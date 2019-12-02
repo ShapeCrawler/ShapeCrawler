@@ -6,7 +6,7 @@ using Xunit;
 namespace PptxXML.Tests
 {
     /// <summary>
-    /// Represent a unit tests of <see cref="SlideEx"/> object.
+    /// Represents a unit tests of <see cref="SlideEx"/> object.
     /// </summary>
     public class SlideTests
     {

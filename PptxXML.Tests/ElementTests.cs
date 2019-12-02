@@ -1,18 +1,19 @@
 using System.IO;
 using System.Linq;
 using PptxXML.Entities;
+using PptxXML.Entities.Elements;
 using PptxXML.Enums;
 using Xunit;
 
 namespace PptxXML.Tests
 {
     /// <summary>
-    /// Represent a unit tests of <see cref="Element"/> object.
+    /// Represents a unit tests of <see cref="Element"/> object.
     /// </summary>
     public class ElementTests
     {
         [Fact]
-        public void Type()
+        public void Type_Test()
         {
             var ms = new MemoryStream(Properties.Resources._003);
             var pre = new PresentationEx(ms);

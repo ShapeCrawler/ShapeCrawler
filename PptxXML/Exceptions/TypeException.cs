@@ -1,29 +1,17 @@
-﻿using System;
-
-namespace PptxXML.Exceptions
+﻿namespace PptxXML.Exceptions
 {
     /// <summary>
-    /// Represent an exception which is throws when a type of element could not be defined.
+    /// Thrown when a type of element could not be defined.
     /// </summary>
-    public class TypeException : Exception
+    public class TypeException : PptxXMLException
     {
-        #region Fields
-
-        private const string DefaultMessage = "Element type was not defined";
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
-        /// Initialise <see cref="TypeException"/> exception with default error message.
+        /// Initializes a new instance of the <see cref="TypeException"/> class with default error message.
         /// </summary>
-        public TypeException():
-            base(DefaultMessage)
-        {
-            
-        }
+        public TypeException(): base(101, "Element type was not defined.") { }
 
-        #endregion
+        #endregion Constructors
     }
 }
