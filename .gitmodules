@@ -1,0 +1,3 @@
+[submodule "submodules/ObjectEx"]
+	path = submodules/ObjectEx
+	url = https://github.com/adamshakhabov/ObjectEx
