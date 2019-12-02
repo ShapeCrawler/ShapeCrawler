@@ -1,15 +1,16 @@
-using DocumentFormat.OpenXml.Presentation;
 using PptxXML.Entities;
 using System.IO;
 using System.Linq;
+using PptxXML.Entities.Elements;
+using PptxXML.Models.Elements;
 using Xunit;
 
 namespace PptxXML.Tests
 {
     /// <summary>
-    /// Represent unit tests of <see cref="Presentation"/> object
+    /// Represents unit tests of the <see cref="PresentationEx"/> class.
     /// </summary>
-    public class PresentationTests
+    public class PresentationExTests
     {
         [Fact]
         public void SlidesNumber_Test()
@@ -56,6 +57,25 @@ namespace PptxXML.Tests
             // ASSERT
             Assert.Equal(1, numSlides);
             Assert.Equal(2, numElements);
+        }
+
+        [Fact]
+        public void ShapeTextBody_Test()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._008);
+
+            // ACT
+            var shapes = pre.Slides.Single().Elements.OfType<ShapeEx>();
+            var sh36 = shapes.Single(e => e.Id == 36);
+            var sh37 = shapes.Single(e => e.Id == 37);
+            pre.Dispose();
+
+            // ASSERT
+            Assert.Null(sh36.TextBody);
+            Assert.NotNull(sh37.TextBody);
+            Assert.Equal("P1t1 P1t2", sh37.TextBody.Paragraphs[0].Text);
+            Assert.Equal("p2", sh37.TextBody.Paragraphs[1].Text);
         }
     }
 }

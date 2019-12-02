@@ -119,5 +119,15 @@ namespace PptxXML.Tests.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] _008 {
+            get {
+                object obj = ResourceManager.GetObject("_008", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

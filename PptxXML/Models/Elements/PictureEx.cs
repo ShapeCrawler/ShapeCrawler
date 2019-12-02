@@ -8,15 +8,15 @@ namespace PptxXML.Entities.Elements
     /// <summary>
     /// Represent a picture element
     /// </summary>
-    public class Picture: Element
+    public class PictureEx: Element
     {
         #region Constructors
 
         /// <summary>
-        /// Initialise an instance of <see cref="Picture"/> class.
+        /// Initialise an instance of <see cref="PictureEx"/> class.
         /// </summary>
         /// <param name="xmlCompositeElement"></param>
-        public Picture(OpenXmlCompositeElement xmlCompositeElement) :
+        public PictureEx(OpenXmlCompositeElement xmlCompositeElement) :
             base(xmlCompositeElement)
         {
             Type = ElementType.Picture;

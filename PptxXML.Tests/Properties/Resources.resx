@@ -136,4 +136,7 @@
   <data name="_007_2 slides" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\007_2 slides.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="_008" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resource\008.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

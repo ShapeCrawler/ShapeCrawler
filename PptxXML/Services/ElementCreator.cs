@@ -4,6 +4,7 @@ using objectEx.Extensions;
 using PptxXML.Entities.Elements;
 using PptxXML.Exceptions;
 using PptxXML.Extensions;
+using PptxXML.Models.Elements;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace PptxXML.Services
@@ -32,13 +33,13 @@ namespace PptxXML.Services
 
                 // Shape
                 case P.Shape xmlShape:
-                    element = new Shape(xmlShape);
+                    element = new ShapeEx(xmlShape);
                     return element;
             }
             // Chart
             if (xmlCompositeElement.IsChart())
             {
-                element = new Chart(xmlCompositeElement);
+                element = new ChartEx(xmlCompositeElement);
                 return element;
             }
             // Table
@@ -51,7 +52,7 @@ namespace PptxXML.Services
             if (xmlCompositeElement is P.Picture
                 || xmlCompositeElement is P.GraphicFrame && xmlCompositeElement.Descendants<P.Picture>().Any())
             {
-                element = new Picture(xmlCompositeElement);
+                element = new PictureEx(xmlCompositeElement);
                 return element;
             }
 

@@ -7,7 +7,7 @@ using PptxXML.Extensions;
 namespace PptxXML.Entities.Elements
 {
     /// <summary>
-    /// Represent an element on a slide.
+    /// Represents an element on a slide.
     /// </summary>
     public abstract class Element
     {
