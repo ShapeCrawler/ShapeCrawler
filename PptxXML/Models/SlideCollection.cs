@@ -1,7 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ObjectEx.Utilities;
-using PptxXML.Entities;
 using System.Collections;
 using System.Collections.Generic;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -36,6 +35,10 @@ namespace PptxXML.Models
 
         #region Public Methods
 
+        /// <summary>
+        /// Adds slide item.
+        /// </summary>
+        /// <param name="item"></param>
         public void Add(SlideEx item)
         {
             Check.NotNull(item, nameof(item));
@@ -50,10 +53,10 @@ namespace PptxXML.Models
             Check.NotNull(item, nameof(item));
 
             RemoveFromDom(item.Number);
+            _xmlPreDoc.PresentationPart.Presentation.Save(); // save the modified presentation
+
             _items.Remove(item);
             UpdateNumbers();
-
-            _xmlPreDoc.PresentationPart.Presentation.Save(); // save the modified presentation
         }
 
         /// <summary>

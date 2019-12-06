@@ -1,12 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using DocumentFormat.OpenXml;
-using objectEx.Extensions;
-using PptxXML.Enums;
+using ObjectEx.Utilities;
 
-namespace PptxXML.Entities.Elements
+namespace PptxXML.Models.Elements
 {
     /// <summary>
-    /// Represent a picture element
+    /// Represents a picture element.
     /// </summary>
     public class PictureEx: Element
     {
@@ -16,13 +16,12 @@ namespace PptxXML.Entities.Elements
         /// Initialise an instance of <see cref="PictureEx"/> class.
         /// </summary>
         /// <param name="xmlCompositeElement"></param>
-        public PictureEx(OpenXmlCompositeElement xmlCompositeElement) :
-            base(xmlCompositeElement)
+        public PictureEx(OpenXmlCompositeElement xmlCompositeElement) : base(xmlCompositeElement)
         {
-            Type = ElementType.Picture;
+
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Public Methods
 
@@ -32,9 +31,15 @@ namespace PptxXML.Entities.Elements
         /// <param name="stream"></param>
         public void SetImage(Stream stream)
         {
-            stream.ThrowIfNull(nameof(stream));
+            Check.NotNull(stream, nameof(stream));
+            throw new NotImplementedException();
         }
 
-        #endregion
+        #endregion Public Methods
+
+        #region Private Methods
+
+
+        #endregion Private Methods
     }
 }

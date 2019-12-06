@@ -1,16 +1,15 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using DocumentFormat.OpenXml.Packaging;
 using objectEx.Extensions;
 using ObjectEx.Utilities;
-using PptxXML.Models;
+using PptxXML.Services;
 
-namespace PptxXML.Entities
+namespace PptxXML.Models
 {
     /// <summary>
     /// Represents a presentation.
     /// </summary>
-    public class PresentationEx : IDisposable
+    public class PresentationEx : IPresentationEx
     {
         #region Fields
 
@@ -73,6 +72,18 @@ namespace PptxXML.Entities
         #region Public Methods
 
         /// <summary>
+        /// Saves the presentation in specified file path.
+        /// </summary>
+        /// <param name="filePath"></param>
+        public void SaveAs(string filePath)
+        {
+            Check.NotEmpty(filePath, nameof(filePath));
+
+            var savedXmlDoc = _xmlDoc.SaveAs(filePath);
+            savedXmlDoc.Dispose();
+        }
+
+        /// <summary>
         /// Saves and closes the presentation, and releases all resources.
         /// </summary>
         public void Dispose()
@@ -89,13 +100,14 @@ namespace PptxXML.Entities
         {
             _slides = new SlideCollection(_xmlDoc);
             var sldNumber = 0;
+            var elementCreator = new ElementCreator();
             foreach (var sldPart in _xmlDoc.PresentationPart.SlideParts)
             {
                 sldNumber++;
-                _slides.Add(new SlideEx(sldPart, _xmlDoc, sldNumber));
+                _slides.Add(new SlideEx(sldPart, sldNumber, elementCreator));
             }
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }

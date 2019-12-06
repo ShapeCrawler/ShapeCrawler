@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using PptxXML.Enums;
 
-namespace PptxXML.Entities.Elements
+namespace PptxXML.Models.Elements
 {
     /// <summary>
     /// Represents a chart.

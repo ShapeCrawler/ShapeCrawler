@@ -1,7 +1,6 @@
-using PptxXML.Entities;
 using System.IO;
 using System.Linq;
-using PptxXML.Entities.Elements;
+using PptxXML.Models;
 using PptxXML.Models.Elements;
 using Xunit;
 

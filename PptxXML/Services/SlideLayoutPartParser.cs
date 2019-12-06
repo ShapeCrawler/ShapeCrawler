@@ -12,7 +12,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace PptxXML.Services
 {
     /// <summary>
-    /// Represent <see cref="SlideLayoutPart"/> object parser.
+    /// Represents <see cref="SlideLayoutPart"/> object parser.
     /// </summary>
     public class SlideLayoutPartParser
     {

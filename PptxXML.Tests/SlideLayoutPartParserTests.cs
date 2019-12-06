@@ -1,7 +1,7 @@
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using PptxXML.Entities;
+using PptxXML.Models;
 using PptxXML.Services;
 using Xunit;
 

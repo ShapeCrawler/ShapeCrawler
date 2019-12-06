@@ -2,7 +2,7 @@
 using DocumentFormat.OpenXml;
 using PptxXML.Enums;
 
-namespace PptxXML.Entities.Elements
+namespace PptxXML.Models.Elements
 {
     /// <summary>
     /// Represent OLE (Object Linking and Embedding) object.
@@ -16,8 +16,7 @@ namespace PptxXML.Entities.Elements
         /// Initialise an instance of <see cref="OLEObject"/> class.
         /// </summary>
         /// <param name="xmlCompositeElement"></param>
-        public OLEObject(OpenXmlCompositeElement xmlCompositeElement) :
-            base(xmlCompositeElement)
+        public OLEObject(OpenXmlCompositeElement xmlCompositeElement) : base(xmlCompositeElement)
         {
             Type = ElementType.OLEObject;
         }
