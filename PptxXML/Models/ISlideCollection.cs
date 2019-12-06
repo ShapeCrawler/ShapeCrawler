@@ -1,5 +1,4 @@
-﻿using PptxXML.Entities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace PptxXML.Models
 {

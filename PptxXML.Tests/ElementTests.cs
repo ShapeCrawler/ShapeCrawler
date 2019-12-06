@@ -1,9 +1,12 @@
 using System.IO;
 using System.Linq;
-using PptxXML.Entities;
-using PptxXML.Entities.Elements;
+using DocumentFormat.OpenXml.Packaging;
 using PptxXML.Enums;
+using PptxXML.Extensions;
+using PptxXML.Models;
+using PptxXML.Models.Elements;
 using Xunit;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace PptxXML.Tests
 {
@@ -13,28 +16,23 @@ namespace PptxXML.Tests
     public class ElementTests
     {
         [Fact]
-        public void Type_Test()
+        public void IdHiddenIsPlaceholder_Test()
         {
             var ms = new MemoryStream(Properties.Resources._003);
-            var pre = new PresentationEx(ms);
-            var allElements = pre.Slides.First().Elements;
+            var doc = PresentationDocument.Open(ms, false);
+            var stubGrFrame = doc.PresentationPart.SlideParts.Single().Slide.CommonSlideData.ShapeTree.Elements<P.GraphicFrame>().Single(ge => ge.GetId() == 4);
 
             // ACT
-            var chart = allElements[0].Type;
-            var group = allElements[1].Type;
-            var picture = allElements[2].Type;
-            var shape = allElements[3].Type;
-            var table = allElements[4].Type;
+            var chart = new ChartEx(stubGrFrame);
 
             // CLOSE
-            pre.Dispose();
-            
+            ms.Dispose();
+            doc.Dispose();
+
             // ASSERT
-            Assert.Equal(ElementType.Chart, chart);
-            Assert.Equal(ElementType.Group, group);
-            Assert.Equal(ElementType.Picture, picture);
-            Assert.Equal(ElementType.Shape, shape);
-            Assert.Equal(ElementType.Table, table);
+            Assert.Equal(4, chart.Id);
+            Assert.False(chart.Hidden);
+            Assert.False(chart.IsPlaceholder);
         }
 
         [Fact]
@@ -50,6 +48,7 @@ namespace PptxXML.Tests
 
             // CLOSE
             pre.Dispose();
+            ms.Dispose();
 
             // ASSERT
             Assert.True(shapeHiddenValue);

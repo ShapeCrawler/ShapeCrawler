@@ -1,6 +1,6 @@
-using PptxXML.Entities;
 using System.IO;
 using System.Linq;
+using PptxXML.Models;
 using Xunit;
 
 namespace PptxXML.Tests
@@ -19,14 +19,13 @@ namespace PptxXML.Tests
 
             // ACT
             var elementsNumber = allElements.Count;
-            var firstElementId = allElements[0].Id;
 
             // CLOSE
             pre.Dispose();
+            ms.Dispose();
             
             // ASSERT
-            Assert.Equal(5, elementsNumber);
-            Assert.Equal(2, firstElementId);
+            Assert.Equal(3, elementsNumber);
         }
     }
 }

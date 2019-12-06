@@ -47,13 +47,25 @@ namespace PptxXML.Extensions
         /// <returns>(identifier, hidden)</returns>
         public static (int, bool) GetNvPrValues(this OpenXmlCompositeElement compositeElement)
         {
-            // .First() is used instead .Single() because group shape can have more than one id for its child elements.
+            // .First() is used instead .Single() because group shape can have more than one id for its child elements
             var cNvPr = compositeElement.Descendants<P.NonVisualDrawingProperties>().First();
             var id = (int) cNvPr.Id.Value;
             var parsedHiddenValue = cNvPr.Hidden?.Value;
             var hidden = parsedHiddenValue != null && parsedHiddenValue == true;
 
             return (id, hidden);
+        }
+
+        /// <summary>
+        /// Gets identifier.
+        /// </summary>
+        public static int GetId(this OpenXmlCompositeElement compositeElement)
+        {
+            // .First() is used instead .Single() because group shape can have more than one id for its child elements
+            var cNvPr = compositeElement.Descendants<P.NonVisualDrawingProperties>().First();
+            var id = (int)cNvPr.Id.Value;
+
+            return id;
         }
 
         /// <summary>

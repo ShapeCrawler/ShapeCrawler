@@ -3,7 +3,7 @@
 namespace PptxXML.Models
 {
     /// <summary>
-    /// Represent data of a placeholder.
+    /// Represents data of a placeholder.
     /// </summary>
     public class PlaceholderData
     {

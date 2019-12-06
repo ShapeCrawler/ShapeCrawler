@@ -1,13 +1,13 @@
-﻿using PptxXML.Entities;
-using PptxXML.Models;
+﻿using PptxXML.Models;
 using PptxXML.Tests.Helpers;
 using System.Linq;
+using PptxXML.Services;
 using Xunit;
 
 namespace PptxXML.Tests
 {
     /// <summary>
-    /// Represents unit tests for <see cref="SlideCollection"/> class.
+    /// Represents unit tests for the <see cref="SlideCollection"/> class.
     /// </summary>
     public class SlideCollectionTests
     {
@@ -17,7 +17,7 @@ namespace PptxXML.Tests
             // ARRANGE
             var xmlDoc = DocHelper.Open(Properties.Resources._001);
             var slides = new SlideCollection(xmlDoc);
-            var newSlide = new SlideEx(xmlDoc.PresentationPart.SlideParts.First(), xmlDoc, 1);
+            var newSlide = new SlideEx(xmlDoc.PresentationPart.SlideParts.First(), 1, new ElementCreator());
 
             // ACT
             slides.Add(newSlide);
@@ -25,7 +25,7 @@ namespace PptxXML.Tests
             // CLEAN
             xmlDoc.Dispose();
 
-            // ARRANGE
+            // ASSERT
             Assert.Single(slides);
         }
 

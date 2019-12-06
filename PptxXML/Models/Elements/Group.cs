@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using PptxXML.Enums;
 
-namespace PptxXML.Entities.Elements
+namespace PptxXML.Models.Elements
 {
     /// <summary>
     /// Represent a group shape.
@@ -14,8 +14,7 @@ namespace PptxXML.Entities.Elements
         /// Initialise an instance of <see cref="Group"/> class.
         /// </summary>
         /// <param name="xmlCompositeElement"></param>
-        public Group(OpenXmlCompositeElement xmlCompositeElement) :
-            base(xmlCompositeElement)
+        public Group(OpenXmlCompositeElement xmlCompositeElement) : base(xmlCompositeElement)
         {
             Type = ElementType.Group;
         }

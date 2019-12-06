@@ -1,0 +1,2 @@
+- 1 slide;
+- 1 empty shape. 

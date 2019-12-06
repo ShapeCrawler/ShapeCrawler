@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using PptxXML.Entities.Elements;
 using PptxXML.Enums;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -15,6 +14,8 @@ namespace PptxXML.Models.Elements
         #region Fields
 
         private readonly P.Shape _xmlShape;
+        private bool _xmlTxtBodyParsed; // used to avoid second time parsed text body
+        private TextBodyEx _textBody;
 
         #endregion Fields
 
@@ -23,7 +24,19 @@ namespace PptxXML.Models.Elements
         /// <summary>
         /// Gets text body.
         /// </summary>
-        public TextBodyEx TextBody { get; private set; }
+        /// <remarks>Lazy load.</remarks>
+        public TextBodyEx TextBody
+        {
+            get
+            {
+                if (!_xmlTxtBodyParsed)
+                {
+                    _textBody = TryParseTxtBody();
+                }
+
+                return _textBody;
+            }
+        }
 
         #endregion Properties
 
@@ -49,17 +62,31 @@ namespace PptxXML.Models.Elements
             // Type
             Type = ElementType.Shape;
 
+            // X, Y, W, H
+            var t2D = _xmlShape.ShapeProperties.Transform2D;
+            X = t2D.Offset.X.Value;
+            Y = t2D.Offset.Y.Value;
+            Width = t2D.Extents.Cx.Value;
+            Height = t2D.Extents.Cy.Value;
+        }
+
+        private TextBodyEx TryParseTxtBody()
+        {
             // TextBodyEx
+            TextBodyEx result = null;
             var xmlTxtBody = _xmlShape.TextBody;
             if (xmlTxtBody != null)
             {
                 var aTexts = xmlTxtBody.Descendants<A.Text>();
-                if (aTexts.Any(t => t.Parent is A.Run) 
+                if (aTexts.Any(t => t.Parent is A.Run)
                     && aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element contain text
                 {
-                    TextBody = new TextBodyEx(xmlTxtBody);
+                    result = new TextBodyEx(xmlTxtBody);
                 }
             }
+
+            _xmlTxtBodyParsed = true;
+            return result; // if shape does have text null is returned
         }
 
         #endregion

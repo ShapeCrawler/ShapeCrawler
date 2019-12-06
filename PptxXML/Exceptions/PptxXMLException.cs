@@ -16,6 +16,15 @@ namespace PptxXML.Exceptions
 
         #endregion Properties
 
+        #region Constructors
+
+        /// <summary>
+        /// Defines parametersless constructor.
+        /// </summary>
+        public PptxXMLException() { }
+
+        public PptxXMLException(string message) : base(message) { }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PptxXMLException"/> class with default error message.
         /// </summary>
@@ -24,9 +33,6 @@ namespace PptxXML.Exceptions
             ErrorCode = errorCode;
         }
 
-        /// <summary>
-        /// Defines parametersless constructor.
-        /// </summary>
-        public PptxXMLException() { }
+        #endregion Constructors
     }
 }
