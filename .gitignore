@@ -1,13 +1,10 @@
-pptxxml/.vs
-pptxxml/bin
-pptxxml/obj
+src/pptxxml/.vs
+src/pptxxml/bin
+src/pptxxml/obj
 
-pptxxml.tests/obj
-pptxxml.tests/bin
+src/pptxxml.tests/obj
+src/pptxxml.tests/bin
 
-adamo/bin
-adamo/obj
-
-pptxXML.examples/bin
-pptxXML.examples/obj
+src/pptxXML.examples/bin
+src/pptxXML.examples/obj
 
