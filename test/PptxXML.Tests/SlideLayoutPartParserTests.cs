@@ -3,6 +3,7 @@ using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using PptxXML.Models;
 using PptxXML.Services;
+using PptxXML.Services.Placeholder;
 using Xunit;
 
 namespace PptxXML.Tests
@@ -13,10 +14,10 @@ namespace PptxXML.Tests
     public class SlideLayoutPartParserTests
     {
         /// <summary>
-        /// Test contains data for title placeholder
+        /// Test contains data for title placeholder.
         /// </summary>
         [Fact]
-        public void GetPlaceholderDataTest()
+        public void GetPlaceholderDic_Test()
         {
             var ms = new MemoryStream(Properties.Resources._006_1_slides);
             var xmlDoc = PresentationDocument.Open(ms, false);
@@ -28,28 +29,10 @@ namespace PptxXML.Tests
 
             // CLOSE
             xmlDoc.Close();
+            ms.Dispose();
 
             // ASSERT
-            Assert.True(phDataDic.Any(d => d.Key.Equals(0)));
-        }
-
-        [Fact]
-        public void Hidden()
-        {
-            var ms = new MemoryStream(Properties.Resources._004);
-            var pre = new PresentationEx(ms);
-
-            // ACT
-            var allElements = pre.Slides.Single().Elements;
-            var shapeHiddenValue = allElements[0].Hidden;
-            var tableHiddenValue = allElements[1].Hidden;
-
-            // CLOSE
-            pre.Dispose();
-
-            // ASSERT
-            Assert.True(shapeHiddenValue);
-            Assert.False(tableHiddenValue);
+            Assert.Contains(phDataDic, d => d.Key.Equals(0));
         }
     }
 }

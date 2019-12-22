@@ -4,23 +4,22 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
-using ObjectEx.Extensions;
+using ObjectEx.Utilities;
 using PptxXML.Extensions;
-using PptxXML.Models;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace PptxXML.Services
+namespace PptxXML.Services.Placeholder
 {
     /// <summary>
-    /// Represents <see cref="SlideLayoutPart"/> object parser.
+    /// Represents a <see cref="SlideLayoutPart"/> object parser.
     /// </summary>
-    public class SlideLayoutPartParser
+    public class SlideLayoutPartParser : ISlideLayoutPartParser
     {
         #region Fields
 
         private const int CustomGeometryCode = 187;
 
-        #endregion
+        #endregion Fields
 
         #region Public Methods
 
@@ -30,7 +29,7 @@ namespace PptxXML.Services
         /// <param name="sldLtPart"></param>
         public Dictionary<int, PlaceholderData> GetPlaceholderDic(SlideLayoutPart sldLtPart)
         {
-            sldLtPart.ThrowIfNull(nameof(sldLtPart));
+            Check.NotNull(sldLtPart, nameof(sldLtPart));
 
             var resultDic = new Dictionary<int, PlaceholderData>();
 
@@ -47,8 +46,8 @@ namespace PptxXML.Services
                 {
                     continue;
                 }
-                var shapePr = el.Descendants<P.ShapeProperties>().Single();
-                var t2d = shapePr.Transform2D;
+                var elShapeProperties = el.Descendants<P.ShapeProperties>().Single();
+                var t2d = elShapeProperties.Transform2D;
                 if (t2d == null)
                 {
                     continue;
@@ -61,11 +60,11 @@ namespace PptxXML.Services
                     Y = t2d.Offset.Y.Value,
                     Width = t2d.Extents.Cx.Value,
                     Height = t2d.Extents.Cy.Value,
-                    ShapeProperties = shapePr
+                    ShapeProperties = elShapeProperties
                 };
 
                 // Gets geometry form
-                var presetGeometry = shapePr.GetFirstChild<PresetGeometry>();
+                var presetGeometry = elShapeProperties.GetFirstChild<PresetGeometry>();
                 if (presetGeometry == null)
                 {
                     placeholderData.GeometryCode = CustomGeometryCode;
@@ -82,21 +81,6 @@ namespace PptxXML.Services
             return resultDic;
         }
 
-        /// <summary>
-        /// Gets placeholder data from slide layout/master by index.
-        /// </summary>
-        /// <returns>Null if not found.</returns>
-        public PlaceholderData GetByIndex(SlideLayoutPart sldLtPart, int placeholderIndex)
-        {
-            throw new NotImplementedException();
-
-            var result = sldLtPart.SlideLayout.CommonSlideData.ShapeTree.Elements<OpenXmlCompositeElement>()
-                .FirstOrDefault(el => el.Descendants<P.ShapeProperties>().Any() 
-                             && el.GetPlaceholderIndex() != null 
-                             && el.GetPlaceholderIndex().Equals(placeholderIndex));
-        }
-
         #endregion
-
     }
 }

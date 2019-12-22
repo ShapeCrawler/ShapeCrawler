@@ -2,9 +2,11 @@ src/pptxxml/.vs
 src/pptxxml/bin
 src/pptxxml/obj
 
-src/pptxxml.tests/obj
-src/pptxxml.tests/bin
+test/pptxxml.tests/obj
+test/pptxxml.tests/bin
 
 src/pptxXML.examples/bin
 src/pptxXML.examples/obj
+
+.vs/
 

@@ -2,9 +2,9 @@
 using DocumentFormat.OpenXml.Packaging;
 using ObjectEx.Utilities;
 using PptxXML.Enums;
-using PptxXML.Exceptions;
 using PptxXML.Models.Elements;
 using PptxXML.Services;
+using PptxXML.Services.Placeholder;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace PptxXML.Models
@@ -21,9 +21,10 @@ namespace PptxXML.Models
         #region Dependencies
 
         private readonly SlidePart _xmlSldPart;
-        private readonly IElementFactory _elCreator;
+        private readonly IElementFactory _elFactory;
         private readonly IGroupShapeTypeParser _shapeTreeParser;
         private readonly IGroupBuilder _groupBuilder;
+        private readonly ISlideLayoutPartParser _sldLayoutPartParser;
 
         #endregion Dependencies
 
@@ -48,7 +49,7 @@ namespace PptxXML.Models
         }
 
         /// <summary>
-        /// Returns slide number in presentation.
+        /// Returns a slide number in presentation.
         /// </summary>
         public int Number { get; set; } //TODO: Remove public setter somehow
 
@@ -61,15 +62,23 @@ namespace PptxXML.Models
         /// </summary>
         public SlideEx(SlidePart xmlSldPart, 
                        int sldNumber, 
-                       IElementFactory elCreator, 
+                       IElementFactory elFactory, 
                        IGroupShapeTypeParser shapeTreeParser,
-                       IGroupBuilder groupBuilder)
+                       IGroupBuilder groupBuilder,
+                       ISlideLayoutPartParser sldLayoutPartParser)
         {
+            Check.NotNull(xmlSldPart, nameof(xmlSldPart));
+            Check.IsPositive(sldNumber, nameof(sldNumber));
+            Check.NotNull(elFactory, nameof(elFactory));
+            Check.NotNull(shapeTreeParser, nameof(shapeTreeParser));
+            Check.NotNull(groupBuilder, nameof(groupBuilder));
+            Check.NotNull(sldLayoutPartParser, nameof(sldLayoutPartParser));
             _xmlSldPart = xmlSldPart;
             Number = sldNumber;
-            _elCreator = elCreator;
+            _elFactory = elFactory;
             _shapeTreeParser = shapeTreeParser;
             _groupBuilder = groupBuilder;
+            _sldLayoutPartParser = sldLayoutPartParser;
         }
 
         #endregion Constructors
@@ -79,43 +88,19 @@ namespace PptxXML.Models
         private void InitElements()
         {
             _elements = new List<Element>();
-            var shapeTree = _xmlSldPart.Slide.CommonSlideData.ShapeTree;
-            var shapeTreeCandidates = _shapeTreeParser.CreateCandidates(shapeTree);
 
-            foreach (var c in shapeTreeCandidates)
+            // Get candidates
+            var shapeTreeCandidates = _shapeTreeParser.CreateCandidates(_xmlSldPart.Slide.CommonSlideData.ShapeTree);
+
+            // Get placeholder dictionary
+            var phDic = _sldLayoutPartParser.GetPlaceholderDic(_xmlSldPart.SlideLayoutPart);
+
+            foreach (var ec in shapeTreeCandidates)
             {
-                Element el;
-                switch (c.ElementType)
-                {
-                    case ElementType.Shape:
-                        {
-                            el = _elCreator.CreateShape(c);
-                            break;
-                        }
-                    case ElementType.Chart:
-                        {
-                            el = _elCreator.CreateChart(c);
-                            break;
-                        }
-                    case ElementType.Table:
-                        { 
-                            el = _elCreator.CreateTable(c);
-                            break;
-                        }
-                    case ElementType.Picture:
-                        {
-                            el = _elCreator.CreatePicture(c);
-                            break;
-                        }
-                    case ElementType.Group:
-                        {
-                            el = _groupBuilder.Build((P.GroupShape)c.CompositeElement);
-                            break;
-                        }
-                    default:
-                        throw new PptxXMLException(nameof(ElementType));
-                }
-                _elements.Add(el);
+                var newEl = ec.ElementType.Equals(ElementType.Group)
+                    ? _groupBuilder.Build((P.GroupShape)ec.CompositeElement)
+                    : _elFactory.CreateRootElement(ec, phDic);
+                _elements.Add(newEl);
             }
         }
 

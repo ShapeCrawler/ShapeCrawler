@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\submodules\ObjectEx\src\ObjectEx.csproj" />
+    <ProjectReference Include="..\ObjectEx\src\ObjectEx.csproj" />
   </ItemGroup>
 
 </Project>

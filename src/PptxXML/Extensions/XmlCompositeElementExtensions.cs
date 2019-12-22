@@ -17,12 +17,12 @@ namespace PptxXML.Extensions
         #endregion
 
         /// <summary>
-        /// Get placeholder index.
+        /// Returns placeholder index.
         /// </summary>
         /// <param name="xmlCompositeElement">
         /// An element which can be located on slide or master slide.
         /// </param>
-        /// <returns></returns>
+        /// <returns>Placeholder index or null.</returns>
         public static uint? GetPlaceholderIndex(this OpenXmlCompositeElement xmlCompositeElement)
         {
             var ph = xmlCompositeElement.Descendants<P.PlaceholderShape>().FirstOrDefault();
