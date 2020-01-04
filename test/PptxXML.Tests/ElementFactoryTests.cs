@@ -1,9 +1,11 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using PptxXML.Enums;
 using PptxXML.Extensions;
 using PptxXML.Services;
+using PptxXML.Services.Placeholder;
 using Xunit;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -26,10 +28,11 @@ namespace PptxXML.Tests
                 CompositeElement = stubXmlShape,
                 ElementType = ElementType.Shape
             };
-            var creator = new ElementFactory(new GroupShapeTypeParser());
+            var creator = new ElementFactory();
+            var stubPhDic = new Dictionary<int, PlaceholderData>();
 
             // ACT
-            var element = creator.CreateShape(stubEc);
+            var element = creator.CreateRootElement(stubEc, stubPhDic);
 
             // CLEAN
             doc.Dispose();
@@ -55,10 +58,11 @@ namespace PptxXML.Tests
                 CompositeElement = stubXmlPic,
                 ElementType = ElementType.Picture
             };
-            var creator = new ElementFactory(new GroupShapeTypeParser());
+            var creator = new ElementFactory();
+            var stubPhDic = new Dictionary<int, PlaceholderData>();
 
             // ACT
-            var element = creator.CreatePicture(stubEc);
+            var element = creator.CreateRootElement(stubEc, stubPhDic);
 
             // CLEAN
             doc.Dispose();
@@ -84,10 +88,11 @@ namespace PptxXML.Tests
                 CompositeElement = stubGrFrame,
                 ElementType = ElementType.Table
             };
-            var creator = new ElementFactory(new GroupShapeTypeParser());
+            var creator = new ElementFactory();
+            var stubPhDic = new Dictionary<int, PlaceholderData>();
 
             // ACT
-            var element = creator.CreateTable(stubEc);
+            var element = creator.CreateRootElement(stubEc, stubPhDic);
 
             // CLEAN
             doc.Dispose();
@@ -113,10 +118,11 @@ namespace PptxXML.Tests
                 CompositeElement = stubGrFrame,
                 ElementType = ElementType.Chart
             };
-            var creator = new ElementFactory(new GroupShapeTypeParser());
+            var creator = new ElementFactory();
+            var stubPhDic = new Dictionary<int, PlaceholderData>();
 
             // ACT
-            var element = creator.CreateChart(stubEc);
+            var element = creator.CreateRootElement(stubEc, stubPhDic);
 
             // CLEAN
             doc.Dispose();

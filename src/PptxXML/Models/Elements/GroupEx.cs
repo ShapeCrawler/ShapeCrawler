@@ -18,7 +18,7 @@ namespace PptxXML.Models.Elements
         #region Dependencies
 
         private readonly IGroupShapeTypeParser _groupShapeTypeParser;
-        private readonly IElementFactory _elCreator;
+        private readonly IElementFactory _elFactory;
 
         #endregion Dependencies
 
@@ -49,7 +49,7 @@ namespace PptxXML.Models.Elements
         private GroupEx(IGroupShapeTypeParser parser, IElementFactory elFactory) : base(ElementType.Group)
         {
             _groupShapeTypeParser = parser;
-            _elCreator = elFactory;
+            _elFactory = elFactory;
         }
 
         #endregion Constructors
@@ -99,38 +99,12 @@ namespace PptxXML.Models.Elements
             var groupShapeCandidates = _groupShapeTypeParser.CreateCandidates(xmlGroupShape, false); // false is set to avoid parse group in group
 
             // TODO: delete this copy/past
-            foreach (var c in groupShapeCandidates)
+            foreach (var ec in groupShapeCandidates)
             {
-                Element el;
-                switch (c.ElementType)
-                {
-                    case ElementType.Shape:
-                    {
-                        el = _elCreator.CreateShape(c);
-                        break;
-                    }
-                    case ElementType.Chart:
-                    {
-                        el = _elCreator.CreateChart(c);
-                        break;
-                    }
-                    case ElementType.Table:
-                    {
-                        el = _elCreator.CreateTable(c);
-                        break;
-                    }
-                    case ElementType.Picture:
-                    {
-                        el = _elCreator.CreatePicture(c);
-                        break;
-                    }
-                    default:
-                        throw new PptxXMLException(nameof(ElementType));
-                }
+                Element newEl = _elFactory.CreateGroupsElement(ec);
+                _elements.Add(newEl);
 
                 //TODO: parsed x,y,w,h values for child elements (https://github.com/adamshakhabov/PptxXML/issues/7)
-
-                _elements.Add(el);
             }
         }
 

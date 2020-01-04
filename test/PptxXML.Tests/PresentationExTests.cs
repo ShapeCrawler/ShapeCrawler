@@ -90,5 +90,22 @@ namespace PptxXML.Tests
             // ASSERT
             Assert.Equal(5, numberElements);
         }
+
+        [Fact]
+        public void ShapePlaceholderTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._006_1_slides);
+
+            // ACT
+            var shapePlaceholder = pre.Slides.Single().Elements.Single();
+            pre.Dispose();
+
+            // ASSERT
+            Assert.Equal(1524000, shapePlaceholder.X);
+            Assert.Equal(1122363, shapePlaceholder.Y);
+            Assert.Equal(9144000, shapePlaceholder.Width);
+            Assert.Equal(2387600, shapePlaceholder.Height);
+        }
     }
 }

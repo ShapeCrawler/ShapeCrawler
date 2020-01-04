@@ -1,66 +1,141 @@
-﻿using ObjectEx.Utilities;
+﻿using System.Collections.Generic;
+using DocumentFormat.OpenXml;
+using ObjectEx.Utilities;
 using PptxXML.Exceptions;
 using PptxXML.Models.Elements;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
+using PptxXML.Enums;
+using PptxXML.Extensions;
+using PptxXML.Models;
+using PptxXML.Services.Placeholder;
 
 namespace PptxXML.Services
 {
     /// <summary>
-    /// Represents <see cref="Element"/> instance creator.
+    /// Represents factory to create elements except Group type element.
     /// </summary>
     public class ElementFactory : IElementFactory
     {
         #region Dependencies
 
-        private readonly IGroupShapeTypeParser _groupShapeTypeParser;
-
         #endregion Dependencies
 
         #region Constructors
-
-        public ElementFactory(IGroupShapeTypeParser groupShapeTypeParser)
-        {
-            _groupShapeTypeParser = groupShapeTypeParser;
-        }
 
         #endregion Constructors
 
         #region Public Methods
 
         /// <summary>
-        /// Creates instance of the <see cref="ShapeEx"/> class.
+        /// Creates a new element from root tree.
+        /// </summary>
+        /// <returns></returns>
+        public Element CreateRootElement(ElementCandidate ec, Dictionary<int, PlaceholderData> phDic)
+        {
+            Check.NotNull(ec, nameof(ec));
+
+            switch (ec.ElementType)
+            {
+                case ElementType.Shape:
+                    {
+                        return CreateShape(ec.CompositeElement, phDic);
+                    }
+                case ElementType.Chart:
+                    {
+                        return CreateChart(ec);
+                    }
+                case ElementType.Table:
+                    {
+                        return CreateTable(ec);
+
+                    }
+                case ElementType.Picture:
+                    {
+                        return CreatePicture(ec);
+                    }
+                default:
+                    throw new PptxXMLException(nameof(ElementType));
+            }
+        }
+
+        /// <summary>
+        /// Creates a new element of group element.
         /// </summary>
         /// <param name="ec"></param>
         /// <returns></returns>
-        public Element CreateShape(ElementCandidate ec)
+        public Element CreateGroupsElement(ElementCandidate ec)
         {
-            // Validate
             Check.NotNull(ec, nameof(ec));
-            if (!(ec.CompositeElement is P.Shape xmlShape))
-            {
-                throw new PptxXMLException();
-            }
 
-            // Create shape
-            var shape = new ShapeEx
+            switch (ec.ElementType)
             {
-                XmlCompositeElement = xmlShape
-            };
+                case ElementType.Shape:
+                {
+                    return CreateShape(ec.CompositeElement);
+                }
+                case ElementType.Chart:
+                {
+                    return CreateChart(ec);
+                }
+                case ElementType.Table:
+                {
+                    return CreateTable(ec);
+
+                }
+                case ElementType.Picture:
+                {
+                    return CreatePicture(ec);
+                }
+                default:
+                    throw new PptxXMLException(nameof(ElementType));
+            }
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
+
+        private static Element CreateShape(OpenXmlCompositeElement ce)
+        {
+            // Create shape
+            var shape = new ShapeEx { XmlCompositeElement = ce };
 
             // Add own transform properties
-            var t2d = xmlShape.ShapeProperties.Transform2D;
+            var t2d = ((P.Shape)ce).ShapeProperties.Transform2D;
             WithOwnTransform2d(shape, t2d);
 
             return shape;
         }
 
-        /// <summary>
-        /// Creates instance of the <see cref="ShapeEx"/> class.
-        /// </summary>
-        /// <param name="ec"></param>
-        /// <returns></returns>
-        public Element CreatePicture(ElementCandidate ec)
+        private static Element CreateShape(OpenXmlCompositeElement ce, Dictionary<int, PlaceholderData> phDic)
+        {
+            // Create shape
+            var shape = new ShapeEx { XmlCompositeElement = ce };
+
+            // Add own transform properties
+            var t2d = ((P.Shape)ce).ShapeProperties.Transform2D;
+            if (t2d != null) // not place holder
+            { 
+                WithOwnTransform2d(shape, t2d);
+            }
+            else // is placeholder
+            { 
+                var idx = ce.GetPlaceholderIndex();
+                const string errMsg = "Something went wrong during process placeholder.";
+                _ = idx ?? throw new PptxXMLException(errMsg);
+                phDic.TryGetValue((int)idx, out var placeholderData);
+                _ = placeholderData ?? throw new PptxXMLException(errMsg);
+                shape.X = placeholderData.X;
+                shape.Y = placeholderData.Y;
+                shape.Width = placeholderData.Width;
+                shape.Height = placeholderData.Height;
+            }
+
+            return shape;
+        }
+
+        private Element CreatePicture(ElementCandidate ec)
         {
             Check.NotNull(ec, nameof(ec));
 
@@ -68,7 +143,7 @@ namespace PptxXML.Services
             if (compositeElement is P.Shape || compositeElement is P.Picture)
             {
                 var t2D = compositeElement.GetFirstChild<P.ShapeProperties>().Transform2D;
-                var picture = new PictureEx()
+                var picture = new PictureEx
                 {
                     XmlCompositeElement = compositeElement
                 };
@@ -80,12 +155,7 @@ namespace PptxXML.Services
             throw new PptxXMLException();
         }
 
-        /// <summary>
-        /// Creates instance of the <see cref="ChartEx"/> class.
-        /// </summary>
-        /// <param name="ec"></param>
-        /// <returns></returns>
-        public Element CreateChart(ElementCandidate ec)
+        private Element CreateChart(ElementCandidate ec)
         {
             // Validate
             Check.NotNull(ec, nameof(ec));
@@ -103,12 +173,7 @@ namespace PptxXML.Services
             return chart;
         }
 
-        /// <summary>
-        /// Creates instance of the <see cref="TableEx"/> class.
-        /// </summary>
-        /// <param name="ec"></param>
-        /// <returns></returns>
-        public Element CreateTable(ElementCandidate ec)
+        private Element CreateTable(ElementCandidate ec)
         {
             // Validate
             Check.NotNull(ec, nameof(ec));
@@ -125,10 +190,6 @@ namespace PptxXML.Services
 
             return table;
         }
-
-        #endregion Public Methods
-
-        #region Private Methods
 
         private static void WithOwnTransform(Element e, P.GraphicFrame xmlGrFrame)
         {

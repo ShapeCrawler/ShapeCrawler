@@ -1,4 +1,6 @@
-﻿using PptxXML.Models.Elements;
+﻿using System.Collections.Generic;
+using PptxXML.Models.Elements;
+using PptxXML.Services.Placeholder;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace PptxXML.Services
@@ -8,12 +10,8 @@ namespace PptxXML.Services
     /// </summary>
     public interface IElementFactory
     {
-        Element CreateShape(ElementCandidate ec);
+        Element CreateGroupsElement(ElementCandidate ec);
 
-        Element CreateChart(ElementCandidate ec);
-
-        Element CreateTable(ElementCandidate ec);
-
-        Element CreatePicture(ElementCandidate ec);
+        Element CreateRootElement(ElementCandidate ec, Dictionary<int, PlaceholderData> phDic);
     }
 }

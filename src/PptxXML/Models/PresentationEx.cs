@@ -5,6 +5,7 @@ using ObjectEx.Extensions;
 using ObjectEx.Utilities;
 using PptxXML.Models.Elements;
 using PptxXML.Services;
+using PptxXML.Services.Placeholder;
 
 namespace PptxXML.Models
 {
@@ -102,13 +103,16 @@ namespace PptxXML.Models
         {
             _slides = new SlideCollection(_xmlDoc);
             var sldNumber = 0;
-            var groupShapeTypeParser = new GroupShapeTypeParser();
-            var elementCreator = new ElementFactory(groupShapeTypeParser);
-            var groupBuilder = new GroupEx.Builder(groupShapeTypeParser, elementCreator);
+            var groupShapeTypeParser = new GroupShapeTypeParser(); // Inject via DI Container
+            var elFactory = new ElementFactory();
+            var groupExBuilder = new GroupEx.Builder(new GroupShapeTypeParser(), elFactory);
+
             foreach (var sldPart in _xmlDoc.PresentationPart.SlideParts)
             {
                 sldNumber++;
-                _slides.Add(new SlideEx(sldPart, sldNumber, elementCreator, groupShapeTypeParser, groupBuilder));
+                var newSldEx = new SlideEx(sldPart, sldNumber, elFactory, groupShapeTypeParser, groupExBuilder,
+                    new SlideLayoutPartParser());
+                _slides.Add(newSldEx);
             }
         }
 

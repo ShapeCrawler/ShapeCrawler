@@ -3,6 +3,7 @@ using PptxXML.Tests.Helpers;
 using System.Linq;
 using PptxXML.Models.Elements;
 using PptxXML.Services;
+using PptxXML.Services.Placeholder;
 using Xunit;
 
 namespace PptxXML.Tests
@@ -18,10 +19,10 @@ namespace PptxXML.Tests
             // ARRANGE
             var xmlDoc = DocHelper.Open(Properties.Resources._001);
             var slides = new SlideCollection(xmlDoc);
-            var elementCreator = new ElementFactory(new GroupShapeTypeParser());
+            var elementCreator = new ElementFactory();
             var treeParser = new GroupShapeTypeParser();
             var builder = new GroupEx.Builder(treeParser, elementCreator);
-            var newSlide = new SlideEx(xmlDoc.PresentationPart.SlideParts.First(), 1, elementCreator, treeParser, builder);
+            var newSlide = new SlideEx(xmlDoc.PresentationPart.SlideParts.First(), 1, elementCreator, treeParser, builder, new SlideLayoutPartParser());
 
             // ACT
             slides.Add(newSlide);

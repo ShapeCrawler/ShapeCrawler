@@ -36,7 +36,7 @@ namespace PptxXML.Tests
         }
 
         [Fact]
-        public void Hidden()
+        public void Hidden_Test()
         {
             var ms = new MemoryStream(Properties.Resources._004);
             var pre = new PresentationEx(ms);
