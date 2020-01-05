@@ -21,7 +21,7 @@ namespace PptxXML.Tests
             // ARRANGE
             var ms = new MemoryStream(Properties.Resources._009);
             var doc = PresentationDocument.Open(ms, false);
-            var groupShape = doc.PresentationPart.SlideParts.Single().Slide.CommonSlideData.ShapeTree.Elements<P.GroupShape>().Single(x => x.GetId() == 2);
+            var groupShape = doc.PresentationPart.GetSlidePartByNumber(1).Slide.CommonSlideData.ShapeTree.Elements<P.GroupShape>().Single(x => x.GetId() == 2);
             var parser = new GroupShapeTypeParser();
             var elFactory = new ElementFactory();
             var builder = new GroupEx.Builder(parser, elFactory);

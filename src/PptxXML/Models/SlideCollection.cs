@@ -14,7 +14,7 @@ namespace PptxXML.Models
     {
         #region Fields
 
-        private readonly List<SlideEx> _items = new List<SlideEx>();
+        private readonly List<SlideEx> _items;
         private readonly PresentationDocument _xmlPreDoc;
 
         #endregion Fields
@@ -24,11 +24,21 @@ namespace PptxXML.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="SlideCollection"></see> class.
         /// </summary>
-        /// <param name="xmlPreDoc"></param>
         public SlideCollection(PresentationDocument xmlPreDoc)
         {
             Check.NotNull(xmlPreDoc, nameof(xmlPreDoc));
+            _items = new List<SlideEx>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SlideCollection"></see> class.
+        /// </summary>
+        public SlideCollection(PresentationDocument xmlPreDoc, int sldNumbers)
+        {
+            Check.NotNull(xmlPreDoc, nameof(xmlPreDoc));
+            Check.IsPositive(sldNumbers, nameof(sldNumbers));
             _xmlPreDoc = xmlPreDoc;
+            _items = new List<SlideEx>(sldNumbers);
         }
 
         #endregion Constructors
@@ -72,6 +82,13 @@ namespace PptxXML.Models
         {
             return _items.GetEnumerator();
         }
+
+        /// <summary>
+        /// Gets item by index.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public SlideEx this[int index] => _items[index];
 
         #endregion Public Methods
 

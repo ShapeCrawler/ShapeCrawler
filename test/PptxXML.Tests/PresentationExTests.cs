@@ -1,5 +1,7 @@
+using System;
 using System.IO;
 using System.Linq;
+using PptxXML.Enums;
 using PptxXML.Models;
 using PptxXML.Models.Elements;
 using Xunit;
@@ -106,6 +108,52 @@ namespace PptxXML.Tests
             Assert.Equal(1122363, shapePlaceholder.Y);
             Assert.Equal(9144000, shapePlaceholder.Width);
             Assert.Equal(2387600, shapePlaceholder.Height);
+        }
+
+        [Fact]
+        public void GroupsElementPropertiesTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+
+            // ACT
+            var slides = pre.Slides;
+            var groupElement = (GroupEx)pre.Slides[1].Elements.Single(x => x.Type.Equals(ElementType.Group));
+            var el3 = groupElement.Elements.Single(x => x.Id.Equals(5));
+            pre.Dispose();
+
+            // ASSERT
+            Assert.Equal(1581846, el3.X);
+            Assert.Equal(1181377, el3.Width);
+            Assert.Equal(654096, el3.Height);
+        }
+
+        [Fact]
+        public void SecondSlideElementsNumberTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+
+            // ACT
+            var elNumber1 = pre.Slides[0].Elements.Count;
+            var elNumber2 = pre.Slides[1].Elements.Count;
+            pre.Dispose();
+
+            // ASSERT
+            Assert.Equal(6, elNumber1);
+            Assert.Equal(2, elNumber2);
+        }
+
+        [Fact]
+        public void SlideElementsDoNotThrowsExceptionTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+
+            // ACT
+            var elements = pre.Slides[0].Elements;
+
+            pre.Dispose();
         }
     }
 }

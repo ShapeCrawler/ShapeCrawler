@@ -1,8 +1,9 @@
 ﻿using System.IO;
+using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
 using ObjectEx.Extensions;
 using ObjectEx.Utilities;
+using PptxXML.Extensions;
 using PptxXML.Models.Elements;
 using PptxXML.Services;
 using PptxXML.Services.Placeholder;
@@ -101,17 +102,19 @@ namespace PptxXML.Models
 
         private void InitSlides()
         {
-            _slides = new SlideCollection(_xmlDoc);
-            var sldNumber = 0;
-            var groupShapeTypeParser = new GroupShapeTypeParser(); // Inject via DI Container
+            PresentationPart presentationPart = _xmlDoc.PresentationPart;
+            var nbSlides = presentationPart.SlideParts.Count();
+            _slides = new SlideCollection(_xmlDoc, nbSlides);
+            var groupShapeTypeParser = new GroupShapeTypeParser(); // TODO: Inject via DI Container
             var elFactory = new ElementFactory();
             var groupExBuilder = new GroupEx.Builder(new GroupShapeTypeParser(), elFactory);
+            var sldLayoutPartParser = new SlideLayoutPartParser();
 
-            foreach (var sldPart in _xmlDoc.PresentationPart.SlideParts)
+            for (var slideIndex = 0; slideIndex < nbSlides; slideIndex++)
             {
-                sldNumber++;
-                var newSldEx = new SlideEx(sldPart, sldNumber, elFactory, groupShapeTypeParser, groupExBuilder,
-                    new SlideLayoutPartParser());
+                SlidePart slidePart = presentationPart.GetSlidePartByIndex(slideIndex);
+
+                var newSldEx = new SlideEx(slidePart, slideIndex + 1, elFactory, groupShapeTypeParser, groupExBuilder, sldLayoutPartParser);
                 _slides.Add(newSldEx);
             }
         }

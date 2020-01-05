@@ -22,7 +22,7 @@ namespace PptxXML.Tests
             // ARRANGE
             var ms = new MemoryStream(Properties.Resources._009);
             var doc = PresentationDocument.Open(ms, false);
-            var stubXmlShape = doc.PresentationPart.SlideParts.Single().Slide.CommonSlideData.ShapeTree.Elements<P.Shape>().Single(s => s.GetId() == 36);
+            var stubXmlShape = doc.PresentationPart.GetSlidePartByNumber(1).Slide.CommonSlideData.ShapeTree.Elements<P.Shape>().Single(s => s.GetId() == 36);
             var stubEc = new ElementCandidate
             {
                 CompositeElement = stubXmlShape,
@@ -52,7 +52,7 @@ namespace PptxXML.Tests
             // ARRANGE
             var ms = new MemoryStream(Properties.Resources._009);
             var doc = PresentationDocument.Open(ms, false);
-            var stubXmlPic = doc.PresentationPart.SlideParts.Single().Slide.CommonSlideData.ShapeTree.Elements<P.Picture>().Single();
+            var stubXmlPic = doc.PresentationPart.GetSlidePartByNumber(1).Slide.CommonSlideData.ShapeTree.Elements<P.Picture>().Single();
             var stubEc = new ElementCandidate
             {
                 CompositeElement = stubXmlPic,
@@ -82,7 +82,7 @@ namespace PptxXML.Tests
             // ARRANGE
             var ms = new MemoryStream(Properties.Resources._009);
             var doc = PresentationDocument.Open(ms, false);
-            var stubGrFrame = doc.PresentationPart.SlideParts.Single().Slide.CommonSlideData.ShapeTree.Elements<P.GraphicFrame>().Single(e => e.GetId() == 38);
+            var stubGrFrame = doc.PresentationPart.GetSlidePartByNumber(1).Slide.CommonSlideData.ShapeTree.Elements<P.GraphicFrame>().Single(e => e.GetId() == 38);
             var stubEc = new ElementCandidate
             {
                 CompositeElement = stubGrFrame,
@@ -112,7 +112,7 @@ namespace PptxXML.Tests
             // ARRANGE
             var ms = new MemoryStream(Properties.Resources._009);
             var doc = PresentationDocument.Open(ms, false);
-            var stubGrFrame = doc.PresentationPart.SlideParts.Single().Slide.CommonSlideData.ShapeTree.Elements<P.GraphicFrame>().Single(x => x.GetId() == 4);
+            var stubGrFrame = doc.PresentationPart.GetSlidePartByNumber(1).Slide.CommonSlideData.ShapeTree.Elements<P.GraphicFrame>().Single(x => x.GetId() == 4);
             var stubEc = new ElementCandidate
             {
                 CompositeElement = stubGrFrame,

@@ -8,13 +8,13 @@ namespace PptxXML.Extensions
     /// <summary>
     /// Extension methods for <see cref="OpenXmlCompositeElement"/> instance.
     /// </summary>
-    public static class XmlCompositeElementExtensions
+    public static class CompositeElementExtensions
     {
         #region Fields
 
-        private const uint TitlePlaceholderIndexValue = 0;
+        private const uint TitlePlaceholderIndexValue = 0; // Title and CenteredTitle are combined into one
 
-        #endregion
+        #endregion Fields
 
         /// <summary>
         /// Returns placeholder index.
@@ -38,7 +38,14 @@ namespace PptxXML.Extensions
                 return TitlePlaceholderIndexValue;
             }
 
-            return ph.Index.Value;
+            var index = ph.Index;
+
+            if (index == null)
+            {
+                return null;
+            }
+
+            return index.Value;
         }
 
         /// <summary>
