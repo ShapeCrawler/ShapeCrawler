@@ -98,13 +98,12 @@ namespace PptxXML.Models.Elements
             var tg = xmlGroupShape.GroupShapeProperties.TransformGroup;
             var groupShapeCandidates = _groupShapeTypeParser.CreateCandidates(xmlGroupShape, false); // false is set to avoid parse group in group
 
-            // TODO: delete this copy/past
             foreach (var ec in groupShapeCandidates)
             {
                 Element newEl = _elFactory.CreateGroupsElement(ec);
+                newEl.X = newEl.X - tg.ChildOffset.X + tg.Offset.X;
+                newEl.Y = newEl.Y - tg.ChildOffset.Y + tg.Offset.Y;
                 _elements.Add(newEl);
-
-                //TODO: parsed x,y,w,h values for child elements (https://github.com/adamshakhabov/PptxXML/issues/7)
             }
         }
 
