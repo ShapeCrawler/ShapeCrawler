@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ObjectEx.Utilities;
 using PptxXML.Exceptions;
 using PptxXML.Models.Elements;
@@ -17,21 +18,13 @@ namespace PptxXML.Services
     /// </summary>
     public class ElementFactory : IElementFactory
     {
-        #region Dependencies
-
-        #endregion Dependencies
-
-        #region Constructors
-
-        #endregion Constructors
-
         #region Public Methods
 
         /// <summary>
         /// Creates a new element from root tree.
         /// </summary>
         /// <returns></returns>
-        public Element CreateRootElement(ElementCandidate ec, Dictionary<int, PlaceholderData> phDic)
+        public Element CreateRootElement(ElementCandidate ec, SlidePart sldPart, Dictionary<int, PlaceholderData> phDic)
         {
             Check.NotNull(ec, nameof(ec));
 
@@ -52,7 +45,7 @@ namespace PptxXML.Services
                     }
                 case ElementType.Picture:
                     {
-                        return CreatePicture(ec);
+                        return CreatePicture(ec, sldPart);
                     }
                 default:
                     throw new PptxXMLException(nameof(ElementType));
@@ -64,7 +57,7 @@ namespace PptxXML.Services
         /// </summary>
         /// <param name="ec"></param>
         /// <returns></returns>
-        public Element CreateGroupsElement(ElementCandidate ec)
+        public Element CreateGroupsElement(ElementCandidate ec, SlidePart sldPart)
         {
             Check.NotNull(ec, nameof(ec));
 
@@ -85,7 +78,7 @@ namespace PptxXML.Services
                 }
                 case ElementType.Picture:
                 {
-                    return CreatePicture(ec);
+                    return CreatePicture(ec, sldPart);
                 }
                 default:
                     throw new PptxXMLException(nameof(ElementType));
@@ -135,7 +128,7 @@ namespace PptxXML.Services
             return shape;
         }
 
-        private Element CreatePicture(ElementCandidate ec)
+        private Element CreatePicture(ElementCandidate ec, SlidePart sldPart)
         {
             Check.NotNull(ec, nameof(ec));
 
@@ -143,7 +136,7 @@ namespace PptxXML.Services
             if (compositeElement is P.Shape || compositeElement is P.Picture)
             {
                 var t2D = compositeElement.GetFirstChild<P.ShapeProperties>().Transform2D;
-                var picture = new PictureEx
+                var picture = new PictureEx(sldPart)
                 {
                     XmlCompositeElement = compositeElement
                 };

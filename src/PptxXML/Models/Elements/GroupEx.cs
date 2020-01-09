@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DocumentFormat.OpenXml.Packaging;
 using PptxXML.Enums;
 using PptxXML.Exceptions;
 using PptxXML.Services;
@@ -19,6 +20,7 @@ namespace PptxXML.Models.Elements
 
         private readonly IGroupShapeTypeParser _groupShapeTypeParser;
         private readonly IElementFactory _elFactory;
+        private SlidePart _sldPart;
 
         #endregion Dependencies
 
@@ -46,13 +48,34 @@ namespace PptxXML.Models.Elements
 
         #region Constructors
 
-        private GroupEx(IGroupShapeTypeParser parser, IElementFactory elFactory) : base(ElementType.Group)
+        private GroupEx(IGroupShapeTypeParser parser, 
+                        IElementFactory elFactory) : base(ElementType.Group)
         {
             _groupShapeTypeParser = parser;
             _elFactory = elFactory;
         }
 
         #endregion Constructors
+
+        #region Private Methods
+
+        private void InitChildElements()
+        {
+            _elements = new List<Element>();
+            var xmlGroupShape = (P.GroupShape) XmlCompositeElement;
+            var tg = xmlGroupShape.GroupShapeProperties.TransformGroup;
+            var groupShapeCandidates = _groupShapeTypeParser.CreateCandidates(xmlGroupShape, false); // false is set to avoid parse group in group
+
+            foreach (var ec in groupShapeCandidates)
+            {
+                Element newEl = _elFactory.CreateGroupsElement(ec, _sldPart);
+                newEl.X = newEl.X - tg.ChildOffset.X + tg.Offset.X;
+                newEl.Y = newEl.Y - tg.ChildOffset.Y + tg.Offset.Y;
+                _elements.Add(newEl);
+            }
+        }
+
+        #endregion Private Methods
 
         /// <summary>
         /// Represents a builder of the <see cref="GroupEx"/> class.
@@ -73,11 +96,12 @@ namespace PptxXML.Models.Elements
             /// Builds a new instance of the <see cref="GroupEx"/> class.
             /// </summary>
             /// <returns></returns>
-            public GroupEx Build(P.GroupShape xmlGroupShape)
+            public GroupEx Build(P.GroupShape xmlGroupShape, SlidePart sldPart)
             {
                 var group = new GroupEx(_parser, _elFactory)
                 {
-                    XmlCompositeElement = xmlGroupShape
+                    XmlCompositeElement = xmlGroupShape,
+                    _sldPart = sldPart
                 };
                 var tg = xmlGroupShape.GroupShapeProperties.TransformGroup;
                 group.X = tg.Offset.X.Value;
@@ -88,25 +112,5 @@ namespace PptxXML.Models.Elements
                 return group;
             }
         }
-
-        #region Private Methods
-
-        private void InitChildElements()
-        {
-            _elements = new List<Element>();
-            var xmlGroupShape = (P.GroupShape) XmlCompositeElement;
-            var tg = xmlGroupShape.GroupShapeProperties.TransformGroup;
-            var groupShapeCandidates = _groupShapeTypeParser.CreateCandidates(xmlGroupShape, false); // false is set to avoid parse group in group
-
-            foreach (var ec in groupShapeCandidates)
-            {
-                Element newEl = _elFactory.CreateGroupsElement(ec);
-                newEl.X = newEl.X - tg.ChildOffset.X + tg.Offset.X;
-                newEl.Y = newEl.Y - tg.ChildOffset.Y + tg.Offset.Y;
-                _elements.Add(newEl);
-            }
-        }
-
-        #endregion Private Methods
     }
 }
