@@ -66,8 +66,8 @@ namespace PptxXML.Models
         public PresentationEx(byte[] pptxFileBytes)
         {
             Check.NotNull(pptxFileBytes, nameof(pptxFileBytes));
-
-            _pptxFileStream = new MemoryStream(pptxFileBytes);
+            _pptxFileStream = new MemoryStream();
+            _pptxFileStream.Write(pptxFileBytes, 0, pptxFileBytes.Length);
             _xmlDoc = PresentationDocument.Open(_pptxFileStream, true);
         }
 

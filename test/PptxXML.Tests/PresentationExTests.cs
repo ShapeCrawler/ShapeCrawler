@@ -141,7 +141,7 @@ namespace PptxXML.Tests
 
             // ASSERT
             Assert.Equal(6, elNumber1);
-            Assert.Equal(2, elNumber2);
+            Assert.Equal(3, elNumber2);
         }
 
         [Fact]
@@ -154,6 +154,41 @@ namespace PptxXML.Tests
             var elements = pre.Slides[0].Elements;
 
             pre.Dispose();
+        }
+
+        [Fact]
+        public void PictureEx_BytesTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+            var picEx = (PictureEx) pre.Slides[1].Elements.Single(e => e.Id.Equals(3));
+
+            // ACT
+            var bytes = picEx.Bytes;
+            pre.Dispose();
+
+            // ASSERT
+            Assert.True(bytes.Length > 0);
+        }
+
+        [Fact]
+        public void PictureEx_SetImageTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+            var picEx = (PictureEx)pre.Slides[1].Elements.Single(e => e.Id.Equals(3));
+            var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
+            var sizeBefore = picEx.Bytes.Length;
+
+            // ACT
+            picEx.SetImage(testImage2Stream);
+
+            var sizeAfter = picEx.Bytes.Length;
+            pre.Dispose();
+            testImage2Stream.Dispose();
+
+            // ASSERT
+            Assert.NotEqual(sizeBefore,  sizeAfter);
         }
     }
 }

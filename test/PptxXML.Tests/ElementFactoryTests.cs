@@ -22,7 +22,8 @@ namespace PptxXML.Tests
             // ARRANGE
             var ms = new MemoryStream(Properties.Resources._009);
             var doc = PresentationDocument.Open(ms, false);
-            var stubXmlShape = doc.PresentationPart.GetSlidePartByNumber(1).Slide.CommonSlideData.ShapeTree.Elements<P.Shape>().Single(s => s.GetId() == 36);
+            var sldPart = doc.PresentationPart.GetSlidePartByNumber(1);
+            var stubXmlShape = sldPart.Slide.CommonSlideData.ShapeTree.Elements<P.Shape>().Single(s => s.GetId() == 36);
             var stubEc = new ElementCandidate
             {
                 CompositeElement = stubXmlShape,
@@ -32,7 +33,7 @@ namespace PptxXML.Tests
             var stubPhDic = new Dictionary<int, PlaceholderData>();
 
             // ACT
-            var element = creator.CreateRootElement(stubEc, stubPhDic);
+            var element = creator.CreateRootElement(stubEc, sldPart, stubPhDic);
 
             // CLEAN
             doc.Dispose();
@@ -52,7 +53,8 @@ namespace PptxXML.Tests
             // ARRANGE
             var ms = new MemoryStream(Properties.Resources._009);
             var doc = PresentationDocument.Open(ms, false);
-            var stubXmlPic = doc.PresentationPart.GetSlidePartByNumber(1).Slide.CommonSlideData.ShapeTree.Elements<P.Picture>().Single();
+            var sldPart = doc.PresentationPart.GetSlidePartByNumber(1);
+            var stubXmlPic = sldPart.Slide.CommonSlideData.ShapeTree.Elements<P.Picture>().Single();
             var stubEc = new ElementCandidate
             {
                 CompositeElement = stubXmlPic,
@@ -62,7 +64,7 @@ namespace PptxXML.Tests
             var stubPhDic = new Dictionary<int, PlaceholderData>();
 
             // ACT
-            var element = creator.CreateRootElement(stubEc, stubPhDic);
+            var element = creator.CreateRootElement(stubEc, sldPart, stubPhDic);
 
             // CLEAN
             doc.Dispose();
@@ -82,7 +84,8 @@ namespace PptxXML.Tests
             // ARRANGE
             var ms = new MemoryStream(Properties.Resources._009);
             var doc = PresentationDocument.Open(ms, false);
-            var stubGrFrame = doc.PresentationPart.GetSlidePartByNumber(1).Slide.CommonSlideData.ShapeTree.Elements<P.GraphicFrame>().Single(e => e.GetId() == 38);
+            var sldPart = doc.PresentationPart.GetSlidePartByNumber(1);
+            var stubGrFrame = sldPart.Slide.CommonSlideData.ShapeTree.Elements<P.GraphicFrame>().Single(e => e.GetId() == 38);
             var stubEc = new ElementCandidate
             {
                 CompositeElement = stubGrFrame,
@@ -92,7 +95,7 @@ namespace PptxXML.Tests
             var stubPhDic = new Dictionary<int, PlaceholderData>();
 
             // ACT
-            var element = creator.CreateRootElement(stubEc, stubPhDic);
+            var element = creator.CreateRootElement(stubEc, sldPart, stubPhDic);
 
             // CLEAN
             doc.Dispose();
@@ -112,7 +115,8 @@ namespace PptxXML.Tests
             // ARRANGE
             var ms = new MemoryStream(Properties.Resources._009);
             var doc = PresentationDocument.Open(ms, false);
-            var stubGrFrame = doc.PresentationPart.GetSlidePartByNumber(1).Slide.CommonSlideData.ShapeTree.Elements<P.GraphicFrame>().Single(x => x.GetId() == 4);
+            var sldPart = doc.PresentationPart.GetSlidePartByNumber(1);
+            var stubGrFrame = sldPart.Slide.CommonSlideData.ShapeTree.Elements<P.GraphicFrame>().Single(x => x.GetId() == 4);
             var stubEc = new ElementCandidate
             {
                 CompositeElement = stubGrFrame,
@@ -122,7 +126,7 @@ namespace PptxXML.Tests
             var stubPhDic = new Dictionary<int, PlaceholderData>();
 
             // ACT
-            var element = creator.CreateRootElement(stubEc, stubPhDic);
+            var element = creator.CreateRootElement(stubEc, sldPart, stubPhDic);
 
             // CLEAN
             doc.Dispose();

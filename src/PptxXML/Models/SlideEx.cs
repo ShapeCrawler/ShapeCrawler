@@ -98,8 +98,8 @@ namespace PptxXML.Models
             foreach (var ec in shapeTreeCandidates)
             {
                 var newEl = ec.ElementType.Equals(ElementType.Group)
-                    ? _groupBuilder.Build((P.GroupShape)ec.CompositeElement)
-                    : _elFactory.CreateRootElement(ec, phDic);
+                    ? _groupBuilder.Build((P.GroupShape)ec.CompositeElement, _xmlSldPart)
+                    : _elFactory.CreateRootElement(ec, _xmlSldPart, phDic);
                 _elements.Add(newEl);
             }
         }

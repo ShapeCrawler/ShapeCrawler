@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Presentation;
+﻿using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Presentation;
 using PptxXML.Models.Elements;
 
 namespace PptxXML.Models
@@ -8,6 +9,6 @@ namespace PptxXML.Models
     /// </summary>
     public interface IGroupBuilder
     {
-        GroupEx Build(GroupShape compositeElement);
+        GroupEx Build(GroupShape compositeElement, SlidePart sldPart);
     }
 }

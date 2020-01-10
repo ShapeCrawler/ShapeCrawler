@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using PptxXML.Enums;
 using PptxXML.Extensions;
 using PptxXML.Models.Elements;
 using PptxXML.Services;
@@ -21,13 +20,14 @@ namespace PptxXML.Tests
             // ARRANGE
             var ms = new MemoryStream(Properties.Resources._009);
             var doc = PresentationDocument.Open(ms, false);
-            var groupShape = doc.PresentationPart.GetSlidePartByNumber(1).Slide.CommonSlideData.ShapeTree.Elements<P.GroupShape>().Single(x => x.GetId() == 2);
+            var sldPart = doc.PresentationPart.GetSlidePartByNumber(1);
+            var groupShape = sldPart.Slide.CommonSlideData.ShapeTree.Elements<P.GroupShape>().Single(x => x.GetId() == 2);
             var parser = new GroupShapeTypeParser();
             var elFactory = new ElementFactory();
             var builder = new GroupEx.Builder(parser, elFactory);
 
             // ACT
-            var groupEx = builder.Build(groupShape);
+            var groupEx = builder.Build(groupShape, sldPart);
 
             // CLEAN
             doc.Dispose();
