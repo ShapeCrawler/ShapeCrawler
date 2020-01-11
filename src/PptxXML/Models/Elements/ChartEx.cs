@@ -13,7 +13,7 @@ namespace PptxXML.Models.Elements
         /// <summary>
         /// Initializes a new instance of the <see cref="ChartEx"/> class.
         /// </summary>
-        public ChartEx() : base(ElementType.Chart) { }
+        public ChartEx(OpenXmlCompositeElement ce) : base(ElementType.Chart, ce) { }
 
         #endregion
     }

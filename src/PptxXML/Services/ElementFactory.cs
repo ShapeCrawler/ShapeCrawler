@@ -32,7 +32,7 @@ namespace PptxXML.Services
             {
                 case ElementType.Shape:
                     {
-                        return CreateShape(ec.CompositeElement, phDic);
+                        return CreateShape(ec.CompositeElement, sldPart, phDic);
                     }
                 case ElementType.Chart:
                     {
@@ -55,7 +55,6 @@ namespace PptxXML.Services
         /// <summary>
         /// Creates a new element of group element.
         /// </summary>
-        /// <param name="ec"></param>
         /// <returns></returns>
         public Element CreateGroupsElement(ElementCandidate ec, SlidePart sldPart)
         {
@@ -65,7 +64,7 @@ namespace PptxXML.Services
             {
                 case ElementType.Shape:
                 {
-                    return CreateShape(ec.CompositeElement);
+                    return CreateShape(ec.CompositeElement, sldPart);
                 }
                 case ElementType.Chart:
                 {
@@ -89,10 +88,10 @@ namespace PptxXML.Services
 
         #region Private Methods
 
-        private static Element CreateShape(OpenXmlCompositeElement ce)
+        private static Element CreateShape(OpenXmlCompositeElement ce, SlidePart sldPart)
         {
             // Create shape
-            var shape = new ShapeEx { XmlCompositeElement = ce };
+            var shape = new ShapeEx(ce, sldPart);
 
             // Add own transform properties
             var t2d = ((P.Shape)ce).ShapeProperties.Transform2D;
@@ -101,10 +100,10 @@ namespace PptxXML.Services
             return shape;
         }
 
-        private static Element CreateShape(OpenXmlCompositeElement ce, Dictionary<int, PlaceholderData> phDic)
+        private static Element CreateShape(OpenXmlCompositeElement ce, SlidePart sldPart, Dictionary<int, PlaceholderData> phDic)
         {
             // Create shape
-            var shape = new ShapeEx { XmlCompositeElement = ce };
+            var shape = new ShapeEx(ce, sldPart);
 
             // Add own transform properties
             var t2d = ((P.Shape)ce).ShapeProperties.Transform2D;
@@ -136,10 +135,7 @@ namespace PptxXML.Services
             if (compositeElement is P.Shape || compositeElement is P.Picture)
             {
                 var t2D = compositeElement.GetFirstChild<P.ShapeProperties>().Transform2D;
-                var picture = new PictureEx(sldPart)
-                {
-                    XmlCompositeElement = compositeElement
-                };
+                var picture = new PictureEx(sldPart, compositeElement);
                 WithOwnTransform2d(picture, t2D);
 
                 return picture;
@@ -157,10 +153,7 @@ namespace PptxXML.Services
                 throw new PptxXMLException();
             }
 
-            var chart = new ChartEx
-            {
-                XmlCompositeElement = xmlGrFrame
-            };
+            var chart = new ChartEx(xmlGrFrame);
             WithOwnTransform(chart, xmlGrFrame);
 
             return chart;
@@ -175,10 +168,8 @@ namespace PptxXML.Services
                 throw new PptxXMLException();
             }
 
-            var table = new TableEx
-            {
-                XmlCompositeElement = xmlGrFrame
-            };
+            var table = new TableEx(xmlGrFrame);
+            
             WithOwnTransform(table, xmlGrFrame);
 
             return table;

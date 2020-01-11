@@ -15,7 +15,8 @@ namespace PptxXML.Models.Elements
     {
         #region Fields
 
-        public OpenXmlCompositeElement XmlCompositeElement { get; set; } //TODO: remove public setter
+        protected OpenXmlCompositeElement CompositeElement;
+
         private bool? _isPlaceholder;
         private bool? _hidden;
         private int _id;
@@ -33,7 +34,7 @@ namespace PptxXML.Models.Elements
             {
                 if (_id == 0)
                 {
-                    var (id, hidden) = XmlCompositeElement.GetNvPrValues();
+                    var (id, hidden) = CompositeElement.GetNvPrValues();
                     _id = id;
                     _hidden = hidden;
                 }
@@ -51,7 +52,7 @@ namespace PptxXML.Models.Elements
             {
                 if (_hidden == null)
                 {
-                    var (id, hidden) = XmlCompositeElement.GetNvPrValues();
+                    var (id, hidden) = CompositeElement.GetNvPrValues();
                     _id = id;
                     _hidden = hidden;
                 }
@@ -70,7 +71,7 @@ namespace PptxXML.Models.Elements
             {
                 if (_isPlaceholder == null)
                 {
-                    _isPlaceholder = XmlCompositeElement.Descendants<P.PlaceholderShape>().Any();
+                    _isPlaceholder = CompositeElement.Descendants<P.PlaceholderShape>().Any();
                 }
 
                 return (bool)_isPlaceholder;
@@ -118,6 +119,15 @@ namespace PptxXML.Models.Elements
         protected Element(ElementType et)
         {
             Type = et;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Element"/> class.
+        /// </summary>
+        protected Element(ElementType et, OpenXmlCompositeElement compositeElement) : this(et)
+        {
+            Check.NotNull(compositeElement, nameof(compositeElement));
+            CompositeElement = compositeElement;
         }
 
         #endregion Constructors

@@ -164,7 +164,7 @@ namespace PptxXML.Tests
             var picEx = (PictureEx) pre.Slides[1].Elements.Single(e => e.Id.Equals(3));
 
             // ACT
-            var bytes = picEx.Bytes;
+            var bytes = picEx.ImageEx.Bytes;
             pre.Dispose();
 
             // ASSERT
@@ -178,17 +178,65 @@ namespace PptxXML.Tests
             var pre = new PresentationEx(Properties.Resources._009);
             var picEx = (PictureEx)pre.Slides[1].Elements.Single(e => e.Id.Equals(3));
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
-            var sizeBefore = picEx.Bytes.Length;
+            var sizeBefore = picEx.ImageEx.Bytes.Length;
 
             // ACT
-            picEx.SetImage(testImage2Stream);
+            picEx.ImageEx.SetImage(testImage2Stream);
 
-            var sizeAfter = picEx.Bytes.Length;
+            var sizeAfter = picEx.ImageEx.Bytes.Length;
             pre.Dispose();
             testImage2Stream.Dispose();
 
             // ASSERT
             Assert.NotEqual(sizeBefore,  sizeAfter);
+        }
+
+        [Fact]
+        public void ShapeEx_BackgroundImage_BytesTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+            var shapeEx = (ShapeEx)pre.Slides[2].Elements.Single(e => e.Id.Equals(4));
+
+            // ACT
+            var length = shapeEx.BackgroundImage.Bytes.Length;
+
+            // ASSERT
+            Assert.True(length > 0);
+        }
+
+        [Fact]
+        public void ShapeEx_BackgroundImage_SetImageTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+            var shapeEx = (ShapeEx)pre.Slides[2].Elements.Single(e => e.Id.Equals(4));
+            var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
+            var sizeBefore = shapeEx.BackgroundImage.Bytes.Length;
+
+            // ACT
+            shapeEx.BackgroundImage.SetImage(testImage2Stream);
+
+            var sizeAfter = shapeEx.BackgroundImage.Bytes.Length;
+            pre.Dispose();
+            testImage2Stream.Dispose();
+
+            // ASSERT
+            Assert.NotEqual(sizeBefore, sizeAfter);
+        }
+
+        [Fact]
+        public void ShapeEx_BackgroundImage_IsNullTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+            var shapeEx = (ShapeEx)pre.Slides[1].Elements.Single(e => e.Id.Equals(6));
+
+            // ACT
+            var bImage = shapeEx.BackgroundImage;
+
+            // ASSERT
+            Assert.Null(bImage);
         }
     }
 }
