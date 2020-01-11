@@ -18,27 +18,23 @@ namespace PptxXML.Models.Elements
         protected OpenXmlCompositeElement CompositeElement;
 
         private bool? _isPlaceholder;
+        
         private bool? _hidden;
         private int _id;
+        private string _name;
 
         #endregion Fields
 
         #region Properties
 
         /// <summary>
-        /// Gets or sets identifier.
+        /// Gets an element identifier.
         /// </summary>
         public int Id
         {
             get
             {
-                if (_id == 0)
-                {
-                    var (id, hidden) = CompositeElement.GetNvPrValues();
-                    _id = id;
-                    _hidden = hidden;
-                }
-
+                InitIdHiddenName();
                 return _id;
             }
         }
@@ -50,16 +46,21 @@ namespace PptxXML.Models.Elements
         {
             get
             {
-                if (_hidden == null)
-                {
-                    var (id, hidden) = CompositeElement.GetNvPrValues();
-                    _id = id;
-                    _hidden = hidden;
-                }
-
+                InitIdHiddenName();
                 return (bool)_hidden;
             }
+        }
 
+        /// <summary>
+        /// Gets an element name.
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                InitIdHiddenName();
+                return _name;
+            }
         }
 
         /// <summary>
@@ -131,5 +132,20 @@ namespace PptxXML.Models.Elements
         }
 
         #endregion Constructors
+
+        #region Private Methods
+
+        private void InitIdHiddenName()
+        {
+            if (_id == 0) // id == 0: it is mean NonVisualDrawingProperties was not parsed before
+            {
+                var (id, hidden, name) = CompositeElement.GetNvPrValues();
+                _id = id;
+                _hidden = hidden;
+                _name = name;
+            }
+        }
+
+        #endregion Private Methods
     }
 }

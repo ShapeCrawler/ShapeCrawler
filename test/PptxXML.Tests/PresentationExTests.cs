@@ -141,7 +141,7 @@ namespace PptxXML.Tests
 
             // ASSERT
             Assert.Equal(6, elNumber1);
-            Assert.Equal(3, elNumber2);
+            Assert.Equal(5, elNumber2);
         }
 
         [Fact]
@@ -237,6 +237,32 @@ namespace PptxXML.Tests
 
             // ASSERT
             Assert.Null(bImage);
+        }
+
+        [Fact]
+        public void OLEObjects_ParseTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+
+            // ACT
+            var oleNumbers = pre.Slides[1].Elements.Count(e => e.Type.Equals(ElementType.OLEObject));
+
+            // ASSERT
+            Assert.Equal(2, oleNumbers);
+        }
+
+        [Fact]
+        public void OLEObject_NameTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+
+            // ACT
+            var name = pre.Slides[1].Elements.Single(e => e.Id.Equals(8)).Name;
+
+            // ASSERT
+            Assert.Equal("Object 2", name);
         }
     }
 }

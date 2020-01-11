@@ -51,16 +51,17 @@ namespace PptxXML.Extensions
         /// <summary>
         /// Gets non visual drawing properties values (cNvPr).
         /// </summary>
-        /// <returns>(identifier, hidden)</returns>
-        public static (int, bool) GetNvPrValues(this OpenXmlCompositeElement compositeElement)
+        /// <returns>(identifier, hidden, name)</returns>
+        public static (int, bool, string) GetNvPrValues(this OpenXmlCompositeElement compositeElement)
         {
             // .First() is used instead .Single() because group shape can have more than one id for its child elements
             var cNvPr = compositeElement.Descendants<P.NonVisualDrawingProperties>().First();
             var id = (int) cNvPr.Id.Value;
+            var name = cNvPr.Name.Value;
             var parsedHiddenValue = cNvPr.Hidden?.Value;
             var hidden = parsedHiddenValue != null && parsedHiddenValue == true;
 
-            return (id, hidden);
+            return (id, hidden, name);
         }
 
         /// <summary>

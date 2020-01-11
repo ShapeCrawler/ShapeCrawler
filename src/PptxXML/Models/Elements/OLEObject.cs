@@ -5,7 +5,7 @@ using PptxXML.Enums;
 namespace PptxXML.Models.Elements
 {
     /// <summary>
-    /// Represents a OLE (Object Linking and Embedding) object.
+    /// Represents an OLE object on a slide.
     /// </summary>
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class OLEObject: Element
@@ -15,7 +15,10 @@ namespace PptxXML.Models.Elements
         /// <summary>
         /// Initialise a new instance of the <see cref="OLEObject"/> class.
         /// </summary>
-        public OLEObject() : base(ElementType.OLEObject) { }
+        public OLEObject(OpenXmlCompositeElement compositeElement) : base(ElementType.OLEObject, compositeElement)
+        {
+
+        }
 
         #endregion
     }
