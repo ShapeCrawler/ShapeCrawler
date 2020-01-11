@@ -31,9 +31,7 @@ namespace PptxXML.Services
             var nonPlaceholderElements = allElements.Where(e => e.GetPlaceholderIndex() == null);
 
             // FILTER PICTURES
-            var pictureCandidates = nonPlaceholderElements.Where(e => e is P.Picture
-                                                                                            || e is P.Shape && e.Descendants<A.BlipFill>().Any()
-                                                                                            || e is P.GraphicFrame && e.Descendants<P.Picture>().Any());
+            var pictureCandidates = nonPlaceholderElements.Where(e => e is P.Picture || e is P.GraphicFrame && e.Descendants<P.Picture>().Any());
             var graphicFrameImages = pictureCandidates.Where(e => e is P.GraphicFrame).SelectMany(e => e.Descendants<P.Picture>());
             var picAndShapeImages = pictureCandidates.Where(e => e is P.Picture
                                                                  || e is P.Shape && e.Descendants<A.BlipFill>().Any());

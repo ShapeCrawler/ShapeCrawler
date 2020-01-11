@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using PptxXML.Enums;
 using PptxXML.Exceptions;
@@ -48,8 +49,8 @@ namespace PptxXML.Models.Elements
 
         #region Constructors
 
-        private GroupEx(IGroupShapeTypeParser parser, 
-                        IElementFactory elFactory) : base(ElementType.Group)
+        private GroupEx(IGroupShapeTypeParser parser, IElementFactory elFactory, OpenXmlCompositeElement compositeElement) 
+            : base(ElementType.Group, compositeElement)
         {
             _groupShapeTypeParser = parser;
             _elFactory = elFactory;
@@ -62,7 +63,7 @@ namespace PptxXML.Models.Elements
         private void InitChildElements()
         {
             _elements = new List<Element>();
-            var xmlGroupShape = (P.GroupShape) XmlCompositeElement;
+            var xmlGroupShape = (P.GroupShape) CompositeElement;
             var tg = xmlGroupShape.GroupShapeProperties.TransformGroup;
             var groupShapeCandidates = _groupShapeTypeParser.CreateCandidates(xmlGroupShape, false); // false is set to avoid parse group in group
 
@@ -98,9 +99,8 @@ namespace PptxXML.Models.Elements
             /// <returns></returns>
             public GroupEx Build(P.GroupShape xmlGroupShape, SlidePart sldPart)
             {
-                var group = new GroupEx(_parser, _elFactory)
+                var group = new GroupEx(_parser, _elFactory, xmlGroupShape)
                 {
-                    XmlCompositeElement = xmlGroupShape,
                     _sldPart = sldPart
                 };
                 var tg = xmlGroupShape.GroupShapeProperties.TransformGroup;

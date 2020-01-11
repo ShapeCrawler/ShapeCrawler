@@ -23,7 +23,7 @@ namespace PptxXML.Tests
             var stubGrFrame = doc.PresentationPart.SlideParts.Single().Slide.CommonSlideData.ShapeTree.Elements<P.GraphicFrame>().Single(ge => ge.GetId() == 4);
 
             // ACT
-            var chart = new ChartEx {XmlCompositeElement = stubGrFrame};
+            var chart = new ChartEx(stubGrFrame);
 
             // CLOSE
             ms.Dispose();

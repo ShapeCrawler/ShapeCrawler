@@ -13,7 +13,7 @@ namespace PptxXML.Models.Elements
         /// <summary>
         /// Initialise an instance of <see cref="TableEx"/> class.
         /// </summary>
-        public TableEx() : base(ElementType.Table) { }
+        public TableEx(OpenXmlCompositeElement ce) : base(ElementType.Table, ce) { }
 
         #endregion Constructors
     }
