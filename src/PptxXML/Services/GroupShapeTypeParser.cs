@@ -21,6 +21,7 @@ namespace PptxXML.Services
         /// <summary>
         /// Creates candidate collection.
         /// </summary>
+        /// <param name="groupTypeShape">ShapeTree or GroupShape</param>
         /// <returns></returns>
         public IEnumerable<ElementCandidate> CreateCandidates(P.GroupShapeType groupTypeShape, bool groupParsed = true)
         {
@@ -30,8 +31,16 @@ namespace PptxXML.Services
             // Get non-placeholder elements
             var nonPlaceholderElements = allElements.Where(e => e.GetPlaceholderIndex() == null);
 
+            // OLE Objects
+            var oleFrames = nonPlaceholderElements.Where(e => e is P.GraphicFrame && e.Descendants<P.OleObject>().Any());
+            var oleCandidates = oleFrames.Select(ce => new ElementCandidate
+            {
+                CompositeElement = ce,
+                ElementType = ElementType.OLEObject
+            });
+
             // FILTER PICTURES
-            var pictureCandidates = nonPlaceholderElements.Where(e => e is P.Picture || e is P.GraphicFrame && e.Descendants<P.Picture>().Any());
+            var pictureCandidates = nonPlaceholderElements.Except(oleFrames).Where(e => e is P.Picture || e is P.GraphicFrame && e.Descendants<P.Picture>().Any());
             var graphicFrameImages = pictureCandidates.Where(e => e is P.GraphicFrame).SelectMany(e => e.Descendants<P.Picture>());
             var picAndShapeImages = pictureCandidates.Where(e => e is P.Picture
                                                                  || e is P.Shape && e.Descendants<A.BlipFill>().Any());
@@ -77,7 +86,7 @@ namespace PptxXML.Services
                 ElementType = ElementType.Chart
             });
 
-            var allCandidates = picCandidates.Union(shapeCandidates).Union(tableCandidates).Union(chartCandidates);
+            var allCandidates = picCandidates.Union(shapeCandidates).Union(tableCandidates).Union(chartCandidates).Union(oleCandidates);
 
             // Group candidates
             if (groupParsed)

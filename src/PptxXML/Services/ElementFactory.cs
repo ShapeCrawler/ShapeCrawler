@@ -8,7 +8,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 using PptxXML.Enums;
 using PptxXML.Extensions;
-using PptxXML.Models;
 using PptxXML.Services.Placeholder;
 
 namespace PptxXML.Services
@@ -47,6 +46,10 @@ namespace PptxXML.Services
                     {
                         return CreatePicture(ec, sldPart);
                     }
+                case ElementType.OLEObject:
+                {
+                    return new OLEObject(ec.CompositeElement);
+                }
                 default:
                     throw new PptxXMLException(nameof(ElementType));
             }
