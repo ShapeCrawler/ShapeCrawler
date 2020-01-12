@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ObjectEx.Utilities;
 using PptxXML.Enums;
@@ -6,6 +7,7 @@ using PptxXML.Models.Elements;
 using PptxXML.Services;
 using PptxXML.Services.Placeholder;
 using P = DocumentFormat.OpenXml.Presentation;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace PptxXML.Models
 {
@@ -16,15 +18,18 @@ namespace PptxXML.Models
     {
         #region Fields
 
-        private List<Element> _elements;
+        private readonly SlidePart _xmlSldPart;
+
+        private List<Element> _elements; //TODO: use capacity
+        private ImageEx _backgroundImage;
 
         #region Dependencies
 
-        private readonly SlidePart _xmlSldPart;
         private readonly IElementFactory _elFactory;
         private readonly IGroupShapeTypeParser _shapeTreeParser;
         private readonly IGroupBuilder _groupBuilder;
         private readonly ISlideLayoutPartParser _sldLayoutPartParser;
+        private readonly IBackgroundImageFactory _bgImgFactory;
 
         #endregion Dependencies
 
@@ -53,6 +58,17 @@ namespace PptxXML.Models
         /// </summary>
         public int Number { get; set; } //TODO: Remove public setter somehow
 
+        /// <summary>
+        /// Returns a background image of slide.
+        /// </summary>
+        public ImageEx BackgroundImage
+        {
+            get
+            {
+                return _backgroundImage ??= _bgImgFactory.CreateBackgroundSlide(_xmlSldPart);
+            }
+        }
+
         #endregion Properties
 
         #region Constructors
@@ -65,7 +81,8 @@ namespace PptxXML.Models
                        IElementFactory elFactory, 
                        IGroupShapeTypeParser shapeTreeParser,
                        IGroupBuilder groupBuilder,
-                       ISlideLayoutPartParser sldLayoutPartParser)
+                       ISlideLayoutPartParser sldLayoutPartParser,
+                       IBackgroundImageFactory bgImgFactory)
         {
             Check.NotNull(xmlSldPart, nameof(xmlSldPart));
             Check.IsPositive(sldNumber, nameof(sldNumber));
@@ -73,12 +90,14 @@ namespace PptxXML.Models
             Check.NotNull(shapeTreeParser, nameof(shapeTreeParser));
             Check.NotNull(groupBuilder, nameof(groupBuilder));
             Check.NotNull(sldLayoutPartParser, nameof(sldLayoutPartParser));
+            Check.NotNull(bgImgFactory, nameof(bgImgFactory));
             _xmlSldPart = xmlSldPart;
             Number = sldNumber;
             _elFactory = elFactory;
             _shapeTreeParser = shapeTreeParser;
             _groupBuilder = groupBuilder;
             _sldLayoutPartParser = sldLayoutPartParser;
+            _bgImgFactory = bgImgFactory;
         }
 
         #endregion Constructors

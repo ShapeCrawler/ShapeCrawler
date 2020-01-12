@@ -8,6 +8,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 using PptxXML.Enums;
 using PptxXML.Extensions;
+using PptxXML.Models.Elements.Builders;
 using PptxXML.Services.Placeholder;
 
 namespace PptxXML.Services
@@ -17,6 +18,22 @@ namespace PptxXML.Services
     /// </summary>
     public class ElementFactory : IElementFactory
     {
+        #region Dependencies
+
+        private readonly IShapeExBuilder _shapeBuilder;
+
+        #endregion Dependencies
+
+        #region Constructors
+
+        public ElementFactory(IShapeExBuilder shapeBuilder)
+        {
+            Check.NotNull(shapeBuilder, nameof(shapeBuilder));
+            _shapeBuilder = shapeBuilder;
+        }
+
+        #endregion Constructors
+
         #region Public Methods
 
         /// <summary>
@@ -91,10 +108,10 @@ namespace PptxXML.Services
 
         #region Private Methods
 
-        private static Element CreateShape(OpenXmlCompositeElement ce, SlidePart sldPart)
+        private Element CreateShape(OpenXmlCompositeElement ce, SlidePart sldPart)
         {
             // Create shape
-            var shape = new ShapeEx(ce, sldPart);
+            var shape = _shapeBuilder.Build(ce, sldPart);
 
             // Add own transform properties
             var t2d = ((P.Shape)ce).ShapeProperties.Transform2D;
@@ -103,10 +120,10 @@ namespace PptxXML.Services
             return shape;
         }
 
-        private static Element CreateShape(OpenXmlCompositeElement ce, SlidePart sldPart, Dictionary<int, PlaceholderData> phDic)
+        private Element CreateShape(OpenXmlCompositeElement ce, SlidePart sldPart, Dictionary<int, PlaceholderData> phDic)
         {
             // Create shape
-            var shape = new ShapeEx(ce, sldPart);
+            var shape = _shapeBuilder.Build(ce, sldPart);
 
             // Add own transform properties
             var t2d = ((P.Shape)ce).ShapeProperties.Transform2D;

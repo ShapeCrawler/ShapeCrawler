@@ -23,7 +23,7 @@ namespace PptxXML.Tests
             var sldPart = doc.PresentationPart.GetSlidePartByNumber(1);
             var groupShape = sldPart.Slide.CommonSlideData.ShapeTree.Elements<P.GroupShape>().Single(x => x.GetId() == 2);
             var parser = new GroupShapeTypeParser();
-            var elFactory = new ElementFactory();
+            var elFactory = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
             var builder = new GroupEx.Builder(parser, elFactory);
 
             // ACT

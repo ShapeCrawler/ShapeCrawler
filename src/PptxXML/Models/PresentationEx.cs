@@ -105,16 +105,17 @@ namespace PptxXML.Models
             PresentationPart presentationPart = _xmlDoc.PresentationPart;
             var nbSlides = presentationPart.SlideParts.Count();
             _slides = new SlideCollection(_xmlDoc, nbSlides);
-            var groupShapeTypeParser = new GroupShapeTypeParser(); // TODO: Inject via DI Container
-            var elFactory = new ElementFactory();
-            var groupExBuilder = new GroupEx.Builder(new GroupShapeTypeParser(), elFactory);
+            var groupShapeTypeParser = new GroupShapeTypeParser(); // TODO: inject via DI Container
             var sldLayoutPartParser = new SlideLayoutPartParser();
+            var bgImgFactory = new BackgroundImageFactory();
+            var elFactory = new ElementFactory(new ShapeEx.Builder(bgImgFactory));
+            var groupExBuilder = new GroupEx.Builder(groupShapeTypeParser, elFactory);
 
             for (var slideIndex = 0; slideIndex < nbSlides; slideIndex++)
             {
                 SlidePart slidePart = presentationPart.GetSlidePartByIndex(slideIndex);
 
-                var newSldEx = new SlideEx(slidePart, slideIndex + 1, elFactory, groupShapeTypeParser, groupExBuilder, sldLayoutPartParser);
+                var newSldEx = new SlideEx(slidePart, slideIndex + 1, elFactory, groupShapeTypeParser, groupExBuilder, sldLayoutPartParser, bgImgFactory);
                 _slides.Add(newSldEx);
             }
         }
