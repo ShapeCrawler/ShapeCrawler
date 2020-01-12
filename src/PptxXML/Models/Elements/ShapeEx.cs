@@ -4,6 +4,8 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ObjectEx.Utilities;
 using PptxXML.Enums;
+using PptxXML.Models.Elements.Builders;
+using PptxXML.Services;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -23,6 +25,12 @@ namespace PptxXML.Models.Elements
         private ImageEx _backgroundImage;
 
         #endregion Fields
+
+        #region Dependencies
+
+        private readonly IBackgroundImageFactory _bgImgFactory;
+
+        #endregion Dependencies
 
         #region Properties
 
@@ -51,18 +59,7 @@ namespace PptxXML.Models.Elements
         {
             get
             {
-                if (_backgroundImage == null)
-                {
-                    var pShape = (P.Shape)CompositeElement;
-                    var aBlipFill = pShape.ShapeProperties.GetFirstChild<A.BlipFill>();
-                    var blipRelateId = aBlipFill?.Blip?.Embed?.Value; // try to get blip relationship ID
-                    if (blipRelateId != null)
-                    {
-                        _backgroundImage = new ImageEx(_sldPart, blipRelateId);
-                    }
-                }
-
-                return _backgroundImage;
+                return _backgroundImage ??= _bgImgFactory.CreateBackgroundShape(_sldPart, (P.Shape) CompositeElement);
             }
         }
 
@@ -74,10 +71,12 @@ namespace PptxXML.Models.Elements
         /// Initializes a new instance of the <see cref="ShapeEx"/> class.
         /// </summary>
         [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter")]
-        public ShapeEx(OpenXmlCompositeElement compositeElement, SlidePart sldPart) : base(ElementType.Shape, compositeElement)
+        private ShapeEx(OpenXmlCompositeElement compositeElement, SlidePart sldPart, IBackgroundImageFactory bgImgFactory) : base(ElementType.Shape, compositeElement)
         {
             Check.NotNull(sldPart, nameof(sldPart));
+            Check.NotNull(bgImgFactory, nameof(bgImgFactory));
             _sldPart = sldPart;
+            _bgImgFactory = bgImgFactory;
         }
 
         #endregion Constructors
@@ -104,5 +103,47 @@ namespace PptxXML.Models.Elements
         }
 
         #endregion
+
+        #region Builder
+
+        /// <summary>
+        /// Represents <see cref="ShapeEx"/> instance builder.
+        /// </summary>
+        public class Builder : IShapeExBuilder
+        {
+            #region Dependencies
+
+            private readonly IBackgroundImageFactory _bgImgFactor;
+
+            #endregion Dependencies
+
+            #region Constructors
+
+            public Builder(IBackgroundImageFactory bgImgFactor)
+            {
+                Check.NotNull(bgImgFactor, nameof(bgImgFactor));
+                _bgImgFactor = bgImgFactor;
+            }
+
+            #endregion Constructors
+
+            #region Public Methods
+
+            /// <summary>
+            /// Builds shape.
+            /// </summary>
+            /// <returns></returns>
+            public ShapeEx Build(OpenXmlCompositeElement compositeElement, SlidePart sldPart)
+            {
+                Check.NotNull(compositeElement, nameof(compositeElement));
+                Check.NotNull(sldPart, nameof(sldPart));
+
+                return new ShapeEx(compositeElement, sldPart, _bgImgFactor);
+            }
+
+            #endregion Public Methods
+        }
+
+        #endregion Builder
     }
 }

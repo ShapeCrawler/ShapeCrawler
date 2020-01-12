@@ -4,6 +4,7 @@ using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using PptxXML.Enums;
 using PptxXML.Extensions;
+using PptxXML.Models.Elements;
 using PptxXML.Services;
 using PptxXML.Services.Placeholder;
 using Xunit;
@@ -29,7 +30,7 @@ namespace PptxXML.Tests
                 CompositeElement = stubXmlShape,
                 ElementType = ElementType.Shape
             };
-            var creator = new ElementFactory();
+            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
             var stubPhDic = new Dictionary<int, PlaceholderData>();
 
             // ACT
@@ -60,7 +61,7 @@ namespace PptxXML.Tests
                 CompositeElement = stubXmlPic,
                 ElementType = ElementType.Picture
             };
-            var creator = new ElementFactory();
+            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
             var stubPhDic = new Dictionary<int, PlaceholderData>();
 
             // ACT
@@ -91,7 +92,7 @@ namespace PptxXML.Tests
                 CompositeElement = stubGrFrame,
                 ElementType = ElementType.Table
             };
-            var creator = new ElementFactory();
+            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
             var stubPhDic = new Dictionary<int, PlaceholderData>();
 
             // ACT
@@ -122,7 +123,7 @@ namespace PptxXML.Tests
                 CompositeElement = stubGrFrame,
                 ElementType = ElementType.Chart
             };
-            var creator = new ElementFactory();
+            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
             var stubPhDic = new Dictionary<int, PlaceholderData>();
 
             // ACT

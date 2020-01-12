@@ -2,7 +2,6 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using PptxXML.Enums;
-using PptxXML.Exceptions;
 using PptxXML.Services;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -78,6 +77,8 @@ namespace PptxXML.Models.Elements
 
         #endregion Private Methods
 
+        #region Builder
+
         /// <summary>
         /// Represents a builder of the <see cref="GroupEx"/> class.
         /// </summary>
@@ -112,5 +113,7 @@ namespace PptxXML.Models.Elements
                 return group;
             }
         }
+
+        #endregion Builder
     }
 }

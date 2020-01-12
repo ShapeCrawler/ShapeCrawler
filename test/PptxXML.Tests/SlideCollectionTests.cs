@@ -19,10 +19,11 @@ namespace PptxXML.Tests
             // ARRANGE
             var xmlDoc = DocHelper.Open(Properties.Resources._001);
             var slides = new SlideCollection(xmlDoc);
-            var elementCreator = new ElementFactory();
+            var elementCreator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
             var treeParser = new GroupShapeTypeParser();
             var builder = new GroupEx.Builder(treeParser, elementCreator);
-            var newSlide = new SlideEx(xmlDoc.PresentationPart.SlideParts.First(), 1, elementCreator, treeParser, builder, new SlideLayoutPartParser());
+            var bgImgFactory = new BackgroundImageFactory();
+            var newSlide = new SlideEx(xmlDoc.PresentationPart.SlideParts.First(), 1, elementCreator, treeParser, builder, new SlideLayoutPartParser(), bgImgFactory);
 
             // ACT
             slides.Add(newSlide);

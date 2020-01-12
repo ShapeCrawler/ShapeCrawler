@@ -264,5 +264,38 @@ namespace PptxXML.Tests
             // ASSERT
             Assert.Equal("Object 2", name);
         }
+
+        [Fact]
+        public void SlideEx_Background_IsNullTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+
+            // ACT
+            var bg = pre.Slides[1].BackgroundImage;
+
+            // ASSERT
+            Assert.Null(bg);
+        }
+
+        [Fact]
+        public void SlideEx_Background_ChangeTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+            var bg = pre.Slides[0].BackgroundImage;
+            var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
+            var sizeBefore = bg.Bytes.Length;
+
+            // ACT
+            bg.SetImage(testImage2Stream);
+
+            var sizeAfter = bg.Bytes.Length;
+            pre.Dispose();
+            testImage2Stream.Dispose();
+
+            // ASSERT
+            Assert.NotEqual(sizeBefore, sizeAfter);
+        }
     }
 }
