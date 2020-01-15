@@ -12,12 +12,13 @@ namespace PptxXML.Extensions
     {
         #region Fields
 
-        private const uint TitlePlaceholderIndexValue = 0; // Title and CenteredTitle are combined into one
+        private const uint TitleIndexValue = 100; // Title and CenteredTitle have same custom index value
+        private const uint SubtitleIndexValue = 101;
 
         #endregion Fields
 
         /// <summary>
-        /// Returns placeholder index.
+        /// Parses <see cref="P.PlaceholderValues.Title"/> and <see cref="P.PlaceholderValues.CenteredTitle"/> placeholders.
         /// </summary>
         /// <param name="xmlCompositeElement">
         /// An element which can be located on slide or master slide.
@@ -33,9 +34,16 @@ namespace PptxXML.Extensions
 
             // Simple title and centered title placeholders were united.
             var phType = ph.Type;
-            if (phType != null && (phType == P.PlaceholderValues.Title || phType == P.PlaceholderValues.CenteredTitle))
+            if (phType != null)
             {
-                return TitlePlaceholderIndexValue;
+                if (phType == P.PlaceholderValues.Title || phType == P.PlaceholderValues.CenteredTitle)
+                {
+                    return TitleIndexValue;
+                }
+                if (phType == P.PlaceholderValues.SubTitle)
+                {
+                    return SubtitleIndexValue;
+                }
             }
 
             var index = ph.Index;
@@ -46,6 +54,16 @@ namespace PptxXML.Extensions
             }
 
             return index.Value;
+        }
+
+        /// <summary>
+        /// Determines whether element is placeholder.
+        /// </summary>
+        /// <param name="xmlCompositeElement"></param>
+        /// <returns></returns>
+        public static bool IsPlaceholder(this OpenXmlCompositeElement xmlCompositeElement)
+        {
+            return xmlCompositeElement.Descendants<P.PlaceholderShape>().Any();
         }
 
         /// <summary>

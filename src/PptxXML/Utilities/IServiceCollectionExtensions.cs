@@ -13,9 +13,8 @@ namespace PptxXML.Utilities
         /// </summary>
         public static IServiceCollection AddPptxXMLLibrary(this IServiceCollection services)
         {
-            services.AddScoped<IElementFactory, ElementFactory>();
-            services.AddScoped<IGroupShapeTypeParser, GroupShapeTypeParser>();
-            services.AddScoped<IGroupShapeTypeParser, GroupShapeTypeParser>();
+            services.AddTransient<IElementFactory, ElementFactory>();
+            services.AddTransient<IGroupShapeTypeParser, GroupShapeTypeParser>();
 
             return services;
         }

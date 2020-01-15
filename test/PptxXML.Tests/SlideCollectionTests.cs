@@ -1,9 +1,13 @@
 ﻿using PptxXML.Models;
 using PptxXML.Tests.Helpers;
 using System.Linq;
+using NSubstitute;
 using PptxXML.Models.Elements;
+using PptxXML.Models.Settings;
 using PptxXML.Services;
+using PptxXML.Services.Builders;
 using PptxXML.Services.Placeholder;
+using PptxXML.Services.Placeholders;
 using Xunit;
 
 namespace PptxXML.Tests
@@ -19,11 +23,14 @@ namespace PptxXML.Tests
             // ARRANGE
             var xmlDoc = DocHelper.Open(Properties.Resources._001);
             var slides = new SlideCollection(xmlDoc);
-            var elementCreator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
+            var mockTxtBuilder = Substitute.For<ITextBodyExBuilder>();
+            var elementCreator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory(), mockTxtBuilder));
             var treeParser = new GroupShapeTypeParser();
             var builder = new GroupEx.Builder(treeParser, elementCreator);
             var bgImgFactory = new BackgroundImageFactory();
-            var newSlide = new SlideEx(xmlDoc.PresentationPart.SlideParts.First(), 1, elementCreator, treeParser, builder, new SlideLayoutPartParser(), bgImgFactory);
+            var mockPreSettings = Substitute.For<IPreSettings>();
+            var sldPart = xmlDoc.PresentationPart.SlideParts.First();
+            var newSlide = new SlideEx(sldPart, 1, elementCreator, treeParser, builder, new SlideLayoutPartParser(), bgImgFactory, mockPreSettings);
 
             // ACT
             slides.Add(newSlide);

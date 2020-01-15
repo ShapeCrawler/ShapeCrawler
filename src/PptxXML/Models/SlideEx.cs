@@ -4,10 +4,11 @@ using DocumentFormat.OpenXml.Packaging;
 using ObjectEx.Utilities;
 using PptxXML.Enums;
 using PptxXML.Models.Elements;
+using PptxXML.Models.Settings;
 using PptxXML.Services;
+using PptxXML.Services.Builders;
 using PptxXML.Services.Placeholder;
 using P = DocumentFormat.OpenXml.Presentation;
-using A = DocumentFormat.OpenXml.Drawing;
 
 namespace PptxXML.Models
 {
@@ -26,10 +27,11 @@ namespace PptxXML.Models
         #region Dependencies
 
         private readonly IElementFactory _elFactory;
-        private readonly IGroupShapeTypeParser _shapeTreeParser;
-        private readonly IGroupBuilder _groupBuilder;
+        private readonly IGroupShapeTypeParser _shapeTreeParser; // may be better move into _elFactory
+        private readonly IGroupExBuilder _groupBuilder;
         private readonly ISlideLayoutPartParser _sldLayoutPartParser;
         private readonly IBackgroundImageFactory _bgImgFactory;
+        private readonly IPreSettings _preSettings;
 
         #endregion Dependencies
 
@@ -76,13 +78,15 @@ namespace PptxXML.Models
         /// <summary>
         /// Initialize a new instance of the <see cref="SlideEx"/> class.
         /// </summary>
+        /// TODO: use builder instead public constructor
         public SlideEx(SlidePart xmlSldPart, 
                        int sldNumber, 
                        IElementFactory elFactory, 
                        IGroupShapeTypeParser shapeTreeParser,
-                       IGroupBuilder groupBuilder,
+                       IGroupExBuilder groupBuilder,
                        ISlideLayoutPartParser sldLayoutPartParser,
-                       IBackgroundImageFactory bgImgFactory)
+                       IBackgroundImageFactory bgImgFactory,
+                       IPreSettings preSettings)
         {
             Check.NotNull(xmlSldPart, nameof(xmlSldPart));
             Check.IsPositive(sldNumber, nameof(sldNumber));
@@ -98,6 +102,7 @@ namespace PptxXML.Models
             _groupBuilder = groupBuilder;
             _sldLayoutPartParser = sldLayoutPartParser;
             _bgImgFactory = bgImgFactory;
+            _preSettings = preSettings;
         }
 
         #endregion Constructors
@@ -106,19 +111,16 @@ namespace PptxXML.Models
 
         private void InitElements()
         {
-            _elements = new List<Element>();
-
-            // Get candidates
-            var shapeTreeCandidates = _shapeTreeParser.CreateCandidates(_xmlSldPart.Slide.CommonSlideData.ShapeTree);
-
-            // Get placeholder dictionary
+            // Slide
+            var shTree = _xmlSldPart.Slide.CommonSlideData.ShapeTree;
+            var sldCandidates = _shapeTreeParser.CreateCandidates(shTree);
             var phDic = _sldLayoutPartParser.GetPlaceholderDic(_xmlSldPart.SlideLayoutPart);
-
-            foreach (var ec in shapeTreeCandidates)
+            _elements = new List<Element>(sldCandidates.Count());
+            foreach (var ec in sldCandidates)
             {
                 var newEl = ec.ElementType.Equals(ElementType.Group)
-                    ? _groupBuilder.Build((P.GroupShape)ec.CompositeElement, _xmlSldPart)
-                    : _elFactory.CreateRootElement(ec, _xmlSldPart, phDic);
+                    ? _groupBuilder.Build((P.GroupShape)ec.CompositeElement, _xmlSldPart, _preSettings)
+                    : _elFactory.CreateRootSldElement(ec, _xmlSldPart, _preSettings, phDic);
                 _elements.Add(newEl);
             }
         }

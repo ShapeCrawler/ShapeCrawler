@@ -4,8 +4,12 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ObjectEx.Utilities;
 using PptxXML.Enums;
-using PptxXML.Models.Elements.Builders;
+using PptxXML.Models.Settings;
+using PptxXML.Models.TextBody;
 using PptxXML.Services;
+using PptxXML.Services.Builders;
+using PptxXML.Services.Placeholder;
+using PptxXML.Services.Placeholders;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -23,12 +27,14 @@ namespace PptxXML.Models.Elements
         private bool _xmlTxtBodyParsed; // used to avoid second time parsed text body
         private TextBodyEx _textBody;
         private ImageEx _backgroundImage;
+        private ShapeSettings _spSettings;
 
         #endregion Fields
 
         #region Dependencies
 
         private readonly IBackgroundImageFactory _bgImgFactory;
+        private readonly ITextBodyExBuilder _txtBodyBuilder;
 
         #endregion Dependencies
 
@@ -71,12 +77,20 @@ namespace PptxXML.Models.Elements
         /// Initializes a new instance of the <see cref="ShapeEx"/> class.
         /// </summary>
         [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter")]
-        private ShapeEx(OpenXmlCompositeElement compositeElement, SlidePart sldPart, IBackgroundImageFactory bgImgFactory) : base(ElementType.Shape, compositeElement)
+        private ShapeEx(IBackgroundImageFactory bgImgFactory, 
+                        ITextBodyExBuilder txtBodyBuilder,
+                        OpenXmlCompositeElement compositeElement,
+                        SlidePart sldPart,
+                        ShapeSettings spSettings) : base(ElementType.Shape, compositeElement)
         {
-            Check.NotNull(sldPart, nameof(sldPart));
             Check.NotNull(bgImgFactory, nameof(bgImgFactory));
-            _sldPart = sldPart;
+            Check.NotNull(txtBodyBuilder, nameof(txtBodyBuilder));
+            Check.NotNull(sldPart, nameof(sldPart));
+            Check.NotNull(spSettings, nameof(spSettings));
             _bgImgFactory = bgImgFactory;
+            _txtBodyBuilder = txtBodyBuilder;
+            _sldPart = sldPart;
+            _spSettings = spSettings;
         }
 
         #endregion Constructors
@@ -94,7 +108,7 @@ namespace PptxXML.Models.Elements
                 if (aTexts.Any(t => t.Parent is A.Run)
                     && aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element contain text
                 {
-                    result = new TextBodyEx(xmlTxtBody);
+                    result = _txtBodyBuilder.Build(xmlTxtBody, _spSettings);
                 }
             }
 
@@ -114,15 +128,18 @@ namespace PptxXML.Models.Elements
             #region Dependencies
 
             private readonly IBackgroundImageFactory _bgImgFactor;
+            private readonly ITextBodyExBuilder _txtBodyBuilder;
 
             #endregion Dependencies
 
             #region Constructors
 
-            public Builder(IBackgroundImageFactory bgImgFactor)
+            public Builder(IBackgroundImageFactory bgImgFactor, ITextBodyExBuilder txtBodyBuilder)
             {
                 Check.NotNull(bgImgFactor, nameof(bgImgFactor));
+                Check.NotNull(txtBodyBuilder, nameof(txtBodyBuilder));
                 _bgImgFactor = bgImgFactor;
+                _txtBodyBuilder = txtBodyBuilder;
             }
 
             #endregion Constructors
@@ -133,12 +150,12 @@ namespace PptxXML.Models.Elements
             /// Builds shape.
             /// </summary>
             /// <returns></returns>
-            public ShapeEx Build(OpenXmlCompositeElement compositeElement, SlidePart sldPart)
+            public ShapeEx Build(OpenXmlCompositeElement compositeElement, SlidePart sldPart, ShapeSettings spSettings)
             {
                 Check.NotNull(compositeElement, nameof(compositeElement));
                 Check.NotNull(sldPart, nameof(sldPart));
 
-                return new ShapeEx(compositeElement, sldPart, _bgImgFactor);
+                return new ShapeEx(_bgImgFactor, _txtBodyBuilder, compositeElement, sldPart, spSettings);
             }
 
             #endregion Public Methods

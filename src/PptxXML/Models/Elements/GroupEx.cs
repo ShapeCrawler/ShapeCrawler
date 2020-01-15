@@ -2,7 +2,9 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using PptxXML.Enums;
+using PptxXML.Models.Settings;
 using PptxXML.Services;
+using PptxXML.Services.Builders;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace PptxXML.Models.Elements
@@ -20,6 +22,7 @@ namespace PptxXML.Models.Elements
 
         private readonly IGroupShapeTypeParser _groupShapeTypeParser;
         private readonly IElementFactory _elFactory;
+        private readonly IPreSettings _preSettings;
         private SlidePart _sldPart;
 
         #endregion Dependencies
@@ -48,11 +51,15 @@ namespace PptxXML.Models.Elements
 
         #region Constructors
 
-        private GroupEx(IGroupShapeTypeParser parser, IElementFactory elFactory, OpenXmlCompositeElement compositeElement) 
+        private GroupEx(IGroupShapeTypeParser parser, 
+                        IElementFactory elFactory, 
+                        OpenXmlCompositeElement compositeElement, 
+                        IPreSettings preSettings) 
             : base(ElementType.Group, compositeElement)
         {
             _groupShapeTypeParser = parser;
             _elFactory = elFactory;
+            _preSettings = preSettings;
         }
 
         #endregion Constructors
@@ -68,7 +75,7 @@ namespace PptxXML.Models.Elements
 
             foreach (var ec in groupShapeCandidates)
             {
-                Element newEl = _elFactory.CreateGroupsElement(ec, _sldPart);
+                Element newEl = _elFactory.CreateGroupsElement(ec, _sldPart, _preSettings);
                 newEl.X = newEl.X - tg.ChildOffset.X + tg.Offset.X;
                 newEl.Y = newEl.Y - tg.ChildOffset.Y + tg.Offset.Y;
                 _elements.Add(newEl);
@@ -83,7 +90,7 @@ namespace PptxXML.Models.Elements
         /// Represents a builder of the <see cref="GroupEx"/> class.
         /// </summary>
         /// <returns>A new instance of the <see cref="GroupEx"/> class.</returns>
-        public class Builder : IGroupBuilder
+        public class Builder : IGroupExBuilder
         {
             private readonly IGroupShapeTypeParser _parser;
             private readonly IElementFactory _elFactory;
@@ -98,9 +105,9 @@ namespace PptxXML.Models.Elements
             /// Builds a new instance of the <see cref="GroupEx"/> class.
             /// </summary>
             /// <returns></returns>
-            public GroupEx Build(P.GroupShape xmlGroupShape, SlidePart sldPart)
+            public GroupEx Build(P.GroupShape xmlGroupShape, SlidePart sldPart, IPreSettings preSettings)
             {
-                var group = new GroupEx(_parser, _elFactory, xmlGroupShape)
+                var group = new GroupEx(_parser, _elFactory, xmlGroupShape, preSettings)
                 {
                     _sldPart = sldPart
                 };
