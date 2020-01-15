@@ -5,8 +5,11 @@ using ObjectEx.Extensions;
 using ObjectEx.Utilities;
 using PptxXML.Extensions;
 using PptxXML.Models.Elements;
+using PptxXML.Models.Settings;
+using PptxXML.Models.TextBody;
 using PptxXML.Services;
 using PptxXML.Services.Placeholder;
+using PptxXML.Services.Placeholders;
 
 namespace PptxXML.Models
 {
@@ -40,6 +43,16 @@ namespace PptxXML.Models
                 return _slides;
             }
         }
+
+        /// <summary>
+        /// Returns presentation slides width in EMUs.
+        /// </summary>
+        public int SlideWidth => _xmlDoc.PresentationPart.Presentation.SlideSize.Cx.Value;
+
+        /// <summary>
+        /// Returns presentation slides height in EMUs.
+        /// </summary>
+        public int SlideHeight => _xmlDoc.PresentationPart.Presentation.SlideSize.Cy.Value;
 
         #endregion Properties
 
@@ -108,14 +121,22 @@ namespace PptxXML.Models
             var groupShapeTypeParser = new GroupShapeTypeParser(); // TODO: inject via DI Container
             var sldLayoutPartParser = new SlideLayoutPartParser();
             var bgImgFactory = new BackgroundImageFactory();
-            var elFactory = new ElementFactory(new ShapeEx.Builder(bgImgFactory));
+            var preSettings = new PreSettings(_xmlDoc.PresentationPart.Presentation);
+            var txtBodyBuilder = new TextBodyEx.TextBodyExBuilder(new ParagraphEx.ParagraphExBuilder());
+            var elFactory = new ElementFactory(new ShapeEx.Builder(bgImgFactory, txtBodyBuilder));
             var groupExBuilder = new GroupEx.Builder(groupShapeTypeParser, elFactory);
 
             for (var slideIndex = 0; slideIndex < nbSlides; slideIndex++)
             {
                 SlidePart slidePart = presentationPart.GetSlidePartByIndex(slideIndex);
-
-                var newSldEx = new SlideEx(slidePart, slideIndex + 1, elFactory, groupShapeTypeParser, groupExBuilder, sldLayoutPartParser, bgImgFactory);
+                var newSldEx = new SlideEx(slidePart, 
+                                   slideIndex + 1, 
+                                           elFactory,
+                                           groupShapeTypeParser, 
+                                           groupExBuilder, 
+                                           sldLayoutPartParser, 
+                                           bgImgFactory,
+                                           preSettings);
                 _slides.Add(newSldEx);
             }
         }

@@ -25,14 +25,14 @@ namespace PptxXML.Services
         /// <returns></returns>
         public IEnumerable<ElementCandidate> CreateCandidates(P.GroupShapeType groupTypeShape, bool groupParsed = true)
         {
-            // Get all element elements
+            // Gets all element elements
             var allElements = groupTypeShape.Elements<OpenXmlCompositeElement>();
 
-            // Get non-placeholder elements
-            var nonPlaceholderElements = allElements.Where(e => e.GetPlaceholderIndex() == null);
+            // Gets elements includes supported placeholder types
+            var supportElements = allElements.Where(e => e.GetPlaceholderIndex() == null);
 
             // OLE Objects
-            var oleFrames = nonPlaceholderElements.Where(e => e is P.GraphicFrame && e.Descendants<P.OleObject>().Any());
+            var oleFrames = supportElements.Where(e => e is P.GraphicFrame && e.Descendants<P.OleObject>().Any());
             var oleCandidates = oleFrames.Select(ce => new ElementCandidate
             {
                 CompositeElement = ce,
@@ -40,7 +40,7 @@ namespace PptxXML.Services
             });
 
             // FILTER PICTURES
-            var pictureCandidates = nonPlaceholderElements.Except(oleFrames).Where(e => e is P.Picture || e is P.GraphicFrame && e.Descendants<P.Picture>().Any());
+            var pictureCandidates = supportElements.Except(oleFrames).Where(e => e is P.Picture || e is P.GraphicFrame && e.Descendants<P.Picture>().Any());
             var graphicFrameImages = pictureCandidates.Where(e => e is P.GraphicFrame).SelectMany(e => e.Descendants<P.Picture>());
             var picAndShapeImages = pictureCandidates.Where(e => e is P.Picture
                                                                  || e is P.Shape && e.Descendants<A.BlipFill>().Any());
@@ -63,7 +63,7 @@ namespace PptxXML.Services
             });
 
             // Table candidates
-            var xmlTables = nonPlaceholderElements
+            var xmlTables = supportElements
                                                             .Where(e => e.GetPlaceholderIndex() == null) // skip placeholders
                                                             .Except(pictureCandidates)
                                                             .Except(xmlShapes)
@@ -75,7 +75,7 @@ namespace PptxXML.Services
             });
 
             // Chart candidates
-            var xmlCharts = nonPlaceholderElements
+            var xmlCharts = supportElements
                                                             .Except(pictureCandidates)
                                                             .Except(xmlShapes)
                                                             .Except(xmlTables)
@@ -91,7 +91,7 @@ namespace PptxXML.Services
             // Group candidates
             if (groupParsed)
             {
-                var xmlGroupCandidates = nonPlaceholderElements.Where(e => e is P.GroupShape).Select(ce => new ElementCandidate
+                var xmlGroupCandidates = supportElements.Where(e => e is P.GroupShape).Select(ce => new ElementCandidate
                 {
                     CompositeElement = ce,
                     ElementType = ElementType.Group

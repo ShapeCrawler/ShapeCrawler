@@ -1,9 +1,12 @@
 ﻿using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using NSubstitute;
 using PptxXML.Extensions;
 using PptxXML.Models.Elements;
+using PptxXML.Models.Settings;
 using PptxXML.Services;
+using PptxXML.Services.Builders;
 using Xunit;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -23,11 +26,13 @@ namespace PptxXML.Tests
             var sldPart = doc.PresentationPart.GetSlidePartByNumber(1);
             var groupShape = sldPart.Slide.CommonSlideData.ShapeTree.Elements<P.GroupShape>().Single(x => x.GetId() == 2);
             var parser = new GroupShapeTypeParser();
-            var elFactory = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
+            var mockTxtBuilder = Substitute.For<ITextBodyExBuilder>();
+            var elFactory = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory(), mockTxtBuilder));
             var builder = new GroupEx.Builder(parser, elFactory);
+            var mockPreSettings = Substitute.For<IPreSettings>();
 
             // ACT
-            var groupEx = builder.Build(groupShape, sldPart);
+            var groupEx = builder.Build(groupShape, sldPart, mockPreSettings);
 
             // CLEAN
             doc.Dispose();

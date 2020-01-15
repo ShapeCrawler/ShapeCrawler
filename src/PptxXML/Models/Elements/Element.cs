@@ -70,9 +70,9 @@ namespace PptxXML.Models.Elements
         {
             get
             {
-                if (_isPlaceholder == null)
+                if (_isPlaceholder == null) // whether PlaceholderShape was parsed before
                 {
-                    _isPlaceholder = CompositeElement.Descendants<P.PlaceholderShape>().Any();
+                    _isPlaceholder = CompositeElement.IsPlaceholder();
                 }
 
                 return (bool)_isPlaceholder;
@@ -87,7 +87,7 @@ namespace PptxXML.Models.Elements
         /// <summary>
         /// Gets or sets the x-coordinate of the upper-left corner of the element in EMUs.
         /// </summary>
-        public long X { get; set; }
+        public long X { get; set; } //TODO; delete getter
 
         /// <summary>
         /// Gets or sets the y-coordinate of the upper-left corner of the element in EMUs.

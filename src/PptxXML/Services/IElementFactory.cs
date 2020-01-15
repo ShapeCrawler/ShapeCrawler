@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
+using PptxXML.Models;
 using PptxXML.Models.Elements;
+using PptxXML.Models.Settings;
 using PptxXML.Services.Placeholder;
 
 namespace PptxXML.Services
@@ -10,8 +12,8 @@ namespace PptxXML.Services
     /// </summary>
     public interface IElementFactory
     {
-        Element CreateGroupsElement(ElementCandidate ec, SlidePart sldPart);
+        Element CreateGroupsElement(ElementCandidate ec, SlidePart sldPart, IPreSettings preSettings);
 
-        Element CreateRootElement(ElementCandidate ec, SlidePart sldPart, Dictionary<int, PlaceholderData> phDic);
+        Element CreateRootSldElement(ElementCandidate ec, SlidePart sldPart, IPreSettings preSettings, Dictionary<int, Placeholders.Placeholder> phDic);
     }
 }

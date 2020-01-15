@@ -11,11 +11,14 @@
     <PackageTags>pptx-xml, openxml, openxml-sdk, powerpoint, pptx-parser</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon></PackageIcon>
+    <PackageIconUrl />
+    <Copyright>MIT</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.10.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.1" />
   </ItemGroup>
 
   <ItemGroup>

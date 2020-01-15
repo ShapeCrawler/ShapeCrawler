@@ -297,5 +297,66 @@ namespace PptxXML.Tests
             // ASSERT
             Assert.NotEqual(sizeBefore, sizeAfter);
         }
+
+        [Fact]
+        public void NumberParagraphAndPortionTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+            var shape = (ShapeEx)pre.Slides[2].Elements.SingleOrDefault(e => e.Id.Equals(2));
+            var paragraphs = shape.TextBody.Paragraphs;
+
+            // ACT
+            var numParagraphs = paragraphs.Count;
+            var portions = paragraphs[0].Portions;
+            var numPortions = portions.Count;
+            var por1Size = portions[0].FontHeight;
+            var por2Size = portions[1].FontHeight;
+
+            pre.Dispose();
+
+            // ASSERT
+            Assert.Equal(1, numParagraphs);
+            Assert.Equal(2, numPortions);
+            Assert.Equal(1800, por1Size);
+            Assert.Equal(2000, por2Size);
+        }
+
+        [Fact]
+        public void SlideWidthAndHeightTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+
+            // ACT
+            var w = pre.SlideWidth;
+            var y = pre.SlideHeight;
+
+            pre.Dispose();
+
+            // ASSERT
+            Assert.Equal(9144000, w);
+            Assert.Equal(5143500, y);
+        }
+
+        [Fact]
+        public void Placeholder_FontHeightTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+            var elements = pre.Slides[3].Elements;
+            var titlePlaceholder = (ShapeEx)elements.Single(e => e.Id.Equals(2));
+            var subTitlePlaceholder = (ShapeEx)elements.Single(e => e.Id.Equals(3));
+
+            // ACT
+            var fhTitle = titlePlaceholder.TextBody.Paragraphs.Single().Portions.Single().FontHeight;
+            var fhSubTitle = subTitlePlaceholder.TextBody.Paragraphs.Single().Portions.Single().FontHeight;
+
+            pre.Dispose();
+
+            // ASSERT
+            Assert.Equal(4400, fhTitle);
+            Assert.Equal(3200, fhSubTitle);
+        }
     }
 }

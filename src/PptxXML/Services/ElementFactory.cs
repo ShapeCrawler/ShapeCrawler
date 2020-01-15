@@ -8,8 +8,8 @@ using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 using PptxXML.Enums;
 using PptxXML.Extensions;
-using PptxXML.Models.Elements.Builders;
-using PptxXML.Services.Placeholder;
+using PptxXML.Models.Settings;
+using PptxXML.Services.Builders;
 
 namespace PptxXML.Services
 {
@@ -40,7 +40,7 @@ namespace PptxXML.Services
         /// Creates a new element from root tree.
         /// </summary>
         /// <returns></returns>
-        public Element CreateRootElement(ElementCandidate ec, SlidePart sldPart, Dictionary<int, PlaceholderData> phDic)
+        public Element CreateRootSldElement(ElementCandidate ec, SlidePart sldPart, IPreSettings preSettings, Dictionary<int, Placeholders.Placeholder> phDic)
         {
             Check.NotNull(ec, nameof(ec));
 
@@ -48,7 +48,7 @@ namespace PptxXML.Services
             {
                 case ElementType.Shape:
                     {
-                        return CreateShape(ec.CompositeElement, sldPart, phDic);
+                        return CreateShape(ec.CompositeElement, sldPart, preSettings, phDic);
                     }
                 case ElementType.Chart:
                     {
@@ -76,7 +76,7 @@ namespace PptxXML.Services
         /// Creates a new element of group element.
         /// </summary>
         /// <returns></returns>
-        public Element CreateGroupsElement(ElementCandidate ec, SlidePart sldPart)
+        public Element CreateGroupsElement(ElementCandidate ec, SlidePart sldPart, IPreSettings preSettings)
         {
             Check.NotNull(ec, nameof(ec));
 
@@ -84,7 +84,7 @@ namespace PptxXML.Services
             {
                 case ElementType.Shape:
                 {
-                    return CreateShape(ec.CompositeElement, sldPart);
+                    return CreateShape(ec.CompositeElement, sldPart, preSettings);
                 }
                 case ElementType.Chart:
                 {
@@ -108,10 +108,11 @@ namespace PptxXML.Services
 
         #region Private Methods
 
-        private Element CreateShape(OpenXmlCompositeElement ce, SlidePart sldPart)
+        private Element CreateShape(OpenXmlCompositeElement ce, SlidePart sldPart, IPreSettings preSettings)
         {
             // Create shape
-            var shape = _shapeBuilder.Build(ce, sldPart);
+            var spSettings = new ShapeSettings(preSettings);
+            var shape = _shapeBuilder.Build(ce, sldPart, spSettings);
 
             // Add own transform properties
             var t2d = ((P.Shape)ce).ShapeProperties.Transform2D;
@@ -120,31 +121,47 @@ namespace PptxXML.Services
             return shape;
         }
 
-        private Element CreateShape(OpenXmlCompositeElement ce, SlidePart sldPart, Dictionary<int, PlaceholderData> phDic)
+        private Element CreateShape(OpenXmlCompositeElement ce, SlidePart sldPart, IPreSettings preSettings, Dictionary<int, Placeholders.Placeholder> phDic)
         {
-            // Create shape
-            var shape = _shapeBuilder.Build(ce, sldPart);
+            ShapeEx shape;
+            var spSettings = new ShapeSettings(preSettings);
 
             // Add own transform properties
             var t2d = ((P.Shape)ce).ShapeProperties.Transform2D;
-            if (t2d != null) // not place holder
-            { 
+            if (t2d != null)
+            {
+                if (ce.IsPlaceholder())
+                {
+                    var placeholder = GetPlaceholder(ce, phDic);
+                    spSettings.Placeholder = placeholder;
+                }
+                shape = _shapeBuilder.Build(ce, sldPart, spSettings);
                 WithOwnTransform2d(shape, t2d);
             }
-            else // is placeholder
-            { 
-                var idx = ce.GetPlaceholderIndex();
-                const string errMsg = "Something went wrong during process placeholder.";
-                _ = idx ?? throw new PptxXMLException(errMsg);
-                phDic.TryGetValue((int)idx, out var placeholderData);
-                _ = placeholderData ?? throw new PptxXMLException(errMsg);
-                shape.X = placeholderData.X;
-                shape.Y = placeholderData.Y;
-                shape.Width = placeholderData.Width;
-                shape.Height = placeholderData.Height;
+            else // is placeholder obviously
+            {
+                var placeholder = GetPlaceholder(ce, phDic);
+                spSettings.Placeholder = placeholder;
+
+                shape = _shapeBuilder.Build(ce, sldPart, spSettings);
+                shape.X = placeholder.X;
+                shape.Y = placeholder.Y;
+                shape.Width = placeholder.Width;
+                shape.Height = placeholder.Height;
             }
 
             return shape;
+        }
+
+        private Placeholders.Placeholder GetPlaceholder(OpenXmlCompositeElement ce, Dictionary<int, Placeholders.Placeholder> phDic)
+        {
+            var idx = ce.GetPlaceholderIndex();
+            const string errMsg = "Something went wrong during process placeholder.";
+            _ = idx ?? throw new PptxXMLException(errMsg);
+            phDic.TryGetValue((int)idx, out var placeholder);
+            _ = placeholder ?? throw new PptxXMLException(errMsg);
+
+            return placeholder;
         }
 
         private Element CreatePicture(ElementCandidate ec, SlidePart sldPart)

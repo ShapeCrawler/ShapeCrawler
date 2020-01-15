@@ -1,9 +1,7 @@
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using PptxXML.Models;
-using PptxXML.Services;
-using PptxXML.Services.Placeholder;
+using PptxXML.Services.Placeholders;
 using Xunit;
 
 namespace PptxXML.Tests
@@ -14,7 +12,7 @@ namespace PptxXML.Tests
     public class SlideLayoutPartParserTests
     {
         /// <summary>
-        /// Test contains data for title placeholder.
+        /// Tests contains data for title placeholder.
         /// </summary>
         [Fact]
         public void GetPlaceholderDic_Test()
@@ -32,7 +30,7 @@ namespace PptxXML.Tests
             ms.Dispose();
 
             // ASSERT
-            Assert.Contains(phDataDic, d => d.Key.Equals(0));
+            Assert.Contains(phDataDic, d => d.Key.Equals(100));
         }
     }
 }

@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using ObjectEx.Utilities;
 using PptxXML.Extensions;
+using PptxXML.Services.Placeholder;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace PptxXML.Services.Placeholder
+namespace PptxXML.Services.Placeholders
 {
     /// <summary>
     /// Represents a <see cref="SlideLayoutPart"/> object parser.
@@ -27,11 +27,11 @@ namespace PptxXML.Services.Placeholder
         /// Gets placeholder data dictionary.
         /// </summary>
         /// <param name="sldLtPart"></param>
-        public Dictionary<int, PlaceholderData> GetPlaceholderDic(SlideLayoutPart sldLtPart)
+        public Dictionary<int, Placeholder> GetPlaceholderDic(SlideLayoutPart sldLtPart)
         {
             Check.NotNull(sldLtPart, nameof(sldLtPart));
 
-            var resultDic = new Dictionary<int, PlaceholderData>();
+            var resultDic = new Dictionary<int, Placeholder>();
 
             // Get OpenXmlCompositeElement instances have P.ShapeProperties.
             var layoutElements = sldLtPart.SlideLayout.CommonSlideData.ShapeTree.Elements<OpenXmlCompositeElement>()
@@ -54,13 +54,13 @@ namespace PptxXML.Services.Placeholder
                 }
 
                 // Gets X, Y, W, H and ShapeProperties
-                var placeholderData = new PlaceholderData
+                var placeholderData = new Placeholder
                 {
                     X = t2d.Offset.X.Value,
                     Y = t2d.Offset.Y.Value,
                     Width = t2d.Extents.Cx.Value,
                     Height = t2d.Extents.Cy.Value,
-                    ShapeProperties = elShapeProperties
+                    CompositeElement = el
                 };
 
                 // Gets geometry form

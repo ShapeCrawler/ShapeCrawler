@@ -10,3 +10,9 @@ src/pptxXML.examples/obj
 
 .vs/
 
+
+PptxXML.Examples/bin/Debug/netcoreapp3.1/
+
+PptxXML.Examples/obj/Debug/netcoreapp3.1/
+
+PptxXML.Examples/obj/

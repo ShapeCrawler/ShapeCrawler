@@ -2,11 +2,15 @@
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using NSubstitute;
 using PptxXML.Enums;
 using PptxXML.Extensions;
 using PptxXML.Models.Elements;
+using PptxXML.Models.Settings;
 using PptxXML.Services;
+using PptxXML.Services.Builders;
 using PptxXML.Services.Placeholder;
+using PptxXML.Services.Placeholders;
 using Xunit;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -30,11 +34,13 @@ namespace PptxXML.Tests
                 CompositeElement = stubXmlShape,
                 ElementType = ElementType.Shape
             };
-            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
-            var stubPhDic = new Dictionary<int, PlaceholderData>();
+            var mockTxtBodyBuilder = Substitute.For<ITextBodyExBuilder>();
+            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory(), mockTxtBodyBuilder));
+            var stubPhDic = new Dictionary<int, Placeholder>();
+            var mockPreSetting = Substitute.For<IPreSettings>();
 
             // ACT
-            var element = creator.CreateRootElement(stubEc, sldPart, stubPhDic);
+            var element = creator.CreateRootSldElement(stubEc, sldPart, mockPreSetting, stubPhDic);
 
             // CLEAN
             doc.Dispose();
@@ -61,11 +67,13 @@ namespace PptxXML.Tests
                 CompositeElement = stubXmlPic,
                 ElementType = ElementType.Picture
             };
-            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
-            var stubPhDic = new Dictionary<int, PlaceholderData>();
+            var mockTxtBuilder = Substitute.For<ITextBodyExBuilder>();
+            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory(), mockTxtBuilder));
+            var stubPhDic = new Dictionary<int, Placeholder>();
+            var mockPreSettings = Substitute.For<IPreSettings>();
 
             // ACT
-            var element = creator.CreateRootElement(stubEc, sldPart, stubPhDic);
+            var element = creator.CreateRootSldElement(stubEc, sldPart, mockPreSettings, stubPhDic);
 
             // CLEAN
             doc.Dispose();
@@ -92,11 +100,13 @@ namespace PptxXML.Tests
                 CompositeElement = stubGrFrame,
                 ElementType = ElementType.Table
             };
-            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
-            var stubPhDic = new Dictionary<int, PlaceholderData>();
+            var mockTxtBuilder = Substitute.For<ITextBodyExBuilder>();
+            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory(), mockTxtBuilder));
+            var stubPhDic = new Dictionary<int, Placeholder>();
+            var mockPreSettings = Substitute.For<IPreSettings>();
 
             // ACT
-            var element = creator.CreateRootElement(stubEc, sldPart, stubPhDic);
+            var element = creator.CreateRootSldElement(stubEc, sldPart, mockPreSettings, stubPhDic);
 
             // CLEAN
             doc.Dispose();
@@ -123,11 +133,13 @@ namespace PptxXML.Tests
                 CompositeElement = stubGrFrame,
                 ElementType = ElementType.Chart
             };
-            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
-            var stubPhDic = new Dictionary<int, PlaceholderData>();
+            var mockTxtBuilder = Substitute.For<ITextBodyExBuilder>();
+            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory(), mockTxtBuilder));
+            var stubPhDic = new Dictionary<int, Placeholder>();
+            var mockPreSettings = Substitute.For<IPreSettings>();
 
             // ACT
-            var element = creator.CreateRootElement(stubEc, sldPart, stubPhDic);
+            var element = creator.CreateRootSldElement(stubEc, sldPart, mockPreSettings, stubPhDic);
 
             // CLEAN
             doc.Dispose();
