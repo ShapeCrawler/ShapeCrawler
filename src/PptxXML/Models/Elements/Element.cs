@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml;
 using ObjectEx.Utilities;
 using PptxXML.Enums;
 using PptxXML.Extensions;
+using PptxXML.Models.Settings;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace PptxXML.Models.Elements
@@ -16,9 +17,9 @@ namespace PptxXML.Models.Elements
         #region Fields
 
         protected OpenXmlCompositeElement CompositeElement;
+        protected ElementSettings ElementSettings;
 
         private bool? _isPlaceholder;
-        
         private bool? _hidden;
         private int _id;
         private string _name;
@@ -129,6 +130,15 @@ namespace PptxXML.Models.Elements
         {
             Check.NotNull(compositeElement, nameof(compositeElement));
             CompositeElement = compositeElement;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Element"/> class.
+        /// </summary>
+        protected Element(ElementType et, OpenXmlCompositeElement compositeElement, ElementSettings elSettings) : this(et, compositeElement)
+        {
+            Check.NotNull(elSettings, nameof(elSettings));
+            ElementSettings = elSettings;
         }
 
         #endregion Constructors

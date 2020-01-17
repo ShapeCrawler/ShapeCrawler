@@ -8,6 +8,6 @@ namespace PptxXML.Services.Placeholder
     /// </summary>
     public interface ISlideLayoutPartParser
     {
-        Dictionary<int, Placeholders.Placeholder> GetPlaceholderDic(SlideLayoutPart sldLtPart);
+        Dictionary<int, Placeholders.PlaceholderEx> GetPlaceholderDic(SlideLayoutPart sldLtPart);
     }
 }

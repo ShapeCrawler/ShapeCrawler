@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using ObjectEx.Utilities;
 using PptxXML.Models.Settings;
 using PptxXML.Services.Builders;
@@ -15,8 +16,8 @@ namespace PptxXML.Models.TextBody
     {
         #region Fields
 
-        private readonly IParagraphExBuilder _paragraphExBuilder;
-        private readonly ShapeSettings _spSettings;
+        private readonly ElementSettings _spSettings;
+        private string _text;
 
         #endregion
 
@@ -27,54 +28,93 @@ namespace PptxXML.Models.TextBody
         /// </summary>
         public IList<ParagraphEx> Paragraphs { get; private set; }
 
+        public string Text
+        {
+            get
+            {
+                if (_text == null)
+                {
+                    InitText();
+                }
+
+                return _text;
+            }
+        }
+
         #endregion Properties
 
         #region Constructors
 
-        private TextBodyEx(IParagraphExBuilder paragraphExBuilder, ShapeSettings spSettings, P.TextBody xmlTxtBody)
+        /// <summary>
+        /// Initializes an instance of the <see cref="TextBodyEx"/> class with <see cref="P.TextBody"/>.
+        /// </summary>
+        /// <param name="spSettings"></param>
+        /// <param name="pTxtBody"><see cref="P.TextBody"/> instance which contains a text.</param>
+        public TextBodyEx(ElementSettings spSettings, P.TextBody pTxtBody)
         {
-            Check.NotNull(paragraphExBuilder, nameof(paragraphExBuilder));
             Check.NotNull(spSettings, nameof(spSettings));
-            Check.NotNull(spSettings, nameof(xmlTxtBody));
-            _paragraphExBuilder = paragraphExBuilder;
+            Check.NotNull(pTxtBody, nameof(pTxtBody));
             _spSettings = spSettings;
-            ParseParagraphs(xmlTxtBody);
+            ParseParagraphs(pTxtBody);
+        }
+
+        /// <summary>
+        /// Initializes an instance of the <see cref="TextBodyEx"/> class with <see cref="A.TextBody"/>.
+        /// </summary>
+        /// <param name="spSettings"></param>
+        /// <param name="aTxtBody"><see cref="A.TextBody"/> instance which contains a text.</param>
+        public TextBodyEx(ElementSettings spSettings, A.TextBody aTxtBody)
+        {
+            Check.NotNull(spSettings, nameof(spSettings));
+            Check.NotNull(spSettings, nameof(aTxtBody));
+            _spSettings = spSettings;
+            ParseParagraphs(aTxtBody);
         }
 
         #endregion Constructors
 
         #region Private Methods
 
-        private void ParseParagraphs(P.TextBody xmlTxtBody)
+        private void ParseParagraphs(P.TextBody pTxtBody)
         {
-            var aParagraphs = xmlTxtBody.Descendants<A.Paragraph>();
-            Paragraphs = new List<ParagraphEx>(aParagraphs.Count());
-            foreach (var p in aParagraphs)
+            var aParagraphs = pTxtBody.Elements<A.Paragraph>();
+            SetParagraphs(aParagraphs);
+        }
+
+        private void ParseParagraphs(A.TextBody aTxtBody)
+        {
+            var aParagraphs = aTxtBody.Elements<A.Paragraph>();
+            SetParagraphs(aParagraphs);
+        }
+
+        private void SetParagraphs(IEnumerable<A.Paragraph> paragraphs)
+        {
+            Paragraphs = new List<ParagraphEx>(paragraphs.Count());
+            foreach (var p in paragraphs)
             {
-                Paragraphs.Add(_paragraphExBuilder.Build(p, _spSettings));
+                Paragraphs.Add(new ParagraphEx(_spSettings, p));
             }
+        }
+
+        private void InitText()
+        {
+            var sb = new StringBuilder();
+            sb.Append(Paragraphs[0].Text);
+            
+            // If the number of paragraphs more than one.
+            var numPr = Paragraphs.Count;
+            var index = 1;
+            while (index < numPr)
+            {
+                sb.AppendLine();
+                sb.Append(Paragraphs[index].Text);
+
+                index++;
+            }
+
+            _text = sb.ToString();
         }
 
         #endregion Private Methods
-
-        #region Builder
-
-        public class TextBodyExBuilder : ITextBodyExBuilder
-        {
-            private readonly IParagraphExBuilder _paragraphExBuilder;
-
-            public TextBodyExBuilder(IParagraphExBuilder paragraphExBuilder)
-            {
-                Check.NotNull(paragraphExBuilder, nameof(paragraphExBuilder));
-                _paragraphExBuilder = paragraphExBuilder;
-            }
-
-            public TextBodyEx Build(P.TextBody xmlTxtBody, ShapeSettings spSettings)
-            {
-                return new TextBodyEx(_paragraphExBuilder, spSettings, xmlTxtBody);
-            }
-        }
-
-        #endregion
     }
 }

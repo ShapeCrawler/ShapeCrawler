@@ -26,8 +26,7 @@ namespace PptxXML.Tests
             var sldPart = doc.PresentationPart.GetSlidePartByNumber(1);
             var groupShape = sldPart.Slide.CommonSlideData.ShapeTree.Elements<P.GroupShape>().Single(x => x.GetId() == 2);
             var parser = new GroupShapeTypeParser();
-            var mockTxtBuilder = Substitute.For<ITextBodyExBuilder>();
-            var elFactory = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory(), mockTxtBuilder));
+            var elFactory = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
             var builder = new GroupEx.Builder(parser, elFactory);
             var mockPreSettings = Substitute.For<IPreSettings>();
 
