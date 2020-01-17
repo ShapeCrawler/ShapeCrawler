@@ -10,6 +10,6 @@ namespace PptxXML.Services.Builders
     /// </summary>
     public interface IShapeExBuilder
     {
-        ShapeEx Build(OpenXmlCompositeElement compositeElement, SlidePart sldPart, ShapeSettings spSettings);
+        ShapeEx Build(OpenXmlCompositeElement compositeElement, SlidePart sldPart, ElementSettings spSettings);
     }
 }

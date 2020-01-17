@@ -34,9 +34,8 @@ namespace PptxXML.Tests
                 CompositeElement = stubXmlShape,
                 ElementType = ElementType.Shape
             };
-            var mockTxtBodyBuilder = Substitute.For<ITextBodyExBuilder>();
-            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory(), mockTxtBodyBuilder));
-            var stubPhDic = new Dictionary<int, Placeholder>();
+            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
+            var stubPhDic = new Dictionary<int, PlaceholderEx>();
             var mockPreSetting = Substitute.For<IPreSettings>();
 
             // ACT
@@ -67,9 +66,8 @@ namespace PptxXML.Tests
                 CompositeElement = stubXmlPic,
                 ElementType = ElementType.Picture
             };
-            var mockTxtBuilder = Substitute.For<ITextBodyExBuilder>();
-            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory(), mockTxtBuilder));
-            var stubPhDic = new Dictionary<int, Placeholder>();
+            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
+            var stubPhDic = new Dictionary<int, PlaceholderEx>();
             var mockPreSettings = Substitute.For<IPreSettings>();
 
             // ACT
@@ -100,9 +98,8 @@ namespace PptxXML.Tests
                 CompositeElement = stubGrFrame,
                 ElementType = ElementType.Table
             };
-            var mockTxtBuilder = Substitute.For<ITextBodyExBuilder>();
-            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory(), mockTxtBuilder));
-            var stubPhDic = new Dictionary<int, Placeholder>();
+            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
+            var stubPhDic = new Dictionary<int, PlaceholderEx>();
             var mockPreSettings = Substitute.For<IPreSettings>();
 
             // ACT
@@ -133,9 +130,8 @@ namespace PptxXML.Tests
                 CompositeElement = stubGrFrame,
                 ElementType = ElementType.Chart
             };
-            var mockTxtBuilder = Substitute.For<ITextBodyExBuilder>();
-            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory(), mockTxtBuilder));
-            var stubPhDic = new Dictionary<int, Placeholder>();
+            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
+            var stubPhDic = new Dictionary<int, PlaceholderEx>();
             var mockPreSettings = Substitute.For<IPreSettings>();
 
             // ACT

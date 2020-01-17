@@ -2,7 +2,6 @@
 using System.Linq;
 using ObjectEx.Utilities;
 using PptxXML.Models.Settings;
-using PptxXML.Services.Builders;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace PptxXML.Models.TextBody
@@ -15,7 +14,7 @@ namespace PptxXML.Models.TextBody
         #region Fields
 
         private readonly A.Paragraph _aParagraph;
-        private readonly ShapeSettings _shapeSetting;
+        private readonly ElementSettings _shapeSetting;
 
         private string _text;
         private int? _lvl; // paragraph's level
@@ -59,12 +58,17 @@ namespace PptxXML.Models.TextBody
 
         #region Constructors
 
-        public ParagraphEx(ShapeSettings shapeSetting, A.Paragraph aParagraph)
+        /// <summary>
+        /// Initializes an instance of the <see cref="ParagraphEx"/> class.
+        /// </summary>
+        /// <param name="elSetting"></param>
+        /// <param name="aParagraph">A XML paragraph which contains a text.</param>
+        public ParagraphEx(ElementSettings elSetting, A.Paragraph aParagraph)
         {
             Check.NotNull(aParagraph, nameof(aParagraph));
-            Check.NotNull(shapeSetting, nameof(shapeSetting));
+            Check.NotNull(elSetting, nameof(elSetting));
             _aParagraph = aParagraph;
-            _shapeSetting = shapeSetting;
+            _shapeSetting = elSetting;
         }
 
         #endregion Constructors
@@ -73,7 +77,7 @@ namespace PptxXML.Models.TextBody
 
         private void InitText()
         {
-            _text = _aParagraph.Descendants<A.Text>().Select(t => t.Text).Aggregate((t1, t2) => t1 + t2);
+            _text = Portions.Select(p => p.Text).Aggregate((t1, t2) => t1 + t2);
         }
 
         private void InitPortions()
@@ -88,7 +92,7 @@ namespace PptxXML.Models.TextBody
                 var fh = ph.FontHeights[prLvl]; // gets font height from placeholder
                 foreach (var run in runs) //TODO: delete unnecessary run
                 {
-                    _portions.Add(new Portion(fh));
+                    _portions.Add(new Portion(fh, run.Text.Text));
                 }
             }
             else // is not placeholder
@@ -96,7 +100,7 @@ namespace PptxXML.Models.TextBody
                 foreach (var run in runs)
                 {
                     var fh = run.RunProperties?.FontSize?.Value ?? _shapeSetting.PreSettings.LlvFontHeights[prLvl];
-                    _portions.Add(new Portion(fh));
+                    _portions.Add(new Portion(fh, run.Text.Text));
                 }
             }
         }
@@ -122,34 +126,5 @@ namespace PptxXML.Models.TextBody
         }
 
         #endregion Private Methods
-
-        #region Builder
-
-        public class ParagraphExBuilder : IParagraphExBuilder
-        {
-            #region Dependencies
-
-            private readonly ShapeSettings _spSettings;
-
-            #endregion Dependencies
-
-            #region Constructors
-
-            public ParagraphExBuilder()
-            {
-
-            }
-
-            #endregion Constructors
-
-            public ParagraphEx Build(A.Paragraph aParagraph, ShapeSettings spSetting)
-            {
-                Check.NotNull(aParagraph, nameof(aParagraph));
-                Check.NotNull(spSetting, nameof(spSetting));
-                return new ParagraphEx(spSetting, aParagraph);
-            }
-        }
-
-        #endregion Builder
     }
 }

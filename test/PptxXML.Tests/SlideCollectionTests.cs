@@ -23,8 +23,7 @@ namespace PptxXML.Tests
             // ARRANGE
             var xmlDoc = DocHelper.Open(Properties.Resources._001);
             var slides = new SlideCollection(xmlDoc);
-            var mockTxtBuilder = Substitute.For<ITextBodyExBuilder>();
-            var elementCreator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory(), mockTxtBuilder));
+            var elementCreator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
             var treeParser = new GroupShapeTypeParser();
             var builder = new GroupEx.Builder(treeParser, elementCreator);
             var bgImgFactory = new BackgroundImageFactory();

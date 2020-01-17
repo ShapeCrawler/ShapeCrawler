@@ -9,7 +9,7 @@ namespace PptxXML.Services.Placeholders
     /// <summary>
     /// Represents a data of a placeholder.
     /// </summary>
-    public class Placeholder
+    public class PlaceholderEx
     {
         private Dictionary<int, int> _fontHeights;
 

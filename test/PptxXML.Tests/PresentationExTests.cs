@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Linq;
 using PptxXML.Enums;
@@ -357,6 +356,34 @@ namespace PptxXML.Tests
             // ASSERT
             Assert.Equal(4400, fhTitle);
             Assert.Equal(3200, fhSubTitle);
+        }
+
+        [Fact]
+        public void TablesPropertiesTest()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+            var elements = pre.Slides[2].Elements;
+            var tblEx = (TableEx)elements.Single(e => e.Id.Equals(3));
+            var firstRow = tblEx.Rows.First();
+
+            // ACT
+            var numRows = tblEx.Rows.Count;
+            var numCells = firstRow.Cells.Count;
+            var numParagraphs = firstRow.Cells.First().TextBody.Paragraphs.Count;
+            var cellTxt = firstRow.Cells.First().TextBody.Text;
+            var prText = firstRow.Cells.First().TextBody.Paragraphs.First().Text;
+            var portionTxt = firstRow.Cells.First().TextBody.Paragraphs.First().Portions.Single().Text;
+
+            pre.Dispose();
+
+            // ASSERT
+            Assert.Equal(3, numRows);
+            Assert.Equal(3, numCells);
+            Assert.Equal(2, numParagraphs);
+            Assert.Equal("0:0_p1_lvl1\r\n0:0_p2_lvl2", cellTxt);
+            Assert.Equal("0:0_p1_lvl1", prText);
+            Assert.Equal("0:0_p1_lvl1", portionTxt);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ObjectEx.Utilities;
@@ -10,6 +11,7 @@ using PptxXML.Enums;
 using PptxXML.Extensions;
 using PptxXML.Models.Settings;
 using PptxXML.Services.Builders;
+using PptxXML.Services.Placeholders;
 
 namespace PptxXML.Services
 {
@@ -40,15 +42,16 @@ namespace PptxXML.Services
         /// Creates a new element from root tree.
         /// </summary>
         /// <returns></returns>
-        public Element CreateRootSldElement(ElementCandidate ec, SlidePart sldPart, IPreSettings preSettings, Dictionary<int, Placeholders.Placeholder> phDic)
+        public Element CreateRootSldElement(ElementCandidate ec, SlidePart sldPart, IPreSettings preSettings, Dictionary<int, PlaceholderEx> phDic)
         {
             Check.NotNull(ec, nameof(ec));
+            var elSettings = new ElementSettings(preSettings);
 
             switch (ec.ElementType)
             {
                 case ElementType.Shape:
                     {
-                        return CreateShape(ec.CompositeElement, sldPart, preSettings, phDic);
+                        return CreateShape(ec.CompositeElement, sldPart, elSettings, phDic);
                     }
                 case ElementType.Chart:
                     {
@@ -56,7 +59,7 @@ namespace PptxXML.Services
                     }
                 case ElementType.Table:
                     {
-                        return CreateTable(ec);
+                        return CreateTable(ec, elSettings);
 
                     }
                 case ElementType.Picture:
@@ -79,12 +82,13 @@ namespace PptxXML.Services
         public Element CreateGroupsElement(ElementCandidate ec, SlidePart sldPart, IPreSettings preSettings)
         {
             Check.NotNull(ec, nameof(ec));
+            var elSetting = new ElementSettings(preSettings);
 
             switch (ec.ElementType)
             {
                 case ElementType.Shape:
                 {
-                    return CreateShape(ec.CompositeElement, sldPart, preSettings);
+                    return CreateShape(ec.CompositeElement, sldPart, elSetting);
                 }
                 case ElementType.Chart:
                 {
@@ -92,7 +96,7 @@ namespace PptxXML.Services
                 }
                 case ElementType.Table:
                 {
-                    return CreateTable(ec);
+                    return CreateTable(ec, elSetting);
 
                 }
                 case ElementType.Picture:
@@ -108,11 +112,10 @@ namespace PptxXML.Services
 
         #region Private Methods
 
-        private Element CreateShape(OpenXmlCompositeElement ce, SlidePart sldPart, IPreSettings preSettings)
+        private Element CreateShape(OpenXmlCompositeElement ce, SlidePart sldPart, ElementSettings elSettings)
         {
             // Create shape
-            var spSettings = new ShapeSettings(preSettings);
-            var shape = _shapeBuilder.Build(ce, sldPart, spSettings);
+            var shape = _shapeBuilder.Build(ce, sldPart, elSettings);
 
             // Add own transform properties
             var t2d = ((P.Shape)ce).ShapeProperties.Transform2D;
@@ -121,10 +124,9 @@ namespace PptxXML.Services
             return shape;
         }
 
-        private Element CreateShape(OpenXmlCompositeElement ce, SlidePart sldPart, IPreSettings preSettings, Dictionary<int, Placeholders.Placeholder> phDic)
+        private Element CreateShape(OpenXmlCompositeElement ce, SlidePart sldPart, ElementSettings elSettings, Dictionary<int, PlaceholderEx> phDic)
         {
             ShapeEx shape;
-            var spSettings = new ShapeSettings(preSettings);
 
             // Add own transform properties
             var t2d = ((P.Shape)ce).ShapeProperties.Transform2D;
@@ -133,17 +135,17 @@ namespace PptxXML.Services
                 if (ce.IsPlaceholder())
                 {
                     var placeholder = GetPlaceholder(ce, phDic);
-                    spSettings.Placeholder = placeholder;
+                    elSettings.Placeholder = placeholder;
                 }
-                shape = _shapeBuilder.Build(ce, sldPart, spSettings);
+                shape = _shapeBuilder.Build(ce, sldPart, elSettings);
                 WithOwnTransform2d(shape, t2d);
             }
             else // is placeholder obviously
             {
                 var placeholder = GetPlaceholder(ce, phDic);
-                spSettings.Placeholder = placeholder;
+                elSettings.Placeholder = placeholder;
 
-                shape = _shapeBuilder.Build(ce, sldPart, spSettings);
+                shape = _shapeBuilder.Build(ce, sldPart, elSettings);
                 shape.X = placeholder.X;
                 shape.Y = placeholder.Y;
                 shape.Width = placeholder.Width;
@@ -153,7 +155,7 @@ namespace PptxXML.Services
             return shape;
         }
 
-        private Placeholders.Placeholder GetPlaceholder(OpenXmlCompositeElement ce, Dictionary<int, Placeholders.Placeholder> phDic)
+        private PlaceholderEx GetPlaceholder(OpenXmlCompositeElement ce, Dictionary<int, PlaceholderEx> phDic)
         {
             var idx = ce.GetPlaceholderIndex();
             const string errMsg = "Something went wrong during process placeholder.";
@@ -196,7 +198,7 @@ namespace PptxXML.Services
             return chart;
         }
 
-        private Element CreateTable(ElementCandidate ec)
+        private Element CreateTable(ElementCandidate ec, ElementSettings elSettings)
         {
             // Validate
             Check.NotNull(ec, nameof(ec));
@@ -205,7 +207,7 @@ namespace PptxXML.Services
                 throw new PptxXMLException();
             }
 
-            var table = new TableEx(xmlGrFrame);
+            var table = new TableEx(xmlGrFrame, elSettings);
             
             WithOwnTransform(table, xmlGrFrame);
 

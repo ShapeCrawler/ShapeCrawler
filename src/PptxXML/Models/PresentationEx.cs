@@ -122,8 +122,7 @@ namespace PptxXML.Models
             var sldLayoutPartParser = new SlideLayoutPartParser();
             var bgImgFactory = new BackgroundImageFactory();
             var preSettings = new PreSettings(_xmlDoc.PresentationPart.Presentation);
-            var txtBodyBuilder = new TextBodyEx.TextBodyExBuilder(new ParagraphEx.ParagraphExBuilder());
-            var elFactory = new ElementFactory(new ShapeEx.Builder(bgImgFactory, txtBodyBuilder));
+            var elFactory = new ElementFactory(new ShapeEx.Builder(bgImgFactory));
             var groupExBuilder = new GroupEx.Builder(groupShapeTypeParser, elFactory);
 
             for (var slideIndex = 0; slideIndex < nbSlides; slideIndex++)

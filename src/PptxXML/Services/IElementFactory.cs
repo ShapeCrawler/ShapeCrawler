@@ -14,6 +14,6 @@ namespace PptxXML.Services
     {
         Element CreateGroupsElement(ElementCandidate ec, SlidePart sldPart, IPreSettings preSettings);
 
-        Element CreateRootSldElement(ElementCandidate ec, SlidePart sldPart, IPreSettings preSettings, Dictionary<int, Placeholders.Placeholder> phDic);
+        Element CreateRootSldElement(ElementCandidate ec, SlidePart sldPart, IPreSettings preSettings, Dictionary<int, Placeholders.PlaceholderEx> phDic);
     }
 }

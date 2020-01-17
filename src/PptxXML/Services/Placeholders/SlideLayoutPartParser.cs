@@ -27,11 +27,11 @@ namespace PptxXML.Services.Placeholders
         /// Gets placeholder data dictionary.
         /// </summary>
         /// <param name="sldLtPart"></param>
-        public Dictionary<int, Placeholder> GetPlaceholderDic(SlideLayoutPart sldLtPart)
+        public Dictionary<int, PlaceholderEx> GetPlaceholderDic(SlideLayoutPart sldLtPart)
         {
             Check.NotNull(sldLtPart, nameof(sldLtPart));
 
-            var resultDic = new Dictionary<int, Placeholder>();
+            var resultDic = new Dictionary<int, PlaceholderEx>();
 
             // Get OpenXmlCompositeElement instances have P.ShapeProperties.
             var layoutElements = sldLtPart.SlideLayout.CommonSlideData.ShapeTree.Elements<OpenXmlCompositeElement>()
@@ -54,7 +54,7 @@ namespace PptxXML.Services.Placeholders
                 }
 
                 // Gets X, Y, W, H and ShapeProperties
-                var placeholderData = new Placeholder
+                var placeholderData = new PlaceholderEx
                 {
                     X = t2d.Offset.X.Value,
                     Y = t2d.Offset.Y.Value,
