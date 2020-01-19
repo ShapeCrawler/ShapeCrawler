@@ -1,18 +1,15 @@
-src/pptxxml/.vs
-src/pptxxml/bin
-src/pptxxml/obj
+src/slidexml/.vs
+src/slidexml/bin
+src/slidexml/obj
 
-test/pptxxml.tests/obj
-test/pptxxml.tests/bin
+test/slidexml.tests/obj
+test/slidexml.tests/bin
 
-src/pptxXML.examples/bin
-src/pptxXML.examples/obj
+src/slidexml.examples/bin
+src/slidexml.examples/obj
 
 .vs/
 
 
-PptxXML.Examples/bin/Debug/netcoreapp3.1/
-
-PptxXML.Examples/obj/Debug/netcoreapp3.1/
-
-PptxXML.Examples/obj/
+slidexml.Examples/bin/
+slidexml.Examples/obj/
