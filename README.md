@@ -13,13 +13,35 @@ To install PptxXML, run the following command in the Package Manager Console
 PM> Install-Package SlideXML
 ```
 ### Usage
+```
+//Opens presentation from the file path
+using var presentation = new PresentationSL(@"c:\file.pptx");
 
+//Gets the slide collection
+var slides = presentation.Slides; 
+
+//Gets number of slides
+var numSlides = slides.Count(); 
+
+//Gets the shape collection of the first slide
+var shapes = slides[0].Shapes; 
+
+//Prints texts of TextBox shapes on the Debug console
+foreach (var sp in shapes)
+{
+    if (sp.Type == ShapeType.TextBox)
+    {
+        var textBox = sp as TextBoxSL;
+        Debug.WriteLine(textBox.TextBody.Text);
+    }
+}
+```
 ## Support
 * If you have "how-to" questions please post [Stack Overflow](https://stackoverflow.com/) with **slidexml** tag.
 * If you get an exception while work with the library's API, then create an issue. You also can send an email message to theadamo86@gmail.com with "SlideXML" subject.
 
 ## Author
-**Adam Shakhabov** – [adamshakhabov](https://www.linkedin.com/in/adamshakhabov)
+**Adam Shakhabov** â€“ [adamshakhabov](https://www.linkedin.com/in/adamshakhabov)
 
 ## License
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
