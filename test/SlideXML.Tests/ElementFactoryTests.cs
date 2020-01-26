@@ -30,21 +30,22 @@ namespace SlideXML.Tests
             var stubEc = new ElementCandidate
             {
                 CompositeElement = stubXmlShape,
-                ElementType = ElementType.Shape
+                ElementType = ShapeType.AutoShape
             };
-            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
-            var stubPhDic = new Dictionary<int, PlaceholderEx>();
+            var mockPhService = Substitute.For<IPlaceholderService>();
+            var creator = new ElementFactory(sldPart);
+            var stubPhDic = new Dictionary<int, PlaceholderSL>();
             var mockPreSetting = Substitute.For<IPreSettings>();
 
             // ACT
-            var element = creator.CreateRootSldElement(stubEc, sldPart, mockPreSetting, stubPhDic);
+            var element = creator.CreateShape(stubEc, mockPreSetting);
 
             // CLEAN
             doc.Dispose();
             ms.Dispose();
 
             // ASSERT
-            Assert.Equal(ElementType.Shape, element.Type);
+            Assert.Equal(ShapeType.AutoShape, element.Type);
             Assert.Equal(3291840, element.X);
             Assert.Equal(274320, element.Y);
             Assert.Equal(1143000, element.Width);
@@ -62,21 +63,21 @@ namespace SlideXML.Tests
             var stubEc = new ElementCandidate
             {
                 CompositeElement = stubXmlPic,
-                ElementType = ElementType.Picture
+                ElementType = ShapeType.Picture
             };
-            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
-            var stubPhDic = new Dictionary<int, PlaceholderEx>();
+            var mockPhService = Substitute.For<IPlaceholderService>();
+            var creator = new ElementFactory(sldPart);
             var mockPreSettings = Substitute.For<IPreSettings>();
 
             // ACT
-            var element = creator.CreateRootSldElement(stubEc, sldPart, mockPreSettings, stubPhDic);
+            var element = creator.CreateShape(stubEc, mockPreSettings);
 
             // CLEAN
             doc.Dispose();
             ms.Dispose();
 
             // ASSERT
-            Assert.Equal(ElementType.Picture, element.Type);
+            Assert.Equal(ShapeType.Picture, element.Type);
             Assert.Equal(4663440, element.X);
             Assert.Equal(1005840, element.Y);
             Assert.Equal(2315880, element.Width);
@@ -94,21 +95,21 @@ namespace SlideXML.Tests
             var stubEc = new ElementCandidate
             {
                 CompositeElement = stubGrFrame,
-                ElementType = ElementType.Table
+                ElementType = ShapeType.Table
             };
-            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
-            var stubPhDic = new Dictionary<int, PlaceholderEx>();
+            var mockPhService = Substitute.For<IPlaceholderService>();
+            var creator = new ElementFactory(sldPart);
             var mockPreSettings = Substitute.For<IPreSettings>();
 
             // ACT
-            var element = creator.CreateRootSldElement(stubEc, sldPart, mockPreSettings, stubPhDic);
+            var element = creator.CreateShape(stubEc, mockPreSettings);
 
             // CLEAN
             doc.Dispose();
             ms.Dispose();
 
             // ASSERT
-            Assert.Equal(ElementType.Table, element.Type);
+            Assert.Equal(ShapeType.Table, element.Type);
             Assert.Equal(453240, element.X);
             Assert.Equal(3417120, element.Y);
             Assert.Equal(5075640, element.Width);
@@ -126,21 +127,22 @@ namespace SlideXML.Tests
             var stubEc = new ElementCandidate
             {
                 CompositeElement = stubGrFrame,
-                ElementType = ElementType.Chart
+                ElementType = ShapeType.Chart
             };
-            var creator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
-            var stubPhDic = new Dictionary<int, PlaceholderEx>();
+            var mockPhService = Substitute.For<IPlaceholderService>();
+            var creator = new ElementFactory(sldPart);
+            var stubPhDic = new Dictionary<int, PlaceholderSL>();
             var mockPreSettings = Substitute.For<IPreSettings>();
 
             // ACT
-            var element = creator.CreateRootSldElement(stubEc, sldPart, mockPreSettings, stubPhDic);
+            var element = creator.CreateShape(stubEc, mockPreSettings);
 
             // CLEAN
             doc.Dispose();
             ms.Dispose();
 
             // ASSERT
-            Assert.Equal(ElementType.Chart, element.Type);
+            Assert.Equal(ShapeType.Chart, element.Type);
             Assert.Equal(453241, element.X);
             Assert.Equal(752401, element.Y);
             Assert.Equal(2672732, element.Width);

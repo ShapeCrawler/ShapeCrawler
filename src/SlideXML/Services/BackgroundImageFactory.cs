@@ -8,17 +8,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace SlideXML.Services
 {
     /// <summary>
-    /// Provides APIs to parse background images.
-    /// </summary>
-    public interface IBackgroundImageFactory
-    {
-        ImageEx CreateBackgroundSlide(SlidePart sldPart);
-
-        ImageEx CreateBackgroundShape(SlidePart sldPart, P.Shape pShape);
-    }
-
-
-    /// <summary>
     /// Represents a background <see cref="ImageEx"/> instance factory.
     /// </summary>
     public class BackgroundImageFactory : IBackgroundImageFactory

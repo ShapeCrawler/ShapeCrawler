@@ -8,14 +8,14 @@ namespace SlideXML.Models.Elements
     /// Represents an OLE object on a slide.
     /// </summary>
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public class OLEObject: Element
+    public class OleObjectSL
     {
         #region Constructors
 
         /// <summary>
-        /// Initialise a new instance of the <see cref="OLEObject"/> class.
+        /// Initialise a new instance of the <see cref="OleObjectSL"/> class.
         /// </summary>
-        public OLEObject(OpenXmlCompositeElement compositeElement) : base(ElementType.OLEObject, compositeElement)
+        public OleObjectSL(OpenXmlCompositeElement ce)
         {
 
         }

@@ -18,12 +18,8 @@ namespace SlideXML.Extensions
         #endregion Fields
 
         /// <summary>
-        /// Parses <see cref="P.PlaceholderValues.Title"/> and <see cref="P.PlaceholderValues.CenteredTitle"/> placeholders.
+        /// Returns placeholder index if it exists or null.
         /// </summary>
-        /// <param name="xmlCompositeElement">
-        /// An element which can be located on slide or master slide.
-        /// </param>
-        /// <returns>Placeholder index or null.</returns>
         public static uint? GetPlaceholderIndex(this OpenXmlCompositeElement xmlCompositeElement)
         {
             var ph = xmlCompositeElement.Descendants<P.PlaceholderShape>().FirstOrDefault();
@@ -32,28 +28,35 @@ namespace SlideXML.Extensions
                 return null;
             }
 
-            // Simple title and centered title placeholders were united.
-            var phType = ph.Type;
-            if (phType != null)
-            {
-                if (phType == P.PlaceholderValues.Title || phType == P.PlaceholderValues.CenteredTitle)
-                {
-                    return TitleIndexValue;
-                }
-                if (phType == P.PlaceholderValues.SubTitle)
-                {
-                    return SubtitleIndexValue;
-                }
-            }
-
             var index = ph.Index;
-
             if (index == null)
             {
                 return null;
             }
 
             return index.Value;
+        }
+
+        /// <summary>
+        /// Returns placeholder type if it exists or null.
+        /// </summary>
+        public static P.PlaceholderValues? GetPlaceholderType(this OpenXmlCompositeElement xmlCompositeElement)
+        {
+            var ph = xmlCompositeElement.Descendants<P.PlaceholderShape>().FirstOrDefault();
+            var phType = ph?.Type;
+
+            if (phType == null)
+            {
+                return null;
+            }
+
+            // Simple title and centered title placeholders were united
+            if (phType == P.PlaceholderValues.Title || phType == P.PlaceholderValues.CenteredTitle)
+            {
+                return P.PlaceholderValues.Title;
+            }
+
+            return phType;
         }
 
         /// <summary>

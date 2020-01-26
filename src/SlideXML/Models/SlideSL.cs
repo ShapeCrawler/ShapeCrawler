@@ -15,21 +15,18 @@ namespace SlideXML.Models
     /// <summary>
     /// Represents a slide.
     /// </summary>
-    public class SlideEx
+    public class SlideSL
     {
         #region Fields
 
         private readonly SlidePart _xmlSldPart;
 
-        private List<Element> _elements; //TODO: use capacity
+        private List<ShapeSL> _shapes; //TODO: use capacity
         private ImageEx _backgroundImage;
 
         #region Dependencies
 
-        private readonly IElementFactory _elFactory;
-        private readonly IGroupShapeTypeParser _shapeTreeParser; // may be better move into _elFactory
-        private readonly IGroupExBuilder _groupBuilder;
-        private readonly ISlideLayoutPartParser _sldLayoutPartParser;
+        private readonly IGroupShapeTypeParser _groupShapeTypeParser; // may be better move into _elFactory
         private readonly IBackgroundImageFactory _bgImgFactory;
         private readonly IPreSettings _preSettings;
 
@@ -42,16 +39,16 @@ namespace SlideXML.Models
         /// <summary>
         /// Gets elements.
         /// </summary>
-        public IList<Element> Elements
+        public IList<ShapeSL> Shapes
         {
             get
             {
-                if (_elements == null)
+                if (_shapes == null)
                 {
                     InitElements();
                 }
 
-                return _elements;
+                return _shapes;
             }
         }
 
@@ -76,31 +73,22 @@ namespace SlideXML.Models
         #region Constructors
 
         /// <summary>
-        /// Initialize a new instance of the <see cref="SlideEx"/> class.
+        /// Initialize a new instance of the <see cref="SlideSL"/> class.
         /// </summary>
         /// TODO: use builder instead public constructor
-        public SlideEx(SlidePart xmlSldPart, 
-                       int sldNumber, 
-                       IElementFactory elFactory, 
+        public SlideSL(SlidePart xmlSldPart, 
+                       int sldNumber,
                        IGroupShapeTypeParser shapeTreeParser,
-                       IGroupExBuilder groupBuilder,
-                       ISlideLayoutPartParser sldLayoutPartParser,
                        IBackgroundImageFactory bgImgFactory,
                        IPreSettings preSettings)
         {
             Check.NotNull(xmlSldPart, nameof(xmlSldPart));
             Check.IsPositive(sldNumber, nameof(sldNumber));
-            Check.NotNull(elFactory, nameof(elFactory));
             Check.NotNull(shapeTreeParser, nameof(shapeTreeParser));
-            Check.NotNull(groupBuilder, nameof(groupBuilder));
-            Check.NotNull(sldLayoutPartParser, nameof(sldLayoutPartParser));
             Check.NotNull(bgImgFactory, nameof(bgImgFactory));
             _xmlSldPart = xmlSldPart;
             Number = sldNumber;
-            _elFactory = elFactory;
-            _shapeTreeParser = shapeTreeParser;
-            _groupBuilder = groupBuilder;
-            _sldLayoutPartParser = sldLayoutPartParser;
+            _groupShapeTypeParser = shapeTreeParser;
             _bgImgFactory = bgImgFactory;
             _preSettings = preSettings;
         }
@@ -112,16 +100,21 @@ namespace SlideXML.Models
         private void InitElements()
         {
             // Slide
-            var shTree = _xmlSldPart.Slide.CommonSlideData.ShapeTree;
-            var sldCandidates = _shapeTreeParser.CreateCandidates(shTree);
-            var phDic = _sldLayoutPartParser.GetPlaceholderDic(_xmlSldPart.SlideLayoutPart);
-            _elements = new List<Element>(sldCandidates.Count());
-            foreach (var ec in sldCandidates)
+            var elFactory = new ElementFactory(_xmlSldPart);
+            var sldCandidates = _groupShapeTypeParser.CreateCandidates(_xmlSldPart.Slide.CommonSlideData.ShapeTree);
+            _shapes = new List<ShapeSL>(sldCandidates.Count());
+            foreach (var candidate in sldCandidates)
             {
-                var newEl = ec.ElementType.Equals(ElementType.Group)
-                    ? _groupBuilder.Build((P.GroupShape)ec.CompositeElement, _xmlSldPart, _preSettings)
-                    : _elFactory.CreateRootSldElement(ec, _xmlSldPart, _preSettings, phDic);
-                _elements.Add(newEl);
+                ShapeSL newShape;
+                if (candidate.ElementType == ShapeType.Group)
+                {
+                    newShape = elFactory.CreateGroupShape(candidate.CompositeElement, _preSettings);
+                }
+                else
+                {
+                    newShape = elFactory.CreateShape(candidate, _preSettings);
+                }
+                _shapes.Add(newShape);
             }
         }
 

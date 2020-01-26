@@ -28,7 +28,6 @@ namespace SlideXML.Services
             // Gets all element elements
             var allElements = groupTypeShape.Elements<OpenXmlCompositeElement>();
 
-            // Gets elements includes supported placeholder types
             var supportElements = allElements.Where(e => e.GetPlaceholderIndex() == null);
 
             // OLE Objects
@@ -36,7 +35,7 @@ namespace SlideXML.Services
             var oleCandidates = oleFrames.Select(ce => new ElementCandidate
             {
                 CompositeElement = ce,
-                ElementType = ElementType.OLEObject
+                ElementType = ShapeType.OLEObject
             });
 
             // FILTER PICTURES
@@ -50,7 +49,7 @@ namespace SlideXML.Services
             var picCandidates = xmlPictures.Select(ce => new ElementCandidate
             {
                 CompositeElement = ce,
-                ElementType = ElementType.Picture
+                ElementType = ShapeType.Picture
             });
 
             // Shape candidates
@@ -59,7 +58,7 @@ namespace SlideXML.Services
             var shapeCandidates = xmlShapes.Select(ce => new ElementCandidate
             {
                 CompositeElement = ce,
-                ElementType = ElementType.Shape
+                ElementType = ShapeType.AutoShape
             });
 
             // Table candidates
@@ -71,7 +70,7 @@ namespace SlideXML.Services
             var tableCandidates = xmlTables.Select(ce => new ElementCandidate
             {
                 CompositeElement = ce,
-                ElementType = ElementType.Table
+                ElementType = ShapeType.Table
             });
 
             // Chart candidates
@@ -83,7 +82,7 @@ namespace SlideXML.Services
             var chartCandidates = xmlCharts.Select(ce => new ElementCandidate
             {
                 CompositeElement = ce,
-                ElementType = ElementType.Chart
+                ElementType = ShapeType.Chart
             });
 
             var allCandidates = picCandidates.Union(shapeCandidates).Union(tableCandidates).Union(chartCandidates).Union(oleCandidates);
@@ -94,7 +93,7 @@ namespace SlideXML.Services
                 var xmlGroupCandidates = supportElements.Where(e => e is P.GroupShape).Select(ce => new ElementCandidate
                 {
                     CompositeElement = ce,
-                    ElementType = ElementType.Group
+                    ElementType = ShapeType.Group
                 });
                 allCandidates = allCandidates.Union(xmlGroupCandidates);
             }

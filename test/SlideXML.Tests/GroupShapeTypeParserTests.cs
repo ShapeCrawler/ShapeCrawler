@@ -29,11 +29,11 @@ namespace SlideXML.Tests
             ms.Dispose();
 
             // ASSERT
-            Assert.Single(candidates.Where(c => c.ElementType.Equals(ElementType.Shape)));
-            Assert.Single(candidates.Where(c => c.ElementType.Equals(ElementType.Picture)));
-            Assert.Single(candidates.Where(c => c.ElementType.Equals(ElementType.Table)));
-            Assert.Single(candidates.Where(c => c.ElementType.Equals(ElementType.Chart)));
-            Assert.Single(candidates.Where(c => c.ElementType.Equals(ElementType.Group)));
+            Assert.Single(candidates.Where(c => c.ElementType.Equals(ShapeType.AutoShape)));
+            Assert.Single(candidates.Where(c => c.ElementType.Equals(ShapeType.Picture)));
+            Assert.Single(candidates.Where(c => c.ElementType.Equals(ShapeType.Table)));
+            Assert.Single(candidates.Where(c => c.ElementType.Equals(ShapeType.Chart)));
+            Assert.Single(candidates.Where(c => c.ElementType.Equals(ShapeType.Group)));
         }
     }
 }

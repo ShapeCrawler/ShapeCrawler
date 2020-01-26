@@ -14,12 +14,13 @@ namespace SlideXML.Models
     /// <summary>
     /// Represents a presentation.
     /// </summary>
-    public class PresentationEx : IPresentationEx
+    public class PresentationSL : IPresentationSL
     {
         #region Fields
 
         private readonly PresentationDocument _xmlDoc;
-        private readonly MemoryStream _pptxFileStream;
+        private readonly MemoryStream _pptxMemoryStream;
+        private readonly FileStream _pptxFileStream;
         private ISlideCollection _slides;
 
         #endregion Fields
@@ -57,10 +58,10 @@ namespace SlideXML.Models
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationEx"/> class by pptx-file stream.
+        /// Initializes a new instance of the <see cref="PresentationSL"/> class by pptx-file stream.
         /// </summary>
         /// <param name="pptxFileStream"></param>
-        public PresentationEx(Stream pptxFileStream)
+        public PresentationSL(Stream pptxFileStream)
         {
             pptxFileStream.ThrowIfNull(nameof(pptxFileStream));
             if (pptxFileStream.CanSeek)
@@ -71,14 +72,24 @@ namespace SlideXML.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationEx"/> class by pptx-file byte array.
+        /// Initializes a new instance of the <see cref="PresentationSL"/> class by pptx-file byte array.
         /// </summary>
         /// <param name="pptxFileBytes"></param>
-        public PresentationEx(byte[] pptxFileBytes)
+        public PresentationSL(byte[] pptxFileBytes)
         {
             Check.NotNull(pptxFileBytes, nameof(pptxFileBytes));
-            _pptxFileStream = new MemoryStream();
-            _pptxFileStream.Write(pptxFileBytes, 0, pptxFileBytes.Length);
+            _pptxMemoryStream = new MemoryStream();
+            _pptxMemoryStream.Write(pptxFileBytes, 0, pptxFileBytes.Length);
+            _xmlDoc = PresentationDocument.Open(_pptxMemoryStream, true);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PresentationSL"/> class by pptx-file path.
+        /// </summary>
+        public PresentationSL(string pptxFilePath)
+        {
+            Check.NotEmpty(pptxFilePath, nameof(pptxFilePath));
+            _pptxFileStream = File.Open(pptxFilePath, FileMode.Open);
             _xmlDoc = PresentationDocument.Open(_pptxFileStream, true);
         }
 
@@ -104,6 +115,7 @@ namespace SlideXML.Models
         public void Dispose()
         {
             _xmlDoc.Dispose(); // saves and closes
+            _pptxMemoryStream?.Dispose();
             _pptxFileStream?.Dispose();
         }
 
@@ -117,23 +129,17 @@ namespace SlideXML.Models
             var nbSlides = presentationPart.SlideParts.Count();
             _slides = new SlideCollection(_xmlDoc, nbSlides);
             var groupShapeTypeParser = new GroupShapeTypeParser(); // TODO: inject via DI Container
-            var sldLayoutPartParser = new SlideLayoutPartParser();
             var bgImgFactory = new BackgroundImageFactory();
             var preSettings = new PreSettings(_xmlDoc.PresentationPart.Presentation);
-            var elFactory = new ElementFactory(new ShapeEx.Builder(bgImgFactory));
-            var groupExBuilder = new GroupEx.Builder(groupShapeTypeParser, elFactory);
 
             for (var slideIndex = 0; slideIndex < nbSlides; slideIndex++)
             {
                 SlidePart slidePart = presentationPart.GetSlidePartByIndex(slideIndex);
-                var newSldEx = new SlideEx(slidePart, 
-                                   slideIndex + 1, 
-                                           elFactory,
-                                           groupShapeTypeParser, 
-                                           groupExBuilder, 
-                                           sldLayoutPartParser, 
-                                           bgImgFactory,
-                                           preSettings);
+                var newSldEx = new SlideSL(slidePart, 
+                                   slideIndex + 1,
+                                   groupShapeTypeParser,
+                                   bgImgFactory,
+                                   preSettings);
                 _slides.Add(newSldEx);
             }
         }

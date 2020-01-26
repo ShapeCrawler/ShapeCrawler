@@ -6,7 +6,7 @@ using Xunit;
 namespace SlideXML.Tests
 {
     /// <summary>
-    /// Represents a unit tests of <see cref="SlideEx"/> object.
+    /// Represents a unit tests of <see cref="SlideSL"/> object.
     /// </summary>
     public class SlideTests
     {
@@ -14,8 +14,8 @@ namespace SlideXML.Tests
         public void ElementsNumber()
         {
             var ms = new MemoryStream(Properties.Resources._002);
-            var pre = new PresentationEx(ms);
-            var allElements = pre.Slides.First().Elements;
+            var pre = new PresentationSL(ms);
+            var allElements = pre.Slides.First().Shapes;
 
             // ACT
             var elementsNumber = allElements.Count;

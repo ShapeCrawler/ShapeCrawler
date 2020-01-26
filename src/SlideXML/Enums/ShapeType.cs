@@ -3,16 +3,17 @@
 namespace SlideXML.Enums
 {
     /// <summary>
-    /// Represents the type of a element.
+    /// Enumerations of shape type.
     /// </summary>
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public enum ElementType
+    public enum ShapeType
     {
         Chart,
         Group,
         Picture,
-        Shape,
+        AutoShape,
         Table,
-        OLEObject
+        OLEObject,
+        Placeholder
     }
 }

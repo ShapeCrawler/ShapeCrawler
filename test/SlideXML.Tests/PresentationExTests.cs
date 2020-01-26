@@ -8,7 +8,7 @@ using Xunit;
 namespace SlideXML.Tests
 {
     /// <summary>
-    /// Represents tests of the <see cref="PresentationEx"/> class.
+    /// Represents tests of the <see cref="PresentationSL"/> class.
     /// </summary>
     public class PresentationExTests
     {
@@ -16,7 +16,7 @@ namespace SlideXML.Tests
         public void SlidesNumber_Test()
         {
             var ms = new MemoryStream(Properties.Resources._001);
-            var pre = new PresentationEx(ms);
+            var pre = new PresentationSL(ms);
 
             // ACT
             var sldNumber = pre.Slides.Count();
@@ -41,16 +41,16 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var ms = new MemoryStream(Properties.Resources._007_2_slides);
-            var pre = new PresentationEx(ms);
+            var pre = new PresentationSL(ms);
 
             // ACT
             var slide1 = pre.Slides.First();
             pre.Slides.Remove(slide1);
             pre.Dispose();
 
-            var pre2 = new PresentationEx(ms);
+            var pre2 = new PresentationSL(ms);
             var numSlides = pre2.Slides.Count();
-            var numElements = pre2.Slides.Single().Elements.Count;
+            var numElements = pre2.Slides.Single().Shapes.Count;
             pre2.Dispose();
             ms.Dispose();
 
@@ -63,10 +63,10 @@ namespace SlideXML.Tests
         public void ShapeTextBody_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._008);
+            var pre = new PresentationSL(Properties.Resources._008);
 
             // ACT
-            var shapes = pre.Slides.Single().Elements.OfType<ShapeEx>();
+            var shapes = pre.Slides.Single().Shapes.OfType<ShapeSL>();
             var sh36 = shapes.Single(e => e.Id == 36);
             var sh37 = shapes.Single(e => e.Id == 37);
             pre.Dispose();
@@ -82,10 +82,10 @@ namespace SlideXML.Tests
         public void SlideElementsCount_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._003);
+            var pre = new PresentationSL(Properties.Resources._003);
 
             // ACT
-            var numberElements = pre.Slides.Single().Elements.Count;
+            var numberElements = pre.Slides.Single().Shapes.Count;
             pre.Dispose();
 
             // ASSERT
@@ -93,13 +93,13 @@ namespace SlideXML.Tests
         }
 
         [Fact]
-        public void ShapePlaceholderTest()
+        public void TextBox_Placeholder_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._006_1_slides);
+            var pre = new PresentationSL(Properties.Resources._006_1_slides);
 
             // ACT
-            var shapePlaceholder = pre.Slides.Single().Elements.Single();
+            var shapePlaceholder = pre.Slides.Single().Shapes.Single();
             pre.Dispose();
 
             // ASSERT
@@ -113,12 +113,12 @@ namespace SlideXML.Tests
         public void GroupsElementPropertiesTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = new PresentationSL(Properties.Resources._009);
 
             // ACT
             var slides = pre.Slides;
-            var groupElement = (GroupEx)pre.Slides[1].Elements.Single(x => x.Type.Equals(ElementType.Group));
-            var el3 = groupElement.Elements.Single(x => x.Id.Equals(5));
+            var groupElement = pre.Slides[1].Shapes.Single(x => x.Type.Equals(ShapeType.Group));
+            var el3 = groupElement.Group.Shapes.Single(x => x.Id.Equals(5));
             pre.Dispose();
 
             // ASSERT
@@ -131,11 +131,11 @@ namespace SlideXML.Tests
         public void SecondSlideElementsNumberTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = new PresentationSL(Properties.Resources._009);
 
             // ACT
-            var elNumber1 = pre.Slides[0].Elements.Count;
-            var elNumber2 = pre.Slides[1].Elements.Count;
+            var elNumber1 = pre.Slides[0].Shapes.Count;
+            var elNumber2 = pre.Slides[1].Shapes.Count;
             pre.Dispose();
 
             // ASSERT
@@ -147,10 +147,10 @@ namespace SlideXML.Tests
         public void SlideElementsDoNotThrowsExceptionTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = new PresentationSL(Properties.Resources._009);
 
             // ACT
-            var elements = pre.Slides[0].Elements;
+            var elements = pre.Slides[0].Shapes;
 
             pre.Dispose();
         }
@@ -159,11 +159,11 @@ namespace SlideXML.Tests
         public void PictureEx_BytesTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
-            var picEx = (PictureEx) pre.Slides[1].Elements.Single(e => e.Id.Equals(3));
+            var pre = new PresentationSL(Properties.Resources._009);
+            var picEx = pre.Slides[1].Shapes.Single(e => e.Id.Equals(3));
 
             // ACT
-            var bytes = picEx.ImageEx.Bytes;
+            var bytes = picEx.Picture.ImageEx.Bytes;
             pre.Dispose();
 
             // ASSERT
@@ -174,15 +174,15 @@ namespace SlideXML.Tests
         public void PictureEx_SetImageTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
-            var picEx = (PictureEx)pre.Slides[1].Elements.Single(e => e.Id.Equals(3));
+            var pre = new PresentationSL(Properties.Resources._009);
+            var picEx = pre.Slides[1].Shapes.Single(e => e.Id.Equals(3));
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
-            var sizeBefore = picEx.ImageEx.Bytes.Length;
+            var sizeBefore = picEx.Picture.ImageEx.Bytes.Length;
 
             // ACT
-            picEx.ImageEx.SetImage(testImage2Stream);
+            picEx.Picture.ImageEx.SetImage(testImage2Stream);
 
-            var sizeAfter = picEx.ImageEx.Bytes.Length;
+            var sizeAfter = picEx.Picture.ImageEx.Bytes.Length;
             pre.Dispose();
             testImage2Stream.Dispose();
 
@@ -194,8 +194,8 @@ namespace SlideXML.Tests
         public void ShapeEx_BackgroundImage_BytesTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
-            var shapeEx = (ShapeEx)pre.Slides[2].Elements.Single(e => e.Id.Equals(4));
+            var pre = new PresentationSL(Properties.Resources._009);
+            var shapeEx = (ShapeSL)pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
 
             // ACT
             var length = shapeEx.BackgroundImage.Bytes.Length;
@@ -208,8 +208,8 @@ namespace SlideXML.Tests
         public void ShapeEx_BackgroundImage_SetImageTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
-            var shapeEx = (ShapeEx)pre.Slides[2].Elements.Single(e => e.Id.Equals(4));
+            var pre = new PresentationSL(Properties.Resources._009);
+            var shapeEx = (ShapeSL)pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
             var sizeBefore = shapeEx.BackgroundImage.Bytes.Length;
 
@@ -228,8 +228,8 @@ namespace SlideXML.Tests
         public void ShapeEx_BackgroundImage_IsNullTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
-            var shapeEx = (ShapeEx)pre.Slides[1].Elements.Single(e => e.Id.Equals(6));
+            var pre = new PresentationSL(Properties.Resources._009);
+            var shapeEx = (ShapeSL)pre.Slides[1].Shapes.Single(e => e.Id.Equals(6));
 
             // ACT
             var bImage = shapeEx.BackgroundImage;
@@ -242,10 +242,10 @@ namespace SlideXML.Tests
         public void OLEObjects_ParseTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = new PresentationSL(Properties.Resources._009);
 
             // ACT
-            var oleNumbers = pre.Slides[1].Elements.Count(e => e.Type.Equals(ElementType.OLEObject));
+            var oleNumbers = pre.Slides[1].Shapes.Count(e => e.Type.Equals(ShapeType.OLEObject));
 
             // ASSERT
             Assert.Equal(2, oleNumbers);
@@ -255,10 +255,10 @@ namespace SlideXML.Tests
         public void OLEObject_NameTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = new PresentationSL(Properties.Resources._009);
 
             // ACT
-            var name = pre.Slides[1].Elements.Single(e => e.Id.Equals(8)).Name;
+            var name = pre.Slides[1].Shapes.Single(e => e.Id.Equals(8)).Name;
 
             // ASSERT
             Assert.Equal("Object 2", name);
@@ -268,7 +268,7 @@ namespace SlideXML.Tests
         public void SlideEx_Background_IsNullTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = new PresentationSL(Properties.Resources._009);
 
             // ACT
             var bg = pre.Slides[1].BackgroundImage;
@@ -281,7 +281,7 @@ namespace SlideXML.Tests
         public void SlideEx_Background_ChangeTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = new PresentationSL(Properties.Resources._009);
             var bg = pre.Slides[0].BackgroundImage;
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
             var sizeBefore = bg.Bytes.Length;
@@ -301,8 +301,8 @@ namespace SlideXML.Tests
         public void NumberParagraphAndPortionTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
-            var shape = (ShapeEx)pre.Slides[2].Elements.SingleOrDefault(e => e.Id.Equals(2));
+            var pre = new PresentationSL(Properties.Resources._009);
+            var shape = (ShapeSL)pre.Slides[2].Shapes.SingleOrDefault(e => e.Id.Equals(2));
             var paragraphs = shape.TextBody.Paragraphs;
 
             // ACT
@@ -325,7 +325,7 @@ namespace SlideXML.Tests
         public void SlideWidthAndHeightTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = new PresentationSL(Properties.Resources._009);
 
             // ACT
             var w = pre.SlideWidth;
@@ -339,36 +339,54 @@ namespace SlideXML.Tests
         }
 
         [Fact]
-        public void Placeholder_FontHeightTest()
+        public void TextBox_Placeholder_FontHeight_Case1_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
-            var elements = pre.Slides[3].Elements;
-            var titlePlaceholder = (ShapeEx)elements.Single(e => e.Id.Equals(2));
-            var subTitlePlaceholder = (ShapeEx)elements.Single(e => e.Id.Equals(3));
+            var pre = new PresentationSL(Properties.Resources._009);
+            var elements = pre.Slides[3].Shapes;
+            var tb2TitlePh = (ShapeSL)elements.Single(e => e.Id.Equals(2));
+            var tb3SubTitlePh = (ShapeSL)elements.Single(e => e.Id.Equals(3));
 
             // ACT
-            var fhTitle = titlePlaceholder.TextBody.Paragraphs.Single().Portions.Single().FontHeight;
-            var fhSubTitle = subTitlePlaceholder.TextBody.Paragraphs.Single().Portions.Single().FontHeight;
+            var fhTitle = tb2TitlePh.TextBody.Paragraphs.Single().Portions.Single().FontHeight;
+            var text2 = tb2TitlePh.TextBody.Text;
+            var fhSubTitle = tb3SubTitlePh.TextBody.Paragraphs.Single().Portions.Single().FontHeight;
 
             pre.Dispose();
 
             // ASSERT
             Assert.Equal(4400, fhTitle);
             Assert.Equal(3200, fhSubTitle);
+            Assert.Equal("Title text", text2);
+        }
+
+        [Fact]
+        public void TextBox_Placeholder_FontHeight_Case2_Test()
+        {
+            // ARRANGE
+            var pre010 = new PresentationSL(Properties.Resources._010);
+            var pre010TextBox = (ShapeSL)pre010.Slides.First().Shapes.First();
+
+            // ACT
+            var fh = pre010TextBox.TextBody.Paragraphs.First().Portions.First().FontHeight;
+
+            pre010.Dispose();
+
+            // ASSERT
+            Assert.Equal(1226, fh);
         }
 
         [Fact]
         public void TablesPropertiesTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
-            var elements = pre.Slides[2].Elements;
-            var tblEx = (TableEx)elements.Single(e => e.Id.Equals(3));
-            var firstRow = tblEx.Rows.First();
+            var pre = new PresentationSL(Properties.Resources._009);
+            var elements = pre.Slides[2].Shapes;
+            var tblEx = elements.Single(e => e.Id.Equals(3));
+            var firstRow = tblEx.Table.Rows.First();
 
             // ACT
-            var numRows = tblEx.Rows.Count;
+            var numRows = tblEx.Table.Rows.Count;
             var numCells = firstRow.Cells.Count;
             var numParagraphs = firstRow.Cells.First().TextBody.Paragraphs.Count;
             var cellTxt = firstRow.Cells.First().TextBody.Text;
@@ -390,22 +408,22 @@ namespace SlideXML.Tests
         public void ChartPropertiesTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
-            var sld3Elements = pre.Slides[2].Elements;
-            var sld5Elements = pre.Slides[4].Elements;
-            var chartEx6 = (ChartEx)sld3Elements.Single(e => e.Id.Equals(6));
-            var chartEx7 = (ChartEx)sld3Elements.Single(e => e.Id.Equals(7));
-            var sld5Chart6 = (ChartEx)sld5Elements.Single(e => e.Id.Equals(6));
-            var sld5Chart3 = (ChartEx)sld5Elements.Single(e => e.Id.Equals(3));
-            var sld5Chart5 = (ChartEx)sld5Elements.Single(e => e.Id.Equals(5));
+            var pre = new PresentationSL(Properties.Resources._009);
+            var sld3Elements = pre.Slides[2].Shapes;
+            var sld5Elements = pre.Slides[4].Shapes;
+            var chartEx6 = sld3Elements.Single(e => e.Id.Equals(6));
+            var chartEx7 = sld3Elements.Single(e => e.Id.Equals(7));
+            var sld5Chart6 = sld5Elements.Single(e => e.Id.Equals(6));
+            var sld5Chart3 = sld5Elements.Single(e => e.Id.Equals(3));
+            var sld5Chart5 = sld5Elements.Single(e => e.Id.Equals(5));
 
             // ACT
-            var chart7Title = chartEx7.Title;
-            var chart6Title = chartEx6.Title;
-            var chart7Type = chartEx7.Type;
-            var sld5Chart6Title = sld5Chart6.Title;
-            var sld5Chart3Title = sld5Chart3.Title;
-            var sld5Chart5Title = sld5Chart5.Title;
+            var chart7Title = chartEx7.Chart.Title;
+            var chart6Title = chartEx6.Chart.Title;
+            var chart7Type = chartEx7.Chart.Type;
+            var sld5Chart6Title = sld5Chart6.Chart.Title;
+            var sld5Chart3Title = sld5Chart3.Chart.Title;
+            var sld5Chart5Title = sld5Chart5.Chart.Title;
 
             pre.Dispose();
 
