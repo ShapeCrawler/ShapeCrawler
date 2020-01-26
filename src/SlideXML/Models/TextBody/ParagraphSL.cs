@@ -9,7 +9,7 @@ namespace SlideXML.Models.TextBody
     /// <summary>
     /// Represents a text paragraph.
     /// </summary>
-    public class ParagraphEx
+    public class ParagraphSL
     {
         #region Fields
 
@@ -59,11 +59,11 @@ namespace SlideXML.Models.TextBody
         #region Constructors
 
         /// <summary>
-        /// Initializes an instance of the <see cref="ParagraphEx"/> class.
+        /// Initializes an instance of the <see cref="ParagraphSL"/> class.
         /// </summary>
         /// <param name="elSetting"></param>
         /// <param name="aParagraph">A XML paragraph which contains a text.</param>
-        public ParagraphEx(ElementSettings elSetting, A.Paragraph aParagraph)
+        public ParagraphSL(ElementSettings elSetting, A.Paragraph aParagraph)
         {
             Check.NotNull(aParagraph, nameof(aParagraph));
             Check.NotNull(elSetting, nameof(elSetting));

@@ -11,11 +11,13 @@ namespace SlideXML.Models.Elements
     /// <summary>
     /// Represents a table element on a slide.
     /// </summary>
-    public class TableEx: Element
+    public class TableSL
     {
         #region Fields
 
         private List<RowEx> _rows;
+        private readonly P.GraphicFrame _xmlGrFrame;
+        private readonly ElementSettings _elSettings;
 
         #endregion Fields
 
@@ -39,9 +41,13 @@ namespace SlideXML.Models.Elements
         #region Constructors
 
         /// <summary>
-        /// Initialise an instance of <see cref="TableEx"/> class.
+        /// Initialise an instance of <see cref="TableSL"/> class.
         /// </summary>
-        public TableEx(P.GraphicFrame xmlGrFrame, ElementSettings elSettings) : base(ElementType.Table, xmlGrFrame, elSettings) { }
+        public TableSL(P.GraphicFrame xmlGrFrame, ElementSettings elSettings)
+        {
+            _xmlGrFrame = xmlGrFrame;
+            _elSettings = elSettings;
+        }
 
         #endregion Constructors
 
@@ -49,11 +55,11 @@ namespace SlideXML.Models.Elements
 
         private void ParseRows()
         {
-            var xmlRows = CompositeElement.Descendants<A.Table>().Single().Elements<A.TableRow>();
+            var xmlRows = _xmlGrFrame.Descendants<A.Table>().Single().Elements<A.TableRow>();
             _rows = new List<RowEx>(xmlRows.Count());
             foreach (var r in xmlRows)
             {
-                _rows.Add(new RowEx(r, ElementSettings));
+                _rows.Add(new RowEx(r, _elSettings));
             }
         }
 

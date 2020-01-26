@@ -21,13 +21,14 @@ namespace SlideXML.Tests
             // ARRANGE
             var xmlDoc = DocHelper.Open(Properties.Resources._001);
             var slides = new SlideCollection(xmlDoc);
-            var elementCreator = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
+            var mockPhService = Substitute.For<IPlaceholderService>();
             var treeParser = new GroupShapeTypeParser();
-            var builder = new GroupEx.Builder(treeParser, elementCreator);
             var bgImgFactory = new BackgroundImageFactory();
             var mockPreSettings = Substitute.For<IPreSettings>();
             var sldPart = xmlDoc.PresentationPart.SlideParts.First();
-            var newSlide = new SlideEx(sldPart, 1, elementCreator, treeParser, builder, new SlideLayoutPartParser(), bgImgFactory, mockPreSettings);
+            var elementCreator = new ElementFactory(sldPart);
+
+            var newSlide = new SlideSL(sldPart, 1, treeParser, bgImgFactory, mockPreSettings);
 
             // ACT
             slides.Add(newSlide);
@@ -50,7 +51,7 @@ namespace SlideXML.Tests
         public void Remove_Test1()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._007_2_slides);
+            var pre = new PresentationSL(Properties.Resources._007_2_slides);
             var slides = pre.Slides;
             var slide1 = slides.First();
 
@@ -75,7 +76,7 @@ namespace SlideXML.Tests
         public void Remove_Test2()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._006_1_slides);
+            var pre = new PresentationSL(Properties.Resources._006_1_slides);
             var slides = pre.Slides;
             var slide1 = slides.First();
 

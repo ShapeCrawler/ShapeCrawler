@@ -14,7 +14,7 @@ namespace SlideXML.Models.Elements
     /// <summary>
     /// Represents a chart.
     /// </summary>
-    public class ChartEx: Element
+    public class ChartSL
     {
         #region Fields
 
@@ -54,12 +54,13 @@ namespace SlideXML.Models.Elements
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChartEx"/> class.
+        /// Initializes a new instance of the <see cref="ChartSL"/> class.
         /// </summary>
-        public ChartEx(P.GraphicFrame grFrame, SlidePart sldPart) : base(ElementType.Chart, grFrame)
+        public ChartSL(P.GraphicFrame grFrame, SlidePart sldPart)
         {
             Check.NotNull(sldPart, nameof(sldPart));
             _sldPart = sldPart;
+            _xmlElement = grFrame;
 
             Init();
         }
@@ -69,7 +70,7 @@ namespace SlideXML.Models.Elements
         private void Init()
         {
             // Get reference
-            var chartRef = CompositeElement.Descendants<C.ChartReference>().Single();
+            var chartRef = _xmlElement.Descendants<C.ChartReference>().Single();
 
             // Get chart part by reference
             var chPart = _sldPart.GetPartById(chartRef.Id) as ChartPart;

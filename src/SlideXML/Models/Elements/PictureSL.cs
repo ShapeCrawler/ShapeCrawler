@@ -10,12 +10,13 @@ namespace SlideXML.Models.Elements
     /// <summary>
     /// Represents a picture element.
     /// </summary>
-    public class PictureEx: Element
+    public class PictureSL
     {
         #region Fields
 
         private readonly SlidePart _sldPart;
         private ImageEx _imageEx;
+        private readonly OpenXmlCompositeElement _compositeElement;
 
         #endregion Fields
 
@@ -30,7 +31,7 @@ namespace SlideXML.Models.Elements
             {
                 if (_imageEx == null)
                 {
-                    var pPicture = (P.Picture)CompositeElement;
+                    var pPicture = (P.Picture)_compositeElement;
                     var pBlipFill = pPicture.GetFirstChild<P.BlipFill>();
                     var blipRelateId = pBlipFill?.Blip?.Embed?.Value;
                     if (blipRelateId != null)
@@ -52,12 +53,13 @@ namespace SlideXML.Models.Elements
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of <see cref="PictureEx"/> class.
+        /// Initializes a new instance of <see cref="PictureSL"/> class.
         /// </summary>
-        public PictureEx(SlidePart sldPart, OpenXmlCompositeElement compositeElement) : base(ElementType.Picture, compositeElement)
+        public PictureSL(SlidePart sldPart, OpenXmlCompositeElement compositeElement)
         {
             Check.NotNull(sldPart, nameof(sldPart));
             _sldPart = sldPart;
+            _compositeElement = compositeElement;
         }
 
         #endregion Constructors

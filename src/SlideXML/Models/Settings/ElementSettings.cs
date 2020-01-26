@@ -9,7 +9,7 @@ namespace SlideXML.Models.Settings
     {
         public IPreSettings PreSettings { get; }
 
-        public PlaceholderEx Placeholder { get; set; }
+        public PlaceholderSL Placeholder { get; set; }
 
         public ElementSettings(IPreSettings preSettings)
         {

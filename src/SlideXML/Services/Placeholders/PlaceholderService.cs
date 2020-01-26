@@ -10,27 +10,52 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace SlideXML.Services.Placeholders
 {
     /// <summary>
-    /// Represents a <see cref="SlideLayoutPart"/> object parser.
+    /// Represents a Slide Layout placeholder service.
     /// </summary>
-    public class SlideLayoutPartParser : ISlideLayoutPartParser
+    public class PlaceholderService : IPlaceholderService
     {
         #region Fields
 
         private const int CustomGeometryCode = 187;
+        private readonly List<PlaceholderSL> _placeholders = new List<PlaceholderSL>();
 
         #endregion Fields
+
+        #region Constructors
+
+        public PlaceholderService(SlideLayoutPart sldLtPart)
+        {
+            Init(sldLtPart);
+        }
+
+        #endregion
 
         #region Public Methods
 
         /// <summary>
-        /// Gets placeholder data dictionary.
+        /// Gets placeholder.
         /// </summary>
-        /// <param name="sldLtPart"></param>
-        public Dictionary<int, PlaceholderEx> GetPlaceholderDic(SlideLayoutPart sldLtPart)
+        /// <param name="ce"></param>
+        /// <returns></returns>
+        public PlaceholderSL Get(OpenXmlCompositeElement ce)
+        {
+            var type = ce.GetPlaceholderType();
+            if (type != null)
+            {
+                return _placeholders.Single(p => p.Type == type);
+            }
+
+            var idx = ce.GetPlaceholderIndex();
+            return _placeholders.Single(p => p.Id == idx);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void Init(SlideLayoutPart sldLtPart)
         {
             Check.NotNull(sldLtPart, nameof(sldLtPart));
-
-            var resultDic = new Dictionary<int, PlaceholderEx>();
 
             // Get OpenXmlCompositeElement instances have P.ShapeProperties.
             var layoutElements = sldLtPart.SlideLayout.CommonSlideData.ShapeTree.Elements<OpenXmlCompositeElement>()
@@ -40,11 +65,23 @@ namespace SlideXML.Services.Placeholders
 
             foreach (var el in layoutElements.Union(masterElements))
             {
-                var placeholderIndex = el.GetPlaceholderIndex();
-                if (placeholderIndex == null || resultDic.ContainsKey((int)placeholderIndex))
+                var type = el.GetPlaceholderType();
+                var idx = el.GetPlaceholderIndex();
+                if (type == null && idx == null)
                 {
                     continue;
                 }
+
+                if (type != null && _placeholders.Any(p => p.Type == type))
+                {
+                    continue;
+                }
+
+                if (idx != null && _placeholders.Any(p => p.Id == idx))
+                {
+                    continue;
+                }
+
                 var elShapeProperties = el.Descendants<P.ShapeProperties>().Single();
                 var t2d = elShapeProperties.Transform2D;
                 if (t2d == null)
@@ -53,7 +90,7 @@ namespace SlideXML.Services.Placeholders
                 }
 
                 // Gets X, Y, W, H and ShapeProperties
-                var placeholderData = new PlaceholderEx
+                var newPh = new PlaceholderSL
                 {
                     X = t2d.Offset.X.Value,
                     Y = t2d.Offset.Y.Value,
@@ -66,18 +103,17 @@ namespace SlideXML.Services.Placeholders
                 var presetGeometry = elShapeProperties.GetFirstChild<PresetGeometry>();
                 if (presetGeometry == null)
                 {
-                    placeholderData.GeometryCode = CustomGeometryCode;
+                    newPh.GeometryCode = CustomGeometryCode;
                 }
                 else
                 {
-                    placeholderData.GeometryCode = (int)presetGeometry.Preset.Value;
+                    newPh.GeometryCode = (int)presetGeometry.Preset.Value;
                 }
 
-                // Add in result dictionary
-                resultDic.Add((int)placeholderIndex, placeholderData);
+                newPh.Type = type;
+                newPh.Id = (int?)idx;
+                _placeholders.Add(newPh);
             }
-
-            return resultDic;
         }
 
         #endregion

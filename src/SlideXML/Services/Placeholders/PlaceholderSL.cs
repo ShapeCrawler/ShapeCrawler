@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using DocumentFormat.OpenXml;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -9,11 +8,16 @@ namespace SlideXML.Services.Placeholders
     /// <summary>
     /// Represents a data of a placeholder.
     /// </summary>
-    public class PlaceholderEx
+    public class PlaceholderSL
     {
         private Dictionary<int, int> _fontHeights;
 
         #region Properties
+
+        /// <summary>
+        /// Returns placeholder identifier or null.
+        /// </summary>
+        public int? Id { get; set; } //TODO: refactor: maybe better create two placeholder types: identifier exist and type exist
 
         /// <summary>
         /// Gets or sets X-coordinate's value.
@@ -57,9 +61,14 @@ namespace SlideXML.Services.Placeholders
         }
 
         /// <summary>
-        /// Gets or sets element's <see cref="OpenXmlCompositeElement"/> instance.
+        /// Gets or sets layout's <see cref="OpenXmlCompositeElement"/> instance.
         /// </summary>
         public OpenXmlCompositeElement CompositeElement { get; set; }
+
+        /// <summary>
+        /// Returns placeholder type or null.
+        /// </summary>
+        public P.PlaceholderValues? Type { get; set; }
 
         #endregion
 
@@ -68,18 +77,9 @@ namespace SlideXML.Services.Placeholders
             _fontHeights = new Dictionary<int, int>();
             var shape = (P.Shape)CompositeElement;
 
-            // Defines placeholder type
-            var ph = CompositeElement.Descendants<P.PlaceholderShape>().FirstOrDefault();
-            var phType = ph.Type;
-
-            // Title placeholder type
-            if (phType == P.PlaceholderValues.Title || phType == P.PlaceholderValues.CenteredTitle || phType == P.PlaceholderValues.SubTitle)
+            var listStyle = shape.TextBody.ListStyle;
+            if (listStyle?.Level1ParagraphProperties != null)
             {
-                _fontHeights.Add(1, shape.TextBody.GetFirstChild<A.Paragraph>().GetFirstChild<A.EndParagraphRunProperties>().FontSize.Value);
-            }
-            else // Other placeholder types
-            {
-                var listStyle = shape.TextBody.ListStyle;
                 _fontHeights.Add(1, listStyle.Level1ParagraphProperties.GetFirstChild<A.DefaultRunProperties>().FontSize.Value);
 
                 if (listStyle.Level2ParagraphProperties != null)
@@ -114,6 +114,10 @@ namespace SlideXML.Services.Placeholders
                 {
                     _fontHeights.Add(9, listStyle.Level9ParagraphProperties.GetFirstChild<A.DefaultRunProperties>().FontSize.Value);
                 }
+            }
+            else
+            {
+                _fontHeights.Add(1, shape.TextBody.GetFirstChild<A.Paragraph>().GetFirstChild<A.EndParagraphRunProperties>().FontSize.Value);
             }
         }
     }

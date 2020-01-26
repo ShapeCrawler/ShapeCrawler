@@ -11,7 +11,7 @@ namespace SlideXML.Models.TextBody
     /// <summary>
     /// Represents a text body of the shape.
     /// </summary>
-    public class TextBodyEx
+    public class TextBodySL
     {
         #region Fields
 
@@ -25,7 +25,7 @@ namespace SlideXML.Models.TextBody
         /// <summary>
         /// Gets paragraphs.
         /// </summary>
-        public IList<ParagraphEx> Paragraphs { get; private set; }
+        public IList<ParagraphSL> Paragraphs { get; private set; }
 
         public string Text
         {
@@ -45,11 +45,11 @@ namespace SlideXML.Models.TextBody
         #region Constructors
 
         /// <summary>
-        /// Initializes an instance of the <see cref="TextBodyEx"/> class with <see cref="P.TextBody"/>.
+        /// Initializes an instance of the <see cref="TextBodySL"/> class with <see cref="P.TextBody"/>.
         /// </summary>
         /// <param name="spSettings"></param>
         /// <param name="pTxtBody"><see cref="P.TextBody"/> instance which contains a text.</param>
-        public TextBodyEx(ElementSettings spSettings, P.TextBody pTxtBody)
+        public TextBodySL(ElementSettings spSettings, P.TextBody pTxtBody)
         {
             Check.NotNull(spSettings, nameof(spSettings));
             Check.NotNull(pTxtBody, nameof(pTxtBody));
@@ -58,11 +58,11 @@ namespace SlideXML.Models.TextBody
         }
 
         /// <summary>
-        /// Initializes an instance of the <see cref="TextBodyEx"/> class with <see cref="A.TextBody"/>.
+        /// Initializes an instance of the <see cref="TextBodySL"/> class with <see cref="A.TextBody"/>.
         /// </summary>
         /// <param name="spSettings"></param>
         /// <param name="aTxtBody"><see cref="A.TextBody"/> instance which contains a text.</param>
-        public TextBodyEx(ElementSettings spSettings, A.TextBody aTxtBody)
+        public TextBodySL(ElementSettings spSettings, A.TextBody aTxtBody)
         {
             Check.NotNull(spSettings, nameof(spSettings));
             Check.NotNull(spSettings, nameof(aTxtBody));
@@ -88,10 +88,10 @@ namespace SlideXML.Models.TextBody
 
         private void SetParagraphs(IEnumerable<A.Paragraph> paragraphs)
         {
-            Paragraphs = new List<ParagraphEx>(paragraphs.Count());
+            Paragraphs = new List<ParagraphSL>(paragraphs.Count());
             foreach (var p in paragraphs)
             {
-                Paragraphs.Add(new ParagraphEx(_spSettings, p));
+                Paragraphs.Add(new ParagraphSL(_spSettings, p));
             }
         }
 

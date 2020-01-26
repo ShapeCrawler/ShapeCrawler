@@ -5,7 +5,7 @@ namespace SlideXML.Models
     /// <summary>
     /// Provides APIs for presentation document.
     /// </summary>
-    public interface IPresentationEx : IDisposable
+    public interface IPresentationSL : IDisposable
     {
         ISlideCollection Slides { get; }
 

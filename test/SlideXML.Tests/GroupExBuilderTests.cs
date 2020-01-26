@@ -6,13 +6,14 @@ using SlideXML.Extensions;
 using SlideXML.Models.Elements;
 using SlideXML.Models.Settings;
 using SlideXML.Services;
+using SlideXML.Services.Placeholders;
 using Xunit;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace SlideXML.Tests
 {
     /// <summary>
-    /// Contains tests for the <see cref="GroupEx.Builder"/> class.
+    /// Contains tests for the <see cref="GroupSL.Builder"/> class.
     /// </summary>
     public class GroupExBuilderTests
     {
@@ -25,19 +26,20 @@ namespace SlideXML.Tests
             var sldPart = doc.PresentationPart.GetSlidePartByNumber(1);
             var groupShape = sldPart.Slide.CommonSlideData.ShapeTree.Elements<P.GroupShape>().Single(x => x.GetId() == 2);
             var parser = new GroupShapeTypeParser();
-            var elFactory = new ElementFactory(new ShapeEx.Builder(new BackgroundImageFactory()));
-            var builder = new GroupEx.Builder(parser, elFactory);
+            var mockPhService = Substitute.For<IPlaceholderService>();
+            var elFactory = new ElementFactory(sldPart);
+            var builder = new ShapeSL.Builder(new BackgroundImageFactory(), new GroupShapeTypeParser(), sldPart);
             var mockPreSettings = Substitute.For<IPreSettings>();
 
             // ACT
-            var groupEx = builder.Build(groupShape, sldPart, mockPreSettings);
+            var groupEx = builder.BuildGroupShape(elFactory, groupShape, mockPreSettings);
 
             // CLEAN
             doc.Dispose();
             ms.Dispose();
 
             // ASSERT
-            Assert.Equal(2, groupEx.Elements.Count);
+            Assert.Equal(2, groupEx.Group.Shapes.Count);
             Assert.Equal(7547759, groupEx.X);
             Assert.Equal(2372475, groupEx.Y);
             Assert.Equal(1143000, groupEx.Width);
