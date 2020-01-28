@@ -22,7 +22,7 @@ namespace SlideXML.Tests
             var sldNumber = pre.Slides.Count();
 
             // CLOSE
-            pre.Dispose();
+            pre.Close();
             
             // ASSERT
             Assert.Equal(2, sldNumber);
@@ -46,12 +46,12 @@ namespace SlideXML.Tests
             // ACT
             var slide1 = pre.Slides.First();
             pre.Slides.Remove(slide1);
-            pre.Dispose();
+            pre.Close();
 
             var pre2 = new PresentationSL(ms);
             var numSlides = pre2.Slides.Count();
             var numElements = pre2.Slides.Single().Shapes.Count;
-            pre2.Dispose();
+            pre2.Close();
             ms.Dispose();
 
             // ASSERT
@@ -69,7 +69,7 @@ namespace SlideXML.Tests
             var shapes = pre.Slides.Single().Shapes.OfType<ShapeSL>();
             var sh36 = shapes.Single(e => e.Id == 36);
             var sh37 = shapes.Single(e => e.Id == 37);
-            pre.Dispose();
+            pre.Close();
 
             // ASSERT
             Assert.Null(sh36.TextBody);
@@ -86,7 +86,7 @@ namespace SlideXML.Tests
 
             // ACT
             var numberElements = pre.Slides.Single().Shapes.Count;
-            pre.Dispose();
+            pre.Close();
 
             // ASSERT
             Assert.Equal(5, numberElements);
@@ -100,7 +100,7 @@ namespace SlideXML.Tests
 
             // ACT
             var shapePlaceholder = pre.Slides.Single().Shapes.Single();
-            pre.Dispose();
+            pre.Close();
 
             // ASSERT
             Assert.Equal(1524000, shapePlaceholder.X);
@@ -119,7 +119,7 @@ namespace SlideXML.Tests
             var slides = pre.Slides;
             var groupElement = pre.Slides[1].Shapes.Single(x => x.Type.Equals(ShapeType.Group));
             var el3 = groupElement.Group.Shapes.Single(x => x.Id.Equals(5));
-            pre.Dispose();
+            pre.Close();
 
             // ASSERT
             Assert.Equal(1581846, el3.X);
@@ -136,7 +136,7 @@ namespace SlideXML.Tests
             // ACT
             var elNumber1 = pre.Slides[0].Shapes.Count;
             var elNumber2 = pre.Slides[1].Shapes.Count;
-            pre.Dispose();
+            pre.Close();
 
             // ASSERT
             Assert.Equal(6, elNumber1);
@@ -152,7 +152,7 @@ namespace SlideXML.Tests
             // ACT
             var elements = pre.Slides[0].Shapes;
 
-            pre.Dispose();
+            pre.Close();
         }
 
         [Fact]
@@ -164,7 +164,7 @@ namespace SlideXML.Tests
 
             // ACT
             var bytes = picEx.Picture.ImageEx.Bytes;
-            pre.Dispose();
+            pre.Close();
 
             // ASSERT
             Assert.True(bytes.Length > 0);
@@ -183,7 +183,7 @@ namespace SlideXML.Tests
             picEx.Picture.ImageEx.SetImage(testImage2Stream);
 
             var sizeAfter = picEx.Picture.ImageEx.Bytes.Length;
-            pre.Dispose();
+            pre.Close();
             testImage2Stream.Dispose();
 
             // ASSERT
@@ -217,7 +217,7 @@ namespace SlideXML.Tests
             shapeEx.BackgroundImage.SetImage(testImage2Stream);
 
             var sizeAfter = shapeEx.BackgroundImage.Bytes.Length;
-            pre.Dispose();
+            pre.Close();
             testImage2Stream.Dispose();
 
             // ASSERT
@@ -290,7 +290,7 @@ namespace SlideXML.Tests
             bg.SetImage(testImage2Stream);
 
             var sizeAfter = bg.Bytes.Length;
-            pre.Dispose();
+            pre.Close();
             testImage2Stream.Dispose();
 
             // ASSERT
@@ -312,7 +312,7 @@ namespace SlideXML.Tests
             var por1Size = portions[0].FontHeight;
             var por2Size = portions[1].FontHeight;
 
-            pre.Dispose();
+            pre.Close();
 
             // ASSERT
             Assert.Equal(1, numParagraphs);
@@ -331,7 +331,7 @@ namespace SlideXML.Tests
             var w = pre.SlideWidth;
             var y = pre.SlideHeight;
 
-            pre.Dispose();
+            pre.Close();
 
             // ASSERT
             Assert.Equal(9144000, w);
@@ -344,15 +344,15 @@ namespace SlideXML.Tests
             // ARRANGE
             var pre = new PresentationSL(Properties.Resources._009);
             var elements = pre.Slides[3].Shapes;
-            var tb2TitlePh = (ShapeSL)elements.Single(e => e.Id.Equals(2));
-            var tb3SubTitlePh = (ShapeSL)elements.Single(e => e.Id.Equals(3));
+            var tb2TitlePh = elements.Single(e => e.Id.Equals(2));
+            var tb3SubTitlePh = elements.Single(e => e.Id.Equals(3));
 
             // ACT
             var fhTitle = tb2TitlePh.TextBody.Paragraphs.Single().Portions.Single().FontHeight;
             var text2 = tb2TitlePh.TextBody.Text;
             var fhSubTitle = tb3SubTitlePh.TextBody.Paragraphs.Single().Portions.Single().FontHeight;
 
-            pre.Dispose();
+            pre.Close();
 
             // ASSERT
             Assert.Equal(4400, fhTitle);
@@ -365,12 +365,12 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre010 = new PresentationSL(Properties.Resources._010);
-            var pre010TextBox = (ShapeSL)pre010.Slides.First().Shapes.First();
+            var pre010TextBox = pre010.Slides.First().Shapes.First();
 
             // ACT
             var fh = pre010TextBox.TextBody.Paragraphs.First().Portions.First().FontHeight;
 
-            pre010.Dispose();
+            pre010.Close();
 
             // ASSERT
             Assert.Equal(1226, fh);
@@ -393,7 +393,7 @@ namespace SlideXML.Tests
             var prText = firstRow.Cells.First().TextBody.Paragraphs.First().Text;
             var portionTxt = firstRow.Cells.First().TextBody.Paragraphs.First().Portions.Single().Text;
 
-            pre.Dispose();
+            pre.Close();
 
             // ASSERT
             Assert.Equal(3, numRows);
@@ -425,7 +425,7 @@ namespace SlideXML.Tests
             var sld5Chart3Title = sld5Chart3.Chart.Title;
             var sld5Chart5Title = sld5Chart5.Chart.Title;
 
-            pre.Dispose();
+            pre.Close();
 
             // ASSERT
             Assert.Equal("Sales", chart7Title);

@@ -6,8 +6,6 @@ using SlideXML.Enums;
 using SlideXML.Models.Elements;
 using SlideXML.Models.Settings;
 using SlideXML.Services;
-using SlideXML.Services.Builders;
-using SlideXML.Services.Placeholders;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace SlideXML.Models

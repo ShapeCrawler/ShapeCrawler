@@ -53,7 +53,7 @@ namespace SlideXML.Models.Elements
 
         public ShapeType Type { get; }
 
-        public P.PlaceholderValues PlaceholderType
+        public P.PlaceholderValues? PlaceholderType
         {
             get
             {
@@ -123,7 +123,6 @@ namespace SlideXML.Models.Elements
             }
         }
 
-
         /// <summary>
         /// Determines whether the shape is hidden.
         /// </summary>
@@ -156,7 +155,6 @@ namespace SlideXML.Models.Elements
                 return _placeholderType != null;
             }
         }
-
 
         public ChartSL Chart { get; }
 

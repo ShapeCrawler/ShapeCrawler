@@ -1,27 +1,25 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using LogicNull.Extensions;
 using LogicNull.Utilities;
 using SlideXML.Extensions;
-using SlideXML.Models.Elements;
 using SlideXML.Models.Settings;
 using SlideXML.Services;
-using SlideXML.Services.Placeholders;
 
 namespace SlideXML.Models
 {
     /// <summary>
     /// Represents a presentation.
     /// </summary>
-    public class PresentationSL : IPresentationSL
+    public class PresentationSL : IPresentation
     {
         #region Fields
 
-        private readonly PresentationDocument _xmlDoc;
-        private readonly MemoryStream _pptxMemoryStream;
-        private readonly FileStream _pptxFileStream;
+        private PresentationDocument _xmlDoc;
         private ISlideCollection _slides;
+        private bool _disposed;
 
         #endregion Fields
 
@@ -55,7 +53,7 @@ namespace SlideXML.Models
 
         #endregion Properties
 
-        #region Constructors
+        #region Constructors and Finalizer
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PresentationSL"/> class by pptx-file stream.
@@ -78,9 +76,9 @@ namespace SlideXML.Models
         public PresentationSL(byte[] pptxFileBytes)
         {
             Check.NotNull(pptxFileBytes, nameof(pptxFileBytes));
-            _pptxMemoryStream = new MemoryStream();
-            _pptxMemoryStream.Write(pptxFileBytes, 0, pptxFileBytes.Length);
-            _xmlDoc = PresentationDocument.Open(_pptxMemoryStream, true);
+            var pptxMemoryStream = new MemoryStream();
+            pptxMemoryStream.Write(pptxFileBytes, 0, pptxFileBytes.Length);
+            _xmlDoc = PresentationDocument.Open(pptxMemoryStream, true);
         }
 
         /// <summary>
@@ -88,9 +86,16 @@ namespace SlideXML.Models
         /// </summary>
         public PresentationSL(string pptxFilePath)
         {
-            Check.NotEmpty(pptxFilePath, nameof(pptxFilePath));
-            _pptxFileStream = File.Open(pptxFilePath, FileMode.Open);
-            _xmlDoc = PresentationDocument.Open(_pptxFileStream, true);
+            Check.NotEmpty(pptxFilePath, nameof(pptxFilePath));            
+            _xmlDoc = PresentationDocument.Open(pptxFilePath, true);
+        }
+
+        /// <summary>
+        /// The Finalizer.
+        /// </summary>
+        ~PresentationSL()
+        {
+            DisposeManaged();
         }
 
         #endregion Constructors
@@ -98,15 +103,25 @@ namespace SlideXML.Models
         #region Public Methods
 
         /// <summary>
-        /// Saves the presentation in specified file path.
+        /// Saves the presentation in specified file path. After saved the presentation is not closed.
         /// </summary>
         /// <param name="filePath"></param>
         public void SaveAs(string filePath)
         {
             Check.NotEmpty(filePath, nameof(filePath));
+            _xmlDoc = (PresentationDocument)_xmlDoc.SaveAs(filePath);
+        }
 
-            var savedXmlDoc = _xmlDoc.SaveAs(filePath);
-            savedXmlDoc.Dispose();
+        /// <summary>
+        /// Saves and closes the presentation.
+        /// </summary>
+        public void Close()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(GetType().Name);
+            }
+            DisposeManaged();
         }
 
         /// <summary>
@@ -114,14 +129,19 @@ namespace SlideXML.Models
         /// </summary>
         public void Dispose()
         {
-            _xmlDoc.Dispose(); // saves and closes
-            _pptxMemoryStream?.Dispose();
-            _pptxFileStream?.Dispose();
+            Close();
+            GC.SuppressFinalize(this);
         }
 
         #endregion Public Methods
 
         #region Private Methods
+
+        private void DisposeManaged()
+        {
+            _xmlDoc.Close();
+            _disposed = true;
+        }
 
         private void InitSlides()
         {

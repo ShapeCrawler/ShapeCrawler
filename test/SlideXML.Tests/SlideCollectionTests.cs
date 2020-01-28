@@ -62,7 +62,7 @@ namespace SlideXML.Tests
             Assert.Equal(1, slides.Single().Number);
 
             // CLEAN
-            pre.Dispose();
+            pre.Close();
         }
 
         /// <State>
@@ -87,7 +87,7 @@ namespace SlideXML.Tests
             Assert.Empty(slides);
 
             // CLEAN
-            pre.Dispose();
+            pre.Close();
         }
     }
 }
