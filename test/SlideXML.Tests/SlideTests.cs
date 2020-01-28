@@ -21,8 +21,7 @@ namespace SlideXML.Tests
             var elementsNumber = allElements.Count;
 
             // CLOSE
-            pre.Dispose();
-            ms.Dispose();
+            pre.Close();
             
             // ASSERT
             Assert.Equal(3, elementsNumber);

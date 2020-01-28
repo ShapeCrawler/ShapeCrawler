@@ -1,7 +1,7 @@
 ﻿namespace SlideXML.Exceptions
 {
     /// <summary>
-    /// Thrown when a type of element could not be defined.
+    /// Thrown if a type of element could not be defined.
     /// </summary>
     public class TypeException : SlideXMLException
     {

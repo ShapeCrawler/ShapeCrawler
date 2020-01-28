@@ -58,11 +58,11 @@ namespace SlideXML.Services
             {
                 case ShapeType.AutoShape:
                     {
-                        return CreateShape(ec.CompositeElement, _sldPart, elSetting);
+                        return CreateShape(ec.CompositeElement,  elSetting);
                     }
                 case ShapeType.Chart:
                     {
-                        return CreateChart(ec, _sldPart);
+                        return CreateChart(ec);
                     }
                 case ShapeType.Table:
                     {
@@ -91,7 +91,7 @@ namespace SlideXML.Services
 
         #region Private Methods
 
-        private ShapeSL CreateShape(OpenXmlCompositeElement ce, SlidePart sldPart, ElementSettings elSettings)
+        private ShapeSL CreateShape(OpenXmlCompositeElement ce, ElementSettings elSettings)
         {
             ShapeSL shape;
 
@@ -122,7 +122,7 @@ namespace SlideXML.Services
             return shape;
         }
 
-        private ShapeSL CreateChart(ElementCandidate ec, SlidePart sldPart)
+        private ShapeSL CreateChart(ElementCandidate ec)
         {
             // Validate
             Check.NotNull(ec, nameof(ec));

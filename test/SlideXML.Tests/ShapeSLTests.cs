@@ -49,8 +49,7 @@ namespace SlideXML.Tests
             var tableHiddenValue = allElements[1].Hidden;
 
             // CLOSE
-            pre.Dispose();
-            ms.Dispose();
+            pre.Close();
 
             // ASSERT
             Assert.True(shapeHiddenValue);

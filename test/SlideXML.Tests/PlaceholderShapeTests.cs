@@ -13,7 +13,7 @@ namespace SlideXML.Tests
     public class PlaceholderShapeTest
     {
         [Fact]
-        public void DateTimePlaceholder_Test()
+        public void DateTimePlaceholder_HasText_Test()
         {
             // ARRANGE
             var pre = new PresentationSL(Properties.Resources._008);
@@ -22,10 +22,28 @@ namespace SlideXML.Tests
             // ACT
             var hasTextBody = sp3.HasTextBody;
 
-            pre.Dispose();
+            pre.Close();
 
             // ASSERT
             Assert.False(hasTextBody);
+        }
+
+        [Fact]
+        public void DateTimePlaceholder_Text_Test()
+        {
+            // ARRANGE
+            var pre = new PresentationSL(Properties.Resources._011_dt);
+            var dt = pre.Slides[0].Shapes.Single();
+
+            // ACT
+            var text = dt.TextBody.Text;
+            var hasText = dt.HasTextBody;
+
+            pre.Close();
+
+            // ASSERT
+            Assert.True(hasText);
+            Assert.NotNull(text);
         }
     }
 }
