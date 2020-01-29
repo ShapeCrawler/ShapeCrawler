@@ -11,7 +11,7 @@ namespace SlideXML.Models.TextBody
     /// <summary>
     /// Represents a text body of the shape.
     /// </summary>
-    public class TextBodySL
+    public class TextFrame
     {
         #region Fields
 
@@ -45,11 +45,11 @@ namespace SlideXML.Models.TextBody
         #region Constructors
 
         /// <summary>
-        /// Initializes an instance of the <see cref="TextBodySL"/> class with <see cref="P.TextBody"/>.
+        /// Initializes an instance of the <see cref="TextFrame"/> class with <see cref="P.TextBody"/>.
         /// </summary>
         /// <param name="spSettings"></param>
         /// <param name="pTxtBody"><see cref="P.TextBody"/> instance which contains a text.</param>
-        public TextBodySL(ElementSettings spSettings, P.TextBody pTxtBody)
+        public TextFrame(ElementSettings spSettings, P.TextBody pTxtBody)
         {
             Check.NotNull(spSettings, nameof(spSettings));
             Check.NotNull(pTxtBody, nameof(pTxtBody));
@@ -58,11 +58,11 @@ namespace SlideXML.Models.TextBody
         }
 
         /// <summary>
-        /// Initializes an instance of the <see cref="TextBodySL"/> class with <see cref="A.TextBody"/>.
+        /// Initializes an instance of the <see cref="TextFrame"/> class with <see cref="A.TextBody"/>.
         /// </summary>
         /// <param name="spSettings"></param>
         /// <param name="aTxtBody"><see cref="A.TextBody"/> instance which contains a text.</param>
-        public TextBodySL(ElementSettings spSettings, A.TextBody aTxtBody)
+        public TextFrame(ElementSettings spSettings, A.TextBody aTxtBody)
         {
             Check.NotNull(spSettings, nameof(spSettings));
             Check.NotNull(spSettings, nameof(aTxtBody));

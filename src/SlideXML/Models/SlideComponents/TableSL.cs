@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SlideXML.Enums;
 using SlideXML.Models.Settings;
 using SlideXML.Models.TableComponents;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideXML.Models.Elements
+namespace SlideXML.Models.SlideComponents
 {
     /// <summary>
     /// Represents a table element on a slide.

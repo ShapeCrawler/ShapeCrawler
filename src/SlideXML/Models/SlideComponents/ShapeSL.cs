@@ -13,7 +13,7 @@ using SlideXML.Services.Builders;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace SlideXML.Models.Elements
+namespace SlideXML.Models.SlideComponents
 {
     /// <summary>
     /// Represents a shape element on a slide.
@@ -29,7 +29,7 @@ namespace SlideXML.Models.Elements
         private bool? _hidden;
         private int _id;
         private string _name;
-        private TextBodySL _textBody;
+        private TextFrame _textBody;
         private ImageEx _backgroundImage;
         private P.PlaceholderValues? _placeholderType;
 
@@ -98,7 +98,7 @@ namespace SlideXML.Models.Elements
         /// Returns text body if it exist or null.
         /// </summary>
         /// <remarks>Lazy load.</remarks>
-        public TextBodySL TextBody
+        public TextFrame TextFrame
         {
             get
             {
@@ -138,7 +138,7 @@ namespace SlideXML.Models.Elements
         /// <summary>
         /// Determines whether the shape has text body.
         /// </summary>
-        public bool HasTextBody => TextBody != null;
+        public bool HasTextFrame => TextFrame != null;
 
         /// <summary>
         /// Determines whether the shape is placeholder.
@@ -231,7 +231,7 @@ namespace SlideXML.Models.Elements
 
         private void TryParseTxtBody()
         {
-            var pTxtBody = ((P.Shape)_compositeElement).TextBody;
+            var pTxtBody = _compositeElement.Descendants<P.TextBody>().SingleOrDefault();
 
             if (pTxtBody == null)
             {
@@ -241,7 +241,7 @@ namespace SlideXML.Models.Elements
             var aTexts = pTxtBody.Descendants<A.Text>();
             if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element contain text
             {
-                _textBody = new TextBodySL(_spSettings, pTxtBody);
+                _textBody = new TextFrame(_spSettings, pTxtBody);
             }
         }
 
@@ -293,55 +293,80 @@ namespace SlideXML.Models.Elements
             #region Public Methods
 
             /// <summary>
-            /// Builds shape.
+            /// Builds a AutoShape.
             /// </summary>
             /// <returns></returns>
-            public ShapeSL BuildTxtShape(OpenXmlCompositeElement compositeElement, ElementSettings spSettings)
+            public ShapeSL BuildAutoShape(OpenXmlCompositeElement compositeElement, ElementSettings spSettings)
             {
                 Check.NotNull(compositeElement, nameof(compositeElement));
                 return new ShapeSL(_bgImgFactor, compositeElement, _sldPart, spSettings);
             }
 
-            public ShapeSL BuildChartShape(P.GraphicFrame xmlGrFrame)
+            /// <summary>
+            /// Builds a chart.
+            /// </summary>
+            /// <param name="xmlGrFrame"></param>
+            /// <returns></returns>
+            public ShapeSL BuildChart(P.GraphicFrame xmlGrFrame)
             {
                 var chart = new ChartSL(xmlGrFrame, _sldPart);
                 var newShape = new ShapeSL(chart, xmlGrFrame);
-                var transform = xmlGrFrame.Transform;
-                newShape.X = transform.Offset.X.Value;
-                newShape.Y = transform.Offset.Y.Value;
-                newShape.Width = transform.Extents.Cx.Value;
-                newShape.Height = transform.Extents.Cy.Value;
+                SetTransform(newShape, xmlGrFrame);
 
                 return newShape;
             }
 
-            public ShapeSL BuildTableShape(P.GraphicFrame xmlGrFrame, ElementSettings elSettings)
+            /// <summary>
+            /// Builds a table.
+            /// </summary>
+            /// <param name="xmlGrFrame"></param>
+            /// <param name="elSettings"></param>
+            /// <returns></returns>
+            public ShapeSL BuildTable(P.GraphicFrame xmlGrFrame, ElementSettings elSettings)
             {
                 var table = new TableSL(xmlGrFrame, elSettings);
                 var newShape = new ShapeSL(table, xmlGrFrame);
-                var transform = xmlGrFrame.Transform;
-                newShape.X = transform.Offset.X.Value;
-                newShape.Y = transform.Offset.Y.Value;
-                newShape.Width = transform.Extents.Cx.Value;
-                newShape.Height = transform.Extents.Cy.Value;
+               SetTransform(newShape, xmlGrFrame);
 
                 return newShape;
             }
 
-            public ShapeSL BuildPictureShape(OpenXmlCompositeElement ce)
+            /// <summary>
+            /// Builds a picture.
+            /// </summary>
+            /// <param name="ce"></param>
+            /// <returns></returns>
+            public ShapeSL BuildPicture(OpenXmlCompositeElement ce)
             {
                 var picture = new PictureSL(_sldPart, ce);
                 var newShape = new ShapeSL(picture, ce);
-                var transform2D = ce.GetFirstChild<P.ShapeProperties>().Transform2D;
-                newShape.X = transform2D.Offset.X.Value;
-                newShape.Y = transform2D.Offset.Y.Value;
-                newShape.Width = transform2D.Extents.Cx.Value;
-                newShape.Height = transform2D.Extents.Cy.Value;
+                SetTransform2D(newShape, ce);
 
                 return newShape;
             }
 
-            public ShapeSL BuildGroupShape(IElementFactory elFactory, OpenXmlCompositeElement ce, IPreSettings preSettings)
+            /// <summary>
+            /// Builds a OLE object.
+            /// </summary>
+            /// <param name="ce"></param>
+            /// <returns></returns>
+            public ShapeSL BuildOLEObject(OpenXmlCompositeElement ce)
+            {
+                var oleObject = new OleObjectSL(ce);
+                var newShape = new ShapeSL(oleObject, ce);
+                SetTransform2D(newShape, ce);
+
+                return newShape;
+            }
+
+            /// <summary>
+            /// Builds a group.
+            /// </summary>
+            /// <param name="elFactory"></param>
+            /// <param name="ce"></param>
+            /// <param name="preSettings"></param>
+            /// <returns></returns>
+            public ShapeSL BuildGroup(IElementFactory elFactory, OpenXmlCompositeElement ce, IPreSettings preSettings)
             {
                 var group = new GroupSL(_groupSpTypeParser, elFactory, ce, preSettings, _sldPart);
                 var newShape = new ShapeSL(group, ce);
@@ -354,15 +379,25 @@ namespace SlideXML.Models.Elements
                 return newShape;
             }
 
-            public ShapeSL BuildOLEObject(OpenXmlCompositeElement ce)
-            {
-                var oleObject = new OleObjectSL(ce);
-                var newShape = new ShapeSL(oleObject, ce);
+            #endregion Public Methods
 
-                return newShape;
+            private static void SetTransform(ShapeSL newShape, OpenXmlCompositeElement ce)
+            {
+                var transform = ce.Descendants<P.Transform>().Single();
+                newShape.X = transform.Offset.X.Value;
+                newShape.Y = transform.Offset.Y.Value;
+                newShape.Width = transform.Extents.Cx.Value;
+                newShape.Height = transform.Extents.Cy.Value;
             }
 
-            #endregion Public Methods
+            private static void SetTransform2D(ShapeSL newShape, OpenXmlCompositeElement ce)
+            {
+                var transform2D = ce.Descendants<A.Transform2D>().Single();
+                newShape.X = transform2D.Offset.X.Value;
+                newShape.Y = transform2D.Offset.Y.Value;
+                newShape.Width = transform2D.Extents.Cx.Value;
+                newShape.Height = transform2D.Extents.Cy.Value;
+            }
         }
 
         #endregion Builder

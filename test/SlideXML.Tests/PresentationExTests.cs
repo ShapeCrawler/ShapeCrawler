@@ -2,7 +2,7 @@ using System.IO;
 using System.Linq;
 using SlideXML.Enums;
 using SlideXML.Models;
-using SlideXML.Models.Elements;
+using SlideXML.Models.SlideComponents;
 using Xunit;
 
 namespace SlideXML.Tests
@@ -72,10 +72,10 @@ namespace SlideXML.Tests
             pre.Close();
 
             // ASSERT
-            Assert.Null(sh36.TextBody);
-            Assert.NotNull(sh37.TextBody);
-            Assert.Equal("P1t1 P1t2", sh37.TextBody.Paragraphs[0].Text);
-            Assert.Equal("p2", sh37.TextBody.Paragraphs[1].Text);
+            Assert.Null(sh36.TextFrame);
+            Assert.NotNull(sh37.TextFrame);
+            Assert.Equal("P1t1 P1t2", sh37.TextFrame.Paragraphs[0].Text);
+            Assert.Equal("p2", sh37.TextFrame.Paragraphs[1].Text);
         }
 
         [Fact]
@@ -239,16 +239,22 @@ namespace SlideXML.Tests
         }
 
         [Fact]
-        public void OLEObjects_ParseTest()
+        public void OleObjects_ParseTest()
         {
             // ARRANGE
             var pre = new PresentationSL(Properties.Resources._009);
+            var shapes = pre.Slides[1].Shapes;
 
             // ACT
-            var oleNumbers = pre.Slides[1].Shapes.Count(e => e.Type.Equals(ShapeType.OLEObject));
+            var oleNumbers = shapes.Count(e => e.Type.Equals(ShapeType.OLEObject));
+            var ole9 = shapes.Single(s => s.Id == 9);
 
             // ASSERT
             Assert.Equal(2, oleNumbers);
+            Assert.Equal(699323, ole9.X);
+            Assert.Equal(3463288, ole9.Y);
+            Assert.Equal(485775, ole9.Width);
+            Assert.Equal(373062, ole9.Height);
         }
 
         [Fact]
@@ -303,7 +309,7 @@ namespace SlideXML.Tests
             // ARRANGE
             var pre = new PresentationSL(Properties.Resources._009);
             var shape = (ShapeSL)pre.Slides[2].Shapes.SingleOrDefault(e => e.Id.Equals(2));
-            var paragraphs = shape.TextBody.Paragraphs;
+            var paragraphs = shape.TextFrame.Paragraphs;
 
             // ACT
             var numParagraphs = paragraphs.Count;
@@ -348,9 +354,9 @@ namespace SlideXML.Tests
             var tb3SubTitlePh = elements.Single(e => e.Id.Equals(3));
 
             // ACT
-            var fhTitle = tb2TitlePh.TextBody.Paragraphs.Single().Portions.Single().FontHeight;
-            var text2 = tb2TitlePh.TextBody.Text;
-            var fhSubTitle = tb3SubTitlePh.TextBody.Paragraphs.Single().Portions.Single().FontHeight;
+            var fhTitle = tb2TitlePh.TextFrame.Paragraphs.Single().Portions.Single().FontHeight;
+            var text2 = tb2TitlePh.TextFrame.Text;
+            var fhSubTitle = tb3SubTitlePh.TextFrame.Paragraphs.Single().Portions.Single().FontHeight;
 
             pre.Close();
 
@@ -368,7 +374,7 @@ namespace SlideXML.Tests
             var pre010TextBox = pre010.Slides.First().Shapes.First();
 
             // ACT
-            var fh = pre010TextBox.TextBody.Paragraphs.First().Portions.First().FontHeight;
+            var fh = pre010TextBox.TextFrame.Paragraphs.First().Portions.First().FontHeight;
 
             pre010.Close();
 
