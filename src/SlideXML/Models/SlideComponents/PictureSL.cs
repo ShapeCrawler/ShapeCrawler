@@ -1,11 +1,10 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using LogicNull.Utilities;
-using SlideXML.Enums;
 using SlideXML.Exceptions;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideXML.Models.Elements
+namespace SlideXML.Models.SlideComponents
 {
     /// <summary>
     /// Represents a picture element.

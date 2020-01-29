@@ -3,8 +3,8 @@ using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using NSubstitute;
 using SlideXML.Extensions;
-using SlideXML.Models.Elements;
 using SlideXML.Models.Settings;
+using SlideXML.Models.SlideComponents;
 using SlideXML.Services;
 using SlideXML.Services.Placeholders;
 using Xunit;
@@ -32,7 +32,7 @@ namespace SlideXML.Tests
             var mockPreSettings = Substitute.For<IPreSettings>();
 
             // ACT
-            var groupEx = builder.BuildGroupShape(elFactory, groupShape, mockPreSettings);
+            var groupEx = builder.BuildGroup(elFactory, groupShape, mockPreSettings);
 
             // CLEAN
             doc.Dispose();

@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using NSubstitute;
 using SlideXML.Models;
-using SlideXML.Models.Elements;
 using SlideXML.Models.Settings;
 using SlideXML.Services;
 using SlideXML.Services.Placeholders;

@@ -14,25 +14,24 @@ PM> Install-Package SlideXML
 ```
 ### Usage
 ```C#
-//Opens presentation from the file path
-using var presentation = new PresentationSL(@"c:\file.pptx");
+// Opens presentation from the file path
+using var presentation = new PresentationSL(@"c:\test.pptx");
 
-//Gets the slide collection
+// Gets the slide collection
 var slides = presentation.Slides; 
 
-//Gets number of slides
+// Gets number of slides
 var numSlides = slides.Count(); 
 
-//Gets the shape collection of the first slide
+// Gets the shape collection of the first slide
 var shapes = slides[0].Shapes; 
 
-//Prints texts of TextBox shapes on the Debug console
+// Prints texts of TextBox shapes on the Debug console
 foreach (var sp in shapes)
 {
-    if (sp.Type == ShapeType.TextBox)
+    if (sp.HasTextFrame)
     {
-        var textBox = sp as TextBoxSL;
-        Debug.WriteLine(textBox.TextBody.Text);
+        Debug.WriteLine(sp.TextFrame.Text);
     }
 }
 ```

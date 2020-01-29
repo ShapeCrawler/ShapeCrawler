@@ -1,6 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
-using SlideXML.Models.Elements;
 using SlideXML.Models.Settings;
+using SlideXML.Models.SlideComponents;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace SlideXML.Services.Builders
@@ -10,15 +10,15 @@ namespace SlideXML.Services.Builders
     /// </summary>
     public interface IShapeNewBuilder
     {
-        ShapeSL BuildTxtShape(OpenXmlCompositeElement compositeElement, ElementSettings spSettings);
+        ShapeSL BuildAutoShape(OpenXmlCompositeElement compositeElement, ElementSettings spSettings);
 
-        ShapeSL BuildChartShape(P.GraphicFrame xmlGrFrame);
+        ShapeSL BuildChart(P.GraphicFrame xmlGrFrame);
 
-        ShapeSL BuildTableShape(P.GraphicFrame xmlGrFrame, ElementSettings elSettings);
+        ShapeSL BuildTable(P.GraphicFrame xmlGrFrame, ElementSettings elSettings);
 
-        ShapeSL BuildPictureShape(OpenXmlCompositeElement ce);
+        ShapeSL BuildPicture(OpenXmlCompositeElement ce);
 
-        ShapeSL BuildGroupShape(IElementFactory elFactory, OpenXmlCompositeElement compositeElement, IPreSettings preSettings);
+        ShapeSL BuildGroup(IElementFactory elFactory, OpenXmlCompositeElement compositeElement, IPreSettings preSettings);
         
         ShapeSL BuildOLEObject(OpenXmlCompositeElement compositeElement);
     }

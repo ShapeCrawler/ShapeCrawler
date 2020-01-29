@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml;
-using SlideXML.Enums;
+using LogicNull.Utilities;
 
-namespace SlideXML.Models.Elements
+namespace SlideXML.Models.SlideComponents
 {
     /// <summary>
     /// Represents an OLE object on a slide.
@@ -10,14 +10,17 @@ namespace SlideXML.Models.Elements
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class OleObjectSL
     {
+        private readonly OpenXmlCompositeElement _compositeElement;
+
         #region Constructors
 
         /// <summary>
-        /// Initialise a new instance of the <see cref="OleObjectSL"/> class.
+        /// Initializes a new instance of the <see cref="OleObjectSL"/> class.
         /// </summary>
         public OleObjectSL(OpenXmlCompositeElement ce)
         {
-
+            Check.NotNull(ce, nameof(ce));
+            _compositeElement = ce;
         }
 
         #endregion

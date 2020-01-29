@@ -3,7 +3,7 @@ using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using SlideXML.Extensions;
 using SlideXML.Models;
-using SlideXML.Models.Elements;
+using SlideXML.Models.SlideComponents;
 using SlideXML.Services;
 using Xunit;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -25,7 +25,7 @@ namespace SlideXML.Tests
 
             // ACT
             var shapeBuilder = new ShapeSL.Builder(new BackgroundImageFactory(), new GroupShapeTypeParser(), sldPart);
-            var chartShape = shapeBuilder.BuildChartShape(stubGrFrame);
+            var chartShape = shapeBuilder.BuildChart(stubGrFrame);
 
             // CLOSE
             ms.Dispose();

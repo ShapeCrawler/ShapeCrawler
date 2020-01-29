@@ -2,7 +2,6 @@ using System.IO;
 using System.Linq;
 using SlideXML.Enums;
 using SlideXML.Models;
-using SlideXML.Models.Elements;
 using Xunit;
 
 namespace SlideXML.Tests
@@ -20,7 +19,7 @@ namespace SlideXML.Tests
             var sp3 = pre.Slides[0].Shapes.Single(sp => sp.Id == 3);
 
             // ACT
-            var hasTextBody = sp3.HasTextBody;
+            var hasTextBody = sp3.HasTextFrame;
 
             pre.Close();
 
@@ -36,8 +35,8 @@ namespace SlideXML.Tests
             var dt = pre.Slides[0].Shapes.Single();
 
             // ACT
-            var text = dt.TextBody.Text;
-            var hasText = dt.HasTextBody;
+            var text = dt.TextFrame.Text;
+            var hasText = dt.HasTextFrame;
 
             pre.Close();
 

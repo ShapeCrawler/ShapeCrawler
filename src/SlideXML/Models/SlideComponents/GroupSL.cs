@@ -5,7 +5,7 @@ using SlideXML.Models.Settings;
 using SlideXML.Services;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideXML.Models.Elements
+namespace SlideXML.Models.SlideComponents
 {
     /// <summary>
     /// Represents a group element.

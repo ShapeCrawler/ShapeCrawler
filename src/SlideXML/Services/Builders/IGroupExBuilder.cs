@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using SlideXML.Models.Elements;
 using SlideXML.Models.Settings;
+using SlideXML.Models.SlideComponents;
 
 namespace SlideXML.Services.Builders
 {

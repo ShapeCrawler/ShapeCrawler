@@ -4,8 +4,8 @@ using LogicNull.Utilities;
 using SlideXML.Enums;
 using SlideXML.Exceptions;
 using SlideXML.Extensions;
-using SlideXML.Models.Elements;
 using SlideXML.Models.Settings;
+using SlideXML.Models.SlideComponents;
 using SlideXML.Services.Builders;
 using SlideXML.Services.Placeholders;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -66,12 +66,12 @@ namespace SlideXML.Services
                     }
                 case ShapeType.Table:
                     {
-                        return _shapeBuilder.BuildTableShape((P.GraphicFrame)ec.CompositeElement, elSetting);
+                        return _shapeBuilder.BuildTable((P.GraphicFrame)ec.CompositeElement, elSetting);
 
                     }
                 case ShapeType.Picture:
                 {
-                    return _shapeBuilder.BuildPictureShape(ec.CompositeElement);
+                    return _shapeBuilder.BuildPicture(ec.CompositeElement);
                 }
                 case ShapeType.OLEObject:
                 {
@@ -84,7 +84,7 @@ namespace SlideXML.Services
 
         public ShapeSL CreateGroupShape(OpenXmlCompositeElement compositeElement, IPreSettings preSettings)
         {
-            return _shapeBuilder.BuildGroupShape(this, compositeElement, preSettings);
+            return _shapeBuilder.BuildGroup(this, compositeElement, preSettings);
         }
 
         #endregion Public Methods
@@ -104,7 +104,7 @@ namespace SlideXML.Services
                     var placeholder = _phService.Get(ce);
                     elSettings.Placeholder = placeholder;
                 }
-                shape = _shapeBuilder.BuildTxtShape(ce, elSettings);
+                shape = _shapeBuilder.BuildAutoShape(ce, elSettings);
                 WithOwnTransform2d(shape, t2d);
             }
             else // is placeholder obviously
@@ -112,7 +112,7 @@ namespace SlideXML.Services
                 var placeholder = _phService.Get(ce);
                 elSettings.Placeholder = placeholder;
 
-                shape = _shapeBuilder.BuildTxtShape(ce, elSettings);
+                shape = _shapeBuilder.BuildAutoShape(ce, elSettings);
                 shape.X = placeholder.X;
                 shape.Y = placeholder.Y;
                 shape.Width = placeholder.Width;
@@ -131,7 +131,7 @@ namespace SlideXML.Services
                 throw new SlideXMLException();
             }
 
-            var chartShape = _shapeBuilder.BuildChartShape(xmlGrFrame);
+            var chartShape = _shapeBuilder.BuildChart(xmlGrFrame);
 
             return chartShape;
         }

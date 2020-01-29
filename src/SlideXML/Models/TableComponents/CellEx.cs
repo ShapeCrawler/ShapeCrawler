@@ -13,7 +13,7 @@ namespace SlideXML.Models.TableComponents
     {
         #region Fields
 
-        private TextBodySL _textBody;
+        private TextFrame _textBody;
 
         private readonly A.TableCell _xmlCell;
         private readonly ElementSettings _elSettings;
@@ -23,9 +23,9 @@ namespace SlideXML.Models.TableComponents
         #region Properties
 
         /// <summary>
-        /// Returns <see cref="TextBodySL"/> instance or null if the cell does not contain a text.
+        /// Returns <see cref="TextFrame"/> instance or null if the cell does not contain a text.
         /// </summary>
-        public TextBodySL TextBody
+        public TextFrame TextBody
         {
             get
             {
@@ -58,7 +58,7 @@ namespace SlideXML.Models.TableComponents
             var aTexts = aTxtBody.Descendants<A.Text>();
             if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element contain text
             {
-                _textBody = new TextBodySL(_elSettings, aTxtBody);
+                _textBody = new TextFrame(_elSettings, aTxtBody);
             }
         }
     }

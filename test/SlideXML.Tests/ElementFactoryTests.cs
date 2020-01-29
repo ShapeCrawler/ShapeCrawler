@@ -5,7 +5,6 @@ using DocumentFormat.OpenXml.Packaging;
 using NSubstitute;
 using SlideXML.Enums;
 using SlideXML.Extensions;
-using SlideXML.Models.Elements;
 using SlideXML.Models.Settings;
 using SlideXML.Services;
 using SlideXML.Services.Placeholders;

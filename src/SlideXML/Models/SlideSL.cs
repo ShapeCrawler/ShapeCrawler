@@ -3,8 +3,8 @@ using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using LogicNull.Utilities;
 using SlideXML.Enums;
-using SlideXML.Models.Elements;
 using SlideXML.Models.Settings;
+using SlideXML.Models.SlideComponents;
 using SlideXML.Services;
 using P = DocumentFormat.OpenXml.Presentation;
 
