@@ -119,7 +119,7 @@ namespace SlideXML.Models
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException(GetType().Name);
+                return;
             }
             DisposeManaged();
         }

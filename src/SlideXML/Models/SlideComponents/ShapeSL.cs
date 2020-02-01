@@ -29,7 +29,7 @@ namespace SlideXML.Models.SlideComponents
         private bool? _hidden;
         private int _id;
         private string _name;
-        private TextFrame _textBody;
+        private TextFrame _textFrame;
         private ImageEx _backgroundImage;
         private P.PlaceholderValues? _placeholderType;
 
@@ -102,12 +102,12 @@ namespace SlideXML.Models.SlideComponents
         {
             get
             {
-                if (_textBody == null)
+                if (_textFrame == null && Type == ShapeType.AutoShape)
                 {
-                    TryParseTxtBody();
+                    TryParseTextFrame();
                 }
 
-                return _textBody;
+                return _textFrame;
             }
         }
 
@@ -229,7 +229,7 @@ namespace SlideXML.Models.SlideComponents
 
         #region Private Methods
 
-        private void TryParseTxtBody()
+        private void TryParseTextFrame()
         {
             var pTxtBody = _compositeElement.Descendants<P.TextBody>().SingleOrDefault();
 
@@ -241,7 +241,7 @@ namespace SlideXML.Models.SlideComponents
             var aTexts = pTxtBody.Descendants<A.Text>();
             if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element contain text
             {
-                _textBody = new TextFrame(_spSettings, pTxtBody);
+                _textFrame = new TextFrame(_spSettings, pTxtBody);
             }
         }
 
