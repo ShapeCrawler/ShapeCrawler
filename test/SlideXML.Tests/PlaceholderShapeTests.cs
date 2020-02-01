@@ -32,7 +32,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new PresentationSL(Properties.Resources._011_dt);
-            var dt = pre.Slides[0].Shapes.Single();
+            var dt = pre.Slides[0].Shapes.Single(s => s.Id == 54275);
 
             // ACT
             var text = dt.TextFrame.Text;

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DocumentFormat.OpenXml;
 using LogicNull.Utilities;
 using SlideXML.Models.Settings;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -45,49 +46,26 @@ namespace SlideXML.Models.TextBody
         #region Constructors
 
         /// <summary>
-        /// Initializes an instance of the <see cref="TextFrame"/> class with <see cref="P.TextBody"/>.
+        /// Initializes an instance of the <see cref="TextFrame"/>.
         /// </summary>
-        /// <param name="spSettings"></param>
-        /// <param name="pTxtBody"><see cref="P.TextBody"/> instance which contains a text.</param>
-        public TextFrame(ElementSettings spSettings, P.TextBody pTxtBody)
+        public TextFrame(ElementSettings spSettings, OpenXmlCompositeElement compositeElement)
         {
             Check.NotNull(spSettings, nameof(spSettings));
-            Check.NotNull(pTxtBody, nameof(pTxtBody));
+            Check.NotNull(compositeElement, nameof(compositeElement));
             _spSettings = spSettings;
-            ParseParagraphs(pTxtBody);
-        }
-
-        /// <summary>
-        /// Initializes an instance of the <see cref="TextFrame"/> class with <see cref="A.TextBody"/>.
-        /// </summary>
-        /// <param name="spSettings"></param>
-        /// <param name="aTxtBody"><see cref="A.TextBody"/> instance which contains a text.</param>
-        public TextFrame(ElementSettings spSettings, A.TextBody aTxtBody)
-        {
-            Check.NotNull(spSettings, nameof(spSettings));
-            Check.NotNull(spSettings, nameof(aTxtBody));
-            _spSettings = spSettings;
-            ParseParagraphs(aTxtBody);
+            ParseParagraphs(compositeElement);
         }
 
         #endregion Constructors
 
         #region Private Methods
 
-        private void ParseParagraphs(P.TextBody pTxtBody)
+        private void ParseParagraphs(OpenXmlCompositeElement compositeElement)
         {
-            var aParagraphs = pTxtBody.Elements<A.Paragraph>();
-            SetParagraphs(aParagraphs);
-        }
+            // Parses non-empty paragraphs
+            var paragraphs = compositeElement.Elements<A.Paragraph>().Where(e => e.Descendants<A.Text>().Any());
 
-        private void ParseParagraphs(A.TextBody aTxtBody)
-        {
-            var aParagraphs = aTxtBody.Elements<A.Paragraph>();
-            SetParagraphs(aParagraphs);
-        }
-
-        private void SetParagraphs(IEnumerable<A.Paragraph> paragraphs)
-        {
+            // Sets paragraphs
             Paragraphs = new List<ParagraphSL>(paragraphs.Count());
             foreach (var p in paragraphs)
             {
