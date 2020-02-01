@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Presentation;
 using P = DocumentFormat.OpenXml.Presentation;
 using D = DocumentFormat.OpenXml.Drawing;
 
@@ -38,11 +39,11 @@ namespace SlideXML.Extensions
         }
 
         /// <summary>
-        /// Returns placeholder type if it exists or null.
+        /// Returns <see cref="PlaceholderValues"/> value or null if it is custom placeholder.
         /// </summary>
-        public static P.PlaceholderValues? GetPlaceholderType(this OpenXmlCompositeElement xmlCompositeElement)
+        public static PlaceholderValues? GetPlaceholderType(this OpenXmlCompositeElement xmlCompositeElement)
         {
-            var ph = xmlCompositeElement.Descendants<P.PlaceholderShape>().FirstOrDefault();
+            var ph = xmlCompositeElement.Descendants<PlaceholderShape>().FirstOrDefault();
             var phType = ph?.Type;
 
             if (phType == null)

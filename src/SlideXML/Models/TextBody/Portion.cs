@@ -3,7 +3,7 @@
 namespace SlideXML.Models.TextBody
 {
     /// <summary>
-    /// Represents paragraph text portion.
+    /// Represents a paragraph text portion.
     /// </summary>
     public class Portion
     {
@@ -27,7 +27,7 @@ namespace SlideXML.Models.TextBody
         public Portion(int fontHeight, string text)
         {
             Check.IsPositive(fontHeight, nameof(fontHeight));
-            Check.NotEmpty(text, nameof(text));
+            Check.NotNull(text, nameof(text));
             FontHeight = fontHeight;
             Text = text;
         }

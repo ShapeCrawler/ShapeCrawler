@@ -85,23 +85,14 @@ namespace SlideXML.Models.TextBody
             var prLvl = ParseLevel();
             var runs = _aParagraph.Elements<A.Run>();
             _portions = new List<Portion>(runs.Count());
-            var ph = _shapeSetting.Placeholder;
+            var placeholderSL = _shapeSetting.Placeholder;
 
-            if (ph != null) // is placeholder
+            foreach (var run in runs)
             {
-                var fh = ph.FontHeights[prLvl]; // gets font height from placeholder
-                foreach (var run in runs) //TODO: delete unnecessary run
-                {
-                    _portions.Add(new Portion(fh, run.Text.Text));
-                }
-            }
-            else // is not placeholder
-            {
-                foreach (var run in runs)
-                {
-                    var fh = run.RunProperties?.FontSize?.Value ?? _shapeSetting.PreSettings.LlvFontHeights[prLvl];
-                    _portions.Add(new Portion(fh, run.Text.Text));
-                }
+                // First tries to get font height from run, then placeholder and only then from presentation settings.
+                var fh = run.RunProperties?.FontSize?.Value ?? placeholderSL?.FontHeights[prLvl] ?? _shapeSetting.PreSettings.LlvFontHeights[prLvl];
+                
+                _portions.Add(new Portion(fh, run.Text.Text));
             }
         }
 

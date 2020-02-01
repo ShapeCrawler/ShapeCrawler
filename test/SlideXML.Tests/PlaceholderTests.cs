@@ -44,5 +44,41 @@ namespace SlideXML.Tests
             Assert.True(hasText);
             Assert.NotNull(text);
         }
+
+
+        [Fact]
+        public void TitlePlaceholder_TextAndFont_Test()
+        {
+            // ARRANGE
+            var pre = new PresentationSL(Properties.Resources._012_title_placeholder);
+            var title = pre.Slides[0].Shapes.Single(x => x.Id == 2);
+
+            // ACT
+            var text = title.TextFrame.Text;
+            var fh = title.TextFrame.Paragraphs.First().Portions.First().FontHeight;
+
+            pre.Close();
+
+            // ASSERT
+            Assert.NotNull(text);
+            Assert.Equal(2000, fh);
+        }
+
+        [Fact]
+        public void TitlePlaceholder_FontHeight_Test()
+        {
+            // ARRANGE
+            var pre010 = new PresentationSL(Properties.Resources._010);
+            var pre010TextBox = pre010.Slides[0].Shapes.Single(x => x.Id == 2);
+
+            // ACT
+            var fh = pre010TextBox.TextFrame.Paragraphs.First().Portions.First().FontHeight;
+
+            pre010.Close();
+
+            // ASSERT
+            Assert.Equal(1539, fh);
+        }
+
     }
 }
