@@ -151,4 +151,7 @@
   <data name="_011_dt" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\011_dt.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="_012_title_placeholder" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resource\012_title-placeholder.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

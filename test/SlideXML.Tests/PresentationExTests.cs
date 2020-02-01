@@ -367,22 +367,6 @@ namespace SlideXML.Tests
         }
 
         [Fact]
-        public void TextBox_Placeholder_FontHeight_Case2_Test()
-        {
-            // ARRANGE
-            var pre010 = new PresentationSL(Properties.Resources._010);
-            var pre010TextBox = pre010.Slides.First().Shapes.First();
-
-            // ACT
-            var fh = pre010TextBox.TextFrame.Paragraphs.First().Portions.First().FontHeight;
-
-            pre010.Close();
-
-            // ASSERT
-            Assert.Equal(1226, fh);
-        }
-
-        [Fact]
         public void TablesPropertiesTest()
         {
             // ARRANGE
