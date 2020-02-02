@@ -29,7 +29,7 @@ namespace SlideXML.Models.SlideComponents
         private bool? _hidden;
         private int _id;
         private string _name;
-        private TextFrame _textFrame;
+        private ITextFrame _textFrame;
         private ImageEx _backgroundImage;
         private P.PlaceholderValues? _placeholderType;
 
@@ -98,9 +98,9 @@ namespace SlideXML.Models.SlideComponents
         /// Returns text body if it exist or null.
         /// </summary>
         /// <remarks>Lazy load.</remarks>
-        public TextFrame TextFrame
+        public ITextFrame TextFrame
         {
-            get
+            get 
             {
                 if (_textFrame == null && Type == ShapeType.AutoShape)
                 {
@@ -136,9 +136,14 @@ namespace SlideXML.Models.SlideComponents
         }
 
         /// <summary>
-        /// Determines whether the shape has text body.
+        /// Determines whether the shape has text frame.
         /// </summary>
-        public bool HasTextFrame => TextFrame != null;
+        public bool HasTextFrame => TextFrame is TextFrame;
+
+        /// <summary>
+        /// Determines whether the shape has chart.
+        /// </summary>
+        public bool HasChart => Chart is ChartSL;
 
         /// <summary>
         /// Determines whether the shape is placeholder.
@@ -156,7 +161,7 @@ namespace SlideXML.Models.SlideComponents
             }
         }
 
-        public ChartSL Chart { get; }
+        public IChart Chart { get; }
 
         public TableSL Table { get; }
 
@@ -171,7 +176,7 @@ namespace SlideXML.Models.SlideComponents
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ShapeSL"/> class.
+        /// Initializes a new instance of AutoShape.
         /// </summary>
         [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter")]
         private ShapeSL(IBackgroundImageFactory bgImgFactory,
@@ -185,44 +190,54 @@ namespace SlideXML.Models.SlideComponents
             _bgImgFactory = bgImgFactory;
             _sldPart = sldPart;
             _spSettings = spSettings;
-            Type = ShapeType.AutoShape;
             _compositeElement = compositeElement;
+            Type = ShapeType.AutoShape;
+            Chart = new NoChart();
         }
 
         [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter")]
         private ShapeSL(ChartSL chart, OpenXmlCompositeElement ce)
         {
             Chart = chart;
-            Type = ShapeType.Chart;
             _compositeElement = ce;
+            Type = ShapeType.Chart;
+            _textFrame = new NoTextFrame();
         }
 
         private ShapeSL(TableSL table, OpenXmlCompositeElement ce)
         {
             Table = table;
-            Type = ShapeType.Table;
             _compositeElement = ce;
+            Type = ShapeType.Table;
+            Chart = new NoChart();
+            _textFrame = new NoTextFrame();
         }
 
         private ShapeSL(PictureSL pic, OpenXmlCompositeElement ce)
         {
             Picture = pic;
-            Type = ShapeType.Picture;
             _compositeElement = ce;
+            Type = ShapeType.Picture;
+            Chart = new NoChart();
+            _textFrame = new NoTextFrame();
         }
 
         private ShapeSL(GroupSL group, OpenXmlCompositeElement ce)
         {
             Group = group;
-            Type = ShapeType.Group;
             _compositeElement = ce;
+            Type = ShapeType.Group;
+            Chart = new NoChart();
+            _textFrame = new NoTextFrame();
         }
 
         private ShapeSL(OleObjectSL oleObject, OpenXmlCompositeElement ce)
         {
             OleObject = oleObject;
-            Type = ShapeType.OLEObject;
             _compositeElement = ce;
+            Type = ShapeType.OLEObject;
+            Chart = new NoChart();
+            _textFrame = new NoTextFrame();
         }
 
         #endregion Constructors
@@ -232,16 +247,19 @@ namespace SlideXML.Models.SlideComponents
         private void TryParseTextFrame()
         {
             var pTxtBody = _compositeElement.Descendants<P.TextBody>().SingleOrDefault();
-
             if (pTxtBody == null)
             {
-                return;
+                _textFrame = new NoTextFrame();
             }
 
             var aTexts = pTxtBody.Descendants<A.Text>();
             if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element contain text
             {
                 _textFrame = new TextFrame(_spSettings, pTxtBody);
+            }
+            else
+            {
+                _textFrame = new NoTextFrame();
             }
         }
 

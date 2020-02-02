@@ -11,7 +11,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace SlideXML.Services.Placeholders
 {
     /// <summary>
-    /// Represents a Slide Layout placeholder service.
+    /// <inheritdoc cref="IPlaceholderService"/>
     /// </summary>
     public class PlaceholderService : IPlaceholderService
     {
@@ -37,20 +37,20 @@ namespace SlideXML.Services.Placeholders
         #region Public Methods
 
         /// <summary>
-        /// Gets placeholder by type or index.
+        /// Tries to return the <see cref="PlaceholderSL"/> instance that satisfies type/identifier of specified element or null if no such instance exists.
         /// </summary>
         /// <param name="ce"></param>
         /// <returns></returns>
-        public PlaceholderSL Get(OpenXmlCompositeElement ce)
+        public PlaceholderSL TryGet(OpenXmlCompositeElement ce)
         {
             var type = ce.GetPlaceholderType();
             if (type != null)
             {
-                return _placeholders.Single(p => p.Type == type);
+                return _placeholders.SingleOrDefault(p => p.Type == type);
             }
 
             var idx = ce.GetPlaceholderIndex();
-            return _placeholders.Single(p => p.Id == idx);
+            return _placeholders.SingleOrDefault(p => p.Id == idx);
         }
 
         #endregion

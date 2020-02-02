@@ -4,24 +4,28 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using LogicNull.Utilities;
 using SlideXML.Enums;
-using SlideXML.Exceptions;
 using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using A = DocumentFormat.OpenXml.Drawing;
+using System.Collections.Generic;
 
 namespace SlideXML.Models.SlideComponents
 {
     /// <summary>
-    /// Represents a chart.
+    /// <inheritdoc cref="IChart"/>
     /// </summary>
-    public class ChartSL
+    public class ChartSL : IChart
     {
         #region Fields
+
+        // Contains chart elements, e.g. <c:pieChart>. If the chart type is not a combination,
+        // then collection contains an only single item.
+        private List<OpenXmlElement> _chartElements;
 
         private readonly SlidePart _sldPart;
         private ChartType? _type;
         private string _title;
-        private OpenXmlElement _xmlElement; // contains chart element, e.g. <c:pieChart>
+        private P.GraphicFrame _grFrame;
         private C.Chart _cChart;
 
         #endregion
@@ -45,9 +49,9 @@ namespace SlideXML.Models.SlideComponents
         }
 
         /// <summary>
-        /// Returns the chart title text.
+        /// Returns the chart title text or null if title no exists.
         /// </summary>
-        public string Title => _title ??= ParseTitle();
+        public string Title => _title ??= TryParseTitle();
 
         #endregion
 
@@ -60,9 +64,9 @@ namespace SlideXML.Models.SlideComponents
         {
             Check.NotNull(sldPart, nameof(sldPart));
             _sldPart = sldPart;
-            _xmlElement = grFrame;
+            _grFrame = grFrame;
 
-            Init();
+            Init(); //TODO: convert to lazy loading
         }
 
         #endregion
@@ -70,44 +74,58 @@ namespace SlideXML.Models.SlideComponents
         private void Init()
         {
             // Get reference
-            var chartRef = _xmlElement.Descendants<C.ChartReference>().Single();
+            var chartRef = _grFrame.Descendants<C.ChartReference>().Single();
 
             // Get chart part by reference
             var chPart = _sldPart.GetPartById(chartRef.Id) as ChartPart;
 
             _cChart = chPart.ChartSpace.GetFirstChild<C.Chart>();
-            _xmlElement = _cChart.PlotArea.Elements().Single(e => e.LocalName.EndsWith("Chart"));
+            _chartElements = _cChart.PlotArea.Elements().Where(e => e.LocalName.EndsWith("Chart")).ToList();
         }
 
         private void ParseType()
         {
-            var chartName = _xmlElement.LocalName;
-            var parsed = Enum.TryParse(chartName, true, out ChartType chartType);
-            if (!parsed)
+            if (_chartElements.Count > 1)
             {
-                throw new SlideXMLException("An error occured during parse chart type.");
+                _type = ChartType.Combination;
             }
-            _type = chartType;
+            else
+            {
+                var chartName = _chartElements.Single().LocalName;
+                Enum.TryParse(chartName, true, out ChartType chartType);
+                _type = chartType;
+            }
         }
 
-        private string ParseTitle()
+        private string TryParseTitle()
         {
-            var chartText = _cChart.Title.ChartText;
+            var title = _cChart.Title;
+            if (title == null) // chart has not title
+            {
+                return null;
+            }
+            var chartText = title.ChartText;
 
-            // First, try parse static title
+            // Combination
+            if (Type == ChartType.Combination)
+            {
+                return chartText.RichText.Descendants<A.Text>().Single().Text;
+            }
+
+            // Non-combination
+            // First, tries parse static title
             var rRich = chartText?.RichText;
             if (rRich != null)
             {
                 return rRich.Descendants<A.Text>().Single().Text;
             }
-
             // Dynamic title
             if (chartText != null)
             {
                 return chartText.Descendants<C.StringPoint>().Single().InnerText;
             }
-            // Parse PieChart dynamic title
-            return _xmlElement.GetFirstChild<C.PieChartSeries>().GetFirstChild<C.SeriesText>().Descendants<C.StringPoint>().Single().InnerText;
+            // Parses PieChart dynamic title
+            return _chartElements.Single().GetFirstChild<C.PieChartSeries>().GetFirstChild<C.SeriesText>().Descendants<C.StringPoint>().Single().InnerText;
         }
     }
 }

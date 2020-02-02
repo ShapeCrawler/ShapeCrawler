@@ -10,9 +10,9 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace SlideXML.Models.TextBody
 {
     /// <summary>
-    /// Represents a text body of the shape.
+    /// <inheritdoc cref="ITextFrame"/>
     /// </summary>
-    public class TextFrame
+    public sealed class TextFrame : ITextFrame
     {
         #region Fields
 
@@ -23,9 +23,6 @@ namespace SlideXML.Models.TextBody
 
         #region Properties
 
-        /// <summary>
-        /// Gets paragraphs.
-        /// </summary>
         public IList<ParagraphSL> Paragraphs { get; private set; }
 
         public string Text

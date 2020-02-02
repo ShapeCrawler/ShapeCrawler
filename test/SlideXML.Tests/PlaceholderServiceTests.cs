@@ -25,7 +25,7 @@ namespace SlideXML.Tests
             var phService = new PlaceholderService(sldLtPart);
 
             // ACT
-            var type = (P.PlaceholderValues)phService.Get(spId3).Type;
+            var type = (P.PlaceholderValues)phService.TryGet(spId3).Type;
 
             // CLOSE
             xmlDoc.Close();
