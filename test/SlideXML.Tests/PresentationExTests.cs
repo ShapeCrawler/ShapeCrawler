@@ -399,6 +399,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new PresentationSL(Properties.Resources._009);
+            var pre13 = new PresentationSL(Properties.Resources._013);
             var sld3Elements = pre.Slides[2].Shapes;
             var sld5Elements = pre.Slides[4].Shapes;
             var chartEx6 = sld3Elements.Single(e => e.Id.Equals(6));
@@ -406,6 +407,8 @@ namespace SlideXML.Tests
             var sld5Chart6 = sld5Elements.Single(e => e.Id.Equals(6));
             var sld5Chart3 = sld5Elements.Single(e => e.Id.Equals(3));
             var sld5Chart5 = sld5Elements.Single(e => e.Id.Equals(5));
+            var chart = pre13.Slides[0].Shapes.Single(x => x.Id == 5).Chart;
+            var chart4 = pre13.Slides[0].Shapes.Single(x => x.Id == 4).Chart;
 
             // ACT
             var chart7Title = chartEx7.Chart.Title;
@@ -414,8 +417,13 @@ namespace SlideXML.Tests
             var sld5Chart6Title = sld5Chart6.Chart.Title;
             var sld5Chart3Title = sld5Chart3.Chart.Title;
             var sld5Chart5Title = sld5Chart5.Chart.Title;
+            var hasTextFrame = sld5Chart5.HasTextFrame;
+            var title = chart.Title;
+            var title4 = chart4.Title;
+            var type = chart.Type;
 
             pre.Close();
+            pre13.Close();
 
             // ASSERT
             Assert.Equal("Sales", chart7Title);
@@ -424,6 +432,23 @@ namespace SlideXML.Tests
             Assert.Equal("Sales4", sld5Chart3Title);
             Assert.Equal("Sales5", sld5Chart5Title);
             Assert.Equal(ChartType.PieChart, chart7Type);
+            Assert.False(hasTextFrame);
+            Assert.Equal(ChartType.Combination, type);
+            Assert.Equal("Title text", title);
+            Assert.Null(title4);
+        }
+
+        [Fact]
+        public void TEMP()
+        {
+            // ARRANGE
+            var pre = new PresentationSL(@"d:\test.pptx");
+            var type = pre.Slides[0].Shapes.First().Chart.Type;
+            var title = pre.Slides[0].Shapes.First().Chart.Title;
+
+
+            pre.Close();
+
         }
     }
 }

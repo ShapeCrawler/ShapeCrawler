@@ -101,15 +101,14 @@ namespace SlideXML.Services
             {
                 if (ce.IsPlaceholder())
                 {
-                    var placeholder = _phService.Get(ce);
-                    elSettings.Placeholder = placeholder;
+                    elSettings.Placeholder = _phService.TryGet(ce);
                 }
                 shape = _shapeBuilder.BuildAutoShape(ce, elSettings);
                 WithOwnTransform2d(shape, t2d);
             }
             else // is placeholder obviously
             {
-                var placeholder = _phService.Get(ce);
+                var placeholder = _phService.TryGet(ce);
                 elSettings.Placeholder = placeholder;
 
                 shape = _shapeBuilder.BuildAutoShape(ce, elSettings);

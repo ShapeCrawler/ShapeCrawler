@@ -173,6 +173,16 @@ namespace SlideXML.Tests.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] _013 {
+            get {
+                object obj = ResourceManager.GetObject("_013", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] test_image_2 {
             get {
                 object obj = ResourceManager.GetObject("test_image_2", resourceCulture);

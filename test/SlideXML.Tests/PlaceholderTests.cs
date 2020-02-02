@@ -12,7 +12,7 @@ namespace SlideXML.Tests
     public class PlaceholderShapeTest
     {
         [Fact]
-        public void DateTimePlaceholder_HasText_Test()
+        public void DateTimePlaceholder_HasTextFrame_Test()
         {
             // ARRANGE
             var pre = new PresentationSL(Properties.Resources._008);
@@ -80,5 +80,17 @@ namespace SlideXML.Tests
             Assert.Equal(1539, fh);
         }
 
+
+        [Fact]
+        public void Slide_Shapes_Test()
+        {
+            // ARRANGE
+            var pre = new PresentationSL(Properties.Resources._013);
+
+            // ACT
+            var shapes = pre.Slides[0].Shapes; // should not throw exception
+
+            pre.Close();
+        }
     }
 }

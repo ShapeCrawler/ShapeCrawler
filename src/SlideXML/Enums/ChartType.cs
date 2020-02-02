@@ -10,6 +10,7 @@
         Bar3DChart,
         BarChart,
         BubbleChart,
+        Combination,
         DoughnutChart,
         Line3DChart,
         LineChart,
