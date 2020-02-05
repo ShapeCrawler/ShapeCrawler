@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml;
-using LogicNull.Utilities;
+using SlideXML.Validation;
 
 namespace SlideXML.Models.SlideComponents
 {

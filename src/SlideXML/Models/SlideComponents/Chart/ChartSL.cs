@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using LogicNull.Utilities;
 using SlideXML.Enums;
+using SlideXML.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using A = DocumentFormat.OpenXml.Drawing;
-using System.Collections.Generic;
 
-namespace SlideXML.Models.SlideComponents
+namespace SlideXML.Models.SlideComponents.Chart
 {
     /// <summary>
     /// <inheritdoc cref="IChart"/>

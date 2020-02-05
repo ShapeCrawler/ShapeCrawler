@@ -1,6 +1,6 @@
 ﻿using SlideXML.Enums;
 
-namespace SlideXML.Models.SlideComponents
+namespace SlideXML.Models.SlideComponents.Chart
 {
     /// <summary>
     /// Represents a chart.

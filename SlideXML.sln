@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29025.244
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogicNull", "src\LogicNull\src\LogicNull.csproj", "{95D08E4F-D668-420B-AD78-46D41D9818F1}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlideXML", "src\SlideXML\SlideXML.csproj", "{8A0184D0-4080-43FB-9FED-B6F7ED613F4A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlideXML.Tests", "test\SlideXML.Tests\SlideXML.Tests.csproj", "{4BF06CE3-2EC7-4ADD-BB9F-60CC729EFF62}"
@@ -15,10 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{95D08E4F-D668-420B-AD78-46D41D9818F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{95D08E4F-D668-420B-AD78-46D41D9818F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{95D08E4F-D668-420B-AD78-46D41D9818F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{95D08E4F-D668-420B-AD78-46D41D9818F1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8A0184D0-4080-43FB-9FED-B6F7ED613F4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8A0184D0-4080-43FB-9FED-B6F7ED613F4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A0184D0-4080-43FB-9FED-B6F7ED613F4A}.Release|Any CPU.ActiveCfg = Release|Any CPU

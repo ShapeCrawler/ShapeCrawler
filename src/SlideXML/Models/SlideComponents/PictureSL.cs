@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using LogicNull.Utilities;
 using SlideXML.Exceptions;
+using SlideXML.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace SlideXML.Models.SlideComponents

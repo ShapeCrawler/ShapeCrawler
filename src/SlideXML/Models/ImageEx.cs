@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using DocumentFormat.OpenXml.Packaging;
-using LogicNull.Utilities;
-using ObjectEx.Extensions;
+using SlideXML.Extensions;
+using SlideXML.Validation;
 
 namespace SlideXML.Models
 {

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using LogicNull.Utilities;
 using SlideXML.Models;
+using SlideXML.Validation;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 

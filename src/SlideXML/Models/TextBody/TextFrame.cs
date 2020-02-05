@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
-using LogicNull.Utilities;
 using SlideXML.Models.Settings;
+using SlideXML.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 

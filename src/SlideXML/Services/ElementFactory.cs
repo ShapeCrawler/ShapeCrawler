@@ -1,6 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using LogicNull.Utilities;
 using SlideXML.Enums;
 using SlideXML.Exceptions;
 using SlideXML.Extensions;
@@ -8,6 +7,7 @@ using SlideXML.Models.Settings;
 using SlideXML.Models.SlideComponents;
 using SlideXML.Services.Builders;
 using SlideXML.Services.Placeholders;
+using SlideXML.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -20,7 +20,7 @@ namespace SlideXML.Services
     {
         #region Fields
 
-        private readonly IShapeNewBuilder _shapeBuilder;
+        private readonly IShapeBuilder _shapeBuilder;
         private readonly IPlaceholderService _phService;
 
         #region Dependencies

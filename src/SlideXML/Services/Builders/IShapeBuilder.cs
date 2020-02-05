@@ -8,7 +8,7 @@ namespace SlideXML.Services.Builders
     /// <summary>
     /// Defines method to create <see cref="ShapeSL"/> instance.
     /// </summary>
-    public interface IShapeNewBuilder
+    public interface IShapeBuilder
     {
         ShapeSL BuildAutoShape(OpenXmlCompositeElement compositeElement, ElementSettings spSettings);
 

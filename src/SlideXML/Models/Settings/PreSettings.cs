@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using LogicNull.Utilities;
+using SlideXML.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 namespace SlideXML.Models.Settings

@@ -1,7 +1,7 @@
 ﻿using SlideXML.Enums;
 using SlideXML.Exceptions;
 
-namespace SlideXML.Models.SlideComponents
+namespace SlideXML.Models.SlideComponents.Chart
 {
     public class NoChart : IChart
     {
