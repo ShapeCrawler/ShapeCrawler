@@ -1,7 +1,7 @@
 ﻿using System.Linq;
-using LogicNull.Utilities;
 using SlideXML.Models.Settings;
 using SlideXML.Models.TextBody;
+using SlideXML.Validation;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideXML.Models.TableComponents

@@ -1,12 +1,10 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using LogicNull.Extensions;
-using LogicNull.Utilities;
 using SlideXML.Extensions;
 using SlideXML.Models.Settings;
 using SlideXML.Services;
+using SlideXML.Validation;
 
 namespace SlideXML.Models
 {
@@ -61,11 +59,8 @@ namespace SlideXML.Models
         /// <param name="pptxFileStream"></param>
         public PresentationSL(Stream pptxFileStream)
         {
-            pptxFileStream.ThrowIfNull(nameof(pptxFileStream));
-            if (pptxFileStream.CanSeek)
-            {
-                pptxFileStream.Seek(0, SeekOrigin.Begin);
-            }
+            Check.NotNull(pptxFileStream, nameof(pptxFileStream));
+            pptxFileStream.SeekBegin();
             _xmlDoc = PresentationDocument.Open(pptxFileStream, true);
         }
 
@@ -90,14 +85,6 @@ namespace SlideXML.Models
             _xmlDoc = PresentationDocument.Open(pptxFilePath, true);
         }
 
-        /// <summary>
-        /// The Finalizer.
-        /// </summary>
-        ~PresentationSL()
-        {
-            DisposeManaged();
-        }
-
         #endregion Constructors
 
         #region Public Methods
@@ -113,7 +100,7 @@ namespace SlideXML.Models
         }
 
         /// <summary>
-        /// Saves and closes the presentation.
+        /// Saves and closes the current presentation if it is not already closed.
         /// </summary>
         public void Close()
         {
@@ -121,27 +108,21 @@ namespace SlideXML.Models
             {
                 return;
             }
-            DisposeManaged();
+            _xmlDoc.Close();
+            _disposed = true;
         }
 
         /// <summary>
-        /// Saves and closes the presentation, and releases all resources.
+        /// Saves and closes the current presentation.
         /// </summary>
         public void Dispose()
         {
             Close();
-            GC.SuppressFinalize(this);
         }
 
         #endregion Public Methods
 
         #region Private Methods
-
-        private void DisposeManaged()
-        {
-            _xmlDoc.Close();
-            _disposed = true;
-        }
 
         private void InitSlides()
         {

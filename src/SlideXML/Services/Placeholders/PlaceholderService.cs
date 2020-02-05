@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
-using LogicNull.Utilities;
+using SlideXML.Enums;
 using SlideXML.Extensions;
+using SlideXML.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace SlideXML.Services.Placeholders
 {
@@ -18,7 +21,7 @@ namespace SlideXML.Services.Placeholders
         #region Fields
 
         private const int CustomGeometryCode = 187;
-        private List<PlaceholderSL> _placeholders;
+        private List<PlaceholderSL> _placeholders; //TODO: consider use here HashSet
         private readonly SlideLayoutPart _sldLtPart;
 
         #endregion Fields
@@ -37,20 +40,64 @@ namespace SlideXML.Services.Placeholders
         #region Public Methods
 
         /// <summary>
-        /// Tries to return the <see cref="PlaceholderSL"/> instance that satisfies type/identifier of specified element or null if no such instance exists.
+        /// Tries to get placeholder from the repository.
         /// </summary>
         /// <param name="ce"></param>
         /// <returns></returns>
+        /// <remarks>
+        /// Some placeholder on a slide has its location (x/y) and size (width/height) data on the slide.
+        /// </remarks>
         public PlaceholderSL TryGet(OpenXmlCompositeElement ce)
         {
-            var type = ce.GetPlaceholderType();
-            if (type != null)
+            if (!ce.IsPlaceholder())
             {
-                return _placeholders.SingleOrDefault(p => p.Type == type);
+                return null;
             }
 
-            var idx = ce.GetPlaceholderIndex();
-            return _placeholders.SingleOrDefault(p => p.Id == idx);
+            var phXml = GetPlaceholderXML(ce);
+            if (phXml.PlaceholderType == PlaceholderType.Custom)
+            {
+                return _placeholders.SingleOrDefault(p => p.Index == phXml.Index);
+            }
+
+            return _placeholders.SingleOrDefault(p => p.Type == phXml.PlaceholderType);
+        }
+
+        /// <summary>
+        /// Get placeholder XML.
+        /// </summary>
+        /// <param name="compositeElement">Placeholder which is placeholder.</param>
+        public static PlaceholderXML GetPlaceholderXML(OpenXmlCompositeElement compositeElement)
+        {
+            var result = new PlaceholderXML();
+            var ph = compositeElement.Descendants<P.PlaceholderShape>().First();
+            var phTypeXml = ph.Type;
+
+            // TYPE
+            if (phTypeXml == null)
+            {
+                result.PlaceholderType = PlaceholderType.Custom;
+            }
+            else
+            {
+                // Simple title and centered title placeholders were united
+                if (phTypeXml == P.PlaceholderValues.Title || phTypeXml == P.PlaceholderValues.CenteredTitle)
+                {
+                    result.PlaceholderType = PlaceholderType.Title;
+                }
+                else
+                {
+                    result.PlaceholderType = Enum.Parse<PlaceholderType>(phTypeXml.Value.ToString());
+                }
+            }
+
+            // INDEX
+            if (ph.Index != null)
+            {
+                result.Index = (int)ph.Index.Value;
+            }
+
+            return result;
         }
 
         #endregion
@@ -70,7 +117,7 @@ namespace SlideXML.Services.Placeholders
             // if master placeholder contains level font height, then it becomes a priority than the layout
             foreach (var mHolder in masterHolders)
             {
-                if (layoutHolders.Any(x => x.Type == mHolder.Type || x.Id == mHolder.Id))
+                if (layoutHolders.Any(x => x.Type == mHolder.Type || x.Index == mHolder.Index))
                 {
                     var shape = (P.Shape)mHolder.CompositeElement;
                     var dRp = shape.TextBody.ListStyle?.Level1ParagraphProperties?.GetFirstChild<DefaultRunProperties>();
@@ -79,7 +126,7 @@ namespace SlideXML.Services.Placeholders
                         continue;
                     }
 
-                    var removeEl = layoutHolders.Single(x => x.Type == mHolder.Type || x.Id == mHolder.Id);
+                    var removeEl = layoutHolders.Single(x => x.Type == mHolder.Type || x.Index == mHolder.Index);
                     layoutHolders.Remove(removeEl);
                     layoutHolders.Add(mHolder);
                 }
@@ -96,15 +143,8 @@ namespace SlideXML.Services.Placeholders
         private List<PlaceholderSL> GetPlaceholders(IEnumerable<OpenXmlCompositeElement> ce)
         {
             var result = new List<PlaceholderSL>(ce.Count());
-            foreach (var el in ce)
+            foreach (var el in ce.Where(e => e.IsPlaceholder()))
             {
-                var type = el.GetPlaceholderType();
-                var idx = el.GetPlaceholderIndex();
-                if (type == null && idx == null)
-                {
-                    continue;
-                }
-
                 var elShapeProperties = el.Descendants<P.ShapeProperties>().Single();
                 var t2d = elShapeProperties.Transform2D;
                 if (t2d == null)
@@ -112,8 +152,8 @@ namespace SlideXML.Services.Placeholders
                     continue;
                 }
 
-                // Gets X, Y, W, H and ShapeProperties
-                var newPh = new PlaceholderSL
+                var phXml = GetPlaceholderXML(el);
+                var newPh = new PlaceholderSL(phXml)
                 {
                     X = t2d.Offset.X.Value,
                     Y = t2d.Offset.Y.Value,
@@ -133,9 +173,6 @@ namespace SlideXML.Services.Placeholders
                 {
                     newPh.GeometryCode = (int)presetGeometry.Preset.Value;
                 }
-
-                newPh.Type = type;
-                newPh.Id = (int?)idx;
 
                 result.Add(newPh);
             }

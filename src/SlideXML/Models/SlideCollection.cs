@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using LogicNull.Utilities;
+using SlideXML.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace SlideXML.Models

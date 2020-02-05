@@ -1,4 +1,4 @@
-﻿using LogicNull.Utilities;
+﻿using SlideXML.Validation;
 
 namespace SlideXML.Models.TextBody
 {

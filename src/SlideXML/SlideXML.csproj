@@ -32,4 +32,8 @@
     <ProjectReference Include="..\LogicNull\src\LogicNull.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Validation\" />
+  </ItemGroup>
+
 </Project>

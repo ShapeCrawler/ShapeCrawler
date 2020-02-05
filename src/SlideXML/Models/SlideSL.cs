@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using LogicNull.Utilities;
 using SlideXML.Enums;
 using SlideXML.Models.Settings;
 using SlideXML.Models.SlideComponents;
 using SlideXML.Services;
+using SlideXML.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace SlideXML.Models
@@ -13,7 +13,7 @@ namespace SlideXML.Models
     /// <summary>
     /// Represents a slide.
     /// </summary>
-    public class SlideSL
+    public class SlideSL : TaggedComponent
     {
         #region Fields
 
