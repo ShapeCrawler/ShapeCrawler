@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>SlideXML</AssemblyName>
+    <RootNamespace>SlideXML</RootNamespace>
+    <Version>0.1.0</Version>
+    <Authors>Adam Shakhabov</Authors>
+    <Company></Company>
+    <Description>A lightweight .NET library for parse PowerPoint file presentations without having to install the PowerPoint application.</Description>
+    <PackageTags>openxml powerpoint slidexml pptx</PackageTags>
+    <NeutralLanguage>en</NeutralLanguage>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon></PackageIcon>
+    <PackageIconUrl />
+    <Copyright>MIT</Copyright>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LogicNull\src\LogicNull.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Validation\" />
+  </ItemGroup>
+
+</Project>

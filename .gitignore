@@ -1,0 +1,15 @@
+src/slidexml/.vs
+src/slidexml/bin
+src/slidexml/obj
+
+test/slidexml.tests/obj
+test/slidexml.tests/bin
+
+src/slidexml.examples/bin
+src/slidexml.examples/obj
+
+.vs/
+
+
+slidexml.Examples/bin/
+slidexml.Examples/obj/
