@@ -10,7 +10,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace SlideXML.Services.Placeholders
 {
     /// <summary>
-    /// Represents a data of a placeholder.
+    /// Represents placeholder data on layout/master slide.
     /// </summary>
     public class PlaceholderSL : IEquatable<PlaceholderSL>
     {
@@ -70,7 +70,7 @@ namespace SlideXML.Services.Placeholders
         }
 
         /// <summary>
-        /// Gets or sets layout's <see cref="OpenXmlCompositeElement"/> instance.
+        /// Gets or sets <see cref="OpenXmlCompositeElement"/> instance of layout/master.
         /// </summary>
         public OpenXmlCompositeElement CompositeElement { get; set; }
 
@@ -169,39 +169,24 @@ namespace SlideXML.Services.Placeholders
                 var listStyle = shape.TextBody.ListStyle;
                 if (listStyle?.Level1ParagraphProperties != null)
                 {
-                    _fontHeights.Add(1, listStyle.Level1ParagraphProperties.GetFirstChild<A.DefaultRunProperties>().FontSize.Value);
-
-                    if (listStyle.Level2ParagraphProperties != null)
+                    // parses Level{X}ParagraphProperties
+                    foreach (var textPr in listStyle.Elements<A.TextParagraphPropertiesType>())
                     {
-                        _fontHeights.Add(2, listStyle.Level2ParagraphProperties.GetFirstChild<A.DefaultRunProperties>().FontSize.Value);
-                    }
-                    if (listStyle.Level3ParagraphProperties != null)
-                    {
-                        _fontHeights.Add(3, listStyle.Level3ParagraphProperties.GetFirstChild<A.DefaultRunProperties>().FontSize.Value);
-                    }
-                    if (listStyle.Level4ParagraphProperties != null)
-                    {
-                        _fontHeights.Add(4, listStyle.Level4ParagraphProperties.GetFirstChild<A.DefaultRunProperties>().FontSize.Value);
-                    }
-                    if (listStyle.Level5ParagraphProperties != null)
-                    {
-                        _fontHeights.Add(5, listStyle.Level5ParagraphProperties.GetFirstChild<A.DefaultRunProperties>().FontSize.Value);
-                    }
-                    if (listStyle.Level6ParagraphProperties != null)
-                    {
-                        _fontHeights.Add(6, listStyle.Level6ParagraphProperties.GetFirstChild<A.DefaultRunProperties>().FontSize.Value);
-                    }
-                    if (listStyle.Level7ParagraphProperties != null)
-                    {
-                        _fontHeights.Add(7, listStyle.Level7ParagraphProperties.GetFirstChild<A.DefaultRunProperties>().FontSize.Value);
-                    }
-                    if (listStyle.Level8ParagraphProperties != null)
-                    {
-                        _fontHeights.Add(8, listStyle.Level8ParagraphProperties.GetFirstChild<A.DefaultRunProperties>().FontSize.Value);
-                    }
-                    if (listStyle.Level9ParagraphProperties != null)
-                    {
-                        _fontHeights.Add(9, listStyle.Level9ParagraphProperties.GetFirstChild<A.DefaultRunProperties>().FontSize.Value);
+                        var fs = textPr.GetFirstChild<A.DefaultRunProperties>().FontSize;
+                        if (fs == null)
+                        {
+                            continue;
+                        }
+                        var lvl = textPr.Level;
+                        if (lvl == null)
+                        {
+                            lvl = 1;
+                        }
+                        else
+                        {
+                            lvl++;
+                        }
+                        _fontHeights.Add(lvl, fs.Value);
                     }
                 }
                 else
@@ -210,7 +195,6 @@ namespace SlideXML.Services.Placeholders
                 }
             }
         }
-
 
         #endregion
     }

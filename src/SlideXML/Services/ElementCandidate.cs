@@ -11,7 +11,7 @@ namespace SlideXML.Services
         /// <summary>
         /// Gets or sets corresponding element type.
         /// </summary>
-        public ShapeType ElementType { get; set; }
+        public ElementType ElementType { get; set; }
 
         /// <summary>
         /// Gets or sets instance of <see cref="OpenXmlCompositeElement"/>.

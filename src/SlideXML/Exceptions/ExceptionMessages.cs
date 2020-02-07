@@ -7,8 +7,12 @@ namespace SlideXML.Exceptions
     /// </summary>
     public class ExceptionMessages
     {
-        public static string NoTextFrame = "Shape has not text frame.";
+        public static string NoTextFrame = "Element has not a text frame.";
 
-        public static string NoChart = "Shape has not chart.";
+        public static string NoChart = "Element has not a chart.";
+
+        public static string NotPlaceholder = "Element is not a placeholder";
+
+        public static string NotTitle = "Chart has not a title.";
     }
 }

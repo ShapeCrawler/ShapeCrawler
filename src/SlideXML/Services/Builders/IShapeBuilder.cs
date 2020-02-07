@@ -6,20 +6,20 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace SlideXML.Services.Builders
 {
     /// <summary>
-    /// Defines method to create <see cref="ShapeSL"/> instance.
+    /// Defines method to create <see cref="SlideElement"/> instance.
     /// </summary>
     public interface IShapeBuilder
     {
-        ShapeSL BuildAutoShape(OpenXmlCompositeElement compositeElement, ElementSettings spSettings);
+        SlideElement BuildAutoShape(OpenXmlCompositeElement compositeElement, ElementSettings spSettings);
 
-        ShapeSL BuildChart(P.GraphicFrame xmlGrFrame);
+        SlideElement BuildChart(P.GraphicFrame xmlGrFrame);
 
-        ShapeSL BuildTable(P.GraphicFrame xmlGrFrame, ElementSettings elSettings);
+        SlideElement BuildTable(P.GraphicFrame xmlGrFrame, ElementSettings elSettings);
 
-        ShapeSL BuildPicture(OpenXmlCompositeElement ce);
+        SlideElement BuildPicture(OpenXmlCompositeElement ce);
 
-        ShapeSL BuildGroup(IElementFactory elFactory, OpenXmlCompositeElement compositeElement, IPreSettings preSettings);
+        SlideElement BuildGroup(IElementFactory elFactory, OpenXmlCompositeElement compositeElement, IPreSettings preSettings);
         
-        ShapeSL BuildOLEObject(OpenXmlCompositeElement compositeElement);
+        SlideElement BuildOLEObject(OpenXmlCompositeElement compositeElement);
     }
 }

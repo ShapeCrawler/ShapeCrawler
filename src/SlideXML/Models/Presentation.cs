@@ -11,7 +11,7 @@ namespace SlideXML.Models
     /// <summary>
     /// Represents a presentation.
     /// </summary>
-    public class PresentationSL : IPresentation
+    public class Presentation : IPresentation
     {
         #region Fields
 
@@ -51,13 +51,13 @@ namespace SlideXML.Models
 
         #endregion Properties
 
-        #region Constructors and Finalizer
+        #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationSL"/> class by pptx-file stream.
+        /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file stream.
         /// </summary>
         /// <param name="pptxFileStream"></param>
-        public PresentationSL(Stream pptxFileStream)
+        public Presentation(Stream pptxFileStream)
         {
             Check.NotNull(pptxFileStream, nameof(pptxFileStream));
             pptxFileStream.SeekBegin();
@@ -65,10 +65,10 @@ namespace SlideXML.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationSL"/> class by pptx-file byte array.
+        /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file byte array.
         /// </summary>
         /// <param name="pptxFileBytes"></param>
-        public PresentationSL(byte[] pptxFileBytes)
+        public Presentation(byte[] pptxFileBytes)
         {
             Check.NotNull(pptxFileBytes, nameof(pptxFileBytes));
             var pptxMemoryStream = new MemoryStream();
@@ -77,9 +77,9 @@ namespace SlideXML.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationSL"/> class by pptx-file path.
+        /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file path.
         /// </summary>
-        public PresentationSL(string pptxFilePath)
+        public Presentation(string pptxFilePath)
         {
             Check.NotEmpty(pptxFilePath, nameof(pptxFilePath));            
             _xmlDoc = PresentationDocument.Open(pptxFilePath, true);
@@ -136,7 +136,7 @@ namespace SlideXML.Models
             for (var slideIndex = 0; slideIndex < nbSlides; slideIndex++)
             {
                 SlidePart slidePart = presentationPart.GetSlidePartByIndex(slideIndex);
-                var newSldEx = new SlideSL(slidePart, 
+                var newSldEx = new Slide(slidePart, 
                                    slideIndex + 1,
                                    groupShapeTypeParser,
                                    bgImgFactory,

@@ -6,7 +6,7 @@ namespace SlideXML.Models.TextBody
 {
     public class NoTextFrame : ITextFrame
     {
-        public IList<ParagraphSL> Paragraphs => throw new SlideXMLException(ExceptionMessages.NoTextFrame);
+        public IList<Paragraph> Paragraphs => throw new SlideXMLException(ExceptionMessages.NoTextFrame);
 
         public string Text => throw new SlideXMLException(ExceptionMessages.NoTextFrame);
     }

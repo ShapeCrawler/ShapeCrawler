@@ -10,5 +10,7 @@ namespace SlideXML.Models.SlideComponents.Chart
         ChartType Type { get; }
 
         string Title { get; }
+
+        bool HasTitle { get; }
     }
 }

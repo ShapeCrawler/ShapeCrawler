@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Packaging;
 using SlideXML.Extensions;
 using SlideXML.Validation;
@@ -19,42 +21,35 @@ namespace SlideXML.Models
 
         #endregion Fields
 
-        #region Properties
-
-        /// <summary>
-        /// Gets image bytes.
-        /// </summary>
-        /// <returns>
-        /// A <c>byte array</c>, otherwise <c>null</c> if image is not exist.
-        /// </returns>
-        public byte[] Bytes
-        {
-            get
-            {
-                if (_bytes == null)
-                {
-                    InitBytes();
-                }
-
-                return _bytes;
-            }
-        }
-
-        #endregion Properties
-
         #region Constructors
 
         public ImageEx(SlidePart sldPart, string blipRelateId)
         {
-            Check.NotNull(sldPart, nameof(sldPart));
-            Check.NotNull(blipRelateId, nameof(blipRelateId));
-            _sldPart = sldPart;
-            _blipRelateId = blipRelateId;
+            _sldPart = sldPart ?? throw new ArgumentNullException(nameof(sldPart));
+            _blipRelateId = blipRelateId ?? throw new ArgumentNullException(nameof(blipRelateId));
         }
 
         #endregion Constructors
 
         #region Public Methods
+
+        /// <summary>
+        /// Returns image bytes.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<byte[]> GetBytes() // TODO: consider to use ValueTask instead Task
+        {
+            if (_bytes != null)
+            {
+                return _bytes; // return from cache
+            }
+
+            await using var imgPartStream = GetImagePart().GetStream(); // consider re-use same stream with SetImage()
+            _bytes = new byte[imgPartStream.Length];
+            await imgPartStream.ReadAsync(_bytes, 0, (int)imgPartStream.Length);
+
+            return _bytes;
+        }
 
         /// <summary>
         /// Sets an image.
@@ -64,37 +59,19 @@ namespace SlideXML.Models
         {
             Check.NotNull(stream, nameof(stream));
 
-            var imgPart = GetImagePart();
             stream.SeekBegin();
-            imgPart.FeedData(stream);
+            GetImagePart().FeedData(stream);
 
-            _bytes = null; // reset
+            _bytes = null; // reset/clean cache
         }
 
         #endregion Public Methods
 
         #region Private Methods
 
-        private void InitBytes()
-        {
-            var imgPart = GetImagePart();
-
-            using (var stream = imgPart.GetStream())
-            {
-                var length = stream.Length;
-                _bytes = new byte[length];
-                stream.Read(_bytes, 0, (int)stream.Length); //TODO: use stream.ReadAsync instead
-            }
-        }
-
         private ImagePart GetImagePart()
         {
-            if (_imgPart == null) //TODO: use ?? operator
-            {
-                _imgPart = (ImagePart)_sldPart.GetPartById(_blipRelateId);
-            }
-
-            return _imgPart;
+            return _imgPart ??= (ImagePart) _sldPart.GetPartById(_blipRelateId);
         }
 
         #endregion Private Methods

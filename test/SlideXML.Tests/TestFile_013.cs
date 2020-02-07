@@ -2,6 +2,7 @@
 using SlideXML.Enums;
 using SlideXML.Models;
 using Xunit;
+// ReSharper disable TooManyChainedReferences
 
 namespace SlideXML.Tests
 {
@@ -11,13 +12,13 @@ namespace SlideXML.Tests
         public void ChartPropertiesTest()
         {
             // ARRANGE
-            var pre13 = new PresentationSL(Properties.Resources._013);
+            var pre13 = new Presentation(Properties.Resources._013);
             var chart = pre13.Slides[0].Shapes.Single(x => x.Id == 5).Chart;
             var chart4 = pre13.Slides[0].Shapes.Single(x => x.Id == 4).Chart;
 
             // ACT
             var title = chart.Title;
-            var title4 = chart4.Title;
+            var hasTitle = chart4.HasTitle;
             var type = chart.Type;
 
             pre13.Close();
@@ -25,14 +26,14 @@ namespace SlideXML.Tests
             // ASSERT
             Assert.Equal(ChartType.Combination, type);
             Assert.Equal("Title text", title);
-            Assert.Null(title4);
+            Assert.False(hasTitle);
         }
 
         [Fact]
         public void Slide_Shapes_Test()
         {
             // ARRANGE
-            var pre = new PresentationSL(Properties.Resources._013);
+            var pre = new Presentation(Properties.Resources._013);
 
             // ACT
             var shapes = pre.Slides[0].Shapes; // should not throw exception
@@ -44,13 +45,41 @@ namespace SlideXML.Tests
         public void PlaceholderType_Test()
         {
             // ARRANGE
-            var pre = new PresentationSL(Properties.Resources._013);
+            var pre = new Presentation(Properties.Resources._013);
 
             // ACT
             var phType = pre.Slides[0].Shapes.Single(s=>s.Id == 281).PlaceholderType;
 
             // ARRANGE
             Assert.Equal(PlaceholderType.Custom, phType);
+        }
+
+        [Fact]
+        public void Chart_Title_Test()
+        {
+            // ARRANGE
+            var pre = new Presentation(Properties.Resources._013);
+            var chart = pre.Slides[0].Shapes.Single(s => s.Id == 6).Chart;
+
+            // ACT
+            var hasTitle = chart.HasTitle;
+
+            // ARRANGE
+            Assert.False(hasTitle);
+        }
+
+        [Fact]
+        public void TextFrame_Text_Test()
+        {
+            // ARRANGE
+            var pre = new Presentation(Properties.Resources._014);
+            var elId61 = pre.Slides[0].Shapes.Single(s => s.Id == 61);
+
+            // ACT
+            var text = elId61.TextFrame.Text;
+
+            // ARRANGE
+            Assert.NotNull(text);
         }
     }
 }

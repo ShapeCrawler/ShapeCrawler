@@ -4,6 +4,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using SlideXML.Enums;
+using SlideXML.Exceptions;
 using SlideXML.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -14,7 +15,7 @@ namespace SlideXML.Models.SlideComponents.Chart
     /// <summary>
     /// <inheritdoc cref="IChart"/>
     /// </summary>
-    public class ChartSL : IChart
+    public class Chart : IChart
     {
         #region Fields
 
@@ -25,7 +26,7 @@ namespace SlideXML.Models.SlideComponents.Chart
         private readonly SlidePart _sldPart;
         private ChartType? _type;
         private string _title;
-        private P.GraphicFrame _grFrame;
+        private readonly P.GraphicFrame _grFrame;
         private C.Chart _cChart;
 
         #endregion
@@ -44,23 +45,50 @@ namespace SlideXML.Models.SlideComponents.Chart
                     ParseType();
                 }
 
-                return (ChartType)_type;
+                return (ChartType)_type; //TODO: fix casting
             }
         }
 
         /// <summary>
         /// Returns the chart title text or null if title no exists.
         /// </summary>
-        public string Title => _title ??= TryParseTitle();
+        public string Title
+        {
+            get
+            {
+                if (_title == null)
+                {
+                    _title = TryParseTitle();
+                }
 
-        #endregion
+                return _title ?? throw new SlideXMLException(ExceptionMessages.NotTitle);
+            }
+        }
+
+        /// <summary>
+        /// Indicates whether the chart has a title.
+        /// </summary>
+        public bool HasTitle
+        {
+            get
+            {
+                if (_title == null)
+                {
+                    _title = TryParseTitle();
+                }
+
+                return _title != null;
+            }
+        }
+
+        #endregion Properties
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChartSL"/> class.
+        /// Initializes a new instance of the <see cref="Chart"/> class.
         /// </summary>
-        public ChartSL(P.GraphicFrame grFrame, SlidePart sldPart)
+        public Chart(P.GraphicFrame grFrame, SlidePart sldPart)
         {
             Check.NotNull(sldPart, nameof(sldPart));
             _sldPart = sldPart;
@@ -70,6 +98,8 @@ namespace SlideXML.Models.SlideComponents.Chart
         }
 
         #endregion
+
+        #region Private Methods
 
         private void Init()
         {
@@ -104,6 +134,7 @@ namespace SlideXML.Models.SlideComponents.Chart
             {
                 return null;
             }
+           
             var chartText = title.ChartText;
 
             // Combination
@@ -124,9 +155,17 @@ namespace SlideXML.Models.SlideComponents.Chart
             {
                 return chartText.Descendants<C.StringPoint>().Single().InnerText;
             }
-            // Parses PieChart dynamic title
-            return _chartElements.Single().GetFirstChild<C.PieChartSeries>().GetFirstChild<C.SeriesText>().Descendants<C.StringPoint>().Single().InnerText;
+
+            if (Type == ChartType.PieChart)
+            {
+                // Parses PieChart dynamic title
+                return _chartElements.Single().GetFirstChild<C.PieChartSeries>().GetFirstChild<C.SeriesText>().Descendants<C.StringPoint>().Single().InnerText;
+            }
+
+            return null;
         }
+
+        #endregion
     }
 }
 

@@ -37,7 +37,7 @@ namespace SlideXML.Services
         {
             Check.NotNull(sldPart, nameof(sldPart));
             _sldPart = sldPart;
-            _shapeBuilder = new ShapeSL.Builder(new BackgroundImageFactory(), new GroupShapeTypeParser(), _sldPart);
+            _shapeBuilder = new SlideElement.Builder(new BackgroundImageFactory(), new GroupShapeTypeParser(), _sldPart);
             _phService = new PlaceholderService(_sldPart.SlideLayoutPart);
         }
 
@@ -49,40 +49,40 @@ namespace SlideXML.Services
         /// Creates a new shape from candidate.
         /// </summary>
         /// <returns></returns>
-        public ShapeSL CreateShape(ElementCandidate ec, IPreSettings preSettings)
+        public SlideElement CreateShape(ElementCandidate ec, IPreSettings preSettings)
         {
             Check.NotNull(ec, nameof(ec));
             var elSetting = new ElementSettings(preSettings);
 
             switch (ec.ElementType)
             {
-                case ShapeType.AutoShape:
+                case ElementType.AutoShape:
                     {
                         return CreateShape(ec.CompositeElement,  elSetting);
                     }
-                case ShapeType.Chart:
+                case ElementType.Chart:
                     {
                         return CreateChart(ec);
                     }
-                case ShapeType.Table:
+                case ElementType.Table:
                     {
                         return _shapeBuilder.BuildTable((P.GraphicFrame)ec.CompositeElement, elSetting);
 
                     }
-                case ShapeType.Picture:
+                case ElementType.Picture:
                 {
                     return _shapeBuilder.BuildPicture(ec.CompositeElement);
                 }
-                case ShapeType.OLEObject:
+                case ElementType.OLEObject:
                 {
                     return _shapeBuilder.BuildOLEObject(ec.CompositeElement);
                 }
                 default:
-                    throw new SlideXMLException(nameof(ShapeType));
+                    throw new SlideXMLException(nameof(ElementType));
             }
         }
 
-        public ShapeSL CreateGroupShape(OpenXmlCompositeElement compositeElement, IPreSettings preSettings)
+        public SlideElement CreateGroupShape(OpenXmlCompositeElement compositeElement, IPreSettings preSettings)
         {
             return _shapeBuilder.BuildGroup(this, compositeElement, preSettings);
         }
@@ -91,9 +91,9 @@ namespace SlideXML.Services
 
         #region Private Methods
 
-        private ShapeSL CreateShape(OpenXmlCompositeElement ce, ElementSettings elSettings)
+        private SlideElement CreateShape(OpenXmlCompositeElement ce, ElementSettings elSettings)
         {
-            ShapeSL shape;
+            SlideElement shape;
 
             // Add own transform properties
             var t2d = ((P.Shape)ce).ShapeProperties.Transform2D;
@@ -121,7 +121,7 @@ namespace SlideXML.Services
             return shape;
         }
 
-        private ShapeSL CreateChart(ElementCandidate ec)
+        private SlideElement CreateChart(ElementCandidate ec)
         {
             // Validate
             Check.NotNull(ec, nameof(ec));
@@ -135,7 +135,7 @@ namespace SlideXML.Services
             return chartShape;
         }
 
-        private static void WithOwnTransform2d(ShapeSL e, A.Transform2D t2D)
+        private static void WithOwnTransform2d(SlideElement e, A.Transform2D t2D)
         {
             e.X = t2D.Offset.X.Value;
             e.Y = t2D.Offset.Y.Value;

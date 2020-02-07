@@ -5,13 +5,13 @@ namespace SlideXML.Models
     /// <summary>
     /// Provides APIs for slide collection.
     /// </summary>
-    public interface ISlideCollection : IEnumerable<SlideSL>
+    public interface ISlideCollection : IEnumerable<Slide>
     {
-        void Add(SlideSL item);
+        void Add(Slide item);
 
-        void Remove(SlideSL item);
+        void Remove(Slide item);
 
-        SlideSL this[int index]
+        Slide this[int index]
         {
             get;
         }

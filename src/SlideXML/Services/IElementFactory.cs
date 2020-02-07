@@ -10,8 +10,8 @@ namespace SlideXML.Services
     /// </summary>
     public interface IElementFactory
     {
-        ShapeSL CreateShape(ElementCandidate ec, IPreSettings preSettings);
+        SlideElement CreateShape(ElementCandidate ec, IPreSettings preSettings);
 
-        ShapeSL CreateGroupShape(OpenXmlCompositeElement compositeElement, IPreSettings preSettings);
+        SlideElement CreateGroupShape(OpenXmlCompositeElement compositeElement, IPreSettings preSettings);
     }
 }

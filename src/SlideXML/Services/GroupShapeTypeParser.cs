@@ -35,7 +35,7 @@ namespace SlideXML.Services
             var oleCandidates = oleFrames.Select(ce => new ElementCandidate
             {
                 CompositeElement = ce,
-                ElementType = ShapeType.OLEObject
+                ElementType = ElementType.OLEObject
             });
 
             // FILTER PICTURES
@@ -49,7 +49,7 @@ namespace SlideXML.Services
             var picCandidates = xmlPictures.Select(ce => new ElementCandidate
             {
                 CompositeElement = ce,
-                ElementType = ShapeType.Picture
+                ElementType = ElementType.Picture
             });
 
             // Shape candidates
@@ -58,7 +58,7 @@ namespace SlideXML.Services
             var shapeCandidates = xmlShapes.Select(ce => new ElementCandidate
             {
                 CompositeElement = ce,
-                ElementType = ShapeType.AutoShape
+                ElementType = ElementType.AutoShape
             });
 
             // Table candidates
@@ -70,7 +70,7 @@ namespace SlideXML.Services
             var tableCandidates = xmlTables.Select(ce => new ElementCandidate
             {
                 CompositeElement = ce,
-                ElementType = ShapeType.Table
+                ElementType = ElementType.Table
             });
 
             // Chart candidates
@@ -82,7 +82,7 @@ namespace SlideXML.Services
             var chartCandidates = xmlCharts.Select(ce => new ElementCandidate
             {
                 CompositeElement = ce,
-                ElementType = ShapeType.Chart
+                ElementType = ElementType.Chart
             });
 
             var allCandidates = picCandidates.Union(shapeCandidates).Union(tableCandidates).Union(chartCandidates).Union(oleCandidates);
@@ -93,7 +93,7 @@ namespace SlideXML.Services
                 var xmlGroupCandidates = supportElements.Where(e => e is P.GroupShape).Select(ce => new ElementCandidate
                 {
                     CompositeElement = ce,
-                    ElementType = ShapeType.Group
+                    ElementType = ElementType.Group
                 });
                 allCandidates = allCandidates.Union(xmlGroupCandidates);
             }
