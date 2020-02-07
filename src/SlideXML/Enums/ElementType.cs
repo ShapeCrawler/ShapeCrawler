@@ -6,7 +6,7 @@ namespace SlideXML.Enums
     /// Enumerations of shape type.
     /// </summary>
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public enum ShapeType
+    public enum ElementType
     {
         Chart,
         Group,

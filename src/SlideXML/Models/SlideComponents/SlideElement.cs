@@ -15,13 +15,14 @@ using SlideXML.Services.Placeholders;
 using SlideXML.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace SlideXML.Models.SlideComponents
 {
     /// <summary>
     /// Represents a shape element on a slide.
     /// </summary>
-    public class ShapeSL : TaggedComponent
+    public class SlideElement
     {
         #region Fields
 
@@ -30,6 +31,7 @@ namespace SlideXML.Models.SlideComponents
         private readonly ElementSettings _spSettings;
         private readonly Lazy<ITextFrame> _textFrame = new Lazy<ITextFrame>(new NoTextFrame());
         private readonly Lazy<IChart> _chart = new Lazy<IChart>(new NoChart());
+        private readonly IBackgroundImageFactory _bgImgFactory;
         private bool? _hidden;
         private int _id;
         private string _name;
@@ -37,12 +39,6 @@ namespace SlideXML.Models.SlideComponents
         private PlaceholderType? _placeholderType;
 
         #endregion Fields
-
-        #region Dependencies
-
-        private readonly IBackgroundImageFactory _bgImgFactory;
-
-        #endregion Dependencies
 
         #region Properties
 
@@ -54,7 +50,7 @@ namespace SlideXML.Models.SlideComponents
 
         public long Height { get; set; }
 
-        public ShapeType Type { get; }
+        public ElementType Type { get; }
 
         /// <summary>
         /// Returns an element identifier.
@@ -112,7 +108,7 @@ namespace SlideXML.Models.SlideComponents
         /// <summary>
         /// Determines whether the shape has chart.
         /// </summary>
-        public bool HasChart => Chart is ChartSL;
+        public bool HasChart => Chart is Chart.Chart;
 
         /// <summary>
         /// Returns text frame.
@@ -128,22 +124,22 @@ namespace SlideXML.Models.SlideComponents
         /// <summary>
         /// Returns table.
         /// </summary>
-        public TableSL Table { get; }
+        public Table Table { get; }
 
         /// <summary>
         /// Returns picture.
         /// </summary>
-        public PictureSL Picture { get; }
+        public Picture Picture { get; }
 
         /// <summary>
         /// Returns group.
         /// </summary>
-        public GroupSL Group { get; } //TODO: convert into GroupItems
+        public Group Group { get; } //TODO: convert into GroupItems
 
         /// <summary>
         /// Returns OLE object.
         /// </summary>
-        public OleObjectSL OleObject { get; }
+        public OleObject OleObject { get; }
 
         /// <summary>
         /// Determines shape is placeholder.
@@ -160,7 +156,7 @@ namespace SlideXML.Models.SlideComponents
                 }
                 if (_placeholderType == null)
                 {
-                    throw new SlideXMLException("Shape is not a placeholder.");
+                    throw new SlideXMLException(ExceptionMessages.NotPlaceholder);
                 }
 
                 return (PlaceholderType)_placeholderType;
@@ -171,12 +167,12 @@ namespace SlideXML.Models.SlideComponents
 
         #region Constructors
 
-        private ShapeSL(IBackgroundImageFactory bgImgFactory,
+        private SlideElement(IBackgroundImageFactory bgImgFactory,
                         OpenXmlCompositeElement compositeElement,
                         SlidePart sldPart,
                         ElementSettings spSettings)
         {
-            Type = ShapeType.AutoShape;
+            Type = ElementType.AutoShape;
             _textFrame = new Lazy<ITextFrame>(GetTextFrame);
             _bgImgFactory = bgImgFactory;
             _compositeElement = compositeElement;
@@ -184,37 +180,37 @@ namespace SlideXML.Models.SlideComponents
             _spSettings = spSettings;
         }
 
-        private ShapeSL(IChart chart, OpenXmlCompositeElement ce)
+        private SlideElement(IChart chart, OpenXmlCompositeElement ce)
         {
-            Type = ShapeType.Chart;
+            Type = ElementType.Chart;
             _chart = new Lazy<IChart>(chart);
             _compositeElement = ce;
         }
 
-        private ShapeSL(TableSL table, OpenXmlCompositeElement ce)
+        private SlideElement(Table table, OpenXmlCompositeElement ce)
         {
-            Type = ShapeType.Table;
+            Type = ElementType.Table;
             Table = table;
             _compositeElement = ce;
         }
 
-        private ShapeSL(PictureSL pic, OpenXmlCompositeElement ce)
+        private SlideElement(Picture pic, OpenXmlCompositeElement ce)
         {
-            Type = ShapeType.Picture;
+            Type = ElementType.Picture;
             Picture = pic;
             _compositeElement = ce;
         }
 
-        private ShapeSL(GroupSL group, OpenXmlCompositeElement ce)
+        private SlideElement(Group group, OpenXmlCompositeElement ce)
         {
-            Type = ShapeType.Group;
+            Type = ElementType.Group;
             Group = group;
             _compositeElement = ce;
         }
 
-        private ShapeSL(OleObjectSL oleObject, OpenXmlCompositeElement ce)
+        private SlideElement(OleObject oleObject, OpenXmlCompositeElement ce)
         {
-            Type = ShapeType.OLEObject;
+            Type = ElementType.OLEObject;
             OleObject = oleObject;
             _compositeElement = ce;
         }
@@ -225,7 +221,7 @@ namespace SlideXML.Models.SlideComponents
 
         private ITextFrame GetTextFrame()
         {
-            if (Type != ShapeType.AutoShape)
+            if (Type != ElementType.AutoShape)
             {
                 return new NoTextFrame();
             }
@@ -279,8 +275,6 @@ namespace SlideXML.Models.SlideComponents
             /// <summary>
             /// Initialize a new builder.
             /// </summary>
-            /// <param name="bgImgFactor"></param>
-            /// <param name="groupSpTypeParser"></param>
             public Builder(IBackgroundImageFactory bgImgFactor, IGroupShapeTypeParser groupSpTypeParser, SlidePart sldPart)
             {
                 Check.NotNull(bgImgFactor, nameof(bgImgFactor));
@@ -297,12 +291,12 @@ namespace SlideXML.Models.SlideComponents
             /// Builds a AutoShape.
             /// </summary>
             /// <returns></returns>
-            public ShapeSL BuildAutoShape(OpenXmlCompositeElement compositeElement, ElementSettings spSettings)
+            public SlideElement BuildAutoShape(OpenXmlCompositeElement compositeElement, ElementSettings spSettings)
             {
                 Check.NotNull(compositeElement, nameof(compositeElement));
                 Check.NotNull(spSettings, nameof(spSettings));
 
-                return new ShapeSL(_bgImgFactor, compositeElement, _sldPart, spSettings);
+                return new SlideElement(_bgImgFactor, compositeElement, _sldPart, spSettings);
             }
 
             /// <summary>
@@ -310,10 +304,10 @@ namespace SlideXML.Models.SlideComponents
             /// </summary>
             /// <param name="xmlGrFrame"></param>
             /// <returns></returns>
-            public ShapeSL BuildChart(P.GraphicFrame xmlGrFrame)
+            public SlideElement BuildChart(P.GraphicFrame xmlGrFrame)
             {
                 Check.NotNull(xmlGrFrame, nameof(xmlGrFrame));
-                var newShape = new ShapeSL(new ChartSL(xmlGrFrame, _sldPart), xmlGrFrame);
+                var newShape = new SlideElement(new Chart.Chart(xmlGrFrame, _sldPart), xmlGrFrame);
                 SetTransform(newShape, xmlGrFrame);
 
                 return newShape;
@@ -325,11 +319,11 @@ namespace SlideXML.Models.SlideComponents
             /// <param name="xmlGrFrame"></param>
             /// <param name="elSettings"></param>
             /// <returns></returns>
-            public ShapeSL BuildTable(P.GraphicFrame xmlGrFrame, ElementSettings elSettings)
+            public SlideElement BuildTable(P.GraphicFrame xmlGrFrame, ElementSettings elSettings)
             {
                 Check.NotNull(xmlGrFrame, nameof(xmlGrFrame));
                 Check.NotNull(elSettings, nameof(elSettings));
-                var newShape = new ShapeSL(new TableSL(xmlGrFrame, elSettings), xmlGrFrame);
+                var newShape = new SlideElement(new Table(xmlGrFrame, elSettings), xmlGrFrame);
                 SetTransform(newShape, xmlGrFrame);
 
                 return newShape;
@@ -339,10 +333,10 @@ namespace SlideXML.Models.SlideComponents
             /// Builds a picture.
             /// </summary>
             /// <returns></returns>
-            public ShapeSL BuildPicture(OpenXmlCompositeElement compositeElement)
+            public SlideElement BuildPicture(OpenXmlCompositeElement compositeElement)
             {
                 Check.NotNull(compositeElement, nameof(compositeElement));
-                var newShape = new ShapeSL(new PictureSL(_sldPart, compositeElement), compositeElement);
+                var newShape = new SlideElement(new Picture(_sldPart, compositeElement), compositeElement);
                 SetTransform2D(newShape, compositeElement);
 
                 return newShape;
@@ -352,10 +346,10 @@ namespace SlideXML.Models.SlideComponents
             /// Builds a OLE object.
             /// </summary>
             /// <returns></returns>
-            public ShapeSL BuildOLEObject(OpenXmlCompositeElement compositeElement)
+            public SlideElement BuildOLEObject(OpenXmlCompositeElement compositeElement)
             {
                 Check.NotNull(compositeElement, nameof(compositeElement));
-                var newShape = new ShapeSL(new OleObjectSL(compositeElement), compositeElement);
+                var newShape = new SlideElement(new OleObject(compositeElement), compositeElement);
                 SetTransform2D(newShape, compositeElement);
 
                 return newShape;
@@ -365,12 +359,12 @@ namespace SlideXML.Models.SlideComponents
             /// Builds a group.
             /// </summary>
             /// <returns></returns>
-            public ShapeSL BuildGroup(IElementFactory elFactory, OpenXmlCompositeElement compositeElement, IPreSettings preSettings)
+            public SlideElement BuildGroup(IElementFactory elFactory, OpenXmlCompositeElement compositeElement, IPreSettings preSettings)
             {
                 Check.NotNull(elFactory, nameof(elFactory));
                 Check.NotNull(compositeElement, nameof(compositeElement));
-                var group = new GroupSL(_groupSpTypeParser, elFactory, compositeElement, preSettings, _sldPart);
-                var newShape = new ShapeSL(group, compositeElement);
+                var group = new Group(_groupSpTypeParser, elFactory, compositeElement, preSettings, _sldPart);
+                var newShape = new SlideElement(group, compositeElement);
                
                 var transformGroup = ((P.GroupShape)compositeElement).GroupShapeProperties.TransformGroup;
                 newShape.X = transformGroup.Offset.X.Value;
@@ -383,7 +377,7 @@ namespace SlideXML.Models.SlideComponents
 
             #endregion Public Methods
 
-            private static void SetTransform(ShapeSL newShape, OpenXmlElement ce)
+            private static void SetTransform(SlideElement newShape, OpenXmlElement ce)
             {
                 var transform = ce.Descendants<P.Transform>().Single();
                 newShape.X = transform.Offset.X.Value;
@@ -392,7 +386,7 @@ namespace SlideXML.Models.SlideComponents
                 newShape.Height = transform.Extents.Cy.Value;
             }
 
-            private static void SetTransform2D(ShapeSL newShape, OpenXmlElement ce)
+            private static void SetTransform2D(SlideElement newShape, OpenXmlElement ce)
             {
                 var transform2D = ce.Descendants<A.Transform2D>().Single();
                 newShape.X = transform2D.Offset.X.Value;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using SlideXML.Enums;
@@ -6,20 +7,20 @@ using SlideXML.Models.Settings;
 using SlideXML.Models.SlideComponents;
 using SlideXML.Services;
 using SlideXML.Validation;
-using P = DocumentFormat.OpenXml.Presentation;
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace SlideXML.Models
 {
     /// <summary>
     /// Represents a slide.
     /// </summary>
-    public class SlideSL : TaggedComponent
+    public class Slide
     {
         #region Fields
 
         private readonly SlidePart _xmlSldPart;
 
-        private List<ShapeSL> _shapes; //TODO: use capacity
+        private List<SlideElement> _elements;
         private ImageEx _backgroundImage;
 
         #region Dependencies
@@ -37,16 +38,16 @@ namespace SlideXML.Models
         /// <summary>
         /// Gets elements.
         /// </summary>
-        public IList<ShapeSL> Shapes
+        public IList<SlideElement> Shapes
         {
             get
             {
-                if (_shapes == null)
+                if (_elements == null)
                 {
                     InitElements();
                 }
 
-                return _shapes;
+                return _elements;
             }
         }
 
@@ -71,24 +72,21 @@ namespace SlideXML.Models
         #region Constructors
 
         /// <summary>
-        /// Initialize a new instance of the <see cref="SlideSL"/> class.
+        /// Initialize a new instance of the <see cref="Slide"/> class.
         /// </summary>
         /// TODO: use builder instead public constructor
-        public SlideSL(SlidePart xmlSldPart, 
+        public Slide(SlidePart xmlSldPart, 
                        int sldNumber,
                        IGroupShapeTypeParser shapeTreeParser,
                        IBackgroundImageFactory bgImgFactory,
                        IPreSettings preSettings)
         {
-            Check.NotNull(xmlSldPart, nameof(xmlSldPart));
             Check.IsPositive(sldNumber, nameof(sldNumber));
-            Check.NotNull(shapeTreeParser, nameof(shapeTreeParser));
-            Check.NotNull(bgImgFactory, nameof(bgImgFactory));
-            _xmlSldPart = xmlSldPart;
             Number = sldNumber;
-            _groupShapeTypeParser = shapeTreeParser;
-            _bgImgFactory = bgImgFactory;
-            _preSettings = preSettings;
+            _xmlSldPart = xmlSldPart ?? throw new ArgumentNullException(nameof(xmlSldPart));
+            _groupShapeTypeParser = shapeTreeParser ?? throw new ArgumentNullException(nameof(shapeTreeParser));
+            _bgImgFactory = bgImgFactory ?? throw new ArgumentNullException(nameof(bgImgFactory));
+            _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
         }
 
         #endregion Constructors
@@ -100,19 +98,19 @@ namespace SlideXML.Models
             // Slide
             var elFactory = new ElementFactory(_xmlSldPart);
             var sldCandidates = _groupShapeTypeParser.CreateCandidates(_xmlSldPart.Slide.CommonSlideData.ShapeTree);
-            _shapes = new List<ShapeSL>(sldCandidates.Count());
+            _elements = new List<SlideElement>(sldCandidates.Count());
             foreach (var candidate in sldCandidates)
             {
-                ShapeSL newShape;
-                if (candidate.ElementType == ShapeType.Group)
+                SlideElement newElement;
+                if (candidate.ElementType == ElementType.Group)
                 {
-                    newShape = elFactory.CreateGroupShape(candidate.CompositeElement, _preSettings);
+                    newElement = elFactory.CreateGroupShape(candidate.CompositeElement, _preSettings);
                 }
                 else
                 {
-                    newShape = elFactory.CreateShape(candidate, _preSettings);
+                    newElement = elFactory.CreateShape(candidate, _preSettings);
                 }
-                _shapes.Add(newShape);
+                _elements.Add(newElement);
             }
         }
 

@@ -10,7 +10,7 @@ namespace SlideXML.Models.TextBody
         /// <summary>
         /// Returns list of paragraphs.
         /// </summary>
-        IList<ParagraphSL> Paragraphs { get; }
+        IList<Paragraph> Paragraphs { get; }
 
         /// <summary>
         /// Returns text content.

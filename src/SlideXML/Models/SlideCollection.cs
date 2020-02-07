@@ -14,7 +14,7 @@ namespace SlideXML.Models
     {
         #region Fields
 
-        private readonly List<SlideSL> _items;
+        private readonly List<Slide> _items;
         private readonly PresentationDocument _xmlPreDoc;
 
         #endregion Fields
@@ -27,7 +27,7 @@ namespace SlideXML.Models
         public SlideCollection(PresentationDocument xmlPreDoc)
         {
             Check.NotNull(xmlPreDoc, nameof(xmlPreDoc));
-            _items = new List<SlideSL>();
+            _items = new List<Slide>();
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace SlideXML.Models
             Check.NotNull(xmlPreDoc, nameof(xmlPreDoc));
             Check.IsPositive(sldNumbers, nameof(sldNumbers));
             _xmlPreDoc = xmlPreDoc;
-            _items = new List<SlideSL>(sldNumbers);
+            _items = new List<Slide>(sldNumbers);
         }
 
         #endregion Constructors
@@ -49,7 +49,7 @@ namespace SlideXML.Models
         /// Adds slide item.
         /// </summary>
         /// <param name="item"></param>
-        public void Add(SlideSL item)
+        public void Add(Slide item)
         {
             Check.NotNull(item, nameof(item));
             _items.Add(item);
@@ -58,7 +58,7 @@ namespace SlideXML.Models
         /// <summary>
         /// Removes specified slide and saves DOM.
         /// </summary>
-        public void Remove(SlideSL item)
+        public void Remove(Slide item)
         {
             Check.NotNull(item, nameof(item));
 
@@ -73,7 +73,7 @@ namespace SlideXML.Models
         /// Returns an enumerator for slide list.
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<SlideSL> GetEnumerator()
+        public IEnumerator<Slide> GetEnumerator()
         {
             return _items.GetEnumerator();
         }
@@ -88,7 +88,7 @@ namespace SlideXML.Models
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public SlideSL this[int index] => _items[index];
+        public Slide this[int index] => _items[index];
 
         #endregion Public Methods
 

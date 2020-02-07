@@ -10,11 +10,11 @@ namespace SlideXML.Models.SlideComponents
     /// <summary>
     /// Represents a group element.
     /// </summary>
-    public class GroupSL
+    public class Group
     {
         #region Fields
 
-        private List<ShapeSL> _shapes;
+        private List<SlideElement> _shapes;
 
         #region Dependencies
 
@@ -32,7 +32,7 @@ namespace SlideXML.Models.SlideComponents
         /// <summary>
         /// Gets child elements.
         /// </summary>
-        public IList<ShapeSL> Shapes
+        public IList<SlideElement> Shapes
         {
             get
             {
@@ -49,7 +49,7 @@ namespace SlideXML.Models.SlideComponents
 
         #region Constructors
 
-        public GroupSL(IGroupShapeTypeParser parser, 
+        public Group(IGroupShapeTypeParser parser, 
                         IElementFactory elFactory, 
                         OpenXmlCompositeElement compositeElement, 
                         IPreSettings preSettings,
@@ -67,14 +67,14 @@ namespace SlideXML.Models.SlideComponents
 
         private void InitChildElements()
         {
-            _shapes = new List<ShapeSL>();
+            _shapes = new List<SlideElement>();
             var xmlGroupShape = (P.GroupShape) _compositeElement;
             var tg = xmlGroupShape.GroupShapeProperties.TransformGroup;
             var groupShapeCandidates = _groupShapeTypeParser.CreateCandidates(xmlGroupShape, false); // false is set to avoid parse group in group
 
             foreach (var ec in groupShapeCandidates)
             {
-                ShapeSL newEl = _elFactory.CreateShape(ec, _preSettings);
+                SlideElement newEl = _elFactory.CreateShape(ec, _preSettings);
                 newEl.X = newEl.X - tg.ChildOffset.X + tg.Offset.X;
                 newEl.Y = newEl.Y - tg.ChildOffset.Y + tg.Offset.Y;
                 _shapes.Add(newEl);

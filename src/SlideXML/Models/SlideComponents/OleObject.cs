@@ -8,16 +8,16 @@ namespace SlideXML.Models.SlideComponents
     /// Represents an OLE object on a slide.
     /// </summary>
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public class OleObjectSL
+    public class OleObject
     {
         private readonly OpenXmlCompositeElement _compositeElement;
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OleObjectSL"/> class.
+        /// Initializes a new instance of the <see cref="OleObject"/> class.
         /// </summary>
-        public OleObjectSL(OpenXmlCompositeElement ce)
+        public OleObject(OpenXmlCompositeElement ce)
         {
             Check.NotNull(ce, nameof(ce));
             _compositeElement = ce;

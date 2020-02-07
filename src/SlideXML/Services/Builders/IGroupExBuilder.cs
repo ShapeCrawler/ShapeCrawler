@@ -6,10 +6,10 @@ using SlideXML.Models.SlideComponents;
 namespace SlideXML.Services.Builders
 {
     /// <summary>
-    /// Provides APIs to build instance of the <see cref="GroupSL"/> class.
+    /// Provides APIs to build instance of the <see cref="Group"/> class.
     /// </summary>
     public interface IGroupExBuilder
     {
-        GroupSL Build(GroupShape compositeElement, SlidePart sldPart, IPreSettings preSettings);
+        Group Build(GroupShape compositeElement, SlidePart sldPart, IPreSettings preSettings);
     }
 }

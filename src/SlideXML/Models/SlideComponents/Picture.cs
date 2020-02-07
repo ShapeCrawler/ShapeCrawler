@@ -9,7 +9,7 @@ namespace SlideXML.Models.SlideComponents
     /// <summary>
     /// Represents a picture element.
     /// </summary>
-    public class PictureSL
+    public class Picture
     {
         #region Fields
 
@@ -52,9 +52,9 @@ namespace SlideXML.Models.SlideComponents
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of <see cref="PictureSL"/> class.
+        /// Initializes a new instance of <see cref="Picture"/> class.
         /// </summary>
-        public PictureSL(SlidePart sldPart, OpenXmlCompositeElement compositeElement)
+        public Picture(SlidePart sldPart, OpenXmlCompositeElement compositeElement)
         {
             Check.NotNull(sldPart, nameof(sldPart));
             _sldPart = sldPart;

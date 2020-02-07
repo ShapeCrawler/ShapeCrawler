@@ -4,13 +4,14 @@ using SlideXML.Models.Settings;
 using SlideXML.Models.TableComponents;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
+// ReSharper disable All
 
 namespace SlideXML.Models.SlideComponents
 {
     /// <summary>
     /// Represents a table element on a slide.
     /// </summary>
-    public class TableSL
+    public class Table
     {
         #region Fields
 
@@ -40,9 +41,9 @@ namespace SlideXML.Models.SlideComponents
         #region Constructors
 
         /// <summary>
-        /// Initialise an instance of <see cref="TableSL"/> class.
+        /// Initialise an instance of <see cref="Table"/> class.
         /// </summary>
-        public TableSL(P.GraphicFrame xmlGrFrame, ElementSettings elSettings)
+        public Table(P.GraphicFrame xmlGrFrame, ElementSettings elSettings)
         {
             _xmlGrFrame = xmlGrFrame;
             _elSettings = elSettings;

@@ -23,7 +23,7 @@ namespace SlideXML.Models.TextBody
 
         #region Properties
 
-        public IList<ParagraphSL> Paragraphs { get; private set; }
+        public IList<Paragraph> Paragraphs { get; private set; }
 
         public string Text
         {
@@ -63,10 +63,10 @@ namespace SlideXML.Models.TextBody
             var paragraphs = compositeElement.Elements<A.Paragraph>().Where(e => e.Descendants<A.Text>().Any());
 
             // Sets paragraphs
-            Paragraphs = new List<ParagraphSL>(paragraphs.Count());
+            Paragraphs = new List<Paragraph>(paragraphs.Count());
             foreach (var p in paragraphs)
             {
-                Paragraphs.Add(new ParagraphSL(_spSettings, p));
+                Paragraphs.Add(new Paragraph(_spSettings, p));
             }
         }
 
