@@ -13,8 +13,8 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre13 = new Presentation(Properties.Resources._013);
-            var chart = pre13.Slides[0].Shapes.Single(x => x.Id == 5).Chart;
-            var chart4 = pre13.Slides[0].Shapes.Single(x => x.Id == 4).Chart;
+            var chart = pre13.Slides[0].Elements.Single(x => x.Id == 5).Chart;
+            var chart4 = pre13.Slides[0].Elements.Single(x => x.Id == 4).Chart;
 
             // ACT
             var title = chart.Title;
@@ -36,7 +36,7 @@ namespace SlideXML.Tests
             var pre = new Presentation(Properties.Resources._013);
 
             // ACT
-            var shapes = pre.Slides[0].Shapes; // should not throw exception
+            var shapes = pre.Slides[0].Elements; // should not throw exception
 
             pre.Close();
         }
@@ -48,7 +48,7 @@ namespace SlideXML.Tests
             var pre = new Presentation(Properties.Resources._013);
 
             // ACT
-            var phType = pre.Slides[0].Shapes.Single(s=>s.Id == 281).PlaceholderType;
+            var phType = pre.Slides[0].Elements.Single(s=>s.Id == 281).PlaceholderType;
 
             // ARRANGE
             Assert.Equal(PlaceholderType.Custom, phType);
@@ -59,7 +59,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._013);
-            var chart = pre.Slides[0].Shapes.Single(s => s.Id == 6).Chart;
+            var chart = pre.Slides[0].Elements.Single(s => s.Id == 6).Chart;
 
             // ACT
             var hasTitle = chart.HasTitle;
@@ -73,7 +73,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._014);
-            var elId61 = pre.Slides[0].Shapes.Single(s => s.Id == 61);
+            var elId61 = pre.Slides[0].Elements.Single(s => s.Id == 61);
 
             // ACT
             var text = elId61.TextFrame.Text;

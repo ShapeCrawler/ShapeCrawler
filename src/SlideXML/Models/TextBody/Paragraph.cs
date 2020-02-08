@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml;
 using SlideXML.Models.Settings;
 using SlideXML.Validation;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -16,7 +17,7 @@ namespace SlideXML.Models.TextBody
         #region Fields
 
         private readonly A.Paragraph _aParagraph;
-        private readonly ElementSettings _shapeSetting;
+        private readonly ElementSettings _elSetting;
         private string _text;
         private readonly Lazy<int> _lvl;
         private List<Portion> _portions;
@@ -66,14 +67,31 @@ namespace SlideXML.Models.TextBody
         /// <param name="aParagraph">A XML paragraph which contains a text.</param>
         public Paragraph(ElementSettings elSetting, A.Paragraph aParagraph)
         {
-            Check.NotNull(aParagraph, nameof(aParagraph));
-            Check.NotNull(elSetting, nameof(elSetting));
-            _aParagraph = aParagraph;
-            _shapeSetting = elSetting;
-            _lvl = new Lazy<int>(ParseLevel);
+            _aParagraph = aParagraph ?? throw new ArgumentNullException(nameof(aParagraph));
+            _elSetting = elSetting ?? throw new ArgumentNullException(nameof(elSetting));
+            _lvl = new Lazy<int>(GetLevel(_aParagraph));
         }
 
         #endregion Constructors
+
+        /// <summary>
+        /// Gets paragraph level for specified <see cref="A.Paragraph"/> or <see cref="A.TextParagraphPropertiesType"/> instance.
+        /// </summary>
+        /// <returns></returns>
+        private static int GetLevel(A.Paragraph aPr)
+        {
+            var lvl = aPr.ParagraphProperties?.Level?.Value;
+            if (lvl == null) //null is first level
+            {
+                lvl = 1;
+            }
+            else
+            {
+                lvl++;
+            }
+
+            return (int)lvl;
+        }
 
         #region Private Methods
 
@@ -86,32 +104,15 @@ namespace SlideXML.Models.TextBody
         {
             var runs = _aParagraph.Elements<A.Run>();
             _portions = new List<Portion>(runs.Count());
-            var ph = _shapeSetting.Placeholder;
+            var ph = _elSetting.Placeholder;
 
             foreach (var run in runs)
             {
                 // First tries to get font height from run, then placeholder and only then from presentation settings.
-                var fh = run.RunProperties?.FontSize?.Value ?? ph?.FontHeights[_lvl.Value] ?? _shapeSetting.PreSettings.LlvFontHeights[_lvl.Value];
+                var fh = run.RunProperties?.FontSize?.Value ?? ph?.FontHeights[_lvl.Value] ?? _elSetting.PreSettings.LlvFontHeights[_lvl.Value];
                 
                 _portions.Add(new Portion(fh, run.Text.Text));
             }
-        }
-
-        private int ParseLevel()
-        {
-            // gets default paragraph level font height for current paragraph's level
-            var lvl = _aParagraph.ParagraphProperties?.Level?.Value;
-            if (lvl == null)
-            {
-                lvl = 1;
-            }
-            else
-            {
-                // by unknown reason, slide and presentation's default settings have different numbering
-                lvl++;
-            }
-
-            return (int)lvl;
         }
 
         #endregion Private Methods

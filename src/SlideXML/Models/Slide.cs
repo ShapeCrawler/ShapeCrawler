@@ -36,9 +36,9 @@ namespace SlideXML.Models
         #region Properties
 
         /// <summary>
-        /// Gets elements.
+        /// Gets slide elements.
         /// </summary>
-        public IList<SlideElement> Shapes
+        public IList<SlideElement> Elements
         {
             get
             {

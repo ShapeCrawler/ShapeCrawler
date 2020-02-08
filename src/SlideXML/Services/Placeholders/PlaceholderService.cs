@@ -107,17 +107,15 @@ namespace SlideXML.Services.Placeholders
         private void Init(SlideLayoutPart sldLtPart)
         {
             // Get OpenXmlCompositeElement instances have P.ShapeProperties
-            var layoutElements = sldLtPart.SlideLayout.CommonSlideData.ShapeTree.Elements<OpenXmlCompositeElement>()
-                .Where(el => el.Descendants<P.ShapeProperties>().Any());
-            var masterElements = sldLtPart.SlideMasterPart.SlideMaster.CommonSlideData.ShapeTree.Elements<OpenXmlCompositeElement>()
-                .Where(el => el.Descendants<P.ShapeProperties>().Any());
+            var layoutElements = sldLtPart.SlideLayout.CommonSlideData.ShapeTree.Elements<OpenXmlCompositeElement>();
+            var masterElements = sldLtPart.SlideMasterPart.SlideMaster.CommonSlideData.ShapeTree.Elements<OpenXmlCompositeElement>();
             var layoutHolders = GetPlaceholders(layoutElements);
             var masterHolders = GetPlaceholders(masterElements);
 
             // if master placeholder contains level font height, then it becomes a priority than the layout
             foreach (var mHolder in masterHolders)
             {
-                if (layoutHolders.Any(x => x.Type == mHolder.Type || x.Index == mHolder.Index))
+                if (layoutHolders.Any(p => p.Type == mHolder.Type || p.Index == mHolder.Index))
                 {
                     var shape = (P.Shape)mHolder.CompositeElement;
                     var dRp = shape.TextBody.ListStyle?.Level1ParagraphProperties?.GetFirstChild<DefaultRunProperties>();
@@ -140,20 +138,16 @@ namespace SlideXML.Services.Placeholders
 
         }
 
-        private List<PlaceholderSL> GetPlaceholders(IEnumerable<OpenXmlCompositeElement> ce)
+        private List<PlaceholderSL> GetPlaceholders(IEnumerable<OpenXmlCompositeElement> compositeElements)
         {
-            var result = new List<PlaceholderSL>(ce.Count());
-            foreach (var el in ce.Where(e => e.IsPlaceholder()))
+            var filtered = Filter(compositeElements);
+            var result = new List<PlaceholderSL>(filtered.Count());
+            foreach (var el in filtered)
             {
-                var elShapeProperties = el.Descendants<P.ShapeProperties>().Single();
-                var t2d = elShapeProperties.Transform2D;
-                if (t2d == null)
-                {
-                    continue;
-                }
-
+                var spPr = el.Descendants<P.ShapeProperties>().Single();
+                var t2d = spPr.Transform2D;
                 var phXml = GetPlaceholderXML(el);
-                var newPh = new PlaceholderSL(phXml)
+                var newPhSl = new PlaceholderSL(phXml)
                 {
                     X = t2d.Offset.X.Value,
                     Y = t2d.Offset.Y.Value,
@@ -163,21 +157,36 @@ namespace SlideXML.Services.Placeholders
                     SlideLayoutPart = _sldLtPart
                 };
 
-                // Gets geometry form
-                var presetGeometry = elShapeProperties.GetFirstChild<PresetGeometry>();
-                if (presetGeometry == null)
+                // avoid duplicate non-custom placeholders
+                if (result.Any(p => p.Equals(newPhSl)))
                 {
-                    newPh.GeometryCode = CustomGeometryCode;
-                }
-                else
-                {
-                    newPh.GeometryCode = (int)presetGeometry.Preset.Value;
+                    continue;
                 }
 
-                result.Add(newPh);
+                // sets geometry form
+                var presetGeometry = spPr.GetFirstChild<PresetGeometry>();
+                newPhSl.GeometryCode = presetGeometry != null ? (int)presetGeometry.Preset.Value : CustomGeometryCode;
+              
+                result.Add(newPhSl);
             }
 
             return result;
+        }
+
+        private static IEnumerable<OpenXmlCompositeElement> Filter(IEnumerable<OpenXmlCompositeElement> compositeElements)
+        {
+            var filteredList = new List<OpenXmlCompositeElement>();
+            var candidates = compositeElements.Where(e=>e.IsPlaceholder());
+            foreach (var c in candidates)
+            {
+                var shPr = c.Descendants<P.ShapeProperties>().FirstOrDefault();
+                if (shPr?.Transform2D != null)
+                {
+                    filteredList.Add(c);
+                }
+            }
+
+            return filteredList;
         }
 
         #endregion
