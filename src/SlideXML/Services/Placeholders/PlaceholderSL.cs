@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using SlideXML.Enums;
+using SlideXML.Models.TextBody;
 using SlideXML.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -14,7 +17,7 @@ namespace SlideXML.Services.Placeholders
     /// </summary>
     public class PlaceholderSL : IEquatable<PlaceholderSL>
     {
-        private Dictionary<int, int> _fontHeights;
+        private Dictionary<int, int> _fontHeights; //TODO: set lazy
 
         #region Properties
 
@@ -102,12 +105,13 @@ namespace SlideXML.Services.Placeholders
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
         public bool Equals(PlaceholderSL other)
         {
             Check.NotNull(other, nameof(other));
 
             // Compares custom type
-            if (Type == PlaceholderType.Custom && other.Type == PlaceholderType.Custom && this.Index == other.Index)
+            if (Type == PlaceholderType.Custom && other.Type == PlaceholderType.Custom && Index == other.Index)
             {
                 return true;
             }
@@ -163,33 +167,21 @@ namespace SlideXML.Services.Placeholders
             {
                 _fontHeights.Add(1, SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.TitleStyle.Level1ParagraphProperties.GetFirstChild<A.DefaultRunProperties>().FontSize.Value);
             }
-            else
+            else // non-title placeholder
             {
                 var shape = (P.Shape)CompositeElement;
-                var listStyle = shape.TextBody.ListStyle;
-                if (listStyle?.Level1ParagraphProperties != null)
+                foreach (var textPr in shape.TextBody.Descendants<A.TextParagraphPropertiesType>())
                 {
-                    // parses Level{X}ParagraphProperties
-                    foreach (var textPr in listStyle.Elements<A.TextParagraphPropertiesType>())
+                    var fs = textPr.GetFirstChild<A.DefaultRunProperties>()?.FontSize;
+                    if (fs == null)
                     {
-                        var fs = textPr.GetFirstChild<A.DefaultRunProperties>().FontSize;
-                        if (fs == null)
-                        {
-                            continue;
-                        }
-                        var lvl = textPr.Level;
-                        if (lvl == null)
-                        {
-                            lvl = 1;
-                        }
-                        else
-                        {
-                            lvl++;
-                        }
-                        _fontHeights.Add(lvl, fs.Value);
+                        continue;
                     }
+                    // fourth character of LocalName contains level number, example: "lvl1pPr, lvl2pPr, etc."
+                    var lvl = int.Parse(textPr.LocalName[3].ToString()); 
+                    _fontHeights.Add(lvl, fs.Value);
                 }
-                else
+                if (!_fontHeights.Any())
                 {
                     _fontHeights.Add(1, shape.TextBody.GetFirstChild<A.Paragraph>().GetFirstChild<A.EndParagraphRunProperties>().FontSize.Value);
                 }

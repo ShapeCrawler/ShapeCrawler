@@ -58,7 +58,7 @@ namespace SlideXML.Tests
 
             var pre2 = new Presentation(ms);
             var numSlides = pre2.Slides.Count();
-            var numElements = pre2.Slides.Single().Shapes.Count;
+            var numElements = pre2.Slides.Single().Elements.Count;
             pre2.Close();
             ms.Dispose();
 
@@ -74,7 +74,7 @@ namespace SlideXML.Tests
             var pre = new Presentation(Properties.Resources._008);
 
             // ACT
-            var shapes = pre.Slides.Single().Shapes.OfType<SlideElement>();
+            var shapes = pre.Slides.Single().Elements.OfType<SlideElement>();
             var sh36 = shapes.Single(e => e.Id == 36);
             var sh37 = shapes.Single(e => e.Id == 37);
            
@@ -94,7 +94,7 @@ namespace SlideXML.Tests
             var pre = new Presentation(Properties.Resources._003);
 
             // ACT
-            var numberElements = pre.Slides.Single().Shapes.Count;
+            var numberElements = pre.Slides.Single().Elements.Count;
             pre.Close();
 
             // ASSERT
@@ -108,7 +108,7 @@ namespace SlideXML.Tests
             var pre = new Presentation(Properties.Resources._006_1_slides);
 
             // ACT
-            var shapePlaceholder = pre.Slides.Single().Shapes.Single();
+            var shapePlaceholder = pre.Slides.Single().Elements.Single();
             pre.Close();
 
             // ASSERT
@@ -126,7 +126,7 @@ namespace SlideXML.Tests
 
             // ACT
             var slides = pre.Slides;
-            var groupElement = pre.Slides[1].Shapes.Single(x => x.Type.Equals(ElementType.Group));
+            var groupElement = pre.Slides[1].Elements.Single(x => x.Type.Equals(ElementType.Group));
             var el3 = groupElement.Group.Shapes.Single(x => x.Id.Equals(5));
             pre.Close();
 
@@ -143,8 +143,8 @@ namespace SlideXML.Tests
             var pre = new Presentation(Properties.Resources._009);
 
             // ACT
-            var elNumber1 = pre.Slides[0].Shapes.Count;
-            var elNumber2 = pre.Slides[1].Shapes.Count;
+            var elNumber1 = pre.Slides[0].Elements.Count;
+            var elNumber2 = pre.Slides[1].Elements.Count;
             pre.Close();
 
             // ASSERT
@@ -159,7 +159,7 @@ namespace SlideXML.Tests
             var pre = new Presentation(Properties.Resources._009);
 
             // ACT
-            var elements = pre.Slides[0].Shapes;
+            var elements = pre.Slides[0].Elements;
 
             pre.Close();
         }
@@ -169,7 +169,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._009);
-            var picEx = pre.Slides[1].Shapes.Single(e => e.Id.Equals(3));
+            var picEx = pre.Slides[1].Elements.Single(e => e.Id.Equals(3));
 
             // ACT
             var bytes = picEx.Picture.ImageEx.GetBytes().Result;
@@ -183,7 +183,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._009);
-            var picEx = pre.Slides[1].Shapes.Single(e => e.Id.Equals(3));
+            var picEx = pre.Slides[1].Elements.Single(e => e.Id.Equals(3));
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
             var sizeBefore = picEx.Picture.ImageEx.GetBytes().Result.Length;
 
@@ -203,7 +203,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._009);
-            var shapeEx = pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
+            var shapeEx = pre.Slides[2].Elements.Single(e => e.Id.Equals(4));
 
             // ACT
             var length = shapeEx.BackgroundImage.GetBytes().Result.Length;
@@ -217,7 +217,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._009);
-            var shapeEx = (SlideElement)pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
+            var shapeEx = (SlideElement)pre.Slides[2].Elements.Single(e => e.Id.Equals(4));
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
             var sizeBefore = shapeEx.BackgroundImage.GetBytes().Result.Length;
 
@@ -237,7 +237,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._009);
-            var shapeEx = (SlideElement)pre.Slides[1].Shapes.Single(e => e.Id.Equals(6));
+            var shapeEx = (SlideElement)pre.Slides[1].Elements.Single(e => e.Id.Equals(6));
 
             // ACT
             var bImage = shapeEx.BackgroundImage;
@@ -251,7 +251,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._009);
-            var shapes = pre.Slides[1].Shapes;
+            var shapes = pre.Slides[1].Elements;
 
             // ACT
             var oleNumbers = shapes.Count(e => e.Type.Equals(ElementType.OLEObject));
@@ -274,7 +274,7 @@ namespace SlideXML.Tests
             var pre = new Presentation(Properties.Resources._009);
 
             // ACT
-            var name = pre.Slides[1].Shapes.Single(e => e.Id.Equals(8)).Name;
+            var name = pre.Slides[1].Elements.Single(e => e.Id.Equals(8)).Name;
 
             pre.Close();
 
@@ -320,7 +320,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._009);
-            var shape = (SlideElement)pre.Slides[2].Shapes.SingleOrDefault(e => e.Id.Equals(2));
+            var shape = (SlideElement)pre.Slides[2].Elements.SingleOrDefault(e => e.Id.Equals(2));
             var paragraphs = shape.TextFrame.Paragraphs;
 
             // ACT
@@ -361,7 +361,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._009);
-            var elements = pre.Slides[3].Shapes;
+            var elements = pre.Slides[3].Elements;
             var tb2TitlePh = elements.Single(e => e.Id.Equals(2));
             var tb3SubTitlePh = elements.Single(e => e.Id.Equals(3));
 
@@ -383,7 +383,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._009);
-            var elements = pre.Slides[2].Shapes;
+            var elements = pre.Slides[2].Elements;
             var tblEx = elements.Single(e => e.Id.Equals(3));
             var firstRow = tblEx.Table.Rows.First();
 
@@ -411,8 +411,8 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._009);
-            var sld3Elements = pre.Slides[2].Shapes;
-            var sld5Elements = pre.Slides[4].Shapes;
+            var sld3Elements = pre.Slides[2].Elements;
+            var sld5Elements = pre.Slides[4].Elements;
             var chartEx6 = sld3Elements.Single(e => e.Id.Equals(6));
             var chartEx7 = sld3Elements.Single(e => e.Id.Equals(7));
             var sld5Chart6 = sld5Elements.Single(e => e.Id.Equals(6));
@@ -475,7 +475,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._008);
-            var sp3 = pre.Slides[0].Shapes.Single(sp => sp.Id == 3);
+            var sp3 = pre.Slides[0].Elements.Single(sp => sp.Id == 3);
 
             // ACT
             var hasTextBody = sp3.HasTextFrame;
@@ -491,7 +491,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._011_dt);
-            var dt = pre.Slides[0].Shapes.Single(s => s.Id == 54275);
+            var dt = pre.Slides[0].Elements.Single(s => s.Id == 54275);
 
             // ACT
             var text = dt.TextFrame.Text;
@@ -510,7 +510,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._012_title_placeholder);
-            var title = pre.Slides[0].Shapes.Single(x => x.Id == 2);
+            var title = pre.Slides[0].Elements.Single(x => x.Id == 2);
 
             // ACT
             var text = title.TextFrame.Text;
@@ -528,7 +528,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre010 = new Presentation(Properties.Resources._010);
-            var pre010TextBox = pre010.Slides[0].Shapes.Single(x => x.Id == 2);
+            var pre010TextBox = pre010.Slides[0].Elements.Single(x => x.Id == 2);
 
             // ACT
             var fh = pre010TextBox.TextFrame.Paragraphs.First().Portions.First().FontHeight;
@@ -544,7 +544,7 @@ namespace SlideXML.Tests
         {
             var ms = new MemoryStream(Properties.Resources._002);
             var pre = new Presentation(ms);
-            var allElements = pre.Slides.First().Shapes;
+            var allElements = pre.Slides.First().Elements;
 
             // ACT
             var elementsNumber = allElements.Count;
@@ -646,7 +646,7 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._012_title_placeholder);
-            var autoShape = pre.Slides[0].Shapes.Single(s => s.Id == 3);
+            var autoShape = pre.Slides[0].Elements.Single(s => s.Id == 3);
 
             // ACT
             var text = autoShape.TextFrame.Text;
@@ -662,8 +662,8 @@ namespace SlideXML.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._011_dt);
-            var autoShape = pre.Slides[0].Shapes.Single(s => s.Id == 2);
-            var grShape = pre.Slides[0].Shapes.Single(s => s.Id == 4);
+            var autoShape = pre.Slides[0].Elements.Single(s => s.Id == 2);
+            var grShape = pre.Slides[0].Elements.Single(s => s.Id == 4);
 
             // ACT
             var text = autoShape.TextFrame.Text;
@@ -705,7 +705,7 @@ namespace SlideXML.Tests
             var pre = new Presentation(ms);
 
             // ACT
-            var allElements = pre.Slides.Single().Shapes;
+            var allElements = pre.Slides.Single().Elements;
             var shapeHiddenValue = allElements[0].Hidden;
             var tableHiddenValue = allElements[1].Hidden;
 
