@@ -5,7 +5,6 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using SlideXML.Enums;
-using SlideXML.Models.TextBody;
 using SlideXML.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -15,7 +14,7 @@ namespace SlideXML.Services.Placeholders
     /// <summary>
     /// Represents placeholder data on layout/master slide.
     /// </summary>
-    public class PlaceholderSL : IEquatable<PlaceholderSL>
+    public class PlaceholderData : IEquatable<PlaceholderData>
     {
         private Dictionary<int, int> _fontHeights; //TODO: set lazy
 
@@ -87,9 +86,9 @@ namespace SlideXML.Services.Placeholders
         #region Constructors
 
         /// <summary>
-        /// Creates a new <see cref="PlaceholderSL"/> instance from <see cref="PlaceholderXML"/>.
+        /// Creates a new <see cref="PlaceholderData"/> instance from <see cref="PlaceholderXML"/>.
         /// </summary>
-        public PlaceholderSL(PlaceholderXML phXml)
+        public PlaceholderData(PlaceholderXML phXml)
         {
             Check.NotNull(phXml, nameof(phXml));
             Type = phXml.PlaceholderType;
@@ -101,23 +100,24 @@ namespace SlideXML.Services.Placeholders
         #region Public Methods
 
         /// <summary>
-        /// Indicates whether the current object is equal to another <see cref="PlaceholderSL"/> instance.
+        /// Indicates whether the current object is equal to another <see cref="PlaceholderData"/> instance.
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
         [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-        public bool Equals(PlaceholderSL other)
+        public bool Equals(PlaceholderData other)
         {
-            Check.NotNull(other, nameof(other));
-
-            // Compares custom type
-            if (Type == PlaceholderType.Custom && other.Type == PlaceholderType.Custom && Index == other.Index)
+            if (other == null)
             {
-                return true;
+                return false;
             }
 
-            // Compares non-custom type
-            return Type != PlaceholderType.Custom && Type == other.Type;
+            if (Type != PlaceholderType.Custom)
+            {
+                return Type == other.Type; // compare pre-define types
+            }
+
+            return Index == other.Index; // custom types are compared by index
         }
 
         /// <summary>
@@ -127,8 +127,12 @@ namespace SlideXML.Services.Placeholders
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            Check.NotNull(obj, nameof(obj));
-            var ph = (PlaceholderSL)obj;
+            if (obj == null)
+            {
+                return false;
+            }
+
+            var ph = (PlaceholderData)obj;
 
             return Equals(ph);
         }
@@ -163,29 +167,40 @@ namespace SlideXML.Services.Placeholders
         private void ParseFontHeights()
         {
             _fontHeights = new Dictionary<int, int>();
-            if (Type.Equals(PlaceholderType.Title)) // for title placeholder font height is parsed from slide master
+            var shape = (P.Shape)CompositeElement;
+            // from component
+            foreach (var textPr in shape.TextBody.ListStyle.Elements<A.TextParagraphPropertiesType>())
             {
-                _fontHeights.Add(1, SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.TitleStyle.Level1ParagraphProperties.GetFirstChild<A.DefaultRunProperties>().FontSize.Value);
+                var fs = textPr.GetFirstChild<A.DefaultRunProperties>()?.FontSize;
+                if (fs == null)
+                {
+                    continue;
+                }
+                // fourth character of LocalName contains level number, example: "lvl1pPr, lvl2pPr, etc."
+                var lvl = int.Parse(textPr.LocalName[3].ToString());
+                _fontHeights.Add(lvl, fs.Value);
             }
-            else // non-title placeholder
+            if (!_fontHeights.Any()) // font height is still not known
             {
-                var shape = (P.Shape)CompositeElement;
-                foreach (var textPr in shape.TextBody.Descendants<A.TextParagraphPropertiesType>())
+                var endParaRunPrFs = shape.TextBody.GetFirstChild<A.Paragraph>().GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
+                if (endParaRunPrFs != null)
                 {
-                    var fs = textPr.GetFirstChild<A.DefaultRunProperties>()?.FontSize;
-                    if (fs == null)
-                    {
-                        continue;
-                    }
-                    // fourth character of LocalName contains level number, example: "lvl1pPr, lvl2pPr, etc."
-                    var lvl = int.Parse(textPr.LocalName[3].ToString()); 
-                    _fontHeights.Add(lvl, fs.Value);
+                    _fontHeights.Add(1, endParaRunPrFs.Value);
                 }
-                if (!_fontHeights.Any())
+                else
                 {
-                    _fontHeights.Add(1, shape.TextBody.GetFirstChild<A.Paragraph>().GetFirstChild<A.EndParagraphRunProperties>().FontSize.Value);
+                    FromMaster();
                 }
             }
+        }
+
+        private void FromMaster()
+        {
+            var masterTxtStyle = SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles;
+            _fontHeights.Add(1,
+                Type == PlaceholderType.Title
+                    ? masterTxtStyle.TitleStyle.Level1ParagraphProperties.GetFirstChild<A.DefaultRunProperties>().FontSize.Value
+                    : masterTxtStyle.BodyStyle.Level1ParagraphProperties.GetFirstChild<A.DefaultRunProperties>().FontSize.Value);
         }
 
         #endregion

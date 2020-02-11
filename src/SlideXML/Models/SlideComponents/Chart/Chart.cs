@@ -61,7 +61,7 @@ namespace SlideXML.Models.SlideComponents.Chart
                     _title = TryParseTitle();
                 }
 
-                return _title ?? throw new SlideXMLException(ExceptionMessages.NotTitle);
+                return _title ?? throw new SlideXmlException(ExceptionMessages.NotTitle);
             }
         }
 

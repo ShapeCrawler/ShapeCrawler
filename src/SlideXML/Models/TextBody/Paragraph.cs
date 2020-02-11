@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using DocumentFormat.OpenXml;
+using SlideXML.Enums;
 using SlideXML.Models.Settings;
-using SlideXML.Validation;
 using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -81,7 +81,7 @@ namespace SlideXML.Models.TextBody
         private static int GetLevel(A.Paragraph aPr)
         {
             var lvl = aPr.ParagraphProperties?.Level?.Value;
-            if (lvl == null) //null is first level
+            if (lvl == null) // null is first level
             {
                 lvl = 1;
             }
@@ -100,19 +100,30 @@ namespace SlideXML.Models.TextBody
             _text = Portions.Select(p => p.Text).Aggregate((t1, t2) => t1 + t2);
         }
 
+        [SuppressMessage("ReSharper", "ConvertIfStatementToConditionalTernaryExpression")]
         private void InitPortions()
         {
             var runs = _aParagraph.Elements<A.Run>();
             _portions = new List<Portion>(runs.Count());
-            var ph = _elSetting.Placeholder;
 
             foreach (var run in runs)
             {
-                // First tries to get font height from run, then placeholder and only then from presentation settings.
-                var fh = run.RunProperties?.FontSize?.Value ?? ph?.FontHeights[_lvl.Value] ?? _elSetting.PreSettings.LlvFontHeights[_lvl.Value];
-                
-                _portions.Add(new Portion(fh, run.Text.Text));
+                var runFh = GetRunFontHeight(run);
+                _portions.Add(new Portion(runFh, run.Text.Text));
             }
+        }
+
+        private int GetRunFontHeight(A.Run run)
+        {
+            if (_elSetting.Shape.Type == ElementType.AutoShape && _elSetting.Shape.IsPlaceholder)
+            {
+                return -1; // font height for placeholder will be implemented in the next version
+            }
+            var ph = _elSetting.Placeholder;
+            // first tries to get font height from RUN, then PLACEHOLDER and only then from PRESENTATION settings.
+            var fh = run.RunProperties?.FontSize?.Value ?? ph?.FontHeights[_lvl.Value] ?? _elSetting.PreSettings.LlvFontHeights[_lvl.Value];
+
+            return fh;
         }
 
         #endregion Private Methods

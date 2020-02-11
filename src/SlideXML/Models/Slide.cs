@@ -75,17 +75,13 @@ namespace SlideXML.Models
         /// Initialize a new instance of the <see cref="Slide"/> class.
         /// </summary>
         /// TODO: use builder instead public constructor
-        public Slide(SlidePart xmlSldPart, 
-                       int sldNumber,
-                       IGroupShapeTypeParser shapeTreeParser,
-                       IBackgroundImageFactory bgImgFactory,
-                       IPreSettings preSettings)
+        public Slide(SlidePart xmlSldPart, int sldNumber, IPreSettings preSettings)
         {
             Check.IsPositive(sldNumber, nameof(sldNumber));
             Number = sldNumber;
             _xmlSldPart = xmlSldPart ?? throw new ArgumentNullException(nameof(xmlSldPart));
-            _groupShapeTypeParser = shapeTreeParser ?? throw new ArgumentNullException(nameof(shapeTreeParser));
-            _bgImgFactory = bgImgFactory ?? throw new ArgumentNullException(nameof(bgImgFactory));
+            _groupShapeTypeParser = new GroupShapeTypeParser();
+            _bgImgFactory = new BackgroundImageFactory();
             _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
         }
 

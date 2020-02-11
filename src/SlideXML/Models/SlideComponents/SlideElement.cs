@@ -156,7 +156,7 @@ namespace SlideXML.Models.SlideComponents
                 }
                 if (_placeholderType == null)
                 {
-                    throw new SlideXMLException(ExceptionMessages.NotPlaceholder);
+                    throw new SlideXmlException(ExceptionMessages.NotPlaceholder);
                 }
 
                 return (PlaceholderType)_placeholderType;
@@ -168,16 +168,18 @@ namespace SlideXML.Models.SlideComponents
         #region Constructors
 
         private SlideElement(IBackgroundImageFactory bgImgFactory,
-                        OpenXmlCompositeElement compositeElement,
-                        SlidePart sldPart,
-                        ElementSettings spSettings)
+                             OpenXmlCompositeElement compositeElement,
+                             SlidePart sldPart, 
+                             ElementSettings spSettings)
         {
+            
+            _bgImgFactory = bgImgFactory ?? throw new ArgumentNullException(nameof(bgImgFactory));
+            _compositeElement = compositeElement ?? throw new ArgumentNullException(nameof(compositeElement));
+            _sldPart = sldPart ?? throw new ArgumentNullException(nameof(sldPart));
+            _spSettings = spSettings;
+            _spSettings.Shape = this;
             Type = ElementType.AutoShape;
             _textFrame = new Lazy<ITextFrame>(GetTextFrame);
-            _bgImgFactory = bgImgFactory;
-            _compositeElement = compositeElement;
-            _sldPart = sldPart;
-            _spSettings = spSettings;
         }
 
         private SlideElement(IChart chart, OpenXmlCompositeElement ce)

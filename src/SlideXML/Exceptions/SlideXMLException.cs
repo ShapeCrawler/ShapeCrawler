@@ -1,34 +1,37 @@
 ﻿using System;
+using SlideXML.Enums;
 
 namespace SlideXML.Exceptions
 {
     /// <summary>
     /// Represents the library exception. 
     /// </summary>
-    public class SlideXMLException : Exception
+    public class SlideXmlException : Exception
     {
         #region Properties
 
         /// <summary>
         /// Returns error code number.
         /// </summary>
-        public int ErrorCode { get; } = 100; // 100 is general code
+        public int ErrorCode { get; } = (int)ExceptionCodes.SlideXmlException;
 
         #endregion Properties
 
         #region Constructors
 
         /// <summary>
-        /// Defines parametersless constructor.
+        /// Defines a parameterless constructor.
         /// </summary>
-        public SlideXMLException() { }
+        public SlideXmlException() { }
 
-        public SlideXMLException(string message) : base(message) { }
+        public SlideXmlException(string message) : base(message) { }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SlideXMLException"/> class with default error message.
-        /// </summary>
-        public SlideXMLException(int errorCode, string message) : base(message)
+        public SlideXmlException(string message, int errorCode) : base(message)
+        {
+            ErrorCode = errorCode;
+        }
+
+        public SlideXmlException(int errorCode)
         {
             ErrorCode = errorCode;
         }

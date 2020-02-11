@@ -39,7 +39,7 @@ namespace SlideXML.Models.SlideComponents
                     }
                     else
                     {
-                        throw new SlideXMLException("Element does contain an image.");
+                        throw new SlideXmlException("Element does contain an image.");
                     }
                 }
 
