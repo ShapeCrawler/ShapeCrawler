@@ -21,7 +21,7 @@ namespace SlideXML.Services.Placeholders
         #region Fields
 
         private const int CustomGeometryCode = 187;
-        private List<PlaceholderSL> _placeholders; //TODO: consider use here HashSet
+        private List<PlaceholderData> _placeholders; //TODO: consider use here HashSet
         private readonly SlideLayoutPart _sldLtPart;
 
         #endregion Fields
@@ -47,7 +47,7 @@ namespace SlideXML.Services.Placeholders
         /// <remarks>
         /// Some placeholder on a slide has its location (x/y) and size (width/height) data on the slide.
         /// </remarks>
-        public PlaceholderSL TryGet(OpenXmlCompositeElement ce)
+        public PlaceholderData TryGet(OpenXmlCompositeElement ce)
         {
             if (!ce.IsPlaceholder())
             {
@@ -138,16 +138,16 @@ namespace SlideXML.Services.Placeholders
 
         }
 
-        private List<PlaceholderSL> GetPlaceholders(IEnumerable<OpenXmlCompositeElement> compositeElements)
+        private List<PlaceholderData> GetPlaceholders(IEnumerable<OpenXmlCompositeElement> compositeElements)
         {
             var filtered = Filter(compositeElements);
-            var result = new List<PlaceholderSL>(filtered.Count());
+            var result = new List<PlaceholderData>(filtered.Count());
             foreach (var el in filtered)
             {
                 var spPr = el.Descendants<P.ShapeProperties>().Single();
                 var t2d = spPr.Transform2D;
                 var phXml = GetPlaceholderXML(el);
-                var newPhSl = new PlaceholderSL(phXml)
+                var newPhSl = new PlaceholderData(phXml)
                 {
                     X = t2d.Offset.X.Value,
                     Y = t2d.Offset.Y.Value,

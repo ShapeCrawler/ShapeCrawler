@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using SlideXML.Exceptions;
 using SlideXML.Extensions;
 using SlideXML.Models.Settings;
 using SlideXML.Services;
@@ -56,24 +57,14 @@ namespace SlideXML.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file stream.
         /// </summary>
-        /// <param name="pptxFileStream"></param>
-        public Presentation(Stream pptxFileStream)
+        /// <param name="pptxStream"></param>
+        public Presentation(Stream pptxStream)
         {
-            Check.NotNull(pptxFileStream, nameof(pptxFileStream));
-            pptxFileStream.SeekBegin();
-            _xmlDoc = PresentationDocument.Open(pptxFileStream, true);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file byte array.
-        /// </summary>
-        /// <param name="pptxFileBytes"></param>
-        public Presentation(byte[] pptxFileBytes)
-        {
-            Check.NotNull(pptxFileBytes, nameof(pptxFileBytes));
-            var pptxMemoryStream = new MemoryStream();
-            pptxMemoryStream.Write(pptxFileBytes, 0, pptxFileBytes.Length);
-            _xmlDoc = PresentationDocument.Open(pptxMemoryStream, true);
+            ThrowIfInvalid(pptxStream);
+           
+            pptxStream.SeekBegin();
+           
+            _xmlDoc = PresentationDocument.Open(pptxStream, true);
         }
 
         /// <summary>
@@ -81,8 +72,23 @@ namespace SlideXML.Models
         /// </summary>
         public Presentation(string pptxFilePath)
         {
-            Check.NotEmpty(pptxFilePath, nameof(pptxFilePath));            
+            ThrowIfInvalid(pptxFilePath);
+           
             _xmlDoc = PresentationDocument.Open(pptxFilePath, true);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file byte array.
+        /// </summary>
+        /// <param name="pptxBytes"></param>
+        public Presentation(byte[] pptxBytes)
+        {
+            ThrowIfInvalid(pptxBytes);
+         
+            var pptxMemoryStream = new MemoryStream();
+            pptxMemoryStream.Write(pptxBytes, 0, pptxBytes.Length);
+            
+            _xmlDoc = PresentationDocument.Open(pptxMemoryStream, true);
         }
 
         #endregion Constructors
@@ -128,20 +134,56 @@ namespace SlideXML.Models
         {
             PresentationPart presentationPart = _xmlDoc.PresentationPart;
             var nbSlides = presentationPart.SlideParts.Count();
+            ThrowIfMoreSlides(nbSlides); // if number of slides more than allowed, then presentation is closed and throw is thrown
             _slides = new SlideCollection(_xmlDoc, nbSlides);
-            var groupShapeTypeParser = new GroupShapeTypeParser(); // TODO: inject via DI Container
-            var bgImgFactory = new BackgroundImageFactory();
             var preSettings = new PreSettings(_xmlDoc.PresentationPart.Presentation);
 
             for (var slideIndex = 0; slideIndex < nbSlides; slideIndex++)
             {
                 SlidePart slidePart = presentationPart.GetSlidePartByIndex(slideIndex);
-                var newSldEx = new Slide(slidePart, 
-                                   slideIndex + 1,
-                                   groupShapeTypeParser,
-                                   bgImgFactory,
-                                   preSettings);
+                var newSldEx = new Slide(slidePart, slideIndex + 1, preSettings);
                 _slides.Add(newSldEx);
+            }
+        }
+
+        private void ThrowIfInvalid(string path)
+        {
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException(nameof(path));
+            }
+            var  fileLength = new FileInfo(path).Length;
+            ThrowIfMore(fileLength);
+        }
+
+        private void ThrowIfInvalid(Stream stream)
+        {
+            Check.NotNull(stream, nameof(stream));
+            ThrowIfMore(stream.Length);
+        }
+
+        private void ThrowIfInvalid(byte[] bytes)
+        {
+            Check.NotNull(bytes, nameof(bytes));
+            ThrowIfMore(bytes.Length);
+        }
+
+        private static void ThrowIfMore(long length)
+        {
+            if (length > Limitations.MaxPresentationSize)
+            {
+                var ex = PresentationIsLargeException.FromMax(Limitations.MaxPresentationSize);
+                throw ex;
+            }
+        }
+
+        private void ThrowIfMoreSlides(int nbSlides)
+        {
+            if (nbSlides > Limitations.MaxSlidesNumber)
+            {
+                Close();
+                var ex = SlidesMuchMoreException.FromMax(Limitations.MaxSlidesNumber);
+                throw ex;
             }
         }
 

@@ -6,6 +6,6 @@ namespace SlideXML.Models.Settings
     {
         public IPreSettings PreSettings { get; }
 
-        public PlaceholderSL Placeholder { get; set; }
+        public PlaceholderData Placeholder { get; set; }
     }
 }

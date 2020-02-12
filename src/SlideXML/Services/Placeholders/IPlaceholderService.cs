@@ -7,6 +7,6 @@ namespace SlideXML.Services.Placeholders
     /// </summary>
     public interface IPlaceholderService
     {
-        PlaceholderSL TryGet(OpenXmlCompositeElement ce);
+        PlaceholderData TryGet(OpenXmlCompositeElement ce);
     }
 }

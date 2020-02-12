@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml;
+﻿using System;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using SlideXML.Enums;
 using SlideXML.Exceptions;
@@ -35,8 +36,7 @@ namespace SlideXML.Services
 
         public ElementFactory(SlidePart sldPart)
         {
-            Check.NotNull(sldPart, nameof(sldPart));
-            _sldPart = sldPart;
+            _sldPart = sldPart ?? throw new ArgumentNullException(nameof(sldPart));
             _shapeBuilder = new SlideElement.Builder(new BackgroundImageFactory(), new GroupShapeTypeParser(), _sldPart);
             _phService = new PlaceholderService(_sldPart.SlideLayoutPart);
         }
@@ -52,7 +52,8 @@ namespace SlideXML.Services
         public SlideElement CreateShape(ElementCandidate ec, IPreSettings preSettings)
         {
             Check.NotNull(ec, nameof(ec));
-            var elSetting = new ElementSettings(preSettings);
+            Check.NotNull(preSettings, nameof(preSettings));
+            var elSetting = new ElementSettings(preSettings); //TODO: consider possibility use struct or WeakReference
 
             switch (ec.ElementType)
             {
@@ -66,7 +67,9 @@ namespace SlideXML.Services
                     }
                 case ElementType.Table:
                     {
-                        return _shapeBuilder.BuildTable((P.GraphicFrame)ec.CompositeElement, elSetting);
+                        var tableShape = _shapeBuilder.BuildTable((P.GraphicFrame)ec.CompositeElement, elSetting);
+                        elSetting.Shape = tableShape;
+                        return tableShape;
 
                     }
                 case ElementType.Picture:
@@ -78,7 +81,7 @@ namespace SlideXML.Services
                     return _shapeBuilder.BuildOLEObject(ec.CompositeElement);
                 }
                 default:
-                    throw new SlideXMLException(nameof(ElementType));
+                    throw new SlideXmlException(nameof(ElementType));
             }
         }
 
@@ -94,7 +97,6 @@ namespace SlideXML.Services
         private SlideElement CreateShape(OpenXmlCompositeElement ce, ElementSettings elSettings)
         {
             SlideElement shape;
-
             // Add own transform properties
             var t2d = ((P.Shape)ce).ShapeProperties.Transform2D;
             if (t2d != null)
@@ -104,6 +106,7 @@ namespace SlideXML.Services
                     elSettings.Placeholder = _phService.TryGet(ce);
                 }
                 shape = _shapeBuilder.BuildAutoShape(ce, elSettings);
+                elSettings.Shape = shape;
                 WithOwnTransform2d(shape, t2d);
             }
             else // is placeholder obviously
@@ -112,6 +115,7 @@ namespace SlideXML.Services
                 elSettings.Placeholder = placeholder;
 
                 shape = _shapeBuilder.BuildAutoShape(ce, elSettings);
+                elSettings.Shape = shape;
                 shape.X = placeholder.X;
                 shape.Y = placeholder.Y;
                 shape.Width = placeholder.Width;
@@ -127,7 +131,7 @@ namespace SlideXML.Services
             Check.NotNull(ec, nameof(ec));
             if (!(ec.CompositeElement is P.GraphicFrame xmlGrFrame))
             {
-                throw new SlideXMLException();
+                throw new SlideXmlException();
             }
 
             var chartShape = _shapeBuilder.BuildChart(xmlGrFrame);

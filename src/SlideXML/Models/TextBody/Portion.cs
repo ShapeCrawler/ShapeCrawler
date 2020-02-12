@@ -1,4 +1,5 @@
-﻿using SlideXML.Validation;
+﻿using System;
+using SlideXML.Exceptions;
 
 namespace SlideXML.Models.TextBody
 {
@@ -7,15 +8,26 @@ namespace SlideXML.Models.TextBody
     /// </summary>
     public class Portion
     {
+        private readonly int _fontHeight;
+
         #region Properties
 
         /// <summary>
         /// Returns font height in EMUs.
         /// </summary>
-        public int FontHeight { get; }
+        public int FontHeight {
+            get
+            {
+                if (_fontHeight == -1)
+                {
+                    throw new FeatureNotYetImplementedException();
+                }
+
+                return _fontHeight;
+            }
+        }
 
         public string Text { get; }
-        
 
         #endregion Properties
 
@@ -26,10 +38,8 @@ namespace SlideXML.Models.TextBody
         /// </summary>
         public Portion(int fontHeight, string text)
         {
-            Check.IsPositive(fontHeight, nameof(fontHeight));
-            Check.NotNull(text, nameof(text));
-            FontHeight = fontHeight;
-            Text = text;
+            Text = text ?? throw new ArgumentNullException(nameof(text));
+            _fontHeight = fontHeight;
         }
 
         #endregion Constructors

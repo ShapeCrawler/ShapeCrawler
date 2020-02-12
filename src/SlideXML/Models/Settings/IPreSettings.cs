@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SlideXML.Models.SlideComponents;
 
 namespace SlideXML.Models.Settings
 {
