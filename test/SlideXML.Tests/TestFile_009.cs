@@ -127,7 +127,7 @@ namespace SlideXML.Tests
             // ACT
             var slides = pre.Slides;
             var groupElement = pre.Slides[1].Elements.Single(x => x.Type.Equals(ElementType.Group));
-            var el3 = groupElement.Group.Shapes.Single(x => x.Id.Equals(5));
+            var el3 = groupElement.GroupedElements.Single(x => x.Id.Equals(5));
             pre.Close();
 
             // ASSERT
@@ -562,7 +562,7 @@ namespace SlideXML.Tests
             var xmlDoc = DocHelper.Open(Properties.Resources._001);
             var slides = new SlideCollection(xmlDoc);
             Substitute.For<IPlaceholderService>();
-            var treeParser = new GroupShapeTypeParser();
+            var treeParser = new XmlGroupShapeTypeParser();
             var bgImgFactory = new BackgroundImageFactory();
             var mockPreSettings = Substitute.For<IPreSettings>();
             var sldPart = xmlDoc.PresentationPart.SlideParts.First();
@@ -674,7 +674,7 @@ namespace SlideXML.Tests
             var stubGrFrame = sldPart.Slide.CommonSlideData.ShapeTree.Elements<P.GraphicFrame>().Single(ge => ge.GetId() == 6);
 
             // ACT
-            var shapeBuilder = new SlideElement.Builder(new BackgroundImageFactory(), new GroupShapeTypeParser(), sldPart);
+            var shapeBuilder = new SlideElement.Builder(new BackgroundImageFactory(), new XmlGroupShapeTypeParser(), sldPart);
             var chartShape = shapeBuilder.BuildChart(stubGrFrame);
 
             // CLOSE
@@ -750,7 +750,7 @@ namespace SlideXML.Tests
             // ARRANGE
             var ms = new MemoryStream(Properties.Resources._003);
             var doc = PresentationDocument.Open(ms, false);
-            var parser = new GroupShapeTypeParser();
+            var parser = new XmlGroupShapeTypeParser();
             var shapeTree = doc.PresentationPart.SlideParts.First().Slide.CommonSlideData.ShapeTree;
 
             // ACT
@@ -777,7 +777,7 @@ namespace SlideXML.Tests
             var sldPart = doc.PresentationPart.GetSlidePartByNumber(1);
             var groupShape = sldPart.Slide.CommonSlideData.ShapeTree.Elements<P.GroupShape>().Single(x => x.GetId() == 2);
             var elFactory = new ElementFactory(sldPart);
-            var builder = new SlideElement.Builder(new BackgroundImageFactory(), new GroupShapeTypeParser(), sldPart);
+            var builder = new SlideElement.Builder(new BackgroundImageFactory(), new XmlGroupShapeTypeParser(), sldPart);
             var mockPreSettings = Substitute.For<IPreSettings>();
 
             // ACT
@@ -787,7 +787,7 @@ namespace SlideXML.Tests
             doc.Close();
 
             // ASSERT
-            Assert.Equal(2, groupEx.Group.Shapes.Count);
+            Assert.Equal(2, groupEx.GroupedElements.Count);
             Assert.Equal(7547759, groupEx.X);
             Assert.Equal(2372475, groupEx.Y);
             Assert.Equal(1143000, groupEx.Width);

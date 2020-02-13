@@ -18,7 +18,7 @@ namespace SlideXML.Models.SlideComponents
 
         #region Dependencies
 
-        private readonly IGroupShapeTypeParser _groupShapeTypeParser;
+        private readonly IXmlGroupShapeTypeParser _groupShapeTypeParser;
         private readonly IElementFactory _elFactory;
         private readonly IPreSettings _preSettings;
         private readonly OpenXmlCompositeElement _compositeElement;
@@ -49,7 +49,7 @@ namespace SlideXML.Models.SlideComponents
 
         #region Constructors
 
-        public Group(IGroupShapeTypeParser parser, 
+        public Group(IXmlGroupShapeTypeParser parser, 
                         IElementFactory elFactory, 
                         OpenXmlCompositeElement compositeElement, 
                         IPreSettings preSettings,

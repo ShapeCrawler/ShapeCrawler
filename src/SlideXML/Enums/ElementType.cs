@@ -3,17 +3,39 @@
 namespace SlideXML.Enums
 {
     /// <summary>
-    /// Enumerations of shape type.
+    /// Element type.
     /// </summary>
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum ElementType
     {
+        /// <summary>
+        /// Chart.
+        /// </summary>
         Chart,
+
+        /// <summary>
+        /// Element which has grouped elements.
+        /// </summary>
         Group,
+
+        /// <summary>
+        /// Picture.
+        /// </summary>
         Picture,
+
+        /// <summary>
+        /// AutoShape.
+        /// </summary>
         AutoShape,
+
+        /// <summary>
+        /// Table.
+        /// </summary>
         Table,
-        OLEObject,
-        Placeholder
+
+        /// <summary>
+        /// OLE Object.
+        /// </summary>
+        OLEObject
     }
 }

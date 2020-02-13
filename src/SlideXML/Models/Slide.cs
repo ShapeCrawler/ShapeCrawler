@@ -25,7 +25,7 @@ namespace SlideXML.Models
 
         #region Dependencies
 
-        private readonly IGroupShapeTypeParser _groupShapeTypeParser; // may be better move into _elFactory
+        private readonly IXmlGroupShapeTypeParser _groupShapeTypeParser; // may be better move into _elFactory
         private readonly IBackgroundImageFactory _bgImgFactory;
         private readonly IPreSettings _preSettings;
 
@@ -80,7 +80,7 @@ namespace SlideXML.Models
             Check.IsPositive(sldNumber, nameof(sldNumber));
             Number = sldNumber;
             _xmlSldPart = xmlSldPart ?? throw new ArgumentNullException(nameof(xmlSldPart));
-            _groupShapeTypeParser = new GroupShapeTypeParser();
+            _groupShapeTypeParser = new XmlGroupShapeTypeParser();
             _bgImgFactory = new BackgroundImageFactory();
             _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
         }
@@ -91,11 +91,10 @@ namespace SlideXML.Models
 
         private void InitElements()
         {
-            // Slide
+            var elCandidates = _groupShapeTypeParser.CreateCandidates(_xmlSldPart.Slide.CommonSlideData.ShapeTree);
+            _elements = new List<SlideElement>(elCandidates.Count());
             var elFactory = new ElementFactory(_xmlSldPart);
-            var sldCandidates = _groupShapeTypeParser.CreateCandidates(_xmlSldPart.Slide.CommonSlideData.ShapeTree);
-            _elements = new List<SlideElement>(sldCandidates.Count());
-            foreach (var candidate in sldCandidates)
+            foreach (var candidate in elCandidates)
             {
                 SlideElement newElement;
                 if (candidate.ElementType == ElementType.Group)
