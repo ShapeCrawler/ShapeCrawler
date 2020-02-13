@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -20,7 +20,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace SlideXML.Models.SlideComponents
 {
     /// <summary>
-    /// Represents a shape element on a slide.
+    /// Represents a slide element.
     /// </summary>
     public class SlideElement
     {
@@ -131,10 +131,7 @@ namespace SlideXML.Models.SlideComponents
         /// </summary>
         public Picture Picture { get; }
 
-        /// <summary>
-        /// Returns group.
-        /// </summary>
-        public Group Group { get; } //TODO: convert into GroupItems
+        public IList<SlideElement> GroupedElements { get; }
 
         /// <summary>
         /// Returns OLE object.
@@ -206,7 +203,7 @@ namespace SlideXML.Models.SlideComponents
         private SlideElement(Group group, OpenXmlCompositeElement ce)
         {
             Type = ElementType.Group;
-            Group = group;
+            GroupedElements = new List<SlideElement>(group.Shapes);
             _compositeElement = ce;
         }
 
@@ -267,7 +264,7 @@ namespace SlideXML.Models.SlideComponents
             #region Dependencies
 
             private readonly IBackgroundImageFactory _bgImgFactor;
-            private readonly IGroupShapeTypeParser _groupSpTypeParser;
+            private readonly IXmlGroupShapeTypeParser _groupSpTypeParser;
             private readonly SlidePart _sldPart;
 
             #endregion Dependencies
@@ -277,12 +274,11 @@ namespace SlideXML.Models.SlideComponents
             /// <summary>
             /// Initialize a new builder.
             /// </summary>
-            public Builder(IBackgroundImageFactory bgImgFactor, IGroupShapeTypeParser groupSpTypeParser, SlidePart sldPart)
+            public Builder(IBackgroundImageFactory bgImgFactor, IXmlGroupShapeTypeParser groupSpTypeParser, SlidePart sldPart)
             {
-                Check.NotNull(bgImgFactor, nameof(bgImgFactor));
-                _bgImgFactor = bgImgFactor;
-                _groupSpTypeParser = groupSpTypeParser;
-                _sldPart = sldPart;
+                _bgImgFactor = bgImgFactor ?? throw new ArgumentNullException(nameof(bgImgFactor));
+                _groupSpTypeParser = groupSpTypeParser ?? throw new ArgumentNullException(nameof(groupSpTypeParser));
+                _sldPart = sldPart ?? throw new ArgumentNullException(nameof(sldPart));
             }
 
             #endregion Constructors

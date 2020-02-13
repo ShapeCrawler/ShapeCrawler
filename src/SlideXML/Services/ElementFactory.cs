@@ -37,7 +37,7 @@ namespace SlideXML.Services
         public ElementFactory(SlidePart sldPart)
         {
             _sldPart = sldPart ?? throw new ArgumentNullException(nameof(sldPart));
-            _shapeBuilder = new SlideElement.Builder(new BackgroundImageFactory(), new GroupShapeTypeParser(), _sldPart);
+            _shapeBuilder = new SlideElement.Builder(new BackgroundImageFactory(), new XmlGroupShapeTypeParser(), _sldPart);
             _phService = new PlaceholderService(_sldPart.SlideLayoutPart);
         }
 

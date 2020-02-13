@@ -5,6 +5,7 @@ using SlideXML.Enums;
 using SlideXML.Extensions;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace SlideXML.Services
 {
@@ -14,21 +15,20 @@ namespace SlideXML.Services
     /// <remarks>
     /// <see cref="P.ShapeTree"/> and <see cref="P.GroupShape"/> both derived from <see cref="P.GroupShapeType"/> class.
     /// </remarks>
-    public class GroupShapeTypeParser : IGroupShapeTypeParser
+    public class XmlGroupShapeTypeParser : IXmlGroupShapeTypeParser
     {
         #region Public Methods
 
         /// <summary>
         /// Creates candidate collection.
         /// </summary>
-        /// <param name="groupTypeShape">ShapeTree or GroupShape</param>
         /// <returns></returns>
         public IEnumerable<ElementCandidate> CreateCandidates(P.GroupShapeType groupTypeShape, bool groupParsed = true)
         {
-            // Gets all element elements
-            var allElements = groupTypeShape.Elements<OpenXmlCompositeElement>();
+            // gets all xml composite elements
+            var allCompositeElements = groupTypeShape.Elements<OpenXmlCompositeElement>();
 
-            var supportElements = allElements.Where(e => e.GetPlaceholderIndex() == null);
+            var supportElements = allCompositeElements.Where(e => e.GetPlaceholderIndex() == null);
 
             // OLE Objects
             var oleFrames = supportElements.Where(e => e is P.GraphicFrame && e.Descendants<P.OleObject>().Any());
@@ -53,7 +53,7 @@ namespace SlideXML.Services
             });
 
             // Shape candidates
-            var xmlShapes = allElements.Except(pictureCandidates)
+            var xmlShapes = allCompositeElements.Except(pictureCandidates)
                                                                      .Where(e => e is P.Shape);
             var shapeCandidates = xmlShapes.Select(ce => new ElementCandidate
             {
@@ -63,7 +63,6 @@ namespace SlideXML.Services
 
             // Table candidates
             var xmlTables = supportElements
-                                                            .Where(e => e.GetPlaceholderIndex() == null) // skip placeholders
                                                             .Except(pictureCandidates)
                                                             .Except(xmlShapes)
                                                             .Where(e => e is P.GraphicFrame grFrame && grFrame.Descendants<A.Table>().Any());
