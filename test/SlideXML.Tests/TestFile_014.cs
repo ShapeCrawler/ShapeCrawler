@@ -21,7 +21,7 @@ namespace SlideXML.Tests
             Assert.NotNull(text);
         }
 
-        [Fact(Skip = "Temporary")]
+        [Fact]
         public void Portion_FontHeight_Test()
         {
             // ARRANGE
@@ -43,7 +43,7 @@ namespace SlideXML.Tests
             var elements = pre.Slides[2].Elements;
         }
 
-        [Fact(Skip = "Temporary")]
+        [Fact]
         public void FontHeight_Test1()
         {
             // Arrange
@@ -57,7 +57,7 @@ namespace SlideXML.Tests
             Assert.Equal(1200, fh);
         }
 
-        [Fact(Skip = "Temporary")]
+        [Fact]
         public void FontHeight_Test2()
         {
             // Arrange
@@ -71,7 +71,7 @@ namespace SlideXML.Tests
             Assert.Equal(1200, fh);
         }
 
-        [Fact(Skip = "Temporary")]
+        [Fact]
         public void Title_FontHeight_Test()
         {
             // Arrange
