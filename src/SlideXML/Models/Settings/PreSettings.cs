@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SlideXML.Models.SlideComponents;
+using System.Linq;
+using DocumentFormat.OpenXml;
 using SlideXML.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -33,22 +34,38 @@ namespace SlideXML.Models.Settings
 
         #endregion Constructors
 
+        #region Private Methods
+
         private static Dictionary<int, int> ParseLlvSizes(P.Presentation xmlPresentation)
         {
             var levelSizes = new Dictionary<int, int>();
-            foreach (var textPr in xmlPresentation.DefaultTextStyle.Elements<A.TextParagraphPropertiesType>())
+            
+            FromCompositeElement(xmlPresentation.DefaultTextStyle); // from presentation default text settings
+            if (!levelSizes.Any())
             {
-                var fs = textPr.GetFirstChild<A.DefaultRunProperties>()?.FontSize;
-                if (fs == null)
+                // parses from theme default text settings
+                FromCompositeElement(xmlPresentation.PresentationPart.ThemePart.Theme.ObjectDefaults.TextDefault.ListStyle);
+            }
+
+            // local function
+            void FromCompositeElement(OpenXmlCompositeElement ce)
+            {
+                foreach (var textPr in ce.Elements().Where(e => e.LocalName.StartsWith("lvl"))) // <a:lvl1pPr>, <a:lvl2pPr>, etc.
                 {
-                    continue;
+                    var fs = textPr.GetFirstChild<A.DefaultRunProperties>()?.FontSize;
+                    if (fs == null)
+                    {
+                        continue;
+                    }
+                    // fourth character of LocalName contains level number, example: "lvl1pPr -> 1, lvl2pPr -> 2, etc."
+                    var lvl = int.Parse(textPr.LocalName[3].ToString());
+                    levelSizes.Add(lvl, fs.Value);
                 }
-                // fourth character of LocalName contains level number, example: "lvl1pPr, lvl2pPr, etc."
-                var lvl = int.Parse(textPr.LocalName[3].ToString());
-                levelSizes.Add(lvl, fs.Value);
             }
 
             return levelSizes;
         }
+
+        #endregion Private Methods
     }
 }

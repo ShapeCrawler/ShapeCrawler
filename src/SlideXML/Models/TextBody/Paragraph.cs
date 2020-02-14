@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using SlideXML.Enums;
+using System.Runtime.InteropServices.WindowsRuntime;
 using SlideXML.Models.Settings;
 using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable PossibleMultipleEnumeration
@@ -20,7 +20,7 @@ namespace SlideXML.Models.TextBody
         private readonly ElementSettings _elSetting;
         private string _text;
         private readonly Lazy<int> _lvl;
-        private List<Portion> _portions;
+        private Lazy<List<Portion>> _portions;
 
         #endregion Fields
 
@@ -39,22 +39,12 @@ namespace SlideXML.Models.TextBody
 
                 return _text;
             }
-        } 
+        }
 
         /// <summary>
         /// Returns paragraph text portions.
         /// </summary>
-        public IList<Portion> Portions {
-            get
-            {
-                if (_portions == null)
-                {
-                    InitPortions();
-                }
-
-                return _portions;
-            }
-        }
+        public IList<Portion> Portions => _portions.Value;
 
         #endregion Properties
 
@@ -70,27 +60,20 @@ namespace SlideXML.Models.TextBody
             _aParagraph = aParagraph ?? throw new ArgumentNullException(nameof(aParagraph));
             _elSetting = elSetting ?? throw new ArgumentNullException(nameof(elSetting));
             _lvl = new Lazy<int>(GetLevel(_aParagraph));
+            _portions = new Lazy<List<Portion>>(GetPortions);
         }
 
         #endregion Constructors
 
-        /// <summary>
-        /// Gets paragraph level for specified <see cref="A.Paragraph"/> or <see cref="A.TextParagraphPropertiesType"/> instance.
-        /// </summary>
-        /// <returns></returns>
         private static int GetLevel(A.Paragraph aPr)
         {
-            var lvl = aPr.ParagraphProperties?.Level?.Value;
-            if (lvl == null) // null is first level
+            var lvl = aPr.ParagraphProperties?.Level;
+            if (lvl == null) 
             {
-                lvl = 1;
-            }
-            else
-            {
-                lvl++;
+                return 1; // null is first level
             }
 
-            return (int)lvl;
+            return ++lvl.Value;
         }
 
         #region Private Methods
@@ -101,29 +84,37 @@ namespace SlideXML.Models.TextBody
         }
 
         [SuppressMessage("ReSharper", "ConvertIfStatementToConditionalTernaryExpression")]
-        private void InitPortions()
+        private List<Portion> GetPortions()
         {
             var runs = _aParagraph.Elements<A.Run>();
-            _portions = new List<Portion>(runs.Count());
-
+            var portions = new List<Portion>(runs.Count());
             foreach (var run in runs)
             {
                 var runFh = GetRunFontHeight(run);
-                _portions.Add(new Portion(runFh, run.Text.Text));
+                portions.Add(new Portion(runFh, run.Text.Text));
             }
+
+            return portions;
         }
 
         private int GetRunFontHeight(A.Run run)
         {
-            if (_elSetting.Shape.Type == ElementType.AutoShape && _elSetting.Shape.IsPlaceholder)
+            // first, tries parse font height from current run (portion)
+            var runFs = run.RunProperties?.FontSize;
+            if (runFs != null)
             {
-                return -1; // font height for placeholder will be implemented in the next version
+                return runFs.Value;
             }
-            var ph = _elSetting.Placeholder;
-            // first tries to get font height from RUN, then PLACEHOLDER and only then from PRESENTATION settings.
-            var fh = run.RunProperties?.FontSize?.Value ?? ph?.FontHeights[_lvl.Value] ?? _elSetting.PreSettings.LlvFontHeights[_lvl.Value];
 
-            return fh;
+            // if element is placeholder, tries to get from placeholder data
+            var ph = _elSetting.Placeholder;
+            if (ph != null)
+            {
+                return ph.FontHeights[_lvl.Value];
+            }
+
+            // from global presentation setting
+            return _elSetting.PreSettings.LlvFontHeights[_lvl.Value];
         }
 
         #endregion Private Methods

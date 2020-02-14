@@ -356,7 +356,7 @@ namespace SlideXML.Tests
             Assert.Equal(5143500, y);
         }
 
-        [Fact(Skip = "Temporary")]
+        [Fact]
         public void Placeholder_FontHeight_TextBox_Test()
         {
             // ARRANGE
@@ -504,7 +504,7 @@ namespace SlideXML.Tests
             Assert.NotNull(text);
         }
 
-        [Fact(Skip = "Temporary")]
+        [Fact]
         public void Placeholder_FontHeight_Test()
         {
             // ARRANGE
@@ -522,7 +522,7 @@ namespace SlideXML.Tests
             Assert.Equal(2000, fh);
         }
 
-        [Fact (Skip = "Temporary")]
+        [Fact]
         public void Placeholder_FontHeight_Title_Test()
         {
             // ARRANGE

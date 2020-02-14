@@ -2,5 +2,8 @@
 	<s:String x:Key="/Default/Environment/UpdatesManger/LastUpdateCheck/@EntryValue">02/11/2020 22:19:53</s:String>
 	
 	<s:String x:Key="/Default/Housekeeping/Layout/DialogWindows/OptionsDialogView/Position/@EntryValue">[8,-16](956,792)</s:String>
+	<s:Double x:Key="/Default/Housekeeping/TreeModelBrowserPanelPersistence/PreviewSplitterVerticalProportion/=UnitTestSessionDescriptor/@EntryIndexedValue">0.63773584905660385</s:Double>
+	
+	
 	
 	</wpf:ResourceDictionary>

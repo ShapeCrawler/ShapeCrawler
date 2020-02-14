@@ -8,24 +8,12 @@ namespace SlideXML.Models.TextBody
     /// </summary>
     public class Portion
     {
-        private readonly int _fontHeight;
-
         #region Properties
 
         /// <summary>
         /// Returns font height in EMUs.
         /// </summary>
-        public int FontHeight {
-            get
-            {
-                if (_fontHeight == -1)
-                {
-                    throw new FeatureNotYetImplementedException();
-                }
-
-                return _fontHeight;
-            }
-        }
+        public int FontHeight { get; }
 
         public string Text { get; }
 
@@ -39,7 +27,7 @@ namespace SlideXML.Models.TextBody
         public Portion(int fontHeight, string text)
         {
             Text = text ?? throw new ArgumentNullException(nameof(text));
-            _fontHeight = fontHeight;
+            FontHeight = fontHeight;
         }
 
         #endregion Constructors
