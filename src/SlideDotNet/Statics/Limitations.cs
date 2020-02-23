@@ -1,7 +1,7 @@
 ﻿namespace SlideDotNet
 {
     /// <summary>
-    /// Contains library limitation constant values
+    /// Contains library limitation constant values.
     /// </summary>
     public static class Limitations
     {
@@ -13,7 +13,7 @@
         /// <summary>
         /// Returns the maximal allowed number of slides in a presentation.
         /// </summary>
-        public static int MaxSlidesNumber => 200;
+        public static int MaxSlidesNumber => 250;
 
         /// <summary>
         /// Returns the maximal allowed number of shapes on one slide.

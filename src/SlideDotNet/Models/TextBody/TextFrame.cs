@@ -16,7 +16,7 @@ namespace SlideDotNet.Models.TextBody
     {
         #region Fields
 
-        private readonly ElementSettings _elSettings;
+        private readonly IShapeContext _spContext;
         private string _text;
 
         #endregion
@@ -45,9 +45,9 @@ namespace SlideDotNet.Models.TextBody
         /// <summary>
         /// Initializes an instance of the <see cref="TextFrame"/>.
         /// </summary>
-        public TextFrame(ElementSettings elSettings, OpenXmlCompositeElement compositeElement)
+        public TextFrame(IShapeContext spContext, OpenXmlCompositeElement compositeElement)
         {
-            _elSettings = elSettings ?? throw new ArgumentNullException(nameof(elSettings));
+            _spContext = spContext ?? throw new ArgumentNullException(nameof(spContext));
             Check.NotNull(compositeElement, nameof(compositeElement));
             ParseParagraphs(compositeElement);
         }
@@ -65,7 +65,7 @@ namespace SlideDotNet.Models.TextBody
             Paragraphs = new List<Paragraph>(paragraphs.Count());
             foreach (var p in paragraphs)
             {
-                Paragraphs.Add(new Paragraph(_elSettings, p));
+                Paragraphs.Add(new Paragraph(_spContext, p));
             }
         }
 

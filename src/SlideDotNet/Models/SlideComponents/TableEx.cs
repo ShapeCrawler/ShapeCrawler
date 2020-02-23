@@ -11,13 +11,13 @@ namespace SlideXML.Models.SlideComponents
     /// <summary>
     /// Represents a table element on a slide.
     /// </summary>
-    public class Table
+    public class TableEx
     {
         #region Fields
 
         private List<RowEx> _rows;
         private readonly P.GraphicFrame _xmlGrFrame;
-        private readonly ElementSettings _elSettings;
+        private readonly IShapeContext _spContext;
 
         #endregion Fields
 
@@ -41,12 +41,12 @@ namespace SlideXML.Models.SlideComponents
         #region Constructors
 
         /// <summary>
-        /// Initialise an instance of <see cref="Table"/> class.
+        /// Initialise an instance of <see cref="TableEx"/> class.
         /// </summary>
-        public Table(P.GraphicFrame xmlGrFrame, ElementSettings elSettings)
+        public TableEx(P.GraphicFrame xmlGrFrame, IShapeContext spContext)
         {
             _xmlGrFrame = xmlGrFrame;
-            _elSettings = elSettings;
+            _spContext = spContext;
         }
 
         #endregion Constructors
@@ -59,7 +59,7 @@ namespace SlideXML.Models.SlideComponents
             _rows = new List<RowEx>(xmlRows.Count());
             foreach (var r in xmlRows)
             {
-                _rows.Add(new RowEx(r, _elSettings));
+                _rows.Add(new RowEx(r, _spContext));
             }
         }
 

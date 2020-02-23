@@ -13,7 +13,7 @@ namespace SlideDotNet.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._014);
-            var elId61 = pre.Slides[0].Elements.Single(s => s.Id == 61);
+            var elId61 = pre.Slides[0].Shapes.Single(s => s.Id == 61);
 
             // ACT
             var text = elId61.TextFrame.Text;
@@ -27,7 +27,7 @@ namespace SlideDotNet.Tests
         {
             // ARRANGE
             var pre = new Presentation(Properties.Resources._014);
-            var elId5 = pre.Slides[1].Elements.Single(x => x.Id == 5);
+            var elId5 = pre.Slides[1].Shapes.Single(x => x.Id == 5);
 
             // ACT-ASSERT
             var text = elId5.TextFrame.Text;
@@ -41,7 +41,7 @@ namespace SlideDotNet.Tests
             var pre = new Presentation(Properties.Resources._014);
 
             // ACT-ASSERT
-            var elements = pre.Slides[2].Elements;
+            var elements = pre.Slides[2].Shapes;
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace SlideDotNet.Tests
             var pre = new Presentation(Properties.Resources._014);
 
             // Act
-            var element = pre.Slides[3].Elements.Single(x => x.Id == 5);
+            var element = pre.Slides[3].Shapes.Single(x => x.Id == 5);
             var fh = element.TextFrame.Paragraphs.First().Portions.First().FontHeight;
 
             // Assert
@@ -65,7 +65,7 @@ namespace SlideDotNet.Tests
             var pre = new Presentation(Properties.Resources._014);
 
             // Act
-            var element = pre.Slides[4].Elements.Single(x => x.Id == 4);
+            var element = pre.Slides[4].Shapes.Single(x => x.Id == 4);
             var fh = element.TextFrame.Paragraphs.First().Portions.First().FontHeight;
 
             // Assert
@@ -79,7 +79,7 @@ namespace SlideDotNet.Tests
             var pre = new Presentation(Properties.Resources._014);
 
             // Act
-            var element = pre.Slides[5].Elements.Single(x => x.Id == 52);
+            var element = pre.Slides[5].Shapes.Single(x => x.Id == 52);
             var fh = element.TextFrame.Paragraphs.First().Portions.First().FontHeight;
 
             // Assert

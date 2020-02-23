@@ -2,6 +2,6 @@
 src/slidedotnet/.vs
 src/slidedotnet/bin
 src/slidedotnet/obj
-test/slidedotnet.tests/obj
-test/slidedotnet.tests/bin
+src/slidedotnet.tests/obj
+src/slidedotnet.tests/bin
 slidedotnet.sln.DotSettings.user

@@ -6,7 +6,7 @@ namespace SlideDotNet.Exceptions
     /// <summary>
     /// Represents the library exception. 
     /// </summary>
-    public class SlideXmlException : Exception
+    public class SlideDotNetException : Exception
     {
         #region Properties
 
@@ -22,16 +22,16 @@ namespace SlideDotNet.Exceptions
         /// <summary>
         /// Defines a parameterless constructor.
         /// </summary>
-        public SlideXmlException() { }
+        public SlideDotNetException() { }
 
-        public SlideXmlException(string message) : base(message) { }
+        public SlideDotNetException(string message) : base(message) { }
 
-        public SlideXmlException(string message, int errorCode) : base(message)
+        public SlideDotNetException(string message, int errorCode) : base(message)
         {
             ErrorCode = errorCode;
         }
 
-        public SlideXmlException(int errorCode)
+        public SlideDotNetException(int errorCode)
         {
             ErrorCode = errorCode;
         }

@@ -9,11 +9,11 @@ namespace SlideDotNet.Tests
     public class TestFile_015
     {
         [Fact]
-        public void FontHeight_Test_1()
+        public void NonPlaceholder_FontHeight_Test()
         {
             // Arrange
             var pre = new Presentation(Properties.Resources._015);
-            var elId5 = pre.Slides[0].Elements.Single(s => s.Id == 5);
+            var elId5 = pre.Slides[0].Shapes.Single(s => s.Id == 5);
 
             // Act
             var fh = elId5.TextFrame.Paragraphs[0].Portions[2].FontHeight;
@@ -27,7 +27,7 @@ namespace SlideDotNet.Tests
         {
             // Arrange
             var pre = new Presentation(Properties.Resources._015);
-            var el = pre.Slides[1].Elements.Single(s => s.Id == 61);
+            var el = pre.Slides[1].Shapes.Single(s => s.Id == 61);
 
             // Act
             var fh = el.TextFrame.Paragraphs[0].Portions[0].FontHeight;

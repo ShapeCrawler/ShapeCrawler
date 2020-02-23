@@ -3,17 +3,12 @@
 namespace SlideDotNet.Models
 {
     /// <summary>
-    /// Provides APIs for slide collection.
+    /// Represents a collection of a slides.
     /// </summary>
     public interface ISlideCollection : IEnumerable<Slide>
     {
-        void Add(Slide item);
-
         void Remove(Slide item);
 
-        Slide this[int index]
-        {
-            get;
-        }
+        Slide this[int index] { get; }
     }
 }

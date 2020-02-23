@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Validation;
@@ -15,7 +16,7 @@ namespace SlideDotNet.Models.TableComponents
 
         private List<CellEx> _cells;
         private readonly A.TableRow _xmlRow;
-        private readonly ElementSettings _elSettings;
+        private readonly IShapeContext _spContext;
 
         #endregion
 
@@ -40,12 +41,10 @@ namespace SlideDotNet.Models.TableComponents
 
         #region Constructors
 
-        public RowEx(A.TableRow xmlRow, ElementSettings elSettings)
+        public RowEx(A.TableRow xmlRow, IShapeContext spContext)
         {
-            Check.NotNull(xmlRow, nameof(xmlRow));
-            Check.NotNull(elSettings, nameof(elSettings));
-            _xmlRow = xmlRow;
-            _elSettings = elSettings;
+            _xmlRow = xmlRow ?? throw new ArgumentNullException(nameof(xmlRow));
+            _spContext = spContext ?? throw new ArgumentNullException(nameof(spContext));
         }
 
         #endregion
@@ -58,7 +57,7 @@ namespace SlideDotNet.Models.TableComponents
             _cells = new List<CellEx>(xmlCells.Count());
             foreach (var c in xmlCells)
             {
-                _cells.Add(new CellEx(c, _elSettings));
+                _cells.Add(new CellEx(c, _spContext));
             }
         }
 

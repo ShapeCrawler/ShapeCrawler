@@ -11,6 +11,10 @@
 
         public static string NoPicture = "Element has not a picture.";
 
+        public static string NoTable = "Element has not a table.";
+
+        public static string NoOleObject = "Element has not a OLE object.";
+
         public static string NotPlaceholder = "Element is not a placeholder";
 
         public static string NotTitle = "Chart has not a title.";

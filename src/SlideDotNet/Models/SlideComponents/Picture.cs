@@ -1,21 +1,14 @@
-﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Exceptions;
+﻿using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Validation;
-using P = DocumentFormat.OpenXml.Presentation;
 
 namespace SlideDotNet.Models.SlideComponents
 {
     /// <summary>
-    /// Represents a picture element.
+    /// Represents a picture content.
     /// </summary>
     public class Picture
     {
         #region Fields
-
-        private readonly SlidePart _sldPart;
-        private ImageEx _imageEx;
-        private readonly OpenXmlCompositeElement _compositeElement;
 
         #endregion Fields
 
@@ -24,41 +17,19 @@ namespace SlideDotNet.Models.SlideComponents
         /// <summary>
         /// Gets image.
         /// </summary>
-        public ImageEx ImageEx
-        {
-            get
-            {
-                if (_imageEx == null)
-                {
-                    var pPicture = (P.Picture)_compositeElement;
-                    var pBlipFill = pPicture.GetFirstChild<P.BlipFill>();
-                    var blipRelateId = pBlipFill?.Blip?.Embed?.Value;
-                    if (blipRelateId != null)
-                    {
-                        _imageEx = new ImageEx(_sldPart, blipRelateId);
-                    }
-                    else
-                    {
-                        throw new SlideXmlException("Element does contain an image.");
-                    }
-                }
-
-                return _imageEx;
-            }
-        }
+        public ImageEx ImageEx { get; }
 
         #endregion Properties
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of <see cref="Picture"/> class.
+        /// Initializes a new instance of the <see cref="Picture"/> class.
         /// </summary>
-        public Picture(SlidePart sldPart, OpenXmlCompositeElement compositeElement)
+        public Picture(SlidePart xmlSldPart, string blipRelateId)
         {
-            Check.NotNull(sldPart, nameof(sldPart));
-            _sldPart = sldPart;
-            _compositeElement = compositeElement;
+            Check.NotNull(xmlSldPart, nameof(xmlSldPart));
+            ImageEx = new ImageEx(xmlSldPart, blipRelateId);
         }
 
         #endregion Constructors

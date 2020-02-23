@@ -15,26 +15,25 @@ namespace SlideDotNet.Models.SlideComponents.Chart
     /// <summary>
     /// <inheritdoc cref="IChart"/>
     /// </summary>
-    public class Chart : IChart
+    public class ChartEx : IChart
     {
         #region Fields
 
         // Contains chart elements, e.g. <c:pieChart>. If the chart type is not a combination,
         // then collection contains an only single item.
         private List<OpenXmlElement> _chartElements;
-
         private readonly SlidePart _sldPart;
-        private ChartType? _type;
+        private ChartType? _type; //TODO: make lazy
         private string _title;
         private readonly P.GraphicFrame _grFrame;
         private C.Chart _cChart;
 
-        #endregion
+        #endregion Fields
 
         #region Properties
 
         /// <summary>
-        /// Returns the chart type.
+        /// <inheritdoc cref="IChart.Type"/>
         /// </summary>
         public ChartType Type
         {
@@ -45,12 +44,12 @@ namespace SlideDotNet.Models.SlideComponents.Chart
                     ParseType();
                 }
 
-                return (ChartType)_type; //TODO: fix casting
+                return (ChartType)_type;
             }
         }
 
         /// <summary>
-        /// Returns the chart title text or null if title no exists.
+        /// <inheritdoc cref="IChart.Title"/>
         /// </summary>
         public string Title
         {
@@ -58,15 +57,15 @@ namespace SlideDotNet.Models.SlideComponents.Chart
             {
                 if (_title == null)
                 {
-                    _title = TryParseTitle();
+                    _title = TryGetTitle();
                 }
 
-                return _title ?? throw new SlideXmlException(ExceptionMessages.NotTitle);
+                return _title ?? throw new SlideDotNetException(ExceptionMessages.NotTitle);
             }
         }
 
         /// <summary>
-        /// Indicates whether the chart has a title.
+        /// <inheritdoc cref="IChart.HasTitle"/>
         /// </summary>
         public bool HasTitle
         {
@@ -74,7 +73,7 @@ namespace SlideDotNet.Models.SlideComponents.Chart
             {
                 if (_title == null)
                 {
-                    _title = TryParseTitle();
+                    _title = TryGetTitle();
                 }
 
                 return _title != null;
@@ -86,9 +85,9 @@ namespace SlideDotNet.Models.SlideComponents.Chart
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Chart"/> class.
+        /// Initializes a new instance of the <see cref="ChartEx"/> class.
         /// </summary>
-        public Chart(P.GraphicFrame grFrame, SlidePart sldPart)
+        public ChartEx(P.GraphicFrame grFrame, SlidePart sldPart)
         {
             Check.NotNull(sldPart, nameof(sldPart));
             _sldPart = sldPart;
@@ -107,7 +106,7 @@ namespace SlideDotNet.Models.SlideComponents.Chart
             var chartRef = _grFrame.Descendants<C.ChartReference>().Single();
 
             // Get chart part by reference
-            var chPart = _sldPart.GetPartById(chartRef.Id) as ChartPart;
+            var chPart = (ChartPart)_sldPart.GetPartById(chartRef.Id);
 
             _cChart = chPart.ChartSpace.GetFirstChild<C.Chart>();
             _chartElements = _cChart.PlotArea.Elements().Where(e => e.LocalName.EndsWith("Chart")).ToList();
@@ -127,7 +126,7 @@ namespace SlideDotNet.Models.SlideComponents.Chart
             }
         }
 
-        private string TryParseTitle()
+        private string TryGetTitle()
         {
             var title = _cChart.Title;
             if (title == null) // chart has not title
@@ -135,25 +134,17 @@ namespace SlideDotNet.Models.SlideComponents.Chart
                 return null;
             }
            
-            var chartText = title.ChartText;
-
-            // Combination
-            if (Type == ChartType.Combination)
+            var xmlChartText = title.ChartText;
+            var existStatic = TryGetStatic(xmlChartText, out var staticTitle);
+            if (existStatic)
             {
-                return chartText.RichText.Descendants<A.Text>().Single().Text;
+                return staticTitle;
             }
 
-            // Non-combination
-            // First, tries parse static title
-            var rRich = chartText?.RichText;
-            if (rRich != null)
-            {
-                return rRich.Descendants<A.Text>().Single().Text;
-            }
             // Dynamic title
-            if (chartText != null)
+            if (xmlChartText != null)
             {
-                return chartText.Descendants<C.StringPoint>().Single().InnerText;
+                return xmlChartText.Descendants<C.StringPoint>().Single().InnerText;
             }
 
             if (Type == ChartType.PieChart)
@@ -166,8 +157,26 @@ namespace SlideDotNet.Models.SlideComponents.Chart
         }
 
         #endregion
+
+        private bool TryGetStatic(C.ChartText chartText, out string staticTitle)
+        {
+            staticTitle = null;
+            if (Type == ChartType.Combination)
+            {
+                staticTitle = chartText.RichText.Descendants<A.Text>().Select(t => t.Text).Aggregate((t1, t2) => t1 + t2);
+                return true;
+            }
+
+            var rRich = chartText?.RichText;
+            if (rRich != null)
+            {
+                staticTitle = rRich.Descendants<A.Text>().Select(t => t.Text).Aggregate((t1, t2) => t1 + t2);
+                return true;
+            }
+
+            return false;
+        }
     }
 }
-
 
 

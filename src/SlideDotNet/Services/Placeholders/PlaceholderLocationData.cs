@@ -36,11 +36,11 @@ namespace SlideDotNet.Services.Placeholders
         /// <summary>
         /// Creates a new <see cref="PlaceholderLocationData"/> instance from <see cref="PlaceholderData"/>.
         /// </summary>
-        public PlaceholderLocationData(PlaceholderData phXml)
+        public PlaceholderLocationData(PlaceholderData phData)
         {
-            Check.NotNull(phXml, nameof(phXml));
-            PlaceholderType = phXml.PlaceholderType;
-            Index = phXml.Index;
+            Check.NotNull(phData, nameof(phData));
+            PlaceholderType = phData.PlaceholderType;
+            Index = phData.Index;
         }
 
         #endregion Constructors

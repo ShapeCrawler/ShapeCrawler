@@ -9,8 +9,8 @@ namespace SlideDotNet.Services
     /// </summary>
     public interface IElementFactory
     {
-        Shape ElementFromCandidate(ElementCandidate ec, IParents parents);
+        ShapeEx ElementFromCandidate(ElementCandidate ec, IPreSettings parents);
 
-        Shape GroupFromXml(OpenXmlCompositeElement compositeElement, IParents parents);
+        ShapeEx GroupFromXml(OpenXmlCompositeElement compositeElement, IPreSettings parents);
     }
 }

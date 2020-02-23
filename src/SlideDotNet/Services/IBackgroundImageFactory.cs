@@ -1,15 +1,22 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Models;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace SlideDotNet.Services
 {
     /// <summary>
-    /// Provides APIs to parse background images.
+    /// Represents a factory to create an instance of the <see cref="ImageEx"/> class.
     /// </summary>
     public interface IBackgroundImageFactory
     {
-        ImageEx CreateBackgroundSlide(SlidePart sldPart);
+        /// <summary>
+        /// Gets slide background image. Returns null if slide does not have background image.
+        /// </summary>
+        ImageEx FromXmlSlide(SlidePart xmlSldPart);
 
-        ImageEx CreateBackgroundShape(SlidePart sldPart, DocumentFormat.OpenXml.Presentation.Shape pShape);
+        /// <summary>
+        /// Gets shape background image. It returns null if the shape is not filled with a picture.
+        /// </summary>
+        ImageEx FromXmlShape(SlidePart xmlSldPart, P.Shape xmlShape);
     }
 }
