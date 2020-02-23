@@ -5,7 +5,7 @@ namespace SlideDotNet.Exceptions
     /// <summary>
     /// Thrown when number of slides more than allowed.
     /// </summary>
-    public class SlidesMuchMoreException : SlideXmlException
+    public class SlidesMuchMoreException : SlideDotNetException
     {
         #region Constructors
 

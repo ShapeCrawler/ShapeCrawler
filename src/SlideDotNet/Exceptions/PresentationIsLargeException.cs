@@ -5,7 +5,7 @@ namespace SlideDotNet.Exceptions
     /// <summary>
     /// Thrown when presentation size is more than allowable.
     /// </summary>
-    public class PresentationIsLargeException : SlideXmlException
+    public class PresentationIsLargeException : SlideDotNetException
     {
         #region Constructors
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Enums;
 using SlideDotNet.Extensions;
@@ -36,7 +37,7 @@ namespace SlideDotNet.Services
         /// <param name="xmlSlideShape">Placeholder element.</param>
         /// <param name="pLvl">Paragraph level.</param>
         /// <returns></returns>
-        public int? TryGetFontHeight(P.Shape xmlSlideShape, int pLvl)
+        public int? TryGetHeight(OpenXmlCompositeElement xmlSlideShape, int pLvl) //TODO: use pattern Try
         {
             var sPlaceholder = FromSlideXmlElement(xmlSlideShape);
             
@@ -89,7 +90,7 @@ namespace SlideDotNet.Services
             return FontHeightParser.FromCompositeElement(xmlSldPart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.BodyStyle);
         }
 
-        private static PlaceholderFontData FromSlideXmlElement(P.Shape xmlShape)
+        private static PlaceholderFontData FromSlideXmlElement(OpenXmlCompositeElement xmlShape)
         {
             var result = new PlaceholderFontData();
             var ph = xmlShape.Descendants<P.PlaceholderShape>().First();

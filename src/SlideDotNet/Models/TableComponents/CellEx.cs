@@ -1,7 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.TextBody;
-using SlideDotNet.Validation;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Models.TableComponents
@@ -16,7 +16,7 @@ namespace SlideDotNet.Models.TableComponents
         private TextFrame _textBody;
 
         private readonly A.TableCell _xmlCell;
-        private readonly ElementSettings _elSettings;
+        private readonly IShapeContext _spContext;
 
         #endregion
 
@@ -42,12 +42,10 @@ namespace SlideDotNet.Models.TableComponents
 
         #region Constructors
 
-        public CellEx(A.TableCell xmlCell, ElementSettings elSettings)
+        public CellEx(A.TableCell xmlCell, IShapeContext spContext)
         {
-            Check.NotNull(xmlCell, nameof(xmlCell));
-            Check.NotNull(elSettings, nameof(elSettings));
-            _xmlCell = xmlCell;
-            _elSettings = elSettings;
+            _xmlCell = xmlCell ?? throw new ArgumentNullException(nameof(xmlCell));
+            _spContext = spContext ?? throw new ArgumentNullException(nameof(spContext));
         }
 
         #endregion
@@ -58,7 +56,7 @@ namespace SlideDotNet.Models.TableComponents
             var aTexts = aTxtBody.Descendants<A.Text>();
             if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element contain text
             {
-                _textBody = new TextFrame(_elSettings, aTxtBody);
+                _textBody = new TextFrame(_spContext, aTxtBody);
             }
         }
     }

@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Enums;
 using SlideDotNet.Extensions;
+using SlideDotNet.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable PossibleMultipleEnumeration
@@ -19,7 +20,6 @@ namespace SlideDotNet.Services.Placeholders
         #region Fields
 
         private List<PlaceholderLocationData> _placeholders; //TODO: consider use here HashSet
-        private readonly SlideLayoutPart _sldLtPart;
 
         #endregion Fields
 
@@ -27,8 +27,8 @@ namespace SlideDotNet.Services.Placeholders
 
         public PlaceholderService(SlideLayoutPart sldLtPart)
         {
-            _sldLtPart = sldLtPart ?? throw new ArgumentNullException(nameof(sldLtPart));
-            Init(_sldLtPart);
+            Check.NotNull(sldLtPart, nameof(sldLtPart));
+            Init(sldLtPart);
         }
 
         #endregion
@@ -50,7 +50,7 @@ namespace SlideDotNet.Services.Placeholders
                 return null;
             }
 
-            var phXml = XmlPlaceholderFrom(ce);
+            var phXml = PlaceholderDataFrom(ce);
             if (phXml.PlaceholderType == PlaceholderType.Custom)
             {
                 return _placeholders.SingleOrDefault(p => p.Index == phXml.Index);
@@ -60,10 +60,10 @@ namespace SlideDotNet.Services.Placeholders
         }
 
         /// <summary>
-        /// Get placeholder XML.
+        /// Gets placeholder data.
         /// </summary>
         /// <param name="compositeElement">Placeholder which is placeholder.</param>
-        public static PlaceholderData XmlPlaceholderFrom(OpenXmlCompositeElement compositeElement)
+        public static PlaceholderData PlaceholderDataFrom(OpenXmlCompositeElement compositeElement)
         {
             var result = new PlaceholderData();
             var ph = compositeElement.Descendants<P.PlaceholderShape>().First();
@@ -125,7 +125,7 @@ namespace SlideDotNet.Services.Placeholders
             {
                 var spPr = el.Descendants<P.ShapeProperties>().Single();
                 var t2d = spPr.Transform2D;
-                var phXml = XmlPlaceholderFrom(el);
+                var phXml = PlaceholderDataFrom(el);
                 var newPhSl = new PlaceholderLocationData(phXml)
                 {
                     X = t2d.Offset.X.Value,

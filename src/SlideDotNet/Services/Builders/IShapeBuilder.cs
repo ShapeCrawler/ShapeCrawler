@@ -1,6 +1,10 @@
-﻿using DocumentFormat.OpenXml;
+﻿using System.Collections.Generic;
+using DocumentFormat.OpenXml;
+using SlideDotNet.Models;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.SlideComponents;
+using SlideDotNet.Models.SlideComponents.Chart;
+using SlideXML.Models.SlideComponents;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace SlideDotNet.Services.Builders
@@ -10,16 +14,34 @@ namespace SlideDotNet.Services.Builders
     /// </summary>
     public interface IShapeBuilder
     {
-        Shape BuildAutoShape(OpenXmlCompositeElement xmlElement, ElementSettings elSettings);
+        /// <summary>
+        /// Builds a shape with OLE object content.
+        /// </summary>
+        ShapeEx WithOle(Location location, IShapeContext spContext, OleObject ole);
 
-        Shape BuildPicture(OpenXmlCompositeElement xmlElement, ElementSettings elSettings);
+        /// <summary>
+        /// Builds a shape with picture content.
+        /// </summary>
+        ShapeEx WithPicture(Location location, IShapeContext spContext, Picture picture);
 
-        Shape BuildTable(P.GraphicFrame xmlGrFrame, ElementSettings elSettings);
+        /// <summary>
+        /// Builds a AutoShape.
+        /// </summary>
+        ShapeEx WithAutoShape(Location location, IShapeContext spContext);
 
-        Shape BuildChart(P.GraphicFrame xmlGrFrame);
+        /// <summary>
+        /// Builds a shape with table content.
+        /// </summary>
+        ShapeEx WithTable(Location location, IShapeContext spContext, TableEx table);
 
-        Shape BuildOleObject(OpenXmlCompositeElement xmlElement);
+        /// <summary>
+        /// Builds a shape with OLE object content.
+        /// </summary>
+        ShapeEx WithChart(Location location, IShapeContext spContext, ChartEx chart);
 
-        Shape BuildGroup(IElementFactory elFactory, OpenXmlCompositeElement xmlElement, IParents parents);
+        /// <summary>
+        /// Builds a group shape which has grouped shape items.
+        /// </summary>
+        ShapeEx WithGroup(Location location, IShapeContext spContext, IEnumerable<ShapeEx> groupedShapes);
     }
 }

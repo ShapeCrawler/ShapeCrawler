@@ -3,13 +3,12 @@ using SlideDotNet.Exceptions;
 
 namespace SlideDotNet.Models.SlideComponents.Chart
 {
-    /// <inheritdoc cref="IChart"/>
     public class NoChart : IChart
     {
-        public ChartType Type => throw new SlideXmlException(ExceptionMessages.NoChart);
+        public ChartType Type => throw new SlideDotNetException(ExceptionMessages.NoChart);
 
-        public string Title => throw new SlideXmlException(ExceptionMessages.NoChart);
+        public string Title => throw new SlideDotNetException(ExceptionMessages.NoChart);
 
-        public bool HasTitle => throw new SlideXmlException(ExceptionMessages.NoChart);
+        public bool HasTitle => throw new SlideDotNetException(ExceptionMessages.NoChart);
     }
 }

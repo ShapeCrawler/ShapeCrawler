@@ -8,25 +8,24 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace SlideDotNet.Models.Settings
 {
     /// <summary>
-    /// Represents presentation settings.
+    /// <inheritdoc cref="IPreSettings"/>
     /// </summary>
-    public class Parents : IParents
+    public class PreSettings : IPreSettings
     {
         private readonly Lazy<Dictionary<int, int>> _lvlFontHeights;
 
         #region Properties
 
         /// <summary>
-        /// Gets default level sizes.
+        /// <inheritdoc cref="IPreSettings.LlvFontHeights"/>
         /// </summary>
-        /// <returns></returns>
         public Dictionary<int, int> LlvFontHeights => _lvlFontHeights.Value;
 
         #endregion Properties
 
         #region Constructors
 
-        public Parents(P.Presentation xmlPresentation)
+        public PreSettings(P.Presentation xmlPresentation)
         {
             Check.NotNull(xmlPresentation, nameof(xmlPresentation));
             _lvlFontHeights = new Lazy<Dictionary<int, int>>(ParseFontHeights(xmlPresentation));

@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using SlideDotNet.Extensions;
 using SlideDotNet.Models.Settings;
+using SlideDotNet.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
@@ -18,7 +19,7 @@ namespace SlideDotNet.Models.TextBody
         #region Fields
 
         private readonly A.Paragraph _aParagraph;
-        private readonly ElementSettings _elSetting;
+        private readonly IShapeContext _spContext;
         private string _text;
         private readonly Lazy<int> _lvl;
         private readonly Lazy<List<Portion>> _portions;
@@ -56,24 +57,25 @@ namespace SlideDotNet.Models.TextBody
         /// </summary>
         /// <param name="elSetting"></param>
         /// <param name="aParagraph">A XML paragraph which contains a text.</param>
-        public Paragraph(ElementSettings elSetting, A.Paragraph aParagraph)
+        public Paragraph(IShapeContext elSetting, A.Paragraph aParagraph)
         {
             _aParagraph = aParagraph ?? throw new ArgumentNullException(nameof(aParagraph));
-            _elSetting = elSetting ?? throw new ArgumentNullException(nameof(elSetting));
-            _lvl = new Lazy<int>(GetLevel(_aParagraph));
+            _spContext = elSetting ?? throw new ArgumentNullException(nameof(elSetting));
+            _lvl = new Lazy<int>(GetInnerLevel(_aParagraph));
             _portions = new Lazy<List<Portion>>(GetPortions);
         }
 
         #endregion Constructors
 
-        private static int GetLevel(A.Paragraph aPr)
-        {
-            var lvl = aPr.ParagraphProperties?.Level ?? 0; // null is first level
-
-            return ++lvl.Value;
-        }
-
         #region Private Methods
+
+        private static int GetInnerLevel(A.Paragraph aPr)
+        {
+            var outerLvl = aPr.ParagraphProperties?.Level ?? 0;
+            var interLvl = outerLvl + 1;
+
+            return interLvl;
+        }
 
         private void InitText()
         {
@@ -104,17 +106,28 @@ namespace SlideDotNet.Models.TextBody
             }
 
             // if element is placeholder, tries to get from placeholder data
-            if (_elSetting.XmlElement.IsPlaceholder())
+            var xmlElement = _spContext.XmlElement;
+            if (xmlElement.IsPlaceholder())
             {
-                var phFs = _elSetting.FontService.TryGetFontHeight((P.Shape)_elSetting.XmlElement, _lvl.Value);
-                if (phFs != null)
+                var prFontHeight = _spContext.PlaceholderFontService.TryGetHeight(xmlElement, _lvl.Value);
+                if (prFontHeight != null)
                 {
-                    return (int)phFs;
+                    return (int)prFontHeight;
                 }
             }
 
-            // from global presentation setting
-            return _elSetting.Parents.LlvFontHeights[_lvl.Value];
+            if (_spContext.PreSettings.LlvFontHeights.ContainsKey(_lvl.Value))
+            {
+                return _spContext.PreSettings.LlvFontHeights[_lvl.Value];
+            }
+
+            var exist = _spContext.TryFromMasterOther(_lvl.Value, out int fh);
+            if (exist)
+            {
+                return fh;
+            }
+
+            return FormatConstants.DefaultFontHeight;
         }
 
         #endregion Private Methods

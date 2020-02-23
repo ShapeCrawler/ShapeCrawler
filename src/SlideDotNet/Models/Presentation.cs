@@ -1,8 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Exceptions;
-using SlideDotNet.Extensions;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Validation;
 
@@ -16,7 +16,7 @@ namespace SlideDotNet.Models
         #region Fields
 
         private PresentationDocument _xmlDoc;
-        private ISlideCollection _slides;
+        private readonly Lazy<ISlideCollection> _slides;
         private bool _disposed;
 
         #endregion Fields
@@ -24,20 +24,9 @@ namespace SlideDotNet.Models
         #region Properties
 
         /// <summary>
-        /// Gets slides.
+        /// Returns slides collection.
         /// </summary>
-        public ISlideCollection Slides
-        {
-            get
-            {
-                if (_slides == null)
-                {
-                    InitSlides();
-                }
-
-                return _slides;
-            }
-        }
+        public ISlideCollection Slides => _slides.Value;
 
         /// <summary>
         /// Returns presentation slides width in EMUs.
@@ -54,26 +43,26 @@ namespace SlideDotNet.Models
         #region Constructors
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file path.
+        /// </summary>
+        public Presentation(string pptxPath)
+        {
+            ThrowIfInvalid(pptxPath);
+            _xmlDoc = PresentationDocument.Open(pptxPath, true);
+            ThrowIfSlidesNumberLarge();
+            _slides = new Lazy<ISlideCollection>(InitSlides);
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file stream.
         /// </summary>
         /// <param name="pptxStream"></param>
         public Presentation(Stream pptxStream)
         {
             ThrowIfInvalid(pptxStream);
-           
-            pptxStream.SeekBegin();
-           
             _xmlDoc = PresentationDocument.Open(pptxStream, true);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file path.
-        /// </summary>
-        public Presentation(string pptxFilePath)
-        {
-            ThrowIfInvalid(pptxFilePath);
-           
-            _xmlDoc = PresentationDocument.Open(pptxFilePath, true);
+            ThrowIfSlidesNumberLarge();
+            _slides = new Lazy<ISlideCollection>(InitSlides);
         }
 
         /// <summary>
@@ -83,11 +72,11 @@ namespace SlideDotNet.Models
         public Presentation(byte[] pptxBytes)
         {
             ThrowIfInvalid(pptxBytes);
-         
-            var pptxMemoryStream = new MemoryStream();
-            pptxMemoryStream.Write(pptxBytes, 0, pptxBytes.Length);
-            
-            _xmlDoc = PresentationDocument.Open(pptxMemoryStream, true);
+            var pptxStream = new MemoryStream();
+            pptxStream.Write(pptxBytes, 0, pptxBytes.Length);
+            _xmlDoc = PresentationDocument.Open(pptxStream, true);
+            ThrowIfSlidesNumberLarge();
+            _slides = new Lazy<ISlideCollection>(InitSlides);
         }
 
         #endregion Constructors
@@ -129,20 +118,12 @@ namespace SlideDotNet.Models
 
         #region Private Methods
 
-        private void InitSlides()
+        private ISlideCollection InitSlides()
         {
-            PresentationPart presentationPart = _xmlDoc.PresentationPart;
-            var nbSlides = presentationPart.SlideParts.Count();
-            ThrowIfMoreSlides(nbSlides); // if number of slides more than allowed, then presentation is closed and throw is thrown
-            _slides = new SlideCollection(_xmlDoc, nbSlides);
-            var preSettings = new Parents(_xmlDoc.PresentationPart.Presentation);
+            var preSettings = new PreSettings(_xmlDoc.PresentationPart.Presentation);
+            var slideCollection = SlideCollection.Create(_xmlDoc, preSettings);
 
-            for (var slideIndex = 0; slideIndex < nbSlides; slideIndex++)
-            {
-                SlidePart slidePart = presentationPart.GetSlidePartByIndex(slideIndex);
-                var newSldEx = new Slide(slidePart, slideIndex + 1, preSettings);
-                _slides.Add(newSldEx);
-            }
+            return slideCollection;
         }
 
         private void ThrowIfInvalid(string path)
@@ -151,38 +132,40 @@ namespace SlideDotNet.Models
             {
                 throw new FileNotFoundException(nameof(path));
             }
-            var  fileLength = new FileInfo(path).Length;
-            ThrowIfMore(fileLength);
+            var  fileInfo = new FileInfo(path);
+
+            ThrowIfPptxSizeLarge(fileInfo.Length);
         }
 
         private void ThrowIfInvalid(Stream stream)
         {
             Check.NotNull(stream, nameof(stream));
-            ThrowIfMore(stream.Length);
+
+            ThrowIfPptxSizeLarge(stream.Length);
         }
 
         private void ThrowIfInvalid(byte[] bytes)
         {
             Check.NotNull(bytes, nameof(bytes));
-            ThrowIfMore(bytes.Length);
+
+            ThrowIfPptxSizeLarge(bytes.Length);
         }
 
-        private static void ThrowIfMore(long length)
+        private static void ThrowIfPptxSizeLarge(long length)
         {
             if (length > Limitations.MaxPresentationSize)
             {
-                var ex = PresentationIsLargeException.FromMax(Limitations.MaxPresentationSize);
-                throw ex;
+                throw PresentationIsLargeException.FromMax(Limitations.MaxPresentationSize);
             }
         }
 
-        private void ThrowIfMoreSlides(int nbSlides)
+        private void ThrowIfSlidesNumberLarge()
         {
+            var nbSlides = _xmlDoc.PresentationPart.SlideParts.Count();
             if (nbSlides > Limitations.MaxSlidesNumber)
             {
                 Close();
-                var ex = SlidesMuchMoreException.FromMax(Limitations.MaxSlidesNumber);
-                throw ex;
+                throw SlidesMuchMoreException.FromMax(Limitations.MaxSlidesNumber);
             }
         }
 

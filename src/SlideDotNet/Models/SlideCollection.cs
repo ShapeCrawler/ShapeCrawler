@@ -1,44 +1,52 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
+using SlideDotNet.Extensions;
+using SlideDotNet.Models.Settings;
 using SlideDotNet.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace SlideDotNet.Models
 {
     /// <summary>
-    /// Represents a collection of a slides.
+    /// <inheritdoc cref="ISlideCollection"/>
     /// </summary>
     public class SlideCollection: ISlideCollection
     {
         #region Fields
 
-        private readonly List<Slide> _items;
-        private readonly PresentationDocument _xmlPreDoc;
+        private readonly List<Slide> _slides;
+        private readonly PresentationDocument _xmlDoc;
+        private readonly Dictionary<Slide, SlideNumber> _sldNumEntities;
 
         #endregion Fields
 
         #region Constructors
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SlideCollection"></see> class.
-        /// </summary>
-        public SlideCollection(PresentationDocument xmlPreDoc)
+        private SlideCollection(List<Slide> slides, PresentationDocument xmlDoc, Dictionary<Slide, SlideNumber> sldNumEntities)
         {
-            Check.NotNull(xmlPreDoc, nameof(xmlPreDoc));
-            _items = new List<Slide>();
+            _slides = slides;
+            _xmlDoc = xmlDoc;
+            _sldNumEntities = sldNumEntities;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SlideCollection"></see> class.
-        /// </summary>
-        public SlideCollection(PresentationDocument xmlPreDoc, int sldNumbers)
+        public static SlideCollection Create(PresentationDocument xmlDoc, IPreSettings preSettings)
         {
-            Check.NotNull(xmlPreDoc, nameof(xmlPreDoc));
-            Check.IsPositive(sldNumbers, nameof(sldNumbers));
-            _xmlPreDoc = xmlPreDoc;
-            _items = new List<Slide>(sldNumbers);
+            var xmlPrePart = xmlDoc.PresentationPart;
+            var slideCollection = new List<Slide>();
+            var sldNumDic = new Dictionary<Slide, SlideNumber>();
+            for (var sldIndex = 0; sldIndex < xmlPrePart.SlideParts.Count(); sldIndex++)
+            {
+                var xmlSldPart = xmlPrePart.GetSlidePartByIndex(sldIndex);
+                var sldNumEntity = new SlideNumber(sldIndex + 1);
+                var newSlide = new Slide(xmlSldPart, sldNumEntity, preSettings);
+                sldNumDic.Add(newSlide, sldNumEntity);
+                slideCollection.Add(newSlide);
+            }
+
+            return new SlideCollection(slideCollection, xmlDoc, sldNumDic);
         }
 
         #endregion Constructors
@@ -46,26 +54,16 @@ namespace SlideDotNet.Models
         #region Public Methods
 
         /// <summary>
-        /// Adds slide item.
-        /// </summary>
-        /// <param name="item"></param>
-        public void Add(Slide item)
-        {
-            Check.NotNull(item, nameof(item));
-            _items.Add(item);
-        }
-
-        /// <summary>
         /// Removes specified slide and saves DOM.
         /// </summary>
         public void Remove(Slide item)
         {
+            //TODO: validate case when last slide is deleted
             Check.NotNull(item, nameof(item));
 
             RemoveFromDom(item.Number);
-            _xmlPreDoc.PresentationPart.Presentation.Save(); // save the modified presentation
-
-            _items.Remove(item);
+            _xmlDoc.PresentationPart.Presentation.Save(); // save the modified presentation
+            _slides.Remove(item);
             UpdateNumbers();
         }
 
@@ -75,12 +73,13 @@ namespace SlideDotNet.Models
         /// <returns></returns>
         public IEnumerator<Slide> GetEnumerator()
         {
-            return _items.GetEnumerator();
+            return _slides.GetEnumerator();
         }
 
+        //TODO: why two GetEnumerator() methods?
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _items.GetEnumerator();
+            return _slides.GetEnumerator();
         }
 
         /// <summary>
@@ -88,7 +87,7 @@ namespace SlideDotNet.Models
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public Slide this[int index] => _items[index];
+        public Slide this[int index] => _slides[index];
 
         #endregion Public Methods
 
@@ -96,67 +95,76 @@ namespace SlideDotNet.Models
 
         private void RemoveFromDom(int number)
         {
-            PresentationPart presentationPart = _xmlPreDoc.PresentationPart;
-
-            // Get the presentation from the presentation part.
+            PresentationPart presentationPart = _xmlDoc.PresentationPart;
             P.Presentation presentation = presentationPart.Presentation;
-
-            // Get the list of slide IDs in the presentation.
+            // gets the list of slide identifiers in the presentation
             SlideIdList slideIdList = presentation.SlideIdList;
-
-            // Get the slide ID of the specified slide
-            SlideId slideId = slideIdList.ChildElements[number - 1] as SlideId;
-
-            // Get the relationship ID of the slide.
+            // gets the slide identifier of the specified slide
+            SlideId slideId = (SlideId)slideIdList.ChildElements[number - 1];
+            // gets the relationship identifier of the slide
             string slideRelId = slideId.RelationshipId;
-
-            // Remove the slide from the slide list.
+            // removes the slide from the slide list
             slideIdList.RemoveChild(slideId);
 
-            // Remove references to the slide from all custom shows.
+            // remove references to the slide from all custom shows
             if (presentation.CustomShowList != null)
             {
-                // Iterate through the list of custom shows.
+                // iterates through the list of custom shows
                 foreach (var customShow in presentation.CustomShowList.Elements<CustomShow>())
                 {
-                    if (customShow.SlideList != null)
+                    if (customShow.SlideList == null)
                     {
-                        // Declare a link list of slide list entries.
-                        LinkedList<SlideListEntry> slideListEntries = new LinkedList<SlideListEntry>();
-                        foreach (SlideListEntry slideListEntry in customShow.SlideList.Elements())
-                        {
-                            // Find the slide reference to remove from the custom show.
-                            if (slideListEntry.Id != null && slideListEntry.Id == slideRelId)
-                            {
-                                slideListEntries.AddLast(slideListEntry);
-                            }
-                        }
+                        continue;
+                    }
 
-                        // Remove all references to the slide from the custom show.
-                        foreach (SlideListEntry slideListEntry in slideListEntries)
+                    // declares a link list of slide list entries
+                    var slideListEntries = new LinkedList<SlideListEntry>();
+                    foreach (SlideListEntry slideListEntry in customShow.SlideList.Elements())
+                    {
+                        // finds the slide reference to remove from the custom show
+                        if (slideListEntry.Id != null && slideListEntry.Id == slideRelId)
                         {
-                            customShow.SlideList.RemoveChild(slideListEntry);
+                            slideListEntries.AddLast(slideListEntry);
                         }
+                    }
+                    // removes all references to the slide from the custom show
+                    foreach (SlideListEntry slideListEntry in slideListEntries)
+                    {
+                        customShow.SlideList.RemoveChild(slideListEntry);
                     }
                 }
             }
 
-            // Get the slide part for the specified slide.
+            // gets the slide part for the specified slide
             SlidePart slidePart = presentationPart.GetPartById(slideRelId) as SlidePart;
-
-            // Remove the slide part.
+            // removes the slide part
             presentationPart.DeletePart(slidePart);
         }
 
         private void UpdateNumbers()
         {
             var current = 0;
-            foreach (var i in _items)
+            foreach (var slide in _slides)
             {
-                i.Number = ++current;
+                current++;
+                _sldNumEntities[slide].Number = current;
             }
         }
 
         #endregion Private Methods
+    }
+
+    public class SlideNumber
+    {
+        /// <summary>
+        /// Gets or sets slide number.
+        /// </summary>
+        public int Number { get; set; }
+
+        public SlideNumber(int sldNum)
+        {
+            Check.IsPositive(sldNum, nameof(sldNum));
+            Number = sldNum;
+        }
     }
 }
