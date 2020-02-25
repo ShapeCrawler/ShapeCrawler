@@ -77,7 +77,7 @@ namespace SlideDotNet.Tests
             var expectedMessage = $"The size of presentation more than {maxLength} bytes.";
 
             // Act-Assert
-            var ex = Assert.Throws<PresentationIsLargeException>(() => new Presentation(mockStream));
+            var ex = Assert.Throws<PresentationIsLargeException>(() => new PresentationEx(mockStream));
             var expectedCode = (int)ExceptionCodes.PresentationIsLargeException;
             Assert.Equal(expectedMessage, ex.Message);
             Assert.Equal(expectedCode, ex.ErrorCode);

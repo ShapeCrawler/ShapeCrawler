@@ -1,20 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <AssemblyName>SlideDotNet</AssemblyName>
     <RootNamespace>SlideDotNet</RootNamespace>
     <Version>0.1.0</Version>
     <Authors>Adam Shakhabov</Authors>
     <Company></Company>
-    <Description>A lightweight .NET library for parse PowerPoint file presentations without having to install the PowerPoint application.</Description>
-    <PackageTags>openxml powerpoint slidexml pptx</PackageTags>
+    <Description>A lightweight .NET library for parse PowerPoint file presentations without Microsoft Office installed.</Description>
+    <PackageTags>openxml powerpoint pptx c-sharp dotnet slidedotnet</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageIcon></PackageIcon>
+    <PackageIcon>logo.jpg</PackageIcon>
     <PackageIconUrl />
     <Copyright>MIT</Copyright>
     <LangVersion>8</LangVersion>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
+    <PackageReleaseNotes>This is first release.</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/adamshakhabov/SlideDotNet</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\resources\logo.jpg">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>

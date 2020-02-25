@@ -13,7 +13,7 @@ namespace SlideDotNet.Tests
         public void Picture_Placeholder_Test()
         {
             // Arrange
-            var pre = new Presentation(Properties.Resources._018);
+            var pre = new PresentationEx(Properties.Resources._018);
             var pic = pre.Slides[0].Shapes.Single(x=>x.Id == 7);
 
             // Act
@@ -31,7 +31,7 @@ namespace SlideDotNet.Tests
         public void Chart_Title_Test()
         {
             // Arrange
-            var pre = new Presentation(Properties.Resources._018);
+            var pre = new PresentationEx(Properties.Resources._018);
             var chartShape6 = pre.Slides[0].Shapes.Single(x => x.Id == 6);
 
             // Act

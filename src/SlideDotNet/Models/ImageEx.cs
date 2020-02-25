@@ -43,7 +43,7 @@ namespace SlideDotNet.Models
                 return _bytes; // return from cache
             }
 
-            await using var imgPartStream = GetImagePart().GetStream();
+            using var imgPartStream = GetImagePart().GetStream();
             _bytes = new byte[imgPartStream.Length];
             await imgPartStream.ReadAsync(_bytes, 0, (int)imgPartStream.Length);
 

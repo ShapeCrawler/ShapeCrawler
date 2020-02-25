@@ -9,9 +9,9 @@ using SlideDotNet.Validation;
 namespace SlideDotNet.Models
 {
     /// <summary>
-    /// Represents a presentation.
+    /// <inheritdoc cref="IPresentation"/>
     /// </summary>
-    public class Presentation : IPresentation
+    public class PresentationEx : IPresentation
     {
         #region Fields
 
@@ -24,17 +24,17 @@ namespace SlideDotNet.Models
         #region Properties
 
         /// <summary>
-        /// Returns slides collection.
+        /// <inheritdoc cref="IPresentation.Slides"/>
         /// </summary>
         public ISlideCollection Slides => _slides.Value;
 
         /// <summary>
-        /// Returns presentation slides width in EMUs.
+        /// <inheritdoc cref="IPresentation.SlideWidth"/>
         /// </summary>
         public int SlideWidth => _xmlDoc.PresentationPart.Presentation.SlideSize.Cx.Value;
 
         /// <summary>
-        /// Returns presentation slides height in EMUs.
+        /// <inheritdoc cref="IPresentation.SlideHeight"/>
         /// </summary>
         public int SlideHeight => _xmlDoc.PresentationPart.Presentation.SlideSize.Cy.Value;
 
@@ -43,9 +43,9 @@ namespace SlideDotNet.Models
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file path.
+        /// Initializes a new instance of the <see cref="PresentationEx"/> class by pptx-file path.
         /// </summary>
-        public Presentation(string pptxPath)
+        public PresentationEx(string pptxPath)
         {
             ThrowIfInvalid(pptxPath);
             _xmlDoc = PresentationDocument.Open(pptxPath, true);
@@ -54,10 +54,10 @@ namespace SlideDotNet.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file stream.
+        /// Initializes a new instance of the <see cref="PresentationEx"/> class by pptx-file stream.
         /// </summary>
         /// <param name="pptxStream"></param>
-        public Presentation(Stream pptxStream)
+        public PresentationEx(Stream pptxStream)
         {
             ThrowIfInvalid(pptxStream);
             _xmlDoc = PresentationDocument.Open(pptxStream, true);
@@ -66,10 +66,10 @@ namespace SlideDotNet.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file byte array.
+        /// Initializes a new instance of the <see cref="PresentationEx"/> class by pptx-file byte array.
         /// </summary>
         /// <param name="pptxBytes"></param>
-        public Presentation(byte[] pptxBytes)
+        public PresentationEx(byte[] pptxBytes)
         {
             ThrowIfInvalid(pptxBytes);
             var pptxStream = new MemoryStream();
@@ -84,7 +84,7 @@ namespace SlideDotNet.Models
         #region Public Methods
 
         /// <summary>
-        /// Saves the presentation in specified file path. After saved the presentation is not closed.
+        /// <inheritdoc cref="IPresentation.SaveAs"/>
         /// </summary>
         /// <param name="filePath"></param>
         public void SaveAs(string filePath)
@@ -94,7 +94,7 @@ namespace SlideDotNet.Models
         }
 
         /// <summary>
-        /// Saves and closes the current presentation if it is not already closed.
+        /// <inheritdoc cref="IPresentation.Close"/>
         /// </summary>
         public void Close()
         {
