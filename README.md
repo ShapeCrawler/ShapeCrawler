@@ -6,7 +6,6 @@
 
 <h3 align="center">
 
-  [![NuGet](https://img.shields.io/nuget/v/BenchmarkDotNet.svg)](https://www.nuget.org/packages/BenchmarkDotNet/)
   [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 </h3>
