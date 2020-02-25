@@ -32,6 +32,35 @@ namespace SlideDotNet.Models
             _sldNumEntities = sldNumEntities;
         }
 
+        #endregion Constructors
+
+        #region Public Methods
+
+        /// <summary>
+        /// <inheritdoc cref="ISlideCollection.Remove"/>
+        /// </summary>
+        public void Remove(Slide item)
+        {
+            //TODO: validate case when last slide is deleted
+            Check.NotNull(item, nameof(item));
+
+            RemoveFromDom(item.Number);
+            _xmlDoc.PresentationPart.Presentation.Save(); // save the modified presentation
+            _slides.Remove(item);
+            UpdateNumbers();
+        }
+
+        /// <summary>
+        /// Returns the element at the specified index.
+        /// </summary>
+        public Slide this[int index] => _slides[index];
+
+        /// <summary>
+        /// Creates slides collection.
+        /// </summary>
+        /// <param name="xmlDoc"></param>
+        /// <param name="preSettings"></param>
+        /// <returns></returns>
         public static SlideCollection Create(PresentationDocument xmlDoc, IPreSettings preSettings)
         {
             var xmlPrePart = xmlDoc.PresentationPart;
@@ -49,45 +78,24 @@ namespace SlideDotNet.Models
             return new SlideCollection(slideCollection, xmlDoc, sldNumDic);
         }
 
-        #endregion Constructors
-
-        #region Public Methods
-
-        /// <summary>
-        /// Removes specified slide and saves DOM.
-        /// </summary>
-        public void Remove(Slide item)
-        {
-            //TODO: validate case when last slide is deleted
-            Check.NotNull(item, nameof(item));
-
-            RemoveFromDom(item.Number);
-            _xmlDoc.PresentationPart.Presentation.Save(); // save the modified presentation
-            _slides.Remove(item);
-            UpdateNumbers();
-        }
-
         /// <summary>
         /// Returns an enumerator for slide list.
         /// </summary>
-        /// <returns></returns>
         public IEnumerator<Slide> GetEnumerator()
         {
             return _slides.GetEnumerator();
         }
 
-        //TODO: why two GetEnumerator() methods?
+        
+        /// <summary>
+        /// Returns an enumerator for slide list. 
+        /// </summary>
+        /// <returns></returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
+            //TODO: why two GetEnumerator() methods?
             return _slides.GetEnumerator();
         }
-
-        /// <summary>
-        /// Gets item by index.
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        public Slide this[int index] => _slides[index];
 
         #endregion Public Methods
 

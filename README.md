@@ -1,32 +1,42 @@
-![Alt text](/resources/readme.png)
+<h3 align="center">
 
+![SlideDotNet](/resources/readme.png)
 
-SlideXML is a lightweight .NET library for parse Microsoft PowerPoint file presentations without having to install the PowerPoint application. It aims to provide an intuitive and user-friendly interface to dealing with the underlying [Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK) API.
+</h3>
+
+<h3 align="center">
+
+  [![NuGet](https://img.shields.io/nuget/v/BenchmarkDotNet.svg)](https://www.nuget.org/packages/BenchmarkDotNet/)
+  [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+</h3>
+
+SlideDotNet is a fluent wrapper around [Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK) for the processing of PowerPoint files without Microsoft Office installed. It aims to provide an intuitive and user-friendly interface to dealing with the underlying Open XML SDK API.
 
 ## Getting Started
 You can quickly start work with the library by following steps listed below.
 ### Prerequisites
-* .NET Core 3.1 or above
+* .NET Core 2.2 or above
 ### Installing
-To install SlideXML, run the following command in the Package Manager Console
+To install SlideDotNet, run the following command in the Package Manager Console:
 ```
-PM> Install-Package SlideXML
+PM> Install-Package SlideDotNet
 ```
 ### Usage
 ```C#
-// Opens presentation from the file path
-using var presentation = new PresentationSL(@"c:\test.pptx");
+// opens presentation from the file path
+using var presentation = new PresentationEx(@"c:\slide_dot_net.pptx");
 
-// Gets the slide collection
+// gets the slides collection
 var slides = presentation.Slides; 
 
-// Gets number of slides
+// gets number of slides
 var numSlides = slides.Count(); 
 
-// Gets the shape collection of the first slide
-var shapes = slides[0].Shapes; 
+// gets the shapes collection of the first slide
+var shapes = slides[0].Shapes;
 
-// Prints texts of TextBox shapes on the Debug console
+// prints texts of shapes on the Debug console
 foreach (var sp in shapes)
 {
     if (sp.HasTextFrame)
@@ -37,11 +47,10 @@ foreach (var sp in shapes)
 ```
 
 ## Support
-* If you have "how-to" questions please post [Stack Overflow](https://stackoverflow.com/) with **slidexml** tag.
-* If you get an exception while work with the library's API, then create an issue. You also can send an email message to theadamo86@gmail.com with "SlideXML" subject.
+If you have any problems or questions you can create an issue on this repository or contact me at <a href="mailto:theadamo86@gmail.com">theadamo86@gmail.com</a>.
+
+## Contribution
+If you want to contribute in improving this wrapper, feel free to [create pull requests](https://github.com/adamshakhabov/SlideDotNet/pulls).
 
 ## Author
-**Adam Shakhabov** – [adamshakhabov](https://www.linkedin.com/in/adamshakhabov)
-
-## License
-[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
+**Adam Shakhabov** â€” [adamshakhabov](https://www.linkedin.com/in/adamshakhabov)

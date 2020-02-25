@@ -14,7 +14,7 @@ namespace SlideDotNet.Tests
         public void AutoShape_FontHeight()
         {
             // Arrange
-            var pre = new Presentation(Properties.Resources._019);
+            var pre = new PresentationEx(Properties.Resources._019);
 
             // Act
             var fh = pre.Slides[0].Shapes.Single(x=>x.Id == 4103).TextFrame.Paragraphs.First().Portions.First().FontHeight;
@@ -27,7 +27,7 @@ namespace SlideDotNet.Tests
         public void Chart_Title_Test()
         {
             // Arrange
-            var pre = new Presentation(Properties.Resources._019);
+            var pre = new PresentationEx(Properties.Resources._019);
 
             // Act
             var chartTitle = pre.Slides[0].Shapes.Single(x => x.Id == 4).Chart.Title;
@@ -40,7 +40,7 @@ namespace SlideDotNet.Tests
         public void Picture_DoNotParseStrangePicture_Test()
         {
             // Arrange
-            var pre = new Presentation(Properties.Resources._019);
+            var pre = new PresentationEx(Properties.Resources._019);
 
             // Act - Assert
             Assert.ThrowsAny<Exception>(() => pre.Slides[1].Shapes.Single(x => x.Id == 47));

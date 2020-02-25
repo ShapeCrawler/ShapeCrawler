@@ -12,7 +12,7 @@ namespace SlideDotNet.Tests
         public void NonPlaceholder_FontHeight_Test()
         {
             // Arrange
-            var pre = new Presentation(Properties.Resources._015);
+            var pre = new PresentationEx(Properties.Resources._015);
             var elId5 = pre.Slides[0].Shapes.Single(s => s.Id == 5);
 
             // Act
@@ -26,7 +26,7 @@ namespace SlideDotNet.Tests
         public void Placeholder_FontHeight_Test()
         {
             // Arrange
-            var pre = new Presentation(Properties.Resources._015);
+            var pre = new PresentationEx(Properties.Resources._015);
             var el = pre.Slides[1].Shapes.Single(s => s.Id == 61);
 
             // Act

@@ -24,7 +24,7 @@ namespace SlideDotNet.Tests
         public void SlidesNumber_Test()
         {
             var ms = new MemoryStream(Properties.Resources._001);
-            var pre = new Presentation(ms);
+            var pre = new PresentationEx(ms);
 
             // ACT
             var sldNumber = pre.Slides.Count();
@@ -49,14 +49,14 @@ namespace SlideDotNet.Tests
         {
             // ARRANGE
             var ms = new MemoryStream(Properties.Resources._007_2_slides);
-            var pre = new Presentation(ms);
+            var pre = new PresentationEx(ms);
 
             // ACT
             var slide1 = pre.Slides.First();
             pre.Slides.Remove(slide1);
             pre.Close();
 
-            var pre2 = new Presentation(ms);
+            var pre2 = new PresentationEx(ms);
             var numSlides = pre2.Slides.Count();
             var numElements = pre2.Slides.Single().Shapes.Count;
             pre2.Close();
@@ -71,7 +71,7 @@ namespace SlideDotNet.Tests
         public void ShapeTextBody_Test()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._008);
+            var pre = new PresentationEx(Properties.Resources._008);
 
             // ACT
             var shapes = pre.Slides.Single().Shapes.OfType<ShapeEx>();
@@ -91,7 +91,7 @@ namespace SlideDotNet.Tests
         public void SlideElementsCount_Test()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._003);
+            var pre = new PresentationEx(Properties.Resources._003);
 
             // ACT
             var numberElements = pre.Slides.Single().Shapes.Count;
@@ -105,7 +105,7 @@ namespace SlideDotNet.Tests
         public void TextBox_Placeholder_Test()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._006_1_slides);
+            var pre = new PresentationEx(Properties.Resources._006_1_slides);
 
             // ACT
             var shapePlaceholder = pre.Slides.Single().Shapes.Single();
@@ -122,7 +122,7 @@ namespace SlideDotNet.Tests
         public void GroupsElementPropertiesTest()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
 
             // ACT
             var slides = pre.Slides;
@@ -140,7 +140,7 @@ namespace SlideDotNet.Tests
         public void SecondSlideElementsNumberTest()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
 
             // ACT
             var elNumber1 = pre.Slides[0].Shapes.Count;
@@ -156,7 +156,7 @@ namespace SlideDotNet.Tests
         public void SlideElementsDoNotThrowsExceptionTest()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
 
             // ACT
             var elements = pre.Slides[0].Shapes;
@@ -168,7 +168,7 @@ namespace SlideDotNet.Tests
         public void PictureEx_BytesTest()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
             var picEx = pre.Slides[1].Shapes.Single(e => e.Id.Equals(3));
 
             // ACT
@@ -184,7 +184,7 @@ namespace SlideDotNet.Tests
         public void PictureEx_SetImageTest()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
             var picEx = pre.Slides[1].Shapes.Single(e => e.Id.Equals(3));
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
             var sizeBefore = picEx.Picture.ImageEx.GetImageBytes().Result.Length;
@@ -204,7 +204,7 @@ namespace SlideDotNet.Tests
         public void ShapeEx_BackgroundImage_BytesTest()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
             var shapeEx = pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
 
             // ACT
@@ -218,7 +218,7 @@ namespace SlideDotNet.Tests
         public void ShapeEx_BackgroundImage_SetImageTest()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
             var shapeEx = (ShapeEx)pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
             var sizeBefore = shapeEx.BackgroundImage.GetImageBytes().Result.Length;
@@ -238,7 +238,7 @@ namespace SlideDotNet.Tests
         public void ShapeEx_BackgroundImage_IsNullTest()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
             var shapeEx = (ShapeEx)pre.Slides[1].Shapes.Single(e => e.Id.Equals(6));
 
             // ACT
@@ -252,7 +252,7 @@ namespace SlideDotNet.Tests
         public void OleObjects_ParseTest()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
             var shapes = pre.Slides[1].Shapes;
 
             // ACT
@@ -273,7 +273,7 @@ namespace SlideDotNet.Tests
         public void OLEObject_NameTest()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
 
             // ACT
             var name = pre.Slides[1].Shapes.Single(e => e.Id.Equals(8)).Name;
@@ -288,7 +288,7 @@ namespace SlideDotNet.Tests
         public void SlideEx_Background_IsNullTest()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
 
             // ACT
             var bg = pre.Slides[1].BackgroundImage;
@@ -301,7 +301,7 @@ namespace SlideDotNet.Tests
         public void SlideEx_Background_ChangeTest()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
             var bg = pre.Slides[0].BackgroundImage;
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
             var sizeBefore = bg.GetImageBytes().Result.Length;
@@ -321,7 +321,7 @@ namespace SlideDotNet.Tests
         public void NumberParagraphAndPortionTest()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
             var shape = (ShapeEx)pre.Slides[2].Shapes.SingleOrDefault(e => e.Id.Equals(2));
             var paragraphs = shape.TextFrame.Paragraphs;
 
@@ -345,7 +345,7 @@ namespace SlideDotNet.Tests
         public void SlideWidthAndHeightTest()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
 
             // ACT
             var w = pre.SlideWidth;
@@ -362,7 +362,7 @@ namespace SlideDotNet.Tests
         public void Placeholder_FontHeight_TextBox_Test()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
             var elements = pre.Slides[3].Shapes;
             var tb2TitlePh = elements.Single(e => e.Id.Equals(2));
             var subTitle3 = elements.Single(e => e.Id.Equals(3));
@@ -384,7 +384,7 @@ namespace SlideDotNet.Tests
         public void TablesPropertiesTest()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
             var elements = pre.Slides[2].Shapes;
             var tblEx = elements.Single(e => e.Id.Equals(3));
             var firstRow = tblEx.Table.Rows.First();
@@ -412,7 +412,7 @@ namespace SlideDotNet.Tests
         public void ChartPropertiesTest()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
+            var pre = new PresentationEx(Properties.Resources._009);
             var sld3Elements = pre.Slides[2].Shapes;
             var sld5Elements = pre.Slides[4].Shapes;
             var chartEx6 = sld3Elements.Single(e => e.Id.Equals(6));
@@ -446,7 +446,7 @@ namespace SlideDotNet.Tests
         public void DateTimePlaceholder_HasTextFrame_Test()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._008);
+            var pre = new PresentationEx(Properties.Resources._008);
             var sp3 = pre.Slides[0].Shapes.Single(sp => sp.Id == 3);
 
             // ACT
@@ -462,7 +462,7 @@ namespace SlideDotNet.Tests
         public void DateTimePlaceholder_Text_Test()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._011_dt);
+            var pre = new PresentationEx(Properties.Resources._011_dt);
             var dt = pre.Slides[0].Shapes.Single(s => s.Id == 54275);
 
             // ACT
@@ -480,7 +480,7 @@ namespace SlideDotNet.Tests
         public void Placeholder_FontHeight_Test()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._012_title_placeholder);
+            var pre = new PresentationEx(Properties.Resources._012_title_placeholder);
             var title = pre.Slides[0].Shapes.Single(x => x.Id == 2);
 
             // ACT
@@ -498,7 +498,7 @@ namespace SlideDotNet.Tests
         public void Placeholder_FontHeight_Title_Test()
         {
             // ARRANGE
-            var pre010 = new Presentation(Properties.Resources._010);
+            var pre010 = new PresentationEx(Properties.Resources._010);
             var pre010TextBox = pre010.Slides[0].Shapes.Single(x => x.Id == 2);
 
             // ACT
@@ -514,7 +514,7 @@ namespace SlideDotNet.Tests
         public void ElementsNumber()
         {
             var ms = new MemoryStream(Properties.Resources._002);
-            var pre = new Presentation(ms);
+            var pre = new PresentationEx(ms);
             var allElements = pre.Slides.First().Shapes;
 
             // ACT
@@ -538,7 +538,7 @@ namespace SlideDotNet.Tests
         public void Remove_Test1()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._007_2_slides);
+            var pre = new PresentationEx(Properties.Resources._007_2_slides);
             var slides = pre.Slides;
             var slide1 = slides[0];
             var slide2 = slides[1];
@@ -569,7 +569,7 @@ namespace SlideDotNet.Tests
         public void Remove_Test2()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._006_1_slides);
+            var pre = new PresentationEx(Properties.Resources._006_1_slides);
             var slides = pre.Slides;
             var slide1 = slides.First();
 
@@ -587,7 +587,7 @@ namespace SlideDotNet.Tests
         public void Shape_Text_Test2()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._012_title_placeholder);
+            var pre = new PresentationEx(Properties.Resources._012_title_placeholder);
             var autoShape = pre.Slides[0].Shapes.Single(s => s.Id == 3);
 
             // ACT
@@ -603,7 +603,7 @@ namespace SlideDotNet.Tests
         public void Shape_Text_Tests()
         {
             // ARRANGE
-            var pre = new Presentation(Properties.Resources._011_dt);
+            var pre = new PresentationEx(Properties.Resources._011_dt);
             var autoShape = pre.Slides[0].Shapes.Single(s => s.Id == 2);
             var grShape = pre.Slides[0].Shapes.Single(s => s.Id == 4);
 
@@ -622,7 +622,7 @@ namespace SlideDotNet.Tests
         public void Hidden_Test()
         {
             var ms = new MemoryStream(Properties.Resources._004);
-            var pre = new Presentation(ms);
+            var pre = new PresentationEx(ms);
 
             // ACT
             var allElements = pre.Slides.Single().Shapes;
