@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Models.SlideComponents;
 using SlideDotNet.Services;
 using SlideDotNet.Services.Placeholders;
 using SlideDotNet.Statics;

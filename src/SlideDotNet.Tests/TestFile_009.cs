@@ -149,7 +149,7 @@ namespace SlideDotNet.Tests
 
             // ASSERT
             Assert.Equal(6, elNumber1);
-            Assert.Equal(5, elNumber2);
+            Assert.Equal(6, elNumber2);
         }
 
         [Fact]
@@ -201,17 +201,35 @@ namespace SlideDotNet.Tests
         }
 
         [Fact]
-        public void ShapeEx_BackgroundImage_BytesTest()
+        public void Shape_Fill_Test()
         {
             // ARRANGE
             var pre = new PresentationEx(Properties.Resources._009);
-            var shapeEx = pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
+            var sp4 = pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
 
             // ACT
-            var length = shapeEx.BackgroundImage.GetImageBytes().Result.Length;
+            var fillType = sp4.Fill.Type;
+            var fillPicLength = sp4.Fill.Picture.GetImageBytes().Result.Length;
 
             // ASSERT
-            Assert.True(length > 0);
+            Assert.Equal(FillType.Picture, fillType);
+            Assert.True(fillPicLength > 0);
+        }
+
+        [Fact]
+        public void Shape_Fill_Solid_Test()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+            var sp2 = pre.Slides[1].Shapes.Single(e => e.Id.Equals(2));
+
+            // ACT
+            var fillType = sp2.Fill.Type;
+            var fillSolidColorName = sp2.Fill.SolidColor.Name;
+
+            // ASSERT
+            Assert.Equal(FillType.Solid, fillType);
+            Assert.Equal("ff0000", fillSolidColorName);
         }
 
         [Fact]
@@ -221,12 +239,12 @@ namespace SlideDotNet.Tests
             var pre = new PresentationEx(Properties.Resources._009);
             var shapeEx = (ShapeEx)pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
-            var sizeBefore = shapeEx.BackgroundImage.GetImageBytes().Result.Length;
+            var sizeBefore = shapeEx.Fill.Picture.GetImageBytes().Result.Length;
 
             // ACT
-            shapeEx.BackgroundImage.SetImageStream(testImage2Stream);
+            shapeEx.Fill.Picture.SetImageStream(testImage2Stream);
 
-            var sizeAfter = shapeEx.BackgroundImage.GetImageBytes().Result.Length;
+            var sizeAfter = shapeEx.Fill.Picture.GetImageBytes().Result.Length;
             pre.Close();
             testImage2Stream.Dispose();
 
@@ -235,17 +253,17 @@ namespace SlideDotNet.Tests
         }
 
         [Fact]
-        public void ShapeEx_BackgroundImage_IsNullTest()
+        public void Shape_Fill_IsNull_Test()
         {
             // ARRANGE
             var pre = new PresentationEx(Properties.Resources._009);
-            var shapeEx = (ShapeEx)pre.Slides[1].Shapes.Single(e => e.Id.Equals(6));
+            var shapeEx = pre.Slides[1].Shapes.Single(e => e.Id.Equals(6));
 
             // ACT
-            var bImage = shapeEx.BackgroundImage;
+            var shapeFill = shapeEx.Fill;
 
             // ASSERT
-            Assert.Null(bImage);
+            Assert.Null(shapeFill);
         }
 
         [Fact]

@@ -17,26 +17,21 @@ namespace SlideDotNet.Models.TextBody
         #region Fields
 
         private readonly IShapeContext _spContext;
-        private string _text;
+        private readonly Lazy<string> _text;
 
-        #endregion
+        #endregion Fields
 
         #region Properties
 
+        /// <summary>
+        /// <inheritdoc cref="ITextFrame.Paragraphs"/>
+        /// </summary>
         public IList<Paragraph> Paragraphs { get; private set; }
 
-        public string Text
-        {
-            get
-            {
-                if (_text == null)
-                {
-                    InitText();
-                }
-
-                return _text;
-            }
-        }
+        /// <summary>
+        /// <inheritdoc cref="ITextFrame.Text"/>
+        /// </summary>
+        public string Text => _text.Value;
 
         #endregion Properties
 
@@ -50,6 +45,7 @@ namespace SlideDotNet.Models.TextBody
             _spContext = spContext ?? throw new ArgumentNullException(nameof(spContext));
             Check.NotNull(compositeElement, nameof(compositeElement));
             ParseParagraphs(compositeElement);
+            _text = new Lazy<string>(GetText);
         }
 
         #endregion Constructors
@@ -69,7 +65,7 @@ namespace SlideDotNet.Models.TextBody
             }
         }
 
-        private void InitText()
+        private string GetText()
         {
             var sb = new StringBuilder();
             sb.Append(Paragraphs[0].Text);
@@ -85,7 +81,7 @@ namespace SlideDotNet.Models.TextBody
                 index++;
             }
 
-            _text = sb.ToString();
+            return sb.ToString();
         }
 
         #endregion Private Methods

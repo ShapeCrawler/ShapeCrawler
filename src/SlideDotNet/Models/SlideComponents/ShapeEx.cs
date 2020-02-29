@@ -28,11 +28,11 @@ namespace SlideDotNet.Models.SlideComponents
 
         private readonly IShapeContext _context;
         private readonly Lazy<ITextFrame> _textFrame;
-        private readonly IBackgroundImageFactory _bgImgFactory = new BackgroundImageFactory(); //TODO: do not initiate for non-AutoShape types
+        private readonly Lazy<Fill> _fill;
+        private readonly IImageExFactory _imageFactory = new ImageExFactory(); //TODO: do not initiate for non-AutoShape types
         private bool? _hidden;
         private int _id;
         private string _name;
-        private ImageEx _backgroundImage;
         private Picture _picture;
         private OleObject _ole;
         private TableEx _table;
@@ -88,17 +88,6 @@ namespace SlideDotNet.Models.SlideComponents
             {
                 InitIdHiddenName();
                 return _name;
-            }
-        }
-
-        /// <summary>
-        /// Returns background image of AutoShape. Returns null if AutoShape has not background image.
-        /// </summary>
-        public ImageEx BackgroundImage
-        {
-            get
-            { //TODO: throw exception if element is not a AutoShape
-                return _backgroundImage ??= _bgImgFactory.FromXmlShape(_context.XmlSlidePart, (P.Shape) _context.XmlElement);
             }
         }
 
@@ -176,6 +165,11 @@ namespace SlideDotNet.Models.SlideComponents
             }
         }
 
+        /// <summary>
+        /// Returns shape fill. Returns <c>null</c> if shape has not fill.
+        /// </summary>
+        public Fill Fill => _fill.Value;
+
         #endregion Properties
 
         #region Constructors
@@ -189,6 +183,7 @@ namespace SlideDotNet.Models.SlideComponents
             _context = spContext;
             ContentType = contentType;
             _textFrame = new Lazy<ITextFrame>(TryGetTextFrame);
+            _fill = new Lazy<Fill>(TryGetFill);
         }
 
         #endregion Constructors
@@ -215,6 +210,28 @@ namespace SlideDotNet.Models.SlideComponents
             }
 
             return new NoTextFrame();
+        }
+
+        private Fill TryGetFill()
+        {
+            if (ContentType != ShapeContentType.AutoShape)
+            {
+                return null;
+            }
+            var image = _imageFactory.TryFromXmlShape(_context.XmlSlidePart, _context.XmlElement);
+            if (image != null)
+            {
+                return new Fill(image);
+            }
+
+            var xmlShape = (P.Shape) _context.XmlElement;
+            var solidFill = xmlShape.ShapeProperties.GetFirstChild<A.SolidFill>();
+            if (solidFill != null)
+            {
+                return Fill.FromXmlSolidFill(solidFill);
+            }
+
+            return null;
         }
 
         private void InitIdHiddenName()
