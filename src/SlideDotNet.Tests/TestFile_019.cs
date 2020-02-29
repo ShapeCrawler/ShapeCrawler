@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using SlideDotNet.Enums;
 using SlideDotNet.Models;
 using Xunit;
 // ReSharper disable TooManyDeclarations
@@ -44,6 +45,22 @@ namespace SlideDotNet.Tests
 
             // Act - Assert
             Assert.ThrowsAny<Exception>(() => pre.Slides[1].Shapes.Single(x => x.Id == 47));
+        }
+
+        [Fact]
+        public void SlideNumber_Test()
+        {
+            // Arrange
+            var pre = new PresentationEx(Properties.Resources._019);
+            var shape2 = pre.Slides[0].Shapes.Single(x => x.Id == 2);
+
+            // Act
+            var text = shape2.TextFrame.Text;
+            var phType = shape2.PlaceholderType;
+
+            // Arrange
+            Assert.Equal("1", text);
+            Assert.Equal(PlaceholderType.SlideNumber, phType);
         }
     }
 }

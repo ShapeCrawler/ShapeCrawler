@@ -7,6 +7,7 @@
 <h3 align="center">
 
   [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+  [![NuGet](https://img.shields.io/nuget/v/SlideDotNet?color=blue)](https://www.nuget.org/packages/SlideDotNet)  
 
 </h3>
 

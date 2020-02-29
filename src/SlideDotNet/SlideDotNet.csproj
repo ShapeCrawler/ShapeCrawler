@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AssemblyName>SlideDotNet</AssemblyName>
     <RootNamespace>SlideDotNet</RootNamespace>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <Authors>Adam Shakhabov</Authors>
     <Company></Company>
     <Description>A lightweight .NET library for parse PowerPoint file presentations without Microsoft Office installed.</Description>
@@ -16,9 +16,9 @@
     <Copyright>MIT</Copyright>
     <LangVersion>8</LangVersion>
     <ApplicationIcon>logo.ico</ApplicationIcon>
-    <PackageReleaseNotes>This is first release.</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/adamshakhabov/SlideDotNet</PackageProjectUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

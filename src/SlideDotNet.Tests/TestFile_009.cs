@@ -126,7 +126,7 @@ namespace SlideDotNet.Tests
 
             // ACT
             var slides = pre.Slides;
-            var groupElement = pre.Slides[1].Shapes.Single(x => x.Type.Equals(ElementType.Group));
+            var groupElement = pre.Slides[1].Shapes.Single(x => x.ContentType.Equals(ShapeContentType.Group));
             var el3 = groupElement.GroupedShapes.Single(x => x.Id.Equals(5));
             pre.Close();
 
@@ -256,7 +256,7 @@ namespace SlideDotNet.Tests
             var shapes = pre.Slides[1].Shapes;
 
             // ACT
-            var oleNumbers = shapes.Count(e => e.Type.Equals(ElementType.OLEObject));
+            var oleNumbers = shapes.Count(e => e.ContentType.Equals(ShapeContentType.OLEObject));
             var ole9 = shapes.Single(s => s.Id == 9);
 
             pre.Close();
@@ -450,12 +450,16 @@ namespace SlideDotNet.Tests
             var sp3 = pre.Slides[0].Shapes.Single(sp => sp.Id == 3);
 
             // ACT
-            var hasTextBody = sp3.HasTextFrame;
+            var hasTextFrame = sp3.HasTextFrame;
+            var text = sp3.TextFrame.Text;
+            var phType = sp3.PlaceholderType;
 
             pre.Close();
 
             // ASSERT
-            Assert.False(hasTextBody);
+            Assert.True(hasTextFrame);
+            Assert.Equal("25.01.2020", text);
+            Assert.Equal(PlaceholderType.DateAndTime, phType);
         }
 
         [Fact]
@@ -695,11 +699,11 @@ namespace SlideDotNet.Tests
             ms.Dispose();
 
             // ASSERT
-            Assert.Single(candidates.Where(c => c.Type.Equals(ElementType.AutoShape)));
-            Assert.Single(candidates.Where(c => c.Type.Equals(ElementType.Picture)));
-            Assert.Single(candidates.Where(c => c.Type.Equals(ElementType.Table)));
-            Assert.Single(candidates.Where(c => c.Type.Equals(ElementType.Chart)));
-            Assert.Single(candidates.Where(c => c.Type.Equals(ElementType.Group)));
+            Assert.Single(candidates.Where(c => c.ContentType.Equals(ShapeContentType.AutoShape)));
+            Assert.Single(candidates.Where(c => c.ContentType.Equals(ShapeContentType.Picture)));
+            Assert.Single(candidates.Where(c => c.ContentType.Equals(ShapeContentType.Table)));
+            Assert.Single(candidates.Where(c => c.ContentType.Equals(ShapeContentType.Chart)));
+            Assert.Single(candidates.Where(c => c.ContentType.Equals(ShapeContentType.Group)));
         }
     }
 }
