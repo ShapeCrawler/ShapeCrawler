@@ -17,11 +17,12 @@ namespace SlideDotNet.Models.TextBody
     {
         #region Fields
 
-        private readonly A.Paragraph _xmlParagraph;
         private readonly IShapeContext _spContext;
-        private readonly Lazy<int> _innerPrLvl;
-        private readonly Lazy<List<Portion>> _portions;
+
+        private readonly A.Paragraph _xmlParagraph;
+        private readonly Lazy<int> _innerPrLvl; // inner paragraph level started from one
         private readonly Lazy<string> _text;
+        private readonly Lazy<List<Portion>> _portions;
 
         #endregion Fields
 
@@ -61,6 +62,7 @@ namespace SlideDotNet.Models.TextBody
 
         private static int GetInnerLevel(A.Paragraph xmlParagraph)
         {
+            // XML-paragraph enumeration started from zero. Null is also zero
             var outerLvl = xmlParagraph.ParagraphProperties?.Level ?? 0;
             var interLvl = outerLvl + 1;
 
@@ -88,7 +90,7 @@ namespace SlideDotNet.Models.TextBody
             }
             else
             {
-                var text = _xmlParagraph.Descendants<A.Text>().Single().Text;
+                var text = _xmlParagraph.Descendants<A.Text>().Single().Text; // text container candidate is <a:fld> element
                 var portions = new List<Portion>(1)
                 {
                     new Portion(text)

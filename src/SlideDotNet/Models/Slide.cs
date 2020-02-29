@@ -21,7 +21,7 @@ namespace SlideDotNet.Models
         private readonly IPreSettings _preSettings;
         private readonly SlidePart _xmlSldPart;
         private readonly Lazy<List<ShapeEx>> _shapes;
-        private readonly BackgroundImageFactory _backgroundImageFactory = new BackgroundImageFactory(); //TODO: [DI]
+        private readonly ImageExFactory _backgroundImageFactory = new ImageExFactory(); //TODO: [DI]
         private readonly SlideNumber _sldNumEntity;
 
         #endregion Fields
@@ -45,7 +45,7 @@ namespace SlideDotNet.Models
         {
             get
             {
-                return _backgroundImg ??= _backgroundImageFactory.FromXmlSlide(_xmlSldPart);
+                return _backgroundImg ??= _backgroundImageFactory.TryFromXmlSlide(_xmlSldPart);
             }
         }
 

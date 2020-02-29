@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Models;
 using SlideDotNet.Validation;
@@ -8,18 +9,18 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace SlideDotNet.Services
 {
     /// <summary>
-    /// <inheritdoc cref="IBackgroundImageFactory"/>
+    /// <inheritdoc cref="IImageExFactory"/>
     /// </summary>
-    public class BackgroundImageFactory : IBackgroundImageFactory
+    public class ImageExFactory : IImageExFactory
     {
         #region Public Methods
 
         /// <summary>
-        /// <inheritdoc cref="IBackgroundImageFactory.FromXmlSlide"/>
+        /// <inheritdoc cref="IImageExFactory.TryFromXmlSlide"/>
         /// </summary>
         /// <param name="xmlSldPart"></param>
         /// <returns></returns>
-        public ImageEx FromXmlSlide(SlidePart xmlSldPart)
+        public ImageEx TryFromXmlSlide(SlidePart xmlSldPart)
         {
             Check.NotNull(xmlSldPart, nameof(xmlSldPart));
 
@@ -28,22 +29,23 @@ namespace SlideDotNet.Services
             if (background != null)
             {
                 var aBlipFill = background.Descendants<A.BlipFill>().SingleOrDefault();
-                backgroundImage = FromBlipFill(xmlSldPart, aBlipFill);
+                backgroundImage = TryFromBlipFill(xmlSldPart, aBlipFill);
             }
 
             return backgroundImage;
         }
 
         /// <summary>
-        /// <inheritdoc cref="IBackgroundImageFactory.FromXmlShape"/>
+        /// <inheritdoc cref="IImageExFactory.TryFromXmlShape"/>
         /// </summary>
-        public ImageEx FromXmlShape(SlidePart xmlSldPart, P.Shape xmlShape)
+        public ImageEx TryFromXmlShape(SlidePart xmlSldPart, OpenXmlCompositeElement ce)
         {
             Check.NotNull(xmlSldPart, nameof(xmlSldPart));
-            Check.NotNull(xmlShape, nameof(xmlShape));
-            
-            var aBlipFill = xmlShape.ShapeProperties.GetFirstChild<A.BlipFill>();
-            ImageEx backgroundImage = FromBlipFill(xmlSldPart, aBlipFill);
+            Check.NotNull(ce, nameof(ce));
+
+            var shape = (P.Shape)ce;
+            var aBlipFill = shape.ShapeProperties.GetFirstChild<A.BlipFill>();
+            ImageEx backgroundImage = TryFromBlipFill(xmlSldPart, aBlipFill);
 
             return backgroundImage;
         }
@@ -52,7 +54,7 @@ namespace SlideDotNet.Services
 
         #region Private Methods
 
-        private static ImageEx FromBlipFill(SlidePart sldPart, A.BlipFill aBlipFill)
+        private static ImageEx TryFromBlipFill(SlidePart sldPart, A.BlipFill aBlipFill)
         {
             ImageEx backgroundImage = null;
             var blipRelateId = aBlipFill?.Blip?.Embed?.Value; // try to get blip relationship ID
