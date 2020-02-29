@@ -11,16 +11,16 @@ using SlideDotNet.Services;
 using SlideDotNet.Services.Builders;
 using SlideDotNet.Services.Placeholders;
 using SlideDotNet.Validation;
+using SlideXML.Models.SlideComponents;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
-using TableEx = SlideXML.Models.SlideComponents.TableEx;
 
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace SlideDotNet.Models.SlideComponents
 {
     /// <summary>
-    /// Represents a slide element.
+    /// Represents a shape on a slide.
     /// </summary>
     public class ShapeEx
     {
@@ -33,7 +33,6 @@ namespace SlideDotNet.Models.SlideComponents
         private int _id;
         private string _name;
         private ImageEx _backgroundImage;
-        private PlaceholderType? _placeholderType;
         private Picture _picture;
         private OleObject _ole;
         private TableEx _table;
@@ -43,15 +42,30 @@ namespace SlideDotNet.Models.SlideComponents
 
         #region Properties
 
+        /// <summary>
+        /// Returns the x-coordinate of the upper-left corner of the shape.
+        /// </summary>
         public long X { get; set; } //TODO: delete public setter
 
+        /// <summary>
+        /// Returns the y-coordinate of the upper-left corner of the shape.
+        /// </summary>
         public long Y { get; set; } //TODO: delete public setter
 
-        public long Width { get; private set; }
+        /// <summary>
+        /// Returns the width of the shape.
+        /// </summary>
+        public long Width { get; }
 
-        public long Height { get; private set; }
+        /// <summary>
+        /// Returns the height of the shape.
+        /// </summary>
+        public long Height { get; }
 
-        public ElementType Type { get; private set; }
+        /// <summary>
+        /// Returns shape main content type.
+        /// </summary>
+        public ShapeContentType ContentType { get; }
 
         /// <summary>
         /// Returns an element identifier.
@@ -106,12 +120,12 @@ namespace SlideDotNet.Models.SlideComponents
         public bool HasTextFrame => TextFrame is TextFrame;
 
         /// <summary>
-        /// Determines whether the shape has chart.
+        /// Determines whether the shape has chart content.
         /// </summary>
         public bool HasChart => Chart is Chart.ChartEx;
 
         /// <summary>
-        /// Determines whether the slide element has picture.
+        /// Determines whether the slide element has picture content.
         /// </summary>
         public bool HasPicture => _picture != null;
 
@@ -122,49 +136,43 @@ namespace SlideDotNet.Models.SlideComponents
         public ITextFrame TextFrame => _textFrame.Value;
 
         /// <summary>
-        /// Returns chart.
+        /// Returns chart. Throws exception if shape content type is not <see cref="ShapeContentType.Chart"/>
         /// </summary>
         public IChart Chart => _chart ?? throw new SlideDotNetException(ExceptionMessages.NoChart);
 
         /// <summary>
-        /// Returns table.
+        /// Returns table. Throws exception if shape content type is not <see cref="ShapeContentType.Table"/>
         /// </summary>
         public TableEx Table => _table ?? throw new SlideDotNetException(ExceptionMessages.NoTable);
 
         /// <summary>
-        /// Returns picture.
+        /// Returns picture. Throws exception if shape content type is not a <see cref="ShapeContentType.Picture"/>
         /// </summary>
         public Picture Picture => _picture ?? throw new SlideDotNetException(ExceptionMessages.NoPicture);
 
         /// <summary>
-        /// Returns grouped shapes. Throws exception if shape type is not <see cref="ElementType.Group"/>
+        /// Returns grouped shapes. Throws exception if shape content type is not <see cref="ShapeContentType.Group"/>
         /// </summary>
         public IList<ShapeEx> GroupedShapes { get; private set; }
 
         /// <summary>
-        /// Returns OLE object.
+        /// Returns OLE object content.
         /// </summary>
         public OleObject OleObject => _ole ?? throw new SlideDotNetException(ExceptionMessages.NoOleObject);
 
         /// <summary>
-        /// Determines shape is placeholder.
+        /// Returns placeholder type. Returns null if shape is not a placeholder.
         /// </summary>
-        public bool IsPlaceholder => _context.XmlElement.IsPlaceholder(); //TODO: make lazy
-
-        public PlaceholderType PlaceholderType
+        public PlaceholderType? PlaceholderType
         {
             get
             {
-                if (_placeholderType == null && _context.XmlElement.IsPlaceholder())
+                if (_context.XmlElement.IsPlaceholder())
                 {
-                    _placeholderType = PlaceholderService.PlaceholderDataFrom(_context.XmlElement).PlaceholderType;
-                }
-                if (_placeholderType == null)
-                {
-                    throw new SlideDotNetException(ExceptionMessages.NotPlaceholder);
+                    return PlaceholderService.PlaceholderDataFrom(_context.XmlElement).PlaceholderType;
                 }
 
-                return (PlaceholderType)_placeholderType;
+                return null;
             }
         }
 
@@ -172,24 +180,24 @@ namespace SlideDotNet.Models.SlideComponents
 
         #region Constructors
 
-        private ShapeEx (Location location, IShapeContext spContext, ElementType type)
+        private ShapeEx (Location location, IShapeContext spContext, ShapeContentType contentType)
         {
             X = location.X;
             Y = location.Y;
             Width = location.Width;
             Height = location.Height;
             _context = spContext;
-            Type = type;
-            _textFrame = new Lazy<ITextFrame>(GetTextFrame);
+            ContentType = contentType;
+            _textFrame = new Lazy<ITextFrame>(TryGetTextFrame);
         }
 
         #endregion Constructors
 
         #region Private Methods
 
-        private ITextFrame GetTextFrame()
+        private ITextFrame TryGetTextFrame()
         {
-            if (Type != ElementType.AutoShape)
+            if (ContentType != ShapeContentType.AutoShape)
             {
                 return new NoTextFrame();
             }
@@ -201,7 +209,7 @@ namespace SlideDotNet.Models.SlideComponents
             }
 
             var aTexts = pTxtBody.Descendants<A.Text>();
-            if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element contain text
+            if (aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element with text must be exist
             {
                 return new TextFrame(_context, pTxtBody);
             }
@@ -239,7 +247,7 @@ namespace SlideDotNet.Models.SlideComponents
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(ole, nameof(ole));
 
-                var newShape = new ShapeEx(location, spContext, ElementType.OLEObject)
+                var newShape = new ShapeEx(location, spContext, ShapeContentType.OLEObject)
                 {
                     _ole = ole
                 };
@@ -256,7 +264,7 @@ namespace SlideDotNet.Models.SlideComponents
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(picture, nameof(picture));
 
-                var newShape = new ShapeEx(location, spContext, ElementType.Picture)
+                var newShape = new ShapeEx(location, spContext, ShapeContentType.Picture)
                 {
                     _picture = picture
                 };
@@ -272,7 +280,7 @@ namespace SlideDotNet.Models.SlideComponents
                 Check.NotNull(location, nameof(location));
                 Check.NotNull(spContext, nameof(spContext));
 
-                var newShape = new ShapeEx(location, spContext, ElementType.AutoShape);
+                var newShape = new ShapeEx(location, spContext, ShapeContentType.AutoShape);
       
                 return newShape;
             }
@@ -286,7 +294,7 @@ namespace SlideDotNet.Models.SlideComponents
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(table, nameof(table));
 
-                var newShape = new ShapeEx(location, spContext, ElementType.Table)
+                var newShape = new ShapeEx(location, spContext, ShapeContentType.Table)
                 {
                     _table = table
                 };
@@ -303,7 +311,7 @@ namespace SlideDotNet.Models.SlideComponents
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(chart, nameof(chart));
 
-                var newShape = new ShapeEx(location, spContext, ElementType.Chart)
+                var newShape = new ShapeEx(location, spContext, ShapeContentType.Chart)
                 {
                     _chart = chart
                 };
@@ -320,7 +328,7 @@ namespace SlideDotNet.Models.SlideComponents
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(groupedShapes, nameof(groupedShapes));
 
-                var newShape = new ShapeEx(location, spContext, ElementType.Group)
+                var newShape = new ShapeEx(location, spContext, ShapeContentType.Group)
                 {
                     GroupedShapes = groupedShapes.ToList()
                 };

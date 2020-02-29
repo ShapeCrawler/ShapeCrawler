@@ -6,7 +6,6 @@ using SlideDotNet.Extensions;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace SlideDotNet.Models.TextBody
@@ -18,11 +17,11 @@ namespace SlideDotNet.Models.TextBody
     {
         #region Fields
 
-        private readonly A.Paragraph _aParagraph;
+        private readonly A.Paragraph _xmlParagraph;
         private readonly IShapeContext _spContext;
-        private string _text;
-        private readonly Lazy<int> _lvl;
+        private readonly Lazy<int> _innerPrLvl;
         private readonly Lazy<List<Portion>> _portions;
+        private readonly Lazy<string> _text;
 
         #endregion Fields
 
@@ -31,17 +30,7 @@ namespace SlideDotNet.Models.TextBody
         /// <summary>
         /// Returns the paragraph's text string.
         /// </summary>
-        public string Text {
-            get
-            {
-                if (_text == null)
-                {
-                    InitText();
-                }
-
-                return _text;
-            }
-        }
+        public string Text => _text.Value;
 
         /// <summary>
         /// Returns paragraph text portions.
@@ -55,13 +44,14 @@ namespace SlideDotNet.Models.TextBody
         /// <summary>
         /// Initializes an instance of the <see cref="Paragraph"/> class.
         /// </summary>
-        /// <param name="elSetting"></param>
-        /// <param name="aParagraph">A XML paragraph which contains a text.</param>
-        public Paragraph(IShapeContext elSetting, A.Paragraph aParagraph)
+        /// <param name="spContext"></param>
+        /// <param name="xmlParagraph">A XML paragraph which contains a text.</param>
+        public Paragraph(IShapeContext spContext, A.Paragraph xmlParagraph)
         {
-            _aParagraph = aParagraph ?? throw new ArgumentNullException(nameof(aParagraph));
-            _spContext = elSetting ?? throw new ArgumentNullException(nameof(elSetting));
-            _lvl = new Lazy<int>(GetInnerLevel(_aParagraph));
+            _xmlParagraph = xmlParagraph ?? throw new ArgumentNullException(nameof(xmlParagraph));
+            _spContext = spContext ?? throw new ArgumentNullException(nameof(spContext));
+            _innerPrLvl = new Lazy<int>(GetInnerLevel(_xmlParagraph));
+            _text = new Lazy<string>(GetText);
             _portions = new Lazy<List<Portion>>(GetPortions);
         }
 
@@ -69,31 +59,42 @@ namespace SlideDotNet.Models.TextBody
 
         #region Private Methods
 
-        private static int GetInnerLevel(A.Paragraph aPr)
+        private static int GetInnerLevel(A.Paragraph xmlParagraph)
         {
-            var outerLvl = aPr.ParagraphProperties?.Level ?? 0;
+            var outerLvl = xmlParagraph.ParagraphProperties?.Level ?? 0;
             var interLvl = outerLvl + 1;
 
             return interLvl;
         }
 
-        private void InitText()
+        private string GetText()
         {
-            _text = Portions.Select(p => p.Text).Aggregate((t1, t2) => t1 + t2);
+            return Portions.Select(p => p.Text).Aggregate((result, next) => result + next);
         }
 
         [SuppressMessage("ReSharper", "ConvertIfStatementToConditionalTernaryExpression")]
         private List<Portion> GetPortions()
         {
-            var runs = _aParagraph.Elements<A.Run>();
-            var portions = new List<Portion>(runs.Count());
-            foreach (var run in runs)
+            var runs = _xmlParagraph.Elements<A.Run>();
+            if (runs.Any())
             {
-                var runFh = GetRunFontHeight(run);
-                portions.Add(new Portion(runFh, run.Text.Text));
+                var portions = new List<Portion>(runs.Count());
+                foreach (var run in runs)
+                {
+                    var runFh = GetRunFontHeight(run);
+                    portions.Add(new Portion(run.Text.Text, runFh));
+                }
+                return portions;
             }
-
-            return portions;
+            else
+            {
+                var text = _xmlParagraph.Descendants<A.Text>().Single().Text;
+                var portions = new List<Portion>(1)
+                {
+                    new Portion(text)
+                };
+                return portions;
+            }
         }
 
         private int GetRunFontHeight(A.Run run)
@@ -109,19 +110,19 @@ namespace SlideDotNet.Models.TextBody
             var xmlElement = _spContext.XmlElement;
             if (xmlElement.IsPlaceholder())
             {
-                var prFontHeight = _spContext.PlaceholderFontService.TryGetHeight(xmlElement, _lvl.Value);
+                var prFontHeight = _spContext.PlaceholderFontService.TryGetHeight(xmlElement, _innerPrLvl.Value);
                 if (prFontHeight != null)
                 {
                     return (int)prFontHeight;
                 }
             }
 
-            if (_spContext.PreSettings.LlvFontHeights.ContainsKey(_lvl.Value))
+            if (_spContext.PreSettings.LlvFontHeights.ContainsKey(_innerPrLvl.Value))
             {
-                return _spContext.PreSettings.LlvFontHeights[_lvl.Value];
+                return _spContext.PreSettings.LlvFontHeights[_innerPrLvl.Value];
             }
 
-            var exist = _spContext.TryFromMasterOther(_lvl.Value, out int fh);
+            var exist = _spContext.TryFromMasterOther(_innerPrLvl.Value, out int fh);
             if (exist)
             {
                 return fh;

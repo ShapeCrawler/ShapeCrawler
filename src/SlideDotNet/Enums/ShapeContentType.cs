@@ -3,10 +3,10 @@
 namespace SlideDotNet.Enums
 {
     /// <summary>
-    /// Element type.
+    /// Main shape content type.
     /// </summary>
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public enum ElementType
+    public enum ShapeContentType
     {
         /// <summary>
         /// Chart.

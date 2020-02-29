@@ -11,7 +11,7 @@ namespace SlideDotNet.Services
         /// <summary>
         /// Gets or sets corresponding element type.
         /// </summary>
-        public ElementType ElementType { get; set; }
+        public ShapeContentType ElementType { get; set; }
 
         /// <summary>
         /// Gets or sets instance of <see cref="OpenXmlCompositeElement"/>.
