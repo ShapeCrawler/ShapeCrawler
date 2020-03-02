@@ -225,10 +225,10 @@ namespace SlideDotNet.Models.SlideComponents
             }
 
             var xmlShape = (P.Shape) _context.XmlElement;
-            var solidFill = xmlShape.ShapeProperties.GetFirstChild<A.SolidFill>();
-            if (solidFill != null)
+            var rgbColorModelHex = xmlShape.ShapeProperties.GetFirstChild<A.SolidFill>()?.RgbColorModelHex;
+            if (rgbColorModelHex != null)
             {
-                return Fill.FromXmlSolidFill(solidFill);
+                return Fill.FromXmlSolidFill(rgbColorModelHex);
             }
 
             return null;

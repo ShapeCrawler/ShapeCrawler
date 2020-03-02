@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using SlideDotNet.Extensions;
 using SlideDotNet.Models.Settings;
@@ -51,6 +50,7 @@ namespace SlideDotNet.Models.TextBody
         {
             _xmlParagraph = xmlParagraph ?? throw new ArgumentNullException(nameof(xmlParagraph));
             _spContext = spContext ?? throw new ArgumentNullException(nameof(spContext));
+
             _innerPrLvl = new Lazy<int>(GetInnerLevel(_xmlParagraph));
             _text = new Lazy<string>(GetText);
             _portions = new Lazy<List<Portion>>(GetPortions);
@@ -74,40 +74,47 @@ namespace SlideDotNet.Models.TextBody
             return Portions.Select(p => p.Text).Aggregate((result, next) => result + next);
         }
 
-        [SuppressMessage("ReSharper", "ConvertIfStatementToConditionalTernaryExpression")]
         private List<Portion> GetPortions()
         {
             var runs = _xmlParagraph.Elements<A.Run>();
-            if (runs.Any())
-            {
-                var portions = new List<Portion>(runs.Count());
-                foreach (var run in runs)
-                {
-                    var runFh = GetRunFontHeight(run);
-                    portions.Add(new Portion(run.Text.Text, runFh));
-                }
-                return portions;
-            }
-            else
-            {
-                var text = _xmlParagraph.Descendants<A.Text>().Single().Text; // text container candidate is <a:fld> element
-                var portions = new List<Portion>(1)
-                {
-                    new Portion(text)
-                };
-                return portions;
-            }
+            var resultPortions = runs.Any() ? PortionsFromRuns(runs) : PortionsFromField();
+
+            return resultPortions;
         }
 
-        private int GetRunFontHeight(A.Run run)
+        private List<Portion> PortionsFromRuns(IEnumerable<A.Run> runs)
         {
-            // first, tries parse font height from current run (portion)
-            var runFs = run.RunProperties?.FontSize;
-            if (runFs != null)
+            var portions = new List<Portion>(runs.Count());
+            foreach (var run in runs)
             {
-                return runFs.Value;
+                var fh = FontHeightFromRun(run);
+                portions.Add(new Portion(run.Text.Text, fh));
             }
+            return portions;
+        }
 
+        private List<Portion> PortionsFromField()
+        {
+            var text = _xmlParagraph.GetFirstChild<A.Field>().GetFirstChild<A.Text>().Text;
+            var fh = FontHeightFromOther();
+            var portions = new List<Portion>(1)
+            {
+                new Portion(text, fh)
+            };
+
+            return portions;
+        }
+
+        private int FontHeightFromRun(A.Run run)
+        {
+            var runFs = run.RunProperties?.FontSize;
+            var resultFh = runFs == null ? FontHeightFromOther() : runFs.Value;
+
+            return resultFh;
+        }
+
+        private int FontHeightFromOther()
+        {
             // if element is placeholder, tries to get from placeholder data
             var xmlElement = _spContext.XmlElement;
             if (xmlElement.IsPlaceholder())

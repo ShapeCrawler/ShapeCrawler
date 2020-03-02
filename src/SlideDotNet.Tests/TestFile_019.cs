@@ -57,10 +57,12 @@ namespace SlideDotNet.Tests
             // Act
             var text = shape2.TextFrame.Text;
             var phType = shape2.PlaceholderType;
+            var fh = shape2.TextFrame.Paragraphs.First().Portions.First().FontHeight;
 
             // Arrange
             Assert.Equal("1", text);
             Assert.Equal(PlaceholderType.SlideNumber, phType);
+            Assert.Equal(1200, fh);
         }
     }
 }

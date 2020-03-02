@@ -6,13 +6,24 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Models.SlideComponents
 {
-
+    /// <summary>
+    /// Represents a shape fill.
+    /// </summary>
     public class Fill
     {
+        /// <summary>
+        /// Returns fill type.
+        /// </summary>
         public FillType Type { get; }
 
+        /// <summary>
+        /// Returns picture image. Returns <c>null</c> if fill type is not picture.
+        /// </summary>
         public ImageEx Picture { get; }
 
+        /// <summary>
+        /// Returns instance of the <see cref="System.Drawing.Color"/>. Returns <c>null</c> if fill type is not solid color.
+        /// </summary>
         public Color SolidColor { get; }
 
         #region Constructors
@@ -35,13 +46,17 @@ namespace SlideDotNet.Models.SlideComponents
 
         #endregion Constructors
 
-        public static Fill FromXmlSolidFill(A.SolidFill xmlSldFill)
+        #region Public Methods
+
+        public static Fill FromXmlSolidFill(A.RgbColorModelHex rgbColorModelHex)
         {
-            var hexColor = xmlSldFill.RgbColorModelHex.Val.ToString();
+            var hexColor = rgbColorModelHex.Val.ToString();
             var hexColorInt = int.Parse(hexColor, NumberStyles.HexNumber);
             Color clr = Color.FromArgb(hexColorInt);
 
             return new Fill(clr);
         }
+
+        #endregion Public Methods
     }
 }
