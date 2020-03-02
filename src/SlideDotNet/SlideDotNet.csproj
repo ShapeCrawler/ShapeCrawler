@@ -7,8 +7,8 @@
     <Version>0.2.0</Version>
     <Authors>Adam Shakhabov</Authors>
     <Company></Company>
-    <Description>A lightweight .NET library for parse PowerPoint file presentations without Microsoft Office installed.</Description>
-    <PackageTags>openxml powerpoint pptx c-sharp dotnet slidedotnet</PackageTags>
+    <Description>A lightweight .NET library for parse PowerPoint file (PPTX) presentations without Microsoft Office installed.</Description>
+    <PackageTags>openxml powerpoint pptx c-sharp slide slidedotnet</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>logo.jpg</PackageIcon>
@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DocumentFormat.OpenXml" Version="2.10.0" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.10.1" />
   </ItemGroup>
 
   <ItemGroup>

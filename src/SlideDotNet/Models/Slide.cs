@@ -17,11 +17,11 @@ namespace SlideDotNet.Models
     {
         #region Fields
 
-        private ImageEx _backgroundImg;
+        private readonly Lazy<ImageEx> _backgroundImage;
         private readonly IPreSettings _preSettings;
-        private readonly SlidePart _xmlSldPart;
         private readonly Lazy<List<ShapeEx>> _shapes;
         private readonly ImageExFactory _backgroundImageFactory = new ImageExFactory(); //TODO: [DI]
+        private readonly SlidePart _xmlSldPart;
         private readonly SlideNumber _sldNumEntity;
 
         #endregion Fields
@@ -39,15 +39,9 @@ namespace SlideDotNet.Models
         public int Number => _sldNumEntity.Number;
 
         /// <summary>
-        /// Returns a background image of the slide. Returns null if slide does not have background image.
+        /// Returns a background image of the slide. Returns <c>null</c>if slide does not have background image.
         /// </summary>
-        public ImageEx BackgroundImage
-        {
-            get
-            {
-                return _backgroundImg ??= _backgroundImageFactory.TryFromXmlSlide(_xmlSldPart);
-            }
-        }
+        public ImageEx BackgroundImage => _backgroundImage.Value;
 
         #endregion Properties
 
@@ -56,13 +50,14 @@ namespace SlideDotNet.Models
         /// <summary>
         /// Initialize a new instance of the <see cref="Slide"/> class.
         /// </summary>
-        /// TODO: use builder instead public constructor
         public Slide(SlidePart xmlSldPart, SlideNumber sldNum, IPreSettings preSettings)
         {
             _xmlSldPart = xmlSldPart ?? throw new ArgumentNullException(nameof(xmlSldPart));
             _sldNumEntity = sldNum ?? throw new ArgumentNullException(nameof(SlideNumber));
             _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
+
             _shapes = new Lazy<List<ShapeEx>>(GetShapes);
+            _backgroundImage = new Lazy<ImageEx>(TryGetBackground);
         }
 
         #endregion Constructors
@@ -73,6 +68,11 @@ namespace SlideDotNet.Models
         {
             var shapeFactory = new ShapeFactory(_xmlSldPart, _preSettings);
             return shapeFactory.CreateShapesCollection(_xmlSldPart.Slide.CommonSlideData.ShapeTree).ToList();
+        }
+
+        private ImageEx TryGetBackground()
+        {
+            return _backgroundImageFactory.TryFromXmlSlide(_xmlSldPart);
         }
 
         #endregion Private Methods
