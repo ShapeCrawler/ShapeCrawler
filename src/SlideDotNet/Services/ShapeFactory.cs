@@ -24,7 +24,7 @@ namespace SlideDotNet.Services
     {
         #region Fields
 
-        private readonly IShapeBuilder _shapeBuilder = new ShapeEx.Builder(); // make DI
+        private readonly IShapeBuilder _shapeBuilder = new ShapeEx.Builder(); // TODO: [DI]
         private readonly IPreSettings _preSettings;
         private readonly IPlaceholderService _phService;
         private readonly SlidePlaceholderFontService _slideFontService;
@@ -194,11 +194,11 @@ namespace SlideDotNet.Services
         {
             foreach (var xmlGraphicFrame in xmlTablesGraphicFrames)
             {
-                var chart = new ChartEx(xmlGraphicFrame, _xmlSldPart);
+                var chartEx = new ChartEx(xmlGraphicFrame, _xmlSldPart);
                 var transform = xmlGraphicFrame.Transform;
                 var location = LocationFromTransformX(transform);
                 var spContext = new ShapeContext(_preSettings, _slideFontService, xmlGraphicFrame, _xmlSldPart);
-                var newShape = _shapeBuilder.WithChart(location, spContext, chart);
+                var newShape = _shapeBuilder.WithChart(location, spContext, chartEx);
                 shapesCollection.Add(newShape);
             }
         }

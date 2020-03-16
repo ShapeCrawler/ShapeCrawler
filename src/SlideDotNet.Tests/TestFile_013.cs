@@ -13,21 +13,23 @@ namespace SlideDotNet.Tests
         public void ChartPropertiesTest()
         {
             // ARRANGE
-            var pre13 = new PresentationEx(Properties.Resources._013);
-            var chart = pre13.Slides[0].Shapes.Single(x => x.Id == 5).Chart;
-            var chart4 = pre13.Slides[0].Shapes.Single(x => x.Id == 4).Chart;
+            var pre = new PresentationEx(Properties.Resources._013);
+            var combChart = pre.Slides[0].Shapes.Single(x => x.Id == 5).Chart;
+            var chart4 = pre.Slides[0].Shapes.Single(x => x.Id == 4).Chart;
 
             // ACT
-            var title = chart.Title;
+            var title = combChart.Title;
             var hasTitle = chart4.HasTitle;
-            var type = chart.Type;
+            var type = combChart.Type;
+            var numSeries = combChart.SeriesCollection.Count;
 
-            pre13.Close();
+            pre.Close();
 
             // ASSERT
             Assert.Equal(ChartType.Combination, type);
             Assert.Equal("Title text", title);
             Assert.False(hasTitle);
+            Assert.Equal(3, numSeries);
         }
 
         [Fact]

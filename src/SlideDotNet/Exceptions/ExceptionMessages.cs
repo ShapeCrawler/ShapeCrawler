@@ -1,4 +1,6 @@
-﻿namespace SlideDotNet.Exceptions
+﻿using SlideDotNet.Models.SlideComponents.Chart;
+
+namespace SlideDotNet.Exceptions
 {
     /// <summary>
     /// Contains constant error messages.
@@ -25,5 +27,7 @@
         public static string PresentationIsLarge = "The size of presentation more than {0} bytes.";
 
         public static string SlidesMuchMore = "The number of slides is more allowed {0}.";
+
+        public static string ChartCanNotHaveCategory = $"#0 can not have category. You can check chart type via {nameof(ChartEx.Type)} property.";
     }
 }

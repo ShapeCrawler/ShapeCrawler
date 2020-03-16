@@ -13,7 +13,7 @@ namespace SlideDotNet.Exceptions
         /// <summary>
         /// Returns error code number.
         /// </summary>
-        public int ErrorCode { get; } = (int)ExceptionCodes.SlideXmlException;
+        public int ErrorCode { get; } = (int)ExceptionCodes.SlideDotNetException;
 
         #endregion Properties
 
@@ -29,6 +29,11 @@ namespace SlideDotNet.Exceptions
         public SlideDotNetException(string message, int errorCode) : base(message)
         {
             ErrorCode = errorCode;
+        }
+
+        public SlideDotNetException(string message, ExceptionCodes exceptionCode) : base(message)
+        {
+            ErrorCode = (int)exceptionCode;
         }
 
         public SlideDotNetException(int errorCode)

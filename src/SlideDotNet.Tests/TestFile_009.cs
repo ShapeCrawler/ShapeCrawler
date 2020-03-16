@@ -434,30 +434,62 @@ namespace SlideDotNet.Tests
             var sld3Elements = pre.Slides[2].Shapes;
             var sld5Elements = pre.Slides[4].Shapes;
             var chartEx6 = sld3Elements.Single(e => e.Id.Equals(6));
-            var chartEx7 = sld3Elements.Single(e => e.Id.Equals(7));
+            var pieChartShape7 = sld3Elements.Single(e => e.Id.Equals(7));
             var sld5Chart6 = sld5Elements.Single(e => e.Id.Equals(6));
             var sld5Chart3 = sld5Elements.Single(e => e.Id.Equals(3));
             var sld5Chart5 = sld5Elements.Single(e => e.Id.Equals(5));
+            var pieChart7 = pieChartShape7.Chart;
 
             // ACT
-            var chart7Title = chartEx7.Chart.Title;
+            var pieChart7Title = pieChart7.Title;
+            var pieChart7Type = pieChart7.Type;
+            var pieChart7NumSeries = pieChart7.SeriesCollection.Count();
             var chart6Title = chartEx6.Chart.Title;
-            var chart7Type = chartEx7.Chart.Type;
             var sld5Chart6Title = sld5Chart6.Chart.Title;
             var sld5Chart3Title = sld5Chart3.Chart.Title;
             var sld5Chart5Title = sld5Chart5.Chart.Title;
             var hasTextFrame = sld5Chart5.HasTextFrame;
+            var v00 = pieChart7.SeriesCollection[0].PointValues[0];
+            var v01 = pieChart7.SeriesCollection[0].PointValues[1];
 
             pre.Close();
 
             // ASSERT
-            Assert.Equal("Sales", chart7Title);
+            Assert.Equal("Sales", pieChart7Title);
             Assert.Equal("Sales2", chart6Title);
             Assert.Equal("Sales3", sld5Chart6Title);
             Assert.Equal("Sales4", sld5Chart3Title);
             Assert.Equal("Sales5", sld5Chart5Title);
-            Assert.Equal(ChartType.PieChart, chart7Type);
+            Assert.Equal(ChartType.PieChart, pieChart7Type);
             Assert.False(hasTextFrame);
+            Assert.Equal(1, pieChart7NumSeries);
+            Assert.Equal(8.2, v00);
+            Assert.Equal(3.2, v01);
+        }
+
+        [Fact]
+        public void Chart_Category_Test()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+            var sld3Shapes = pre.Slides[2].Shapes;
+            var pieChartShape7 = sld3Shapes.Single(e => e.Id == 7);
+            var pieChart7 = pieChartShape7.Chart;
+            var pieChart7Categories = pieChart7.Categories;
+
+            // ACT
+            var c1 = pieChart7Categories[0];
+            var c2 = pieChart7Categories[1];
+            var c3 = pieChart7Categories[2];
+            var c4 = pieChart7Categories[3];
+
+            pre.Close();
+
+            // ASSERT
+            Assert.Equal("Q1", c1);
+            Assert.Equal("Q2", c2);
+            Assert.Equal("Q3", c3);
+            Assert.Equal("Q4", c4);
         }
 
         [Fact]
@@ -698,7 +730,7 @@ namespace SlideDotNet.Tests
         }
 
         [Fact]
-        public void CreateCandidates_Test()
+        public void CreateShapesCollection_Test()
         {
             // ARRANGE
             var ms = new MemoryStream(Properties.Resources._003);

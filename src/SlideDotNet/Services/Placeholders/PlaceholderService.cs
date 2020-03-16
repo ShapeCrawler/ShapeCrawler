@@ -19,7 +19,7 @@ namespace SlideDotNet.Services.Placeholders
     {
         #region Fields
 
-        private List<PlaceholderLocationData> _placeholders; //TODO: consider use here HashSet
+        private HashSet<PlaceholderLocationData> _phLocations; //TODO: consider use here HashSet
 
         #endregion Fields
 
@@ -36,27 +36,22 @@ namespace SlideDotNet.Services.Placeholders
         #region Public Methods
 
         /// <summary>
-        /// Tries to get placeholder from the repository.
+        /// <inheritdoc cref="IPlaceholderService.TryGet"/>
         /// </summary>
-        /// <param name="ce"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// Some placeholder on a slide has its location (x/y) and size (width/height) data on the slide.
-        /// </remarks>
-        public PlaceholderLocationData TryGet(OpenXmlCompositeElement ce)
+        public PlaceholderLocationData TryGet(OpenXmlCompositeElement sdkElement)
         {
-            if (!ce.IsPlaceholder())
+            if (!sdkElement.IsPlaceholder())
             {
                 return null;
             }
 
-            var phXml = PlaceholderDataFrom(ce);
+            var phXml = PlaceholderDataFrom(sdkElement);
             if (phXml.PlaceholderType == PlaceholderType.Custom)
             {
-                return _placeholders.SingleOrDefault(p => p.Index == phXml.Index);
+                return _phLocations.FirstOrDefault(p => p.Index == phXml.Index);
             }
 
-            return _placeholders.SingleOrDefault(p => p.PlaceholderType == phXml.PlaceholderType);
+            return _phLocations.FirstOrDefault(p => p.PlaceholderType == phXml.PlaceholderType);
         }
 
         /// <summary>
@@ -107,14 +102,14 @@ namespace SlideDotNet.Services.Placeholders
             var masterElements = sldLtPart.SlideMasterPart.SlideMaster.CommonSlideData.ShapeTree.Elements<OpenXmlCompositeElement>();
             var layoutHolders = GetPlaceholders(layoutElements);
             var masterHolders = GetPlaceholders(masterElements);
+            var f = masterHolders.Where(mHolder => !layoutHolders.Contains(mHolder));
 
             // slide master can contain duplicate
             foreach (var mHolder in masterHolders.Where(mHolder => !layoutHolders.Contains(mHolder)))
             {
                 layoutHolders.Add(mHolder);
             }
-
-            _placeholders = layoutHolders;
+            _phLocations = layoutHolders.ToHashSet(); //TODO: optimize ToHashSet()
         }
 
         private List<PlaceholderLocationData> GetPlaceholders(IEnumerable<OpenXmlCompositeElement> compositeElements)

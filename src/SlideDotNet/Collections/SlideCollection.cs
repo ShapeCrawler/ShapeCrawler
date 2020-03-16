@@ -4,11 +4,12 @@ using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using SlideDotNet.Extensions;
+using SlideDotNet.Models;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Validation;
-using P = DocumentFormat.OpenXml.Presentation;
+using Slide = SlideDotNet.Models.Slide;
 
-namespace SlideDotNet.Models
+namespace SlideDotNet.Collections
 {
     /// <summary>
     /// <inheritdoc cref="ISlideCollection"/>
@@ -17,7 +18,7 @@ namespace SlideDotNet.Models
     {
         #region Fields
 
-        private readonly List<Slide> _slides;
+        private readonly List<Slide> _items;
         private readonly PresentationDocument _xmlDoc;
         private readonly Dictionary<Slide, SlideNumber> _sldNumEntities;
 
@@ -25,16 +26,42 @@ namespace SlideDotNet.Models
 
         #region Constructors
 
-        private SlideCollection(List<Slide> slides, PresentationDocument xmlDoc, Dictionary<Slide, SlideNumber> sldNumEntities)
+        private SlideCollection(List<Slide> items, PresentationDocument xmlDoc, Dictionary<Slide, SlideNumber> sldNumEntities)
         {
-            _slides = slides;
+            _items = items;
             _xmlDoc = xmlDoc;
             _sldNumEntities = sldNumEntities;
         }
 
         #endregion Constructors
 
-        #region Public Methods
+        /// <summary>
+        /// Gets a generic enumerator that iterates through the collection.
+        /// </summary>
+        public IEnumerator<Slide> GetEnumerator()
+        {
+            return _items.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            //TODO: why two GetEnumerator() methods?
+            return _items.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Returns the element at the specified index.
+        /// </summary>
+        public Slide this[int index] => _items[index];
+
+        /// <summary>
+        /// Gets the number of slides in the collection.
+        /// </summary>
+        public int Count => _items.Count;
 
         /// <summary>
         /// <inheritdoc cref="ISlideCollection.Remove"/>
@@ -46,14 +73,9 @@ namespace SlideDotNet.Models
 
             RemoveFromDom(item.Number);
             _xmlDoc.PresentationPart.Presentation.Save(); // save the modified presentation
-            _slides.Remove(item);
+            _items.Remove(item);
             UpdateNumbers();
         }
-
-        /// <summary>
-        /// Returns the element at the specified index.
-        /// </summary>
-        public Slide this[int index] => _slides[index];
 
         /// <summary>
         /// Creates slides collection.
@@ -78,33 +100,12 @@ namespace SlideDotNet.Models
             return new SlideCollection(slideCollection, xmlDoc, sldNumDic);
         }
 
-        /// <summary>
-        /// Returns an enumerator for slide list.
-        /// </summary>
-        public IEnumerator<Slide> GetEnumerator()
-        {
-            return _slides.GetEnumerator();
-        }
-
-        
-        /// <summary>
-        /// Returns an enumerator for slide list. 
-        /// </summary>
-        /// <returns></returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            //TODO: why two GetEnumerator() methods?
-            return _slides.GetEnumerator();
-        }
-
-        #endregion Public Methods
-
         #region Private Methods
 
         private void RemoveFromDom(int number)
         {
             PresentationPart presentationPart = _xmlDoc.PresentationPart;
-            P.Presentation presentation = presentationPart.Presentation;
+            DocumentFormat.OpenXml.Presentation.Presentation presentation = presentationPart.Presentation;
             // gets the list of slide identifiers in the presentation
             SlideIdList slideIdList = presentation.SlideIdList;
             // gets the slide identifier of the specified slide
@@ -152,7 +153,7 @@ namespace SlideDotNet.Models
         private void UpdateNumbers()
         {
             var current = 0;
-            foreach (var slide in _slides)
+            foreach (var slide in _items)
             {
                 current++;
                 _sldNumEntities[slide].Number = current;
@@ -160,19 +161,5 @@ namespace SlideDotNet.Models
         }
 
         #endregion Private Methods
-    }
-
-    public class SlideNumber
-    {
-        /// <summary>
-        /// Gets or sets slide number.
-        /// </summary>
-        public int Number { get; set; }
-
-        public SlideNumber(int sldNum)
-        {
-            Check.IsPositive(sldNum, nameof(sldNum));
-            Number = sldNum;
-        }
     }
 }
