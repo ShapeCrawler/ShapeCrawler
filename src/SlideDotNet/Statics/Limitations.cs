@@ -1,4 +1,4 @@
-﻿namespace SlideDotNet
+﻿namespace SlideDotNet.Statics
 {
     /// <summary>
     /// Contains library limitation constant values.

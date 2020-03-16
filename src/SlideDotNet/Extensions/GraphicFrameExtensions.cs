@@ -10,18 +10,17 @@ namespace SlideDotNet.Extensions
     /// </summary>
     public static class GraphicFrameExtensions
     {
+        private const string ChartUri = "http://schemas.openxmlformats.org/drawingml/2006/chart";
+
         /// <summary>
         /// Has <see cref="P.GraphicFrame"/> instance chart.
         /// </summary>
         /// <param name="grFrame"></param>        
         public static bool HasChart(this P.GraphicFrame grFrame)
         {
-            Check.NotNull(grFrame, nameof(grFrame));
-
-            var grData = grFrame.Descendants<A.GraphicData>().Single();
-            var endsWithChart = grData?.Uri?.Value?.EndsWith("chart");
-
-            return endsWithChart != null && endsWithChart != false;
+            var grData = grFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
+            
+            return grData.Uri.Value.Equals(ChartUri);
         }
     }
 }

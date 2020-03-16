@@ -1,4 +1,6 @@
-﻿using SlideDotNet.Enums;
+﻿using System.Collections.Generic;
+using SlideDotNet.Collections;
+using SlideDotNet.Enums;
 
 namespace SlideDotNet.Models.SlideComponents.Chart
 {
@@ -21,5 +23,17 @@ namespace SlideDotNet.Models.SlideComponents.Chart
         /// Indicates whether chart has a title.
         /// </summary>
         bool HasTitle { get; }
+
+        /// <summary>
+        /// Returns collection of the chart series.
+        /// </summary>
+        SeriesCollection SeriesCollection { get; }
+
+        bool HasCategories { get; }
+
+        /// <summary>
+        /// Returns collection of the chart category.
+        /// </summary>
+        CategoryCollection Categories { get; }
     }
 }

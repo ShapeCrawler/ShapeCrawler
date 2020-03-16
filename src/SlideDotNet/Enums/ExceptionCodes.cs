@@ -5,9 +5,10 @@
     /// </summary>
     public enum ExceptionCodes
     {
-        SlideXmlException = 100,
+        SlideDotNetException = 100,
         FeatureNotYetImplementedException = 101,
         PresentationIsLargeException = 102,
-        SlidesMuchMoreException = 103
+        SlidesMuchMoreException = 103,
+        RuntimeDefinedPropertyException = 104
     }
 }

@@ -1,9 +1,12 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using NSubstitute;
 using SlideDotNet.Enums;
 using SlideDotNet.Exceptions;
 using SlideDotNet.Models;
 using SlideDotNet.Services.Placeholders;
+using SlideDotNet.Statics;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations
@@ -26,16 +29,28 @@ namespace SlideDotNet.Tests
             var stubPhXml3 = new PlaceholderData { PlaceholderType = PlaceholderType.Custom, Index = 1};
             var phSl3 = new PlaceholderLocationData(stubPhXml3);
             var phSl4 = new PlaceholderLocationData(stubPhXml3);
+            var custom = new PlaceholderData
+            {
+                Index = 4,
+                PlaceholderType = PlaceholderType.Custom
+            };
+            var sldNum = new PlaceholderData
+            {
+                Index = 4,
+                PlaceholderType = PlaceholderType.SlideNumber
+            };
 
             // ACT
             var isEquals1 = phSl1.Equals(phSl2);
             var isEquals2 = phSl1.Equals(phSl3);
             var isEquals3 = phSl3.Equals(phSl4);
+            var isEquals4 = custom.Equals(sldNum);
 
             // ASSERT
             Assert.True(isEquals1);
             Assert.False(isEquals2);
             Assert.True(isEquals3);
+            Assert.False(isEquals4);
         }
 
         [Fact]
@@ -82,5 +97,6 @@ namespace SlideDotNet.Tests
             Assert.Equal(expectedMessage, ex.Message);
             Assert.Equal(expectedCode, ex.ErrorCode);
         }
+
     }
 }

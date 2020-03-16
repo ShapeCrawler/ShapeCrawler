@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using SlideDotNet.Collections;
 using SlideDotNet.Enums;
 using SlideDotNet.Exceptions;
-using SlideDotNet.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -20,13 +20,17 @@ namespace SlideDotNet.Models.SlideComponents.Chart
         #region Fields
 
         // Contains chart elements, e.g. <c:pieChart>. If the chart type is not a combination,
-        // then collection contains an only single item.
-        private List<OpenXmlElement> _chartElements;
+        // then collection contains only single item.
+        private List<OpenXmlElement> _sdkCharts;
+
         private readonly SlidePart _sldPart;
-        private ChartType? _type; //TODO: make lazy
-        private string _title;
         private readonly P.GraphicFrame _grFrame;
+        private readonly Lazy<ChartType> _chartType;
         private C.Chart _cChart;
+        private Lazy<SeriesCollection> _seriesCollection;
+        private Lazy<CategoryCollection> _categories;
+        private string _chartTitle;
+        private ChartPart _sdkChartPart;
 
         #endregion Fields
 
@@ -35,18 +39,7 @@ namespace SlideDotNet.Models.SlideComponents.Chart
         /// <summary>
         /// <inheritdoc cref="IChart.Type"/>
         /// </summary>
-        public ChartType Type
-        {
-            get
-            {
-                if (_type == null)
-                {
-                    ParseType();
-                }
-
-                return (ChartType)_type;
-            }
-        }
+        public ChartType Type => _chartType.Value;
 
         /// <summary>
         /// <inheritdoc cref="IChart.Title"/>
@@ -55,12 +48,12 @@ namespace SlideDotNet.Models.SlideComponents.Chart
         {
             get
             {
-                if (_title == null)
+                if (_chartTitle == null)
                 {
-                    _title = TryGetTitle();
+                    _chartTitle = TryGetTitle();
                 }
 
-                return _title ?? throw new SlideDotNetException(ExceptionMessages.NotTitle);
+                return _chartTitle ?? throw new SlideDotNetException(ExceptionMessages.NotTitle);
             }
         }
 
@@ -71,12 +64,36 @@ namespace SlideDotNet.Models.SlideComponents.Chart
         {
             get
             {
-                if (_title == null)
+                if (_chartTitle == null)
                 {
-                    _title = TryGetTitle();
+                    _chartTitle = TryGetTitle();
                 }
 
-                return _title != null;
+                return _chartTitle != null;
+            }
+        }
+
+        public bool HasCategories => _categories.Value != null;
+
+        /// <summary>
+        /// <inheritdoc cref="IChart.SeriesCollection"/>
+        /// </summary>
+        public SeriesCollection SeriesCollection => _seriesCollection.Value;
+
+        /// <summary>
+        /// <inheritdoc cref="IChart.Categories"/>
+        /// </summary>
+        public CategoryCollection Categories
+        {
+            get
+            {
+                if (_categories.Value == null)
+                {
+                    var msg = ExceptionMessages.ChartCanNotHaveCategory.Replace("#0", Type.ToString());
+                    throw new RuntimeDefinedPropertyException(msg);
+                }
+
+                return _categories.Value;
             }
         }
 
@@ -89,10 +106,9 @@ namespace SlideDotNet.Models.SlideComponents.Chart
         /// </summary>
         public ChartEx(P.GraphicFrame grFrame, SlidePart sldPart)
         {
-            Check.NotNull(sldPart, nameof(sldPart));
-            _sldPart = sldPart;
-            _grFrame = grFrame;
-
+            _grFrame = grFrame ?? throw new ArgumentNullException(nameof(grFrame));
+            _sldPart = sldPart ?? throw new ArgumentNullException(nameof(sldPart));
+            _chartType = new Lazy<ChartType>(GetChartType);
             Init(); //TODO: convert to lazy loading
         }
 
@@ -102,28 +118,25 @@ namespace SlideDotNet.Models.SlideComponents.Chart
 
         private void Init()
         {
-            // Get reference
-            var chartRef = _grFrame.Descendants<C.ChartReference>().Single();
+            var chartPartRef = _grFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>().GetFirstChild<C.ChartReference>().Id;
+            _sdkChartPart = (ChartPart)_sldPart.GetPartById(chartPartRef);
 
-            // Get chart part by reference
-            var chPart = (ChartPart)_sldPart.GetPartById(chartRef.Id);
-
-            _cChart = chPart.ChartSpace.GetFirstChild<C.Chart>();
-            _chartElements = _cChart.PlotArea.Elements().Where(e => e.LocalName.EndsWith("Chart")).ToList();
+            _cChart = _sdkChartPart.ChartSpace.GetFirstChild<C.Chart>();
+            _sdkCharts = _cChart.PlotArea.Where(e => e.LocalName.EndsWith("Chart")).ToList();  // example: <c:barChart>, <c:lineChart>
+            _seriesCollection = new Lazy<SeriesCollection>(GetSeriesCollection);
+            _categories = new Lazy<CategoryCollection>(TryGetCategories);
         }
 
-        private void ParseType()
+        private ChartType GetChartType()
         {
-            if (_chartElements.Count > 1)
+            if (_sdkCharts.Count > 1)
             {
-                _type = ChartType.Combination;
+                return ChartType.Combination;
             }
-            else
-            {
-                var chartName = _chartElements.Single().LocalName;
-                Enum.TryParse(chartName, true, out ChartType chartType);
-                _type = chartType;
-            }
+
+            var chartName = _sdkCharts.Single().LocalName;
+            Enum.TryParse(chartName, true, out ChartType chartType);
+            return chartType;
         }
 
         private string TryGetTitle()
@@ -133,10 +146,10 @@ namespace SlideDotNet.Models.SlideComponents.Chart
             {
                 return null;
             }
-           
+
             var xmlChartText = title.ChartText;
-            var existStatic = TryGetStatic(xmlChartText, out var staticTitle);
-            if (existStatic)
+            var staticAvailable = TryGetStatic(xmlChartText, out var staticTitle);
+            if (staticAvailable)
             {
                 return staticTitle;
             }
@@ -150,13 +163,11 @@ namespace SlideDotNet.Models.SlideComponents.Chart
             if (Type == ChartType.PieChart)
             {
                 // Parses PieChart dynamic title
-                return _chartElements.Single().GetFirstChild<C.PieChartSeries>().GetFirstChild<C.SeriesText>().Descendants<C.StringPoint>().Single().InnerText;
+                return _sdkCharts.Single().GetFirstChild<C.PieChartSeries>().GetFirstChild<C.SeriesText>().Descendants<C.StringPoint>().Single().InnerText;
             }
 
             return null;
         }
-
-        #endregion
 
         private bool TryGetStatic(C.ChartText chartText, out string staticTitle)
         {
@@ -176,6 +187,23 @@ namespace SlideDotNet.Models.SlideComponents.Chart
 
             return false;
         }
+
+        private SeriesCollection GetSeriesCollection()
+        {
+            return new SeriesCollection(_sdkCharts, _sdkChartPart);
+        }
+
+        private CategoryCollection TryGetCategories()
+        {
+            if (Type == ChartType.BubbleChart || Type == ChartType.ScatterChart)
+            {
+                return null;
+            }
+            var sdkChartSeries = _sdkCharts.First().ChildElements.First(e => e.LocalName.Equals("ser"));
+            return new CategoryCollection(sdkChartSeries);
+        }
+
+        #endregion
     }
 }
 

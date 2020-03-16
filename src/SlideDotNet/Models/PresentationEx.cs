@@ -2,8 +2,10 @@
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using SlideDotNet.Collections;
 using SlideDotNet.Exceptions;
 using SlideDotNet.Models.Settings;
+using SlideDotNet.Statics;
 using SlideDotNet.Validation;
 
 namespace SlideDotNet.Models

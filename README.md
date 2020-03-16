@@ -48,6 +48,7 @@ foreach (var sp in shapes)
     }
 }
 ```
+**To find out more, please check out the [SlideDotNet wiki](https://github.com/adamshakhabov/SlideDotNet/wiki).**
 
 ## Support
 If you have any problems or questions you can create an issue on this repository or contact me at <a href="mailto:theadamo86@gmail.com">theadamo86@gmail.com</a>.
