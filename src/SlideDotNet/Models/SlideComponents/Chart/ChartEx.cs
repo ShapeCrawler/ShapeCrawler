@@ -73,6 +73,9 @@ namespace SlideDotNet.Models.SlideComponents.Chart
             }
         }
 
+        /// <summary>
+        /// <inheritdoc cref="IChart.HasCategories"/>
+        /// </summary>
         public bool HasCategories => _categories.Value != null;
 
         /// <summary>

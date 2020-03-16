@@ -29,6 +29,9 @@ namespace SlideDotNet.Models.SlideComponents.Chart
         /// </summary>
         SeriesCollection SeriesCollection { get; }
 
+        /// <summary>
+        /// Indicates whether chart has categories. Some chart types like ScatterChart and BubbleChart does not have categories.
+        /// </summary>
         bool HasCategories { get; }
 
         /// <summary>
