@@ -1,4 +1,5 @@
-﻿using SlideDotNet.Models.SlideComponents.Chart;
+﻿using SlideDotNet.Models.SlideComponents;
+using SlideDotNet.Models.SlideComponents.Chart;
 
 namespace SlideDotNet.Exceptions
 {
@@ -17,8 +18,6 @@ namespace SlideDotNet.Exceptions
 
         public static string NoOleObject = "Element has not a OLE object.";
 
-        public static string NotPlaceholder = "Element is not a placeholder";
-
         public static string NotTitle = "Chart has not a title.";
 
         /// <summary>
@@ -28,6 +27,16 @@ namespace SlideDotNet.Exceptions
 
         public static string SlidesMuchMore = "The number of slides is more allowed {0}.";
 
-        public static string ChartCanNotHaveCategory = $"#0 can not have category. You can check chart type via {nameof(ChartEx.Type)} property.";
+        public static string ChartCanNotHaveCategory = 
+            $"#0 can not have category. You can check chart type via {nameof(ChartEx.Type)} property.";
+
+        public static string ShapeIsNotPlaceholder =
+            $"The shape is not placeholder. You can check it via {nameof(ShapeEx.IsPlaceholder)} property.";
+
+        public static string PropertyCanChangedInNextVersion =
+            "This property can not be changed for placeholder. The capability was planned to implement in one of the next library version. Use can use IsPlaceholder to check whether the shape is a placeholder.";
+
+        public static string ForGroupedCanNotChanged =
+            "This property can not be changed for a grouped shape. Use IsGrouped to check whether the shape is grouped.";
     }
 }

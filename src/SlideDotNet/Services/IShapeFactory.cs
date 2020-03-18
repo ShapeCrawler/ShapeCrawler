@@ -12,6 +12,6 @@ namespace SlideDotNet.Services
     /// </remarks>
     public interface IShapeFactory
     {
-        IList<ShapeEx> CreateShapesCollection(P.ShapeTree xmlGroupTypeShape);
+        IList<ShapeEx> FromTree(P.ShapeTree sdkShapeTree);
     }
 }

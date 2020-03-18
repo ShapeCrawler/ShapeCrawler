@@ -8,6 +8,7 @@ using SlideDotNet.Models;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.SlideComponents;
 using SlideDotNet.Models.SlideComponents.Chart;
+using SlideDotNet.Models.Transforms;
 using SlideDotNet.Services.Builders;
 using SlideDotNet.Services.Placeholders;
 using SlideXML.Models.SlideComponents;
@@ -29,8 +30,11 @@ namespace SlideDotNet.Services
         private readonly IPlaceholderService _phService;
         private readonly SlidePlaceholderFontService _slideFontService;
         private readonly SlidePart _xmlSldPart;
+        private P.GroupShapeType _currentSdkGroupType;
 
         #endregion Fields
+
+        #region Constructors
 
         public ShapeFactory(SlidePart xmlSldPart, IPreSettings preSettings)
         {
@@ -40,13 +44,17 @@ namespace SlideDotNet.Services
             _phService = new PlaceholderService(xmlSldPart.SlideLayoutPart);
         }
 
+        #endregion Constructors
+
         #region Public Methods
 
-        public IList<ShapeEx> CreateShapesCollection(P.ShapeTree xmlGroupTypeShape)
+        public IList<ShapeEx> FromTree(P.ShapeTree sdkShapeTree)
         {
-            var allXmlElements = xmlGroupTypeShape.Elements<OpenXmlCompositeElement>();
-            var shapesCollection = new List<ShapeEx>();
-            ParseTree(shapesCollection, allXmlElements);
+            _currentSdkGroupType = sdkShapeTree ?? throw new ArgumentNullException(nameof(sdkShapeTree));
+           
+            var allXmlElements = _currentSdkGroupType.Elements<OpenXmlCompositeElement>();
+            var shapesCollection = new List<ShapeEx>(allXmlElements.Count());
+            ParseElements(shapesCollection, allXmlElements);
 
             var xmlGroups = allXmlElements.OfType<P.GroupShape>();
             AddGroups(shapesCollection, xmlGroups);
@@ -58,16 +66,17 @@ namespace SlideDotNet.Services
 
         #region Private Methods
 
-        private IList<ShapeEx> CreateShapesCollection(P.GroupShape xmlGroupTypeShape)
+        private IList<ShapeEx> FromGroup(P.GroupShape xmlGroupTypeShape)
         {
+            _currentSdkGroupType = xmlGroupTypeShape;
             var allXmlElements = xmlGroupTypeShape.Elements<OpenXmlCompositeElement>();
-            var shapesCollection = new List<ShapeEx>();
-            ParseTree(shapesCollection, allXmlElements);
+            var shapesCollection = new List<ShapeEx>(allXmlElements.Count());
+            ParseElements(shapesCollection, allXmlElements);
 
             return shapesCollection;
         }
 
-        private void ParseTree(List<ShapeEx> shapesCollection, IEnumerable<OpenXmlCompositeElement> allXmlElements)
+        private void ParseElements(List<ShapeEx> shapesCollection, IEnumerable<OpenXmlCompositeElement> allXmlElements)
         {
             var xmlGraphicFrameElements = allXmlElements.OfType<P.GraphicFrame>();
 
@@ -99,9 +108,17 @@ namespace SlideDotNet.Services
             {
                 var spContext = new ShapeContext(_preSettings, _slideFontService, xmlGraphicFrame, _xmlSldPart);
                 var ole = new OleObject(xmlGraphicFrame);
-                var transform = xmlGraphicFrame.Transform;
-                var location = LocationFromTransformX(transform);
-                var newOleShape = _shapeBuilder.WithOle(location, spContext, ole);
+                IInnerTransform innerTransform;
+                if (_currentSdkGroupType is P.GroupShape groupShape)
+                {
+                    innerTransform = new NonPlaceholderGroupedTransform(xmlGraphicFrame, groupShape);
+                }
+                else
+                {
+                    innerTransform = new NonPlaceholderTransform(xmlGraphicFrame);
+                }
+                
+                var newOleShape = _shapeBuilder.WithOle(innerTransform, spContext, ole);
 
                 shapesCollection.Add(newOleShape);
             }
@@ -124,19 +141,26 @@ namespace SlideDotNet.Services
                 var spContext = new ShapeContext(_preSettings, _slideFontService, xmlPic, _xmlSldPart);
 
                 // Location 
-                Location location;
+                IInnerTransform innerTransform;
                 var t2d = xmlPic.ShapeProperties.Transform2D;
                 if (t2d != null)
                 {
-                    location = LocationFromTransformX(t2d);
+                    if (_currentSdkGroupType is P.GroupShape groupShape)
+                    {
+                        innerTransform = new NonPlaceholderGroupedTransform(t2d, groupShape);
+                    }
+                    else
+                    {
+                        innerTransform = new NonPlaceholderTransform(t2d);
+                    }
                 }
                 else
                 {
-                    var phData = _phService.TryGet(xmlPic);
-                    location = LocationFromPh(phData);
+                    var placeholderLocationData = _phService.TryGet(xmlPic);
+                    innerTransform = new PlaceholderTransform(placeholderLocationData);
                 }
 
-                var newPicShape = _shapeBuilder.WithPicture(location, spContext, picture);
+                var newPicShape = _shapeBuilder.WithPicture(innerTransform, spContext, picture);
                 shapesCollection.Add(newPicShape);
             }
         }
@@ -148,29 +172,24 @@ namespace SlideDotNet.Services
                 ShapeEx newAutoShape;
                 var spContext = new ShapeContext(_preSettings, _slideFontService, xmlShape, _xmlSldPart);
                 var t2d = xmlShape.ShapeProperties.Transform2D;
+                IInnerTransform innerTransform;
                 if (t2d != null)
                 {
-                    if (xmlShape.IsPlaceholder())
+                    if (_currentSdkGroupType is P.GroupShape groupShape)
                     {
-                        spContext.PlaceholderLocationData = _phService.TryGet(xmlShape);
+                        innerTransform = new NonPlaceholderGroupedTransform(t2d, groupShape);
                     }
-
-                    var location = LocationFromTransformX(t2d);
-                    newAutoShape = _shapeBuilder.WithAutoShape(location, spContext);
+                    else
+                    {
+                        innerTransform = new NonPlaceholderTransform(t2d);
+                    }
+                    newAutoShape = _shapeBuilder.WithAutoShape(innerTransform, spContext);
                 }
                 else // is placeholder obviously
                 {
-                    var placeholder = _phService.TryGet(xmlShape);
-                    spContext.PlaceholderLocationData = placeholder;
-
-                    var location = new Location
-                    {
-                        X = placeholder.X,
-                        Y = placeholder.Y,
-                        Width = placeholder.Width,
-                        Height = placeholder.Height
-                    };
-                    newAutoShape = _shapeBuilder.WithAutoShape(location, spContext);
+                    var placeholderLocationData = _phService.TryGet(xmlShape);
+                    innerTransform = new PlaceholderTransform(placeholderLocationData);
+                    newAutoShape = _shapeBuilder.WithAutoShape(innerTransform, spContext);
                 }
 
                 shapesCollection.Add(newAutoShape);
@@ -183,9 +202,16 @@ namespace SlideDotNet.Services
             {
                 var spContext = new ShapeContext(_preSettings, _slideFontService, xmlGraphicFrame, _xmlSldPart);
                 var table = new TableEx(xmlGraphicFrame, spContext);
-                var transform = xmlGraphicFrame.Transform;
-                var location = LocationFromTransformX(transform);
-                var newShape = _shapeBuilder.WithTable(location, spContext, table);
+                IInnerTransform innerTransform;
+                if (_currentSdkGroupType is P.GroupShape groupShape)
+                {
+                    innerTransform = new NonPlaceholderGroupedTransform(xmlGraphicFrame, groupShape);
+                }
+                else
+                {
+                    innerTransform = new NonPlaceholderTransform(xmlGraphicFrame);
+                }
+                var newShape = _shapeBuilder.WithTable(innerTransform, spContext, table);
                 shapesCollection.Add(newShape);
             }
         }
@@ -195,61 +221,33 @@ namespace SlideDotNet.Services
             foreach (var xmlGraphicFrame in xmlTablesGraphicFrames)
             {
                 var chartEx = new ChartEx(xmlGraphicFrame, _xmlSldPart);
-                var transform = xmlGraphicFrame.Transform;
-                var location = LocationFromTransformX(transform);
+                IInnerTransform innerTransform;
+                if (_currentSdkGroupType is P.GroupShape groupShape)
+                {
+                    innerTransform = new NonPlaceholderGroupedTransform(xmlGraphicFrame, groupShape);
+                }
+                else
+                {
+                    innerTransform = new NonPlaceholderTransform(xmlGraphicFrame);
+                }
                 var spContext = new ShapeContext(_preSettings, _slideFontService, xmlGraphicFrame, _xmlSldPart);
-                var newShape = _shapeBuilder.WithChart(location, spContext, chartEx);
+                var newShape = _shapeBuilder.WithChart(innerTransform, spContext, chartEx);
                 shapesCollection.Add(newShape);
             }
         }
 
-        private void AddGroups(List<ShapeEx> shapeCollection, IEnumerable<P.GroupShape> xmlGroupShapes)
+        private void AddGroups(List<ShapeEx> shapesCollection, IEnumerable<P.GroupShape> xmlGroupShapes)
         {
             foreach (var xmlGroup in xmlGroupShapes)
             {
                 var spContext = new ShapeContext(_preSettings, _slideFontService, xmlGroup, _xmlSldPart);
-                var groupedShapes = CreateShapesCollection(xmlGroup);
+                var groupedShapes = FromGroup(xmlGroup);
                 var transformGroup = xmlGroup.GroupShapeProperties.TransformGroup;
-                foreach (var item in groupedShapes)
-                {
-                    item.X = item.X - transformGroup.ChildOffset.X + transformGroup.Offset.X;
-                    item.Y = item.Y - transformGroup.ChildOffset.Y + transformGroup.Offset.Y;
-                }
-                var location = new Location
-                {
-                    X = transformGroup.Offset.X.Value,
-                    Y = transformGroup.Offset.Y.Value,
-                    Width = transformGroup.Extents.Cx.Value,
-                    Height = transformGroup.Extents.Cy.Value
-                };
-                var newShape = _shapeBuilder.WithGroup(location, spContext, groupedShapes);
-                shapeCollection.Add(newShape);
+                var innerTransform = new NonPlaceholderTransform(transformGroup);
+
+                var newShape = _shapeBuilder.WithGroup(innerTransform, spContext, groupedShapes);
+                shapesCollection.Add(newShape);
             }
-        }
-
-        private static Location LocationFromTransformX(OpenXmlCompositeElement xmlElement)
-        {
-            var offset = xmlElement.GetFirstChild<A.Offset>();
-            var extents = xmlElement.GetFirstChild<A.Extents>();
-
-            return new Location
-            {
-                X = offset.X.Value,
-                Y = offset.Y.Value,
-                Width = extents.Cx.Value,
-                Height = extents.Cy.Value
-            };
-        }
-
-        private static Location LocationFromPh(PlaceholderLocationData phLocationData)
-        {
-            return new Location
-            {
-                X = phLocationData.X,
-                Y = phLocationData.Y,
-                Width = phLocationData.Width,
-                Height = phLocationData.Height
-            };
         }
 
         #endregion Private Methods

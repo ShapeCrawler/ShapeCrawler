@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using DocumentFormat.OpenXml.Packaging;
 using NSubstitute;
@@ -108,14 +109,43 @@ namespace SlideDotNet.Tests
             var pre = new PresentationEx(Properties.Resources._006_1_slides);
 
             // ACT
-            var shapePlaceholder = pre.Slides.Single().Shapes.Single();
+            var shapePlaceholder = pre.Slides[0].Shapes.First(x => x.Id == 2);
             pre.Close();
 
             // ASSERT
             Assert.Equal(1524000, shapePlaceholder.X);
             Assert.Equal(1122363, shapePlaceholder.Y);
             Assert.Equal(9144000, shapePlaceholder.Width);
-            Assert.Equal(2387600, shapePlaceholder.Height);
+            Assert.Equal(1425528, shapePlaceholder.Height);
+        }
+
+        [Fact(Skip = "temp")]
+        public void Shape_XandWsetter_Testtttttttttttttttttt()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._006_1_slides);
+            var shape2 = pre.Slides[0].Shapes.First(x => x.Id == 3);
+
+            // ACT
+            shape2.X = 4000000;
+            shape2.Width = 6000000;
+            var isPlaceholder = shape2.IsPlaceholder;
+            var isGrouped = shape2.IsGrouped;
+
+            var ms = new MemoryStream();
+            pre.SaveAs(ms);
+            pre.Close();
+
+            ms.SeekBegin();
+            pre = new PresentationEx(ms);
+            shape2 = pre.Slides[0].Shapes.First(x => x.Id == 3);
+            pre.Close();
+
+            // ASSERT
+            Assert.False(isPlaceholder);
+            Assert.False(isGrouped);
+            Assert.Equal(4000000, shape2.X);
+            Assert.Equal(6000000, shape2.Width);
         }
 
         [Fact]
@@ -125,15 +155,14 @@ namespace SlideDotNet.Tests
             var pre = new PresentationEx(Properties.Resources._009);
 
             // ACT
-            var slides = pre.Slides;
             var groupElement = pre.Slides[1].Shapes.Single(x => x.ContentType.Equals(ShapeContentType.Group));
-            var el3 = groupElement.GroupedShapes.Single(x => x.Id.Equals(5));
+            var groupedShape5 = groupElement.GroupedShapes.Single(x => x.Id.Equals(5));
             pre.Close();
 
             // ASSERT
-            Assert.Equal(1581846, el3.X);
-            Assert.Equal(1181377, el3.Width);
-            Assert.Equal(654096, el3.Height);
+            Assert.Equal(1581846, groupedShape5.X);
+            Assert.Equal(1181377, groupedShape5.Width);
+            Assert.Equal(654096, groupedShape5.Height);
         }
 
         [Fact]
@@ -742,7 +771,7 @@ namespace SlideDotNet.Tests
             var parser = new ShapeFactory(xmlSldPart, preSettings);
 
             // ACT
-            var candidates = parser.CreateShapesCollection(shapeTree);
+            var candidates = parser.FromTree(shapeTree);
 
             // CLEAN
             doc.Dispose();

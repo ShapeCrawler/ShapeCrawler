@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace SlideDotNet.Models
 {
@@ -27,6 +28,11 @@ namespace SlideDotNet.Models
         /// </summary>
         /// <param name="filePath"></param>
         void SaveAs(string filePath);
+
+        /// <summary>
+        /// Saves the presentation in specified stream.
+        /// </summary>
+        void SaveAs(Stream stream);
 
         /// <summary>
         /// Saves and closes the current presentation.

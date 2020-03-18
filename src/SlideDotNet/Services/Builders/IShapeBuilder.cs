@@ -17,31 +17,31 @@ namespace SlideDotNet.Services.Builders
         /// <summary>
         /// Builds a shape with OLE object content.
         /// </summary>
-        ShapeEx WithOle(Location location, IShapeContext spContext, OleObject ole);
+        ShapeEx WithOle(IInnerTransform innerTransform, IShapeContext spContext, OleObject ole);
 
         /// <summary>
         /// Builds a shape with picture content.
         /// </summary>
-        ShapeEx WithPicture(Location location, IShapeContext spContext, Picture picture);
+        ShapeEx WithPicture(IInnerTransform innerTransform, IShapeContext spContext, Picture picture);
 
         /// <summary>
         /// Builds a AutoShape.
         /// </summary>
-        ShapeEx WithAutoShape(Location location, IShapeContext spContext);
+        ShapeEx WithAutoShape(IInnerTransform innerTransform, IShapeContext spContext);
 
         /// <summary>
         /// Builds a shape with table content.
         /// </summary>
-        ShapeEx WithTable(Location location, IShapeContext spContext, TableEx table);
+        ShapeEx WithTable(IInnerTransform innerTransform, IShapeContext spContext, TableEx table);
 
         /// <summary>
         /// Builds a shape with OLE object content.
         /// </summary>
-        ShapeEx WithChart(Location location, IShapeContext spContext, ChartEx chart);
+        ShapeEx WithChart(IInnerTransform innerTransform, IShapeContext spContext, ChartEx chart);
 
         /// <summary>
         /// Builds a group shape which has grouped shape items.
         /// </summary>
-        ShapeEx WithGroup(Location location, IShapeContext spContext, IEnumerable<ShapeEx> groupedShapes);
+        ShapeEx WithGroup(IInnerTransform innerTransform, IShapeContext spContext, IEnumerable<ShapeEx> groupedShapes);
     }
 }

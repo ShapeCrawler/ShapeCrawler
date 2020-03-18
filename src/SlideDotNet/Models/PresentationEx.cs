@@ -88,11 +88,20 @@ namespace SlideDotNet.Models
         /// <summary>
         /// <inheritdoc cref="IPresentation.SaveAs"/>
         /// </summary>
-        /// <param name="filePath"></param>
         public void SaveAs(string filePath)
         {
             Check.NotEmpty(filePath, nameof(filePath));
             _xmlDoc = (PresentationDocument)_xmlDoc.SaveAs(filePath);
+        }
+
+        /// <summary>
+        /// <inheritdoc cref="IPresentation.SaveAs"/> //TODO: resolve inheritdoc conflicts
+        /// </summary>
+        /// <param name="stream"></param>
+        public void SaveAs(Stream stream)
+        {
+            Check.NotNull(stream, nameof(stream));
+            _xmlDoc = (PresentationDocument)_xmlDoc.Clone(stream);
         }
 
         /// <summary>

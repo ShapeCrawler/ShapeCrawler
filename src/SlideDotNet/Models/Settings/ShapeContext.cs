@@ -26,11 +26,6 @@ namespace SlideDotNet.Models.Settings
 
         public OpenXmlCompositeElement XmlElement { get; set; }
 
-        /// <summary>
-        /// <inheritdoc cref="IShapeContext.PlaceholderLocationData"/>
-        /// </summary>
-        public PlaceholderLocationData PlaceholderLocationData { get; set; }
-
         public SlidePart XmlSlidePart { get; }
 
         #endregion Properties
