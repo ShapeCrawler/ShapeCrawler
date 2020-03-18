@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AssemblyName>SlideDotNet</AssemblyName>
     <RootNamespace>SlideDotNet</RootNamespace>
-    <Version>0.3.0</Version>
+    <Version>0.4.0</Version>
     <Authors>Adam Shakhabov</Authors>
     <Company></Company>
     <Description>A lightweight .NET library for parse PowerPoint file (PPTX) presentations without Microsoft Office installed.
