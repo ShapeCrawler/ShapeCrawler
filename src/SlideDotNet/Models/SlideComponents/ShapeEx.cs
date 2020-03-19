@@ -215,7 +215,7 @@ namespace SlideDotNet.Models.SlideComponents
         /// <summary>
         /// Determines whether the shape is grouped.
         /// </summary>
-        public bool IsGrouped => !(_innerTransform is NonPlaceholderGroupedTransform);
+        public bool IsGrouped => _innerTransform is NonPlaceholderGroupedTransform;
 
         #endregion Properties
 

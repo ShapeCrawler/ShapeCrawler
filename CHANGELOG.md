@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Version 0.4.0 - Unreleased
+### Added
+- Added setters for `X`, `Y`, `Width` and `Height` properties of non-placeholder shapes;
+- Added `ShapeEx.IsGrouped` boolean property to determine whether the shape is grouped.
+
 ## Version 0.3.0 - 2020-03-16
 ### Added
 - Added _ChartEx.SeriesCollection_ and  _ChartEx.Categories_ collections

@@ -119,8 +119,8 @@ namespace SlideDotNet.Tests
             Assert.Equal(1425528, shapePlaceholder.Height);
         }
 
-        [Fact(Skip = "temp")]
-        public void Shape_XandWsetter_Testtttttttttttttttttt()
+        [Fact]
+        public void Shape_XandWsetter_Test()
         {
             // ARRANGE
             var pre = new PresentationEx(Properties.Resources._006_1_slides);
