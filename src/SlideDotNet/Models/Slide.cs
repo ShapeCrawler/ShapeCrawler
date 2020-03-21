@@ -67,7 +67,7 @@ namespace SlideDotNet.Models
         private List<ShapeEx> GetShapes()
         {
             var shapeFactory = new ShapeFactory(_xmlSldPart, _preSettings);
-            return shapeFactory.FromTree(_xmlSldPart.Slide.CommonSlideData.ShapeTree).ToList();
+            return shapeFactory.FromTree(_xmlSldPart.Slide.CommonSlideData.ShapeTree).ToList(); //TODO: remove ToList()
         }
 
         private ImageEx TryGetBackground()

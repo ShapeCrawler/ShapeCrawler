@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml;
 using SlideDotNet.Extensions;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Statics;
@@ -116,10 +117,10 @@ namespace SlideDotNet.Models.TextBody
         private int FontHeightFromOther()
         {
             // if element is placeholder, tries to get from placeholder data
-            var xmlElement = _spContext.XmlElement;
+            var xmlElement = _spContext.SdkElement;
             if (xmlElement.IsPlaceholder())
             {
-                var prFontHeight = _spContext.PlaceholderFontService.TryGetHeight(xmlElement, _innerPrLvl.Value);
+                var prFontHeight = _spContext.PlaceholderFontService.TryGetHeight((OpenXmlCompositeElement)xmlElement, _innerPrLvl.Value);
                 if (prFontHeight != null)
                 {
                     return (int)prFontHeight;

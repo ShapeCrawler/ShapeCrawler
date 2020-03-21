@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using SlideDotNet.Validation;
-using P = DocumentFormat.OpenXml.Presentation;
+﻿using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Extensions

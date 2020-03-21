@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Services;
-using SlideDotNet.Services.Placeholders;
 using SlideDotNet.Statics;
 
 namespace SlideDotNet.Models.Settings
@@ -24,20 +23,20 @@ namespace SlideDotNet.Models.Settings
 
         public SlidePlaceholderFontService PlaceholderFontService { get; }
 
-        public OpenXmlCompositeElement XmlElement { get; set; }
+        public OpenXmlElement SdkElement { get; set; }
 
-        public SlidePart XmlSlidePart { get; }
+        public SlidePart SkdSlidePart { get; }
 
         #endregion Properties
 
         #region Constructors
 
-        public ShapeContext(IPreSettings preSettings, SlidePlaceholderFontService fontService, OpenXmlCompositeElement xmlElement, SlidePart xmlSldPart)
+        public ShapeContext(IPreSettings preSettings, SlidePlaceholderFontService fontService, OpenXmlElement xmlElement, SlidePart xmlSldPart)
         {
             PreSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
             PlaceholderFontService = fontService ?? throw new ArgumentNullException(nameof(fontService));
-            XmlElement = xmlElement ?? throw new ArgumentNullException(nameof(xmlElement));
-            XmlSlidePart = xmlSldPart ?? throw new ArgumentNullException(nameof(xmlSldPart));
+            SdkElement = xmlElement ?? throw new ArgumentNullException(nameof(xmlElement));
+            SkdSlidePart = xmlSldPart ?? throw new ArgumentNullException(nameof(xmlSldPart));
             _masterOtherFonts = new Lazy<Dictionary<int, int>>(InitMasterOtherFonts);
         }
 
@@ -62,7 +61,7 @@ namespace SlideDotNet.Models.Settings
 
         private Dictionary<int, int> InitMasterOtherFonts()
         {
-            var result = FontHeightParser.FromCompositeElement(XmlSlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.OtherStyle);
+            var result = FontHeightParser.FromCompositeElement(SkdSlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.OtherStyle);
 
             return result;
         }

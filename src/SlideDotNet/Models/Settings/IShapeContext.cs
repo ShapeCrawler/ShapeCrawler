@@ -1,7 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Services;
-using SlideDotNet.Services.Placeholders;
 
 namespace SlideDotNet.Models.Settings
 {
@@ -11,15 +10,22 @@ namespace SlideDotNet.Models.Settings
     public interface IShapeContext
     {
         /// <summary>
-        /// Returns presentation settings.
+        /// Returns a presentation settings.
         /// </summary>
-        public IPreSettings PreSettings { get; }
+        IPreSettings PreSettings { get; }
 
-        public SlidePlaceholderFontService PlaceholderFontService { get; }
+        /// <summary>
+        /// Returns a service for placeholder's fonts.
+        /// </summary>
+        SlidePlaceholderFontService PlaceholderFontService { get; }
 
-        public OpenXmlCompositeElement XmlElement { get; }
+        /// <summary>
+        /// Returns a <see cref="OpenXmlElement"/> instance.
+        /// </summary>
+        OpenXmlElement SdkElement { get; }
 
-        public SlidePart XmlSlidePart { get; }
+        SlidePart SkdSlidePart { get; }
+
 
         bool TryFromMasterOther(int prLvl, out int fh);
     }

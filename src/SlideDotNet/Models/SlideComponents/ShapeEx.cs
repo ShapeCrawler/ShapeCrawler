@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml;
 using SlideDotNet.Enums;
 using SlideDotNet.Exceptions;
 using SlideDotNet.Extensions;
@@ -53,7 +54,7 @@ namespace SlideDotNet.Models.SlideComponents
         private bool? _hidden;
         private int _id;
         private string _name;
-        private Picture _picture;
+        private PictureEx _picture;
         private OleObject _ole;
         private TableEx _table;
         private ChartEx _chart;
@@ -174,7 +175,7 @@ namespace SlideDotNet.Models.SlideComponents
         /// <summary>
         /// Returns picture. Throws exception if shape content type is not a <see cref="ShapeContentType.Picture"/>
         /// </summary>
-        public Picture Picture => _picture ?? throw new SlideDotNetException(ExceptionMessages.NoPicture);
+        public PictureEx Picture => _picture ?? throw new SlideDotNetException(ExceptionMessages.NoPicture);
 
         /// <summary>
         /// Returns grouped shapes. Throws exception if shape content type is not <see cref="ShapeContentType.Group"/>
@@ -189,7 +190,7 @@ namespace SlideDotNet.Models.SlideComponents
         /// <summary>
         /// Determines whether the shape is placeholder.
         /// </summary>
-        public bool IsPlaceholder => _context.XmlElement.IsPlaceholder();
+        public bool IsPlaceholder => _context.SdkElement.IsPlaceholder();
 
         /// <summary>
         /// Returns placeholder type. Returns null if shape is not a placeholder.
@@ -203,7 +204,7 @@ namespace SlideDotNet.Models.SlideComponents
                     throw new RuntimeDefinedPropertyException(ExceptionMessages.ShapeIsNotPlaceholder);
                 }
 
-                return PlaceholderService.PlaceholderDataFrom(_context.XmlElement).PlaceholderType;
+                return PlaceholderService.PlaceholderDataFrom((OpenXmlCompositeElement)_context.SdkElement).PlaceholderType; // TODO: delete casting
             }
         }
 
@@ -241,7 +242,7 @@ namespace SlideDotNet.Models.SlideComponents
                 return new NoTextFrame();
             }
 
-            var pTxtBody = _context.XmlElement.Descendants<P.TextBody>().SingleOrDefault();
+            var pTxtBody = _context.SdkElement.Descendants<P.TextBody>().SingleOrDefault();
             if (pTxtBody == null)
             {
                 return new NoTextFrame();
@@ -262,13 +263,13 @@ namespace SlideDotNet.Models.SlideComponents
             {
                 return null;
             }
-            var image = _imageFactory.TryFromXmlShape(_context.XmlSlidePart, _context.XmlElement);
+            var image = _imageFactory.TryFromXmlShape(_context.SkdSlidePart, (OpenXmlCompositeElement)_context.SdkElement); //TODO: delete casting
             if (image != null)
             {
                 return new Fill(image);
             }
 
-            var xmlShape = (P.Shape) _context.XmlElement;
+            var xmlShape = (P.Shape) _context.SdkElement;
             var rgbColorModelHex = xmlShape.ShapeProperties.GetFirstChild<A.SolidFill>()?.RgbColorModelHex;
             if (rgbColorModelHex != null)
             {
@@ -284,7 +285,7 @@ namespace SlideDotNet.Models.SlideComponents
             {
                 return;
             }
-            var (id, hidden, name) = _context.XmlElement.GetNvPrValues();
+            var (id, hidden, name) = ((OpenXmlCompositeElement)_context.SdkElement).GetNvPrValues(); //TODO: delete casting
             _id = id;
             _hidden = hidden;
             _name = name;
@@ -319,7 +320,7 @@ namespace SlideDotNet.Models.SlideComponents
             /// <summary>
             /// <inheritdoc cref="IShapeBuilder.WithPicture"/>
             /// </summary>
-            public ShapeEx WithPicture(IInnerTransform innerTransform, IShapeContext spContext, Picture picture)
+            public ShapeEx WithPicture(IInnerTransform innerTransform, IShapeContext spContext, PictureEx picture)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));

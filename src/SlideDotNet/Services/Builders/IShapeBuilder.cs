@@ -22,7 +22,7 @@ namespace SlideDotNet.Services.Builders
         /// <summary>
         /// Builds a shape with picture content.
         /// </summary>
-        ShapeEx WithPicture(IInnerTransform innerTransform, IShapeContext spContext, Picture picture);
+        ShapeEx WithPicture(IInnerTransform innerTransform, IShapeContext spContext, PictureEx picture);
 
         /// <summary>
         /// Builds a AutoShape.

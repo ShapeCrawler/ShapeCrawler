@@ -6,12 +6,8 @@ namespace SlideDotNet.Models.SlideComponents
     /// <summary>
     /// Represents a picture content.
     /// </summary>
-    public class Picture
+    public class PictureEx
     {
-        #region Fields
-
-        #endregion Fields
-
         #region Properties
 
         /// <summary>
@@ -24,9 +20,9 @@ namespace SlideDotNet.Models.SlideComponents
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Picture"/> class.
+        /// Initializes a new instance of the <see cref="PictureEx"/> class.
         /// </summary>
-        public Picture(SlidePart xmlSldPart, string blipRelateId)
+        public PictureEx(SlidePart xmlSldPart, string blipRelateId)
         {
             Check.NotNull(xmlSldPart, nameof(xmlSldPart));
             ImageEx = new ImageEx(xmlSldPart, blipRelateId);

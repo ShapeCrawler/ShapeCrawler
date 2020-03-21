@@ -28,4 +28,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Version 0.1.0 - 2020-02-25
 ### Added
-- First release.
+- Initial release of SlideDotNet.

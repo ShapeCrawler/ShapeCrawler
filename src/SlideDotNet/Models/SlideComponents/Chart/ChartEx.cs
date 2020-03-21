@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Collections;
 using SlideDotNet.Enums;
 using SlideDotNet.Exceptions;
+using SlideDotNet.Models.Settings;
 using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -23,7 +24,7 @@ namespace SlideDotNet.Models.SlideComponents.Chart
         // then collection contains only single item.
         private List<OpenXmlElement> _sdkCharts;
 
-        private readonly SlidePart _sldPart;
+        private readonly IShapeContext _shapeContext;
         private readonly P.GraphicFrame _grFrame;
         private readonly Lazy<ChartType> _chartType;
         private C.Chart _cChart;
@@ -107,10 +108,10 @@ namespace SlideDotNet.Models.SlideComponents.Chart
         /// <summary>
         /// Initializes a new instance of the <see cref="ChartEx"/> class.
         /// </summary>
-        public ChartEx(P.GraphicFrame grFrame, SlidePart sldPart)
+        public ChartEx(P.GraphicFrame grFrame, IShapeContext shapeContext)
         {
             _grFrame = grFrame ?? throw new ArgumentNullException(nameof(grFrame));
-            _sldPart = sldPart ?? throw new ArgumentNullException(nameof(sldPart));
+            _shapeContext = shapeContext ?? throw new ArgumentNullException(nameof(shapeContext));
             _chartType = new Lazy<ChartType>(GetChartType);
             Init(); //TODO: convert to lazy loading
         }
@@ -122,7 +123,7 @@ namespace SlideDotNet.Models.SlideComponents.Chart
         private void Init()
         {
             var chartPartRef = _grFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>().GetFirstChild<C.ChartReference>().Id;
-            _sdkChartPart = (ChartPart)_sldPart.GetPartById(chartPartRef);
+            _sdkChartPart = (ChartPart)_shapeContext.SkdSlidePart.GetPartById(chartPartRef);
 
             _cChart = _sdkChartPart.ChartSpace.GetFirstChild<C.Chart>();
             _sdkCharts = _cChart.PlotArea.Where(e => e.LocalName.EndsWith("Chart")).ToList();  // example: <c:barChart>, <c:lineChart>
