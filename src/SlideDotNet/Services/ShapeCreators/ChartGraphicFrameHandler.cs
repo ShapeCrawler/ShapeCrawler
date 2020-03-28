@@ -9,7 +9,7 @@ using SlideDotNet.Validation;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideDotNet.Services
+namespace SlideDotNet.Services.ShapeCreators
 {
     public class ChartGraphicFrameHandler : OpenXmlElementHandler
     {

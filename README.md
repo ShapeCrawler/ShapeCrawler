@@ -48,12 +48,26 @@ foreach (var sp in shapes)
     }
 }
 ```
-**To find out more, please check out the [SlideDotNet wiki](https://github.com/adamshakhabov/SlideDotNet/wiki).**
 
-## Support
-If you have any problems or questions you can create an issue on this repository or contact me at <a href="mailto:theadamo86@gmail.com">theadamo86@gmail.com</a>.
+## Changelog
+### Version 0.4.0 - Unreleased
+#### Added
+- Added setters for `X`, `Y`, `Width` and `Height` properties of non-placeholder shapes;
+- Added `ShapeEx.IsGrouped` boolean property to determine whether the shape is grouped;
+- Added APIs to remove table row
+  ```
+  var tableRows = shape.Table.Rows;
+  // remove by index
+  tableRows.RemoveAt(0);
+  // remove by instance
+  var row = tableRows.First();
+  tableRows.Remove(row);
+  ```
+
+To find out more, please check out the [CHANGELOG].(https://github.com/adamshakhabov/SlideDotNet/blob/master/CHANGELOG.md)
 
 ## Contribution
+If you have any problems or questions you can create an issue on this repository or contact me at <a href="mailto:theadamo86@gmail.com">theadamo86@gmail.com</a>.
 If you want to contribute in improving this wrapper, feel free to [create pull requests](https://github.com/adamshakhabov/SlideDotNet/pulls).
 
 ## Author

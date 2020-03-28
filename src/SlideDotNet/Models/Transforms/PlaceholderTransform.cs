@@ -2,7 +2,7 @@
 using SlideDotNet.Models.SlideComponents;
 using SlideDotNet.Services.Placeholders;
 
-namespace SlideDotNet.Services
+namespace SlideDotNet.Models.Transforms
 {
     public class PlaceholderTransform : IInnerTransform
     {

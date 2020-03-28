@@ -7,8 +7,9 @@ using SlideDotNet.Services.Builders;
 using SlideDotNet.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
+using OleObject = SlideDotNet.Models.SlideComponents.OleObject;
 
-namespace SlideDotNet.Services
+namespace SlideDotNet.Services.ShapeCreators
 {
     public class OleGraphicFrameHandler : OpenXmlElementHandler
     {
@@ -17,6 +18,7 @@ namespace SlideDotNet.Services
         private readonly SlidePart _sdkSldPart;
         private readonly InnerTransformFactory _transformFactory;
         private readonly IShapeBuilder _shapeBuilder;
+
         private const string Uri = "http://schemas.openxmlformats.org/presentationml/2006/ole";
 
         public OleGraphicFrameHandler(IPreSettings preSettings,

@@ -33,10 +33,10 @@ namespace SlideDotNet.Collections
             {
                 sdkNumericValues = cCat.NumberReference.NumberingCache.Descendants<C.NumericValue>();
             }
-            _collectionItems = new List<string>(sdkNumericValues.Count());
+            CollectionItems = new List<string>(sdkNumericValues.Count());
             foreach (var numericValue in sdkNumericValues)
             {
-                _collectionItems.Add(numericValue.InnerText);
+                CollectionItems.Add(numericValue.InnerText);
             }
         }
 

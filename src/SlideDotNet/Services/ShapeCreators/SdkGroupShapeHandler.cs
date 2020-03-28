@@ -10,7 +10,7 @@ using SlideDotNet.Services.Builders;
 using SlideDotNet.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideDotNet.Services
+namespace SlideDotNet.Services.ShapeCreators
 {
     public class SdkGroupShapeHandler : OpenXmlElementHandler
     {

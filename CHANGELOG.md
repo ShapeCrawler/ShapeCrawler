@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Version 0.4.0 - Unreleased
 ### Added
 - Added setters for `X`, `Y`, `Width` and `Height` properties of non-placeholder shapes;
-- Added `ShapeEx.IsGrouped` boolean property to determine whether the shape is grouped.
+- Added `ShapeEx.IsGrouped` boolean property to determine whether the shape is grouped;
+- Added APIs to remove table row
+  ```
+  var tableRows = shape.Table.Rows;
+  // remove by index
+  tableRows.RemoveAt(0);
+  // remove by instance
+  var row = tableRows.First();
+  tableRows.Remove(row);
+  ```
 
 ## Version 0.3.0 - 2020-03-16
 ### Added

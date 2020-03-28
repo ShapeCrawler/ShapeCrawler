@@ -10,29 +10,29 @@ namespace SlideDotNet.Collections
     {
         #region Fields
 
-        protected List<T> _collectionItems;
+        protected List<T> CollectionItems;
 
         #endregion Fields
 
         /// <summary>
-        /// Gets a generic enumerator that iterates through the collection.
+        /// Gets the generic enumerator that iterates through the collection.
         /// </summary>
-        public IEnumerator<T> GetEnumerator() => _collectionItems.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => CollectionItems.GetEnumerator();
 
         /// <summary>
         /// Gets an enumerator that iterates through the collection.
         /// </summary>
         /// <returns></returns>
-        IEnumerator IEnumerable.GetEnumerator() => _collectionItems.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => CollectionItems.GetEnumerator();
 
         /// <summary>
-        /// Returns the element at the specified index.
+        /// Gets the element at the specified index.
         /// </summary>
-        public T this[int index] => _collectionItems[index];
+        public T this[int index] => CollectionItems[index];
 
         /// <summary>
         /// Gets the number of series items in the collection.
         /// </summary>
-        public int Count => _collectionItems.Count;
+        public int Count => CollectionItems.Count;
     }
 }

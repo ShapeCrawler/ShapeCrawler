@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Models.Settings;
-using SlideDotNet.Models.SlideComponents;
 using SlideDotNet.Services;
 
 // ReSharper disable PossibleMultipleEnumeration
@@ -18,10 +15,9 @@ namespace SlideDotNet.Models
         #region Fields
 
         private readonly Lazy<ImageEx> _backgroundImage;
+        private readonly Lazy<ShapeCollection> _shapes;
         private readonly IPreSettings _preSettings;
-        private readonly Lazy<List<ShapeEx>> _shapes;
-        private readonly ImageExFactory _backgroundImageFactory = new ImageExFactory(); //TODO: [DI]
-        private readonly SlidePart _xmlSldPart;
+        private readonly SlidePart _sdkSldPart;
         private readonly SlideNumber _sldNumEntity;
 
         #endregion Fields
@@ -29,9 +25,9 @@ namespace SlideDotNet.Models
         #region Properties
 
         /// <summary>
-        /// Gets slide elements.
+        /// Returns a slide shapes.
         /// </summary>
-        public IList<ShapeEx> Shapes => _shapes.Value;
+        public ShapeCollection Shapes => _shapes.Value;
 
         /// <summary>
         /// Returns a slide number in presentation.
@@ -50,13 +46,12 @@ namespace SlideDotNet.Models
         /// <summary>
         /// Initialize a new instance of the <see cref="Slide"/> class.
         /// </summary>
-        public Slide(SlidePart xmlSldPart, SlideNumber sldNum, IPreSettings preSettings)
+        public Slide(SlidePart sdkSldPart, SlideNumber sldNum, IPreSettings preSettings)
         {
-            _xmlSldPart = xmlSldPart ?? throw new ArgumentNullException(nameof(xmlSldPart));
+            _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
             _sldNumEntity = sldNum ?? throw new ArgumentNullException(nameof(SlideNumber));
             _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
-
-            _shapes = new Lazy<List<ShapeEx>>(GetShapes);
+            _shapes = new Lazy<ShapeCollection>(GetShapeCollection);
             _backgroundImage = new Lazy<ImageEx>(TryGetBackground);
         }
 
@@ -64,15 +59,19 @@ namespace SlideDotNet.Models
 
         #region Private Methods
 
-        private List<ShapeEx> GetShapes()
+        private ShapeCollection GetShapeCollection()
         {
-            var shapeFactory = new ShapeFactory(_xmlSldPart, _preSettings);
-            return shapeFactory.FromTree(_xmlSldPart.Slide.CommonSlideData.ShapeTree).ToList(); //TODO: remove ToList()
+            var shapeFactory = new ShapeFactory(_sdkSldPart, _preSettings);
+            var shapes = shapeFactory.FromTree(_sdkSldPart.Slide.CommonSlideData.ShapeTree);
+            var shapeCollection = new ShapeCollection(shapes);
+
+            return shapeCollection;
         }
 
         private ImageEx TryGetBackground()
         {
-            return _backgroundImageFactory.TryFromXmlSlide(_xmlSldPart);
+            var backgroundImageFactory = new ImageExFactory();
+            return backgroundImageFactory.TryFromXmlSlide(_sdkSldPart);
         }
 
         #endregion Private Methods

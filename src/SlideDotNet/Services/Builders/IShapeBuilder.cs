@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using DocumentFormat.OpenXml;
-using SlideDotNet.Models;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.SlideComponents;
 using SlideDotNet.Models.SlideComponents.Chart;
-using SlideXML.Models.SlideComponents;
+using SlideDotNet.Models.TableComponents;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace SlideDotNet.Services.Builders
@@ -42,6 +40,6 @@ namespace SlideDotNet.Services.Builders
         /// <summary>
         /// Builds a group shape which has grouped shape items.
         /// </summary>
-        ShapeEx WithGroup(IInnerTransform innerTransform, IShapeContext spContext, IEnumerable<ShapeEx> groupedShapes);
+        ShapeEx WithGroup(IInnerTransform innerTransform, IShapeContext spContext, IList<ShapeEx> groupedShapes);
     }
 }

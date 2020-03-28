@@ -8,7 +8,7 @@ using SlideDotNet.Services.Builders;
 using SlideDotNet.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideDotNet.Services
+namespace SlideDotNet.Services.ShapeCreators
 {
     /// <summary>
     /// Represents a picture handler for p:pic and picture p:graphicFrame element.

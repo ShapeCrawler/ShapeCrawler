@@ -7,13 +7,13 @@ using SlideDotNet.Exceptions;
 using SlideDotNet.Extensions;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.SlideComponents.Chart;
+using SlideDotNet.Models.TableComponents;
 using SlideDotNet.Models.TextBody;
 using SlideDotNet.Models.Transforms;
 using SlideDotNet.Services;
 using SlideDotNet.Services.Builders;
 using SlideDotNet.Services.Placeholders;
 using SlideDotNet.Validation;
-using SlideXML.Models.SlideComponents;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -21,25 +21,6 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Models.SlideComponents
 {
-    public interface IInnerTransform
-    {
-        long X { get; }
-      
-        long Y { get; }
-      
-        long Width { get; }
-      
-        long Height { get; }
-       
-        void SetX(long x);
-       
-        void SetY(long y);
-       
-        void SetWidth(long w);
-       
-        void SetHeight(long h);
-    }
-
     /// <summary>
     /// Represents a shape on a slide.
     /// </summary>
@@ -384,7 +365,7 @@ namespace SlideDotNet.Models.SlideComponents
             /// <summary>
             /// <inheritdoc cref="IShapeBuilder.WithGroup"/>
             /// </summary>
-            public ShapeEx WithGroup(IInnerTransform innerTransform, IShapeContext spContext, IEnumerable<ShapeEx> groupedShapes)
+            public ShapeEx WithGroup(IInnerTransform innerTransform, IShapeContext spContext, IList<ShapeEx> groupedShapes)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
@@ -392,7 +373,7 @@ namespace SlideDotNet.Models.SlideComponents
 
                 var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.Group)
                 {
-                    GroupedShapes = groupedShapes.ToList()
+                    GroupedShapes = groupedShapes
                 };
 
                 return newShape;

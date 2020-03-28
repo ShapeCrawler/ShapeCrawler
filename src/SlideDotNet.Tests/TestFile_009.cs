@@ -456,6 +456,32 @@ namespace SlideDotNet.Tests
         }
 
         [Fact]
+        public void Table_Row_Remove_Test()
+        {
+            // ARRANGE
+            var pre = new PresentationEx(Properties.Resources._009);
+            var sld3Shapes = pre.Slides[2].Shapes;
+            var table3 = sld3Shapes.First(s => s.Id.Equals(3)).Table;
+            var rows = table3.Rows;
+            var numRowsBefore = rows.Count;
+
+            // ACT
+            rows.RemoveAt(0);
+            
+            var ms = new MemoryStream();
+            pre.SaveAs(ms);
+            pre.Close();
+
+            pre = new PresentationEx(ms);
+            table3 = pre.Slides[2].Shapes.First(s => s.Id.Equals(3)).Table;
+            rows = table3.Rows;
+            var numRowsAfter = rows.Count;
+
+            // ASSERT
+            Assert.True(numRowsBefore > numRowsAfter);
+        }
+
+        [Fact]
         public void ChartPropertiesTest()
         {
             // ARRANGE

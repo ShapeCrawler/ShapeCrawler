@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using SlideDotNet.Collections;
 
 namespace SlideDotNet.Models
 {
@@ -11,7 +12,7 @@ namespace SlideDotNet.Models
         /// <summary>
         /// Returns slides collection.
         /// </summary>
-        ISlideCollection Slides { get; }
+        EditAbleCollection<Slide> Slides { get; }
 
         /// <summary>
         /// Returns slides width in EMUs.

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using SlideDotNet.Models.Settings;
-using SlideDotNet.Validation;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Models.TableComponents
@@ -15,7 +14,7 @@ namespace SlideDotNet.Models.TableComponents
         #region Fields
 
         private List<CellEx> _cells;
-        private readonly A.TableRow _xmlRow;
+        private readonly A.TableRow _sdkTblRow;
         private readonly IShapeContext _spContext;
 
         #endregion
@@ -25,6 +24,7 @@ namespace SlideDotNet.Models.TableComponents
         /// <summary>
         /// Returns row's cells.
         /// </summary>
+        /// TODO: use custom collection
         public IList<CellEx> Cells {
             get
             {
@@ -43,7 +43,7 @@ namespace SlideDotNet.Models.TableComponents
 
         public RowEx(A.TableRow xmlRow, IShapeContext spContext)
         {
-            _xmlRow = xmlRow ?? throw new ArgumentNullException(nameof(xmlRow));
+            _sdkTblRow = xmlRow ?? throw new ArgumentNullException(nameof(xmlRow));
             _spContext = spContext ?? throw new ArgumentNullException(nameof(spContext));
         }
 
@@ -53,7 +53,7 @@ namespace SlideDotNet.Models.TableComponents
 
         private void ParseCells()
         {
-            var xmlCells = _xmlRow.Elements<A.TableCell>();
+            var xmlCells = _sdkTblRow.Elements<A.TableCell>();
             _cells = new List<CellEx>(xmlCells.Count());
             foreach (var c in xmlCells)
             {

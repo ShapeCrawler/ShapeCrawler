@@ -6,9 +6,8 @@ using SlideDotNet.Models.SlideComponents;
 using SlideDotNet.Services.Builders;
 using SlideDotNet.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
-using A = DocumentFormat.OpenXml.Drawing;
 
-namespace SlideDotNet.Services
+namespace SlideDotNet.Services.ShapeCreators
 {
     public class SdkShapeHandler : OpenXmlElementHandler
     {

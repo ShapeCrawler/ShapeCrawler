@@ -38,7 +38,7 @@ namespace SlideDotNet.Collections
                 }
             }
 
-            _collectionItems = new List<Series>(tempSeriesCollection);
+            CollectionItems = new List<Series>(tempSeriesCollection);
         }
 
         #endregion Constructors

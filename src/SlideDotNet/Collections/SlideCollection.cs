@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
@@ -12,68 +11,39 @@ using Slide = SlideDotNet.Models.Slide;
 namespace SlideDotNet.Collections
 {
     /// <summary>
-    /// <inheritdoc cref="ISlideCollection"/>
+    /// Represents a collection of the slides.
     /// </summary>
-    public class SlideCollection: ISlideCollection
+    public class SlideCollection : EditAbleCollection<Slide>
     {
         #region Fields
 
-        private readonly List<Slide> _items;
-        private readonly PresentationDocument _xmlDoc;
+        private readonly PresentationDocument _sdkPre;
         private readonly Dictionary<Slide, SlideNumber> _sldNumEntities;
 
         #endregion Fields
 
         #region Constructors
 
-        private SlideCollection(List<Slide> items, PresentationDocument xmlDoc, Dictionary<Slide, SlideNumber> sldNumEntities)
+        private SlideCollection(List<Slide> slides, PresentationDocument sdkPre, Dictionary<Slide, SlideNumber> sldNumEntities)
         {
-            _items = items;
-            _xmlDoc = xmlDoc;
+            CollectionItems = slides;
+            _sdkPre = sdkPre;
             _sldNumEntities = sldNumEntities;
         }
 
         #endregion Constructors
 
         /// <summary>
-        /// Gets a generic enumerator that iterates through the collection.
+        /// Removes the specified slide.
         /// </summary>
-        public IEnumerator<Slide> GetEnumerator()
+        /// <param name="item"></param>
+        public override void Remove(Slide item)
         {
-            return _items.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Gets an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns></returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            //TODO: why two GetEnumerator() methods?
-            return _items.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Returns the element at the specified index.
-        /// </summary>
-        public Slide this[int index] => _items[index];
-
-        /// <summary>
-        /// Gets the number of slides in the collection.
-        /// </summary>
-        public int Count => _items.Count;
-
-        /// <summary>
-        /// <inheritdoc cref="ISlideCollection.Remove"/>
-        /// </summary>
-        public void Remove(Slide item)
-        {
-            //TODO: validate case when last slide is deleted
             Check.NotNull(item, nameof(item));
 
             RemoveFromDom(item.Number);
-            _xmlDoc.PresentationPart.Presentation.Save(); // save the modified presentation
-            _items.Remove(item);
+            _sdkPre.PresentationPart.Presentation.Save();
+            CollectionItems.Remove(item);
             UpdateNumbers();
         }
 
@@ -104,7 +74,7 @@ namespace SlideDotNet.Collections
 
         private void RemoveFromDom(int number)
         {
-            PresentationPart presentationPart = _xmlDoc.PresentationPart;
+            PresentationPart presentationPart = _sdkPre.PresentationPart;
             DocumentFormat.OpenXml.Presentation.Presentation presentation = presentationPart.Presentation;
             // gets the list of slide identifiers in the presentation
             SlideIdList slideIdList = presentation.SlideIdList;
@@ -153,7 +123,7 @@ namespace SlideDotNet.Collections
         private void UpdateNumbers()
         {
             var current = 0;
-            foreach (var slide in _items)
+            foreach (var slide in CollectionItems)
             {
                 current++;
                 _sldNumEntities[slide].Number = current;

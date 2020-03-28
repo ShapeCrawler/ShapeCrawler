@@ -3,13 +3,13 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.SlideComponents;
+using SlideDotNet.Models.TableComponents;
 using SlideDotNet.Services.Builders;
 using SlideDotNet.Validation;
-using SlideXML.Models.SlideComponents;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace SlideDotNet.Services
+namespace SlideDotNet.Services.ShapeCreators
 {
     public class TableGraphicFrameHandler : OpenXmlElementHandler
     {

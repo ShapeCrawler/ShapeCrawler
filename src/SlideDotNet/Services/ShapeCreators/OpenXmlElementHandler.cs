@@ -1,8 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using SlideDotNet.Models.SlideComponents;
-using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideDotNet.Services
+namespace SlideDotNet.Services.ShapeCreators
 {
     public abstract class OpenXmlElementHandler
     {
