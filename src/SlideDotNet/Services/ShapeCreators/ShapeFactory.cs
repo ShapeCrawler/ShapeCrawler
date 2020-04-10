@@ -20,15 +20,13 @@ namespace SlideDotNet.Services
         #region Fields
 
         private readonly IPreSettings _preSettings;
-        private readonly SlidePart _sdkSldPart;
 
         #endregion Fields
 
         #region Constructors
 
-        public ShapeFactory(SlidePart sdkSldPart, IPreSettings preSettings)
+        public ShapeFactory(IPreSettings preSettings)
         {
-            _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
             _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
         }
 
@@ -36,32 +34,30 @@ namespace SlideDotNet.Services
 
         #region Public Methods
 
-        /// <summary>
-        /// Creates collection of the shapes from sdk shape tree.
-        /// </summary>
-        /// <param name="sdkShapeTree"></param>
-        /// <returns></returns>
-        public IList<ShapeEx> FromTree(P.ShapeTree sdkShapeTree)
+        public IList<ShapeEx> FromSldPart(SlidePart sdkSldPart)
         {
-            var sldPhFontService = new SlidePlaceholderFontService(_sdkSldPart);
-            var phService = new PlaceholderService(_sdkSldPart.SlideLayoutPart);
+            var sldPhFontService = new PlaceholderFontService(sdkSldPart); //TODO: make DI
+            var phService = new PlaceholderLocationService(sdkSldPart.SlideLayoutPart);
             var transformFactory = new InnerTransformFactory(phService);
-            var shapeBuilder = new ShapeEx.Builder();
+            var geometryFactory = new GeometryFactory(phService);
+            var shapeContextBuilder = new ShapeContext.Builder(_preSettings, sldPhFontService,sdkSldPart);
 
-            var sdkShapeHandler = new SdkShapeHandler(_preSettings, sldPhFontService, _sdkSldPart, transformFactory, shapeBuilder);
-            var sdkGroupShapeHandler = new SdkGroupShapeHandler(_preSettings, sldPhFontService, _sdkSldPart, transformFactory, shapeBuilder);
-            var oleGrFrameHandler = new OleGraphicFrameHandler(_preSettings, sldPhFontService, _sdkSldPart, transformFactory, shapeBuilder);
-            var pictureHandler = new PictureHandler(_preSettings, sldPhFontService, _sdkSldPart, transformFactory, shapeBuilder);
-            var chartGrFrameHandler = new ChartGraphicFrameHandler(_preSettings, sldPhFontService, _sdkSldPart, transformFactory, shapeBuilder);
-            var tableGrFrameHandler = new TableGraphicFrameHandler(_preSettings, sldPhFontService, _sdkSldPart, transformFactory, shapeBuilder);
+            var chartGrFrameHandler = new ChartGraphicFrameHandler(shapeContextBuilder, transformFactory);
+            var tableGrFrameHandler = new TableGraphicFrameHandler(shapeContextBuilder, transformFactory);
+            var oleGrFrameHandler = new OleGraphicFrameHandler(shapeContextBuilder, transformFactory);
+            var sdkShapeHandler = new SdkShapeHandler(shapeContextBuilder, transformFactory, geometryFactory);
+            var pictureHandler = new PictureHandler(shapeContextBuilder, transformFactory, geometryFactory, sdkSldPart);
+            var sdkGroupShapeHandler = new SdkGroupShapeHandler(shapeContextBuilder, transformFactory, geometryFactory, sdkSldPart);
 
             sdkShapeHandler.Successor = sdkGroupShapeHandler;
             sdkGroupShapeHandler.Successor = oleGrFrameHandler;
-            // OLE objects handler must be before pictures handler, cause OLE container can contain p:pic elements, thereby defining OLE as a picture
+            // OLE objects handler must be before pictures handler, cause OLE container can contain p:pic elements,
+            // thereby defining OLE as a picture
             oleGrFrameHandler.Successor = pictureHandler;
             pictureHandler.Successor = chartGrFrameHandler;
             chartGrFrameHandler.Successor = tableGrFrameHandler;
 
+            var sdkShapeTree = sdkSldPart.Slide.CommonSlideData.ShapeTree;
             var shapes = new List<ShapeEx>(sdkShapeTree.Count());
             foreach (var openXmlElement in sdkShapeTree)
             {

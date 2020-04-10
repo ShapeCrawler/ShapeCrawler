@@ -1,54 +1,76 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.SlideComponents;
 using SlideDotNet.Services.Builders;
 using SlideDotNet.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Services.ShapeCreators
 {
+    /// <summary>
+    /// <inheritdoc cref="OpenXmlElementHandler"/>.
+    /// </summary>
     public class SdkShapeHandler : OpenXmlElementHandler
     {
-        private readonly IPreSettings _preSettings;
-        private readonly SlidePlaceholderFontService _sldFontService;
-        private readonly SlidePart _sdkSldPart;
+        #region Fields
+
+        private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly InnerTransformFactory _transformFactory;
+        private readonly IGeometryFactory _geometryFactory;
         private readonly IShapeBuilder _shapeBuilder;
 
-        public SdkShapeHandler(IPreSettings preSettings, 
-            SlidePlaceholderFontService sldFontService, 
-            SlidePart sdkSldPart,
-            InnerTransformFactory transformFactory,
-            IShapeBuilder shapeBuilder)
+        #endregion Fields
+
+        #region Constructors
+
+        public SdkShapeHandler(ShapeContext.Builder shapeContextBuilder,
+                               InnerTransformFactory transformFactory,
+                               IGeometryFactory geometryFactory) :
+            this(shapeContextBuilder, transformFactory, geometryFactory, new ShapeEx.Builder())
         {
-            _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
-            _sldFontService = sldFontService ?? throw new ArgumentNullException(nameof(sldFontService));
-            _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
-            _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
-            _shapeBuilder = shapeBuilder;
+
         }
 
-        public override ShapeEx Create(OpenXmlElement openXmlElement)
+        //TODO: inject interface instead
+        public SdkShapeHandler(ShapeContext.Builder shapeContextBuilder,
+                               InnerTransformFactory transformFactory,
+                               IGeometryFactory geometryFactory,
+                               IShapeBuilder shapeBuilder)
         {
-            Check.NotNull(openXmlElement, nameof(openXmlElement));
+            _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
+            _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
+            _geometryFactory = geometryFactory ?? throw new ArgumentNullException(nameof(geometryFactory));
+            _shapeBuilder = shapeBuilder ?? throw new ArgumentNullException(nameof(shapeBuilder));
+        }
 
-            if (openXmlElement is P.Shape sdkShape)
+        #endregion Constructors
+
+        #region Public Methods
+
+        public override ShapeEx Create(OpenXmlElement sdkElement)
+        {
+            Check.NotNull(sdkElement, nameof(sdkElement));
+
+            if (sdkElement is P.Shape sdkShape)
             {
-                var spContext = new ShapeContext(_preSettings, _sldFontService, sdkShape, _sdkSldPart);
+                var spContext = _shapeContextBuilder.Build(sdkElement);
                 var innerTransform = _transformFactory.FromComposite(sdkShape);
-                var shape = _shapeBuilder.WithAutoShape(innerTransform, spContext);
+                var geometry = _geometryFactory.ForShape(sdkShape);
+                var shape = _shapeBuilder.WithAutoShape(innerTransform, spContext, geometry);
                 
                 return shape;
             }
             
             if (Successor != null)
             {
-                return Successor.Create(openXmlElement);
+                return Successor.Create(sdkElement);
             }
            
             return null;
         }
+
+        #endregion Public Methods
     }
 }

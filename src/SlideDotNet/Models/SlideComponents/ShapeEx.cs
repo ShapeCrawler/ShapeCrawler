@@ -185,7 +185,7 @@ namespace SlideDotNet.Models.SlideComponents
                     throw new RuntimeDefinedPropertyException(ExceptionMessages.ShapeIsNotPlaceholder);
                 }
 
-                return PlaceholderService.PlaceholderDataFrom((OpenXmlCompositeElement)_context.SdkElement).PlaceholderType; // TODO: delete casting
+                return PlaceholderLocationService.CreatePlaceholderData(_context.SdkElement).PlaceholderType; //TODO: cache result
             }
         }
 
@@ -199,9 +199,19 @@ namespace SlideDotNet.Models.SlideComponents
         /// </summary>
         public bool IsGrouped => _innerTransform is NonPlaceholderGroupedTransform;
 
+        public GeometryType GeometryType { get; }
+
         #endregion Properties
 
         #region Constructors
+
+        private ShapeEx(IInnerTransform innerTransform,
+                        IShapeContext spContext,
+                        ShapeContentType contentType,
+                        GeometryType geometryType) : this(innerTransform, spContext, contentType)
+        {
+            GeometryType = geometryType;
+        }
 
         private ShapeEx (IInnerTransform innerTransform, IShapeContext spContext, ShapeContentType contentType)
         {
@@ -281,9 +291,6 @@ namespace SlideDotNet.Models.SlideComponents
         {
             #region Public Methods
 
-            /// <summary>
-            /// <inheritdoc cref="IShapeBuilder.WithOle"/>
-            /// </summary>
             public ShapeEx WithOle(IInnerTransform innerTransform, IShapeContext spContext, OleObject ole)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
@@ -298,16 +305,14 @@ namespace SlideDotNet.Models.SlideComponents
                 return newShape;
             }
 
-            /// <summary>
-            /// <inheritdoc cref="IShapeBuilder.WithPicture"/>
-            /// </summary>
-            public ShapeEx WithPicture(IInnerTransform innerTransform, IShapeContext spContext, PictureEx picture)
+            public ShapeEx WithPicture(IInnerTransform innerTransform, IShapeContext spContext, PictureEx picture, GeometryType geometry)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(picture, nameof(picture));
+                Check.NotNull(geometry, nameof(geometry));
 
-                var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.Picture)
+                var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.Picture, geometry)
                 {
                     _picture = picture
                 };
@@ -315,22 +320,16 @@ namespace SlideDotNet.Models.SlideComponents
                 return newShape;
             }
 
-            /// <summary>
-            /// <inheritdoc cref="IShapeBuilder.WithAutoShape"/>
-            /// </summary>
-            public ShapeEx WithAutoShape(IInnerTransform innerTransform, IShapeContext spContext)
+            public ShapeEx WithAutoShape(IInnerTransform innerTransform, IShapeContext spContext, GeometryType geometry)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
 
-                var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.AutoShape);
+                var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.AutoShape, geometry);
       
                 return newShape;
             }
 
-            /// <summary>
-            /// <inheritdoc cref="IShapeBuilder.WithTable"/>
-            /// </summary>
             public ShapeEx WithTable(IInnerTransform innerTransform, IShapeContext spContext, TableEx table)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
@@ -345,9 +344,6 @@ namespace SlideDotNet.Models.SlideComponents
                 return newShape;
             }
 
-            /// <summary>
-            /// <inheritdoc cref="IShapeBuilder.WithChart"/>
-            /// </summary>
             public ShapeEx WithChart(IInnerTransform innerTransform, IShapeContext spContext, ChartEx chart)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
@@ -362,9 +358,6 @@ namespace SlideDotNet.Models.SlideComponents
                 return newShape;
             }
 
-            /// <summary>
-            /// <inheritdoc cref="IShapeBuilder.WithGroup"/>
-            /// </summary>
             public ShapeEx WithGroup(IInnerTransform innerTransform, IShapeContext spContext, IList<ShapeEx> groupedShapes)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));

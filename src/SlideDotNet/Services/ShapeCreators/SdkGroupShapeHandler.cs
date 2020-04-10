@@ -14,37 +14,46 @@ namespace SlideDotNet.Services.ShapeCreators
 {
     public class SdkGroupShapeHandler : OpenXmlElementHandler
     {
-        private readonly IPreSettings _preSettings;
-        private readonly SlidePlaceholderFontService _sldPhFontService;
+        private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly SlidePart _sdkSldPart;
+        private readonly IGeometryFactory _geometryFactory; //TODO: DI
         private readonly InnerTransformFactory _transformFactory;
         private readonly IShapeBuilder _shapeBuilder;
 
-        public SdkGroupShapeHandler(IPreSettings preSettings,
-            SlidePlaceholderFontService sldFontService,
-            SlidePart sdkSldPart,
-            InnerTransformFactory transformFactory,
-            IShapeBuilder shapeBuilder)
+        public SdkGroupShapeHandler(ShapeContext.Builder shapeContextBuilder,
+                                    InnerTransformFactory transformFactory,
+                                    IGeometryFactory geometryFactory,
+                                    SlidePart sdkSldPart) :
+            this(shapeContextBuilder, transformFactory, geometryFactory, sdkSldPart, new ShapeEx.Builder())
         {
-            _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
-            _sldPhFontService = sldFontService ?? throw new ArgumentNullException(nameof(sldFontService));
-            _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
-            _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
-            _shapeBuilder = shapeBuilder;
+ 
         }
 
-        public override ShapeEx Create(OpenXmlElement openXmlElement)
+        public SdkGroupShapeHandler(ShapeContext.Builder shapeContextBuilder,
+                                    InnerTransformFactory transformFactory,
+                                    IGeometryFactory geometryFactory,
+                                    SlidePart sdkSldPart,
+                                    IShapeBuilder shapeBuilder)
         {
-            Check.NotNull(openXmlElement, nameof(openXmlElement));
+            _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(sdkSldPart));
+            _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
+            _geometryFactory = geometryFactory ?? throw new ArgumentNullException(nameof(geometryFactory));
+            _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
+            _shapeBuilder = shapeBuilder ?? throw new ArgumentNullException(nameof(shapeBuilder));
+        }
 
-            if (openXmlElement is P.GroupShape sdkGroupShape)
+        public override ShapeEx Create(OpenXmlElement sdkElement)
+        {
+            Check.NotNull(sdkElement, nameof(sdkElement));
+
+            if (sdkElement is P.GroupShape sdkGroupShape)
             {
-                var sdkShapeHandler = new SdkShapeHandler(_preSettings, _sldPhFontService, _sdkSldPart, _transformFactory, _shapeBuilder);
-                var sdkGroupShapeHandler = new SdkGroupShapeHandler(_preSettings, _sldPhFontService, _sdkSldPart, _transformFactory, _shapeBuilder);
-                var oleGrFrameHandler = new OleGraphicFrameHandler(_preSettings, _sldPhFontService, _sdkSldPart, _transformFactory, _shapeBuilder);
-                var pictureHandler = new PictureHandler(_preSettings, _sldPhFontService, _sdkSldPart, _transformFactory, _shapeBuilder);
-                var chartGrFrameHandler = new ChartGraphicFrameHandler(_preSettings, _sldPhFontService, _sdkSldPart, _transformFactory, _shapeBuilder);
-                var tableGrFrameHandler = new TableGraphicFrameHandler(_preSettings, _sldPhFontService, _sdkSldPart, _transformFactory, _shapeBuilder);
+                var sdkShapeHandler = new SdkShapeHandler(_shapeContextBuilder, _transformFactory, _geometryFactory);
+                var oleGrFrameHandler = new OleGraphicFrameHandler(_shapeContextBuilder, _transformFactory, _shapeBuilder);
+                var pictureHandler = new PictureHandler(_shapeContextBuilder, _transformFactory, _geometryFactory, _sdkSldPart);
+                var sdkGroupShapeHandler = new SdkGroupShapeHandler(_shapeContextBuilder, _transformFactory, _geometryFactory, _sdkSldPart);
+                var chartGrFrameHandler = new ChartGraphicFrameHandler(_shapeContextBuilder, _transformFactory, _shapeBuilder);
+                var tableGrFrameHandler = new TableGraphicFrameHandler(_shapeContextBuilder, _transformFactory, _shapeBuilder);
 
                 sdkShapeHandler.Successor = sdkGroupShapeHandler;
                 sdkGroupShapeHandler.Successor = oleGrFrameHandler;
@@ -62,7 +71,7 @@ namespace SlideDotNet.Services.ShapeCreators
                         groupedShapes.Add(groupedShape);
                     }
                 }
-                var spContext = new ShapeContext(_preSettings, _sldPhFontService, sdkGroupShape, _sdkSldPart);
+                var spContext = _shapeContextBuilder.Build(sdkElement);
                 var transformGroup = sdkGroupShape.GroupShapeProperties.TransformGroup;
                 var innerTransform = new NonPlaceholderTransform(transformGroup); //TODO: use factory version instead
                 var shape = _shapeBuilder.WithGroup(innerTransform, spContext, groupedShapes);
@@ -72,7 +81,7 @@ namespace SlideDotNet.Services.ShapeCreators
 
             if (Successor != null)
             {
-                return Successor.Create(openXmlElement);
+                return Successor.Create(sdkElement);
             }
 
             return null;

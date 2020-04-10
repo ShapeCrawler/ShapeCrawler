@@ -7,6 +7,7 @@ using SlideDotNet.Models;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Validation;
 using Slide = SlideDotNet.Models.Slide;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace SlideDotNet.Collections
 {
@@ -17,18 +18,18 @@ namespace SlideDotNet.Collections
     {
         #region Fields
 
-        private readonly PresentationDocument _sdkPre;
-        private readonly Dictionary<Slide, SlideNumber> _sldNumEntities;
+        private readonly PresentationPart _sdkPrePart;
+        private readonly Dictionary<Slide, SlideNumber> _sldNumDic;
 
         #endregion Fields
 
         #region Constructors
 
-        private SlideCollection(List<Slide> slides, PresentationDocument sdkPre, Dictionary<Slide, SlideNumber> sldNumEntities)
+        private SlideCollection(List<Slide> slides, PresentationPart sdkPrePart, Dictionary<Slide, SlideNumber> sldNumDic)
         {
             CollectionItems = slides;
-            _sdkPre = sdkPre;
-            _sldNumEntities = sldNumEntities;
+            _sdkPrePart = sdkPrePart;
+            _sldNumDic = sldNumDic;
         }
 
         #endregion Constructors
@@ -42,7 +43,7 @@ namespace SlideDotNet.Collections
             Check.NotNull(item, nameof(item));
 
             RemoveFromDom(item.Number);
-            _sdkPre.PresentationPart.Presentation.Save();
+            _sdkPrePart.Presentation.Save();
             CollectionItems.Remove(item);
             UpdateNumbers();
         }
@@ -50,32 +51,32 @@ namespace SlideDotNet.Collections
         /// <summary>
         /// Creates slides collection.
         /// </summary>
-        /// <param name="xmlDoc"></param>
-        /// <param name="preSettings"></param>
         /// <returns></returns>
-        public static SlideCollection Create(PresentationDocument xmlDoc, IPreSettings preSettings)
+        public static SlideCollection Create(PresentationPart sdkPrePart, IPreSettings preSettings)
         {
-            var xmlPrePart = xmlDoc.PresentationPart;
-            var slideCollection = new List<Slide>();
-            var sldNumDic = new Dictionary<Slide, SlideNumber>();
-            for (var sldIndex = 0; sldIndex < xmlPrePart.SlideParts.Count(); sldIndex++)
+            Check.NotNull(sdkPrePart, nameof(sdkPrePart));
+            Check.NotNull(preSettings, nameof(preSettings));
+
+            var numSlides = sdkPrePart.SlideParts.Count();
+            var slideCollection = new List<Slide>(numSlides);
+            var sldNumDic = new Dictionary<Slide, SlideNumber>(numSlides);
+            for (var sldIndex = 0; sldIndex < numSlides; sldIndex++)
             {
-                var xmlSldPart = xmlPrePart.GetSlidePartByIndex(sldIndex);
+                var sdkSldPart = sdkPrePart.GetSlidePartByIndex(sldIndex);
                 var sldNumEntity = new SlideNumber(sldIndex + 1);
-                var newSlide = new Slide(xmlSldPart, sldNumEntity, preSettings);
+                var newSlide = new Slide(sdkSldPart, sldNumEntity, preSettings);
                 sldNumDic.Add(newSlide, sldNumEntity);
                 slideCollection.Add(newSlide);
             }
 
-            return new SlideCollection(slideCollection, xmlDoc, sldNumDic);
+            return new SlideCollection(slideCollection, sdkPrePart, sldNumDic);
         }
 
         #region Private Methods
 
         private void RemoveFromDom(int number)
         {
-            PresentationPart presentationPart = _sdkPre.PresentationPart;
-            DocumentFormat.OpenXml.Presentation.Presentation presentation = presentationPart.Presentation;
+            P.Presentation presentation = _sdkPrePart.Presentation;
             // gets the list of slide identifiers in the presentation
             SlideIdList slideIdList = presentation.SlideIdList;
             // gets the slide identifier of the specified slide
@@ -115,9 +116,9 @@ namespace SlideDotNet.Collections
             }
 
             // gets the slide part for the specified slide
-            SlidePart slidePart = presentationPart.GetPartById(slideRelId) as SlidePart;
+            SlidePart slidePart = _sdkPrePart.GetPartById(slideRelId) as SlidePart;
             // removes the slide part
-            presentationPart.DeletePart(slidePart);
+            _sdkPrePart.DeletePart(slidePart);
         }
 
         private void UpdateNumbers()
@@ -126,7 +127,7 @@ namespace SlideDotNet.Collections
             foreach (var slide in CollectionItems)
             {
                 current++;
-                _sldNumEntities[slide].Number = current;
+                _sldNumDic[slide].Number = current;
             }
         }
 

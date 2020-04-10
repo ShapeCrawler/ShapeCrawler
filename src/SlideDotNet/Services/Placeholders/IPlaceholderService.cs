@@ -8,11 +8,12 @@ namespace SlideDotNet.Services.Placeholders
     public interface IPlaceholderService
     {
         /// <summary>
-        /// Gets placeholder from the repository. Returns null if data does not exist for specified element.
+        /// Tries to get matched <see cref="PlaceholderLocationData"/> instance for specified SDK-element.
+        /// Returns null if matched object is not found.
         /// </summary>
         /// <remarks>
         /// Placeholder can have their location and size property values data on the slide.
         /// </remarks>
-        PlaceholderLocationData TryGet(OpenXmlCompositeElement sdkElement);
+        PlaceholderLocationData TryGet(OpenXmlCompositeElement sdkCompositeElement);
     }
 }

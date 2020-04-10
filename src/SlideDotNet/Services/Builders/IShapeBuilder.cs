@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using SlideDotNet.Enums;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.SlideComponents;
 using SlideDotNet.Models.SlideComponents.Chart;
 using SlideDotNet.Models.TableComponents;
 using P = DocumentFormat.OpenXml.Presentation;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Services.Builders
 {
@@ -20,12 +22,12 @@ namespace SlideDotNet.Services.Builders
         /// <summary>
         /// Builds a shape with picture content.
         /// </summary>
-        ShapeEx WithPicture(IInnerTransform innerTransform, IShapeContext spContext, PictureEx picture);
+        ShapeEx WithPicture(IInnerTransform innerTransform, IShapeContext spContext, PictureEx picture, GeometryType geometry);
 
         /// <summary>
         /// Builds a AutoShape.
         /// </summary>
-        ShapeEx WithAutoShape(IInnerTransform innerTransform, IShapeContext spContext);
+        ShapeEx WithAutoShape(IInnerTransform innerTransform, IShapeContext spContext, GeometryType geometry);
 
         /// <summary>
         /// Builds a shape with table content.

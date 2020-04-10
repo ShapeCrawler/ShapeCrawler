@@ -120,7 +120,7 @@ namespace SlideDotNet.Models.TextBody
             var xmlElement = _spContext.SdkElement;
             if (xmlElement.IsPlaceholder())
             {
-                var prFontHeight = _spContext.PlaceholderFontService.TryGetHeight((OpenXmlCompositeElement)xmlElement, _innerPrLvl.Value);
+                var prFontHeight = _spContext.PlaceholderFontService.TryGetFontHeight((OpenXmlCompositeElement)xmlElement, _innerPrLvl.Value);
                 if (prFontHeight != null)
                 {
                     return (int)prFontHeight;

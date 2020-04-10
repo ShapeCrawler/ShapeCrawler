@@ -1,9 +1,12 @@
-﻿using SlideDotNet.Validation;
+﻿using DocumentFormat.OpenXml.Drawing;
+using SlideDotNet.Enums;
+using SlideDotNet.Validation;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Services.Placeholders
 {
     /// <summary>
-    /// Represents placeholder location data.
+    /// Represents placeholder data.
     /// </summary>
     public class PlaceholderLocationData : PlaceholderData
     {
@@ -29,6 +32,8 @@ namespace SlideDotNet.Services.Placeholders
         /// </summary>
         public long Height { get; set; }
 
+        public GeometryType Geometry { get; set; } = GeometryType.Rectangle;
+
         #endregion
 
         #region Constructors
@@ -39,6 +44,7 @@ namespace SlideDotNet.Services.Placeholders
         public PlaceholderLocationData(PlaceholderData phData)
         {
             Check.NotNull(phData, nameof(phData));
+
             PlaceholderType = phData.PlaceholderType;
             Index = phData.Index;
         }

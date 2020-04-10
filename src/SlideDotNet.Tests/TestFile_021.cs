@@ -2,6 +2,8 @@
 using SlideDotNet.Enums;
 using SlideDotNet.Models;
 using Xunit;
+using A = DocumentFormat.OpenXml.Drawing;
+
 // ReSharper disable TooManyDeclarations
 // ReSharper disable InconsistentNaming
 // ReSharper disable TooManyChainedReferences
@@ -81,13 +83,26 @@ namespace SlideDotNet.Tests
         }
 
         [Fact]
-        public void Slide_Shapes_Test()
+        public void Footer_Test()
         {
             // Arrange
             var pre = new PresentationEx(Properties.Resources._021);
-
-            // Act-Assert
             var sld4Shapes = pre.Slides[3].Shapes;
+
+            // Act
+            var footerShape = sld4Shapes.First(s => s.Id == 2);
+            var ellipse = sld4Shapes.First(s => s.Id == 3).GeometryType;
+            var type = footerShape.PlaceholderType;
+            var text = footerShape.TextFrame.Text;
+            var x = footerShape.X;
+            var geometry = footerShape.GeometryType;
+
+            // Assert
+            Assert.Equal(PlaceholderType.Footer, type);
+            Assert.Equal("test footer", text);
+            Assert.Equal(3653579, x);
+            Assert.Equal(GeometryType.Rectangle, geometry);
+            Assert.Equal(GeometryType.Ellipse, ellipse);
         }
     }
 }

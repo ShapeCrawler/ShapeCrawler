@@ -548,7 +548,7 @@ namespace SlideDotNet.Tests
         }
 
         [Fact]
-        public void DateTimePlaceholder_HasTextFrame_Test()
+        public void Placeholder_DateTime_Test()
         {
             // ARRANGE
             var pre = new PresentationEx(Properties.Resources._008);
@@ -558,6 +558,7 @@ namespace SlideDotNet.Tests
             var hasTextFrame = sp3.HasTextFrame;
             var text = sp3.TextFrame.Text;
             var phType = sp3.PlaceholderType;
+            var x = sp3.X;
 
             pre.Close();
 
@@ -565,6 +566,7 @@ namespace SlideDotNet.Tests
             Assert.True(hasTextFrame);
             Assert.Equal("25.01.2020", text);
             Assert.Equal(PlaceholderType.DateAndTime, phType);
+            Assert.Equal(628650, x);
         }
 
         [Fact]
@@ -754,7 +756,7 @@ namespace SlideDotNet.Tests
             var sldPart = xmlDoc.PresentationPart.SlideParts.First();
             var spId3 = sldPart.Slide.CommonSlideData.ShapeTree.Elements<DocumentFormat.OpenXml.Presentation.Shape>().Single(sp => sp.GetId() == 3);
             var sldLtPart = sldPart.SlideLayoutPart;
-            var phService = new PlaceholderService(sldLtPart);
+            var phService = new PlaceholderLocationService(sldLtPart);
 
             // ACT
             var type = phService.TryGet(spId3).PlaceholderType;
@@ -775,7 +777,7 @@ namespace SlideDotNet.Tests
             var spId3 = sldPart.Slide.CommonSlideData.ShapeTree.Elements<DocumentFormat.OpenXml.Presentation.Shape>().Single(sp => sp.GetId() == 3);
 
             // ACT
-            var phXml = PlaceholderService.PlaceholderDataFrom(spId3);
+            var phXml = PlaceholderLocationService.CreatePlaceholderData(spId3);
 
             // CLOSE
             xmlDoc.Close();
@@ -791,13 +793,13 @@ namespace SlideDotNet.Tests
             var ms = new MemoryStream(Properties.Resources._003);
             var doc = PresentationDocument.Open(ms, false);
 
-            var xmlSldPart = doc.PresentationPart.SlideParts.First();
+            var sdkSldPart = doc.PresentationPart.SlideParts.First();
             var preSettings = new PreSettings(doc.PresentationPart.Presentation);
-            var shapeTree = xmlSldPart.Slide.CommonSlideData.ShapeTree;
-            var parser = new ShapeFactory(xmlSldPart, preSettings);
+            var shapeTree = sdkSldPart.Slide.CommonSlideData.ShapeTree;
+            var parser = new ShapeFactory(preSettings);
 
             // ACT
-            var candidates = parser.FromTree(shapeTree);
+            var candidates = parser.FromSldPart(sdkSldPart);
 
             // CLEAN
             doc.Dispose();

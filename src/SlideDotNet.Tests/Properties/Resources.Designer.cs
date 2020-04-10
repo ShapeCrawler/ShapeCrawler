@@ -263,6 +263,36 @@ namespace SlideDotNet.Tests.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] _022 {
+            get {
+                object obj = ResourceManager.GetObject("_022", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] _023 {
+            get {
+                object obj = ResourceManager.GetObject("_023", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] _024 {
+            get {
+                object obj = ResourceManager.GetObject("_024", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] test_image_2 {
             get {
                 object obj = ResourceManager.GetObject("test_image_2", resourceCulture);

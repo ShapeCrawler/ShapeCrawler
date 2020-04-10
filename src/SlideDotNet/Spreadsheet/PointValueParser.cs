@@ -9,7 +9,7 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 namespace SlideDotNet.Spreadsheet
 {
     /// <summary>
-    /// Represents a series value point .arser
+    /// Represents a series value point parser.
     /// </summary>
     public class PointValueParser
     {
@@ -28,7 +28,7 @@ namespace SlideDotNet.Spreadsheet
             string sheetId = wbPart.Workbook.Descendants<Sheet>().First(s => sheetNameAndCellsFormula[0].Equals(s.Name)).Id;
             var wsPart = (WorksheetPart)wbPart.GetPartById(sheetId);
             var sdkCells = wsPart.Worksheet.Descendants<Cell>(); //TODO: use HashSet
-            var addresses = new CellFormula(sheetNameAndCellsFormula[1]).GetCellAddresses();
+            var addresses = new CellFormulaParser(sheetNameAndCellsFormula[1]).GetCellAddresses();
             var result = new List<double>(addresses.Count);
             foreach (var address in addresses)
             {

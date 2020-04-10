@@ -16,31 +16,26 @@ namespace SlideDotNet.Models.Settings
 
         #region Properties
 
-        /// <summary>
-        /// <inheritdoc cref="IShapeContext.PreSettings"/>
-        /// </summary>
-        public IPreSettings PreSettings { get; }
+        public IPreSettings PreSettings { get; private set; }
 
-        public SlidePlaceholderFontService PlaceholderFontService { get; }
+        public SlidePart SkdSlidePart { get; private set; }
 
-        public OpenXmlElement SdkElement { get; set; }
+        public PlaceholderFontService PlaceholderFontService { get; private set; }
 
-        public SlidePart SkdSlidePart { get; }
+        public OpenXmlElement SdkElement { get; private set; }
 
         #endregion Properties
 
         #region Constructors
 
-        public ShapeContext(IPreSettings preSettings, SlidePlaceholderFontService fontService, OpenXmlElement xmlElement, SlidePart xmlSldPart)
+        private ShapeContext()
         {
-            PreSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
-            PlaceholderFontService = fontService ?? throw new ArgumentNullException(nameof(fontService));
-            SdkElement = xmlElement ?? throw new ArgumentNullException(nameof(xmlElement));
-            SkdSlidePart = xmlSldPart ?? throw new ArgumentNullException(nameof(xmlSldPart));
             _masterOtherFonts = new Lazy<Dictionary<int, int>>(InitMasterOtherFonts);
         }
 
         #endregion Constructors
+
+        #region Public Methods
 
         public bool TryFromMasterOther(int prLvl, out int fh)
         {
@@ -59,11 +54,46 @@ namespace SlideDotNet.Models.Settings
             return false;
         }
 
+        #endregion Public Methods
+
+        #region Private Methods
+
         private Dictionary<int, int> InitMasterOtherFonts()
         {
             var result = FontHeightParser.FromCompositeElement(SkdSlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.OtherStyle);
 
             return result;
         }
+
+        #endregion Private Methods
+
+        #region Builder
+
+        public class Builder
+        {
+            private readonly IPreSettings _preSettings;
+            private readonly PlaceholderFontService _fontService;
+            private readonly SlidePart _sdkSldPart;
+
+            public Builder(IPreSettings preSettings, PlaceholderFontService fontService, SlidePart sdkSldPart)
+            {
+                _preSettings = preSettings;
+                _fontService = fontService;
+                _sdkSldPart = sdkSldPart;
+            }
+
+            public IShapeContext Build(OpenXmlElement openXmlElement)
+            {
+                return new ShapeContext
+                {
+                    PreSettings = _preSettings,
+                    PlaceholderFontService = _fontService,
+                    SkdSlidePart = _sdkSldPart,
+                    SdkElement = openXmlElement
+                };
+            }
+        }
+
+        #endregion Builder
     }
 }

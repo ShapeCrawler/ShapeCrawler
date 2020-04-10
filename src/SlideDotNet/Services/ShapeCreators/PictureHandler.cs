@@ -15,37 +15,56 @@ namespace SlideDotNet.Services.ShapeCreators
     /// </summary>
     public class PictureHandler : OpenXmlElementHandler
     {
-        private readonly IPreSettings _preSettings;
-        private readonly SlidePlaceholderFontService _sldFontService;
-        private readonly SlidePart _sdkSldPart;
+        #region Fields
+
+        private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly InnerTransformFactory _transformFactory;
         private readonly IShapeBuilder _shapeBuilder;
+        private readonly SlidePart _sdkSldPart;
+        private readonly IGeometryFactory _geometryFactory;
 
-        public PictureHandler(IPreSettings preSettings,
-            SlidePlaceholderFontService sldFontService,
-            SlidePart sdkSldPart,
-            InnerTransformFactory transformFactory,
-            IShapeBuilder shapeBuilder)
+        #endregion Fields
+
+        #region Constructors
+
+        public PictureHandler(ShapeContext.Builder shapeContextBuilder,
+                              InnerTransformFactory transformFactory,
+                              IGeometryFactory geometryFactory,
+                              SlidePart sdkSldPart) :
+            this(shapeContextBuilder, transformFactory, geometryFactory, sdkSldPart, new ShapeEx.Builder())
         {
-            _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
-            _sldFontService = sldFontService ?? throw new ArgumentNullException(nameof(sldFontService));
-            _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
-            _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
-            _shapeBuilder = shapeBuilder;
+
         }
 
-        public override ShapeEx Create(OpenXmlElement openXmlElement)
+        public PictureHandler(ShapeContext.Builder shapeContextBuilder,
+                              InnerTransformFactory transformFactory,
+                              IGeometryFactory geometryFactory,
+                              SlidePart sdkSldPart,
+                              IShapeBuilder shapeBuilder)
         {
-            Check.NotNull(openXmlElement, nameof(openXmlElement));
+            _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
+            _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
+            _shapeBuilder = shapeBuilder ?? throw new ArgumentNullException(nameof(shapeBuilder));
+            _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
+            _geometryFactory = geometryFactory ?? throw new ArgumentNullException(nameof(geometryFactory));
+        }
+
+        #endregion Constructors
+
+        #region Constructors
+
+        public override ShapeEx Create(OpenXmlElement sdkElement)
+        {
+            Check.NotNull(sdkElement, nameof(sdkElement));
 
             P.Picture sdkPicture;
-            if (openXmlElement is P.Picture treePic)
+            if (sdkElement is P.Picture treePic)
             {
                 sdkPicture = treePic;
             }
             else
             {
-                var framePic = openXmlElement.Descendants<P.Picture>().FirstOrDefault();
+                var framePic = sdkElement.Descendants<P.Picture>().FirstOrDefault();
                 sdkPicture = framePic;
             }
             if (sdkPicture != null)
@@ -57,20 +76,22 @@ namespace SlideDotNet.Services.ShapeCreators
                     return null;
                 }
                 var pictureEx = new PictureEx(_sdkSldPart, blipRelateId);
-                var spContext = new ShapeContext(_preSettings, _sldFontService, openXmlElement, _sdkSldPart);
+                var spContext = _shapeContextBuilder.Build(sdkElement);
                 var innerTransform = _transformFactory.FromComposite(sdkPicture);
-                var shape = _shapeBuilder.WithPicture(innerTransform, spContext, pictureEx);
+                var geometry = _geometryFactory.ForPicture(sdkPicture);
+                var shape = _shapeBuilder.WithPicture(innerTransform, spContext, pictureEx, geometry);
 
                 return shape;
-
             }
 
             if (Successor != null)
             {
-                return Successor.Create(openXmlElement);
+                return Successor.Create(sdkElement);
             }
 
             return null;
         }
+
+        #endregion Constructors
     }
 }

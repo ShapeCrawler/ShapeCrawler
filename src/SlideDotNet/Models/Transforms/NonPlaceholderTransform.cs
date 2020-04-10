@@ -1,14 +1,15 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
 using SlideDotNet.Models.SlideComponents;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Models.Transforms
 {
     public class NonPlaceholderTransform : IInnerTransform
     {
-        private readonly DocumentFormat.OpenXml.Drawing.Offset _offset;
+        private readonly A.Offset _offset;
 
-        private readonly DocumentFormat.OpenXml.Drawing.Extents _extents;
+        private readonly A.Extents _extents;
 
         public long X => _offset.X.Value;
 
@@ -18,10 +19,10 @@ namespace SlideDotNet.Models.Transforms
 
         public long Height => _extents.Cy.Value;
 
-        public NonPlaceholderTransform(OpenXmlCompositeElement xmlElement)
+        public NonPlaceholderTransform(OpenXmlCompositeElement sdkCompositeElement)
         {
-            _offset = xmlElement.Descendants<DocumentFormat.OpenXml.Drawing.Offset>().First(); //TODO: make lazy
-            _extents = xmlElement.Descendants<DocumentFormat.OpenXml.Drawing.Extents>().First();
+            _offset = sdkCompositeElement.Descendants<A.Offset>().First(); //TODO: make lazy
+            _extents = sdkCompositeElement.Descendants<A.Extents>().First();
         }
 
         public void SetX(long x) // TODO: validate

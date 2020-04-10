@@ -1,7 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Collections;
+using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.SlideComponents;
+using SlideDotNet.Services;
 using SlideDotNet.Validation;
+using P = DocumentFormat.OpenXml.Presentation;
+// ReSharper disable All
 
 namespace SlideDotNet.Models
 {
@@ -12,10 +17,23 @@ namespace SlideDotNet.Models
     {
         #region Constructors
 
-        public ShapeCollection(IEnumerable<ShapeEx> shapes)
+        /// <summary>
+        /// Initializes a new instance by default <see cref="ShapeFactory"/> instance.
+        /// </summary>
+        /// <param name="sdkSldPart"></param>
+        /// <param name="preSettings"></param>
+        public ShapeCollection(SlidePart sdkSldPart, IPreSettings preSettings):
+            this(sdkSldPart, new ShapeFactory(preSettings))
         {
-            Check.NotEmpty(shapes, nameof(shapes));
-            CollectionItems = new List<ShapeEx>(shapes);
+            
+        }
+
+        public ShapeCollection(SlidePart sdkSldPart, IShapeFactory shapeFactory)
+        {
+            Check.NotNull(sdkSldPart, nameof(sdkSldPart));
+            Check.NotNull(shapeFactory, nameof(shapeFactory));
+
+            CollectionItems = shapeFactory.FromSldPart(sdkSldPart).ToList();
         }
 
         #endregion Constructors

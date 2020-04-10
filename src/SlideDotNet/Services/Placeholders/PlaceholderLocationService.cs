@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Enums;
 using SlideDotNet.Extensions;
@@ -15,53 +16,56 @@ namespace SlideDotNet.Services.Placeholders
     /// <summary>
     /// <inheritdoc cref="IPlaceholderService"/>
     /// </summary>
-    public class PlaceholderService : IPlaceholderService
+    public class PlaceholderLocationService : IPlaceholderService
     {
         #region Fields
 
-        private HashSet<PlaceholderLocationData> _phLocations; //TODO: consider use here HashSet
+        private HashSet<PlaceholderLocationData> _phLocations;
 
         #endregion Fields
 
         #region Constructors
 
-        public PlaceholderService(SlideLayoutPart sldLtPart)
+        public PlaceholderLocationService(SlideLayoutPart sldLtPart)
         {
             Check.NotNull(sldLtPart, nameof(sldLtPart));
             Init(sldLtPart);
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Public Methods
 
-        /// <summary>
-        /// <inheritdoc cref="IPlaceholderService.TryGet"/>
-        /// </summary>
-        public PlaceholderLocationData TryGet(OpenXmlCompositeElement sdkElement)
+        public PlaceholderLocationData TryGet(OpenXmlCompositeElement sdkCompositeElement)
         {
-            if (!sdkElement.IsPlaceholder())
+            Check.NotNull(sdkCompositeElement, nameof(sdkCompositeElement));
+
+            if (!sdkCompositeElement.IsPlaceholder())
             {
                 return null;
             }
 
-            var phXml = PlaceholderDataFrom(sdkElement);
-            if (phXml.PlaceholderType == PlaceholderType.Custom)
+            var placeholderData = CreatePlaceholderData(sdkCompositeElement);
+            var result = _phLocations.FirstOrDefault(p => p.Equals(placeholderData));
+            if (result == null && placeholderData.Index != null)
             {
-                return _phLocations.FirstOrDefault(p => p.Index == phXml.Index);
+                var idx = placeholderData.Index;
+                return _phLocations.FirstOrDefault(p => p.PlaceholderType == PlaceholderType.Body && p.Index == idx);
             }
 
-            return _phLocations.FirstOrDefault(p => p.PlaceholderType == phXml.PlaceholderType);
+            return result;
         }
 
         /// <summary>
-        /// Gets placeholder data.
+        /// Gets placeholder data from SDK-element.
         /// </summary>
-        /// <param name="compositeElement">Placeholder which is placeholder.</param>
-        public static PlaceholderData PlaceholderDataFrom(OpenXmlCompositeElement compositeElement)
+        /// <param name="sdkElement">Placeholder which is placeholder.</param>
+        public static PlaceholderData CreatePlaceholderData(OpenXmlElement sdkElement)
         {
+            Check.NotNull(sdkElement, nameof(sdkElement));
+
             var result = new PlaceholderData();
-            var ph = compositeElement.Descendants<P.PlaceholderShape>().First();
+            var ph = sdkElement.Descendants<P.PlaceholderShape>().First();
             var phTypeXml = ph.Type;
 
             // TYPE
@@ -91,6 +95,17 @@ namespace SlideDotNet.Services.Placeholders
             return result;
         }
 
+        public static PlaceholderFontData PlaceholderFontDataFromCompositeElement(OpenXmlCompositeElement sdkCompositeElement)
+        {
+            var placeholderData = CreatePlaceholderData(sdkCompositeElement);
+
+            return new PlaceholderFontData
+            {
+                PlaceholderType = placeholderData.PlaceholderType,
+                Index = placeholderData.Index
+            };
+        }
+
         #endregion
 
         #region Private Methods
@@ -102,7 +117,6 @@ namespace SlideDotNet.Services.Placeholders
             var masterElements = sldLtPart.SlideMasterPart.SlideMaster.CommonSlideData.ShapeTree.Elements<OpenXmlCompositeElement>();
             var layoutHolders = GetPlaceholders(layoutElements);
             var masterHolders = GetPlaceholders(masterElements);
-            var f = masterHolders.Where(mHolder => !layoutHolders.Contains(mHolder));
 
             // slide master can contain duplicate
             foreach (var mHolder in masterHolders.Where(mHolder => !layoutHolders.Contains(mHolder)))
@@ -118,24 +132,32 @@ namespace SlideDotNet.Services.Placeholders
             var result = new List<PlaceholderLocationData>(filtered.Count());
             foreach (var el in filtered)
             {
-                var spPr = el.Descendants<P.ShapeProperties>().Single();
-                var t2d = spPr.Transform2D;
-                var phXml = PlaceholderDataFrom(el);
-                var newPhSl = new PlaceholderLocationData(phXml)
-                {
-                    X = t2d.Offset.X.Value,
-                    Y = t2d.Offset.Y.Value,
-                    Width = t2d.Extents.Cx.Value,
-                    Height = t2d.Extents.Cy.Value
-                };
-
+                var placeholderData = CreatePlaceholderData(el);
                 // avoid duplicate non-custom placeholders
-                if (result.Any(p => p.Equals(newPhSl)))
+                if (result.Any(p => p.Equals(placeholderData)))
                 {
                     continue;
                 }
 
-                result.Add(newPhSl);
+                var spPr = el.Descendants<P.ShapeProperties>().First();
+                var t2D = spPr.Transform2D;
+                var placeholderLocationData = new PlaceholderLocationData(placeholderData)
+                {
+                    X = t2D.Offset.X.Value,
+                    Y = t2D.Offset.Y.Value,
+                    Width = t2D.Extents.Cx.Value,
+                    Height = t2D.Extents.Cy.Value
+                };
+
+                var presetGeometry = spPr.GetFirstChild<PresetGeometry>();
+                if (presetGeometry != null)
+                {
+                    var name = presetGeometry.Preset.Value.ToString();
+                    Enum.TryParse(name, true, out GeometryType geometryType);
+                    placeholderLocationData.Geometry = geometryType;
+                }
+
+                result.Add(placeholderLocationData);
             }
 
             return result;

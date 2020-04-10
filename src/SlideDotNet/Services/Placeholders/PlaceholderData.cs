@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using SlideDotNet.Enums;
 
 namespace SlideDotNet.Services.Placeholders
@@ -20,7 +19,7 @@ namespace SlideDotNet.Services.Placeholders
         /// Gets or sets index (p:ph idx="12345").  
         /// </summary>
         /// <returns>Index value or null if such index not exist.</returns>
-        public int? Index { get; set; }
+        public int? Index { get; set; } //TODO: move separate class
 
         #endregion Properties
 
@@ -65,7 +64,7 @@ namespace SlideDotNet.Services.Placeholders
         public override int GetHashCode()
         {
             var hash = 17;
-            hash = hash * 23 + PlaceholderType.GetHashCode(); //TODO; make readonly
+            hash = hash * 23 + PlaceholderType.GetHashCode(); //TODO: make readonly
             if (PlaceholderType == PlaceholderType.Custom)
             {
                 hash = hash * 23 + Index.GetHashCode();

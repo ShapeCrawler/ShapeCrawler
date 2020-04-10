@@ -17,7 +17,7 @@ namespace SlideDotNet.Models.Settings
         /// <summary>
         /// Returns a service for placeholder's fonts.
         /// </summary>
-        SlidePlaceholderFontService PlaceholderFontService { get; }
+        PlaceholderFontService PlaceholderFontService { get; }
 
         /// <summary>
         /// Returns a <see cref="OpenXmlElement"/> instance.

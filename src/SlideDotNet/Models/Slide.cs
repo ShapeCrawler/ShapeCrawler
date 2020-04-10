@@ -44,13 +44,14 @@ namespace SlideDotNet.Models
         #region Constructors
 
         /// <summary>
-        /// Initialize a new instance of the <see cref="Slide"/> class.
+        /// Initializes a new instance of the <see cref="Slide"/> class.
         /// </summary>
         public Slide(SlidePart sdkSldPart, SlideNumber sldNum, IPreSettings preSettings)
         {
             _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
             _sldNumEntity = sldNum ?? throw new ArgumentNullException(nameof(SlideNumber));
             _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
+
             _shapes = new Lazy<ShapeCollection>(GetShapeCollection);
             _backgroundImage = new Lazy<ImageEx>(TryGetBackground);
         }
@@ -61,10 +62,7 @@ namespace SlideDotNet.Models
 
         private ShapeCollection GetShapeCollection()
         {
-            var shapeFactory = new ShapeFactory(_sdkSldPart, _preSettings);
-            var shapes = shapeFactory.FromTree(_sdkSldPart.Slide.CommonSlideData.ShapeTree);
-            var shapeCollection = new ShapeCollection(shapes);
-
+            var shapeCollection = new ShapeCollection(_sdkSldPart, _preSettings);
             return shapeCollection;
         }
 

@@ -13,36 +13,40 @@ namespace SlideDotNet.Services.ShapeCreators
 {
     public class TableGraphicFrameHandler : OpenXmlElementHandler
     {
-        private readonly IPreSettings _preSettings;
-        private readonly SlidePlaceholderFontService _sldFontService;
-        private readonly SlidePart _sdkSldPart;
+        private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly InnerTransformFactory _transformFactory;
         private readonly IShapeBuilder _shapeBuilder;
         private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/table";
 
-        public TableGraphicFrameHandler(IPreSettings preSettings,
-            SlidePlaceholderFontService sldFontService,
-            SlidePart sdkSldPart,
-            InnerTransformFactory transformFactory,
-            IShapeBuilder shapeBuilder)
+        #region Constructors
+
+        public TableGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, InnerTransformFactory transformFactory) :
+            this(shapeContextBuilder, transformFactory, new ShapeEx.Builder())
         {
-            _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
-            _sldFontService = sldFontService ?? throw new ArgumentNullException(nameof(sldFontService));
-            _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
-            _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
-            _shapeBuilder = shapeBuilder;
+            
         }
 
-        public override ShapeEx Create(OpenXmlElement openXmlElement)
+        public TableGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder,
+                                        InnerTransformFactory transformFactory,
+                                        IShapeBuilder shapeBuilder)
         {
-            Check.NotNull(openXmlElement, nameof(openXmlElement));
+            _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
+            _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
+            _shapeBuilder = shapeBuilder ?? throw new ArgumentNullException(nameof(shapeBuilder));
+        }
 
-            if (openXmlElement is P.GraphicFrame sdkGraphicFrame)
+        #endregion Constructors
+
+        public override ShapeEx Create(OpenXmlElement sdkElement)
+        {
+            Check.NotNull(sdkElement, nameof(sdkElement));
+
+            if (sdkElement is P.GraphicFrame sdkGraphicFrame)
             {
-                var grData = openXmlElement.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
+                var grData = sdkElement.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
                 if (grData.Uri.Value.Equals(Uri))
                 {
-                    var spContext = new ShapeContext(_preSettings, _sldFontService, openXmlElement, _sdkSldPart);
+                    var spContext = _shapeContextBuilder.Build(sdkElement);
                     var innerTransform = _transformFactory.FromComposite(sdkGraphicFrame);
                     var table = new TableEx(sdkGraphicFrame, spContext);
                     var shape = _shapeBuilder.WithTable(innerTransform, spContext, table);
@@ -53,7 +57,7 @@ namespace SlideDotNet.Services.ShapeCreators
 
             if (Successor != null)
             {
-                return Successor.Create(openXmlElement);
+                return Successor.Create(sdkElement);
             }
 
             return null;

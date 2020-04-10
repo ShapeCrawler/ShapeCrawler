@@ -50,7 +50,7 @@ foreach (var sp in shapes)
 ```
 
 ## Changelog
-### Version 0.4.0 - Unreleased
+### Version 0.4.0 - 2020-03-28
 #### Added
 - Added setters for `X`, `Y`, `Width` and `Height` properties of non-placeholder shapes;
 - Added `ShapeEx.IsGrouped` boolean property to determine whether the shape is grouped;
@@ -64,7 +64,7 @@ foreach (var sp in shapes)
   tableRows.Remove(row);
   ```
 
-To find out more, please check out the [CHANGELOG].(https://github.com/adamshakhabov/SlideDotNet/blob/master/CHANGELOG.md)
+To find out more, please check out the [CHANGELOG](https://github.com/adamshakhabov/SlideDotNet/blob/master/CHANGELOG.md).
 
 ## Contribution
 If you have any problems or questions you can create an issue on this repository or contact me at <a href="mailto:theadamo86@gmail.com">theadamo86@gmail.com</a>.

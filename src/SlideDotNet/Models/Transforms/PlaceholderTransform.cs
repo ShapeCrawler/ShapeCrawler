@@ -1,9 +1,13 @@
 ﻿using SlideDotNet.Exceptions;
 using SlideDotNet.Models.SlideComponents;
 using SlideDotNet.Services.Placeholders;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Models.Transforms
 {
+    /// <summary>
+    /// <inheritdoc cref="IInnerTransform"/>
+    /// </summary>
     public class PlaceholderTransform : IInnerTransform
     {
         private readonly PlaceholderLocationData _placeholderLocationData;
@@ -16,10 +20,16 @@ namespace SlideDotNet.Models.Transforms
 
         public long Height => _placeholderLocationData.Height;
 
+        #region Constructors
+
         public PlaceholderTransform(PlaceholderLocationData placeholderLocationData)
         {
             _placeholderLocationData = placeholderLocationData;
         }
+
+        #endregion Constructors
+
+        #region Public Methods
 
         public void SetX(long x)
         {
@@ -40,5 +50,7 @@ namespace SlideDotNet.Models.Transforms
         {
             throw new NextVersionFeatureException(ExceptionMessages.PropertyCanChangedInNextVersion);
         }
+
+        #endregion Public Methods
     }
 }

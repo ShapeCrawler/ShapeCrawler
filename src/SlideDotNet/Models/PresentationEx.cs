@@ -111,8 +111,9 @@ namespace SlideDotNet.Models
 
         private EditAbleCollection<Slide> InitSlides()
         {
-            var preSettings = new PreSettings(_sdkPre.PresentationPart.Presentation);
-            var slideCollection = SlideCollection.Create(_sdkPre, preSettings);
+            var sdkPrePart = _sdkPre.PresentationPart;
+            var preSettings = new PreSettings(sdkPrePart.Presentation);
+            var slideCollection = SlideCollection.Create(sdkPrePart, preSettings);
 
             return slideCollection;
         }
@@ -131,14 +132,12 @@ namespace SlideDotNet.Models
         private void ThrowIfInvalid(Stream stream)
         {
             Check.NotNull(stream, nameof(stream));
-
             ThrowIfPptxSizeLarge(stream.Length);
         }
 
         private void ThrowIfInvalid(byte[] bytes)
         {
             Check.NotNull(bytes, nameof(bytes));
-
             ThrowIfPptxSizeLarge(bytes.Length);
         }
 

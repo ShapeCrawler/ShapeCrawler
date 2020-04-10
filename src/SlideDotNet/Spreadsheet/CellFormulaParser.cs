@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+// ReSharper disable All
 
 namespace SlideDotNet.Spreadsheet
 {
-    public class CellFormula
+    /// <summary>
+    /// Represents a cell formula parser.
+    /// </summary>
+    public class CellFormulaParser
     {
         #region Fields
 
@@ -14,7 +18,7 @@ namespace SlideDotNet.Spreadsheet
 
         #region Constructors
 
-        public CellFormula(string cellsFormula)
+        public CellFormulaParser(string cellsFormula)
         {
             _cellsFormula = cellsFormula;
         }

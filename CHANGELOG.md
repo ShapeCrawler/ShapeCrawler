@@ -4,7 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Version 0.4.0 - Unreleased
+## Version 0.5.0 - Unreleased
+- Added `ShapeEx.GeometryType` property, conating the geometric form:
+```
+public enum GeometryType
+{
+    Line,
+    LineInverse,
+    Triangle,
+    RightTriangle,
+    Rectangle,
+    ...
+```
+
+## Version 0.4.0 - 2020-03-28
 ### Added
 - Added setters for `X`, `Y`, `Width` and `Height` properties of non-placeholder shapes;
 - Added `ShapeEx.IsGrouped` boolean property to determine whether the shape is grouped;

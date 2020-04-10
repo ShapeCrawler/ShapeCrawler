@@ -19,7 +19,7 @@ namespace SlideDotNet.Tests
     public class PlaceholderTests
     {
         [Fact]
-        public void Equals_Test()
+        public void Equals_Test_Case1()
         {
             // ARRANGE
             var stubPhXml1 = new PlaceholderData { PlaceholderType = PlaceholderType.Title };
@@ -29,27 +29,37 @@ namespace SlideDotNet.Tests
             var stubPhXml3 = new PlaceholderData { PlaceholderType = PlaceholderType.Custom, Index = 1};
             var phSl3 = new PlaceholderLocationData(stubPhXml3);
             var phSl4 = new PlaceholderLocationData(stubPhXml3);
-            var custom = new PlaceholderData
+
+            // ACT
+            var isEquals1 = phSl1.Equals(phSl2);
+            var isEquals2 = phSl1.Equals(phSl3);
+            var isEquals3 = phSl3.Equals(phSl4);
+
+            // ASSERT
+            Assert.True(isEquals1);
+            Assert.False(isEquals2);
+            Assert.True(isEquals3);
+        }
+
+        [Fact]
+        public void Equals_Test_Case2()
+        {
+            // ARRANGE
+            var customIndex4 = new PlaceholderData
             {
                 Index = 4,
                 PlaceholderType = PlaceholderType.Custom
             };
-            var sldNum = new PlaceholderData
+            var sldNumIndex4 = new PlaceholderData
             {
                 Index = 4,
                 PlaceholderType = PlaceholderType.SlideNumber
             };
 
             // ACT
-            var isEquals1 = phSl1.Equals(phSl2);
-            var isEquals2 = phSl1.Equals(phSl3);
-            var isEquals3 = phSl3.Equals(phSl4);
-            var isEquals4 = custom.Equals(sldNum);
+            var isEquals4 = customIndex4.Equals(sldNumIndex4);
 
             // ASSERT
-            Assert.True(isEquals1);
-            Assert.False(isEquals2);
-            Assert.True(isEquals3);
             Assert.False(isEquals4);
         }
 
@@ -97,6 +107,5 @@ namespace SlideDotNet.Tests
             Assert.Equal(expectedMessage, ex.Message);
             Assert.Equal(expectedCode, ex.ErrorCode);
         }
-
     }
 }
