@@ -38,6 +38,8 @@ namespace SlideDotNet.Models.SlideComponents.Chart
         public Series(ChartType type, OpenXmlElement sdkSeries, ChartPart sdkChartPart)
         {
             Check.NotNull(sdkSeries, nameof(sdkSeries));
+            Check.NotNull(sdkChartPart, nameof(sdkChartPart));
+
             _sdkChartPart = sdkChartPart ?? throw new ArgumentNullException(nameof(sdkChartPart));
             _pointValues = new Lazy<List<double>>(GetPointValues(sdkSeries));
             Type = type;
@@ -60,15 +62,7 @@ namespace SlideDotNet.Models.SlideComponents.Chart
                 numberReference = sdkSeries.GetFirstChild<C.YValues>().NumberReference;
             }
 
-            var numberingCache = numberReference.NumberingCache;
-            if (numberingCache != null)
-            {
-                return PointValueParser.FromCache(numberingCache).ToList(); //TODO: remove ToList()
-            }
-
-            var embeddedPackagePart = _sdkChartPart.EmbeddedPackagePart;
-            var values = PointValueParser.FromFormula(numberReference.Formula, embeddedPackagePart).ToList(); //TODO: remove ToList()
-            return values;
+            return PointValueParser.FromNumRef(numberReference, _sdkChartPart.EmbeddedPackagePart).ToList(); //TODO: remove to list
         }
 
         #endregion Private Methods

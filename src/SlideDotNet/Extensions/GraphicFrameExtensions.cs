@@ -1,4 +1,5 @@
-﻿using P = DocumentFormat.OpenXml.Presentation;
+﻿using System;
+using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Extensions
@@ -18,7 +19,7 @@ namespace SlideDotNet.Extensions
         {
             var grData = grFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
             
-            return grData.Uri.Value.Equals(ChartUri);
+            return grData.Uri.Value.Equals(ChartUri, StringComparison.Ordinal);
         }
     }
 }

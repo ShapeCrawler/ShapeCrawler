@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using SlideDotNet.Enums;
 using SlideDotNet.Services;
+using SlideDotNet.Services.Placeholders;
 using SlideDotNet.Statics;
+using SlideDotNet.Validation;
 
 namespace SlideDotNet.Models.Settings
 {
@@ -16,13 +19,15 @@ namespace SlideDotNet.Models.Settings
 
         #region Properties
 
-        public IPreSettings PreSettings { get; private set; }
-
         public SlidePart SkdSlidePart { get; private set; }
+
+        public OpenXmlElement SdkElement { get; private set; }
+
+        public IPreSettings PreSettings { get; private set; }
 
         public PlaceholderFontService PlaceholderFontService { get; private set; }
 
-        public OpenXmlElement SdkElement { get; private set; }
+        public IPlaceholderService PlaceholderService { get; private set; }
 
         #endregion Properties
 
@@ -37,7 +42,13 @@ namespace SlideDotNet.Models.Settings
 
         #region Public Methods
 
-        public bool TryFromMasterOther(int prLvl, out int fh)
+        /// <summary>
+        /// Tries to find matched font height from master/layout slides.
+        /// </summary>
+        /// <param name="prLvl"></param>
+        /// <param name="fh"></param>
+        /// <returns></returns>
+        public bool TryGetFontHeight(int prLvl, out int fh)
         {
             if (prLvl < 1 || prLvl > FormatConstants.MaxPrLevel)
             {
@@ -71,27 +82,47 @@ namespace SlideDotNet.Models.Settings
 
         public class Builder
         {
+            private readonly SlidePart _sdkSldPart;
             private readonly IPreSettings _preSettings;
             private readonly PlaceholderFontService _fontService;
-            private readonly SlidePart _sdkSldPart;
+            private readonly IPlaceholderService _placeholderService;
 
-            public Builder(IPreSettings preSettings, PlaceholderFontService fontService, SlidePart sdkSldPart)
+            #region Constructors
+
+            public Builder(IPreSettings preSettings, PlaceholderFontService fontService, SlidePart sdkSldPart):
+                this(preSettings, fontService, sdkSldPart, new PlaceholderService(sdkSldPart.SlideLayoutPart))
             {
-                _preSettings = preSettings;
-                _fontService = fontService;
-                _sdkSldPart = sdkSldPart;
+
             }
 
-            public IShapeContext Build(OpenXmlElement openXmlElement)
+
+            public Builder(IPreSettings preSettings, PlaceholderFontService fontService, SlidePart sdkSldPart, IPlaceholderService placeholderService)
             {
+                _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
+                _fontService = fontService ?? throw new ArgumentNullException(nameof(fontService));
+                _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
+                _placeholderService = placeholderService;
+            }
+
+            #endregion Constructors
+
+            #region Public Methods
+
+            public IShapeContext Build(OpenXmlElement sdkElement)
+            {
+                Check.NotNull(sdkElement, nameof(sdkElement));
+
                 return new ShapeContext
                 {
                     PreSettings = _preSettings,
                     PlaceholderFontService = _fontService,
+                    PlaceholderService = _placeholderService,
                     SkdSlidePart = _sdkSldPart,
-                    SdkElement = openXmlElement
+                    SdkElement = sdkElement
                 };
             }
+
+            #endregion Public Methods
         }
 
         #endregion Builder

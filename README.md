@@ -50,19 +50,20 @@ foreach (var sp in shapes)
 ```
 
 ## Changelog
-### Version 0.4.0 - 2020-03-28
+### Version 0.5.0 - 2020-05-02
 #### Added
-- Added setters for `X`, `Y`, `Width` and `Height` properties of non-placeholder shapes;
-- Added `ShapeEx.IsGrouped` boolean property to determine whether the shape is grouped;
-- Added APIs to remove table row
-  ```
-  var tableRows = shape.Table.Rows;
-  // remove by index
-  tableRows.RemoveAt(0);
-  // remove by instance
-  var row = tableRows.First();
-  tableRows.Remove(row);
-  ```
+- Added `ShapeEx.GeometryType` property, conating the geometric form:
+```
+public enum GeometryType
+{
+    Line,
+    LineInverse,
+    Triangle,
+    RightTriangle,
+    Rectangle,
+    ...
+```
+- Added `ChartEx.XValues` property for charts like ScatterChart.
 
 To find out more, please check out the [CHANGELOG](https://github.com/adamshakhabov/SlideDotNet/blob/master/CHANGELOG.md).
 

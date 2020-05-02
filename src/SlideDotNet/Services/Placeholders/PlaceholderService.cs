@@ -16,7 +16,7 @@ namespace SlideDotNet.Services.Placeholders
     /// <summary>
     /// <inheritdoc cref="IPlaceholderService"/>
     /// </summary>
-    public class PlaceholderLocationService : IPlaceholderService
+    public class PlaceholderService : IPlaceholderService
     {
         #region Fields
 
@@ -26,7 +26,7 @@ namespace SlideDotNet.Services.Placeholders
 
         #region Constructors
 
-        public PlaceholderLocationService(SlideLayoutPart sldLtPart)
+        public PlaceholderService(SlideLayoutPart sldLtPart)
         {
             Check.NotNull(sldLtPart, nameof(sldLtPart));
             Init(sldLtPart);
@@ -36,7 +36,7 @@ namespace SlideDotNet.Services.Placeholders
 
         #region Public Methods
 
-        public PlaceholderLocationData TryGet(OpenXmlCompositeElement sdkCompositeElement)
+        public PlaceholderLocationData TryGetLocation(OpenXmlCompositeElement sdkCompositeElement)
         {
             Check.NotNull(sdkCompositeElement, nameof(sdkCompositeElement));
 
@@ -56,35 +56,26 @@ namespace SlideDotNet.Services.Placeholders
             return result;
         }
 
+        public PlaceholderType GetPlaceholderType(OpenXmlElement sdkElement)
+        {
+            var sdkPlaceholder = sdkElement.Descendants<P.PlaceholderShape>().First();
+
+            return GetPlaceholderType(sdkPlaceholder);
+        }
+
         /// <summary>
         /// Gets placeholder data from SDK-element.
         /// </summary>
         /// <param name="sdkElement">Placeholder which is placeholder.</param>
-        public static PlaceholderData CreatePlaceholderData(OpenXmlElement sdkElement)
+        public PlaceholderData CreatePlaceholderData(OpenXmlElement sdkElement)
         {
             Check.NotNull(sdkElement, nameof(sdkElement));
 
             var result = new PlaceholderData();
             var ph = sdkElement.Descendants<P.PlaceholderShape>().First();
-            var phTypeXml = ph.Type;
 
             // TYPE
-            if (phTypeXml == null)
-            {
-                result.PlaceholderType = PlaceholderType.Custom;
-            }
-            else
-            {
-                // Simple title and centered title placeholders were united
-                if (phTypeXml == P.PlaceholderValues.Title || phTypeXml == P.PlaceholderValues.CenteredTitle)
-                {
-                    result.PlaceholderType = PlaceholderType.Title;
-                }
-                else
-                {
-                    result.PlaceholderType = Enum.Parse<PlaceholderType>(phTypeXml.Value.ToString());
-                }
-            }
+            result.PlaceholderType = GetPlaceholderType(ph);
 
             // INDEX
             if (ph.Index != null)
@@ -95,7 +86,7 @@ namespace SlideDotNet.Services.Placeholders
             return result;
         }
 
-        public static PlaceholderFontData PlaceholderFontDataFromCompositeElement(OpenXmlCompositeElement sdkCompositeElement)
+        public PlaceholderFontData PlaceholderFontDataFromCompositeElement(OpenXmlCompositeElement sdkCompositeElement)
         {
             var placeholderData = CreatePlaceholderData(sdkCompositeElement);
 
@@ -109,6 +100,28 @@ namespace SlideDotNet.Services.Placeholders
         #endregion
 
         #region Private Methods
+
+        private PlaceholderType GetPlaceholderType(P.PlaceholderShape sdkPlaceholder)
+        {
+            var phTypeXml = sdkPlaceholder.Type;
+
+            if (phTypeXml == null)
+            {
+                return PlaceholderType.Custom;
+            }
+            else
+            {
+                // Simple title and centered title placeholders were united
+                if (phTypeXml == P.PlaceholderValues.Title || phTypeXml == P.PlaceholderValues.CenteredTitle)
+                {
+                    return PlaceholderType.Title;
+                }
+                else
+                {
+                    return Enum.Parse<PlaceholderType>(phTypeXml.Value.ToString());
+                }
+            }
+        }
 
         private void Init(SlideLayoutPart sldLtPart)
         {

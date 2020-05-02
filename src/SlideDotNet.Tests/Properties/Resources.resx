@@ -190,4 +190,7 @@
   <data name="_024" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\024.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="_025" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resource\025.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

@@ -25,12 +25,14 @@ namespace SlideDotNet.Collections
         public SeriesCollection(IEnumerable<OpenXmlElement> sdkCharts, ChartPart sdkChartPart)
         {
             Check.NotEmpty(sdkCharts, nameof(sdkCharts));
+            Check.NotNull(sdkChartPart, nameof(sdkChartPart));
 
-            var tempSeriesCollection = new LinkedList<Series>();
+            var tempSeriesCollection = new LinkedList<Series>(); //TODO: make weak reference
             foreach (var nextSdkChart in sdkCharts)
             {
                 Enum.TryParse(nextSdkChart.LocalName, true, out ChartType chartType);
-                var nextSdkChartSeriesCollection = nextSdkChart.ChildElements.Where(e => e.LocalName.Equals("ser"));
+                var nextSdkChartSeriesCollection = nextSdkChart.ChildElements
+                    .Where(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
                 foreach (var sdkSeries in nextSdkChartSeriesCollection)
                 {
                     var series = new Series(chartType, sdkSeries, sdkChartPart);

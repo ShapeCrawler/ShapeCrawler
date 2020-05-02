@@ -5,12 +5,10 @@ using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.SlideComponents;
 using SlideDotNet.Services.Placeholders;
-using SlideDotNet.Services.ShapeCreators;
-using P = DocumentFormat.OpenXml.Presentation;
-using A = DocumentFormat.OpenXml.Drawing;
+
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace SlideDotNet.Services
+namespace SlideDotNet.Services.ShapeCreators
 {
     /// <summary>
     /// <inheritdoc cref="IShapeFactory"/>
@@ -37,7 +35,7 @@ namespace SlideDotNet.Services
         public IList<ShapeEx> FromSldPart(SlidePart sdkSldPart)
         {
             var sldPhFontService = new PlaceholderFontService(sdkSldPart); //TODO: make DI
-            var phService = new PlaceholderLocationService(sdkSldPart.SlideLayoutPart);
+            var phService = new PlaceholderService(sdkSldPart.SlideLayoutPart);
             var transformFactory = new InnerTransformFactory(phService);
             var geometryFactory = new GeometryFactory(phService);
             var shapeContextBuilder = new ShapeContext.Builder(_preSettings, sldPhFontService,sdkSldPart);

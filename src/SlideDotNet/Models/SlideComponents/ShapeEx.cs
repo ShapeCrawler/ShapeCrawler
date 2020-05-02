@@ -146,17 +146,17 @@ namespace SlideDotNet.Models.SlideComponents
         /// <summary>
         /// Returns chart. Throws exception if shape content type is not <see cref="ShapeContentType.Chart"/>
         /// </summary>
-        public IChart Chart => _chart ?? throw new SlideDotNetException(ExceptionMessages.NoChart);
+        public IChart Chart => _chart ?? throw new NotSupportedException(ExceptionMessages.NoChart);
 
         /// <summary>
         /// Returns table. Throws exception if shape content type is not <see cref="ShapeContentType.Table"/>
         /// </summary>
-        public TableEx Table => _table ?? throw new SlideDotNetException(ExceptionMessages.NoTable);
+        public TableEx Table => _table ?? throw new NotSupportedException(ExceptionMessages.NoTable);
 
         /// <summary>
         /// Returns picture. Throws exception if shape content type is not a <see cref="ShapeContentType.Picture"/>
         /// </summary>
-        public PictureEx Picture => _picture ?? throw new SlideDotNetException(ExceptionMessages.NoPicture);
+        public PictureEx Picture => _picture ?? throw new NotSupportedException(ExceptionMessages.NoPicture);
 
         /// <summary>
         /// Returns grouped shapes. Throws exception if shape content type is not <see cref="ShapeContentType.Group"/>
@@ -166,7 +166,7 @@ namespace SlideDotNet.Models.SlideComponents
         /// <summary>
         /// Returns OLE object content.
         /// </summary>
-        public OleObject OleObject => _ole ?? throw new SlideDotNetException(ExceptionMessages.NoOleObject);
+        public OleObject OleObject => _ole ?? throw new NotSupportedException(ExceptionMessages.NoOleObject);
 
         /// <summary>
         /// Determines whether the shape is placeholder.
@@ -182,10 +182,10 @@ namespace SlideDotNet.Models.SlideComponents
             {
                 if (!IsPlaceholder)
                 {
-                    throw new RuntimeDefinedPropertyException(ExceptionMessages.ShapeIsNotPlaceholder);
+                    throw new NotSupportedException(ExceptionMessages.ShapeIsNotPlaceholder);
                 }
-
-                return PlaceholderLocationService.CreatePlaceholderData(_context.SdkElement).PlaceholderType; //TODO: cache result
+                
+                return _context.PlaceholderService.GetPlaceholderType(_context.SdkElement);
             }
         }
 

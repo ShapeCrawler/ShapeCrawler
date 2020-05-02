@@ -45,7 +45,7 @@ namespace SlideDotNet.Services.ShapeCreators
             if (sdkElement is P.GraphicFrame sdkGraphicFrame)
             {
                 var grData = sdkElement.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
-                if (grData.Uri.Value.Equals(Uri))
+                if (grData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
                 {
                     var spContext = _shapeContextBuilder.Build(sdkElement);
                     var innerTransform = _transformFactory.FromComposite(sdkGraphicFrame);

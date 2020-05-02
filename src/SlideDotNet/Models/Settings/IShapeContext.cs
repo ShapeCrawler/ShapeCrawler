@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Services;
+using SlideDotNet.Services.Placeholders;
 
 namespace SlideDotNet.Models.Settings
 {
@@ -19,6 +20,8 @@ namespace SlideDotNet.Models.Settings
         /// </summary>
         PlaceholderFontService PlaceholderFontService { get; }
 
+        public IPlaceholderService PlaceholderService { get; }
+
         /// <summary>
         /// Returns a <see cref="OpenXmlElement"/> instance.
         /// </summary>
@@ -27,6 +30,6 @@ namespace SlideDotNet.Models.Settings
         SlidePart SkdSlidePart { get; }
 
 
-        bool TryFromMasterOther(int prLvl, out int fh);
+        bool TryGetFontHeight(int prLvl, out int fh);
     }
 }

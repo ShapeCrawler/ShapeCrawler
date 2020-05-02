@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 
@@ -17,7 +18,7 @@ namespace SlideDotNet.Services
         public static Dictionary<int, int> FromCompositeElement(OpenXmlCompositeElement compositeElement)
         {
             var result = new Dictionary<int, int>();
-            foreach (var textPr in compositeElement.Elements().Where(e => e.LocalName.StartsWith("lvl"))) // <a:lvl1pPr>, <a:lvl2pPr>, etc.
+            foreach (var textPr in compositeElement.Elements().Where(e => e.LocalName.StartsWith("lvl", StringComparison.Ordinal))) // <a:lvl1pPr>, <a:lvl2pPr>, etc.
             {
                 var fs = textPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.DefaultRunProperties>()?.FontSize;
                 if (fs == null)

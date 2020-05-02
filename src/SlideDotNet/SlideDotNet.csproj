@@ -23,6 +23,10 @@ SlideDotNet is a fluent wrapper around Open XML SDK for the processing of PowerP
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.10.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
@@ -32,6 +36,7 @@ SlideDotNet is a fluent wrapper around Open XML SDK for the processing of PowerP
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\.editorconfig" Link=".editorconfig" />
     <None Include="..\..\resources\logo.jpg">
       <Pack>True</Pack>
       <PackagePath></PackagePath>

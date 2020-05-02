@@ -13,6 +13,7 @@ using SlideDotNet.Tests.Helpers;
 using Xunit;
 using P = DocumentFormat.OpenXml.Presentation;
 using System.Linq;
+using SlideDotNet.Services.ShapeCreators;
 
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
@@ -533,10 +534,10 @@ namespace SlideDotNet.Tests
             var pieChart7Categories = pieChart7.Categories;
 
             // ACT
-            var c1 = pieChart7Categories[0];
-            var c2 = pieChart7Categories[1];
-            var c3 = pieChart7Categories[2];
-            var c4 = pieChart7Categories[3];
+            var c1 = pieChart7Categories[0].Value;
+            var c2 = pieChart7Categories[1].Value;
+            var c3 = pieChart7Categories[2].Value;
+            var c4 = pieChart7Categories[3].Value;
 
             pre.Close();
 
@@ -756,10 +757,10 @@ namespace SlideDotNet.Tests
             var sldPart = xmlDoc.PresentationPart.SlideParts.First();
             var spId3 = sldPart.Slide.CommonSlideData.ShapeTree.Elements<DocumentFormat.OpenXml.Presentation.Shape>().Single(sp => sp.GetId() == 3);
             var sldLtPart = sldPart.SlideLayoutPart;
-            var phService = new PlaceholderLocationService(sldLtPart);
+            var phService = new PlaceholderService(sldLtPart);
 
             // ACT
-            var type = phService.TryGet(spId3).PlaceholderType;
+            var type = phService.TryGetLocation(spId3).PlaceholderType;
 
             // CLOSE
             xmlDoc.Close();
@@ -775,9 +776,10 @@ namespace SlideDotNet.Tests
             var xmlDoc = PresentationDocument.Open(ms, false);
             var sldPart = xmlDoc.PresentationPart.SlideParts.First();
             var spId3 = sldPart.Slide.CommonSlideData.ShapeTree.Elements<DocumentFormat.OpenXml.Presentation.Shape>().Single(sp => sp.GetId() == 3);
+            var placeholderService = new PlaceholderService(sldPart.SlideLayoutPart);
 
             // ACT
-            var phXml = PlaceholderLocationService.CreatePlaceholderData(spId3);
+            var phXml = placeholderService.CreatePlaceholderData(spId3);
 
             // CLOSE
             xmlDoc.Close();

@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Models.SlideComponents;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideDotNet.Services
+namespace SlideDotNet.Services.ShapeCreators
 {
     /// <summary>
     /// Represents a factory to generate instances of the <see cref="ShapeEx"/> class.

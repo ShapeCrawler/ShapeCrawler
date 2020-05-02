@@ -72,7 +72,7 @@ namespace SlideDotNet.Services
 
             GeometryType FromLayout()
             {
-                var placeholderLocationData = _phService.TryGet(sdkCompositeElement);
+                var placeholderLocationData = _phService.TryGetLocation(sdkCompositeElement);
                 if (placeholderLocationData == null)
                 {
                     return GeometryType.Rectangle;

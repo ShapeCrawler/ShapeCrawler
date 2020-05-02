@@ -1,4 +1,5 @@
-﻿using SlideDotNet.Enums;
+﻿using System;
+using SlideDotNet.Enums;
 
 namespace SlideDotNet.Exceptions
 {
@@ -15,7 +16,7 @@ namespace SlideDotNet.Exceptions
 
         public static SlidesMuchMoreException FromMax(int maxNum)
         {
-            var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString());
+            var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString(), StringComparison.Ordinal);
             return new SlidesMuchMoreException(message);
         }
     }

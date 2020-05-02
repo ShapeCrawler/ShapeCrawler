@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using P = DocumentFormat.OpenXml.Presentation;
 using D = DocumentFormat.OpenXml.Drawing;
@@ -86,7 +87,7 @@ namespace SlideDotNet.Extensions
             {
                 return false;
             }
-            var endsWithChart = grData?.Uri?.Value?.EndsWith("chart");
+            var endsWithChart = grData?.Uri?.Value?.EndsWith("chart", StringComparison.Ordinal);
             return endsWithChart != null && endsWithChart != false;
         }
 

@@ -50,7 +50,7 @@ namespace SlideDotNet.Services
             }
             else
             {
-                var placeholderLocationData = _phService.TryGet(sdkCompositeElement);
+                var placeholderLocationData = _phService.TryGetLocation(sdkCompositeElement);
                 innerTransform = new PlaceholderTransform(placeholderLocationData);
             }
 

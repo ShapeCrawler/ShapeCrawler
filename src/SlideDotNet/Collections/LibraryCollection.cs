@@ -6,7 +6,7 @@ namespace SlideDotNet.Collections
     /// <summary>
     /// An abstract library collection.
     /// </summary>
-    public abstract class LibraryCollection<T> : IEnumerable<T>
+    public class LibraryCollection<T> : IEnumerable<T>
     {
         #region Fields
 
@@ -34,5 +34,15 @@ namespace SlideDotNet.Collections
         /// Gets the number of series items in the collection.
         /// </summary>
         public int Count => CollectionItems.Count;
+
+        public LibraryCollection()
+        {
+
+        }
+
+        public LibraryCollection(IEnumerable<T> items)
+        {
+            CollectionItems = new List<T>(items);
+        }
     }
 }

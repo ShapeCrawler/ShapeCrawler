@@ -5,27 +5,31 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Enums;
 using SlideDotNet.Extensions;
-using SlideDotNet.Services.Placeholders;
 using SlideDotNet.Validation;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable PossibleNullReferenceException
 
-namespace SlideDotNet.Services
+namespace SlideDotNet.Services.Placeholders
 {
     /// <summary>
-    /// Represents a font size manager for placeholder elements
+    /// Represents a font height manager for placeholder elements.
     /// </summary>
     public class PlaceholderFontService
     {
         private readonly SlidePart _sdkSldPart;
+
         private readonly Lazy<HashSet<PlaceholderFontData>> _layoutPlaceholders;
         private readonly Lazy<HashSet<PlaceholderFontData>> _masterPlaceholders;
         private readonly Lazy<Dictionary<int, int>> _masterBodyFontHeights;
+        private readonly IPlaceholderService _placeholderService;
 
-        public PlaceholderFontService(SlidePart sdkSldPart)
+        #region Constructors
+
+        public PlaceholderFontService(SlidePart sdkSldPart, IPlaceholderService placeholderService)
         {
             _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
+            _placeholderService = placeholderService ?? throw new ArgumentNullException(nameof(placeholderService));
 
             var layoutSldData = _sdkSldPart.SlideLayoutPart.SlideLayout.CommonSlideData;
             var masterSldData = _sdkSldPart.SlideLayoutPart.SlideMasterPart.SlideMaster.CommonSlideData;
@@ -33,6 +37,16 @@ namespace SlideDotNet.Services
             _masterPlaceholders = new Lazy<HashSet<PlaceholderFontData>>(InitLayoutMaster(masterSldData));
             _masterBodyFontHeights = new Lazy<Dictionary<int, int>>(InitBodyTypePlaceholder(_sdkSldPart));
         }
+
+        public PlaceholderFontService(SlidePart sdkSldPart)
+            :this(sdkSldPart, new PlaceholderService(sdkSldPart.SlideLayoutPart))
+        {
+
+        }
+
+        #endregion Constructors
+
+        #region Public Methods
 
         /// <summary>
         /// Tries gets font height. Return null if font height is not defined.
@@ -44,7 +58,7 @@ namespace SlideDotNet.Services
         {
             Check.NotNull(sdkCompositeElement, nameof(sdkCompositeElement));
 
-            var paramPlaceholderData = PlaceholderLocationService.CreatePlaceholderData(sdkCompositeElement);
+            var paramPlaceholderData = _placeholderService.CreatePlaceholderData(sdkCompositeElement);
             
             // From slide layout element
             var lPlaceholder = _layoutPlaceholders.Value.FirstOrDefault(e => e.Equals(paramPlaceholderData));
@@ -76,6 +90,8 @@ namespace SlideDotNet.Services
             return null;
         }
 
+        #endregion Public Methods
+
         #region Private Methods
 
         private HashSet<PlaceholderFontData> InitLayoutMaster(P.CommonSlideData layoutMasterCommonSlideData)
@@ -90,14 +106,14 @@ namespace SlideDotNet.Services
             return fontDataPlaceholders;
         }
 
-        private static Dictionary<int, int> InitBodyTypePlaceholder(SlidePart xmlSldPart)
+        private static Dictionary<int, int> InitBodyTypePlaceholder(SlidePart sdkSldPart)
         {
-            return FontHeightParser.FromCompositeElement(xmlSldPart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.BodyStyle);
+            return FontHeightParser.FromCompositeElement(sdkSldPart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.BodyStyle);
         }
 
-        private static PlaceholderFontData FromLayoutMasterElement(P.Shape sdkShape)
+        private PlaceholderFontData FromLayoutMasterElement(P.Shape sdkShape)
         {
-            var placeholderFontData = PlaceholderLocationService.PlaceholderFontDataFromCompositeElement(sdkShape);
+            var placeholderFontData = _placeholderService.PlaceholderFontDataFromCompositeElement(sdkShape);
             placeholderFontData.LvlFontHeights = FontHeightParser.FromCompositeElement(sdkShape.TextBody.ListStyle);
 
             if (!placeholderFontData.LvlFontHeights.Any()) // font height is still not known

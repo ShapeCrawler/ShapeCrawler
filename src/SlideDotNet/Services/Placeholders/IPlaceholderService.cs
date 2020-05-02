@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
+using SlideDotNet.Enums;
 
 namespace SlideDotNet.Services.Placeholders
 {
@@ -14,6 +15,12 @@ namespace SlideDotNet.Services.Placeholders
         /// <remarks>
         /// Placeholder can have their location and size property values data on the slide.
         /// </remarks>
-        PlaceholderLocationData TryGet(OpenXmlCompositeElement sdkCompositeElement);
+        PlaceholderLocationData TryGetLocation(OpenXmlCompositeElement sdkCompositeElement);
+
+        PlaceholderFontData PlaceholderFontDataFromCompositeElement(OpenXmlCompositeElement sdkCompositeElement);
+
+        PlaceholderData CreatePlaceholderData(OpenXmlElement sdkElement);
+
+        PlaceholderType GetPlaceholderType(OpenXmlElement sdkElement);
     }
 }

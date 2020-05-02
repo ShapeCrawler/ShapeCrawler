@@ -132,7 +132,7 @@ namespace SlideDotNet.Models.TextBody
                 return _spContext.PreSettings.LlvFontHeights[_innerPrLvl.Value];
             }
 
-            var exist = _spContext.TryFromMasterOther(_innerPrLvl.Value, out int fh);
+            var exist = _spContext.TryGetFontHeight(_innerPrLvl.Value, out int fh);
             if (exist)
             {
                 return fh;

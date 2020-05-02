@@ -38,5 +38,9 @@ namespace SlideDotNet.Models.SlideComponents.Chart
         /// Returns collection of the chart category.
         /// </summary>
         CategoryCollection Categories { get; }
+
+        public bool HasXValues { get; }
+
+        public LibraryCollection<double> XValues { get; }
     }
 }

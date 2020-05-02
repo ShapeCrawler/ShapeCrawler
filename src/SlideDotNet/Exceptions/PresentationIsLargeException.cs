@@ -1,4 +1,5 @@
-﻿using SlideDotNet.Enums;
+﻿using System;
+using SlideDotNet.Enums;
 
 namespace SlideDotNet.Exceptions
 {
@@ -22,7 +23,7 @@ namespace SlideDotNet.Exceptions
         /// <param name="maxSize"></param>
         public static PresentationIsLargeException FromMax(int maxSize)
         {
-            var message = ExceptionMessages.PresentationIsLarge.Replace("{0}", maxSize.ToString());
+            var message = ExceptionMessages.PresentationIsLarge.Replace("{0}", maxSize.ToString(), StringComparison.Ordinal);
             return new PresentationIsLargeException(message);
         }
     }
