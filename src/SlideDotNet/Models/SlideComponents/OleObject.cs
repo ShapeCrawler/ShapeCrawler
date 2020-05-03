@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 
 namespace SlideDotNet.Models.SlideComponents
 {

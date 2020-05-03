@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Globalization;
 using SlideDotNet.Enums;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Models.SlideComponents

@@ -4,7 +4,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using SlideDotNet.Enums;
 using SlideDotNet.Services.Placeholders;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace SlideDotNet.Services

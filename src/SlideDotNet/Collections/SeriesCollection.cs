@@ -5,7 +5,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Enums;
 using SlideDotNet.Models.SlideComponents.Chart;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 // ReSharper disable PossibleMultipleEnumeration

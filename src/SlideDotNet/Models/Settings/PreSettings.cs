@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SlideDotNet.Services;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace SlideDotNet.Models.Settings

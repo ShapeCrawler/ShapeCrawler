@@ -534,10 +534,10 @@ namespace SlideDotNet.Tests
             var pieChart7Categories = pieChart7.Categories;
 
             // ACT
-            var c1 = pieChart7Categories[0].Value;
-            var c2 = pieChart7Categories[1].Value;
-            var c3 = pieChart7Categories[2].Value;
-            var c4 = pieChart7Categories[3].Value;
+            var c1 = pieChart7Categories[0].Name;
+            var c2 = pieChart7Categories[1].Name;
+            var c3 = pieChart7Categories[2].Name;
+            var c4 = pieChart7Categories[3].Name;
 
             pre.Close();
 

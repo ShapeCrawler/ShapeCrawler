@@ -5,8 +5,8 @@ using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Enums;
 using SlideDotNet.Services;
 using SlideDotNet.Services.Placeholders;
+using SlideDotNet.Shared;
 using SlideDotNet.Statics;
-using SlideDotNet.Validation;
 
 namespace SlideDotNet.Models.Settings
 {

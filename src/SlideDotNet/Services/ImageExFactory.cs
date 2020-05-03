@@ -2,7 +2,7 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Models;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 

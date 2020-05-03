@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 
 namespace SlideDotNet.Extensions
 {

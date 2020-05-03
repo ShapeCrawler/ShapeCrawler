@@ -13,7 +13,7 @@ using SlideDotNet.Models.Transforms;
 using SlideDotNet.Services;
 using SlideDotNet.Services.Builders;
 using SlideDotNet.Services.Placeholders;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 

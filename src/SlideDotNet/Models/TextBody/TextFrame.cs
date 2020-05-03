@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
 using SlideDotNet.Models.Settings;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Models.TextBody

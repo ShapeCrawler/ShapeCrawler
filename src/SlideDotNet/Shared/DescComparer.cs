@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SlideDotNet.Comparer
+namespace SlideDotNet.Shared
 {
     /// <summary>
     /// Represents a desc comparer.

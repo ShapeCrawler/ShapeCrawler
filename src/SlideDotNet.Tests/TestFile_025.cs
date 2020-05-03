@@ -27,8 +27,8 @@ namespace SlideDotNet.Tests
             // Act
             var chart8HasXValues = chart8.HasXValues;
             var chart11HasXValues = chart11.HasXValues;
-            var chart4ChildCatVal = chart4ChildCat.Value;
-            var chart4ParentCatVal = chart4ChildCat.Parent.Value;
+            var chart4ChildCatVal = chart4ChildCat.Name;
+            var chart4ParentCatVal = chart4ChildCat.Parent.Name;
 
             // Assert
             Assert.False(chart8HasXValues);

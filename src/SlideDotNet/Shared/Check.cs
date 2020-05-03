@@ -4,12 +4,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace SlideDotNet.Validation
+namespace SlideDotNet.Shared
 {
     /// <summary>
     /// Represents parameter checker.
     /// </summary>
-    public class Check
+    public static class Check
     {
         /// <summary>
         /// Checks whether specified object is not null.

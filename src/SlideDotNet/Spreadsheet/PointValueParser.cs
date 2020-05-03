@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 // ReSharper disable PossibleMultipleEnumeration
 

@@ -1,6 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Drawing;
 using SlideDotNet.Enums;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Services.Placeholders

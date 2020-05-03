@@ -4,8 +4,8 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Enums;
+using SlideDotNet.Shared;
 using SlideDotNet.Spreadsheet;
-using SlideDotNet.Validation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 // ReSharper disable PossibleMultipleEnumeration
 

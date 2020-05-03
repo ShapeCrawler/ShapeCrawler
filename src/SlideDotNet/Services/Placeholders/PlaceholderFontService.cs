@@ -5,7 +5,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Enums;
 using SlideDotNet.Extensions;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable PossibleNullReferenceException

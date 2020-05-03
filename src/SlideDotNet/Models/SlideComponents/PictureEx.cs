@@ -1,5 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 
 namespace SlideDotNet.Models.SlideComponents
 {

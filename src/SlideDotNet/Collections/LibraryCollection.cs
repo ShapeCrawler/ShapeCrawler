@@ -10,7 +10,7 @@ namespace SlideDotNet.Collections
     {
         #region Fields
 
-        protected List<T> CollectionItems;
+        protected List<T> CollectionItems; //TODO: change on Array
 
         #endregion Fields
 
@@ -35,6 +35,8 @@ namespace SlideDotNet.Collections
         /// </summary>
         public int Count => CollectionItems.Count;
 
+        #region Constructors
+
         public LibraryCollection()
         {
 
@@ -44,5 +46,7 @@ namespace SlideDotNet.Collections
         {
             CollectionItems = new List<T>(items);
         }
+
+        #endregion Constructors
     }
 }

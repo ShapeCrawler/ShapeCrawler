@@ -5,7 +5,7 @@ using DocumentFormat.OpenXml.Presentation;
 using SlideDotNet.Extensions;
 using SlideDotNet.Models;
 using SlideDotNet.Models.Settings;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using Slide = SlideDotNet.Models.Slide;
 using P = DocumentFormat.OpenXml.Presentation;
 

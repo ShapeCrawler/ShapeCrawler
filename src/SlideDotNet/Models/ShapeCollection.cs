@@ -5,7 +5,7 @@ using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.SlideComponents;
 using SlideDotNet.Services;
 using SlideDotNet.Services.ShapeCreators;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable All
 

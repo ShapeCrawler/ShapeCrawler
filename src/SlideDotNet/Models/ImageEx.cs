@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 
 namespace SlideDotNet.Models
 {

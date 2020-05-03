@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using SlideDotNet.Comparer;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -57,19 +56,22 @@ namespace SlideDotNet.Collections
 
         private void AddMultiCategories(C.MultiLevelStringReference multiLvlStrRef)
         {
-            var parents = new SortedDictionary<uint, Category>(new DescComparer<uint>());
-            var levels = multiLvlStrRef.MultiLevelStringCache.Elements<C.Level>().Reverse();
+            var parents = new List<KeyValuePair<uint, Category>>();
+            var levels = multiLvlStrRef.MultiLevelStringCache.Elements<C.Level>().Reverse(); //TODO: try without Reverse()
             foreach (var lvl in levels)
             {
                 var ptElements = lvl.Elements<C.StringPoint>();
-                var nextParents = new SortedDictionary<uint, Category>(new DescComparer<uint>());
+                var nextParents = new List<KeyValuePair<uint, Category>>();
                 if (parents.Any())
                 {
+                    var descParents = parents.OrderByDescending(kvp => kvp.Key).ToList();
                     foreach (var pt in ptElements)
                     {
                         var index = pt.Index;
-                        var parent = parents.First(kvp => kvp.Key <= index);
-                        nextParents.Add(index, new Category(pt.NumericValue.InnerText, parent.Value));
+                        var catName = pt.NumericValue.InnerText;
+                        var parent = descParents.First(kvp => kvp.Key <= index);
+                        var category = new Category(catName, parent.Value);
+                        nextParents.Add(new KeyValuePair<uint, Category>(index, category));
                     }
                 }
                 else
@@ -77,15 +79,16 @@ namespace SlideDotNet.Collections
                     foreach (var pt in ptElements)
                     {
                         var index = pt.Index;
-                        nextParents.Add(index, new Category(pt.NumericValue.InnerText));
+                        var catName = pt.NumericValue.InnerText;
+                        var category = new Category(catName);
+                        nextParents.Add(new KeyValuePair<uint, Category>(index, category));
                     }
                 }
 
                 parents = nextParents;
             }
 
-            var ascParents = parents.OrderBy(kvp => kvp.Key);
-            CollectionItems = new List<Category>(ascParents.Select(kvp => kvp.Value));
+            CollectionItems = parents.Select(kvp => kvp.Value).ToList(parents.Count);
         }
 
         #endregion Private Methods

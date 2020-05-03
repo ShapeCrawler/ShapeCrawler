@@ -4,7 +4,7 @@ using System.Linq;
 using SlideDotNet.Collections;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.TableComponents;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable PossibleMultipleEnumeration
 

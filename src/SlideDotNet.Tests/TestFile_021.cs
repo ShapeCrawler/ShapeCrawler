@@ -40,7 +40,7 @@ namespace SlideDotNet.Tests
             Assert.Equal(56, pValueBar);
             Assert.Equal(ChartType.ScatterChart, chartTypeScatter);
             Assert.Equal(44, pValueScatter);
-            Assert.Equal("2015", category.Value);
+            Assert.Equal("2015", category.Name);
             Assert.Equal(17.35, pv);
         }
 

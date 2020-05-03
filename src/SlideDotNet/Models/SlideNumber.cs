@@ -1,4 +1,4 @@
-﻿using SlideDotNet.Validation;
+﻿using SlideDotNet.Shared;
 
 namespace SlideDotNet.Models
 {

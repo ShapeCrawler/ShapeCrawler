@@ -47,4 +47,8 @@ SlideDotNet is a fluent wrapper around Open XML SDK for the processing of PowerP
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Validation\" />
+  </ItemGroup>
+
 </Project>

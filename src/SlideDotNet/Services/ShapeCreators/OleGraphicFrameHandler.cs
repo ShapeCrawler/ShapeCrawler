@@ -4,7 +4,7 @@ using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.SlideComponents;
 using SlideDotNet.Services.Builders;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 using OleObject = SlideDotNet.Models.SlideComponents.OleObject;

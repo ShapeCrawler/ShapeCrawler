@@ -6,7 +6,7 @@ using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Enums;
 using SlideDotNet.Extensions;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable PossibleMultipleEnumeration

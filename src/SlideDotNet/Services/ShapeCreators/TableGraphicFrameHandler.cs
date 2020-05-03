@@ -5,7 +5,7 @@ using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.SlideComponents;
 using SlideDotNet.Models.TableComponents;
 using SlideDotNet.Services.Builders;
-using SlideDotNet.Validation;
+using SlideDotNet.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 

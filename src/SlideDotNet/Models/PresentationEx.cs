@@ -5,8 +5,8 @@ using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Collections;
 using SlideDotNet.Exceptions;
 using SlideDotNet.Models.Settings;
+using SlideDotNet.Shared;
 using SlideDotNet.Statics;
-using SlideDotNet.Validation;
 
 namespace SlideDotNet.Models
 {
