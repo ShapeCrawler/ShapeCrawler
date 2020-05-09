@@ -21,6 +21,8 @@ namespace SlideDotNet.Exceptions
 
         public const string NotTitle = "Chart has not a title.";
 
+        public static string SeriesHasNotName => $"The Series does not have a name. Use {nameof(Series.HasName)} to check whether series has a name.";
+
         /// <summary>
         /// Returns message string with placeholder.
         /// </summary>
@@ -34,13 +36,13 @@ namespace SlideDotNet.Exceptions
         public const string ForGroupedCanNotChanged =
             "This property can not be changed for a grouped shape. Use IsGrouped to check whether the shape is grouped.";
 
-        public static string NotXValues =
+        public static string NotXValues =>
             $"This chart type has not {nameof(ChartEx.XValues)} property. You can check it via {nameof(ChartEx.HasXValues)} property.";
 
-        public static string ChartCanNotHaveCategory =
+        public static string ChartCanNotHaveCategory =>
             $"#0 can not have category. You can check chart type via {nameof(ChartEx.Type)} property.";
 
-        public static string ShapeIsNotPlaceholder =
+        public static string ShapeIsNotPlaceholder =>
             $"The shape is not placeholder. You can check it via {nameof(ShapeEx.IsPlaceholder)} property.";
     }
 }

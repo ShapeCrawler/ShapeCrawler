@@ -189,10 +189,10 @@ namespace SlideDotNet.Models.SlideComponents.Chart
                 return xmlChartText.Descendants<C.StringPoint>().Single().InnerText;
             }
 
+            // Title of PieChart is its single series name
             if (Type == ChartType.PieChart)
             {
-                // Parses PieChart dynamic title
-                return _sdkCharts.Single().GetFirstChild<C.PieChartSeries>().GetFirstChild<C.SeriesText>().Descendants<C.StringPoint>().Single().InnerText;
+                return SeriesCollection.Single().Name;
             }
 
             return null;
