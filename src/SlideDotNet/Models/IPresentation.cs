@@ -7,7 +7,7 @@ namespace SlideDotNet.Models
     /// <summary>
     /// Represents a presentation.
     /// </summary>
-    public interface IPresentation : IDisposable
+    public interface IPresentation
     {
         /// <summary>
         /// Returns slides collection.

@@ -25,10 +25,10 @@ namespace SlideDotNet.Models.Settings
 
         #region Constructors
 
-        public PreSettings(P.Presentation xmlPresentation)
+        public PreSettings(P.Presentation sdkPresentation)
         {
-            Check.NotNull(xmlPresentation, nameof(xmlPresentation));
-            _lvlFontHeights = new Lazy<Dictionary<int, int>>(ParseFontHeights(xmlPresentation));
+            Check.NotNull(sdkPresentation, nameof(sdkPresentation));
+            _lvlFontHeights = new Lazy<Dictionary<int, int>>(ParseFontHeights(sdkPresentation));
         }
 
         #endregion Constructors

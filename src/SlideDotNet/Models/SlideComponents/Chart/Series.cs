@@ -82,7 +82,7 @@ namespace SlideDotNet.Models.SlideComponents.Chart
                 numReference = _sdkSeries.GetFirstChild<C.YValues>().NumberReference;
             }
 
-            return PointValueParser.FromNumRef(numReference, _sdkChartPart.EmbeddedPackagePart).ToList(); //TODO: remove to list
+            return PointValueParser.GetNumbers(numReference, _sdkChartPart.EmbeddedPackagePart).ToList(); //TODO: remove to list
         }
 
         private string GetNameOrDefault()

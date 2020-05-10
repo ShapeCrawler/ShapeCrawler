@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using SlideDotNet.Enums;
 using SlideDotNet.Models;
 using Xunit;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -39,8 +38,8 @@ namespace SlideDotNet.Tests
             Assert.False(chart11HasXValues);
             Assert.Equal("Dresses", chart4ChildCatVal);
             Assert.Equal("Clothing", chart4ParentCatVal);
-            Assert.Equal("Ряд1", serName1);
-            Assert.Equal("Ряд3", serName3);
+            Assert.Equal("Ряд 1", serName1);
+            Assert.Equal("Ряд 3", serName3);
         }
     }
 }

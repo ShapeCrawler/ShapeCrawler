@@ -19,7 +19,8 @@ namespace SlideDotNet.Models
 
         private PresentationDocument _sdkPre;
         private readonly Lazy<EditAbleCollection<Slide>> _slides;
-        private bool _disposed;
+        private bool _closed;
+        private PreSettings _preSettings;
 
         #endregion Fields
 
@@ -76,33 +77,40 @@ namespace SlideDotNet.Models
 
         #region Public Methods
 
+        /// <summary>
+        /// Saves presentation in specified file path.
+        /// </summary>
+        /// <param name="filePath"></param>
         public void SaveAs(string filePath)
         {
             Check.NotEmpty(filePath, nameof(filePath));
             _sdkPre = (PresentationDocument)_sdkPre.SaveAs(filePath);
         }
 
+        /// <summary>
+        /// Saves presentation in specified stream.
+        /// </summary>
+        /// <param name="stream"></param>
         public void SaveAs(Stream stream)
         {
             Check.NotNull(stream, nameof(stream));
             _sdkPre = (PresentationDocument)_sdkPre.Clone(stream);
         }
 
+        /// <summary>
+        /// Closes presentation.
+        /// </summary>
         public void Close()
         {
-            if (_disposed)
+            if (_closed)
             {
                 return;
             }
+
             _sdkPre.Close();
-            _disposed = true;
 
-            
-        }
 
-        public void Dispose()
-        {
-            Close();
+            _closed = true;
         }
 
         #endregion Public Methods
@@ -112,13 +120,13 @@ namespace SlideDotNet.Models
         private EditAbleCollection<Slide> InitSlides()
         {
             var sdkPrePart = _sdkPre.PresentationPart;
-            var preSettings = new PreSettings(sdkPrePart.Presentation);
-            var slideCollection = SlideCollection.Create(sdkPrePart, preSettings);
+            _preSettings = new PreSettings(sdkPrePart.Presentation);
+            var slideCollection = SlideCollection.Create(sdkPrePart, _preSettings);
 
             return slideCollection;
         }
 
-        private void ThrowIfInvalid(string path)
+        private static void ThrowIfInvalid(string path)
         {
             if (!File.Exists(path))
             {
@@ -129,13 +137,13 @@ namespace SlideDotNet.Models
             ThrowIfPptxSizeLarge(fileInfo.Length);
         }
 
-        private void ThrowIfInvalid(Stream stream)
+        private static void ThrowIfInvalid(Stream stream)
         {
             Check.NotNull(stream, nameof(stream));
             ThrowIfPptxSizeLarge(stream.Length);
         }
 
-        private void ThrowIfInvalid(byte[] bytes)
+        private static void ThrowIfInvalid(byte[] bytes)
         {
             Check.NotNull(bytes, nameof(bytes));
             ThrowIfPptxSizeLarge(bytes.Length);

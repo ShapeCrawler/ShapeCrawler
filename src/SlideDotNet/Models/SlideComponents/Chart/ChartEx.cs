@@ -234,7 +234,7 @@ namespace SlideDotNet.Models.SlideComponents.Chart
             {
                 return null;
             }
-            var points = PointValueParser.FromNumRef(sdkXValues.NumberReference, _sdkChartPart.EmbeddedPackagePart);
+            var points = PointValueParser.GetNumbers(sdkXValues.NumberReference, _sdkChartPart.EmbeddedPackagePart);
 
             return new LibraryCollection<double>(points);
         }

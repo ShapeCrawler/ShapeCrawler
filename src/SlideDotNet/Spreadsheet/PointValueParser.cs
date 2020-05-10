@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
@@ -23,7 +24,7 @@ namespace SlideDotNet.Spreadsheet
         /// <param name="numRef"></param>
         /// <param name="xlsxPackagePart"></param>
         /// <returns></returns>
-        public static IList<double> FromNumRef(C.NumberReference numRef, EmbeddedPackagePart xlsxPackagePart)
+        public static IList<double> GetNumbers(C.NumberReference numRef, EmbeddedPackagePart xlsxPackagePart)
         {
             Check.NotNull(numRef, nameof(numRef));
             Check.NotNull(xlsxPackagePart, nameof(xlsxPackagePart));
@@ -35,8 +36,9 @@ namespace SlideDotNet.Spreadsheet
                 var pointValues = new List<double>(sdkNumericValues.Count());
                 foreach (var numericValue in sdkNumericValues)
                 {
-                    var sdkValue = numericValue.InnerText.Replace(".", ",", StringComparison.Ordinal); // double type uses comma as decimal separator
-                    pointValues.Add(double.Parse(sdkValue));
+                    var number = double.Parse(numericValue.InnerText, CultureInfo.InvariantCulture.NumberFormat);
+                    var roundNumber = Math.Round(number, 1);
+                    pointValues.Add(roundNumber);
                 }
 
                 return pointValues;
@@ -52,41 +54,54 @@ namespace SlideDotNet.Spreadsheet
             {
                 return fromCache;
             }
-            var formula = strRef.Formula;
 
-            throw new NotImplementedException();
+            var formula = strRef.Formula;
+            var cellStrValues = GetCellStrValues(formula, xlsxPackagePart);
+
+            return cellStrValues.Single();
         }
 
         #endregion Public Methods
 
         #region Private Methods
 
-        private static IList<double> FromFormula(C.Formula formula, EmbeddedPackagePart xlsxPackagePart)
+        private static List<double> FromFormula(C.Formula formula, OpenXmlPart xlsxPackagePart)
+        {
+            var cellStrValues = GetCellStrValues(formula, xlsxPackagePart);
+
+            var cellNumberValues = new List<double>(cellStrValues.Count);
+            foreach (var cellValue in cellStrValues)
+            {
+                var sdkCellValueStr = cellValue;
+                sdkCellValueStr = sdkCellValueStr.Length == 0 ? "0" : sdkCellValueStr;
+                cellNumberValues.Add(double.Parse(sdkCellValueStr, CultureInfo.InvariantCulture.NumberFormat));
+            }
+
+            return cellNumberValues;
+        }
+
+        private static List<string> GetCellStrValues(C.Formula formula, OpenXmlPart xlsxPackagePart) //EmbeddedPackagePart : OpenXmlPart
         {
             //TODO: caching embeddedPackagePart
             var filteredFormula = formula.Text.Replace("'", string.Empty, StringComparison.Ordinal)
-                                                    .Replace("$", string.Empty, StringComparison.Ordinal); //eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5
+                .Replace("$", string.Empty, StringComparison.Ordinal); //eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5
             var sheetNameAndCellsFormula = filteredFormula.Split('!'); //eg: Sheet1!A2:A5 -> ['Sheet1', 'A2:A5']
-            var stream = xlsxPackagePart.GetStream();
-            var doc = SpreadsheetDocument.Open(stream, false);
-            var wbPart = doc.WorkbookPart;
+            var xlsxDoc = SpreadsheetDocument.Open(xlsxPackagePart.GetStream(), false);
+            var wbPart = xlsxDoc.WorkbookPart;
             string sheetId = wbPart.Workbook.Descendants<Sheet>().First(s => sheetNameAndCellsFormula[0].Equals(s.Name, StringComparison.Ordinal)).Id;
             var wsPart = (WorksheetPart)wbPart.GetPartById(sheetId);
             var sdkCells = wsPart.Worksheet.Descendants<Cell>(); //TODO: use HashSet
             var addresses = new CellFormulaParser(sheetNameAndCellsFormula[1]).GetCellAddresses(); //eg: [1] = 'A2:A5'
-            
-            var result = new List<double>(addresses.Count);
+
+            var strValues = new List<string>(addresses.Count);
             foreach (var address in addresses)
             {
-                var sdkCellValueStr = sdkCells.First(c => c.CellReference == address).InnerText
-                                                                            .Replace(".", ",", StringComparison.Ordinal);
-                sdkCellValueStr = sdkCellValueStr.Length == 0 ? "0" : sdkCellValueStr;
-                result.Add(double.Parse(sdkCellValueStr));
+                var sdkCellValueStr = sdkCells.First(c => c.CellReference == address).InnerText;
+                strValues.Add(sdkCellValueStr);
             }
 
-            doc.Close();
-            stream.Close();
-            return result;
+            xlsxDoc.Close();
+            return strValues;
         }
 
         #endregion Private Methods
