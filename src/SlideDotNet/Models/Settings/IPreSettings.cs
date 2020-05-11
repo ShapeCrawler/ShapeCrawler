@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DocumentFormat.OpenXml.Packaging;
 
 namespace SlideDotNet.Models.Settings
 {
@@ -11,5 +12,7 @@ namespace SlideDotNet.Models.Settings
         /// Returns font heights from global presentation or theme settings.
         /// </summary>
         Dictionary<int, int> LlvFontHeights { get; }
+
+        public Dictionary<OpenXmlPart, SpreadsheetDocument> XlsxDocuments { get; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Services;
 using SlideDotNet.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -21,6 +22,8 @@ namespace SlideDotNet.Models.Settings
         /// </summary>
         public Dictionary<int, int> LlvFontHeights => _lvlFontHeights.Value;
 
+        public Dictionary<OpenXmlPart, SpreadsheetDocument> XlsxDocuments { get; }
+
         #endregion Properties
 
         #region Constructors
@@ -29,6 +32,7 @@ namespace SlideDotNet.Models.Settings
         {
             Check.NotNull(sdkPresentation, nameof(sdkPresentation));
             _lvlFontHeights = new Lazy<Dictionary<int, int>>(ParseFontHeights(sdkPresentation));
+            XlsxDocuments = new Dictionary<OpenXmlPart, SpreadsheetDocument>(); //TODO: make lazy initialization
         }
 
         #endregion Constructors

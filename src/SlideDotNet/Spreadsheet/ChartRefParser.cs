@@ -4,33 +4,48 @@ using System.Globalization;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using SlideDotNet.Models.Settings;
 using SlideDotNet.Shared;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace SlideDotNet.Spreadsheet
 {
+    public interface IChartRefParser
+    {
+        IList<double> GetNumbers(C.NumberReference numRef, ChartPart chartPart);
+
+        string GetSingleString(C.StringReference strRef, ChartPart chartPart);
+    }
+
     /// <summary>
     /// Represents a series value point parser.
     /// </summary>
     /// TODO: convert into interface
-    public class PointValueParser
+    public class ChartRefParser: IChartRefParser
     {
+        private readonly IShapeContext _spContext;
+
+        public ChartRefParser(IShapeContext spContext)
+        {
+            _spContext = spContext;
+        }
+
         #region Public Methods
 
         /// <summary>
-        /// Gets series values from xls.
+        /// Gets series values from xlsx.
         /// </summary>
         /// <param name="numRef"></param>
-        /// <param name="xlsxPackagePart"></param>
+        /// <param name="chartPart"></param>
         /// <returns></returns>
-        public static IList<double> GetNumbers(C.NumberReference numRef, EmbeddedPackagePart xlsxPackagePart)
+        public IList<double> GetNumbers(C.NumberReference numRef, ChartPart chartPart)
         {
             Check.NotNull(numRef, nameof(numRef));
-            Check.NotNull(xlsxPackagePart, nameof(xlsxPackagePart));
+            Check.NotNull(chartPart, nameof(chartPart));
 
             var numberingCache = numRef.NumberingCache;
-            if (numberingCache != null)
+            if (numberingCache != null) // From cache
             {
                 var sdkNumericValues = numberingCache.Descendants<C.NumericValue>();
                 var pointValues = new List<double>(sdkNumericValues.Count());
@@ -44,10 +59,10 @@ namespace SlideDotNet.Spreadsheet
                 return pointValues;
             }
 
-            return FromFormula(numRef.Formula, xlsxPackagePart).ToList(); //TODO: remove ToList()
+            return FromFormula(numRef.Formula, chartPart.EmbeddedPackagePart).ToList(); //TODO: remove ToList()
         }
 
-        public static string GetSingleString(C.StringReference strRef, EmbeddedPackagePart xlsxPackagePart)
+        public string GetSingleString(C.StringReference strRef, ChartPart chartPart)
         {
             var fromCache = strRef.StringCache?.GetFirstChild<C.StringPoint>().Single().InnerText;
             if (fromCache != null)
@@ -56,7 +71,7 @@ namespace SlideDotNet.Spreadsheet
             }
 
             var formula = strRef.Formula;
-            var cellStrValues = GetCellStrValues(formula, xlsxPackagePart);
+            var cellStrValues = GetCellStrValues(formula, chartPart.EmbeddedPackagePart);
 
             return cellStrValues.Single();
         }
@@ -65,7 +80,7 @@ namespace SlideDotNet.Spreadsheet
 
         #region Private Methods
 
-        private static List<double> FromFormula(C.Formula formula, OpenXmlPart xlsxPackagePart)
+        private List<double> FromFormula(C.Formula formula, OpenXmlPart xlsxPackagePart)
         {
             var cellStrValues = GetCellStrValues(formula, xlsxPackagePart);
 
@@ -80,13 +95,17 @@ namespace SlideDotNet.Spreadsheet
             return cellNumberValues;
         }
 
-        private static List<string> GetCellStrValues(C.Formula formula, OpenXmlPart xlsxPackagePart) //EmbeddedPackagePart : OpenXmlPart
+        private List<string> GetCellStrValues(C.Formula formula, OpenXmlPart xlsxPackagePart) //EmbeddedPackagePart : OpenXmlPart
         {
-            //TODO: caching embeddedPackagePart
+            var exist = _spContext.PreSettings.XlsxDocuments.TryGetValue(xlsxPackagePart, out var xlsxDoc);
+            if (!exist)
+            {
+                xlsxDoc = SpreadsheetDocument.Open(xlsxPackagePart.GetStream(), false);
+                _spContext.PreSettings.XlsxDocuments.Add(xlsxPackagePart, xlsxDoc);
+            }
             var filteredFormula = formula.Text.Replace("'", string.Empty, StringComparison.Ordinal)
                 .Replace("$", string.Empty, StringComparison.Ordinal); //eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5
             var sheetNameAndCellsFormula = filteredFormula.Split('!'); //eg: Sheet1!A2:A5 -> ['Sheet1', 'A2:A5']
-            var xlsxDoc = SpreadsheetDocument.Open(xlsxPackagePart.GetStream(), false);
             var wbPart = xlsxDoc.WorkbookPart;
             string sheetId = wbPart.Workbook.Descendants<Sheet>().First(s => sheetNameAndCellsFormula[0].Equals(s.Name, StringComparison.Ordinal)).Id;
             var wsPart = (WorksheetPart)wbPart.GetPartById(sheetId);

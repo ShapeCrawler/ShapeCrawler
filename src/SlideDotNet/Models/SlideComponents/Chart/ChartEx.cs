@@ -35,6 +35,7 @@ namespace SlideDotNet.Models.SlideComponents.Chart
         private readonly Lazy<LibraryCollection<double>> _xValues;
         private string _chartTitle;
         private ChartPart _sdkChartPart;
+        private readonly IChartRefParser _chartRefParser;
 
         #endregion Fields
 
@@ -123,13 +124,20 @@ namespace SlideDotNet.Models.SlideComponents.Chart
 
         #region Constructors
 
+        public ChartEx(P.GraphicFrame grFrame, IShapeContext shapeContext)
+        : this(grFrame, shapeContext, new ChartRefParser(shapeContext))
+        {
+
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ChartEx"/> class.
         /// </summary>
-        public ChartEx(P.GraphicFrame grFrame, IShapeContext shapeContext)
+        public ChartEx(P.GraphicFrame grFrame, IShapeContext shapeContext, IChartRefParser chartRefParser)
         {
             _grFrame = grFrame ?? throw new ArgumentNullException(nameof(grFrame));
             _shapeContext = shapeContext ?? throw new ArgumentNullException(nameof(shapeContext));
+            _chartRefParser = chartRefParser;
             _chartType = new Lazy<ChartType>(GetChartType);
             _firstSeries = new Lazy<OpenXmlElement>(GetFirstSeries);
             _xValues = new Lazy<LibraryCollection<double>>(TryGetXValues);
@@ -165,7 +173,7 @@ namespace SlideDotNet.Models.SlideComponents.Chart
 
         private SeriesCollection GetSeriesCollection()
         {
-            return new SeriesCollection(_sdkCharts, _sdkChartPart);
+            return new SeriesCollection(_sdkCharts, _sdkChartPart, _chartRefParser);
         }
 
         private string TryGetTitle()
@@ -189,10 +197,11 @@ namespace SlideDotNet.Models.SlideComponents.Chart
                 return xmlChartText.Descendants<C.StringPoint>().Single().InnerText;
             }
 
-            // Title of PieChart is its single series name
+            // PieChart uses only one series for view.
+            // However, it can have store multiple series data in the spreadsheet.
             if (Type == ChartType.PieChart)
             {
-                return SeriesCollection.Single().Name;
+                return SeriesCollection.First().Name;
             }
 
             return null;
@@ -234,7 +243,7 @@ namespace SlideDotNet.Models.SlideComponents.Chart
             {
                 return null;
             }
-            var points = PointValueParser.GetNumbers(sdkXValues.NumberReference, _sdkChartPart.EmbeddedPackagePart);
+            var points = _chartRefParser.GetNumbers(sdkXValues.NumberReference, _sdkChartPart);
 
             return new LibraryCollection<double>(points);
         }

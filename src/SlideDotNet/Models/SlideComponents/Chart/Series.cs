@@ -23,6 +23,7 @@ namespace SlideDotNet.Models.SlideComponents.Chart
         private readonly Lazy<string> _name;
         private readonly ChartPart _sdkChartPart;
         private readonly OpenXmlElement _sdkSeries;
+        private readonly IChartRefParser _chartRefParser;
 
         #endregion Fields
 
@@ -53,13 +54,14 @@ namespace SlideDotNet.Models.SlideComponents.Chart
 
         #region Constructors
 
-        public Series(ChartType type, OpenXmlElement sdkSeries, ChartPart sdkChartPart)
+        public Series(ChartType type, OpenXmlElement sdkSeries, ChartPart sdkChartPart, IChartRefParser chartRefParser)
         {
             _sdkSeries = sdkSeries ?? throw new ArgumentNullException(nameof(sdkSeries));
             Check.NotNull(sdkSeries, nameof(sdkSeries));
             Check.NotNull(sdkChartPart, nameof(sdkChartPart));
 
             _sdkChartPart = sdkChartPart ?? throw new ArgumentNullException(nameof(sdkChartPart));
+            _chartRefParser = chartRefParser;
             _pointValues = new Lazy<List<double>>(GetPointValues);
             _name = new Lazy<string>(GetNameOrDefault);
             Type = type;
@@ -82,7 +84,7 @@ namespace SlideDotNet.Models.SlideComponents.Chart
                 numReference = _sdkSeries.GetFirstChild<C.YValues>().NumberReference;
             }
 
-            return PointValueParser.GetNumbers(numReference, _sdkChartPart.EmbeddedPackagePart).ToList(); //TODO: remove to list
+            return _chartRefParser.GetNumbers(numReference, _sdkChartPart).ToList(); //TODO: remove to list
         }
 
         private string GetNameOrDefault()
@@ -93,7 +95,7 @@ namespace SlideDotNet.Models.SlideComponents.Chart
                 return null;
             }
 
-            return PointValueParser.GetSingleString(strReference, _sdkChartPart.EmbeddedPackagePart);
+            return _chartRefParser.GetSingleString(strReference, _sdkChartPart);
         }
 
         #endregion Private Methods

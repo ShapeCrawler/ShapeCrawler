@@ -108,7 +108,13 @@ namespace SlideDotNet.Models
             }
 
             _sdkPre.Close();
-
+            if (_preSettings != null)
+            {
+                foreach (var xlsxDoc in _preSettings.XlsxDocuments.Values)
+                {
+                    xlsxDoc.Close();
+                }
+            }
 
             _closed = true;
         }

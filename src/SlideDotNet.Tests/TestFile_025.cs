@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SlideDotNet.Models;
 using Xunit;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -9,15 +10,42 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Tests
 {
-    public class TestFile_025
+    /// <summary>
+    /// Represents a class whose single instance is shared for tests.
+    /// </summary>
+    public class Presentation25Fixture : IDisposable
     {
+        public PresentationEx Presentation { get; }
+
+        public Presentation25Fixture()
+        {
+            Presentation = new PresentationEx(Properties.Resources._025);
+        }
+
+        public void Dispose()
+        {
+            Presentation.Close();
+        }
+    }
+
+    /// <summary>
+    /// Represents a class whose instance is created for each test.
+    /// </summary>
+    public class TestFile_025 : IClassFixture<Presentation25Fixture>
+    {
+        private readonly Presentation25Fixture _pre25Fixture;
+
+        public TestFile_025(Presentation25Fixture pre25Fixture)
+        {
+            _pre25Fixture = pre25Fixture;
+        }
+
         [Fact]
         public void Chart_Test()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._025);
-            var sld1 = pre.Slides[0];
-            var sld2 = pre.Slides[1];
+            var sld1 = _pre25Fixture.Presentation.Slides[0];
+            var sld2 = _pre25Fixture.Presentation.Slides[1];
             var chart8 = sld1.Shapes.First(x => x.Id == 8).Chart;
             var chart4 = sld1.Shapes.First(x => x.Id == 4).Chart;
             var chart5 = sld1.Shapes.First(x => x.Id == 5).Chart;
@@ -40,6 +68,24 @@ namespace SlideDotNet.Tests
             Assert.Equal("Clothing", chart4ParentCatVal);
             Assert.Equal("Ряд 1", serName1);
             Assert.Equal("Ряд 3", serName3);
+        }
+
+        [Fact]
+        public void Chart_Test_2()
+        {
+            // Arrange
+            var sld1 = _pre25Fixture.Presentation.Slides[0];
+            var sld2 = _pre25Fixture.Presentation.Slides[1];
+            var chart4 = sld2.Shapes.First(x => x.Id == 4).Chart;
+            var chart7 = sld1.Shapes.First(x => x.Id == 7).Chart;
+
+            // Act
+            var pointValue = chart4.SeriesCollection[0].PointValues[0];
+            var chartTitle = chart7.Title;
+
+            // Assert
+            Assert.True(pointValue > 0);
+            Assert.NotNull(chartTitle);
         }
     }
 }

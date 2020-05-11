@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Enums;
 using SlideDotNet.Models.SlideComponents.Chart;
 using SlideDotNet.Shared;
+using SlideDotNet.Spreadsheet;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 // ReSharper disable PossibleMultipleEnumeration
@@ -17,13 +18,16 @@ namespace SlideDotNet.Collections
     /// </summary>
     public class SeriesCollection : LibraryCollection<Series>
     {
+        private IChartRefParser _chartRefParser;
+
         #region Constructors
 
         /// <summary>
         /// Initializes a new collection of the chart series.
         /// </summary>
-        public SeriesCollection(IEnumerable<OpenXmlElement> sdkCharts, ChartPart sdkChartPart)
+        public SeriesCollection(IEnumerable<OpenXmlElement> sdkCharts, ChartPart sdkChartPart, IChartRefParser chartRefParser)
         {
+            _chartRefParser = chartRefParser;
             Check.NotEmpty(sdkCharts, nameof(sdkCharts));
             Check.NotNull(sdkChartPart, nameof(sdkChartPart));
 
@@ -35,7 +39,7 @@ namespace SlideDotNet.Collections
                     .Where(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
                 foreach (var sdkSeries in nextSdkChartSeriesCollection)
                 {
-                    var series = new Series(chartType, sdkSeries, sdkChartPart);
+                    var series = new Series(chartType, sdkSeries, sdkChartPart, _chartRefParser);
                     tempSeriesCollection.AddLast(series);
                 }
             }
