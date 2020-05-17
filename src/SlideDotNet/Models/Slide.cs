@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Services;
@@ -57,6 +58,29 @@ namespace SlideDotNet.Models
         }
 
         #endregion Constructors
+
+        public void SaveScheme(string filePath)
+        {
+            var sldWidthEmu = _preSettings.SlideSize.Value.Width;
+            var sldHeightEmu = _preSettings.SlideSize.Value.Height;
+            var sldWidthPx = sldWidthEmu / 10000;
+            var sldHeightPx = sldHeightEmu / 10000;
+
+            using var bitmap = new Bitmap(sldWidthPx+50, sldHeightPx+50);
+            var graphics = Graphics.FromImage(bitmap);
+
+            using var blackPen = new Pen(Color.Black, 3); // create pen.
+            var rect = new Rectangle(253, 500, 189, 62); // create rectangle. (x,y,width, height)
+            var sldRectangle = new Rectangle(10, 10, sldWidthPx, sldHeightPx); // create rectangle. (x,y,width, height)
+
+            var rect2 = new Rectangle(651, 194, 189, 81);
+
+            graphics.DrawRectangle(blackPen, sldRectangle);
+
+            //graphics.DrawRectangle(blackPen, rect);
+
+            bitmap.Save(@"d:\1\test.png");
+        }
 
         #region Private Methods
 

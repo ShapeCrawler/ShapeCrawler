@@ -796,8 +796,7 @@ namespace SlideDotNet.Tests
             var doc = PresentationDocument.Open(ms, false);
 
             var sdkSldPart = doc.PresentationPart.SlideParts.First();
-            var preSettings = new PreSettings(doc.PresentationPart.Presentation);
-            var shapeTree = sdkSldPart.Slide.CommonSlideData.ShapeTree;
+            var preSettings = new PreSettings(doc.PresentationPart.Presentation, new Lazy<SlideSize>());
             var parser = new ShapeFactory(preSettings);
 
             // ACT

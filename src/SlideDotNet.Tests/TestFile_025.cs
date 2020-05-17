@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using SlideDotNet.Models;
 using Xunit;
@@ -86,6 +87,24 @@ namespace SlideDotNet.Tests
             // Assert
             Assert.True(pointValue > 0);
             Assert.NotNull(chartTitle);
+        }
+
+        [Fact]
+        public void SaveScheme_Test()
+        {
+            // Arrange
+            var sld3 = _pre25Fixture.Presentation.Slides[2];
+            var filePath = Path.GetTempFileName();
+
+            // Act
+            sld3.SaveScheme(filePath);
+            var fi = new FileInfo(filePath);
+
+            // Assert
+            Assert.True(fi.Length > 0);
+
+            // Clean
+            fi.Delete();
         }
     }
 }

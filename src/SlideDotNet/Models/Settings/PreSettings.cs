@@ -22,15 +22,22 @@ namespace SlideDotNet.Models.Settings
         /// </summary>
         public Dictionary<int, int> LlvFontHeights => _lvlFontHeights.Value;
 
+        /// <summary>
+        /// <inheritdoc cref="IPreSettings.XlsxDocuments"/>
+        /// </summary>
         public Dictionary<OpenXmlPart, SpreadsheetDocument> XlsxDocuments { get; }
+
+        public Lazy<SlideSize> SlideSize { get; }
 
         #endregion Properties
 
         #region Constructors
 
-        public PreSettings(P.Presentation sdkPresentation)
+        public PreSettings(P.Presentation sdkPresentation, Lazy<SlideSize> slideSize)
         {
             Check.NotNull(sdkPresentation, nameof(sdkPresentation));
+
+            SlideSize = slideSize ?? throw new ArgumentNullException(nameof(slideSize));
             _lvlFontHeights = new Lazy<Dictionary<int, int>>(ParseFontHeights(sdkPresentation));
             XlsxDocuments = new Dictionary<OpenXmlPart, SpreadsheetDocument>(); //TODO: make lazy initialization
         }

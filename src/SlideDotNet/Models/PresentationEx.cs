@@ -18,7 +18,8 @@ namespace SlideDotNet.Models
         #region Fields
 
         private PresentationDocument _sdkPre;
-        private readonly Lazy<EditAbleCollection<Slide>> _slides;
+        private Lazy<EditAbleCollection<Slide>> _slides;
+        private Lazy<SlideSize> _slideSize;
         private bool _closed;
         private PreSettings _preSettings;
 
@@ -26,11 +27,20 @@ namespace SlideDotNet.Models
 
         #region Properties
 
+        /// <summary>
+        /// Gets the presentation slides.
+        /// </summary>
         public EditAbleCollection<Slide> Slides => _slides.Value;
 
-        public int SlideWidth => _sdkPre.PresentationPart.Presentation.SlideSize.Cx.Value;
+        /// <summary>
+        /// Gets the presentation slides width.
+        /// </summary>
+        public int SlideWidth => _slideSize.Value.Width;
 
-        public int SlideHeight => _sdkPre.PresentationPart.Presentation.SlideSize.Cy.Value;
+        /// <summary>
+        /// Gets the presentation slides height.
+        /// </summary>
+        public int SlideHeight => _slideSize.Value.Height;
 
         #endregion Properties
 
@@ -41,10 +51,11 @@ namespace SlideDotNet.Models
         /// </summary>
         public PresentationEx(string pptxPath)
         {
-            ThrowIfInvalid(pptxPath);
+            ThrowIfSourceInvalid(pptxPath);
+
             _sdkPre = PresentationDocument.Open(pptxPath, true);
-            ThrowIfSlidesNumberLarge();
-            _slides = new Lazy<EditAbleCollection<Slide>>(InitSlides);
+
+            Init();
         }
 
         /// <summary>
@@ -53,10 +64,11 @@ namespace SlideDotNet.Models
         /// <param name="pptxStream"></param>
         public PresentationEx(Stream pptxStream)
         {
-            ThrowIfInvalid(pptxStream);
+            ThrowIfSourceInvalid(pptxStream);
+            
             _sdkPre = PresentationDocument.Open(pptxStream, true);
-            ThrowIfSlidesNumberLarge();
-            _slides = new Lazy<EditAbleCollection<Slide>>(InitSlides);
+
+            Init();
         }
 
         /// <summary>
@@ -65,12 +77,13 @@ namespace SlideDotNet.Models
         /// <param name="pptxBytes"></param>
         public PresentationEx(byte[] pptxBytes)
         {
-            ThrowIfInvalid(pptxBytes);
+            ThrowIfSourceInvalid(pptxBytes);
+
             var pptxStream = new MemoryStream();
             pptxStream.Write(pptxBytes, 0, pptxBytes.Length);
             _sdkPre = PresentationDocument.Open(pptxStream, true);
-            ThrowIfSlidesNumberLarge();
-            _slides = new Lazy<EditAbleCollection<Slide>>(InitSlides);
+            
+            Init();
         }
 
         #endregion Constructors
@@ -123,16 +136,16 @@ namespace SlideDotNet.Models
 
         #region Private Methods
 
-        private EditAbleCollection<Slide> InitSlides()
+        private EditAbleCollection<Slide> GetSlides()
         {
             var sdkPrePart = _sdkPre.PresentationPart;
-            _preSettings = new PreSettings(sdkPrePart.Presentation);
+            _preSettings = new PreSettings(sdkPrePart.Presentation, _slideSize);
             var slideCollection = SlideCollection.Create(sdkPrePart, _preSettings);
 
             return slideCollection;
         }
 
-        private static void ThrowIfInvalid(string path)
+        private static void ThrowIfSourceInvalid(string path)
         {
             if (!File.Exists(path))
             {
@@ -143,13 +156,13 @@ namespace SlideDotNet.Models
             ThrowIfPptxSizeLarge(fileInfo.Length);
         }
 
-        private static void ThrowIfInvalid(Stream stream)
+        private static void ThrowIfSourceInvalid(Stream stream)
         {
             Check.NotNull(stream, nameof(stream));
             ThrowIfPptxSizeLarge(stream.Length);
         }
 
-        private static void ThrowIfInvalid(byte[] bytes)
+        private static void ThrowIfSourceInvalid(byte[] bytes)
         {
             Check.NotNull(bytes, nameof(bytes));
             ThrowIfPptxSizeLarge(bytes.Length);
@@ -173,6 +186,32 @@ namespace SlideDotNet.Models
             }
         }
 
+        private void Init()
+        {
+            ThrowIfSlidesNumberLarge();
+            _slides = new Lazy<EditAbleCollection<Slide>>(GetSlides);
+            _slideSize = new Lazy<SlideSize>(ParseSlideSize);
+        }
+
+        private SlideSize ParseSlideSize()
+        {
+            var sdkSldSize = _sdkPre.PresentationPart.Presentation.SlideSize;
+            return new SlideSize(sdkSldSize.Cx.Value, sdkSldSize.Cy.Value);
+        }
+
         #endregion Private Methods
+    }
+
+    public class SlideSize
+    {
+        public int Width { get; }
+        
+        public int Height { get; }
+
+        public SlideSize(int sdkW, int sdkH)
+        {
+            Width = sdkW;
+            Height = sdkH;
+        }
     }
 }
