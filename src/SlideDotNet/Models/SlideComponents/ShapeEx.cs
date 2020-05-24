@@ -39,7 +39,7 @@ namespace SlideDotNet.Models.SlideComponents
         private OleObject _ole;
         private TableEx _table;
         private ChartEx _chart;
-        private readonly IInnerTransform _innerTransform;
+        private readonly ILocation _innerTransform;
 
         #endregion Fields
 
@@ -205,7 +205,7 @@ namespace SlideDotNet.Models.SlideComponents
 
         #region Constructors
 
-        private ShapeEx(IInnerTransform innerTransform,
+        private ShapeEx(ILocation innerTransform,
                         IShapeContext spContext,
                         ShapeContentType contentType,
                         GeometryType geometryType) : this(innerTransform, spContext, contentType)
@@ -213,7 +213,7 @@ namespace SlideDotNet.Models.SlideComponents
             GeometryType = geometryType;
         }
 
-        private ShapeEx (IInnerTransform innerTransform, IShapeContext spContext, ShapeContentType contentType)
+        private ShapeEx (ILocation innerTransform, IShapeContext spContext, ShapeContentType contentType)
         {
             _innerTransform = innerTransform;
             _context = spContext;
@@ -254,7 +254,7 @@ namespace SlideDotNet.Models.SlideComponents
             {
                 return null;
             }
-            var image = _imageFactory.TryFromXmlShape(_context.SkdSlidePart, (OpenXmlCompositeElement)_context.SdkElement); //TODO: delete casting
+            var image = _imageFactory.TryFromSdkShape(_context.SkdSlidePart, (OpenXmlCompositeElement)_context.SdkElement); //TODO: delete casting
             if (image != null)
             {
                 return new Fill(image);
@@ -291,7 +291,7 @@ namespace SlideDotNet.Models.SlideComponents
         {
             #region Public Methods
 
-            public ShapeEx WithOle(IInnerTransform innerTransform, IShapeContext spContext, OleObject ole)
+            public ShapeEx WithOle(ILocation innerTransform, IShapeContext spContext, OleObject ole)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
@@ -305,7 +305,7 @@ namespace SlideDotNet.Models.SlideComponents
                 return newShape;
             }
 
-            public ShapeEx WithPicture(IInnerTransform innerTransform, IShapeContext spContext, PictureEx picture, GeometryType geometry)
+            public ShapeEx WithPicture(ILocation innerTransform, IShapeContext spContext, PictureEx picture, GeometryType geometry)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
@@ -320,7 +320,7 @@ namespace SlideDotNet.Models.SlideComponents
                 return newShape;
             }
 
-            public ShapeEx WithAutoShape(IInnerTransform innerTransform, IShapeContext spContext, GeometryType geometry)
+            public ShapeEx WithAutoShape(ILocation innerTransform, IShapeContext spContext, GeometryType geometry)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
@@ -330,7 +330,7 @@ namespace SlideDotNet.Models.SlideComponents
                 return newShape;
             }
 
-            public ShapeEx WithTable(IInnerTransform innerTransform, IShapeContext spContext, TableEx table)
+            public ShapeEx WithTable(ILocation innerTransform, IShapeContext spContext, TableEx table)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
@@ -344,7 +344,7 @@ namespace SlideDotNet.Models.SlideComponents
                 return newShape;
             }
 
-            public ShapeEx WithChart(IInnerTransform innerTransform, IShapeContext spContext, ChartEx chart)
+            public ShapeEx WithChart(ILocation innerTransform, IShapeContext spContext, ChartEx chart)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
@@ -358,7 +358,7 @@ namespace SlideDotNet.Models.SlideComponents
                 return newShape;
             }
 
-            public ShapeEx WithGroup(IInnerTransform innerTransform, IShapeContext spContext, IList<ShapeEx> groupedShapes)
+            public ShapeEx WithGroup(ILocation innerTransform, IShapeContext spContext, IList<ShapeEx> groupedShapes)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));

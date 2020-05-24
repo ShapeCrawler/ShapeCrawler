@@ -6,9 +6,9 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace SlideDotNet.Models.Transforms
 {
     /// <summary>
-    /// <inheritdoc cref="IInnerTransform"/>
+    /// <inheritdoc cref="ILocation"/>
     /// </summary>
-    public class PlaceholderTransform : IInnerTransform
+    public class PlaceholderTransform : ILocation
     {
         private readonly PlaceholderLocationData _placeholderLocationData;
 

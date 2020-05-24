@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using JetBrains.Annotations;
 using SlideDotNet.Enums;
 using SlideDotNet.Models.SlideComponents.Chart;
 using SlideDotNet.Shared;

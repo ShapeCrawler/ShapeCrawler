@@ -17,7 +17,7 @@ namespace SlideDotNet.Services.ShapeCreators
         #region Fields
 
         private readonly ShapeContext.Builder _shapeContextBuilder;
-        private readonly InnerTransformFactory _transformFactory;
+        private readonly LocationParser _transformFactory;
         private readonly IGeometryFactory _geometryFactory;
         private readonly IShapeBuilder _shapeBuilder;
 
@@ -26,7 +26,7 @@ namespace SlideDotNet.Services.ShapeCreators
         #region Constructors
 
         public SdkShapeHandler(ShapeContext.Builder shapeContextBuilder,
-                               InnerTransformFactory transformFactory,
+                               LocationParser transformFactory,
                                IGeometryFactory geometryFactory) :
             this(shapeContextBuilder, transformFactory, geometryFactory, new ShapeEx.Builder())
         {
@@ -35,7 +35,7 @@ namespace SlideDotNet.Services.ShapeCreators
 
         //TODO: inject interface instead
         public SdkShapeHandler(ShapeContext.Builder shapeContextBuilder,
-                               InnerTransformFactory transformFactory,
+                               LocationParser transformFactory,
                                IGeometryFactory geometryFactory,
                                IShapeBuilder shapeBuilder)
         {

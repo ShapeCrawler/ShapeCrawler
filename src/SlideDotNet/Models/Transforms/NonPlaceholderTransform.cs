@@ -5,7 +5,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Models.Transforms
 {
-    public class NonPlaceholderTransform : IInnerTransform
+    public class NonPlaceholderTransform : ILocation
     {
         private readonly A.Offset _offset;
 

@@ -10,7 +10,10 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace SlideDotNet.Services
 {
-    public class InnerTransformFactory
+    /// <summary>
+    /// Represents a shape location and size data manager.
+    /// </summary>
+    public class LocationParser
     {
         #region Fields
 
@@ -20,7 +23,7 @@ namespace SlideDotNet.Services
 
         #region Constructors
 
-        public InnerTransformFactory(IPlaceholderService phService)
+        public LocationParser(IPlaceholderService phService)
         {
             _phService = phService ?? throw new ArgumentNullException(nameof(phService));
         }
@@ -29,13 +32,20 @@ namespace SlideDotNet.Services
 
         #region Public Methods
 
-        public IInnerTransform FromComposite(OpenXmlCompositeElement sdkCompositeElement)
+        /// <summary>
+        /// Gets 
+        /// </summary>
+        /// <param name="sdkCompositeElement"></param>
+        /// <returns></returns>
+        public ILocation FromComposite(OpenXmlCompositeElement sdkCompositeElement)
         {
             Check.NotNull(sdkCompositeElement, nameof(sdkCompositeElement));
 
-            IInnerTransform innerTransform;
-            var t2d = sdkCompositeElement.Descendants<A.Transform2D>().FirstOrDefault();
-            if (t2d != null)
+            ILocation innerTransform;
+            var aTransform = sdkCompositeElement.Descendants<A.Transform2D>().FirstOrDefault();
+            
+            if (aTransform != null 
+                || sdkCompositeElement.Descendants<P.Transform>().FirstOrDefault() != null) // p:graphicFrame contains p:xfrm
             {
                 // Group
                 if (sdkCompositeElement.Parent is P.GroupShape groupShape)

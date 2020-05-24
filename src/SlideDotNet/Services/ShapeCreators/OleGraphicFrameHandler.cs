@@ -15,20 +15,20 @@ namespace SlideDotNet.Services.ShapeCreators
     {
         private readonly ShapeContext.Builder _shapeContextBuilder;
         //TODO: inject via DI
-        private readonly InnerTransformFactory _transformFactory;
+        private readonly LocationParser _transformFactory;
         private readonly IShapeBuilder _shapeBuilder;
         private const string Uri = "http://schemas.openxmlformats.org/presentationml/2006/ole";
 
         #region Constructors
 
-        public OleGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, InnerTransformFactory transformFactory) :
+        public OleGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory) :
             this(shapeContextBuilder, transformFactory, new ShapeEx.Builder())
         {
             
         }
 
         public OleGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder,
-            InnerTransformFactory transformFactory,
+            LocationParser transformFactory,
             IShapeBuilder shapeBuilder)
         {
             _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder)); ;

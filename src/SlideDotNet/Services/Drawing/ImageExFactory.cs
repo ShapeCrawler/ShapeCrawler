@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using JetBrains.Annotations;
 using SlideDotNet.Models;
 using SlideDotNet.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -16,11 +17,12 @@ namespace SlideDotNet.Services
         #region Public Methods
 
         /// <summary>
-        /// <inheritdoc cref="IImageExFactory.TryFromXmlSlide"/>
+        /// <inheritdoc cref="IImageExFactory.TryFromSdkSlide"/>
         /// </summary>
         /// <param name="xmlSldPart"></param>
         /// <returns></returns>
-        public ImageEx TryFromXmlSlide(SlidePart xmlSldPart)
+        [NotNull]
+        public ImageEx TryFromSdkSlide(SlidePart xmlSldPart)
         {
             Check.NotNull(xmlSldPart, nameof(xmlSldPart));
 
@@ -36,9 +38,9 @@ namespace SlideDotNet.Services
         }
 
         /// <summary>
-        /// <inheritdoc cref="IImageExFactory.TryFromXmlShape"/>
+        /// <inheritdoc cref="IImageExFactory.TryFromSdkShape"/>
         /// </summary>
-        public ImageEx TryFromXmlShape(SlidePart xmlSldPart, OpenXmlCompositeElement ce)
+        public ImageEx TryFromSdkShape(SlidePart xmlSldPart, OpenXmlCompositeElement ce)
         {
             Check.NotNull(xmlSldPart, nameof(xmlSldPart));
             Check.NotNull(ce, nameof(ce));

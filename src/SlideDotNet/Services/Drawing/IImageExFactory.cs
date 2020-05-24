@@ -12,11 +12,11 @@ namespace SlideDotNet.Services
         /// <summary>
         /// Gets slide background image. Returns <c>null</c> if slide does not have background image.
         /// </summary>
-        ImageEx TryFromXmlSlide(SlidePart xmlSldPart);
+        ImageEx TryFromSdkSlide(SlidePart xmlSldPart);
 
         /// <summary>
         /// Gets shape background image. Returns <c>null</c> if the shape is not filled with a picture.
         /// </summary>
-        ImageEx TryFromXmlShape(SlidePart xmlSldPart, OpenXmlCompositeElement ce);
+        ImageEx TryFromSdkShape(SlidePart xmlSldPart, OpenXmlCompositeElement ce);
     }
 }

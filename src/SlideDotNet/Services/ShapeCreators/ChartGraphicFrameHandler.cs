@@ -14,20 +14,20 @@ namespace SlideDotNet.Services.ShapeCreators
     public class ChartGraphicFrameHandler : OpenXmlElementHandler
     {
         private readonly ShapeContext.Builder _shapeContextBuilder;
-        private readonly InnerTransformFactory _transformFactory;
+        private readonly LocationParser _transformFactory;
         private readonly IShapeBuilder _shapeBuilder;
         private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart"; //TODO: delete duplicate from GraphicFrameExtensions
 
         #region Constructors
 
-        public ChartGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, InnerTransformFactory transformFactory) :
+        public ChartGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory) :
             this(shapeContextBuilder, transformFactory, new ShapeEx.Builder())
         {
 
         }
 
         public ChartGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder,
-            InnerTransformFactory transformFactory,
+            LocationParser transformFactory,
             IShapeBuilder shapeBuilder)
         {
             _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));

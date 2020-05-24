@@ -36,7 +36,7 @@ namespace SlideDotNet.Services.ShapeCreators
         {
             var sldPhFontService = new PlaceholderFontService(sdkSldPart); //TODO: make DI
             var phService = new PlaceholderService(sdkSldPart.SlideLayoutPart);
-            var transformFactory = new InnerTransformFactory(phService);
+            var transformFactory = new LocationParser(phService);
             var geometryFactory = new GeometryFactory(phService);
             var shapeContextBuilder = new ShapeContext.Builder(_preSettings, sldPhFontService,sdkSldPart);
 

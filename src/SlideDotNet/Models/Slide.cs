@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Services;
+using SlideDotNet.Services.Drawing;
 
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -18,6 +18,7 @@ namespace SlideDotNet.Models
         private readonly Lazy<ImageEx> _backgroundImage;
         private readonly Lazy<ShapeCollection> _shapes;
         private readonly IPreSettings _preSettings;
+        private readonly ISlideSchemeService _schemeService;
         private readonly SlidePart _sdkSldPart;
         private readonly SlideNumber _sldNumEntity;
 
@@ -44,42 +45,35 @@ namespace SlideDotNet.Models
 
         #region Constructors
 
+        public Slide(SlidePart sdkSldPart, SlideNumber sldNum, IPreSettings preSettings) :
+            this(sdkSldPart, sldNum, preSettings, new SlideSchemeService())
+        {
+
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Slide"/> class.
         /// </summary>
-        public Slide(SlidePart sdkSldPart, SlideNumber sldNum, IPreSettings preSettings)
+        public Slide(SlidePart sdkSldPart, SlideNumber sldNum, IPreSettings preSettings, ISlideSchemeService schemeService)
         {
             _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
-            _sldNumEntity = sldNum ?? throw new ArgumentNullException(nameof(SlideNumber));
+            _sldNumEntity = sldNum ?? throw new ArgumentNullException(nameof(sldNum));
             _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
-
+            _schemeService = schemeService ?? throw new ArgumentNullException(nameof(schemeService));
             _shapes = new Lazy<ShapeCollection>(GetShapeCollection);
             _backgroundImage = new Lazy<ImageEx>(TryGetBackground);
         }
 
         #endregion Constructors
 
+        /// <summary>
+        /// Saves slide scheme in PNG file.
+        /// </summary>
+        /// <param name="filePath"></param>
         public void SaveScheme(string filePath)
         {
-            var sldWidthEmu = _preSettings.SlideSize.Value.Width;
-            var sldHeightEmu = _preSettings.SlideSize.Value.Height;
-            var sldWidthPx = sldWidthEmu / 10000;
-            var sldHeightPx = sldHeightEmu / 10000;
-
-            using var bitmap = new Bitmap(sldWidthPx+50, sldHeightPx+50);
-            var graphics = Graphics.FromImage(bitmap);
-
-            using var blackPen = new Pen(Color.Black, 3); // create pen.
-            var rect = new Rectangle(253, 500, 189, 62); // create rectangle. (x,y,width, height)
-            var sldRectangle = new Rectangle(10, 10, sldWidthPx, sldHeightPx); // create rectangle. (x,y,width, height)
-
-            var rect2 = new Rectangle(651, 194, 189, 81);
-
-            graphics.DrawRectangle(blackPen, sldRectangle);
-
-            //graphics.DrawRectangle(blackPen, rect);
-
-            bitmap.Save(@"d:\1\test.png");
+            var sldSize = _preSettings.SlideSize.Value;
+            _schemeService.SaveScheme(filePath, _shapes.Value, sldSize.Width, sldSize.Height);
         }
 
         #region Private Methods
@@ -93,7 +87,7 @@ namespace SlideDotNet.Models
         private ImageEx TryGetBackground()
         {
             var backgroundImageFactory = new ImageExFactory();
-            return backgroundImageFactory.TryFromXmlSlide(_sdkSldPart);
+            return backgroundImageFactory.TryFromSdkSlide(_sdkSldPart);
         }
 
         #endregion Private Methods

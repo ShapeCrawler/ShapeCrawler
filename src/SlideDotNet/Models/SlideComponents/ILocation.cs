@@ -1,6 +1,9 @@
 ﻿namespace SlideDotNet.Models.SlideComponents
 {
-    public interface IInnerTransform
+    /// <summary>
+    /// Represents a shape location and size data.
+    /// </summary>
+    public interface ILocation
     {
         long X { get; }
       

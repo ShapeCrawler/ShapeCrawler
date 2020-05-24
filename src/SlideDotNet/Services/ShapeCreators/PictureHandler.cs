@@ -18,7 +18,7 @@ namespace SlideDotNet.Services.ShapeCreators
         #region Fields
 
         private readonly ShapeContext.Builder _shapeContextBuilder;
-        private readonly InnerTransformFactory _transformFactory;
+        private readonly LocationParser _transformFactory;
         private readonly IShapeBuilder _shapeBuilder;
         private readonly SlidePart _sdkSldPart;
         private readonly IGeometryFactory _geometryFactory;
@@ -28,7 +28,7 @@ namespace SlideDotNet.Services.ShapeCreators
         #region Constructors
 
         public PictureHandler(ShapeContext.Builder shapeContextBuilder,
-                              InnerTransformFactory transformFactory,
+                              LocationParser transformFactory,
                               IGeometryFactory geometryFactory,
                               SlidePart sdkSldPart) :
             this(shapeContextBuilder, transformFactory, geometryFactory, sdkSldPart, new ShapeEx.Builder())
@@ -37,7 +37,7 @@ namespace SlideDotNet.Services.ShapeCreators
         }
 
         public PictureHandler(ShapeContext.Builder shapeContextBuilder,
-                              InnerTransformFactory transformFactory,
+                              LocationParser transformFactory,
                               IGeometryFactory geometryFactory,
                               SlidePart sdkSldPart,
                               IShapeBuilder shapeBuilder)

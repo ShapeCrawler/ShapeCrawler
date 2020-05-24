@@ -17,31 +17,31 @@ namespace SlideDotNet.Services.Builders
         /// <summary>
         /// Builds a shape with OLE object content.
         /// </summary>
-        ShapeEx WithOle(IInnerTransform innerTransform, IShapeContext spContext, OleObject ole);
+        ShapeEx WithOle(ILocation innerTransform, IShapeContext spContext, OleObject ole);
 
         /// <summary>
         /// Builds a shape with picture content.
         /// </summary>
-        ShapeEx WithPicture(IInnerTransform innerTransform, IShapeContext spContext, PictureEx picture, GeometryType geometry);
+        ShapeEx WithPicture(ILocation innerTransform, IShapeContext spContext, PictureEx picture, GeometryType geometry);
 
         /// <summary>
         /// Builds a AutoShape.
         /// </summary>
-        ShapeEx WithAutoShape(IInnerTransform innerTransform, IShapeContext spContext, GeometryType geometry);
+        ShapeEx WithAutoShape(ILocation innerTransform, IShapeContext spContext, GeometryType geometry);
 
         /// <summary>
         /// Builds a shape with table content.
         /// </summary>
-        ShapeEx WithTable(IInnerTransform innerTransform, IShapeContext spContext, TableEx table);
+        ShapeEx WithTable(ILocation innerTransform, IShapeContext spContext, TableEx table);
 
         /// <summary>
         /// Builds a shape with OLE object content.
         /// </summary>
-        ShapeEx WithChart(IInnerTransform innerTransform, IShapeContext spContext, ChartEx chart);
+        ShapeEx WithChart(ILocation innerTransform, IShapeContext spContext, ChartEx chart);
 
         /// <summary>
         /// Builds a group shape which has grouped shape items.
         /// </summary>
-        ShapeEx WithGroup(IInnerTransform innerTransform, IShapeContext spContext, IList<ShapeEx> groupedShapes);
+        ShapeEx WithGroup(ILocation innerTransform, IShapeContext spContext, IList<ShapeEx> groupedShapes);
     }
 }

@@ -7,7 +7,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace SlideDotNet.Models.Transforms
 {
-    public class NonPlaceholderGroupedTransform : IInnerTransform
+    public class NonPlaceholderGroupedTransform : ILocation
     {
         public long X { get; }
 
