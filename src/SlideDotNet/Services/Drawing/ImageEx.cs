@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Shared;
 
-namespace SlideDotNet.Models
+namespace SlideDotNet.Services.Drawing
 {
     /// <summary>
     /// Represents a image model.

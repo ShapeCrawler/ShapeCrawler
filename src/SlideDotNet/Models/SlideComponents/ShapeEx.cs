@@ -12,6 +12,7 @@ using SlideDotNet.Models.TextBody;
 using SlideDotNet.Models.Transforms;
 using SlideDotNet.Services;
 using SlideDotNet.Services.Builders;
+using SlideDotNet.Services.Drawing;
 using SlideDotNet.Services.Placeholders;
 using SlideDotNet.Shared;
 using P = DocumentFormat.OpenXml.Presentation;

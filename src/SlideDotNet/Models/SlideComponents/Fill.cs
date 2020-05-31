@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Globalization;
 using SlideDotNet.Enums;
+using SlideDotNet.Services.Drawing;
 using SlideDotNet.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 

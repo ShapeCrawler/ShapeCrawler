@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AssemblyName>SlideDotNet</AssemblyName>
     <RootNamespace>SlideDotNet</RootNamespace>
-    <Version>0.6.0</Version>
+    <Version>0.7.0</Version>
     <Authors>Adam Shakhabov</Authors>
     <Company></Company>
     <Description>A lightweight .NET library for parse PowerPoint file (PPTX) presentations without Microsoft Office installed.
@@ -29,7 +29,6 @@ SlideDotNet is a fluent wrapper around Open XML SDK for the processing of PowerP
 
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.11.0" />
-    <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

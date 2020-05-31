@@ -1,8 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Models;
 
-namespace SlideDotNet.Services
+namespace SlideDotNet.Services.Drawing
 {
     /// <summary>
     /// Represents a factory to create an instance of the <see cref="ImageEx"/> class.

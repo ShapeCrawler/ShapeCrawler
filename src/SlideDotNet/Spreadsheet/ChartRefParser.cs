@@ -11,13 +11,6 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace SlideDotNet.Spreadsheet
 {
-    public interface IChartRefParser
-    {
-        IList<double> GetNumbers(C.NumberReference numRef, ChartPart chartPart);
-
-        string GetSingleString(C.StringReference strRef, ChartPart chartPart);
-    }
-
     /// <summary>
     /// Represents a series value point parser.
     /// </summary>

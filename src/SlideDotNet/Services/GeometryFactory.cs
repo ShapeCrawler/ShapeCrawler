@@ -2,7 +2,6 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
-using JetBrains.Annotations;
 using SlideDotNet.Enums;
 using SlideDotNet.Services.Placeholders;
 using SlideDotNet.Shared;

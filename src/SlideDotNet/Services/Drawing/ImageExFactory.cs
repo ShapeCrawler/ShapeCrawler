@@ -1,13 +1,11 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using JetBrains.Annotations;
-using SlideDotNet.Models;
 using SlideDotNet.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideDotNet.Services
+namespace SlideDotNet.Services.Drawing
 {
     /// <summary>
     /// <inheritdoc cref="IImageExFactory"/>
@@ -21,7 +19,6 @@ namespace SlideDotNet.Services
         /// </summary>
         /// <param name="xmlSldPart"></param>
         /// <returns></returns>
-        [NotNull]
         public ImageEx TryFromSdkSlide(SlidePart xmlSldPart)
         {
             Check.NotNull(xmlSldPart, nameof(xmlSldPart));
