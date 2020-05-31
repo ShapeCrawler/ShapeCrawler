@@ -4,9 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Version 0.6.0 - Unreleased
+## Version 0.6.0 - 2020-05-31
 ### Added
-- Added `Series.Name` property.
+- Added `Series.Name` property;
+- Added `SlideEx.SaveScheme()` to save slide's scheme to PNG file:
+![slide-scheme](/resources/slide-scheme.png)
 
 ## Version 0.5.0 - 2020-05-02
 ### Added

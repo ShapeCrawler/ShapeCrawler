@@ -201,17 +201,4 @@ namespace SlideDotNet.Models
 
         #endregion Private Methods
     }
-
-    public class SlideSize
-    {
-        public int Width { get; }
-        
-        public int Height { get; }
-
-        public SlideSize(int sdkW, int sdkH)
-        {
-            Width = sdkW;
-            Height = sdkH;
-        }
-    }
 }

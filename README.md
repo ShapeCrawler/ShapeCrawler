@@ -28,7 +28,7 @@ PM> Install-Package SlideDotNet
 ### Usage
 ```C#
 // opens presentation from the file path
-using var presentation = new PresentationEx(@"c:\test.pptx");
+var presentation = new PresentationEx(@"c:\test.pptx");
 
 // gets the slides collection
 var slides = presentation.Slides; 
@@ -50,20 +50,11 @@ foreach (var sp in shapes)
 ```
 
 ## Changelog
-### Version 0.5.0 - 2020-05-02
+### Version 0.6.0 - 2020-05-31
 #### Added
-- Added `ShapeEx.GeometryType` property, conating the geometric form:
-```
-public enum GeometryType
-{
-    Line,
-    LineInverse,
-    Triangle,
-    RightTriangle,
-    Rectangle,
-    ...
-```
-- Added `ChartEx.XValues` property for charts like ScatterChart.
+- Added `Series.Name` property;
+- Added `SlideEx.SaveScheme()` to save slide's scheme to PNG file:
+![slide-scheme](/resources/slide-scheme.png)
 
 To find out more, please check out the [CHANGELOG](https://github.com/adamshakhabov/SlideDotNet/blob/master/CHANGELOG.md).
 

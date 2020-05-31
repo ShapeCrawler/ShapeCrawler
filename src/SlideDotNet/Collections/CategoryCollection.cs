@@ -57,7 +57,7 @@ namespace SlideDotNet.Collections
         private void AddMultiCategories(C.MultiLevelStringReference multiLvlStrRef)
         {
             var parents = new List<KeyValuePair<uint, Category>>();
-            var levels = multiLvlStrRef.MultiLevelStringCache.Elements<C.Level>().Reverse(); //TODO: try without Reverse()
+            var levels = multiLvlStrRef.MultiLevelStringCache.Elements<C.Level>().Reverse();
             foreach (var lvl in levels)
             {
                 var ptElements = lvl.Elements<C.StringPoint>();

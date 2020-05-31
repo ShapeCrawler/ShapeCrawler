@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Services;
@@ -66,6 +67,8 @@ namespace SlideDotNet.Models
 
         #endregion Constructors
 
+        #region Public Methods
+
         /// <summary>
         /// Saves slide scheme in PNG file.
         /// </summary>
@@ -73,8 +76,20 @@ namespace SlideDotNet.Models
         public void SaveScheme(string filePath)
         {
             var sldSize = _preSettings.SlideSize.Value;
-            _schemeService.SaveScheme(filePath, _shapes.Value, sldSize.Width, sldSize.Height);
+            _schemeService.SaveScheme(_shapes.Value, sldSize.Width, sldSize.Height, filePath);
         }
+
+        /// <summary>
+        /// Saves slide scheme in stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        public void SaveScheme(Stream stream)
+        {
+            var sldSize = _preSettings.SlideSize.Value;
+            _schemeService.SaveScheme(_shapes.Value, sldSize.Width, sldSize.Height, stream);
+        }
+
+        #endregion Public Methods
 
         #region Private Methods
 

@@ -1,22 +1,54 @@
 ﻿using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using SlideDotNet.Enums;
 using SlideDotNet.Models;
 
 namespace SlideDotNet.Services.Drawing
 {
+    /// <summary>
+    /// Represents a slide scheme generator.
+    /// </summary>
     public class SlideSchemeService : ISlideSchemeService
     {
         private const int Scale = 10000;
         private const int BitmapOffset = 50;
         private const int RectangleOffset = 10;
 
-        public void SaveScheme(string filePath, ShapeCollection shapesValue, int sldW, int sldH)
+        #region Public Methods
+
+        public void SaveScheme(ShapeCollection shapes, int sldW, int sldH, string filePath)
+        {
+            var bitmap = GetBitmap(shapes, sldW, sldH);
+            bitmap.Save(filePath);
+            bitmap.Dispose();
+        }
+
+        /// <summary>
+        /// Saves in PNG.
+        /// </summary>
+        /// <param name="shapes"></param>
+        /// <param name="sldW"></param>
+        /// <param name="sldH"></param>
+        /// <param name="stream"></param>
+        public void SaveScheme(ShapeCollection shapes, int sldW, int sldH, Stream stream)
+        {
+            var bitmap = GetBitmap(shapes, sldW, sldH);
+            bitmap.Save(stream, ImageFormat.Png);
+            bitmap.Dispose();
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
+
+        private static Bitmap GetBitmap(ShapeCollection shapes, int sldW, int sldH)
         {
             var sldWidthPx = sldW / Scale;
             var sldHeightPx = sldH / Scale;
 
             // Prepare scheme bitmap
-            using var bitmap = new Bitmap(sldWidthPx + BitmapOffset, sldHeightPx + BitmapOffset);
+            var bitmap = new Bitmap(sldWidthPx + BitmapOffset, sldHeightPx + BitmapOffset);
             var graphics = Graphics.FromImage(bitmap);
 
             // Draw slide rectangle
@@ -25,13 +57,13 @@ namespace SlideDotNet.Services.Drawing
             graphics.DrawRectangle(blackPen, sldRectangle);
 
             // Draw shape rectangles
-            foreach (var shape in shapesValue)
+            foreach (var shape in shapes)
             {
-                var x = shape.X / Scale;
-                var y = shape.Y / Scale;
-                var w = shape.Width / Scale;
-                var h = shape.Height / Scale;
-                var shapeRectangle = new Rectangle((int)x, (int)y, (int)w, (int)h);
+                var x = (int)(shape.X / Scale);
+                var y = (int)(shape.Y / Scale);
+                var w = (int)(shape.Width / Scale);
+                var h = (int)(shape.Height / Scale);
+                var shapeRectangle = new Rectangle(x, y, w, h);
                 switch (shape.ContentType)
                 {
                     case ShapeContentType.AutoShape:
@@ -52,7 +84,9 @@ namespace SlideDotNet.Services.Drawing
                 }
             }
 
-            bitmap.Save(filePath);
+            return bitmap;
         }
+
+        #endregion Private Methods
     }
 }

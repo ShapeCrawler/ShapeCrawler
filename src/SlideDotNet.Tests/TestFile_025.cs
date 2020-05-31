@@ -94,20 +94,16 @@ namespace SlideDotNet.Tests
         {
             // Arrange
             var sld3 = _pre25Fixture.Presentation.Slides[2];
-            var filePath = Path.GetTempFileName();
             var chart3 = sld3.Shapes.First(x => x.Id == 7);
+            var stream = new MemoryStream();
 
             // Act
-            sld3.SaveScheme(filePath);
-            var fi = new FileInfo(filePath);
+            sld3.SaveScheme(stream);
             var chartX = chart3.X;
 
             // Assert
-            Assert.True(fi.Length > 0);
+            Assert.True(stream.Length > 0);
             Assert.Equal(757383, chartX);
-
-            // Clean
-            fi.Delete();
         }
     }
 }

@@ -10,7 +10,7 @@ namespace SlideDotNet.Collections
     {
         #region Fields
 
-        protected List<T> CollectionItems; //TODO: change on Array
+        protected List<T> CollectionItems;
 
         #endregion Fields
 
@@ -42,7 +42,7 @@ namespace SlideDotNet.Collections
 
         }
 
-        public LibraryCollection(IEnumerable<T> items)
+        public LibraryCollection(ICollection<T> items)
         {
             CollectionItems = new List<T>(items);
         }
