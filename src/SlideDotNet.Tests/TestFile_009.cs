@@ -1,17 +1,13 @@
 using System;
 using System.IO;
 using DocumentFormat.OpenXml.Packaging;
-using NSubstitute;
 using SlideDotNet.Enums;
 using SlideDotNet.Extensions;
 using SlideDotNet.Models;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.SlideComponents;
-using SlideDotNet.Services;
 using SlideDotNet.Services.Placeholders;
-using SlideDotNet.Tests.Helpers;
 using Xunit;
-using P = DocumentFormat.OpenXml.Presentation;
 using System.Linq;
 using SlideDotNet.Services.ShapeCreators;
 
@@ -22,22 +18,6 @@ namespace SlideDotNet.Tests
 {
     public class TestFile_009
     {
-        [Fact]
-        public void SlidesNumber_Test()
-        {
-            var ms = new MemoryStream(Properties.Resources._001);
-            var pre = new PresentationEx(ms);
-
-            // ACT
-            var sldNumber = pre.Slides.Count();
-
-            // CLOSE
-            pre.Close();
-            
-            // ASSERT
-            Assert.Equal(2, sldNumber);
-        }
-
         /// <State>
         /// - there is a presentation with two slides. The first slide contains one element. The second slide includes two elements;
         /// - the first slide is removed;
@@ -620,23 +600,6 @@ namespace SlideDotNet.Tests
 
             // ASSERT
             Assert.Equal(1539, fh);
-        }
-
-        [Fact]
-        public void ElementsNumber()
-        {
-            var ms = new MemoryStream(Properties.Resources._002);
-            var pre = new PresentationEx(ms);
-            var allElements = pre.Slides.First().Shapes;
-
-            // ACT
-            var elementsNumber = allElements.Count;
-
-            // CLOSE
-            pre.Close();
-
-            // ASSERT
-            Assert.Equal(3, elementsNumber);
         }
 
         /// <State>

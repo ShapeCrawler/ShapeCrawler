@@ -23,6 +23,7 @@ namespace SlideDotNet.Models.TextBody
         private readonly Lazy<int> _innerPrLvl; // inner paragraph level started from one
         private readonly Lazy<string> _text;
         private readonly Lazy<List<Portion>> _portions;
+        private readonly Lazy<Bullet> _bullet;
 
         #endregion Fields
 
@@ -38,6 +39,8 @@ namespace SlideDotNet.Models.TextBody
         /// </summary>
         public IList<Portion> Portions => _portions.Value;
 
+        public Bullet Bullet => _bullet.Value;
+
         #endregion Properties
 
         #region Constructors
@@ -51,10 +54,26 @@ namespace SlideDotNet.Models.TextBody
         {
             _xmlParagraph = xmlParagraph ?? throw new ArgumentNullException(nameof(xmlParagraph));
             _spContext = spContext ?? throw new ArgumentNullException(nameof(spContext));
-
             _innerPrLvl = new Lazy<int>(GetInnerLevel(_xmlParagraph));
             _text = new Lazy<string>(GetText);
             _portions = new Lazy<List<Portion>>(GetPortions);
+            _bullet = new Lazy<Bullet>(GetBullet);
+        }
+
+        private Bullet GetBullet()
+        {
+            var pPr = _xmlParagraph.ParagraphProperties;
+            if (pPr == null)
+            {
+                return null;
+            }
+            var buChar = pPr.GetFirstChild<A.CharacterBullet>();
+            if (buChar == null)
+            {
+                return null;
+            }
+
+            return new Bullet(pPr);
         }
 
         #endregion Constructors

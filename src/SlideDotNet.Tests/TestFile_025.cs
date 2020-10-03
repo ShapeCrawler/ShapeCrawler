@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using FluentAssertions;
 using SlideDotNet.Models;
 using Xunit;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -68,7 +69,7 @@ namespace SlideDotNet.Tests
             Assert.Equal("Dresses", chart4ChildCatVal);
             Assert.Equal("Clothing", chart4ParentCatVal);
             Assert.Equal("Ряд 1", serName1);
-            Assert.Equal("Ряд 3", serName3);
+            serName3.Should().Be("Ряд 3");
         }
 
         [Fact]
