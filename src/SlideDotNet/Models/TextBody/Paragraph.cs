@@ -16,9 +16,8 @@ namespace SlideDotNet.Models.TextBody
     public class Paragraph
     {
         #region Fields
-
+        
         private readonly IShapeContext _spContext;
-
         private readonly A.Paragraph _xmlParagraph;
         private readonly Lazy<int> _innerPrLvl; // inner paragraph level started from one
         private readonly Lazy<string> _text;
@@ -30,15 +29,18 @@ namespace SlideDotNet.Models.TextBody
         #region Properties
 
         /// <summary>
-        /// Returns the paragraph's text string.
+        /// Gets paragraph's text string.
         /// </summary>
         public string Text => _text.Value;
 
         /// <summary>
-        /// Returns paragraph text portions.
+        /// Gets paragraph text portions.
         /// </summary>
         public IList<Portion> Portions => _portions.Value;
 
+        /// <summary>
+        /// Gets paragraph bullet. Returns null if bullet does not exist.
+        /// </summary>
         public Bullet Bullet => _bullet.Value;
 
         #endregion Properties
@@ -62,18 +64,7 @@ namespace SlideDotNet.Models.TextBody
 
         private Bullet GetBullet()
         {
-            var pPr = _xmlParagraph.ParagraphProperties;
-            if (pPr == null)
-            {
-                return null;
-            }
-            var buChar = pPr.GetFirstChild<A.CharacterBullet>();
-            if (buChar == null)
-            {
-                return null;
-            }
-
-            return new Bullet(pPr);
+            return new Bullet(_xmlParagraph.ParagraphProperties);
         }
 
         #endregion Constructors

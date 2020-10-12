@@ -50,11 +50,14 @@ foreach (var sp in shapes)
 ```
 
 ## Changelog
-### Version 0.6.0 - 2020-05-31
+### Version 0.7.0 - 2020-10-12
 #### Added
-- Added `Series.Name` property;
-- Added `SlideEx.SaveScheme()` to save slide's scheme to PNG file:
-![slide-scheme](/resources/slide-scheme.png)
+- Added `Bullet` property for the paragraph:
+    - Bullet.Type
+    - Bullet.Char
+    - Bullet.FontName
+    - Bullet.Size
+    - Bullet.ColorHex
 
 To find out more, please check out the [CHANGELOG](https://github.com/adamshakhabov/SlideDotNet/blob/master/CHANGELOG.md).
 
