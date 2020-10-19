@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Drawing;
-using SlideDotNet.Models.SlideComponents;
+﻿using SlideDotNet.Models.SlideComponents;
 using SlideDotNet.Models.SlideComponents.Chart;
 
 namespace SlideDotNet.Exceptions

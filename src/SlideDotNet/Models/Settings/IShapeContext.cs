@@ -1,6 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Services;
 using SlideDotNet.Services.Placeholders;
 
 namespace SlideDotNet.Models.Settings

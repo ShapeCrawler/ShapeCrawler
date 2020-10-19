@@ -2,8 +2,8 @@
 using System.IO;
 using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Models.Settings;
-using SlideDotNet.Services;
 using SlideDotNet.Services.Drawing;
+using SlideDotNet.Statics;
 
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -22,6 +22,7 @@ namespace SlideDotNet.Models
         private readonly ISlideSchemeService _schemeService;
         private readonly SlidePart _sdkSldPart;
         private readonly SlideNumber _sldNumEntity;
+        private readonly Lazy<CustomXmlPart> _sldXmlPart;
 
         #endregion Fields
 
@@ -41,6 +42,12 @@ namespace SlideDotNet.Models
         /// Returns a background image of the slide. Returns <c>null</c>if slide does not have background image.
         /// </summary>
         public ImageEx BackgroundImage => _backgroundImage.Value;
+
+        public string CustomData
+        {
+            get => GetCustomData();
+            set => SetCustomData(value);
+        }
 
         #endregion Properties
 
@@ -63,6 +70,7 @@ namespace SlideDotNet.Models
             _schemeService = schemeService ?? throw new ArgumentNullException(nameof(schemeService));
             _shapes = new Lazy<ShapeCollection>(GetShapeCollection);
             _backgroundImage = new Lazy<ImageEx>(TryGetBackground);
+            _sldXmlPart = new Lazy<CustomXmlPart>(GetSldCustomXmlPart);
         }
 
         #endregion Constructors
@@ -103,6 +111,40 @@ namespace SlideDotNet.Models
         {
             var backgroundImageFactory = new ImageExFactory();
             return backgroundImageFactory.TryFromSdkSlide(_sdkSldPart);
+        }
+
+        private string GetCustomData()
+        {
+            using var sr = new StreamReader(_sldXmlPart.Value.GetStream());
+            var raw = sr.ReadToEnd();
+            if (raw.Length == 0)
+            {
+                return null;
+            }
+
+            return raw.Substring(ConstantStrings.CustomDataElementName.Length);
+        }
+
+        private void SetCustomData(string value)
+        {
+            var sldXmlPartStream = _sldXmlPart.Value.GetStream();
+            using var streamWriter = new StreamWriter(sldXmlPartStream);
+            streamWriter.Write($"{ConstantStrings.CustomDataElementName}{value}");
+        }
+
+        private CustomXmlPart GetSldCustomXmlPart()
+        {
+            foreach (var customXmlPart in _sdkSldPart.CustomXmlParts)
+            {
+                using var streamReader = new StreamReader(customXmlPart.GetStream());
+                string customXmlPartText = streamReader.ReadToEnd();
+                if (customXmlPartText.StartsWith(ConstantStrings.CustomDataElementName, StringComparison.CurrentCulture))
+                {
+                    return customXmlPart;
+                }
+            }
+
+            return _sdkSldPart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
         }
 
         #endregion Private Methods

@@ -3,7 +3,6 @@ using DocumentFormat.OpenXml.Packaging;
 using SlideDotNet.Collections;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.SlideComponents;
-using SlideDotNet.Services;
 using SlideDotNet.Services.ShapeCreators;
 using SlideDotNet.Shared;
 using P = DocumentFormat.OpenXml.Presentation;

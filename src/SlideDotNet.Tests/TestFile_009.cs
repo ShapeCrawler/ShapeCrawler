@@ -6,9 +6,9 @@ using SlideDotNet.Extensions;
 using SlideDotNet.Models;
 using SlideDotNet.Models.Settings;
 using SlideDotNet.Models.SlideComponents;
-using SlideDotNet.Services.Placeholders;
 using Xunit;
 using System.Linq;
+using FluentAssertions;
 using SlideDotNet.Services.ShapeCreators;
 
 // ReSharper disable TooManyChainedReferences
@@ -16,57 +16,28 @@ using SlideDotNet.Services.ShapeCreators;
 
 namespace SlideDotNet.Tests
 {
-    public class TestFile_009
+    public class TestFile_009Fixture : IDisposable
     {
-        /// <State>
-        /// - there is a presentation with two slides. The first slide contains one element. The second slide includes two elements;
-        /// - the first slide is removed;
-        /// - the presentation is closed.
-        /// </State>
-        /// <ExpectedBahavior>
-        /// There is the only second slide with its two elements.
-        /// </ExpectedBahavior>
-        [Fact]
-        public void SlidesRemove_Test()
+        public PresentationEx pre009 { get; }
+
+        public TestFile_009Fixture()
         {
-            // ARRANGE
-            var ms = new MemoryStream(Properties.Resources._007_2_slides);
-            var pre = new PresentationEx(ms);
-
-            // ACT
-            var slide1 = pre.Slides.First();
-            pre.Slides.Remove(slide1);
-            pre.Close();
-
-            var pre2 = new PresentationEx(ms);
-            var numSlides = pre2.Slides.Count();
-            var numElements = pre2.Slides.Single().Shapes.Count;
-            pre2.Close();
-            ms.Dispose();
-
-            // ASSERT
-            Assert.Equal(1, numSlides);
-            Assert.Equal(2, numElements);
+            pre009 = new PresentationEx(Properties.Resources._009);
         }
 
-        [Fact]
-        public void ShapeTextBody_Test()
+        public void Dispose()
         {
-            // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._008);
 
-            // ACT
-            var shapes = pre.Slides.Single().Shapes.OfType<ShapeEx>();
-            var sh36 = shapes.Single(e => e.Id == 36);
-            var sh37 = shapes.Single(e => e.Id == 37);
-           
-            pre.Close();
+        }
+    }
 
-            // ASSERT
-            Assert.False(sh36.HasTextFrame);
-            Assert.True(sh37.HasTextFrame);
-            Assert.Equal("P1t1 P1t2", sh37.TextFrame.Paragraphs[0].Text);
-            Assert.Equal("p2", sh37.TextFrame.Paragraphs[1].Text);
+    public class TestFile_009 : IClassFixture<TestFile_009Fixture>
+    {
+        private readonly TestFile_009Fixture _fixture;
+
+        public TestFile_009(TestFile_009Fixture fixture)
+        {
+            _fixture = fixture;
         }
 
         [Fact]
@@ -130,20 +101,54 @@ namespace SlideDotNet.Tests
         }
 
         [Fact]
-        public void GroupsElementPropertiesTest()
+        public void GroupedShape()
         {
-            // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            // Arrange
+            var pre = _fixture.pre009;
+            var groupShape = pre.Slides[1].Shapes.Single(x => x.ContentType.Equals(ShapeContentType.Group));
 
-            // ACT
-            var groupElement = pre.Slides[1].Shapes.Single(x => x.ContentType.Equals(ShapeContentType.Group));
-            var groupedShape5 = groupElement.GroupedShapes.Single(x => x.Id.Equals(5));
-            pre.Close();
+            // Act
+            var groupedShape = groupShape.GroupedShapes.Single(x => x.Id.Equals(5));
 
-            // ASSERT
-            Assert.Equal(1581846, groupedShape5.X);
-            Assert.Equal(1181377, groupedShape5.Width);
-            Assert.Equal(654096, groupedShape5.Height);
+            // Assert
+            Assert.Equal(1581846, groupedShape.X);
+            Assert.Equal(1181377, groupedShape.Width);
+            Assert.Equal(654096, groupedShape.Height);
+        }
+
+        [Fact]
+        public void ShapeCustomData_ShouldReturnNull_ShapeCustomDataIsNotSet()
+        {
+            // Arrange
+            var pre = _fixture.pre009;
+            var shape = pre.Slides.First().Shapes.First();
+
+            // Act
+            var shapeCustomData = shape.CustomData;
+
+            // Assert
+            shapeCustomData.Should().BeNull();
+        }
+
+        [Fact]
+        public void ShapeCustomData_ShouldReturnData_ShapeCustomDataIsSet()
+        {
+            // Arrange
+            const string customDataString = "Test custom data";
+            var origPreStream = new MemoryStream();
+            origPreStream.Write(Properties.Resources._009);
+            var originVersionPre = new PresentationEx(origPreStream);
+            var shape = originVersionPre.Slides.First().Shapes.First();
+
+            // Act
+            shape.CustomData = customDataString;
+            var changedVersionPreStream = new MemoryStream();
+            originVersionPre.SaveAs(changedVersionPreStream);
+            var changedVersionPre = new PresentationEx(changedVersionPreStream);
+            var shapeCustomData = changedVersionPre.Slides.First().Shapes.First().CustomData;
+
+            // Assert
+            shapeCustomData.Should().Be(customDataString);
         }
 
         [Fact]
@@ -227,19 +232,35 @@ namespace SlideDotNet.Tests
         }
 
         [Fact]
-        public void Shape_Fill_Solid_Test()
+        public void ShapeFill_FillTypeAndFillSolidColorName()
         {
-            // ARRANGE
+            // Arrange
             var pre = new PresentationEx(Properties.Resources._009);
             var sp2 = pre.Slides[1].Shapes.Single(e => e.Id.Equals(2));
+            var shapeFill = sp2.Fill;
 
-            // ACT
-            var fillType = sp2.Fill.Type;
-            var fillSolidColorName = sp2.Fill.SolidColor.Name;
+            // Act
+            var fillType = shapeFill.Type;
+            var fillSolidColorName = shapeFill.SolidColor.Name;
 
-            // ASSERT
-            Assert.Equal(FillType.Solid, fillType);
-            Assert.Equal("ff0000", fillSolidColorName);
+            // Assert
+            fillType.Should().BeEquivalentTo(FillType.Solid);
+            fillSolidColorName.Should().BeEquivalentTo("ff0000");
+        }
+
+
+        [Fact]
+        public void ShapeFill_ShouldReturnNull_ShapeIsNotFilled()
+        {
+            // Arrange
+            var pre = new PresentationEx(Properties.Resources._009);
+            var shapeEx = pre.Slides[1].Shapes.Single(e => e.Id.Equals(6));
+
+            // Act
+            var shapeFill = shapeEx.Fill;
+
+            // Act
+            shapeFill.Should().BeNull();
         }
 
         [Fact]
@@ -260,20 +281,6 @@ namespace SlideDotNet.Tests
 
             // ASSERT
             Assert.NotEqual(sizeBefore, sizeAfter);
-        }
-
-        [Fact]
-        public void Shape_Fill_IsNull_Test()
-        {
-            // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
-            var shapeEx = pre.Slides[1].Shapes.Single(e => e.Id.Equals(6));
-
-            // ACT
-            var shapeFill = shapeEx.Fill;
-
-            // ASSERT
-            Assert.Null(shapeFill);
         }
 
         [Fact]
@@ -529,28 +536,6 @@ namespace SlideDotNet.Tests
         }
 
         [Fact]
-        public void Placeholder_DateTime_Test()
-        {
-            // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._008);
-            var sp3 = pre.Slides[0].Shapes.Single(sp => sp.Id == 3);
-
-            // ACT
-            var hasTextFrame = sp3.HasTextFrame;
-            var text = sp3.TextFrame.Text;
-            var phType = sp3.PlaceholderType;
-            var x = sp3.X;
-
-            pre.Close();
-
-            // ASSERT
-            Assert.True(hasTextFrame);
-            Assert.Equal("25.01.2020", text);
-            Assert.Equal(PlaceholderType.DateAndTime, phType);
-            Assert.Equal(628650, x);
-        }
-
-        [Fact]
         public void DateTimePlaceholder_Text_Test()
         {
             // ARRANGE
@@ -600,37 +585,6 @@ namespace SlideDotNet.Tests
 
             // ASSERT
             Assert.Equal(1539, fh);
-        }
-
-        /// <State>
-        /// - there is presentation with two slides;
-        /// - first slide is deleted.
-        /// </State>
-        /// <ExpectedBahavior>
-        /// Presentation contains single slide with 1 number.
-        /// </ExpectedBahavior>
-        [Fact]
-        public void Remove_Test1()
-        {
-            // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._007_2_slides);
-            var slides = pre.Slides;
-            var slide1 = slides[0];
-            var slide2 = slides[1];
-
-            // ACT
-            var num1BeforeRemoving = slide1.Number;
-            var num2BeforeRemoving = slide2.Number;
-            slides.Remove(slide1);
-            var num2AfterRemoving = slide2.Number;
-
-            // ARRANGE
-            Assert.Equal(1, num1BeforeRemoving);
-            Assert.Equal(2, num2BeforeRemoving);
-            Assert.Equal(1, num2AfterRemoving);
-
-            // CLEAN
-            pre.Close();
         }
 
         /// <State>
@@ -711,46 +665,6 @@ namespace SlideDotNet.Tests
             Assert.True(shapeHiddenValue);
             Assert.False(tableHiddenValue);
         }
-
-        [Fact]
-        public void Get_Test()
-        {
-            var ms = new MemoryStream(Properties.Resources._008);
-            var xmlDoc = PresentationDocument.Open(ms, false);
-            var sldPart = xmlDoc.PresentationPart.SlideParts.First();
-            var spId3 = sldPart.Slide.CommonSlideData.ShapeTree.Elements<DocumentFormat.OpenXml.Presentation.Shape>().Single(sp => sp.GetId() == 3);
-            var sldLtPart = sldPart.SlideLayoutPart;
-            var phService = new PlaceholderService(sldLtPart);
-
-            // ACT
-            var type = phService.TryGetLocation(spId3).PlaceholderType;
-
-            // CLOSE
-            xmlDoc.Close();
-
-            // ASSERT
-            Assert.Equal(PlaceholderType.DateAndTime, type);
-        }
-
-        [Fact]
-        public void GetPlaceholderType_Test()
-        {
-            var ms = new MemoryStream(Properties.Resources._008);
-            var xmlDoc = PresentationDocument.Open(ms, false);
-            var sldPart = xmlDoc.PresentationPart.SlideParts.First();
-            var spId3 = sldPart.Slide.CommonSlideData.ShapeTree.Elements<DocumentFormat.OpenXml.Presentation.Shape>().Single(sp => sp.GetId() == 3);
-            var placeholderService = new PlaceholderService(sldPart.SlideLayoutPart);
-
-            // ACT
-            var phXml = placeholderService.CreatePlaceholderData(spId3);
-
-            // CLOSE
-            xmlDoc.Close();
-
-            // ASSERT
-            Assert.Equal(PlaceholderType.DateAndTime, phXml.PlaceholderType);
-        }
-
         [Fact]
         public void CreateShapesCollection_Test()
         {

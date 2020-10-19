@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using SlideDotNet.Enums;
 using SlideDotNet.Exceptions;
@@ -10,13 +11,12 @@ using SlideDotNet.Models.SlideComponents.Chart;
 using SlideDotNet.Models.TableComponents;
 using SlideDotNet.Models.TextBody;
 using SlideDotNet.Models.Transforms;
-using SlideDotNet.Services;
 using SlideDotNet.Services.Builders;
 using SlideDotNet.Services.Drawing;
-using SlideDotNet.Services.Placeholders;
 using SlideDotNet.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
+using SlideDotNet.Statics;
 
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -202,6 +202,18 @@ namespace SlideDotNet.Models.SlideComponents
 
         public GeometryType GeometryType { get; }
 
+        public string CustomData
+        {
+            get => GetCustomData();
+            set => SetCustomData(value);
+        }
+
+        private void SetCustomData(string value)
+        {
+            var customDataElement = $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
+            _context.SdkElement.InnerXml += customDataElement;
+        }
+
         #endregion Properties
 
         #region Constructors
@@ -226,6 +238,19 @@ namespace SlideDotNet.Models.SlideComponents
         #endregion Constructors
 
         #region Private Methods
+
+        private string GetCustomData()
+        {
+            var pattern = @$"<{ConstantStrings.CustomDataElementName}>(.*)<\/{ConstantStrings.CustomDataElementName}>";
+            var regex = new Regex(pattern);
+            var elementText = regex.Match(_context.SdkElement.InnerXml).Groups[1];
+            if (elementText.Value.Length == 0)
+            {
+                return null;
+            }
+
+            return elementText.Value;
+        }
 
         private ITextFrame TryGetTextFrame()
         {
