@@ -23,7 +23,7 @@ namespace SlideDotNet.Exceptions
         /// <param name="maxSize"></param>
         public static PresentationIsLargeException FromMax(int maxSize)
         {
-            var message = ExceptionMessages.PresentationIsLarge.Replace("{0}", maxSize.ToString(), StringComparison.Ordinal);
+            var message = ExceptionMessages.PresentationIsLarge.Replace("{0}", maxSize.ToString());
             return new PresentationIsLargeException(message);
         }
     }

@@ -118,7 +118,7 @@ namespace SlideDotNet.Services.Placeholders
                 }
                 else
                 {
-                    return Enum.Parse<PlaceholderType>(phTypeXml.Value.ToString());
+                    return (PlaceholderType)Enum.Parse(typeof(PlaceholderType),phTypeXml.Value.ToString());
                 }
             }
         }
@@ -136,7 +136,18 @@ namespace SlideDotNet.Services.Placeholders
             {
                 layoutHolders.Add(mHolder);
             }
-            _phLocations = layoutHolders.ToHashSet(); //TODO: optimize ToHashSet()
+            // _phLocations = layoutHolders.ToHashSet(); //TODO: optimize ToHashSet()
+            _phLocations = ToHashSet(layoutHolders);
+        }
+
+        private static HashSet<T> ToHashSet<T>(IEnumerable<T> items)
+        {
+            HashSet<T> set = new HashSet<T>();
+            foreach(var item in items)
+            {
+                set.Add(item);
+            }
+            return set;
         }
 
         private List<PlaceholderLocationData> GetPlaceholders(IEnumerable<OpenXmlCompositeElement> compositeElements)

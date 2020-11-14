@@ -97,7 +97,7 @@ namespace SlideDotNet.Models.SlideComponents.Chart
             {
                 if (_categories.Value == null)
                 {
-                    var msg = ExceptionMessages.ChartCanNotHaveCategory.Replace("#0", Type.ToString(), StringComparison.Ordinal);
+                    var msg = ExceptionMessages.ChartCanNotHaveCategory.Replace("#0", Type.ToString());
                     throw new NotSupportedException(msg);
                 }
 

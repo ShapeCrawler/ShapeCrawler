@@ -36,7 +36,7 @@ namespace SlideDotNet.Services.Drawing
         /// Returns image bytes.
         /// </summary>
         /// <returns></returns>
-        public async ValueTask<byte[]> GetImageBytes()
+        public async Task<byte[]> GetImageBytes()
         {
             if (_bytes != null)
             {

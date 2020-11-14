@@ -33,9 +33,9 @@ namespace SlideDotNet.Services.Placeholders
 
             var layoutSldData = _sdkSldPart.SlideLayoutPart.SlideLayout.CommonSlideData;
             var masterSldData = _sdkSldPart.SlideLayoutPart.SlideMasterPart.SlideMaster.CommonSlideData;
-            _layoutPlaceholders = new Lazy<HashSet<PlaceholderFontData>>(InitLayoutMaster(layoutSldData));
-            _masterPlaceholders = new Lazy<HashSet<PlaceholderFontData>>(InitLayoutMaster(masterSldData));
-            _masterBodyFontHeights = new Lazy<Dictionary<int, int>>(InitBodyTypePlaceholder(_sdkSldPart));
+            _layoutPlaceholders = new Lazy<HashSet<PlaceholderFontData>>(()=>InitLayoutMaster(layoutSldData));
+            _masterPlaceholders = new Lazy<HashSet<PlaceholderFontData>>(()=>InitLayoutMaster(masterSldData));
+            _masterBodyFontHeights = new Lazy<Dictionary<int, int>>(()=>InitBodyTypePlaceholder(_sdkSldPart));
         }
 
         public PlaceholderFontService(SlidePart sdkSldPart)

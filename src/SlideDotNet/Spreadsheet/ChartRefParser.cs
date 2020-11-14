@@ -96,8 +96,8 @@ namespace SlideDotNet.Spreadsheet
                 xlsxDoc = SpreadsheetDocument.Open(xlsxPackagePart.GetStream(), false);
                 _spContext.PreSettings.XlsxDocuments.Add(xlsxPackagePart, xlsxDoc);
             }
-            var filteredFormula = formula.Text.Replace("'", string.Empty, StringComparison.Ordinal)
-                .Replace("$", string.Empty, StringComparison.Ordinal); //eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5
+            var filteredFormula = formula.Text.Replace("'", string.Empty)
+                .Replace("$", string.Empty); //eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5
             var sheetNameAndCellsFormula = filteredFormula.Split('!'); //eg: Sheet1!A2:A5 -> ['Sheet1', 'A2:A5']
             var wbPart = xlsxDoc.WorkbookPart;
             string sheetId = wbPart.Workbook.Descendants<Sheet>().First(s => sheetNameAndCellsFormula[0].Equals(s.Name, StringComparison.Ordinal)).Id;

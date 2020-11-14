@@ -16,7 +16,7 @@ namespace SlideDotNet.Exceptions
 
         public static SlidesMuchMoreException FromMax(int maxNum)
         {
-            var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString(), StringComparison.Ordinal);
+            var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString());
             return new SlidesMuchMoreException(message);
         }
     }

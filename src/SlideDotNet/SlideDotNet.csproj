@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
-    <AssemblyName>SlideDotNet</AssemblyName>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>SlideDotNet.NetStandard</AssemblyName>
     <RootNamespace>SlideDotNet</RootNamespace>
-    <Version>0.8.0</Version>
+    <Version>0.8.1</Version>
     <Authors>Adam Shakhabov</Authors>
     <Company></Company>
-    <Description>A lightweight .NET library for parse PowerPoint file (PPTX) presentations without Microsoft Office installed.
+    <Description>Migration version of .Net Standard.
+A lightweight .NET library for parse PowerPoint file (PPTX) presentations without Microsoft Office installed.
 
 SlideDotNet is a fluent wrapper around Open XML SDK for the processing of PowerPoint files without Microsoft Office installed. It aims to provide an intuitive and user-friendly interface to dealing with the underlying Open XML SDK API.</Description>
     <PackageTags>openxml powerpoint pptx c-sharp slide slidedotnet</PackageTags>
@@ -19,7 +20,7 @@ SlideDotNet is a fluent wrapper around Open XML SDK for the processing of PowerP
     <LangVersion>8</LangVersion>
     <ApplicationIcon>logo.ico</ApplicationIcon>
     <PackageReleaseNotes>https://github.com/adamshakhabov/SlideDotNet/blob/master/CHANGELOG.md</PackageReleaseNotes>
-    <PackageProjectUrl>https://github.com/adamshakhabov/SlideDotNet</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/yangzhongke/SlideDotNet</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
