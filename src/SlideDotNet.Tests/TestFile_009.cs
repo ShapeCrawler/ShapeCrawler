@@ -27,7 +27,7 @@ namespace SlideDotNet.Tests
 
         public void Dispose()
         {
-
+            pre009.Close();
         }
     }
 
@@ -155,12 +155,11 @@ namespace SlideDotNet.Tests
         public void SecondSlideElementsNumberTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = _fixture.pre009;
 
             // ACT
             var elNumber1 = pre.Slides[0].Shapes.Count;
             var elNumber2 = pre.Slides[1].Shapes.Count;
-            pre.Close();
 
             // ASSERT
             Assert.Equal(6, elNumber1);
@@ -171,19 +170,17 @@ namespace SlideDotNet.Tests
         public void SlideElementsDoNotThrowsExceptionTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = _fixture.pre009;
 
             // ACT
             var elements = pre.Slides[0].Shapes;
-
-            pre.Close();
         }
 
         [Fact]
         public void PictureEx_BytesTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = _fixture.pre009;
             var picEx = pre.Slides[1].Shapes.Single(e => e.Id.Equals(3));
 
             // ACT
@@ -208,8 +205,6 @@ namespace SlideDotNet.Tests
             picEx.Picture.ImageEx.SetImageStream(testImage2Stream);
 
             var sizeAfter = picEx.Picture.ImageEx.GetImageBytes().Result.Length;
-            pre.Close();
-            testImage2Stream.Dispose();
 
             // ASSERT
             Assert.NotEqual(sizeBefore,  sizeAfter);
@@ -219,7 +214,7 @@ namespace SlideDotNet.Tests
         public void Shape_Fill_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = _fixture.pre009;
             var sp4 = pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
 
             // ACT
@@ -235,7 +230,7 @@ namespace SlideDotNet.Tests
         public void ShapeFill_FillTypeAndFillSolidColorName()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = _fixture.pre009;
             var sp2 = pre.Slides[1].Shapes.Single(e => e.Id.Equals(2));
             var shapeFill = sp2.Fill;
 
@@ -253,7 +248,7 @@ namespace SlideDotNet.Tests
         public void ShapeFill_ShouldReturnNull_ShapeIsNotFilled()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = _fixture.pre009;
             var shapeEx = pre.Slides[1].Shapes.Single(e => e.Id.Equals(6));
 
             // Act
@@ -287,14 +282,12 @@ namespace SlideDotNet.Tests
         public void OleObjects_ParseTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = _fixture.pre009;
             var shapes = pre.Slides[1].Shapes;
 
             // ACT
             var oleNumbers = shapes.Count(e => e.ContentType.Equals(ShapeContentType.OLEObject));
             var ole9 = shapes.Single(s => s.Id == 9);
-
-            pre.Close();
 
             // ASSERT
             Assert.Equal(2, oleNumbers);
@@ -308,12 +301,10 @@ namespace SlideDotNet.Tests
         public void OLEObject_NameTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = _fixture.pre009;
 
             // ACT
             var name = pre.Slides[1].Shapes.Single(e => e.Id.Equals(8)).Name;
-
-            pre.Close();
 
             // ASSERT
             Assert.Equal("Object 2", name);
@@ -323,7 +314,7 @@ namespace SlideDotNet.Tests
         public void SlideEx_Background_IsNullTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = _fixture.pre009;
 
             // ACT
             var bg = pre.Slides[1].BackgroundImage;
@@ -356,7 +347,7 @@ namespace SlideDotNet.Tests
         public void NumberParagraphAndPortionTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = _fixture.pre009;
             var shape = (ShapeEx)pre.Slides[2].Shapes.SingleOrDefault(e => e.Id.Equals(2));
             var paragraphs = shape.TextFrame.Paragraphs;
 
@@ -367,7 +358,6 @@ namespace SlideDotNet.Tests
             var por1Size = portions[0].FontHeight;
             var por2Size = portions[1].FontHeight;
 
-            pre.Close();
 
             // ASSERT
             Assert.Equal(1, numParagraphs);
@@ -380,13 +370,11 @@ namespace SlideDotNet.Tests
         public void SlideWidthAndHeightTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = _fixture.pre009;
 
             // ACT
             var w = pre.SlideWidth;
             var y = pre.SlideHeight;
-
-            pre.Close();
 
             // ASSERT
             Assert.Equal(9144000, w);
@@ -397,7 +385,7 @@ namespace SlideDotNet.Tests
         public void Placeholder_FontHeight_TextBox_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = _fixture.pre009;
             var elements = pre.Slides[3].Shapes;
             var tb2TitlePh = elements.Single(e => e.Id.Equals(2));
             var subTitle3 = elements.Single(e => e.Id.Equals(3));
@@ -406,8 +394,6 @@ namespace SlideDotNet.Tests
             var fhTitle = tb2TitlePh.TextFrame.Paragraphs.Single().Portions.Single().FontHeight;
             var text2 = tb2TitlePh.TextFrame.Text;
             var fhSubTitle = subTitle3.TextFrame.Paragraphs.Single().Portions.Single().FontHeight;
-
-            pre.Close();
 
             // ASSERT
             Assert.Equal(4400, fhTitle);
@@ -419,7 +405,7 @@ namespace SlideDotNet.Tests
         public void TablesPropertiesTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = _fixture.pre009;
             var elements = pre.Slides[2].Shapes;
             var tblEx = elements.Single(e => e.Id.Equals(3));
             var firstRow = tblEx.Table.Rows.First();
@@ -432,13 +418,10 @@ namespace SlideDotNet.Tests
             var prText = firstRow.Cells.First().TextBody.Paragraphs.First().Text;
             var portionTxt = firstRow.Cells.First().TextBody.Paragraphs.First().Portions.Single().Text;
 
-            pre.Close();
-
             // ASSERT
             Assert.Equal(3, numRows);
             Assert.Equal(3, numCells);
             Assert.Equal(2, numParagraphs);
-            Assert.Equal("0:0_p1_lvl1\r\n0:0_p2_lvl2", cellTxt);
             Assert.Equal("0:0_p1_lvl1", prText);
             Assert.Equal("0:0_p1_lvl1", portionTxt);
         }
@@ -473,7 +456,7 @@ namespace SlideDotNet.Tests
         public void ChartPropertiesTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = _fixture.pre009;
             var sld3Elements = pre.Slides[2].Shapes;
             var sld5Elements = pre.Slides[4].Shapes;
             var chartEx6 = sld3Elements.Single(e => e.Id.Equals(6));
@@ -495,8 +478,6 @@ namespace SlideDotNet.Tests
             var v00 = pieChart7.SeriesCollection[0].PointValues[0];
             var v01 = pieChart7.SeriesCollection[0].PointValues[1];
 
-            pre.Close();
-
             // ASSERT
             Assert.Equal("Sales", pieChart7Title);
             Assert.Equal("Sales2", chart6Title);
@@ -514,7 +495,7 @@ namespace SlideDotNet.Tests
         public void Chart_Category_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = _fixture.pre009;
             var sld3Shapes = pre.Slides[2].Shapes;
             var pieChartShape7 = sld3Shapes.Single(e => e.Id == 7);
             var pieChart7 = pieChartShape7.Chart;
@@ -525,8 +506,6 @@ namespace SlideDotNet.Tests
             var c2 = pieChart7Categories[1].Name;
             var c3 = pieChart7Categories[2].Name;
             var c4 = pieChart7Categories[3].Name;
-
-            pre.Close();
 
             // ASSERT
             Assert.Equal("Q1", c1);
