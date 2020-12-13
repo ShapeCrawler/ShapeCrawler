@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>SlideDotNet</AssemblyName>
     <RootNamespace>SlideDotNet</RootNamespace>
     <Version>0.8.0</Version>
@@ -21,6 +21,7 @@ SlideDotNet is a fluent wrapper around Open XML SDK for the processing of PowerP
     <PackageReleaseNotes>https://github.com/adamshakhabov/SlideDotNet/blob/master/CHANGELOG.md</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/adamshakhabov/SlideDotNet</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

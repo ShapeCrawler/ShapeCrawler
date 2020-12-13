@@ -9,13 +9,35 @@ using Xunit;
 
 namespace SlideDotNet.Tests
 {
-    public class TestFile_019
+    public class TestFile_019Fixture : IDisposable
     {
+        public PresentationEx pre019 { get; }
+
+        public TestFile_019Fixture()
+        {
+            pre019 = new PresentationEx(Properties.Resources._019);
+        }
+
+        public void Dispose()
+        {
+            pre019.Close();
+        }
+    }
+
+    public class TestFile_019 : IClassFixture<TestFile_019Fixture>
+    {
+        private readonly TestFile_019Fixture _fixture;
+
+        public TestFile_019(TestFile_019Fixture fixture)
+        {
+            _fixture = fixture;
+        }
+
         [Fact]
         public void AutoShape_FontHeight()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._019);
+            var pre = _fixture.pre019;
 
             // Act
             var fh = pre.Slides[0].Shapes.Single(x=>x.Id == 4103).TextFrame.Paragraphs.First().Portions.First().FontHeight;
@@ -28,7 +50,7 @@ namespace SlideDotNet.Tests
         public void Chart_Title_Test()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._019);
+            var pre = _fixture.pre019;
 
             // Act
             var chartTitle = pre.Slides[0].Shapes.Single(x => x.Id == 4).Chart.Title;
@@ -41,7 +63,7 @@ namespace SlideDotNet.Tests
         public void Picture_DoNotParseStrangePicture_Test()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._019);
+            var pre = _fixture.pre019;
 
             // Act - Assert
             Assert.ThrowsAny<Exception>(() => pre.Slides[1].Shapes.Single(x => x.Id == 47));
@@ -51,7 +73,7 @@ namespace SlideDotNet.Tests
         public void SlideNumber_Test()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._019);
+            var pre = _fixture.pre019;
             var shape2 = pre.Slides[0].Shapes.Single(x => x.Id == 2);
 
             // Act
