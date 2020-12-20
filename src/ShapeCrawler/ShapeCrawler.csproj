@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>ShapeCrawler</AssemblyName>
-    <RootNamespace>SlideDotNet</RootNamespace>
+    <RootNamespace>ShapeCrawler</RootNamespace>
     <Version>0.8.0</Version>
     <Authors>Adam Shakhabov</Authors>
     <Company>ShapeCrawler</Company>

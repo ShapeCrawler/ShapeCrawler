@@ -116,14 +116,9 @@ public static async void Usage()
 </details>
 
 ## Changelog
-### Version 0.7.0 - 2020-10-12
+### Version 0.8.0 - 2020-12-20
 #### Added
-- Added `Bullet` property for the paragraph:
-    - Bullet.Type
-    - Bullet.Char
-    - Bullet.FontName
-    - Bullet.Size
-    - Bullet.ColorHex
+- Added `CustomData` property for slide and shape objects: `Slide.CustomData`, `ShapeEx.CustomData`. These property allows to store some user's custom string.
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).
 
