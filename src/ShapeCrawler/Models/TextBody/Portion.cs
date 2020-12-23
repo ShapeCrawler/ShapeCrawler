@@ -1,7 +1,7 @@
 ﻿using System;
-using SlideDotNet.Shared;
+using ShapeCrawler.Shared;
 
-namespace SlideDotNet.Models.TextBody
+namespace ShapeCrawler.Models.TextBody
 {
     /// <summary>
     /// Represents a paragraph text portion.

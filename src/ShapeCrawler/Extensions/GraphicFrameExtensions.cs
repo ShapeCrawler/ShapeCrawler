@@ -2,7 +2,7 @@
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace SlideDotNet.Extensions
+namespace ShapeCrawler.Extensions
 {
     /// <summary>
     /// Contains extension methods for <see cref="P.GraphicFrame "/> class object.

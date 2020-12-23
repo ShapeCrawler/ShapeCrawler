@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml;
-using SlideDotNet.Shared;
+using ShapeCrawler.Shared;
 
-namespace SlideDotNet.Models.SlideComponents
+namespace ShapeCrawler.Models.SlideComponents
 {
     /// <summary>
     /// Represents an OLE object on a slide.

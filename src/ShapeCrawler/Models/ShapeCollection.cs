@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Collections;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Models.SlideComponents;
-using SlideDotNet.Services.ShapeCreators;
-using SlideDotNet.Shared;
+using ShapeCrawler.Collections;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Services.ShapeCreators;
+using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable All
 

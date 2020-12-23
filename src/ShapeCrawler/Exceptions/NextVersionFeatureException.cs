@@ -1,6 +1,6 @@
-﻿using SlideDotNet.Enums;
+﻿using ShapeCrawler.Enums;
 
-namespace SlideDotNet.Exceptions
+namespace ShapeCrawler.Exceptions
 {
     /// <summary>
     /// Thrown when a feature not yet been implemented.

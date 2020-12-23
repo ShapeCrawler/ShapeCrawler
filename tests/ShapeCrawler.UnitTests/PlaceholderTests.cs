@@ -1,10 +1,10 @@
 ﻿using System.IO;
 using NSubstitute;
-using SlideDotNet.Enums;
-using SlideDotNet.Exceptions;
-using SlideDotNet.Models;
-using SlideDotNet.Services.Placeholders;
-using SlideDotNet.Statics;
+using ShapeCrawler.Enums;
+using ShapeCrawler.Exceptions;
+using ShapeCrawler.Models;
+using ShapeCrawler.Services.Placeholders;
+using ShapeCrawler.Statics;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations

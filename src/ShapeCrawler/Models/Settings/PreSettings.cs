@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Services;
-using SlideDotNet.Shared;
+using ShapeCrawler.Services;
+using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideDotNet.Models.Settings
+namespace ShapeCrawler.Models.Settings
 {
     /// <summary>
     /// <inheritdoc cref="IPreSettings"/>

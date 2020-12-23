@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
-using SlideDotNet.Models.SlideComponents;
+using ShapeCrawler.Models.SlideComponents;
 
-namespace SlideDotNet.Services.ShapeCreators
+namespace ShapeCrawler.Services.ShapeCreators
 {
     /// <summary>
     /// Represents a base class for shape creators.

@@ -1,9 +1,9 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using SlideDotNet.Shared;
+using ShapeCrawler.Shared;
 
-namespace SlideDotNet.Extensions
+namespace ShapeCrawler.Extensions
 {
     /// <summary>
     /// Contains extension methods for <see cref="PresentationPart"/> class object.

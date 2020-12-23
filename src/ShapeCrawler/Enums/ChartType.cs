@@ -1,4 +1,4 @@
-﻿namespace SlideDotNet.Enums
+﻿namespace ShapeCrawler.Enums
 {
     /// <summary>
     /// Chart types.

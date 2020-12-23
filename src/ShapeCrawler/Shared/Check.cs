@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace SlideDotNet.Shared
+namespace ShapeCrawler.Shared
 {
     /// <summary>
     /// Represents parameter checker.

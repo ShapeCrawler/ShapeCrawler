@@ -2,12 +2,12 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
-using SlideDotNet.Enums;
-using SlideDotNet.Services.Placeholders;
-using SlideDotNet.Shared;
+using ShapeCrawler.Enums;
+using ShapeCrawler.Services.Placeholders;
+using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideDotNet.Services
+namespace ShapeCrawler.Services
 {
     /// <summary>
     /// <inheritdoc cref="IGeometryFactory"/>.

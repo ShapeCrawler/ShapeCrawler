@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using ShapeCrawler.Models;
 using SlideDotNet.Models;
 using Xunit;
 

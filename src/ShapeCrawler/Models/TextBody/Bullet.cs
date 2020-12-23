@@ -1,10 +1,10 @@
-﻿using SlideDotNet.Enums;
-using System;
+﻿using System;
 using System.Linq;
-using SlideDotNet.Exceptions;
+using ShapeCrawler.Enums;
+using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace SlideDotNet.Models.TextBody
+namespace ShapeCrawler.Models.TextBody
 {
     /// <summary>
     /// Represents a paragraph bullet class.

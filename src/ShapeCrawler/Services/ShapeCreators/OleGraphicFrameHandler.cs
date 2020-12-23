@@ -1,15 +1,14 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Models.SlideComponents;
-using SlideDotNet.Services.Builders;
-using SlideDotNet.Shared;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Services.Builders;
+using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
-using OleObject = SlideDotNet.Models.SlideComponents.OleObject;
+using OleObject = ShapeCrawler.Models.SlideComponents.OleObject;
 
-namespace SlideDotNet.Services.ShapeCreators
+namespace ShapeCrawler.Services.ShapeCreators
 {
     public class OleGraphicFrameHandler : OpenXmlElementHandler
     {

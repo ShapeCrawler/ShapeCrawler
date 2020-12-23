@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using SlideDotNet.Shared;
+using ShapeCrawler.Shared;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace SlideDotNet.Collections
+namespace ShapeCrawler.Collections
 {
     /// <summary>
     /// Represents a collection of the chart category.

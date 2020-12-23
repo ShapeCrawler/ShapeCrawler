@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using SlideDotNet.Models;
 
-namespace SlideDotNet.Services.Drawing
+namespace ShapeCrawler.Services.Drawing
 {
     public interface ISlideSchemeService
     {

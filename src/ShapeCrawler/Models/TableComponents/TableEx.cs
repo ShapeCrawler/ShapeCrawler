@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Models.SlideComponents;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Models.SlideComponents;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable All

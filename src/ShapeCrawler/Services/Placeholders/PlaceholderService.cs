@@ -4,14 +4,14 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Enums;
-using SlideDotNet.Extensions;
-using SlideDotNet.Shared;
+using ShapeCrawler.Enums;
+using ShapeCrawler.Extensions;
+using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace SlideDotNet.Services.Placeholders
+namespace ShapeCrawler.Services.Placeholders
 {
     /// <summary>
     /// <inheritdoc cref="IPlaceholderService"/>

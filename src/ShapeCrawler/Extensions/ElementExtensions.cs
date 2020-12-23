@@ -1,9 +1,8 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
 using P = DocumentFormat.OpenXml.Presentation;
-using D = DocumentFormat.OpenXml.Drawing;
 
-namespace SlideDotNet.Extensions
+namespace ShapeCrawler.Extensions
 {
     /// <summary>
     /// Extension methods for <see cref="OpenXmlElement"/> instance.

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SlideDotNet.Models.TextBody
+namespace ShapeCrawler.Models.TextBody
 {
     /// <summary>
     /// Represents a text frame of the shape.

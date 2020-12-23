@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SlideDotNet.Collections
+namespace ShapeCrawler.Collections
 {
     /// <summary>
     /// Represents a chart category.

@@ -1,4 +1,4 @@
-﻿namespace SlideDotNet.Collections
+﻿namespace ShapeCrawler.Collections
 {
     /// <summary>
     /// Represents a base class for collections which allow item removing.

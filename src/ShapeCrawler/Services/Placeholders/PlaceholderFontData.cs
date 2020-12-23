@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SlideDotNet.Services.Placeholders
+namespace ShapeCrawler.Services.Placeholders
 {
     /// <summary>
     /// Represents placeholder font data.

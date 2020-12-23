@@ -2,19 +2,19 @@
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using SlideDotNet.Extensions;
-using SlideDotNet.Models;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Shared;
-using Slide = SlideDotNet.Models.Slide;
+using ShapeCrawler.Extensions;
+using ShapeCrawler.Models;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Shared;
+using Slide = ShapeCrawler.Models.Slide;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideDotNet.Collections
+namespace ShapeCrawler.Collections
 {
     /// <summary>
     /// Represents a collection of the slides.
     /// </summary>
-    public class SlideCollection : EditAbleCollection<Slide>
+    public class SlideCollection : EditAbleCollection<Models.Slide>
     {
         #region Fields
 

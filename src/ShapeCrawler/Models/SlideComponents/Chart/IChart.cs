@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using SlideDotNet.Collections;
-using SlideDotNet.Enums;
+﻿using ShapeCrawler.Collections;
+using ShapeCrawler.Enums;
 
-namespace SlideDotNet.Models.SlideComponents.Chart
+namespace ShapeCrawler.Models.SlideComponents.Chart
 {
     /// <summary>
     /// Represents a chart.

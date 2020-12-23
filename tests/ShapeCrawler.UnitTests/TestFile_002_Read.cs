@@ -1,6 +1,7 @@
 using System.Linq;
 using FluentAssertions;
-using SlideDotNet.Enums;
+using ShapeCrawler.Enums;
+using ShapeCrawler.Models;
 using Xunit;
 
 // ReSharper disable TooManyChainedReferences
@@ -8,11 +9,11 @@ using Xunit;
 
 namespace ShapeCrawler.UnitTests
 {
-    public class TestFile_002 : IClassFixture<TestFile_002Fixture>
+    public class TestFile_002_Read : IClassFixture<TestFile_002Fixture>
     {
         private readonly TestFile_002Fixture _fixture;
 
-        public TestFile_002(TestFile_002Fixture fixture)
+        public TestFile_002_Read(TestFile_002Fixture fixture)
         {
             _fixture = fixture;
         }
@@ -88,6 +89,19 @@ namespace ShapeCrawler.UnitTests
             bulletColorHex.Should().Be("C00000");
             bulletChar.Should().Be("'");
             bulletSize.Should().Be(120);
+        }
+
+        [Fact]
+        public void Slide_Hidden_returns_true_when_slide_is_hidden()
+        {
+            // Arrange
+            Slide slide = _fixture.pre002.Slides[2];
+
+            // Act
+            bool hidden = slide.Hidden;
+
+            // Assert
+            hidden.Should().BeFalse();
         }
     }
 }

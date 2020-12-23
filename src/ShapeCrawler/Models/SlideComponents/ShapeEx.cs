@@ -3,24 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
-using SlideDotNet.Enums;
-using SlideDotNet.Exceptions;
-using SlideDotNet.Extensions;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Models.SlideComponents.Chart;
+using ShapeCrawler.Enums;
+using ShapeCrawler.Exceptions;
+using ShapeCrawler.Extensions;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Models.SlideComponents.Chart;
+using ShapeCrawler.Models.TextBody;
+using ShapeCrawler.Models.Transforms;
+using ShapeCrawler.Services.Builders;
+using ShapeCrawler.Services.Drawing;
+using ShapeCrawler.Shared;
+using ShapeCrawler.Statics;
 using SlideDotNet.Models.TableComponents;
-using SlideDotNet.Models.TextBody;
-using SlideDotNet.Models.Transforms;
-using SlideDotNet.Services.Builders;
-using SlideDotNet.Services.Drawing;
-using SlideDotNet.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
-using SlideDotNet.Statics;
 
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace SlideDotNet.Models.SlideComponents
+namespace ShapeCrawler.Models.SlideComponents
 {
     /// <summary>
     /// Represents a shape on a slide.

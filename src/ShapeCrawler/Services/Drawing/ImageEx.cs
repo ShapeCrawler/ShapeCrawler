@@ -2,9 +2,9 @@
 using System.IO;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Shared;
+using ShapeCrawler.Shared;
 
-namespace SlideDotNet.Services.Drawing
+namespace ShapeCrawler.Services.Drawing
 {
     /// <summary>
     /// Represents a image model.

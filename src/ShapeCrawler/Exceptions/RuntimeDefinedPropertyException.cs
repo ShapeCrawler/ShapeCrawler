@@ -1,6 +1,6 @@
-﻿using SlideDotNet.Enums;
+﻿using ShapeCrawler.Enums;
 
-namespace SlideDotNet.Exceptions
+namespace ShapeCrawler.Exceptions
 {
     /// <summary>
     /// Thrown while attempting to access runtime defined property, but it does not exist for the current object.

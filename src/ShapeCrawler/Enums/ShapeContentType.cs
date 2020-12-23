@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace SlideDotNet.Enums
+namespace ShapeCrawler.Enums
 {
     /// <summary>
     /// Main shape content type.

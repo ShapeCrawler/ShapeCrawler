@@ -1,13 +1,14 @@
 ﻿using System;
 using System.IO;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Services.Drawing;
-using SlideDotNet.Statics;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Services.Drawing;
+using ShapeCrawler.Statics;
+using SlideDotNet.Models;
 
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace SlideDotNet.Models
+namespace ShapeCrawler.Models
 {
     /// <summary>
     /// Represents a slide.
@@ -48,6 +49,8 @@ namespace SlideDotNet.Models
             get => GetCustomData();
             set => SetCustomData(value);
         }
+
+        public bool Hidden => _sdkSldPart.Slide.Show != null && _sdkSldPart.Slide.Show.Value;
 
         #endregion Properties
 

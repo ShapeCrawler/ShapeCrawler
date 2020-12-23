@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
 
-namespace SlideDotNet.Spreadsheet
+namespace ShapeCrawler.Spreadsheet
 {
     public interface IChartRefParser
     {

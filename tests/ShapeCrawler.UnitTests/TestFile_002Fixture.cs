@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using ShapeCrawler.Models;
 using SlideDotNet.Models;
 
 namespace ShapeCrawler.UnitTests

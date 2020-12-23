@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using SlideDotNet.Exceptions;
+using ShapeCrawler.Exceptions;
 
-namespace SlideDotNet.Models.TextBody
+namespace ShapeCrawler.Models.TextBody
 {
     public class NoTextFrame : ITextFrame
     {

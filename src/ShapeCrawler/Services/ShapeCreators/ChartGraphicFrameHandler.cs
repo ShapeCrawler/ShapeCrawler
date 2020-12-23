@@ -1,15 +1,14 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Models.SlideComponents;
-using SlideDotNet.Models.SlideComponents.Chart;
-using SlideDotNet.Services.Builders;
-using SlideDotNet.Shared;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Models.SlideComponents.Chart;
+using ShapeCrawler.Services.Builders;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideDotNet.Services.ShapeCreators
+namespace ShapeCrawler.Services.ShapeCreators
 {
     public class ChartGraphicFrameHandler : OpenXmlElementHandler
     {

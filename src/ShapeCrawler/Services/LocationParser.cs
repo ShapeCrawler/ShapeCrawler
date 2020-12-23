@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using SlideDotNet.Models.SlideComponents;
-using SlideDotNet.Models.Transforms;
-using SlideDotNet.Services.Placeholders;
-using SlideDotNet.Shared;
+using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Models.Transforms;
+using ShapeCrawler.Services.Placeholders;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideDotNet.Services
+namespace ShapeCrawler.Services
 {
     /// <summary>
     /// Represents a shape location and size data manager.

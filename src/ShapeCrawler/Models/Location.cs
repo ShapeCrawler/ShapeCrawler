@@ -1,4 +1,4 @@
-﻿namespace SlideDotNet.Models
+﻿namespace ShapeCrawler.Models
 {
     public class Location
     {

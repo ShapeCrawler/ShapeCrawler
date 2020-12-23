@@ -1,4 +1,4 @@
-﻿namespace SlideDotNet.Enums
+﻿namespace ShapeCrawler.Enums
 {
     public enum BulletType
     {

@@ -1,9 +1,7 @@
-﻿using DocumentFormat.OpenXml.Drawing;
-using SlideDotNet.Enums;
-using SlideDotNet.Shared;
-using A = DocumentFormat.OpenXml.Drawing;
+﻿using ShapeCrawler.Enums;
+using ShapeCrawler.Shared;
 
-namespace SlideDotNet.Services.Placeholders
+namespace ShapeCrawler.Services.Placeholders
 {
     /// <summary>
     /// Represents placeholder data.

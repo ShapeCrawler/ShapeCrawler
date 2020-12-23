@@ -1,4 +1,5 @@
-﻿using SlideDotNet.Models;
+﻿using ShapeCrawler.Models;
+using SlideDotNet.Models;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations

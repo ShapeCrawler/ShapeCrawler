@@ -2,13 +2,13 @@
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Collections;
-using SlideDotNet.Exceptions;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Shared;
-using SlideDotNet.Statics;
+using ShapeCrawler.Collections;
+using ShapeCrawler.Exceptions;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Shared;
+using ShapeCrawler.Statics;
 
-namespace SlideDotNet.Models
+namespace ShapeCrawler.Models
 {
     /// <summary>
     /// <inheritdoc cref="IPresentation"/>

@@ -1,8 +1,8 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Services.Placeholders;
+using ShapeCrawler.Services.Placeholders;
 
-namespace SlideDotNet.Models.Settings
+namespace ShapeCrawler.Models.Settings
 {
     /// <summary>
     /// Represents a shape context.

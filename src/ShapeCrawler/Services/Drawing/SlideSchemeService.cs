@@ -1,10 +1,10 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using SlideDotNet.Enums;
+using ShapeCrawler.Enums;
 using SlideDotNet.Models;
 
-namespace SlideDotNet.Services.Drawing
+namespace ShapeCrawler.Services.Drawing
 {
     /// <summary>
     /// Represents a slide scheme generator.

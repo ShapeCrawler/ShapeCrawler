@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace SlideDotNet.Extensions
+namespace ShapeCrawler.Extensions
 {
     /// <summary>
     /// Contains extension methods for <see cref="Stream"/> instance.

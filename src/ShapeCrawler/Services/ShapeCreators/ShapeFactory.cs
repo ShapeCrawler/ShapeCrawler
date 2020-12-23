@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Models.SlideComponents;
-using SlideDotNet.Services.Placeholders;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Services.Placeholders;
 
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace SlideDotNet.Services.ShapeCreators
+namespace ShapeCrawler.Services.ShapeCreators
 {
     /// <summary>
     /// <inheritdoc cref="IShapeFactory"/>

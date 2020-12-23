@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Models.SlideComponents;
-using SlideDotNet.Models.Transforms;
-using SlideDotNet.Services.Builders;
-using SlideDotNet.Shared;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Models.Transforms;
+using ShapeCrawler.Services.Builders;
+using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideDotNet.Services.ShapeCreators
+namespace ShapeCrawler.Services.ShapeCreators
 {
     public class SdkGroupShapeHandler : OpenXmlElementHandler
     {

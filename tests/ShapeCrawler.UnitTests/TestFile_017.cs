@@ -1,4 +1,4 @@
-﻿using SlideDotNet.Models;
+﻿using ShapeCrawler.Models;
 using Xunit;
 
 // ReSharper disable TooManyChainedReferences

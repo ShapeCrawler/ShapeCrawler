@@ -1,11 +1,11 @@
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Enums;
-using SlideDotNet.Extensions;
-using SlideDotNet.Models;
-using SlideDotNet.Models.SlideComponents;
-using SlideDotNet.Services.Placeholders;
+using ShapeCrawler.Enums;
+using ShapeCrawler.Extensions;
+using ShapeCrawler.Models;
+using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Services.Placeholders;
 using Xunit;
 
 // ReSharper disable TooManyChainedReferences

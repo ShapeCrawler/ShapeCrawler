@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Shared;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace SlideDotNet.Models.TextBody
+namespace ShapeCrawler.Models.TextBody
 {
     /// <summary>
     /// <inheritdoc cref="ITextFrame"/>

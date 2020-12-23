@@ -1,11 +1,11 @@
 ﻿using System.Drawing;
 using System.Globalization;
-using SlideDotNet.Enums;
-using SlideDotNet.Services.Drawing;
-using SlideDotNet.Shared;
+using ShapeCrawler.Enums;
+using ShapeCrawler.Services.Drawing;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace SlideDotNet.Models.SlideComponents
+namespace ShapeCrawler.Models.SlideComponents
 {
     /// <summary>
     /// Represents a shape fill.

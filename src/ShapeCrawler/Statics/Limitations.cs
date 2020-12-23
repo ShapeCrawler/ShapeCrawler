@@ -1,4 +1,4 @@
-﻿namespace SlideDotNet.Statics
+﻿namespace ShapeCrawler.Statics
 {
     /// <summary>
     /// Contains library limitation constant values.

@@ -1,4 +1,4 @@
-﻿namespace SlideDotNet.Models.SlideComponents
+﻿namespace ShapeCrawler.Models.SlideComponents
 {
     /// <summary>
     /// Represents a shape location and size data.

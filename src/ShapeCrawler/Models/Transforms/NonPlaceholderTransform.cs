@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
-using SlideDotNet.Models.SlideComponents;
+using ShapeCrawler.Models.SlideComponents;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace SlideDotNet.Models.Transforms
+namespace ShapeCrawler.Models.Transforms
 {
     public class NonPlaceholderTransform : ILocation
     {

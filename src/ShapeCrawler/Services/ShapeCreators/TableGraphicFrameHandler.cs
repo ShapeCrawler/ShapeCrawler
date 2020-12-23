@@ -1,15 +1,14 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Models.SlideComponents;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Services.Builders;
+using ShapeCrawler.Shared;
 using SlideDotNet.Models.TableComponents;
-using SlideDotNet.Services.Builders;
-using SlideDotNet.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace SlideDotNet.Services.ShapeCreators
+namespace ShapeCrawler.Services.ShapeCreators
 {
     public class TableGraphicFrameHandler : OpenXmlElementHandler
     {

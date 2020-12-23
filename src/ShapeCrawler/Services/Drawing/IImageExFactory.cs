@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 
-namespace SlideDotNet.Services.Drawing
+namespace ShapeCrawler.Services.Drawing
 {
     /// <summary>
     /// Represents a factory to create an instance of the <see cref="ImageEx"/> class.

@@ -1,5 +1,5 @@
 ﻿using System;
-using SlideDotNet.Models;
+using ShapeCrawler.Models;
 
 namespace ShapeCrawler.UnitTests
 {

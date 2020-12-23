@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
 
-namespace SlideDotNet.Models.Settings
+namespace ShapeCrawler.Models.Settings
 {
     /// <summary>
     /// Represents a global presentation settings.

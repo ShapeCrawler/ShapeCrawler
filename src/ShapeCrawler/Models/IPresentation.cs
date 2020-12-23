@@ -1,8 +1,7 @@
-﻿using System;
-using System.IO;
-using SlideDotNet.Collections;
+﻿using System.IO;
+using ShapeCrawler.Collections;
 
-namespace SlideDotNet.Models
+namespace ShapeCrawler.Models
 {
     /// <summary>
     /// Represents a presentation.

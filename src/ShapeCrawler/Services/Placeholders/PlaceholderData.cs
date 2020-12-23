@@ -1,7 +1,7 @@
 ﻿using System;
-using SlideDotNet.Enums;
+using ShapeCrawler.Enums;
 
-namespace SlideDotNet.Services.Placeholders
+namespace ShapeCrawler.Services.Placeholders
 {
     /// <summary>
     /// Represents placeholder data.

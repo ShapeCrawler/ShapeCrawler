@@ -1,9 +1,8 @@
-﻿using SlideDotNet.Exceptions;
-using SlideDotNet.Models.SlideComponents;
-using SlideDotNet.Services.Placeholders;
-using A = DocumentFormat.OpenXml.Drawing;
+﻿using ShapeCrawler.Exceptions;
+using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Services.Placeholders;
 
-namespace SlideDotNet.Models.Transforms
+namespace ShapeCrawler.Models.Transforms
 {
     /// <summary>
     /// <inheritdoc cref="ILocation"/>

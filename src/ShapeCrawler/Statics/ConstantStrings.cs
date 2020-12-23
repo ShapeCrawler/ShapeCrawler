@@ -1,4 +1,4 @@
-﻿namespace SlideDotNet.Statics
+﻿namespace ShapeCrawler.Statics
 {
     public static class ConstantStrings
     {

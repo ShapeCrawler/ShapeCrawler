@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Collections;
-using SlideDotNet.Enums;
-using SlideDotNet.Exceptions;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Spreadsheet;
+using ShapeCrawler.Collections;
+using ShapeCrawler.Enums;
+using ShapeCrawler.Exceptions;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Spreadsheet;
 using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace SlideDotNet.Models.SlideComponents.Chart
+namespace ShapeCrawler.Models.SlideComponents.Chart
 {
     /// <summary>
     /// <inheritdoc cref="IChart"/>

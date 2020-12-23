@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Enums;
-using SlideDotNet.Extensions;
-using SlideDotNet.Shared;
+using ShapeCrawler.Enums;
+using ShapeCrawler.Extensions;
+using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable PossibleNullReferenceException
 
-namespace SlideDotNet.Services.Placeholders
+namespace ShapeCrawler.Services.Placeholders
 {
     /// <summary>
     /// Represents a font height manager for placeholder elements.

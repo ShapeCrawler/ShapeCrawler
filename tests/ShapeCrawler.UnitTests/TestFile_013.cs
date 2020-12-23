@@ -1,5 +1,6 @@
 ﻿using System.Linq;
-using SlideDotNet.Enums;
+using ShapeCrawler.Enums;
+using ShapeCrawler.Models;
 using SlideDotNet.Models;
 using Xunit;
 

@@ -2,13 +2,13 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Models.SlideComponents;
-using SlideDotNet.Services.Builders;
-using SlideDotNet.Shared;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Services.Builders;
+using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideDotNet.Services.ShapeCreators
+namespace ShapeCrawler.Services.ShapeCreators
 {
     /// <summary>
     /// Represents a picture handler for p:pic and picture p:graphicFrame element.

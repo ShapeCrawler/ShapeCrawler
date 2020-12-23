@@ -115,13 +115,13 @@ public static async void Usage()
 ```
 </details>
 
+# Feedback and Give a Star! :star:
+I’m pretty sure there are still lots of things to improve in this project. Try it out and let me know your thoughts.
+
+Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issues) if you find bugs or request a new feature. Your valuable feedback is much appreciated to better improve this project. If you find this useful, please give it a star to show your support for this project. 
 ## Changelog
 ### Version 0.8.0 - 2020-12-20
 #### Added
 - Added `CustomData` property for slide and shape objects: `Slide.CustomData`, `ShapeEx.CustomData`. These property allows to store some user's custom string.
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).
-
-## Contribution
-- Feel free to report a bug or suggest a new feature by creating an [issue](https://github.com/ShapeCrawler/ShapeCrawler/issues);
-- Welcome to contribute. We are wating for your [Pull Requests](https://github.com/ShapeCrawler/ShapeCrawler/pulls). 

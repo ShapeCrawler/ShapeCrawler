@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Shared;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideDotNet.Services.Drawing
+namespace ShapeCrawler.Services.Drawing
 {
     /// <summary>
     /// <inheritdoc cref="IImageExFactory"/>

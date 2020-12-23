@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Models.TextBody;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Models.TextBody;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace SlideDotNet.Models.TableComponents
+namespace ShapeCrawler.Models.TableComponents
 {
     /// <summary>
     /// Represents a row's cell.

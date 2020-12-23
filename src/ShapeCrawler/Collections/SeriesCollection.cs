@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Enums;
-using SlideDotNet.Models.SlideComponents.Chart;
-using SlideDotNet.Shared;
-using SlideDotNet.Spreadsheet;
-using C = DocumentFormat.OpenXml.Drawing.Charts;
+using ShapeCrawler.Enums;
+using ShapeCrawler.Models.SlideComponents.Chart;
+using ShapeCrawler.Shared;
+using ShapeCrawler.Spreadsheet;
 
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace SlideDotNet.Collections
+namespace ShapeCrawler.Collections
 {
     /// <summary>
     /// Represents a collection of the chart series.

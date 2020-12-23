@@ -4,12 +4,13 @@ using System.Globalization;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Shared;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Shared;
+using SlideDotNet.Spreadsheet;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace SlideDotNet.Spreadsheet
+namespace ShapeCrawler.Spreadsheet
 {
     /// <summary>
     /// Represents a series value point parser.

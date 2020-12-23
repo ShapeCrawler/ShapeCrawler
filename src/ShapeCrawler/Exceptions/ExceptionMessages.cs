@@ -1,7 +1,7 @@
-﻿using SlideDotNet.Models.SlideComponents;
-using SlideDotNet.Models.SlideComponents.Chart;
+﻿using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Models.SlideComponents.Chart;
 
-namespace SlideDotNet.Exceptions
+namespace ShapeCrawler.Exceptions
 {
     /// <summary>
     /// Contains constant error messages.

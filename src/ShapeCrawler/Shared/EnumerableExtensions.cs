@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SlideDotNet.Shared
+namespace ShapeCrawler.Shared
 {
     public static class EnumerableExtensions
     {

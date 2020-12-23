@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
-using SlideDotNet.Enums;
+using ShapeCrawler.Enums;
 
-namespace SlideDotNet.Services
+namespace ShapeCrawler.Services
 {
     /// <summary>
     /// Represents a parsed candidate element.

@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Enums;
-using SlideDotNet.Services;
-using SlideDotNet.Services.Placeholders;
-using SlideDotNet.Shared;
-using SlideDotNet.Statics;
+using ShapeCrawler.Services;
+using ShapeCrawler.Services.Placeholders;
+using ShapeCrawler.Shared;
+using ShapeCrawler.Statics;
 
-namespace SlideDotNet.Models.Settings
+namespace ShapeCrawler.Models.Settings
 {
     /// <summary>
     /// <inheritdoc cref="IShapeContext"/>

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SlideDotNet.Shared
+namespace ShapeCrawler.Shared
 {
     /// <summary>
     /// Represents a desc comparer.

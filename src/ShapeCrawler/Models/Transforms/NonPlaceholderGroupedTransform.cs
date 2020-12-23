@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
-using SlideDotNet.Exceptions;
-using SlideDotNet.Models.SlideComponents;
+using ShapeCrawler.Exceptions;
+using ShapeCrawler.Models.SlideComponents;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace SlideDotNet.Models.Transforms
+namespace ShapeCrawler.Models.Transforms
 {
     public class NonPlaceholderGroupedTransform : ILocation
     {

@@ -1,4 +1,4 @@
-﻿namespace SlideDotNet.Statics
+﻿namespace ShapeCrawler.Statics
 {
     /// <summary>
     /// Represents PowerPoint presentation format constants.

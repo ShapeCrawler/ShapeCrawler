@@ -1,7 +1,7 @@
-﻿using SlideDotNet.Enums;
+﻿using ShapeCrawler.Enums;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace SlideDotNet.Services
+namespace ShapeCrawler.Services
 {
     /// <summary>
     /// Represents a factory to generate a shape geometry.

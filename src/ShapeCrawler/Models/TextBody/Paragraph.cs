@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using SlideDotNet.Extensions;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Statics;
+using ShapeCrawler.Extensions;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace SlideDotNet.Models.TextBody
+namespace ShapeCrawler.Models.TextBody
 {
     /// <summary>
     /// Represents a text paragraph.

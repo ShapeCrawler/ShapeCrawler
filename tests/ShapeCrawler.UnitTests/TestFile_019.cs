@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using SlideDotNet.Enums;
+using ShapeCrawler.Enums;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations

@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
-using SlideDotNet.Enums;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Models.SlideComponents;
-using SlideDotNet.Models.SlideComponents.Chart;
+using ShapeCrawler.Enums;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Models.SlideComponents.Chart;
 using SlideDotNet.Models.TableComponents;
-using P = DocumentFormat.OpenXml.Presentation;
-using A = DocumentFormat.OpenXml.Drawing;
+using OleObject = ShapeCrawler.Models.SlideComponents.OleObject;
 
-namespace SlideDotNet.Services.Builders
+namespace ShapeCrawler.Services.Builders
 {
     /// <summary>
     /// Represents a shape builder.

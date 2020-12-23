@@ -1,8 +1,8 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
-using SlideDotNet.Services.Drawing;
-using SlideDotNet.Shared;
+using ShapeCrawler.Services.Drawing;
+using ShapeCrawler.Shared;
 
-namespace SlideDotNet.Models.SlideComponents
+namespace ShapeCrawler.Models.SlideComponents
 {
     /// <summary>
     /// Represents a picture content.

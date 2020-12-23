@@ -1,7 +1,7 @@
 ﻿using System;
-using SlideDotNet.Enums;
+using ShapeCrawler.Enums;
 
-namespace SlideDotNet.Exceptions
+namespace ShapeCrawler.Exceptions
 {
     /// <summary>
     /// Thrown when number of slides more than allowed.

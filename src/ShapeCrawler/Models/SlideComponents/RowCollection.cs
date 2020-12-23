@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SlideDotNet.Collections;
-using SlideDotNet.Models.Settings;
-using SlideDotNet.Models.TableComponents;
-using SlideDotNet.Shared;
+using ShapeCrawler.Collections;
+using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Models.TableComponents;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace SlideDotNet.Models.SlideComponents
+namespace ShapeCrawler.Models.SlideComponents
 {
     /// <summary>
     /// Represents a collection of table rows.

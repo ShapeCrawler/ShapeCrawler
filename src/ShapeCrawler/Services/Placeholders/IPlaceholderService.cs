@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
-using SlideDotNet.Enums;
+using ShapeCrawler.Enums;
 
-namespace SlideDotNet.Services.Placeholders
+namespace ShapeCrawler.Services.Placeholders
 {
     /// <summary>
     /// Represents a Slide Layout placeholder service.
