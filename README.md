@@ -129,9 +129,10 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 4. Push to the branch (`git push origin my-new-feature`).
 5. Create a new Pull Request.
 
-## Changelog
-### Version 0.8.0 - 2020-12-20
-#### Added
-- Added `CustomData` property for slide and shape objects: `Slide.CustomData`, `ShapeEx.CustomData`. These property allows to store some user's custom string.
+# Changelog
+## Version 0.9.0 - 2020-12-24
+### Added
+- Added `Slide.Hide()` and `Slide.Hidden` APIs to hide slide and define whether the slide is hidden;
+- Added support .NET Standard 2.0 and .NET Standard 2.1 frameworks.
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).
