@@ -38,7 +38,7 @@ namespace ShapeCrawler.Models.Settings
             Check.NotNull(sdkPresentation, nameof(sdkPresentation));
 
             SlideSize = slideSize ?? throw new ArgumentNullException(nameof(slideSize));
-            _lvlFontHeights = new Lazy<Dictionary<int, int>>(ParseFontHeights(sdkPresentation));
+            _lvlFontHeights = new Lazy<Dictionary<int, int>>(()=>ParseFontHeights(sdkPresentation));
             XlsxDocuments = new Dictionary<OpenXmlPart, SpreadsheetDocument>(); //TODO: make lazy initialization
         }
 

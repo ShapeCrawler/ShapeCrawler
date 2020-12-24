@@ -9,11 +9,11 @@ using Xunit;
 
 namespace ShapeCrawler.UnitTests
 {
-    public class TestFile_002_Read : IClassFixture<TestFile_002Fixture>
+    public class TestFile_002_Read : IClassFixture<TestFileFixture>
     {
-        private readonly TestFile_002Fixture _fixture;
+        private readonly TestFileFixture _fixture;
 
-        public TestFile_002_Read(TestFile_002Fixture fixture)
+        public TestFile_002_Read(TestFileFixture fixture)
         {
             _fixture = fixture;
         }
@@ -89,19 +89,6 @@ namespace ShapeCrawler.UnitTests
             bulletColorHex.Should().Be("C00000");
             bulletChar.Should().Be("'");
             bulletSize.Should().Be(120);
-        }
-
-        [Fact]
-        public void Slide_Hidden_returns_true_when_slide_is_hidden()
-        {
-            // Arrange
-            Slide slide = _fixture.pre002.Slides[2];
-
-            // Act
-            bool hidden = slide.Hidden;
-
-            // Assert
-            hidden.Should().BeFalse();
         }
     }
 }

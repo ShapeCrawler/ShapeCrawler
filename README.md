@@ -6,8 +6,7 @@
 
 <h3 align="center">
 
-  [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-  [![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=blue)](https://www.nuget.org/packages/ShapeCrawler)  
+[![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=blue)](https://www.nuget.org/packages/ShapeCrawler) [![.NET Standard](https://img.shields.io/badge/.NET%20Standard-%3E%3D%202.0-red.svg)](#) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) 
 
 </h3>
 
@@ -47,7 +46,7 @@ public static async void Usage()
     int slideNumber = slide.Number;
 
     // Gets slide background content
-    byte[] backgroundBytes = await slide.BackgroundImage.GetImageBytes();
+    byte[] backgroundBytes = await slide.BackgroundImage.GetImageBytesValueTask();
 }
 ```
 <details>
@@ -77,13 +76,17 @@ public static async void Usage()
     int slideNumber = slide.Number;
 
     // Gets slide background content
-    byte[] backgroundBytes = await slide.BackgroundImage.GetImageBytes();
+    byte[] backgroundBytes = await slide.BackgroundImage.GetImageBytesValueTask();
 
     // Sets slide background
     using (FileStream fs = File.OpenRead(@"c:\test.png"))
     {
         slide.BackgroundImage.SetImageStream(fs);
     }
+
+    // Hides slide
+    slide.Hide();
+    bool isHidden = slide.Hidden; // true
 
     // Set some custom data in slide, e.g. tag
     slide.CustomData = "#mySlide";
@@ -111,7 +114,6 @@ public static async void Usage()
             Debug.Print("Chart type is BarChart.");
         }
     }
-}
 ```
 </details>
 

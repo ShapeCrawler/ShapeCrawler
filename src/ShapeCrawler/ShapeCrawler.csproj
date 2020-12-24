@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
     <AssemblyName>ShapeCrawler</AssemblyName>
     <RootNamespace>ShapeCrawler</RootNamespace>
     <Version>0.8.0</Version>
@@ -22,6 +22,7 @@
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -29,7 +30,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DocumentFormat.OpenXml" Version="2.11.3" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.12.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

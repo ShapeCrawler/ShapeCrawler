@@ -56,7 +56,7 @@ namespace ShapeCrawler.Models.TextBody
         {
             _xmlParagraph = xmlParagraph ?? throw new ArgumentNullException(nameof(xmlParagraph));
             _spContext = spContext ?? throw new ArgumentNullException(nameof(spContext));
-            _innerPrLvl = new Lazy<int>(GetInnerLevel(_xmlParagraph));
+            _innerPrLvl = new Lazy<int>(()=>GetInnerLevel(_xmlParagraph));
             _text = new Lazy<string>(GetText);
             _portions = new Lazy<List<Portion>>(GetPortions);
             _bullet = new Lazy<Bullet>(GetBullet);

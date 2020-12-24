@@ -116,13 +116,13 @@ namespace ShapeCrawler.UnitTests
         }
 
         [Fact]
-        public void ShapeCustomData_ShouldReturnData_ShapeCustomDataIsSet()
+        public void ShapeCustomData_ReturnsData_WhenItWasAssigned()
         {
             // Arrange
             const string customDataString = "Test custom data";
             var origPreStream = new MemoryStream();
             origPreStream.Write(Properties.Resources._009);
-            var originVersionPre = new PresentationEx(origPreStream);
+            var originVersionPre = new PresentationEx(origPreStream, true);
             var shape = originVersionPre.Slides.First().Shapes.First();
 
             // Act
@@ -162,7 +162,7 @@ namespace ShapeCrawler.UnitTests
         }
 
         [Fact]
-        public void PictureEx_BytesTest()
+        public async void PictureEx_BytesTest()
         {
             // ARRANGE
             var pre = _fixture.pre009;
@@ -170,7 +170,7 @@ namespace ShapeCrawler.UnitTests
 
             // ACT
             var hasPicture = picEx.HasPicture;
-            var bytes = picEx.Picture.ImageEx.GetImageBytes().Result;
+            var bytes = (await picEx.Picture.ImageEx.GetImageBytesValueTask());
 
             // ASSERT
             Assert.True(bytes.Length > 0);
@@ -178,25 +178,25 @@ namespace ShapeCrawler.UnitTests
         }
 
         [Fact]
-        public void PictureEx_SetImageTest()
+        public async void PictureEx_SetImageTest()
         {
             // ARRANGE
             var pre = new PresentationEx(Properties.Resources._009);
             var picEx = pre.Slides[1].Shapes.Single(e => e.Id.Equals(3));
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
-            var sizeBefore = picEx.Picture.ImageEx.GetImageBytes().Result.Length;
+            var sizeBefore = (await picEx.Picture.ImageEx.GetImageBytesValueTask()).Length;
 
             // ACT
             picEx.Picture.ImageEx.SetImageStream(testImage2Stream);
 
-            var sizeAfter = picEx.Picture.ImageEx.GetImageBytes().Result.Length;
+            var sizeAfter = (await picEx.Picture.ImageEx.GetImageBytesValueTask()).Length;
 
             // ASSERT
             Assert.NotEqual(sizeBefore,  sizeAfter);
         }
 
         [Fact]
-        public void Shape_Fill_Test()
+        public async void Shape_Fill_Test()
         {
             // ARRANGE
             var pre = _fixture.pre009;
@@ -204,7 +204,7 @@ namespace ShapeCrawler.UnitTests
 
             // ACT
             var fillType = sp4.Fill.Type;
-            var fillPicLength = sp4.Fill.Picture.GetImageBytes().Result.Length;
+            var fillPicLength = (await sp4.Fill.Picture.GetImageBytesValueTask()).Length;
 
             // ASSERT
             Assert.Equal(FillType.Picture, fillType);
@@ -244,23 +244,23 @@ namespace ShapeCrawler.UnitTests
         }
 
         [Fact]
-        public void ShapeEx_BackgroundImage_SetImageTest()
+        public async void ShapeEx_BackgroundImage_SetImageTest()
         {
             // ARRANGE
             var pre = new PresentationEx(Properties.Resources._009);
             var shapeEx = (ShapeEx)pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
-            var sizeBefore = shapeEx.Fill.Picture.GetImageBytes().Result.Length;
+            var sizeBefore = (await shapeEx.Fill.Picture.GetImageBytesValueTask()).Length;
 
             // ACT
             shapeEx.Fill.Picture.SetImageStream(testImage2Stream);
 
-            var sizeAfter = shapeEx.Fill.Picture.GetImageBytes().Result.Length;
+            var sizeAfter = await shapeEx.Fill.Picture.GetImageBytesValueTask();
             pre.Close();
             testImage2Stream.Dispose();
 
             // ASSERT
-            Assert.NotEqual(sizeBefore, sizeAfter);
+            Assert.NotEqual(sizeBefore, sizeAfter.Length);
         }
 
         [Fact]
@@ -309,23 +309,23 @@ namespace ShapeCrawler.UnitTests
         }
 
         [Fact]
-        public void SlideEx_Background_ChangeTest()
+        public async void SlideEx_Background_ChangeTest()
         {
             // ARRANGE
             var pre = new PresentationEx(Properties.Resources._009);
             var bg = pre.Slides[0].BackgroundImage;
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
-            var sizeBefore = bg.GetImageBytes().Result.Length;
+            var sizeBefore = (await bg.GetImageBytesValueTask()).Length;
 
             // ACT
             bg.SetImageStream(testImage2Stream);
 
-            var sizeAfter = bg.GetImageBytes().Result.Length;
+            var sizeAfter = await bg.GetImageBytesValueTask();
             pre.Close();
             testImage2Stream.Dispose();
 
             // ASSERT
-            Assert.NotEqual(sizeBefore, sizeAfter);
+            Assert.NotEqual(sizeBefore, sizeAfter.Length);
         }
 
         [Fact]
