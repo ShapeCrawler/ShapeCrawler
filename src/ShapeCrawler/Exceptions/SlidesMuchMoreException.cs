@@ -16,7 +16,11 @@ namespace ShapeCrawler.Exceptions
 
         public static SlidesMuchMoreException FromMax(int maxNum)
         {
-            var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString(), StringComparison.Ordinal);
+#if NETSTANDARD2_1
+            var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString(), StringComparison.OrdinalIgnoreCase);
+#else
+            var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString());
+#endif
             return new SlidesMuchMoreException(message);
         }
     }

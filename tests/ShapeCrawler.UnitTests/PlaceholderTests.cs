@@ -100,7 +100,7 @@ namespace ShapeCrawler.UnitTests
             var expectedMessage = $"The size of presentation more than {maxLength} bytes.";
 
             // Act-Assert
-            var ex = Assert.Throws<PresentationIsLargeException>(() => new PresentationEx(mockStream));
+            var ex = Assert.Throws<PresentationIsLargeException>(() => new PresentationEx(mockStream, false));
             var expectedCode = (int)ExceptionCodes.PresentationIsLargeException;
             Assert.Equal(expectedMessage, ex.Message);
             Assert.Equal(expectedCode, ex.ErrorCode);

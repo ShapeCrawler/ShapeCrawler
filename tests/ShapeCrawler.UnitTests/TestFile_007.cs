@@ -20,13 +20,14 @@ namespace ShapeCrawler.UnitTests
         /// There is the only second slide with its two elements.
         /// </ExpectedBahavior>
         [Fact]
-        public void SlidesRemove_Test()
+        //public void SlidesRemove_Test()
+        public void SlidesRemove_RemovesSlideFromPresentation_WhenSlideInstanceIsPassed()
         {
-            // ARRANGE
+            // Arrange
             var ms = new MemoryStream(Properties.Resources._007_2_slides);
-            var pre = new PresentationEx(ms);
+            var pre = new PresentationEx(ms, true);
 
-            // ACT
+            // Act
             var slide1 = pre.Slides.First();
             pre.Slides.Remove(slide1);
             pre.Close();
@@ -35,9 +36,8 @@ namespace ShapeCrawler.UnitTests
             var numSlides = pre2.Slides.Count();
             var numElements = pre2.Slides.Single().Shapes.Count;
             pre2.Close();
-            ms.Dispose();
 
-            // ASSERT
+            // Assert
             Assert.Equal(1, numSlides);
             Assert.Equal(2, numElements);
         }

@@ -25,12 +25,9 @@ namespace ShapeCrawler.UnitTests
         }
 
         [Fact]
-        public void SlideCustomData_ShouldReturnNull_CustomDataIsNotAssigned()
+        public void Slide_CustomData_returns_null_when_CustomData_was_not_assigned()
         {
-            // Arrange
-            var preStream = new MemoryStream();
-            preStream.Write(Properties.Resources._001, 0, Properties.Resources._001.Length);
-            var pre = new PresentationEx(preStream);
+            var pre = new PresentationEx(Properties.Resources._001);
             var slide = pre.Slides.First();
 
             // Act

@@ -97,7 +97,11 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
             {
                 if (_categories.Value == null)
                 {
-                    var msg = ExceptionMessages.ChartCanNotHaveCategory.Replace("#0", Type.ToString(), StringComparison.Ordinal);
+#if NETSTANDARD2_1
+                    var msg = ExceptionMessages.ChartCanNotHaveCategory.Replace("#0", Type.ToString(), StringComparison.OrdinalIgnoreCase);
+#else
+                    var msg = ExceptionMessages.ChartCanNotHaveCategory.Replace("#0", Type.ToString());
+#endif
                     throw new NotSupportedException(msg);
                 }
 
@@ -120,9 +124,9 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
             }
         }
 
-        #endregion Properties
+#endregion Properties
 
-        #region Constructors
+#region Constructors
 
         public ChartEx(P.GraphicFrame grFrame, IShapeContext shapeContext)
         : this(grFrame, shapeContext, new ChartRefParser(shapeContext))
@@ -144,9 +148,9 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
             Init(); //TODO: convert to lazy loading
         }
 
-        #endregion
+#endregion
 
-        #region Private Methods
+#region Private Methods
 
         private void Init()
         {
@@ -253,7 +257,7 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
             return _sdkCharts.First().ChildElements.FirstOrDefault(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
         }
 
-        #endregion
+#endregion
     }
 }
 

@@ -23,7 +23,11 @@ namespace ShapeCrawler.Exceptions
         /// <param name="maxSize"></param>
         public static PresentationIsLargeException FromMax(int maxSize)
         {
-            var message = ExceptionMessages.PresentationIsLarge.Replace("{0}", maxSize.ToString(), StringComparison.Ordinal);
+#if NETSTANDARD2_1
+            var message = ExceptionMessages.PresentationIsLarge.Replace("{0}", maxSize.ToString(), StringComparison.OrdinalIgnoreCase);
+#else
+            var message = ExceptionMessages.PresentationIsLarge.Replace("{0}", maxSize.ToString());
+#endif
             return new PresentationIsLargeException(message);
         }
     }

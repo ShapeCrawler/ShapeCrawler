@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Models.Settings;
 using ShapeCrawler.Services.Drawing;
@@ -50,7 +51,7 @@ namespace ShapeCrawler.Models
             set => SetCustomData(value);
         }
 
-        public bool Hidden => _sdkSldPart.Slide.Show != null && _sdkSldPart.Slide.Show.Value;
+        public bool Hidden => _sdkSldPart.Slide.Show != null && _sdkSldPart.Slide.Show.Value == false;
 
         #endregion Properties
 
@@ -151,5 +152,18 @@ namespace ShapeCrawler.Models
         }
 
         #endregion Private Methods
+
+        public void Hide()
+        {
+            if (_sdkSldPart.Slide.Show == null)
+            {
+                var showAttribute = new OpenXmlAttribute("show", "", "0");
+                _sdkSldPart.Slide.SetAttribute(showAttribute);
+            }
+            else
+            {
+                _sdkSldPart.Slide.Show = false;
+            }
+        }
     }
 }

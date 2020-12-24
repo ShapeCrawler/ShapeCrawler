@@ -36,7 +36,7 @@ namespace SlideDotNet.Models.TableComponents
         {
             _sdkGrFrame = xmlGrFrame ?? throw new ArgumentNullException(nameof(xmlGrFrame));
             _spContext = spContext ?? throw new ArgumentNullException(nameof(spContext));
-            _rowsCollection = new Lazy<RowCollection>(GetRowsCollection());
+            _rowsCollection = new Lazy<RowCollection>(()=>GetRowsCollection());
         }
 
         #endregion Constructors

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Version 0.9.0 - 2020-12-24
+### Added
+- Added `Slide.Hide()` and `Slide.Hidden` APIs to hide slide and define whether the slide is hidden;
+- Added support .NET Standard 2.0 and .NET Standard 2.1 frameworks.
+
 ## Version 0.8.0 - 2020-12-20
 ### Added
 - Added `CustomData` property for slide and shape objects: `Slide.CustomData`, `ShapeEx.CustomData`. These property allows to store some user's custom string.

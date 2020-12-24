@@ -97,8 +97,15 @@ namespace ShapeCrawler.Spreadsheet
                 xlsxDoc = SpreadsheetDocument.Open(xlsxPackagePart.GetStream(), false);
                 _spContext.PreSettings.XlsxDocuments.Add(xlsxPackagePart, xlsxDoc);
             }
-            var filteredFormula = formula.Text.Replace("'", string.Empty, StringComparison.Ordinal)
-                .Replace("$", string.Empty, StringComparison.Ordinal); //eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5
+#if NETSTANDARD2_1
+            var filteredFormula = formula.Text
+                .Replace("'", string.Empty, StringComparison.OrdinalIgnoreCase)
+                .Replace("$", string.Empty, StringComparison.OrdinalIgnoreCase); //eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5            
+#else
+            var filteredFormula = formula.Text.Replace("'", string.Empty).Replace("$", string.Empty);
+#endif
+            
+
             var sheetNameAndCellsFormula = filteredFormula.Split('!'); //eg: Sheet1!A2:A5 -> ['Sheet1', 'A2:A5']
             var wbPart = xlsxDoc.WorkbookPart;
             string sheetId = wbPart.Workbook.Descendants<Sheet>().First(s => sheetNameAndCellsFormula[0].Equals(s.Name, StringComparison.Ordinal)).Id;
@@ -117,6 +124,6 @@ namespace ShapeCrawler.Spreadsheet
             return strValues;
         }
 
-        #endregion Private Methods
+#endregion Private Methods
     }
 }
