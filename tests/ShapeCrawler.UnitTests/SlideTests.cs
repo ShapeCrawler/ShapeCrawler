@@ -46,5 +46,22 @@ namespace ShapeCrawler.UnitTests
             // Assert
             hidden.Should().BeTrue();
         }
+
+        [Fact]
+        public async void BackgroundSetImage_ChangesBackground_WhenImageStreamIsPassed()
+        {
+            // Arrange
+            var pre = new PresentationEx(Properties.Resources._009);
+            var backgroundImage = pre.Slides[0].Background;
+            var imgStream = new MemoryStream(Properties.Resources.test_image_2);
+            var bytesBefore = await backgroundImage.GetImageBytesValueTask();
+
+            // Act
+            backgroundImage.SetImage(imgStream);
+
+            // Assert
+            var bytesAfter = await backgroundImage.GetImageBytesValueTask();
+            bytesAfter.Length.Should().NotBe(bytesBefore.Length);
+        }
     }
 }

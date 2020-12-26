@@ -4,10 +4,14 @@
     <TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
     <AssemblyName>ShapeCrawler</AssemblyName>
     <RootNamespace>ShapeCrawler</RootNamespace>
-    <Version>0.9.0</Version>
+    <Version>0.10.0</Version>
     <Authors>Adam Shakhabov</Authors>
     <Company>ShapeCrawler</Company>
-    <Description>ShapeCrawler (formerly SlideDotNet) is a fluent API for the processing of PowerPoint presentations without Microsoft Office installed.</Description>
+    <Description>A fluent API for the processing of PowerPoint presentations without Microsoft Office installed.
+
+
+
+ShapeCrawler (formerly SlideDotNet) is a wrapper around Open XML SDK to process PowerPoint files without Microsoft Office installed. It aims to provide an intuitive and friendly interface to dealing with the underlying Open XML SDK APIs.</Description>
     <PackageTags>powerpoint slide pptx c-sharp shapecrawler openxml</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
@@ -19,10 +23,11 @@
     <PackageReleaseNotes>https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

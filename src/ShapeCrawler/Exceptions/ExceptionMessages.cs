@@ -42,6 +42,6 @@ namespace ShapeCrawler.Exceptions
             $"#0 can not have category. You can check chart type via {nameof(ChartEx.Type)} property.";
 
         public static string ShapeIsNotPlaceholder =>
-            $"The shape is not placeholder. You can check it via {nameof(ShapeEx.IsPlaceholder)} property.";
+            $"The shape is not placeholder. You can check it via {nameof(Shape.IsPlaceholder)} property.";
     }
 }

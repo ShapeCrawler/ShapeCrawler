@@ -13,7 +13,7 @@ namespace ShapeCrawler.Models.SlideComponents
     /// <summary>
     /// Represents a collection of table rows.
     /// </summary>
-    public class RowCollection : EditAbleCollection<RowEx>
+    public class RowCollection : EditableCollection<RowEx>
     {
         private readonly Dictionary<RowEx, A.TableRow> _innerSdkDic;
 

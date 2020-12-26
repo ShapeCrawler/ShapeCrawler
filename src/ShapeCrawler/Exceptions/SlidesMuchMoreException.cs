@@ -23,5 +23,13 @@ namespace ShapeCrawler.Exceptions
 #endif
             return new SlidesMuchMoreException(message);
         }
+
+        public SlidesMuchMoreException()
+        {
+        }
+
+        public SlidesMuchMoreException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
     }
 }

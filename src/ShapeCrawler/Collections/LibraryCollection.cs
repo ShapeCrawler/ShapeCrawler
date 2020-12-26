@@ -10,7 +10,7 @@ namespace ShapeCrawler.Collections
     {
         #region Fields
 
-        protected List<T> CollectionItems;
+        internal List<T> CollectionItems;
 
         #endregion Fields
 

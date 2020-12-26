@@ -14,10 +14,10 @@ namespace ShapeCrawler.Services.ShapeCreators
         public OpenXmlElementHandler Successor { get; set; }
         
         /// <summary>
-        /// Creates <see cref="ShapeEx"/> instance from specified SDK element or passes it to next handler.
+        /// Creates <see cref="Shape"/> instance from specified SDK element or passes it to next handler.
         /// </summary>
         /// <param name="sdkElement"></param>
         /// <returns></returns>
-        public abstract ShapeEx Create(OpenXmlElement sdkElement);
+        public abstract Shape Create(OpenXmlElement sdkElement);
     }
 }

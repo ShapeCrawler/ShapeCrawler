@@ -30,5 +30,13 @@ namespace ShapeCrawler.Exceptions
 #endif
             return new PresentationIsLargeException(message);
         }
+
+        public PresentationIsLargeException()
+        {
+        }
+
+        public PresentationIsLargeException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
     }
 }

@@ -12,6 +12,14 @@ namespace ShapeCrawler.Exceptions
         public RuntimeDefinedPropertyException(string message) 
             : base(message, ExceptionCodes.RuntimeDefinedPropertyException) { }
 
+        public RuntimeDefinedPropertyException()
+        {
+        }
+
+        public RuntimeDefinedPropertyException(string message, System.Exception innerException) : base(message, innerException)
+        {
+        }
+
         #endregion Constructors
     }
 }

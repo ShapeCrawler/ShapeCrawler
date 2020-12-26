@@ -10,7 +10,7 @@ namespace ShapeCrawler.Services.Placeholders
     {
         #region Properties
 
-        public Dictionary<int, int> LvlFontHeights;
+        internal Dictionary<int, int> LvlFontHeights;
 
         #endregion Properties
     }

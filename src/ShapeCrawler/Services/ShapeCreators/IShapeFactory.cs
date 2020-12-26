@@ -6,7 +6,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Services.ShapeCreators
 {
     /// <summary>
-    /// Represents a factory to generate instances of the <see cref="ShapeEx"/> class.
+    /// Represents a factory to generate instances of the <see cref="Shape"/> class.
     /// </summary>
     /// <remarks>
     /// <see cref="P.ShapeTree"/> and <see cref="P.GroupShape"/> both derived from <see cref="P.GroupShapeType"/> class.
@@ -18,6 +18,6 @@ namespace ShapeCrawler.Services.ShapeCreators
         /// </summary>
         /// <param name="sdkSldPart"></param>
         /// <returns></returns>
-        IList<ShapeEx> FromSldPart(SlidePart sdkSldPart);
+        IList<Shape> FromSldPart(SlidePart sdkSldPart);
     }
 }

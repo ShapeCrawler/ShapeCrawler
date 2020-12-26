@@ -55,13 +55,13 @@ namespace ShapeCrawler.Models.TextBody
         private void ParseParagraphs(OpenXmlCompositeElement compositeElement)
         {
             // Parses non-empty paragraphs
-            var paragraphs = compositeElement.Elements<A.Paragraph>().Where(e => e.Descendants<A.Text>().Any());
+            var aParagraphs = compositeElement.Elements<A.Paragraph>().Where(e => e.Descendants<A.Text>().Any());
 
             // Sets paragraphs
-            Paragraphs = new List<Paragraph>(paragraphs.Count());
-            foreach (var p in paragraphs)
+            Paragraphs = new List<Paragraph>(aParagraphs.Count());
+            foreach (A.Paragraph aParagraph in aParagraphs)
             {
-                Paragraphs.Add(new Paragraph(_spContext, p));
+                Paragraphs.Add(new Paragraph(_spContext, aParagraph));
             }
         }
 

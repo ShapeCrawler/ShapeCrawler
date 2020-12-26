@@ -1,9 +1,9 @@
 ﻿namespace ShapeCrawler.Collections
 {
     /// <summary>
-    /// Represents a base class for collections which allow item removing.
+    /// Represents a base class for editable collection.
     /// </summary>
-    public abstract class EditAbleCollection<T> : LibraryCollection<T>
+    public abstract class EditableCollection<T> : LibraryCollection<T>
     {
         /// <summary>
         /// Removes the specific object from the collection.
