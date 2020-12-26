@@ -18,7 +18,7 @@ namespace ShapeCrawler.Models
         #region Fields
 
         private PresentationDocument _outerSdkPresentation;
-        private Lazy<EditAbleCollection<Slide>> _slides;
+        private Lazy<EditableCollection<Slide>> _slides;
         private Lazy<SlideSize> _slideSize;
         private bool _closed;
         private PreSettings _preSettings;
@@ -30,7 +30,7 @@ namespace ShapeCrawler.Models
         /// <summary>
         /// Gets the presentation slides.
         /// </summary>
-        public EditAbleCollection<Slide> Slides => _slides.Value;
+        public EditableCollection<Slide> Slides => _slides.Value;
 
         /// <summary>
         /// Gets the presentation slides width.
@@ -154,7 +154,7 @@ namespace ShapeCrawler.Models
 
         #region Private Methods
 
-        private EditAbleCollection<Slide> GetSlides()
+        private EditableCollection<Slide> GetSlides()
         {
             var sdkPrePart = _outerSdkPresentation.PresentationPart;
             _preSettings = new PreSettings(sdkPrePart.Presentation, _slideSize);
@@ -207,7 +207,7 @@ namespace ShapeCrawler.Models
         private void Init()
         {
             ThrowIfSlidesNumberLarge();
-            _slides = new Lazy<EditAbleCollection<Slide>>(GetSlides);
+            _slides = new Lazy<EditableCollection<Slide>>(GetSlides);
             _slideSize = new Lazy<SlideSize>(ParseSlideSize);
         }
 

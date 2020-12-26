@@ -32,7 +32,7 @@ namespace ShapeCrawler.Services.ShapeCreators
 
         #region Public Methods
 
-        public IList<ShapeEx> FromSldPart(SlidePart sdkSldPart)
+        public IList<Shape> FromSldPart(SlidePart sdkSldPart)
         {
             var sldPhFontService = new PlaceholderFontService(sdkSldPart); //TODO: make DI
             var phService = new PlaceholderService(sdkSldPart.SlideLayoutPart);
@@ -56,7 +56,7 @@ namespace ShapeCrawler.Services.ShapeCreators
             chartGrFrameHandler.Successor = tableGrFrameHandler;
 
             var sdkShapeTree = sdkSldPart.Slide.CommonSlideData.ShapeTree;
-            var shapes = new List<ShapeEx>(sdkShapeTree.Count());
+            var shapes = new List<Shape>(sdkShapeTree.Count());
             foreach (var openXmlElement in sdkShapeTree)
             {
                 var shape = sdkShapeHandler.Create(openXmlElement);

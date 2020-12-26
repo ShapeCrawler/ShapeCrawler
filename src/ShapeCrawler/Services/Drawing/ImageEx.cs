@@ -65,7 +65,7 @@ namespace ShapeCrawler.Services.Drawing
         /// Sets an image.
         /// </summary>
         /// <param name="stream"></param>
-        public void SetImageStream(Stream stream)
+        public void SetImage(Stream stream)
         {
             Check.NotNull(stream, nameof(stream));
             GetImagePart().FeedData(stream);

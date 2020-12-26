@@ -43,7 +43,7 @@ namespace ShapeCrawler.Models
         /// <summary>
         /// Returns a background image of the slide. Returns <c>null</c>if slide does not have background image.
         /// </summary>
-        public ImageEx BackgroundImage => _backgroundImage.Value;
+        public ImageEx Background => _backgroundImage.Value;
 
         public string CustomData
         {

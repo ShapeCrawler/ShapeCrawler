@@ -22,7 +22,7 @@ namespace ShapeCrawler.UnitTests
             var pre = new PresentationEx(Properties.Resources._008);
 
             // ACT
-            var shapes = pre.Slides.Single().Shapes.OfType<ShapeEx>();
+            var shapes = pre.Slides.Single().Shapes.OfType<Shape>();
             var sh36 = shapes.Single(e => e.Id == 36);
             var sh37 = shapes.Single(e => e.Id == 37);
            

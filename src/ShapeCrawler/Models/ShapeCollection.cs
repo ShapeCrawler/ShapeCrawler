@@ -13,7 +13,7 @@ namespace SlideDotNet.Models
     /// <summary>
     /// Represents a collection of the slide shapes.
     /// </summary>
-    public class ShapeCollection : LibraryCollection<ShapeEx>
+    public class ShapeCollection : LibraryCollection<Shape>
     {
         #region Constructors
 

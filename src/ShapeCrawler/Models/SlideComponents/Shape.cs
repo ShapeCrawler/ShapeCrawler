@@ -25,7 +25,7 @@ namespace ShapeCrawler.Models.SlideComponents
     /// <summary>
     /// Represents a shape on a slide.
     /// </summary>
-    public class ShapeEx
+    public class Shape
     {
         #region Fields
 
@@ -162,7 +162,7 @@ namespace ShapeCrawler.Models.SlideComponents
         /// <summary>
         /// Returns grouped shapes. Throws exception if shape content type is not <see cref="ShapeContentType.Group"/>
         /// </summary>
-        public IList<ShapeEx> GroupedShapes { get; private set; }
+        public IList<Shape> GroupedShapes { get; private set; }
 
         /// <summary>
         /// Returns OLE object content.
@@ -218,7 +218,7 @@ namespace ShapeCrawler.Models.SlideComponents
 
         #region Constructors
 
-        private ShapeEx(ILocation innerTransform,
+        private Shape(ILocation innerTransform,
                         IShapeContext spContext,
                         ShapeContentType contentType,
                         GeometryType geometryType) : this(innerTransform, spContext, contentType)
@@ -226,7 +226,7 @@ namespace ShapeCrawler.Models.SlideComponents
             GeometryType = geometryType;
         }
 
-        private ShapeEx (ILocation innerTransform, IShapeContext spContext, ShapeContentType contentType)
+        private Shape (ILocation innerTransform, IShapeContext spContext, ShapeContentType contentType)
         {
             _innerTransform = innerTransform;
             _context = spContext;
@@ -317,13 +317,13 @@ namespace ShapeCrawler.Models.SlideComponents
         {
             #region Public Methods
 
-            public ShapeEx WithOle(ILocation innerTransform, IShapeContext spContext, OleObject ole)
+            public Shape WithOle(ILocation innerTransform, IShapeContext spContext, OleObject ole)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(ole, nameof(ole));
 
-                var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.OLEObject)
+                var newShape = new Shape(innerTransform, spContext, ShapeContentType.OLEObject)
                 {
                     _ole = ole
                 };
@@ -331,14 +331,14 @@ namespace ShapeCrawler.Models.SlideComponents
                 return newShape;
             }
 
-            public ShapeEx WithPicture(ILocation innerTransform, IShapeContext spContext, PictureEx picture, GeometryType geometry)
+            public Shape WithPicture(ILocation innerTransform, IShapeContext spContext, PictureEx picture, GeometryType geometry)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(picture, nameof(picture));
                 Check.NotNull(geometry, nameof(geometry));
 
-                var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.Picture, geometry)
+                var newShape = new Shape(innerTransform, spContext, ShapeContentType.Picture, geometry)
                 {
                     _picture = picture
                 };
@@ -346,23 +346,23 @@ namespace ShapeCrawler.Models.SlideComponents
                 return newShape;
             }
 
-            public ShapeEx WithAutoShape(ILocation innerTransform, IShapeContext spContext, GeometryType geometry)
+            public Shape WithAutoShape(ILocation innerTransform, IShapeContext spContext, GeometryType geometry)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
 
-                var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.AutoShape, geometry);
+                var newShape = new Shape(innerTransform, spContext, ShapeContentType.AutoShape, geometry);
       
                 return newShape;
             }
 
-            public ShapeEx WithTable(ILocation innerTransform, IShapeContext spContext, TableEx table)
+            public Shape WithTable(ILocation innerTransform, IShapeContext spContext, TableEx table)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(table, nameof(table));
 
-                var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.Table)
+                var newShape = new Shape(innerTransform, spContext, ShapeContentType.Table)
                 {
                     _table = table
                 };
@@ -370,13 +370,13 @@ namespace ShapeCrawler.Models.SlideComponents
                 return newShape;
             }
 
-            public ShapeEx WithChart(ILocation innerTransform, IShapeContext spContext, ChartEx chart)
+            public Shape WithChart(ILocation innerTransform, IShapeContext spContext, ChartEx chart)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(chart, nameof(chart));
 
-                var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.Chart)
+                var newShape = new Shape(innerTransform, spContext, ShapeContentType.Chart)
                 {
                     _chart = chart
                 };
@@ -384,13 +384,13 @@ namespace ShapeCrawler.Models.SlideComponents
                 return newShape;
             }
 
-            public ShapeEx WithGroup(ILocation innerTransform, IShapeContext spContext, IList<ShapeEx> groupedShapes)
+            public Shape WithGroup(ILocation innerTransform, IShapeContext spContext, IList<Shape> groupedShapes)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(groupedShapes, nameof(groupedShapes));
 
-                var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.Group)
+                var newShape = new Shape(innerTransform, spContext, ShapeContentType.Group)
                 {
                     GroupedShapes = groupedShapes
                 };

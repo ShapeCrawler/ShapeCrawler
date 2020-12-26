@@ -41,6 +41,10 @@ namespace ShapeCrawler.Exceptions
             ErrorCode = errorCode;
         }
 
+        public SlideDotNetException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
         #endregion Constructors
     }
 }

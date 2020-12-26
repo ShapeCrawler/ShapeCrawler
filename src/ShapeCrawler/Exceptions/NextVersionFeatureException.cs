@@ -9,5 +9,13 @@ namespace ShapeCrawler.Exceptions
     {
         public NextVersionFeatureException(string message) 
             : base(message, ExceptionCodes.NextVersionFeatureException) { }
+
+        public NextVersionFeatureException()
+        {
+        }
+
+        public NextVersionFeatureException(string message, System.Exception innerException) : base(message, innerException)
+        {
+        }
     }
 }

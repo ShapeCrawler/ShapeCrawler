@@ -187,7 +187,7 @@ namespace ShapeCrawler.UnitTests
             var sizeBefore = (await picEx.Picture.ImageEx.GetImageBytesValueTask()).Length;
 
             // ACT
-            picEx.Picture.ImageEx.SetImageStream(testImage2Stream);
+            picEx.Picture.ImageEx.SetImage(testImage2Stream);
 
             var sizeAfter = (await picEx.Picture.ImageEx.GetImageBytesValueTask()).Length;
 
@@ -248,12 +248,12 @@ namespace ShapeCrawler.UnitTests
         {
             // ARRANGE
             var pre = new PresentationEx(Properties.Resources._009);
-            var shapeEx = (ShapeEx)pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
+            var shapeEx = (Shape)pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
             var sizeBefore = (await shapeEx.Fill.Picture.GetImageBytesValueTask()).Length;
 
             // ACT
-            shapeEx.Fill.Picture.SetImageStream(testImage2Stream);
+            shapeEx.Fill.Picture.SetImage(testImage2Stream);
 
             var sizeAfter = await shapeEx.Fill.Picture.GetImageBytesValueTask();
             pre.Close();
@@ -302,30 +302,10 @@ namespace ShapeCrawler.UnitTests
             var pre = _fixture.pre009;
 
             // ACT
-            var bg = pre.Slides[1].BackgroundImage;
+            var bg = pre.Slides[1].Background;
 
             // ASSERT
             Assert.Null(bg);
-        }
-
-        [Fact]
-        public async void SlideEx_Background_ChangeTest()
-        {
-            // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
-            var bg = pre.Slides[0].BackgroundImage;
-            var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
-            var sizeBefore = (await bg.GetImageBytesValueTask()).Length;
-
-            // ACT
-            bg.SetImageStream(testImage2Stream);
-
-            var sizeAfter = await bg.GetImageBytesValueTask();
-            pre.Close();
-            testImage2Stream.Dispose();
-
-            // ASSERT
-            Assert.NotEqual(sizeBefore, sizeAfter.Length);
         }
 
         [Fact]
@@ -333,7 +313,7 @@ namespace ShapeCrawler.UnitTests
         {
             // ARRANGE
             var pre = _fixture.pre009;
-            var shape = (ShapeEx)pre.Slides[2].Shapes.SingleOrDefault(e => e.Id.Equals(2));
+            var shape = (Shape)pre.Slides[2].Shapes.SingleOrDefault(e => e.Id.Equals(2));
             var paragraphs = shape.TextFrame.Paragraphs;
 
             // ACT

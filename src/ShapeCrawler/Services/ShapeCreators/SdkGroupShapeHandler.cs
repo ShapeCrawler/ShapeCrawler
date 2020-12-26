@@ -24,7 +24,7 @@ namespace ShapeCrawler.Services.ShapeCreators
                                     LocationParser transformFactory,
                                     IGeometryFactory geometryFactory,
                                     SlidePart sdkSldPart) :
-            this(shapeContextBuilder, transformFactory, geometryFactory, sdkSldPart, new ShapeEx.Builder())
+            this(shapeContextBuilder, transformFactory, geometryFactory, sdkSldPart, new Shape.Builder())
         {
  
         }
@@ -42,7 +42,7 @@ namespace ShapeCrawler.Services.ShapeCreators
             _shapeBuilder = shapeBuilder ?? throw new ArgumentNullException(nameof(shapeBuilder));
         }
 
-        public override ShapeEx Create(OpenXmlElement sdkElement)
+        public override Shape Create(OpenXmlElement sdkElement)
         {
             Check.NotNull(sdkElement, nameof(sdkElement));
 
@@ -62,7 +62,7 @@ namespace ShapeCrawler.Services.ShapeCreators
                 pictureHandler.Successor = chartGrFrameHandler;
                 chartGrFrameHandler.Successor = tableGrFrameHandler;
 
-                var groupedShapes = new List<ShapeEx>(sdkGroupShape.Count());
+                var groupedShapes = new List<Shape>(sdkGroupShape.Count());
                 foreach (var item in sdkGroupShape)
                 {
                     var groupedShape = sdkShapeHandler.Create(item);

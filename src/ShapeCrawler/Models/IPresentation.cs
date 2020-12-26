@@ -11,7 +11,7 @@ namespace ShapeCrawler.Models
         /// <summary>
         /// Returns slides collection.
         /// </summary>
-        EditAbleCollection<Slide> Slides { get; }
+        EditableCollection<Slide> Slides { get; }
 
         /// <summary>
         /// Returns slides width in EMUs.

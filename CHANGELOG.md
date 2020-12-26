@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Version 0.10.0 - Unreleased
+### Added
+- Added `Portion.Remove()` to be able to remove paragraph portion.
+
 ## Version 0.9.0 - 2020-12-24
 ### Added
 - Added `Slide.Hide()` and `Slide.Hidden` APIs to hide slide and define whether the slide is hidden;

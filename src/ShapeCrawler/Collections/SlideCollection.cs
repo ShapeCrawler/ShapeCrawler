@@ -14,7 +14,7 @@ namespace ShapeCrawler.Collections
     /// <summary>
     /// Represents a collection of the slides.
     /// </summary>
-    public class SlideCollection : EditAbleCollection<Models.Slide>
+    public class SlideCollection : EditableCollection<Slide>
     {
         #region Fields
 

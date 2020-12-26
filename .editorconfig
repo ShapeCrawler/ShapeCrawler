@@ -1,5 +1,8 @@
 ﻿[*.cs]
 
+dotnet_diagnostic.CA1032.severity = error
+dotnet_diagnostic.CA1051.severity = error
+
 # CA1065: get_Chart creates an exception of type SlideDotNetException, an exception type that should not be raised in a property. If this exception instance might be raised, use a different exception type, convert this property into a method, or change this property's logic so that it no longer raises an exception.
 dotnet_diagnostic.CA1065.severity = error
 
