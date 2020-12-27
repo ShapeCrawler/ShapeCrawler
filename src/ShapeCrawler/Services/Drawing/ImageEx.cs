@@ -32,7 +32,7 @@ namespace ShapeCrawler.Services.Drawing
 
         #region Public Methods
 
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP2_0
         public async ValueTask<byte[]> GetImageBytesValueTask()
         {
             if (_bytes != null)
@@ -40,7 +40,7 @@ namespace ShapeCrawler.Services.Drawing
                 return _bytes; // return from cache
             }
 
-            await using var imgPartStream = GetImagePart().GetStream();
+            using var imgPartStream = GetImagePart().GetStream();
             _bytes = new byte[imgPartStream.Length];
             await imgPartStream.ReadAsync(_bytes, 0, (int)imgPartStream.Length);
 

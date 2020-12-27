@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Version 0.10.0 - Unreleased
 ### Added
 - Added `Portion.Remove()` to be able to remove paragraph portion;
-- Added setter for `Paragraph.Text` property to be able to change paragraph's text.
+- Added setter for `Paragraph.Text` property to be able to change paragraph's text;
+- Added support for .NET Core 2.0
 
 ## Version 0.9.0 - 2020-12-24
 ### Added

@@ -1,12 +1,8 @@
-using System;
 using System.IO;
 using System.Linq;
-using DocumentFormat.OpenXml.Packaging;
 using FluentAssertions;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
-using ShapeCrawler.Models.Settings;
-using ShapeCrawler.Services.ShapeCreators;
 using Xunit;
 
 // ReSharper disable TooManyChainedReferences
@@ -105,6 +101,20 @@ namespace ShapeCrawler.UnitTests
             Assert.Single(shapes.Where(c => c.ContentType.Equals(ShapeContentType.Table)));
             Assert.Single(shapes.Where(c => c.ContentType.Equals(ShapeContentType.Chart)));
             Assert.Single(shapes.Where(c => c.ContentType.Equals(ShapeContentType.Group)));
+        }
+
+        [Fact]
+        public void Shapes_CollectionReturnsCorrectShapesCount()
+        {
+            // Arrange
+            var pre = _fixture.Pre013;
+
+            // Act
+            var shapes = pre.Slides[0].Shapes;
+
+            // Assert
+            shapes.Count.Should().Be(4);
+
         }
     }
 }
