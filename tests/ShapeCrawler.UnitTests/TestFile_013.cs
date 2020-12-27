@@ -34,18 +34,6 @@ namespace ShapeCrawler.UnitTests
         }
 
         [Fact]
-        public void Slide_Shapes_Test()
-        {
-            // ARRANGE
-            var pre = new Presentation(Properties.Resources._013);
-
-            // ACT
-            var shapes = pre.Slides[0].Shapes; // should not throw exception
-
-            pre.Close();
-        }
-
-        [Fact]
         public void PlaceholderType_Test()
         {
             // ARRANGE

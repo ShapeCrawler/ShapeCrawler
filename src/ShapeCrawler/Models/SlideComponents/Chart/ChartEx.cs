@@ -97,7 +97,7 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
             {
                 if (_categories.Value == null)
                 {
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NETCOREAPP2_0
                     var msg = ExceptionMessages.ChartCanNotHaveCategory.Replace("#0", Type.ToString(), StringComparison.OrdinalIgnoreCase);
 #else
                     var msg = ExceptionMessages.ChartCanNotHaveCategory.Replace("#0", Type.ToString());
