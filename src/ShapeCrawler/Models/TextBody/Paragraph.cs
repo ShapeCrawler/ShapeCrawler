@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Models.Settings;
@@ -16,13 +15,15 @@ namespace ShapeCrawler.Models.TextBody
         #region Fields
 
         private readonly A.Paragraph _aParagraph;
-        private readonly Lazy<string> _text;
+        private Lazy<string> _text;
         private readonly Lazy<Bullet> _bullet;
         private readonly Lazy<PortionCollection> _portions;
 
         #endregion Fields
 
         #region Properties
+
+        public TextFrame TextFrame { get; }
 
         /// <summary>
         /// Gets or sets the the plain text of a paragraph.
@@ -35,9 +36,15 @@ namespace ShapeCrawler.Models.TextBody
 
         private void SetText(string text)
         {
-            var firstPortion = Portions.First();
-            
-            throw new NotImplementedException();
+            if (Portions.Count > 1)
+            {
+                // TODO: Improve performance of deleting, for example by adding a new method RemoveAllExceptFirst.
+                var removingPortions = Portions.Skip(1);
+                Portions.RemoveRange(removingPortions.ToList());
+            }
+
+            Portions.Single().Text = text;
+            _text = new Lazy<string>(GetText);
         }
 
         /// <summary>
@@ -57,12 +64,14 @@ namespace ShapeCrawler.Models.TextBody
         /// <summary>
         /// Initializes an instance of the <see cref="Paragraph"/> class.
         /// </summary>
-        public Paragraph(IShapeContext spContext, A.Paragraph aParagraph)
+        public Paragraph(IShapeContext spContext, A.Paragraph aParagraph, TextFrame textFrame)
         {
             _aParagraph = aParagraph;
             var innerPrLvl = GetInnerLevel(aParagraph);
             _text = new Lazy<string>(GetText);
             _bullet = new Lazy<Bullet>(GetBullet);
+            TextFrame = textFrame;
+
 #if NETSTANDARD2_0
             _portions = new Lazy<PortionCollection>(()=>PortionCollection.Create(aParagraph, spContext, innerPrLvl, this));
 #else

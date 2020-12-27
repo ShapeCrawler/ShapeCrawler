@@ -15,7 +15,7 @@ namespace ShapeCrawler.UnitTests
         public void Slide_Shapes_Test()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._024);
+            var pre = new Presentation(Properties.Resources._024);
             var sld2 = pre.Slides[1];
             var chart = sld2.Shapes.First(x => x.Id == 5).Chart;
 

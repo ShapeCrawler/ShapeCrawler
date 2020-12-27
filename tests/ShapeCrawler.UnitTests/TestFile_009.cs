@@ -29,7 +29,7 @@ namespace ShapeCrawler.UnitTests
         public void SlideElementsCount_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._003);
+            var pre = new Presentation(Properties.Resources._003);
 
             // ACT
             var numberElements = pre.Slides.Single().Shapes.Count;
@@ -43,7 +43,7 @@ namespace ShapeCrawler.UnitTests
         public void TextBox_Placeholder_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._006_1_slides);
+            var pre = new Presentation(Properties.Resources._006_1_slides);
 
             // ACT
             var shapePlaceholder = pre.Slides[0].Shapes.First(x => x.Id == 2);
@@ -60,7 +60,7 @@ namespace ShapeCrawler.UnitTests
         public void Shape_XandWsetter_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._006_1_slides);
+            var pre = new Presentation(Properties.Resources._006_1_slides);
             var shape2 = pre.Slides[0].Shapes.First(x => x.Id == 3);
 
             // ACT
@@ -74,7 +74,7 @@ namespace ShapeCrawler.UnitTests
             pre.Close();
 
             ms.SeekBegin();
-            pre = new PresentationEx(ms);
+            pre = new Presentation(ms);
             shape2 = pre.Slides[0].Shapes.First(x => x.Id == 3);
             pre.Close();
 
@@ -122,14 +122,14 @@ namespace ShapeCrawler.UnitTests
             const string customDataString = "Test custom data";
             var origPreStream = new MemoryStream();
             origPreStream.Write(Properties.Resources._009);
-            var originVersionPre = new PresentationEx(origPreStream, true);
+            var originVersionPre = new Presentation(origPreStream, true);
             var shape = originVersionPre.Slides.First().Shapes.First();
 
             // Act
             shape.CustomData = customDataString;
             var changedVersionPreStream = new MemoryStream();
             originVersionPre.SaveAs(changedVersionPreStream);
-            var changedVersionPre = new PresentationEx(changedVersionPreStream);
+            var changedVersionPre = new Presentation(changedVersionPreStream);
             var shapeCustomData = changedVersionPre.Slides.First().Shapes.First().CustomData;
 
             // Assert
@@ -181,7 +181,7 @@ namespace ShapeCrawler.UnitTests
         public async void PictureEx_SetImageTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = new Presentation(Properties.Resources._009);
             var picEx = pre.Slides[1].Shapes.Single(e => e.Id.Equals(3));
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
             var sizeBefore = (await picEx.Picture.ImageEx.GetImageBytesValueTask()).Length;
@@ -247,7 +247,7 @@ namespace ShapeCrawler.UnitTests
         public async void ShapeEx_BackgroundImage_SetImageTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = new Presentation(Properties.Resources._009);
             var shapeEx = (Shape)pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
             var sizeBefore = (await shapeEx.Fill.Picture.GetImageBytesValueTask()).Length;
@@ -395,7 +395,7 @@ namespace ShapeCrawler.UnitTests
         public void Table_Row_Remove_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = new Presentation(Properties.Resources._009);
             var sld3Shapes = pre.Slides[2].Shapes;
             var table3 = sld3Shapes.First(s => s.Id.Equals(3)).Table;
             var rows = table3.Rows;
@@ -408,7 +408,7 @@ namespace ShapeCrawler.UnitTests
             pre.SaveAs(ms);
             pre.Close();
 
-            pre = new PresentationEx(ms);
+            pre = new Presentation(ms);
             table3 = pre.Slides[2].Shapes.First(s => s.Id.Equals(3)).Table;
             rows = table3.Rows;
             var numRowsAfter = rows.Count;
@@ -483,7 +483,7 @@ namespace ShapeCrawler.UnitTests
         public void DateTimePlaceholder_Text_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._011_dt);
+            var pre = new Presentation(Properties.Resources._011_dt);
             var dt = pre.Slides[0].Shapes.Single(s => s.Id == 54275);
 
             // ACT
@@ -501,7 +501,7 @@ namespace ShapeCrawler.UnitTests
         public void Placeholder_FontHeight_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._012_title_placeholder);
+            var pre = new Presentation(Properties.Resources._012_title_placeholder);
             var title = pre.Slides[0].Shapes.Single(x => x.Id == 2);
 
             // ACT
@@ -519,7 +519,7 @@ namespace ShapeCrawler.UnitTests
         public void Placeholder_FontHeight_Title_Test()
         {
             // ARRANGE
-            var pre010 = new PresentationEx(Properties.Resources._010);
+            var pre010 = new Presentation(Properties.Resources._010);
             var pre010TextBox = pre010.Slides[0].Shapes.Single(x => x.Id == 2);
 
             // ACT
@@ -542,7 +542,7 @@ namespace ShapeCrawler.UnitTests
         public void Remove_Test2()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._006_1_slides);
+            var pre = new Presentation(Properties.Resources._006_1_slides);
             var slides = pre.Slides;
             var slide1 = slides.First();
 
@@ -560,7 +560,7 @@ namespace ShapeCrawler.UnitTests
         public void Shape_Text_Test2()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._012_title_placeholder);
+            var pre = new Presentation(Properties.Resources._012_title_placeholder);
             var autoShape = pre.Slides[0].Shapes.Single(s => s.Id == 3);
 
             // ACT
@@ -576,7 +576,7 @@ namespace ShapeCrawler.UnitTests
         public void Shape_Text_Tests()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._011_dt);
+            var pre = new Presentation(Properties.Resources._011_dt);
             var autoShape = pre.Slides[0].Shapes.Single(s => s.Id == 2);
             var grShape = pre.Slides[0].Shapes.Single(s => s.Id == 4);
 
@@ -595,7 +595,7 @@ namespace ShapeCrawler.UnitTests
         public void Hidden_Test()
         {
             var ms = new MemoryStream(Properties.Resources._004);
-            var pre = new PresentationEx(ms);
+            var pre = new Presentation(ms);
 
             // ACT
             var allElements = pre.Slides.Single().Shapes;
@@ -608,31 +608,6 @@ namespace ShapeCrawler.UnitTests
             // ASSERT
             Assert.True(shapeHiddenValue);
             Assert.False(tableHiddenValue);
-        }
-        [Fact]
-        public void CreateShapesCollection_Test()
-        {
-            // ARRANGE
-            var ms = new MemoryStream(Properties.Resources._003);
-            var doc = PresentationDocument.Open(ms, false);
-
-            var sdkSldPart = doc.PresentationPart.SlideParts.First();
-            var preSettings = new PreSettings(doc.PresentationPart.Presentation, new Lazy<SlideSize>());
-            var parser = new ShapeFactory(preSettings);
-
-            // ACT
-            var candidates = parser.FromSldPart(sdkSldPart);
-
-            // CLEAN
-            doc.Dispose();
-            ms.Dispose();
-
-            // ASSERT
-            Assert.Single(candidates.Where(c => c.ContentType.Equals(ShapeContentType.AutoShape)));
-            Assert.Single(candidates.Where(c => c.ContentType.Equals(ShapeContentType.Picture)));
-            Assert.Single(candidates.Where(c => c.ContentType.Equals(ShapeContentType.Table)));
-            Assert.Single(candidates.Where(c => c.ContentType.Equals(ShapeContentType.Chart)));
-            Assert.Single(candidates.Where(c => c.ContentType.Equals(ShapeContentType.Group)));
         }
     }
 }

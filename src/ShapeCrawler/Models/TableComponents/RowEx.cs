@@ -13,7 +13,7 @@ namespace ShapeCrawler.Models.TableComponents
     {
         #region Fields
 
-        private List<CellEx> _cells;
+        private List<Cell> _cells;
         private readonly A.TableRow _sdkTblRow;
         private readonly IShapeContext _spContext;
 
@@ -25,7 +25,7 @@ namespace ShapeCrawler.Models.TableComponents
         /// Returns row's cells.
         /// </summary>
         /// TODO: use custom collection
-        public IList<CellEx> Cells {
+        public IList<Cell> Cells {
             get
             {
                 if (_cells == null)
@@ -54,10 +54,10 @@ namespace ShapeCrawler.Models.TableComponents
         private void ParseCells()
         {
             var xmlCells = _sdkTblRow.Elements<A.TableCell>();
-            _cells = new List<CellEx>(xmlCells.Count());
+            _cells = new List<Cell>(xmlCells.Count());
             foreach (var c in xmlCells)
             {
-                _cells.Add(new CellEx(c, _spContext));
+                _cells.Add(new Cell(c, _spContext));
             }
         }
 

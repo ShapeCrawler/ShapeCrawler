@@ -2,6 +2,7 @@
 using System.IO;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Collections;
 using ShapeCrawler.Models.Settings;
 using ShapeCrawler.Services.Drawing;
 using ShapeCrawler.Statics;
@@ -25,6 +26,8 @@ namespace ShapeCrawler.Models
         private readonly SlidePart _sdkSldPart;
         private readonly SlideNumber _sldNumEntity;
         private readonly Lazy<CustomXmlPart> _sldXmlPart;
+
+        public Presentation Presentation { get; }
 
         #endregion Fields
 
@@ -57,8 +60,8 @@ namespace ShapeCrawler.Models
 
         #region Constructors
 
-        public Slide(SlidePart sdkSldPart, SlideNumber sldNum, IPreSettings preSettings) :
-            this(sdkSldPart, sldNum, preSettings, new SlideSchemeService())
+        public Slide(SlidePart sdkSldPart, SlideNumber sldNum, IPreSettings preSettings, Presentation presentation) :
+            this(sdkSldPart, sldNum, preSettings, new SlideSchemeService(), presentation)
         {
 
         }
@@ -66,7 +69,12 @@ namespace ShapeCrawler.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="Slide"/> class.
         /// </summary>
-        public Slide(SlidePart sdkSldPart, SlideNumber sldNum, IPreSettings preSettings, ISlideSchemeService schemeService)
+        public Slide(
+            SlidePart sdkSldPart, 
+            SlideNumber sldNum, 
+            IPreSettings preSettings, 
+            ISlideSchemeService schemeService, 
+            Presentation presentation)
         {
             _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
             _sldNumEntity = sldNum ?? throw new ArgumentNullException(nameof(sldNum));
@@ -75,6 +83,7 @@ namespace ShapeCrawler.Models
             _shapes = new Lazy<ShapeCollection>(GetShapeCollection);
             _backgroundImage = new Lazy<ImageEx>(TryGetBackground);
             _sldXmlPart = new Lazy<CustomXmlPart>(GetSldCustomXmlPart);
+            Presentation = presentation;
         }
 
         #endregion Constructors
@@ -107,7 +116,7 @@ namespace ShapeCrawler.Models
 
         private ShapeCollection GetShapeCollection()
         {
-            var shapeCollection = new ShapeCollection(_sdkSldPart, _preSettings);
+            var shapeCollection = new ShapeCollection(_sdkSldPart, _preSettings, this);
             return shapeCollection;
         }
 

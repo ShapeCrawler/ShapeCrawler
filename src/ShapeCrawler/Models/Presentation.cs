@@ -13,7 +13,7 @@ namespace ShapeCrawler.Models
     /// <summary>
     /// <inheritdoc cref="IPresentation"/>
     /// </summary>
-    public class PresentationEx : IPresentation
+    public class Presentation : IPresentation
     {
         #region Fields
 
@@ -47,9 +47,9 @@ namespace ShapeCrawler.Models
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationEx"/> class by pptx-file path.
+        /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file path.
         /// </summary>
-        public PresentationEx(string pptxPath)
+        public Presentation(string pptxPath)
         {
             ThrowIfSourceInvalid(pptxPath);
 
@@ -59,9 +59,9 @@ namespace ShapeCrawler.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationEx"/> class by pptx-file stream.
+        /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file stream.
         /// </summary>
-        public PresentationEx(Stream pptxStream, bool isEditable = false)
+        public Presentation(Stream pptxStream, bool isEditable = false)
         {
             ThrowIfSourceInvalid(pptxStream);
             _outerSdkPresentation = PresentationDocument.Open(pptxStream, isEditable);
@@ -69,9 +69,9 @@ namespace ShapeCrawler.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationEx"/> class by pptx-file stream.
+        /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file stream.
         /// </summary>
-        private PresentationEx(MemoryStream pptxStream, bool isEditable)
+        private Presentation(MemoryStream pptxStream, bool isEditable)
         {
             ThrowIfSourceInvalid(pptxStream);
             _outerSdkPresentation = PresentationDocument.Open(pptxStream, isEditable);
@@ -79,10 +79,10 @@ namespace ShapeCrawler.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationEx"/> class by pptx-file byte array.
+        /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file byte array.
         /// </summary>
         /// <param name="pptxBytes"></param>
-        public PresentationEx(byte[] pptxBytes)
+        public Presentation(byte[] pptxBytes)
         {
             ThrowIfSourceInvalid(pptxBytes);
 
@@ -96,6 +96,11 @@ namespace ShapeCrawler.Models
         #endregion Constructors
 
         #region Public Methods
+
+        public void Save()
+        {
+            _outerSdkPresentation.Save();
+        }
 
         /// <summary>
         /// Saves presentation in specified file path.
@@ -140,14 +145,14 @@ namespace ShapeCrawler.Models
         }
 
 
-        public static PresentationEx Open(byte[] pptxBytes, bool isEditable = false)
+        public static Presentation Open(byte[] pptxBytes, bool isEditable = false)
         {
             ThrowIfSourceInvalid(pptxBytes);
 
             var pptxMemoryStream = new MemoryStream();
             pptxMemoryStream.Write(pptxBytes, 0, pptxBytes.Length);
 
-            return new PresentationEx(pptxMemoryStream, isEditable);
+            return new Presentation(pptxMemoryStream, isEditable);
         }
 
         #endregion Public Methods
@@ -158,7 +163,7 @@ namespace ShapeCrawler.Models
         {
             var sdkPrePart = _outerSdkPresentation.PresentationPart;
             _preSettings = new PreSettings(sdkPrePart.Presentation, _slideSize);
-            var slideCollection = SlideCollection.Create(sdkPrePart, _preSettings);
+            var slideCollection = SlideCollection.Create(sdkPrePart, _preSettings, this);
 
             return slideCollection;
         }

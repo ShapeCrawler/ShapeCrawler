@@ -15,7 +15,7 @@ namespace ShapeCrawler.UnitTests
         public void FontHeight_Test()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._020);
+            var pre = new Presentation(Properties.Resources._020);
 
             // Act
             var shape3 = pre.Slides[0].Shapes.Single(x => x.Id == 3);

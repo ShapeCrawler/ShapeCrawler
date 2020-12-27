@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using ShapeCrawler.Collections;
+using ShapeCrawler.Models;
 using SlideDotNet.Models;
 
 namespace ShapeCrawler.Services.Drawing

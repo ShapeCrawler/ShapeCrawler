@@ -7,9 +7,9 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace ShapeCrawler.Models.TableComponents
 {
     /// <summary>
-    /// Represents a row's cell.
+    /// Represents cell of table row.
     /// </summary>
-    public class CellEx
+    public class Cell
     {
         #region Fields
 
@@ -42,7 +42,7 @@ namespace ShapeCrawler.Models.TableComponents
 
         #region Constructors
 
-        public CellEx(A.TableCell xmlCell, IShapeContext spContext)
+        public Cell(A.TableCell xmlCell, IShapeContext spContext)
         {
             _xmlCell = xmlCell ?? throw new ArgumentNullException(nameof(xmlCell));
             _spContext = spContext ?? throw new ArgumentNullException(nameof(spContext));

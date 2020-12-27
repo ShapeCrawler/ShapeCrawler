@@ -25,14 +25,14 @@ namespace ShapeCrawler.UnitTests
         {
             // Arrange
             var ms = new MemoryStream(Properties.Resources._007_2_slides);
-            var pre = new PresentationEx(ms, true);
+            var pre = new Presentation(ms, true);
 
             // Act
             var slide1 = pre.Slides.First();
             pre.Slides.Remove(slide1);
             pre.Close();
 
-            var pre2 = new PresentationEx(ms);
+            var pre2 = new Presentation(ms);
             var numSlides = pre2.Slides.Count();
             var numElements = pre2.Slides.Single().Shapes.Count;
             pre2.Close();
@@ -53,7 +53,7 @@ namespace ShapeCrawler.UnitTests
         public void Remove_Test1()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._007_2_slides);
+            var pre = new Presentation(Properties.Resources._007_2_slides);
             var slides = pre.Slides;
             var slide1 = slides[0];
             var slide2 = slides[1];

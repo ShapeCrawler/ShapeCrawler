@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -17,7 +18,8 @@ namespace ShapeCrawler.Services.ShapeCreators
         /// Creates collection of the shapes from SDK-slide part.
         /// </summary>
         /// <param name="sdkSldPart"></param>
+        /// <param name="slide"></param>
         /// <returns></returns>
-        IList<Shape> FromSldPart(SlidePart sdkSldPart);
+        IList<Shape> FromSdlSlidePart(SlidePart sdkSldPart, Slide slide);
     }
 }

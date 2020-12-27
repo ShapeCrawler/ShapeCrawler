@@ -13,7 +13,7 @@ namespace ShapeCrawler.UnitTests
         public void TextFrame_Text_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._014);
+            var pre = new Presentation(Properties.Resources._014);
             var elId61 = pre.Slides[0].Shapes.Single(s => s.Id == 61);
 
             // ACT
@@ -27,7 +27,7 @@ namespace ShapeCrawler.UnitTests
         public void Portion_FontHeight_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._014);
+            var pre = new Presentation(Properties.Resources._014);
             var elId5 = pre.Slides[1].Shapes.Single(x => x.Id == 5);
 
             // ACT-ASSERT
@@ -39,7 +39,7 @@ namespace ShapeCrawler.UnitTests
         public void Slide_Elements_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._014);
+            var pre = new Presentation(Properties.Resources._014);
 
             // ACT-ASSERT
             var elements = pre.Slides[2].Shapes;
@@ -49,7 +49,7 @@ namespace ShapeCrawler.UnitTests
         public void FontHeight_Test1()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._014);
+            var pre = new Presentation(Properties.Resources._014);
 
             // Act
             var element = pre.Slides[3].Shapes.Single(x => x.Id == 5);
@@ -63,7 +63,7 @@ namespace ShapeCrawler.UnitTests
         public void FontHeight_Test2()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._014);
+            var pre = new Presentation(Properties.Resources._014);
 
             // Act
             var element = pre.Slides[4].Shapes.Single(x => x.Id == 4);
@@ -77,7 +77,7 @@ namespace ShapeCrawler.UnitTests
         public void Title_FontHeight_Test()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._014);
+            var pre = new Presentation(Properties.Resources._014);
 
             // Act
             var element = pre.Slides[5].Shapes.Single(x => x.Id == 52);

@@ -1,14 +1,12 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Collections;
+using ShapeCrawler.Models;
 using ShapeCrawler.Models.Settings;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Services.ShapeCreators;
 using ShapeCrawler.Shared;
-using P = DocumentFormat.OpenXml.Presentation;
-// ReSharper disable All
 
-namespace SlideDotNet.Models
+namespace ShapeCrawler.Collections
 {
     /// <summary>
     /// Represents a collection of the slide shapes.
@@ -22,18 +20,15 @@ namespace SlideDotNet.Models
         /// </summary>
         /// <param name="sdkSldPart"></param>
         /// <param name="preSettings"></param>
-        public ShapeCollection(SlidePart sdkSldPart, IPreSettings preSettings):
-            this(sdkSldPart, new ShapeFactory(preSettings))
+        public ShapeCollection(SlidePart sdkSldPart, IPreSettings preSettings, Slide slide) :
+            this(sdkSldPart, new ShapeFactory(preSettings), slide)
         {
             
         }
 
-        public ShapeCollection(SlidePart sdkSldPart, IShapeFactory shapeFactory)
+        public ShapeCollection(SlidePart sdkSldPart, IShapeFactory shapeFactory, Slide slide)
         {
-            Check.NotNull(sdkSldPart, nameof(sdkSldPart));
-            Check.NotNull(shapeFactory, nameof(shapeFactory));
-
-            CollectionItems = shapeFactory.FromSldPart(sdkSldPart).ToList();
+            CollectionItems = shapeFactory.FromSdlSlidePart(sdkSldPart, slide).ToList(); // TODO: Check whether it is possible avoid ToList()
         }
 
         #endregion Constructors

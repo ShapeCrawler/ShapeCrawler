@@ -15,7 +15,7 @@ namespace ShapeCrawler.UnitTests
         public void SlidesCount_ShouldReturnTwo_PresentationContainsTwoSlides()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._001);
+            var pre = new Presentation(Properties.Resources._001);
 
             // Act
             var sldNumber = pre.Slides.Count();
@@ -27,7 +27,7 @@ namespace ShapeCrawler.UnitTests
         [Fact]
         public void Slide_CustomData_returns_null_when_CustomData_was_not_assigned()
         {
-            var pre = new PresentationEx(Properties.Resources._001);
+            var pre = new Presentation(Properties.Resources._001);
             var slide = pre.Slides.First();
 
             // Act

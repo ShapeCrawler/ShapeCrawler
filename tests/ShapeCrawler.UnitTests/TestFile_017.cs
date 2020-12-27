@@ -11,7 +11,7 @@ namespace ShapeCrawler.UnitTests
         public void SlidesCollection_Test()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._017);
+            var pre = new Presentation(Properties.Resources._017);
 
             // Act-Assert
             var slides = pre.Slides; // should not throws exception

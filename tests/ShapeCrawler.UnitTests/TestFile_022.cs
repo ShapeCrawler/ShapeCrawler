@@ -16,7 +16,7 @@ namespace ShapeCrawler.UnitTests
         public void Slide_Shapes_Test()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._022);
+            var pre = new Presentation(Properties.Resources._022);
             var spPic3 = pre.Slides[0].Shapes.First(x => x.Id == 3);
 
             // Act

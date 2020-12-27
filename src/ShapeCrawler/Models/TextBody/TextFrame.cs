@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Models.Settings;
-using ShapeCrawler.Shared;
+using ShapeCrawler.Models.SlideComponents;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Models.TextBody
@@ -12,12 +13,15 @@ namespace ShapeCrawler.Models.TextBody
     /// <summary>
     /// <inheritdoc cref="ITextFrame"/>
     /// </summary>
+    [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     public sealed class TextFrame : ITextFrame
     {
         #region Fields
 
         private readonly IShapeContext _spContext;
         private readonly Lazy<string> _text;
+
+        public Shape Shape { get; }
 
         #endregion Fields
 
@@ -26,7 +30,7 @@ namespace ShapeCrawler.Models.TextBody
         /// <summary>
         /// <inheritdoc cref="ITextFrame.Paragraphs"/>
         /// </summary>
-        public IList<Paragraph> Paragraphs { get; private set; }
+        public IList<Paragraph> Paragraphs { get; private set; } // TODO: Consider to use IReadOnlyList instead IList
 
         /// <summary>
         /// <inheritdoc cref="ITextFrame.Text"/>
@@ -40,11 +44,16 @@ namespace ShapeCrawler.Models.TextBody
         /// <summary>
         /// Initializes an instance of the <see cref="TextFrame"/>.
         /// </summary>
+        public TextFrame(IShapeContext spContext, OpenXmlCompositeElement compositeElement, Shape shape)
+        :this(spContext, compositeElement)
+        {
+            Shape = shape;
+        }
+
         public TextFrame(IShapeContext spContext, OpenXmlCompositeElement compositeElement)
         {
-            _spContext = spContext ?? throw new ArgumentNullException(nameof(spContext));
-            Check.NotNull(compositeElement, nameof(compositeElement));
-            ParseParagraphs(compositeElement);
+            _spContext = spContext;
+            ParseParagraphs(compositeElement); // TODO: Make paragraphs parsing lazy
             _text = new Lazy<string>(GetText);
         }
 
@@ -61,7 +70,7 @@ namespace ShapeCrawler.Models.TextBody
             Paragraphs = new List<Paragraph>(aParagraphs.Count());
             foreach (A.Paragraph aParagraph in aParagraphs)
             {
-                Paragraphs.Add(new Paragraph(_spContext, aParagraph));
+                Paragraphs.Add(new Paragraph(_spContext, aParagraph, this));
             }
         }
 

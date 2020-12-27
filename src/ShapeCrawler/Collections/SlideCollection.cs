@@ -52,7 +52,7 @@ namespace ShapeCrawler.Collections
         /// Creates slides collection.
         /// </summary>
         /// <returns></returns>
-        public static SlideCollection Create(PresentationPart sdkPrePart, IPreSettings preSettings)
+        public static SlideCollection Create(PresentationPart sdkPrePart, IPreSettings preSettings, Models.Presentation presentation)
         {
             Check.NotNull(sdkPrePart, nameof(sdkPrePart));
             Check.NotNull(preSettings, nameof(preSettings));
@@ -64,7 +64,7 @@ namespace ShapeCrawler.Collections
             {
                 var sdkSldPart = sdkPrePart.GetSlidePartByIndex(sldIndex);
                 var sldNumEntity = new SlideNumber(sldIndex + 1);
-                var newSlide = new Slide(sdkSldPart, sldNumEntity, preSettings);
+                var newSlide = new Slide(sdkSldPart, sldNumEntity, preSettings, presentation);
                 sldNumDic.Add(newSlide, sldNumEntity);
                 slideCollection.Add(newSlide);
             }
