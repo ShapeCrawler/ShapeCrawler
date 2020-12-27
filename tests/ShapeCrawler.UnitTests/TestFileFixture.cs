@@ -1,22 +1,24 @@
 using System;
-using System.IO;
 using ShapeCrawler.Models;
 
 namespace ShapeCrawler.UnitTests
 {
     public class TestFileFixture : IDisposable
     {
-        public PresentationEx pre002 { get; }
+        public Presentation Pre002 { get; }
+        public Presentation Pre003 { get; }
+        public Presentation Pre021 { get; }
 
         public TestFileFixture()
         {
-            var ms = new MemoryStream(Properties.Resources._002);
-            pre002 = new PresentationEx(ms);
+            Pre002 = Presentation.Open(Properties.Resources._002, false);
+            Pre003 = Presentation.Open(Properties.Resources._003, false);
+            Pre021 = Presentation.Open(Properties.Resources._021, false);
         }
 
         public void Dispose()
         {
-            pre002.Close();
+
         }
     }
 }

@@ -19,7 +19,7 @@ namespace ShapeCrawler.UnitTests
         public void ShapeTextBody_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._008);
+            var pre = new Presentation(Properties.Resources._008);
 
             // ACT
             var shapes = pre.Slides.Single().Shapes.OfType<Shape>();
@@ -39,7 +39,7 @@ namespace ShapeCrawler.UnitTests
         public void Placeholder_DateTime_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._008);
+            var pre = new Presentation(Properties.Resources._008);
             var sp3 = pre.Slides[0].Shapes.Single(sp => sp.Id == 3);
 
             // ACT

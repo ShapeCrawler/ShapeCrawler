@@ -81,7 +81,7 @@ namespace ShapeCrawler.Models.TextBody
         {
             if (Type == BulletType.None)
             {
-                throw new RuntimeDefinedPropertyException(BulletIsNotDefinedErrorMsg);
+                return null;
             }
 
             var srgbClrElements = _xmlParagraphProperties.Descendants<A.RgbColorModelHex>();
@@ -97,7 +97,7 @@ namespace ShapeCrawler.Models.TextBody
         {
             if (Type == BulletType.None)
             {
-                throw new RuntimeDefinedPropertyException(BulletIsNotDefinedErrorMsg);
+                return null;
             }
 
             var buChar = _xmlParagraphProperties.GetFirstChild<A.CharacterBullet>();
@@ -113,7 +113,7 @@ namespace ShapeCrawler.Models.TextBody
         {
             if (Type == BulletType.None)
             {
-                throw new RuntimeDefinedPropertyException(BulletIsNotDefinedErrorMsg);
+                return null;
             }
 
             var buFont = _xmlParagraphProperties.GetFirstChild<A.BulletFont>();
@@ -124,7 +124,7 @@ namespace ShapeCrawler.Models.TextBody
         {
             if (Type == BulletType.None)
             {
-                throw new RuntimeDefinedPropertyException(BulletIsNotDefinedErrorMsg);
+                return 0;
             }
 
             var buSzPct = _xmlParagraphProperties.GetFirstChild<A.BulletSizePercentage>();

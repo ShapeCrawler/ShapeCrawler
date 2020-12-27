@@ -10,11 +10,12 @@
 
 </h3>
 
-ShapeCrawler (formerly SlideDotNet) is a fluent API for the processing of PowerPoint presentations without Microsoft Office installed.
+ShapeCrawler (formerly SlideDotNet) is a fluent API for processing PowerPoint presentations without Microsoft Office installed. It is a wrapper for [Open-XML-SDK](https://github.com/OfficeDev/Open-XML-SDK) aiming to make its APIs intuitive while working on pptx-files.
+
+The library allows to process presentation files without any COM+ or COM interop layers. 
 
 ## Getting Started
 You can quickly start work with the library by following steps listed below.
-
 ### Installing
 To install ShapeCrawler, run the following command in the Package Manager Console:
 ```

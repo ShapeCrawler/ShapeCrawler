@@ -14,7 +14,7 @@ namespace ShapeCrawler.UnitTests
         public void ChartPropertiesTest()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._013);
+            var pre = new Presentation(Properties.Resources._013);
             var combChart = pre.Slides[0].Shapes.Single(x => x.Id == 5).Chart;
             var chart4 = pre.Slides[0].Shapes.Single(x => x.Id == 4).Chart;
 
@@ -37,7 +37,7 @@ namespace ShapeCrawler.UnitTests
         public void Slide_Shapes_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._013);
+            var pre = new Presentation(Properties.Resources._013);
 
             // ACT
             var shapes = pre.Slides[0].Shapes; // should not throw exception
@@ -49,7 +49,7 @@ namespace ShapeCrawler.UnitTests
         public void PlaceholderType_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._013);
+            var pre = new Presentation(Properties.Resources._013);
 
             // ACT
             var phType = pre.Slides[0].Shapes.Single(s=>s.Id == 281).PlaceholderType;
@@ -62,7 +62,7 @@ namespace ShapeCrawler.UnitTests
         public void Chart_Title_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._013);
+            var pre = new Presentation(Properties.Resources._013);
             var chart = pre.Slides[0].Shapes.Single(s => s.Id == 6).Chart;
 
             // ACT
@@ -76,7 +76,7 @@ namespace ShapeCrawler.UnitTests
         public void TextFrame_Text_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._014);
+            var pre = new Presentation(Properties.Resources._014);
             var elId61 = pre.Slides[0].Shapes.Single(s => s.Id == 61);
 
             // ACT

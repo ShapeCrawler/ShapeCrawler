@@ -1,7 +1,9 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using ShapeCrawler.Collections;
 using ShapeCrawler.Enums;
+using ShapeCrawler.Models;
 using SlideDotNet.Models;
 
 namespace ShapeCrawler.Services.Drawing

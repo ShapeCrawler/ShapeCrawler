@@ -1,24 +1,48 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Models.Settings;
 using ShapeCrawler.Models.TextBody;
+using ShapeCrawler.NoLogic;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Collections
 {
+    [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     public class PortionCollection : EditableCollection<Portion>
     {
-        public PortionCollection(List<Portion> portions)
+        // TODO: Delete one of collection which duplicates collection of Portions.
+        // _portionToText and CollectionItems both store Portion items.
+        private readonly Dictionary<Portion, A.Text> _portionToText;
+
+        public PortionCollection(List<Portion> portions, Dictionary<Portion, A.Text> portionToText)
         {
             CollectionItems = portions;
+            _portionToText = portionToText;
         }
 
-        public override void Remove(Portion item)
+        public override void Remove(Portion portion)
         {
-            CollectionItems.Remove(item);
+            if (!CollectionItems.Contains(portion))
+            {
+                return;
+            }
+            CollectionItems.Remove(portion);
+
+            _portionToText[portion].Parent.Remove(); // removes from DOM
+        }
+
+        public void RemoveRange(IList<Portion> removingPortions)
+        {
+            foreach (var portion in removingPortions)
+            {
+                CollectionItems.Remove(portion);
+                var aText = _portionToText[portion];
+                aText.Parent.Remove();
+            }
         }
 
         public static PortionCollection Create(A.Paragraph aParagraph, IShapeContext spContext, int innerPrLvl, Paragraph paragraph)
@@ -27,25 +51,27 @@ namespace ShapeCrawler.Collections
             if (regularTextRuns.Any())
             {
                 var portions = new List<Portion>(regularTextRuns.Count());
+                var portionToText = new Dictionary<Portion, A.Text>(regularTextRuns.Count());
                 foreach (var run in regularTextRuns)
                 {
-                    var fh = FontHeightFromRun(run, spContext, innerPrLvl);
-                    portions.Add(new Portion(run.Text, fh, paragraph));
+                    int fh = FontHeightFromRun(run, spContext, innerPrLvl);
+                    A.Text aText = run.Text;
+                    var newPortion = new Portion(aText, fh, paragraph);
+                    portions.Add(newPortion);
+                    portionToText.Add(newPortion, aText);
                 }
 
-                return new PortionCollection(portions);
+                return new PortionCollection(portions, portionToText);
             }
             else
             {
-                var textField = aParagraph.GetFirstChild<A.Field>()
-                    .GetFirstChild<A.Text>();
-                var fh = FontHeightFromOther(spContext, innerPrLvl);
-                var portions = new List<Portion>(1)
-                {
-                    new Portion(textField, fh, paragraph)
-                };
+                A.Text aText = aParagraph.GetFirstChild<A.Field>().GetFirstChild<A.Text>();
+                int fh = FontHeightFromOther(spContext, innerPrLvl);
+                var newPortion = new Portion(aText, fh, paragraph);
+                var portions = new List<Portion>(new[] {newPortion});
+                var portionToText = new Dictionary<Portion, A.Text> {{newPortion, aText}};
 
-                return new PortionCollection(portions);
+                return new PortionCollection(portions, portionToText);
             }
         }
 

@@ -7,11 +7,9 @@
     <Version>0.10.0</Version>
     <Authors>Adam Shakhabov</Authors>
     <Company>ShapeCrawler</Company>
-    <Description>A fluent API for the processing of PowerPoint presentations without Microsoft Office installed.
+    <Description>ShapeCrawler (formerly SlideDotNet) is a fluent API for processing PowerPoint presentations without Microsoft Office installed. It is a wrapper for Open-XML-SDK aiming to make its APIs intuitive while working on pptx-files.
 
-
-
-ShapeCrawler (formerly SlideDotNet) is a wrapper around Open XML SDK to process PowerPoint files without Microsoft Office installed. It aims to provide an intuitive and friendly interface to dealing with the underlying Open XML SDK APIs.</Description>
+The library allows to process presentation files without any COM+ or COM interop layers.</Description>
     <PackageTags>powerpoint slide pptx c-sharp shapecrawler openxml</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>

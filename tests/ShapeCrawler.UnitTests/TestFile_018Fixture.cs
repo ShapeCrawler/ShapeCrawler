@@ -6,11 +6,11 @@ namespace ShapeCrawler.UnitTests
 {
     public class TestFile_018Fixture : IDisposable
     {
-        public PresentationEx pre018 { get; }
+        public Presentation pre018 { get; }
 
         public TestFile_018Fixture()
         {
-            pre018 = new PresentationEx(Properties.Resources._018);
+            pre018 = new Presentation(Properties.Resources._018);
         }
 
         public void Dispose()

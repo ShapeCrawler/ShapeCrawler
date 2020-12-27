@@ -5,7 +5,6 @@ using FluentAssertions;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
-using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Models.TextBody;
 using Xunit;
 
@@ -27,7 +26,7 @@ namespace ShapeCrawler.UnitTests
         public void Bullet_FontName()
         {
             // Arrange
-            var shapeList = _fixture.pre002.Slides[1].Shapes;
+            var shapeList = _fixture.Pre002.Slides[1].Shapes;
             var shape3 = shapeList.First(x => x.Id == 3);
             var shape4 = shapeList.First(x => x.Id == 4);
             var shape3Pr1Bullet = shape3.TextFrame.Paragraphs[0].Bullet;
@@ -46,7 +45,7 @@ namespace ShapeCrawler.UnitTests
         public void Bullet_Type()
         {
             // Arrange
-            var shapeList = _fixture.pre002.Slides[1].Shapes;
+            var shapeList = _fixture.Pre002.Slides[1].Shapes;
             var shape4 = shapeList.First(x => x.Id == 4);
             var shape5 = shapeList.First(x => x.Id == 5);
             var shape4Pr2Bullet = shape4.TextFrame.Paragraphs[1].Bullet;
@@ -68,7 +67,7 @@ namespace ShapeCrawler.UnitTests
         public void ParagraphBullet_ColorHexAndCharAndSize()
         {
             // Arrange
-            var shapeList = _fixture.pre002.Slides[1].Shapes;
+            var shapeList = _fixture.Pre002.Slides[1].Shapes;
             var shape4 = shapeList.First(x => x.Id == 4);
             var shape4Pr2Bullet = shape4.TextFrame.Paragraphs[1].Bullet;
 
@@ -87,7 +86,7 @@ namespace ShapeCrawler.UnitTests
         public void ParagraphPortionRemove_RemovesPortionFromCollection()
         {
             // Arrange
-            var presentation = PresentationEx.Open(Properties.Resources._002, true);
+            var presentation = Presentation.Open(Properties.Resources._002, true);
             var portions = GetPortions(presentation);
             var portion = portions.First();
             var countBefore = portions.Count;
@@ -101,23 +100,46 @@ namespace ShapeCrawler.UnitTests
             
             var memoryStream = new MemoryStream();
             presentation.SaveAs(memoryStream);
-            var savedPresentation = new PresentationEx(memoryStream, false);
+            var savedPresentation = new Presentation(memoryStream, false);
             portions = GetPortions(savedPresentation);
             portions.Should().HaveCount(1);
         }
 
-        private static PortionCollection GetPortions(PresentationEx presentation)
+        [Theory]
+        [MemberData(nameof(GetTestCasesForWhenTextIsChangedViaSetter))]
+        public void ParagraphText_IsChanged_WhenTextIsChangedViaSetter(Paragraph paragraph)
+        {
+            // Arrange
+            const string expectedText = "a new paragraph text";
+
+            // Act
+            paragraph.Text = expectedText;
+
+            // Assert
+            paragraph.Text.Should().BeEquivalentTo(expectedText);
+            paragraph.Portions.Should().HaveCount(1);
+        }
+
+        public static IEnumerable<object[]> GetTestCasesForWhenTextIsChangedViaSetter()
+        {
+            var paragraphNumber = 2;
+            var pre002 = Presentation.Open(Properties.Resources._002, true);
+            var shape4 = pre002.Slides[1].Shapes.First(x => x.Id == 4);
+            var paragraph = shape4.TextFrame.Paragraphs[--paragraphNumber];
+            yield return new[] {paragraph};
+
+            paragraphNumber = 3;
+            pre002 = Presentation.Open(Properties.Resources._002, true);
+            shape4 = pre002.Slides[1].Shapes.First(x => x.Id == 4);
+            paragraph = shape4.TextFrame.Paragraphs[--paragraphNumber];
+            yield return new[] { paragraph };
+        }
+
+        private static PortionCollection GetPortions(Presentation presentation)
         {
             var shape5 = presentation.Slides[1].Shapes.First(x => x.Id == 5);
             var portions = shape5.TextFrame.Paragraphs.First().Portions;
             return portions;
-        }
-
-        private static string GetParagraphText(PresentationEx presentation)
-        {
-            var shape4 = presentation.Slides[1].Shapes.First(x => x.Id == 4);
-            var paragraphText = shape4.TextFrame.Paragraphs.First().Text;
-            return paragraphText;
         }
     }
 }

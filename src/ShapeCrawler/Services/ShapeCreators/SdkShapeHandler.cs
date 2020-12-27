@@ -52,11 +52,11 @@ namespace ShapeCrawler.Services.ShapeCreators
         {
             Check.NotNull(sdkElement, nameof(sdkElement));
 
-            if (sdkElement is P.Shape sdkShape)
+            if (sdkElement is P.Shape pShape)
             {
                 var spContext = _shapeContextBuilder.Build(sdkElement);
-                var innerTransform = _transformFactory.FromComposite(sdkShape);
-                var geometry = _geometryFactory.ForShape(sdkShape);
+                var innerTransform = _transformFactory.FromComposite(pShape);
+                var geometry = _geometryFactory.ForShape(pShape);
                 var shape = _shapeBuilder.WithAutoShape(innerTransform, spContext, geometry);
                 
                 return shape;

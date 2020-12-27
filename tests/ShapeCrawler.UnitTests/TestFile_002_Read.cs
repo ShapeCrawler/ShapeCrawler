@@ -19,7 +19,7 @@ namespace ShapeCrawler.UnitTests
         public void ShapesCount_ShouldReturn3_SlideContain3Shapes()
         {
             // Arrange
-            var shapes = _fixture.pre002.Slides[0].Shapes;
+            var shapes = _fixture.Pre002.Slides[0].Shapes;
 
             // Act
             var shapesCount = shapes.Count;

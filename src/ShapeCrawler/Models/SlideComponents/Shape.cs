@@ -145,29 +145,29 @@ namespace ShapeCrawler.Models.SlideComponents
         public ITextFrame TextFrame => _textFrame.Value;
 
         /// <summary>
-        /// Returns chart. Throws exception if shape content type is not <see cref="ShapeContentType.Chart"/>
+        /// Returns chart. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.Chart"/>.
         /// </summary>
-        public IChart Chart => _chart ?? throw new NotSupportedException(ExceptionMessages.NoChart);
+        public IChart Chart => _chart;
 
         /// <summary>
-        /// Returns table. Throws exception if shape content type is not <see cref="ShapeContentType.Table"/>
+        /// Returns table. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.Table"/>.
         /// </summary>
-        public TableEx Table => _table ?? throw new NotSupportedException(ExceptionMessages.NoTable);
+        public TableEx Table => _table;
 
         /// <summary>
-        /// Returns picture. Throws exception if shape content type is not a <see cref="ShapeContentType.Picture"/>
+        /// Returns picture. Returns <c>NULL</c> when the shape content type is not a <see cref="ShapeContentType.Picture"/>.
         /// </summary>
-        public PictureEx Picture => _picture ?? throw new NotSupportedException(ExceptionMessages.NoPicture);
+        public PictureEx Picture => _picture;
 
         /// <summary>
-        /// Returns grouped shapes. Throws exception if shape content type is not <see cref="ShapeContentType.Group"/>
+        /// Returns grouped shapes. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.Group"/>.
         /// </summary>
         public IList<Shape> GroupedShapes { get; private set; }
 
         /// <summary>
-        /// Returns OLE object content.
+        /// Returns OLE object content. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.OLEObject"/>.
         /// </summary>
-        public OleObject OleObject => _ole ?? throw new NotSupportedException(ExceptionMessages.NoOleObject);
+        public OleObject OleObject => _ole;
 
         /// <summary>
         /// Determines whether the shape is placeholder.
@@ -207,6 +207,11 @@ namespace ShapeCrawler.Models.SlideComponents
             get => GetCustomData();
             set => SetCustomData(value);
         }
+
+        /// <summary>
+        /// Gets parent slide.
+        /// </summary>
+        public Slide Slide { get; internal set; }
 
         private void SetCustomData(string value)
         {
@@ -268,7 +273,7 @@ namespace ShapeCrawler.Models.SlideComponents
             var aTexts = pTxtBody.Descendants<A.Text>();
             if (aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element with text must be exist
             {
-                return new TextFrame(_context, pTxtBody);
+                return new TextFrame(_context, pTxtBody, this);
             }
 
             return new NoTextFrame();

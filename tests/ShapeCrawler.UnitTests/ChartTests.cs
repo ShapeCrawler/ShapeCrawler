@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
-using SlideDotNet.Models;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations
@@ -10,13 +9,13 @@ using Xunit;
 
 namespace ShapeCrawler.UnitTests
 {
-    public class TestFile_021
+    public class ChartTests
     {
         [Fact]
         public void Chart_Test()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._021);
+            var pre = new Presentation(Properties.Resources._021);
             var shapes1 = pre.Slides[0].Shapes;
             var shapes2 = pre.Slides[1].Shapes;
             var sp108 = shapes1.Single(x => x.Id == 108);
@@ -48,7 +47,7 @@ namespace ShapeCrawler.UnitTests
         public void Chart3_Test()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._021);
+            var pre = new Presentation(Properties.Resources._021);
             var sld2Shapes = pre.Slides[1].Shapes;
             var shape3 = sld2Shapes.First(x => x.Id == 3);
             var chart3 = shape3.Chart;
@@ -66,7 +65,7 @@ namespace ShapeCrawler.UnitTests
         public void Chart4_Test()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._021);
+            var pre = new Presentation(Properties.Resources._021);
             var sld3Shapes = pre.Slides[2].Shapes;
             var shape4 = sld3Shapes.First(x => x.Id == 4);
             var chart4 = shape4.Chart;
@@ -80,29 +79,6 @@ namespace ShapeCrawler.UnitTests
             Assert.Equal(2.4, pValue);
             Assert.Equal(ChartType.ScatterChart, type);
             Assert.False(hasCategories);
-        }
-
-        [Fact]
-        public void Footer_Test()
-        {
-            // Arrange
-            var pre = new PresentationEx(Properties.Resources._021);
-            var sld4Shapes = pre.Slides[3].Shapes;
-
-            // Act
-            var footerShape = sld4Shapes.First(s => s.Id == 2);
-            var ellipse = sld4Shapes.First(s => s.Id == 3).GeometryType;
-            var type = footerShape.PlaceholderType;
-            var text = footerShape.TextFrame.Text;
-            var x = footerShape.X;
-            var geometry = footerShape.GeometryType;
-
-            // Assert
-            Assert.Equal(PlaceholderType.Footer, type);
-            Assert.Equal("test footer", text);
-            Assert.Equal(3653579, x);
-            Assert.Equal(GeometryType.Rectangle, geometry);
-            Assert.Equal(GeometryType.Ellipse, ellipse);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Models;
 using ShapeCrawler.Models.Settings;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Services.Placeholders;
@@ -32,7 +33,7 @@ namespace ShapeCrawler.Services.ShapeCreators
 
         #region Public Methods
 
-        public IList<Shape> FromSldPart(SlidePart sdkSldPart)
+        public IList<Shape> FromSdlSlidePart(SlidePart sdkSldPart, Slide slide)
         {
             var sldPhFontService = new PlaceholderFontService(sdkSldPart); //TODO: make DI
             var phService = new PlaceholderService(sdkSldPart.SlideLayoutPart);
@@ -62,6 +63,7 @@ namespace ShapeCrawler.Services.ShapeCreators
                 var shape = sdkShapeHandler.Create(openXmlElement);
                 if (shape != null)
                 {
+                    shape.Slide = slide;
                     shapes.Add(shape);
                 }
             }

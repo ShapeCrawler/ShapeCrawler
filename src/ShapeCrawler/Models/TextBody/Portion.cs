@@ -34,7 +34,6 @@ namespace ShapeCrawler.Models.TextBody
         public void Remove()
         {
             _paragraph.Portions.Remove(this);
-            _aText.Parent.Remove(); // removes from DOM
         }
         
         #endregion Properties

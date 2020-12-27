@@ -8,11 +8,11 @@ namespace ShapeCrawler.UnitTests
     /// </summary>
     public class Presentation25Fixture : IDisposable
     {
-        public PresentationEx Presentation { get; }
+        public Presentation Presentation { get; }
 
         public Presentation25Fixture()
         {
-            Presentation = new PresentationEx(Properties.Resources._025);
+            Presentation = new Presentation(Properties.Resources._025);
         }
 
         public void Dispose()
