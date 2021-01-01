@@ -27,7 +27,8 @@ PM> Install-Package ShapeCrawler
 ```C#
 public static async void Usage()
 {
-    var presentation = new PresentationEx(@"c:\test.pptx");
+    // Gets number of slides
+    var presentation = new Presentation(@"c:\test.pptx");
     var slides = presentation.Slides;
     var numSlides = slides.Count();
 
@@ -47,7 +48,7 @@ public static async void Usage()
     int slideNumber = slide.Number;
 
     // Gets slide background content
-    byte[] backgroundBytes = await slide.BackgroundImage.GetImageBytesValueTask();
+    byte[] backgroundBytes = await slide.Background.GetImageBytesValueTask();
 }
 ```
 <details>
@@ -57,7 +58,7 @@ public static async void Usage()
 public static async void Usage()
 {
     // Gets number of slides
-    var presentation = new PresentationEx(@"c:\test.pptx");
+    var presentation = new Presentation(@"c:\test.pptx");
     var slides = presentation.Slides;
     var numSlides = slides.Count();
 
@@ -77,12 +78,12 @@ public static async void Usage()
     int slideNumber = slide.Number;
 
     // Gets slide background content
-    byte[] backgroundBytes = await slide.BackgroundImage.GetImageBytesValueTask();
+    byte[] backgroundBytes = await slide.Background.GetImageBytesValueTask();
 
     // Sets slide background
     using (FileStream fs = File.OpenRead(@"c:\test.png"))
     {
-        slide.BackgroundImage.SetImageStream(fs);
+        slide.Background.SetImage(fs);
     }
 
     // Hides slide
@@ -91,15 +92,6 @@ public static async void Usage()
 
     // Set some custom data in slide, e.g. tag
     slide.CustomData = "#mySlide";
-
-    // Prints texts of shapes on the Debug console
-    foreach (var sp in shapes)
-    {
-        if (sp.HasTextFrame)
-        {
-            Debug.WriteLine(sp.TextFrame.Text);
-        }
-    }
 
     // Works with charts
     var chartShape = shapes.FirstOrDefault(s => s.HasChart);
@@ -115,6 +107,7 @@ public static async void Usage()
             Debug.Print("Chart type is BarChart.");
         }
     }
+}
 ```
 </details>
 
