@@ -124,9 +124,10 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 5. Create a new Pull Request.
 
 # Changelog
-## Version 0.9.0 - 2020-12-24
+## Version 0.10.0 - 2021-01-01
 ### Added
-- Added `Slide.Hide()` and `Slide.Hidden` APIs to hide slide and define whether the slide is hidden;
-- Added support .NET Standard 2.0 and .NET Standard 2.1 frameworks.
+- Added `Portion.Remove()` to be able to remove paragraph portion;
+- Added setter for `Paragraph.Text` property to be able to change paragraph's text;
+- Added support for .NET Core 2.0
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).
