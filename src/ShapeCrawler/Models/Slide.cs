@@ -3,8 +3,8 @@ using System.IO;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Models.Settings;
 using ShapeCrawler.Services.Drawing;
+using ShapeCrawler.Settings;
 using ShapeCrawler.Statics;
 using SlideDotNet.Models;
 
@@ -21,11 +21,11 @@ namespace ShapeCrawler.Models
 
         private readonly Lazy<ImageEx> _backgroundImage;
         private readonly Lazy<ShapeCollection> _shapes;
-        private readonly IPreSettings _preSettings;
+        private readonly IPresentationData _preSettings;
         private readonly ISlideSchemeService _schemeService;
         private readonly SlidePart _sdkSldPart;
         private readonly SlideNumber _sldNumEntity;
-        private readonly Lazy<CustomXmlPart> _sldXmlPart;
+        private Lazy<CustomXmlPart> _customXmlPart;
 
         public Presentation Presentation { get; }
 
@@ -60,7 +60,7 @@ namespace ShapeCrawler.Models
 
         #region Constructors
 
-        public Slide(SlidePart sdkSldPart, SlideNumber sldNum, IPreSettings preSettings, Presentation presentation) :
+        public Slide(SlidePart sdkSldPart, SlideNumber sldNum, IPresentationData preSettings, Presentation presentation) :
             this(sdkSldPart, sldNum, preSettings, new SlideSchemeService(), presentation)
         {
 
@@ -72,7 +72,7 @@ namespace ShapeCrawler.Models
         public Slide(
             SlidePart sdkSldPart, 
             SlideNumber sldNum, 
-            IPreSettings preSettings, 
+            IPresentationData preSettings, 
             ISlideSchemeService schemeService, 
             Presentation presentation)
         {
@@ -82,7 +82,7 @@ namespace ShapeCrawler.Models
             _schemeService = schemeService ?? throw new ArgumentNullException(nameof(schemeService));
             _shapes = new Lazy<ShapeCollection>(GetShapeCollection);
             _backgroundImage = new Lazy<ImageEx>(TryGetBackground);
-            _sldXmlPart = new Lazy<CustomXmlPart>(GetSldCustomXmlPart);
+            _customXmlPart = new Lazy<CustomXmlPart>(GetSldCustomXmlPart);
             Presentation = presentation;
         }
 
@@ -110,6 +110,19 @@ namespace ShapeCrawler.Models
             _schemeService.SaveScheme(_shapes.Value, sldSize.Width, sldSize.Height, stream);
         }
 
+        public void Hide()
+        {
+            if (_sdkSldPart.Slide.Show == null)
+            {
+                var showAttribute = new OpenXmlAttribute("show", "", "0");
+                _sdkSldPart.Slide.SetAttribute(showAttribute);
+            }
+            else
+            {
+                _sdkSldPart.Slide.Show = false;
+            }
+        }
+
         #endregion Public Methods
 
         #region Private Methods
@@ -128,51 +141,54 @@ namespace ShapeCrawler.Models
 
         private string GetCustomData()
         {
-            using var sr = new StreamReader(_sldXmlPart.Value.GetStream());
-            var raw = sr.ReadToEnd();
-            if (raw.Length == 0)
+            if (_customXmlPart.Value == null)
             {
                 return null;
             }
+
+            var customXmlPartStream = _customXmlPart.Value.GetStream();
+            using var customXmlStreamReader = new StreamReader(customXmlPartStream);
+            var raw = customXmlStreamReader.ReadToEnd();
 
             return raw.Substring(ConstantStrings.CustomDataElementName.Length);
         }
 
         private void SetCustomData(string value)
         {
-            var sldXmlPartStream = _sldXmlPart.Value.GetStream();
-            using var streamWriter = new StreamWriter(sldXmlPartStream);
-            streamWriter.Write($"{ConstantStrings.CustomDataElementName}{value}");
+            Stream customXmlPartStream;
+            if (_customXmlPart.Value == null)
+            {
+                var newSlideCustomXmlPart = _sdkSldPart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
+                customXmlPartStream = newSlideCustomXmlPart.GetStream();
+#if NETSTANDARD2_0
+                _customXmlPart = new Lazy<CustomXmlPart>(()=>newSlideCustomXmlPart);
+#else
+                _customXmlPart = new Lazy<CustomXmlPart>(newSlideCustomXmlPart);
+#endif
+            }
+            else
+            {
+                customXmlPartStream = _customXmlPart.Value.GetStream();
+            }
+            using var customXmlStreamReader = new StreamWriter(customXmlPartStream);
+            customXmlStreamReader.Write($"{ConstantStrings.CustomDataElementName}{value}");
         }
 
         private CustomXmlPart GetSldCustomXmlPart()
         {
             foreach (var customXmlPart in _sdkSldPart.CustomXmlParts)
             {
-                using var streamReader = new StreamReader(customXmlPart.GetStream());
-                string customXmlPartText = streamReader.ReadToEnd();
+                using var customXmlPartStream = new StreamReader(customXmlPart.GetStream());
+                string customXmlPartText = customXmlPartStream.ReadToEnd();
                 if (customXmlPartText.StartsWith(ConstantStrings.CustomDataElementName, StringComparison.CurrentCulture))
                 {
                     return customXmlPart;
                 }
             }
 
-            return _sdkSldPart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
+            return null;
         }
 
-        #endregion Private Methods
-
-        public void Hide()
-        {
-            if (_sdkSldPart.Slide.Show == null)
-            {
-                var showAttribute = new OpenXmlAttribute("show", "", "0");
-                _sdkSldPart.Slide.SetAttribute(showAttribute);
-            }
-            else
-            {
-                _sdkSldPart.Slide.Show = false;
-            }
-        }
+#endregion Private Methods
     }
 }

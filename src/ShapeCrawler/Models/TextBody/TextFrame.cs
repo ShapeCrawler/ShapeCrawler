@@ -4,8 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Models.Settings;
 using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Settings;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Models.TextBody
@@ -79,7 +79,7 @@ namespace ShapeCrawler.Models.TextBody
             var sb = new StringBuilder();
             sb.Append(Paragraphs[0].Text);
             
-            // If the number of paragraphs more than one.
+            // If the number of paragraphs more than one
             var numPr = Paragraphs.Count;
             var index = 1;
             while (index < numPr)

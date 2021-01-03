@@ -5,25 +5,26 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
+using SlideSize = ShapeCrawler.Models.SlideSize;
 
-namespace ShapeCrawler.Models.Settings
+namespace ShapeCrawler.Settings
 {
     /// <summary>
-    /// <inheritdoc cref="IPreSettings"/>
+    /// <inheritdoc cref="IPresentationData"/>
     /// </summary>
-    public class PreSettings : IPreSettings
+    public class PresentationData : IPresentationData
     {
         private readonly Lazy<Dictionary<int, int>> _lvlFontHeights;
 
         #region Properties
 
         /// <summary>
-        /// <inheritdoc cref="IPreSettings.LlvFontHeights"/>
+        /// <inheritdoc cref="IPresentationData.LlvFontHeights"/>
         /// </summary>
         public Dictionary<int, int> LlvFontHeights => _lvlFontHeights.Value;
 
         /// <summary>
-        /// <inheritdoc cref="IPreSettings.XlsxDocuments"/>
+        /// <inheritdoc cref="IPresentationData.XlsxDocuments"/>
         /// </summary>
         public Dictionary<OpenXmlPart, SpreadsheetDocument> XlsxDocuments { get; }
 
@@ -33,7 +34,7 @@ namespace ShapeCrawler.Models.Settings
 
         #region Constructors
 
-        public PreSettings(P.Presentation sdkPresentation, Lazy<SlideSize> slideSize)
+        public PresentationData(P.Presentation sdkPresentation, Lazy<SlideSize> slideSize)
         {
             Check.NotNull(sdkPresentation, nameof(sdkPresentation));
 
@@ -46,20 +47,20 @@ namespace ShapeCrawler.Models.Settings
 
         #region Private Methods
 
-        private static Dictionary<int, int> ParseFontHeights(P.Presentation xmlPresentation)
+        private static Dictionary<int, int> ParseFontHeights(P.Presentation pPresentation)
         {
             var lvlFontHeights = new Dictionary<int, int>();
 
             // from presentation default text settings
-            if (xmlPresentation.DefaultTextStyle != null)
+            if (pPresentation.DefaultTextStyle != null)
             {
-                lvlFontHeights = FontHeightParser.FromCompositeElement(xmlPresentation.DefaultTextStyle);
+                lvlFontHeights = FontHeightParser.FromCompositeElement(pPresentation.DefaultTextStyle);
             }
 
             // from theme default text settings
             if (!lvlFontHeights.Any())
             {
-                var themeTextDefault = xmlPresentation.PresentationPart.ThemePart.Theme.ObjectDefaults.TextDefault;
+                var themeTextDefault = pPresentation.PresentationPart.ThemePart.Theme.ObjectDefaults.TextDefault;
                 if (themeTextDefault != null)
                 {
                     lvlFontHeights = FontHeightParser.FromCompositeElement(themeTextDefault.ListStyle);

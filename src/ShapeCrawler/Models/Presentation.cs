@@ -4,7 +4,7 @@ using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
 
@@ -16,12 +16,12 @@ namespace ShapeCrawler.Models
     public class Presentation : IPresentation
     {
         #region Fields
-
+// TODO: Implement IDisposable
         private PresentationDocument _outerSdkPresentation;
         private Lazy<EditableCollection<Slide>> _slides;
         private Lazy<SlideSize> _slideSize;
         private bool _closed;
-        private PreSettings _preSettings;
+        private PresentationData _preData;
 
         #endregion Fields
 
@@ -49,12 +49,10 @@ namespace ShapeCrawler.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="Presentation"/> class by pptx-file path.
         /// </summary>
-        public Presentation(string pptxPath)
+        internal Presentation(string pptxPath, bool isEditable)
         {
             ThrowIfSourceInvalid(pptxPath);
-
-            _outerSdkPresentation = PresentationDocument.Open(pptxPath, true);
-
+            _outerSdkPresentation = PresentationDocument.Open(pptxPath, isEditable);
             Init();
         }
 
@@ -97,6 +95,11 @@ namespace ShapeCrawler.Models
 
         #region Public Methods
 
+        public static Presentation Open(string pptxPath, bool isEditable)
+        {
+            return new Presentation(pptxPath, isEditable);
+        }
+
         public void Save()
         {
             _outerSdkPresentation.Save();
@@ -123,7 +126,7 @@ namespace ShapeCrawler.Models
         }
 
         /// <summary>
-        /// Closes presentation.
+        /// Saves and closes the presentation.
         /// </summary>
         public void Close()
         {
@@ -133,9 +136,9 @@ namespace ShapeCrawler.Models
             }
 
             _outerSdkPresentation.Close();
-            if (_preSettings != null)
+            if (_preData != null)
             {
-                foreach (var xlsxDoc in _preSettings.XlsxDocuments.Values)
+                foreach (var xlsxDoc in _preData.XlsxDocuments.Values)
                 {
                     xlsxDoc.Close();
                 }
@@ -143,7 +146,6 @@ namespace ShapeCrawler.Models
 
             _closed = true;
         }
-
 
         public static Presentation Open(byte[] pptxBytes, bool isEditable = false)
         {
@@ -155,6 +157,11 @@ namespace ShapeCrawler.Models
             return new Presentation(pptxMemoryStream, isEditable);
         }
 
+        public static Presentation Open(Stream stream, bool isEditable)
+        {
+            return new Presentation(stream, isEditable);
+        }
+
         #endregion Public Methods
 
         #region Private Methods
@@ -162,8 +169,8 @@ namespace ShapeCrawler.Models
         private EditableCollection<Slide> GetSlides()
         {
             var sdkPrePart = _outerSdkPresentation.PresentationPart;
-            _preSettings = new PreSettings(sdkPrePart.Presentation, _slideSize);
-            var slideCollection = SlideCollection.Create(sdkPrePart, _preSettings, this);
+            _preData = new PresentationData(sdkPrePart.Presentation, _slideSize);
+            var slideCollection = SlideCollection.Create(sdkPrePart, _preData, this);
 
             return slideCollection;
         }

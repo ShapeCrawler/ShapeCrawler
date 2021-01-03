@@ -6,7 +6,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Settings;
 using ShapeCrawler.Spreadsheet;
 using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -155,7 +155,7 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
         private void Init()
         {
             var chartPartRef = _grFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>().GetFirstChild<C.ChartReference>().Id;
-            _sdkChartPart = (ChartPart)_shapeContext.SkdSlidePart.GetPartById(chartPartRef);
+            _sdkChartPart = (ChartPart)_shapeContext.SdkSlidePart.GetPartById(chartPartRef);
 
             _cChart = _sdkChartPart.ChartSpace.GetFirstChild<C.Chart>();
             _sdkCharts = _cChart.PlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)).ToList();  // example: <c:barChart>, <c:lineChart>

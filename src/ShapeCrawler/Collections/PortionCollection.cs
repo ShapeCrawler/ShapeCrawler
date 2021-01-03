@@ -3,9 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Models.Settings;
 using ShapeCrawler.Models.TextBody;
 using ShapeCrawler.NoLogic;
+using ShapeCrawler.Settings;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -98,9 +98,9 @@ namespace ShapeCrawler.Collections
                 }
             }
 
-            if (spContext.PreSettings.LlvFontHeights.ContainsKey(innerPrLvl))
+            if (spContext.presentationData.LlvFontHeights.ContainsKey(innerPrLvl))
             {
-                return spContext.PreSettings.LlvFontHeights[innerPrLvl];
+                return spContext.presentationData.LlvFontHeights[innerPrLvl];
             }
 
             var exist = spContext.TryGetFontHeight(innerPrLvl, out int fh);

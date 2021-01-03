@@ -2,9 +2,9 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Models.Settings;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Services.Builders;
+using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -75,7 +75,7 @@ namespace ShapeCrawler.Services.ShapeCreators
                 {
                     return null;
                 }
-                var pictureEx = new PictureEx(_sdkSldPart, blipRelateId);
+                var pictureEx = new Picture(_sdkSldPart, blipRelateId);
                 var spContext = _shapeContextBuilder.Build(sdkElement);
                 var innerTransform = _transformFactory.FromComposite(sdkPicture);
                 var geometry = _geometryFactory.ForPicture(sdkPicture);

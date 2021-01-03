@@ -4,13 +4,13 @@
     <TargetFrameworks>netcoreapp2.0;netstandard2.1;netstandard2.0</TargetFrameworks>
     <AssemblyName>ShapeCrawler</AssemblyName>
     <RootNamespace>ShapeCrawler</RootNamespace>
-    <Version>0.10.0</Version>
+    <Version>0.11.0</Version>
     <Authors>Adam Shakhabov</Authors>
     <Company>ShapeCrawler</Company>
     <Description>ShapeCrawler (formerly SlideDotNet) is a fluent API for processing PowerPoint presentations without Microsoft Office installed. It is a wrapper for Open-XML-SDK aiming to make its APIs intuitive while working on pptx-files.
 
 The library allows to process presentation files without any COM+ or COM interop layers.</Description>
-    <PackageTags>powerpoint slide pptx c-sharp shapecrawler openxml</PackageTags>
+    <PackageTags>presentation slide powerpoint slide pptx c-sharp shapecrawler openxml slidedotnet</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>logo.jpg</PackageIcon>
@@ -34,7 +34,7 @@ The library allows to process presentation files without any COM+ or COM interop
 
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.12.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0">
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

@@ -1,6 +1,10 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using FluentAssertions;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
+using ShapeCrawler.Models.SlideComponents.Chart;
+using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations
@@ -9,38 +13,58 @@ using Xunit;
 
 namespace ShapeCrawler.UnitTests
 {
-    public class ChartTests
+    [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
+    public class ChartTests : IClassFixture<ReadOnlyTestPresentations>
     {
+        private readonly ReadOnlyTestPresentations _fixture;
+
+        public ChartTests(ReadOnlyTestPresentations fixture)
+        {
+            _fixture = fixture;
+        }
+
         [Fact]
         public void Chart_Test()
         {
             // Arrange
-            var pre = new Presentation(Properties.Resources._021);
+            var pre = _fixture.Pre021;
             var shapes1 = pre.Slides[0].Shapes;
-            var shapes2 = pre.Slides[1].Shapes;
-            var sp108 = shapes1.Single(x => x.Id == 108);
-            var chart3 = shapes1.Single(x => x.Id == 3).Chart;
-            var sld1Chart4 = shapes1.Single(x => x.Id == 4).Chart;
+            var shapes2 = pre.Slides[1].Shapes; // TODO: Research why this statement takes mach time
+            var sp108 = shapes1.First(x => x.Id == 108);
+            var chart3 = shapes1.First(x => x.Id == 3).Chart;
+            var sld1Chart4 = shapes1.First(x => x.Id == 4).Chart;
             var sld2Chart4 = shapes2.First(x => x.Id == 4).Chart;
             var lineChartSeries = sld2Chart4.SeriesCollection[1];
 
             // Act
             var fill = sp108.Fill; //assert: do not throw exception
-            
-            var chartTypeBar = chart3.SeriesCollection[1].Type;
-            var pValueBar = chart3.SeriesCollection[1].PointValues[0];
-            var chartTypeScatter = chart3.SeriesCollection[2].Type;
-            var pValueScatter = chart3.SeriesCollection[2].PointValues[0];
+            var barChartPointValue = chart3.SeriesCollection[1].PointValues[0];
+            var scatterChartPointValue = chart3.SeriesCollection[2].PointValues[0];
             var category = sld1Chart4.Categories[0];
-            var pv = lineChartSeries.PointValues[0];
+            var lineChartPointValue = lineChartSeries.PointValues[0];
 
             // Assert
-            Assert.Equal(ChartType.BarChart, chartTypeBar);
-            Assert.Equal(56, pValueBar);
-            Assert.Equal(ChartType.ScatterChart, chartTypeScatter);
-            Assert.Equal(44, pValueScatter);
+            Assert.Equal(56, barChartPointValue);
+            Assert.Equal(44, scatterChartPointValue);
+            Assert.Equal(17.35, lineChartPointValue);
             Assert.Equal("2015", category.Name);
-            Assert.Equal(17.35, pv);
+        }
+
+        [Fact]
+        public void SeriesType_ReturnsSeriesChartType()
+        {
+            // Arrange
+            var chart = _fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 3).Chart;
+            Series series2 = chart.SeriesCollection[1];
+            Series series3 = chart.SeriesCollection[2];
+
+            // Act
+            ChartType seriesChartType2 = series2.Type;
+            ChartType seriesChartType3 = series3.Type;
+
+            // Assert
+            seriesChartType2.Should().Be(ChartType.BarChart);
+            seriesChartType3.Should().Be(ChartType.ScatterChart);
         }
 
         [Fact]

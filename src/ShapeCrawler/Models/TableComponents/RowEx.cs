@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Settings;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Models.TableComponents

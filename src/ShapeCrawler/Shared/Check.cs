@@ -26,7 +26,7 @@ namespace ShapeCrawler.Shared
                     throw new ArgumentNullException(paramName);
                 }
 
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(paramName);
             }
         }
 

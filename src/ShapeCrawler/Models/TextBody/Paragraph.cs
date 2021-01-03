@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Settings;
 using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable PossibleMultipleEnumeration
 

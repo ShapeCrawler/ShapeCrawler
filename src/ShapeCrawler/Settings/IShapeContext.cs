@@ -2,7 +2,7 @@
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Services.Placeholders;
 
-namespace ShapeCrawler.Models.Settings
+namespace ShapeCrawler.Settings
 {
     /// <summary>
     /// Represents a shape context.
@@ -12,7 +12,7 @@ namespace ShapeCrawler.Models.Settings
         /// <summary>
         /// Returns a presentation settings.
         /// </summary>
-        IPreSettings PreSettings { get; }
+        IPresentationData presentationData { get; }
 
         /// <summary>
         /// Returns a service for placeholder's fonts.
@@ -26,8 +26,7 @@ namespace ShapeCrawler.Models.Settings
         /// </summary>
         OpenXmlElement SdkElement { get; }
 
-        SlidePart SkdSlidePart { get; }
-
+        SlidePart SdkSlidePart { get; }
 
         bool TryGetFontHeight(int prLvl, out int fh);
     }
