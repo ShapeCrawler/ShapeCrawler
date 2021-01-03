@@ -11,13 +11,6 @@ namespace ShapeCrawler.Extensions
     /// </summary>
     public static class CompositeElementExtensions
     {
-        #region Fields
-
-        private const uint TitleIndexValue = 100; // Title and CenteredTitle have same custom index value
-        private const uint SubtitleIndexValue = 101;
-
-        #endregion Fields
-
         /// <summary>
         /// Returns index of custom placeholder. Returns null if such an index does not exist.
         /// </summary>

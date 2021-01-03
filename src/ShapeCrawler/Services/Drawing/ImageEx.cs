@@ -22,9 +22,9 @@ namespace ShapeCrawler.Services.Drawing
 
         #region Constructors
 
-        public ImageEx(SlidePart sldPart, string blipRelateId)
+        public ImageEx(SlidePart sdkSlidePart, string blipRelateId)
         {
-            _sldPart = sldPart ?? throw new ArgumentNullException(nameof(sldPart));
+            _sldPart = sdkSlidePart ?? throw new ArgumentNullException(nameof(sdkSlidePart));
             _blipRelateId = blipRelateId ?? throw new ArgumentNullException(nameof(blipRelateId));
         }
 
@@ -33,7 +33,7 @@ namespace ShapeCrawler.Services.Drawing
         #region Public Methods
 
 #if NETSTANDARD2_1 || NETCOREAPP2_0
-        public async ValueTask<byte[]> GetImageBytesValueTask()
+        public async ValueTask<byte[]> GetImageBytes()
         {
             if (_bytes != null)
             {
@@ -42,12 +42,12 @@ namespace ShapeCrawler.Services.Drawing
 
             using var imgPartStream = GetImagePart().GetStream();
             _bytes = new byte[imgPartStream.Length];
-            await imgPartStream.ReadAsync(_bytes, 0, (int)imgPartStream.Length);
+            await imgPartStream.ReadAsync(_bytes, 0, (int)imgPartStream.Length).ConfigureAwait(false);
 
             return _bytes;
         }
 #else
-        public async Task<byte[]> GetImageTask()
+        public async Task<byte[]> GetImageBytes()
         {
             if (_bytes != null)
             {
@@ -55,7 +55,7 @@ namespace ShapeCrawler.Services.Drawing
             }
             var imgPartStream = GetImagePart().GetStream();
             _bytes = new byte[imgPartStream.Length];
-            await imgPartStream.ReadAsync(_bytes, 0, (int)imgPartStream.Length);
+            await imgPartStream.ReadAsync(_bytes, 0, (int)imgPartStream.Length).ConfigureAwait(false);;
 
             return _bytes;
         }
@@ -74,13 +74,13 @@ namespace ShapeCrawler.Services.Drawing
 
 #endregion Public Methods
 
-#region Private Methods
+        #region Private Methods
 
         private ImagePart GetImagePart()
         {
             return _imgPart ??= (ImagePart) _sldPart.GetPartById(_blipRelateId);
         }
 
-#endregion Private Methods
+        #endregion Private Methods
     }
 }

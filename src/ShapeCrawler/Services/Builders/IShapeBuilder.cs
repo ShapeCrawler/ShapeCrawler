@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using ShapeCrawler.Enums;
-using ShapeCrawler.Models.Settings;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Models.SlideComponents.Chart;
+using ShapeCrawler.Settings;
 using SlideDotNet.Models.TableComponents;
 using OleObject = ShapeCrawler.Models.SlideComponents.OleObject;
 
@@ -21,7 +21,7 @@ namespace ShapeCrawler.Services.Builders
         /// <summary>
         /// Builds a shape with picture content.
         /// </summary>
-        Shape WithPicture(ILocation innerTransform, IShapeContext spContext, PictureEx picture, GeometryType geometry);
+        Shape WithPicture(ILocation innerTransform, IShapeContext spContext, Picture picture, GeometryType geometry);
 
         /// <summary>
         /// Builds a AutoShape.

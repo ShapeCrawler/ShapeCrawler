@@ -7,7 +7,7 @@ namespace ShapeCrawler.Models.SlideComponents
     /// <summary>
     /// Represents a picture content.
     /// </summary>
-    public class PictureEx
+    public class Picture
     {
         #region Properties
 
@@ -21,9 +21,9 @@ namespace ShapeCrawler.Models.SlideComponents
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PictureEx"/> class.
+        /// Initializes a new instance of the <see cref="Picture"/> class.
         /// </summary>
-        public PictureEx(SlidePart xmlSldPart, string blipRelateId)
+        public Picture(SlidePart xmlSldPart, string blipRelateId)
         {
             Check.NotNull(xmlSldPart, nameof(xmlSldPart));
             ImageEx = new ImageEx(xmlSldPart, blipRelateId);

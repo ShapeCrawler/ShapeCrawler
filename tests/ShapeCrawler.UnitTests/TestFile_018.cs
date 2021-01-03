@@ -26,7 +26,7 @@ namespace ShapeCrawler.UnitTests
             // Act
             var hasPicture = pic.HasPicture;
             var y = pic.Y;
-            var picBytes = pic.Picture.ImageEx.GetImageBytesValueTask().Result;
+            var picBytes = pic.Picture.ImageEx.GetImageBytes().Result;
 
             // Assert
             Assert.True(hasPicture);

@@ -4,7 +4,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Models;
-using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using Slide = ShapeCrawler.Models.Slide;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -52,7 +52,7 @@ namespace ShapeCrawler.Collections
         /// Creates slides collection.
         /// </summary>
         /// <returns></returns>
-        public static SlideCollection Create(PresentationPart sdkPrePart, IPreSettings preSettings, Models.Presentation presentation)
+        public static SlideCollection Create(PresentationPart sdkPrePart, IPresentationData preSettings, Models.Presentation presentation)
         {
             Check.NotNull(sdkPrePart, nameof(sdkPrePart));
             Check.NotNull(preSettings, nameof(preSettings));

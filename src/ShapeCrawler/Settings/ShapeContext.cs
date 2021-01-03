@@ -7,7 +7,7 @@ using ShapeCrawler.Services.Placeholders;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
 
-namespace ShapeCrawler.Models.Settings
+namespace ShapeCrawler.Settings
 {
     /// <summary>
     /// <inheritdoc cref="IShapeContext"/>
@@ -18,11 +18,11 @@ namespace ShapeCrawler.Models.Settings
 
         #region Properties
 
-        public SlidePart SkdSlidePart { get; private set; }
+        public SlidePart SdkSlidePart { get; private set; }
 
         public OpenXmlElement SdkElement { get; private set; }
 
-        public IPreSettings PreSettings { get; private set; }
+        public IPresentationData presentationData { get; private set; }
 
         public PlaceholderFontService PlaceholderFontService { get; private set; }
 
@@ -70,7 +70,7 @@ namespace ShapeCrawler.Models.Settings
 
         private Dictionary<int, int> InitMasterOtherFonts()
         {
-            var result = FontHeightParser.FromCompositeElement(SkdSlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.OtherStyle);
+            var result = FontHeightParser.FromCompositeElement(SdkSlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.OtherStyle);
 
             return result;
         }
@@ -82,20 +82,20 @@ namespace ShapeCrawler.Models.Settings
         public class Builder
         {
             private readonly SlidePart _sdkSldPart;
-            private readonly IPreSettings _preSettings;
+            private readonly IPresentationData _preSettings;
             private readonly PlaceholderFontService _fontService;
             private readonly IPlaceholderService _placeholderService;
 
             #region Constructors
 
-            public Builder(IPreSettings preSettings, PlaceholderFontService fontService, SlidePart sdkSldPart):
+            public Builder(IPresentationData preSettings, PlaceholderFontService fontService, SlidePart sdkSldPart):
                 this(preSettings, fontService, sdkSldPart, new PlaceholderService(sdkSldPart.SlideLayoutPart))
             {
 
             }
 
 
-            public Builder(IPreSettings preSettings, PlaceholderFontService fontService, SlidePart sdkSldPart, IPlaceholderService placeholderService)
+            public Builder(IPresentationData preSettings, PlaceholderFontService fontService, SlidePart sdkSldPart, IPlaceholderService placeholderService)
             {
                 _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
                 _fontService = fontService ?? throw new ArgumentNullException(nameof(fontService));
@@ -113,10 +113,10 @@ namespace ShapeCrawler.Models.Settings
 
                 return new ShapeContext
                 {
-                    PreSettings = _preSettings,
+                    presentationData = _preSettings,
                     PlaceholderFontService = _fontService,
                     PlaceholderService = _placeholderService,
-                    SkdSlidePart = _sdkSldPart,
+                    SdkSlidePart = _sdkSldPart,
                     SdkElement = sdkElement
                 };
             }

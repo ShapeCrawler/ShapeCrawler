@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Models;
-using ShapeCrawler.Models.Settings;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Services.Placeholders;
+using ShapeCrawler.Settings;
 
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -18,13 +18,13 @@ namespace ShapeCrawler.Services.ShapeCreators
     {
         #region Fields
 
-        private readonly IPreSettings _preSettings;
+        private readonly IPresentationData _preSettings;
 
         #endregion Fields
 
         #region Constructors
 
-        public ShapeFactory(IPreSettings preSettings)
+        public ShapeFactory(IPresentationData preSettings)
         {
             _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
         }

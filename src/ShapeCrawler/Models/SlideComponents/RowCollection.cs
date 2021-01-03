@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Models.Settings;
 using ShapeCrawler.Models.TableComponents;
+using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable PossibleMultipleEnumeration

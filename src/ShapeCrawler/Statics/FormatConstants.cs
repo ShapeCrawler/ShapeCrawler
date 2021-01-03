@@ -8,11 +8,11 @@
         /// <summary>
         /// Returns max paragraph level value.
         /// </summary>
-        public static int MaxPrLevel = 9;
+        internal static int MaxPrLevel = 9;
 
         /// <summary>
         /// Returns default font according to following link https://bit.ly/37Tjjlo
         /// </summary>
-        public static int DefaultFontHeight = 1800;
+        internal static int DefaultFontHeight = 1800;
     }
 }

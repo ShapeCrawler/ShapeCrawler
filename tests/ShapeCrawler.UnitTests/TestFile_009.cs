@@ -1,14 +1,13 @@
-using System;
 using System.IO;
 using System.Linq;
-using DocumentFormat.OpenXml.Packaging;
 using FluentAssertions;
+using NSubstitute;
 using ShapeCrawler.Enums;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Models;
-using ShapeCrawler.Models.Settings;
 using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.Services.ShapeCreators;
+using ShapeCrawler.Statics;
 using Xunit;
 
 // ReSharper disable TooManyChainedReferences
@@ -25,175 +24,24 @@ namespace ShapeCrawler.UnitTests
             _fixture = fixture;
         }
 
-        [Fact]
-        public void SlideElementsCount_Test()
-        {
-            // ARRANGE
-            var pre = new Presentation(Properties.Resources._003);
-
-            // ACT
-            var numberElements = pre.Slides.Single().Shapes.Count;
-            pre.Close();
-
-            // ASSERT
-            Assert.Equal(5, numberElements);
-        }
 
         [Fact]
-        public void TextBox_Placeholder_Test()
-        {
-            // ARRANGE
-            var pre = new Presentation(Properties.Resources._006_1_slides);
-
-            // ACT
-            var shapePlaceholder = pre.Slides[0].Shapes.First(x => x.Id == 2);
-            pre.Close();
-
-            // ASSERT
-            Assert.Equal(1524000, shapePlaceholder.X);
-            Assert.Equal(1122363, shapePlaceholder.Y);
-            Assert.Equal(9144000, shapePlaceholder.Width);
-            Assert.Equal(1425528, shapePlaceholder.Height);
-        }
-
-        [Fact]
-        public void Shape_XandWsetter_Test()
-        {
-            // ARRANGE
-            var pre = new Presentation(Properties.Resources._006_1_slides);
-            var shape2 = pre.Slides[0].Shapes.First(x => x.Id == 3);
-
-            // ACT
-            shape2.X = 4000000;
-            shape2.Width = 6000000;
-            var isPlaceholder = shape2.IsPlaceholder;
-            var isGrouped = shape2.IsGrouped;
-
-            var ms = new MemoryStream();
-            pre.SaveAs(ms);
-            pre.Close();
-
-            ms.SeekBegin();
-            pre = new Presentation(ms);
-            shape2 = pre.Slides[0].Shapes.First(x => x.Id == 3);
-            pre.Close();
-
-            // ASSERT
-            Assert.False(isPlaceholder);
-            Assert.False(isGrouped);
-            Assert.Equal(4000000, shape2.X);
-            Assert.Equal(6000000, shape2.Width);
-        }
-
-        [Fact]
-        public void GroupedShape()
+        public void Constructor_Test()
         {
             // Arrange
-            var pre = _fixture.pre009;
-            var groupShape = pre.Slides[1].Shapes.Single(x => x.ContentType.Equals(ShapeContentType.Group));
+            var mockStream = Substitute.For<Stream>();
+            var maxLength = Limitations.MaxPresentationSize;
+            var stubStreamLength = Limitations.MaxPresentationSize + 1;
+            mockStream.Length.Returns(stubStreamLength);
+            var expectedMessage = $"The size of presentation more than {maxLength} bytes.";
 
-            // Act
-            var groupedShape = groupShape.GroupedShapes.Single(x => x.Id.Equals(5));
-
-            // Assert
-            Assert.Equal(1581846, groupedShape.X);
-            Assert.Equal(1181377, groupedShape.Width);
-            Assert.Equal(654096, groupedShape.Height);
+            // Act-Assert
+            var ex = Assert.Throws<PresentationIsLargeException>(() => new Presentation(mockStream, false));
+            var expectedCode = (int)ExceptionCodes.PresentationIsLargeException;
+            Assert.Equal(expectedMessage, ex.Message);
+            Assert.Equal(expectedCode, ex.ErrorCode);
         }
 
-        [Fact]
-        public void ShapeCustomData_ShouldReturnNull_ShapeCustomDataIsNotSet()
-        {
-            // Arrange
-            var pre = _fixture.pre009;
-            var shape = pre.Slides.First().Shapes.First();
-
-            // Act
-            var shapeCustomData = shape.CustomData;
-
-            // Assert
-            shapeCustomData.Should().BeNull();
-        }
-
-        [Fact]
-        public void ShapeCustomData_ReturnsData_WhenItWasAssigned()
-        {
-            // Arrange
-            const string customDataString = "Test custom data";
-            var origPreStream = new MemoryStream();
-            origPreStream.Write(Properties.Resources._009);
-            var originVersionPre = new Presentation(origPreStream, true);
-            var shape = originVersionPre.Slides.First().Shapes.First();
-
-            // Act
-            shape.CustomData = customDataString;
-            var changedVersionPreStream = new MemoryStream();
-            originVersionPre.SaveAs(changedVersionPreStream);
-            var changedVersionPre = new Presentation(changedVersionPreStream);
-            var shapeCustomData = changedVersionPre.Slides.First().Shapes.First().CustomData;
-
-            // Assert
-            shapeCustomData.Should().Be(customDataString);
-        }
-
-        [Fact]
-        public void SecondSlideElementsNumberTest()
-        {
-            // ARRANGE
-            var pre = _fixture.pre009;
-
-            // ACT
-            var elNumber1 = pre.Slides[0].Shapes.Count;
-            var elNumber2 = pre.Slides[1].Shapes.Count;
-
-            // ASSERT
-            Assert.Equal(6, elNumber1);
-            Assert.Equal(6, elNumber2);
-        }
-
-        [Fact]
-        public void SlideElementsDoNotThrowsExceptionTest()
-        {
-            // ARRANGE
-            var pre = _fixture.pre009;
-
-            // ACT
-            var elements = pre.Slides[0].Shapes;
-        }
-
-        [Fact]
-        public async void PictureEx_BytesTest()
-        {
-            // ARRANGE
-            var pre = _fixture.pre009;
-            var picEx = pre.Slides[1].Shapes.Single(e => e.Id.Equals(3));
-
-            // ACT
-            var hasPicture = picEx.HasPicture;
-            var bytes = (await picEx.Picture.ImageEx.GetImageBytesValueTask());
-
-            // ASSERT
-            Assert.True(bytes.Length > 0);
-            Assert.True(hasPicture);
-        }
-
-        [Fact]
-        public async void PictureEx_SetImageTest()
-        {
-            // ARRANGE
-            var pre = new Presentation(Properties.Resources._009);
-            var picEx = pre.Slides[1].Shapes.Single(e => e.Id.Equals(3));
-            var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
-            var sizeBefore = (await picEx.Picture.ImageEx.GetImageBytesValueTask()).Length;
-
-            // ACT
-            picEx.Picture.ImageEx.SetImage(testImage2Stream);
-
-            var sizeAfter = (await picEx.Picture.ImageEx.GetImageBytesValueTask()).Length;
-
-            // ASSERT
-            Assert.NotEqual(sizeBefore,  sizeAfter);
-        }
 
         [Fact]
         public async void Shape_Fill_Test()
@@ -203,61 +51,26 @@ namespace ShapeCrawler.UnitTests
             var sp4 = pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
 
             // ACT
-            var fillType = sp4.Fill.Type;
-            var fillPicLength = (await sp4.Fill.Picture.GetImageBytesValueTask()).Length;
+            var fillPicLength = (await sp4.Fill.Picture.GetImageBytes()).Length;
 
             // ASSERT
-            Assert.Equal(FillType.Picture, fillType);
             Assert.True(fillPicLength > 0);
         }
 
         [Fact]
-        public void ShapeFill_FillTypeAndFillSolidColorName()
+        public async void FillPictureSetImage_MethodSetsImageForPictureFilledShape()
         {
             // Arrange
-            var pre = _fixture.pre009;
-            var sp2 = pre.Slides[1].Shapes.Single(e => e.Id.Equals(2));
-            var shapeFill = sp2.Fill;
-
-            // Act
-            var fillType = shapeFill.Type;
-            var fillSolidColorName = shapeFill.SolidColor.Name;
-
-            // Assert
-            fillType.Should().BeEquivalentTo(FillType.Solid);
-            fillSolidColorName.Should().BeEquivalentTo("ff0000");
-        }
-
-
-        [Fact]
-        public void ShapeFill_ShouldReturnNull_ShapeIsNotFilled()
-        {
-            // Arrange
-            var pre = _fixture.pre009;
-            var shapeEx = pre.Slides[1].Shapes.Single(e => e.Id.Equals(6));
-
-            // Act
-            var shapeFill = shapeEx.Fill;
-
-            // Act
-            shapeFill.Should().BeNull();
-        }
-
-        [Fact]
-        public async void ShapeEx_BackgroundImage_SetImageTest()
-        {
-            // ARRANGE
             var pre = new Presentation(Properties.Resources._009);
             var shapeEx = (Shape)pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
             var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
-            var sizeBefore = (await shapeEx.Fill.Picture.GetImageBytesValueTask()).Length;
+            var sizeBefore = (await shapeEx.Fill.Picture.GetImageBytes()).Length;
 
             // ACT
             shapeEx.Fill.Picture.SetImage(testImage2Stream);
 
-            var sizeAfter = await shapeEx.Fill.Picture.GetImageBytesValueTask();
+            var sizeAfter = await shapeEx.Fill.Picture.GetImageBytes();
             pre.Close();
-            testImage2Stream.Dispose();
 
             // ASSERT
             Assert.NotEqual(sizeBefore, sizeAfter.Length);

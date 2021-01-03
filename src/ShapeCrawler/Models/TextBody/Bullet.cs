@@ -11,7 +11,6 @@ namespace ShapeCrawler.Models.TextBody
     /// </summary>
     public class Bullet
     {
-        private static readonly string BulletIsNotDefinedErrorMsg = $"This bullet type is {BulletType.None}";
         private readonly A.ParagraphProperties _xmlParagraphProperties;
         private readonly Lazy<string> _colorHex;
         private readonly Lazy<string> _char;

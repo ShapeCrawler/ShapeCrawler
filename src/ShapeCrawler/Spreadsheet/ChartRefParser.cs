@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using ShapeCrawler.Models.Settings;
+using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using SlideDotNet.Spreadsheet;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -91,11 +91,11 @@ namespace ShapeCrawler.Spreadsheet
 
         private List<string> GetCellStrValues(C.Formula formula, OpenXmlPart xlsxPackagePart) //EmbeddedPackagePart : OpenXmlPart
         {
-            var exist = _spContext.PreSettings.XlsxDocuments.TryGetValue(xlsxPackagePart, out var xlsxDoc);
+            var exist = _spContext.presentationData.XlsxDocuments.TryGetValue(xlsxPackagePart, out var xlsxDoc);
             if (!exist)
             {
                 xlsxDoc = SpreadsheetDocument.Open(xlsxPackagePart.GetStream(), false);
-                _spContext.PreSettings.XlsxDocuments.Add(xlsxPackagePart, xlsxDoc);
+                _spContext.presentationData.XlsxDocuments.Add(xlsxPackagePart, xlsxDoc);
             }
 #if NETSTANDARD2_1 || NETCOREAPP2_0
             var filteredFormula = formula.Text

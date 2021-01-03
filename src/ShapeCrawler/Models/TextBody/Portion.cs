@@ -1,6 +1,8 @@
-﻿using ShapeCrawler.Collections;
+﻿using System.Linq;
+using ShapeCrawler.Collections;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Models.TextBody
 {
@@ -26,6 +28,31 @@ namespace ShapeCrawler.Models.TextBody
         {
             get => _aText.Text;
             set => _aText.Text = value;
+        }
+
+        public string FontName
+        {
+            get => ParseFontName();
+            set
+            {
+
+            }
+        }
+
+        private string ParseFontName()
+        {
+            var rPr = _aText.Parent.GetFirstChild<A.RunProperties>();
+            var latinFont = rPr?.GetFirstChild<A.LatinFont>();
+            if (latinFont == null)
+            {
+                // Gets font from theme
+                latinFont = _aText.Ancestors<P.Slide>().Single()
+                    .SlidePart.SlideLayoutPart.SlideMasterPart
+                    .ThemePart.Theme.ThemeElements.FontScheme.MinorFont
+                    .LatinFont;
+            }
+
+            return latinFont.Typeface;
         }
 
         /// <summary>

@@ -6,12 +6,12 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Models.Settings;
 using ShapeCrawler.Models.SlideComponents.Chart;
 using ShapeCrawler.Models.TextBody;
 using ShapeCrawler.Models.Transforms;
 using ShapeCrawler.Services.Builders;
 using ShapeCrawler.Services.Drawing;
+using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
 using SlideDotNet.Models.TableComponents;
@@ -36,7 +36,7 @@ namespace ShapeCrawler.Models.SlideComponents
         private bool? _hidden;
         private int _id;
         private string _name;
-        private PictureEx _picture;
+        private Picture _picture;
         private OleObject _ole;
         private TableEx _table;
         private ChartEx _chart;
@@ -157,7 +157,7 @@ namespace ShapeCrawler.Models.SlideComponents
         /// <summary>
         /// Returns picture. Returns <c>NULL</c> when the shape content type is not a <see cref="ShapeContentType.Picture"/>.
         /// </summary>
-        public PictureEx Picture => _picture;
+        public Picture Picture => _picture;
 
         /// <summary>
         /// Returns grouped shapes. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.Group"/>.
@@ -285,7 +285,7 @@ namespace ShapeCrawler.Models.SlideComponents
             {
                 return null;
             }
-            var image = _imageFactory.TryFromSdkShape(_context.SkdSlidePart, (OpenXmlCompositeElement)_context.SdkElement); //TODO: delete casting
+            var image = _imageFactory.TryFromSdkShape(_context.SdkSlidePart, (OpenXmlCompositeElement)_context.SdkElement); //TODO: delete casting
             if (image != null)
             {
                 return new Fill(image);
@@ -336,7 +336,7 @@ namespace ShapeCrawler.Models.SlideComponents
                 return newShape;
             }
 
-            public Shape WithPicture(ILocation innerTransform, IShapeContext spContext, PictureEx picture, GeometryType geometry)
+            public Shape WithPicture(ILocation innerTransform, IShapeContext spContext, Picture picture, GeometryType geometry)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));

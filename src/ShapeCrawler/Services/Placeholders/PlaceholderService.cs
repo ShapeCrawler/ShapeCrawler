@@ -101,7 +101,7 @@ namespace ShapeCrawler.Services.Placeholders
 
         #region Private Methods
 
-        private PlaceholderType GetPlaceholderType(P.PlaceholderShape sdkPlaceholder)
+        private static PlaceholderType GetPlaceholderType(P.PlaceholderShape sdkPlaceholder)
         {
             var phTypeXml = sdkPlaceholder.Type;
 

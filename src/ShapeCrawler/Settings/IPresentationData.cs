@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Models;
 
-namespace ShapeCrawler.Models.Settings
+namespace ShapeCrawler.Settings
 {
     /// <summary>
     /// Represents a global presentation settings.
     /// </summary>
-    public interface IPreSettings
+    public interface IPresentationData
     {
         /// <summary>
         /// Returns font heights from global presentation or theme settings.

@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Models;
-using ShapeCrawler.Models.Settings;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Services.ShapeCreators;
+using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 
 namespace ShapeCrawler.Collections
@@ -20,7 +20,7 @@ namespace ShapeCrawler.Collections
         /// </summary>
         /// <param name="sdkSldPart"></param>
         /// <param name="preSettings"></param>
-        public ShapeCollection(SlidePart sdkSldPart, IPreSettings preSettings, Slide slide) :
+        public ShapeCollection(SlidePart sdkSldPart, IPresentationData preSettings, Slide slide) :
             this(sdkSldPart, new ShapeFactory(preSettings), slide)
         {
             
