@@ -4,16 +4,17 @@ using FluentAssertions;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents.Chart;
-using ShapeCrawler.UnitTests.Helpers;
+using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations
 // ReSharper disable InconsistentNaming
 // ReSharper disable TooManyChainedReferences
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
+    [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
     public class ChartTests : IClassFixture<ReadOnlyTestPresentations>
     {
         private readonly ReadOnlyTestPresentations _fixture;
@@ -21,6 +22,21 @@ namespace ShapeCrawler.UnitTests
         public ChartTests(ReadOnlyTestPresentations fixture)
         {
             _fixture = fixture;
+        }
+
+        [Fact]
+        public void XValues_ReturnsParticularXAxisValue_ViaItsCollectionIndexer()
+        {
+            // Arrange
+            IChart chart = _fixture.Pre024.Slides[1].Shapes.First(sp => sp.Id == 5).Chart;
+
+            // Act
+            var hasXValues = chart.HasXValues;
+            double xValue = chart.XValues[0];
+
+            // Assert
+            xValue.Should().Be(10);
+            chart.HasXValues.Should().BeTrue();
         }
 
         [Fact]

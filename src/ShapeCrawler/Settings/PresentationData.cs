@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Services;
+using ShapeCrawler.Factories;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 using SlideSize = ShapeCrawler.Models.SlideSize;

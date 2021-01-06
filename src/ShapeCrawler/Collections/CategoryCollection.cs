@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.NoLogic;
+using ShapeCrawler.Models.SlideComponents.Chart;
 using ShapeCrawler.Shared;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 // ReSharper disable PossibleMultipleEnumeration

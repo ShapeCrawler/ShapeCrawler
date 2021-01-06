@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Factories.ShapeCreators;
 using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.Services.ShapeCreators;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 

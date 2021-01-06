@@ -1,11 +1,10 @@
 ﻿using System.Linq;
 using ShapeCrawler.Models;
-using SlideDotNet.Models;
 using Xunit;
 
 // ReSharper disable TooManyChainedReferences
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
     public class TestFile_015
     {
@@ -17,7 +16,7 @@ namespace ShapeCrawler.UnitTests
             var elId5 = pre.Slides[0].Shapes.Single(s => s.Id == 5);
 
             // Act
-            var fh = elId5.TextFrame.Paragraphs[0].Portions[2].FontHeight;
+            var fh = elId5.TextFrame.Paragraphs[0].Portions[2].Font.Size;
 
             // Arrange
             Assert.Equal(1800, fh);
@@ -31,7 +30,7 @@ namespace ShapeCrawler.UnitTests
             var el = pre.Slides[1].Shapes.Single(s => s.Id == 61);
 
             // Act
-            var fh = el.TextFrame.Paragraphs[0].Portions[0].FontHeight;
+            var fh = el.TextFrame.Paragraphs[0].Portions[0].Font.Size;
 
             // Assert
             Assert.Equal(1867, fh);

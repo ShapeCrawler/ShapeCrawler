@@ -1,19 +1,16 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.Enums;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.UnitTests.Helpers;
+using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]

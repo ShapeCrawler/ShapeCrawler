@@ -6,8 +6,8 @@ namespace ShapeCrawler.Models.TextBody
 {
     public class NoTextFrame : ITextFrame
     {
-        public IList<Paragraph> Paragraphs => throw new NotSupportedException(ExceptionMessages.NoTextFrame);
+        public IList<Paragraph> Paragraphs => null;
 
-        public string Text => throw new NotSupportedException(ExceptionMessages.NoTextFrame);
+        public string Text => null;
     }
 }

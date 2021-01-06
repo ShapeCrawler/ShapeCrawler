@@ -8,7 +8,6 @@
         /// <summary>
         /// Removes the specific object from the collection.
         /// </summary>
-        /// <param name="item"></param>
         public abstract void Remove(T item);
     }
 }

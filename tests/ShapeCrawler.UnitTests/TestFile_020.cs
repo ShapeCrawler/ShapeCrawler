@@ -1,13 +1,12 @@
 ﻿using System.Linq;
 using ShapeCrawler.Models;
-using SlideDotNet.Models;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations
 // ReSharper disable InconsistentNaming
 // ReSharper disable TooManyChainedReferences
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
     public class TestFile_020
     {
@@ -21,7 +20,7 @@ namespace ShapeCrawler.UnitTests
             var shape3 = pre.Slides[0].Shapes.Single(x => x.Id == 3);
 
             var text = shape3.TextFrame.Text;
-            var fh = shape3.TextFrame.Paragraphs.First().Portions.First().FontHeight;
+            var fh = shape3.TextFrame.Paragraphs.First().Portions.First().Font.Size;
 
             // Assert
             Assert.Equal(1800, fh);

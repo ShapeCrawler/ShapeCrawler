@@ -1,12 +1,11 @@
 ﻿using System.Linq;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
-using SlideDotNet.Models;
 using Xunit;
 
 // ReSharper disable TooManyChainedReferences
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
     public class TestFile_013
     {

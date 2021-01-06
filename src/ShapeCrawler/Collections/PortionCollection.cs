@@ -4,13 +4,15 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Models.TextBody;
-using ShapeCrawler.NoLogic;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Collections
 {
+    /// <summary>
+    /// Represents collection of paragraph text portions.
+    /// </summary>
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     public class PortionCollection : EditableCollection<Portion>
     {
@@ -56,7 +58,7 @@ namespace ShapeCrawler.Collections
                 {
                     int fh = FontHeightFromRun(run, spContext, innerPrLvl);
                     A.Text aText = run.Text;
-                    var newPortion = new Portion(aText, fh, paragraph);
+                    var newPortion = new Portion(aText, paragraph, fh);
                     portions.Add(newPortion);
                     portionToText.Add(newPortion, aText);
                 }
@@ -67,7 +69,7 @@ namespace ShapeCrawler.Collections
             {
                 A.Text aText = aParagraph.GetFirstChild<A.Field>().GetFirstChild<A.Text>();
                 int fh = FontHeightFromOther(spContext, innerPrLvl);
-                var newPortion = new Portion(aText, fh, paragraph);
+                var newPortion = new Portion(aText, paragraph, fh);
                 var portions = new List<Portion>(new[] {newPortion});
                 var portionToText = new Dictionary<Portion, A.Text> {{newPortion, aText}};
 

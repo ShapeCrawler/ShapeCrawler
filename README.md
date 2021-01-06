@@ -6,13 +6,11 @@
 
 <h3 align="center">
 
-[![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=blue)](https://www.nuget.org/packages/ShapeCrawler) [![.NET Standard](https://img.shields.io/badge/.NET%20Core-2.1-blue)](#) [![.NET Standard](https://img.shields.io/badge/.NET%20Standard-%3E%3D%202.0-blue.svg)](#) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) 
+[![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=blue)](https://www.nuget.org/packages/ShapeCrawler) [![.NET Standard](https://img.shields.io/badge/.NET%20Core-2.0-blue)](#) [![.NET Standard](https://img.shields.io/badge/.NET%20Standard-%3E%3D%202.0-blue.svg)](#) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) 
 
 </h3>
 
-ShapeCrawler (formerly SlideDotNet) is a fluent API for processing PowerPoint presentations without Microsoft Office installed. It is a wrapper for [Open-XML-SDK](https://github.com/OfficeDev/Open-XML-SDK) aiming to make its APIs intuitive while working on pptx-files.
-
-The library allows to process presentation files without any COM+ or COM interop layers. 
+ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoint presentations. It provides fluent APIs to process slides without having Microsoft Office installed.
 
 ## Getting Started
 You can quickly start work with the library by following steps listed below.

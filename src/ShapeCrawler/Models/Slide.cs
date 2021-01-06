@@ -3,7 +3,7 @@ using System.IO;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Services.Drawing;
+using ShapeCrawler.Factories.Drawing;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Statics;
 using SlideDotNet.Models;

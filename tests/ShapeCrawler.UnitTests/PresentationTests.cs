@@ -1,11 +1,14 @@
-using FluentAssertions;
-using ShapeCrawler.Models;
+using System;
 using System.IO;
 using System.Linq;
-using ShapeCrawler.UnitTests.Helpers;
+using FluentAssertions;
+using ShapeCrawler.Exceptions;
+using ShapeCrawler.Models;
+using ShapeCrawler.Statics;
+using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
     public class PresentationTests : IClassFixture<ReadOnlyTestPresentations>
     {
@@ -16,14 +19,28 @@ namespace ShapeCrawler.UnitTests
             _fixture = fixture;
         }
 
+
         [Fact]
-        public void Slides_CollectionContainsTwoItems_WhenThePresentationHasTwoSlides()
+        public void Open_ThrowsPresentationIsLargeException_WhenThePresentationContentSizeIsBeyondThePermitted()
+        {
+            // Arrange
+            var bytes = new byte[Limitations.MaxPresentationSize + 1];
+
+            // Act
+            Action act = () => Presentation.Open(bytes, false);
+
+            // Arrange
+            act.Should().Throw<PresentationIsLargeException>();
+        }
+
+        [Fact]
+        public void Slides_CollectionContainsNumberOfSlidesInThePresentation()
         {
             // Act
-            var slides = _fixture.Pre001.Slides;
+            var slidesCollectionCase2 = _fixture.Pre017.Slides;
 
             // Assert
-            slides.Should().HaveCount(2);
+            slidesCollectionCase2.Should().HaveCount(1);
         }
 
         [Fact]

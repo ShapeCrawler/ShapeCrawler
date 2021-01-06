@@ -5,7 +5,7 @@ using Xunit;
 // ReSharper disable InconsistentNaming
 // ReSharper disable TooManyChainedReferences
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
     public class TestFile_018 : IClassFixture<TestFile_018Fixture>
     {

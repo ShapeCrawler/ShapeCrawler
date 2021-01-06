@@ -7,7 +7,7 @@ using Xunit;
 // ReSharper disable InconsistentNaming
 // ReSharper disable TooManyChainedReferences
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
     /// <summary>
     /// Represents a class whose instance is created for each test.

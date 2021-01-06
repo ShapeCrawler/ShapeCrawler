@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using DocumentFormat.OpenXml.Packaging;
 
-namespace ShapeCrawler.UnitTests.Helpers
+namespace ShapeCrawler.Tests.Unit.Helpers
 {
     /// <summary>
     /// Represents a helper for <see cref="PresentationDocument"/> class.

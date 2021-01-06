@@ -6,11 +6,12 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Factories.Builders;
+using ShapeCrawler.Factories.Drawing;
 using ShapeCrawler.Models.SlideComponents.Chart;
+using ShapeCrawler.Models.Styles;
 using ShapeCrawler.Models.TextBody;
 using ShapeCrawler.Models.Transforms;
-using ShapeCrawler.Services.Builders;
-using ShapeCrawler.Services.Drawing;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
@@ -31,7 +32,7 @@ namespace ShapeCrawler.Models.SlideComponents
 
         private readonly IShapeContext _context;
         private readonly Lazy<ITextFrame> _textFrame;
-        private readonly Lazy<Fill> _fill;
+        private readonly Lazy<ShapeFill> _shapeFill;
         private readonly IImageExFactory _imageFactory = new ImageExFactory(); //TODO: do not initiate for non-AutoShape types
         private bool? _hidden;
         private int _id;
@@ -172,18 +173,31 @@ namespace ShapeCrawler.Models.SlideComponents
         /// <summary>
         /// Determines whether the shape is placeholder.
         /// </summary>
-        public bool IsPlaceholder => _context.SdkElement.IsPlaceholder();
+        public bool IsPlaceholder => Placeholder != null;
+
+        public Placeholder Placeholder
+        {
+            get
+            {
+                if (_context.SdkElement.IsPlaceholder())
+                {
+                    return new Placeholder();
+                }
+
+                return null;
+            }
+        }
 
         /// <summary>
         /// Returns placeholder type. Returns null if shape is not a placeholder.
         /// </summary>
-        public PlaceholderType PlaceholderType
+        public PlaceholderType? PlaceholderType
         {
             get
             {
                 if (!IsPlaceholder)
                 {
-                    throw new NotSupportedException(ExceptionMessages.ShapeIsNotPlaceholder);
+                    return null;
                 }
                 
                 return _context.PlaceholderService.GetPlaceholderType(_context.SdkElement);
@@ -191,9 +205,9 @@ namespace ShapeCrawler.Models.SlideComponents
         }
 
         /// <summary>
-        /// Returns shape fill. Returns <c>null</c> if shape has not fill.
+        /// Returns the Shape Fill. Returns <c>NULL</c> if shape is not filled.
         /// </summary>
-        public Fill Fill => _fill.Value;
+        public ShapeFill Fill => _shapeFill.Value;
 
         /// <summary>
         /// Determines whether the shape is grouped.
@@ -237,7 +251,7 @@ namespace ShapeCrawler.Models.SlideComponents
             _context = spContext;
             ContentType = contentType;
             _textFrame = new Lazy<ITextFrame>(TryGetTextFrame);
-            _fill = new Lazy<Fill>(TryGetFill);
+            _shapeFill = new Lazy<ShapeFill>(TryGetFill);
         }
 
         #endregion Constructors
@@ -279,7 +293,7 @@ namespace ShapeCrawler.Models.SlideComponents
             return new NoTextFrame();
         }
 
-        private Fill TryGetFill()
+        private ShapeFill TryGetFill()
         {
             if (ContentType != ShapeContentType.AutoShape)
             {
@@ -288,14 +302,14 @@ namespace ShapeCrawler.Models.SlideComponents
             var image = _imageFactory.TryFromSdkShape(_context.SdkSlidePart, (OpenXmlCompositeElement)_context.SdkElement); //TODO: delete casting
             if (image != null)
             {
-                return new Fill(image);
+                return new ShapeFill(image);
             }
 
             var xmlShape = (P.Shape) _context.SdkElement;
             var rgbColorModelHex = xmlShape.ShapeProperties.GetFirstChild<A.SolidFill>()?.RgbColorModelHex;
             if (rgbColorModelHex != null)
             {
-                return Fill.FromXmlSolidFill(rgbColorModelHex);
+                return ShapeFill.FromXmlSolidFill(rgbColorModelHex);
             }
 
             return null;

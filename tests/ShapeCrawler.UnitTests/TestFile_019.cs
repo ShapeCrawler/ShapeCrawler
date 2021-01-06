@@ -7,7 +7,7 @@ using Xunit;
 // ReSharper disable InconsistentNaming
 // ReSharper disable TooManyChainedReferences
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
     public class TestFile_019 : IClassFixture<TestFile_019Fixture>
     {
@@ -25,7 +25,7 @@ namespace ShapeCrawler.UnitTests
             var pre = _fixture.pre019;
 
             // Act
-            var fh = pre.Slides[0].Shapes.Single(x=>x.Id == 4103).TextFrame.Paragraphs.First().Portions.First().FontHeight;
+            var fh = pre.Slides[0].Shapes.Single(x=>x.Id == 4103).TextFrame.Paragraphs.First().Portions.First().Font.Size;
 
             // Assert
             Assert.Equal(1800, fh);
@@ -64,7 +64,7 @@ namespace ShapeCrawler.UnitTests
             // Act
             var text = shape2.TextFrame.Text;
             var phType = shape2.PlaceholderType;
-            var fh = shape2.TextFrame.Paragraphs.First().Portions.First().FontHeight;
+            var fh = shape2.TextFrame.Paragraphs.First().Portions.First().Font.Size;
 
             // Arrange
             Assert.Equal("1", text);

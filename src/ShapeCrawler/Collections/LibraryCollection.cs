@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    /// An abstract library collection.
+    /// Represents a base class for library collection.
     /// </summary>
     public class LibraryCollection<T> : IEnumerable<T>
     {

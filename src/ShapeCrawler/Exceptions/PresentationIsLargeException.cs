@@ -6,11 +6,11 @@ namespace ShapeCrawler.Exceptions
     /// <summary>
     /// Thrown when presentation size is more than allowable.
     /// </summary>
-    public class PresentationIsLargeException : SlideDotNetException
+    public class PresentationIsLargeException : ShapeCrawlerException
     {
         #region Constructors
 
-        private PresentationIsLargeException(string message) : base(message, (int)ExceptionCodes.PresentationIsLargeException)
+        private PresentationIsLargeException(string message) : base(message, (int)ExceptionCode.PresentationIsLargeException)
         {
 
         }
