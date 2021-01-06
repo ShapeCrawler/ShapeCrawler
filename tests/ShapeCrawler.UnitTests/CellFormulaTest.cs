@@ -4,7 +4,7 @@ using Xunit;
 
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
     /// <summary>
     /// Contains test for <see cref="CellFormulaParser"/> class.

@@ -1,19 +1,14 @@
 using System.IO;
 using System.Linq;
-using FluentAssertions;
-using NSubstitute;
 using ShapeCrawler.Enums;
-using ShapeCrawler.Exceptions;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.Statics;
 using Xunit;
 
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
     public class TestFile_009 : IClassFixture<TestFile_009Fixture>
     {
@@ -22,58 +17,6 @@ namespace ShapeCrawler.UnitTests
         public TestFile_009(TestFile_009Fixture fixture)
         {
             _fixture = fixture;
-        }
-
-
-        [Fact]
-        public void Constructor_Test()
-        {
-            // Arrange
-            var mockStream = Substitute.For<Stream>();
-            var maxLength = Limitations.MaxPresentationSize;
-            var stubStreamLength = Limitations.MaxPresentationSize + 1;
-            mockStream.Length.Returns(stubStreamLength);
-            var expectedMessage = $"The size of presentation more than {maxLength} bytes.";
-
-            // Act-Assert
-            var ex = Assert.Throws<PresentationIsLargeException>(() => new Presentation(mockStream, false));
-            var expectedCode = (int)ExceptionCodes.PresentationIsLargeException;
-            Assert.Equal(expectedMessage, ex.Message);
-            Assert.Equal(expectedCode, ex.ErrorCode);
-        }
-
-
-        [Fact]
-        public async void Shape_Fill_Test()
-        {
-            // ARRANGE
-            var pre = _fixture.pre009;
-            var sp4 = pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
-
-            // ACT
-            var fillPicLength = (await sp4.Fill.Picture.GetImageBytes()).Length;
-
-            // ASSERT
-            Assert.True(fillPicLength > 0);
-        }
-
-        [Fact]
-        public async void FillPictureSetImage_MethodSetsImageForPictureFilledShape()
-        {
-            // Arrange
-            var pre = new Presentation(Properties.Resources._009);
-            var shapeEx = (Shape)pre.Slides[2].Shapes.Single(e => e.Id.Equals(4));
-            var testImage2Stream = new MemoryStream(Properties.Resources.test_image_2);
-            var sizeBefore = (await shapeEx.Fill.Picture.GetImageBytes()).Length;
-
-            // ACT
-            shapeEx.Fill.Picture.SetImage(testImage2Stream);
-
-            var sizeAfter = await shapeEx.Fill.Picture.GetImageBytes();
-            pre.Close();
-
-            // ASSERT
-            Assert.NotEqual(sizeBefore, sizeAfter.Length);
         }
 
         [Fact]
@@ -133,8 +76,8 @@ namespace ShapeCrawler.UnitTests
             var numParagraphs = paragraphs.Count;
             var portions = paragraphs[0].Portions;
             var numPortions = portions.Count;
-            var por1Size = portions[0].FontHeight;
-            var por2Size = portions[1].FontHeight;
+            var por1Size = portions[0].Font.Size;
+            var por2Size = portions[1].Font.Size;
 
 
             // ASSERT
@@ -169,9 +112,9 @@ namespace ShapeCrawler.UnitTests
             var subTitle3 = elements.Single(e => e.Id.Equals(3));
 
             // ACT
-            var fhTitle = tb2TitlePh.TextFrame.Paragraphs.Single().Portions.Single().FontHeight;
+            var fhTitle = tb2TitlePh.TextFrame.Paragraphs.Single().Portions.Single().Font.Size;
             var text2 = tb2TitlePh.TextFrame.Text;
-            var fhSubTitle = subTitle3.TextFrame.Paragraphs.Single().Portions.Single().FontHeight;
+            var fhSubTitle = subTitle3.TextFrame.Paragraphs.Single().Portions.Single().Font.Size;
 
             // ASSERT
             Assert.Equal(4400, fhTitle);
@@ -319,7 +262,7 @@ namespace ShapeCrawler.UnitTests
 
             // ACT
             var text = title.TextFrame.Text;
-            var fh = title.TextFrame.Paragraphs.First().Portions.First().FontHeight;
+            var fh = title.TextFrame.Paragraphs.First().Portions.First().Font.Size;
 
             pre.Close();
 
@@ -336,7 +279,7 @@ namespace ShapeCrawler.UnitTests
             var pre010TextBox = pre010.Slides[0].Shapes.Single(x => x.Id == 2);
 
             // ACT
-            var fh = pre010TextBox.TextFrame.Paragraphs.First().Portions.First().FontHeight;
+            var fh = pre010TextBox.TextFrame.Paragraphs.First().Portions.First().Font.Size;
 
             pre010.Close();
 

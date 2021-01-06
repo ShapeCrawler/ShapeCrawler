@@ -4,18 +4,18 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Enums;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.UnitTests.Helpers;
-using ShapeCrawler.UnitTests.Properties;
+using ShapeCrawler.Models.Styles;
+using ShapeCrawler.Tests.Unit.Helpers;
+using ShapeCrawler.Tests.Unit.Properties;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations
 // ReSharper disable InconsistentNaming
 // ReSharper disable TooManyChainedReferences
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     public class ShapeTests : IClassFixture<ReadOnlyTestPresentations>
@@ -52,6 +52,19 @@ namespace ShapeCrawler.UnitTests
         }
 
         [Fact]
+        public void Fill_ReturnsNull_WhenShapeIsNotFilled()
+        {
+            // Arrange
+            Shape shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 6);
+
+            // Act
+            ShapeFill shapeFill = shape.Fill;
+
+            // Assert
+            shapeFill.Should().BeNull();
+        }
+
+        [Fact]
         public void FillType_GetterReturnsFillTypeByWhichTheShapeIsFilled()
         {
             // Arrange
@@ -80,17 +93,35 @@ namespace ShapeCrawler.UnitTests
             shapeSolidColorName.Should().BeEquivalentTo("ff0000");
         }
 
+
         [Fact]
-        public void Fill_ReturnsNull_WhenShapeIsNotFilled()
+        public async void FillPictureGetImageBytes_ReturnsImageByWhichTheShapeIsFilled()
         {
             // Arrange
-            Shape shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 6);
+            Shape shape = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
 
             // Act
-            Fill shapeFill = shape.Fill;
+            var shapeFilledImage = await shape.Fill.Picture.GetImageBytes();
 
             // Assert
-            shapeFill.Should().BeNull();
+            shapeFilledImage.Length.Should().BePositive();
+        }
+
+        [Fact]
+        public async void FillPictureSetImage_MethodSetsImageForPictureFilledShape()
+        {
+            // Arrange
+            var presentation = Presentation.Open(Resources._009, true);
+            Shape shape = presentation.Slides[2].Shapes.First(sp => sp.Id.Equals(4));
+            var newImage = new MemoryStream(Resources.test_image_2);
+            var imageSizeBefore = (await shape.Fill.Picture.GetImageBytes()).Length;
+
+            // Act
+            shape.Fill.Picture.SetImage(newImage);
+
+            // Assert
+            var imageSizeAfter = (await shape.Fill.Picture.GetImageBytes()).Length;
+            imageSizeAfter.Should().NotBe(imageSizeBefore);
         }
 
         [Fact]
@@ -172,11 +203,22 @@ namespace ShapeCrawler.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(ReturnsCorrectGeometryTypeValueTestCases))]
+        [MemberData(nameof(GeometryTypeTestCases))]
         public void GeometryType_ReturnsCorrectGeometryTypeValue(Shape shape, GeometryType expectedGeometryType)
         {
             // Assert
             shape.GeometryType.Should().BeEquivalentTo(expectedGeometryType);
+        }
+
+        public static IEnumerable<object[]> GeometryTypeTestCases()
+        {
+            var pre021 = Presentation.Open(Resources._021,false);
+            var shapes = pre021.Slides[3].Shapes;
+            var shapeCase1 = shapes.First(sp => sp.Id == 2);
+            var shapeCase2 = shapes.First(sp => sp.Id == 3);
+
+            yield return new object[] { shapeCase1, GeometryType.Rectangle };
+            yield return new object[] { shapeCase2, GeometryType.Ellipse };
         }
 
         [Fact]
@@ -226,20 +268,5 @@ namespace ShapeCrawler.UnitTests
             shape = presentation.Slides.First().Shapes.First();
             shape.CustomData.Should().Be(customDataString);
         }
-
-        #region Helpers
-
-        public static IEnumerable<object[]> ReturnsCorrectGeometryTypeValueTestCases()
-        {
-            var pre021 = Presentation.Open(Resources._021);
-            var shapes = pre021.Slides[3].Shapes;
-            var shape2 = shapes.First(s => s.Id == 2);
-            var shape3 = shapes.First(s => s.Id == 3);
-
-            yield return new object[] { shape2, GeometryType.Rectangle };
-            yield return new object[] { shape3, GeometryType.Ellipse };
-        }
-
-        #endregion Helpers
     }
 }

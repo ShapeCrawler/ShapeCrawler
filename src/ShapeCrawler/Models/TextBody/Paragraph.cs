@@ -21,9 +21,9 @@ namespace ShapeCrawler.Models.TextBody
 
         #endregion Fields
 
-        #region Properties
+        internal TextFrame TextFrame { get; }
 
-        public TextFrame TextFrame { get; }
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the the plain text of a paragraph.
@@ -57,7 +57,7 @@ namespace ShapeCrawler.Models.TextBody
         /// </summary>
         public Bullet Bullet => _bullet.Value;
 
-        #endregion Properties
+        #endregion Public Properties
 
         #region Constructors
 

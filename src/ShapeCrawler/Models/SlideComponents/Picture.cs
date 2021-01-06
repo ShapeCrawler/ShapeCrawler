@@ -1,5 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Services.Drawing;
+using ShapeCrawler.Factories.Drawing;
 using ShapeCrawler.Shared;
 
 namespace ShapeCrawler.Models.SlideComponents

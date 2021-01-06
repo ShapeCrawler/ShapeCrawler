@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Services;
-using ShapeCrawler.Services.Placeholders;
+using ShapeCrawler.Factories;
+using ShapeCrawler.Factories.Placeholders;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using ShapeCrawler.Models;
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
     /// <summary>
     /// Represents a class whose single instance is shared for tests.

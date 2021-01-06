@@ -1,6 +1,6 @@
 ﻿using ShapeCrawler.Exceptions;
+using ShapeCrawler.Factories.Placeholders;
 using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.Services.Placeholders;
 
 namespace ShapeCrawler.Models.Transforms
 {

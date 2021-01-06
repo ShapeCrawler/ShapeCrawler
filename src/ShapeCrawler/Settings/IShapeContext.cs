@@ -1,6 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Services.Placeholders;
+using ShapeCrawler.Factories.Placeholders;
 
 namespace ShapeCrawler.Settings
 {

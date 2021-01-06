@@ -1,17 +1,19 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
-using ShapeCrawler.UnitTests.Helpers;
+using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
+    [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     public class SlideTests : IClassFixture<ReadOnlyTestPresentations>
     {
         private readonly ReadOnlyTestPresentations _fixture;
@@ -105,8 +107,8 @@ namespace ShapeCrawler.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(ShapesCollectionTestCases))]
-        public void Shapes_CountPropertyReturnsNumberOfTheShapesOnTheSlide(Slide slide, int expectedShapesNumber)
+        [MemberData(nameof(TestCasesForShapesCounter))]
+        public void Shapes_CounterReturnsNumberOfShapesOnTheSlide(Slide slide, int expectedShapesNumber)
         {
             // Act
             var shapes = slide.Shapes;
@@ -115,22 +117,27 @@ namespace ShapeCrawler.UnitTests
             shapes.Should().HaveCount(expectedShapesNumber);
         }
 
-        public static IEnumerable<object[]> ShapesCollectionTestCases()
+        public static IEnumerable<object[]> TestCasesForShapesCounter()
         {
-            var slide = Presentation.Open(Properties.Resources._002, false).Slides[0];
+            var pre009 = Presentation.Open(Properties.Resources._009, false);
+            
+            Slide slide = pre009.Slides[0];
+            yield return new object[] { slide, 6 };
+
+            slide = pre009.Slides[1];
+            yield return new object[] { slide, 6 };
+
+            slide = Presentation.Open(Properties.Resources._002, false).Slides[0];
             yield return new object[] { slide, 3 };
 
             slide = Presentation.Open(Properties.Resources._003, false).Slides[0];
             yield return new object[] { slide, 5 };
 
-            slide = Presentation.Open(Properties.Resources._009, false).Slides[0];
-            yield return new object[] { slide, 6 };
-
-            slide = Presentation.Open(Properties.Resources._009, false).Slides[1];
-            yield return new object[] { slide, 6 };
-
             slide = Presentation.Open(Properties.Resources._013, false).Slides[0];
             yield return new object[] { slide, 4 };
+
+            slide = Presentation.Open(Properties.Resources._023, false).Slides[0];
+            yield return new object[] { slide, 1 };
         }
 
         [Fact]

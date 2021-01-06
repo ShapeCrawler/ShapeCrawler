@@ -5,10 +5,10 @@ namespace ShapeCrawler.Exceptions
     /// <summary>
     /// Thrown when a feature not yet been implemented.
     /// </summary>
-    public class NextVersionFeatureException : SlideDotNetException
+    public class NextVersionFeatureException : ShapeCrawlerException
     {
         public NextVersionFeatureException(string message) 
-            : base(message, ExceptionCodes.NextVersionFeatureException) { }
+            : base(message, ExceptionCode.NextVersionFeatureException) { }
 
         public NextVersionFeatureException()
         {

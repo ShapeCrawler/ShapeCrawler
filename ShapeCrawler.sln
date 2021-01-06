@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapeCrawler.UnitTests", "tests\ShapeCrawler.UnitTests\ShapeCrawler.UnitTests.csproj", "{CB20C4CA-9EFC-48E2-8C56-0EA63E90C049}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapeCrawler.Tests.Unit", "tests\ShapeCrawler.UnitTests\ShapeCrawler.Tests.Unit.csproj", "{CB20C4CA-9EFC-48E2-8C56-0EA63E90C049}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapeCrawler", "src\ShapeCrawler\ShapeCrawler.csproj", "{34B79512-BDAC-4C6C-BCD4-61C88E4ABDE1}"
 EndProject

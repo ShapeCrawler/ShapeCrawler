@@ -6,14 +6,15 @@ using ShapeCrawler.Collections;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
 using ShapeCrawler.Models.TextBody;
-using ShapeCrawler.UnitTests.Helpers;
-using ShapeCrawler.UnitTests.Properties;
+using ShapeCrawler.Tests.Unit.Helpers;
+using ShapeCrawler.Tests.Unit.Properties;
 using Xunit;
 
+// ReSharper disable All
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
     public class TextFrameTests : IClassFixture<ReadOnlyTestPresentations>
     {
@@ -104,45 +105,6 @@ namespace ShapeCrawler.UnitTests
             bulletSize.Should().Be(120);
         }
 
-        [Fact]
-        public void ParagraphPortionRemove_RemovesPortionFromCollection()
-        {
-            // Arrange
-            var presentation = Presentation.Open(Properties.Resources._002, true);
-            var portions = GetPortions(presentation);
-            var portion = portions.First();
-            var countBefore = portions.Count;
-
-            // Act
-            portion.Remove();
-            
-            // Assert
-            portions.Should().HaveCount(1);
-            portions.Should().HaveCountLessThan(countBefore);
-            
-            var memoryStream = new MemoryStream();
-            presentation.SaveAs(memoryStream);
-            var savedPresentation = new Presentation(memoryStream, false);
-            portions = GetPortions(savedPresentation);
-            portions.Should().HaveCount(1);
-        }
-
-        [Fact]
-        public void ParagraphPortionFontName_GetterReturnsFontNameOfParagraphPortion()
-        {
-            // Arrange
-            var textFrameCase1 = _fixture.Pre002.Slides[1].Shapes.First(s => s.Id == 3).TextFrame;
-            var textFrameCase2 = _fixture.Pre001.Slides[0].Shapes.First(s => s.Id == 4).TextFrame;
-
-            // Act
-            var portionFontNameCase1 = textFrameCase1.Paragraphs[0].Portions[0].FontName;
-            var portionFontNameCase2 = textFrameCase2.Paragraphs[0].Portions[0].FontName;
-
-            // Assert
-            portionFontNameCase1.Should().BeEquivalentTo("Palatino Linotype");
-            portionFontNameCase2.Should().BeEquivalentTo("Broadway");
-        }
-
         [Theory]
         [MemberData(nameof(ParagraphTextTestCases))]
         public void ParagraphText_IsChanged_WhenTextIsChangedViaSetter(Paragraph paragraph)
@@ -159,7 +121,7 @@ namespace ShapeCrawler.UnitTests
         }
 
         [Fact]
-        public void ParagraphTextProperty_ReturnsCorrectValue_WhenItsGetterIsCalled()
+        public void ParagraphText_ReturnsCorrectValue_WhenItsGetterIsCalled()
         {
             // Arrange
             var presentation = _fixture.Pre008;
@@ -191,13 +153,6 @@ namespace ShapeCrawler.UnitTests
             shape4 = pre002.Slides[1].Shapes.First(x => x.Id == 4);
             paragraph = shape4.TextFrame.Paragraphs[--paragraphNumber];
             yield return new[] { paragraph };
-        }
-
-        private static PortionCollection GetPortions(Presentation presentation)
-        {
-            var shape5 = presentation.Slides[1].Shapes.First(x => x.Id == 5);
-            var portions = shape5.TextFrame.Paragraphs.First().Portions;
-            return portions;
         }
 
         #endregion Helpers

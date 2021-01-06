@@ -1,11 +1,10 @@
 ﻿using System.Linq;
 using ShapeCrawler.Models;
-using SlideDotNet.Models;
 using Xunit;
 
 // ReSharper disable TooManyChainedReferences
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
     public class TestFile_014
     {
@@ -32,7 +31,7 @@ namespace ShapeCrawler.UnitTests
 
             // ACT-ASSERT
             var text = elId5.TextFrame.Text;
-            var fh = elId5.TextFrame.Paragraphs.First().Portions.First().FontHeight;
+            var fh = elId5.TextFrame.Paragraphs.First().Portions.First().Font.Size;
         }
 
         [Fact]
@@ -53,7 +52,7 @@ namespace ShapeCrawler.UnitTests
 
             // Act
             var element = pre.Slides[3].Shapes.Single(x => x.Id == 5);
-            var fh = element.TextFrame.Paragraphs.First().Portions.First().FontHeight;
+            var fh = element.TextFrame.Paragraphs.First().Portions.First().Font.Size;
 
             // Assert
             Assert.Equal(1200, fh);
@@ -67,7 +66,7 @@ namespace ShapeCrawler.UnitTests
 
             // Act
             var element = pre.Slides[4].Shapes.Single(x => x.Id == 4);
-            var fh = element.TextFrame.Paragraphs.First().Portions.First().FontHeight;
+            var fh = element.TextFrame.Paragraphs.First().Portions.First().Font.Size;
 
             // Assert
             Assert.Equal(1200, fh);
@@ -81,7 +80,7 @@ namespace ShapeCrawler.UnitTests
 
             // Act
             var element = pre.Slides[5].Shapes.Single(x => x.Id == 52);
-            var fh = element.TextFrame.Paragraphs.First().Portions.First().FontHeight;
+            var fh = element.TextFrame.Paragraphs.First().Portions.First().Font.Size;
 
             // Assert
             Assert.Equal(2700, fh);

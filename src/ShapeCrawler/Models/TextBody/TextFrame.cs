@@ -21,11 +21,12 @@ namespace ShapeCrawler.Models.TextBody
         private readonly IShapeContext _spContext;
         private readonly Lazy<string> _text;
 
-        public Shape Shape { get; }
-
         #endregion Fields
 
-        #region Properties
+        internal Shape Shape { get; }
+
+
+        #region Public Properties
 
         /// <summary>
         /// <inheritdoc cref="ITextFrame.Paragraphs"/>
@@ -37,7 +38,7 @@ namespace ShapeCrawler.Models.TextBody
         /// </summary>
         public string Text => _text.Value;
 
-        #endregion Properties
+        #endregion Public Properties
 
         #region Constructors
 

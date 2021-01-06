@@ -1,7 +1,7 @@
 using System;
 using ShapeCrawler.Models;
 
-namespace ShapeCrawler.UnitTests.Helpers
+namespace ShapeCrawler.Tests.Unit.Helpers
 {
     public class ReadOnlyTestPresentations : IDisposable
     {
@@ -12,7 +12,9 @@ namespace ShapeCrawler.UnitTests.Helpers
         public Presentation Pre008 { get; }
         public Presentation Pre009 { get; }
         public Presentation Pre013 { get; }
+        public Presentation Pre017 { get; }
         public Presentation Pre021 { get; }
+        public Presentation Pre024 { get; }
 
         public ReadOnlyTestPresentations()
         {
@@ -23,7 +25,9 @@ namespace ShapeCrawler.UnitTests.Helpers
             Pre008 = Presentation.Open(Properties.Resources._008, false);
             Pre009 = Presentation.Open(Properties.Resources._009, false);
             Pre013 = Presentation.Open(Properties.Resources._013, false);
+            Pre017 = Presentation.Open(Properties.Resources._017, false);
             Pre021 = Presentation.Open(Properties.Resources._021, false);
+            Pre024 = Presentation.Open(Properties.Resources._024, false);
         }
 
         public void Dispose()

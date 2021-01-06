@@ -5,12 +5,12 @@ namespace ShapeCrawler.Exceptions
     /// <summary>
     /// Thrown while attempting to access runtime defined property, but it does not exist for the current object.
     /// </summary>
-    public class RuntimeDefinedPropertyException : SlideDotNetException
+    public class RuntimeDefinedPropertyException : ShapeCrawlerException
     {
         #region Constructors
 
         public RuntimeDefinedPropertyException(string message) 
-            : base(message, ExceptionCodes.RuntimeDefinedPropertyException) { }
+            : base(message, ExceptionCode.RuntimeDefinedPropertyException) { }
 
         public RuntimeDefinedPropertyException()
         {

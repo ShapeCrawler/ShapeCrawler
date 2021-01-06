@@ -1,15 +1,10 @@
-﻿using System.IO;
-using NSubstitute;
-using ShapeCrawler.Enums;
-using ShapeCrawler.Exceptions;
-using ShapeCrawler.Models;
-using ShapeCrawler.Services.Placeholders;
-using ShapeCrawler.Statics;
+﻿using ShapeCrawler.Enums;
+using ShapeCrawler.Factories.Placeholders;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations
 
-namespace ShapeCrawler.UnitTests
+namespace ShapeCrawler.Tests.Unit
 {
     /// <summary>
     /// Represents test for <see cref="PlaceholderLocationData"/> class APIs.

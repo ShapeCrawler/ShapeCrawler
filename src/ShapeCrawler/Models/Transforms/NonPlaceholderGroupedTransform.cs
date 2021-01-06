@@ -31,22 +31,22 @@ namespace ShapeCrawler.Models.Transforms
 
         public void SetX(long x)
         {
-            throw new SlideDotNetException(ExceptionMessages.ForGroupedCanNotChanged);
+            throw new ShapeCrawlerException(ExceptionMessages.ForGroupedCanNotChanged);
         }
 
         public void SetY(long y)
         {
-            throw new SlideDotNetException(ExceptionMessages.ForGroupedCanNotChanged);
+            throw new ShapeCrawlerException(ExceptionMessages.ForGroupedCanNotChanged);
         }
 
         public void SetWidth(long w)
         {
-            throw new SlideDotNetException(ExceptionMessages.ForGroupedCanNotChanged);
+            throw new ShapeCrawlerException(ExceptionMessages.ForGroupedCanNotChanged);
         }
 
         public void SetHeight(long h)
         {
-            throw new SlideDotNetException(ExceptionMessages.ForGroupedCanNotChanged);
+            throw new ShapeCrawlerException(ExceptionMessages.ForGroupedCanNotChanged);
         }
     }
 }
