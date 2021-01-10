@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Version 0.11.0 - Unreleased
 ### Added
 - Added setter for `Portion.Text` property to be able to change text of paragraph portion (#22)
+- Added setter for `Portion.Font.Name` to change font name of the portion of non-placeholder shape (#82)
+- Added setter for `Portion.Font.Size` to change font size of the portion of non-placeholer shape (#81)
 ## Version 0.10.0 - 2021-01-01
 ### Added
 - Added `Portion.Remove()` to be able to remove paragraph portion;

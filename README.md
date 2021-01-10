@@ -10,105 +10,53 @@
 
 </h3>
 
+✅ **Project status: active**
+
 ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoint presentations. It provides fluent APIs to process slides without having Microsoft Office installed.
 
 ## Getting Started
 You can quickly start work with the library by following steps listed below.
-### Installing
-To install ShapeCrawler, run the following command in the Package Manager Console:
-```
-PM> Install-Package ShapeCrawler
-```
+## Install
 
-### Usage
+- [NuGet](https://nuget.org/packages/ShapeCrawler): `dotnet add package ShapeCrawler`
 
+## Usage
+### Work with Text
 ```C#
-public static async void Usage()
+PresentationEx presentation = PresentationEx.Open("helloWorld.pptx", true);
+SlideEx slide = presentation.Slides.First();
+
+// Prints on console content of all text shapes
+foreach (ShapeEx shape in slide.Shapes)
 {
-    // Gets number of slides
-    var presentation = new Presentation(@"c:\test.pptx");
-    var slides = presentation.Slides;
-    var numSlides = slides.Count();
-
-    // Gets slide sizes in EMUs
-    int slideHeight = presentation.SlideHeight;
-    int slideWidth = presentation.SlideWidth;
-
-    // Saves presentation
-    presentation.SaveAs(@"c:\test_edited.pptx");
-
-    // Gets number of shapes
-    Slide slide = slides[0];
-    var shapes = slide.Shapes;
-    var numShapes = shapes.Count;
-
-    // Gets slide number
-    int slideNumber = slide.Number;
-
-    // Gets slide background content
-    byte[] backgroundBytes = await slide.Background.GetImageBytesValueTask();
-}
-```
-<details>
-<summary><i>Show more usage examples...</i></summary>
-
-```C#
-public static async void Usage()
-{
-    // Gets number of slides
-    var presentation = new Presentation(@"c:\test.pptx");
-    var slides = presentation.Slides;
-    var numSlides = slides.Count();
-
-    // Gets slide sizes in EMUs
-    int slideHeight = presentation.SlideHeight;
-    int slideWidth = presentation.SlideWidth;
-
-    // Saves presentation
-    presentation.SaveAs(@"c:\test_edited.pptx");
-
-    // Gets number of shapes
-    Slide slide = slides[0];
-    var shapes = slide.Shapes;
-    var numShapes = shapes.Count;
-
-    // Gets slide number
-    int slideNumber = slide.Number;
-
-    // Gets slide background content
-    byte[] backgroundBytes = await slide.Background.GetImageBytesValueTask();
-
-    // Sets slide background
-    using (FileStream fs = File.OpenRead(@"c:\test.png"))
+    if (shape.HasTextFrame)
     {
-        slide.Background.SetImage(fs);
-    }
-
-    // Hides slide
-    slide.Hide();
-    bool isHidden = slide.Hidden; // true
-
-    // Set some custom data in slide, e.g. tag
-    slide.CustomData = "#mySlide";
-
-    // Works with charts
-    var chartShape = shapes.FirstOrDefault(s => s.HasChart);
-    if (chartShape != null)
-    {
-        IChart chart = chartShape.Chart;
-        if (chart.HasTitle)
-        {
-            Debug.Print(chart.Title);
-        }
-        if (chart.Type == ChartType.BarChart)
-        {
-            Debug.Print("Chart type is BarChart.");
-        }
+        Console.WriteLine(shape.TextFrame.Text);
     }
 }
-```
-</details>
 
+// Changes paragraph text
+ShapeEx textShape = slide.Shapes.First(sp => sp.HasTextFrame);
+ParagraphEx paragraph = textShape.TextFrame.Paragraphs.First();
+paragraph.Text = "A new paragraph text";
+presentation.Save();
+```
+### Work with Chart
+```C#
+PresentationEx presentation = PresentationEx.Open("helloWorld.pptx", isEditable: false);
+SlideEx slide = presentation.Slides.First();
+ShapeEx chartShape = slide.Shapes.First(sp => sp.HasChart == true);
+
+IChart chart = chartShape.Chart;
+if (chart.HasTitle)
+{
+    Debug.Print(chart.Title);
+}
+if (chart.Type == ChartType.BarChart)
+{
+    Debug.Print("Chart type is BarChart.");
+}
+```
 # Feedback and Give a Star! :star:
 The project is in development, and I’m pretty sure there are still lots of things to add in this library. Try it out and let me know your thoughts.
 
