@@ -21,7 +21,7 @@ You can quickly start work with the library by following steps listed below.
 - [NuGet](https://nuget.org/packages/ShapeCrawler): `dotnet add package ShapeCrawler`
 
 ## Usage
-### Work with Text
+### Work with Text shape
 ```C#
 PresentationEx presentation = PresentationEx.Open("helloWorld.pptx", true);
 SlideEx slide = presentation.Slides.First();
@@ -41,7 +41,22 @@ ParagraphEx paragraph = textShape.TextFrame.Paragraphs.First();
 paragraph.Text = "A new paragraph text";
 presentation.Save();
 ```
-### Work with Chart
+
+#### Font
+```C#
+PresentationEx presentation = PresentationEx.Open("helloWorld.pptx", false);
+SlideEx slide = presentation.Slides.First();
+
+// Prints font name and sizes of paragraph text portions
+ITextFrame textFrame = slide.Shapes.First(sp => sp.HasTextFrame).TextFrame;
+IEnumerable<Portion> paragraphPortions = textFrame.Paragraphs.First().Portions;
+foreach (Portion portion in paragraphPortions)
+{
+    Console.WriteLine($"Font name: {portion.Font.Name}");
+    Console.WriteLine($"Font size: {portion.Font.Size}");
+}
+```
+### Work with Chart shape
 ```C#
 PresentationEx presentation = PresentationEx.Open("helloWorld.pptx", isEditable: false);
 SlideEx slide = presentation.Slides.First();
@@ -70,10 +85,10 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 5. Create a new Pull Request.
 
 # Changelog
-## Version 0.10.0 - 2021-01-01
+## Version 0.11.0 - 2021-01-10
 ### Added
-- Added `Portion.Remove()` to be able to remove paragraph portion;
-- Added setter for `Paragraph.Text` property to be able to change paragraph's text;
-- Added support for .NET Core 2.0
+- Added setter for `Portion.Text` property to be able to change text of paragraph portion (#22)
+- Added setter for `Portion.Font.Name` to change font name of the portion of non-placeholder shape (#82)
+- Added setter for `Portion.Font.Size` to change font size of the portion of non-placeholer shape (#81)
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).
