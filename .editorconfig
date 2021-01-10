@@ -19,3 +19,6 @@ dotnet_diagnostic.CA1307.severity = error
 
 
 dotnet_diagnostic.CA1720.severity = suggestion
+
+# IDE0044: Add readonly modifier
+dotnet_diagnostic.IDE0044.severity = error
