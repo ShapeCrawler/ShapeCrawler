@@ -44,7 +44,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             var customImageStream = new MemoryStream(Properties.Resources.test_image_2);
-            Picture picture = PresentationEx.Open(Properties.Resources._009, true).
+            Picture picture = PresentationSc.Open(Properties.Resources._009, true).
                                                             Slides[1].Shapes.First(sp => sp.Id == 3).Picture;
             var originLength = (await picture.ImageEx.GetImageBytes()).Length;
 

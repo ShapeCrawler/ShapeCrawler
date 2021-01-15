@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Models;
 using ShapeCrawler.Statics;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
@@ -30,7 +29,7 @@ namespace ShapeCrawler.Tests.Unit
             var bytes = new byte[Limitations.MaxPresentationSize + 1];
 
             // Act
-            Action act = () => PresentationEx.Open(bytes, false);
+            Action act = () => PresentationSc.Open(bytes, false);
 
             // Arrange
             act.Should().Throw<PresentationIsLargeException>();
@@ -40,7 +39,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SlideWidthAndSlideHeight_ReturnWidthAndHeightSizesOfThePresentationSlides()
         {
             // Arrange
-            PresentationEx presentation = _fixture.Pre009;
+            PresentationSc presentation = _fixture.Pre009;
 
             // Act
             int slideWidth = presentation.SlideWidth;
@@ -68,7 +67,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             var stream = new MemoryStream(Properties.Resources._007_2_slides);
-            var presentation = new PresentationEx(stream, true);
+            var presentation = new PresentationSc(stream, true);
             var removingSlide = presentation.Slides.First();
 
             // Act
@@ -76,7 +75,7 @@ namespace ShapeCrawler.Tests.Unit
             presentation.Close();
 
             // Assert
-            presentation = new PresentationEx(stream, false);
+            presentation = new PresentationSc(stream, false);
             presentation.Slides.Should().HaveCount(1);
         }
     }

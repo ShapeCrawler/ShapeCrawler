@@ -14,7 +14,7 @@ namespace ShapeCrawler.Models.TextShape
     /// <inheritdoc cref="ITextFrame"/>
     /// </summary>
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-    public sealed class TextFrame : ITextFrame
+    public sealed class TextSc : ITextFrame
     {
         #region Fields
 
@@ -23,14 +23,14 @@ namespace ShapeCrawler.Models.TextShape
 
         #endregion Fields
 
-        internal ShapeEx ShapeEx { get; }
+        internal ShapeSc ShapeEx { get; }
 
         #region Public Properties
 
         /// <summary>
         /// <inheritdoc cref="ITextFrame.Paragraphs"/>
         /// </summary>
-        public IList<ParagraphEx> Paragraphs { get; private set; } // TODO: Consider to use IReadOnlyList instead IList or create own collection
+        public IList<Paragraph> Paragraphs { get; private set; } // TODO: Consider to use IReadOnlyList instead IList or create own collection
 
         /// <summary>
         /// <inheritdoc cref="ITextFrame.Text"/>
@@ -42,15 +42,15 @@ namespace ShapeCrawler.Models.TextShape
         #region Constructors
 
         /// <summary>
-        /// Initializes an instance of the <see cref="TextFrame"/>.
+        /// Initializes an instance of the <see cref="TextSc"/>.
         /// </summary>
-        public TextFrame(OpenXmlCompositeElement compositeElement, ShapeEx shapeEx)
+        public TextSc(OpenXmlCompositeElement compositeElement, ShapeSc shapeEx)
             :this(shapeEx.Context, compositeElement)
         {
             ShapeEx = shapeEx;
         }
 
-        public TextFrame(ShapeContext spContext, OpenXmlCompositeElement compositeElement)
+        public TextSc(ShapeContext spContext, OpenXmlCompositeElement compositeElement)
         {
             _spContext = spContext;
             ParseParagraphs(compositeElement); // TODO: Make paragraphs parsing lazy
@@ -67,10 +67,10 @@ namespace ShapeCrawler.Models.TextShape
             var aParagraphs = compositeElement.Elements<A.Paragraph>().Where(e => e.Descendants<A.Text>().Any());
 
             // Sets paragraphs
-            Paragraphs = new List<ParagraphEx>(aParagraphs.Count());
+            Paragraphs = new List<Paragraph>(aParagraphs.Count());
             foreach (A.Paragraph aParagraph in aParagraphs)
             {
-                Paragraphs.Add(new ParagraphEx(_spContext, aParagraph, this));
+                Paragraphs.Add(new Paragraph(_spContext, aParagraph, this));
             }
         }
 

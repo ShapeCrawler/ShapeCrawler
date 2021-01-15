@@ -7,13 +7,13 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace ShapeCrawler.Models.TableComponents
 {
     /// <summary>
-    /// Represents cell of table row.
+    /// Represents a table row cell.
     /// </summary>
-    public class Cell
+    public class CellSc
     {
         #region Fields
 
-        private TextFrame _textBody;
+        private TextSc _textBody;
 
         private readonly A.TableCell _xmlCell;
         private readonly ShapeContext _spContext;
@@ -23,9 +23,9 @@ namespace ShapeCrawler.Models.TableComponents
         #region Properties
 
         /// <summary>
-        /// Returns <see cref="TextFrame"/> instance or null if the cell does not contain a text.
+        /// Gets text frame of a cell.
         /// </summary>
-        public TextFrame TextBody
+        public TextSc TextFrame
         {
             get
             {
@@ -42,7 +42,7 @@ namespace ShapeCrawler.Models.TableComponents
 
         #region Constructors
 
-        public Cell(A.TableCell xmlCell)
+        public CellSc(A.TableCell xmlCell)
         {
             _xmlCell = xmlCell ?? throw new ArgumentNullException(nameof(xmlCell));
         }
@@ -55,7 +55,7 @@ namespace ShapeCrawler.Models.TableComponents
             var aTexts = aTxtBody.Descendants<A.Text>();
             if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element contain text
             {
-                _textBody = new TextFrame(_spContext, aTxtBody);
+                _textBody = new TextSc(_spContext, aTxtBody);
             }
         }
     }

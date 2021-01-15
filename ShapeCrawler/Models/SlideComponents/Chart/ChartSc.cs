@@ -14,10 +14,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Models.SlideComponents.Chart
 {
-    /// <summary>
-    /// <inheritdoc cref="IChart"/>
-    /// </summary>
-    public class ChartEx : IChart
+    public class ChartSc
     {
         #region Fields
 
@@ -39,15 +36,15 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
 
         #endregion Fields
 
-        #region Properties
+        #region Public Properties
 
         /// <summary>
-        /// <inheritdoc cref="IChart.Type"/>
+        /// Gets the chart title. Returns null if chart has not a title.
         /// </summary>
         public ChartType Type => _chartType.Value;
 
         /// <summary>
-        /// <inheritdoc cref="IChart.Title"/>
+        /// Gets chart title string.
         /// </summary>
         public string Title
         {
@@ -63,7 +60,7 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
         }
 
         /// <summary>
-        /// <inheritdoc cref="IChart.HasTitle"/>
+        /// Determines whether chart has a title.
         /// </summary>
         public bool HasTitle
         {
@@ -79,17 +76,17 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
         }
 
         /// <summary>
-        /// <inheritdoc cref="IChart.HasCategories"/>
+        /// Determines whether chart has categories. Some chart types like ScatterChart and BubbleChart does not have categories.
         /// </summary>
         public bool HasCategories => _categories.Value != null;
 
         /// <summary>
-        /// <inheritdoc cref="IChart.SeriesCollection"/>
+        /// Gets collection of the chart series.
         /// </summary>
         public SeriesCollection SeriesCollection => _seriesCollection.Value;
 
         /// <summary>
-        /// <inheritdoc cref="IChart.Categories"/>
+        /// Gets collection of the chart category.
         /// </summary>
         public CategoryCollection Categories
         {
@@ -124,20 +121,20 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
             }
         }
 
-#endregion Properties
+        #endregion Public Properties
 
-#region Constructors
+        #region Constructors
 
-        public ChartEx(P.GraphicFrame grFrame, ShapeContext shapeContext)
+        public ChartSc(P.GraphicFrame grFrame, ShapeContext shapeContext)
         : this(grFrame, shapeContext, new ChartRefParser(shapeContext))
         {
 
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChartEx"/> class.
+        /// Initializes a new instance of the <see cref="ChartSc"/> class.
         /// </summary>
-        public ChartEx(P.GraphicFrame grFrame, ShapeContext shapeContext, ChartRefParser chartRefParser)
+        public ChartSc(P.GraphicFrame grFrame, ShapeContext shapeContext, ChartRefParser chartRefParser)
         {
             _grFrame = grFrame ?? throw new ArgumentNullException(nameof(grFrame));
             _shapeContext = shapeContext ?? throw new ArgumentNullException(nameof(shapeContext));
@@ -150,7 +147,7 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
 
 #endregion
 
-#region Private Methods
+        #region Private Methods
 
         private void Init()
         {
@@ -257,7 +254,7 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
             return _sdkCharts.First().ChildElements.FirstOrDefault(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
         }
 
-#endregion
+        #endregion
     }
 }
 

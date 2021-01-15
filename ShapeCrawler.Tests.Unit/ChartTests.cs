@@ -2,7 +2,6 @@
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Enums;
-using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents.Chart;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
@@ -28,7 +27,7 @@ namespace ShapeCrawler.Tests.Unit
         public void XValues_ReturnsParticularXAxisValue_ViaItsCollectionIndexer()
         {
             // Arrange
-            IChart chart = _fixture.Pre024.Slides[1].Shapes.First(sp => sp.Id == 5).Chart;
+            ChartSc chart = _fixture.Pre024.Slides[1].Shapes.First(sp => sp.Id == 5).Chart;
 
             // Act
             double xValue = chart.XValues[0];
@@ -40,16 +39,59 @@ namespace ShapeCrawler.Tests.Unit
 
 
         [Fact]
-        public void Title_ReturnsTextOfTheChartTitle_WhenGetterIsCalled()
+        public void HasXValues()
         {
             // Arrange
-            IChart chart = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 6).Chart;
+            var sld1 = _fixture.Pre025.Slides[0];
+            var sld2 = _fixture.Pre025.Slides[1];
+            var chart8 = sld1.Shapes.First(x => x.Id == 8).Chart;
+            var chart11 = sld2.Shapes.First(x => x.Id == 11).Chart;
 
             // Act
-            string charTitle = chart.Title;
+            var chart8HasXValues = chart8.HasXValues;
+            var chart11HasXValues = chart11.HasXValues;
 
             // Assert
-            charTitle.Should().BeEquivalentTo("Test title");
+            Assert.False(chart8HasXValues);
+            Assert.False(chart11HasXValues);
+        }
+
+        [Fact]
+        public void HasCategories_ReturnsFalse_WhenAChartHasNotCategories()
+        {
+            // Arrange
+            ChartSc chart = _fixture.Pre021.Slides[2].Shapes.First(sp => sp.Id == 4).Chart;
+
+            // Act
+            bool hasChartCategories = chart.HasCategories;
+
+            // Assert
+            hasChartCategories.Should().BeFalse();
+        }
+
+        [Fact]
+        public void TitleAndHasTitle_ReturnChartTitleStringAndFlagIndicatingWhetherChartHasATitle()
+        {
+            // Arrange
+            ChartSc chartCase1 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 6).Chart;
+            ChartSc chartCase2 = _fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 7).Chart;
+            ChartSc chartCase3 = _fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 5).Chart;
+            ChartSc chartCase4 = _fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 4).Chart;
+            ChartSc chartCase5 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 4).Chart;
+
+            // Act
+            string charTitleCase1 = chartCase1.Title;
+            string charTitleCase2 = chartCase2.Title;
+            string charTitleCase3 = chartCase3.Title;
+            string charTitleCase5 = chartCase5.Title;
+            bool hasTitleCase4 = chartCase4.HasTitle;
+
+            // Assert
+            charTitleCase1.Should().BeEquivalentTo("Test title");
+            charTitleCase2.Should().BeEquivalentTo("Series 1");
+            charTitleCase3.Should().BeEquivalentTo("Title text");
+            charTitleCase5.Should().BeEquivalentTo("Test title");
+            hasTitleCase4.Should().BeFalse();
         }
 
         [Fact]
@@ -61,7 +103,6 @@ namespace ShapeCrawler.Tests.Unit
             var shapes2 = pre.Slides[1].Shapes; // TODO: Research why this statement takes mach time
             var sp108 = shapes1.First(x => x.Id == 108);
             var chart3 = shapes1.First(x => x.Id == 3).Chart;
-            var sld1Chart4 = shapes1.First(x => x.Id == 4).Chart;
             var sld2Chart4 = shapes2.First(x => x.Id == 4).Chart;
             var lineChartSeries = sld2Chart4.SeriesCollection[1];
 
@@ -72,21 +113,34 @@ namespace ShapeCrawler.Tests.Unit
             var scatterChartPointValue = chart3.SeriesCollection[2].PointValues[0];
             var lineChartPointValue = lineChartSeries.PointValues[0];
 
-            var category = sld1Chart4.Categories[0];
-
             // Assert
             Assert.Equal(56, barChartPointValue);
             Assert.Equal(44, scatterChartPointValue);
             Assert.Equal(17.35, lineChartPointValue);
+        }
 
-            Assert.Equal("2015", category.Name);
+        [Fact]
+        public void CategoryName_ContainsNameOfMainOrSubcategory()
+        {
+            ChartSc chartCase1 = _fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4).Chart;
+            ChartSc chartCase2 = _fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 4).Chart;
+
+            // Act
+            string mainNameOfMultiCategory = chartCase1.Categories[0].MainCategory.Name;
+            string subNameOfMultiCategory = chartCase1.Categories[0].Name;
+            string nameOfNonMultiCategory = chartCase2.Categories[0].Name;
+
+            // Assert
+            mainNameOfMultiCategory.Should().BeEquivalentTo("Clothing");
+            subNameOfMultiCategory.Should().BeEquivalentTo("Dresses");
+            nameOfNonMultiCategory.Should().BeEquivalentTo("2015");
         }
 
         [Fact]
         public void SeriesType_ReturnsChartTypeOfTheSeries()
         {
             // Arrange
-            IChart chart = _fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 3).Chart;
+            ChartSc chart = _fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 3).Chart;
             Series series2 = chart.SeriesCollection[1];
             Series series3 = chart.SeriesCollection[2];
 
@@ -100,51 +154,69 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Type_ReturnsChartType()
+        public void SeriesCollection_CounterReturnsNumberOfTheSeriesInTheChart()
         {
             // Arrange
-            IChart chartCase1 = _fixture.Pre021.Slides[1].Shapes.First(sp => sp.Id == 3).Chart;
-            IChart chartCase2 = _fixture.Pre021.Slides[2].Shapes.First(sp => sp.Id == 4).Chart;
-
+            ChartSc chart = _fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 5).Chart;
+            
             // Act
-            ChartType chartTypeCase1 = chartCase1.Type;
-            ChartType chartTypeCase2 = chartCase2.Type;
+            int seriesCount = chart.SeriesCollection.Count;
 
             // Assert
-            chartTypeCase1.Should().Be(ChartType.BubbleChart);
-            chartTypeCase2.Should().Be(ChartType.ScatterChart);
+            seriesCount.Should().Be(3);
         }
 
         [Fact]
-        public void SeriesPointValues_ContainsSeriesPointValuesOfTheChart()
+        public void SeriesPointValue_ReturnsChartSeriesPointValue()
         {
             // Arrange
             Series seriesCase1 = _fixture.Pre021.Slides[1].Shapes.First(sp => sp.Id == 3).Chart.SeriesCollection[0];
             Series seriesCase2 = _fixture.Pre021.Slides[2].Shapes.First(sp => sp.Id == 4).Chart.SeriesCollection[0];
+            Series seriesCase3 = _fixture.Pre025.Slides[1].Shapes.First(sp => sp.Id == 4).Chart.SeriesCollection[0];
 
             // Act
             double seriesPointValueCase1 = seriesCase1.PointValues[0];
             double seriesPointValueCase2 = seriesCase2.PointValues[0];
+            double seriesPointValueCase3 = seriesCase3.PointValues[0];
 
             // Arrange
             seriesPointValueCase1.Should().Be(20.4);
             seriesPointValueCase2.Should().Be(2.4);
+            seriesPointValueCase3.Should().Be(72.7);
         }
 
         [Fact]
-        public void Chart4_Test()
+        public void SeriesName_ReturnsChartSeriesName()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._021);
-            var sld3Shapes = pre.Slides[2].Shapes;
-            var shape4 = sld3Shapes.First(x => x.Id == 4);
-            var chart4 = shape4.Chart;
+            ChartSc chart = _fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 5).Chart;
 
             // Act
-            var hasCategories = chart4.HasCategories;
+            string seriesNameCase1 = chart.SeriesCollection[0].Name;
+            string seriesNameCase2 = chart.SeriesCollection[2].Name;
 
             // Assert
-            Assert.False(hasCategories);
+            seriesNameCase1.Should().BeEquivalentTo("Ряд 1");
+            seriesNameCase2.Should().BeEquivalentTo("Ряд 3");
+        }
+
+        [Fact]
+        public void Type_ReturnsChartType()
+        {
+            // Arrange
+            ChartSc chartCase1 = _fixture.Pre021.Slides[1].Shapes.First(sp => sp.Id == 3).Chart;
+            ChartSc chartCase2 = _fixture.Pre021.Slides[2].Shapes.First(sp => sp.Id == 4).Chart;
+            ChartSc chartCase3 = _fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 5).Chart;
+
+            // Act
+            ChartType chartTypeCase1 = chartCase1.Type;
+            ChartType chartTypeCase2 = chartCase2.Type;
+            ChartType chartTypeCase3 = chartCase3.Type;
+
+            // Assert
+            chartTypeCase1.Should().Be(ChartType.BubbleChart);
+            chartTypeCase2.Should().Be(ChartType.ScatterChart);
+            chartTypeCase3.Should().Be(ChartType.Combination);
         }
     }
 }

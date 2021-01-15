@@ -5,7 +5,6 @@ using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Models;
 using ShapeCrawler.Models.TextShape;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
@@ -30,7 +29,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Remove_RemovesPortionFromCollection()
         {
             // Arrange
-            var presentation = PresentationEx.Open(Resources._002, true);
+            var presentation = PresentationSc.Open(Resources._002, true);
             var portions = GetPortions(presentation);
             var portion = portions.First();
             var countBefore = portions.Count;
@@ -44,9 +43,23 @@ namespace ShapeCrawler.Tests.Unit
 
             var memoryStream = new MemoryStream();
             presentation.SaveAs(memoryStream);
-            var savedPresentation = new PresentationEx(memoryStream, false);
+            var savedPresentation = new PresentationSc(memoryStream, false);
             portions = GetPortions(savedPresentation);
             portions.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public void Text_GetterReturnsParagraphPortionText()
+        {
+            // Arrange
+            Portion portion = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextFrame
+                .Paragraphs[0].Portions[0];
+
+            // Act
+            string paragraphPortionText = portion.Text;
+
+            // Assert
+            paragraphPortionText.Should().BeEquivalentTo("0:0_p1_lvl1");
         }
 
         [Fact]
@@ -70,7 +83,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             const string newFont = "Time New Roman";
-            Portion paragraphPortion = PresentationEx.Open(Resources._001, true).
+            Portion paragraphPortion = PresentationSc.Open(Resources._001, true).
                 Slides[0].Shapes.First(sp => sp.Id == 4).
                 TextFrame.Paragraphs[0].Portions[0];
             // Act
@@ -84,9 +97,9 @@ namespace ShapeCrawler.Tests.Unit
         public void FontName_SetterThrowsException_WhenAUserTrySetFontNameForPortionOfAPlaceholderShape()
         {
             // Arrange
-            ITextFrame textFrame = PresentationEx.Open(Resources._001, true).Slides[2].Shapes
+            ITextFrame textFrame = PresentationSc.Open(Resources._001, true).Slides[2].Shapes
                 .First(sp => sp.Id == 4).TextFrame;
-            IList<ParagraphEx> paragraphs = textFrame.Paragraphs;
+            IList<Paragraph> paragraphs = textFrame.Paragraphs;
             Portion paragraphPortion = paragraphs[0].Portions[0];
 
             // Act
@@ -100,20 +113,15 @@ namespace ShapeCrawler.Tests.Unit
         public void FontSize_GetterReturnsFontSizeOfTheParagraphPortion()
         {
             // Arrange
-            Portion portionCase1 = _fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3).
-                                                                TextFrame.Paragraphs[0].Portions[0];
-            Portion portionCase2 = _fixture.Pre015.Slides[0].Shapes.First(sp => sp.Id == 5).
-                                                                TextFrame.Paragraphs[0].Portions[2];
-            Portion portionCase3 = _fixture.Pre015.Slides[1].Shapes.First(sp => sp.Id == 61).
-                                                                TextFrame.Paragraphs[0].Portions[0];
-            Portion portionCase4 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2).
-                                                                TextFrame.Paragraphs[0].Portions[0];
-            Portion portionCase5 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2).
-                                                                TextFrame.Paragraphs[0].Portions[1];
-            Portion portionCase6 = _fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2).
-                                                                TextFrame.Paragraphs[0].Portions[0];
-            Portion portionCase7 = _fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 3).
-                                                                TextFrame.Paragraphs[0].Portions[0];
+            Portion portionCase1 = _fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3).TextFrame.Paragraphs[0].Portions[0];
+            Portion portionCase2 = _fixture.Pre015.Slides[0].Shapes.First(sp => sp.Id == 5).TextFrame.Paragraphs[0].Portions[2];
+            Portion portionCase3 = _fixture.Pre015.Slides[1].Shapes.First(sp => sp.Id == 61).TextFrame.Paragraphs[0].Portions[0];
+            Portion portionCase4 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2).TextFrame.Paragraphs[0].Portions[0];
+            Portion portionCase5 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2).TextFrame.Paragraphs[0].Portions[1];
+            Portion portionCase6 = _fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2).TextFrame.Paragraphs[0].Portions[0];
+            Portion portionCase7 = _fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 3).TextFrame.Paragraphs[0].Portions[0];
+            Portion portionCase8 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 4103).TextFrame.Paragraphs[0].Portions[0];
+            Portion portionCase9 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2).TextFrame.Paragraphs[0].Portions[0];
 
             // Act
             int portionFontSizeCase1 = portionCase1.Font.Size;
@@ -123,6 +131,8 @@ namespace ShapeCrawler.Tests.Unit
             int portionFontSizeCase5 = portionCase5.Font.Size;
             int portionFontSizeCase6 = portionCase6.Font.Size;
             int portionFontSizeCase7 = portionCase7.Font.Size;
+            int portionFontSizeCase8 = portionCase8.Font.Size;
+            int portionFontSizeCase9 = portionCase9.Font.Size;
 
             // Assert
             portionFontSizeCase1.Should().Be(1800);
@@ -132,20 +142,22 @@ namespace ShapeCrawler.Tests.Unit
             portionFontSizeCase5.Should().Be(2000);
             portionFontSizeCase6.Should().Be(4400);
             portionFontSizeCase7.Should().Be(3200);
+            portionFontSizeCase8.Should().Be(1800);
+            portionFontSizeCase9.Should().Be(1200);
         }
 
         [Fact]
         public void FontSize_SetterChangesFontSizeOfParagraphPortion()
         {
             // Arrange
-            static Portion GetPortion(PresentationEx presentation)
+            static Portion GetPortion(PresentationSc presentation)
             {
                 Portion portion = presentation.Slides[0].Shapes.First(sp => sp.Id == 4).TextFrame.Paragraphs[0].Portions[0];
                 return portion;
             }
             int newFontSize = 28;
             var savedPreStream = new MemoryStream();
-            PresentationEx presentation = PresentationEx.Open(Resources._001, true);
+            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
             Portion portion = GetPortion(presentation);
             int oldFontSize = portion.Font.Size;
 
@@ -154,14 +166,14 @@ namespace ShapeCrawler.Tests.Unit
             presentation.SaveAs(savedPreStream);
 
             // Assert
-            presentation = PresentationEx.Open(savedPreStream, false);
+            presentation = PresentationSc.Open(savedPreStream, false);
             portion = GetPortion(presentation);
             portion.Font.Size.Should().NotBe(oldFontSize);
             portion.Font.Size.Should().Be(newFontSize);
             portion.Font.SizeCanBeChanged().Should().BeTrue();
         }
 
-        private static PortionCollection GetPortions(PresentationEx presentation)
+        private static PortionCollection GetPortions(PresentationSc presentation)
         {
             var shape5 = presentation.Slides[1].Shapes.First(x => x.Id == 5);
             var portions = shape5.TextFrame.Paragraphs.First().Portions;

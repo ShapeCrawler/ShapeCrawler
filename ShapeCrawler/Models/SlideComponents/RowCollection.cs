@@ -11,7 +11,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace ShapeCrawler.Models.SlideComponents
 {
     /// <summary>
-    /// Represents a collection of table rows.
+    /// Represents a table rows collection.
     /// </summary>
     public class RowCollection : EditableCollection<RowEx>
     {

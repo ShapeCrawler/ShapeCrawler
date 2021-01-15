@@ -20,7 +20,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
         #region Constructors
 
         public ChartGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory) :
-            this(shapeContextBuilder, transformFactory, new ShapeEx.Builder())
+            this(shapeContextBuilder, transformFactory, new ShapeSc.Builder())
         {
 
         }
@@ -36,7 +36,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #endregion Constructors
 
-        public override ShapeEx Create(OpenXmlElement sdkElement)
+        public override ShapeSc Create(OpenXmlElement sdkElement)
         {
             Check.NotNull(sdkElement, nameof(sdkElement));
 
@@ -47,7 +47,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 {
                     var spContext = _shapeContextBuilder.Build(sdkElement);
                     var innerTransform = _transformFactory.FromComposite(sdkGraphicFrame);
-                    var chartEx = new ChartEx(sdkGraphicFrame, spContext);
+                    var chartEx = new ChartSc(sdkGraphicFrame, spContext);
                     var shape = _shapeBuilder.WithChart(innerTransform, spContext, chartEx);
 
                     return shape;

@@ -1,15 +1,15 @@
 using System;
-using ShapeCrawler.Models;
+using ShapeCrawler;
 
 namespace ShapeCrawler.Tests.Unit
 {
     public class TestFile_009Fixture : IDisposable
     {
-        public PresentationEx pre009 { get; }
+        public PresentationSc pre009 { get; }
 
         public TestFile_009Fixture()
         {
-            pre009 = new PresentationEx(Properties.Resources._009);
+            pre009 = new PresentationSc(Properties.Resources._009);
         }
 
         public void Dispose()

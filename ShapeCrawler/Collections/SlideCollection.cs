@@ -13,18 +13,18 @@ namespace ShapeCrawler.Collections
     /// <summary>
     /// Represents a collection of the slides.
     /// </summary>
-    public class SlideCollection : EditableCollection<SlideEx>
+    public class SlideCollection : EditableCollection<SlideSc>
     {
         #region Fields
 
         private readonly PresentationPart _sdkPrePart;
-        private readonly Dictionary<SlideEx, SlideNumber> _sldNumDic;
+        private readonly Dictionary<SlideSc, SlideNumber> _sldNumDic;
 
         #endregion Fields
 
         #region Constructors
 
-        private SlideCollection(List<SlideEx> slides, PresentationPart sdkPrePart, Dictionary<SlideEx, SlideNumber> sldNumDic)
+        private SlideCollection(List<SlideSc> slides, PresentationPart sdkPrePart, Dictionary<SlideSc, SlideNumber> sldNumDic)
         {
             CollectionItems = slides;
             _sdkPrePart = sdkPrePart;
@@ -37,7 +37,7 @@ namespace ShapeCrawler.Collections
         /// Removes the specified slide.
         /// </summary>
         /// <param name="item"></param>
-        public override void Remove(SlideEx item)
+        public override void Remove(SlideSc item)
         {
             Check.NotNull(item, nameof(item));
 
@@ -51,19 +51,19 @@ namespace ShapeCrawler.Collections
         /// Creates slides collection.
         /// </summary>
         /// <returns></returns>
-        public static SlideCollection Create(PresentationPart sdkPrePart, IPresentationData preSettings, Models.PresentationEx presentationEx)
+        public static SlideCollection Create(PresentationPart sdkPrePart, IPresentationData preSettings, PresentationSc presentationEx)
         {
             Check.NotNull(sdkPrePart, nameof(sdkPrePart));
             Check.NotNull(preSettings, nameof(preSettings));
 
             var numSlides = sdkPrePart.SlideParts.Count();
-            var slideCollection = new List<SlideEx>(numSlides);
-            var sldNumDic = new Dictionary<SlideEx, SlideNumber>(numSlides);
+            var slideCollection = new List<SlideSc>(numSlides);
+            var sldNumDic = new Dictionary<SlideSc, SlideNumber>(numSlides);
             for (var sldIndex = 0; sldIndex < numSlides; sldIndex++)
             {
                 var sdkSldPart = sdkPrePart.GetSlidePartByIndex(sldIndex);
                 var sldNumEntity = new SlideNumber(sldIndex + 1);
-                var newSlide = new SlideEx(sdkSldPart, sldNumEntity, preSettings, presentationEx);
+                var newSlide = new SlideSc(sdkSldPart, sldNumEntity, preSettings, presentationEx);
                 sldNumDic.Add(newSlide, sldNumEntity);
                 slideCollection.Add(newSlide);
             }

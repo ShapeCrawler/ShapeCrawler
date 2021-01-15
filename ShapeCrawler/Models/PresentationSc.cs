@@ -2,21 +2,24 @@
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Models;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
+// ReSharper disable CheckNamespace
 
-namespace ShapeCrawler.Models
+namespace ShapeCrawler
 {
-    public class PresentationEx
+    public class PresentationSc
     {
         #region Fields
 // TODO: Implement IDisposable
         private PresentationDocument _outerSdkPresentation;
-        private Lazy<EditableCollection<SlideEx>> _slides;
-        private Lazy<SlideSize> _slideSize;
+        private Lazy<EditableCollection<SlideSc>> _slides;
+        private Lazy<SlideSizeSc> _slideSize;
         private bool _closed;
         private PresentationData _preData;
 
@@ -27,7 +30,7 @@ namespace ShapeCrawler.Models
         /// <summary>
         /// Gets the presentation slides.
         /// </summary>
-        public EditableCollection<SlideEx> Slides => _slides.Value;
+        public EditableCollection<SlideSc> Slides => _slides.Value;
 
         /// <summary>
         /// Gets the presentation slides width.
@@ -44,9 +47,9 @@ namespace ShapeCrawler.Models
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationEx"/> class by pptx-file path.
+        /// Initializes a new instance of the <see cref="PresentationSc"/> class by pptx-file path.
         /// </summary>
-        internal PresentationEx(string pptxPath, bool isEditable)
+        internal PresentationSc(string pptxPath, bool isEditable)
         {
             ThrowIfSourceInvalid(pptxPath);
             _outerSdkPresentation = PresentationDocument.Open(pptxPath, isEditable);
@@ -54,9 +57,9 @@ namespace ShapeCrawler.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationEx"/> class by pptx-file stream.
+        /// Initializes a new instance of the <see cref="PresentationSc"/> class by pptx-file stream.
         /// </summary>
-        public PresentationEx(Stream pptxStream, bool isEditable = false)
+        public PresentationSc(Stream pptxStream, bool isEditable = false)
         {
             ThrowIfSourceInvalid(pptxStream);
             _outerSdkPresentation = PresentationDocument.Open(pptxStream, isEditable);
@@ -64,9 +67,9 @@ namespace ShapeCrawler.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationEx"/> class by pptx-file stream.
+        /// Initializes a new instance of the <see cref="PresentationSc"/> class by pptx-file stream.
         /// </summary>
-        private PresentationEx(MemoryStream pptxStream, bool isEditable)
+        private PresentationSc(MemoryStream pptxStream, bool isEditable)
         {
             ThrowIfSourceInvalid(pptxStream);
             _outerSdkPresentation = PresentationDocument.Open(pptxStream, isEditable);
@@ -74,10 +77,10 @@ namespace ShapeCrawler.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationEx"/> class by pptx-file byte array.
+        /// Initializes a new instance of the <see cref="PresentationSc"/> class by pptx-file byte array.
         /// </summary>
         /// <param name="pptxBytes"></param>
-        public PresentationEx(byte[] pptxBytes)
+        public PresentationSc(byte[] pptxBytes)
         {
             ThrowIfSourceInvalid(pptxBytes);
 
@@ -92,9 +95,9 @@ namespace ShapeCrawler.Models
 
         #region Public Methods
 
-        public static PresentationEx Open(string pptxPath, bool isEditable)
+        public static PresentationSc Open(string pptxPath, bool isEditable)
         {
-            return new PresentationEx(pptxPath, isEditable);
+            return new PresentationSc(pptxPath, isEditable);
         }
 
         public void Save()
@@ -144,26 +147,26 @@ namespace ShapeCrawler.Models
             _closed = true;
         }
 
-        public static PresentationEx Open(byte[] pptxBytes, bool isEditable = false)
+        public static PresentationSc Open(byte[] pptxBytes, bool isEditable = false)
         {
             ThrowIfSourceInvalid(pptxBytes);
 
             var pptxMemoryStream = new MemoryStream();
             pptxMemoryStream.Write(pptxBytes, 0, pptxBytes.Length);
 
-            return new PresentationEx(pptxMemoryStream, isEditable);
+            return new PresentationSc(pptxMemoryStream, isEditable);
         }
 
-        public static PresentationEx Open(Stream stream, bool isEditable)
+        public static PresentationSc Open(Stream stream, bool isEditable)
         {
-            return new PresentationEx(stream, isEditable);
+            return new PresentationSc(stream, isEditable);
         }
 
         #endregion Public Methods
 
         #region Private Methods
 
-        private EditableCollection<SlideEx> GetSlides()
+        private EditableCollection<SlideSc> GetSlides()
         {
             var sdkPrePart = _outerSdkPresentation.PresentationPart;
             _preData = new PresentationData(sdkPrePart.Presentation, _slideSize);
@@ -216,14 +219,14 @@ namespace ShapeCrawler.Models
         private void Init()
         {
             ThrowIfSlidesNumberLarge();
-            _slides = new Lazy<EditableCollection<SlideEx>>(GetSlides);
-            _slideSize = new Lazy<SlideSize>(ParseSlideSize);
+            _slides = new Lazy<EditableCollection<SlideSc>>(GetSlides);
+            _slideSize = new Lazy<SlideSizeSc>(ParseSlideSize);
         }
 
-        private SlideSize ParseSlideSize()
+        private SlideSizeSc ParseSlideSize()
         {
             var sdkSldSize = _outerSdkPresentation.PresentationPart.Presentation.SlideSize;
-            return new SlideSize(sdkSldSize.Cx.Value, sdkSldSize.Cy.Value);
+            return new SlideSizeSc(sdkSldSize.Cx.Value, sdkSldSize.Cy.Value);
         }
 
         #endregion Private Methods

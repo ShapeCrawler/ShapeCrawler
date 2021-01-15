@@ -16,31 +16,31 @@ namespace ShapeCrawler.Factories.Builders
         /// <summary>
         /// Builds a shape with OLE object content.
         /// </summary>
-        ShapeEx WithOle(ILocation innerTransform, ShapeContext spContext, OleObject ole);
+        ShapeSc WithOle(ILocation innerTransform, ShapeContext spContext, OleObject ole);
 
         /// <summary>
         /// Builds a shape with picture content.
         /// </summary>
-        ShapeEx WithPicture(ILocation innerTransform, ShapeContext spContext, Picture picture, GeometryType geometry);
+        ShapeSc WithPicture(ILocation innerTransform, ShapeContext spContext, Picture picture, GeometryType geometry);
 
         /// <summary>
         /// Builds a AutoShape.
         /// </summary>
-        ShapeEx WithAutoShape(ILocation innerTransform, ShapeContext spContext, GeometryType geometry);
+        ShapeSc WithAutoShape(ILocation innerTransform, ShapeContext spContext, GeometryType geometry);
 
         /// <summary>
         /// Builds a shape with table content.
         /// </summary>
-        ShapeEx WithTable(ILocation innerTransform, ShapeContext spContext, TableEx table);
+        ShapeSc WithTable(ILocation innerTransform, ShapeContext spContext, TableSc table);
 
         /// <summary>
         /// Builds a shape with OLE object content.
         /// </summary>
-        ShapeEx WithChart(ILocation innerTransform, ShapeContext spContext, ChartEx chart);
+        ShapeSc WithChart(ILocation innerTransform, ShapeContext spContext, ChartSc chart);
 
         /// <summary>
         /// Builds a group shape which has grouped shape items.
         /// </summary>
-        ShapeEx WithGroup(ILocation innerTransform, ShapeContext spContext, IList<ShapeEx> groupedShapes);
+        ShapeSc WithGroup(ILocation innerTransform, ShapeContext spContext, IList<ShapeSc> groupedShapes);
     }
 }

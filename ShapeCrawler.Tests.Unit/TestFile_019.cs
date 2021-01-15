@@ -19,32 +19,6 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void AutoShape_FontHeight()
-        {
-            // Arrange
-            var pre = _fixture.pre019;
-
-            // Act
-            var fh = pre.Slides[0].Shapes.Single(x=>x.Id == 4103).TextFrame.Paragraphs.First().Portions.First().Font.Size;
-
-            // Assert
-            Assert.Equal(1800, fh);
-        }
-
-        [Fact]
-        public void Chart_Title_Test()
-        {
-            // Arrange
-            var pre = _fixture.pre019;
-
-            // Act
-            var chartTitle = pre.Slides[0].Shapes.Single(x => x.Id == 4).Chart.Title;
-
-            // Assert
-            Assert.Equal("Test title", chartTitle);
-        }
-
-        [Fact]
         public void Picture_DoNotParseStrangePicture_Test()
         {
             // Arrange
@@ -52,24 +26,6 @@ namespace ShapeCrawler.Tests.Unit
 
             // Act - Assert
             Assert.ThrowsAny<Exception>(() => pre.Slides[1].Shapes.Single(x => x.Id == 47));
-        }
-
-        [Fact]
-        public void SlideNumber_Test()
-        {
-            // Arrange
-            var pre = _fixture.pre019;
-            var shape2 = pre.Slides[0].Shapes.Single(x => x.Id == 2);
-
-            // Act
-            var text = shape2.TextFrame.Text;
-            var phType = shape2.PlaceholderType;
-            var fh = shape2.TextFrame.Paragraphs.First().Portions.First().Font.Size;
-
-            // Arrange
-            Assert.Equal("1", text);
-            Assert.Equal(PlaceholderType.SlideNumber, phType);
-            Assert.Equal(1200, fh);
         }
     }
 }

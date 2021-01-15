@@ -20,36 +20,12 @@ namespace ShapeCrawler.Tests.Unit
         }
 
 
-        [Fact]
-        public void TablesPropertiesTest()
-        {
-            // ARRANGE
-            var pre = _fixture.pre009;
-            var elements = pre.Slides[2].Shapes;
-            var tblEx = elements.Single(e => e.Id.Equals(3));
-            var firstRow = tblEx.Table.Rows.First();
-
-            // ACT
-            var numRows = tblEx.Table.Rows.Count;
-            var numCells = firstRow.Cells.Count;
-            var numParagraphs = firstRow.Cells.First().TextBody.Paragraphs.Count;
-            var cellTxt = firstRow.Cells.First().TextBody.Text;
-            var prText = firstRow.Cells.First().TextBody.Paragraphs.First().Text;
-            var portionTxt = firstRow.Cells.First().TextBody.Paragraphs.First().Portions.Single().Text;
-
-            // ASSERT
-            Assert.Equal(3, numRows);
-            Assert.Equal(3, numCells);
-            Assert.Equal(2, numParagraphs);
-            Assert.Equal("0:0_p1_lvl1", prText);
-            Assert.Equal("0:0_p1_lvl1", portionTxt);
-        }
 
         [Fact]
         public void Table_Row_Remove_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = new PresentationSc(Properties.Resources._009);
             var sld3Shapes = pre.Slides[2].Shapes;
             var table3 = sld3Shapes.First(s => s.Id.Equals(3)).Table;
             var rows = table3.Rows;
@@ -62,7 +38,7 @@ namespace ShapeCrawler.Tests.Unit
             pre.SaveAs(ms);
             pre.Close();
 
-            pre = new PresentationEx(ms);
+            pre = new PresentationSc(ms);
             table3 = pre.Slides[2].Shapes.First(s => s.Id.Equals(3)).Table;
             rows = table3.Rows;
             var numRowsAfter = rows.Count;
@@ -137,7 +113,7 @@ namespace ShapeCrawler.Tests.Unit
         public void DateTimePlaceholder_Text_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._011_dt);
+            var pre = new PresentationSc(Properties.Resources._011_dt);
             var dt = pre.Slides[0].Shapes.Single(s => s.Id == 54275);
 
             // ACT
@@ -155,7 +131,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Placeholder_FontHeight_Test()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._012_title_placeholder);
+            var pre = new PresentationSc(Properties.Resources._012_title_placeholder);
             var title = pre.Slides[0].Shapes.Single(x => x.Id == 2);
 
             // ACT
@@ -173,7 +149,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Placeholder_FontHeight_Title_Test()
         {
             // ARRANGE
-            var pre010 = new PresentationEx(Properties.Resources._010);
+            var pre010 = new PresentationSc(Properties.Resources._010);
             var pre010TextBox = pre010.Slides[0].Shapes.Single(x => x.Id == 2);
 
             // ACT
@@ -196,7 +172,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Remove_Test2()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._006_1_slides);
+            var pre = new PresentationSc(Properties.Resources._006_1_slides);
             var slides = pre.Slides;
             var slide1 = slides.First();
 
@@ -214,7 +190,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Shape_Text_Test2()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._012_title_placeholder);
+            var pre = new PresentationSc(Properties.Resources._012_title_placeholder);
             var autoShape = pre.Slides[0].Shapes.Single(s => s.Id == 3);
 
             // ACT
@@ -230,7 +206,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Shape_Text_Tests()
         {
             // ARRANGE
-            var pre = new PresentationEx(Properties.Resources._011_dt);
+            var pre = new PresentationSc(Properties.Resources._011_dt);
             var autoShape = pre.Slides[0].Shapes.Single(s => s.Id == 2);
             var grShape = pre.Slides[0].Shapes.Single(s => s.Id == 4);
 
@@ -249,7 +225,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Hidden_Test()
         {
             var ms = new MemoryStream(Properties.Resources._004);
-            var pre = new PresentationEx(ms);
+            var pre = new PresentationSc(ms);
 
             // ACT
             var allElements = pre.Slides.Single().Shapes;

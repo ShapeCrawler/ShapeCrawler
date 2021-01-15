@@ -36,12 +36,12 @@ namespace ShapeCrawler.Exceptions
             "This property can not be changed for a grouped shape. Use IsGrouped to check whether the shape is grouped.";
 
         public static string NotXValues =>
-            $"This chart type has not {nameof(ChartEx.XValues)} property. You can check it via {nameof(ChartEx.HasXValues)} property.";
+            $"This chart type has not {nameof(ChartSc.XValues)} property. You can check it via {nameof(ChartSc.HasXValues)} property.";
 
         public static string ChartCanNotHaveCategory =>
-            $"#0 can not have category. You can check chart type via {nameof(ChartEx.Type)} property.";
+            $"#0 can not have category. You can check chart type via {nameof(ChartSc.Type)} property.";
 
         public static string ShapeIsNotPlaceholder =>
-            $"The shape is not placeholder. You can check it via {nameof(ShapeEx.IsPlaceholder)} property.";
+            $"The shape is not placeholder. You can check it via {nameof(ShapeSc.IsPlaceholder)} property.";
     }
 }

@@ -1,11 +1,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using DocumentFormat.OpenXml;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.Models.TextShape;
 using ShapeCrawler.Settings;
-using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Collections
@@ -26,7 +23,7 @@ namespace ShapeCrawler.Collections
             CollectionItems = portions;
         }
 
-        internal static PortionCollection Create(A.Paragraph aParagraph, ShapeContext spContext, int innerPrLvl, ParagraphEx paragraphEx)
+        internal static PortionCollection Create(A.Paragraph aParagraph, ShapeContext spContext, Paragraph paragraph)
         {
             IEnumerable<A.Run> aRuns = aParagraph.Elements<A.Run>();
             if (aRuns.Any())
@@ -34,8 +31,7 @@ namespace ShapeCrawler.Collections
                 var portions = new List<Portion>(aRuns.Count());
                 foreach (A.Run aRun in aRuns)
                 {
-                    A.Text aText = aRun.Text;
-                    var newPortion = new Portion(aText, paragraphEx, spContext, innerPrLvl);
+                    var newPortion = new Portion(aRun.Text, paragraph, spContext);
                     portions.Add(newPortion);
                 }
 
@@ -44,7 +40,7 @@ namespace ShapeCrawler.Collections
             else
             {
                 A.Text aText = aParagraph.GetFirstChild<A.Field>().GetFirstChild<A.Text>();
-                var newPortion = new Portion(aText, paragraphEx, spContext, innerPrLvl);
+                var newPortion = new Portion(aText, paragraph, spContext);
                 var portions = new List<Portion>(new[] { newPortion });
 
                 return new PortionCollection(portions);

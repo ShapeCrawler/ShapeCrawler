@@ -14,16 +14,15 @@ namespace ShapeCrawler.Settings
         private readonly Lazy<Dictionary<int, int>> _masterOtherFonts;
 
         #region Properties
+        internal SlidePart SdkSlidePart { get; private set; }
 
-        public SlidePart SdkSlidePart { get; private set; }
+        internal OpenXmlElement SdkElement { get; private set; }
 
-        public OpenXmlElement SdkElement { get; private set; }
+        internal IPresentationData PresentationData { get; private set; }
 
-        public IPresentationData presentationData { get; private set; }
+        internal PlaceholderFontService PlaceholderFontService { get; private set; }
 
-        public PlaceholderFontService PlaceholderFontService { get; private set; }
-
-        public IPlaceholderService PlaceholderService { get; private set; }
+        internal IPlaceholderService PlaceholderService { get; private set; }
 
         #endregion Properties
 
@@ -113,7 +112,7 @@ namespace ShapeCrawler.Settings
 
                 return new ShapeContext
                 {
-                    presentationData = _preSettings,
+                    PresentationData = _preSettings,
                     PlaceholderFontService = _fontService,
                     PlaceholderService = _placeholderService,
                     SdkSlidePart = _sdkSldPart,
