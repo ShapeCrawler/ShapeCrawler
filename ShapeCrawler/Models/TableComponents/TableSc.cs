@@ -11,7 +11,7 @@ namespace SlideDotNet.Models.TableComponents
     /// <summary>
     /// Represents a table element on a slide.
     /// </summary>
-    public class TableEx
+    public class TableSc
     {
         #region Fields
 
@@ -29,9 +29,9 @@ namespace SlideDotNet.Models.TableComponents
         #region Constructors
 
         /// <summary>
-        /// Initializes an instance of the <see cref="TableEx"/> class.
+        /// Initializes an instance of the <see cref="TableSc"/> class.
         /// </summary>
-        public TableEx(P.GraphicFrame xmlGrFrame)
+        public TableSc(P.GraphicFrame xmlGrFrame)
         {
             _sdkGrFrame = xmlGrFrame ?? throw new ArgumentNullException(nameof(xmlGrFrame));
             _rowsCollection = new Lazy<RowCollection>(()=>GetRowsCollection());

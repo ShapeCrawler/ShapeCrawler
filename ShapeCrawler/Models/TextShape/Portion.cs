@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Settings;
@@ -12,15 +13,16 @@ namespace ShapeCrawler.Models.TextShape
     /// Represents a text paragraph portion.
     /// </summary>
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
+    [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
     public class Portion
     {
         private readonly ResettableLazy<FontSc> _font;
         private readonly ShapeContext _shapeContext;
-        private readonly int _innerPrLvl;
 
         #region Internal Properties
 
-        internal ParagraphEx ParagraphEx { get; }
+        internal Paragraph Paragraph { get; }
+        
         internal readonly A.Text AText;
 
         #endregion Internal Properties
@@ -28,12 +30,12 @@ namespace ShapeCrawler.Models.TextShape
         #region Public Properties
 
         /// <summary>
-        /// Gets or sets text.
+        /// Gets or sets paragraph portion text.
         /// </summary>
         public string Text
         {
-            get => AText.Text;
-            set => AText.Text = value;
+            get => GetText();
+            set => SetText(value);
         }
 
         /// <summary>
@@ -46,23 +48,24 @@ namespace ShapeCrawler.Models.TextShape
         /// </summary>
         public void Remove()
         {
-            ParagraphEx.Portions.Remove(this);
+            Paragraph.Portions.Remove(this);
         }
 
         #endregion Public Properties
 
         #region Constructors
 
-        public Portion(A.Text aText, ParagraphEx paragraphEx, ShapeContext shapeContext, int innerPrLvl)
+        public Portion(A.Text aText, Paragraph paragraph, ShapeContext shapeContext)
         {
             AText = aText;
-            ParagraphEx = paragraphEx;
+            Paragraph = paragraph;
             _shapeContext = shapeContext;
-            _innerPrLvl = innerPrLvl;
             _font = new ResettableLazy<FontSc>(CreateFont);
         }
 
         #endregion Constructors
+
+        #region Private Methods
 
         private FontSc CreateFont()
         {
@@ -80,25 +83,48 @@ namespace ShapeCrawler.Models.TextShape
             {
                 var prFontHeight =
                     _shapeContext.PlaceholderFontService.TryGetFontHeight((OpenXmlCompositeElement)sdkElement,
-                        _innerPrLvl);
+                        Paragraph.Level);
                 if (prFontHeight != null)
                 {
                     return (int)prFontHeight;
                 }
             }
 
-            if (_shapeContext.presentationData.LlvFontHeights.ContainsKey(_innerPrLvl))
+            if (_shapeContext.PresentationData.LlvFontHeights.ContainsKey(Paragraph.Level))
             {
-                return _shapeContext.presentationData.LlvFontHeights[_innerPrLvl];
+                return _shapeContext.PresentationData.LlvFontHeights[Paragraph.Level];
             }
 
-            var exist = _shapeContext.TryGetFontSize(_innerPrLvl, out int fh);
+            var exist = _shapeContext.TryGetFontSize(Paragraph.Level, out int fh);
             if (exist)
             {
                 return fh;
             }
 
             return FormatConstants.DefaultFontSize;
+        }
+
+        private string GetText()
+        {
+            string portionText = AText.Text;
+            if (AText.Parent.NextSibling<A.Break>() != null)
+            {
+                portionText += Environment.NewLine;
+            }
+
+            return portionText;
+        }
+
+        private void SetText(string text)
+        {
+            AText.Text = text;
+        }
+
+        #endregion Private Methods
+
+        public A.Run GetARunCopy()
+        {
+            return (A.Run) AText.Parent.CloneNode(true);
         }
     }
 }

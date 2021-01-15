@@ -21,13 +21,24 @@ You can quickly start work with the library by following steps listed below.
 - [NuGet](https://nuget.org/packages/ShapeCrawler): `dotnet add package ShapeCrawler`
 
 ## Usage
+
+### Open presentation
+```C#
+PresentationSc presentation = PresentationSc.Open(@"c:\MyPresentations\helloWorld.pptx", isEditable: false);
+
+Console.WriteLine($"Number of slides in the presentation: {presentation.Slides.Count}");
+Console.WriteLine($"Number of shapes on the first slide: {presentation.Slides[0].Shapes.Count}");
+
+presentation.Close();
+```
+
 ### Work with Text shape
 ```C#
-PresentationEx presentation = PresentationEx.Open("helloWorld.pptx", true);
-SlideEx slide = presentation.Slides.First();
+PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", true);
+SlideSc slide = presentation.Slides.First();
 
 // Prints on console content of all text shapes
-foreach (ShapeEx shape in slide.Shapes)
+foreach (ShapeSc shape in slide.Shapes)
 {
     if (shape.HasTextFrame)
     {
@@ -36,16 +47,16 @@ foreach (ShapeEx shape in slide.Shapes)
 }
 
 // Changes paragraph text
-ShapeEx textShape = slide.Shapes.First(sp => sp.HasTextFrame);
-ParagraphEx paragraph = textShape.TextFrame.Paragraphs.First();
+ShapeSc textShape = slide.Shapes.First(sp => sp.HasTextFrame);
+Paragraph paragraph = textShape.TextFrame.Paragraphs.First();
 paragraph.Text = "A new paragraph text";
 presentation.Save();
 ```
 
 #### Font
 ```C#
-PresentationEx presentation = PresentationEx.Open("helloWorld.pptx", false);
-SlideEx slide = presentation.Slides.First();
+PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", false);
+SlideSc slide = presentation.Slides.First();
 
 // Prints font name and sizes of paragraph text portions
 ITextFrame textFrame = slide.Shapes.First(sp => sp.HasTextFrame).TextFrame;
@@ -58,11 +69,11 @@ foreach (Portion portion in paragraphPortions)
 ```
 ### Work with Chart shape
 ```C#
-PresentationEx presentation = PresentationEx.Open("helloWorld.pptx", isEditable: false);
-SlideEx slide = presentation.Slides.First();
-ShapeEx chartShape = slide.Shapes.First(sp => sp.HasChart == true);
+PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: false);
+SlideSc slide = presentation.Slides.First();
+ShapeSc chartShape = slide.Shapes.First(sp => sp.HasChart == true);
 
-IChart chart = chartShape.Chart;
+ChartSc chart = chartShape.Chart;
 if (chart.HasTitle)
 {
     Debug.Print(chart.Title);

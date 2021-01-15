@@ -5,7 +5,6 @@ using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Factories.Drawing;
-using ShapeCrawler.Models;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 
@@ -28,7 +27,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Hide_MethodHidesSlide_WhenItIsExecuted()
         {
             // Arrange
-            var pre = PresentationEx.Open(Properties.Resources._001, true);
+            var pre = PresentationSc.Open(Properties.Resources._001, true);
             var slide = pre.Slides.First();
 
             // Act
@@ -42,7 +41,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Hidden_GetterReturnsTrue_WhenTheSlideIsHidden()
         { 
             // Arrange
-            SlideEx slideEx = _fixture.Pre002.Slides[2];
+            SlideSc slideEx = _fixture.Pre002.Slides[2];
 
             // Act
             bool hidden = slideEx.Hidden;
@@ -51,11 +50,26 @@ namespace ShapeCrawler.Tests.Unit
             hidden.Should().BeTrue();
         }
 
+
+        [Fact]
+        public void SaveScheme_CreatesAndSavesSlideSchemeImageInSpecifiedStream()
+        {
+            // Arrange
+            SlideSc slide = _fixture.Pre025.Slides[2];
+            var stream = new MemoryStream();
+
+            // Act
+            slide.SaveScheme(stream);
+
+            // Assert
+            stream.Length.Should().BeGreaterThan(0);
+        }
+
         [Fact]
         public async void BackgroundSetImage_ChangesBackground_WhenImageStreamIsPassed()
         {
             // Arrange
-            var pre = new PresentationEx(Properties.Resources._009);
+            var pre = new PresentationSc(Properties.Resources._009);
             var backgroundImage = pre.Slides[0].Background;
             var imgStream = new MemoryStream(Properties.Resources.test_image_2);
             var bytesBefore = await backgroundImage.GetImageBytes();
@@ -72,7 +86,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Background_ImageIsNull_WhenTheSlideHasNotBackground()
         {
             // Arrange
-            SlideEx slide = _fixture.Pre009.Slides[1];
+            SlideSc slide = _fixture.Pre009.Slides[1];
 
             // Act
             ImageEx backgroundImage = slide.Background;
@@ -88,7 +102,7 @@ namespace ShapeCrawler.Tests.Unit
             const string customDataString = "Test custom data";
             var origPreStream = new MemoryStream();
             origPreStream.Write(Properties.Resources._001);
-            var originPre = new PresentationEx(origPreStream, true);
+            var originPre = new PresentationSc(origPreStream, true);
             var slide = originPre.Slides.First();
 
             // Act
@@ -96,7 +110,7 @@ namespace ShapeCrawler.Tests.Unit
 
             var savedPreStream = new MemoryStream();
             originPre.SaveAs(savedPreStream);
-            var savedPre = new PresentationEx(savedPreStream, false);
+            var savedPre = new PresentationSc(savedPreStream, false);
             var customData = savedPre.Slides.First().CustomData;
 
             // Assert
@@ -122,7 +136,7 @@ namespace ShapeCrawler.Tests.Unit
 
         [Theory]
         [MemberData(nameof(TestCasesForShapesCounter))]
-        public void ShapesCount_ReturnsNumberOfShapesOnTheSlide(SlideEx slideEx, int expectedShapesNumber)
+        public void ShapesCount_ReturnsNumberOfShapesOnTheSlide(SlideSc slideEx, int expectedShapesNumber)
         {
             // Act
             var count = slideEx.Shapes.Count;
@@ -133,19 +147,19 @@ namespace ShapeCrawler.Tests.Unit
 
         public static IEnumerable<object[]> TestCasesForShapesCounter()
         {
-            var pre009 = PresentationEx.Open(Properties.Resources._009, false);
+            var pre009 = PresentationSc.Open(Properties.Resources._009, false);
             
-            SlideEx slideEx = pre009.Slides[0];
+            SlideSc slideEx = pre009.Slides[0];
             yield return new object[] { slideEx, 6 };
             slideEx = pre009.Slides[1];
             yield return new object[] { slideEx, 6 };
-            slideEx = PresentationEx.Open(Properties.Resources._002, false).Slides[0];
+            slideEx = PresentationSc.Open(Properties.Resources._002, false).Slides[0];
             yield return new object[] { slideEx, 3 };
-            slideEx = PresentationEx.Open(Properties.Resources._003, false).Slides[0];
+            slideEx = PresentationSc.Open(Properties.Resources._003, false).Slides[0];
             yield return new object[] { slideEx, 5 };
-            slideEx = PresentationEx.Open(Properties.Resources._013, false).Slides[0];
+            slideEx = PresentationSc.Open(Properties.Resources._013, false).Slides[0];
             yield return new object[] { slideEx, 4 };
-            slideEx = PresentationEx.Open(Properties.Resources._023, false).Slides[0];
+            slideEx = PresentationSc.Open(Properties.Resources._023, false).Slides[0];
             yield return new object[] { slideEx, 1 };
         }
 

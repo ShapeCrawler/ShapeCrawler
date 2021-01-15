@@ -27,7 +27,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
         public SdkShapeHandler(ShapeContext.Builder shapeContextBuilder,
                                LocationParser transformFactory,
                                IGeometryFactory geometryFactory) :
-            this(shapeContextBuilder, transformFactory, geometryFactory, new ShapeEx.Builder())
+            this(shapeContextBuilder, transformFactory, geometryFactory, new ShapeSc.Builder())
         {
 
         }
@@ -48,7 +48,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #region Public Methods
 
-        public override ShapeEx Create(OpenXmlElement sdkElement)
+        public override ShapeSc Create(OpenXmlElement sdkElement)
         {
             Check.NotNull(sdkElement, nameof(sdkElement));
 

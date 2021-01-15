@@ -5,7 +5,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
-using SlideSize = ShapeCrawler.Models.SlideSize;
+using SlideSizeSc = ShapeCrawler.Models.SlideSizeSc;
 
 namespace ShapeCrawler.Settings
 {
@@ -28,13 +28,13 @@ namespace ShapeCrawler.Settings
         /// </summary>
         public Dictionary<OpenXmlPart, SpreadsheetDocument> XlsxDocuments { get; }
 
-        public Lazy<SlideSize> SlideSize { get; }
+        public Lazy<SlideSizeSc> SlideSize { get; }
 
         #endregion Properties
 
         #region Constructors
 
-        public PresentationData(P.Presentation sdkPresentation, Lazy<SlideSize> slideSize)
+        public PresentationData(P.Presentation sdkPresentation, Lazy<SlideSizeSc> slideSize)
         {
             Check.NotNull(sdkPresentation, nameof(sdkPresentation));
 

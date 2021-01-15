@@ -10,7 +10,7 @@ namespace ShapeCrawler.Models.TextShape
         /// <summary>
         /// Returns list of paragraphs.
         /// </summary>
-        IList<ParagraphEx> Paragraphs { get; }
+        IList<Paragraph> Paragraphs { get; }
 
         /// <summary>
         /// Returns text content.

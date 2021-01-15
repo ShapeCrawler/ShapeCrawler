@@ -10,12 +10,12 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
         #region Properties
 
         /// <summary>
-        /// Returns the parent category. Returns null if the chart hash not multi-category.
+        /// Gets main category. Returns null if the chart is not a multi-category chart type.
         /// </summary>
-        public Category Parent { get; }
+        public Category MainCategory { get; }
 
         /// <summary>
-        /// Returns category name.
+        /// Gets category name.
         /// </summary>
         public string Name { get; }
 
@@ -40,7 +40,7 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
         public Category(string value, Category parent)
         {
             Name = value ?? throw new ArgumentNullException(nameof(value));
-            Parent = parent ?? throw new ArgumentNullException(nameof(parent));
+            MainCategory = parent ?? throw new ArgumentNullException(nameof(parent));
         }
 
         #endregion Constructors

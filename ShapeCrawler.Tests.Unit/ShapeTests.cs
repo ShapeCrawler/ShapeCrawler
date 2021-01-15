@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Enums;
-using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Models.Styles;
 using ShapeCrawler.Tests.Unit.Helpers;
@@ -29,34 +28,33 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Theory]
-        [MemberData(nameof(PlaceholderTypePropertyTestCases))]
-        public void PlaceholderType_GetterReturnsPlaceholderTypeOfTheShape(ShapeEx shapeEx, PlaceholderType expectedType)
+        [MemberData(nameof(TestCasesPlaceholderType))]
+        public void PlaceholderType_GetterReturnsPlaceholderTypeOfTheShape(ShapeSc shape, PlaceholderType expectedType)
         {
             // Act
-            var actualType = shapeEx.PlaceholderType;
+            PlaceholderType? actualType = shape.PlaceholderType;
 
             // Assert
             actualType.Should().Be(expectedType);
         }
 
-        public static IEnumerable<object[]> PlaceholderTypePropertyTestCases()
+        public static IEnumerable<object[]> TestCasesPlaceholderType()
         {
-            var shape = PresentationEx.Open(Resources._021, false).
-                                                    Slides[3].
-                                                    Shapes.First(sp => sp.Id == 2);
+            ShapeSc shape = PresentationSc.Open(Resources._021, false).Slides[3].Shapes.First(sp => sp.Id == 2);
             yield return new object[] { shape, PlaceholderType.Footer };
 
-            shape = PresentationEx.Open(Resources._008, false)
-                .Slides[0]
-                .Shapes.First(sp => sp.Id == 3);
+            shape = PresentationSc.Open(Resources._008, false).Slides[0].Shapes.First(sp => sp.Id == 3);
             yield return new object[] { shape, PlaceholderType.DateAndTime };
+
+            shape = PresentationSc.Open(Resources._019, false).Slides[0].Shapes.First(sp => sp.Id == 2);
+            yield return new object[] { shape, PlaceholderType.SlideNumber };
         }
 
         [Fact]
         public void Fill_ReturnsNull_WhenShapeIsNotFilled()
         {
             // Arrange
-            ShapeEx shapeEx = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 6);
+            ShapeSc shapeEx = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 6);
 
             // Act
             ShapeFill shapeFill = shapeEx.Fill;
@@ -69,8 +67,8 @@ namespace ShapeCrawler.Tests.Unit
         public void FillType_GetterReturnsFillTypeByWhichTheShapeIsFilled()
         {
             // Arrange
-            ShapeEx shapeExCase1 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
-            ShapeEx shapeExCase2 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
+            ShapeSc shapeExCase1 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
+            ShapeSc shapeExCase2 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
 
             // Act
             FillType shapeFillTypeCase1 = shapeExCase1.Fill.Type;
@@ -85,7 +83,7 @@ namespace ShapeCrawler.Tests.Unit
         public void FillSolidColorName_ReturnsSolidColorNameByWhichTheShapeIsFilled()
         {
             // Arrange
-            ShapeEx shapeEx = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
+            ShapeSc shapeEx = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
 
             // Act
             var shapeSolidColorName = shapeEx.Fill.SolidColor.Name;
@@ -99,7 +97,7 @@ namespace ShapeCrawler.Tests.Unit
         public async void FillPictureGetImageBytes_ReturnsImageByWhichTheShapeIsFilled()
         {
             // Arrange
-            ShapeEx shapeEx = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
+            ShapeSc shapeEx = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
 
             // Act
             var shapeFilledImage = await shapeEx.Fill.Picture.GetImageBytes();
@@ -112,8 +110,8 @@ namespace ShapeCrawler.Tests.Unit
         public async void FillPictureSetImage_MethodSetsImageForPictureFilledShape()
         {
             // Arrange
-            var presentation = PresentationEx.Open(Resources._009, true);
-            ShapeEx shapeEx = presentation.Slides[2].Shapes.First(sp => sp.Id.Equals(4));
+            var presentation = PresentationSc.Open(Resources._009, true);
+            ShapeSc shapeEx = presentation.Slides[2].Shapes.First(sp => sp.Id.Equals(4));
             var newImage = new MemoryStream(Resources.test_image_2);
             var imageSizeBefore = (await shapeEx.Fill.Picture.GetImageBytes()).Length;
 
@@ -126,16 +124,17 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void XAndY_ReturnXAndYAxisShapeCoordinatesOnTheSlide()
+        public void XAndY_ReturnXAndYAxesShapeCoordinatesOnTheSlide()
         {
             // Arrange
-            ShapeEx shapeExCase1 = _fixture.Pre021.Slides[3].Shapes.First(sp => sp.Id == 2);
-            ShapeEx shapeExCase2 = _fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3);
-            ShapeEx shapeExCase3 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
-            ShapeEx shapeExCase4 = _fixture.Pre009.Slides[1].Shapes.Single(sp => sp.ContentType.Equals(ShapeContentType.Group)).
+            ShapeSc shapeExCase1 = _fixture.Pre021.Slides[3].Shapes.First(sp => sp.Id == 2);
+            ShapeSc shapeExCase2 = _fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3);
+            ShapeSc shapeExCase3 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
+            ShapeSc shapeExCase4 = _fixture.Pre009.Slides[1].Shapes.Single(sp => sp.ContentType.Equals(ShapeContentType.Group)).
                                 GroupedShapes.Single(sp => sp.Id.Equals(5));
-            ShapeEx shapeExCase5 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7);
-            ShapeEx shapeExCase6 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
+            ShapeSc shapeExCase5 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7);
+            ShapeSc shapeExCase6 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
+            ShapeSc shapeExCase7 = _fixture.Pre025.Slides[2].Shapes.First(sp => sp.Id == 7);
 
             // Act
             long xCoordinateCase1 = shapeExCase1.X;
@@ -143,6 +142,7 @@ namespace ShapeCrawler.Tests.Unit
             long xCoordinateCase3 = shapeExCase3.X;
             long xCoordinateCase4 = shapeExCase4.X;
             long xCoordinateCase6 = shapeExCase6.X;
+            long xCoordinateCase7 = shapeExCase7.X;
             long yCoordinateCase3 = shapeExCase3.Y;
             long yCoordinateCase5 = shapeExCase5.Y;
             long yCoordinateCase6 = shapeExCase6.Y;
@@ -153,6 +153,7 @@ namespace ShapeCrawler.Tests.Unit
             xCoordinateCase3.Should().Be(1524000);
             xCoordinateCase4.Should().Be(1581846);
             xCoordinateCase6.Should().Be(699323);
+            xCoordinateCase7.Should().Be(757383);
             yCoordinateCase3.Should().Be(1122363);
             yCoordinateCase5.Should().Be(4);
             yCoordinateCase6.Should().Be(3463288);
@@ -162,7 +163,7 @@ namespace ShapeCrawler.Tests.Unit
         public void XAndWidth_SettersSetXAndWidthOfTheShape()
         {
             // Arrange
-            var presentation = PresentationEx.Open(Resources._006_1_slides, true);
+            var presentation = PresentationSc.Open(Resources._006_1_slides, true);
             var shape = presentation.Slides.First().Shapes.First(sp => sp.Id == 3);
             var stream = new MemoryStream();
             const int newX = 4000000;
@@ -174,7 +175,7 @@ namespace ShapeCrawler.Tests.Unit
             presentation.SaveAs(stream);
 
             // Assert
-            presentation = PresentationEx.Open(stream, false);
+            presentation = PresentationSc.Open(stream, false);
             shape = presentation.Slides.First().Shapes.First(sp => sp.Id == 3);
             shape.X.Should().Be(newX);
             shape.Width.Should().Be(newWidth);
@@ -184,34 +185,52 @@ namespace ShapeCrawler.Tests.Unit
         public void WidthAndHeight_ReturnWidthAndHeightSizesOfTheShape()
         {
             // Arrange
-            var shapeCase1 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
-            var shapeCase2 = _fixture.Pre009.Slides[1].Shapes.Single(sp => sp.ContentType.Equals(ShapeContentType.Group)).
-                                GroupedShapes.Single(sp => sp.Id.Equals(5));
+            ShapeSc shapeCase1 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
+            ShapeSc shapeCase2 = _fixture.Pre009.Slides[1].Shapes.Single(sp => sp.ContentType.Equals(ShapeContentType.Group)).
+                                    GroupedShapes.Single(sp => sp.Id.Equals(5));
+            ShapeSc shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
 
             // Act
-            var shapeWidthCase1 = shapeCase1.Width;
-            var shapeHeightCase1 = shapeCase1.Height;
-            var shapeWidthCase2 = shapeCase2.Width;
-            var shapeHeightCase2 = shapeCase2.Height;
+            long shapeWidthCase1 = shapeCase1.Width;
+            long shapeWidthCase2 = shapeCase2.Width;
+            long shapeWidthCase3 = shapeCase3.Width;
+            long shapeHeightCase1 = shapeCase1.Height;
+            long shapeHeightCase2 = shapeCase2.Height;
+            long shapeHeightCase3 = shapeCase3.Height;
 
             // Assert
             shapeWidthCase1.Should().Be(9144000);
-            shapeHeightCase1.Should().Be(1425528);
             shapeWidthCase2.Should().Be(1181377);
+            shapeWidthCase3.Should().Be(485775);
+            shapeHeightCase1.Should().Be(1425528);
             shapeHeightCase2.Should().Be(654096);
+            shapeHeightCase3.Should().Be(373062);
         }
 
         [Theory]
         [MemberData(nameof(GeometryTypeTestCases))]
-        public void GeometryType_ReturnsCorrectGeometryTypeValue(ShapeEx shapeEx, GeometryType expectedGeometryType)
+        public void GeometryType_ReturnsCorrectGeometryTypeValue(ShapeSc shapeEx, GeometryType expectedGeometryType)
         {
             // Assert
             shapeEx.GeometryType.Should().BeEquivalentTo(expectedGeometryType);
         }
 
+        [Fact]
+        public void ContentTypes_ReturnOLEObjectTypeEnum_WhenShapeContainsOLEObjectData()
+        {
+            // Arrange
+            ShapeSc shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 8);
+
+            // Act
+            ShapeContentType shapeContentType = shape.ContentType;
+
+            // Assert
+            shapeContentType.Should().Be(ShapeContentType.OLEObject);
+        }
+
         public static IEnumerable<object[]> GeometryTypeTestCases()
         {
-            var pre021 = PresentationEx.Open(Resources._021,false);
+            var pre021 = PresentationSc.Open(Resources._021,false);
             var shapes = pre021.Slides[3].Shapes;
             var shapeCase1 = shapes.First(sp => sp.Id == 2);
             var shapeCase2 = shapes.First(sp => sp.Id == 3);
@@ -254,7 +273,7 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             const string customDataString = "Test custom data";
             var savedPreStream = new MemoryStream();
-            var presentation = PresentationEx.Open(Resources._009, true);
+            var presentation = PresentationSc.Open(Resources._009, true);
             var shape = presentation.Slides.First().Shapes.First();
 
             // Act
@@ -262,7 +281,7 @@ namespace ShapeCrawler.Tests.Unit
             presentation.SaveAs(savedPreStream);
 
             // Assert
-            presentation = PresentationEx.Open(savedPreStream, false);
+            presentation = PresentationSc.Open(savedPreStream, false);
             shape = presentation.Slides.First().Shapes.First();
             shape.CustomData.Should().Be(customDataString);
         }
@@ -271,7 +290,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Name_ReturnsShapeNameString()
         {
             // Arrange
-            ShapeEx shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 8);
+            ShapeSc shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 8);
 
             // Act
             string shapeName = shape.Name;

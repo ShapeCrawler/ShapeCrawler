@@ -3,7 +3,7 @@
     /// <summary>
     /// Represent presentation slides size.
     /// </summary>
-    public class SlideSize
+    public class SlideSizeSc
     {
         #region Properties
 
@@ -15,7 +15,7 @@
 
         #region Constructors
 
-        public SlideSize(int sdkW, int sdkH)
+        public SlideSizeSc(int sdkW, int sdkH)
         {
             Width = sdkW;
             Height = sdkH;

@@ -91,11 +91,11 @@ namespace ShapeCrawler.Spreadsheet
 
         private List<string> GetCellStrValues(C.Formula formula, OpenXmlPart xlsxPackagePart) //EmbeddedPackagePart : OpenXmlPart
         {
-            var exist = _spContext.presentationData.XlsxDocuments.TryGetValue(xlsxPackagePart, out var xlsxDoc);
+            var exist = _spContext.PresentationData.XlsxDocuments.TryGetValue(xlsxPackagePart, out var xlsxDoc);
             if (!exist)
             {
                 xlsxDoc = SpreadsheetDocument.Open(xlsxPackagePart.GetStream(), false);
-                _spContext.presentationData.XlsxDocuments.Add(xlsxPackagePart, xlsxDoc);
+                _spContext.PresentationData.XlsxDocuments.Add(xlsxPackagePart, xlsxDoc);
             }
 #if NETSTANDARD2_1 || NETCOREAPP2_0
             var filteredFormula = formula.Text

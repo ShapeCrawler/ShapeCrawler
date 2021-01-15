@@ -1,5 +1,5 @@
 ﻿using System;
-using ShapeCrawler.Models;
+using ShapeCrawler;
 
 namespace ShapeCrawler.Tests.Unit
 {
@@ -8,11 +8,11 @@ namespace ShapeCrawler.Tests.Unit
     /// </summary>
     public class Presentation25Fixture : IDisposable
     {
-        public PresentationEx PresentationEx { get; }
+        public PresentationSc PresentationEx { get; }
 
         public Presentation25Fixture()
         {
-            PresentationEx = new PresentationEx(Properties.Resources._025);
+            PresentationEx = new PresentationSc(Properties.Resources._025);
         }
 
         public void Dispose()

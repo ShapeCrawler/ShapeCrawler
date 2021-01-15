@@ -21,7 +21,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
         #region Constructors
 
         public OleGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory) :
-            this(shapeContextBuilder, transformFactory, new ShapeEx.Builder())
+            this(shapeContextBuilder, transformFactory, new ShapeSc.Builder())
         {
             
         }
@@ -37,7 +37,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #endregion Constructors
 
-        public override ShapeEx Create(OpenXmlElement sdkElement)
+        public override ShapeSc Create(OpenXmlElement sdkElement)
         {
             Check.NotNull(sdkElement, nameof(sdkElement));
 

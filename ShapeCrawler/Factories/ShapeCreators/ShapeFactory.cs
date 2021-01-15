@@ -28,11 +28,11 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #endregion Constructors
 
-        #region Public Methods
+        #region Internal Methods
 
-        internal List<ShapeEx> FromSdlSlidePart(SlidePart sdkSldPart, SlideEx slideEx)
+        internal List<ShapeSc> FromSdlSlidePart(SlidePart sdkSldPart, SlideSc slide)
         {
-            var sldPhFontService = new PlaceholderFontService(sdkSldPart); //TODO: make DI
+            var sldPhFontService = new PlaceholderFontService(sdkSldPart);
             var phService = new PlaceholderService(sdkSldPart.SlideLayoutPart);
             var transformFactory = new LocationParser(phService);
             var geometryFactory = new GeometryFactory(phService);
@@ -54,13 +54,13 @@ namespace ShapeCrawler.Factories.ShapeCreators
             chartGrFrameHandler.Successor = tableGrFrameHandler;
 
             var sdkShapeTree = sdkSldPart.Slide.CommonSlideData.ShapeTree;
-            var shapes = new List<ShapeEx>(sdkShapeTree.Count());
+            var shapes = new List<ShapeSc>(sdkShapeTree.Count());
             foreach (var openXmlElement in sdkShapeTree)
             {
                 var shape = sdkShapeHandler.Create(openXmlElement);
                 if (shape != null)
                 {
-                    shape.SlideEx = slideEx;
+                    shape.SlideEx = slide;
                     shapes.Add(shape);
                 }
             }
@@ -68,6 +68,6 @@ namespace ShapeCrawler.Factories.ShapeCreators
             return shapes;
         }
 
-        #endregion Public Methods
+        #endregion Internal Methods
     }
 }

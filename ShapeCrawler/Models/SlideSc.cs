@@ -4,18 +4,18 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Factories.Drawing;
+using ShapeCrawler.Models;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Statics;
-using SlideDotNet.Models;
-
+// ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace ShapeCrawler.Models
+namespace ShapeCrawler
 {
     /// <summary>
     /// Represents a slide.
     /// </summary>
-    public class SlideEx
+    public class SlideSc
     {
         #region Fields
 
@@ -26,7 +26,7 @@ namespace ShapeCrawler.Models
         private readonly SlideNumber _sldNumEntity;
         private Lazy<CustomXmlPart> _customXmlPart;
 
-        public PresentationEx PresentationEx { get; }
+        public PresentationSc PresentationEx { get; }
 
         #endregion Fields
 
@@ -59,21 +59,21 @@ namespace ShapeCrawler.Models
 
         #region Constructors
 
-        public SlideEx(SlidePart sdkSldPart, SlideNumber sldNum, IPresentationData preSettings, PresentationEx presentationEx) :
+        public SlideSc(SlidePart sdkSldPart, SlideNumber sldNum, IPresentationData preSettings, PresentationSc presentationEx) :
             this(sdkSldPart, sldNum, preSettings, new SlideSchemeService(), presentationEx)
         {
 
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SlideEx"/> class.
+        /// Initializes a new instance of the <see cref="SlideSc"/> class.
         /// </summary>
-        public SlideEx(
+        public SlideSc(
             SlidePart sdkSldPart, 
             SlideNumber sldNum, 
             IPresentationData preSettings, 
             SlideSchemeService schemeService, 
-            PresentationEx presentationEx)
+            PresentationSc presentationEx)
         {
             _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
             _sldNumEntity = sldNum ?? throw new ArgumentNullException(nameof(sldNum));

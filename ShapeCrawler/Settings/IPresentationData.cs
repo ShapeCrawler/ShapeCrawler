@@ -20,6 +20,6 @@ namespace ShapeCrawler.Settings
         /// </summary>
         public Dictionary<OpenXmlPart, SpreadsheetDocument> XlsxDocuments { get; }
 
-        public Lazy<SlideSize> SlideSize { get; }
+        public Lazy<SlideSizeSc> SlideSize { get; }
     }
 }

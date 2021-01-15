@@ -26,7 +26,7 @@ namespace ShapeCrawler.Models.SlideComponents
     /// <summary>
     /// Represents a shape on a slide.
     /// </summary>
-    public class ShapeEx
+    public class ShapeSc
     {
         #region Fields
 
@@ -39,8 +39,8 @@ namespace ShapeCrawler.Models.SlideComponents
         private string _name;
         private Picture _picture;
         private OleObject _ole;
-        private TableEx _table;
-        private ChartEx _chart;
+        private TableSc _table;
+        private ChartSc _chart;
         private readonly ILocation _innerTransform;
 
         #endregion Fields
@@ -127,12 +127,12 @@ namespace ShapeCrawler.Models.SlideComponents
         /// <summary>
         /// Determines whether the shape has text frame.
         /// </summary>
-        public bool HasTextFrame => TextFrame is TextFrame;
+        public bool HasTextFrame => TextFrame is TextSc;
 
         /// <summary>
         /// Determines whether the shape has chart content.
         /// </summary>
-        public bool HasChart => Chart is Chart.ChartEx;
+        public bool HasChart => Chart is Chart.ChartSc;
 
         /// <summary>
         /// Determines whether the slide element has picture content.
@@ -148,12 +148,12 @@ namespace ShapeCrawler.Models.SlideComponents
         /// <summary>
         /// Returns chart. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.Chart"/>.
         /// </summary>
-        public IChart Chart => _chart;
+        public ChartSc Chart => _chart;
 
         /// <summary>
         /// Returns table. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.Table"/>.
         /// </summary>
-        public TableEx Table => _table;
+        public TableSc Table => _table;
 
         /// <summary>
         /// Returns picture. Returns <c>NULL</c> when the shape content type is not a <see cref="ShapeContentType.Picture"/>.
@@ -163,7 +163,7 @@ namespace ShapeCrawler.Models.SlideComponents
         /// <summary>
         /// Returns grouped shapes. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.Group"/>.
         /// </summary>
-        public IList<ShapeEx> GroupedShapes { get; private set; }
+        public IList<ShapeSc> GroupedShapes { get; private set; }
 
         /// <summary>
         /// Returns OLE object content. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.OLEObject"/>.
@@ -225,7 +225,7 @@ namespace ShapeCrawler.Models.SlideComponents
         /// <summary>
         /// Gets parent slide.
         /// </summary>
-        public SlideEx SlideEx { get; internal set; }
+        public SlideSc SlideEx { get; internal set; }
 
         private void SetCustomData(string value)
         {
@@ -237,7 +237,7 @@ namespace ShapeCrawler.Models.SlideComponents
 
         #region Constructors
 
-        private ShapeEx(ILocation innerTransform,
+        private ShapeSc(ILocation innerTransform,
                         ShapeContext spContext,
                         ShapeContentType contentType,
                         GeometryType geometryType) : this(innerTransform, spContext, contentType)
@@ -245,7 +245,7 @@ namespace ShapeCrawler.Models.SlideComponents
             GeometryType = geometryType;
         }
 
-        private ShapeEx (ILocation innerTransform, ShapeContext spContext, ShapeContentType contentType)
+        private ShapeSc (ILocation innerTransform, ShapeContext spContext, ShapeContentType contentType)
         {
             _innerTransform = innerTransform;
             Context = spContext;
@@ -287,7 +287,7 @@ namespace ShapeCrawler.Models.SlideComponents
             var aTexts = pTxtBody.Descendants<A.Text>();
             if (aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element with text must be exist
             {
-                return new TextFrame(pTxtBody, this);
+                return new TextSc(pTxtBody, this);
             }
 
             return new NoTextFrame();
@@ -336,13 +336,13 @@ namespace ShapeCrawler.Models.SlideComponents
         {
             #region Public Methods
 
-            public ShapeEx WithOle(ILocation innerTransform, ShapeContext spContext, OleObject ole)
+            public ShapeSc WithOle(ILocation innerTransform, ShapeContext spContext, OleObject ole)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(ole, nameof(ole));
 
-                var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.OLEObject)
+                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.OLEObject)
                 {
                     _ole = ole
                 };
@@ -350,14 +350,14 @@ namespace ShapeCrawler.Models.SlideComponents
                 return newShape;
             }
 
-            public ShapeEx WithPicture(ILocation innerTransform, ShapeContext spContext, Picture picture, GeometryType geometry)
+            public ShapeSc WithPicture(ILocation innerTransform, ShapeContext spContext, Picture picture, GeometryType geometry)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(picture, nameof(picture));
                 Check.NotNull(geometry, nameof(geometry));
 
-                var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.Picture, geometry)
+                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.Picture, geometry)
                 {
                     _picture = picture
                 };
@@ -365,23 +365,23 @@ namespace ShapeCrawler.Models.SlideComponents
                 return newShape;
             }
 
-            public ShapeEx WithAutoShape(ILocation innerTransform, ShapeContext spContext, GeometryType geometry)
+            public ShapeSc WithAutoShape(ILocation innerTransform, ShapeContext spContext, GeometryType geometry)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
 
-                var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.AutoShape, geometry);
+                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.AutoShape, geometry);
       
                 return newShape;
             }
 
-            public ShapeEx WithTable(ILocation innerTransform, ShapeContext spContext, TableEx table)
+            public ShapeSc WithTable(ILocation innerTransform, ShapeContext spContext, TableSc table)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(table, nameof(table));
 
-                var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.Table)
+                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.Table)
                 {
                     _table = table
                 };
@@ -389,13 +389,13 @@ namespace ShapeCrawler.Models.SlideComponents
                 return newShape;
             }
 
-            public ShapeEx WithChart(ILocation innerTransform, ShapeContext spContext, ChartEx chart)
+            public ShapeSc WithChart(ILocation innerTransform, ShapeContext spContext, ChartSc chart)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(chart, nameof(chart));
 
-                var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.Chart)
+                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.Chart)
                 {
                     _chart = chart
                 };
@@ -403,13 +403,13 @@ namespace ShapeCrawler.Models.SlideComponents
                 return newShape;
             }
 
-            public ShapeEx WithGroup(ILocation innerTransform, ShapeContext spContext, IList<ShapeEx> groupedShapes)
+            public ShapeSc WithGroup(ILocation innerTransform, ShapeContext spContext, IList<ShapeSc> groupedShapes)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(groupedShapes, nameof(groupedShapes));
 
-                var newShape = new ShapeEx(innerTransform, spContext, ShapeContentType.Group)
+                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.Group)
                 {
                     GroupedShapes = groupedShapes
                 };

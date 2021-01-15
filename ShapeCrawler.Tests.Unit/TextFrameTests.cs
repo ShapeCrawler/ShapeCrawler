@@ -1,10 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Enums;
-using ShapeCrawler.Models;
 using ShapeCrawler.Models.TextShape;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
@@ -26,16 +25,28 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Text_ReturnsShapeTextWhichIsParagraphsTextAggregate()
+        public void Text_GetterReturnsShapeTextWhichIsParagraphsTextAggregate()
         {
             // Arrange
-            ITextFrame textFrame = _fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2).TextFrame;
+            ITextFrame textFrameCase1 = _fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2).TextFrame;
+            ITextFrame textFrameCase2 = _fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 5).TextFrame;
+            ITextFrame textFrameCase3 = _fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 6).TextFrame;
+            ITextFrame textFrameCase4 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextFrame;
+            ITextFrame textFrameCase5 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2).TextFrame;
 
             // Act
-            string shapeText = textFrame.Text;
+            string shapeTextCase1 = textFrameCase1.Text;
+            string shapeTextCase2 = textFrameCase2.Text;
+            string shapeTextCase3 = textFrameCase3.Text;
+            string shapeTextCase4 = textFrameCase4.Text;
+            string shapeTextCase5 = textFrameCase5.Text;
 
             // Assert
-            shapeText.Should().BeEquivalentTo("Title text");
+            shapeTextCase1.Should().BeEquivalentTo("Title text");
+            shapeTextCase2.Should().BeEquivalentTo(" id5-Text1");
+            shapeTextCase3.Should().BeEquivalentTo($"id6-Text1{Environment.NewLine}Text2");
+            shapeTextCase4.Should().BeEquivalentTo($"0:0_p1_lvl1{Environment.NewLine}0:0_p2_lvl2");
+            shapeTextCase5.Should().BeEquivalentTo("1");
         }
 
         [Fact]
@@ -119,36 +130,72 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Theory]
-        [MemberData(nameof(ParagraphTextTestCases))]
-        public void ParagraphText_IsChanged_WhenTextIsChangedViaSetter(ParagraphEx paragraphEx)
+        [MemberData(nameof(TestCasesParagraphText))]
+        public void ParagraphText_SetterChangesParagraphText(
+            PresentationSc presentation, 
+            ElementRequest prRequest, 
+            string newPrText,
+            int expectedNumPortions)
         {
             // Arrange
-            const string expectedText = "a new paragraph text";
+            Paragraph paragraph = TestHelper.GetParagraph(presentation, prRequest);
+            var presentationStream = new MemoryStream();
 
             // Act
-            paragraphEx.Text = expectedText;
+            paragraph.Text = newPrText;
 
             // Assert
-            paragraphEx.Text.Should().BeEquivalentTo(expectedText);
-            paragraphEx.Portions.Should().HaveCount(1);
+            paragraph.Text.Should().BeEquivalentTo(newPrText);
+            paragraph.Portions.Should().HaveCount(expectedNumPortions);
+
+            presentation.SaveAs(presentationStream);
+            presentation.Close();
+            paragraph = TestHelper.GetParagraph(presentationStream, prRequest);
+            paragraph.Text.Should().BeEquivalentTo(newPrText);
+            paragraph.Portions.Should().HaveCount(expectedNumPortions);
+        }
+
+        public static IEnumerable<object[]> TestCasesParagraphText()
+        {
+            var paragraphRequest = new ElementRequest
+            {
+                SlideIndex = 1,
+                ShapeId = 4,
+                ParagraphIndex = 1
+            };
+            PresentationSc presentation;
+            paragraphRequest.ParagraphIndex = 2;
+
+            presentation = PresentationSc.Open(Resources._002, true);
+            yield return new object[] { presentation, paragraphRequest, "Text", 1};
+
+            presentation = PresentationSc.Open(Resources._002, true);
+            yield return new object[] { presentation, paragraphRequest, $"Text{Environment.NewLine}", 1};
+
+            presentation = PresentationSc.Open(Resources._002, true);
+            yield return new object[] { presentation, paragraphRequest, $"Text{Environment.NewLine}Text2", 2};
+
+            presentation = PresentationSc.Open(Resources._002, true);
+            yield return new object[] { presentation, paragraphRequest, $"Text{Environment.NewLine}Text2{Environment.NewLine}", 2 };
         }
 
         [Fact]
-        public void ParagraphText_ReturnsCorrectValue_WhenItsGetterIsCalled()
+        public void ParagraphText_GetterReturnsParagraphText()
         {
             // Arrange
-            var presentation = _fixture.Pre008;
-            var textFrame = presentation.Slides.First().Shapes.Single(e => e.Id == 37).TextFrame;
-            var paragraph1 = textFrame.Paragraphs[0];
-            var paragraph2 = textFrame.Paragraphs[1];
+            ITextFrame textFrameCase1 = _fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 37).TextFrame;
+            ITextFrame textFrameCase2 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextFrame;
+            ITextFrame textFrameCase3 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextFrame;
 
             // Act
-            var paragraphText1 = paragraph1.Text;
-            var paragraphText2 = paragraph2.Text;
+            string paragraphTextCase1 = textFrameCase1.Paragraphs[0].Text;
+            string paragraphTextCase2 = textFrameCase1.Paragraphs[1].Text;
+            string paragraphTextCase3 = textFrameCase2.Paragraphs[0].Text;
 
             // Assert
-            paragraphText1.Should().BeEquivalentTo("P1t1 P1t2");
-            paragraphText2.Should().BeEquivalentTo("p2");
+            paragraphTextCase1.Should().BeEquivalentTo("P1t1 P1t2");
+            paragraphTextCase2.Should().BeEquivalentTo("p2");
+            paragraphTextCase3.Should().BeEquivalentTo("0:0_p1_lvl1");
         }
 
         [Fact]
@@ -158,12 +205,11 @@ namespace ShapeCrawler.Tests.Unit
             ITextFrame textFrame = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2).TextFrame;
 
             // Act
-            IEnumerable<ParagraphEx> paragraphs = textFrame.Paragraphs;
+            IEnumerable<Paragraph> paragraphs = textFrame.Paragraphs;
 
             // Assert
             paragraphs.Should().HaveCount(1);
         }
-
 
         [Fact]
         public void ParagraphPortions_CollectionCounterReturnsNumberOfTextPortionsInTheParagraph()
@@ -178,23 +224,18 @@ namespace ShapeCrawler.Tests.Unit
             paragraphPortions.Should().HaveCount(2);
         }
 
-        #region Helpers
-
-        public static IEnumerable<object[]> ParagraphTextTestCases()
+        [Fact]
+        public void ParagraphsCount_ReturnsNumberOfParagraphsInTheTextFrame()
         {
-            var paragraphNumber = 2;
-            var pre002 = PresentationEx.Open(Resources._002, true);
-            var shape4 = pre002.Slides[1].Shapes.First(x => x.Id == 4);
-            var paragraph = shape4.TextFrame.Paragraphs[--paragraphNumber];
-            yield return new[] {paragraph};
+            // Arrange
+            ITextFrame textFrame = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0]
+                .TextFrame;
 
-            paragraphNumber = 3;
-            pre002 = PresentationEx.Open(Resources._002, true);
-            shape4 = pre002.Slides[1].Shapes.First(x => x.Id == 4);
-            paragraph = shape4.TextFrame.Paragraphs[--paragraphNumber];
-            yield return new[] { paragraph };
+            // Act
+            int paragraphsCount = textFrame.Paragraphs.Count;
+
+            // Assert
+            paragraphsCount.Should().Be(2);
         }
-
-        #endregion Helpers
     }
 }
