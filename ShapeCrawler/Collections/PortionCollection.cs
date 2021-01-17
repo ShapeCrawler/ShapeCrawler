@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using ShapeCrawler.Models.TextShape;
 using ShapeCrawler.Settings;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Collections
@@ -23,7 +23,7 @@ namespace ShapeCrawler.Collections
             CollectionItems = portions;
         }
 
-        internal static PortionCollection Create(A.Paragraph aParagraph, ShapeContext spContext, Paragraph paragraph)
+        internal static PortionCollection Create(A.Paragraph aParagraph, ShapeContext spContext, ParagraphSc paragraph)
         {
             IEnumerable<A.Run> aRuns = aParagraph.Elements<A.Run>();
             if (aRuns.Any())

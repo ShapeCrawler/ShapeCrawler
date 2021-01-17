@@ -5,7 +5,7 @@ using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Models.TextShape
+namespace ShapeCrawler.Texts
 {
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     public class FontSc

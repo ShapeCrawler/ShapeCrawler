@@ -10,13 +10,13 @@ using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable SuggestVarOrType_SimpleTypes
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 
-namespace ShapeCrawler.Models.TextShape
+namespace ShapeCrawler.Texts
 {
     /// <summary>
     /// Represents a text paragraph.
     /// </summary>
     [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
-    public class Paragraph
+    public class ParagraphSc
     {
         #region Fields
 
@@ -55,9 +55,9 @@ namespace ShapeCrawler.Models.TextShape
         #region Constructors
 
         /// <summary>
-        /// Initializes an instance of the <see cref="Paragraph"/> class.
+        /// Initializes an instance of the <see cref="ParagraphSc"/> class.
         /// </summary>
-        public Paragraph(ShapeContext spContext, A.Paragraph aParagraph, TextSc textFrame) //TODO: Replace constructor initialization on static .Create()
+        public ParagraphSc(ShapeContext spContext, A.Paragraph aParagraph, TextSc textFrame) //TODO: Replace constructor initialization on static .Create()
         {
             _textParagraph = aParagraph;
             Level = GetInnerLevel(aParagraph);
@@ -86,7 +86,7 @@ namespace ShapeCrawler.Models.TextShape
 
         private string GetText()
         {
-            return Portions.Select(p => p.Text).Aggregate((result, next) => result + next);
+            return Portions.Select<Portion, string>(p => p.Text).Aggregate((result, next) => result + next);
         }
 
         private void SetText(string newText)
@@ -95,8 +95,8 @@ namespace ShapeCrawler.Models.TextShape
 
             // To set a paragraph text we use a single portion which is the first paragraph portion.
             // Rest of the portions are deleted from the paragraph.
-            Portions.RemoveRange(Portions.Skip(1).ToList());
-            Portion basePortion = Portions.Single();
+            Portions.RemoveRange(Portions.Skip<Portion>(1).ToList());
+            Portion basePortion = Portions.Single<Portion>();
             string[] textLines = newText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             basePortion.Text = textLines[0];
             OpenXmlElement lastInsertedARunOrLineBreak = basePortion.AText.Parent;

@@ -5,9 +5,9 @@ using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Models.TextShape;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
+using ShapeCrawler.Texts;
 using Xunit;
 
 // ReSharper disable All
@@ -52,7 +52,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Text_GetterReturnsParagraphPortionText()
         {
             // Arrange
-            Portion portion = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextFrame
+            Portion portion = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].Text
                 .Paragraphs[0].Portions[0];
 
             // Act
@@ -99,7 +99,7 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             ITextFrame textFrame = PresentationSc.Open(Resources._001, true).Slides[2].Shapes
                 .First(sp => sp.Id == 4).TextFrame;
-            IList<Paragraph> paragraphs = textFrame.Paragraphs;
+            IList<ParagraphSc> paragraphs = textFrame.Paragraphs;
             Portion paragraphPortion = paragraphs[0].Portions[0];
 
             // Act

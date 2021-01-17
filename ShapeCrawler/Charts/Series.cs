@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Enums;
@@ -19,7 +18,7 @@ namespace ShapeCrawler.Charts
     {
         #region Fields
 
-        private readonly Lazy<List<double>> _pointValues;
+        private readonly Lazy<IReadOnlyList<double>> _pointValues;
         private readonly Lazy<string> _name;
         private readonly ChartPart _sdkChartPart;
         private readonly OpenXmlElement _sdkSeries;
@@ -35,7 +34,7 @@ namespace ShapeCrawler.Charts
         /// <summary>
         /// Returns a point values.
         /// </summary>
-        public IList<double> PointValues => _pointValues.Value;
+        public IReadOnlyList<double> PointValues => _pointValues.Value;
 
         public bool HasName => _name.Value != null;
 
@@ -62,7 +61,7 @@ namespace ShapeCrawler.Charts
 
             _sdkChartPart = sdkChartPart ?? throw new ArgumentNullException(nameof(sdkChartPart));
             _chartRefParser = chartRefParser;
-            _pointValues = new Lazy<List<double>>(GetPointValues);
+            _pointValues = new Lazy<IReadOnlyList<double>>(GetPointValues);
             _name = new Lazy<string>(GetNameOrDefault);
             Type = type;
         }
@@ -71,7 +70,7 @@ namespace ShapeCrawler.Charts
 
         #region Private Methods
 
-        private List<double> GetPointValues()
+        private IReadOnlyList<double> GetPointValues()
         {
             C.NumberReference numReference;
             var cVal = _sdkSeries.GetFirstChild<C.Values>();
@@ -84,7 +83,7 @@ namespace ShapeCrawler.Charts
                 numReference = _sdkSeries.GetFirstChild<C.YValues>().NumberReference;
             }
 
-            return _chartRefParser.GetNumbers(numReference, _sdkChartPart).ToList(); //TODO: remove to list
+            return _chartRefParser.GetNumbers(numReference, _sdkChartPart);
         }
 
         private string GetNameOrDefault()

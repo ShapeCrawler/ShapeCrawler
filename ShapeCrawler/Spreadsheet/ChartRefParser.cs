@@ -33,7 +33,7 @@ namespace ShapeCrawler.Spreadsheet
         /// <param name="numRef"></param>
         /// <param name="chartPart"></param>
         /// <returns></returns>
-        public IList<double> GetNumbers(C.NumberReference numRef, ChartPart chartPart)
+        public IReadOnlyList<double> GetNumbers(C.NumberReference numRef, ChartPart chartPart)
         {
             Check.NotNull(numRef, nameof(numRef));
             Check.NotNull(chartPart, nameof(chartPart));

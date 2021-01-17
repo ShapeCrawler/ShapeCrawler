@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace ShapeCrawler.Models.TextShape
+namespace ShapeCrawler.Texts
 {
     public class NoTextFrame : ITextFrame
     {
-        public IList<Paragraph> Paragraphs => null;
+        public IList<ParagraphSc> Paragraphs => null;
 
         public string Text => null;
     }

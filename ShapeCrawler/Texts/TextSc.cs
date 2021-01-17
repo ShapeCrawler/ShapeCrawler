@@ -8,8 +8,9 @@ using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Settings;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Models.TextShape
+namespace ShapeCrawler.Texts
 {
+    // TODO: Override ToString()
     /// <summary>
     /// <inheritdoc cref="ITextFrame"/>
     /// </summary>
@@ -30,7 +31,7 @@ namespace ShapeCrawler.Models.TextShape
         /// <summary>
         /// <inheritdoc cref="ITextFrame.Paragraphs"/>
         /// </summary>
-        public IList<Paragraph> Paragraphs { get; private set; } // TODO: Consider to use IReadOnlyList instead IList or create own collection
+        public IList<ParagraphSc> Paragraphs { get; private set; } // TODO: Consider to use IReadOnlyList instead IList or create own collection
 
         /// <summary>
         /// <inheritdoc cref="ITextFrame.Text"/>
@@ -67,10 +68,10 @@ namespace ShapeCrawler.Models.TextShape
             var aParagraphs = compositeElement.Elements<A.Paragraph>().Where(e => e.Descendants<A.Text>().Any());
 
             // Sets paragraphs
-            Paragraphs = new List<Paragraph>(aParagraphs.Count());
+            Paragraphs = new List<ParagraphSc>(aParagraphs.Count());
             foreach (A.Paragraph aParagraph in aParagraphs)
             {
-                Paragraphs.Add(new Paragraph(_spContext, aParagraph, this));
+                Paragraphs.Add(new ParagraphSc(_spContext, aParagraph, this));
             }
         }
 

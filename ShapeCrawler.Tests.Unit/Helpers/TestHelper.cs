@@ -1,19 +1,19 @@
+using ShapeCrawler.Texts;
 using System.IO;
 using System.Linq;
-using ShapeCrawler.Models.TextShape;
 
-namespace ShapeCrawler.Tests.Unit
+namespace ShapeCrawler.Tests.Unit.Helpers
 {
     public class TestHelper
     {
-        public static Paragraph GetParagraph(PresentationSc presentation, ElementRequest paragraphRequest)
+        public static ParagraphSc GetParagraph(PresentationSc presentation, ElementRequest paragraphRequest)
         {
             return presentation.Slides[paragraphRequest.SlideIndex]
                                 .Shapes.First(sp => sp.Id == paragraphRequest.ShapeId)
                                 .TextFrame.Paragraphs[paragraphRequest.ParagraphIndex];
         }
 
-        public static Paragraph GetParagraph(MemoryStream presentationStream, ElementRequest paragraphRequest)
+        public static ParagraphSc GetParagraph(MemoryStream presentationStream, ElementRequest paragraphRequest)
         {
             PresentationSc presentation = PresentationSc.Open(presentationStream, false);
 

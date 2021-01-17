@@ -10,19 +10,22 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories.Builders;
 using ShapeCrawler.Factories.Drawing;
+using ShapeCrawler.Models;
+using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Models.Styles;
-using ShapeCrawler.Models.TextShape;
 using ShapeCrawler.Models.Transforms;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
 using ShapeCrawler.Tables;
+using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
+// ReSharper disable CheckNamespace
 
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace ShapeCrawler.Models.SlideComponents
+namespace ShapeCrawler
 {
     /// <summary>
     /// Represents a shape on a slide.

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ShapeCrawler.Models.TextShape
+namespace ShapeCrawler.Texts
 {
     /// <summary>
     /// Represents a text frame of the shape.
@@ -10,7 +10,7 @@ namespace ShapeCrawler.Models.TextShape
         /// <summary>
         /// Returns list of paragraphs.
         /// </summary>
-        IList<Paragraph> Paragraphs { get; }
+        IList<ParagraphSc> Paragraphs { get; }
 
         /// <summary>
         /// Returns text content.

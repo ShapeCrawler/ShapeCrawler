@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    /// Represents a base class for library collection.
+    /// Represents a base class for all library collections.
     /// </summary>
-    public class LibraryCollection<T> : IEnumerable<T>
+    public class LibraryCollection<T> : IReadOnlyCollection<T>
     {
         #region Fields
 

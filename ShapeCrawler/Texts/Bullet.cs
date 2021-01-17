@@ -4,7 +4,7 @@ using ShapeCrawler.Enums;
 using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Models.TextShape
+namespace ShapeCrawler.Texts
 {
     /// <summary>
     /// Represents a paragraph bullet class.

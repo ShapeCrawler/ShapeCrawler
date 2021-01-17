@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using ShapeCrawler.Models.TextShape;
 using ShapeCrawler.Settings;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Tables
@@ -13,7 +13,7 @@ namespace ShapeCrawler.Tables
     {
         #region Fields
 
-        private TextSc _textBody;
+        private TextSc _text;
 
         private readonly A.TableCell _xmlCell;
         private readonly ShapeContext _spContext;
@@ -25,16 +25,16 @@ namespace ShapeCrawler.Tables
         /// <summary>
         /// Gets text frame of a cell.
         /// </summary>
-        public TextSc TextFrame
+        public TextSc Text
         {
             get
             {
-                if (_textBody == null)
+                if (_text == null)
                 {
                     TryParseTxtBody();
                 }
 
-                return _textBody;
+                return _text;
             }
         }
 
@@ -55,7 +55,7 @@ namespace ShapeCrawler.Tables
             var aTexts = aTxtBody.Descendants<A.Text>();
             if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element contain text
             {
-                _textBody = new TextSc(_spContext, aTxtBody);
+                _text = new TextSc(_spContext, aTxtBody);
             }
         }
     }

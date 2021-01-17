@@ -22,65 +22,106 @@ You can quickly start work with the library by following steps listed below.
 
 ## Usage
 
-### Open presentation
+### Text
 ```C#
-PresentationSc presentation = PresentationSc.Open(@"c:\MyPresentations\helloWorld.pptx", isEditable: false);
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-Console.WriteLine($"Number of slides in the presentation: {presentation.Slides.Count}");
-Console.WriteLine($"Number of shapes on the first slide: {presentation.Slides[0].Shapes.Count}");
+using ShapeCrawler;
+using ShapeCrawler.Texts;
 
-presentation.Close();
-```
-
-### Work with Text shape
-```C#
-PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", true);
-SlideSc slide = presentation.Slides.First();
-
-// Prints on console content of all text shapes
-foreach (ShapeSc shape in slide.Shapes)
+public class TextSample
 {
-    if (shape.HasTextFrame)
+    public static void Text()
     {
-        Console.WriteLine(shape.TextFrame.Text);
+        // Open presentation and get first slide
+        PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: true);
+        SlideSc slide = presentation.Slides.First();
+
+        // Print text from all text shapes
+        foreach (ShapeSc shape in slide.Shapes)
+        {
+            if (shape.HasTextFrame)
+            {
+                Console.WriteLine(shape.TextFrame.Text);
+            }
+        }
+
+        // Change paragraph text
+        ShapeSc textShape = slide.Shapes.First(sp => sp.HasTextFrame);
+        ParagraphSc paragraph = textShape.TextFrame.Paragraphs.First();
+        paragraph.Text = "A new paragraph text";
+
+        // Print name and sizes of paragraph text portions
+        ITextFrame textFrame = slide.Shapes.First(sp => sp.HasTextFrame).TextFrame;
+        IEnumerable<Portion> paragraphPortions = textFrame.Paragraphs.First().Portions;
+        foreach (Portion portion in paragraphPortions)
+        {
+            Console.WriteLine($"Font name: {portion.Font.Name}");
+            Console.WriteLine($"Font size: {portion.Font.Size}");
+        }
+
+        // Save and close presentation
+        presentation.Close();
     }
 }
-
-// Changes paragraph text
-ShapeSc textShape = slide.Shapes.First(sp => sp.HasTextFrame);
-Paragraph paragraph = textShape.TextFrame.Paragraphs.First();
-paragraph.Text = "A new paragraph text";
-presentation.Save();
 ```
 
-#### Font
+### Chart
 ```C#
-PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", false);
-SlideSc slide = presentation.Slides.First();
+using System;
+using System.Linq;
 
-// Prints font name and sizes of paragraph text portions
-ITextFrame textFrame = slide.Shapes.First(sp => sp.HasTextFrame).TextFrame;
-IEnumerable<Portion> paragraphPortions = textFrame.Paragraphs.First().Portions;
-foreach (Portion portion in paragraphPortions)
+using ShapeCrawler;
+using ShapeCrawler.Charts;
+
+public class ChartSample
 {
-    Console.WriteLine($"Font name: {portion.Font.Name}");
-    Console.WriteLine($"Font size: {portion.Font.Size}");
+    public static void Chart()
+    {
+        PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: false);
+        SlideSc slide = presentation.Slides.First();
+
+        // Get chart
+        ShapeSc chartShape = slide.Shapes.First(sp => sp.HasChart == true);
+        ChartSc chart = chartShape.Chart;
+        
+        // Print title string if the chart has a title
+        if (chart.HasTitle)
+        {
+            Console.WriteLine(chart.Title);
+        }
+        
+        if (chart.Type == ChartType.BarChart)
+        {
+            Console.WriteLine("Chart type is BarChart.");
+        }
+    }
 }
 ```
-### Work with Chart shape
-```C#
-PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: false);
-SlideSc slide = presentation.Slides.First();
-ShapeSc chartShape = slide.Shapes.First(sp => sp.HasChart == true);
 
-ChartSc chart = chartShape.Chart;
-if (chart.HasTitle)
+### Slide Master
+```C#
+using ShapeCrawler;
+using ShapeCrawler.SlideMaster;
+
+public class SlideMasterSample
 {
-    Debug.Print(chart.Title);
-}
-if (chart.Type == ChartType.BarChart)
-{
-    Debug.Print("Chart type is BarChart.");
+    public static void SlideMaster()
+    {
+        // Open presentation in the read mode
+        PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: false);
+
+        // Get number of Slide Masters in the presentation
+        int slideMastersCount = presentation.SlideMasters.Count;
+
+        // Get first Slide Master
+        SlideMasterSc slideMaster = presentation.SlideMasters[0];
+
+        // Get number of shapes in the Slide Master
+        int masterShapeCount = slideMaster.Shapes.Count;
+    }
 }
 ```
 # Feedback and Give a Star! :star:
@@ -96,10 +137,10 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 5. Create a new Pull Request.
 
 # Changelog
-## Version 0.11.0 - 2021-01-10
+## Version 0.12.0 - 2021-01-17
 ### Added
-- Added setter for `Portion.Text` property to be able to change text of paragraph portion (#22)
-- Added setter for `Portion.Font.Name` to change font name of the portion of non-placeholder shape (#82)
-- Added setter for `Portion.Font.Size` to change font size of the portion of non-placeholer shape (#81)
+- Added base API to get Slide Master collection — `PresentationSc.SlideMasters` (#44)
+### Fixed
+- Fixed New Line character processing for text paragraph (#87)
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).

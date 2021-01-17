@@ -7,7 +7,7 @@ using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Models.TextShape
+namespace ShapeCrawler.Texts
 {
     /// <summary>
     /// Represents a text paragraph portion.
@@ -21,7 +21,7 @@ namespace ShapeCrawler.Models.TextShape
 
         #region Internal Properties
 
-        internal Paragraph Paragraph { get; }
+        internal ParagraphSc Paragraph { get; }
         
         internal readonly A.Text AText;
 
@@ -55,7 +55,7 @@ namespace ShapeCrawler.Models.TextShape
 
         #region Constructors
 
-        public Portion(A.Text aText, Paragraph paragraph, ShapeContext shapeContext)
+        public Portion(A.Text aText, ParagraphSc paragraph, ShapeContext shapeContext)
         {
             AText = aText;
             Paragraph = paragraph;

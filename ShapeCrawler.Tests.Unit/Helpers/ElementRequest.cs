@@ -1,4 +1,4 @@
-namespace ShapeCrawler.Tests.Unit
+namespace ShapeCrawler.Tests.Unit.Helpers
 {
     public class ElementRequest
     {

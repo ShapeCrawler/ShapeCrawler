@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Enums;
-using ShapeCrawler.Models.TextShape;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
+using ShapeCrawler.Texts;
 using Xunit;
 
 // ReSharper disable All
@@ -31,7 +31,7 @@ namespace ShapeCrawler.Tests.Unit
             ITextFrame textFrameCase1 = _fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2).TextFrame;
             ITextFrame textFrameCase2 = _fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 5).TextFrame;
             ITextFrame textFrameCase3 = _fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 6).TextFrame;
-            ITextFrame textFrameCase4 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextFrame;
+            ITextFrame textFrameCase4 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].Text;
             ITextFrame textFrameCase5 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2).TextFrame;
             ITextFrame textFrameCase6 = _fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61).TextFrame;
             ITextFrame textFrameCase7 = _fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5).TextFrame;
@@ -145,7 +145,7 @@ namespace ShapeCrawler.Tests.Unit
             int expectedNumPortions)
         {
             // Arrange
-            Paragraph paragraph = TestHelper.GetParagraph(presentation, prRequest);
+            ParagraphSc paragraph = TestHelper.GetParagraph(presentation, prRequest);
             var presentationStream = new MemoryStream();
 
             // Act
@@ -191,8 +191,8 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             ITextFrame textFrameCase1 = _fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 37).TextFrame;
-            ITextFrame textFrameCase2 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextFrame;
-            ITextFrame textFrameCase3 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextFrame;
+            ITextFrame textFrameCase2 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].Text;
+            ITextFrame textFrameCase3 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].Text;
 
             // Act
             string paragraphTextCase1 = textFrameCase1.Paragraphs[0].Text;
@@ -212,7 +212,7 @@ namespace ShapeCrawler.Tests.Unit
             ITextFrame textFrame = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2).TextFrame;
 
             // Act
-            IEnumerable<Paragraph> paragraphs = textFrame.Paragraphs;
+            IEnumerable<ParagraphSc> paragraphs = textFrame.Paragraphs;
 
             // Assert
             paragraphs.Should().HaveCount(1);
@@ -236,7 +236,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             ITextFrame textFrame = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0]
-                .TextFrame;
+                .Text;
 
             // Act
             int paragraphsCount = textFrame.Paragraphs.Count;

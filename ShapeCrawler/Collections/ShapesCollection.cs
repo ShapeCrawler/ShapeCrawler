@@ -117,20 +117,4 @@ namespace ShapeCrawler.Collections
             return new MasterShapesCollection(slideMasterShapes);
         }
     }
-
-    public class OleObjectSc : BaseShape
-    {
-        public OleObjectSc(GraphicFrame pGraphicFrame)
-        {
-            
-        }
-    }
-
-    public class AutoShape : BaseShape
-    {
-        public AutoShape(Shape pShape)
-        {
-
-        }
-    }
 }
