@@ -33,6 +33,8 @@ namespace ShapeCrawler.Tests.Unit
             ITextFrame textFrameCase3 = _fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 6).TextFrame;
             ITextFrame textFrameCase4 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextFrame;
             ITextFrame textFrameCase5 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2).TextFrame;
+            ITextFrame textFrameCase6 = _fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61).TextFrame;
+            ITextFrame textFrameCase7 = _fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5).TextFrame;
 
             // Act
             string shapeTextCase1 = textFrameCase1.Text;
@@ -40,6 +42,8 @@ namespace ShapeCrawler.Tests.Unit
             string shapeTextCase3 = textFrameCase3.Text;
             string shapeTextCase4 = textFrameCase4.Text;
             string shapeTextCase5 = textFrameCase5.Text;
+            string shapeTextCase6 = textFrameCase6.Text;
+            string shapeTextCase7 = textFrameCase7.Text;
 
             // Assert
             shapeTextCase1.Should().BeEquivalentTo("Title text");
@@ -47,6 +51,9 @@ namespace ShapeCrawler.Tests.Unit
             shapeTextCase3.Should().BeEquivalentTo($"id6-Text1{Environment.NewLine}Text2");
             shapeTextCase4.Should().BeEquivalentTo($"0:0_p1_lvl1{Environment.NewLine}0:0_p2_lvl2");
             shapeTextCase5.Should().BeEquivalentTo("1");
+            shapeTextCase6.Should().BeEquivalentTo($"test1{Environment.NewLine}test2{Environment.NewLine}" +
+                                                   $"test3{Environment.NewLine}test4{Environment.NewLine}test5");
+            shapeTextCase7.Should().BeEquivalentTo($"Test subtitle");
         }
 
         [Fact]

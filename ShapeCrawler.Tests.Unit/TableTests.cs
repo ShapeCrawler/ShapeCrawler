@@ -6,9 +6,8 @@ using FluentAssertions;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.Models.TableComponents;
+using ShapeCrawler.Tables;
 using ShapeCrawler.Tests.Unit.Helpers;
-using SlideDotNet.Models.TableComponents;
 using Xunit;
 
 namespace ShapeCrawler.Tests.Unit

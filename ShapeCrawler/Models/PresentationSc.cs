@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Models;
@@ -13,11 +14,12 @@ using ShapeCrawler.Statics;
 
 namespace ShapeCrawler
 {
+    [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
     public class PresentationSc
     {
         #region Fields
-// TODO: Implement IDisposable
-        private PresentationDocument _outerSdkPresentation;
+        // TODO: Implement IDisposable
+        private PresentationDocument _presentationDocument;
         private Lazy<EditableCollection<SlideSc>> _slides;
         private Lazy<SlideSizeSc> _slideSize;
         private bool _closed;
@@ -42,6 +44,8 @@ namespace ShapeCrawler
         /// </summary>
         public int SlideHeight => _slideSize.Value.Height;
 
+        public SlideMasterCollection SlideMasters => SlideMasterCollection.Create(_presentationDocument.PresentationPart.SlideMasterParts);
+
         #endregion Properties
 
         #region Constructors
@@ -52,7 +56,7 @@ namespace ShapeCrawler
         internal PresentationSc(string pptxPath, bool isEditable)
         {
             ThrowIfSourceInvalid(pptxPath);
-            _outerSdkPresentation = PresentationDocument.Open(pptxPath, isEditable);
+            _presentationDocument = PresentationDocument.Open(pptxPath, isEditable);
             Init();
         }
 
@@ -62,7 +66,7 @@ namespace ShapeCrawler
         public PresentationSc(Stream pptxStream, bool isEditable = false)
         {
             ThrowIfSourceInvalid(pptxStream);
-            _outerSdkPresentation = PresentationDocument.Open(pptxStream, isEditable);
+            _presentationDocument = PresentationDocument.Open(pptxStream, isEditable);
             Init();
         }
 
@@ -72,7 +76,7 @@ namespace ShapeCrawler
         private PresentationSc(MemoryStream pptxStream, bool isEditable)
         {
             ThrowIfSourceInvalid(pptxStream);
-            _outerSdkPresentation = PresentationDocument.Open(pptxStream, isEditable);
+            _presentationDocument = PresentationDocument.Open(pptxStream, isEditable);
             Init();
         }
 
@@ -86,7 +90,7 @@ namespace ShapeCrawler
 
             var pptxStream = new MemoryStream();
             pptxStream.Write(pptxBytes, 0, pptxBytes.Length);
-            _outerSdkPresentation = PresentationDocument.Open(pptxStream, true);
+            _presentationDocument = PresentationDocument.Open(pptxStream, true);
             
             Init();
         }
@@ -102,7 +106,7 @@ namespace ShapeCrawler
 
         public void Save()
         {
-            _outerSdkPresentation.Save();
+            _presentationDocument.Save();
         }
 
         /// <summary>
@@ -112,7 +116,7 @@ namespace ShapeCrawler
         public void SaveAs(string filePath)
         {
             Check.NotEmpty(filePath, nameof(filePath));
-            _outerSdkPresentation = (PresentationDocument)_outerSdkPresentation.SaveAs(filePath);
+            _presentationDocument = (PresentationDocument)_presentationDocument.SaveAs(filePath);
         }
 
         /// <summary>
@@ -122,7 +126,7 @@ namespace ShapeCrawler
         public void SaveAs(Stream stream)
         {
             Check.NotNull(stream, nameof(stream));
-            _outerSdkPresentation = (PresentationDocument)_outerSdkPresentation.Clone(stream);
+            _presentationDocument = (PresentationDocument)_presentationDocument.Clone(stream);
         }
 
         /// <summary>
@@ -135,7 +139,7 @@ namespace ShapeCrawler
                 return;
             }
 
-            _outerSdkPresentation.Close();
+            _presentationDocument.Close();
             if (_preData != null)
             {
                 foreach (var xlsxDoc in _preData.XlsxDocuments.Values)
@@ -168,7 +172,7 @@ namespace ShapeCrawler
 
         private EditableCollection<SlideSc> GetSlides()
         {
-            var sdkPrePart = _outerSdkPresentation.PresentationPart;
+            var sdkPrePart = _presentationDocument.PresentationPart;
             _preData = new PresentationData(sdkPrePart.Presentation, _slideSize);
             var slideCollection = SlideCollection.Create(sdkPrePart, _preData, this);
 
@@ -208,7 +212,7 @@ namespace ShapeCrawler
 
         private void ThrowIfSlidesNumberLarge()
         {
-            var nbSlides = _outerSdkPresentation.PresentationPart.SlideParts.Count();
+            var nbSlides = _presentationDocument.PresentationPart.SlideParts.Count();
             if (nbSlides > Limitations.MaxSlidesNumber)
             {
                 Close();
@@ -225,7 +229,7 @@ namespace ShapeCrawler
 
         private SlideSizeSc ParseSlideSize()
         {
-            var sdkSldSize = _outerSdkPresentation.PresentationPart.Presentation.SlideSize;
+            var sdkSldSize = _presentationDocument.PresentationPart.Presentation.SlideSize;
             return new SlideSizeSc(sdkSldSize.Cx.Value, sdkSldSize.Cy.Value);
         }
 

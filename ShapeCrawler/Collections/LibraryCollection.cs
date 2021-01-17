@@ -42,7 +42,7 @@ namespace ShapeCrawler.Collections
 
         }
 
-        public LibraryCollection(ICollection<T> items)
+        public LibraryCollection(IEnumerable<T> items)
         {
             CollectionItems = new List<T>(items);
         }

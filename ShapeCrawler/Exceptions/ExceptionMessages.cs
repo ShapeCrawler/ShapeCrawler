@@ -1,5 +1,5 @@
-﻿using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.Models.SlideComponents.Chart;
+﻿using ShapeCrawler.Charts;
+using ShapeCrawler.Models.SlideComponents;
 
 namespace ShapeCrawler.Exceptions
 {

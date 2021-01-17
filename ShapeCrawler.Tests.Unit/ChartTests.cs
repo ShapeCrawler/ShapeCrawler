@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.Charts;
 using ShapeCrawler.Enums;
-using ShapeCrawler.Models.SlideComponents.Chart;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 
@@ -78,6 +78,7 @@ namespace ShapeCrawler.Tests.Unit
             ChartSc chartCase3 = _fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 5).Chart;
             ChartSc chartCase4 = _fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 4).Chart;
             ChartSc chartCase5 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 4).Chart;
+            ChartSc chartCase6 = _fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 6).Chart;
 
             // Act
             string charTitleCase1 = chartCase1.Title;
@@ -85,6 +86,7 @@ namespace ShapeCrawler.Tests.Unit
             string charTitleCase3 = chartCase3.Title;
             string charTitleCase5 = chartCase5.Title;
             bool hasTitleCase4 = chartCase4.HasTitle;
+            bool hasTitleCase6 = chartCase6.HasTitle;
 
             // Assert
             charTitleCase1.Should().BeEquivalentTo("Test title");
@@ -92,6 +94,7 @@ namespace ShapeCrawler.Tests.Unit
             charTitleCase3.Should().BeEquivalentTo("Title text");
             charTitleCase5.Should().BeEquivalentTo("Test title");
             hasTitleCase4.Should().BeFalse();
+            hasTitleCase6.Should().BeFalse();
         }
 
         [Fact]

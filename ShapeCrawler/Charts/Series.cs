@@ -10,7 +10,7 @@ using ShapeCrawler.Spreadsheet;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace ShapeCrawler.Models.SlideComponents.Chart
+namespace ShapeCrawler.Charts
 {
     /// <summary>
     /// Represents a chart series.

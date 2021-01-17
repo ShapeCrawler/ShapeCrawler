@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Charts;
+using ShapeCrawler.Collections;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories.Builders;
 using ShapeCrawler.Factories.Drawing;
-using ShapeCrawler.Models.SlideComponents.Chart;
 using ShapeCrawler.Models.Styles;
 using ShapeCrawler.Models.TextShape;
 using ShapeCrawler.Models.Transforms;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
-using SlideDotNet.Models.TableComponents;
+using ShapeCrawler.Tables;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -37,7 +38,7 @@ namespace ShapeCrawler.Models.SlideComponents
         private bool? _hidden;
         private int _id;
         private string _name;
-        private Picture _picture;
+        private PictureSc _picture;
         private OleObject _ole;
         private TableSc _table;
         private ChartSc _chart;
@@ -132,7 +133,7 @@ namespace ShapeCrawler.Models.SlideComponents
         /// <summary>
         /// Determines whether the shape has chart content.
         /// </summary>
-        public bool HasChart => Chart is Chart.ChartSc;
+        public bool HasChart => Chart is ChartSc;
 
         /// <summary>
         /// Determines whether the slide element has picture content.
@@ -158,7 +159,7 @@ namespace ShapeCrawler.Models.SlideComponents
         /// <summary>
         /// Returns picture. Returns <c>NULL</c> when the shape content type is not a <see cref="ShapeContentType.Picture"/>.
         /// </summary>
-        public Picture Picture => _picture;
+        public PictureSc Picture => _picture;
 
         /// <summary>
         /// Returns grouped shapes. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.Group"/>.
@@ -225,7 +226,7 @@ namespace ShapeCrawler.Models.SlideComponents
         /// <summary>
         /// Gets parent slide.
         /// </summary>
-        public SlideSc SlideEx { get; internal set; }
+        public SlideSc Slide { get; internal set; }
 
         private void SetCustomData(string value)
         {
@@ -350,7 +351,7 @@ namespace ShapeCrawler.Models.SlideComponents
                 return newShape;
             }
 
-            public ShapeSc WithPicture(ILocation innerTransform, ShapeContext spContext, Picture picture, GeometryType geometry)
+            public ShapeSc WithPicture(ILocation innerTransform, ShapeContext spContext, PictureSc picture, GeometryType geometry)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));

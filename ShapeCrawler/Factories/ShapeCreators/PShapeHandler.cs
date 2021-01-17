@@ -11,7 +11,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
     /// <summary>
     /// <inheritdoc cref="OpenXmlElementHandler"/>.
     /// </summary>
-    public class SdkShapeHandler : OpenXmlElementHandler
+    internal class PShapeHandler : OpenXmlElementHandler
     {
         #region Fields
 
@@ -24,7 +24,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #region Constructors
 
-        public SdkShapeHandler(ShapeContext.Builder shapeContextBuilder,
+        public PShapeHandler(ShapeContext.Builder shapeContextBuilder,
                                LocationParser transformFactory,
                                IGeometryFactory geometryFactory) :
             this(shapeContextBuilder, transformFactory, geometryFactory, new ShapeSc.Builder())
@@ -33,7 +33,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
         }
 
         //TODO: inject interface instead
-        public SdkShapeHandler(ShapeContext.Builder shapeContextBuilder,
+        public PShapeHandler(ShapeContext.Builder shapeContextBuilder,
                                LocationParser transformFactory,
                                IGeometryFactory geometryFactory,
                                IShapeBuilder shapeBuilder)

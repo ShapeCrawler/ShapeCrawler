@@ -48,7 +48,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
             if (sdkElement is P.GroupShape sdkGroupShape)
             {
-                var sdkShapeHandler = new SdkShapeHandler(_shapeContextBuilder, _transformFactory, _geometryFactory);
+                var sdkShapeHandler = new PShapeHandler(_shapeContextBuilder, _transformFactory, _geometryFactory);
                 var oleGrFrameHandler = new OleGraphicFrameHandler(_shapeContextBuilder, _transformFactory, _shapeBuilder);
                 var pictureHandler = new PictureHandler(_shapeContextBuilder, _transformFactory, _geometryFactory, _sdkSldPart);
                 var sdkGroupShapeHandler = new SdkGroupShapeHandler(_shapeContextBuilder, _transformFactory, _geometryFactory, _sdkSldPart);

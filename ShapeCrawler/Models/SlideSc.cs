@@ -6,6 +6,7 @@ using ShapeCrawler.Collections;
 using ShapeCrawler.Factories.Drawing;
 using ShapeCrawler.Models;
 using ShapeCrawler.Settings;
+using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Statics;
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
@@ -21,8 +22,8 @@ namespace ShapeCrawler
 
         private readonly Lazy<ImageEx> _backgroundImage;
         private readonly Lazy<ShapesCollection> _shapes;
-        private readonly IPresentationData _preSettings;
-        private readonly SlidePart _sdkSldPart;
+        private readonly PresentationData _preSettings;
+        private readonly SlidePart _slidePart;
         private readonly SlideNumber _sldNumEntity;
         private Lazy<CustomXmlPart> _customXmlPart;
 
@@ -53,13 +54,19 @@ namespace ShapeCrawler
             set => SetCustomData(value);
         }
 
-        public bool Hidden => _sdkSldPart.Slide.Show != null && _sdkSldPart.Slide.Show.Value == false;
+        public bool Hidden => _slidePart.Slide.Show != null && _slidePart.Slide.Show.Value == false;
+        public SlideLayoutSc Layout => GetSlideLayout();
+
+        private SlideLayoutSc GetSlideLayout()
+        {
+            throw new NotImplementedException();
+        }
 
         #endregion Properties
 
         #region Constructors
 
-        public SlideSc(SlidePart sdkSldPart, SlideNumber sldNum, IPresentationData preSettings, PresentationSc presentationEx) :
+        public SlideSc(SlidePart sdkSldPart, SlideNumber sldNum, PresentationData preSettings, PresentationSc presentationEx) :
             this(sdkSldPart, sldNum, preSettings, new SlideSchemeService(), presentationEx)
         {
 
@@ -71,14 +78,14 @@ namespace ShapeCrawler
         public SlideSc(
             SlidePart sdkSldPart, 
             SlideNumber sldNum, 
-            IPresentationData preSettings, 
+            PresentationData preSettings, 
             SlideSchemeService schemeService, 
             PresentationSc presentationEx)
         {
-            _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
+            _slidePart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
             _sldNumEntity = sldNum ?? throw new ArgumentNullException(nameof(sldNum));
             _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
-            _shapes = new Lazy<ShapesCollection>(GetShapeCollection);
+            _shapes = new Lazy<ShapesCollection>(GetShapesCollection);
             _backgroundImage = new Lazy<ImageEx>(TryGetBackground);
             _customXmlPart = new Lazy<CustomXmlPart>(GetSldCustomXmlPart);
             PresentationEx = presentationEx;
@@ -110,14 +117,14 @@ namespace ShapeCrawler
 
         public void Hide()
         {
-            if (_sdkSldPart.Slide.Show == null)
+            if (_slidePart.Slide.Show == null)
             {
                 var showAttribute = new OpenXmlAttribute("show", "", "0");
-                _sdkSldPart.Slide.SetAttribute(showAttribute);
+                _slidePart.Slide.SetAttribute(showAttribute);
             }
             else
             {
-                _sdkSldPart.Slide.Show = false;
+                _slidePart.Slide.Show = false;
             }
         }
 
@@ -125,16 +132,15 @@ namespace ShapeCrawler
 
         #region Private Methods
 
-        private ShapesCollection GetShapeCollection()
+        private ShapesCollection GetShapesCollection()
         {
-            var shapeCollection = new ShapesCollection(_sdkSldPart, _preSettings, this);
-            return shapeCollection;
+            return ShapesCollection.CreateForUserSlide(_slidePart, _preSettings, this);
         }
 
         private ImageEx TryGetBackground()
         {
             var backgroundImageFactory = new ImageExFactory();
-            return backgroundImageFactory.TryFromSdkSlide(_sdkSldPart);
+            return backgroundImageFactory.TryFromSdkSlide(_slidePart);
         }
 
         private string GetCustomData()
@@ -156,7 +162,7 @@ namespace ShapeCrawler
             Stream customXmlPartStream;
             if (_customXmlPart.Value == null)
             {
-                var newSlideCustomXmlPart = _sdkSldPart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
+                var newSlideCustomXmlPart = _slidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
                 customXmlPartStream = newSlideCustomXmlPart.GetStream();
 #if NETSTANDARD2_0
                 _customXmlPart = new Lazy<CustomXmlPart>(()=>newSlideCustomXmlPart);
@@ -174,7 +180,7 @@ namespace ShapeCrawler
 
         private CustomXmlPart GetSldCustomXmlPart()
         {
-            foreach (var customXmlPart in _sdkSldPart.CustomXmlParts)
+            foreach (var customXmlPart in _slidePart.CustomXmlParts)
             {
                 using var customXmlPartStream = new StreamReader(customXmlPart.GetStream());
                 string customXmlPartText = customXmlPartStream.ReadToEnd();

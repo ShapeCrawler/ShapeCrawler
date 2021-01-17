@@ -1,8 +1,8 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Charts;
 using ShapeCrawler.Factories.Builders;
 using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.Models.SlideComponents.Chart;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;

@@ -21,7 +21,6 @@ namespace ShapeCrawler.Tests.Unit
             _fixture = fixture;
         }
 
-
         [Fact]
         public void Open_ThrowsPresentationIsLargeException_WhenThePresentationContentSizeIsBeyondThePermitted()
         {
@@ -77,6 +76,35 @@ namespace ShapeCrawler.Tests.Unit
             // Assert
             presentation = new PresentationSc(stream, false);
             presentation.Slides.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public void SlideMastersCount_ReturnsNumberOfMasterSlidesInThePresentation()
+        {
+            // Arrange
+            PresentationSc presentationCase1 = _fixture.Pre001;
+            PresentationSc presentationCase2 = _fixture.Pre002;
+
+            // Act
+            int slideMastersCountCase1 = presentationCase1.SlideMasters.Count;
+            int slideMastersCountCase2 = presentationCase2.SlideMasters.Count;
+
+            // Assert
+            slideMastersCountCase1.Should().Be(1);
+            slideMastersCountCase2.Should().Be(2);
+        }
+
+        [Fact]
+        public void SlideMasterShapesCount_ReturnsNumberOfShapesOnTheMasterSlide()
+        {
+            // Arrange
+            PresentationSc presentation = _fixture.Pre001;
+
+            // Act
+            int slideMasterShapesCount = presentation.SlideMasters[0].Shapes.Count;
+
+            // Assert
+            slideMasterShapesCount.Should().Be(5);
         }
     }
 }
