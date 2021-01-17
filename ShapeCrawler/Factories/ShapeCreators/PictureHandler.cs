@@ -7,7 +7,6 @@ using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
-using Picture = ShapeCrawler.Models.SlideComponents.Picture;
 
 namespace ShapeCrawler.Factories.ShapeCreators
 {
@@ -52,8 +51,6 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #endregion Constructors
 
-        #region Constructors
-
         public override ShapeSc Create(OpenXmlElement sdkElement)
         {
             Check.NotNull(sdkElement, nameof(sdkElement));
@@ -76,7 +73,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 {
                     return null;
                 }
-                var pictureEx = new Picture(_sdkSldPart, blipRelateId);
+                var pictureEx = new PictureSc(_sdkSldPart, blipRelateId);
                 var spContext = _shapeContextBuilder.Build(sdkElement);
                 var innerTransform = _transformFactory.FromComposite(sdkPicture);
                 var geometry = _geometryFactory.ForPicture(sdkPicture);
@@ -92,7 +89,5 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
             return null;
         }
-
-        #endregion Constructors
     }
 }

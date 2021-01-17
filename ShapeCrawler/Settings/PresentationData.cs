@@ -12,19 +12,16 @@ namespace ShapeCrawler.Settings
     /// <summary>
     /// <inheritdoc cref="IPresentationData"/>
     /// </summary>
-    public class PresentationData : IPresentationData
+    public class PresentationData
     {
         private readonly Lazy<Dictionary<int, int>> _lvlFontHeights;
 
         #region Properties
 
-        /// <summary>
-        /// <inheritdoc cref="IPresentationData.LlvFontHeights"/>
-        /// </summary>
         public Dictionary<int, int> LlvFontHeights => _lvlFontHeights.Value;
 
         /// <summary>
-        /// <inheritdoc cref="IPresentationData.XlsxDocuments"/>
+        /// Returns cache Excel documents instantiated by chart shapes.
         /// </summary>
         public Dictionary<OpenXmlPart, SpreadsheetDocument> XlsxDocuments { get; }
 

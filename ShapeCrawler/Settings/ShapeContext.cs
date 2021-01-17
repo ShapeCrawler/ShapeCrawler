@@ -18,7 +18,7 @@ namespace ShapeCrawler.Settings
 
         internal OpenXmlElement SdkElement { get; private set; }
 
-        internal IPresentationData PresentationData { get; private set; }
+        internal PresentationData PresentationData { get; private set; }
 
         internal PlaceholderFontService PlaceholderFontService { get; private set; }
 
@@ -78,20 +78,20 @@ namespace ShapeCrawler.Settings
         public class Builder
         {
             private readonly SlidePart _sdkSldPart;
-            private readonly IPresentationData _preSettings;
+            private readonly PresentationData _preSettings;
             private readonly PlaceholderFontService _fontService;
             private readonly IPlaceholderService _placeholderService;
 
             #region Constructors
 
-            public Builder(IPresentationData preSettings, PlaceholderFontService fontService, SlidePart sdkSldPart):
+            public Builder(PresentationData preSettings, PlaceholderFontService fontService, SlidePart sdkSldPart):
                 this(preSettings, fontService, sdkSldPart, new PlaceholderService(sdkSldPart.SlideLayoutPart))
             {
 
             }
 
             public Builder(
-                IPresentationData preSettings, 
+                PresentationData preSettings, 
                 PlaceholderFontService fontService, 
                 SlidePart sdkSldPart, 
                 IPlaceholderService placeholderService)

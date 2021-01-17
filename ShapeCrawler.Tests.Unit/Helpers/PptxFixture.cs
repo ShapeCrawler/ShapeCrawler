@@ -1,9 +1,6 @@
-using System;
-using ShapeCrawler.Models;
-
 namespace ShapeCrawler.Tests.Unit.Helpers
 {
-    public class PptxFixture : IDisposable
+    public class PptxFixture
     {
         public PresentationSc Pre001 { get; }
         public PresentationSc Pre002 { get; }
@@ -12,6 +9,7 @@ namespace ShapeCrawler.Tests.Unit.Helpers
         public PresentationSc Pre008 { get; }
         public PresentationSc Pre009 { get; }
         public PresentationSc Pre013 { get; }
+        public PresentationSc Pre014 { get; }
         public PresentationSc Pre015 { get; }
         public PresentationSc Pre016 { get; }
         public PresentationSc Pre017 { get; }
@@ -31,6 +29,7 @@ namespace ShapeCrawler.Tests.Unit.Helpers
             Pre008 = PresentationSc.Open(Properties.Resources._008, false);
             Pre009 = PresentationSc.Open(Properties.Resources._009, false);
             Pre013 = PresentationSc.Open(Properties.Resources._013, false);
+            Pre014 = PresentationSc.Open(Properties.Resources._014, false);
             Pre015 = PresentationSc.Open(Properties.Resources._015, false);
             Pre016 = PresentationSc.Open(Properties.Resources._016, false);
             Pre017 = PresentationSc.Open(Properties.Resources._017, false);
@@ -40,11 +39,6 @@ namespace ShapeCrawler.Tests.Unit.Helpers
             Pre021 = PresentationSc.Open(Properties.Resources._021, false);
             Pre024 = PresentationSc.Open(Properties.Resources._024, false);
             Pre025 = PresentationSc.Open(Properties.Resources._025, false);
-        }
-
-        public void Dispose()
-        {
-
         }
     }
 }

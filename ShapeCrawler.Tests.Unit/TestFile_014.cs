@@ -8,31 +8,6 @@ namespace ShapeCrawler.Tests.Unit
 {
     public class TestFile_014
     {
-        [Fact]
-        public void TextFrame_Text_Test()
-        {
-            // ARRANGE
-            var pre = new PresentationSc(Properties.Resources._014);
-            var elId61 = pre.Slides[0].Shapes.Single(s => s.Id == 61);
-
-            // ACT
-            var text = elId61.TextFrame.Text;
-
-            // ARRANGE
-            Assert.NotNull(text);
-        }
-
-        [Fact]
-        public void Portion_FontHeight_Test()
-        {
-            // ARRANGE
-            var pre = new PresentationSc(Properties.Resources._014);
-            var elId5 = pre.Slides[1].Shapes.Single(x => x.Id == 5);
-
-            // ACT-ASSERT
-            var text = elId5.TextFrame.Text;
-            var fh = elId5.TextFrame.Paragraphs.First().Portions.First().Font.Size;
-        }
 
         [Fact]
         public void Slide_Elements_Test()

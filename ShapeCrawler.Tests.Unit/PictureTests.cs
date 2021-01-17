@@ -27,8 +27,8 @@ namespace ShapeCrawler.Tests.Unit
         public async void ImageExGetImageBytes_MethodReturnsNonEmptyShapeImage()
         {
             // Arrange
-            Picture shapePicture1 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3).Picture;
-            Picture shapePicture2 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7).Picture;
+            PictureSc shapePicture1 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3).Picture;
+            PictureSc shapePicture2 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7).Picture;
 
             // Act
             byte[] shapePictureContentCase1 = await shapePicture1.ImageEx.GetImageBytes();
@@ -44,7 +44,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             var customImageStream = new MemoryStream(Properties.Resources.test_image_2);
-            Picture picture = PresentationSc.Open(Properties.Resources._009, true).
+            PictureSc picture = PresentationSc.Open(Properties.Resources._009, true).
                                                             Slides[1].Shapes.First(sp => sp.Id == 3).Picture;
             var originLength = (await picture.ImageEx.GetImageBytes()).Length;
 

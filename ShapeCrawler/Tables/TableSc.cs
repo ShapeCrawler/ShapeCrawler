@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Linq;
+using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.Settings;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
-// ReSharper disable All
 
-namespace SlideDotNet.Models.TableComponents
+namespace ShapeCrawler.Tables
 {
     /// <summary>
     /// Represents a table element on a slide.
     /// </summary>
-    public class TableSc
+    public class TableSc : BaseShape
     {
         #region Fields
 
@@ -31,9 +30,9 @@ namespace SlideDotNet.Models.TableComponents
         /// <summary>
         /// Initializes an instance of the <see cref="TableSc"/> class.
         /// </summary>
-        public TableSc(P.GraphicFrame xmlGrFrame)
+        public TableSc(P.GraphicFrame pGraphicFrame)
         {
-            _sdkGrFrame = xmlGrFrame ?? throw new ArgumentNullException(nameof(xmlGrFrame));
+            _sdkGrFrame = pGraphicFrame ?? throw new ArgumentNullException(nameof(pGraphicFrame));
             _rowsCollection = new Lazy<RowCollection>(()=>GetRowsCollection());
         }
 

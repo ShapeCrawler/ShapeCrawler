@@ -51,10 +51,10 @@ namespace ShapeCrawler.Collections
         /// Creates slides collection.
         /// </summary>
         /// <returns></returns>
-        public static SlideCollection Create(PresentationPart sdkPrePart, IPresentationData preSettings, PresentationSc presentationEx)
+        public static SlideCollection Create(PresentationPart sdkPrePart, PresentationData preData, PresentationSc presentationEx)
         {
             Check.NotNull(sdkPrePart, nameof(sdkPrePart));
-            Check.NotNull(preSettings, nameof(preSettings));
+            Check.NotNull(preData, nameof(preData));
 
             var numSlides = sdkPrePart.SlideParts.Count();
             var slideCollection = new List<SlideSc>(numSlides);
@@ -63,7 +63,7 @@ namespace ShapeCrawler.Collections
             {
                 var sdkSldPart = sdkPrePart.GetSlidePartByIndex(sldIndex);
                 var sldNumEntity = new SlideNumber(sldIndex + 1);
-                var newSlide = new SlideSc(sdkSldPart, sldNumEntity, preSettings, presentationEx);
+                var newSlide = new SlideSc(sdkSldPart, sldNumEntity, preData, presentationEx);
                 sldNumDic.Add(newSlide, sldNumEntity);
                 slideCollection.Add(newSlide);
             }

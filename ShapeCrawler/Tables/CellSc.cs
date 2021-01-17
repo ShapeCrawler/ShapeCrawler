@@ -4,7 +4,7 @@ using ShapeCrawler.Models.TextShape;
 using ShapeCrawler.Settings;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Models.TableComponents
+namespace ShapeCrawler.Tables
 {
     /// <summary>
     /// Represents a table row cell.

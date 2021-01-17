@@ -11,10 +11,12 @@ using ShapeCrawler.Spreadsheet;
 using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using A = DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Presentation;
+using ShapeCrawler.Models;
 
-namespace ShapeCrawler.Models.SlideComponents.Chart
+namespace ShapeCrawler.Charts
 {
-    public class ChartSc
+    public class ChartSc : BaseShape
     {
         #region Fields
 
@@ -23,7 +25,6 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
         private List<OpenXmlElement> _sdkCharts;
 
         private readonly ShapeContext _shapeContext;
-        private readonly P.GraphicFrame _grFrame;
         private readonly Lazy<ChartType> _chartType;
         private readonly Lazy<OpenXmlElement> _firstSeries;
         private C.Chart _cChart;
@@ -33,6 +34,7 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
         private string _chartTitle;
         private ChartPart _sdkChartPart;
         private readonly ChartRefParser _chartRefParser;
+        private readonly GraphicFrame _pGraphicFrame;
 
         #endregion Fields
 
@@ -136,8 +138,8 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
         /// </summary>
         public ChartSc(P.GraphicFrame grFrame, ShapeContext shapeContext, ChartRefParser chartRefParser)
         {
-            _grFrame = grFrame ?? throw new ArgumentNullException(nameof(grFrame));
-            _shapeContext = shapeContext ?? throw new ArgumentNullException(nameof(shapeContext));
+            _pGraphicFrame = grFrame;
+            _shapeContext = shapeContext;
             _chartRefParser = chartRefParser;
             _chartType = new Lazy<ChartType>(GetChartType);
             _firstSeries = new Lazy<OpenXmlElement>(GetFirstSeries);
@@ -145,15 +147,20 @@ namespace ShapeCrawler.Models.SlideComponents.Chart
             Init(); //TODO: convert to lazy loading
         }
 
-#endregion
+        public ChartSc(GraphicFrame pGraphicFrame)
+        {
+            _pGraphicFrame = pGraphicFrame;
+        }
+
+        #endregion
 
         #region Private Methods
 
         private void Init()
         {
-            var chartPartRef = _grFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>().GetFirstChild<C.ChartReference>().Id;
+            StringValue chartPartRef = _pGraphicFrame.GetFirstChild<A.Graphic>().
+                GetFirstChild<A.GraphicData>().GetFirstChild<C.ChartReference>().Id;
             _sdkChartPart = (ChartPart)_shapeContext.SdkSlidePart.GetPartById(chartPartRef);
-
             _cChart = _sdkChartPart.ChartSpace.GetFirstChild<C.Chart>();
             _sdkCharts = _cChart.PlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)).ToList();  // example: <c:barChart>, <c:lineChart>
             _seriesCollection = new Lazy<SeriesCollection>(GetSeriesCollection);

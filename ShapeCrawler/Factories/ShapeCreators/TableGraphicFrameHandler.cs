@@ -5,7 +5,7 @@ using ShapeCrawler.Factories.Builders;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
-using SlideDotNet.Models.TableComponents;
+using ShapeCrawler.Tables;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 

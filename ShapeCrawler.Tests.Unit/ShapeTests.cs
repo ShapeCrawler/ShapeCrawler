@@ -48,6 +48,9 @@ namespace ShapeCrawler.Tests.Unit
 
             shape = PresentationSc.Open(Resources._019, false).Slides[0].Shapes.First(sp => sp.Id == 2);
             yield return new object[] { shape, PlaceholderType.SlideNumber };
+
+            shape = PresentationSc.Open(Resources._013, false).Slides[0].Shapes.First(sp => sp.Id == 281);
+            yield return new object[] { shape, PlaceholderType.Custom };
         }
 
         [Fact]

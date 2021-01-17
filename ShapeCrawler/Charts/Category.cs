@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ShapeCrawler.Models.SlideComponents.Chart
+namespace ShapeCrawler.Charts
 {
     /// <summary>
     /// Represents a chart category.
