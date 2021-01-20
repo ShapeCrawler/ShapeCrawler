@@ -60,7 +60,7 @@ namespace ShapeCrawler.Collections
             portion.AText.Parent.Remove(); // removes from DOM
         }
 
-        public void RemoveRange(IList<Portion> removingPortions)
+        public void Remove(IList<Portion> removingPortions)
         {
             foreach (var portion in removingPortions)
             {

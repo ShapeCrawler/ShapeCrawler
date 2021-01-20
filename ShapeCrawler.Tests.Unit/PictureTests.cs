@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -14,11 +15,11 @@ namespace ShapeCrawler.Tests.Unit
 {
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
-    public class PictureTests : IClassFixture<PptxFixture>
+    public class PictureTests : IClassFixture<PresentationFixture>
     {
-        private readonly PptxFixture _fixture;
+        private readonly PresentationFixture _fixture;
 
-        public PictureTests(PptxFixture fixture)
+        public PictureTests(PresentationFixture fixture)
         {
             _fixture = fixture;
         }
@@ -54,6 +55,18 @@ namespace ShapeCrawler.Tests.Unit
             // Assert
             var editedLength = (await picture.ImageEx.GetImageBytes()).Length;
             editedLength.Should().NotBe(originLength);
+        }
+
+
+        [Fact]
+        public void Picture_DoNotParseStrangePicture_Test()
+        {
+            // TODO: Deeper learn such pictures, where content generated via a:ln
+            // Arrange
+            var pre = _fixture.Pre019;
+
+            // Act - Assert
+            Assert.ThrowsAny<Exception>(() => pre.Slides[1].Shapes.Single(x => x.Id == 47));
         }
     }
 }

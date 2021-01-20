@@ -20,7 +20,7 @@ namespace ShapeCrawler.Texts
     {
         #region Fields
 
-        private readonly A.Paragraph _textParagraph;
+        private readonly A.Paragraph _aParagraph;
         private readonly Lazy<Bullet> _bullet;
         private readonly ResettableLazy<PortionCollection> _portions;
 
@@ -59,16 +59,16 @@ namespace ShapeCrawler.Texts
         /// </summary>
         public ParagraphSc(ShapeContext spContext, A.Paragraph aParagraph, TextSc textFrame) //TODO: Replace constructor initialization on static .Create()
         {
-            _textParagraph = aParagraph;
+            _aParagraph = aParagraph;
             Level = GetInnerLevel(aParagraph);
             _bullet = new Lazy<Bullet>(GetBullet);
             TextFrame = textFrame;
-            _portions = new ResettableLazy<PortionCollection>(() => PortionCollection.Create(_textParagraph, spContext, this));
+            _portions = new ResettableLazy<PortionCollection>(() => PortionCollection.Create(_aParagraph, spContext, this));
         }
 
         private Bullet GetBullet()
         {
-            return new Bullet(_textParagraph.ParagraphProperties);
+            return new Bullet(_aParagraph.ParagraphProperties);
         }
 
         #endregion Constructors
@@ -86,17 +86,17 @@ namespace ShapeCrawler.Texts
 
         private string GetText()
         {
-            return Portions.Select<Portion, string>(p => p.Text).Aggregate((result, next) => result + next);
+            return Portions.Select(p => p.Text).Aggregate((result, next) => result + next);
         }
 
         private void SetText(string newText)
         {
-            // TODO: Improve deleting performance, for example by adding a new method RemoveAllExceptFirst
+            // TODO: Add RemoveRange API to remove all portion except first
 
             // To set a paragraph text we use a single portion which is the first paragraph portion.
             // Rest of the portions are deleted from the paragraph.
-            Portions.RemoveRange(Portions.Skip<Portion>(1).ToList());
-            Portion basePortion = Portions.Single<Portion>();
+            Portions.Remove(Portions.Skip(1).ToList());
+            Portion basePortion = Portions.Single();
             string[] textLines = newText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             basePortion.Text = textLines[0];
             OpenXmlElement lastInsertedARunOrLineBreak = basePortion.AText.Parent;
@@ -117,5 +117,10 @@ namespace ShapeCrawler.Texts
         }
 
         #endregion Private Methods
+
+        internal void Remove()
+        {
+            _aParagraph.Remove();
+        }
     }
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Enums;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Spreadsheet;
@@ -12,6 +11,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using A = DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Presentation;
+using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
 
 namespace ShapeCrawler.Charts
@@ -147,7 +147,7 @@ namespace ShapeCrawler.Charts
             Init(); //TODO: convert to lazy loading
         }
 
-        public ChartSc(GraphicFrame pGraphicFrame)
+        public ChartSc(GraphicFrame pGraphicFrame) : base(pGraphicFrame)
         {
             _pGraphicFrame = pGraphicFrame;
         }
@@ -262,6 +262,15 @@ namespace ShapeCrawler.Charts
         }
 
         #endregion
+
+        public override long Width => throw new NotImplementedException();
+
+        public override long Height => throw new NotImplementedException();
+        public override GeometryType GeometryType { get; }
+
+        public override long X => throw new NotImplementedException();
+
+        public override long Y => throw new NotImplementedException();
     }
 }
 

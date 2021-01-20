@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Enums;
 using ShapeCrawler.Factories.Drawing;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -32,11 +33,21 @@ namespace ShapeCrawler.Models.SlideComponents
             ImageEx = new ImageEx(xmlSldPart, blipRelateId);
         }
 
-        public PictureSc(P.Picture pPicture)
+        public PictureSc(P.Picture pPicture) : base(pPicture)
         {
             _pPicture = pPicture;
         }
 
         #endregion Constructors
+
+        public override long Width => throw new System.NotImplementedException();
+
+        public override long Height => throw new System.NotImplementedException();
+
+        public override long X => throw new System.NotImplementedException();
+
+        public override long Y => throw new System.NotImplementedException();
+
+        public override GeometryType GeometryType => throw new System.NotImplementedException();
     }
 }

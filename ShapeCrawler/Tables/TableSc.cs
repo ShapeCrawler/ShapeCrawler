@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -48,5 +49,15 @@ namespace ShapeCrawler.Tables
         }
 
         #endregion Private Methods
+
+        public override long Width => throw new NotImplementedException();
+
+        public override long Height => throw new NotImplementedException();
+
+        public override long X => throw new NotImplementedException();
+
+        public override long Y => throw new NotImplementedException();
+
+        public override GeometryType GeometryType => throw new NotImplementedException();
     }
 }

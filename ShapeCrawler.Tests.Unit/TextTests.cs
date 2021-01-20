@@ -15,35 +15,35 @@ using Xunit;
 
 namespace ShapeCrawler.Tests.Unit
 {
-    public class TextFrameTests : IClassFixture<PptxFixture>
+    public class TextTests : IClassFixture<PresentationFixture>
     {
-        private readonly PptxFixture _fixture;
+        private readonly PresentationFixture _fixture;
 
-        public TextFrameTests(PptxFixture fixture)
+        public TextTests(PresentationFixture fixture)
         {
             _fixture = fixture;
         }
 
         [Fact]
-        public void Text_GetterReturnsShapeTextWhichIsParagraphsTextAggregate()
+        public void Content_GetterReturnsShapeTextWhichIsParagraphsTextAggregate()
         {
             // Arrange
-            ITextFrame textFrameCase1 = _fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2).TextFrame;
-            ITextFrame textFrameCase2 = _fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 5).TextFrame;
-            ITextFrame textFrameCase3 = _fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 6).TextFrame;
-            ITextFrame textFrameCase4 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].Text;
-            ITextFrame textFrameCase5 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2).TextFrame;
-            ITextFrame textFrameCase6 = _fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61).TextFrame;
-            ITextFrame textFrameCase7 = _fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5).TextFrame;
+            TextSc textFrameCase1 = _fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2).Text;
+            TextSc textFrameCase2 = _fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 5).Text;
+            TextSc textFrameCase3 = _fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 6).Text;
+            TextSc textFrameCase4 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].Text;
+            TextSc textFrameCase5 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2).Text;
+            TextSc textFrameCase6 = _fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61).Text;
+            TextSc textFrameCase7 = _fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5).Text;
 
             // Act
-            string shapeTextCase1 = textFrameCase1.Text;
-            string shapeTextCase2 = textFrameCase2.Text;
-            string shapeTextCase3 = textFrameCase3.Text;
-            string shapeTextCase4 = textFrameCase4.Text;
-            string shapeTextCase5 = textFrameCase5.Text;
-            string shapeTextCase6 = textFrameCase6.Text;
-            string shapeTextCase7 = textFrameCase7.Text;
+            string shapeTextCase1 = textFrameCase1.Content;
+            string shapeTextCase2 = textFrameCase2.Content;
+            string shapeTextCase3 = textFrameCase3.Content;
+            string shapeTextCase4 = textFrameCase4.Content;
+            string shapeTextCase5 = textFrameCase5.Content;
+            string shapeTextCase6 = textFrameCase6.Content;
+            string shapeTextCase7 = textFrameCase7.Content;
 
             // Assert
             shapeTextCase1.Should().BeEquivalentTo("Title text");
@@ -57,19 +57,43 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
+        public void Content_SetterChangesTextByUsingFirstParagraphAsBasicSingleParagraph()
+        {
+            // Arrange
+            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            TextSc text = presentation.Slides[0].Shapes.First(sp => sp.Id == 3).Text;
+            const string newText = "Test";
+            var mStream = new MemoryStream();
+
+            // Act
+            text.Content = newText;
+
+            // Assert
+            text.Content.Should().BeEquivalentTo(newText);
+            text.Paragraphs.Should().HaveCount(1);
+            
+            presentation.SaveAs(mStream);
+            presentation.Close();
+            presentation = PresentationSc.Open(mStream, false);
+            text = presentation.Slides[0].Shapes.First(sp => sp.Id == 3).Text;
+            text.Content.Should().BeEquivalentTo(newText);
+            text.Paragraphs.Should().HaveCount(1);
+        }
+
+        [Fact]
         public void HasTextFrameAndText_PropertiesReturnCorrectValue_WhenTheirGettersAreCalled()
         {
             // Arrange
             var shapeCase1 = _fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3);
             var shapeCase2 = _fixture.Pre021.Slides[3].Shapes.First(sp => sp.Id == 2);
-            var textFrameCase1 = shapeCase1.TextFrame;
-            var textFrameCase2 = shapeCase2.TextFrame;
+            var textFrameCase1 = shapeCase1.Text;
+            var textFrameCase2 = shapeCase2.Text;
 
             // Act
             var hasTextFrameCase1 = shapeCase1.HasTextFrame;
             var hasTextFrameCase2 = shapeCase2.HasTextFrame;
-            var frameTextCase1 = textFrameCase1.Text;
-            var frameTextCase2 = textFrameCase2.Text;
+            var frameTextCase1 = textFrameCase1.Content;
+            var frameTextCase2 = textFrameCase2.Content;
 
             // Assert
             hasTextFrameCase1.Should().BeTrue();
@@ -83,8 +107,8 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             var shapes = _fixture.Pre002.Slides[1].Shapes;
-            var shape3Pr1Bullet = shapes.First(x => x.Id == 3).TextFrame.Paragraphs[0].Bullet;
-            var shape4Pr2Bullet = shapes.First(x => x.Id == 4).TextFrame.Paragraphs[1].Bullet;
+            var shape3Pr1Bullet = shapes.First(x => x.Id == 3).Text.Paragraphs[0].Bullet;
+            var shape4Pr2Bullet = shapes.First(x => x.Id == 4).Text.Paragraphs[1].Bullet;
 
             // Act
             var shape3BulletFontName = shape3Pr1Bullet.FontName;
@@ -102,9 +126,9 @@ namespace ShapeCrawler.Tests.Unit
             var shapeList = _fixture.Pre002.Slides[1].Shapes;
             var shape4 = shapeList.First(x => x.Id == 4);
             var shape5 = shapeList.First(x => x.Id == 5);
-            var shape4Pr2Bullet = shape4.TextFrame.Paragraphs[1].Bullet;
-            var shape5Pr1Bullet = shape5.TextFrame.Paragraphs[0].Bullet;
-            var shape5Pr2Bullet = shape5.TextFrame.Paragraphs[1].Bullet;
+            var shape4Pr2Bullet = shape4.Text.Paragraphs[1].Bullet;
+            var shape5Pr1Bullet = shape5.Text.Paragraphs[0].Bullet;
+            var shape5Pr2Bullet = shape5.Text.Paragraphs[1].Bullet;
 
             // Act
             var shape5Pr1BulletType = shape5Pr1Bullet.Type;
@@ -123,7 +147,7 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             var shapeList = _fixture.Pre002.Slides[1].Shapes;
             var shape4 = shapeList.First(x => x.Id == 4);
-            var shape4Pr2Bullet = shape4.TextFrame.Paragraphs[1].Bullet;
+            var shape4Pr2Bullet = shape4.Text.Paragraphs[1].Bullet;
 
             // Act
             var bulletColorHex = shape4Pr2Bullet.ColorHex;
@@ -190,9 +214,9 @@ namespace ShapeCrawler.Tests.Unit
         public void ParagraphText_GetterReturnsParagraphText()
         {
             // Arrange
-            ITextFrame textFrameCase1 = _fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 37).TextFrame;
-            ITextFrame textFrameCase2 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].Text;
-            ITextFrame textFrameCase3 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].Text;
+            TextSc textFrameCase1 = _fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 37).Text;
+            TextSc textFrameCase2 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].Text;
+            TextSc textFrameCase3 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].Text;
 
             // Act
             string paragraphTextCase1 = textFrameCase1.Paragraphs[0].Text;
@@ -209,7 +233,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Paragraphs_CollectionCounterReturnsNumberOfParagraphsInTheTextFrame()
         {
             // Arrange
-            ITextFrame textFrame = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2).TextFrame;
+            TextSc textFrame = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2).Text;
 
             // Act
             IEnumerable<ParagraphSc> paragraphs = textFrame.Paragraphs;
@@ -222,7 +246,7 @@ namespace ShapeCrawler.Tests.Unit
         public void ParagraphPortions_CollectionCounterReturnsNumberOfTextPortionsInTheParagraph()
         {
             // Arrange
-            ITextFrame textFrame = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2).TextFrame;
+            TextSc textFrame = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2).Text;
 
             // Act
             IEnumerable<Portion> paragraphPortions = textFrame.Paragraphs[0].Portions;
@@ -235,7 +259,7 @@ namespace ShapeCrawler.Tests.Unit
         public void ParagraphsCount_ReturnsNumberOfParagraphsInTheTextFrame()
         {
             // Arrange
-            ITextFrame textFrame = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0]
+            TextSc textFrame = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0]
                 .Text;
 
             // Act

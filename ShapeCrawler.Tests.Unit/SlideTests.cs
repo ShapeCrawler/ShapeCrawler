@@ -15,11 +15,11 @@ using Xunit;
 namespace ShapeCrawler.Tests.Unit
 {
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-    public class SlideTests : IClassFixture<PptxFixture>
+    public class SlideTests : IClassFixture<PresentationFixture>
     {
-        private readonly PptxFixture _fixture;
+        private readonly PresentationFixture _fixture;
 
-        public SlideTests(PptxFixture fixture)
+        public SlideTests(PresentationFixture fixture)
         {
             _fixture = fixture;
         }
@@ -194,5 +194,16 @@ namespace ShapeCrawler.Tests.Unit
             // Assert
             shapeHasPicture.Should().BeTrue();
         }
+#if DEBUG
+        [Fact(Skip = "The feature is in progress")]
+        public void SaveImage_GenerateAndSavesSlideImageInSpecifiedFilePath()
+        {
+            // Arrange
+            SlideSc slide = _fixture.Pre001.Slides[0];
+
+            // Act
+            slide.SaveImage(@"c:\1\SlideScSaveImage.png");
+        }
+#endif
     }
 }
