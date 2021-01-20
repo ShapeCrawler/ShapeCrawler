@@ -24,14 +24,12 @@ namespace ShapeCrawler.Tests.Unit
             var dt = pre.Slides[0].Shapes.Single(s => s.Id == 54275);
 
             // ACT
-            var text = dt.Text.Content;
             var hasText = dt.HasTextFrame;
 
             pre.Close();
 
             // ASSERT
             Assert.True(hasText);
-            Assert.NotNull(text);
         }
 
         [Fact]

@@ -57,5 +57,18 @@ namespace ShapeCrawler.Tests.Unit
             table = PresentationSc.Open(mStream, false).Slides[2].Shapes.First(sp => sp.Id == 3).Table;
             table.Rows.Should().HaveCountLessThan(originRowsCount);
         }
+
+        [Fact]
+        public void CellIsMergedCell_ReturnsTrueWhenTheCellBelongToMergedCellsGroup()
+        {
+            // Arrange
+            CellSc tableCell = _fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4).Table.Rows[1].Cells[0];
+
+            // Act
+            bool isMergedCell = tableCell.IsMergedCell;
+
+            // Assert
+            isMergedCell.Should().BeTrue();
+        }
     }
 }

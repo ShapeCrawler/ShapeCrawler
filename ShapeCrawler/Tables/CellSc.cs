@@ -15,7 +15,7 @@ namespace ShapeCrawler.Tables
 
         private TextSc _text;
 
-        private readonly A.TableCell _xmlCell;
+        private readonly A.TableCell _aTableCell;
         private readonly ShapeContext _spContext;
 
         #endregion
@@ -38,20 +38,30 @@ namespace ShapeCrawler.Tables
             }
         }
 
+        public bool IsMergedCell => DefineWhetherCellIsMerged();
+
+        private bool DefineWhetherCellIsMerged()
+        {
+            return _aTableCell.GridSpan != null ||
+                   _aTableCell.RowSpan != null ||
+                   _aTableCell.HorizontalMerge != null ||
+                   _aTableCell.VerticalMerge != null;
+        }
+
         #endregion
 
         #region Constructors
 
         public CellSc(A.TableCell xmlCell)
         {
-            _xmlCell = xmlCell ?? throw new ArgumentNullException(nameof(xmlCell));
+            _aTableCell = xmlCell ?? throw new ArgumentNullException(nameof(xmlCell));
         }
 
         #endregion
 
         private void TryParseTxtBody()
         {
-            var aTxtBody = _xmlCell.TextBody;
+            var aTxtBody = _aTableCell.TextBody;
             var aTexts = aTxtBody.Descendants<A.Text>();
             if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element contain text
             {
