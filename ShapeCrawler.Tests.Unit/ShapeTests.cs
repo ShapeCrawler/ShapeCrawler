@@ -2,9 +2,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using DocumentFormat.OpenXml.Drawing;
 using FluentAssertions;
 using ShapeCrawler.Enums;
-using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Models.Styles;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
@@ -18,11 +18,11 @@ namespace ShapeCrawler.Tests.Unit
 {
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
-    public class ShapeTests : IClassFixture<PptxFixture>
+    public class ShapeTests : IClassFixture<PresentationFixture>
     {
-        private readonly PptxFixture _fixture;
+        private readonly PresentationFixture _fixture;
 
-        public ShapeTests(PptxFixture fixture)
+        public ShapeTests(PresentationFixture fixture)
         {
             _fixture = fixture;
         }
@@ -258,7 +258,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void CustomData_ReturnNull_WhenShapeHasNotCustomData()
+        public void CustomData_ReturnsNull_WhenShapeHasNotCustomData()
         {
             // Arrange
             var shape = _fixture.Pre009.Slides.First().Shapes.First();
@@ -300,6 +300,19 @@ namespace ShapeCrawler.Tests.Unit
 
             // Assert
             shapeName.Should().BeEquivalentTo("Object 2");
+        }
+
+        [Fact]
+        public void HasTextFrame_ReturnsFalse_WhenTheShapeDoesNotContainText()
+        {
+            // Arrange
+            ShapeSc shape = _fixture.Pre009.Slides[4].Shapes.First(sp => sp.Id == 5);
+
+            // Act
+            bool hasTextFrame = shape.HasTextFrame;
+
+            // Assert
+            hasTextFrame.Should().BeFalse();
         }
     }
 }

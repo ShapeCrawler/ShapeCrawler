@@ -29,6 +29,8 @@ namespace ShapeCrawler.Collections
             CollectionItems = shapes;
         }
 
+        #endregion Constructors
+
         internal static ShapesCollection CreateForUserSlide(SlidePart slidePart, PresentationData preData, SlideSc slide)
         {
             var sldPhFontService = new PlaceholderFontService(slidePart);
@@ -67,8 +69,6 @@ namespace ShapeCrawler.Collections
             return new ShapesCollection(shapes);
         }
 
-        #endregion Constructors
-
         public static MasterShapesCollection CreateForMasterSlide(ShapeTree shapeTree)
         {
             var slideMasterShapes = new List<BaseShape>();
@@ -76,7 +76,7 @@ namespace ShapeCrawler.Collections
             {
                 if (openXmlElement is P.Shape pShape)
                 {
-                    slideMasterShapes.Add(new AutoShape(pShape));
+                    slideMasterShapes.Add(new MasterAutoShape(pShape));
                     continue;
                 }
                 

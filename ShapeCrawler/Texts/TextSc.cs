@@ -4,23 +4,19 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Settings;
-using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts
 {
     // TODO: Override ToString()
-    /// <summary>
-    /// <inheritdoc cref="ITextFrame"/>
-    /// </summary>
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-    public sealed class TextSc : ITextFrame
+    public sealed class TextSc
     {
         #region Fields
 
         private readonly ShapeContext _spContext;
-        private readonly Lazy<string> _text;
+        private readonly Lazy<string> _content;
+        private readonly OpenXmlCompositeElement _compositeElement;
 
         #endregion Fields
 
@@ -28,15 +24,16 @@ namespace ShapeCrawler.Texts
 
         #region Public Properties
 
-        /// <summary>
-        /// <inheritdoc cref="ITextFrame.Paragraphs"/>
-        /// </summary>
-        public IList<ParagraphSc> Paragraphs { get; private set; } // TODO: Consider to use IReadOnlyList instead IList or create own collection
+        public ParagraphCollection Paragraphs => ParagraphCollection.Parse(_compositeElement, _spContext, this); // TODO: make lazy
 
         /// <summary>
-        /// <inheritdoc cref="ITextFrame.Text"/>
+        /// Gets or sets text string content.
         /// </summary>
-        public string Text => _text.Value;
+        public string Content
+        {
+            get => _content.Value;
+            set => SetContent(value);
+        }
 
         #endregion Public Properties
 
@@ -54,25 +51,23 @@ namespace ShapeCrawler.Texts
         public TextSc(ShapeContext spContext, OpenXmlCompositeElement compositeElement)
         {
             _spContext = spContext;
-            ParseParagraphs(compositeElement); // TODO: Make paragraphs parsing lazy
-            _text = new Lazy<string>(GetText);
+            _compositeElement = compositeElement;
+            _content = new Lazy<string>(GetText);
         }
 
         #endregion Constructors
 
         #region Private Methods
 
-        private void ParseParagraphs(OpenXmlCompositeElement compositeElement)
+        private void SetContent(string value)
         {
-            // Parses non-empty paragraphs
-            var aParagraphs = compositeElement.Elements<A.Paragraph>().Where(e => e.Descendants<A.Text>().Any());
-
-            // Sets paragraphs
-            Paragraphs = new List<ParagraphSc>(aParagraphs.Count());
-            foreach (A.Paragraph aParagraph in aParagraphs)
+            if (Paragraphs.Count > 1)
             {
-                Paragraphs.Add(new ParagraphSc(_spContext, aParagraph, this));
+                // Remove all except first paragraph
+                Paragraphs.RemoveRange(1, Paragraphs.Count - 1);
             }
+
+            Paragraphs.Single().Text = value;
         }
 
         private string GetText()

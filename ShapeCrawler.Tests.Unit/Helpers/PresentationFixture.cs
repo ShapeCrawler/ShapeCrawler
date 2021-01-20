@@ -1,6 +1,6 @@
 namespace ShapeCrawler.Tests.Unit.Helpers
 {
-    public class PptxFixture
+    public class PresentationFixture
     {
         public PresentationSc Pre001 { get; }
         public PresentationSc Pre002 { get; }
@@ -20,7 +20,7 @@ namespace ShapeCrawler.Tests.Unit.Helpers
         public PresentationSc Pre024 { get; }
         public PresentationSc Pre025 { get; }
 
-        public PptxFixture()
+        public PresentationFixture()
         {
             Pre001 = PresentationSc.Open(Properties.Resources._001, false);
             Pre002 = PresentationSc.Open(Properties.Resources._002, false);

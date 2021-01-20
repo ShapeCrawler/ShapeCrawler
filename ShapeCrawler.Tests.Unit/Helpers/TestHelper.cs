@@ -10,7 +10,7 @@ namespace ShapeCrawler.Tests.Unit.Helpers
         {
             return presentation.Slides[paragraphRequest.SlideIndex]
                                 .Shapes.First(sp => sp.Id == paragraphRequest.ShapeId)
-                                .TextFrame.Paragraphs[paragraphRequest.ParagraphIndex];
+                                .Text.Paragraphs[paragraphRequest.ParagraphIndex];
         }
 
         public static ParagraphSc GetParagraph(MemoryStream presentationStream, ElementRequest paragraphRequest)
@@ -19,7 +19,7 @@ namespace ShapeCrawler.Tests.Unit.Helpers
 
             return presentation.Slides[paragraphRequest.SlideIndex]
                                 .Shapes.First(sp => sp.Id == paragraphRequest.ShapeId)
-                                .TextFrame.Paragraphs[paragraphRequest.ParagraphIndex];
+                                .Text.Paragraphs[paragraphRequest.ParagraphIndex];
         }
     }
 }

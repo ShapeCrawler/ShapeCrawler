@@ -12,11 +12,11 @@ namespace ShapeCrawler.Tests.Unit
 {
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
-    public class PresentationTests : IClassFixture<PptxFixture>
+    public class PresentationTests : IClassFixture<PresentationFixture>
     {
-        private readonly PptxFixture _fixture;
+        private readonly PresentationFixture _fixture;
 
-        public PresentationTests(PptxFixture fixture)
+        public PresentationTests(PresentationFixture fixture)
         {
             _fixture = fixture;
         }

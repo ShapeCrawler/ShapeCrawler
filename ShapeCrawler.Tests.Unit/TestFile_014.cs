@@ -27,7 +27,7 @@ namespace ShapeCrawler.Tests.Unit
 
             // Act
             var element = pre.Slides[3].Shapes.Single(x => x.Id == 5);
-            var fh = element.TextFrame.Paragraphs.First().Portions.First().Font.Size;
+            var fh = element.Text.Paragraphs.First().Portions.First().Font.Size;
 
             // Assert
             Assert.Equal(1200, fh);
@@ -41,7 +41,7 @@ namespace ShapeCrawler.Tests.Unit
 
             // Act
             var element = pre.Slides[4].Shapes.Single(x => x.Id == 4);
-            var fh = element.TextFrame.Paragraphs.First().Portions.First().Font.Size;
+            var fh = element.Text.Paragraphs.First().Portions.First().Font.Size;
 
             // Assert
             Assert.Equal(1200, fh);
@@ -55,7 +55,7 @@ namespace ShapeCrawler.Tests.Unit
 
             // Act
             var element = pre.Slides[5].Shapes.Single(x => x.Id == 52);
-            var fh = element.TextFrame.Paragraphs.First().Portions.First().Font.Size;
+            var fh = element.Text.Paragraphs.First().Portions.First().Font.Size;
 
             // Assert
             Assert.Equal(2700, fh);

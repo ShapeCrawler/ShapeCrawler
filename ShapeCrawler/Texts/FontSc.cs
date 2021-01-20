@@ -47,9 +47,8 @@ namespace ShapeCrawler.Texts
         }
 
         /// <summary>
-        /// Determines whether font size can be changed.
+        /// Gets value indicating whether font size can be changed.
         /// </summary>
-        /// <returns></returns>
         public bool SizeCanBeChanged()
         {
             var runPr = _aText.Parent.GetFirstChild<A.RunProperties>();

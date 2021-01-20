@@ -4,9 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Enums;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories.Builders;
 using ShapeCrawler.Factories.Drawing;
@@ -35,7 +33,7 @@ namespace ShapeCrawler
         #region Fields
 
         internal ShapeContext Context;
-        private readonly Lazy<ITextFrame> _textFrame;
+        private readonly Lazy<TextSc> _text;
         private readonly Lazy<ShapeFill> _shapeFill;
         private readonly IImageExFactory _imageFactory = new ImageExFactory(); //TODO: do not initiate for non-AutoShape types
         private bool? _hidden;
@@ -131,7 +129,7 @@ namespace ShapeCrawler
         /// <summary>
         /// Determines whether the shape has text frame.
         /// </summary>
-        public bool HasTextFrame => TextFrame is TextSc;
+        public bool HasTextFrame => Text is TextSc;
 
         /// <summary>
         /// Determines whether the shape has chart content.
@@ -147,7 +145,7 @@ namespace ShapeCrawler
         /// Returns text frame.
         /// </summary>
         /// <remarks>Lazy load.</remarks>
-        public ITextFrame TextFrame => _textFrame.Value;
+        public TextSc Text => _text.Value;
 
         /// <summary>
         /// Returns chart. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.Chart"/>.
@@ -254,7 +252,7 @@ namespace ShapeCrawler
             _innerTransform = innerTransform;
             Context = spContext;
             ContentType = contentType;
-            _textFrame = new Lazy<ITextFrame>(TryGetTextFrame);
+            _text = new Lazy<TextSc>(TryGetTextFrame);
             _shapeFill = new Lazy<ShapeFill>(TryGetFill);
         }
 
@@ -275,17 +273,17 @@ namespace ShapeCrawler
             return elementText.Value;
         }
 
-        private ITextFrame TryGetTextFrame()
+        private TextSc TryGetTextFrame()
         {
             if (ContentType != ShapeContentType.AutoShape)
             {
-                return new NoTextFrame();
+                return null;
             }
 
             var pTxtBody = Context.SdkElement.Descendants<P.TextBody>().SingleOrDefault();
             if (pTxtBody == null)
             {
-                return new NoTextFrame();
+                return null;
             }
 
             var aTexts = pTxtBody.Descendants<A.Text>();
@@ -294,7 +292,7 @@ namespace ShapeCrawler
                 return new TextSc(pTxtBody, this);
             }
 
-            return new NoTextFrame();
+            return null;
         }
 
         private ShapeFill TryGetFill()
