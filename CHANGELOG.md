@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Version 0.13.0 - Unreleased
+### Added
+- Added `CellSc.IsMergedCell` to define whether table cell belong to merged cells group.
+
 ## Version 0.12.0 - 2021-01-17
 ### Added
 - Added base API to get Slide Master collection — `PresentationSc.SlideMasters` (#44)

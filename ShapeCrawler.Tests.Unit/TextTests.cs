@@ -28,32 +28,35 @@ namespace ShapeCrawler.Tests.Unit
         public void Content_GetterReturnsShapeTextWhichIsParagraphsTextAggregate()
         {
             // Arrange
-            TextSc textFrameCase1 = _fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2).Text;
-            TextSc textFrameCase2 = _fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 5).Text;
-            TextSc textFrameCase3 = _fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 6).Text;
-            TextSc textFrameCase4 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].Text;
-            TextSc textFrameCase5 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2).Text;
-            TextSc textFrameCase6 = _fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61).Text;
-            TextSc textFrameCase7 = _fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5).Text;
+            TextSc textCase1 = _fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2).Text;
+            TextSc textCase2 = _fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 5).Text;
+            TextSc textCase3 = _fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 6).Text;
+            TextSc textCase4 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].Text;
+            TextSc textCase5 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2).Text;
+            TextSc textCase6 = _fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61).Text;
+            TextSc textCase7 = _fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5).Text;
+            TextSc textCase8 = _fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 54275).Text;
 
             // Act
-            string shapeTextCase1 = textFrameCase1.Content;
-            string shapeTextCase2 = textFrameCase2.Content;
-            string shapeTextCase3 = textFrameCase3.Content;
-            string shapeTextCase4 = textFrameCase4.Content;
-            string shapeTextCase5 = textFrameCase5.Content;
-            string shapeTextCase6 = textFrameCase6.Content;
-            string shapeTextCase7 = textFrameCase7.Content;
+            string textContentCase1 = textCase1.Content;
+            string textContentCase2 = textCase2.Content;
+            string textContentCase3 = textCase3.Content;
+            string textContentCase4 = textCase4.Content;
+            string textContentCase5 = textCase5.Content;
+            string textContentCase6 = textCase6.Content;
+            string textContentCase7 = textCase7.Content;
+            string textContentCase8 = textCase8.Content;
 
             // Assert
-            shapeTextCase1.Should().BeEquivalentTo("Title text");
-            shapeTextCase2.Should().BeEquivalentTo(" id5-Text1");
-            shapeTextCase3.Should().BeEquivalentTo($"id6-Text1{Environment.NewLine}Text2");
-            shapeTextCase4.Should().BeEquivalentTo($"0:0_p1_lvl1{Environment.NewLine}0:0_p2_lvl2");
-            shapeTextCase5.Should().BeEquivalentTo("1");
-            shapeTextCase6.Should().BeEquivalentTo($"test1{Environment.NewLine}test2{Environment.NewLine}" +
+            textContentCase1.Should().BeEquivalentTo("Title text");
+            textContentCase2.Should().BeEquivalentTo(" id5-Text1");
+            textContentCase3.Should().BeEquivalentTo($"id6-Text1{Environment.NewLine}Text2");
+            textContentCase4.Should().BeEquivalentTo($"0:0_p1_lvl1{Environment.NewLine}0:0_p2_lvl2");
+            textContentCase5.Should().BeEquivalentTo("1");
+            textContentCase6.Should().BeEquivalentTo($"test1{Environment.NewLine}test2{Environment.NewLine}" +
                                                    $"test3{Environment.NewLine}test4{Environment.NewLine}test5");
-            shapeTextCase7.Should().BeEquivalentTo($"Test subtitle");
+            textContentCase7.Should().BeEquivalentTo("Test subtitle");
+            textContentCase8.Should().BeEquivalentTo("Jan 2018");
         }
 
         [Fact]
