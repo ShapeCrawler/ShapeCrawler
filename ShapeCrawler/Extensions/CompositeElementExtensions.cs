@@ -3,6 +3,8 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using P = DocumentFormat.OpenXml.Presentation;
 using D = DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Drawing;
+using ShapeCrawler.Exceptions;
 
 namespace ShapeCrawler.Extensions
 {
@@ -55,6 +57,16 @@ namespace ShapeCrawler.Extensions
             var hidden = parsedHiddenValue != null && parsedHiddenValue == true;
 
             return (id, hidden, name);
+        }
+
+        public static P.NonVisualDrawingProperties GetNonVisualDrawingProperties(this OpenXmlCompositeElement compositeElement)
+        {
+            return compositeElement switch
+            {
+                P.GraphicFrame pGraphicFrame => pGraphicFrame.NonVisualGraphicFrameProperties.NonVisualDrawingProperties,
+                P.Shape pShape => pShape.NonVisualShapeProperties.NonVisualDrawingProperties,
+                _ => throw new ShapeCrawlerException()
+            };
         }
 
         /// <summary>

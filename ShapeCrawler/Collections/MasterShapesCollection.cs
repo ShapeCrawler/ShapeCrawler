@@ -5,7 +5,7 @@ namespace ShapeCrawler.Collections
 {
     public class MasterShapesCollection : LibraryCollection<BaseShape>
     {
-        public MasterShapesCollection(IEnumerable<BaseShape> items) : base(items)
+        public MasterShapesCollection(IEnumerable<BaseShape> paragraphItems) : base(paragraphItems)
         {
         }
     }

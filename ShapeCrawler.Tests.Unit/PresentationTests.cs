@@ -30,7 +30,7 @@ namespace ShapeCrawler.Tests.Unit
             // Act
             Action act = () => PresentationSc.Open(bytes, false);
 
-            // Arrange
+            // Assert
             act.Should().Throw<PresentationIsLargeException>();
         }
 
@@ -66,7 +66,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             var stream = new MemoryStream(Properties.Resources._007_2_slides);
-            var presentation = new PresentationSc(stream, true);
+            var presentation = PresentationSc.Open(stream, true);
             var removingSlide = presentation.Slides.First();
 
             // Act
@@ -74,7 +74,7 @@ namespace ShapeCrawler.Tests.Unit
             presentation.Close();
 
             // Assert
-            presentation = new PresentationSc(stream, false);
+            presentation = PresentationSc.Open(stream, false);
             presentation.Slides.Should().HaveCount(1);
         }
 
@@ -104,7 +104,7 @@ namespace ShapeCrawler.Tests.Unit
             int slideMasterShapesCount = presentation.SlideMasters[0].Shapes.Count;
 
             // Assert
-            slideMasterShapesCount.Should().Be(5);
+            slideMasterShapesCount.Should().Be(7);
         }
     }
 }

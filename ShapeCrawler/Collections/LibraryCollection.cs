@@ -42,9 +42,9 @@ namespace ShapeCrawler.Collections
 
         }
 
-        public LibraryCollection(IEnumerable<T> items)
+        public LibraryCollection(IEnumerable<T> paragraphItems)
         {
-            CollectionItems = new List<T>(items);
+            CollectionItems = new List<T>(paragraphItems);
         }
 
         #endregion Constructors

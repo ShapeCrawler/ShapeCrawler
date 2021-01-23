@@ -1,6 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Enums;
+using ShapeCrawler.Extensions;
 
 namespace ShapeCrawler.Models
 {
@@ -12,7 +12,7 @@ namespace ShapeCrawler.Models
         protected internal readonly OpenXmlCompositeElement _compositeElement;
 #endif
 
-        public uint Id => _compositeElement.GetFirstChild<NonVisualShapeProperties>().NonVisualDrawingProperties.Id;
+        public uint Id => _compositeElement.GetNonVisualDrawingProperties().Id;
 
         public abstract long X { get; }
 

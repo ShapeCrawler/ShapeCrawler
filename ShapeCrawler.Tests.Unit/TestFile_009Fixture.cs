@@ -9,7 +9,7 @@ namespace ShapeCrawler.Tests.Unit
 
         public TestFile_009Fixture()
         {
-            pre009 = new PresentationSc(Properties.Resources._009);
+            pre009 = PresentationSc.Open(Properties.Resources._009, false);
         }
 
         public void Dispose()

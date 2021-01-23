@@ -33,7 +33,7 @@ namespace ShapeCrawler.Models.SlideComponents
             ImageEx = new ImageEx(xmlSldPart, blipRelateId);
         }
 
-        public PictureSc(P.Picture pPicture) : base(pPicture)
+        public PictureSc(SlideMaster.SlideMasterSc slideMaster, P.Picture pPicture) : base(pPicture)
         {
             _pPicture = pPicture;
         }

@@ -28,12 +28,13 @@ namespace ShapeCrawler
     /// <summary>
     /// Represents a shape on a slide.
     /// </summary>
-    public class ShapeSc
+    public class 
+        ShapeSc
     {
         #region Fields
 
         internal ShapeContext Context;
-        private readonly Lazy<TextSc> _text;
+        private readonly Lazy<TextBoxSc> _text;
         private readonly Lazy<ShapeFill> _shapeFill;
         private readonly IImageExFactory _imageFactory = new ImageExFactory(); //TODO: do not initiate for non-AutoShape types
         private bool? _hidden;
@@ -47,7 +48,9 @@ namespace ShapeCrawler
 
         #endregion Fields
 
-        #region Properties
+        internal OpenXmlCompositeElement ShapeTreeSource { get; set; }
+
+        #region Public Properties
 
         /// <summary>
         /// Returns the x-coordinate of the upper-left corner of the shape.
@@ -129,7 +132,7 @@ namespace ShapeCrawler
         /// <summary>
         /// Determines whether the shape has text frame.
         /// </summary>
-        public bool HasTextFrame => Text is TextSc;
+        public bool HasTextBox => TextBox is TextBoxSc;
 
         /// <summary>
         /// Determines whether the shape has chart content.
@@ -145,7 +148,7 @@ namespace ShapeCrawler
         /// Returns text frame.
         /// </summary>
         /// <remarks>Lazy load.</remarks>
-        public TextSc Text => _text.Value;
+        public TextBoxSc TextBox => _text.Value;
 
         /// <summary>
         /// Returns chart. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.Chart"/>.
@@ -181,7 +184,7 @@ namespace ShapeCrawler
         {
             get
             {
-                if (Context.SdkElement.IsPlaceholder())
+                if (Context.OpenXmlElement.IsPlaceholder())
                 {
                     return new Placeholder();
                 }
@@ -202,7 +205,7 @@ namespace ShapeCrawler
                     return null;
                 }
                 
-                return Context.PlaceholderService.GetPlaceholderType(Context.SdkElement);
+                return Context.PlaceholderService.GetPlaceholderType(Context.OpenXmlElement);
             }
         }
 
@@ -229,42 +232,45 @@ namespace ShapeCrawler
         /// </summary>
         public SlideSc Slide { get; internal set; }
 
-        private void SetCustomData(string value)
-        {
-            var customDataElement = $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
-            Context.SdkElement.InnerXml += customDataElement;
-        }
-
         #endregion Properties
 
         #region Constructors
 
-        private ShapeSc(ILocation innerTransform,
-                        ShapeContext spContext,
-                        ShapeContentType contentType,
-                        GeometryType geometryType) : this(innerTransform, spContext, contentType)
+        private ShapeSc(
+            ILocation innerTransform,
+            ShapeContext spContext,
+            ShapeContentType contentType,
+            GeometryType geometryType,
+            OpenXmlCompositeElement shapeTreeSource) : this(innerTransform, spContext, contentType, shapeTreeSource)
         {
             GeometryType = geometryType;
         }
 
-        private ShapeSc (ILocation innerTransform, ShapeContext spContext, ShapeContentType contentType)
+        private ShapeSc (ILocation innerTransform, ShapeContext spContext, ShapeContentType contentType, OpenXmlCompositeElement shapeTreeSource)
         {
             _innerTransform = innerTransform;
             Context = spContext;
             ContentType = contentType;
-            _text = new Lazy<TextSc>(TryGetTextFrame);
+            _text = new Lazy<TextBoxSc>(GetTextBox);
             _shapeFill = new Lazy<ShapeFill>(TryGetFill);
+            ShapeTreeSource = shapeTreeSource;
         }
 
         #endregion Constructors
 
         #region Private Methods
 
+        private void SetCustomData(string value)
+        {
+            var customDataElement = $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
+            Context.OpenXmlElement.InnerXml += customDataElement;
+        }
+
         private string GetCustomData()
         {
             var pattern = @$"<{ConstantStrings.CustomDataElementName}>(.*)<\/{ConstantStrings.CustomDataElementName}>";
             var regex = new Regex(pattern);
-            var elementText = regex.Match(Context.SdkElement.InnerXml).Groups[1];
+            var elementText = regex.Match(Context.OpenXmlElement.InnerXml).Groups[1];
             if (elementText.Value.Length == 0)
             {
                 return null;
@@ -273,23 +279,23 @@ namespace ShapeCrawler
             return elementText.Value;
         }
 
-        private TextSc TryGetTextFrame()
+        private TextBoxSc GetTextBox()
         {
             if (ContentType != ShapeContentType.AutoShape)
             {
                 return null;
             }
 
-            var pTxtBody = Context.SdkElement.Descendants<P.TextBody>().SingleOrDefault();
-            if (pTxtBody == null)
+            P.TextBody pTextBody = Context.OpenXmlElement.Descendants<P.TextBody>().SingleOrDefault();
+            if (pTextBody == null)
             {
                 return null;
             }
 
-            var aTexts = pTxtBody.Descendants<A.Text>();
+            var aTexts = pTextBody.Descendants<A.Text>();
             if (aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element with text must be exist
             {
-                return new TextSc(pTxtBody, this);
+                return new TextBoxSc(this, pTextBody);
             }
 
             return null;
@@ -301,13 +307,13 @@ namespace ShapeCrawler
             {
                 return null;
             }
-            var image = _imageFactory.TryFromSdkShape(Context.SdkSlidePart, (OpenXmlCompositeElement)Context.SdkElement); //TODO: delete casting
+            var image = _imageFactory.TryFromSdkShape(Context.SlidePart, (OpenXmlCompositeElement)Context.OpenXmlElement); //TODO: delete casting
             if (image != null)
             {
                 return new ShapeFill(image);
             }
 
-            var xmlShape = (P.Shape) Context.SdkElement;
+            var xmlShape = (P.Shape) Context.OpenXmlElement;
             var rgbColorModelHex = xmlShape.ShapeProperties.GetFirstChild<A.SolidFill>()?.RgbColorModelHex;
             if (rgbColorModelHex != null)
             {
@@ -323,7 +329,7 @@ namespace ShapeCrawler
             {
                 return;
             }
-            var (id, hidden, name) = ((OpenXmlCompositeElement)Context.SdkElement).GetNvPrValues(); //TODO: delete casting
+            var (id, hidden, name) = ((OpenXmlCompositeElement)Context.OpenXmlElement).GetNvPrValues(); //TODO: delete casting
             _id = id;
             _hidden = hidden;
             _name = name;
@@ -338,13 +344,13 @@ namespace ShapeCrawler
         {
             #region Public Methods
 
-            public ShapeSc WithOle(ILocation innerTransform, ShapeContext spContext, OleObject ole)
+            public ShapeSc WithOle(ILocation innerTransform, ShapeContext spContext, OleObject ole, OpenXmlCompositeElement shapeTreeSource)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(ole, nameof(ole));
 
-                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.OLEObject)
+                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.OLEObject, shapeTreeSource)
                 {
                     _ole = ole
                 };
@@ -352,14 +358,19 @@ namespace ShapeCrawler
                 return newShape;
             }
 
-            public ShapeSc WithPicture(ILocation innerTransform, ShapeContext spContext, PictureSc picture, GeometryType geometry)
+            public ShapeSc WithPicture(
+                ILocation innerTransform, 
+                ShapeContext spContext, 
+                PictureSc picture, 
+                GeometryType geometry, 
+                OpenXmlCompositeElement shapeTreeSource)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));
                 Check.NotNull(picture, nameof(picture));
                 Check.NotNull(geometry, nameof(geometry));
 
-                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.Picture, geometry)
+                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.Picture, geometry, shapeTreeSource)
                 {
                     _picture = picture
                 };
@@ -367,37 +378,30 @@ namespace ShapeCrawler
                 return newShape;
             }
 
-            public ShapeSc WithAutoShape(ILocation innerTransform, ShapeContext spContext, GeometryType geometry)
+            public ShapeSc WithAutoShape(
+                ILocation innerTransform, 
+                ShapeContext spContext, 
+                GeometryType geometry, 
+                OpenXmlCompositeElement shapeTreeSource)
             {
-                Check.NotNull(innerTransform, nameof(innerTransform));
-                Check.NotNull(spContext, nameof(spContext));
-
-                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.AutoShape, geometry);
+                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.AutoShape, geometry, shapeTreeSource);
       
                 return newShape;
             }
 
-            public ShapeSc WithTable(ILocation innerTransform, ShapeContext spContext, TableSc table)
+            public ShapeSc WithTable(ILocation innerTransform, ShapeContext spContext, TableSc table, OpenXmlCompositeElement shapeTreeSource)
             {
-                Check.NotNull(innerTransform, nameof(innerTransform));
-                Check.NotNull(spContext, nameof(spContext));
-                Check.NotNull(table, nameof(table));
-
-                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.Table)
+                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.Table, shapeTreeSource)
                 {
                     _table = table
                 };
-
+                table.Shape = newShape;
                 return newShape;
             }
 
-            public ShapeSc WithChart(ILocation innerTransform, ShapeContext spContext, ChartSc chart)
+            public ShapeSc WithChart(ILocation innerTransform, ShapeContext spContext, ChartSc chart, OpenXmlCompositeElement shapeTreeSource)
             {
-                Check.NotNull(innerTransform, nameof(innerTransform));
-                Check.NotNull(spContext, nameof(spContext));
-                Check.NotNull(chart, nameof(chart));
-
-                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.Chart)
+                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.Chart, shapeTreeSource)
                 {
                     _chart = chart
                 };
@@ -405,13 +409,9 @@ namespace ShapeCrawler
                 return newShape;
             }
 
-            public ShapeSc WithGroup(ILocation innerTransform, ShapeContext spContext, IList<ShapeSc> groupedShapes)
+            public ShapeSc WithGroup(ILocation innerTransform, ShapeContext spContext, IList<ShapeSc> groupedShapes, OpenXmlCompositeElement shapeTreeSource)
             {
-                Check.NotNull(innerTransform, nameof(innerTransform));
-                Check.NotNull(spContext, nameof(spContext));
-                Check.NotNull(groupedShapes, nameof(groupedShapes));
-
-                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.Group)
+                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.Group, shapeTreeSource)
                 {
                     GroupedShapes = groupedShapes
                 };

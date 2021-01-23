@@ -1,13 +1,15 @@
 ﻿using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
+using ShapeCrawler.SlideMaster;
+
 // ReSharper disable CheckNamespace
 
 namespace ShapeCrawler
 {
     public class OleObjectSc : BaseShape
     {
-        public OleObjectSc(GraphicFrame pGraphicFrame) : base(pGraphicFrame)
+        public OleObjectSc(SlideMasterSc slideMasterSc, GraphicFrame pGraphicFrame) : base(pGraphicFrame)
         {
             
         }

@@ -21,7 +21,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
         private readonly LocationParser _transformFactory;
         private readonly IShapeBuilder _shapeBuilder;
         private readonly SlidePart _sdkSldPart;
-        private readonly IGeometryFactory _geometryFactory;
+        private readonly GeometryFactory _geometryFactory;
 
         #endregion Fields
 
@@ -29,7 +29,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         public PictureHandler(ShapeContext.Builder shapeContextBuilder,
                               LocationParser transformFactory,
-                              IGeometryFactory geometryFactory,
+                              GeometryFactory geometryFactory,
                               SlidePart sdkSldPart) :
             this(shapeContextBuilder, transformFactory, geometryFactory, sdkSldPart, new ShapeSc.Builder())
         {
@@ -38,7 +38,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         public PictureHandler(ShapeContext.Builder shapeContextBuilder,
                               LocationParser transformFactory,
-                              IGeometryFactory geometryFactory,
+                              GeometryFactory geometryFactory,
                               SlidePart sdkSldPart,
                               IShapeBuilder shapeBuilder)
         {
@@ -51,40 +51,40 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #endregion Constructors
 
-        public override ShapeSc Create(OpenXmlElement sdkElement)
+        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource)
         {
-            Check.NotNull(sdkElement, nameof(sdkElement));
+            Check.NotNull(shapeTreeSource, nameof(shapeTreeSource));
 
-            P.Picture sdkPicture;
-            if (sdkElement is P.Picture treePic)
+            P.Picture pPicture;
+            if (shapeTreeSource is P.Picture treePic)
             {
-                sdkPicture = treePic;
+                pPicture = treePic;
             }
             else
             {
-                var framePic = sdkElement.Descendants<P.Picture>().FirstOrDefault();
-                sdkPicture = framePic;
+                var framePic = shapeTreeSource.Descendants<P.Picture>().FirstOrDefault();
+                pPicture = framePic;
             }
-            if (sdkPicture != null)
+            if (pPicture != null)
             {
-                var pBlipFill = sdkPicture.GetFirstChild<P.BlipFill>();
+                var pBlipFill = pPicture.GetFirstChild<P.BlipFill>();
                 var blipRelateId = pBlipFill?.Blip?.Embed?.Value;
                 if (blipRelateId == null)
                 {
                     return null;
                 }
-                var pictureEx = new PictureSc(_sdkSldPart, blipRelateId);
-                var spContext = _shapeContextBuilder.Build(sdkElement);
-                var innerTransform = _transformFactory.FromComposite(sdkPicture);
-                var geometry = _geometryFactory.ForPicture(sdkPicture);
-                var shape = _shapeBuilder.WithPicture(innerTransform, spContext, pictureEx, geometry);
+                var picture = new PictureSc(_sdkSldPart, blipRelateId);
+                var spContext = _shapeContextBuilder.Build(shapeTreeSource);
+                var innerTransform = _transformFactory.FromComposite(pPicture);
+                var geometry = _geometryFactory.ForCompositeElement(pPicture, pPicture.ShapeProperties);
+                var shape = _shapeBuilder.WithPicture(innerTransform, spContext, picture, geometry, shapeTreeSource);
 
                 return shape;
             }
 
             if (Successor != null)
             {
-                return Successor.Create(sdkElement);
+                return Successor.Create(shapeTreeSource);
             }
 
             return null;

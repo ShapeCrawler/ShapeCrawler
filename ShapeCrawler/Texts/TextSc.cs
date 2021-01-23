@@ -1,38 +1,45 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Models;
 using ShapeCrawler.Settings;
+using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts
 {
     // TODO: Override ToString()
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-    public sealed class TextSc
+    public sealed class TextBoxSc
     {
         #region Fields
 
         private readonly ShapeContext _spContext;
-        private readonly Lazy<string> _content;
+        private readonly Lazy<string> _text;
         private readonly OpenXmlCompositeElement _compositeElement;
 
         #endregion Fields
 
-        internal ShapeSc ShapeEx { get; }
+        #region Internal Properties
+
+        internal ShapeSc Shape { get; }
+        internal BaseShape BaseShape { get; }
+
+        #endregion Internal Properties
 
         #region Public Properties
 
-        public ParagraphCollection Paragraphs => ParagraphCollection.Parse(_compositeElement, _spContext, this); // TODO: make lazy
+        public ParagraphCollection Paragraphs => ParagraphCollection.Create(_compositeElement, _spContext, this);
 
         /// <summary>
-        /// Gets or sets text string content.
+        /// Gets or sets text box string content. Returns null if the text box is empty.
         /// </summary>
-        public string Content
+        public string Text
         {
-            get => _content.Value;
-            set => SetContent(value);
+            get => _text.Value;
+            set => SetText(value);
         }
 
         #endregion Public Properties
@@ -40,26 +47,42 @@ namespace ShapeCrawler.Texts
         #region Constructors
 
         /// <summary>
-        /// Initializes an instance of the <see cref="TextSc"/>.
+        /// Initializes a new empty instance of the <see cref="TextBoxSc"/> class. 
         /// </summary>
-        public TextSc(OpenXmlCompositeElement compositeElement, ShapeSc shapeEx)
-            :this(shapeEx.Context, compositeElement)
+        /// <param name="baseShape"></param>
+        internal TextBoxSc(BaseShape baseShape)
         {
-            ShapeEx = shapeEx;
+            BaseShape = baseShape;
         }
 
-        public TextSc(ShapeContext spContext, OpenXmlCompositeElement compositeElement)
+        internal TextBoxSc(BaseShape baseShape, P.TextBody pTextBody) : this(baseShape)
+        {
+            _compositeElement = pTextBody;
+            _text = new Lazy<string>(GetText);
+        }
+
+        internal TextBoxSc(ShapeSc shape, P.TextBody pTextBody) : this(shape.Context, pTextBody)
+        {
+            Shape = shape;
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="TextBoxSc"/> class.</summary>
+        /// <param name="spContext"></param>
+        /// <param name="compositeElement">
+        ///     Instance of <see cref="P.TextBody"/> of auto shape or instance of the <see cref="A.TextBody"/> of table cell.
+        /// </param>
+        internal TextBoxSc(ShapeContext spContext, OpenXmlCompositeElement compositeElement)
         {
             _spContext = spContext;
             _compositeElement = compositeElement;
-            _content = new Lazy<string>(GetText);
+            _text = new Lazy<string>(GetText);
         }
 
         #endregion Constructors
 
         #region Private Methods
 
-        private void SetContent(string value)
+        private void SetText(string value)
         {
             if (Paragraphs.Count > 1)
             {

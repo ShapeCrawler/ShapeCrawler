@@ -63,7 +63,7 @@ namespace ShapeCrawler
         /// <summary>
         /// Initializes a new instance of the <see cref="PresentationSc"/> class by pptx-file stream.
         /// </summary>
-        public PresentationSc(Stream pptxStream, bool isEditable = false)
+        internal PresentationSc(Stream pptxStream, bool isEditable)
         {
             ThrowIfSourceInvalid(pptxStream);
             _presentationDocument = PresentationDocument.Open(pptxStream, isEditable);
@@ -84,13 +84,13 @@ namespace ShapeCrawler
         /// Initializes a new instance of the <see cref="PresentationSc"/> class by pptx-file byte array.
         /// </summary>
         /// <param name="pptxBytes"></param>
-        public PresentationSc(byte[] pptxBytes)
+        internal PresentationSc(byte[] pptxBytes, bool isEditable)
         {
             ThrowIfSourceInvalid(pptxBytes);
 
             var pptxStream = new MemoryStream();
             pptxStream.Write(pptxBytes, 0, pptxBytes.Length);
-            _presentationDocument = PresentationDocument.Open(pptxStream, true);
+            _presentationDocument = PresentationDocument.Open(pptxStream, isEditable);
             
             Init();
         }
@@ -151,7 +151,7 @@ namespace ShapeCrawler
             _closed = true;
         }
 
-        public static PresentationSc Open(byte[] pptxBytes, bool isEditable = false)
+        public static PresentationSc Open(byte[] pptxBytes, bool isEditable)
         {
             ThrowIfSourceInvalid(pptxBytes);
 

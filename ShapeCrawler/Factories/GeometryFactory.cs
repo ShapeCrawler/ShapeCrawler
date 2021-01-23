@@ -4,55 +4,34 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Factories.Placeholders;
-using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Factories
 {
-    /// <summary>
-    /// <inheritdoc cref="IGeometryFactory"/>.
-    /// </summary>
-    public class GeometryFactory : IGeometryFactory
+    public class GeometryFactory
     {
         #region Fields
 
-        private readonly IPlaceholderService _phService;
+        private readonly IPlaceholderService _placeholderService;
 
         #endregion Fields
 
         #region Constructors
 
-        public GeometryFactory(IPlaceholderService phService)
+        public GeometryFactory(IPlaceholderService placeholderService)
         {
-            _phService = phService ?? throw new ArgumentNullException(nameof(phService));
+            _placeholderService = placeholderService ?? throw new ArgumentNullException(nameof(placeholderService));
         }
 
         #endregion Constructors
 
-        #region Public Methods
-
-        public GeometryType ForShape(P.Shape sdkShape)
+        internal GeometryType ForCompositeElement(OpenXmlCompositeElement compositeElement, P.ShapeProperties spPr)
         {
-            Check.NotNull(sdkShape, nameof(sdkShape));
-            return ForCompositeElement(sdkShape, sdkShape.ShapeProperties);
-        }
-
-        public GeometryType ForPicture(P.Picture sdkPicture)
-        {
-            Check.NotNull(sdkPicture, nameof(sdkPicture));
-            return ForCompositeElement(sdkPicture, sdkPicture.ShapeProperties);
-        }
-
-        #endregion Public Methods
-
-        #region Private Methods
-
-        private GeometryType ForCompositeElement(OpenXmlCompositeElement sdkCompositeElement, P.ShapeProperties spPr)
-        {
-            var t2D = spPr.Transform2D;
-            if (t2D != null)
+            Transform2D transform2D = spPr.Transform2D;
+            if (transform2D != null)
             {
                 var presetGeometry = spPr.GetFirstChild<PresetGeometry>();
+                
                 // Placeholder can have transform on the slide, without having geometry
                 if (presetGeometry == null)
                 {
@@ -72,7 +51,7 @@ namespace ShapeCrawler.Factories
 
             GeometryType FromLayout()
             {
-                var placeholderLocationData = _phService.TryGetLocation(sdkCompositeElement);
+                var placeholderLocationData = _placeholderService.TryGetLocation(compositeElement);
                 if (placeholderLocationData == null)
                 {
                     return GeometryType.Rectangle;
@@ -80,7 +59,5 @@ namespace ShapeCrawler.Factories
                 return placeholderLocationData.Geometry;
             }
         }
-
-        #endregion Private Methods
     }
 }
