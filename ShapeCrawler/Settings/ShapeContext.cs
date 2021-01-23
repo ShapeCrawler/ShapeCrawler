@@ -15,9 +15,9 @@ namespace ShapeCrawler.Settings
 
         #region Internal Properties
 
-        internal SlidePart SdkSlidePart { get; private set; }
+        internal SlidePart SlidePart { get; private set; }
 
-        internal OpenXmlElement SdkElement { get; private set; }
+        internal OpenXmlElement OpenXmlElement { get; private set; }
 
         internal PresentationData PresentationData { get; private set; }
 
@@ -67,7 +67,7 @@ namespace ShapeCrawler.Settings
 
         private Dictionary<int, int> InitMasterOtherFonts()
         {
-            var result = FontHeightParser.FromCompositeElement(SdkSlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.OtherStyle);
+            var result = FontHeightParser.FromCompositeElement(SlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.OtherStyle);
 
             return result;
         }
@@ -91,7 +91,7 @@ namespace ShapeCrawler.Settings
 
             }
 
-            public Builder(
+            internal Builder(
                 PresentationData preSettings, 
                 PlaceholderFontService fontService, 
                 SlidePart sdkSldPart, 
@@ -107,17 +107,17 @@ namespace ShapeCrawler.Settings
 
             #region Public Methods
 
-            public ShapeContext Build(OpenXmlElement sdkElement)
+            internal ShapeContext Build(OpenXmlCompositeElement openXmlElement)
             {
-                Check.NotNull(sdkElement, nameof(sdkElement));
+                Check.NotNull(openXmlElement, nameof(openXmlElement));
 
                 return new ShapeContext
                 {
                     PresentationData = _preSettings,
                     PlaceholderFontService = _fontService,
                     PlaceholderService = _placeholderService,
-                    SdkSlidePart = _sdkSldPart,
-                    SdkElement = sdkElement
+                    SlidePart = _sdkSldPart,
+                    OpenXmlElement = openXmlElement
                 };
             }
 

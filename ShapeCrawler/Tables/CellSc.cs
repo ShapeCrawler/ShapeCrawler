@@ -3,6 +3,7 @@ using System.Linq;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tables
 {
@@ -13,51 +14,43 @@ namespace ShapeCrawler.Tables
     {
         #region Fields
 
-        private TextSc _text;
+        private TextBoxSc _textBox;
 
         private readonly A.TableCell _aTableCell;
         private readonly ShapeContext _spContext;
 
-        #endregion
+        #endregion Fields
 
-        #region Properties
+        #region Public Properties
 
         /// <summary>
-        /// Gets text frame of a cell.
+        /// Gets text box.
         /// </summary>
-        public TextSc Text
+        public TextBoxSc TextBoxBox
         {
             get
             {
-                if (_text == null)
+                if (_textBox == null)
                 {
                     TryParseTxtBody();
                 }
 
-                return _text;
+                return _textBox;
             }
         }
 
         public bool IsMergedCell => DefineWhetherCellIsMerged();
 
-        private bool DefineWhetherCellIsMerged()
-        {
-            return _aTableCell.GridSpan != null ||
-                   _aTableCell.RowSpan != null ||
-                   _aTableCell.HorizontalMerge != null ||
-                   _aTableCell.VerticalMerge != null;
-        }
-
-        #endregion
+        #endregion Public Properties
 
         #region Constructors
 
-        public CellSc(A.TableCell xmlCell)
+        internal CellSc(A.TableCell aTableCell)
         {
-            _aTableCell = xmlCell ?? throw new ArgumentNullException(nameof(xmlCell));
+            _aTableCell = aTableCell ?? throw new ArgumentNullException(nameof(aTableCell));
         }
 
-        #endregion
+        #endregion Constructors
 
         private void TryParseTxtBody()
         {
@@ -65,8 +58,16 @@ namespace ShapeCrawler.Tables
             var aTexts = aTxtBody.Descendants<A.Text>();
             if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element contain text
             {
-                _text = new TextSc(_spContext, aTxtBody);
+                _textBox = new TextBoxSc(_spContext, aTxtBody);
             }
+        }
+
+        private bool DefineWhetherCellIsMerged()
+        {
+            return _aTableCell.GridSpan != null ||
+                   _aTableCell.RowSpan != null ||
+                   _aTableCell.HorizontalMerge != null ||
+                   _aTableCell.VerticalMerge != null;
         }
     }
 }

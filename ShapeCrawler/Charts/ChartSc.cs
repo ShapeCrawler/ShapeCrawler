@@ -13,6 +13,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
+using ShapeCrawler.SlideMaster;
 
 namespace ShapeCrawler.Charts
 {
@@ -147,7 +148,7 @@ namespace ShapeCrawler.Charts
             Init(); //TODO: convert to lazy loading
         }
 
-        public ChartSc(GraphicFrame pGraphicFrame) : base(pGraphicFrame)
+        public ChartSc(SlideMasterSc slideMasterSc, GraphicFrame pGraphicFrame) : base(pGraphicFrame)
         {
             _pGraphicFrame = pGraphicFrame;
         }
@@ -160,7 +161,7 @@ namespace ShapeCrawler.Charts
         {
             StringValue chartPartRef = _pGraphicFrame.GetFirstChild<A.Graphic>().
                 GetFirstChild<A.GraphicData>().GetFirstChild<C.ChartReference>().Id;
-            _sdkChartPart = (ChartPart)_shapeContext.SdkSlidePart.GetPartById(chartPartRef);
+            _sdkChartPart = (ChartPart)_shapeContext.SlidePart.GetPartById(chartPartRef);
             _cChart = _sdkChartPart.ChartSpace.GetFirstChild<C.Chart>();
             _sdkCharts = _cChart.PlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)).ToList();  // example: <c:barChart>, <c:lineChart>
             _seriesCollection = new Lazy<SeriesCollection>(GetSeriesCollection);

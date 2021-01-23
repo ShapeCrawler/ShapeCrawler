@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Version 0.13.0 - Unreleased
 ### Added
-- Added `CellSc.IsMergedCell` to define whether table cell belong to merged cells group.
+- Added `CellSc.IsMergedCell` to define whether table cell belong to merged cells group;
+- Added `ParagraphCollection.Add()` method to add a new paragraph.
 
 ## Version 0.12.0 - 2021-01-17
 ### Added

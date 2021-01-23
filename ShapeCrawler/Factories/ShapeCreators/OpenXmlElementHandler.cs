@@ -16,8 +16,8 @@ namespace ShapeCrawler.Factories.ShapeCreators
         /// <summary>
         /// Creates <see cref="ShapeSc"/> instance from specified SDK element or passes it to next handler.
         /// </summary>
-        /// <param name="sdkElement"></param>
+        /// <param name="shapeTreeSource"></param>
         /// <returns></returns>
-        public abstract ShapeSc Create(OpenXmlElement sdkElement);
+        public abstract ShapeSc Create(OpenXmlCompositeElement shapeTreeSource);
     }
 }

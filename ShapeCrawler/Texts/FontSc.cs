@@ -66,7 +66,7 @@ namespace ShapeCrawler.Texts
 
         private void SetFontName(string fontName)
         {
-            if (_portion.Paragraph.TextFrame.ShapeEx.Placeholder != null)
+            if (_portion.Paragraph.TextBox.Shape.Placeholder != null)
             {
                 throw new PlaceholderCannotBeChangedException();
             }

@@ -7,14 +7,14 @@ namespace ShapeCrawler.Extensions
     /// <summary>
     /// Extension methods for <see cref="OpenXmlElement"/> instance.
     /// </summary>
-    public static class ElementExtensions
+    public static class XmlElementExtensions
     {
         /// <summary>
         /// Determines whether element is placeholder.
         /// </summary>
-        public static bool IsPlaceholder(this OpenXmlElement xmlElement)
+        public static bool IsPlaceholder(this OpenXmlElement openXmlElement)
         {
-            return xmlElement.Descendants<P.PlaceholderShape>().Any();
+            return openXmlElement.Descendants<P.PlaceholderShape>().Any();
         }
     }
 }

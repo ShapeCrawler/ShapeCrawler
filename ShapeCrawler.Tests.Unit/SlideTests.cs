@@ -70,7 +70,7 @@ namespace ShapeCrawler.Tests.Unit
         public async void BackgroundSetImage_ChangesBackground_WhenImageStreamIsPassed()
         {
             // Arrange
-            var pre = new PresentationSc(Properties.Resources._009);
+            var pre = PresentationSc.Open(Properties.Resources._009, true);
             var backgroundImage = pre.Slides[0].Background;
             var imgStream = new MemoryStream(Properties.Resources.test_image_2);
             var bytesBefore = await backgroundImage.GetImageBytes();
@@ -103,7 +103,7 @@ namespace ShapeCrawler.Tests.Unit
             const string customDataString = "Test custom data";
             var origPreStream = new MemoryStream();
             origPreStream.Write(Properties.Resources._001);
-            var originPre = new PresentationSc(origPreStream, true);
+            var originPre = PresentationSc.Open(origPreStream, true);
             var slide = originPre.Slides.First();
 
             // Act
@@ -111,7 +111,7 @@ namespace ShapeCrawler.Tests.Unit
 
             var savedPreStream = new MemoryStream();
             originPre.SaveAs(savedPreStream);
-            var savedPre = new PresentationSc(savedPreStream, false);
+            var savedPre = PresentationSc.Open(savedPreStream, false);
             var customData = savedPre.Slides.First().CustomData;
 
             // Assert

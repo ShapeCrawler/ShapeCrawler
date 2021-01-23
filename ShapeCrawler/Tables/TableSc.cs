@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.SlideMaster;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -15,26 +16,28 @@ namespace ShapeCrawler.Tables
     {
         #region Fields
 
-        private readonly Lazy<RowCollection> _rowsCollection;
-        private readonly P.GraphicFrame _sdkGrFrame;
+        private readonly P.GraphicFrame _pGraphicFrame;
 
         #endregion Fields
 
-        #region Properties
+        #region Public Properties
 
-        public RowCollection Rows => _rowsCollection.Value;
+        public RowCollection Rows => GetRowsCollection();
 
-        #endregion Properties
+        #endregion Public Properties
+
+        internal ShapeSc Shape { get; set; }
 
         #region Constructors
 
-        /// <summary>
-        /// Initializes an instance of the <see cref="TableSc"/> class.
-        /// </summary>
-        public TableSc(P.GraphicFrame pGraphicFrame)
+        internal TableSc(P.GraphicFrame pGraphicFrame)
         {
-            _sdkGrFrame = pGraphicFrame ?? throw new ArgumentNullException(nameof(pGraphicFrame));
-            _rowsCollection = new Lazy<RowCollection>(()=>GetRowsCollection());
+            _pGraphicFrame = pGraphicFrame ?? throw new ArgumentNullException(nameof(pGraphicFrame));
+        }
+
+        internal TableSc(SlideMasterSc slideMaster, P.GraphicFrame pGraphicFrame)
+        {
+            _pGraphicFrame = pGraphicFrame;
         }
 
         #endregion Constructors
@@ -43,9 +46,10 @@ namespace ShapeCrawler.Tables
 
         private RowCollection GetRowsCollection()
         {
-            var sdkTblRows = _sdkGrFrame.Descendants<A.Table>().First().Elements<A.TableRow>();
+            A.Table aTable = _pGraphicFrame.GetFirstChild<A.Graphic>().GraphicData.GetFirstChild<A.Table>();
+            IEnumerable<A.TableRow> tableRows = aTable.Elements<A.TableRow>();
 
-            return new RowCollection(sdkTblRows);
+            return new RowCollection(tableRows);
         }
 
         #endregion Private Methods
@@ -59,5 +63,6 @@ namespace ShapeCrawler.Tables
         public override long Y => throw new NotImplementedException();
 
         public override GeometryType GeometryType => throw new NotImplementedException();
+
     }
 }

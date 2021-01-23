@@ -78,7 +78,7 @@ namespace ShapeCrawler.Texts
         private int FontSizeFromOther()
         {
             // If element is placeholder, tries to get from placeholder data
-            OpenXmlElement sdkElement = _shapeContext.SdkElement;
+            OpenXmlElement sdkElement = _shapeContext.OpenXmlElement;
             if (sdkElement.IsPlaceholder())
             {
                 var prFontHeight =

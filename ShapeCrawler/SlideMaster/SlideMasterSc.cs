@@ -3,13 +3,13 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.SlideMaster
 {
-    public class SlideMasterSc
+    public class SlideMasterSc : ISlide
     {
         private readonly P.SlideMaster _pSlideMaster;
 
         #region Public Properties
 
-        public MasterShapesCollection Shapes => ShapesCollection.CreateForMasterSlide(_pSlideMaster.CommonSlideData.ShapeTree);
+        public MasterShapesCollection Shapes => ShapesCollection.CreateForMasterSlide(this, _pSlideMaster.CommonSlideData.ShapeTree);
 
         #endregion Public Properties
 

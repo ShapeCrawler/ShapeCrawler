@@ -17,36 +17,18 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void DateTimePlaceholder_Text_Test()
-        {
-            // ARRANGE
-            var pre = new PresentationSc(Properties.Resources._011_dt);
-            var dt = pre.Slides[0].Shapes.Single(s => s.Id == 54275);
-
-            // ACT
-            var hasText = dt.HasTextFrame;
-
-            pre.Close();
-
-            // ASSERT
-            Assert.True(hasText);
-        }
-
-        [Fact]
         public void Placeholder_FontHeight_Test()
         {
             // ARRANGE
-            var pre = new PresentationSc(Properties.Resources._012_title_placeholder);
+            var pre = PresentationSc.Open(Properties.Resources._012_title_placeholder, false);
             var title = pre.Slides[0].Shapes.Single(x => x.Id == 2);
 
             // ACT
-            var text = title.Text.Content;
-            var fh = title.Text.Paragraphs.First().Portions.First().Font.Size;
+            var fh = title.TextBox.Paragraphs.First().Portions.First().Font.Size;
 
             pre.Close();
 
             // ASSERT
-            Assert.NotNull(text);
             Assert.Equal(2000, fh);
         }
 
@@ -54,11 +36,11 @@ namespace ShapeCrawler.Tests.Unit
         public void Placeholder_FontHeight_Title_Test()
         {
             // ARRANGE
-            var pre010 = new PresentationSc(Properties.Resources._010);
+            var pre010 = PresentationSc.Open(Properties.Resources._010, false);
             var pre010TextBox = pre010.Slides[0].Shapes.Single(x => x.Id == 2);
 
             // ACT
-            var fh = pre010TextBox.Text.Paragraphs.First().Portions.First().Font.Size;
+            var fh = pre010TextBox.TextBox.Paragraphs.First().Portions.First().Font.Size;
 
             pre010.Close();
 
@@ -77,7 +59,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Remove_Test2()
         {
             // ARRANGE
-            var pre = new PresentationSc(Properties.Resources._006_1_slides);
+            var pre = PresentationSc.Open(Properties.Resources._006_1_slides, true);
             var slides = pre.Slides;
             var slide1 = slides.First();
 
@@ -95,11 +77,11 @@ namespace ShapeCrawler.Tests.Unit
         public void Shape_Text_Test2()
         {
             // ARRANGE
-            var pre = new PresentationSc(Properties.Resources._012_title_placeholder);
+            var pre = PresentationSc.Open(Properties.Resources._012_title_placeholder, false);
             var autoShape = pre.Slides[0].Shapes.Single(s => s.Id == 3);
 
             // ACT
-            var text = autoShape.Text.Content;
+            var text = autoShape.TextBox.Text;
 
             pre.Close();
 
@@ -111,13 +93,13 @@ namespace ShapeCrawler.Tests.Unit
         public void Shape_Text_Tests()
         {
             // ARRANGE
-            var pre = new PresentationSc(Properties.Resources._011_dt);
+            var pre = PresentationSc.Open(Properties.Resources._011_dt, false);
             var autoShape = pre.Slides[0].Shapes.Single(s => s.Id == 2);
             var grShape = pre.Slides[0].Shapes.Single(s => s.Id == 4);
 
             // ACT
-            var text = autoShape.Text.Content;
-            var hasTextFrame = grShape.HasTextFrame;
+            var text = autoShape.TextBox.Text;
+            var hasTextFrame = grShape.HasTextBox;
 
             pre.Close();
 
@@ -129,8 +111,7 @@ namespace ShapeCrawler.Tests.Unit
         [Fact]
         public void Hidden_Test()
         {
-            var ms = new MemoryStream(Properties.Resources._004);
-            var pre = new PresentationSc(ms);
+            var pre = PresentationSc.Open(Properties.Resources._004, false);
 
             // ACT
             var allElements = pre.Slides.Single().Shapes;

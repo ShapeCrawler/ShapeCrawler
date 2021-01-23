@@ -52,33 +52,52 @@ namespace ShapeCrawler.Tests.Unit
             shapeHeight.Should().Be(1325563);
         }
 
-        [Fact]
-        public void MasterAutoShapePlaceholderType_ReturnPlaceholderTypeOfTheMasterShape_WhenTheMasterShapeIsPlaceholder()
+        [Fact(Skip = "The feature is in progress.")]
+        public void MasterShapePlaceholderType_ReturnPlaceholderTypeOfTheMasterShape_WhenTheMasterShapeIsPlaceholder()
         {
             // Arrange
             SlideMasterSc slideMaster = _fixture.Pre001.SlideMasters[0];
-            BaseShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
-            MasterAutoShape masterAutoShape = (MasterAutoShape) shape;
+            MasterShape masterAutoShapeCase1 = (MasterShape)slideMaster.Shapes.First(sp => sp.Id == 2);
+            MasterShape masterAutoShapeCase2 = (MasterShape)slideMaster.Shapes.First(sp => sp.Id == 8);
+            MasterShape masterAutoShapeCase3 = (MasterShape)slideMaster.Shapes.First(sp => sp.Id == 7);
 
             // Act
-            PlaceholderType? shapePlaceholderType = masterAutoShape.PlaceholderType;
+            PlaceholderType? shapePlaceholderTypeCase1 = masterAutoShapeCase1.PlaceholderType;
+            PlaceholderType? shapePlaceholderTypeCase2 = masterAutoShapeCase2.PlaceholderType;
+            PlaceholderType? shapePlaceholderTypeCase3 = masterAutoShapeCase3.PlaceholderType;
 
             // Assert
-            shapePlaceholderType.Should().Be(PlaceholderType.Title);
+            shapePlaceholderTypeCase1.Should().Be(PlaceholderType.Title);
+            shapePlaceholderTypeCase2.Should().BeNull();
+            shapePlaceholderTypeCase3.Should().BeNull();
         }
 
-        [Fact(Skip = "The feature is in progress")]
+        [Fact]
         public void ShapeGeometryType_ReturnsShapesGeometryFormType()
         {
             // Arrange
             SlideMasterSc slideMaster = _fixture.Pre001.SlideMasters[0];
-            BaseShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
+            BaseShape shapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
+            BaseShape shapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
 
             // Act
-            GeometryType shapeGeometryType = shape.GeometryType;
+            GeometryType geometryTypeCase1 = shapeCase1.GeometryType;
+            GeometryType geometryTypeCase2 = shapeCase2.GeometryType;
 
             // Assert
-            shapeGeometryType.Should().Be(GeometryType.Rectangle);
+            geometryTypeCase1.Should().Be(GeometryType.Rectangle);
+            geometryTypeCase2.Should().Be(GeometryType.Custom);
+        }
+
+        [Fact]
+        public void MasterAutoShapeTextBoxText_ReturnsText_WhenTheAutoShapesTextBoxIsNotEmpty()
+        {
+            // Arrange
+            SlideMasterSc slideMaster = _fixture.Pre001.SlideMasters[0];
+            IAutoShape autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
+
+            // Act-Assert
+            autoShape.TextBox.Text.Should().BeEquivalentTo("id8");
         }
     }
 }

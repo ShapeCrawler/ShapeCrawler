@@ -1,7 +1,6 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Factories.Builders;
-using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -17,7 +16,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly LocationParser _transformFactory;
-        private readonly IGeometryFactory _geometryFactory;
+        private readonly GeometryFactory _geometryFactory;
         private readonly IShapeBuilder _shapeBuilder;
 
         #endregion Fields
@@ -26,7 +25,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         public PShapeHandler(ShapeContext.Builder shapeContextBuilder,
                                LocationParser transformFactory,
-                               IGeometryFactory geometryFactory) :
+                               GeometryFactory geometryFactory) :
             this(shapeContextBuilder, transformFactory, geometryFactory, new ShapeSc.Builder())
         {
 
@@ -35,7 +34,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
         //TODO: inject interface instead
         public PShapeHandler(ShapeContext.Builder shapeContextBuilder,
                                LocationParser transformFactory,
-                               IGeometryFactory geometryFactory,
+                               GeometryFactory geometryFactory,
                                IShapeBuilder shapeBuilder)
         {
             _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
@@ -48,23 +47,23 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #region Public Methods
 
-        public override ShapeSc Create(OpenXmlElement sdkElement)
+        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource)
         {
-            Check.NotNull(sdkElement, nameof(sdkElement));
+            Check.NotNull(shapeTreeSource, nameof(shapeTreeSource));
 
-            if (sdkElement is P.Shape pShape)
+            if (shapeTreeSource is P.Shape pShape)
             {
-                var spContext = _shapeContextBuilder.Build(sdkElement);
+                ShapeContext shapeContext = _shapeContextBuilder.Build(shapeTreeSource);
                 var innerTransform = _transformFactory.FromComposite(pShape);
-                var geometry = _geometryFactory.ForShape(pShape);
-                var shape = _shapeBuilder.WithAutoShape(innerTransform, spContext, geometry);
+                var geometry = _geometryFactory.ForCompositeElement(pShape, pShape.ShapeProperties);
+                var shape = _shapeBuilder.WithAutoShape(innerTransform, shapeContext, geometry, shapeTreeSource);
                 
                 return shape;
             }
             
             if (Successor != null)
             {
-                return Successor.Create(sdkElement);
+                return Successor.Create(shapeTreeSource);
             }
            
             return null;

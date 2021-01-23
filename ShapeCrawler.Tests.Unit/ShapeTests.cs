@@ -309,7 +309,7 @@ namespace ShapeCrawler.Tests.Unit
             ShapeSc shape = _fixture.Pre009.Slides[4].Shapes.First(sp => sp.Id == 5);
 
             // Act
-            bool hasTextFrame = shape.HasTextFrame;
+            bool hasTextFrame = shape.HasTextBox;
 
             // Assert
             hasTextFrame.Should().BeFalse();

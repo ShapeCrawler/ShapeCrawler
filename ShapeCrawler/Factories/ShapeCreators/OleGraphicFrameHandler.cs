@@ -1,7 +1,6 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Factories.Builders;
-using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -37,19 +36,19 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #endregion Constructors
 
-        public override ShapeSc Create(OpenXmlElement sdkElement)
+        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource)
         {
-            Check.NotNull(sdkElement, nameof(sdkElement));
+            Check.NotNull(shapeTreeSource, nameof(shapeTreeSource));
 
-            if (sdkElement is P.GraphicFrame sdkGraphicFrame)
+            if (shapeTreeSource is P.GraphicFrame sdkGraphicFrame)
             {
-                var grData = sdkElement.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
+                var grData = shapeTreeSource.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
                 if (grData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
                 {
-                    var spContext = _shapeContextBuilder.Build(sdkElement);
+                    var spContext = _shapeContextBuilder.Build(shapeTreeSource);
                     var innerTransform = _transformFactory.FromComposite(sdkGraphicFrame);
                     var ole = new OleObject(sdkGraphicFrame);
-                    var shape = _shapeBuilder.WithOle(innerTransform, spContext, ole);
+                    var shape = _shapeBuilder.WithOle(innerTransform, spContext, ole, shapeTreeSource);
 
                     return shape;
                 }
@@ -57,7 +56,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
             if (Successor != null)
             {
-                return Successor.Create(sdkElement);
+                return Successor.Create(shapeTreeSource);
             }
 
             return null;

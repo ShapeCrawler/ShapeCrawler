@@ -4,7 +4,6 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Factories.Builders;
-using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Models.Transforms;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
@@ -12,26 +11,26 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Factories.ShapeCreators
 {
-    public class SdkGroupShapeHandler : OpenXmlElementHandler
+    public class PGroupShapeHandler : OpenXmlElementHandler
     {
         private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly SlidePart _sdkSldPart;
-        private readonly IGeometryFactory _geometryFactory; //TODO: DI
+        private readonly GeometryFactory _geometryFactory;
         private readonly LocationParser _transformFactory;
         private readonly IShapeBuilder _shapeBuilder;
 
-        public SdkGroupShapeHandler(ShapeContext.Builder shapeContextBuilder,
+        public PGroupShapeHandler(ShapeContext.Builder shapeContextBuilder,
                                     LocationParser transformFactory,
-                                    IGeometryFactory geometryFactory,
+                                    GeometryFactory geometryFactory,
                                     SlidePart sdkSldPart) :
             this(shapeContextBuilder, transformFactory, geometryFactory, sdkSldPart, new ShapeSc.Builder())
         {
  
         }
 
-        public SdkGroupShapeHandler(ShapeContext.Builder shapeContextBuilder,
+        public PGroupShapeHandler(ShapeContext.Builder shapeContextBuilder,
                                     LocationParser transformFactory,
-                                    IGeometryFactory geometryFactory,
+                                    GeometryFactory geometryFactory,
                                     SlidePart sdkSldPart,
                                     IShapeBuilder shapeBuilder)
         {
@@ -42,46 +41,46 @@ namespace ShapeCrawler.Factories.ShapeCreators
             _shapeBuilder = shapeBuilder ?? throw new ArgumentNullException(nameof(shapeBuilder));
         }
 
-        public override ShapeSc Create(OpenXmlElement sdkElement)
+        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource)
         {
-            Check.NotNull(sdkElement, nameof(sdkElement));
+            Check.NotNull(shapeTreeSource, nameof(shapeTreeSource));
 
-            if (sdkElement is P.GroupShape sdkGroupShape)
+            if (shapeTreeSource is P.GroupShape pGroupShape)
             {
-                var sdkShapeHandler = new PShapeHandler(_shapeContextBuilder, _transformFactory, _geometryFactory);
+                var pShapeHandler = new PShapeHandler(_shapeContextBuilder, _transformFactory, _geometryFactory);
                 var oleGrFrameHandler = new OleGraphicFrameHandler(_shapeContextBuilder, _transformFactory, _shapeBuilder);
                 var pictureHandler = new PictureHandler(_shapeContextBuilder, _transformFactory, _geometryFactory, _sdkSldPart);
-                var sdkGroupShapeHandler = new SdkGroupShapeHandler(_shapeContextBuilder, _transformFactory, _geometryFactory, _sdkSldPart);
+                var pGroupShapeHandler = new PGroupShapeHandler(_shapeContextBuilder, _transformFactory, _geometryFactory, _sdkSldPart);
                 var chartGrFrameHandler = new ChartGraphicFrameHandler(_shapeContextBuilder, _transformFactory, _shapeBuilder);
                 var tableGrFrameHandler = new TableGraphicFrameHandler(_shapeContextBuilder, _transformFactory, _shapeBuilder);
 
-                sdkShapeHandler.Successor = sdkGroupShapeHandler;
-                sdkGroupShapeHandler.Successor = oleGrFrameHandler;
+                pShapeHandler.Successor = pGroupShapeHandler;
+                pGroupShapeHandler.Successor = oleGrFrameHandler;
                 // OLE objects handler must be before pictures handler, cause OLE container can contain p:pic elements, thereby OLE as a picture
                 oleGrFrameHandler.Successor = pictureHandler;
                 pictureHandler.Successor = chartGrFrameHandler;
                 chartGrFrameHandler.Successor = tableGrFrameHandler;
 
-                var groupedShapes = new List<ShapeSc>(sdkGroupShape.Count());
-                foreach (var item in sdkGroupShape)
+                var groupedShapes = new List<ShapeSc>(pGroupShape.Count());
+                foreach (var item in pGroupShape.OfType<OpenXmlCompositeElement>())
                 {
-                    var groupedShape = sdkShapeHandler.Create(item);
+                    var groupedShape = pShapeHandler.Create(item);
                     if (groupedShape != null)
                     {
                         groupedShapes.Add(groupedShape);
                     }
                 }
-                var spContext = _shapeContextBuilder.Build(sdkElement);
-                var transformGroup = sdkGroupShape.GroupShapeProperties.TransformGroup;
+                var spContext = _shapeContextBuilder.Build(shapeTreeSource);
+                var transformGroup = pGroupShape.GroupShapeProperties.TransformGroup;
                 var innerTransform = new NonPlaceholderTransform(transformGroup); //TODO: use factory version instead
-                var shape = _shapeBuilder.WithGroup(innerTransform, spContext, groupedShapes);
+                var shape = _shapeBuilder.WithGroup(innerTransform, spContext, groupedShapes, pGroupShape);
 
                 return shape;
             }
 
             if (Successor != null)
             {
-                return Successor.Create(sdkElement);
+                return Successor.Create(shapeTreeSource);
             }
 
             return null;
