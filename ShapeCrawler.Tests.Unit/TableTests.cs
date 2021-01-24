@@ -30,7 +30,7 @@ namespace ShapeCrawler.Tests.Unit
 
             // Act
             RowCollection tableRows = table.Rows;
-            IEnumerable<CellSc> rowCells = tableRows.First().Cells;
+            IEnumerable<Cell> rowCells = tableRows.First().Cells;
 
             // Assert
             tableRows.Should().HaveCount(3);
@@ -62,7 +62,7 @@ namespace ShapeCrawler.Tests.Unit
         public void CellIsMergedCell_ReturnsTrueWhenTheCellBelongToMergedCellsGroup()
         {
             // Arrange
-            CellSc tableCell = _fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4).Table.Rows[1].Cells[0];
+            Cell tableCell = _fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4).Table.Rows[1].Cells[0];
 
             // Act
             bool isMergedCell = tableCell.IsMergedCell;

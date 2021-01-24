@@ -52,7 +52,7 @@ namespace ShapeCrawler.Models.Styles
         public static ShapeFill FromXmlSolidFill(A.RgbColorModelHex rgbColorModelHex)
         {
             var hexColor = rgbColorModelHex.Val.ToString();
-            var hexColorInt = int.Parse(hexColor, NumberStyles.HexNumber);
+            var hexColorInt = int.Parse(hexColor, NumberStyles.HexNumber, CultureInfo.CurrentCulture);
             Color clr = Color.FromArgb(hexColorInt);
 
             return new ShapeFill(clr);

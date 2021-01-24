@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -15,7 +14,7 @@ using ShapeCrawler.Statics;
 namespace ShapeCrawler
 {
     [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
-    public class PresentationSc
+    public sealed class PresentationSc : IDisposable
     {
         #region Fields
         // TODO: Implement IDisposable
@@ -23,7 +22,7 @@ namespace ShapeCrawler
         private Lazy<EditableCollection<SlideSc>> _slides;
         private Lazy<SlideSizeSc> _slideSize;
         private bool _closed;
-        private PresentationData _preData;
+        private PresentationData _presentationData;
 
         #endregion Fields
 
@@ -139,16 +138,24 @@ namespace ShapeCrawler
                 return;
             }
 
+            // Close SDK presentation documents
             _presentationDocument.Close();
-            if (_preData != null)
+
+            // Close SpreadsheetDocument instances
+            if (_presentationData != null)
             {
-                foreach (var xlsxDoc in _preData.XlsxDocuments.Values)
+                foreach (SpreadsheetDocument spreadsheetDoc in _presentationData.XlsxDocuments.Values)
                 {
-                    xlsxDoc.Close();
+                    spreadsheetDoc.Close();
                 }
             }
 
             _closed = true;
+        }
+
+        public void Dispose()
+        {
+            Close();
         }
 
         public static PresentationSc Open(byte[] pptxBytes, bool isEditable)
@@ -173,8 +180,8 @@ namespace ShapeCrawler
         private EditableCollection<SlideSc> GetSlides()
         {
             var sdkPrePart = _presentationDocument.PresentationPart;
-            _preData = new PresentationData(sdkPrePart.Presentation, _slideSize);
-            var slideCollection = SlideCollection.Create(sdkPrePart, _preData, this);
+            _presentationData = new PresentationData(sdkPrePart.Presentation, _slideSize);
+            var slideCollection = SlideCollection.Create(sdkPrePart, _presentationData, this);
 
             return slideCollection;
         }

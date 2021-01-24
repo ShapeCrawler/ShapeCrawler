@@ -1,4 +1,5 @@
-﻿using ShapeCrawler.SlideMaster;
+﻿using ShapeCrawler.Models;
+using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -29,10 +30,5 @@ namespace ShapeCrawler
 
             return new TextBoxSc(this, pTextBody);
         }
-    }
-
-    public interface IAutoShape
-    {
-        TextBoxSc TextBox { get; }
     }
 }

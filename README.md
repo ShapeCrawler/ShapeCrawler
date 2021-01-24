@@ -35,34 +35,81 @@ public class TextSample
 {
     public static void Text()
     {
-        // Open presentation and get first slide
-        PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: true);
+        // Open presentation and get its first slide
+        using PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: true);
         SlideSc slide = presentation.Slides.First();
 
         // Print text from all text shapes
         foreach (ShapeSc shape in slide.Shapes)
         {
-            if (shape.HasTextFrame)
+            if (shape.HasTextBox)
             {
-                Console.WriteLine(shape.TextFrame.Text);
+                Console.WriteLine(shape.TextBox.Text);
             }
         }
 
-        // Change paragraph text
-        ShapeSc textShape = slide.Shapes.First(sp => sp.HasTextFrame);
-        ParagraphSc paragraph = textShape.TextFrame.Paragraphs.First();
-        paragraph.Text = "A new paragraph text";
+        // Get text holder shape
+        ShapeSc textShape = slide.Shapes.First(sp => sp.HasTextBox);
 
-        // Print name and sizes of paragraph text portions
-        ITextFrame textFrame = slide.Shapes.First(sp => sp.HasTextFrame).TextFrame;
-        IEnumerable<Portion> paragraphPortions = textFrame.Paragraphs.First().Portions;
+        // Change whole shape text
+        textShape.TextBox.Text = "A new shape text";
+
+        // Change text for a certain paragraph
+        ParagraphSc paragraph = textShape.TextBox.Paragraphs[1];
+        paragraph.Text = "A new text for second paragraph";
+
+        // Print font name and size of a paragraph text portions
+        TextBoxSc textBox = textShape.TextBox;
+        IEnumerable<Portion> paragraphPortions = textBox.Paragraphs.First().Portions;
         foreach (Portion portion in paragraphPortions)
         {
             Console.WriteLine($"Font name: {portion.Font.Name}");
             Console.WriteLine($"Font size: {portion.Font.Size}");
         }
 
-        // Save and close presentation
+        // Save and close the presentation
+        presentation.Close();
+    }
+}
+```
+
+### Table
+```C#
+using System;
+using System.Linq;
+
+using ShapeCrawler;
+using ShapeCrawler.Tables;
+
+public class TableSample
+{
+    public static void Table()
+    {
+        // Get first slide
+        using PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: false);
+        SlideSc slide = presentation.Slides.First();
+
+        // Get table
+        TableSc table = slide.Shapes.First(sp => sp.ContentType == ShapeContentType.Table).Table;
+
+        // Get number of rows in the table
+        int rowsCount = table.Rows.Count;
+
+        // Get number of cells in the first row
+        int rowCellsCount = table.Rows[0].Cells.Count;
+
+        // Print message if the cell is part of a merged cells group
+        foreach (Row row in table.Rows)
+        {
+            foreach (Cell cell in row.Cells)
+            {
+                if (cell.IsMergedCell)
+                {
+                    Console.WriteLine("The cell is part of a merged cells group.");
+                }
+            }
+        }
+
         presentation.Close();
     }
 }
@@ -80,7 +127,7 @@ public class ChartSample
 {
     public static void Chart()
     {
-        PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: false);
+        using PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: false);
         SlideSc slide = presentation.Slides.First();
 
         // Get chart
@@ -97,6 +144,8 @@ public class ChartSample
         {
             Console.WriteLine("Chart type is BarChart.");
         }
+
+        presentation.Close();
     }
 }
 ```
@@ -111,7 +160,7 @@ public class SlideMasterSample
     public static void SlideMaster()
     {
         // Open presentation in the read mode
-        PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: false);
+        using PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: false);
 
         // Get number of Slide Masters in the presentation
         int slideMastersCount = presentation.SlideMasters.Count;
@@ -119,8 +168,10 @@ public class SlideMasterSample
         // Get first Slide Master
         SlideMasterSc slideMaster = presentation.SlideMasters[0];
 
-        // Get number of shapes in the Slide Master
+        // Get number of shapes on the Slide Master
         int masterShapeCount = slideMaster.Shapes.Count;
+
+        presentation.Close();
     }
 }
 ```
@@ -137,10 +188,9 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 5. Create a new Pull Request.
 
 # Changelog
-## Version 0.12.0 - 2021-01-17
+## Version 0.13.0 - 2021-01-24
 ### Added
-- Added base API to get Slide Master collection — `PresentationSc.SlideMasters` (#44)
-### Fixed
-- Fixed New Line character processing for text paragraph (#87)
+- Added `CellSc.IsMergedCell` to define whether table cell belong to merged cells group;
+- Added `ParagraphCollection.Add()` method to add a new paragraph.
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).

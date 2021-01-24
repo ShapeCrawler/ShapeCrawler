@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using ShapeCrawler.Enums;
 
 namespace ShapeCrawler.Exceptions
@@ -24,9 +25,9 @@ namespace ShapeCrawler.Exceptions
         public static PresentationIsLargeException FromMax(int maxSize)
         {
 #if NETSTANDARD2_1 || NETCOREAPP2_0
-            var message = ExceptionMessages.PresentationIsLarge.Replace("{0}", maxSize.ToString(), StringComparison.OrdinalIgnoreCase);
+            var message = ExceptionMessages.PresentationIsLarge.Replace("{0}", maxSize.ToString(CultureInfo.CurrentCulture), StringComparison.OrdinalIgnoreCase);
 #else
-            var message = ExceptionMessages.PresentationIsLarge.Replace("{0}", maxSize.ToString());
+            var message = ExceptionMessages.PresentationIsLarge.Replace("{0}", maxSize.ToString(CultureInfo.CurrentCulture));
 #endif
             return new PresentationIsLargeException(message);
         }

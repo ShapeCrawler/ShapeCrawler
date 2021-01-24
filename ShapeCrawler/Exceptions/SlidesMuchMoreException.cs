@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using ShapeCrawler.Enums;
 
 namespace ShapeCrawler.Exceptions
@@ -17,9 +18,9 @@ namespace ShapeCrawler.Exceptions
         public static SlidesMuchMoreException FromMax(int maxNum)
         {
 #if NETSTANDARD2_1 || NETCOREAPP2_0
-            var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString(), StringComparison.OrdinalIgnoreCase);
+            var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString(CultureInfo.CurrentCulture), StringComparison.OrdinalIgnoreCase);
 #else
-            var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString());
+            var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString(CultureInfo.CurrentCulture));
 #endif
             return new SlidesMuchMoreException(message);
         }

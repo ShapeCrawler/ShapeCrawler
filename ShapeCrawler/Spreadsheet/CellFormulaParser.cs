@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 // ReSharper disable All
 
@@ -51,7 +52,7 @@ namespace SlideDotNet.Spreadsheet
             var digitInt = GetDigit(startIndex);
             _tempList.AddLast(letterPart + digitInt); // e.g. 'B'+'10' -> B10
 
-            var endIndex = startIndex + digitInt.ToString().Length;
+            var endIndex = startIndex + digitInt.ToString(CultureInfo.CurrentCulture).Length;
             if (endIndex >= _cellsFormula.Length)
             {
                 return;
@@ -76,7 +77,7 @@ namespace SlideDotNet.Spreadsheet
                 _tempList.AddLast(letterPart + nextDigitInt);
             }
 
-            var nextStart = startIndex + digitInt.ToString().Length + 1; // skip last digit and separator characters
+            var nextStart = startIndex + digitInt.ToString(CultureInfo.CurrentCulture).Length + 1; // skip last digit and separator characters
             if (nextStart < _cellsFormula.Length)
             {
                 ParseLetter(nextStart);
@@ -86,7 +87,7 @@ namespace SlideDotNet.Spreadsheet
         private int GetDigit(int startIndex)
         {
             var digitChars = _cellsFormula.Substring(startIndex).TakeWhile(char.IsDigit);
-            return int.Parse(string.Concat(digitChars));
+            return int.Parse(string.Concat(digitChars), CultureInfo.CurrentCulture);
         }
 
         #endregion Private Methods

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using DocumentFormat.OpenXml;
 
@@ -26,7 +27,7 @@ namespace ShapeCrawler.Factories
                     continue;
                 }
                 // fourth character of LocalName contains level number, example: "lvl1pPr -> 1, lvl2pPr -> 2, etc."
-                var lvl = int.Parse(textPr.LocalName[3].ToString());
+                var lvl = int.Parse(textPr.LocalName[3].ToString(CultureInfo.CurrentCulture), CultureInfo.CurrentCulture);
                 result.Add(lvl, fs.Value);
             }
 
