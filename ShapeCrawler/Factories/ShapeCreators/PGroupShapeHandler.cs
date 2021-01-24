@@ -72,7 +72,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 }
                 var spContext = _shapeContextBuilder.Build(shapeTreeSource);
                 var transformGroup = pGroupShape.GroupShapeProperties.TransformGroup;
-                var innerTransform = new NonPlaceholderTransform(transformGroup); //TODO: use factory version instead
+                var innerTransform = new NonPlaceholderTransform(transformGroup);
                 var shape = _shapeBuilder.WithGroup(innerTransform, spContext, groupedShapes, pGroupShape);
 
                 return shape;

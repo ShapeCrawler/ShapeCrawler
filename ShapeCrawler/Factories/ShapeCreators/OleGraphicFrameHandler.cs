@@ -12,7 +12,6 @@ namespace ShapeCrawler.Factories.ShapeCreators
     public class OleGraphicFrameHandler : OpenXmlElementHandler
     {
         private readonly ShapeContext.Builder _shapeContextBuilder;
-        //TODO: inject via DI
         private readonly LocationParser _transformFactory;
         private readonly IShapeBuilder _shapeBuilder;
         private const string Uri = "http://schemas.openxmlformats.org/presentationml/2006/ole";

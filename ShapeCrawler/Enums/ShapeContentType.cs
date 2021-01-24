@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace ShapeCrawler.Enums
+namespace ShapeCrawler
 {
     /// <summary>
     /// Main shape content type.

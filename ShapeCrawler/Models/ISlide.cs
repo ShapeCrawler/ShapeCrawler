@@ -1,4 +1,4 @@
-﻿namespace ShapeCrawler.SlideMaster
+﻿namespace ShapeCrawler.Models
 {
     public interface ISlide
     {

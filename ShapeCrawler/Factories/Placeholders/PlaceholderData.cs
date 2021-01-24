@@ -19,7 +19,7 @@ namespace ShapeCrawler.Factories.Placeholders
         /// Gets or sets index (p:ph idx="12345").  
         /// </summary>
         /// <returns>Index value or null if such index not exist.</returns>
-        public int? Index { get; set; } //TODO: move separate class
+        public int? Index { get; set; }
 
         #endregion Properties
 
@@ -64,7 +64,7 @@ namespace ShapeCrawler.Factories.Placeholders
         public override int GetHashCode()
         {
             var hash = 17;
-            hash = hash * 23 + PlaceholderType.GetHashCode(); //TODO: make readonly
+            hash = hash * 23 + PlaceholderType.GetHashCode();
             if (PlaceholderType == PlaceholderType.Custom)
             {
                 hash = hash * 23 + Index.GetHashCode();

@@ -2,7 +2,6 @@
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Factories.Builders;
-using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -15,7 +14,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
         private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly LocationParser _transformFactory;
         private readonly IShapeBuilder _shapeBuilder;
-        private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart"; //TODO: delete duplicate from GraphicFrameExtensions
+        private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart";
 
         #region Constructors
 

@@ -10,7 +10,7 @@ namespace ShapeCrawler.Tables
     /// <summary>
     /// Represents a table row cell.
     /// </summary>
-    public class CellSc
+    public class Cell
     {
         #region Fields
 
@@ -45,7 +45,7 @@ namespace ShapeCrawler.Tables
 
         #region Constructors
 
-        internal CellSc(A.TableCell aTableCell)
+        internal Cell(A.TableCell aTableCell)
         {
             _aTableCell = aTableCell ?? throw new ArgumentNullException(nameof(aTableCell));
         }

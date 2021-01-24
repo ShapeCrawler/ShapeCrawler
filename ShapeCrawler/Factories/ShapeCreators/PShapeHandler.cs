@@ -31,7 +31,6 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         }
 
-        //TODO: inject interface instead
         public PShapeHandler(ShapeContext.Builder shapeContextBuilder,
                                LocationParser transformFactory,
                                GeometryFactory geometryFactory,
