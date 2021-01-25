@@ -9,12 +9,12 @@ namespace ShapeCrawler.Factories.Drawing
     /// <summary>
     /// Represents an image model.
     /// </summary>
-    public class ImageEx
+    public class ImageSc
     {
         #region Fields
 
-        private readonly SlidePart _sldPart;
-        private ImagePart _imgPart;
+        private readonly SlidePart _slidePart;
+        private ImagePart _imagePart;
         private byte[] _bytes;
         private readonly string _blipRelateId;
 
@@ -22,9 +22,9 @@ namespace ShapeCrawler.Factories.Drawing
 
         #region Constructors
 
-        public ImageEx(SlidePart sdkSlidePart, string blipRelateId)
+        public ImageSc(SlidePart sdkSlidePart, string blipRelateId)
         {
-            _sldPart = sdkSlidePart ?? throw new ArgumentNullException(nameof(sdkSlidePart));
+            _slidePart = sdkSlidePart ?? throw new ArgumentNullException(nameof(sdkSlidePart));
             _blipRelateId = blipRelateId ?? throw new ArgumentNullException(nameof(blipRelateId));
         }
 
@@ -72,13 +72,13 @@ namespace ShapeCrawler.Factories.Drawing
             _bytes = null; // resets cache
         }
 
-#endregion Public Methods
+        #endregion Public Methods
 
         #region Private Methods
 
         private ImagePart GetImagePart()
         {
-            return _imgPart ??= (ImagePart) _sldPart.GetPartById(_blipRelateId);
+            return _imagePart ??= (ImagePart) _slidePart.GetPartById(_blipRelateId);
         }
 
         #endregion Private Methods

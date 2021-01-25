@@ -93,7 +93,7 @@ namespace ShapeCrawler.Collections
                         }
                         if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/table", StringComparison.Ordinal))
                         {
-                            slideMasterShapes.Add(new TableSc(slideMaster, pGraphicFrame));
+                            slideMasterShapes.Add(new TableNew(slideMaster, pGraphicFrame));
                             continue;
                         }
 

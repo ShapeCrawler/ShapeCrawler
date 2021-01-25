@@ -123,6 +123,8 @@ namespace ShapeCrawler.Tests.Unit
             Portion portionCase8 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 4103).TextBox.Paragraphs[0].Portions[0];
             Portion portionCase9 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2).TextBox.Paragraphs[0].Portions[0];
             Portion portionCase10 = _fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase11 = _fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 2).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase12 = _fixture.Pre010.Slides[0].Shapes.First(sp => sp.Id == 2).TextBox.Paragraphs[0].Portions[0];
 
             // Act
             int portionFontSizeCase1 = portionCase1.Font.Size;
@@ -135,6 +137,8 @@ namespace ShapeCrawler.Tests.Unit
             int portionFontSizeCase8 = portionCase8.Font.Size;
             int portionFontSizeCase9 = portionCase9.Font.Size;
             int portionFontSizeCase10 = portionCase10.Font.Size;
+            int portionFontSizeCase11 = portionCase11.Font.Size;
+            int portionFontSizeCase12 = portionCase12.Font.Size;
 
             // Assert
             portionFontSizeCase1.Should().Be(1800);
@@ -147,6 +151,8 @@ namespace ShapeCrawler.Tests.Unit
             portionFontSizeCase8.Should().Be(1800);
             portionFontSizeCase9.Should().Be(1200);
             portionFontSizeCase10.Should().Be(2177);
+            portionFontSizeCase11.Should().Be(2000);
+            portionFontSizeCase12.Should().Be(1539);
         }
 
         [Fact]

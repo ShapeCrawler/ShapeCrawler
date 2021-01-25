@@ -7,19 +7,22 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.SlideMaster
 {
+    /// <summary>
+    /// Represents a shape on Slide Master.
+    /// </summary>
     public class MasterShape : BaseShape
     {
         public MasterShape(OpenXmlCompositeElement compositeElement) : base(compositeElement)
         {
         }
 
-        public override long X => _compositeElement.GetFirstChild<P.ShapeProperties>().Transform2D.Offset.X;
+        public override long X => CompositeElement.GetFirstChild<P.ShapeProperties>().Transform2D.Offset.X;
 
-        public override long Y => _compositeElement.GetFirstChild<P.ShapeProperties>().Transform2D.Offset.Y;
+        public override long Y => CompositeElement.GetFirstChild<P.ShapeProperties>().Transform2D.Offset.Y;
 
-        public override long Width => _compositeElement.GetFirstChild<P.ShapeProperties>().Transform2D.Extents.Cx;
+        public override long Width => CompositeElement.GetFirstChild<P.ShapeProperties>().Transform2D.Extents.Cx;
 
-        public override long Height => _compositeElement.GetFirstChild<P.ShapeProperties>().Transform2D.Extents.Cy;
+        public override long Height => CompositeElement.GetFirstChild<P.ShapeProperties>().Transform2D.Extents.Cy;
 
         public override GeometryType GeometryType => GetGeometryType();
 
@@ -33,7 +36,7 @@ namespace ShapeCrawler.SlideMaster
         private GeometryType GetGeometryType()
         {
             // Get the shape geometry type in SDK format
-            PresetGeometry presetGeometry = _compositeElement.GetFirstChild<P.ShapeProperties>().
+            PresetGeometry presetGeometry = CompositeElement.GetFirstChild<P.ShapeProperties>().
                                                                 GetFirstChild<PresetGeometry>();
             
             if (presetGeometry == null)
@@ -53,7 +56,7 @@ namespace ShapeCrawler.SlideMaster
 
         private PlaceholderType? GetPlaceholderType()
         {
-            P.PlaceholderShape placeholderShape = _compositeElement.GetFirstChild<P.NonVisualShapeProperties>().ApplicationNonVisualDrawingProperties.PlaceholderShape;
+            P.PlaceholderShape placeholderShape = CompositeElement.GetFirstChild<P.NonVisualShapeProperties>().ApplicationNonVisualDrawingProperties.PlaceholderShape;
             if (placeholderShape == null)
             {
                 return null;

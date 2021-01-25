@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using ShapeCrawler.Enums;
+using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.SlideMaster;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -10,7 +12,7 @@ namespace ShapeCrawler.Tables
     /// <summary>
     /// Represents a table element on a slide.
     /// </summary>
-    public class TableSc
+    public class TableNew : BaseShape
     {
         #region Fields
 
@@ -28,9 +30,14 @@ namespace ShapeCrawler.Tables
 
         #region Constructors
 
-        internal TableSc(P.GraphicFrame pGraphicFrame)
+        internal TableNew(P.GraphicFrame pGraphicFrame)
         {
             _pGraphicFrame = pGraphicFrame ?? throw new ArgumentNullException(nameof(pGraphicFrame));
+        }
+
+        internal TableNew(SlideMasterSc slideMaster, P.GraphicFrame pGraphicFrame)
+        {
+            _pGraphicFrame = pGraphicFrame;
         }
 
         #endregion Constructors
@@ -47,6 +54,15 @@ namespace ShapeCrawler.Tables
 
         #endregion Private Methods
 
-        public CellSc this[int rowIndex, int columnIndex] => Rows[0].Cells[0];
+        public override long Width => throw new NotImplementedException();
+
+        public override long Height => throw new NotImplementedException();
+
+        public override long X => throw new NotImplementedException();
+
+        public override long Y => throw new NotImplementedException();
+
+        public override GeometryType GeometryType => throw new NotImplementedException();
+
     }
 }

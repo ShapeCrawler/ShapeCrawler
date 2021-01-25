@@ -13,9 +13,9 @@ namespace ShapeCrawler.Models.SlideComponents
     /// <summary>
     /// Represents a table rows collection.
     /// </summary>
-    public class RowCollection : EditableCollection<Row>
+    public class RowCollection : EditableCollection<RowSc>
     {
-        private readonly Dictionary<Row, A.TableRow> _innerSdkDic;
+        private readonly Dictionary<RowSc, A.TableRow> _innerSdkDic;
 
         #region Constructors
 
@@ -24,11 +24,11 @@ namespace ShapeCrawler.Models.SlideComponents
             Check.NotNull(sdkTblRows, nameof(sdkTblRows));
 
             var count = sdkTblRows.Count();
-            CollectionItems = new List<Row>(count);
-            _innerSdkDic = new Dictionary<Row, A.TableRow>(count);
+            CollectionItems = new List<RowSc>(count);
+            _innerSdkDic = new Dictionary<RowSc, A.TableRow>(count);
             foreach (var sdkRow in sdkTblRows)
             {
-                var innerRow = new Row(sdkRow);
+                var innerRow = new RowSc(sdkRow);
 
                 _innerSdkDic.Add(innerRow, sdkRow);
                 CollectionItems.Add(innerRow);
@@ -43,7 +43,7 @@ namespace ShapeCrawler.Models.SlideComponents
         /// Removes the specified table row.
         /// </summary>
         /// <param name="item"></param>
-        public override void Remove(Row item)
+        public override void Remove(RowSc item)
         {
             if (!_innerSdkDic.ContainsKey(item))
             {

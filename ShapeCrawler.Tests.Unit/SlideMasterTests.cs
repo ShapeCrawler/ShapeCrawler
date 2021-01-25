@@ -52,7 +52,7 @@ namespace ShapeCrawler.Tests.Unit
             shapeHeight.Should().Be(1325563);
         }
 
-        [Fact(Skip = "The feature is in progress.")]
+        [Fact]
         public void MasterShapePlaceholderType_ReturnPlaceholderTypeOfTheMasterShape_WhenTheMasterShapeIsPlaceholder()
         {
             // Arrange

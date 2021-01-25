@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.Enums;
 using ShapeCrawler.Factories.Drawing;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
@@ -90,7 +89,7 @@ namespace ShapeCrawler.Tests.Unit
             SlideSc slide = _fixture.Pre009.Slides[1];
 
             // Act
-            ImageEx backgroundImage = slide.Background;
+            ImageSc backgroundImage = slide.Background;
 
             // Assert
             backgroundImage.Should().BeNull();
@@ -194,7 +193,7 @@ namespace ShapeCrawler.Tests.Unit
             // Assert
             shapeHasPicture.Should().BeTrue();
         }
-#if DEBUG
+
         [Fact(Skip = "The feature is in progress")]
         public void SaveImage_GenerateAndSavesSlideImageInSpecifiedFilePath()
         {
@@ -204,6 +203,5 @@ namespace ShapeCrawler.Tests.Unit
             // Act
             slide.SaveImage(@"c:\1\SlideScSaveImage.png");
         }
-#endif
     }
 }

@@ -30,7 +30,7 @@ namespace ShapeCrawler.Tests.Unit
 
             // Act
             RowCollection tableRows = table.Rows;
-            IEnumerable<Cell> rowCells = tableRows.First().Cells;
+            IEnumerable<CellSc> rowCells = tableRows.First().Cells;
 
             // Assert
             tableRows.Should().HaveCount(3);
@@ -62,13 +62,34 @@ namespace ShapeCrawler.Tests.Unit
         public void CellIsMergedCell_ReturnsTrueWhenTheCellBelongToMergedCellsGroup()
         {
             // Arrange
-            Cell tableCell = _fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4).Table.Rows[1].Cells[0];
+            CellSc tableCellSc = _fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4).Table.Rows[1].Cells[0];
 
             // Act
-            bool isMergedCell = tableCell.IsMergedCell;
+            bool isMergedCell = tableCellSc.IsMergedCell;
 
             // Assert
             isMergedCell.Should().BeTrue();
+        }
+
+        [Fact(Skip = "The feature is in progress")]
+        public void MergeCells_MergesSpecifiedCellRange()
+        {
+            // Arrange
+            TableSc table = PresentationSc.Open(Resources._001, true).Slides[1].Shapes.First(sp => sp.Id == 4).Table;
+
+        }
+
+        [Fact]
+        public void Indexer_ReturnsCellByRowAndColumnIndexes()
+        {
+            // Arrange
+            TableSc table = _fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4).Table;
+
+            // Act
+            CellSc tableCell = table[0, 0];
+
+            // Assert
+            tableCell.Should().NotBeNull();
         }
     }
 }

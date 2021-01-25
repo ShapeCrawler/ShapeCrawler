@@ -8,11 +8,11 @@ namespace ShapeCrawler.Tables
     /// <summary>
     /// Represents a table's row.
     /// </summary>
-    public class Row
+    public class RowSc
     {
         #region Fields
 
-        private List<Cell> _cells;
+        private List<CellSc> _cells;
         private readonly A.TableRow _sdkTblRow;
 
         #endregion
@@ -23,7 +23,7 @@ namespace ShapeCrawler.Tables
         /// Returns row's cells.
         /// </summary>
         /// TODO: use custom collection
-        public IList<Cell> Cells {
+        public IReadOnlyList<CellSc> Cells {
             get
             {
                 if (_cells == null)
@@ -39,7 +39,7 @@ namespace ShapeCrawler.Tables
 
         #region Constructors
 
-        public Row(A.TableRow xmlRow)
+        public RowSc(A.TableRow xmlRow)
         {
             _sdkTblRow = xmlRow ?? throw new ArgumentNullException(nameof(xmlRow));
         }
@@ -51,10 +51,10 @@ namespace ShapeCrawler.Tables
         private void ParseCells()
         {
             var xmlCells = _sdkTblRow.Elements<A.TableCell>();
-            _cells = new List<Cell>(xmlCells.Count());
+            _cells = new List<CellSc>(xmlCells.Count());
             foreach (var c in xmlCells)
             {
-                _cells.Add(new Cell(c));
+                _cells.Add(new CellSc(c));
             }
         }
 
