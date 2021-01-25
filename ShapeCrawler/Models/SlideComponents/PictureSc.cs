@@ -18,7 +18,7 @@ namespace ShapeCrawler.Models.SlideComponents
         /// <summary>
         /// Gets image.
         /// </summary>
-        public ImageEx ImageEx { get; }
+        public ImageSc ImageSc { get; }
 
         #endregion Properties
 
@@ -30,7 +30,7 @@ namespace ShapeCrawler.Models.SlideComponents
         public PictureSc(SlidePart xmlSldPart, string blipRelateId)
         {
             Check.NotNull(xmlSldPart, nameof(xmlSldPart));
-            ImageEx = new ImageEx(xmlSldPart, blipRelateId);
+            ImageSc = new ImageSc(xmlSldPart, blipRelateId);
         }
 
         public PictureSc(SlideMaster.SlideMasterSc slideMaster, P.Picture pPicture) : base(pPicture)

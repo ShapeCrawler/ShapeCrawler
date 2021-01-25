@@ -22,7 +22,7 @@ namespace ShapeCrawler
     {
         #region Fields
 
-        private readonly Lazy<ImageEx> _backgroundImage;
+        private readonly Lazy<ImageSc> _backgroundImage;
         private readonly Lazy<ShapesCollection> _shapes;
         private readonly PresentationData _preSettings;
         private readonly SlidePart _slidePart;
@@ -48,7 +48,7 @@ namespace ShapeCrawler
         /// <summary>
         /// Returns a background image of the slide. Returns <c>null</c>if slide does not have background image.
         /// </summary>
-        public ImageEx Background => _backgroundImage.Value;
+        public ImageSc Background => _backgroundImage.Value;
 
         public string CustomData
         {
@@ -88,7 +88,7 @@ namespace ShapeCrawler
             _sldNumEntity = sldNum ?? throw new ArgumentNullException(nameof(sldNum));
             _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
             _shapes = new Lazy<ShapesCollection>(GetShapesCollection);
-            _backgroundImage = new Lazy<ImageEx>(TryGetBackground);
+            _backgroundImage = new Lazy<ImageSc>(TryGetBackground);
             _customXmlPart = new Lazy<CustomXmlPart>(GetSldCustomXmlPart);
             PresentationEx = presentationEx;
         }
@@ -169,7 +169,7 @@ namespace ShapeCrawler
             return ShapesCollection.CreateForUserSlide(_slidePart, _preSettings, this);
         }
 
-        private ImageEx TryGetBackground()
+        private ImageSc TryGetBackground()
         {
             var backgroundImageFactory = new ImageExFactory();
             return backgroundImageFactory.TryFromSdkSlide(_slidePart);

@@ -190,7 +190,7 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 # Changelog
 ## Version 0.13.0 - 2021-01-24
 ### Added
-- Added `CellSc.IsMergedCell` to define whether table cell belong to merged cells group;
-- Added `ParagraphCollection.Add()` method to add a new paragraph.
+- Added `CellSc.IsMergedCell` to define whether table cell belong to merged cells group (#35)
+- Added `ParagraphCollection.Add()` method to add a new paragraph (#62)
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).

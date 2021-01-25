@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -61,21 +62,30 @@ namespace ShapeCrawler.Tests.Unit
             numberSlidesCase2.Should().Be(1);
         }
 
-        [Fact]
-        public void SlidesRemove_RemovesSlideFromPresentation_WhenSlideInstanceIsPassedInTheMethod()
+        [Theory]
+        [MemberData(nameof(TestCasesSlidesRemove))]
+        public void SlidesRemove_RemovesSlideFromPresentation(byte[] pptxBytes, int expectedSlidesCount)
         {
             // Arrange
-            var stream = new MemoryStream(Properties.Resources._007_2_slides);
-            var presentation = PresentationSc.Open(stream, true);
-            var removingSlide = presentation.Slides.First();
+            PresentationSc presentation = PresentationSc.Open(pptxBytes, true);
+            SlideSc removingSlide = presentation.Slides[0];
+            var mStream = new MemoryStream();
 
             // Act
             presentation.Slides.Remove(removingSlide);
-            presentation.Close();
 
             // Assert
-            presentation = PresentationSc.Open(stream, false);
-            presentation.Slides.Should().HaveCount(1);
+            presentation.Slides.Should().HaveCount(expectedSlidesCount);
+
+            presentation.SaveAs(mStream);
+            presentation = PresentationSc.Open(mStream, false);
+            presentation.Slides.Should().HaveCount(expectedSlidesCount);
+        }
+
+        public static IEnumerable<object[]> TestCasesSlidesRemove()
+        {
+            yield return new object[] {Properties.Resources._007_2_slides, 1};
+            yield return new object[] {Properties.Resources._006_1_slides, 0};
         }
 
         [Fact]
