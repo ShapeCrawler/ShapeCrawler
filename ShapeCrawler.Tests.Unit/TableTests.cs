@@ -71,6 +71,33 @@ namespace ShapeCrawler.Tests.Unit
             isMergedCell.Should().BeTrue();
         }
 
+        [Fact]
+        public void ColumnsCount_ReturnsNumberOfColumnsInTheTable()
+        {
+            // Arrange
+            TableSc table = _fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4).Table;
+
+            // Act
+            int columnsCount = table.Columns.Count;
+
+            // Assert
+            columnsCount.Should().Be(3);
+        }
+
+        [Fact]
+        public void ColumnWidth_ReturnsWidthOfTableColumnInEMU()
+        {
+            // Arrange
+            TableSc table = _fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4).Table;
+            Column column = table.Columns[0];
+
+            // Act
+            long columnWidth = column.Width;
+
+            // Assert
+            columnWidth.Should().Be(3505199);
+        }
+
         // TODO: Add test case - merging two already merged cells; merging merged cell with un-merged cell
         [Theory(Skip = "In Progress")]
         [InlineData(0, 0, 0, 1)]
@@ -83,7 +110,7 @@ namespace ShapeCrawler.Tests.Unit
             var mStream = new MemoryStream();
 
             // Act
-            //table.MergeCells(table[rowIdx1, colIdx1], table[rowIdx2, colIdx2]);
+            table.MergeCells(table[rowIdx1, colIdx1], table[rowIdx2, colIdx2]);
 
             // Assert
             table[rowIdx1, colIdx1].IsMergedCell.Should().BeTrue();
@@ -95,6 +122,28 @@ namespace ShapeCrawler.Tests.Unit
             table = presentation.Slides[1].Shapes.First(sp => sp.Id == 4).Table;
             table[rowIdx1, colIdx1].IsMergedCell.Should().BeTrue();
             table[rowIdx2, colIdx2].IsMergedCell.Should().BeTrue();
+        }
+
+        [Fact(Skip = "The feature is in progress")]
+        public void MergeCells_MergesTwoCellsOf2X1Table()
+        {
+            // Arrange
+            PresentationSc presentation = PresentationSc.Open(Resources._002, true);
+            TableSc table = presentation.Slides[3].Shapes.First(sp => sp.Id == 4).Table;
+            var mStream = new MemoryStream();
+
+            // Act
+            table.MergeCells(table[0, 1], table[1, 0]);
+
+            // Assert
+            table[0, 1].IsMergedCell.Should().BeTrue();
+            table[1, 0].IsMergedCell.Should().BeTrue();
+
+            presentation.SaveAs(mStream);
+            presentation = PresentationSc.Open(mStream, false);
+            table = presentation.Slides[3].Shapes.First(sp => sp.Id == 4).Table;
+            table[0, 1].IsMergedCell.Should().BeTrue();
+            table[1, 0].IsMergedCell.Should().BeTrue();
         }
 
         [Fact]

@@ -19,7 +19,7 @@ namespace ShapeCrawler.Models.SlideComponents
         /// <summary>
         /// Gets image.
         /// </summary>
-        public ImageSc ImageSc { get; }
+        public ImageSc Image { get; }
 
         #endregion Properties
 
@@ -28,10 +28,10 @@ namespace ShapeCrawler.Models.SlideComponents
         /// <summary>
         /// Initializes a new instance of the <see cref="PictureSc"/> class.
         /// </summary>
-        public PictureSc(SlidePart xmlSldPart, string blipRelateId)
+        public PictureSc(SlidePart slidePart, string blipRelateId)
         {
-            Check.NotNull(xmlSldPart, nameof(xmlSldPart));
-            ImageSc = new ImageSc(xmlSldPart, blipRelateId);
+            Check.NotNull(slidePart, nameof(slidePart));
+            Image = new ImageSc(slidePart, blipRelateId);
         }
 
         public PictureSc(P.Picture pPicture)
@@ -51,7 +51,7 @@ namespace ShapeCrawler.Models.SlideComponents
         /// <summary>
         /// Gets image.
         /// </summary>
-        public ImageSc ImageSc { get; }
+        public ImageSc Image { get; }
 
         #endregion Properties
 
@@ -63,7 +63,7 @@ namespace ShapeCrawler.Models.SlideComponents
         public PictureScNew(SlidePart xmlSldPart, string blipRelateId)
         {
             Check.NotNull(xmlSldPart, nameof(xmlSldPart));
-            ImageSc = new ImageSc(xmlSldPart, blipRelateId);
+            Image = new ImageSc(xmlSldPart, blipRelateId);
         }
 
         public PictureScNew(SlideMasterSc slideMaster, P.Picture pPicture) : base(slideMaster, pPicture)

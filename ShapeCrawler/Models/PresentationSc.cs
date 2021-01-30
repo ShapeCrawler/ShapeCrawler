@@ -9,6 +9,7 @@ using ShapeCrawler.Models;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
+
 // ReSharper disable CheckNamespace
 
 namespace ShapeCrawler
@@ -52,7 +53,7 @@ namespace ShapeCrawler
         /// <summary>
         /// Initializes a new instance of the <see cref="PresentationSc"/> class by pptx-file path.
         /// </summary>
-        internal PresentationSc(string pptxPath, bool isEditable)
+        internal PresentationSc(string pptxPath, in bool isEditable)
         {
             ThrowIfSourceInvalid(pptxPath);
             _presentationDocument = PresentationDocument.Open(pptxPath, isEditable);
@@ -62,7 +63,7 @@ namespace ShapeCrawler
         /// <summary>
         /// Initializes a new instance of the <see cref="PresentationSc"/> class by pptx-file stream.
         /// </summary>
-        internal PresentationSc(Stream pptxStream, bool isEditable)
+        internal PresentationSc(Stream pptxStream, in bool isEditable)
         {
             ThrowIfSourceInvalid(pptxStream);
             _presentationDocument = PresentationDocument.Open(pptxStream, isEditable);
@@ -72,7 +73,7 @@ namespace ShapeCrawler
         /// <summary>
         /// Initializes a new instance of the <see cref="PresentationSc"/> class by pptx-file stream.
         /// </summary>
-        private PresentationSc(MemoryStream pptxStream, bool isEditable)
+        private PresentationSc(MemoryStream pptxStream, in bool isEditable)
         {
             ThrowIfSourceInvalid(pptxStream);
             _presentationDocument = PresentationDocument.Open(pptxStream, isEditable);
@@ -83,7 +84,7 @@ namespace ShapeCrawler
 
         #region Public Methods
 
-        public static PresentationSc Open(string pptxPath, bool isEditable)
+        public static PresentationSc Open(string pptxPath, in bool isEditable)
         {
             return new PresentationSc(pptxPath, isEditable);
         }
@@ -143,7 +144,7 @@ namespace ShapeCrawler
             Close();
         }
 
-        public static PresentationSc Open(byte[] pptxBytes, bool isEditable)
+        public static PresentationSc Open(byte[] pptxBytes, in bool isEditable)
         {
             ThrowIfSourceInvalid(pptxBytes);
 
@@ -153,7 +154,7 @@ namespace ShapeCrawler
             return new PresentationSc(pptxMemoryStream, isEditable);
         }
 
-        public static PresentationSc Open(Stream stream, bool isEditable)
+        public static PresentationSc Open(Stream stream, in bool isEditable)
         {
             return new PresentationSc(stream, isEditable);
         }
@@ -194,7 +195,7 @@ namespace ShapeCrawler
             ThrowIfPptxSizeLarge(bytes.Length);
         }
 
-        private static void ThrowIfPptxSizeLarge(long length)
+        private static void ThrowIfPptxSizeLarge(in long length)
         {
             if (length > Limitations.MaxPresentationSize)
             {

@@ -68,8 +68,8 @@ namespace ShapeCrawler.Tables
 
     public class ChartScNew : BaseShape
     {
-        private SlideMasterSc slideMaster;
-        private GraphicFrame pGraphicFrame;
+        private readonly SlideMasterSc slideMaster;
+        private readonly GraphicFrame pGraphicFrame;
 
         public ChartScNew(SlideMasterSc slideMaster, GraphicFrame pGraphicFrame)
         {

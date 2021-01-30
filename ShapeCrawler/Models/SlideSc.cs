@@ -191,8 +191,11 @@ namespace ShapeCrawler
             var customXmlPartStream = _customXmlPart.Value.GetStream();
             using var customXmlStreamReader = new StreamReader(customXmlPartStream);
             var raw = customXmlStreamReader.ReadToEnd();
-
+#if NET5_0
+            return raw[ConstantStrings.CustomDataElementName.Length..];
+#else
             return raw.Substring(ConstantStrings.CustomDataElementName.Length);
+#endif
         }
 
         private void SetCustomData(string value)

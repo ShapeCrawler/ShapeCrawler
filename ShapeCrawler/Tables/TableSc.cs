@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.SlideMaster;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
+
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 
 namespace ShapeCrawler.Tables
@@ -26,6 +28,7 @@ namespace ShapeCrawler.Tables
         #endregion Public Properties
 
         internal ShapeSc Shape { get; set; }
+        public IReadOnlyList<Column> Columns => GetColumnList();
 
         #region Constructors
 
@@ -38,10 +41,18 @@ namespace ShapeCrawler.Tables
 
         #region Private Methods
 
+        private IReadOnlyList<Column> GetColumnList()
+        {
+            IEnumerable<A.GridColumn> aGridColumns = _pGraphicFrame.GetATable().TableGrid.Elements<A.GridColumn>();
+            var columnList = new List<Column>(aGridColumns.Count());
+            columnList.AddRange(aGridColumns.Select(aGridColumn => new Column(aGridColumn)));
+            
+            return columnList;
+        }
+
         private RowCollection GetRowsCollection()
         {
-            A.Table aTable = _pGraphicFrame.GetFirstChild<A.Graphic>().GraphicData.GetFirstChild<A.Table>();
-            IEnumerable<A.TableRow> tableRows = aTable.Elements<A.TableRow>();
+            IEnumerable<A.TableRow> tableRows = _pGraphicFrame.GetATable().Elements<A.TableRow>();
 
             return new RowCollection(tableRows);
         }
