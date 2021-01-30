@@ -99,5 +99,19 @@ namespace ShapeCrawler.Tests.Unit
             // Act-Assert
             autoShape.TextBox.Text.Should().BeEquivalentTo("id8");
         }
+
+        [Fact(Skip = "In Progress")]
+        public void MasterAutoShapeTextBoxParagraphPortionFontSize_ReturnsTextPortionFontSize()
+        {
+            // Arrange
+            SlideMasterSc slideMaster = _fixture.Pre001.SlideMasters[0];
+            MasterAutoShape masterAutoShape = (MasterAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
+
+            // Act
+            int portionFontSize = masterAutoShape.TextBox.Paragraphs[0].Portions[0].Font.Size;
+
+            // Assert
+            portionFontSize.Should().Be(1800);
+        }
     }
 }

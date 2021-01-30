@@ -56,7 +56,7 @@ namespace ShapeCrawler.Factories.Drawing
             var imgPartStream = GetImagePart().GetStream();
             _bytes = new byte[imgPartStream.Length];
             await imgPartStream.ReadAsync(_bytes, 0, (int)imgPartStream.Length).ConfigureAwait(false);;
-
+            imgPartStream.Close();
             return _bytes;
         }
 #endif

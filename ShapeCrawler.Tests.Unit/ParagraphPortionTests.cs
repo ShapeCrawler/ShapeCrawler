@@ -125,34 +125,26 @@ namespace ShapeCrawler.Tests.Unit
             Portion portionCase10 = _fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5).TextBox.Paragraphs[0].Portions[0];
             Portion portionCase11 = _fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 2).TextBox.Paragraphs[0].Portions[0];
             Portion portionCase12 = _fixture.Pre010.Slides[0].Shapes.First(sp => sp.Id == 2).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase13 = _fixture.Pre014.Slides[3].Shapes.First(sp => sp.Id == 5).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase14 = _fixture.Pre014.Slides[4].Shapes.First(sp => sp.Id == 4).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase15 = _fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52).TextBox.Paragraphs[0].Portions[0];
 
-            // Act
-            int portionFontSizeCase1 = portionCase1.Font.Size;
-            int portionFontSizeCase2 = portionCase2.Font.Size;
-            int portionFontSizeCase3 = portionCase3.Font.Size;
-            int portionFontSizeCase4 = portionCase4.Font.Size;
-            int portionFontSizeCase5 = portionCase5.Font.Size;
-            int portionFontSizeCase6 = portionCase6.Font.Size;
-            int portionFontSizeCase7 = portionCase7.Font.Size;
-            int portionFontSizeCase8 = portionCase8.Font.Size;
-            int portionFontSizeCase9 = portionCase9.Font.Size;
-            int portionFontSizeCase10 = portionCase10.Font.Size;
-            int portionFontSizeCase11 = portionCase11.Font.Size;
-            int portionFontSizeCase12 = portionCase12.Font.Size;
-
-            // Assert
-            portionFontSizeCase1.Should().Be(1800);
-            portionFontSizeCase2.Should().Be(1800);
-            portionFontSizeCase3.Should().Be(1867);
-            portionFontSizeCase4.Should().Be(1800);
-            portionFontSizeCase5.Should().Be(2000);
-            portionFontSizeCase6.Should().Be(4400);
-            portionFontSizeCase7.Should().Be(3200);
-            portionFontSizeCase8.Should().Be(1800);
-            portionFontSizeCase9.Should().Be(1200);
-            portionFontSizeCase10.Should().Be(2177);
-            portionFontSizeCase11.Should().Be(2000);
-            portionFontSizeCase12.Should().Be(1539);
+            // Act-Assert
+            portionCase1.Font.Size.Should().Be(1800);
+            portionCase2.Font.Size.Should().Be(1800);
+            portionCase3.Font.Size.Should().Be(1867);
+            portionCase4.Font.Size.Should().Be(1800);
+            portionCase5.Font.Size.Should().Be(2000);
+            portionCase6.Font.Size.Should().Be(4400);
+            portionCase7.Font.Size.Should().Be(3200);
+            portionCase8.Font.Size.Should().Be(1800);
+            portionCase9.Font.Size.Should().Be(1200);
+            portionCase10.Font.Size.Should().Be(2177); 
+            portionCase11.Font.Size.Should().Be(2000);
+            portionCase12.Font.Size.Should().Be(1539);
+            portionCase13.Font.Size.Should().Be(1200);
+            portionCase14.Font.Size.Should().Be(1200);
+            portionCase15.Font.Size.Should().Be(2700);
         }
 
         [Fact]

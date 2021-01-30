@@ -103,7 +103,7 @@ namespace ShapeCrawler.Tests.Unit
             ShapeSc shapeEx = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
 
             // Act
-            var shapeFilledImage = await shapeEx.Fill.Picture.GetImageBytes();
+            var shapeFilledImage = await shapeEx.Fill.Picture.GetImageBytes().ConfigureAwait(false);
 
             // Assert
             shapeFilledImage.Length.Should().BePositive();
@@ -116,13 +116,13 @@ namespace ShapeCrawler.Tests.Unit
             var presentation = PresentationSc.Open(Resources._009, true);
             ShapeSc shapeEx = presentation.Slides[2].Shapes.First(sp => sp.Id.Equals(4));
             var newImage = new MemoryStream(Resources.test_image_2);
-            var imageSizeBefore = (await shapeEx.Fill.Picture.GetImageBytes()).Length;
+            var imageSizeBefore = (await shapeEx.Fill.Picture.GetImageBytes().ConfigureAwait(false)).Length;
 
             // Act
             shapeEx.Fill.Picture.SetImage(newImage);
 
             // Assert
-            var imageSizeAfter = (await shapeEx.Fill.Picture.GetImageBytes()).Length;
+            var imageSizeAfter = (await shapeEx.Fill.Picture.GetImageBytes().ConfigureAwait(false)).Length;
             imageSizeAfter.Should().NotBe(imageSizeBefore);
         }
 
@@ -303,16 +303,28 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void HasTextFrame_ReturnsFalse_WhenTheShapeDoesNotContainText()
+        public void HasTextBox_ReturnsFalse_WhenTheShapeDoesNotHaveTextBox()
         {
             // Arrange
-            ShapeSc shape = _fixture.Pre009.Slides[4].Shapes.First(sp => sp.Id == 5);
+            ShapeSc shapeCase1 = _fixture.Pre009.Slides[4].Shapes.First(sp => sp.Id == 5);
+            ShapeSc shapeCase2 = _fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 4);
 
-            // Act
-            bool hasTextFrame = shape.HasTextBox;
+            // Act-Assert
+            shapeCase1.HasTextBox.Should().BeFalse();
+            shapeCase2.HasTextBox.Should().BeFalse();
+        }
 
-            // Assert
-            hasTextFrame.Should().BeFalse();
+
+        [Fact]
+        public void Hidden_ReturnsValueIndicatingWhetherShapeIsHiddenFromTheSlide()
+        {
+            // Arrange
+            ShapeSc shapeCase1 = _fixture.Pre004.Slides[0].Shapes[0];
+            ShapeSc shapeCase2 = _fixture.Pre004.Slides[0].Shapes[1];
+
+            // Act-Assert
+            shapeCase1.Hidden.Should().BeTrue();
+            shapeCase2.Hidden.Should().BeFalse();
         }
     }
 }

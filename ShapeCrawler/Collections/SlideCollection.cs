@@ -36,14 +36,14 @@ namespace ShapeCrawler.Collections
         /// <summary>
         /// Removes the specified slide.
         /// </summary>
-        /// <param name="item"></param>
-        public override void Remove(SlideSc item)
+        /// <param name="row"></param>
+        public override void Remove(SlideSc row)
         {
-            Check.NotNull(item, nameof(item));
+            Check.NotNull(row, nameof(row));
 
-            RemoveFromDom(item.Number);
+            RemoveFromDom(row.Number);
             _sdkPrePart.Presentation.Save();
-            CollectionItems.Remove(item);
+            CollectionItems.Remove(row);
             UpdateNumbers();
         }
 

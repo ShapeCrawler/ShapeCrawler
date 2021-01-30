@@ -2,6 +2,7 @@
 using ShapeCrawler.Enums;
 using ShapeCrawler.Factories.Drawing;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMaster;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Models.SlideComponents
@@ -9,7 +10,7 @@ namespace ShapeCrawler.Models.SlideComponents
     /// <summary>
     /// Represents a picture content.
     /// </summary>
-    public class PictureSc : BaseShape
+    public class PictureSc
     {
         private readonly P.Picture _pPicture;
 
@@ -33,21 +34,49 @@ namespace ShapeCrawler.Models.SlideComponents
             ImageSc = new ImageSc(xmlSldPart, blipRelateId);
         }
 
-        public PictureSc(SlideMaster.SlideMasterSc slideMaster, P.Picture pPicture) : base(pPicture)
+        public PictureSc(P.Picture pPicture)
+        {
+            _pPicture = pPicture;
+        }
+
+        #endregion Constructors
+    }
+
+    public class PictureScNew : BaseShape
+    {
+        private readonly P.Picture _pPicture;
+
+        #region Properties
+
+        /// <summary>
+        /// Gets image.
+        /// </summary>
+        public ImageSc ImageSc { get; }
+
+        #endregion Properties
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PictureSc"/> class.
+        /// </summary>
+        public PictureScNew(SlidePart xmlSldPart, string blipRelateId)
+        {
+            Check.NotNull(xmlSldPart, nameof(xmlSldPart));
+            ImageSc = new ImageSc(xmlSldPart, blipRelateId);
+        }
+
+        public PictureScNew(SlideMasterSc slideMaster, P.Picture pPicture) : base(slideMaster, pPicture)
         {
             _pPicture = pPicture;
         }
 
         #endregion Constructors
 
-        public override long Width => throw new System.NotImplementedException();
-
-        public override long Height => throw new System.NotImplementedException();
-
-        public override long X => throw new System.NotImplementedException();
-
-        public override long Y => throw new System.NotImplementedException();
-
-        public override GeometryType GeometryType => throw new System.NotImplementedException();
+        public override long X { get; }
+        public override long Y { get; }
+        public override long Width { get; }
+        public override long Height { get; }
+        public override GeometryType GeometryType { get; }
     }
 }

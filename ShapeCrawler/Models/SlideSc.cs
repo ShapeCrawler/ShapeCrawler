@@ -57,19 +57,25 @@ namespace ShapeCrawler
         }
 
         public bool Hidden => _slidePart.Slide.Show != null && _slidePart.Slide.Show.Value == false;
-        public SlideLayoutSc Layout => GetSlideLayout();
 
-        private SlideLayoutSc GetSlideLayout()
+#if DEBUG
+        public static SlideLayoutSc Layout => GetSlideLayout();
+
+        private static SlideLayoutSc GetSlideLayout()
         {
-            throw new NotImplementedException();
+            return null;
         }
-
+#endif
         #endregion Properties
 
         #region Constructors
 
-        public SlideSc(SlidePart sdkSldPart, SlideNumber sldNum, PresentationData preSettings, PresentationSc presentationEx) :
-            this(sdkSldPart, sldNum, preSettings, new SlideSchemeService(), presentationEx)
+        public SlideSc(
+            SlidePart slidePart, 
+            SlideNumber slideNumber, 
+            PresentationData presentationData, 
+            PresentationSc presentationEx) :
+            this(slidePart, slideNumber, presentationData, new SlideSchemeService(), presentationEx)
         {
 
         }

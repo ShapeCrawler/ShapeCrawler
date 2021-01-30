@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Version 0.14.0 - Unreleased
 ### Added
 - Added two-dimensional indexer for `TableSc[int row_index][int column_Index]` to get table cell by row and column indexes (#29)
+- Added support for .NET 5 (#98)
 
 ## Version 0.13.0 - 2021-01-24
 ### Added

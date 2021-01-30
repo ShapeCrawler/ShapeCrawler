@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Settings;
-using ShapeCrawler.Shared;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable PossibleMultipleEnumeration
@@ -15,23 +13,21 @@ namespace ShapeCrawler.Models.SlideComponents
     /// </summary>
     public class RowCollection : EditableCollection<RowSc>
     {
-        private readonly Dictionary<RowSc, A.TableRow> _innerSdkDic;
+        private readonly Dictionary<RowSc, A.TableRow> _rowToATblRow;
 
         #region Constructors
 
-        public RowCollection(IEnumerable<A.TableRow> sdkTblRows)
+        public RowCollection(IEnumerable<A.TableRow> aTableRows)
         {
-            Check.NotNull(sdkTblRows, nameof(sdkTblRows));
-
-            var count = sdkTblRows.Count();
+            var count = aTableRows.Count();
             CollectionItems = new List<RowSc>(count);
-            _innerSdkDic = new Dictionary<RowSc, A.TableRow>(count);
-            foreach (var sdkRow in sdkTblRows)
+            _rowToATblRow = new Dictionary<RowSc, A.TableRow>(count);
+            foreach (A.TableRow aTblRow in aTableRows)
             {
-                var innerRow = new RowSc(sdkRow);
+                var row = new RowSc(aTblRow);
 
-                _innerSdkDic.Add(innerRow, sdkRow);
-                CollectionItems.Add(innerRow);
+                _rowToATblRow.Add(row, aTblRow);
+                CollectionItems.Add(row);
             }
         }
 
@@ -42,16 +38,11 @@ namespace ShapeCrawler.Models.SlideComponents
         /// <summary>
         /// Removes the specified table row.
         /// </summary>
-        /// <param name="item"></param>
-        public override void Remove(RowSc item)
+        /// <param name="row"></param>
+        public override void Remove(RowSc row)
         {
-            if (!_innerSdkDic.ContainsKey(item))
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            _innerSdkDic[item].Remove();
-            CollectionItems.Remove(item);
+            _rowToATblRow[row].Remove();
+            CollectionItems.Remove(row);
         }
 
         /// <summary>

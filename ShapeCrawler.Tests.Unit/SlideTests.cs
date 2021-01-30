@@ -6,8 +6,8 @@ using FluentAssertions;
 using ShapeCrawler.Factories.Drawing;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
-// ReSharper disable SuggestVarOrType_BuiltInTypes
 
+// ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
 
@@ -72,13 +72,14 @@ namespace ShapeCrawler.Tests.Unit
             var pre = PresentationSc.Open(Properties.Resources._009, true);
             var backgroundImage = pre.Slides[0].Background;
             var imgStream = new MemoryStream(Properties.Resources.test_image_2);
-            var bytesBefore = await backgroundImage.GetImageBytes();
+            var bytesBefore = await backgroundImage.GetImageBytes().ConfigureAwait(false);
 
             // Act
             backgroundImage.SetImage(imgStream);
+            backgroundImage.SetImage(imgStream);
 
             // Assert
-            var bytesAfter = await backgroundImage.GetImageBytes();
+            var bytesAfter = await backgroundImage.GetImageBytes().ConfigureAwait(false);
             bytesAfter.Length.Should().NotBe(bytesBefore.Length);
         }
 
@@ -166,6 +167,9 @@ namespace ShapeCrawler.Tests.Unit
             
             slide = PresentationSc.Open(Properties.Resources._023, false).Slides[0];
             yield return new object[] { slide, 1 };
+
+            slide = PresentationSc.Open(Properties.Resources._014, false).Slides[2];
+            yield return new object[] { slide, 5 };
         }
 
         [Fact]
@@ -193,7 +197,7 @@ namespace ShapeCrawler.Tests.Unit
             // Assert
             shapeHasPicture.Should().BeTrue();
         }
-
+#if DEBUG
         [Fact(Skip = "The feature is in progress")]
         public void SaveImage_GenerateAndSavesSlideImageInSpecifiedFilePath()
         {
@@ -203,5 +207,6 @@ namespace ShapeCrawler.Tests.Unit
             // Act
             slide.SaveImage(@"c:\1\SlideScSaveImage.png");
         }
+#endif
     }
 }

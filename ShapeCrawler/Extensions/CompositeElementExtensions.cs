@@ -1,9 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using DocumentFormat.OpenXml;
 using P = DocumentFormat.OpenXml.Presentation;
 using D = DocumentFormat.OpenXml.Drawing;
-using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Exceptions;
 
 namespace ShapeCrawler.Extensions
@@ -14,33 +12,13 @@ namespace ShapeCrawler.Extensions
     public static class CompositeElementExtensions
     {
         /// <summary>
-        /// Returns index of custom placeholder. Returns null if such an index does not exist.
-        /// </summary>
-        public static uint? GetPlaceholderIndex(this OpenXmlCompositeElement xmlCompositeElement)
-        {
-            var ph = xmlCompositeElement.Descendants<P.PlaceholderShape>().FirstOrDefault();
-            if (ph == null)
-            {
-                return null;
-            }
-
-            var index = ph.Index;
-            if (index == null)
-            {
-                return null;
-            }
-
-            return index.Value;
-        }
-
-        /// <summary>
         /// Determines whether element is placeholder.
         /// </summary>
-        /// <param name="xmlCompositeElement"></param>
+        /// <param name="compositeElement"></param>
         /// <returns></returns>
-        public static bool IsPlaceholder(this OpenXmlCompositeElement xmlCompositeElement)
+        public static bool IsPlaceholder(this OpenXmlCompositeElement compositeElement)
         {
-            return xmlCompositeElement.Descendants<P.PlaceholderShape>().Any();
+            return compositeElement.Descendants<P.PlaceholderShape>().Any();
         }
 
         /// <summary>
@@ -69,40 +47,14 @@ namespace ShapeCrawler.Extensions
             };
         }
 
-        /// <summary>
-        /// Gets identifier.
-        /// </summary>
-        public static int GetId(this OpenXmlCompositeElement compositeElement)
+        public static P.ApplicationNonVisualDrawingProperties GetApplicationNonVisualDrawingProperties(this OpenXmlCompositeElement compositeElement)
         {
-            // .First() is used instead .Single() because group shape can have more than one id for its child elements
-            var cNvPr = compositeElement.Descendants<P.NonVisualDrawingProperties>().First();
-            var id = (int)cNvPr.Id.Value;
-
-            return id;
-        }
-
-        /// <summary>
-        /// Determines whether element is chart. 
-        /// </summary>
-        /// <param name="compositeElement"></param>        
-        public static bool IsChart(this OpenXmlCompositeElement compositeElement)
-        {
-            var grData = compositeElement.Descendants<D.GraphicData>().SingleOrDefault();
-            if (grData == null)
+            return compositeElement switch
             {
-                return false;
-            }
-            var endsWithChart = grData?.Uri?.Value?.EndsWith("chart", StringComparison.Ordinal);
-            return endsWithChart != null && endsWithChart != false;
-        }
-
-        /// <summary>
-        /// Determines whether element is table. 
-        /// </summary>
-        /// <param name="compositeElement"></param>        
-        public static bool IsTable(this OpenXmlCompositeElement compositeElement)
-        {
-            return compositeElement.Descendants<D.Table>().Any();
+                P.GraphicFrame pGraphicFrame => pGraphicFrame.NonVisualGraphicFrameProperties.ApplicationNonVisualDrawingProperties,
+                P.Shape pShape => pShape.NonVisualShapeProperties.ApplicationNonVisualDrawingProperties,
+                _ => throw new ShapeCrawlerException()
+            };
         }
     }
 }

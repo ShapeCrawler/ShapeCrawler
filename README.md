@@ -1,12 +1,12 @@
 <h3 align="center">
 
-![ShapeCrawler](/resources/readme.png)
+![ShapeCrawler](./resources/readme.png)
 
 </h3>
 
 <h3 align="center">
 
-[![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=blue)](https://www.nuget.org/packages/ShapeCrawler) [![.NET Standard](https://img.shields.io/badge/.NET%20Core-2.0-blue)](#) [![.NET Standard](https://img.shields.io/badge/.NET%20Standard-%3E%3D%202.0-blue.svg)](#) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) 
+[![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=orange)](https://www.nuget.org/packages/ShapeCrawler) [![.NET Standard](https://img.shields.io/badge/.NET%20Core-2.0-orange)](#) [![.NET Standard](https://img.shields.io/badge/.NET%20Standard-%3E%3D%202.0-orange.svg)](#) [![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE) 
 
 </h3>
 
@@ -14,15 +14,18 @@
 
 ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoint presentations. It provides fluent APIs to process slides without having Microsoft Office installed.
 
-## Getting Started
-You can quickly start work with the library by following steps listed below.
-## Install
+This library provides a simplified object model on top of the [Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK) for manipulating PowerPoint documents.
 
-- [NuGet](https://nuget.org/packages/ShapeCrawler): `dotnet add package ShapeCrawler`
+## Getting Started
+To get started use ShapeCrawler APIs install it from [NuGet](https://nuget.org/packages/ShapeCrawler):
+```console
+dotnet add package ShapeCrawler
+```
 
 ## Usage
+The usage samples below will take you through some work experience with the presentation object model.
 
-### Text
+### Working with Texts
 ```C#
 using System;
 using System.Collections.Generic;
@@ -73,7 +76,7 @@ public class TextSample
 }
 ```
 
-### Table
+### Working with Tables
 ```C#
 using System;
 using System.Linq;
@@ -115,7 +118,7 @@ public class TableSample
 }
 ```
 
-### Chart
+### Working with Charts
 ```C#
 using System;
 using System.Linq;
@@ -150,7 +153,7 @@ public class ChartSample
 }
 ```
 
-### Slide Master
+### Working with Slide Masters
 ```C#
 using ShapeCrawler;
 using ShapeCrawler.SlideMaster;
@@ -186,6 +189,8 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 3. Commit your changes (`git commit -am 'Add some feature'`).
 4. Push to the branch (`git push origin my-new-feature`).
 5. Create a new Pull Request.
+
+Don't hesitate to contact me if you want to get involved!
 
 # Changelog
 ## Version 0.13.0 - 2021-01-24

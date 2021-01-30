@@ -16,7 +16,7 @@ namespace ShapeCrawler.Factories.Builders
         /// <summary>
         /// Builds a shape with OLE object content.
         /// </summary>
-        ShapeSc WithOle(ILocation innerTransform, ShapeContext spContext, OleObject ole, OpenXmlCompositeElement shapeTreeSource);
+        ShapeSc WithOle(ILocation innerTransform, ShapeContext spContext, OLEObject ole, OpenXmlCompositeElement shapeTreeSource);
 
         /// <summary>
         /// Builds a shape with picture content.

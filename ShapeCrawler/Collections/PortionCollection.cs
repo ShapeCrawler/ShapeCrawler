@@ -49,15 +49,15 @@ namespace ShapeCrawler.Collections
 
         #endregion Internal Methods
 
-        public override void Remove(Portion portion)
+        public override void Remove(Portion row)
         {
-            if (!CollectionItems.Contains(portion))
+            if (!CollectionItems.Contains(row))
             {
                 return;
             }
-            CollectionItems.Remove(portion);
+            CollectionItems.Remove(row);
 
-            portion.AText.Parent.Remove(); // removes from DOM
+            row.AText.Parent.Remove(); // removes from DOM
         }
 
         public void Remove(IList<Portion> removingPortions)

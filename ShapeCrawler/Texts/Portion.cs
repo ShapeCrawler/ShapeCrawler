@@ -69,8 +69,8 @@ namespace ShapeCrawler.Texts
 
         private FontSc CreateFont()
         {
-            Int32Value sdkFontSize = AText.Parent.GetFirstChild<A.RunProperties>()?.FontSize;
-            int fontSize = sdkFontSize != null ? sdkFontSize.Value : FontSizeFromOther();
+            Int32Value sizeFromARunProperties = AText.Parent.GetFirstChild<A.RunProperties>()?.FontSize;
+            int fontSize = sizeFromARunProperties != null ? sizeFromARunProperties.Value : FontSizeFromOther();
 
             return new FontSc(AText, fontSize, this);
         }
@@ -78,11 +78,11 @@ namespace ShapeCrawler.Texts
         private int FontSizeFromOther()
         {
             // If element is placeholder, tries to get from placeholder data
-            OpenXmlElement sdkElement = _shapeContext.OpenXmlElement;
-            if (sdkElement.IsPlaceholder())
+            OpenXmlCompositeElement compositeElement = _shapeContext.CompositeElement;
+            if (compositeElement.IsPlaceholder())
             {
                 var prFontHeight =
-                    _shapeContext.PlaceholderFontService.TryGetFontHeight((OpenXmlCompositeElement)sdkElement,
+                    _shapeContext.PlaceholderFontService.TryGetFontHeight(compositeElement,
                         Paragraph.Level);
                 if (prFontHeight != null)
                 {

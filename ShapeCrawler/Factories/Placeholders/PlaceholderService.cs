@@ -136,10 +136,10 @@ namespace ShapeCrawler.Factories.Placeholders
             {
                 layoutHolders.Add(mHolder);
             }
-#if NETSTANDARD2_1            
-            _phLocations = layoutHolders.ToHashSet();
-#else
+#if NETSTANDARD2_0
             _phLocations = ToCustomHashSet(layoutHolders);
+#else
+            _phLocations = layoutHolders.ToHashSet();
 #endif
         }
 

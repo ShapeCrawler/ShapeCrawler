@@ -17,7 +17,7 @@ namespace ShapeCrawler.Exceptions
 
         public static SlidesMuchMoreException FromMax(int maxNum)
         {
-#if NETSTANDARD2_1 || NETCOREAPP2_0
+#if NETSTANDARD2_1 || NETCOREAPP2_0 || NET5_0
             var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString(CultureInfo.CurrentCulture), StringComparison.OrdinalIgnoreCase);
 #else
             var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString(CultureInfo.CurrentCulture));

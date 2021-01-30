@@ -6,14 +6,14 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace ShapeCrawler.Tables
 {
     /// <summary>
-    /// Represents a table's row.
+    /// Represents a row in a table.
     /// </summary>
     public class RowSc
     {
         #region Fields
 
         private List<CellSc> _cells;
-        private readonly A.TableRow _sdkTblRow;
+        private readonly A.TableRow _aTableRow;
 
         #endregion
 
@@ -41,7 +41,7 @@ namespace ShapeCrawler.Tables
 
         public RowSc(A.TableRow xmlRow)
         {
-            _sdkTblRow = xmlRow ?? throw new ArgumentNullException(nameof(xmlRow));
+            _aTableRow = xmlRow ?? throw new ArgumentNullException(nameof(xmlRow));
         }
 
         #endregion
@@ -50,7 +50,7 @@ namespace ShapeCrawler.Tables
 
         private void ParseCells()
         {
-            var xmlCells = _sdkTblRow.Elements<A.TableCell>();
+            var xmlCells = _aTableRow.Elements<A.TableCell>();
             _cells = new List<CellSc>(xmlCells.Count());
             foreach (var c in xmlCells)
             {

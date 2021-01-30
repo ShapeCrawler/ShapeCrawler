@@ -79,21 +79,6 @@ namespace ShapeCrawler
             Init();
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationSc"/> class by pptx-file byte array.
-        /// </summary>
-        /// <param name="pptxBytes"></param>
-        internal PresentationSc(byte[] pptxBytes, bool isEditable)
-        {
-            ThrowIfSourceInvalid(pptxBytes);
-
-            var pptxStream = new MemoryStream();
-            pptxStream.Write(pptxBytes, 0, pptxBytes.Length);
-            _presentationDocument = PresentationDocument.Open(pptxStream, isEditable);
-            
-            Init();
-        }
-
         #endregion Constructors
 
         #region Public Methods
