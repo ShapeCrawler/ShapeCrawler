@@ -97,7 +97,7 @@ namespace ShapeCrawler.Spreadsheet
                 xlsxDoc = SpreadsheetDocument.Open(xlsxPackagePart.GetStream(), false);
                 _spContext.PresentationData.XlsxDocuments.Add(xlsxPackagePart, xlsxDoc);
             }
-#if NETSTANDARD2_1 || NETCOREAPP2_0
+#if NETSTANDARD2_1 || NETCOREAPP2_0 || NET5_0
             var filteredFormula = formula.Text
                 .Replace("'", string.Empty, StringComparison.OrdinalIgnoreCase)
                 .Replace("$", string.Empty, StringComparison.OrdinalIgnoreCase); //eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5            

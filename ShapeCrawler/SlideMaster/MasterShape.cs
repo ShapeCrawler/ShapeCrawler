@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Enums;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Models;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -12,7 +13,8 @@ namespace ShapeCrawler.SlideMaster
     /// </summary>
     public class MasterShape : BaseShape
     {
-        public MasterShape(OpenXmlCompositeElement compositeElement) : base(compositeElement)
+        public MasterShape(SlideMasterSc slideMaster, OpenXmlCompositeElement compositeElement) 
+            : base(slideMaster, compositeElement)
         {
         }
 
@@ -56,7 +58,7 @@ namespace ShapeCrawler.SlideMaster
 
         private PlaceholderType? GetPlaceholderType()
         {
-            P.PlaceholderShape placeholderShape = CompositeElement.GetFirstChild<P.NonVisualShapeProperties>().ApplicationNonVisualDrawingProperties.PlaceholderShape;
+            P.PlaceholderShape placeholderShape = CompositeElement.GetApplicationNonVisualDrawingProperties().PlaceholderShape;
             if (placeholderShape == null)
             {
                 return null;

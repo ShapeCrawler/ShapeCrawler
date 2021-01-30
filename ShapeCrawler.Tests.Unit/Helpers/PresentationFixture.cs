@@ -5,6 +5,7 @@ namespace ShapeCrawler.Tests.Unit.Helpers
         public PresentationSc Pre001 { get; }
         public PresentationSc Pre002 { get; }
         public PresentationSc Pre003 { get; }
+        public PresentationSc Pre004 { get; }
         public PresentationSc Pre006 { get; }
         public PresentationSc Pre008 { get; }
         public PresentationSc Pre009 { get; }
@@ -28,6 +29,7 @@ namespace ShapeCrawler.Tests.Unit.Helpers
             Pre001 = PresentationSc.Open(Properties.Resources._001, false);
             Pre002 = PresentationSc.Open(Properties.Resources._002, false);
             Pre003 = PresentationSc.Open(Properties.Resources._003, false);
+            Pre004 = PresentationSc.Open(Properties.Resources._004, false);
             Pre006 = PresentationSc.Open(Properties.Resources._006_1_slides, false);
             Pre008 = PresentationSc.Open(Properties.Resources._008, false);
             Pre009 = PresentationSc.Open(Properties.Resources._009, false);

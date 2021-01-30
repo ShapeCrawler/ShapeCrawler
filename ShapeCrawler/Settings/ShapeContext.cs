@@ -17,7 +17,7 @@ namespace ShapeCrawler.Settings
 
         internal SlidePart SlidePart { get; private set; }
 
-        internal OpenXmlElement OpenXmlElement { get; private set; }
+        internal OpenXmlCompositeElement CompositeElement { get; private set; }
 
         internal PresentationData PresentationData { get; private set; }
 
@@ -117,7 +117,7 @@ namespace ShapeCrawler.Settings
                     PlaceholderFontService = _fontService,
                     PlaceholderService = _placeholderService,
                     SlidePart = _sdkSldPart,
-                    OpenXmlElement = openXmlElement
+                    CompositeElement = openXmlElement
                 };
             }
 

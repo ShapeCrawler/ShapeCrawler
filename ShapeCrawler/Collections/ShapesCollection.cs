@@ -83,12 +83,12 @@ namespace ShapeCrawler.Collections
                         A.GraphicData aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
                         if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole", StringComparison.Ordinal))
                         {
-                            slideMasterShapes.Add(new OleObjectSc(slideMaster, pGraphicFrame));
+                            slideMasterShapes.Add(new MasterOLEObject(slideMaster, pGraphicFrame));
                             continue;
                         }
                         if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart", StringComparison.Ordinal))
                         {
-                            slideMasterShapes.Add(new ChartSc(slideMaster, pGraphicFrame));
+                            slideMasterShapes.Add(new ChartScNew(slideMaster, pGraphicFrame));
                             continue;
                         }
                         if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/table", StringComparison.Ordinal))
@@ -115,7 +115,7 @@ namespace ShapeCrawler.Collections
                 }
                 if (pPicture != null)
                 {
-                    slideMasterShapes.Add(new PictureSc(slideMaster, pPicture));
+                    slideMasterShapes.Add(new PictureScNew(slideMaster, pPicture));
                 }
             }
 

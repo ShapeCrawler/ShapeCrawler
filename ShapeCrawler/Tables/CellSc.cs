@@ -8,14 +8,13 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Tables
 {
     /// <summary>
-    /// Represents a table row cell.
+    /// Represents a cell in a table.
     /// </summary>
     public class CellSc
     {
         #region Fields
 
         private TextBoxSc _textBox;
-
         private readonly A.TableCell _aTableCell;
         private readonly ShapeContext _spContext;
 
@@ -40,6 +39,8 @@ namespace ShapeCrawler.Tables
         }
 
         public bool IsMergedCell => DefineWhetherCellIsMerged();
+        public int FirstRowIndex { get; set; }
+        public int FirstColIndex { get; set; }
 
         #endregion Public Properties
 
@@ -68,6 +69,11 @@ namespace ShapeCrawler.Tables
                    _aTableCell.RowSpan != null ||
                    _aTableCell.HorizontalMerge != null ||
                    _aTableCell.VerticalMerge != null;
+        }
+
+        public void SetMerged()
+        {
+            throw new NotImplementedException();
         }
     }
 }

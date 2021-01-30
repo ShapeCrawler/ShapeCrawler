@@ -31,8 +31,8 @@ namespace ShapeCrawler.Tests.Unit
             PictureSc shapePicture2 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7).Picture;
 
             // Act
-            byte[] shapePictureContentCase1 = await shapePicture1.ImageSc.GetImageBytes();
-            byte[] shapePictureContentCase2 = await shapePicture2.ImageSc.GetImageBytes();
+            byte[] shapePictureContentCase1 = await shapePicture1.ImageSc.GetImageBytes().ConfigureAwait(false);
+            byte[] shapePictureContentCase2 = await shapePicture2.ImageSc.GetImageBytes().ConfigureAwait(false);
 
             // Assert
             shapePictureContentCase1.Should().NotBeEmpty();
@@ -46,13 +46,13 @@ namespace ShapeCrawler.Tests.Unit
             var customImageStream = new MemoryStream(Properties.Resources.test_image_2);
             PictureSc picture = PresentationSc.Open(Properties.Resources._009, true).
                                                             Slides[1].Shapes.First(sp => sp.Id == 3).Picture;
-            var originLength = (await picture.ImageSc.GetImageBytes()).Length;
+            var originLength = (await picture.ImageSc.GetImageBytes().ConfigureAwait(false)).Length;
 
             // Act
             picture.ImageSc.SetImage(customImageStream);
 
             // Assert
-            var editedLength = (await picture.ImageSc.GetImageBytes()).Length;
+            var editedLength = (await picture.ImageSc.GetImageBytes().ConfigureAwait(false)).Length;
             editedLength.Should().NotBe(originLength);
         }
 

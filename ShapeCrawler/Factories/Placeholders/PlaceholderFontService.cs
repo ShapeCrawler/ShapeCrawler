@@ -17,7 +17,7 @@ namespace ShapeCrawler.Factories.Placeholders
     /// </summary>
     public class PlaceholderFontService
     {
-        private readonly SlidePart _sdkSldPart;
+        private readonly SlidePart _slidePart;
 
         private readonly Lazy<HashSet<PlaceholderFontData>> _layoutPlaceholders;
         private readonly Lazy<HashSet<PlaceholderFontData>> _masterPlaceholders;
@@ -28,14 +28,14 @@ namespace ShapeCrawler.Factories.Placeholders
 
         public PlaceholderFontService(SlidePart sdkSldPart, IPlaceholderService placeholderService)
         {
-            _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
+            _slidePart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
             _placeholderService = placeholderService ?? throw new ArgumentNullException(nameof(placeholderService));
 
-            var layoutSldData = _sdkSldPart.SlideLayoutPart.SlideLayout.CommonSlideData;
-            var masterSldData = _sdkSldPart.SlideLayoutPart.SlideMasterPart.SlideMaster.CommonSlideData;
+            var layoutSldData = _slidePart.SlideLayoutPart.SlideLayout.CommonSlideData;
+            var masterSldData = _slidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.CommonSlideData;
             _layoutPlaceholders = new Lazy<HashSet<PlaceholderFontData>>(()=>InitLayoutMaster(layoutSldData));
             _masterPlaceholders = new Lazy<HashSet<PlaceholderFontData>>(()=>InitLayoutMaster(masterSldData));
-            _masterBodyFontHeights = new Lazy<Dictionary<int, int>>(()=>InitBodyTypePlaceholder(_sdkSldPart));
+            _masterBodyFontHeights = new Lazy<Dictionary<int, int>>(()=>InitBodyTypePlaceholder(_slidePart));
         }
 
         public PlaceholderFontService(SlidePart sdkSldPart)
@@ -51,14 +51,14 @@ namespace ShapeCrawler.Factories.Placeholders
         /// <summary>
         /// Tries gets font height. Return null if font height is not defined.
         /// </summary>
-        /// <param name="sdkCompositeElement">Placeholder element.</param>
+        /// <param name="compositeElement">Placeholder element.</param>
         /// <param name="pLvl">Paragraph level.</param>
         /// <returns></returns>
-        public int? TryGetFontHeight(OpenXmlCompositeElement sdkCompositeElement, int pLvl) //TODO: use pattern Try
+        public int? TryGetFontHeight(OpenXmlCompositeElement compositeElement, int pLvl)
         {
-            Check.NotNull(sdkCompositeElement, nameof(sdkCompositeElement));
+            Check.NotNull(compositeElement, nameof(compositeElement));
 
-            var paramPlaceholderData = _placeholderService.CreatePlaceholderData(sdkCompositeElement);
+            var paramPlaceholderData = _placeholderService.CreatePlaceholderData(compositeElement);
             
             // From slide layout element
             var lPlaceholder = _layoutPlaceholders.Value.FirstOrDefault(e => e.Equals(paramPlaceholderData));
@@ -75,7 +75,7 @@ namespace ShapeCrawler.Factories.Placeholders
             }
 
             // Title type
-            var masterGlobalTextStyle = _sdkSldPart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles;
+            var masterGlobalTextStyle = _slidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles;
             if (paramPlaceholderData.PlaceholderType == PlaceholderType.Title)
             {
                 return masterGlobalTextStyle.TitleStyle.Level1ParagraphProperties.GetFirstChild<A.DefaultRunProperties>().FontSize.Value;
@@ -106,9 +106,9 @@ namespace ShapeCrawler.Factories.Placeholders
             return fontDataPlaceholders;
         }
 
-        private static Dictionary<int, int> InitBodyTypePlaceholder(SlidePart sdkSldPart)
+        private static Dictionary<int, int> InitBodyTypePlaceholder(SlidePart slidePart)
         {
-            return FontHeightParser.FromCompositeElement(sdkSldPart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.BodyStyle);
+            return FontHeightParser.FromCompositeElement(slidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.BodyStyle);
         }
 
         private PlaceholderFontData FromLayoutMasterElement(P.Shape sdkShape)

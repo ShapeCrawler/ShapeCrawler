@@ -17,7 +17,7 @@ using ShapeCrawler.SlideMaster;
 
 namespace ShapeCrawler.Charts
 {
-    public class ChartSc : BaseShape
+    public class ChartSc
     {
         #region Fields
 
@@ -97,7 +97,7 @@ namespace ShapeCrawler.Charts
             {
                 if (_categories.Value == null)
                 {
-#if NETSTANDARD2_1 || NETCOREAPP2_0
+#if NETSTANDARD2_1 || NETCOREAPP2_0 || NET5_0
                     var msg = ExceptionMessages.ChartCanNotHaveCategory.Replace("#0", Type.ToString(), StringComparison.OrdinalIgnoreCase);
 #else
                     var msg = ExceptionMessages.ChartCanNotHaveCategory.Replace("#0", Type.ToString());
@@ -146,11 +146,6 @@ namespace ShapeCrawler.Charts
             _firstSeries = new Lazy<OpenXmlElement>(GetFirstSeries);
             _xValues = new Lazy<LibraryCollection<double>>(TryGetXValues);
             Init(); //TODO: convert to lazy loading
-        }
-
-        public ChartSc(SlideMasterSc slideMasterSc, GraphicFrame pGraphicFrame) : base(pGraphicFrame)
-        {
-            _pGraphicFrame = pGraphicFrame;
         }
 
         #endregion
@@ -263,15 +258,6 @@ namespace ShapeCrawler.Charts
         }
 
         #endregion
-
-        public override long Width => throw new NotImplementedException();
-
-        public override long Height => throw new NotImplementedException();
-        public override GeometryType GeometryType { get; }
-
-        public override long X => throw new NotImplementedException();
-
-        public override long Y => throw new NotImplementedException();
     }
 }
 

@@ -1,5 +1,4 @@
 ﻿using ShapeCrawler.Charts;
-using ShapeCrawler.Models.SlideComponents;
 
 namespace ShapeCrawler.Exceptions
 {
@@ -8,16 +7,6 @@ namespace ShapeCrawler.Exceptions
     /// </summary>
     public static class ExceptionMessages
     {
-        public const string NoTextFrame = "Element has not a text frame.";
-
-        public const string NoChart = "Element has not a chart.";
-
-        public const string NoPicture = "Element has not a picture.";
-
-        public const string NoTable = "Element has not a table.";
-
-        public const string NoOleObject = "Element has not a OLE object.";
-
         public const string NotTitle = "Chart has not a title.";
 
         public static string SeriesHasNotName => $"The Series does not have a name. Use {nameof(Series.HasName)} to check whether series has a name.";

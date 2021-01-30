@@ -41,7 +41,7 @@ namespace ShapeCrawler
         private int _id;
         private string _name;
         private PictureSc _picture;
-        private OleObject _ole;
+        private OLEObject _ole;
         private TableSc _table;
         private ChartSc _chart;
         private readonly ILocation _innerTransform;
@@ -173,7 +173,7 @@ namespace ShapeCrawler
         /// <summary>
         /// Returns OLE object content. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.OLEObject"/>.
         /// </summary>
-        public OleObject OleObject => _ole;
+        public OLEObject OleObject => _ole;
 
         /// <summary>
         /// Determines whether the shape is placeholder.
@@ -184,7 +184,7 @@ namespace ShapeCrawler
         {
             get
             {
-                if (Context.OpenXmlElement.IsPlaceholder())
+                if (Context.CompositeElement.IsPlaceholder())
                 {
                     return new Placeholder();
                 }
@@ -205,7 +205,7 @@ namespace ShapeCrawler
                     return null;
                 }
                 
-                return Context.PlaceholderService.GetPlaceholderType(Context.OpenXmlElement);
+                return Context.PlaceholderService.GetPlaceholderType(Context.CompositeElement);
             }
         }
 
@@ -263,14 +263,14 @@ namespace ShapeCrawler
         private void SetCustomData(string value)
         {
             var customDataElement = $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
-            Context.OpenXmlElement.InnerXml += customDataElement;
+            Context.CompositeElement.InnerXml += customDataElement;
         }
 
         private string GetCustomData()
         {
             var pattern = @$"<{ConstantStrings.CustomDataElementName}>(.*)<\/{ConstantStrings.CustomDataElementName}>";
             var regex = new Regex(pattern);
-            var elementText = regex.Match(Context.OpenXmlElement.InnerXml).Groups[1];
+            var elementText = regex.Match(Context.CompositeElement.InnerXml).Groups[1];
             if (elementText.Value.Length == 0)
             {
                 return null;
@@ -286,7 +286,7 @@ namespace ShapeCrawler
                 return null;
             }
 
-            P.TextBody pTextBody = Context.OpenXmlElement.Descendants<P.TextBody>().SingleOrDefault();
+            P.TextBody pTextBody = Context.CompositeElement.Descendants<P.TextBody>().SingleOrDefault();
             if (pTextBody == null)
             {
                 return null;
@@ -307,13 +307,13 @@ namespace ShapeCrawler
             {
                 return null;
             }
-            var image = _imageFactory.TryFromSdkShape(Context.SlidePart, (OpenXmlCompositeElement)Context.OpenXmlElement); //TODO: delete casting
+            var image = _imageFactory.TryFromSdkShape(Context.SlidePart, (OpenXmlCompositeElement)Context.CompositeElement); //TODO: delete casting
             if (image != null)
             {
                 return new ShapeFill(image);
             }
 
-            var xmlShape = (P.Shape) Context.OpenXmlElement;
+            var xmlShape = (P.Shape) Context.CompositeElement;
             var rgbColorModelHex = xmlShape.ShapeProperties.GetFirstChild<A.SolidFill>()?.RgbColorModelHex;
             if (rgbColorModelHex != null)
             {
@@ -329,7 +329,7 @@ namespace ShapeCrawler
             {
                 return;
             }
-            var (id, hidden, name) = ((OpenXmlCompositeElement)Context.OpenXmlElement).GetNvPrValues(); //TODO: delete casting
+            var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
             _id = id;
             _hidden = hidden;
             _name = name;
@@ -344,7 +344,7 @@ namespace ShapeCrawler
         {
             #region Public Methods
 
-            public ShapeSc WithOle(ILocation innerTransform, ShapeContext spContext, OleObject ole, OpenXmlCompositeElement shapeTreeSource)
+            public ShapeSc WithOle(ILocation innerTransform, ShapeContext spContext, OLEObject ole, OpenXmlCompositeElement shapeTreeSource)
             {
                 Check.NotNull(innerTransform, nameof(innerTransform));
                 Check.NotNull(spContext, nameof(spContext));

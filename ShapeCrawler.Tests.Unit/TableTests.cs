@@ -71,12 +71,30 @@ namespace ShapeCrawler.Tests.Unit
             isMergedCell.Should().BeTrue();
         }
 
-        [Fact(Skip = "The feature is in progress")]
-        public void MergeCells_MergesSpecifiedCellRange()
+        // TODO: Add test case - merging two already merged cells; merging merged cell with un-merged cell
+        [Theory(Skip = "In Progress")]
+        [InlineData(0, 0, 0, 1)]
+        [InlineData(0, 1, 0, 0)]
+        public void MergeCells_MergesSpecifiedCellsRange(int rowIdx1, int colIdx1, int rowIdx2, int colIdx2)
         {
             // Arrange
-            TableSc table = PresentationSc.Open(Resources._001, true).Slides[1].Shapes.First(sp => sp.Id == 4).Table;
+            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            TableSc table = presentation.Slides[1].Shapes.First(sp => sp.Id == 4).Table;
+            var mStream = new MemoryStream();
 
+            // Act
+            //table.MergeCells(table[rowIdx1, colIdx1], table[rowIdx2, colIdx2]);
+
+            // Assert
+            table[rowIdx1, colIdx1].IsMergedCell.Should().BeTrue();
+            table[rowIdx2, colIdx2].IsMergedCell.Should().BeTrue();
+
+            presentation.SaveAs(mStream);
+            presentation.Close();
+            presentation = PresentationSc.Open(mStream, false);
+            table = presentation.Slides[1].Shapes.First(sp => sp.Id == 4).Table;
+            table[rowIdx1, colIdx1].IsMergedCell.Should().BeTrue();
+            table[rowIdx2, colIdx2].IsMergedCell.Should().BeTrue();
         }
 
         [Fact]

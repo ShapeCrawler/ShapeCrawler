@@ -1,11 +1,11 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Factories.Builders;
+using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
-using OleObject = ShapeCrawler.Models.SlideComponents.OleObject;
 
 namespace ShapeCrawler.Factories.ShapeCreators
 {
@@ -46,7 +46,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 {
                     var spContext = _shapeContextBuilder.Build(shapeTreeSource);
                     var innerTransform = _transformFactory.FromComposite(sdkGraphicFrame);
-                    var ole = new OleObject(sdkGraphicFrame);
+                    var ole = new OLEObject(sdkGraphicFrame);
                     var shape = _shapeBuilder.WithOle(innerTransform, spContext, ole, shapeTreeSource);
 
                     return shape;
