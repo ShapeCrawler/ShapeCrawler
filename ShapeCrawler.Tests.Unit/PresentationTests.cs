@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Statics;
@@ -11,8 +9,6 @@ using Xunit;
 
 namespace ShapeCrawler.Tests.Unit
 {
-    [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-    [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
     public class PresentationTests : IClassFixture<PresentationFixture>
     {
         private readonly PresentationFixture _fixture;
