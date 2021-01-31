@@ -2,7 +2,6 @@
 using System.Drawing.Imaging;
 using System.IO;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Enums;
 
 namespace ShapeCrawler.Factories.Drawing
 {

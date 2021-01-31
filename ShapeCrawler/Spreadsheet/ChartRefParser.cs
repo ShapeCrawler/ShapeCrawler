@@ -15,7 +15,6 @@ namespace ShapeCrawler.Spreadsheet
     /// <summary>
     /// Represents a series value point parser.
     /// </summary>
-    /// TODO: convert into interface
     public class ChartRefParser
     {
         private readonly ShapeContext _spContext;
@@ -53,7 +52,7 @@ namespace ShapeCrawler.Spreadsheet
                 return pointValues;
             }
 
-            return FromFormula(numRef.Formula, chartPart.EmbeddedPackagePart).ToList(); //TODO: remove ToList()
+            return FromFormula(numRef.Formula, chartPart.EmbeddedPackagePart).ToList();
         }
 
         public string GetSingleString(C.StringReference strRef, ChartPart chartPart)
@@ -74,7 +73,7 @@ namespace ShapeCrawler.Spreadsheet
 
         #region Private Methods
 
-        private List<double> FromFormula(C.Formula formula, OpenXmlPart xlsxPackagePart)
+        private List<double> FromFormula(C.Formula formula, EmbeddedPackagePart xlsxPackagePart)
         {
             var cellStrValues = GetCellStrValues(formula, xlsxPackagePart);
 
@@ -97,15 +96,8 @@ namespace ShapeCrawler.Spreadsheet
                 xlsxDoc = SpreadsheetDocument.Open(xlsxPackagePart.GetStream(), false);
                 _spContext.PresentationData.XlsxDocuments.Add(xlsxPackagePart, xlsxDoc);
             }
-#if NETSTANDARD2_1 || NETCOREAPP2_0 || NET5_0
-            var filteredFormula = formula.Text
-                .Replace("'", string.Empty, StringComparison.OrdinalIgnoreCase)
-                .Replace("$", string.Empty, StringComparison.OrdinalIgnoreCase); //eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5            
-#else
-            var filteredFormula = formula.Text.Replace("'", string.Empty).Replace("$", string.Empty);
-#endif
-            
 
+            var filteredFormula = GetFilteredFormula(formula);
             var sheetNameAndCellsFormula = filteredFormula.Split('!'); //eg: Sheet1!A2:A5 -> ['Sheet1', 'A2:A5']
             var wbPart = xlsxDoc.WorkbookPart;
             string sheetId = wbPart.Workbook.Descendants<Sheet>().First(s => sheetNameAndCellsFormula[0].Equals(s.Name, StringComparison.Ordinal)).Id;
@@ -124,6 +116,19 @@ namespace ShapeCrawler.Spreadsheet
             return strValues;
         }
 
-#endregion Private Methods
+        private static string GetFilteredFormula(C.Formula formula)
+        {
+#if NETSTANDARD2_1 || NETCOREAPP2_0 || NET5_0
+            var filteredFormula = formula.Text
+                .Replace("'", string.Empty, StringComparison.OrdinalIgnoreCase)
+                .Replace("$", string.Empty,
+                    StringComparison.OrdinalIgnoreCase); //eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5            
+#else
+            var filteredFormula = formula.Text.Replace("'", string.Empty).Replace("$", string.Empty);
+#endif
+            return filteredFormula;
+        }
+
+        #endregion Private Methods
     }
 }

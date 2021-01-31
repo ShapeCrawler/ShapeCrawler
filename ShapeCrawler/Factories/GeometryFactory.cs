@@ -2,7 +2,6 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
-using ShapeCrawler.Enums;
 using ShapeCrawler.Factories.Placeholders;
 using P = DocumentFormat.OpenXml.Presentation;
 

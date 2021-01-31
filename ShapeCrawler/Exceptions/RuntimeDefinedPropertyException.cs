@@ -1,6 +1,4 @@
-﻿using ShapeCrawler.Enums;
-
-namespace ShapeCrawler.Exceptions
+﻿namespace ShapeCrawler.Exceptions
 {
     /// <summary>
     /// Thrown while attempting to access runtime defined property, but it does not exist for the current object.

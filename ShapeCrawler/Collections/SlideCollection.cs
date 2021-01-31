@@ -11,24 +11,29 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    /// Represents a collection of the slides.
+    /// Represents a slide collection.
     /// </summary>
     public class SlideCollection : EditableCollection<SlideSc>
     {
         #region Fields
 
-        private readonly PresentationPart _sdkPrePart;
-        private readonly Dictionary<SlideSc, SlideNumber> _sldNumDic;
+        private readonly PresentationPart _presentationPart;
+        
+        // TODO: Consider deleting implementation without this dictionary
+        private readonly Dictionary<SlideSc, SlideNumber> _slideToSlideNumber;
 
         #endregion Fields
 
         #region Constructors
 
-        private SlideCollection(List<SlideSc> slides, PresentationPart sdkPrePart, Dictionary<SlideSc, SlideNumber> sldNumDic)
+        private SlideCollection(
+            List<SlideSc> slides, 
+            PresentationPart presentationPart, 
+            Dictionary<SlideSc, SlideNumber> slideToSlideNumber)
         {
             CollectionItems = slides;
-            _sdkPrePart = sdkPrePart;
-            _sldNumDic = sldNumDic;
+            _presentationPart = presentationPart;
+            _slideToSlideNumber = slideToSlideNumber;
         }
 
         #endregion Constructors
@@ -42,7 +47,7 @@ namespace ShapeCrawler.Collections
             Check.NotNull(row, nameof(row));
 
             RemoveFromDom(row.Number);
-            _sdkPrePart.Presentation.Save();
+            _presentationPart.Presentation.Save();
             CollectionItems.Remove(row);
             UpdateNumbers();
         }
@@ -73,9 +78,9 @@ namespace ShapeCrawler.Collections
 
         #region Private Methods
 
-        private void RemoveFromDom(int number)
+        private void RemoveFromDom(in int number)
         {
-            P.Presentation presentation = _sdkPrePart.Presentation;
+            P.Presentation presentation = _presentationPart.Presentation;
             // gets the list of slide identifiers in the presentation
             SlideIdList slideIdList = presentation.SlideIdList;
             // gets the slide identifier of the specified slide
@@ -115,18 +120,18 @@ namespace ShapeCrawler.Collections
             }
 
             // gets the slide part for the specified slide
-            SlidePart slidePart = _sdkPrePart.GetPartById(slideRelId) as SlidePart;
+            SlidePart slidePart = _presentationPart.GetPartById(slideRelId) as SlidePart;
             // removes the slide part
-            _sdkPrePart.DeletePart(slidePart);
+            _presentationPart.DeletePart(slidePart);
         }
 
         private void UpdateNumbers()
         {
             var current = 0;
-            foreach (var slide in CollectionItems)
+            foreach (SlideSc slide in CollectionItems)
             {
                 current++;
-                _sldNumDic[slide].Number = current;
+                _slideToSlideNumber[slide].Number = current;
             }
         }
 

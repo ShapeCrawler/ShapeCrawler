@@ -1,6 +1,4 @@
-﻿using ShapeCrawler.Enums;
-
-namespace ShapeCrawler.Exceptions
+﻿namespace ShapeCrawler.Exceptions
 {
     /// <summary>
     /// Thrown when a feature not yet been implemented.

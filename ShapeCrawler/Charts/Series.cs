@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Enums;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Spreadsheet;

@@ -1,7 +1,6 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
-using ShapeCrawler.Enums;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Models;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -68,7 +67,7 @@ namespace ShapeCrawler.SlideMaster
             if (placeholderShape.Type == P.PlaceholderValues.Title ||
                 placeholderShape.Type == P.PlaceholderValues.CenteredTitle)
             {
-                return Enums.PlaceholderType.Title;
+                return ShapeCrawler.PlaceholderType.Title;
             }
 
             return (PlaceholderType) Enum.Parse(typeof(PlaceholderType), placeholderShape.Type.Value.ToString());

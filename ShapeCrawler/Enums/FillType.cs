@@ -1,4 +1,4 @@
-﻿namespace ShapeCrawler.Enums
+﻿namespace ShapeCrawler
 {
     /// <summary>
     /// Fill type.

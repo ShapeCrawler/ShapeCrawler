@@ -19,7 +19,7 @@ namespace ShapeCrawler.Models.Transforms
 
         public NonPlaceholderGroupedTransform(OpenXmlCompositeElement xmlElement, P.GroupShape groupShape)
         {
-            var offset = xmlElement.Descendants<A.Offset>().First(); //TODO: make lazy
+            var offset = xmlElement.Descendants<A.Offset>().First();
             var transformGroup = groupShape.GroupShapeProperties.TransformGroup;
             X = offset.X - transformGroup.ChildOffset.X + transformGroup.Offset.X;
             Y = offset.Y - transformGroup.ChildOffset.Y + transformGroup.Offset.Y;

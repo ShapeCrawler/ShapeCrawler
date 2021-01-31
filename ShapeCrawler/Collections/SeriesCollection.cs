@@ -4,7 +4,6 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Enums;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Spreadsheet;
 

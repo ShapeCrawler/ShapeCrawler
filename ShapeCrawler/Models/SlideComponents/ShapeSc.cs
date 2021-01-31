@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Enums;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories.Builders;
 using ShapeCrawler.Factories.Drawing;
@@ -36,7 +35,7 @@ namespace ShapeCrawler
         internal ShapeContext Context;
         private readonly Lazy<TextBoxSc> _text;
         private readonly Lazy<ShapeFill> _shapeFill;
-        private readonly IImageExFactory _imageFactory = new ImageExFactory(); //TODO: do not initiate for non-AutoShape types
+        private readonly IImageExFactory _imageFactory = new ImageExFactory();
         private bool? _hidden;
         private int _id;
         private string _name;
@@ -307,7 +306,7 @@ namespace ShapeCrawler
             {
                 return null;
             }
-            var image = _imageFactory.TryFromSdkShape(Context.SlidePart, (OpenXmlCompositeElement)Context.CompositeElement); //TODO: delete casting
+            var image = _imageFactory.TryFromSdkShape(Context.SlidePart, Context.CompositeElement);
             if (image != null)
             {
                 return new ShapeFill(image);

@@ -1,4 +1,4 @@
-﻿namespace ShapeCrawler.Enums
+﻿namespace ShapeCrawler
 {
     /// <summary>
     /// Placeholder types.
@@ -39,11 +39,11 @@
         /// Header.
         /// </summary>
         Header,
-        
+
         /// <summary>
-        /// Object.
+        /// OLEObject.
         /// </summary>
-        Object,
+        OLEObject,
         
         /// <summary>
         /// Chart.

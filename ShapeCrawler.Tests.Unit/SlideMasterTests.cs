@@ -2,7 +2,6 @@
 using System.Linq;
 using DocumentFormat.OpenXml.Presentation;
 using FluentAssertions;
-using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
 using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Tests.Unit.Helpers;

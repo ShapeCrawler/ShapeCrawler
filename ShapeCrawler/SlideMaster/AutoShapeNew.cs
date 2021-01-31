@@ -1,8 +1,6 @@
-﻿using ShapeCrawler.Enums;
-using ShapeCrawler.Models;
-using P = DocumentFormat.OpenXml.Presentation;
+﻿using ShapeCrawler.Models;
 
-namespace ShapeCrawler
+namespace ShapeCrawler.SlideMaster
 {
     public class AutoShapeNew : IShape
     {

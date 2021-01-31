@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using ShapeCrawler.Enums;
 
 namespace ShapeCrawler.Exceptions
 {
