@@ -1,5 +1,4 @@
-﻿using ShapeCrawler.Enums;
-using ShapeCrawler.Factories.Placeholders;
+﻿using ShapeCrawler.Factories.Placeholders;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations

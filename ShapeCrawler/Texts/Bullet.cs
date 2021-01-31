@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using ShapeCrawler.Enums;
 using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
 

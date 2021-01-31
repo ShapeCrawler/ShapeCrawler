@@ -58,7 +58,8 @@ namespace ShapeCrawler.Texts
         /// <summary>
         /// Initializes an instance of the <see cref="ParagraphSc"/> class.
         /// </summary>
-        public ParagraphSc(ShapeContext spContext, A.Paragraph aParagraph, TextBoxSc textBox) //TODO: Replace constructor initialization on static .Create()
+        // TODO: Replace constructor initialization on static .Create()
+        public ParagraphSc(ShapeContext spContext, A.Paragraph aParagraph, TextBoxSc textBox)
         {
             AParagraph = aParagraph;
             Level = GetInnerLevel(aParagraph);

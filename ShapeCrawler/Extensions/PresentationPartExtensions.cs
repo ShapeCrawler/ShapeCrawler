@@ -11,20 +11,6 @@ namespace ShapeCrawler.Extensions
     public static class PresentationPartExtensions
     {
         /// <summary>
-        /// Gets a <see cref="SlidePart"/> instance by slide number.
-        /// </summary>
-        /// <param name="prePart"></param>
-        /// <param name="sldNumber"></param>
-        /// <returns></returns>
-        public static SlidePart GetSlidePartByNumber(this PresentationPart prePart, int sldNumber)
-        {
-            Check.IsPositive(sldNumber, nameof(sldNumber));
-            var slideIndex = --sldNumber;
-
-            return GetSlidePartByIndex(prePart, slideIndex);
-        }
-
-        /// <summary>
         /// Gets a <see cref="SlidePart"/> instance by slide index.
         /// </summary>
         /// <param name="prePart"></param>

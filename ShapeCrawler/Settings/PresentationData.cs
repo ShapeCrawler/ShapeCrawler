@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Factories;
+using ShapeCrawler.Models;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
-using SlideSizeSc = ShapeCrawler.Models.SlideSizeSc;
 
 namespace ShapeCrawler.Settings
 {
-    /// <summary>
-    /// <inheritdoc cref="IPresentationData"/>
-    /// </summary>
     public class PresentationData
     {
         private readonly Lazy<Dictionary<int, int>> _lvlFontHeights;
@@ -31,13 +28,13 @@ namespace ShapeCrawler.Settings
 
         #region Constructors
 
-        public PresentationData(P.Presentation sdkPresentation, Lazy<SlideSizeSc> slideSize)
+        public PresentationData(P.Presentation pPresentation, Lazy<SlideSizeSc> slideSize)
         {
-            Check.NotNull(sdkPresentation, nameof(sdkPresentation));
+            Check.NotNull(pPresentation, nameof(pPresentation));
 
             SlideSize = slideSize ?? throw new ArgumentNullException(nameof(slideSize));
-            _lvlFontHeights = new Lazy<Dictionary<int, int>>(()=>ParseFontHeights(sdkPresentation));
-            XlsxDocuments = new Dictionary<OpenXmlPart, SpreadsheetDocument>(); //TODO: make lazy initialization
+            _lvlFontHeights = new Lazy<Dictionary<int, int>>(() => ParseFontHeights(pPresentation));
+            XlsxDocuments = new Dictionary<OpenXmlPart, SpreadsheetDocument>();
         }
 
         #endregion Constructors

@@ -11,7 +11,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using A = DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Presentation;
-using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
 using ShapeCrawler.SlideMaster;
 

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using DocumentFormat.OpenXml.Presentation;
-using ShapeCrawler.Enums;
 using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.SlideMaster;
@@ -64,23 +62,5 @@ namespace ShapeCrawler.Tables
         public override long Y => throw new NotImplementedException();
 
         public override GeometryType GeometryType => throw new NotImplementedException();
-    }
-
-    public class ChartScNew : BaseShape
-    {
-        private readonly SlideMasterSc slideMaster;
-        private readonly GraphicFrame pGraphicFrame;
-
-        public ChartScNew(SlideMasterSc slideMaster, GraphicFrame pGraphicFrame)
-        {
-            this.slideMaster = slideMaster;
-            this.pGraphicFrame = pGraphicFrame;
-        }
-
-        public override long X { get; }
-        public override long Y { get; }
-        public override long Width { get; }
-        public override long Height { get; }
-        public override GeometryType GeometryType { get; }
     }
 }

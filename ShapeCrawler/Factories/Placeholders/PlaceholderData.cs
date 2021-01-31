@@ -1,5 +1,4 @@
 ﻿using System;
-using ShapeCrawler.Enums;
 
 namespace ShapeCrawler.Factories.Placeholders
 {

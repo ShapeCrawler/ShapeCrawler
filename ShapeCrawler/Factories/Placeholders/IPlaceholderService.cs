@@ -1,5 +1,4 @@
 ﻿using DocumentFormat.OpenXml;
-using ShapeCrawler.Enums;
 
 namespace ShapeCrawler.Factories.Placeholders
 {

@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Drawing;
 using FluentAssertions;
-using ShapeCrawler.Enums;
 using ShapeCrawler.Models.Styles;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;

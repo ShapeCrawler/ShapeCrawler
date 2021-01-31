@@ -9,6 +9,7 @@ using ShapeCrawler.Models;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
+using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
 
@@ -18,7 +19,6 @@ namespace ShapeCrawler
     public sealed class PresentationSc : IDisposable
     {
         #region Fields
-        // TODO: Implement IDisposable
         private PresentationDocument _presentationDocument;
         private Lazy<EditableCollection<SlideSc>> _slides;
         private Lazy<SlideSizeSc> _slideSize;
@@ -217,13 +217,13 @@ namespace ShapeCrawler
         {
             ThrowIfSlidesNumberLarge();
             _slides = new Lazy<EditableCollection<SlideSc>>(GetSlides);
-            _slideSize = new Lazy<SlideSizeSc>(ParseSlideSize);
+            _slideSize = new Lazy<SlideSizeSc>(GetSlideSize);
         }
 
-        private SlideSizeSc ParseSlideSize()
+        private SlideSizeSc GetSlideSize()
         {
-            var sdkSldSize = _presentationDocument.PresentationPart.Presentation.SlideSize;
-            return new SlideSizeSc(sdkSldSize.Cx.Value, sdkSldSize.Cy.Value);
+            P.SlideSize pSlideSize = _presentationDocument.PresentationPart.Presentation.SlideSize;
+            return new SlideSizeSc(pSlideSize.Cx.Value, pSlideSize.Cy.Value);
         }
 
         #endregion Private Methods

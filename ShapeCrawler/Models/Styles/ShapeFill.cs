@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.Globalization;
-using ShapeCrawler.Enums;
 using ShapeCrawler.Factories.Drawing;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;

@@ -21,11 +21,11 @@ namespace ShapeCrawler.Models.Transforms
 
         public NonPlaceholderTransform(OpenXmlCompositeElement sdkCompositeElement)
         {
-            _offset = sdkCompositeElement.Descendants<A.Offset>().First(); //TODO: make lazy
+            _offset = sdkCompositeElement.Descendants<A.Offset>().First();
             _extents = sdkCompositeElement.Descendants<A.Extents>().First();
         }
 
-        public void SetX(long x) // TODO: validate
+        public void SetX(long x)
         {
             _offset.X.Value = x; 
         }

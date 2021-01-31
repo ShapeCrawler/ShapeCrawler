@@ -101,17 +101,24 @@ public class TableSample
         // Get number of cells in the first row
         int rowCellsCount = table.Rows[0].Cells.Count;
 
-        // Print message if the cell is part of a merged cells group
-        foreach (Row row in table.Rows)
+        // Print a message if the cell is a part of a merged cells group
+        foreach (RowSc row in table.Rows)
         {
-            foreach (Cell cell in row.Cells)
+            foreach (CellSc cellItem in row.Cells)
             {
-                if (cell.IsMergedCell)
+                if (cellItem.IsMergedCell)
                 {
-                    Console.WriteLine("The cell is part of a merged cells group.");
+                    Console.WriteLine("The cell is a part of a merged cells group.");
                 }
             }
         }
+
+        // Get column's width
+        Column tableColumn = table.Columns[0];
+        long columnWidth = tableColumn.Width;
+
+        // Get cell with row index 0 and column index 1
+        CellSc cell = table[0, 1];
 
         presentation.Close();
     }
@@ -193,9 +200,10 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 Don't hesitate to contact me if you want to get involved!
 
 # Changelog
-## Version 0.13.0 - 2021-01-24
+## Version 0.14.0 - 2021-01-31
 ### Added
-- Added `CellSc.IsMergedCell` to define whether table cell belong to merged cells group (#35)
-- Added `ParagraphCollection.Add()` method to add a new paragraph (#62)
+- Added two-dimensional indexer for `TableSc[int row_index][int column_Index]` to get table cell by row and column indexes (#29)
+- Added support for .NET 5 (#98)
+- Added `Column.Width` to get width of table column (#101)
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).

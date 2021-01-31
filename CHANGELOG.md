@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Version 0.14.0 - Unreleased
+## Version 0.14.0 - 2021-01-31
 ### Added
 - Added two-dimensional indexer for `TableSc[int row_index][int column_Index]` to get table cell by row and column indexes (#29)
 - Added support for .NET 5 (#98)
+- Added `Column.Width` to get width of table column (#101)
 
 ## Version 0.13.0 - 2021-01-24
 ### Added
