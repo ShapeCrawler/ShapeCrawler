@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using ShapeCrawler.Collections;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
+
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace ShapeCrawler.Models.SlideComponents
@@ -13,22 +16,11 @@ namespace ShapeCrawler.Models.SlideComponents
     /// </summary>
     public class RowCollection : EditableCollection<RowSc>
     {
-        private readonly Dictionary<RowSc, A.TableRow> _rowToATblRow;
-
         #region Constructors
 
-        public RowCollection(IEnumerable<A.TableRow> aTableRows)
+        internal RowCollection(List<RowSc> rowList)
         {
-            var count = aTableRows.Count();
-            CollectionItems = new List<RowSc>(count);
-            _rowToATblRow = new Dictionary<RowSc, A.TableRow>(count);
-            foreach (A.TableRow aTblRow in aTableRows)
-            {
-                var row = new RowSc(aTblRow);
-
-                _rowToATblRow.Add(row, aTblRow);
-                CollectionItems.Add(row);
-            }
+            CollectionItems = rowList;
         }
 
         #endregion Constructors
@@ -41,7 +33,7 @@ namespace ShapeCrawler.Models.SlideComponents
         /// <param name="row"></param>
         public override void Remove(RowSc row)
         {
-            _rowToATblRow[row].Remove();
+            row.ATableRow.Remove();
             CollectionItems.Remove(row);
         }
 
@@ -61,5 +53,15 @@ namespace ShapeCrawler.Models.SlideComponents
         }
 
         #endregion Public Methods
+
+        internal static RowCollection Create(TableSc table, P.GraphicFrame pGraphicFrame)
+        {
+            IEnumerable<A.TableRow> aTableRows = pGraphicFrame.GetATable().Elements<A.TableRow>();
+            var rowList = new List<RowSc>(aTableRows.Count());
+            int rowIndex = 0;
+            rowList.AddRange(aTableRows.Select(aTblRow => new RowSc(table, aTblRow, rowIndex++)));
+
+            return new RowCollection(rowList);
+        }
     }
 }

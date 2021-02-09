@@ -48,7 +48,7 @@ namespace ShapeCrawler.Tables
             A.Table aTable = _pGraphicFrame.GetFirstChild<A.Graphic>().GraphicData.GetFirstChild<A.Table>();
             IEnumerable<A.TableRow> tableRows = aTable.Elements<A.TableRow>();
 
-            return new RowCollection(tableRows);
+            throw new NotImplementedException();
         }
 
         #endregion Private Methods

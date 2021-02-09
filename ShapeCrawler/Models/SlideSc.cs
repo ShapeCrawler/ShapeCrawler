@@ -24,12 +24,11 @@ namespace ShapeCrawler
 
         private readonly Lazy<ImageSc> _backgroundImage;
         private readonly Lazy<ShapesCollection> _shapes;
-        private readonly PresentationData _preSettings;
         private readonly SlidePart _slidePart;
         private readonly SlideNumber _sldNumEntity;
         private Lazy<CustomXmlPart> _customXmlPart;
 
-        public PresentationSc PresentationEx { get; }
+        internal PresentationSc Presentation { get; }
 
         #endregion Fields
 
@@ -72,10 +71,9 @@ namespace ShapeCrawler
 
         public SlideSc(
             SlidePart slidePart, 
-            SlideNumber slideNumber, 
-            PresentationData presentationData, 
+            SlideNumber slideNumber,
             PresentationSc presentationEx) :
-            this(slidePart, slideNumber, presentationData, new SlideSchemeService(), presentationEx)
+            this(slidePart, slideNumber, new SlideSchemeService(), presentationEx)
         {
 
         }
@@ -85,18 +83,16 @@ namespace ShapeCrawler
         /// </summary>
         public SlideSc(
             SlidePart sdkSldPart, 
-            SlideNumber sldNum, 
-            PresentationData preSettings, 
+            SlideNumber sldNum,
             SlideSchemeService schemeService, 
             PresentationSc presentationEx)
         {
             _slidePart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
             _sldNumEntity = sldNum ?? throw new ArgumentNullException(nameof(sldNum));
-            _preSettings = preSettings ?? throw new ArgumentNullException(nameof(preSettings));
             _shapes = new Lazy<ShapesCollection>(GetShapesCollection);
             _backgroundImage = new Lazy<ImageSc>(TryGetBackground);
             _customXmlPart = new Lazy<CustomXmlPart>(GetSldCustomXmlPart);
-            PresentationEx = presentationEx;
+            Presentation = presentationEx;
         }
 
         #endregion Constructors
@@ -109,7 +105,7 @@ namespace ShapeCrawler
         /// <param name="filePath"></param>
         public void SaveScheme(string filePath)
         {
-            var sldSize = _preSettings.SlideSize.Value;
+            var sldSize = Presentation.PresentationData.SlideSize.Value;
             SlideSchemeService.SaveScheme(_shapes.Value, sldSize.Width, sldSize.Height, filePath);
         }
 
@@ -119,7 +115,7 @@ namespace ShapeCrawler
         /// <param name="stream"></param>
         public void SaveScheme(Stream stream)
         {
-            var sldSize = _preSettings.SlideSize.Value;
+            var sldSize = Presentation.PresentationData.SlideSize.Value;
             SlideSchemeService.SaveScheme(_shapes.Value, sldSize.Width, sldSize.Height, stream);
         }
 #if DEBUG
@@ -172,7 +168,7 @@ namespace ShapeCrawler
 
         private ShapesCollection GetShapesCollection()
         {
-            return ShapesCollection.CreateForUserSlide(_slidePart, _preSettings, this);
+            return ShapesCollection.CreateForUserSlide(_slidePart, this);
         }
 
         private ImageSc TryGetBackground()

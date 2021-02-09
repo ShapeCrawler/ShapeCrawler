@@ -56,24 +56,22 @@ namespace ShapeCrawler.Collections
         /// Creates slides collection.
         /// </summary>
         /// <returns></returns>
-        public static SlideCollection Create(PresentationPart sdkPrePart, PresentationData preData, PresentationSc presentationEx)
+        public static SlideCollection Create(PresentationPart presentationPart, PresentationSc presentation)
         {
-            Check.NotNull(sdkPrePart, nameof(sdkPrePart));
-            Check.NotNull(preData, nameof(preData));
 
-            var numSlides = sdkPrePart.SlideParts.Count();
+            var numSlides = presentationPart.SlideParts.Count();
             var slideCollection = new List<SlideSc>(numSlides);
             var sldNumDic = new Dictionary<SlideSc, SlideNumber>(numSlides);
             for (var sldIndex = 0; sldIndex < numSlides; sldIndex++)
             {
-                var sdkSldPart = sdkPrePart.GetSlidePartByIndex(sldIndex);
-                var sldNumEntity = new SlideNumber(sldIndex + 1);
-                var newSlide = new SlideSc(sdkSldPart, sldNumEntity, preData, presentationEx);
-                sldNumDic.Add(newSlide, sldNumEntity);
+                SlidePart slidePart = presentationPart.GetSlidePartByIndex(sldIndex);
+                var slideNumber = new SlideNumber(sldIndex + 1);
+                var newSlide = new SlideSc(slidePart, slideNumber, presentation);
+                sldNumDic.Add(newSlide, slideNumber);
                 slideCollection.Add(newSlide);
             }
 
-            return new SlideCollection(slideCollection, sdkPrePart, sldNumDic);
+            return new SlideCollection(slideCollection, presentationPart, sldNumDic);
         }
 
         #region Private Methods

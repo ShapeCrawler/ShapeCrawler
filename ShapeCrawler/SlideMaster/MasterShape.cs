@@ -12,8 +12,13 @@ namespace ShapeCrawler.SlideMaster
     /// </summary>
     public class MasterShape : BaseShape
     {
-        public MasterShape(SlideMasterSc slideMaster, OpenXmlCompositeElement compositeElement) 
-            : base(slideMaster, compositeElement)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MasterShape"/> class.
+        /// </summary>
+        /// <param name="slideMaster"></param>
+        /// <param name="shapeTreeSource">Element of the shape tree.</param>
+        public MasterShape(SlideMasterSc slideMaster, OpenXmlCompositeElement shapeTreeSource) 
+            : base(slideMaster, shapeTreeSource)
         {
         }
 

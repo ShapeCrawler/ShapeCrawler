@@ -7,7 +7,7 @@ namespace ShapeCrawler.Models
     {
         protected ISlide Slide { get; }
 
-        internal readonly OpenXmlCompositeElement CompositeElement;
+        internal OpenXmlCompositeElement CompositeElement { get; }
 
         public uint Id => CompositeElement.GetNonVisualDrawingProperties().Id;
 
@@ -27,10 +27,10 @@ namespace ShapeCrawler.Models
             // TODO: Can be removed this parameterless constructor?
         }
 
-        protected BaseShape(ISlide slide, OpenXmlCompositeElement compositeElement)
+        protected BaseShape(ISlide slide, OpenXmlCompositeElement shapeTreeSource)
         {
             Slide = slide;
-            CompositeElement = compositeElement;
+            CompositeElement = shapeTreeSource;
         }
 
         #endregion

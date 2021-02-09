@@ -11,8 +11,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using A = DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Presentation;
-using ShapeCrawler.Models;
-using ShapeCrawler.SlideMaster;
 
 namespace ShapeCrawler.Charts
 {
@@ -123,24 +121,20 @@ namespace ShapeCrawler.Charts
             }
         }
 
+        internal ShapeSc Shape { get; set; }
+
         #endregion Public Properties
 
         #region Constructors
 
-        public ChartSc(P.GraphicFrame grFrame, ShapeContext shapeContext)
-        : this(grFrame, shapeContext, new ChartRefParser(shapeContext))
-        {
-
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ChartSc"/> class.
         /// </summary>
-        public ChartSc(P.GraphicFrame grFrame, ShapeContext shapeContext, ChartRefParser chartRefParser)
+        public ChartSc(P.GraphicFrame pGraphicFrame, ShapeContext shapeContext)
         {
-            _pGraphicFrame = grFrame;
+            _pGraphicFrame = pGraphicFrame;
             _shapeContext = shapeContext;
-            _chartRefParser = chartRefParser;
+            _chartRefParser = new ChartRefParser(this);
             _chartType = new Lazy<ChartType>(GetChartType);
             _firstSeries = new Lazy<OpenXmlElement>(GetFirstSeries);
             _xValues = new Lazy<LibraryCollection<double>>(TryGetXValues);

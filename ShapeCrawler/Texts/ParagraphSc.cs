@@ -25,8 +25,13 @@ namespace ShapeCrawler.Texts
 
         #endregion Fields
 
+        #region Internal Properties
+
         internal TextBoxSc TextBox { get; }
+        internal A.Paragraph AParagraph { get; }
         internal int Level { get; }
+
+        #endregion Internal Properties
 
         #region Public Properties
 
@@ -51,8 +56,6 @@ namespace ShapeCrawler.Texts
 
         #endregion Public Properties
 
-        internal A.Paragraph AParagraph { get; }
-
         #region Constructors
 
         /// <summary>
@@ -68,14 +71,14 @@ namespace ShapeCrawler.Texts
             _portions = new ResettableLazy<PortionCollection>(() => PortionCollection.Create(AParagraph, spContext, this));
         }
 
+        #endregion Constructors
+
+        #region Private Methods
+
         private Bullet GetBullet()
         {
             return new Bullet(AParagraph.ParagraphProperties);
         }
-
-        #endregion Constructors
-
-        #region Private Methods
 
         private static int GetInnerLevel(A.Paragraph aParagraph)
         {

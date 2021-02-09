@@ -31,6 +31,9 @@ namespace ShapeCrawler.Texts
 
         #region Public Properties
 
+        /// <summary>
+        /// Gets text paragraph collection.
+        /// </summary>
         public ParagraphCollection Paragraphs => ParagraphCollection.Create(_compositeElement, _spContext, this);
 
         /// <summary>
@@ -61,20 +64,18 @@ namespace ShapeCrawler.Texts
             _text = new Lazy<string>(GetText);
         }
 
-        internal TextBoxSc(ShapeSc shape, P.TextBody pTextBody) : this(shape.Context, pTextBody)
+        internal TextBoxSc(ShapeSc shape, P.TextBody pTextBody)
         {
             Shape = shape;
+            _spContext = shape.Context;
+            _compositeElement = pTextBody;
+            _text = new Lazy<string>(GetText);
         }
 
-        /// <summary>Initializes a new instance of the <see cref="TextBoxSc"/> class.</summary>
-        /// <param name="spContext"></param>
-        /// <param name="compositeElement">
-        ///     Instance of <see cref="P.TextBody"/> of auto shape or instance of the <see cref="A.TextBody"/> of table cell.
-        /// </param>
-        internal TextBoxSc(ShapeContext spContext, OpenXmlCompositeElement compositeElement)
+        internal TextBoxSc(ShapeSc shape, A.TextBody aTextBody)
         {
-            _spContext = spContext;
-            _compositeElement = compositeElement;
+            _spContext = shape.Context;
+            _compositeElement = aTextBody;
             _text = new Lazy<string>(GetText);
         }
 

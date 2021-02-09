@@ -30,7 +30,7 @@ namespace ShapeCrawler.Tests.Unit
             TextBoxSc textBoxCase1 = _fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2).TextBox;
             TextBoxSc textBoxCase2 = _fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 5).TextBox;
             TextBoxSc textBoxCase3 = _fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 6).TextBox;
-            TextBoxSc textBoxCase4 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextBoxBox;
+            TextBoxSc textBoxCase4 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextBox;
             TextBoxSc textBoxCase5 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2).TextBox;
             TextBoxSc textBoxCase6 = _fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61).TextBox;
             TextBoxSc textBoxCase7 = _fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5).TextBox;
@@ -40,6 +40,7 @@ namespace ShapeCrawler.Tests.Unit
             TextBoxSc textBoxCase11 = _fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 2).TextBox;
             TextBoxSc textBoxCase12 = _fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 3).TextBox;
             TextBoxSc textBoxCase13 = _fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 2).TextBox;
+            TextBoxSc textBoxCase14 = _fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextBox;
 
             // Act-Assert
             textBoxCase1.Text.Should().BeEquivalentTo("Title text");
@@ -56,6 +57,7 @@ namespace ShapeCrawler.Tests.Unit
             textBoxCase11.Text.Should().BeEquivalentTo("Test title text");
             textBoxCase12.Text.Should().BeEquivalentTo("P1 P2");
             textBoxCase13.Text.Should().BeEquivalentTo("P1");
+            textBoxCase14.Text.Should().BeEquivalentTo("id3");
         }
 
         [Fact]
@@ -214,8 +216,8 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             TextBoxSc textFrameCase1 = _fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 37).TextBox;
-            TextBoxSc textFrameCase2 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextBoxBox;
-            TextBoxSc textFrameCase3 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextBoxBox;
+            TextBoxSc textFrameCase2 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextBox;
+            TextBoxSc textFrameCase3 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextBox;
 
             // Act
             string paragraphTextCase1 = textFrameCase1.Paragraphs[0].Text;
@@ -259,7 +261,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             TextBoxSc textFrame = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0]
-                .TextBoxBox;
+                .TextBox;
 
             // Act
             int paragraphsCount = textFrame.Paragraphs.Count;

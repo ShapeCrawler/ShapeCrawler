@@ -6,6 +6,7 @@ using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts
 {
@@ -55,47 +56,50 @@ namespace ShapeCrawler.Texts
 
         #region Constructors
 
-        public Portion(A.Text aText, ParagraphSc paragraph, ShapeContext shapeContext)
+        internal Portion(A.Text aText, ParagraphSc paragraph, ShapeContext shapeContext)
         {
             AText = aText;
             Paragraph = paragraph;
             _shapeContext = shapeContext;
-            _font = new ResettableLazy<FontSc>(CreateFont);
+            _font = new ResettableLazy<FontSc>(GetFont);
         }
 
         #endregion Constructors
 
         #region Private Methods
 
-        private FontSc CreateFont()
+        private FontSc GetFont()
         {
-            Int32Value sizeFromARunProperties = AText.Parent.GetFirstChild<A.RunProperties>()?.FontSize;
-            int fontSize = sizeFromARunProperties != null ? sizeFromARunProperties.Value : FontSizeFromOther();
-
+            int fontSize = GetFontSize();
             return new FontSc(AText, fontSize, this);
         }
 
-        private int FontSizeFromOther()
+        private int GetFontSize()
         {
-            // If element is placeholder, tries to get from placeholder data
-            OpenXmlCompositeElement compositeElement = _shapeContext.CompositeElement;
-            if (compositeElement.IsPlaceholder())
+            Int32Value aRunPropertiesSize = AText.Parent.GetFirstChild<A.RunProperties>()?.FontSize;
+            if (aRunPropertiesSize != null)
             {
-                var prFontHeight =
-                    _shapeContext.PlaceholderFontService.TryGetFontHeight(compositeElement,
-                        Paragraph.Level);
+                return aRunPropertiesSize.Value;
+            }
+
+            // If element is placeholder, tries to get from placeholder data
+            P.Shape shapeTreeSource = (P.Shape)Paragraph.TextBox.Shape.ShapeTreeSource;
+            if (shapeTreeSource.IsPlaceholder())
+            {
+                int? prFontHeight = _shapeContext.PlaceholderFontService.GetFontSizeByParagraphLvl(shapeTreeSource, Paragraph.Level);
                 if (prFontHeight != null)
                 {
                     return (int)prFontHeight;
                 }
             }
 
-            if (_shapeContext.PresentationData.LlvFontHeights.ContainsKey(Paragraph.Level))
+            PresentationData presentationData = Paragraph.TextBox.Shape.Slide.Presentation.PresentationData;
+            if (presentationData.LlvFontHeights.ContainsKey(Paragraph.Level))
             {
-                return _shapeContext.PresentationData.LlvFontHeights[Paragraph.Level];
+                return presentationData.LlvFontHeights[Paragraph.Level];
             }
 
-            var exist = _shapeContext.TryGetFontSize(Paragraph.Level, out int fh);
+            var exist = _shapeContext.TryGetFromMasterOtherStyle(Paragraph.Level, out int fh);
             if (exist)
             {
                 return fh;
@@ -122,7 +126,7 @@ namespace ShapeCrawler.Texts
 
         #endregion Private Methods
 
-        public A.Run GetARunCopy()
+        internal A.Run GetARunCopy()
         {
             return (A.Run) AText.Parent.CloneNode(true);
         }

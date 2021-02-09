@@ -4,8 +4,7 @@ using System.Globalization;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using ShapeCrawler.Settings;
-using ShapeCrawler.Shared;
+using ShapeCrawler.Charts;
 using SlideDotNet.Spreadsheet;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 // ReSharper disable PossibleMultipleEnumeration
@@ -13,15 +12,15 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 namespace ShapeCrawler.Spreadsheet
 {
     /// <summary>
-    /// Represents a series value point parser.
+    /// Represents a parser of series point value.
     /// </summary>
-    public class ChartRefParser
+    internal class ChartRefParser
     {
-        private readonly ShapeContext _spContext;
+        private readonly ChartSc _chart;
 
-        public ChartRefParser(ShapeContext spContext)
+        internal ChartRefParser(ChartSc chart)
         {
-            _spContext = spContext;
+            _chart = chart;
         }
 
         #region Public Methods
@@ -29,20 +28,17 @@ namespace ShapeCrawler.Spreadsheet
         /// <summary>
         /// Gets series values from xlsx.
         /// </summary>
-        /// <param name="numRef"></param>
+        /// <param name="numberReference"></param>
         /// <param name="chartPart"></param>
         /// <returns></returns>
-        public IReadOnlyList<double> GetNumbers(C.NumberReference numRef, ChartPart chartPart)
+        internal IReadOnlyList<double> GetNumbers(C.NumberReference numberReference, ChartPart chartPart)
         {
-            Check.NotNull(numRef, nameof(numRef));
-            Check.NotNull(chartPart, nameof(chartPart));
-
-            var numberingCache = numRef.NumberingCache;
-            if (numberingCache != null) // From cache
+            if (numberReference.NumberingCache != null)
             {
-                var sdkNumericValues = numberingCache.Descendants<C.NumericValue>();
-                var pointValues = new List<double>(sdkNumericValues.Count());
-                foreach (var numericValue in sdkNumericValues)
+                // From cache
+                IEnumerable<C.NumericValue> cNumericValues = numberReference.NumberingCache.Descendants<C.NumericValue>();
+                var pointValues = new List<double>(cNumericValues.Count());
+                foreach (var numericValue in cNumericValues)
                 {
                     var number = double.Parse(numericValue.InnerText, CultureInfo.InvariantCulture.NumberFormat);
                     var roundNumber = Math.Round(number, 1);
@@ -52,10 +48,20 @@ namespace ShapeCrawler.Spreadsheet
                 return pointValues;
             }
 
-            return FromFormula(numRef.Formula, chartPart.EmbeddedPackagePart).ToList();
+            // From Spreadsheet
+            List<string> cellStrValues = GetCellStrValues(numberReference.Formula, chartPart.EmbeddedPackagePart);
+            var cellNumberValues = new List<double>(cellStrValues.Count); // TODO: consider allocate on stack
+            foreach (string cellValue in cellStrValues)
+            {
+                string cellValueStr = cellValue;
+                cellValueStr = cellValueStr.Length == 0 ? "0" : cellValueStr;
+                cellNumberValues.Add(double.Parse(cellValueStr, CultureInfo.InvariantCulture.NumberFormat));
+            }
+
+            return cellNumberValues;
         }
 
-        public string GetSingleString(C.StringReference strRef, ChartPart chartPart)
+        internal string GetSingleString(C.StringReference strRef, ChartPart chartPart)
         {
             var fromCache = strRef.StringCache?.GetFirstChild<C.StringPoint>().Single().InnerText;
             if (fromCache != null)
@@ -73,46 +79,30 @@ namespace ShapeCrawler.Spreadsheet
 
         #region Private Methods
 
-        private List<double> FromFormula(C.Formula formula, EmbeddedPackagePart xlsxPackagePart)
+        private List<string> GetCellStrValues(C.Formula formula, EmbeddedPackagePart xlsxPackagePart) //EmbeddedPackagePart : OpenXmlPart
         {
-            var cellStrValues = GetCellStrValues(formula, xlsxPackagePart);
-
-            var cellNumberValues = new List<double>(cellStrValues.Count);
-            foreach (var cellValue in cellStrValues)
-            {
-                var sdkCellValueStr = cellValue;
-                sdkCellValueStr = sdkCellValueStr.Length == 0 ? "0" : sdkCellValueStr;
-                cellNumberValues.Add(double.Parse(sdkCellValueStr, CultureInfo.InvariantCulture.NumberFormat));
-            }
-
-            return cellNumberValues;
-        }
-
-        private List<string> GetCellStrValues(C.Formula formula, OpenXmlPart xlsxPackagePart) //EmbeddedPackagePart : OpenXmlPart
-        {
-            var exist = _spContext.PresentationData.XlsxDocuments.TryGetValue(xlsxPackagePart, out var xlsxDoc);
+            var exist = _chart.Shape.Slide.Presentation.PresentationData.SpreadsheetCache.TryGetValue(xlsxPackagePart, out var xlsxDoc);
             if (!exist)
             {
                 xlsxDoc = SpreadsheetDocument.Open(xlsxPackagePart.GetStream(), false);
-                _spContext.PresentationData.XlsxDocuments.Add(xlsxPackagePart, xlsxDoc);
+                _chart.Shape.Slide.Presentation.PresentationData.SpreadsheetCache.Add(xlsxPackagePart, xlsxDoc);
             }
 
-            var filteredFormula = GetFilteredFormula(formula);
-            var sheetNameAndCellsFormula = filteredFormula.Split('!'); //eg: Sheet1!A2:A5 -> ['Sheet1', 'A2:A5']
-            var wbPart = xlsxDoc.WorkbookPart;
-            string sheetId = wbPart.Workbook.Descendants<Sheet>().First(s => sheetNameAndCellsFormula[0].Equals(s.Name, StringComparison.Ordinal)).Id;
-            var wsPart = (WorksheetPart)wbPart.GetPartById(sheetId);
-            var sdkCells = wsPart.Worksheet.Descendants<Cell>(); //TODO: use HashSet
+            string filteredFormula = GetFilteredFormula(formula);
+            string[] sheetNameAndCellsFormula = filteredFormula.Split('!'); //eg: Sheet1!A2:A5 -> ['Sheet1', 'A2:A5']
+            WorkbookPart workbookPart = xlsxDoc.WorkbookPart;
+            string sheetId = workbookPart.Workbook.Sheets.Elements<Sheet>().First(sheet => sheetNameAndCellsFormula[0] == sheet.Name).Id;
+            var worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheetId);
+            IEnumerable<Cell> cells = worksheetPart.Worksheet.GetFirstChild<SheetData>().ChildElements.SelectMany(r => r.Elements<Cell>()); //TODO: use HashSet
             var addresses = new CellFormulaParser(sheetNameAndCellsFormula[1]).GetCellAddresses(); //eg: [1] = 'A2:A5'
 
             var strValues = new List<string>(addresses.Count);
             foreach (var address in addresses)
             {
-                var sdkCellValueStr = sdkCells.First(c => c.CellReference == address).InnerText;
+                var sdkCellValueStr = cells.First(c => c.CellReference == address).InnerText;
                 strValues.Add(sdkCellValueStr);
             }
 
-            xlsxDoc.Close();
             return strValues;
         }
 

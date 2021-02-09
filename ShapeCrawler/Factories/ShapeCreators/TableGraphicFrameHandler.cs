@@ -21,13 +21,13 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #region Constructors
 
-        public TableGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory) :
+        internal TableGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory) :
             this(shapeContextBuilder, transformFactory, new ShapeSc.Builder())
         {
             
         }
 
-        public TableGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder,
+        internal TableGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder,
                                         LocationParser transformFactory,
                                         IShapeBuilder shapeBuilder)
         {
@@ -50,9 +50,9 @@ namespace ShapeCrawler.Factories.ShapeCreators
                     ShapeContext spContext = _shapeContextBuilder.Build(shapeTreeSource);
                     ILocation innerTransform = _transformFactory.FromComposite(pGraphicFrame);
                     var table = new TableSc(pGraphicFrame);
-                    ShapeSc shapeEx = _shapeBuilder.WithTable(innerTransform, spContext, table, shapeTreeSource);
+                    ShapeSc shape = _shapeBuilder.WithTable(innerTransform, spContext, table, shapeTreeSource);
 
-                    return shapeEx;
+                    return shape;
                 }
             }
 

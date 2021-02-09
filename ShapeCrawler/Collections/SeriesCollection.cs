@@ -21,11 +21,8 @@ namespace ShapeCrawler.Collections
         /// <summary>
         /// Initializes a new collection of the chart series.
         /// </summary>
-        public SeriesCollection(IEnumerable<OpenXmlElement> sdkCharts, ChartPart sdkChartPart, ChartRefParser chartRefParser)
+        internal SeriesCollection(IEnumerable<OpenXmlElement> sdkCharts, ChartPart sdkChartPart, ChartRefParser chartRefParser)
         {
-            Check.NotEmpty(sdkCharts, nameof(sdkCharts));
-            Check.NotNull(sdkChartPart, nameof(sdkChartPart));
-
             var tempSeriesCollection = new LinkedList<Series>(); //TODO: make weak reference
             foreach (var nextSdkChart in sdkCharts)
             {

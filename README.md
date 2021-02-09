@@ -6,7 +6,7 @@
 
 <h3 align="center">
 
-[![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=orange)](https://www.nuget.org/packages/ShapeCrawler) [![.NET Standard](https://img.shields.io/badge/.NET%20Core-2.0-orange)](#) [![.NET Standard](https://img.shields.io/badge/.NET%20Standard-%3E%3D%202.0-orange.svg)](#) [![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE) 
+[![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=orange)](https://www.nuget.org/packages/ShapeCrawler) [![.NET Standard](https://img.shields.io/badge/.NET%20Core-5.0-orange)](#) [![.NET Standard](https://img.shields.io/badge/.NET%20Core-2.0-orange)](#) [![.NET Standard](https://img.shields.io/badge/.NET%20Standard-%3E%3D%202.0-orange.svg)](#) [![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE) 
 
 </h3>
 
@@ -161,6 +161,7 @@ public class ChartSample
 ```
 
 ### Working with Slide Masters
+
 ```C#
 using ShapeCrawler;
 using ShapeCrawler.SlideMaster;
@@ -185,10 +186,14 @@ public class SlideMasterSample
     }
 }
 ```
+
+# Known Issue
+**Font Size** is a tricky part of PowerPoint document structure since obtaining this value leads to parsing different presentation layers —  Slide, Slide Layout or Slide Master. Hence, If you note that font size was incorrect defined, please report [an issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) with attaching your pptx-file example.
+
 # Feedback and Give a Star! :star:
 The project is in development, and I’m pretty sure there are still lots of things to add in this library. Try it out and let me know your thoughts.
 
-Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issues) if you find bugs. Your valuable feedback is much appreciated to better improve this project. If you find this useful, please give it a star to show your support for this project. 
+Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issues) if you find bugs. Your valuable feedback is much appreciated to improve this project better. If you find this useful, please give it a star to show your support. 
 
 # Contributing
 1. Fork it (https://github.com/ShapeCrawler/ShapeCrawler/fork)
