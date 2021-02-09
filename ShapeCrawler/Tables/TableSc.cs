@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -18,23 +21,27 @@ namespace ShapeCrawler.Tables
         #region Fields
 
         private readonly P.GraphicFrame _pGraphicFrame;
+        private readonly ResettableLazy<RowCollection> _rowCollection;
 
         #endregion Fields
+        
+        internal ShapeSc Shape { get; set; }
+        internal A.Table ATable => _pGraphicFrame.GetATable();
 
         #region Public Properties
 
-        public RowCollection Rows => GetRowsCollection();
+        public IReadOnlyList<Column> Columns => GetColumnList();
+        public RowCollection Rows => _rowCollection.Value;
+        public CellSc this[int rowIndex, int columnIndex] => Rows[rowIndex].Cells[columnIndex];
 
         #endregion Public Properties
-
-        internal ShapeSc Shape { get; set; }
-        public IReadOnlyList<Column> Columns => GetColumnList();
 
         #region Constructors
 
         internal TableSc(P.GraphicFrame pGraphicFrame)
         {
-            _pGraphicFrame = pGraphicFrame ?? throw new ArgumentNullException(nameof(pGraphicFrame));
+            _pGraphicFrame = pGraphicFrame;
+            _rowCollection = new ResettableLazy<RowCollection>(() => RowCollection.Create(this, _pGraphicFrame));
         }
 
         #endregion Constructors
@@ -43,60 +50,81 @@ namespace ShapeCrawler.Tables
 
         private IReadOnlyList<Column> GetColumnList()
         {
-            IEnumerable<A.GridColumn> aGridColumns = _pGraphicFrame.GetATable().TableGrid.Elements<A.GridColumn>();
+            IEnumerable<A.GridColumn> aGridColumns = ATable.TableGrid.Elements<A.GridColumn>();
             var columnList = new List<Column>(aGridColumns.Count());
             columnList.AddRange(aGridColumns.Select(aGridColumn => new Column(aGridColumn)));
             
             return columnList;
         }
 
-        private RowCollection GetRowsCollection()
-        {
-            IEnumerable<A.TableRow> tableRows = _pGraphicFrame.GetATable().Elements<A.TableRow>();
-
-            return new RowCollection(tableRows);
-        }
-
         #endregion Private Methods
 
-        public CellSc this[int rowIndex, int columnIndex] => Rows[0].Cells[0];
-
-        public void MergeCells(CellSc cell1, CellSc cell2)
+#if DEBUG
+        public void MergeCells(CellSc cell1, CellSc cell2) // TODO: Optimize method
         {
-            if (cell1 == cell2)
+            if (CannotBeMerged(cell1, cell2))
             {
                 return;
             }
 
-            int minRowIndex = cell1.FirstRowIndex;
-            if (cell2.FirstRowIndex < cell1.FirstRowIndex)
-            {
-                minRowIndex = cell2.FirstRowIndex;
-            }
-            int maxRowIndex = cell1.FirstRowIndex;
-            if (cell2.FirstRowIndex > cell1.FirstRowIndex)
-            {
-                maxRowIndex = cell2.FirstRowIndex;
-            }
+            int minRowIndex = cell1.RowIndex < cell2.RowIndex ? cell1.RowIndex : cell2.RowIndex;
+            int maxRowIndex = cell1.RowIndex > cell2.RowIndex ? cell1.RowIndex : cell2.RowIndex;
+            int minColIndex = cell1.ColumnIndex < cell2.ColumnIndex ? cell1.ColumnIndex : cell2.ColumnIndex;
+            int maxColIndex = cell1.ColumnIndex > cell2.ColumnIndex ? cell1.ColumnIndex : cell2.ColumnIndex;
 
-            int minColIndex = cell1.FirstColIndex;
-            if (cell2.FirstColIndex < cell1.FirstColIndex)
+            // Horizontal merging
+            List<A.TableRow> aTableRows = cell1.Table.ATable.Elements<A.TableRow>().ToList();
+            if (minColIndex != maxColIndex)
             {
-                minColIndex = cell2.FirstColIndex;
-            }
-            int maxColIndex = cell1.FirstColIndex;
-            if (cell2.FirstColIndex > cell1.FirstColIndex)
-            {
-                maxColIndex = cell2.FirstColIndex;
-            }
-
-            for (int rowIdx = minRowIndex; rowIdx <= maxRowIndex; rowIdx++)
-            {
-                for (int colIdx = minColIndex; colIdx < maxColIndex; colIdx++)
+                int horizontalMergingCount = maxColIndex - minColIndex + 1;
+                for (int rowIdx = minRowIndex; rowIdx <= maxRowIndex; rowIdx++)
                 {
-                    this[rowIdx, colIdx].SetMerged();
+                    A.TableCell[] rowATblCells = aTableRows[rowIdx].Elements<A.TableCell>().ToArray();
+                    A.TableCell firstMergingCell = rowATblCells[minColIndex];
+                    firstMergingCell.GridSpan = new Int32Value(horizontalMergingCount);
+                    Span<A.TableCell> nextMergingCells = new Span<A.TableCell>(rowATblCells, minColIndex + 1, horizontalMergingCount - 1);
+                    foreach (A.TableCell aTblCell in nextMergingCells)
+                    {
+                        aTblCell.HorizontalMerge = new BooleanValue(true);
+                    }
                 }
             }
+
+            // Vertical merging
+            if (minRowIndex != maxRowIndex)
+            {
+                int verticalMergingCount = maxRowIndex - minRowIndex + 1;
+                foreach (A.TableCell aTblCell in aTableRows[minRowIndex].Elements<A.TableCell>().Skip(minColIndex).Take(maxColIndex + 1))
+                {
+                    aTblCell.RowSpan = new Int32Value(verticalMergingCount);
+                }
+                foreach (A.TableRow aTblRow in aTableRows.Skip(minRowIndex + 1).Take(maxRowIndex))
+                {
+                    foreach (A.TableCell aTblCell in aTblRow.Elements<A.TableCell>().Take(maxColIndex + 1))
+                    {
+                        aTblCell.VerticalMerge = new BooleanValue(true);
+                    }
+                }
+            }
+
+            _rowCollection.Reset();
         }
+
+        private static bool CannotBeMerged(CellSc cell1, CellSc cell2)
+        {
+            if (cell1 == cell2)
+            {
+                // The cells are already merged
+                return true;
+            }
+
+            if (cell1.Table != cell2.Table)
+            {
+                throw new ShapeCrawlerException("Specified cells are from different tables.");
+            }
+
+            return false;
+        }
+#endif
     }
 }

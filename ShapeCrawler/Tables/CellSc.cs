@@ -16,16 +16,19 @@ namespace ShapeCrawler.Tables
 
         private TextBoxSc _textBox;
         private readonly A.TableCell _aTableCell;
-        private readonly ShapeContext _spContext;
 
         #endregion Fields
+
+        internal int RowIndex { get; }
+        internal int ColumnIndex { get; }
+        internal TableSc Table { get; }
 
         #region Public Properties
 
         /// <summary>
         /// Gets text box.
         /// </summary>
-        public TextBoxSc TextBoxBox
+        public TextBoxSc TextBox
         {
             get
             {
@@ -39,16 +42,17 @@ namespace ShapeCrawler.Tables
         }
 
         public bool IsMergedCell => DefineWhetherCellIsMerged();
-        public int FirstRowIndex { get; set; }
-        public int FirstColIndex { get; set; }
 
         #endregion Public Properties
 
         #region Constructors
 
-        internal CellSc(A.TableCell aTableCell)
+        internal CellSc(TableSc table, A.TableCell aTableCell, int rowIdx, int columnIdx)
         {
-            _aTableCell = aTableCell ?? throw new ArgumentNullException(nameof(aTableCell));
+            Table = table;
+            _aTableCell = aTableCell;
+            RowIndex = rowIdx;
+            ColumnIndex = columnIdx;
         }
 
         #endregion Constructors
@@ -59,7 +63,7 @@ namespace ShapeCrawler.Tables
             var aTexts = aTxtBody.Descendants<A.Text>();
             if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element contain text
             {
-                _textBox = new TextBoxSc(_spContext, aTxtBody);
+                _textBox = new TextBoxSc(Table.Shape, aTxtBody);
             }
         }
 
@@ -71,9 +75,12 @@ namespace ShapeCrawler.Tables
                    _aTableCell.VerticalMerge != null;
         }
 
+
+#if DEBUG
         public void SetMerged()
         {
             throw new NotImplementedException();
         }
+#endif
     }
 }

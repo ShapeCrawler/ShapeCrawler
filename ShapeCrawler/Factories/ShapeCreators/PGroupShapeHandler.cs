@@ -19,7 +19,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
         private readonly LocationParser _transformFactory;
         private readonly IShapeBuilder _shapeBuilder;
 
-        public PGroupShapeHandler(ShapeContext.Builder shapeContextBuilder,
+        internal PGroupShapeHandler(ShapeContext.Builder shapeContextBuilder,
                                     LocationParser transformFactory,
                                     GeometryFactory geometryFactory,
                                     SlidePart sdkSldPart) :
@@ -28,7 +28,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
  
         }
 
-        public PGroupShapeHandler(ShapeContext.Builder shapeContextBuilder,
+        internal PGroupShapeHandler(ShapeContext.Builder shapeContextBuilder,
                                     LocationParser transformFactory,
                                     GeometryFactory geometryFactory,
                                     SlidePart sdkSldPart,

@@ -53,22 +53,43 @@ namespace ShapeCrawler.Tests.Unit
             table.Rows.Should().HaveCountLessThan(originRowsCount);
 
             presentation.SaveAs(mStream);
-            presentation.Close();
             table = PresentationSc.Open(mStream, false).Slides[2].Shapes.First(sp => sp.Id == 3).Table;
             table.Rows.Should().HaveCountLessThan(originRowsCount);
         }
 
         [Fact]
-        public void CellIsMergedCell_ReturnsTrueWhenTheCellBelongToMergedCellsGroup()
+        public void CellIsMergedCell_ReturnsTrue_WhenCellMergedWithOtherHorizontally()
         {
             // Arrange
-            CellSc tableCellSc = _fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4).Table.Rows[1].Cells[0];
+            RowSc row = _fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4).Table.Rows[1];
+            CellSc cell1x0 = row.Cells[0];
+            CellSc cell1x1 = row.Cells[1];
 
-            // Act
-            bool isMergedCell = tableCellSc.IsMergedCell;
+            // Act-Assert
+            cell1x0.IsMergedCell.Should().BeTrue();
+            cell1x1.IsMergedCell.Should().BeTrue();
+            cell1x0.Should().BeSameAs(cell1x1);
+        }
 
-            // Assert
-            isMergedCell.Should().BeTrue();
+        [Theory]
+        [MemberData(nameof(TestCasesCellIsMergedCell))]
+        public void CellIsMergedCell_ReturnsTrue_WhenCellMergedWithOtherVertically(CellSc cell1, CellSc cell2)
+        {
+            cell1.IsMergedCell.Should().BeTrue();
+            cell2.IsMergedCell.Should().BeTrue();
+            cell1.Should().Be(cell2);
+        }
+
+        public static IEnumerable<object[]> TestCasesCellIsMergedCell()
+        {
+            TableSc table = PresentationSc.Open(Resources._001, false).Slides[1].Shapes.First(sp => sp.Id == 3).Table;
+            yield return new object[] {table[0, 0], table[1, 0]};
+
+            table = PresentationSc.Open(Resources._001, false).Slides[1].Shapes.First(sp => sp.Id == 5).Table;
+            yield return new object[] { table[1, 1], table[2, 1] };
+
+            table = PresentationSc.Open(Resources._001, false).Slides[3].Shapes.First(sp => sp.Id == 4).Table;
+            yield return new object[] { table[0, 1], table[1, 1] };
         }
 
         [Fact]
@@ -98,8 +119,9 @@ namespace ShapeCrawler.Tests.Unit
             columnWidth.Should().Be(3505199);
         }
 
-        // TODO: Add test case - merging two already merged cells; merging merged cell with un-merged cell
-        [Theory(Skip = "In Progress")]
+#if DEBUG
+
+        [Theory]
         [InlineData(0, 0, 0, 1)]
         [InlineData(0, 1, 0, 0)]
         public void MergeCells_MergesSpecifiedCellsRange(int rowIdx1, int colIdx1, int rowIdx2, int colIdx2)
@@ -117,46 +139,274 @@ namespace ShapeCrawler.Tests.Unit
             table[rowIdx2, colIdx2].IsMergedCell.Should().BeTrue();
 
             presentation.SaveAs(mStream);
-            presentation.Close();
             presentation = PresentationSc.Open(mStream, false);
             table = presentation.Slides[1].Shapes.First(sp => sp.Id == 4).Table;
             table[rowIdx1, colIdx1].IsMergedCell.Should().BeTrue();
             table[rowIdx2, colIdx2].IsMergedCell.Should().BeTrue();
         }
 
-        [Fact(Skip = "The feature is in progress")]
-        public void MergeCells_MergesTwoCellsOf2X1Table()
+        [Fact(DisplayName = "MergeCells #1")]
+        public void MergeCells_Merges0x0And0x1CellsOf2x2Table()
+        {
+            // Arrange
+            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            TableSc table = presentation.Slides[2].Shapes.First(sp => sp.Id == 5).Table;
+            var mStream = new MemoryStream();
+
+            // Act
+            table.MergeCells(table[0, 0], table[0, 1]);
+
+            // Assert
+            table[0, 0].IsMergedCell.Should().BeTrue();
+            table[0, 1].IsMergedCell.Should().BeTrue();
+
+            presentation.SaveAs(mStream);
+            presentation = PresentationSc.Open(mStream, false);
+            table = presentation.Slides[2].Shapes.First(sp => sp.Id == 5).Table;
+            table[0, 0].IsMergedCell.Should().BeTrue();
+            table[0, 1].IsMergedCell.Should().BeTrue();
+        }
+
+        [Fact(DisplayName = "MergeCells #2")]
+        public void MergeCells_Merges0x1And0x2CellsOf3x2Table()
+        {
+            // Arrange
+            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            TableSc table = presentation.Slides[2].Shapes.First(sp => sp.Id == 3).Table;
+            var mStream = new MemoryStream();
+
+            // Act
+            table.MergeCells(table[0, 1], table[0, 2]);
+
+            // Assert
+            table[0, 1].IsMergedCell.Should().BeTrue();
+            table[0, 2].IsMergedCell.Should().BeTrue();
+
+            presentation.SaveAs(mStream);
+            presentation = PresentationSc.Open(mStream, false);
+            table = presentation.Slides[2].Shapes.First(sp => sp.Id == 3).Table;
+            table[0, 1].IsMergedCell.Should().BeTrue();
+            table[0, 2].IsMergedCell.Should().BeTrue();
+        }
+
+        [Fact(DisplayName = "MergeCells #3")]
+        public void MergeCells_Merges0x0And0x1And0x2CellsOf3x2Table()
+        {
+            // Arrange
+            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            TableSc table = presentation.Slides[2].Shapes.First(sp => sp.Id == 3).Table;
+            var mStream = new MemoryStream();
+
+            // Act
+            table.MergeCells(table[0, 0], table[0, 2]);
+
+            // Assert
+            table[0, 0].IsMergedCell.Should().BeTrue();
+            table[0, 1].IsMergedCell.Should().BeTrue();
+            table[0, 2].IsMergedCell.Should().BeTrue();
+
+            presentation.SaveAs(mStream);
+            presentation = PresentationSc.Open(mStream, false);
+            table = presentation.Slides[2].Shapes.First(sp => sp.Id == 3).Table;
+            table[0, 0].IsMergedCell.Should().BeTrue();
+            table[0, 1].IsMergedCell.Should().BeTrue();
+            table[0, 2].IsMergedCell.Should().BeTrue();
+        }
+
+        [Fact(DisplayName = "MergeCells #4")]
+        public void MergeCells_Merges0x0And0x1MergedCellsWith0x2CellIn3x2Table()
+        {
+            // Arrange
+            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            TableSc table = presentation.Slides[2].Shapes.First(sp => sp.Id == 7).Table;
+            var mStream = new MemoryStream();
+
+            // Act
+            table.MergeCells(table[0, 0], table[0, 2]);
+
+            // Assert
+            table[0, 0].IsMergedCell.Should().BeTrue();
+            table[0, 1].IsMergedCell.Should().BeTrue();
+            table[0, 2].IsMergedCell.Should().BeTrue();
+
+            presentation.SaveAs(mStream);
+            presentation = PresentationSc.Open(mStream, false);
+            table = presentation.Slides[2].Shapes.First(sp => sp.Id == 7).Table;
+            table[0, 0].IsMergedCell.Should().BeTrue();
+            table[0, 1].IsMergedCell.Should().BeTrue();
+            table[0, 2].IsMergedCell.Should().BeTrue();
+        }
+
+        [Fact(DisplayName = "MergeCells #5")]
+        public void MergeCells_Merges0x0And1x0CellsOf2x2Table()
+        {
+            // Arrange
+            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            TableSc table = presentation.Slides[2].Shapes.First(sp => sp.Id == 5).Table;
+            var mStream = new MemoryStream();
+
+            // Act
+            table.MergeCells(table[0, 0], table[1, 0]);
+
+            // Assert
+            table[0, 0].IsMergedCell.Should().BeTrue();
+            table[1, 0].IsMergedCell.Should().BeTrue();
+            table[0, 1].IsMergedCell.Should().BeFalse();
+
+            presentation.SaveAs(mStream);
+            presentation = PresentationSc.Open(mStream, false);
+            table = presentation.Slides[2].Shapes.First(sp => sp.Id == 5).Table;
+            table[0, 0].IsMergedCell.Should().BeTrue();
+            table[1, 0].IsMergedCell.Should().BeTrue();
+            table[0, 1].IsMergedCell.Should().BeFalse();
+        }
+
+        [Fact(DisplayName = "MergeCells #6")]
+        public void MergeCells_Merges0x1And1x1CellsOf3x2Table()
+        {
+            // Arrange
+            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            TableSc table = presentation.Slides[2].Shapes.First(sp => sp.Id == 3).Table;
+            var mStream = new MemoryStream();
+
+            // Act
+            table.MergeCells(table[0, 1], table[1, 1]);
+
+            // Assert
+            table[0, 1].IsMergedCell.Should().BeTrue();
+            table[1, 1].IsMergedCell.Should().BeTrue();
+            table[0, 0].IsMergedCell.Should().BeFalse();
+
+            presentation.SaveAs(mStream);
+            presentation = PresentationSc.Open(mStream, false);
+            table = presentation.Slides[2].Shapes.First(sp => sp.Id == 3).Table;
+            table[0, 1].IsMergedCell.Should().BeTrue();
+            table[1, 1].IsMergedCell.Should().BeTrue();
+            table[0, 0].IsMergedCell.Should().BeFalse();
+        }
+
+        [Fact(DisplayName = "MergeCells #7")]
+        public void MergeCells_Merges0x0To1x1RangeOf3x3Table()
+        {
+            // Arrange
+            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            TableSc table = presentation.Slides[2].Shapes.First(sp => sp.Id == 10).Table;
+            var mStream = new MemoryStream();
+
+            // Act
+            table.MergeCells(table[0, 0], table[1, 1]);
+
+            // Assert
+            table[0, 0].IsMergedCell.Should().BeTrue();
+            table[0, 1].IsMergedCell.Should().BeTrue();
+            table[1, 0].IsMergedCell.Should().BeTrue();
+            table[1, 1].IsMergedCell.Should().BeTrue();
+            table[0, 2].IsMergedCell.Should().BeFalse();
+
+            presentation.SaveAs(mStream);
+            presentation = PresentationSc.Open(mStream, false);
+            table = presentation.Slides[2].Shapes.First(sp => sp.Id == 10).Table;
+            table[0, 0].IsMergedCell.Should().BeTrue();
+            table[0, 1].IsMergedCell.Should().BeTrue();
+            table[1, 0].IsMergedCell.Should().BeTrue();
+            table[1, 1].IsMergedCell.Should().BeTrue();
+            table[0, 2].IsMergedCell.Should().BeFalse();
+        }
+
+        [Fact]
+        public void MergeCells_MergesMergedCellWithNonMergedCell()
+        {
+            // Arrange
+            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            TableSc table = presentation.Slides[1].Shapes.First(sp => sp.Id == 5).Table;
+            var mStream = new MemoryStream();
+
+            // Act
+            table.MergeCells(table[1, 1], table[1, 2]);
+
+            // Assert
+            table[1, 1].IsMergedCell.Should().BeTrue();
+            table[1, 2].IsMergedCell.Should().BeTrue();
+            table[1, 1].Should().Be(table[1, 2]);
+            table[3, 2].IsMergedCell.Should().BeFalse();
+
+            presentation.SaveAs(mStream);
+            presentation = PresentationSc.Open(mStream, false);
+            table = presentation.Slides[1].Shapes.First(sp => sp.Id == 5).Table;
+            table[1, 1].IsMergedCell.Should().BeTrue();
+            table[1, 2].IsMergedCell.Should().BeTrue();
+            table[1, 1].Should().Be(table[1, 2]);
+            table[3, 2].IsMergedCell.Should().BeFalse();
+        }
+
+        [Fact]
+        public void MergeCells_MergesTwoMergedCells()
+        {
+            // Arrange
+            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            TableSc table = presentation.Slides[3].Shapes.First(sp => sp.Id == 2).Table;
+            var mStream = new MemoryStream();
+
+            // Act
+            table.MergeCells(table[0, 0], table[0, 1]);
+
+            // Assert
+            table[0, 0].IsMergedCell.Should().BeTrue();
+            table[0, 1].IsMergedCell.Should().BeTrue();
+            table[1, 0].IsMergedCell.Should().BeTrue();
+            table[1, 1].IsMergedCell.Should().BeTrue();
+            table[0, 0].Should().Be(table[1, 1]);
+            table[0, 2].IsMergedCell.Should().BeFalse();
+
+            presentation.SaveAs(mStream);
+            presentation = PresentationSc.Open(mStream, false);
+            table = presentation.Slides[3].Shapes.First(sp => sp.Id == 2).Table;
+            table[0, 0].IsMergedCell.Should().BeTrue();
+            table[0, 1].IsMergedCell.Should().BeTrue();
+            table[1, 0].IsMergedCell.Should().BeTrue();
+            table[1, 1].IsMergedCell.Should().BeTrue();
+            table[0, 0].Should().Be(table[1, 1]);
+            table[0, 2].IsMergedCell.Should().BeFalse();
+        }
+
+        [Fact(DisplayName = "MergeCells #8", Skip = "In Progress")]
+        public void MergeCells_Converts2X1TableInto1X1_WhenAllColumnsAreMerged()
         {
             // Arrange
             PresentationSc presentation = PresentationSc.Open(Resources._002, true);
             TableSc table = presentation.Slides[3].Shapes.First(sp => sp.Id == 4).Table;
             var mStream = new MemoryStream();
+            long mergedColumnWidth = table.Columns[0].Width + table.Columns[1].Width;
 
             // Act
-            table.MergeCells(table[0, 1], table[1, 0]);
+            table.MergeCells(table[0, 0], table[0, 1]);
 
             // Assert
-            table[0, 1].IsMergedCell.Should().BeTrue();
-            table[1, 0].IsMergedCell.Should().BeTrue();
+            table.Columns.Should().HaveCount(1);
+            table.Columns[0].Width.Should().Be(mergedColumnWidth);
 
             presentation.SaveAs(mStream);
             presentation = PresentationSc.Open(mStream, false);
             table = presentation.Slides[3].Shapes.First(sp => sp.Id == 4).Table;
-            table[0, 1].IsMergedCell.Should().BeTrue();
-            table[1, 0].IsMergedCell.Should().BeTrue();
+            table.Columns.Should().HaveCount(1);
+            table.Columns[0].Width.Should().Be(mergedColumnWidth);
         }
+#endif
 
         [Fact]
         public void Indexer_ReturnsCellByRowAndColumnIndexes()
         {
             // Arrange
-            TableSc table = _fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4).Table;
+            TableSc tableCase1 = _fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4).Table;
+            TableSc tableCase2 = _fixture.Pre001.Slides[3].Shapes.First(sp => sp.Id == 4).Table;
 
             // Act
-            CellSc tableCell = table[0, 0];
+            CellSc cellCase1 = tableCase1[0, 0];
+            CellSc cellCase2 = tableCase2[1, 1];
 
             // Assert
-            tableCell.Should().NotBeNull();
+            cellCase1.Should().NotBeNull();
+            cellCase2.Should().NotBeNull();
         }
     }
 }

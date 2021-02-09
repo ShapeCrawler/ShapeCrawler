@@ -11,7 +11,7 @@ namespace ShapeCrawler.Settings
 {
     public class ShapeContext
     {
-        private readonly Lazy<Dictionary<int, int>> _masterOtherFonts;
+        private readonly Lazy<Dictionary<int, int>> _masterOtherStyle;
 
         #region Internal Properties
 
@@ -31,7 +31,7 @@ namespace ShapeCrawler.Settings
 
         private ShapeContext()
         {
-            _masterOtherFonts = new Lazy<Dictionary<int, int>>(InitMasterOtherFonts);
+            _masterOtherStyle = new Lazy<Dictionary<int, int>>(InitMasterOtherStyle);
         }
 
         #endregion Constructors
@@ -41,23 +41,17 @@ namespace ShapeCrawler.Settings
         /// <summary>
         /// Tries to find matched font height from master/layout slides.
         /// </summary>
-        /// <param name="prLvl"></param>
-        /// <param name="fh"></param>
-        /// <returns></returns>
-        public bool TryGetFontSize(int prLvl, out int fh)
+        /// <param name="paragraphLvl"></param>
+        /// <param name="fontSize"></param>
+        internal bool TryGetFromMasterOtherStyle(int paragraphLvl, out int fontSize)
         {
-            if (prLvl < 1 || prLvl > FormatConstants.MaxPrLevel)
+            if (_masterOtherStyle.Value.ContainsKey(paragraphLvl))
             {
-                throw new ArgumentOutOfRangeException(nameof(prLvl));
-            }
-
-            fh = -1;
-            if (_masterOtherFonts.Value.ContainsKey(prLvl))
-            {
-                fh = _masterOtherFonts.Value[prLvl];
+                fontSize = _masterOtherStyle.Value[paragraphLvl];
                 return true;
             }
 
+            fontSize = -1;
             return false;
         }
 
@@ -65,7 +59,7 @@ namespace ShapeCrawler.Settings
 
         #region Private Methods
 
-        private Dictionary<int, int> InitMasterOtherFonts()
+        private Dictionary<int, int> InitMasterOtherStyle()
         {
             var result = FontHeightParser.FromCompositeElement(SlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.OtherStyle);
 
@@ -76,28 +70,26 @@ namespace ShapeCrawler.Settings
 
         #region Builder
 
-        public class Builder
+        internal class Builder
         {
             private readonly SlidePart _sdkSldPart;
-            private readonly PresentationData _preSettings;
+            private readonly PresentationData _presentationData;
             private readonly PlaceholderFontService _fontService;
             private readonly IPlaceholderService _placeholderService;
 
             #region Constructors
 
-            public Builder(PresentationData preSettings, PlaceholderFontService fontService, SlidePart sdkSldPart):
-                this(preSettings, fontService, sdkSldPart, new PlaceholderService(sdkSldPart.SlideLayoutPart))
+            public Builder(PlaceholderFontService fontService, SlidePart sdkSldPart):
+                this(fontService, sdkSldPart, new PlaceholderService(sdkSldPart.SlideLayoutPart))
             {
 
             }
 
             internal Builder(
-                PresentationData preSettings, 
                 PlaceholderFontService fontService, 
                 SlidePart sdkSldPart, 
                 IPlaceholderService placeholderService)
             {
-                _preSettings = preSettings;
                 _fontService = fontService;
                 _sdkSldPart = sdkSldPart;
                 _placeholderService = placeholderService;
@@ -113,7 +105,7 @@ namespace ShapeCrawler.Settings
 
                 return new ShapeContext
                 {
-                    PresentationData = _preSettings,
+                    PresentationData = _presentationData,
                     PlaceholderFontService = _fontService,
                     PlaceholderService = _placeholderService,
                     SlidePart = _sdkSldPart,

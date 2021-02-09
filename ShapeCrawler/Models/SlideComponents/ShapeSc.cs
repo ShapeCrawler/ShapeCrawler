@@ -404,7 +404,7 @@ namespace ShapeCrawler
                 {
                     _chart = chart
                 };
-
+                chart.Shape = newShape;
                 return newShape;
             }
 

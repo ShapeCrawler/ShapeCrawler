@@ -18,13 +18,13 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #region Constructors
 
-        public ChartGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory) :
+        internal ChartGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory) :
             this(shapeContextBuilder, transformFactory, new ShapeSc.Builder())
         {
 
         }
 
-        public ChartGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder,
+        internal ChartGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder,
             LocationParser transformFactory,
             IShapeBuilder shapeBuilder)
         {
@@ -47,7 +47,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
                     var spContext = _shapeContextBuilder.Build(shapeTreeSource);
                     var innerTransform = _transformFactory.FromComposite(pGraphicFrame);
                     var chart = new ChartSc(pGraphicFrame, spContext);
-                    var shape = _shapeBuilder.WithChart(innerTransform, spContext, chart, shapeTreeSource);
+                    ShapeSc shape = _shapeBuilder.WithChart(innerTransform, spContext, chart, shapeTreeSource);
 
                     return shape;
                 }

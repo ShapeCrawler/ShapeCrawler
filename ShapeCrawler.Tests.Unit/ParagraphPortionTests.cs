@@ -52,7 +52,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Text_GetterReturnsParagraphPortionText()
         {
             // Arrange
-            Portion portion = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextBoxBox
+            Portion portion = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextBox
                 .Paragraphs[0].Portions[0];
 
             // Act

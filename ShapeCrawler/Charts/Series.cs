@@ -52,12 +52,9 @@ namespace ShapeCrawler.Charts
 
         #region Constructors
 
-        public Series(ChartType type, OpenXmlElement sdkSeries, ChartPart sdkChartPart, ChartRefParser chartRefParser)
+        internal Series(ChartType type, OpenXmlElement sdkSeries, ChartPart sdkChartPart, ChartRefParser chartRefParser)
         {
             _sdkSeries = sdkSeries ?? throw new ArgumentNullException(nameof(sdkSeries));
-            Check.NotNull(sdkSeries, nameof(sdkSeries));
-            Check.NotNull(sdkChartPart, nameof(sdkChartPart));
-
             _sdkChartPart = sdkChartPart ?? throw new ArgumentNullException(nameof(sdkChartPart));
             _chartRefParser = chartRefParser;
             _pointValues = new Lazy<IReadOnlyList<double>>(GetPointValues);

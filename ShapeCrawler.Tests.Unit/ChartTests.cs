@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Charts;
@@ -115,9 +116,9 @@ namespace ShapeCrawler.Tests.Unit
         public void Chart_Test()
         {
             // Arrange
-            var pre = _fixture.Pre021;
-            var shapes1 = pre.Slides[0].Shapes;
-            var shapes2 = pre.Slides[1].Shapes; // TODO: Research why this statement takes mach time
+            PresentationSc presentation = _fixture.Pre021;
+            var shapes1 = presentation.Slides[0].Shapes;
+            var shapes2 = presentation.Slides[1].Shapes; 
             var sp108 = shapes1.First(x => x.Id == 108);
             var chart3 = shapes1.First(x => x.Id == 3).Chart;
             var sld2Chart4 = shapes2.First(x => x.Id == 4).Chart;
@@ -128,7 +129,8 @@ namespace ShapeCrawler.Tests.Unit
 
             var barChartPointValue = chart3.SeriesCollection[1].PointValues[0];
             var scatterChartPointValue = chart3.SeriesCollection[2].PointValues[0];
-            var lineChartPointValue = lineChartSeries.PointValues[0];
+            IReadOnlyList<double> pointValues = lineChartSeries.PointValues;
+            var lineChartPointValue = pointValues[0];
 
             // Assert
             Assert.Equal(56, barChartPointValue);

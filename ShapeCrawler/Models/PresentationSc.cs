@@ -19,15 +19,17 @@ namespace ShapeCrawler
     public sealed class PresentationSc : IDisposable
     {
         #region Fields
+
         private PresentationDocument _presentationDocument;
         private Lazy<EditableCollection<SlideSc>> _slides;
         private Lazy<SlideSizeSc> _slideSize;
         private bool _closed;
-        private PresentationData _presentationData;
 
         #endregion Fields
 
-        #region Properties
+        internal PresentationData PresentationData;
+
+        #region Public Properties
 
         /// <summary>
         /// Gets the presentation slides.
@@ -46,7 +48,7 @@ namespace ShapeCrawler
 
         public SlideMasterCollection SlideMasters => SlideMasterCollection.Create(_presentationDocument.PresentationPart.SlideMasterParts);
 
-        #endregion Properties
+        #endregion Properties Public
 
         #region Constructors
 
@@ -128,9 +130,9 @@ namespace ShapeCrawler
             _presentationDocument.Close();
 
             // Close SpreadsheetDocument instances
-            if (_presentationData != null)
+            if (PresentationData != null)
             {
-                foreach (SpreadsheetDocument spreadsheetDoc in _presentationData.XlsxDocuments.Values)
+                foreach (SpreadsheetDocument spreadsheetDoc in PresentationData.SpreadsheetCache.Values)
                 {
                     spreadsheetDoc.Close();
                 }
@@ -165,9 +167,9 @@ namespace ShapeCrawler
 
         private EditableCollection<SlideSc> GetSlides()
         {
-            var sdkPrePart = _presentationDocument.PresentationPart;
-            _presentationData = new PresentationData(sdkPrePart.Presentation, _slideSize);
-            var slideCollection = SlideCollection.Create(sdkPrePart, _presentationData, this);
+            PresentationPart presentationPart = _presentationDocument.PresentationPart;
+            PresentationData = new PresentationData(presentationPart.Presentation, _slideSize);
+            var slideCollection = SlideCollection.Create(presentationPart, this);
 
             return slideCollection;
         }

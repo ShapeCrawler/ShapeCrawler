@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading;
-using ShapeCrawler.Collections;
 
 namespace ShapeCrawler.Shared
 {

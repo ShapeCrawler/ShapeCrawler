@@ -157,7 +157,7 @@ namespace ShapeCrawler.Tests.Unit
             yield return new object[] { slide, 6 };
             
             slide = PresentationSc.Open(Properties.Resources._002, false).Slides[0];
-            yield return new object[] { slide, 3 };
+            yield return new object[] { slide, 4 };
             
             slide = PresentationSc.Open(Properties.Resources._003, false).Slides[0];
             yield return new object[] { slide, 5 };

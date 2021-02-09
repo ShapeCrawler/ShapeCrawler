@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Tables
@@ -10,52 +10,70 @@ namespace ShapeCrawler.Tables
     /// </summary>
     public class RowSc
     {
-        #region Fields
+        private readonly Lazy<List<CellSc>> _cells;
 
-        private List<CellSc> _cells;
-        private readonly A.TableRow _aTableRow;
+        internal readonly A.TableRow ATableRow;
+        internal readonly int Index;
 
-        #endregion
-
-        #region Properties
+        #region Public Properties
 
         /// <summary>
         /// Returns row's cells.
         /// </summary>
-        /// TODO: use custom collection
-        public IReadOnlyList<CellSc> Cells {
-            get
-            {
-                if (_cells == null)
-                {
-                    ParseCells();
-                }
+        public IReadOnlyList<CellSc> Cells =>_cells.Value;
 
-                return _cells;
-            }
-        }
+        public TableSc Table { get; }
 
-        #endregion
+        #endregion Public Properties
 
         #region Constructors
 
-        public RowSc(A.TableRow xmlRow)
+        internal RowSc(TableSc table, A.TableRow aTableRow, int index)
         {
-            _aTableRow = xmlRow ?? throw new ArgumentNullException(nameof(xmlRow));
+            Table = table;
+            ATableRow = aTableRow;
+            Index = index;
+
+#if NETSTANDARD2_0
+            _cells = new Lazy<List<CellSc>>(() => GetCells());
+#else
+            _cells = new Lazy<List<CellSc>>(GetCells);
+#endif
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Private Methods
 
-        private void ParseCells()
+        private List<CellSc> GetCells()
         {
-            var xmlCells = _aTableRow.Elements<A.TableCell>();
-            _cells = new List<CellSc>(xmlCells.Count());
-            foreach (var c in xmlCells)
+            var cellList = new List<CellSc>();
+            IEnumerable<A.TableCell> aTableCells = ATableRow.Elements<A.TableCell>();
+            CellSc addedCell = null;
+
+            int columnIdx = 0;
+            foreach (A.TableCell aTableCell in aTableCells)
             {
-                _cells.Add(new CellSc(c));
+                if (aTableCell.HorizontalMerge != null)
+                {
+                    cellList.Add(addedCell);
+                }
+                else if (aTableCell.VerticalMerge != null)
+                {
+                    int upRowIdx = Index - 1;
+                    CellSc upNeighborCell = Table[upRowIdx, columnIdx];
+                    cellList.Add(upNeighborCell);
+                    addedCell = upNeighborCell;
+                }
+                else
+                {
+                    addedCell = new CellSc(Table, aTableCell, Index, columnIdx);
+                    cellList.Add(addedCell);
+                }
+                columnIdx++;
             }
+
+            return cellList;
         }
 
         #endregion

@@ -27,7 +27,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #region Constructors
 
-        public PictureHandler(ShapeContext.Builder shapeContextBuilder,
+        internal PictureHandler(ShapeContext.Builder shapeContextBuilder,
                               LocationParser transformFactory,
                               GeometryFactory geometryFactory,
                               SlidePart sdkSldPart) :
@@ -36,7 +36,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         }
 
-        public PictureHandler(ShapeContext.Builder shapeContextBuilder,
+        internal PictureHandler(ShapeContext.Builder shapeContextBuilder,
                               LocationParser transformFactory,
                               GeometryFactory geometryFactory,
                               SlidePart sdkSldPart,

@@ -18,13 +18,13 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #region Constructors
 
-        public OleGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory) :
+        internal OleGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory) :
             this(shapeContextBuilder, transformFactory, new ShapeSc.Builder())
         {
             
         }
 
-        public OleGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder,
+        internal OleGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder,
             LocationParser transformFactory,
             IShapeBuilder shapeBuilder)
         {

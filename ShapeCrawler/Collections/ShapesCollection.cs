@@ -4,7 +4,6 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using ShapeCrawler.Charts;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Factories.Placeholders;
 using ShapeCrawler.Factories.ShapeCreators;
@@ -32,13 +31,13 @@ namespace ShapeCrawler.Collections
 
         #endregion Constructors
 
-        internal static ShapesCollection CreateForUserSlide(SlidePart slidePart, PresentationData preData, SlideSc slide)
+        internal static ShapesCollection CreateForUserSlide(SlidePart slidePart, SlideSc slide)
         {
             var sldPhFontService = new PlaceholderFontService(slidePart);
             var phService = new PlaceholderService(slidePart.SlideLayoutPart);
             var transformFactory = new LocationParser(phService);
             var geometryFactory = new GeometryFactory(phService);
-            var shapeContextBuilder = new ShapeContext.Builder(preData, sldPhFontService, slidePart);
+            var shapeContextBuilder = new ShapeContext.Builder(sldPhFontService, slidePart);
 
             var chartGrFrameHandler = new ChartGraphicFrameHandler(shapeContextBuilder, transformFactory);
             var tableGrFrameHandler = new TableGraphicFrameHandler(shapeContextBuilder, transformFactory);
