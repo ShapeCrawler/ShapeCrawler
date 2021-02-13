@@ -16,7 +16,7 @@ The library allows to process presentation files without any COM+ or COM interop
     <PackageIcon>logo.jpg</PackageIcon>
     <PackageIconUrl />
     <Copyright>MIT</Copyright>
-    <LangVersion>8</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <ApplicationIcon>logo.ico</ApplicationIcon>
     <PackageReleaseNotes>https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>

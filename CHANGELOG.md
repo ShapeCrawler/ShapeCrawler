@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Version 0.15.0 - Unreleased
+### Added
+- Added setter for `Column.Width` to change width of a table column 
+- Added `Row.Height` property to access height of table row
+
 ## Version 0.14.0 - 2021-01-31
 ### Added
 - Added two-dimensional indexer for `TableSc[int row_index][int column_Index]` to get table cell by row and column indexes (#29)

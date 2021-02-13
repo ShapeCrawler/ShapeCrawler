@@ -24,6 +24,12 @@ namespace ShapeCrawler.Tables
 
         public TableSc Table { get; }
 
+        public long Height
+        {
+            get => ATableRow.Height.Value;
+            set => ATableRow.Height.Value = value;
+        }
+
         #endregion Public Properties
 
         #region Constructors

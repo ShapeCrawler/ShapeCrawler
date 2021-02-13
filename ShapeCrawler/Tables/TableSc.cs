@@ -30,7 +30,7 @@ namespace ShapeCrawler.Tables
 
         #region Public Properties
 
-        public IReadOnlyList<Column> Columns => GetColumnList();
+        public IReadOnlyList<Column> Columns => GetColumnList(); //TODO: make lazy
         public RowCollection Rows => _rowCollection.Value;
         public CellSc this[int rowIndex, int columnIndex] => Rows[rowIndex].Cells[columnIndex];
 
@@ -73,13 +73,13 @@ namespace ShapeCrawler.Tables
             int maxColIndex = cell1.ColumnIndex > cell2.ColumnIndex ? cell1.ColumnIndex : cell2.ColumnIndex;
 
             // Horizontal merging
-            List<A.TableRow> aTableRows = cell1.Table.ATable.Elements<A.TableRow>().ToList();
+            List<A.TableRow> aTableRowList = cell1.Table.ATable.Elements<A.TableRow>().ToList();
             if (minColIndex != maxColIndex)
             {
                 int horizontalMergingCount = maxColIndex - minColIndex + 1;
                 for (int rowIdx = minRowIndex; rowIdx <= maxRowIndex; rowIdx++)
                 {
-                    A.TableCell[] rowATblCells = aTableRows[rowIdx].Elements<A.TableCell>().ToArray();
+                    A.TableCell[] rowATblCells = aTableRowList[rowIdx].Elements<A.TableCell>().ToArray();
                     A.TableCell firstMergingCell = rowATblCells[minColIndex];
                     firstMergingCell.GridSpan = new Int32Value(horizontalMergingCount);
                     Span<A.TableCell> nextMergingCells = new Span<A.TableCell>(rowATblCells, minColIndex + 1, horizontalMergingCount - 1);
@@ -94,17 +94,48 @@ namespace ShapeCrawler.Tables
             if (minRowIndex != maxRowIndex)
             {
                 int verticalMergingCount = maxRowIndex - minRowIndex + 1;
-                foreach (A.TableCell aTblCell in aTableRows[minRowIndex].Elements<A.TableCell>().Skip(minColIndex).Take(maxColIndex + 1))
+                foreach (A.TableCell aTblCell in aTableRowList[minRowIndex].Elements<A.TableCell>().Skip(minColIndex).Take(maxColIndex + 1))
                 {
                     aTblCell.RowSpan = new Int32Value(verticalMergingCount);
                 }
-                foreach (A.TableRow aTblRow in aTableRows.Skip(minRowIndex + 1).Take(maxRowIndex))
+                foreach (A.TableRow aTblRow in aTableRowList.Skip(minRowIndex + 1).Take(maxRowIndex))
                 {
                     foreach (A.TableCell aTblCell in aTblRow.Elements<A.TableCell>().Take(maxColIndex + 1))
                     {
                         aTblCell.VerticalMerge = new BooleanValue(true);
                     }
                 }
+            }
+
+            // Delete columns
+            for (int colIdx = 0; colIdx < Columns.Count; )
+            {
+                int? gridSpan = Rows[0].Cells[colIdx].ATableCell.GridSpan?.Value;
+                if (gridSpan > 1 && Rows.All(r => r.Cells[colIdx].ATableCell.GridSpan?.Value == gridSpan))
+                {
+                    int deleteColumnCount = gridSpan.Value - 1;
+                    
+                    // Delete a:gridCol elements
+                    foreach (Column column in Columns.Skip(colIdx).Take(deleteColumnCount))
+                    {
+                        column.AGridColumn.Remove();
+                        Columns[colIdx].Width += column.AGridColumn.Width; // append width of deleting column to merged column
+                    }
+
+                    // Delete a:tc elements
+                    foreach (A.TableRow aTblRow in aTableRowList)
+                    {
+                        foreach (A.TableCell aTblCell in aTblRow.Elements<A.TableCell>().Skip(colIdx).Take(deleteColumnCount))
+                        {
+                            aTblCell.Remove();
+                        }
+                    }
+
+                    colIdx += gridSpan.Value;
+                    continue;
+                }
+
+                colIdx++;
             }
 
             _rowCollection.Reset();

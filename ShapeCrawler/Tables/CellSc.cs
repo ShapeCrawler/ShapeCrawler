@@ -15,13 +15,17 @@ namespace ShapeCrawler.Tables
         #region Fields
 
         private TextBoxSc _textBox;
-        private readonly A.TableCell _aTableCell;
 
         #endregion Fields
+
+        #region Internal Properties
 
         internal int RowIndex { get; }
         internal int ColumnIndex { get; }
         internal TableSc Table { get; }
+        internal A.TableCell ATableCell { get; init; }
+
+        #endregion Internal Properties
 
         #region Public Properties
 
@@ -50,7 +54,7 @@ namespace ShapeCrawler.Tables
         internal CellSc(TableSc table, A.TableCell aTableCell, int rowIdx, int columnIdx)
         {
             Table = table;
-            _aTableCell = aTableCell;
+            ATableCell = aTableCell;
             RowIndex = rowIdx;
             ColumnIndex = columnIdx;
         }
@@ -59,7 +63,7 @@ namespace ShapeCrawler.Tables
 
         private void TryParseTxtBody()
         {
-            var aTxtBody = _aTableCell.TextBody;
+            var aTxtBody = ATableCell.TextBody;
             var aTexts = aTxtBody.Descendants<A.Text>();
             if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element contain text
             {
@@ -69,18 +73,10 @@ namespace ShapeCrawler.Tables
 
         private bool DefineWhetherCellIsMerged()
         {
-            return _aTableCell.GridSpan != null ||
-                   _aTableCell.RowSpan != null ||
-                   _aTableCell.HorizontalMerge != null ||
-                   _aTableCell.VerticalMerge != null;
+            return ATableCell.GridSpan != null ||
+                   ATableCell.RowSpan != null ||
+                   ATableCell.HorizontalMerge != null ||
+                   ATableCell.VerticalMerge != null;
         }
-
-
-#if DEBUG
-        public void SetMerged()
-        {
-            throw new NotImplementedException();
-        }
-#endif
     }
 }
