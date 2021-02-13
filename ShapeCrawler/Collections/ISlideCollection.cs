@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ShapeCrawler
+namespace ShapeCrawler.Collections
 {
     public interface ISlideCollection : IReadOnlyList<SlideSc>
     {

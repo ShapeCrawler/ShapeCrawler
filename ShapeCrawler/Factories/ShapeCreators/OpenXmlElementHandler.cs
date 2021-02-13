@@ -6,7 +6,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
     /// <summary>
     /// Represents a base class for shape creators.
     /// </summary>
-    public abstract class OpenXmlElementHandler
+    internal abstract class OpenXmlElementHandler
     {
         /// <summary>
         /// Gets or sets the next handler in the chain.
@@ -18,6 +18,6 @@ namespace ShapeCrawler.Factories.ShapeCreators
         /// </summary>
         /// <param name="shapeTreeSource"></param>
         /// <returns></returns>
-        public abstract ShapeSc Create(OpenXmlCompositeElement shapeTreeSource);
+        public abstract ShapeSc Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide);
     }
 }

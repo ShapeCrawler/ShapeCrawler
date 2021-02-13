@@ -60,7 +60,7 @@ namespace ShapeCrawler.Tests.Unit
 
         [Theory]
         [MemberData(nameof(TestCasesSlidesRemove))]
-        public void SlidesRemove_RemovesSlideFromPresentation(byte[] pptxBytes, int expectedSlidesCount)
+        public void SlidesRemove_RemovesFirstSlideFromPresentation_WhenFirstSlideObjectWasPassed(byte[] pptxBytes, int expectedSlidesCount)
         {
             // Arrange
             PresentationSc presentation = PresentationSc.Open(pptxBytes, true);

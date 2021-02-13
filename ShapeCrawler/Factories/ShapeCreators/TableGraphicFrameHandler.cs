@@ -11,8 +11,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Factories.ShapeCreators
 {
-    [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-    public class TableGraphicFrameHandler : OpenXmlElementHandler
+    internal class TableGraphicFrameHandler : OpenXmlElementHandler
     {
         private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly LocationParser _transformFactory;
@@ -38,7 +37,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #endregion Constructors
 
-        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource)
+        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
         {
             Check.NotNull(shapeTreeSource, nameof(shapeTreeSource));
 
@@ -58,7 +57,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
             if (Successor != null)
             {
-                return Successor.Create(shapeTreeSource);
+                return Successor.Create(shapeTreeSource, slide);
             }
 
             return null;

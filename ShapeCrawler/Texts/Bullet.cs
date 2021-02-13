@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -82,10 +83,10 @@ namespace ShapeCrawler.Texts
                 return null;
             }
 
-            var srgbClrElements = _xmlParagraphProperties.Descendants<A.RgbColorModelHex>();
-            if (srgbClrElements.Any())
+            IEnumerable<A.RgbColorModelHex> aRgbClrModelHexCollection = _xmlParagraphProperties.Descendants<A.RgbColorModelHex>();
+            if (aRgbClrModelHexCollection.Any())
             {
-                return srgbClrElements.Single().Val;
+                return aRgbClrModelHexCollection.Single().Val;
             }
 
             return null;

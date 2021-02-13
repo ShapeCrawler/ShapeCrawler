@@ -23,11 +23,11 @@ namespace ShapeCrawler
 
         private readonly Lazy<ImageSc> _backgroundImage;
         private readonly Lazy<ShapesCollection> _shapes;
-        private readonly SlidePart _slidePart;
         private readonly SlideNumber _sldNumEntity;
         private Lazy<CustomXmlPart> _customXmlPart;
 
         internal PresentationSc Presentation { get; }
+        internal SlidePart SlidePart { get; }
 
         #endregion Fields
 
@@ -54,7 +54,7 @@ namespace ShapeCrawler
             set => SetCustomData(value);
         }
 
-        public bool Hidden => _slidePart.Slide.Show != null && _slidePart.Slide.Show.Value == false;
+        public bool Hidden => SlidePart.Slide.Show != null && SlidePart.Slide.Show.Value == false;
 
 #if DEBUG
         public static SlideLayoutSc Layout => GetSlideLayout();
@@ -86,7 +86,7 @@ namespace ShapeCrawler
             SlideSchemeService schemeService, 
             PresentationSc presentationEx)
         {
-            _slidePart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
+            SlidePart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
             _sldNumEntity = sldNum ?? throw new ArgumentNullException(nameof(sldNum));
             _shapes = new Lazy<ShapesCollection>(GetShapesCollection);
             _backgroundImage = new Lazy<ImageSc>(TryGetBackground);
@@ -150,14 +150,14 @@ namespace ShapeCrawler
 
         public void Hide()
         {
-            if (_slidePart.Slide.Show == null)
+            if (SlidePart.Slide.Show == null)
             {
                 var showAttribute = new OpenXmlAttribute("show", "", "0");
-                _slidePart.Slide.SetAttribute(showAttribute);
+                SlidePart.Slide.SetAttribute(showAttribute);
             }
             else
             {
-                _slidePart.Slide.Show = false;
+                SlidePart.Slide.Show = false;
             }
         }
 
@@ -167,13 +167,13 @@ namespace ShapeCrawler
 
         private ShapesCollection GetShapesCollection()
         {
-            return ShapesCollection.CreateForUserSlide(_slidePart, this);
+            return ShapesCollection.CreateForUserSlide(SlidePart, this);
         }
 
         private ImageSc TryGetBackground()
         {
             var backgroundImageFactory = new ImageExFactory();
-            return backgroundImageFactory.TryFromSdkSlide(_slidePart);
+            return backgroundImageFactory.TryFromSdkSlide(SlidePart);
         }
 
         private string GetCustomData()
@@ -198,7 +198,7 @@ namespace ShapeCrawler
             Stream customXmlPartStream;
             if (_customXmlPart.Value == null)
             {
-                var newSlideCustomXmlPart = _slidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
+                var newSlideCustomXmlPart = SlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
                 customXmlPartStream = newSlideCustomXmlPart.GetStream();
 #if NETSTANDARD2_0
                 _customXmlPart = new Lazy<CustomXmlPart>(()=>newSlideCustomXmlPart);
@@ -216,7 +216,7 @@ namespace ShapeCrawler
 
         private CustomXmlPart GetSldCustomXmlPart()
         {
-            foreach (var customXmlPart in _slidePart.CustomXmlParts)
+            foreach (var customXmlPart in SlidePart.CustomXmlParts)
             {
                 using var customXmlPartStream = new StreamReader(customXmlPart.GetStream());
                 string customXmlPartText = customXmlPartStream.ReadToEnd();

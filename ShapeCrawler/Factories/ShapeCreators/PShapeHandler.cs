@@ -46,7 +46,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #region Public Methods
 
-        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource)
+        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
         {
             Check.NotNull(shapeTreeSource, nameof(shapeTreeSource));
 
@@ -62,7 +62,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
             
             if (Successor != null)
             {
-                return Successor.Create(shapeTreeSource);
+                return Successor.Create(shapeTreeSource, slide);
             }
            
             return null;

@@ -9,7 +9,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Factories.ShapeCreators
 {
-    public class OleGraphicFrameHandler : OpenXmlElementHandler
+    internal class OleGraphicFrameHandler : OpenXmlElementHandler
     {
         private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly LocationParser _transformFactory;
@@ -35,7 +35,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #endregion Constructors
 
-        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource)
+        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
         {
             Check.NotNull(shapeTreeSource, nameof(shapeTreeSource));
 
@@ -55,7 +55,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
             if (Successor != null)
             {
-                return Successor.Create(shapeTreeSource);
+                return Successor.Create(shapeTreeSource, slide);
             }
 
             return null;

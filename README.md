@@ -117,6 +117,9 @@ public class TableSample
         Column tableColumn = table.Columns[0];
         long columnWidth = tableColumn.Width;
 
+        // Get row's height
+        long rowHeight = table.Rows[0].Height;
+
         // Get cell with row index 0 and column index 1
         CellSc cell = table[0, 1];
 
@@ -205,10 +208,9 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 Don't hesitate to contact me if you want to get involved!
 
 # Changelog
-## Version 0.14.0 - 2021-01-31
+## Version 0.15.0 - 2021-02-13
 ### Added
-- Added two-dimensional indexer for `TableSc[int row_index][int column_Index]` to get table cell by row and column indexes (#29)
-- Added support for .NET 5 (#98)
-- Added `Column.Width` to get width of table column (#101)
+- Added setter for `Column.Width` to change width of a table column (#105) 
+- Added `Row.Height` property to access height of table row (#105)
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).

@@ -37,11 +37,6 @@ namespace ShapeCrawler.Exceptions
             ErrorCode = (int)exceptionCode;
         }
 
-        public ShapeCrawlerException(int errorCode)
-        {
-            ErrorCode = errorCode;
-        }
-
         public ShapeCrawlerException(string message, Exception innerException) : base(message, innerException)
         {
         }

@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using DocumentFormat.OpenXml.Presentation;
 using FluentAssertions;
 using ShapeCrawler.Models;
 using ShapeCrawler.SlideMaster;

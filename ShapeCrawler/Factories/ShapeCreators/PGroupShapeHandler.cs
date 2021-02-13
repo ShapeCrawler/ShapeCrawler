@@ -11,10 +11,10 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Factories.ShapeCreators
 {
-    public class PGroupShapeHandler : OpenXmlElementHandler
+    internal class PGroupShapeHandler : OpenXmlElementHandler
     {
         private readonly ShapeContext.Builder _shapeContextBuilder;
-        private readonly SlidePart _sdkSldPart;
+        private readonly SlidePart _slidePart;
         private readonly GeometryFactory _geometryFactory;
         private readonly LocationParser _transformFactory;
         private readonly IShapeBuilder _shapeBuilder;
@@ -37,11 +37,11 @@ namespace ShapeCrawler.Factories.ShapeCreators
             _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(sdkSldPart));
             _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
             _geometryFactory = geometryFactory ?? throw new ArgumentNullException(nameof(geometryFactory));
-            _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
+            _slidePart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
             _shapeBuilder = shapeBuilder ?? throw new ArgumentNullException(nameof(shapeBuilder));
         }
 
-        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource)
+        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
         {
             Check.NotNull(shapeTreeSource, nameof(shapeTreeSource));
 
@@ -49,8 +49,8 @@ namespace ShapeCrawler.Factories.ShapeCreators
             {
                 var pShapeHandler = new PShapeHandler(_shapeContextBuilder, _transformFactory, _geometryFactory);
                 var oleGrFrameHandler = new OleGraphicFrameHandler(_shapeContextBuilder, _transformFactory, _shapeBuilder);
-                var pictureHandler = new PictureHandler(_shapeContextBuilder, _transformFactory, _geometryFactory, _sdkSldPart);
-                var pGroupShapeHandler = new PGroupShapeHandler(_shapeContextBuilder, _transformFactory, _geometryFactory, _sdkSldPart);
+                var pictureHandler = new PictureHandler(_shapeContextBuilder, _transformFactory, _geometryFactory, _slidePart);
+                var pGroupShapeHandler = new PGroupShapeHandler(_shapeContextBuilder, _transformFactory, _geometryFactory, _slidePart);
                 var chartGrFrameHandler = new ChartGraphicFrameHandler(_shapeContextBuilder, _transformFactory, _shapeBuilder);
                 var tableGrFrameHandler = new TableGraphicFrameHandler(_shapeContextBuilder, _transformFactory, _shapeBuilder);
 
@@ -64,7 +64,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 var groupedShapes = new List<ShapeSc>(pGroupShape.Count());
                 foreach (var item in pGroupShape.OfType<OpenXmlCompositeElement>())
                 {
-                    var groupedShape = pShapeHandler.Create(item);
+                    var groupedShape = pShapeHandler.Create(item, slide);
                     if (groupedShape != null)
                     {
                         groupedShapes.Add(groupedShape);
@@ -78,12 +78,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 return shape;
             }
 
-            if (Successor != null)
-            {
-                return Successor.Create(shapeTreeSource);
-            }
-
-            return null;
+            return Successor?.Create(shapeTreeSource, slide);
         }
     }
 }

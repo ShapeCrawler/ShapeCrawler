@@ -56,7 +56,7 @@ namespace ShapeCrawler.Collections
             var shapes = new List<ShapeSc>(shapeTree.Count());
             foreach (OpenXmlCompositeElement compositeElement in shapeTree.OfType<OpenXmlCompositeElement>())
             {
-                ShapeSc shape = pShapeHandler.Create(compositeElement);
+                ShapeSc shape = pShapeHandler.Create(compositeElement, slide);
                 if (shape != null)
                 {
                     shape.Slide = slide;

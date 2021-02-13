@@ -5,7 +5,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Settings;
 using ShapeCrawler.Spreadsheet;
 using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -20,19 +19,18 @@ namespace ShapeCrawler.Charts
 
         // Contains chart elements, e.g. <c:pieChart>. If the chart type is not a combination,
         // then collection contains only single item.
-        private List<OpenXmlElement> _sdkCharts;
+        private IEnumerable<OpenXmlElement> _sdkCharts;
 
-        private readonly ShapeContext _shapeContext;
         private readonly Lazy<ChartType> _chartType;
         private readonly Lazy<OpenXmlElement> _firstSeries;
-        private C.Chart _cChart;
-        private Lazy<SeriesCollection> _seriesCollection;
-        private Lazy<CategoryCollection> _categories;
+        private readonly Lazy<SeriesCollection> _seriesCollection;
+        private readonly Lazy<CategoryCollection> _categories;
         private readonly Lazy<LibraryCollection<double>> _xValues;
         private string _chartTitle;
-        private ChartPart _sdkChartPart;
+        private ChartPart _chartPart;
         private readonly ChartRefParser _chartRefParser;
         private readonly GraphicFrame _pGraphicFrame;
+        private readonly SlideSc _slide;
 
         #endregion Fields
 
@@ -50,10 +48,7 @@ namespace ShapeCrawler.Charts
         {
             get
             {
-                if (_chartTitle == null)
-                {
-                    _chartTitle = TryGetTitle();
-                }
+                _chartTitle ??= TryGetTitle();
 
                 return _chartTitle ?? throw new NotSupportedException(ExceptionMessages.NotTitle);
             }
@@ -66,10 +61,7 @@ namespace ShapeCrawler.Charts
         {
             get
             {
-                if (_chartTitle == null)
-                {
-                    _chartTitle = TryGetTitle();
-                }
+                _chartTitle ??= TryGetTitle();
 
                 return _chartTitle != null;
             }
@@ -130,14 +122,16 @@ namespace ShapeCrawler.Charts
         /// <summary>
         /// Initializes a new instance of the <see cref="ChartSc"/> class.
         /// </summary>
-        public ChartSc(P.GraphicFrame pGraphicFrame, ShapeContext shapeContext)
+        internal ChartSc(P.GraphicFrame pGraphicFrame,  SlideSc slide)
         {
             _pGraphicFrame = pGraphicFrame;
-            _shapeContext = shapeContext;
             _chartRefParser = new ChartRefParser(this);
             _chartType = new Lazy<ChartType>(GetChartType);
             _firstSeries = new Lazy<OpenXmlElement>(GetFirstSeries);
             _xValues = new Lazy<LibraryCollection<double>>(TryGetXValues);
+            _slide = slide;
+            _seriesCollection = new Lazy<SeriesCollection>(GetSeriesCollection);
+            _categories = new Lazy<CategoryCollection>(TryGetCategoryCollection);
             Init(); //TODO: convert to lazy loading
         }
 
@@ -147,18 +141,14 @@ namespace ShapeCrawler.Charts
 
         private void Init()
         {
-            StringValue chartPartRef = _pGraphicFrame.GetFirstChild<A.Graphic>().
-                GetFirstChild<A.GraphicData>().GetFirstChild<C.ChartReference>().Id;
-            _sdkChartPart = (ChartPart)_shapeContext.SlidePart.GetPartById(chartPartRef);
-            _cChart = _sdkChartPart.ChartSpace.GetFirstChild<C.Chart>();
-            _sdkCharts = _cChart.PlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)).ToList();  // example: <c:barChart>, <c:lineChart>
-            _seriesCollection = new Lazy<SeriesCollection>(GetSeriesCollection);
-            _categories = new Lazy<CategoryCollection>(TryGetCategories);
+            StringValue chartPartRef = _pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>().GetFirstChild<C.ChartReference>().Id;
+            _chartPart = _slide.SlidePart.GetPartById(chartPartRef) as ChartPart;
+            _sdkCharts = _chartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));  // example: <c:barChart>, <c:lineChart>
         }
 
         private ChartType GetChartType()
         {
-            if (_sdkCharts.Count > 1)
+            if (_sdkCharts.Count() > 1)
             {
                 return ChartType.Combination;
             }
@@ -170,12 +160,12 @@ namespace ShapeCrawler.Charts
 
         private SeriesCollection GetSeriesCollection()
         {
-            return new SeriesCollection(_sdkCharts, _sdkChartPart, _chartRefParser);
+            return new SeriesCollection(_sdkCharts, _chartPart, _chartRefParser);
         }
 
         private string TryGetTitle()
         {
-            var title = _cChart.Title;
+            var title = _chartPart.ChartSpace.GetFirstChild<C.Chart>().Title;
             if (title == null) // chart has not title
             {
                 return null;
@@ -223,7 +213,7 @@ namespace ShapeCrawler.Charts
             return false;
         }
 
-        private CategoryCollection TryGetCategories()
+        private CategoryCollection TryGetCategoryCollection()
         {
             if (Type == ChartType.BubbleChart || Type == ChartType.ScatterChart)
             {
@@ -240,7 +230,7 @@ namespace ShapeCrawler.Charts
             {
                 return null;
             }
-            var points = _chartRefParser.GetNumbers(sdkXValues.NumberReference, _sdkChartPart);
+            var points = _chartRefParser.GetNumbers(sdkXValues.NumberReference, _chartPart);
 
             return new LibraryCollection<double>(points);
         }
