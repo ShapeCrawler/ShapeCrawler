@@ -4,10 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Version 0.15.0 - Unreleased
+## Version 0.15.0 - 2021-02-13
 ### Added
-- Added setter for `Column.Width` to change width of a table column 
-- Added `Row.Height` property to access height of table row
+- Added setter for `Column.Width` to change width of a table column (#105) 
+- Added `Row.Height` property to access height of table row (#105)
 
 ## Version 0.14.0 - 2021-01-31
 ### Added

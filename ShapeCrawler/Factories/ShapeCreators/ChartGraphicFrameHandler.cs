@@ -3,13 +3,12 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Factories.Builders;
 using ShapeCrawler.Settings;
-using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Factories.ShapeCreators
 {
-    public class ChartGraphicFrameHandler : OpenXmlElementHandler
+    internal class ChartGraphicFrameHandler : OpenXmlElementHandler
     {
         private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly LocationParser _transformFactory;
@@ -35,10 +34,8 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #endregion Constructors
 
-        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource)
+        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
         {
-            Check.NotNull(shapeTreeSource, nameof(shapeTreeSource));
-
             if (shapeTreeSource is P.GraphicFrame pGraphicFrame)
             {
                 A.GraphicData aGraphicData = shapeTreeSource.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
@@ -46,19 +43,14 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 {
                     var spContext = _shapeContextBuilder.Build(shapeTreeSource);
                     var innerTransform = _transformFactory.FromComposite(pGraphicFrame);
-                    var chart = new ChartSc(pGraphicFrame, spContext);
+                    var chart = new ChartSc(pGraphicFrame, slide);
                     ShapeSc shape = _shapeBuilder.WithChart(innerTransform, spContext, chart, shapeTreeSource);
 
                     return shape;
                 }
             }
 
-            if (Successor != null)
-            {
-                return Successor.Create(shapeTreeSource);
-            }
-
-            return null;
+            return Successor?.Create(shapeTreeSource, slide);
         }
     }
 }

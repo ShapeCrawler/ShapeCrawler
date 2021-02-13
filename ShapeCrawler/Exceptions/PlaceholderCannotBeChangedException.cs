@@ -1,6 +1,4 @@
-﻿using ShapeCrawler.Models.SlideComponents;
-
-namespace ShapeCrawler.Exceptions
+﻿namespace ShapeCrawler.Exceptions
 {
     public class PlaceholderCannotBeChangedException : ShapeCrawlerException
     {

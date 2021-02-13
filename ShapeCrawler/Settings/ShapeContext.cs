@@ -73,7 +73,6 @@ namespace ShapeCrawler.Settings
         internal class Builder
         {
             private readonly SlidePart _sdkSldPart;
-            private readonly PresentationData _presentationData;
             private readonly PlaceholderFontService _fontService;
             private readonly IPlaceholderService _placeholderService;
 
@@ -105,7 +104,6 @@ namespace ShapeCrawler.Settings
 
                 return new ShapeContext
                 {
-                    PresentationData = _presentationData,
                     PlaceholderFontService = _fontService,
                     PlaceholderService = _placeholderService,
                     SlidePart = _sdkSldPart,

@@ -10,8 +10,6 @@ namespace ShapeCrawler.Models.SlideComponents
     /// </summary>
     public class PictureSc
     {
-        private readonly P.Picture _pPicture;
-
         #region Properties
 
         /// <summary>
