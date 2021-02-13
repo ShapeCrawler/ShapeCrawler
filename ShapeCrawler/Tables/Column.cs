@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Drawing;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Tables
 {
@@ -7,13 +8,17 @@ namespace ShapeCrawler.Tables
     /// </summary>
     public class Column
     {
-        private readonly GridColumn _aGridColumn;
+        internal GridColumn AGridColumn { get; init; }
 
-        public Column(GridColumn aGridColumn)
+        internal Column(A.GridColumn aGridColumn)
         {
-            _aGridColumn = aGridColumn;
+            AGridColumn = aGridColumn;
         }
 
-        public long Width => _aGridColumn.Width.Value;
+        public long Width
+        {
+            get => AGridColumn.Width.Value;
+            set => AGridColumn.Width.Value = value;
+        }
     }
 }
