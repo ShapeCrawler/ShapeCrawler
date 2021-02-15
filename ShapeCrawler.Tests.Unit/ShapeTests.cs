@@ -2,9 +2,11 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using DocumentFormat.OpenXml.Drawing;
 using FluentAssertions;
+using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Models;
 using ShapeCrawler.Models.Styles;
+using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
 using Xunit;
@@ -26,20 +28,20 @@ namespace ShapeCrawler.Tests.Unit
             _fixture = fixture;
         }
 
-        [Theory]
+        [Theory(Skip = "In Progress")]
         [MemberData(nameof(TestCasesPlaceholderType))]
-        public void PlaceholderType_GetterReturnsPlaceholderTypeOfTheShape(ShapeSc shape, PlaceholderType expectedType)
+        public void PlaceholderType_GetterReturnsPlaceholderTypeOfTheShape(IShape shape, PlaceholderType expectedType)
         {
             // Act
-            PlaceholderType? actualType = shape.PlaceholderType;
+            //PlaceholderType? actualType = shape.Placeholder.PlaceholderType;
 
             // Assert
-            actualType.Should().Be(expectedType);
+            //actualType.Should().Be(expectedType);
         }
 
         public static IEnumerable<object[]> TestCasesPlaceholderType()
         {
-            ShapeSc shape = PresentationSc.Open(Resources._021, false).Slides[3].Shapes.First(sp => sp.Id == 2);
+            IShape shape = PresentationSc.Open(Resources._021, false).Slides[3].Shapes.First(sp => sp.Id == 2);
             yield return new object[] { shape, PlaceholderType.Footer };
 
             shape = PresentationSc.Open(Resources._008, false).Slides[0].Shapes.First(sp => sp.Id == 3);
@@ -53,28 +55,38 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Fill_ReturnsNull_WhenShapeIsNotFilled()
+        public void AutoShapeFill_ReturnsNull_WhenAutoShapeIsNotFilled()
         {
             // Arrange
-            ShapeSc shapeEx = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 6);
+            IAutoShape autoShape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 6) as IAutoShape;
 
             // Act
-            ShapeFill shapeFill = shapeEx.Fill;
+            ShapeFill shapeFill = autoShape.Fill;
 
             // Assert
             shapeFill.Should().BeNull();
         }
 
         [Fact]
-        public void FillType_GetterReturnsFillTypeByWhichTheShapeIsFilled()
+        public void AutoShapeFill_IsNotNull_WhenAutoShapeIsFilled()
         {
             // Arrange
-            ShapeSc shapeExCase1 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
-            ShapeSc shapeExCase2 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
+            IAutoShape autoShape = _fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 108) as IAutoShape;
+
+            // Act-Assert
+            autoShape.Fill.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void AutoShapeFillType_GetterReturnsFillTypeByWhichTheAutoShapeIsFilled()
+        {
+            // Arrange
+            IAutoShape autoShape1 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4) as IAutoShape;
+            IAutoShape autoShape2 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2) as IAutoShape;
 
             // Act
-            FillType shapeFillTypeCase1 = shapeExCase1.Fill.Type;
-            FillType shapeFillTypeCase2 = shapeExCase2.Fill.Type;
+            FillType shapeFillTypeCase1 = autoShape1.Fill.Type;
+            FillType shapeFillTypeCase2 = autoShape2.Fill.Type;
 
             // Assert
             shapeFillTypeCase1.Should().Be(FillType.Picture);
@@ -82,13 +94,13 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void FillSolidColorName_ReturnsSolidColorNameByWhichTheShapeIsFilled()
+        public void AutoShapeFillSolidColorName_GetterReturnsSolidColorNameByWhichTheAutoShapeIsFilled()
         {
             // Arrange
-            ShapeSc shapeEx = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
+            IAutoShape autoShape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2) as IAutoShape;
 
             // Act
-            var shapeSolidColorName = shapeEx.Fill.SolidColor.Name;
+            var shapeSolidColorName = autoShape.Fill.SolidColor.Name;
 
             // Assert
             shapeSolidColorName.Should().BeEquivalentTo("ff0000");
@@ -96,32 +108,32 @@ namespace ShapeCrawler.Tests.Unit
 
 
         [Fact]
-        public async void FillPictureGetImageBytes_ReturnsImageByWhichTheShapeIsFilled()
+        public async void AutoShapeFillPictureGetImageBytes_ReturnsImageByWhichTheAutoShapeIsFilled()
         {
             // Arrange
-            ShapeSc shapeEx = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
+            IAutoShape shape = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4) as IAutoShape;
 
             // Act
-            var shapeFilledImage = await shapeEx.Fill.Picture.GetImageBytes().ConfigureAwait(false);
+            byte[] imageBytes = await shape.Fill.Picture.GetImageBytes().ConfigureAwait(false);
 
             // Assert
-            shapeFilledImage.Length.Should().BePositive();
+            imageBytes.Length.Should().BePositive();
         }
 
         [Fact]
-        public async void FillPictureSetImage_MethodSetsImageForPictureFilledShape()
+        public async void AutoShapeFillPictureSetImage_ChangeFilledPictureImage()
         {
             // Arrange
-            var presentation = PresentationSc.Open(Resources._009, true);
-            ShapeSc shapeEx = presentation.Slides[2].Shapes.First(sp => sp.Id.Equals(4));
+            PresentationSc presentation = PresentationSc.Open(Resources._009, true);
+            IAutoShape autoShape = presentation.Slides[2].Shapes.First(sp => sp.Id == 4) as IAutoShape;
             var newImage = new MemoryStream(Resources.test_image_2);
-            var imageSizeBefore = (await shapeEx.Fill.Picture.GetImageBytes().ConfigureAwait(false)).Length;
+            var imageSizeBefore = (await autoShape.Fill.Picture.GetImageBytes().ConfigureAwait(false)).Length;
 
             // Act
-            shapeEx.Fill.Picture.SetImage(newImage);
+            autoShape.Fill.Picture.SetImage(newImage);
 
             // Assert
-            var imageSizeAfter = (await shapeEx.Fill.Picture.GetImageBytes().ConfigureAwait(false)).Length;
+            var imageSizeAfter = (await autoShape.Fill.Picture.GetImageBytes().ConfigureAwait(false)).Length;
             imageSizeAfter.Should().NotBe(imageSizeBefore);
         }
 
@@ -129,14 +141,14 @@ namespace ShapeCrawler.Tests.Unit
         public void XAndY_ReturnXAndYAxesShapeCoordinatesOnTheSlide()
         {
             // Arrange
-            ShapeSc shapeExCase1 = _fixture.Pre021.Slides[3].Shapes.First(sp => sp.Id == 2);
-            ShapeSc shapeExCase2 = _fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3);
-            ShapeSc shapeExCase3 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
-            ShapeSc shapeExCase4 = _fixture.Pre009.Slides[1].Shapes.Single(sp => sp.ContentType.Equals(ShapeContentType.Group)).
-                                GroupedShapes.Single(sp => sp.Id.Equals(5));
-            ShapeSc shapeExCase5 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7);
-            ShapeSc shapeExCase6 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
-            ShapeSc shapeExCase7 = _fixture.Pre025.Slides[2].Shapes.First(sp => sp.Id == 7);
+            IShape shapeExCase1 = _fixture.Pre021.Slides[3].Shapes.First(sp => sp.Id == 2);
+            IShape shapeExCase2 = _fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3);
+            IShape shapeExCase3 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
+            IGroupShape groupShape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7) as IGroupShape;
+            IShape shapeExCase4 = groupShape.Shapes.First(sp => sp.Id.Equals(5));
+            IShape shapeExCase5 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7);
+            IShape shapeExCase6 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
+            IShape shapeExCase7 = _fixture.Pre025.Slides[2].Shapes.First(sp => sp.Id == 7);
 
             // Act
             long xCoordinateCase1 = shapeExCase1.X;
@@ -187,10 +199,10 @@ namespace ShapeCrawler.Tests.Unit
         public void WidthAndHeight_ReturnWidthAndHeightSizesOfTheShape()
         {
             // Arrange
-            ShapeSc shapeCase1 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
-            ShapeSc shapeCase2 = _fixture.Pre009.Slides[1].Shapes.Single(sp => sp.ContentType.Equals(ShapeContentType.Group)).
-                                    GroupedShapes.Single(sp => sp.Id.Equals(5));
-            ShapeSc shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
+            IShape shapeCase1 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
+            IGroupShape groupShape = (IGroupShape) _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
+            IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
+            IShape shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
 
             // Act
             long shapeWidthCase1 = shapeCase1.Width;
@@ -211,28 +223,15 @@ namespace ShapeCrawler.Tests.Unit
 
         [Theory]
         [MemberData(nameof(GeometryTypeTestCases))]
-        public void GeometryType_ReturnsCorrectGeometryTypeValue(ShapeSc shapeEx, GeometryType expectedGeometryType)
+        public void GeometryType_ReturnsShapeGeometryType(IShape shape, GeometryType expectedGeometryType)
         {
             // Assert
-            shapeEx.GeometryType.Should().BeEquivalentTo(expectedGeometryType);
-        }
-
-        [Fact]
-        public void ContentTypes_ReturnOLEObjectTypeEnum_WhenShapeContainsOLEObjectData()
-        {
-            // Arrange
-            ShapeSc shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 8);
-
-            // Act
-            ShapeContentType shapeContentType = shape.ContentType;
-
-            // Assert
-            shapeContentType.Should().Be(ShapeContentType.OLEObject);
+            shape.GeometryType.Should().BeEquivalentTo(expectedGeometryType);
         }
 
         public static IEnumerable<object[]> GeometryTypeTestCases()
         {
-            var pre021 = PresentationSc.Open(Resources._021,false);
+            var pre021 = PresentationSc.Open(Resources._021, false);
             var shapes = pre021.Slides[3].Shapes;
             var shapeCase1 = shapes.First(sp => sp.Id == 2);
             var shapeCase2 = shapes.First(sp => sp.Id == 3);
@@ -242,18 +241,35 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void IsPlaceholderAndIsGrouped_ReturnFalseValues_WhenTheShapeIsNotAPlaceholderAndItIsNotGrouped()
+        public void Shape_IsOLEObject()
         {
             // Arrange
-            var shape = _fixture.Pre006.Slides[0].Shapes.First(x => x.Id == 3);
+            IShape shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 8);
 
-            // Act
-            var isPlaceholderShape = shape.IsPlaceholder;
-            var isGroupedShape = shape.IsGrouped;
+            // Act-Assert
+            shape.Should().BeOfType<OLEObject>();
+        }
 
-            // Assert
-            isPlaceholderShape.Should().BeFalse();
-            isGroupedShape.Should().BeFalse();
+        [Fact]
+        public void Shape_IsNotGroupShape()
+        {
+            // Arrange
+            IShape shape = _fixture.Pre006.Slides[0].Shapes.First(x => x.Id == 3);
+
+            // Act-Assert
+            shape.Should().NotBeOfType<IGroupShape>();
+        }
+
+        [Fact]
+        public void Shape_IsNotAutoShape()
+        {
+            // Arrange
+            IShape shapeCase1 = _fixture.Pre009.Slides[4].Shapes.First(sp => sp.Id == 5);
+            IShape shapeCase2 = _fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 4);
+
+            // Act-Assert
+            shapeCase1.Should().NotBeOfType<IAutoShape>();
+            shapeCase2.Should().NotBeOfType<IAutoShape>();
         }
 
         [Fact]
@@ -292,7 +308,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Name_ReturnsShapeNameString()
         {
             // Arrange
-            ShapeSc shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 8);
+            IShape shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 8);
 
             // Act
             string shapeName = shape.Name;
@@ -301,25 +317,15 @@ namespace ShapeCrawler.Tests.Unit
             shapeName.Should().BeEquivalentTo("Object 2");
         }
 
-        [Fact]
-        public void HasTextBox_ReturnsFalse_WhenTheShapeDoesNotHaveTextBox()
-        {
-            // Arrange
-            ShapeSc shapeCase1 = _fixture.Pre009.Slides[4].Shapes.First(sp => sp.Id == 5);
-            ShapeSc shapeCase2 = _fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 4);
-
-            // Act-Assert
-            shapeCase1.HasTextBox.Should().BeFalse();
-            shapeCase2.HasTextBox.Should().BeFalse();
-        }
+   
 
 
         [Fact]
         public void Hidden_ReturnsValueIndicatingWhetherShapeIsHiddenFromTheSlide()
         {
             // Arrange
-            ShapeSc shapeCase1 = _fixture.Pre004.Slides[0].Shapes[0];
-            ShapeSc shapeCase2 = _fixture.Pre004.Slides[0].Shapes[1];
+            IShape shapeCase1 = _fixture.Pre004.Slides[0].Shapes[0];
+            IShape shapeCase2 = _fixture.Pre004.Slides[0].Shapes[1];
 
             // Act-Assert
             shapeCase1.Hidden.Should().BeTrue();

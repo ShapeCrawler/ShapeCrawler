@@ -1,8 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Presentation;
-using ShapeCrawler.Models;
 using ShapeCrawler.SlideMaster;
 
-namespace ShapeCrawler.Tables
+namespace ShapeCrawler.Models.Experiment
 {
     public class ChartScNew : BaseShape
     {

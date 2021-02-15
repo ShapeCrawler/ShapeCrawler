@@ -1,6 +1,6 @@
 ﻿using ShapeCrawler.Shared;
 
-namespace ShapeCrawler.Models
+namespace ShapeCrawler.Models.SlideComponents
 {
     /// <summary>
     /// Represents a slide number data.

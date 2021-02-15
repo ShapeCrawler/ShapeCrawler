@@ -1,6 +1,5 @@
-﻿using System;
-using System.Linq;
-using ShapeCrawler.Settings;
+﻿using System.Linq;
+using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -14,36 +13,21 @@ namespace ShapeCrawler.Tables
     {
         #region Fields
 
-        private TextBoxSc _textBox;
-
-        #endregion Fields
-
-        #region Internal Properties
+        private readonly ResettableLazy<TextBoxSc> _textBox;
 
         internal int RowIndex { get; }
         internal int ColumnIndex { get; }
         internal TableSc Table { get; }
         internal A.TableCell ATableCell { get; init; }
 
-        #endregion Internal Properties
+        #endregion Fields
 
         #region Public Properties
 
         /// <summary>
         /// Gets text box.
         /// </summary>
-        public TextBoxSc TextBox
-        {
-            get
-            {
-                if (_textBox == null)
-                {
-                    TryParseTxtBody();
-                }
-
-                return _textBox;
-            }
-        }
+        public TextBoxSc TextBox => _textBox.Value;
 
         public bool IsMergedCell => DefineWhetherCellIsMerged();
 
@@ -57,18 +41,23 @@ namespace ShapeCrawler.Tables
             ATableCell = aTableCell;
             RowIndex = rowIdx;
             ColumnIndex = columnIdx;
+            _textBox = new ResettableLazy<TextBoxSc>(() => GetTextBox());
         }
 
         #endregion Constructors
 
-        private void TryParseTxtBody()
+        #region Private Methods
+
+        private TextBoxSc GetTextBox()
         {
             var aTxtBody = ATableCell.TextBody;
             var aTexts = aTxtBody.Descendants<A.Text>();
             if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element contain text
             {
-                _textBox = new TextBoxSc(Table.Shape, aTxtBody);
+                return new TextBoxSc(Table.Context, aTxtBody);
             }
+
+            return null;
         }
 
         private bool DefineWhetherCellIsMerged()
@@ -78,5 +67,7 @@ namespace ShapeCrawler.Tables
                    ATableCell.HorizontalMerge != null ||
                    ATableCell.VerticalMerge != null;
         }
+
+        #endregion Private Methods
     }
 }

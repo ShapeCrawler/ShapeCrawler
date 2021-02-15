@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Factories.Builders;
+using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Tables;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -15,29 +13,19 @@ namespace ShapeCrawler.Factories.ShapeCreators
     {
         private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly LocationParser _transformFactory;
-        private readonly IShapeBuilder _shapeBuilder;
         private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/table";
 
         #region Constructors
 
-        internal TableGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory) :
-            this(shapeContextBuilder, transformFactory, new ShapeSc.Builder())
-        {
-            
-        }
-
-        internal TableGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder,
-                                        LocationParser transformFactory,
-                                        IShapeBuilder shapeBuilder)
+        internal TableGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory)
         {
             _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
             _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
-            _shapeBuilder = shapeBuilder ?? throw new ArgumentNullException(nameof(shapeBuilder));
         }
 
         #endregion Constructors
 
-        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
+        public override IShape Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
         {
             Check.NotNull(shapeTreeSource, nameof(shapeTreeSource));
 
@@ -48,19 +36,13 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 {
                     ShapeContext spContext = _shapeContextBuilder.Build(shapeTreeSource);
                     ILocation innerTransform = _transformFactory.FromComposite(pGraphicFrame);
-                    var table = new TableSc(pGraphicFrame);
-                    ShapeSc shape = _shapeBuilder.WithTable(innerTransform, spContext, table, shapeTreeSource);
+                    var table = new TableSc(pGraphicFrame, innerTransform, spContext);
 
-                    return shape;
+                    return table;
                 }
             }
 
-            if (Successor != null)
-            {
-                return Successor.Create(shapeTreeSource, slide);
-            }
-
-            return null;
+            return Successor?.Create(shapeTreeSource, slide);
         }
     }
 }

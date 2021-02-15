@@ -1,8 +1,6 @@
-﻿using ShapeCrawler.Models;
-
-namespace ShapeCrawler.SlideMaster
+﻿namespace ShapeCrawler.Models.Experiment
 {
-    public class AutoShapeNew : IShape
+    public class AutoShapeNew
     {
         private readonly DocumentFormat.OpenXml.Presentation.Shape _pShape;
 

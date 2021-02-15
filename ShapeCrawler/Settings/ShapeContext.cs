@@ -19,8 +19,6 @@ namespace ShapeCrawler.Settings
 
         internal OpenXmlCompositeElement CompositeElement { get; private set; }
 
-        internal PresentationData PresentationData { get; private set; }
-
         internal PlaceholderFontService PlaceholderFontService { get; private set; }
 
         internal IPlaceholderService PlaceholderService { get; private set; }

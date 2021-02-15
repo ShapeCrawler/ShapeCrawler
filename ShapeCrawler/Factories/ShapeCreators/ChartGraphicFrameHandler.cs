@@ -1,7 +1,7 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Factories.Builders;
+using ShapeCrawler.Models;
 using ShapeCrawler.Settings;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -12,29 +12,19 @@ namespace ShapeCrawler.Factories.ShapeCreators
     {
         private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly LocationParser _transformFactory;
-        private readonly IShapeBuilder _shapeBuilder;
         private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart";
 
         #region Constructors
 
-        internal ChartGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory) :
-            this(shapeContextBuilder, transformFactory, new ShapeSc.Builder())
-        {
-
-        }
-
-        internal ChartGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder,
-            LocationParser transformFactory,
-            IShapeBuilder shapeBuilder)
+        internal ChartGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory)
         {
             _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
             _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
-            _shapeBuilder = shapeBuilder ?? throw new ArgumentNullException(nameof(shapeBuilder));
         }
 
         #endregion Constructors
 
-        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
+        public override IShape Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
         {
             if (shapeTreeSource is P.GraphicFrame pGraphicFrame)
             {
@@ -43,10 +33,9 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 {
                     var spContext = _shapeContextBuilder.Build(shapeTreeSource);
                     var innerTransform = _transformFactory.FromComposite(pGraphicFrame);
-                    var chart = new ChartSc(pGraphicFrame, slide);
-                    ShapeSc shape = _shapeBuilder.WithChart(innerTransform, spContext, chart, shapeTreeSource);
+                    var chart = new ChartSc(pGraphicFrame, slide, pGraphicFrame, innerTransform, spContext);
 
-                    return shape;
+                    return chart;
                 }
             }
 

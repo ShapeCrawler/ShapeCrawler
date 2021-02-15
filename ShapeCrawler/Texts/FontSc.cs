@@ -17,7 +17,7 @@ namespace ShapeCrawler.Texts
 
         #region Constructors
 
-        public FontSc(A.Text aText, int fontSize, Portion portion)
+        internal FontSc(A.Text aText, int fontSize, Portion portion)
         {
             _aText = aText;
             _size = fontSize;
@@ -66,7 +66,7 @@ namespace ShapeCrawler.Texts
 
         private void SetFontName(string fontName)
         {
-            if (_portion.Paragraph.TextBox.Shape.Placeholder != null)
+            if (_portion.Paragraph.TextBox.AutoShape.Placeholder != null)
             {
                 throw new PlaceholderCannotBeChangedException();
             }

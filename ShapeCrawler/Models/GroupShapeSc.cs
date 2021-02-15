@@ -3,18 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Charts;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Factories.Builders;
 using ShapeCrawler.Factories.Drawing;
 using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Models.Styles;
 using ShapeCrawler.Models.Transforms;
 using ShapeCrawler.Settings;
-using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
-using ShapeCrawler.Tables;
 using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -24,11 +20,11 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler
 {
+
     /// <summary>
     /// Represents a shape on a slide.
     /// </summary>
-    public class 
-        ShapeSc
+    public class GroupShapeSc : IGroupShape
     {
         #region Fields
 
@@ -39,10 +35,6 @@ namespace ShapeCrawler
         private bool? _hidden;
         private int _id;
         private string _name;
-        private PictureSc _picture;
-        private OLEObject _ole;
-        private TableSc _table;
-        private ChartSc _chart;
         private readonly ILocation _innerTransform;
 
         #endregion Fields
@@ -129,50 +121,10 @@ namespace ShapeCrawler
         }
 
         /// <summary>
-        /// Determines whether the shape has text frame.
-        /// </summary>
-        public bool HasTextBox => TextBox is TextBoxSc;
-
-        /// <summary>
-        /// Determines whether the shape has chart content.
-        /// </summary>
-        public bool HasChart => Chart is ChartSc;
-
-        /// <summary>
-        /// Determines whether the slide element has picture content.
-        /// </summary>
-        public bool HasPicture => _picture != null;
-
-        /// <summary>
         /// Returns text frame.
         /// </summary>
         /// <remarks>Lazy load.</remarks>
         public TextBoxSc TextBox => _text.Value;
-
-        /// <summary>
-        /// Returns chart. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.Chart"/>.
-        /// </summary>
-        public ChartSc Chart => _chart;
-
-        /// <summary>
-        /// Returns table. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.Table"/>.
-        /// </summary>
-        public TableSc Table => _table;
-
-        /// <summary>
-        /// Returns picture. Returns <c>NULL</c> when the shape content type is not a <see cref="ShapeContentType.Picture"/>.
-        /// </summary>
-        public PictureSc Picture => _picture;
-
-        /// <summary>
-        /// Returns grouped shapes. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.Group"/>.
-        /// </summary>
-        public IList<ShapeSc> GroupedShapes { get; private set; }
-
-        /// <summary>
-        /// Returns OLE object content. Returns <c>NULL</c> when the shape content type is not <see cref="ShapeContentType.OLEObject"/>.
-        /// </summary>
-        public OLEObject OleObject => _ole;
 
         /// <summary>
         /// Determines whether the shape is placeholder.
@@ -218,7 +170,7 @@ namespace ShapeCrawler
         /// </summary>
         public bool IsGrouped => _innerTransform is NonPlaceholderGroupedTransform;
 
-        public GeometryType GeometryType { get; }
+        public GeometryType GeometryType => GeometryType.Rectangle;
 
         public string CustomData
         {
@@ -231,26 +183,21 @@ namespace ShapeCrawler
         /// </summary>
         public SlideSc Slide { get; internal set; }
 
+        public IReadOnlyCollection<IShape> Shapes { get; }
+
         #endregion Properties
 
         #region Constructors
 
-        private ShapeSc(
+        internal GroupShapeSc(
             ILocation innerTransform,
             ShapeContext spContext,
-            ShapeContentType contentType,
-            GeometryType geometryType,
-            OpenXmlCompositeElement shapeTreeSource) : this(innerTransform, spContext, contentType, shapeTreeSource)
-        {
-            GeometryType = geometryType;
-        }
-
-        private ShapeSc (ILocation innerTransform, ShapeContext spContext, ShapeContentType contentType, OpenXmlCompositeElement shapeTreeSource)
+            List<IShape> groupedShapes,
+            OpenXmlCompositeElement shapeTreeSource)
         {
             _innerTransform = innerTransform;
             Context = spContext;
-            ContentType = contentType;
-            _text = new Lazy<TextBoxSc>(GetTextBox);
+            Shapes = groupedShapes;
             _shapeFill = new Lazy<ShapeFill>(TryGetFill);
             ShapeTreeSource = shapeTreeSource;
         }
@@ -278,35 +225,13 @@ namespace ShapeCrawler
             return elementText.Value;
         }
 
-        private TextBoxSc GetTextBox()
-        {
-            if (ContentType != ShapeContentType.AutoShape)
-            {
-                return null;
-            }
-
-            P.TextBody pTextBody = Context.CompositeElement.Descendants<P.TextBody>().SingleOrDefault();
-            if (pTextBody == null)
-            {
-                return null;
-            }
-
-            var aTexts = pTextBody.Descendants<A.Text>();
-            if (aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element with text must be exist
-            {
-                return new TextBoxSc(this, pTextBody);
-            }
-
-            return null;
-        }
-
         private ShapeFill TryGetFill()
         {
             if (ContentType != ShapeContentType.AutoShape)
             {
                 return null;
             }
-            var image = _imageFactory.TryFromSdkShape(Context.SlidePart, Context.CompositeElement);
+            ImageSc image = _imageFactory.TryFromSdkShape(Context.SlidePart, Context.CompositeElement);
             if (image != null)
             {
                 return new ShapeFill(image);
@@ -314,12 +239,7 @@ namespace ShapeCrawler
 
             var xmlShape = (P.Shape) Context.CompositeElement;
             var rgbColorModelHex = xmlShape.ShapeProperties.GetFirstChild<A.SolidFill>()?.RgbColorModelHex;
-            if (rgbColorModelHex != null)
-            {
-                return ShapeFill.FromXmlSolidFill(rgbColorModelHex);
-            }
-
-            return null;
+            return rgbColorModelHex != null ? ShapeFill.FromXmlSolidFill(rgbColorModelHex) : null;
         }
 
         private void InitIdHiddenName()
@@ -336,91 +256,5 @@ namespace ShapeCrawler
 
         #endregion
 
-        #region Builder
-
-        /// <inheritdoc cref="IShapeBuilder"/>
-        public class Builder : IShapeBuilder
-        {
-            #region Public Methods
-
-            public ShapeSc WithOle(ILocation innerTransform, ShapeContext spContext, OLEObject ole, OpenXmlCompositeElement shapeTreeSource)
-            {
-                Check.NotNull(innerTransform, nameof(innerTransform));
-                Check.NotNull(spContext, nameof(spContext));
-                Check.NotNull(ole, nameof(ole));
-
-                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.OLEObject, shapeTreeSource)
-                {
-                    _ole = ole
-                };
-
-                return newShape;
-            }
-
-            public ShapeSc WithPicture(
-                ILocation innerTransform, 
-                ShapeContext spContext, 
-                PictureSc picture, 
-                GeometryType geometry, 
-                OpenXmlCompositeElement shapeTreeSource)
-            {
-                Check.NotNull(innerTransform, nameof(innerTransform));
-                Check.NotNull(spContext, nameof(spContext));
-                Check.NotNull(picture, nameof(picture));
-                Check.NotNull(geometry, nameof(geometry));
-
-                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.Picture, geometry, shapeTreeSource)
-                {
-                    _picture = picture
-                };
-
-                return newShape;
-            }
-
-            public ShapeSc WithAutoShape(
-                ILocation innerTransform, 
-                ShapeContext spContext, 
-                GeometryType geometry, 
-                OpenXmlCompositeElement shapeTreeSource)
-            {
-                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.AutoShape, geometry, shapeTreeSource);
-      
-                return newShape;
-            }
-
-            public ShapeSc WithTable(ILocation innerTransform, ShapeContext spContext, TableSc table, OpenXmlCompositeElement shapeTreeSource)
-            {
-                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.Table, shapeTreeSource)
-                {
-                    _table = table
-                };
-                table.Shape = newShape;
-                return newShape;
-            }
-
-            public ShapeSc WithChart(ILocation innerTransform, ShapeContext spContext, ChartSc chart, OpenXmlCompositeElement shapeTreeSource)
-            {
-                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.Chart, shapeTreeSource)
-                {
-                    _chart = chart
-                };
-                chart.Shape = newShape;
-                return newShape;
-            }
-
-            public ShapeSc WithGroup(ILocation innerTransform, ShapeContext spContext, IList<ShapeSc> groupedShapes, OpenXmlCompositeElement shapeTreeSource)
-            {
-                var newShape = new ShapeSc(innerTransform, spContext, ShapeContentType.Group, shapeTreeSource)
-                {
-                    GroupedShapes = groupedShapes
-                };
-
-                return newShape;
-            }
-
-            #endregion Public Methods
-        }
-
-        #endregion Builder
     }
 }

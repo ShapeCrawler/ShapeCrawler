@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Models;
+using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 

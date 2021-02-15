@@ -1,10 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.SlideMaster;
+using ShapeCrawler.Tables;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
 using ShapeCrawler.Texts;
@@ -52,7 +54,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Text_GetterReturnsParagraphPortionText()
         {
             // Arrange
-            Portion portion = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3).Table.Rows[0].Cells[0].TextBox
+            Portion portion = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextBox
                 .Paragraphs[0].Portions[0];
 
             // Act
@@ -66,8 +68,8 @@ namespace ShapeCrawler.Tests.Unit
         public void FontName_GetterReturnsFontNameOfTheParagraphPortion()
         {
             // Arrange
-            TextBoxSc textFrameCase1 = _fixture.Pre002.Slides[1].Shapes.First(s => s.Id == 3).TextBox;
-            TextBoxSc textFrameCase2 = _fixture.Pre001.Slides[0].Shapes.First(s => s.Id == 4).TextBox;
+            TextBoxSc textFrameCase1 = ((IAutoShape)_fixture.Pre002.Slides[1].Shapes.First(s => s.Id == 3)).TextBox;
+            TextBoxSc textFrameCase2 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(s => s.Id == 4)).TextBox;
 
             // Act
             string portionFontNameCase1 = textFrameCase1.Paragraphs[0].Portions[0].Font.Name;
@@ -83,9 +85,9 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             const string newFont = "Time New Roman";
-            Portion paragraphPortion = PresentationSc.Open(Resources._001, true).
-                Slides[0].Shapes.First(sp => sp.Id == 4).
-                TextBox.Paragraphs[0].Portions[0];
+            IAutoShape autoShape =
+                PresentationSc.Open(Resources._001, true).Slides[0].Shapes.First(sp => sp.Id == 4) as IAutoShape;
+            Portion paragraphPortion = autoShape.TextBox.Paragraphs[0].Portions[0];
             // Act
             paragraphPortion.Font.Name = newFont;
 
@@ -97,9 +99,9 @@ namespace ShapeCrawler.Tests.Unit
         public void FontName_SetterThrowsException_WhenAUserTrySetFontNameForPortionOfAPlaceholderShape()
         {
             // Arrange
-            TextBoxSc textFrame = PresentationSc.Open(Resources._001, true).Slides[2].Shapes
-                .First(sp => sp.Id == 4).TextBox;
-            ParagraphCollection paragraphs = textFrame.Paragraphs;
+            TextBoxSc textBox = ((IAutoShape)PresentationSc.Open(Resources._001, true).Slides[2].Shapes
+                .First(sp => sp.Id == 4)).TextBox;
+            ParagraphCollection paragraphs = textBox.Paragraphs;
             Portion paragraphPortion = paragraphs[0].Portions[0];
 
             // Act
@@ -113,21 +115,21 @@ namespace ShapeCrawler.Tests.Unit
         public void FontSize_GetterReturnsFontSizeOfTheParagraphPortion()
         {
             // Arrange
-            Portion portionCase1 = _fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase2 = _fixture.Pre015.Slides[0].Shapes.First(sp => sp.Id == 5).TextBox.Paragraphs[0].Portions[2];
-            Portion portionCase3 = _fixture.Pre015.Slides[1].Shapes.First(sp => sp.Id == 61).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase4 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase5 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2).TextBox.Paragraphs[0].Portions[1];
-            Portion portionCase6 = _fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase7 = _fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 3).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase8 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 4103).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase9 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase10 = _fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase11 = _fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 2).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase12 = _fixture.Pre010.Slides[0].Shapes.First(sp => sp.Id == 2).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase13 = _fixture.Pre014.Slides[3].Shapes.First(sp => sp.Id == 5).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase14 = _fixture.Pre014.Slides[4].Shapes.First(sp => sp.Id == 4).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase15 = _fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase1 = ((IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase2 = ((IAutoShape)_fixture.Pre015.Slides[0].Shapes.First(sp => sp.Id == 5)).TextBox.Paragraphs[0].Portions[2];
+            Portion portionCase3 = ((IAutoShape)_fixture.Pre015.Slides[1].Shapes.First(sp => sp.Id == 61)).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase4 = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase5 = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[1];
+            Portion portionCase6 = ((IAutoShape)_fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase7 = ((IAutoShape)_fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 3)).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase8 = ((IAutoShape)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 4103)).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase9 = ((IAutoShape)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase10 = ((IAutoShape)_fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5)).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase11 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase12 = ((IAutoShape)_fixture.Pre010.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase13 = ((IAutoShape)_fixture.Pre014.Slides[3].Shapes.First(sp => sp.Id == 5)).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase14 = ((IAutoShape)_fixture.Pre014.Slides[4].Shapes.First(sp => sp.Id == 4)).TextBox.Paragraphs[0].Portions[0];
+            Portion portionCase15 = ((IAutoShape)_fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52)).TextBox.Paragraphs[0].Portions[0];
 
             // Act-Assert
             portionCase1.Font.Size.Should().Be(1800);
@@ -153,7 +155,8 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             static Portion GetPortion(PresentationSc presentation)
             {
-                Portion portion = presentation.Slides[0].Shapes.First(sp => sp.Id == 4).TextBox.Paragraphs[0].Portions[0];
+                IAutoShape autoShape = presentation.Slides[0].Shapes.First(sp => sp.Id == 4) as IAutoShape;
+                Portion portion = autoShape.TextBox.Paragraphs[0].Portions[0];
                 return portion;
             }
             int newFontSize = 28;
@@ -176,7 +179,7 @@ namespace ShapeCrawler.Tests.Unit
 
         private static PortionCollection GetPortions(PresentationSc presentation)
         {
-            var shape5 = presentation.Slides[1].Shapes.First(x => x.Id == 5);
+            IAutoShape shape5 = presentation.Slides[1].Shapes.First(x => x.Id == 5) as IAutoShape;
             var portions = shape5.TextBox.Paragraphs.First().Portions;
             return portions;
         }

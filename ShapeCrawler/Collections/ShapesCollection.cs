@@ -4,10 +4,12 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Factories.Placeholders;
 using ShapeCrawler.Factories.ShapeCreators;
 using ShapeCrawler.Models;
+using ShapeCrawler.Models.Experiment;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Settings;
 using ShapeCrawler.SlideMaster;
@@ -20,11 +22,11 @@ namespace ShapeCrawler.Collections
     /// <summary>
     /// Represents a collection of the slide shapes.
     /// </summary>
-    public class ShapesCollection : LibraryCollection<ShapeSc>
+    public class ShapesCollection : LibraryCollection<IShape>
     {
         #region Constructors
 
-        internal ShapesCollection(List<ShapeSc> shapes)
+        internal ShapesCollection(List<IShape> shapes)
         {
             CollectionItems = shapes;
         }
@@ -42,8 +44,8 @@ namespace ShapeCrawler.Collections
             var chartGrFrameHandler = new ChartGraphicFrameHandler(shapeContextBuilder, transformFactory);
             var tableGrFrameHandler = new TableGraphicFrameHandler(shapeContextBuilder, transformFactory);
             var oleGrFrameHandler = new OleGraphicFrameHandler(shapeContextBuilder, transformFactory);
-            var pShapeHandler = new PShapeHandler(shapeContextBuilder, transformFactory, geometryFactory);
-            var pictureHandler = new PictureHandler(shapeContextBuilder, transformFactory, geometryFactory, slidePart);
+            var pShapeHandler = new AutoShapeCreator(shapeContextBuilder, transformFactory, geometryFactory);
+            var pictureHandler = new PictureHandler(shapeContextBuilder, transformFactory, geometryFactory);
             var sdkGroupShapeHandler = new PGroupShapeHandler(shapeContextBuilder, transformFactory, geometryFactory, slidePart);
 
             pShapeHandler.Successor = sdkGroupShapeHandler;
@@ -53,13 +55,12 @@ namespace ShapeCrawler.Collections
             chartGrFrameHandler.Successor = tableGrFrameHandler;
 
             ShapeTree shapeTree = slidePart.Slide.CommonSlideData.ShapeTree;
-            var shapes = new List<ShapeSc>(shapeTree.Count());
+            var shapes = new List<IShape>(shapeTree.Count());
             foreach (OpenXmlCompositeElement compositeElement in shapeTree.OfType<OpenXmlCompositeElement>())
             {
-                ShapeSc shape = pShapeHandler.Create(compositeElement, slide);
+                IShape shape = pShapeHandler.Create(compositeElement, slide);
                 if (shape != null)
                 {
-                    shape.Slide = slide;
                     shapes.Add(shape);
                 }
             }

@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 
-namespace ShapeCrawler.Models
+namespace ShapeCrawler.Models.Experiment
 {
     public abstract class BaseShape
     {

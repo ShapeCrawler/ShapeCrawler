@@ -1,32 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Exceptions;
+using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Factories.Drawing;
+using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Models.Styles;
+using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
-using A = DocumentFormat.OpenXml.Drawing;
+using ShapeCrawler.Statics;
+using ShapeCrawler.Tables;
 using P = DocumentFormat.OpenXml.Presentation;
+using A = DocumentFormat.OpenXml.Drawing;
+using ShapeCrawler.Exceptions;
 
-// ReSharper disable SuggestVarOrType_BuiltInTypes
+// ReSharper disable CheckNamespace
+// ReSharper disable PossibleMultipleEnumeration
 
-namespace ShapeCrawler.Tables
+namespace ShapeCrawler
 {
     /// <summary>
-    /// Represents a table element on a slide.
+    /// Represents a shape on a slide.
     /// </summary>
-    public class TableSc
+    public class TableSc : ITable
     {
         #region Fields
 
+        private readonly IImageExFactory _imageFactory = new ImageExFactory(); // TODO: do not create this factory for each table shape
+        private bool? _hidden;
+        private int _id;
+        private string _name;
+        private readonly ILocation _innerTransform;
         private readonly P.GraphicFrame _pGraphicFrame;
         private readonly ResettableLazy<RowCollection> _rowCollection;
+        
+        internal ShapeContext Context { get; }
+        internal A.Table ATable => _pGraphicFrame.GetATable();
+        internal OpenXmlCompositeElement ShapeTreeSource { get; } // TODO: delete this duplicate of _pGraphicFrame
+        internal SlideSc Slide { get; }
 
         #endregion Fields
-        
-        internal ShapeSc Shape { get; set; }
-        internal A.Table ATable => _pGraphicFrame.GetATable();
 
         #region Public Properties
 
@@ -36,28 +52,114 @@ namespace ShapeCrawler.Tables
 
         #endregion Public Properties
 
+        /// <summary>
+        /// Returns the x-coordinate of the upper-left corner of the shape.
+        /// </summary>
+        public long X
+        {
+            get => _innerTransform.X;
+            set => _innerTransform.SetX(value);
+        }
+
+        /// <summary>
+        /// Returns the y-coordinate of the upper-left corner of the shape.
+        /// </summary>
+        public long Y
+        {
+            get => _innerTransform.Y;
+            set => _innerTransform.SetY(value);
+        }
+
+        /// <summary>
+        /// Returns the width of the shape.
+        /// </summary>
+        public long Width
+        {
+            get => _innerTransform.Width;
+            set => _innerTransform.SetWidth(value);
+        }
+
+        /// <summary>
+        /// Returns the height of the shape.
+        /// </summary>
+        public long Height
+        {
+            get => _innerTransform.Height;
+            set => _innerTransform.SetHeight(value);
+        }
+
+        /// <summary>
+        /// Returns an element identifier.
+        /// </summary>
+        public int Id
+        {
+            get
+            {
+                InitIdHiddenName();
+                return _id;
+            }
+        }
+
+        /// <summary>
+        /// Gets an element name.
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                InitIdHiddenName();
+                return _name;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether the shape is hidden.
+        /// </summary>
+        public bool Hidden
+        {
+            get
+            {
+                InitIdHiddenName();
+                return (bool)_hidden;
+            }
+        }
+        
+        public Placeholder Placeholder
+        {
+            get
+            {
+                if (Context.CompositeElement.IsPlaceholder())
+                {
+                    return new Placeholder();
+                }
+
+                return null;
+            }
+        }
+
+        public GeometryType GeometryType => GeometryType.Rectangle;
+
+        public string CustomData
+        {
+            get => GetCustomData();
+            set => SetCustomData(value);
+        }
+
         #region Constructors
 
-        internal TableSc(P.GraphicFrame pGraphicFrame)
+        internal TableSc(
+            OpenXmlCompositeElement shapeTreeSource,
+            ILocation innerTransform,
+            ShapeContext spContext)
         {
-            _pGraphicFrame = pGraphicFrame;
-            _rowCollection = new ResettableLazy<RowCollection>(() => RowCollection.Create(this, _pGraphicFrame));
+            ShapeTreeSource = shapeTreeSource;
+            _innerTransform = innerTransform;
+            Context = spContext;
+            _rowCollection = new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame)ShapeTreeSource));
+            _pGraphicFrame = shapeTreeSource as P.GraphicFrame;
         }
 
         #endregion Constructors
-
-        #region Private Methods
-
-        private IReadOnlyList<Column> GetColumnList()
-        {
-            IEnumerable<A.GridColumn> aGridColumns = ATable.TableGrid.Elements<A.GridColumn>();
-            var columnList = new List<Column>(aGridColumns.Count());
-            columnList.AddRange(aGridColumns.Select(aGridColumn => new Column(aGridColumn)));
-            
-            return columnList;
-        }
-
-        #endregion Private Methods
 
 #if DEBUG
         public void MergeCells(CellSc cell1, CellSc cell2) // TODO: Optimize method
@@ -107,19 +209,19 @@ namespace ShapeCrawler.Tables
                 }
             }
 
-            // Delete columns
-            for (int colIdx = 0; colIdx < Columns.Count; )
+            // Delete a:gridCol and a:tc elements if all columns are merged
+            for (int colIdx = 0; colIdx < Columns.Count;)
             {
                 int? gridSpan = Rows[0].Cells[colIdx].ATableCell.GridSpan?.Value;
                 if (gridSpan > 1 && Rows.All(r => r.Cells[colIdx].ATableCell.GridSpan?.Value == gridSpan))
                 {
                     int deleteColumnCount = gridSpan.Value - 1;
-                    
+
                     // Delete a:gridCol elements
-                    foreach (Column column in Columns.Skip(colIdx).Take(deleteColumnCount))
+                    foreach (Column column in Columns.Skip(colIdx + 1).Take(deleteColumnCount))
                     {
                         column.AGridColumn.Remove();
-                        Columns[colIdx].Width += column.AGridColumn.Width; // append width of deleting column to merged column
+                        Columns[colIdx].Width += column.Width; // append width of deleting column to merged column
                     }
 
                     // Delete a:tc elements
@@ -138,7 +240,42 @@ namespace ShapeCrawler.Tables
                 colIdx++;
             }
 
+            // Delete a:tr
+            for (int rowIdx = 0; rowIdx < Rows.Count;)
+            {
+                int? rowSpan = Rows[rowIdx].Cells[0].ATableCell.RowSpan?.Value;
+                if (rowSpan > 1 && Rows[rowIdx].Cells.All(c => c.ATableCell.RowSpan?.Value == rowSpan))
+                {
+                    int deleteRowsCount = rowSpan.Value - 1;
+
+                    // Delete a:gridCol elements
+                    foreach (RowSc row in Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
+                    {
+                        row.ATableRow.Remove();
+                        Rows[rowIdx].Height += row.Height;
+                    }
+
+                    rowIdx += rowSpan.Value;
+                    continue;
+                }
+
+                rowIdx++;
+            }
+
             _rowCollection.Reset();
+        }
+
+#endif
+
+        #region Private Methods
+
+        private IReadOnlyList<Column> GetColumnList()
+        {
+            IEnumerable<A.GridColumn> aGridColumns = ATable.TableGrid.Elements<A.GridColumn>();
+            var columnList = new List<Column>(aGridColumns.Count());
+            columnList.AddRange(aGridColumns.Select(aGridColumn => new Column(aGridColumn)));
+
+            return columnList;
         }
 
         private static bool CannotBeMerged(CellSc cell1, CellSc cell2)
@@ -156,6 +293,38 @@ namespace ShapeCrawler.Tables
 
             return false;
         }
-#endif
+
+        private void SetCustomData(string value)
+        {
+            var customDataElement = $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
+            Context.CompositeElement.InnerXml += customDataElement;
+        }
+
+        private string GetCustomData()
+        {
+            var pattern = @$"<{ConstantStrings.CustomDataElementName}>(.*)<\/{ConstantStrings.CustomDataElementName}>";
+            var regex = new Regex(pattern);
+            var elementText = regex.Match(Context.CompositeElement.InnerXml).Groups[1];
+            if (elementText.Value.Length == 0)
+            {
+                return null;
+            }
+
+            return elementText.Value;
+        }
+
+        private void InitIdHiddenName()
+        {
+            if (_id != 0)
+            {
+                return;
+            }
+            var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
+            _id = id;
+            _hidden = hidden;
+            _name = name;
+        }
+
+        #endregion Private Methods
     }
 }
