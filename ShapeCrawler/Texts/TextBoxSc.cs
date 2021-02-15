@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Models;
+using ShapeCrawler.Models.Experiment;
 using ShapeCrawler.Settings;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -16,7 +17,7 @@ namespace ShapeCrawler.Texts
     {
         #region Fields
 
-        private readonly ShapeContext _spContext;
+        private readonly ShapeContext _shapeContext;
         private readonly Lazy<string> _text;
         private readonly OpenXmlCompositeElement _compositeElement;
 
@@ -24,7 +25,7 @@ namespace ShapeCrawler.Texts
 
         #region Internal Properties
 
-        internal ShapeSc Shape { get; }
+        internal AutoShape AutoShape { get; }
         internal BaseShape BaseShape { get; }
 
         #endregion Internal Properties
@@ -34,7 +35,7 @@ namespace ShapeCrawler.Texts
         /// <summary>
         /// Gets text paragraph collection.
         /// </summary>
-        public ParagraphCollection Paragraphs => ParagraphCollection.Create(_compositeElement, _spContext, this);
+        public ParagraphCollection Paragraphs => ParagraphCollection.Create(_compositeElement, _shapeContext, this);
 
         /// <summary>
         /// Gets or sets text box string content. Returns null if the text box is empty.
@@ -64,17 +65,18 @@ namespace ShapeCrawler.Texts
             _text = new Lazy<string>(GetText);
         }
 
-        internal TextBoxSc(ShapeSc shape, P.TextBody pTextBody)
+        internal TextBoxSc(AutoShape autoShape, P.TextBody pTextBody)
         {
-            Shape = shape;
-            _spContext = shape.Context;
+            AutoShape = autoShape;
+            _shapeContext = autoShape.Context;
             _compositeElement = pTextBody;
             _text = new Lazy<string>(GetText);
         }
 
-        internal TextBoxSc(ShapeSc shape, A.TextBody aTextBody)
+        // TODO: Resolve conflict getting text box for autoShape and table
+        internal TextBoxSc(ShapeContext shapeContext, A.TextBody aTextBody)
         {
-            _spContext = shape.Context;
+            _shapeContext = shapeContext;
             _compositeElement = aTextBody;
             _text = new Lazy<string>(GetText);
         }

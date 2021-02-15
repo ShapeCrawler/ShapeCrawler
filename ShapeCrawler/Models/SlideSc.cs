@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Factories.Drawing;
 using ShapeCrawler.Models;
+using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Statics;
 using SkiaSharp;

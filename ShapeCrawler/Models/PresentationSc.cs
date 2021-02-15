@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Models;
+using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;

@@ -1,7 +1,14 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Charts;
 using ShapeCrawler.Collections;
+using ShapeCrawler.Models;
+using ShapeCrawler.OLEObjects;
+using ShapeCrawler.Pictures;
+using ShapeCrawler.SlideMaster;
+using ShapeCrawler.Tables;
 
 namespace ShapeCrawler.Factories.Drawing
 {
@@ -56,28 +63,28 @@ namespace ShapeCrawler.Factories.Drawing
             graphics.DrawRectangle(blackPen, sldRectangle);
 
             // Draw shape rectangles
-            foreach (var shape in shapes)
+            foreach (IShape shape in shapes)
             {
                 var x = (int)(shape.X / Scale);
                 var y = (int)(shape.Y / Scale);
                 var w = (int)(shape.Width / Scale);
                 var h = (int)(shape.Height / Scale);
                 var shapeRectangle = new Rectangle(x, y, w, h);
-                switch (shape.ContentType)
+                switch (shape)
                 {
-                    case ShapeContentType.AutoShape:
+                    case IAutoShape:
                         graphics.DrawRectangle(Pens.Red, shapeRectangle);
                         break;
-                    case ShapeContentType.Picture:
+                    case IPicture:
                         graphics.DrawRectangle(Pens.Blue, shapeRectangle);
                         break;
-                    case ShapeContentType.Chart:
+                    case IChart:
                         graphics.DrawRectangle(Pens.Aqua, shapeRectangle);
                         break;
-                    case ShapeContentType.OLEObject:
+                    case IOLEObject:
                         graphics.DrawRectangle(Pens.Bisque, shapeRectangle);
                         break;
-                    case ShapeContentType.Table:
+                    case ITable:
                         graphics.DrawRectangle(Pens.Chartreuse, shapeRectangle);
                         break;
                 }

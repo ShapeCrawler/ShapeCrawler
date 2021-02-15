@@ -3,7 +3,7 @@ using ShapeCrawler.Factories.Drawing;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMaster;
 
-namespace ShapeCrawler.Models.SlideComponents
+namespace ShapeCrawler.Models.Experiment
 {
     public class PictureScNew : BaseShape
     {

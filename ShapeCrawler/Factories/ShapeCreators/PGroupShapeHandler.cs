@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Factories.Builders;
+using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Models;
 using ShapeCrawler.Models.Transforms;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
@@ -17,42 +18,30 @@ namespace ShapeCrawler.Factories.ShapeCreators
         private readonly SlidePart _slidePart;
         private readonly GeometryFactory _geometryFactory;
         private readonly LocationParser _transformFactory;
-        private readonly IShapeBuilder _shapeBuilder;
 
         internal PGroupShapeHandler(ShapeContext.Builder shapeContextBuilder,
                                     LocationParser transformFactory,
                                     GeometryFactory geometryFactory,
-                                    SlidePart sdkSldPart) :
-            this(shapeContextBuilder, transformFactory, geometryFactory, sdkSldPart, new ShapeSc.Builder())
-        {
- 
-        }
-
-        internal PGroupShapeHandler(ShapeContext.Builder shapeContextBuilder,
-                                    LocationParser transformFactory,
-                                    GeometryFactory geometryFactory,
-                                    SlidePart sdkSldPart,
-                                    IShapeBuilder shapeBuilder)
+                                    SlidePart sdkSldPart)
         {
             _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(sdkSldPart));
             _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
             _geometryFactory = geometryFactory ?? throw new ArgumentNullException(nameof(geometryFactory));
             _slidePart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
-            _shapeBuilder = shapeBuilder ?? throw new ArgumentNullException(nameof(shapeBuilder));
         }
 
-        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
+        public override IShape Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
         {
             Check.NotNull(shapeTreeSource, nameof(shapeTreeSource));
 
             if (shapeTreeSource is P.GroupShape pGroupShape)
             {
-                var pShapeHandler = new PShapeHandler(_shapeContextBuilder, _transformFactory, _geometryFactory);
-                var oleGrFrameHandler = new OleGraphicFrameHandler(_shapeContextBuilder, _transformFactory, _shapeBuilder);
-                var pictureHandler = new PictureHandler(_shapeContextBuilder, _transformFactory, _geometryFactory, _slidePart);
+                var pShapeHandler = new AutoShapeCreator(_shapeContextBuilder, _transformFactory, _geometryFactory);
+                var oleGrFrameHandler = new OleGraphicFrameHandler(_shapeContextBuilder, _transformFactory);
+                var pictureHandler = new PictureHandler(_shapeContextBuilder, _transformFactory, _geometryFactory);
                 var pGroupShapeHandler = new PGroupShapeHandler(_shapeContextBuilder, _transformFactory, _geometryFactory, _slidePart);
-                var chartGrFrameHandler = new ChartGraphicFrameHandler(_shapeContextBuilder, _transformFactory, _shapeBuilder);
-                var tableGrFrameHandler = new TableGraphicFrameHandler(_shapeContextBuilder, _transformFactory, _shapeBuilder);
+                var chartGrFrameHandler = new ChartGraphicFrameHandler(_shapeContextBuilder, _transformFactory);
+                var tableGrFrameHandler = new TableGraphicFrameHandler(_shapeContextBuilder, _transformFactory);
 
                 pShapeHandler.Successor = pGroupShapeHandler;
                 pGroupShapeHandler.Successor = oleGrFrameHandler;
@@ -61,7 +50,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 pictureHandler.Successor = chartGrFrameHandler;
                 chartGrFrameHandler.Successor = tableGrFrameHandler;
 
-                var groupedShapes = new List<ShapeSc>(pGroupShape.Count());
+                var groupedShapes = new List<IShape>(pGroupShape.Count());
                 foreach (var item in pGroupShape.OfType<OpenXmlCompositeElement>())
                 {
                     var groupedShape = pShapeHandler.Create(item, slide);
@@ -73,9 +62,9 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 var spContext = _shapeContextBuilder.Build(shapeTreeSource);
                 var transformGroup = pGroupShape.GroupShapeProperties.TransformGroup;
                 var innerTransform = new NonPlaceholderTransform(transformGroup);
-                var shape = _shapeBuilder.WithGroup(innerTransform, spContext, groupedShapes, pGroupShape);
+                var groupShape = new GroupShapeSc(innerTransform, spContext, groupedShapes, pGroupShape);
 
-                return shape;
+                return groupShape;
             }
 
             return Successor?.Create(shapeTreeSource, slide);

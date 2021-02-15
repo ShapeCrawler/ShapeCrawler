@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using ShapeCrawler.Models;
-using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Collections;
 using ShapeCrawler.SlideMaster;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Tables
+namespace ShapeCrawler.Models.Experiment
 {
     /// <summary>
     /// Represents a table element on a slide.
@@ -25,7 +24,7 @@ namespace ShapeCrawler.Tables
 
         #endregion Public Properties
 
-        internal ShapeSc Shape { get; set; }
+        internal GroupShapeSc Shape { get; set; }
 
         #region Constructors
 

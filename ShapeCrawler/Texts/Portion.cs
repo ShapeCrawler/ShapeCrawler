@@ -83,7 +83,7 @@ namespace ShapeCrawler.Texts
             }
 
             // If element is placeholder, tries to get from placeholder data
-            P.Shape shapeTreeSource = (P.Shape)Paragraph.TextBox.Shape.ShapeTreeSource;
+            P.Shape shapeTreeSource = (P.Shape)Paragraph.TextBox.AutoShape.ShapeTreeSource;
             if (shapeTreeSource.IsPlaceholder())
             {
                 int? prFontHeight = _shapeContext.PlaceholderFontService.GetFontSizeByParagraphLvl(shapeTreeSource, Paragraph.Level);
@@ -93,7 +93,7 @@ namespace ShapeCrawler.Texts
                 }
             }
 
-            PresentationData presentationData = Paragraph.TextBox.Shape.Slide.Presentation.PresentationData;
+            PresentationData presentationData = Paragraph.TextBox.AutoShape.Slide.Presentation.PresentationData;
             if (presentationData.LlvFontHeights.ContainsKey(Paragraph.Level))
             {
                 return presentationData.LlvFontHeights[Paragraph.Level];

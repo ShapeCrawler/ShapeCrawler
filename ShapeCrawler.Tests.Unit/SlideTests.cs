@@ -3,7 +3,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Charts;
 using ShapeCrawler.Factories.Drawing;
+using ShapeCrawler.Models;
+using ShapeCrawler.Pictures;
+using ShapeCrawler.SlideMaster;
+using ShapeCrawler.Tables;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 
@@ -128,11 +134,11 @@ namespace ShapeCrawler.Tests.Unit
             var shapes = pre.Slides.First().Shapes;
 
             // Assert
-            Assert.Single(shapes.Where(c => c.ContentType.Equals(ShapeContentType.AutoShape)));
-            Assert.Single(shapes.Where(c => c.ContentType.Equals(ShapeContentType.Picture)));
-            Assert.Single(shapes.Where(c => c.ContentType.Equals(ShapeContentType.Table)));
-            Assert.Single(shapes.Where(c => c.ContentType.Equals(ShapeContentType.Chart)));
-            Assert.Single(shapes.Where(c => c.ContentType.Equals(ShapeContentType.Group)));
+            Assert.Single(shapes.Where(sp => sp is IAutoShape));
+            Assert.Single(shapes.Where(sp => sp is IPicture));
+            Assert.Single(shapes.Where(sp => sp is ITable));
+            Assert.Single(shapes.Where(sp => sp is IChart));
+            Assert.Single(shapes.Where(sp => sp is IGroupShape));
         }
 
         [Theory]
@@ -186,17 +192,15 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void HasPicture_ReturnsTrue_WhenTheShapeContainsImageContent()
+        public void Shape_IsAPicture()
         {
             // Arrange
-            var shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
+            IShape shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
 
-            // Act
-            var shapeHasPicture = shape.HasPicture;
-
-            // Assert
-            shapeHasPicture.Should().BeTrue();
+            // Act-Assert
+            shape.Should().BeOfType<PictureSc>();
         }
+
 #if DEBUG
         [Fact(Skip = "The feature is in progress")]
         public void SaveImage_GenerateAndSavesSlideImageInSpecifiedFilePath()

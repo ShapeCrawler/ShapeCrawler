@@ -4,6 +4,7 @@ using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Models;
+using ShapeCrawler.Models.SlideComponents;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Settings

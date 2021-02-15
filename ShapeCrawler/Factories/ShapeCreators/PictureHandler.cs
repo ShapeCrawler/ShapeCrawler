@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Factories.Builders;
-using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Models;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -19,8 +17,6 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly LocationParser _transformFactory;
-        private readonly IShapeBuilder _shapeBuilder;
-        private readonly SlidePart _sdkSldPart;
         private readonly GeometryFactory _geometryFactory;
 
         #endregion Fields
@@ -29,29 +25,16 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         internal PictureHandler(ShapeContext.Builder shapeContextBuilder,
                               LocationParser transformFactory,
-                              GeometryFactory geometryFactory,
-                              SlidePart sdkSldPart) :
-            this(shapeContextBuilder, transformFactory, geometryFactory, sdkSldPart, new ShapeSc.Builder())
-        {
-
-        }
-
-        internal PictureHandler(ShapeContext.Builder shapeContextBuilder,
-                              LocationParser transformFactory,
-                              GeometryFactory geometryFactory,
-                              SlidePart sdkSldPart,
-                              IShapeBuilder shapeBuilder)
+                              GeometryFactory geometryFactory)
         {
             _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
             _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
-            _shapeBuilder = shapeBuilder ?? throw new ArgumentNullException(nameof(shapeBuilder));
-            _sdkSldPart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
             _geometryFactory = geometryFactory ?? throw new ArgumentNullException(nameof(geometryFactory));
         }
 
         #endregion Constructors
 
-        public override ShapeSc Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
+        public override IShape Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
         {
             Check.NotNull(shapeTreeSource, nameof(shapeTreeSource));
 
@@ -73,21 +56,15 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 {
                     return null;
                 }
-                var picture = new PictureSc(_sdkSldPart, blipRelateId);
                 var spContext = _shapeContextBuilder.Build(shapeTreeSource);
                 var innerTransform = _transformFactory.FromComposite(pPicture);
                 var geometry = _geometryFactory.ForCompositeElement(pPicture, pPicture.ShapeProperties);
-                var shape = _shapeBuilder.WithPicture(innerTransform, spContext, picture, geometry, shapeTreeSource);
+                var picture = new PictureSc(slide, blipRelateId, innerTransform, spContext, geometry);
 
-                return shape;
+                return picture;
             }
 
-            if (Successor != null)
-            {
-                return Successor.Create(shapeTreeSource, slide);
-            }
-
-            return null;
+            return Successor?.Create(shapeTreeSource, slide);
         }
     }
 }

@@ -44,6 +44,11 @@ namespace ShapeCrawler.Models.Styles
             Type = FillType.Solid;
         }
 
+        private ShapeFill(A.SchemeColor schemeColor)
+        {
+            
+        }
+
         #endregion Constructors
 
         #region Public Methods
@@ -58,5 +63,10 @@ namespace ShapeCrawler.Models.Styles
         }
 
         #endregion Public Methods
+
+        public static ShapeFill FromASchemeClr(A.SchemeColor schemeColor)
+        {
+            return new ShapeFill(schemeColor);
+        }
     }
 }

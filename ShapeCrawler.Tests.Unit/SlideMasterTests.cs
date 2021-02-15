@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Models;
+using ShapeCrawler.Models.Experiment;
 using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;

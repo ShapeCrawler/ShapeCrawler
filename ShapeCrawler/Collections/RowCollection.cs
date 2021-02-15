@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -9,7 +8,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace ShapeCrawler.Models.SlideComponents
+namespace ShapeCrawler.Collections
 {
     /// <summary>
     /// Represents a table rows collection.

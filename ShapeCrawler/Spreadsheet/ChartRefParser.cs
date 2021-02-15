@@ -81,11 +81,11 @@ namespace ShapeCrawler.Spreadsheet
 
         private List<string> GetCellStrValues(C.Formula formula, EmbeddedPackagePart xlsxPackagePart) //EmbeddedPackagePart : OpenXmlPart
         {
-            var exist = _chart.Shape.Slide.Presentation.PresentationData.SpreadsheetCache.TryGetValue(xlsxPackagePart, out var xlsxDoc);
+            var exist = _chart.Slide.Presentation.PresentationData.SpreadsheetCache.TryGetValue(xlsxPackagePart, out var xlsxDoc);
             if (!exist)
             {
                 xlsxDoc = SpreadsheetDocument.Open(xlsxPackagePart.GetStream(), false);
-                _chart.Shape.Slide.Presentation.PresentationData.SpreadsheetCache.Add(xlsxPackagePart, xlsxDoc);
+                _chart.Slide.Presentation.PresentationData.SpreadsheetCache.Add(xlsxPackagePart, xlsxDoc);
             }
 
             string filteredFormula = GetFilteredFormula(formula);

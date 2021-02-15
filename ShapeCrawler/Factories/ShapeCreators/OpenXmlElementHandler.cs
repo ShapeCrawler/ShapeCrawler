@@ -1,5 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
-using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Models;
 
 namespace ShapeCrawler.Factories.ShapeCreators
 {
@@ -14,10 +14,8 @@ namespace ShapeCrawler.Factories.ShapeCreators
         public OpenXmlElementHandler Successor { get; set; }
         
         /// <summary>
-        /// Creates <see cref="ShapeSc"/> instance from specified SDK element or passes it to next handler.
+        /// Creates <see cref="GroupShapeSc"/> instance from specified SDK element or passes it to next handler.
         /// </summary>
-        /// <param name="shapeTreeSource"></param>
-        /// <returns></returns>
-        public abstract ShapeSc Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide);
+        public abstract IShape Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide);
     }
 }

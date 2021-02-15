@@ -4,7 +4,7 @@
     {
         private static readonly string ExceptionMessage =
             "The property is part of slide layout placeholder and cannot be changed on a slide level. " +
-            $"If you wanna change some placeholder format value, you can do it by using {nameof(ShapeSc.Placeholder)}.";
+            $"If you wanna change some placeholder format value, you can do it by using {nameof(GroupShapeSc.Placeholder)}.";
 
         public PlaceholderCannotBeChangedException(string message) : base(message)
         {
