@@ -285,7 +285,6 @@ namespace ShapeCrawler.Tests.Unit
             textBox.Paragraphs.Should().HaveCountGreaterThan(originParagraphsCount);
 
             presentation.SaveAs(mStream);
-            presentation.Close();
             presentation = PresentationSc.Open(mStream, false);
             textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 4)).TextBox;
             textBox.Paragraphs.Last().Text.Should().BeEquivalentTo(TEST_TEXT);

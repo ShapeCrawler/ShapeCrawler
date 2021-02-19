@@ -5,8 +5,8 @@ namespace ShapeCrawler.Models.Experiment
 {
     public class ChartScNew : BaseShape
     {
-        private readonly SlideMasterSc slideMaster;
         private readonly GraphicFrame pGraphicFrame;
+        private readonly SlideMasterSc slideMaster;
 
         public ChartScNew(SlideMasterSc slideMaster, GraphicFrame pGraphicFrame)
         {

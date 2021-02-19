@@ -7,10 +7,23 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Tables
 {
     /// <summary>
-    /// Represents a cell in a table.
+    ///     Represents a cell in a table.
     /// </summary>
     public class CellSc
     {
+        #region Constructors
+
+        internal CellSc(TableSc table, A.TableCell aTableCell, int rowIdx, int columnIdx)
+        {
+            Table = table;
+            ATableCell = aTableCell;
+            RowIndex = rowIdx;
+            ColumnIndex = columnIdx;
+            _textBox = new ResettableLazy<TextBoxSc>(() => GetTextBox());
+        }
+
+        #endregion Constructors
+
         #region Fields
 
         private readonly ResettableLazy<TextBoxSc> _textBox;
@@ -25,7 +38,7 @@ namespace ShapeCrawler.Tables
         #region Public Properties
 
         /// <summary>
-        /// Gets text box.
+        ///     Gets text box.
         /// </summary>
         public TextBoxSc TextBox => _textBox.Value;
 
@@ -33,26 +46,14 @@ namespace ShapeCrawler.Tables
 
         #endregion Public Properties
 
-        #region Constructors
-
-        internal CellSc(TableSc table, A.TableCell aTableCell, int rowIdx, int columnIdx)
-        {
-            Table = table;
-            ATableCell = aTableCell;
-            RowIndex = rowIdx;
-            ColumnIndex = columnIdx;
-            _textBox = new ResettableLazy<TextBoxSc>(() => GetTextBox());
-        }
-
-        #endregion Constructors
-
         #region Private Methods
 
         private TextBoxSc GetTextBox()
         {
             var aTxtBody = ATableCell.TextBody;
             var aTexts = aTxtBody.Descendants<A.Text>();
-            if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element contain text
+            if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0
+            ) // at least one of <a:t> element contain text
             {
                 return new TextBoxSc(Table.Context, aTxtBody);
             }

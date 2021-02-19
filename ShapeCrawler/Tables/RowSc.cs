@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Tables
 {
     /// <summary>
-    /// Represents a row in a table.
+    ///     Represents a row in a table.
     /// </summary>
     public class RowSc
     {
@@ -14,23 +13,6 @@ namespace ShapeCrawler.Tables
 
         internal readonly A.TableRow ATableRow;
         internal readonly int Index;
-
-        #region Public Properties
-
-        /// <summary>
-        /// Returns row's cells.
-        /// </summary>
-        public IReadOnlyList<CellSc> Cells =>_cells.Value;
-
-        public TableSc Table { get; }
-
-        public long Height
-        {
-            get => ATableRow.Height.Value;
-            set => ATableRow.Height.Value = value;
-        }
-
-        #endregion Public Properties
 
         #region Constructors
 
@@ -76,6 +58,7 @@ namespace ShapeCrawler.Tables
                     addedCell = new CellSc(Table, aTableCell, Index, columnIdx);
                     cellList.Add(addedCell);
                 }
+
                 columnIdx++;
             }
 
@@ -83,5 +66,22 @@ namespace ShapeCrawler.Tables
         }
 
         #endregion
+
+        #region Public Properties
+
+        /// <summary>
+        ///     Returns row's cells.
+        /// </summary>
+        public IReadOnlyList<CellSc> Cells => _cells.Value;
+
+        public TableSc Table { get; }
+
+        public long Height
+        {
+            get => ATableRow.Height.Value;
+            set => ATableRow.Height.Value = value;
+        }
+
+        #endregion Public Properties
     }
 }

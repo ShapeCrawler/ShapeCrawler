@@ -1,19 +1,18 @@
-﻿using DocumentFormat.OpenXml.Drawing;
-using A = DocumentFormat.OpenXml.Drawing;
+﻿using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Tables
 {
     /// <summary>
-    /// Represents a table's column.
+    ///     Represents a table's column.
     /// </summary>
     public class Column
     {
-        internal GridColumn AGridColumn { get; init; }
-
         internal Column(A.GridColumn aGridColumn)
         {
             AGridColumn = aGridColumn;
         }
+
+        internal A.GridColumn AGridColumn { get; init; }
 
         public long Width
         {

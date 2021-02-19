@@ -11,7 +11,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Factories
 {
     /// <summary>
-    /// Represents a shape location and size data manager.
+    ///     Represents a shape location and size data manager.
     /// </summary>
     public class LocationParser
     {
@@ -32,20 +32,16 @@ namespace ShapeCrawler.Factories
 
         #region Public Methods
 
-        /// <summary>
-        /// Gets 
-        /// </summary>
-        /// <param name="sdkCompositeElement"></param>
-        /// <returns></returns>
         public ILocation FromComposite(OpenXmlCompositeElement sdkCompositeElement)
         {
             Check.NotNull(sdkCompositeElement, nameof(sdkCompositeElement));
 
             ILocation innerTransform;
             var aTransform = sdkCompositeElement.Descendants<A.Transform2D>().FirstOrDefault();
-            
-            if (aTransform != null 
-                || sdkCompositeElement.Descendants<P.Transform>().FirstOrDefault() != null) // p:graphicFrame contains p:xfrm
+
+            if (aTransform != null
+                || sdkCompositeElement.Descendants<P.Transform>().FirstOrDefault() != null
+            ) // p:graphicFrame contains p:xfrm
             {
                 // Group
                 if (sdkCompositeElement.Parent is P.GroupShape groupShape)

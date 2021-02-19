@@ -3,35 +3,39 @@ using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Shared;
 using ShapeCrawler.Spreadsheet;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
+
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace ShapeCrawler.Charts
 {
     /// <summary>
-    /// Represents a chart series.
+    ///     Represents a chart series.
     /// </summary>
     public class Series
     {
-        #region Fields
+        #region Constructors
 
-        private readonly Lazy<IReadOnlyList<double>> _pointValues;
-        private readonly Lazy<string> _name;
-        private readonly ChartPart _sdkChartPart;
-        private readonly OpenXmlElement _sdkSeries;
-        private readonly ChartRefParser _chartRefParser;
+        internal Series(ChartType type, OpenXmlElement sdkSeries, ChartPart sdkChartPart, ChartRefParser chartRefParser)
+        {
+            _sdkSeries = sdkSeries ?? throw new ArgumentNullException(nameof(sdkSeries));
+            _sdkChartPart = sdkChartPart ?? throw new ArgumentNullException(nameof(sdkChartPart));
+            _chartRefParser = chartRefParser;
+            _pointValues = new Lazy<IReadOnlyList<double>>(GetPointValues);
+            _name = new Lazy<string>(GetNameOrDefault);
+            Type = type;
+        }
 
-        #endregion Fields
+        #endregion Constructors
 
         /// <summary>
-        /// Returns a chart type.
+        ///     Returns a chart type.
         /// </summary>
         public ChartType Type { get; }
 
         /// <summary>
-        /// Returns a point values.
+        ///     Returns a point values.
         /// </summary>
         public IReadOnlyList<double> PointValues => _pointValues.Value;
 
@@ -50,19 +54,15 @@ namespace ShapeCrawler.Charts
             }
         }
 
-        #region Constructors
+        #region Fields
 
-        internal Series(ChartType type, OpenXmlElement sdkSeries, ChartPart sdkChartPart, ChartRefParser chartRefParser)
-        {
-            _sdkSeries = sdkSeries ?? throw new ArgumentNullException(nameof(sdkSeries));
-            _sdkChartPart = sdkChartPart ?? throw new ArgumentNullException(nameof(sdkChartPart));
-            _chartRefParser = chartRefParser;
-            _pointValues = new Lazy<IReadOnlyList<double>>(GetPointValues);
-            _name = new Lazy<string>(GetNameOrDefault);
-            Type = type;
-        }
+        private readonly Lazy<IReadOnlyList<double>> _pointValues;
+        private readonly Lazy<string> _name;
+        private readonly ChartPart _sdkChartPart;
+        private readonly OpenXmlElement _sdkSeries;
+        private readonly ChartRefParser _chartRefParser;
 
-        #endregion Constructors
+        #endregion Fields
 
         #region Private Methods
 

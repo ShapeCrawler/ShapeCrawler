@@ -3,19 +3,10 @@
 namespace ShapeCrawler.Models.SlideComponents
 {
     /// <summary>
-    /// Represents a slide number data.
+    ///     Represents a slide number data.
     /// </summary>
     public class SlideNumber
     {
-        #region Properties
-
-        /// <summary>
-        /// Gets or sets slide number.
-        /// </summary>
-        public int Number { get; set; }
-
-        #endregion Properties
-
         #region Constructors
 
         public SlideNumber(int sldNum)
@@ -25,5 +16,14 @@ namespace ShapeCrawler.Models.SlideComponents
         }
 
         #endregion Constructors
+
+        #region Properties
+
+        /// <summary>
+        ///     Gets or sets slide number.
+        /// </summary>
+        public int Number { get; set; }
+
+        #endregion Properties
     }
 }

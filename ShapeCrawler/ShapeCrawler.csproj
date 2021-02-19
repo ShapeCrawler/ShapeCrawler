@@ -33,13 +33,13 @@ The library allows to process presentation files without any COM+ or COM interop
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DocumentFormat.OpenXml" Version="2.12.1" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.12.2" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="SkiaSharp" Version="2.80.2" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,7 +47,7 @@ The library allows to process presentation files without any COM+ or COM interop
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="LICENSE">
+    <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

@@ -1,8 +1,11 @@
-﻿namespace ShapeCrawler.Models.Experiment
+﻿using DocumentFormat.OpenXml.Presentation;
+using ShapeCrawler.Factories.Placeholders;
+
+namespace ShapeCrawler.Models.Experiment
 {
     public class AutoShapeNew
     {
-        private readonly DocumentFormat.OpenXml.Presentation.Shape _pShape;
+        private readonly Shape _pShape;
 
         public uint Id => _pShape.NonVisualShapeProperties.NonVisualDrawingProperties.Id;
         public long X { get; set; }

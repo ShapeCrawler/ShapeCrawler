@@ -6,6 +6,7 @@ using ShapeCrawler.Collections;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
+
 // ReSharper disable PossibleMultipleEnumeration
 // ReSharper disable SuggestVarOrType_SimpleTypes
 // ReSharper disable SuggestVarOrType_BuiltInTypes
@@ -23,15 +24,11 @@ namespace ShapeCrawler.Texts
         private readonly Lazy<Bullet> _bullet;
         private readonly ResettableLazy<PortionCollection> _portions;
 
-        #endregion Fields
-
-        #region Internal Properties
-
         internal TextBoxSc TextBox { get; }
         internal A.Paragraph AParagraph { get; }
         internal int Level { get; }
 
-        #endregion Internal Properties
+        #endregion Fields
 
         #region Public Properties
 
@@ -62,13 +59,13 @@ namespace ShapeCrawler.Texts
         /// Initializes an instance of the <see cref="ParagraphSc"/> class.
         /// </summary>
         // TODO: Replace constructor initialization on static .Create()
-        public ParagraphSc(ShapeContext spContext, A.Paragraph aParagraph, TextBoxSc textBox)
+        internal ParagraphSc(A.Paragraph aParagraph, TextBoxSc textBox)
         {
             AParagraph = aParagraph;
             Level = GetInnerLevel(aParagraph);
             _bullet = new Lazy<Bullet>(GetBullet);
             TextBox = textBox;
-            _portions = new ResettableLazy<PortionCollection>(() => PortionCollection.Create(AParagraph, spContext, this));
+            _portions = new ResettableLazy<PortionCollection>(() => PortionCollection.Create(AParagraph, this));
         }
 
         #endregion Constructors

@@ -1,7 +1,7 @@
 ﻿namespace ShapeCrawler
 {
     /// <summary>
-    /// Shape Geometry Type.
+    ///     Shape Geometry Type.
     /// </summary>
     public enum GeometryType
     {

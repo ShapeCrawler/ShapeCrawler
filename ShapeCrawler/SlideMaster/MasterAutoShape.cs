@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Factories.Placeholders;
 using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Models.Styles;

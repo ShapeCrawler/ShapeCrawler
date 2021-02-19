@@ -1,87 +1,87 @@
 ﻿namespace ShapeCrawler
 {
     /// <summary>
-    /// Placeholder types.
+    ///     Placeholder types.
     /// </summary>
     public enum PlaceholderType
     {
         /// <summary>
-        /// Title.
+        ///     Title.
         /// </summary>
         Title,
 
         /// <summary>
-        /// Body.
+        ///     Body.
         /// </summary>
         Body,
-        
+
         /// <summary>
-        /// Subtitle.
+        ///     Subtitle.
         /// </summary>
         SubTitle,
-        
+
         /// <summary>
-        /// Date and Time.
+        ///     Date and Time.
         /// </summary>
         DateAndTime,
-        
+
         /// <summary>
-        /// Slide Number.
+        ///     Slide Number.
         /// </summary>
         SlideNumber,
-        
+
         /// <summary>
-        /// Footer.
+        ///     Footer.
         /// </summary>
         Footer,
-        
+
         /// <summary>
-        /// Header.
+        ///     Header.
         /// </summary>
         Header,
 
         /// <summary>
-        /// OLEObject.
+        ///     OLEObject.
         /// </summary>
         OLEObject,
-        
+
         /// <summary>
-        /// Chart.
+        ///     Chart.
         /// </summary>
         Chart,
-        
+
         /// <summary>
-        /// Table.
+        ///     Table.
         /// </summary>
         Table,
-        
+
         /// <summary>
-        /// Clip Art.
+        ///     Clip Art.
         /// </summary>
         ClipArt,
 
         /// <summary>
-        /// Diagram.
+        ///     Diagram.
         /// </summary>
         Diagram,
-        
+
         /// <summary>
-        /// Media.
+        ///     Media.
         /// </summary>
         Media,
-        
+
         /// <summary>
-        /// Slide Image.
+        ///     Slide Image.
         /// </summary>
         SlideImage,
-        
+
         /// <summary>
-        /// Picture.
+        ///     Picture.
         /// </summary>
         Picture,
 
         /// <summary>
-        /// Custom
+        ///     Custom
         /// </summary>
         Custom
     }

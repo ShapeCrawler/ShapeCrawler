@@ -10,15 +10,15 @@ namespace ShapeCrawler.Factories.ShapeCreators
 {
     internal class OleGraphicFrameHandler : OpenXmlElementHandler
     {
+        private const string Uri = "http://schemas.openxmlformats.org/presentationml/2006/ole";
         private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly LocationParser _transformFactory;
-        private const string Uri = "http://schemas.openxmlformats.org/presentationml/2006/ole";
 
         #region Constructors
 
         internal OleGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory)
         {
-            _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder)); ;
+            _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
             _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
         }
 

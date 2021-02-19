@@ -3,19 +3,19 @@
 namespace ShapeCrawler.Factories.Placeholders
 {
     /// <summary>
-    /// Represents placeholder data.
+    ///     Represents placeholder data.
     /// </summary>
     public class PlaceholderData : IEquatable<PlaceholderData>
     {
         #region Properties
 
         /// <summary>
-        /// Gets or sets placeholder type.
+        ///     Gets or sets placeholder type.
         /// </summary>
         public PlaceholderType PlaceholderType { get; set; }
 
         /// <summary>
-        /// Gets or sets index (p:ph idx="12345").  
+        ///     Gets or sets index (p:ph idx="12345").
         /// </summary>
         /// <returns>Index value or null if such index not exist.</returns>
         public int? Index { get; set; }
@@ -51,13 +51,13 @@ namespace ShapeCrawler.Factories.Placeholders
                 return false;
             }
 
-            var ph = (PlaceholderData)obj;
+            var ph = (PlaceholderData) obj;
 
             return Equals(ph);
         }
 
         /// <summary>
-        /// Returns the hash calculating upon the formula suggested here: https://stackoverflow.com/a/263416/2948684
+        ///     Returns the hash calculating upon the formula suggested here: https://stackoverflow.com/a/263416/2948684
         /// </summary>
         /// <remarks></remarks>
         public override int GetHashCode()

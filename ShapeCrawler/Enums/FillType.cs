@@ -1,7 +1,7 @@
 ﻿namespace ShapeCrawler
 {
     /// <summary>
-    /// Fill type.
+    ///     Fill type.
     /// </summary>
     public enum FillType
     {

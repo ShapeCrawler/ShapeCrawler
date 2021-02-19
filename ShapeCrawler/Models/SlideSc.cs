@@ -4,7 +4,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Factories.Drawing;
-using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Statics;
@@ -16,7 +15,7 @@ using SkiaSharp;
 namespace ShapeCrawler
 {
     /// <summary>
-    /// Represents a slide.
+    ///     Represents a slide.
     /// </summary>
     public class SlideSc
     {
@@ -35,17 +34,17 @@ namespace ShapeCrawler
         #region Properties
 
         /// <summary>
-        /// Returns a slide shapes.
+        ///     Returns a slide shapes.
         /// </summary>
         public ShapesCollection Shapes => _shapes.Value;
 
         /// <summary>
-        /// Returns a slide number in presentation.
+        ///     Returns a slide number in presentation.
         /// </summary>
         public int Number => _sldNumEntity.Number;
 
         /// <summary>
-        /// Returns a background image of the slide. Returns <c>null</c>if slide does not have background image.
+        ///     Returns a background image of the slide. Returns <c>null</c>if slide does not have background image.
         /// </summary>
         public ImageSc Background => _backgroundImage.Value;
 
@@ -65,26 +64,26 @@ namespace ShapeCrawler
             return null;
         }
 #endif
+
         #endregion Properties
 
         #region Constructors
 
         public SlideSc(
-            SlidePart slidePart, 
+            SlidePart slidePart,
             SlideNumber slideNumber,
             PresentationSc presentationEx) :
             this(slidePart, slideNumber, new SlideSchemeService(), presentationEx)
         {
-
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SlideSc"/> class.
+        ///     Initializes a new instance of the <see cref="SlideSc" /> class.
         /// </summary>
         public SlideSc(
-            SlidePart sdkSldPart, 
+            SlidePart sdkSldPart,
             SlideNumber sldNum,
-            SlideSchemeService schemeService, 
+            SlideSchemeService schemeService,
             PresentationSc presentationEx)
         {
             SlidePart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
@@ -100,7 +99,7 @@ namespace ShapeCrawler
         #region Public Methods
 
         /// <summary>
-        /// Saves slide scheme in PNG file.
+        ///     Saves slide scheme in PNG file.
         /// </summary>
         /// <param name="filePath"></param>
         public void SaveScheme(string filePath)
@@ -110,7 +109,7 @@ namespace ShapeCrawler
         }
 
         /// <summary>
-        /// Saves slide scheme in stream.
+        ///     Saves slide scheme in stream.
         /// </summary>
         /// <param name="stream"></param>
         public void SaveScheme(Stream stream)
@@ -136,7 +135,7 @@ namespace ShapeCrawler
                 StrokeWidth = 15,
                 Style = SKPaintStyle.Stroke
             };
-            canvas.DrawCircle(70,70,50, paint);
+            canvas.DrawCircle(70, 70, 50, paint);
 
             using SKPaint textPaint = new SKPaint();
             textPaint.Color = SKColors.Green;
@@ -202,7 +201,7 @@ namespace ShapeCrawler
                 var newSlideCustomXmlPart = SlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
                 customXmlPartStream = newSlideCustomXmlPart.GetStream();
 #if NETSTANDARD2_0
-                _customXmlPart = new Lazy<CustomXmlPart>(()=>newSlideCustomXmlPart);
+                _customXmlPart = new Lazy<CustomXmlPart>(() => newSlideCustomXmlPart);
 #else
                 _customXmlPart = new Lazy<CustomXmlPart>(newSlideCustomXmlPart);
 #endif
@@ -211,6 +210,7 @@ namespace ShapeCrawler
             {
                 customXmlPartStream = _customXmlPart.Value.GetStream();
             }
+
             using var customXmlStreamReader = new StreamWriter(customXmlPartStream);
             customXmlStreamReader.Write($"{ConstantStrings.CustomDataElementName}{value}");
         }
@@ -221,7 +221,8 @@ namespace ShapeCrawler
             {
                 using var customXmlPartStream = new StreamReader(customXmlPart.GetStream());
                 string customXmlPartText = customXmlPartStream.ReadToEnd();
-                if (customXmlPartText.StartsWith(ConstantStrings.CustomDataElementName, StringComparison.CurrentCulture))
+                if (customXmlPartText.StartsWith(ConstantStrings.CustomDataElementName,
+                    StringComparison.CurrentCulture))
                 {
                     return customXmlPart;
                 }
@@ -230,6 +231,6 @@ namespace ShapeCrawler
             return null;
         }
 
-#endregion Private Methods
+        #endregion Private Methods
     }
 }

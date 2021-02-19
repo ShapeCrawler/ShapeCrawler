@@ -3,24 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Factories.Placeholders;
 using ShapeCrawler.Factories.ShapeCreators;
 using ShapeCrawler.Models;
 using ShapeCrawler.Models.Experiment;
-using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Settings;
 using ShapeCrawler.SlideMaster;
-using ShapeCrawler.Tables;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    /// Represents a collection of the slide shapes.
+    ///     Represents a collection of the slide shapes.
     /// </summary>
     public class ShapesCollection : LibraryCollection<IShape>
     {
@@ -46,7 +43,8 @@ namespace ShapeCrawler.Collections
             var oleGrFrameHandler = new OleGraphicFrameHandler(shapeContextBuilder, transformFactory);
             var pShapeHandler = new AutoShapeCreator(shapeContextBuilder, transformFactory, geometryFactory);
             var pictureHandler = new PictureHandler(shapeContextBuilder, transformFactory, geometryFactory);
-            var sdkGroupShapeHandler = new PGroupShapeHandler(shapeContextBuilder, transformFactory, geometryFactory, slidePart);
+            var sdkGroupShapeHandler =
+                new PGroupShapeHandler(shapeContextBuilder, transformFactory, geometryFactory, slidePart);
 
             pShapeHandler.Successor = sdkGroupShapeHandler;
             sdkGroupShapeHandler.Successor = oleGrFrameHandler;
@@ -54,7 +52,7 @@ namespace ShapeCrawler.Collections
             pictureHandler.Successor = chartGrFrameHandler;
             chartGrFrameHandler.Successor = tableGrFrameHandler;
 
-            ShapeTree shapeTree = slidePart.Slide.CommonSlideData.ShapeTree;
+            P.ShapeTree shapeTree = slidePart.Slide.CommonSlideData.ShapeTree;
             var shapes = new List<IShape>(shapeTree.Count());
             foreach (OpenXmlCompositeElement compositeElement in shapeTree.OfType<OpenXmlCompositeElement>())
             {
@@ -68,7 +66,7 @@ namespace ShapeCrawler.Collections
             return new ShapesCollection(shapes);
         }
 
-        public static MasterShapesCollection CreateForMasterSlide(SlideMasterSc slideMaster, ShapeTree shapeTree)
+        public static MasterShapesCollection CreateForMasterSlide(SlideMasterSc slideMaster, P.ShapeTree shapeTree)
         {
             var slideMasterShapes = new List<BaseShape>();
             foreach (OpenXmlCompositeElement compositeElement in shapeTree.OfType<OpenXmlCompositeElement>())
@@ -80,18 +78,24 @@ namespace ShapeCrawler.Collections
                         continue;
                     case P.GraphicFrame pGraphicFrame:
                     {
-                        A.GraphicData aGraphicData = pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
-                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole", StringComparison.Ordinal))
+                        A.GraphicData aGraphicData =
+                            pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
+                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
+                            StringComparison.Ordinal))
                         {
                             slideMasterShapes.Add(new MasterOLEObject(slideMaster, pGraphicFrame));
                             continue;
                         }
-                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart", StringComparison.Ordinal))
+
+                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart",
+                            StringComparison.Ordinal))
                         {
                             slideMasterShapes.Add(new ChartScNew(slideMaster, pGraphicFrame));
                             continue;
                         }
-                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/table", StringComparison.Ordinal))
+
+                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/table",
+                            StringComparison.Ordinal))
                         {
                             slideMasterShapes.Add(new TableNew(slideMaster, pGraphicFrame));
                             continue;
@@ -113,6 +117,7 @@ namespace ShapeCrawler.Collections
                     P.Picture framePicture = compositeElement.Descendants<P.Picture>().FirstOrDefault();
                     pPicture = framePicture;
                 }
+
                 if (pPicture != null)
                 {
                     slideMasterShapes.Add(new PictureScNew(slideMaster, pPicture));

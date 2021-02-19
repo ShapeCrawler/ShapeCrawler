@@ -30,7 +30,7 @@ namespace ShapeCrawler.Factories
             if (transform2D != null)
             {
                 var presetGeometry = spPr.GetFirstChild<PresetGeometry>();
-                
+
                 // Placeholder can have transform on the slide, without having geometry
                 if (presetGeometry == null)
                 {
@@ -38,6 +38,7 @@ namespace ShapeCrawler.Factories
                     {
                         return GeometryType.Custom;
                     }
+
                     return FromLayout();
                 }
 
@@ -55,6 +56,7 @@ namespace ShapeCrawler.Factories
                 {
                     return GeometryType.Rectangle;
                 }
+
                 return placeholderLocationData.Geometry;
             }
         }

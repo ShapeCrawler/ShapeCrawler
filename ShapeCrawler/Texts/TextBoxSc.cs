@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Models;
 using ShapeCrawler.Models.Experiment;
 using ShapeCrawler.Settings;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -17,25 +16,21 @@ namespace ShapeCrawler.Texts
     {
         #region Fields
 
-        private readonly ShapeContext _shapeContext;
         private readonly Lazy<string> _text;
         private readonly OpenXmlCompositeElement _compositeElement;
 
-        #endregion Fields
-
-        #region Internal Properties
-
         internal AutoShape AutoShape { get; }
         internal BaseShape BaseShape { get; }
+        internal ShapeContext ShapeContext { get; }
 
-        #endregion Internal Properties
+        #endregion Fields
 
         #region Public Properties
 
         /// <summary>
         /// Gets text paragraph collection.
         /// </summary>
-        public ParagraphCollection Paragraphs => ParagraphCollection.Create(_compositeElement, _shapeContext, this);
+        public ParagraphCollection Paragraphs => new(_compositeElement, this);
 
         /// <summary>
         /// Gets or sets text box string content. Returns null if the text box is empty.
@@ -68,7 +63,7 @@ namespace ShapeCrawler.Texts
         internal TextBoxSc(AutoShape autoShape, P.TextBody pTextBody)
         {
             AutoShape = autoShape;
-            _shapeContext = autoShape.Context;
+            ShapeContext = autoShape.Context;
             _compositeElement = pTextBody;
             _text = new Lazy<string>(GetText);
         }
@@ -76,7 +71,7 @@ namespace ShapeCrawler.Texts
         // TODO: Resolve conflict getting text box for autoShape and table
         internal TextBoxSc(ShapeContext shapeContext, A.TextBody aTextBody)
         {
-            _shapeContext = shapeContext;
+            ShapeContext = shapeContext;
             _compositeElement = aTextBody;
             _text = new Lazy<string>(GetText);
         }

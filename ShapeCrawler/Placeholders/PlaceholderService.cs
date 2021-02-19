@@ -12,9 +12,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Factories.Placeholders
 {
-    /// <summary>
-    /// <inheritdoc cref="IPlaceholderService"/>
-    /// </summary>
     public class PlaceholderService : IPlaceholderService
     {
         #region Fields
@@ -55,7 +52,7 @@ namespace ShapeCrawler.Factories.Placeholders
             return result;
         }
 
-        public PlaceholderType GetPlaceholderType(OpenXmlElement sdkElement)
+        public static PlaceholderType GetPlaceholderType(OpenXmlElement sdkElement)
         {
             var sdkPlaceholder = sdkElement.Descendants<P.PlaceholderShape>().First();
 
@@ -63,7 +60,7 @@ namespace ShapeCrawler.Factories.Placeholders
         }
 
         /// <summary>
-        /// Gets placeholder data from SDK-element.
+        ///     Gets placeholder data from SDK-element.
         /// </summary>
         /// <param name="sdkElement">Placeholder which is placeholder.</param>
         public PlaceholderData CreatePlaceholderData(OpenXmlElement sdkElement)
@@ -79,7 +76,7 @@ namespace ShapeCrawler.Factories.Placeholders
             // INDEX
             if (ph.Index != null)
             {
-                result.Index = (int)ph.Index.Value;
+                result.Index = (int) ph.Index.Value;
             }
 
             return result;
@@ -108,25 +105,22 @@ namespace ShapeCrawler.Factories.Placeholders
             {
                 return PlaceholderType.Custom;
             }
-            else
+
+            // Simple title and centered title placeholders were united
+            if (phTypeXml == P.PlaceholderValues.Title || phTypeXml == P.PlaceholderValues.CenteredTitle)
             {
-                // Simple title and centered title placeholders were united
-                if (phTypeXml == P.PlaceholderValues.Title || phTypeXml == P.PlaceholderValues.CenteredTitle)
-                {
-                    return PlaceholderType.Title;
-                }
-                else
-                {
-                    return (PlaceholderType)Enum.Parse(typeof(PlaceholderType), phTypeXml.Value.ToString());
-                }
+                return PlaceholderType.Title;
             }
+
+            return (PlaceholderType) Enum.Parse(typeof(PlaceholderType), phTypeXml.Value.ToString());
         }
 
         private void Init(SlideLayoutPart sldLtPart)
         {
             // Get OpenXmlCompositeElement instances have P.ShapeProperties
             var layoutElements = sldLtPart.SlideLayout.CommonSlideData.ShapeTree.Elements<OpenXmlCompositeElement>();
-            var masterElements = sldLtPart.SlideMasterPart.SlideMaster.CommonSlideData.ShapeTree.Elements<OpenXmlCompositeElement>();
+            var masterElements = sldLtPart.SlideMasterPart.SlideMaster.CommonSlideData.ShapeTree
+                .Elements<OpenXmlCompositeElement>();
             var layoutHolders = GetPlaceholders(layoutElements);
             var masterHolders = GetPlaceholders(masterElements);
 
@@ -190,7 +184,8 @@ namespace ShapeCrawler.Factories.Placeholders
             return result;
         }
 
-        private static IEnumerable<OpenXmlCompositeElement> Filter(IEnumerable<OpenXmlCompositeElement> compositeElements)
+        private static IEnumerable<OpenXmlCompositeElement> Filter(
+            IEnumerable<OpenXmlCompositeElement> compositeElements)
         {
             var filteredList = new List<OpenXmlCompositeElement>();
             var candidates = compositeElements.Where(e => e.IsPlaceholder());
@@ -206,6 +201,6 @@ namespace ShapeCrawler.Factories.Placeholders
             return filteredList;
         }
 
-#endregion
+        #endregion
     }
 }

@@ -3,16 +3,14 @@
 namespace ShapeCrawler.Exceptions
 {
     /// <summary>
-    /// Contains constant error messages.
+    ///     Contains constant error messages.
     /// </summary>
     public static class ExceptionMessages
     {
         public const string NotTitle = "Chart has not a title.";
 
-        public static string SeriesHasNotName => $"The Series does not have a name. Use {nameof(Series.HasName)} to check whether series has a name.";
-
         /// <summary>
-        /// Returns message string with placeholder.
+        ///     Returns message string with placeholder.
         /// </summary>
         public const string PresentationIsLarge = "The size of presentation more than {0} bytes.";
 
@@ -23,6 +21,9 @@ namespace ShapeCrawler.Exceptions
 
         public const string ForGroupedCanNotChanged =
             "This property can not be changed for a grouped shape. Use IsGrouped to check whether the shape is grouped.";
+
+        public static string SeriesHasNotName =>
+            $"The Series does not have a name. Use {nameof(Series.HasName)} to check whether series has a name.";
 
         public static string NotXValues =>
             $"This chart type has not {nameof(ChartSc.XValues)} property. You can check it via {nameof(ChartSc.HasXValues)} property.";

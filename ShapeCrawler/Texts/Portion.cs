@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Settings;
@@ -13,20 +12,12 @@ namespace ShapeCrawler.Texts
     /// <summary>
     /// Represents a text paragraph portion.
     /// </summary>
-    [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-    [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
     public class Portion
     {
         private readonly ResettableLazy<FontSc> _font;
-        private readonly ShapeContext _shapeContext;
-
-        #region Internal Properties
 
         internal ParagraphSc Paragraph { get; }
-        
         internal readonly A.Text AText;
-
-        #endregion Internal Properties
 
         #region Public Properties
 
@@ -56,11 +47,10 @@ namespace ShapeCrawler.Texts
 
         #region Constructors
 
-        internal Portion(A.Text aText, ParagraphSc paragraph, ShapeContext shapeContext)
+        internal Portion(A.Text aText, ParagraphSc paragraph)
         {
             AText = aText;
             Paragraph = paragraph;
-            _shapeContext = shapeContext;
             _font = new ResettableLazy<FontSc>(GetFont);
         }
 
@@ -86,7 +76,7 @@ namespace ShapeCrawler.Texts
             P.Shape shapeTreeSource = (P.Shape)Paragraph.TextBox.AutoShape.ShapeTreeSource;
             if (shapeTreeSource.IsPlaceholder())
             {
-                int? prFontHeight = _shapeContext.PlaceholderFontService.GetFontSizeByParagraphLvl(shapeTreeSource, Paragraph.Level);
+                int? prFontHeight = Paragraph.TextBox.ShapeContext.PlaceholderFontService.GetFontSizeByParagraphLvl(shapeTreeSource, Paragraph.Level);
                 if (prFontHeight != null)
                 {
                     return (int)prFontHeight;
@@ -99,7 +89,7 @@ namespace ShapeCrawler.Texts
                 return presentationData.LlvFontHeights[Paragraph.Level];
             }
 
-            var exist = _shapeContext.TryGetFromMasterOtherStyle(Paragraph.Level, out int fh);
+            var exist = Paragraph.TextBox.ShapeContext.TryGetFromMasterOtherStyle(Paragraph.Level, out int fh);
             if (exist)
             {
                 return fh;

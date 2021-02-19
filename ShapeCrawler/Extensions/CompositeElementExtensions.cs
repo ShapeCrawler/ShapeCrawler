@@ -1,18 +1,18 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Exceptions;
 using P = DocumentFormat.OpenXml.Presentation;
 using D = DocumentFormat.OpenXml.Drawing;
-using ShapeCrawler.Exceptions;
 
 namespace ShapeCrawler.Extensions
 {
     /// <summary>
-    /// Extension methods for <see cref="OpenXmlCompositeElement"/> instance.
+    ///     Extension methods for <see cref="OpenXmlCompositeElement" /> instance.
     /// </summary>
     public static class CompositeElementExtensions
     {
         /// <summary>
-        /// Determines whether element is placeholder.
+        ///     Determines whether element is placeholder.
         /// </summary>
         /// <param name="compositeElement"></param>
         /// <returns></returns>
@@ -22,7 +22,7 @@ namespace ShapeCrawler.Extensions
         }
 
         /// <summary>
-        /// Gets non visual drawing properties values (cNvPr).
+        ///     Gets non visual drawing properties values (cNvPr).
         /// </summary>
         /// <returns>(identifier, hidden, name)</returns>
         public static (int, bool, string) GetNvPrValues(this OpenXmlCompositeElement compositeElement)
@@ -37,21 +37,25 @@ namespace ShapeCrawler.Extensions
             return (id, hidden, name);
         }
 
-        public static P.NonVisualDrawingProperties GetNonVisualDrawingProperties(this OpenXmlCompositeElement compositeElement)
+        public static P.NonVisualDrawingProperties GetNonVisualDrawingProperties(
+            this OpenXmlCompositeElement compositeElement)
         {
             return compositeElement switch
             {
-                P.GraphicFrame pGraphicFrame => pGraphicFrame.NonVisualGraphicFrameProperties.NonVisualDrawingProperties,
+                P.GraphicFrame pGraphicFrame => pGraphicFrame.NonVisualGraphicFrameProperties
+                    .NonVisualDrawingProperties,
                 P.Shape pShape => pShape.NonVisualShapeProperties.NonVisualDrawingProperties,
                 _ => throw new ShapeCrawlerException()
             };
         }
 
-        public static P.ApplicationNonVisualDrawingProperties GetApplicationNonVisualDrawingProperties(this OpenXmlCompositeElement compositeElement)
+        public static P.ApplicationNonVisualDrawingProperties GetApplicationNonVisualDrawingProperties(
+            this OpenXmlCompositeElement compositeElement)
         {
             return compositeElement switch
             {
-                P.GraphicFrame pGraphicFrame => pGraphicFrame.NonVisualGraphicFrameProperties.ApplicationNonVisualDrawingProperties,
+                P.GraphicFrame pGraphicFrame => pGraphicFrame.NonVisualGraphicFrameProperties
+                    .ApplicationNonVisualDrawingProperties,
                 P.Shape pShape => pShape.NonVisualShapeProperties.ApplicationNonVisualDrawingProperties,
                 _ => throw new ShapeCrawlerException()
             };

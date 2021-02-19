@@ -4,18 +4,17 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Collections;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Factories.Drawing;
+using ShapeCrawler.Factories.Placeholders;
 using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.Models.Styles;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
 using ShapeCrawler.Tables;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
-using ShapeCrawler.Exceptions;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
@@ -23,145 +22,24 @@ using ShapeCrawler.Exceptions;
 namespace ShapeCrawler
 {
     /// <summary>
-    /// Represents a shape on a slide.
+    ///     Represents a shape on a slide.
     /// </summary>
     public class TableSc : ITable
     {
-        #region Fields
-
-        private readonly IImageExFactory _imageFactory = new ImageExFactory(); // TODO: do not create this factory for each table shape
-        private bool? _hidden;
-        private int _id;
-        private string _name;
-        private readonly ILocation _innerTransform;
-        private readonly P.GraphicFrame _pGraphicFrame;
-        private readonly ResettableLazy<RowCollection> _rowCollection;
-        
-        internal ShapeContext Context { get; }
-        internal A.Table ATable => _pGraphicFrame.GetATable();
-        internal OpenXmlCompositeElement ShapeTreeSource { get; } // TODO: delete this duplicate of _pGraphicFrame
-        internal SlideSc Slide { get; }
-
-        #endregion Fields
-
-        #region Public Properties
-
-        public IReadOnlyList<Column> Columns => GetColumnList(); //TODO: make lazy
-        public RowCollection Rows => _rowCollection.Value;
-        public CellSc this[int rowIndex, int columnIndex] => Rows[rowIndex].Cells[columnIndex];
-
-        #endregion Public Properties
-
-        /// <summary>
-        /// Returns the x-coordinate of the upper-left corner of the shape.
-        /// </summary>
-        public long X
-        {
-            get => _innerTransform.X;
-            set => _innerTransform.SetX(value);
-        }
-
-        /// <summary>
-        /// Returns the y-coordinate of the upper-left corner of the shape.
-        /// </summary>
-        public long Y
-        {
-            get => _innerTransform.Y;
-            set => _innerTransform.SetY(value);
-        }
-
-        /// <summary>
-        /// Returns the width of the shape.
-        /// </summary>
-        public long Width
-        {
-            get => _innerTransform.Width;
-            set => _innerTransform.SetWidth(value);
-        }
-
-        /// <summary>
-        /// Returns the height of the shape.
-        /// </summary>
-        public long Height
-        {
-            get => _innerTransform.Height;
-            set => _innerTransform.SetHeight(value);
-        }
-
-        /// <summary>
-        /// Returns an element identifier.
-        /// </summary>
-        public int Id
-        {
-            get
-            {
-                InitIdHiddenName();
-                return _id;
-            }
-        }
-
-        /// <summary>
-        /// Gets an element name.
-        /// </summary>
-        public string Name
-        {
-            get
-            {
-                InitIdHiddenName();
-                return _name;
-            }
-        }
-
-        /// <summary>
-        /// Determines whether the shape is hidden.
-        /// </summary>
-        public bool Hidden
-        {
-            get
-            {
-                InitIdHiddenName();
-                return (bool)_hidden;
-            }
-        }
-        
-        public Placeholder Placeholder
-        {
-            get
-            {
-                if (Context.CompositeElement.IsPlaceholder())
-                {
-                    return new Placeholder();
-                }
-
-                return null;
-            }
-        }
-
-        public GeometryType GeometryType => GeometryType.Rectangle;
-
-        public string CustomData
-        {
-            get => GetCustomData();
-            set => SetCustomData(value);
-        }
-
         #region Constructors
 
-        internal TableSc(
-            OpenXmlCompositeElement shapeTreeSource,
-            ILocation innerTransform,
-            ShapeContext spContext)
+        internal TableSc(OpenXmlCompositeElement shapeTreeSource, ILocation innerTransform, ShapeContext spContext)
         {
             ShapeTreeSource = shapeTreeSource;
             _innerTransform = innerTransform;
             Context = spContext;
-            _rowCollection = new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame)ShapeTreeSource));
+            _rowCollection =
+                new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) ShapeTreeSource));
             _pGraphicFrame = shapeTreeSource as P.GraphicFrame;
         }
 
         #endregion Constructors
-
-#if DEBUG
+            
         public void MergeCells(CellSc cell1, CellSc cell2) // TODO: Optimize method
         {
             if (CannotBeMerged(cell1, cell2))
@@ -184,10 +62,19 @@ namespace ShapeCrawler
                     A.TableCell[] rowATblCells = aTableRowList[rowIdx].Elements<A.TableCell>().ToArray();
                     A.TableCell firstMergingCell = rowATblCells[minColIndex];
                     firstMergingCell.GridSpan = new Int32Value(horizontalMergingCount);
-                    Span<A.TableCell> nextMergingCells = new Span<A.TableCell>(rowATblCells, minColIndex + 1, horizontalMergingCount - 1);
+                    Span<A.TableCell> nextMergingCells =
+                        new Span<A.TableCell>(rowATblCells, minColIndex + 1, horizontalMergingCount - 1);
                     foreach (A.TableCell aTblCell in nextMergingCells)
                     {
                         aTblCell.HorizontalMerge = new BooleanValue(true);
+
+                        // Copy paragraphs into merged cell
+                        IEnumerable<A.Paragraph> aParagraphsWithARun = aTblCell.TextBody.Elements<A.Paragraph>()
+                            .Where(p => p.Elements<A.Run>().Any());
+                        foreach (A.Paragraph aParagraph in aParagraphsWithARun)
+                        {
+                            this[minRowIndex, minColIndex].ATableCell.TextBody.Append(aParagraph.CloneNode(true));
+                        }
                     }
                 }
             }
@@ -195,16 +82,29 @@ namespace ShapeCrawler
             // Vertical merging
             if (minRowIndex != maxRowIndex)
             {
+                // Set row span value for the first cell in the merged cells
                 int verticalMergingCount = maxRowIndex - minRowIndex + 1;
-                foreach (A.TableCell aTblCell in aTableRowList[minRowIndex].Elements<A.TableCell>().Skip(minColIndex).Take(maxColIndex + 1))
+                IEnumerable<A.TableCell> rowSpanCells = aTableRowList[minRowIndex].Elements<A.TableCell>().Skip(minColIndex)
+                    .Take(maxColIndex + 1);
+                foreach (A.TableCell aTblCell in rowSpanCells)
                 {
                     aTblCell.RowSpan = new Int32Value(verticalMergingCount);
                 }
+
+                // Set vertical merging flag
                 foreach (A.TableRow aTblRow in aTableRowList.Skip(minRowIndex + 1).Take(maxRowIndex))
                 {
                     foreach (A.TableCell aTblCell in aTblRow.Elements<A.TableCell>().Take(maxColIndex + 1))
                     {
                         aTblCell.VerticalMerge = new BooleanValue(true);
+
+                        // Copy paragraphs into merged cell
+                        IEnumerable<A.Paragraph> aParagraphsWithARun = aTblCell.TextBody.Elements<A.Paragraph>()
+                            .Where(p => p.Elements<A.Run>().Any());
+                        foreach (A.Paragraph aParagraph in aParagraphsWithARun)
+                        {
+                            this[minRowIndex, minColIndex].ATableCell.TextBody.Append(aParagraph.CloneNode(true));
+                        }
                     }
                 }
             }
@@ -227,7 +127,9 @@ namespace ShapeCrawler
                     // Delete a:tc elements
                     foreach (A.TableRow aTblRow in aTableRowList)
                     {
-                        foreach (A.TableCell aTblCell in aTblRow.Elements<A.TableCell>().Skip(colIdx).Take(deleteColumnCount))
+                        IEnumerable<A.TableCell> removeCells =
+                            aTblRow.Elements<A.TableCell>().Skip(colIdx).Take(deleteColumnCount);
+                        foreach (A.TableCell aTblCell in removeCells)
                         {
                             aTblCell.Remove();
                         }
@@ -265,7 +167,121 @@ namespace ShapeCrawler
             _rowCollection.Reset();
         }
 
-#endif
+        #region Fields
+
+        private bool? _hidden;
+        private int _id;
+        private string _name;
+        private readonly ILocation _innerTransform;
+        private readonly P.GraphicFrame _pGraphicFrame;
+        private readonly ResettableLazy<RowCollection> _rowCollection;
+
+        internal ShapeContext Context { get; }
+        internal A.Table ATable => _pGraphicFrame.GetATable();
+        internal OpenXmlCompositeElement ShapeTreeSource { get; } // TODO: delete this duplicate of _pGraphicFrame
+
+        #endregion Fields
+
+        #region Public Properties
+
+        public IReadOnlyList<Column> Columns => GetColumnList(); //TODO: make lazy
+        public RowCollection Rows => _rowCollection.Value;
+        public CellSc this[int rowIndex, int columnIndex] => Rows[rowIndex].Cells[columnIndex];
+
+        /// <summary>
+        ///     Returns the x-coordinate of the upper-left corner of the shape.
+        /// </summary>
+        public long X
+        {
+            get => _innerTransform.X;
+            set => _innerTransform.SetX(value);
+        }
+
+        /// <summary>
+        ///     Returns the y-coordinate of the upper-left corner of the shape.
+        /// </summary>
+        public long Y
+        {
+            get => _innerTransform.Y;
+            set => _innerTransform.SetY(value);
+        }
+
+        /// <summary>
+        ///     Returns the width of the shape.
+        /// </summary>
+        public long Width
+        {
+            get => _innerTransform.Width;
+            set => _innerTransform.SetWidth(value);
+        }
+
+        /// <summary>
+        ///     Returns the height of the shape.
+        /// </summary>
+        public long Height
+        {
+            get => _innerTransform.Height;
+            set => _innerTransform.SetHeight(value);
+        }
+
+        /// <summary>
+        ///     Returns an element identifier.
+        /// </summary>
+        public int Id
+        {
+            get
+            {
+                InitIdHiddenName();
+                return _id;
+            }
+        }
+
+        /// <summary>
+        ///     Gets an element name.
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                InitIdHiddenName();
+                return _name;
+            }
+        }
+
+        /// <summary>
+        ///     Determines whether the shape is hidden.
+        /// </summary>
+        public bool Hidden
+        {
+            get
+            {
+                InitIdHiddenName();
+                return (bool) _hidden;
+            }
+        }
+
+        public Placeholder Placeholder
+        {
+            get
+            {
+                if (Context.CompositeElement.IsPlaceholder())
+                {
+                    return new Placeholder(ShapeTreeSource);
+                }
+
+                return null;
+            }
+        }
+
+        public GeometryType GeometryType => GeometryType.Rectangle;
+
+        public string CustomData
+        {
+            get => GetCustomData();
+            set => SetCustomData(value);
+        }
+
+        #endregion Public Properties
 
         #region Private Methods
 
@@ -296,7 +312,8 @@ namespace ShapeCrawler
 
         private void SetCustomData(string value)
         {
-            var customDataElement = $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
+            var customDataElement =
+                $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
             Context.CompositeElement.InnerXml += customDataElement;
         }
 
@@ -319,6 +336,7 @@ namespace ShapeCrawler
             {
                 return;
             }
+
             var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
             _id = id;
             _hidden = hidden;

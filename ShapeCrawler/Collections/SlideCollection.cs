@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -12,15 +10,26 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    /// Represents a slide collection.
+    ///     Represents a slide collection.
     /// </summary>
     public class SlideCollection : ISlideCollection
     {
-        private readonly ResettableLazy<List<SlideSc>> _slides;
-        private readonly PresentationPart _presentationPart;
         private readonly PresentationSc _presentation;
+        private readonly PresentationPart _presentationPart;
+        private readonly ResettableLazy<List<SlideSc>> _slides;
 
-        public IEnumerator<SlideSc> GetEnumerator() => _slides.Value.GetEnumerator();
+        internal SlideCollection(PresentationPart presentationPart, PresentationSc presentation)
+        {
+            _presentationPart = presentationPart;
+            _presentation = presentation;
+
+            _slides = new ResettableLazy<List<SlideSc>>(GetSlides);
+        }
+
+        public IEnumerator<SlideSc> GetEnumerator()
+        {
+            return _slides.Value.GetEnumerator();
+        }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -32,21 +41,21 @@ namespace ShapeCrawler.Collections
         public int Count => _slides.Value.Count;
 
         /// <summary>
-        /// Removes the specified slide.
+        ///     Removes the specified slide.
         /// </summary>
         public void Remove(SlideSc removingSlide)
         {
             P.Presentation presentation = _presentationPart.Presentation;
 
             // Get the list of slide identifiers in the presentation
-            SlideIdList slideIdList = presentation.SlideIdList;
+            P.SlideIdList slideIdList = presentation.SlideIdList;
 
             // Get the slide identifier of the specified slide
-            SlideId slideId = (SlideId)slideIdList.ChildElements[removingSlide.Number - 1];
+            P.SlideId slideId = (P.SlideId) slideIdList.ChildElements[removingSlide.Number - 1];
 
             // Gets the relationship identifier of the slide
             string slideRelId = slideId.RelationshipId;
-            
+
             // Remove the slide from the slide list
             slideIdList.RemoveChild(slideId);
 
@@ -54,7 +63,7 @@ namespace ShapeCrawler.Collections
             if (presentation.CustomShowList != null)
             {
                 // Iterate through the list of custom shows
-                foreach (var customShow in presentation.CustomShowList.Elements<CustomShow>())
+                foreach (var customShow in presentation.CustomShowList.Elements<P.CustomShow>())
                 {
                     if (customShow.SlideList == null)
                     {
@@ -62,8 +71,8 @@ namespace ShapeCrawler.Collections
                     }
 
                     // declares a link list of slide list entries
-                    var slideListEntries = new LinkedList<SlideListEntry>();
-                    foreach (SlideListEntry slideListEntry in customShow.SlideList.Elements())
+                    var slideListEntries = new LinkedList<P.SlideListEntry>();
+                    foreach (P.SlideListEntry slideListEntry in customShow.SlideList.Elements())
                     {
                         // finds the slide reference to remove from the custom show
                         if (slideListEntry.Id != null && slideListEntry.Id == slideRelId)
@@ -71,9 +80,9 @@ namespace ShapeCrawler.Collections
                             slideListEntries.AddLast(slideListEntry);
                         }
                     }
-                    
+
                     // Removes all references to the slide from the custom show
-                    foreach (SlideListEntry slideListEntry in slideListEntries)
+                    foreach (P.SlideListEntry slideListEntry in slideListEntries)
                     {
                         customShow.SlideList.RemoveChild(slideListEntry);
                     }
@@ -82,17 +91,10 @@ namespace ShapeCrawler.Collections
 
             // Gets the slide part for the specified slide
             SlidePart slidePart = _presentationPart.GetPartById(slideRelId) as SlidePart;
-            
+
             _presentationPart.DeletePart(slidePart);
             _presentationPart.Presentation.Save();
             _slides.Reset();
-        }
-
-        public SlideCollection (PresentationPart presentationPart, PresentationSc presentation)
-        {
-            _presentationPart = presentationPart;
-            _presentation = presentation;
-            _slides = new ResettableLazy<List<SlideSc>>(GetSlides);
         }
 
         private List<SlideSc> GetSlides()

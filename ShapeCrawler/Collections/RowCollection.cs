@@ -11,7 +11,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    /// Represents a table rows collection.
+    ///     Represents a table rows collection.
     /// </summary>
     public class RowCollection : EditableCollection<RowSc>
     {
@@ -24,10 +24,20 @@ namespace ShapeCrawler.Collections
 
         #endregion Constructors
 
+        internal static RowCollection Create(TableSc table, P.GraphicFrame pGraphicFrame)
+        {
+            IEnumerable<A.TableRow> aTableRows = pGraphicFrame.GetATable().Elements<A.TableRow>();
+            var rowList = new List<RowSc>(aTableRows.Count());
+            int rowIndex = 0;
+            rowList.AddRange(aTableRows.Select(aTblRow => new RowSc(table, aTblRow, rowIndex++)));
+
+            return new RowCollection(rowList);
+        }
+
         #region Public Methods
 
         /// <summary>
-        /// Removes the specified table row.
+        ///     Removes the specified table row.
         /// </summary>
         /// <param name="row"></param>
         public override void Remove(RowSc row)
@@ -37,7 +47,7 @@ namespace ShapeCrawler.Collections
         }
 
         /// <summary>
-        /// Removes table row by index.
+        ///     Removes table row by index.
         /// </summary>
         /// <param name="index"></param>
         public void RemoveAt(int index)
@@ -52,15 +62,5 @@ namespace ShapeCrawler.Collections
         }
 
         #endregion Public Methods
-
-        internal static RowCollection Create(TableSc table, P.GraphicFrame pGraphicFrame)
-        {
-            IEnumerable<A.TableRow> aTableRows = pGraphicFrame.GetATable().Elements<A.TableRow>();
-            var rowList = new List<RowSc>(aTableRows.Count());
-            int rowIndex = 0;
-            rowList.AddRange(aTableRows.Select(aTblRow => new RowSc(table, aTblRow, rowIndex++)));
-
-            return new RowCollection(rowList);
-        }
     }
 }

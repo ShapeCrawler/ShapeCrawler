@@ -1,7 +1,7 @@
 ﻿namespace ShapeCrawler
 {
     /// <summary>
-    /// Library exception codes
+    ///     Library exception codes
     /// </summary>
     public enum ExceptionCode
     {

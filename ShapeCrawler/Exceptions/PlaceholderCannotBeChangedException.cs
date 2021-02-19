@@ -1,4 +1,6 @@
-﻿namespace ShapeCrawler.Exceptions
+﻿using System;
+
+namespace ShapeCrawler.Exceptions
 {
     public class PlaceholderCannotBeChangedException : ShapeCrawlerException
     {
@@ -10,13 +12,13 @@
         {
         }
 
-        public PlaceholderCannotBeChangedException(string message, System.Exception innerException) : base(message, innerException)
+        public PlaceholderCannotBeChangedException(string message, Exception innerException) : base(message,
+            innerException)
         {
         }
 
-        public PlaceholderCannotBeChangedException(): base(ExceptionMessage)
+        public PlaceholderCannotBeChangedException() : base(ExceptionMessage)
         {
-
         }
     }
 }

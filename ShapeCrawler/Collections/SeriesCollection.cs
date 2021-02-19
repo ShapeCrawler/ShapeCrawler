@@ -4,7 +4,6 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Shared;
 using ShapeCrawler.Spreadsheet;
 
 // ReSharper disable PossibleMultipleEnumeration
@@ -12,16 +11,17 @@ using ShapeCrawler.Spreadsheet;
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    /// Represents chart series collection.
+    ///     Represents chart series collection.
     /// </summary>
     public class SeriesCollection : LibraryCollection<Series>
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new collection of the chart series.
+        ///     Initializes a new collection of the chart series.
         /// </summary>
-        internal SeriesCollection(IEnumerable<OpenXmlElement> sdkCharts, ChartPart sdkChartPart, ChartRefParser chartRefParser)
+        internal SeriesCollection(IEnumerable<OpenXmlElement> sdkCharts, ChartPart sdkChartPart,
+            ChartRefParser chartRefParser)
         {
             var tempSeriesCollection = new LinkedList<Series>(); //TODO: make weak reference
             foreach (var nextSdkChart in sdkCharts)
