@@ -1,16 +1,13 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories.Drawing;
+using ShapeCrawler.Factories.Placeholders;
 using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.Models.Styles;
-using ShapeCrawler.Models.Transforms;
 using ShapeCrawler.Pictures;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Statics;
-using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -19,16 +16,11 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler
 {
-
-    /// <summary>
-    /// Represents a shape on a slide.
-    /// </summary>
+    /// <inheritdoc cref="IPicture"/>
     public class PictureSc : IPicture
     {
         #region Fields
 
-        private readonly Lazy<ShapeFill> _shapeFill;
-        private readonly IImageExFactory _imageFactory = new ImageExFactory();
         private bool? _hidden;
         private int _id;
         private string _name;
@@ -42,50 +34,32 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        /// <summary>
-        /// Gets image.
-        /// </summary>
         public ImageSc Image { get; }
 
-        /// <summary>
-        /// Returns the x-coordinate of the upper-left corner of the shape.
-        /// </summary>
         public long X
         {
             get => _innerTransform.X;
             set => _innerTransform.SetX(value);
         }
 
-        /// <summary>
-        /// Returns the y-coordinate of the upper-left corner of the shape.
-        /// </summary>
         public long Y
         {
             get => _innerTransform.Y;
             set => _innerTransform.SetY(value);
         }
 
-        /// <summary>
-        /// Returns the width of the shape.
-        /// </summary>
         public long Width
         {
             get => _innerTransform.Width;
             set => _innerTransform.SetWidth(value);
         }
 
-        /// <summary>
-        /// Returns the height of the shape.
-        /// </summary>
         public long Height
         {
             get => _innerTransform.Height;
             set => _innerTransform.SetHeight(value);
         }
 
-        /// <summary>
-        /// Returns an element identifier.
-        /// </summary>
         public int Id
         {
             get
@@ -95,9 +69,6 @@ namespace ShapeCrawler
             }
         }
 
-        /// <summary>
-        /// Gets an element name.
-        /// </summary>
         public string Name
         {
             get
@@ -107,9 +78,6 @@ namespace ShapeCrawler
             }
         }
 
-        /// <summary>
-        /// Determines whether the shape is hidden.
-        /// </summary>
         public bool Hidden
         {
             get
@@ -125,7 +93,7 @@ namespace ShapeCrawler
             {
                 if (Context.CompositeElement.IsPlaceholder())
                 {
-                    return new Placeholder();
+                    return new Placeholder(ShapeTreeSource);
                 }
 
                 return null;

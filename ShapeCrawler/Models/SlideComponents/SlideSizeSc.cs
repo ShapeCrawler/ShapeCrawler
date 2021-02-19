@@ -1,18 +1,10 @@
 ﻿namespace ShapeCrawler.Models.SlideComponents
 {
     /// <summary>
-    /// Represent presentation slides size.
+    ///     Represent presentation slides size.
     /// </summary>
     public class SlideSizeSc
     {
-        #region Properties
-
-        public int Width { get; }
-
-        public int Height { get; }
-
-        #endregion Properties
-
         #region Constructors
 
         public SlideSizeSc(int sdkW, int sdkH)
@@ -22,5 +14,13 @@
         }
 
         #endregion Constructors
+
+        #region Properties
+
+        public int Width { get; }
+
+        public int Height { get; }
+
+        #endregion Properties
     }
 }

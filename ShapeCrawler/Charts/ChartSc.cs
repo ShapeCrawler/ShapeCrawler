@@ -7,7 +7,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Models;
+using ShapeCrawler.Factories.Placeholders;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Spreadsheet;
@@ -18,12 +18,41 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts
 {
-
     /// <summary>
-    /// Represents a shape on a slide.
+    ///     Represents a shape on a slide.
     /// </summary>
     public class ChartSc : IChart
     {
+        #region Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ChartSc" /> class.
+        /// </summary>
+        internal ChartSc(
+            P.GraphicFrame pGraphicFrame,
+            SlideSc slide,
+            OpenXmlCompositeElement shapeTreeSource,
+            ILocation innerTransform,
+            ShapeContext spContext)
+        {
+            _pGraphicFrame = pGraphicFrame;
+            Slide = slide;
+            ShapeTreeSource = shapeTreeSource;
+            _innerTransform = innerTransform;
+            Context = spContext;
+
+            _firstSeries = new Lazy<OpenXmlElement>(GetFirstSeries);
+            _xValues = new Lazy<LibraryCollection<double>>(TryGetXValues);
+            _seriesCollection = new Lazy<SeriesCollection>(GetSeriesCollection);
+            _categories = new Lazy<CategoryCollection>(TryGetCategoryCollection);
+            _chartRefParser = new ChartRefParser(this);
+            _chartType = new Lazy<ChartType>(GetChartType);
+
+            Init(); //TODO: convert to lazy loading
+        }
+
+        #endregion Constructors
+
         #region Fields
 
         // Contains chart elements, e.g. <c:pieChart>. If the chart type is not a combination,
@@ -53,12 +82,12 @@ namespace ShapeCrawler.Charts
         #region Public Properties
 
         /// <summary>
-        /// Gets the chart title. Returns null if chart has not a title.
+        ///     Gets the chart title. Returns null if chart has not a title.
         /// </summary>
         public ChartType Type => _chartType.Value;
 
         /// <summary>
-        /// Gets chart title string.
+        ///     Gets chart title string.
         /// </summary>
         public string Title
         {
@@ -71,7 +100,7 @@ namespace ShapeCrawler.Charts
         }
 
         /// <summary>
-        /// Determines whether chart has a title.
+        ///     Determines whether chart has a title.
         /// </summary>
         public bool HasTitle
         {
@@ -84,17 +113,18 @@ namespace ShapeCrawler.Charts
         }
 
         /// <summary>
-        /// Determines whether chart has categories. Some chart types like ScatterChart and BubbleChart does not have categories.
+        ///     Determines whether chart has categories. Some chart types like ScatterChart and BubbleChart does not have
+        ///     categories.
         /// </summary>
         public bool HasCategories => _categories.Value != null;
 
         /// <summary>
-        /// Gets collection of the chart series.
+        ///     Gets collection of the chart series.
         /// </summary>
         public SeriesCollection SeriesCollection => _seriesCollection.Value;
 
         /// <summary>
-        /// Gets collection of the chart category.
+        ///     Gets collection of the chart category.
         /// </summary>
         public CategoryCollection Categories
         {
@@ -103,7 +133,8 @@ namespace ShapeCrawler.Charts
                 if (_categories.Value == null)
                 {
 #if NETSTANDARD2_1 || NETCOREAPP2_0 || NET5_0
-                    var msg = ExceptionMessages.ChartCanNotHaveCategory.Replace("#0", Type.ToString(), StringComparison.OrdinalIgnoreCase);
+                    var msg = ExceptionMessages.ChartCanNotHaveCategory.Replace("#0", Type.ToString(),
+                        StringComparison.OrdinalIgnoreCase);
 #else
                     var msg = ExceptionMessages.ChartCanNotHaveCategory.Replace("#0", Type.ToString());
 #endif
@@ -131,43 +162,16 @@ namespace ShapeCrawler.Charts
 
         #endregion Public Properties
 
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChartSc"/> class.
-        /// </summary>
-        internal ChartSc(
-            P.GraphicFrame pGraphicFrame, 
-            SlideSc slide, 
-            OpenXmlCompositeElement shapeTreeSource,
-            ILocation innerTransform,
-            ShapeContext spContext)
-        {
-            _pGraphicFrame = pGraphicFrame;
-            Slide = slide;
-            ShapeTreeSource = shapeTreeSource;
-            _innerTransform = innerTransform;
-            Context = spContext;
-
-            _firstSeries = new Lazy<OpenXmlElement>(GetFirstSeries);
-            _xValues = new Lazy<LibraryCollection<double>>(TryGetXValues);
-            _seriesCollection = new Lazy<SeriesCollection>(GetSeriesCollection);
-            _categories = new Lazy<CategoryCollection>(TryGetCategoryCollection);
-            _chartRefParser = new ChartRefParser(this);
-            _chartType = new Lazy<ChartType>(GetChartType);
-
-            Init(); //TODO: convert to lazy loading
-        }
-
-        #endregion Constructors
-
         #region Private Methods
 
         private void Init()
         {
-            StringValue chartPartRef = _pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>().GetFirstChild<C.ChartReference>().Id;
+            StringValue chartPartRef = _pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>()
+                .GetFirstChild<C.ChartReference>().Id;
             _chartPart = Slide.SlidePart.GetPartById(chartPartRef) as ChartPart;
-            _sdkCharts = _chartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));  // example: <c:barChart>, <c:lineChart>
+            _sdkCharts = _chartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea
+                .Where(e => e.LocalName.EndsWith("Chart",
+                    StringComparison.Ordinal)); // example: <c:barChart>, <c:lineChart>
         }
 
         private ChartType GetChartType()
@@ -223,7 +227,8 @@ namespace ShapeCrawler.Charts
             staticTitle = null;
             if (Type == ChartType.Combination)
             {
-                staticTitle = chartText.RichText.Descendants<A.Text>().Select(t => t.Text).Aggregate((t1, t2) => t1 + t2);
+                staticTitle = chartText.RichText.Descendants<A.Text>().Select(t => t.Text)
+                    .Aggregate((t1, t2) => t1 + t2);
                 return true;
             }
 
@@ -254,6 +259,7 @@ namespace ShapeCrawler.Charts
             {
                 return null;
             }
+
             var points = _chartRefParser.GetNumbers(sdkXValues.NumberReference, _chartPart);
 
             return new LibraryCollection<double>(points);
@@ -261,7 +267,8 @@ namespace ShapeCrawler.Charts
 
         private OpenXmlElement GetFirstSeries()
         {
-            return _sdkCharts.First().ChildElements.FirstOrDefault(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
+            return _sdkCharts.First().ChildElements
+                .FirstOrDefault(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
         }
 
         #endregion Private Methods
@@ -270,7 +277,7 @@ namespace ShapeCrawler.Charts
         #region Public Properties
 
         /// <summary>
-        /// Returns the x-coordinate of the upper-left corner of the shape.
+        ///     Returns the x-coordinate of the upper-left corner of the shape.
         /// </summary>
         public long X
         {
@@ -279,7 +286,7 @@ namespace ShapeCrawler.Charts
         }
 
         /// <summary>
-        /// Returns the y-coordinate of the upper-left corner of the shape.
+        ///     Returns the y-coordinate of the upper-left corner of the shape.
         /// </summary>
         public long Y
         {
@@ -288,7 +295,7 @@ namespace ShapeCrawler.Charts
         }
 
         /// <summary>
-        /// Returns the width of the shape.
+        ///     Returns the width of the shape.
         /// </summary>
         public long Width
         {
@@ -297,16 +304,16 @@ namespace ShapeCrawler.Charts
         }
 
         /// <summary>
-        /// Returns the height of the shape.
+        ///     Returns the height of the shape.
         /// </summary>
         public long Height
         {
             get => _innerTransform.Height;
             set => _innerTransform.SetHeight(value);
         }
-        
+
         /// <summary>
-        /// Returns an element identifier.
+        ///     Returns an element identifier.
         /// </summary>
         public int Id
         {
@@ -318,7 +325,7 @@ namespace ShapeCrawler.Charts
         }
 
         /// <summary>
-        /// Gets an element name.
+        ///     Gets an element name.
         /// </summary>
         public string Name
         {
@@ -330,30 +337,30 @@ namespace ShapeCrawler.Charts
         }
 
         /// <summary>
-        /// Determines whether the shape is hidden.
+        ///     Determines whether the shape is hidden.
         /// </summary>
         public bool Hidden
         {
             get
             {
                 InitIdHiddenName();
-                return (bool)_hidden;
+                return (bool) _hidden;
             }
         }
-        
+
         public Placeholder Placeholder
         {
             get
             {
                 if (Context.CompositeElement.IsPlaceholder())
                 {
-                    return new Placeholder();
+                    return new Placeholder(ShapeTreeSource);
                 }
 
                 return null;
             }
         }
-        
+
         public GeometryType GeometryType { get; }
 
         public string CustomData
@@ -362,14 +369,14 @@ namespace ShapeCrawler.Charts
             set => SetCustomData(value);
         }
 
-
         #endregion Properties
 
         #region Private Methods
 
         private void SetCustomData(string value)
         {
-            var customDataElement = $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
+            var customDataElement =
+                $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
             Context.CompositeElement.InnerXml += customDataElement;
         }
 
@@ -392,6 +399,7 @@ namespace ShapeCrawler.Charts
             {
                 return;
             }
+
             var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
             _id = id;
             _hidden = hidden;

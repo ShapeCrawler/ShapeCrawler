@@ -3,19 +3,19 @@
 namespace ShapeCrawler.Charts
 {
     /// <summary>
-    /// Represents a chart category.
+    ///     Represents a chart category.
     /// </summary>
     public class Category
     {
         #region Properties
 
         /// <summary>
-        /// Gets main category. Returns null if the chart is not a multi-category chart type.
+        ///     Gets main category. Returns <c>NULL</c> if the chart is not a multi-category chart type.
         /// </summary>
         public Category MainCategory { get; }
 
         /// <summary>
-        /// Gets category name.
+        ///     Gets category name.
         /// </summary>
         public string Name { get; }
 
@@ -24,20 +24,17 @@ namespace ShapeCrawler.Charts
         #region Constructors
 
         /// <summary>
-        /// Constructs a non-multi-category.
+        ///     Initializes a new non-multi-category.
         /// </summary>
-        /// <param name="value"></param>
-        public Category(string value)
+        internal Category(string value)
         {
             Name = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>
-        /// Constructs a multi-category.
+        ///     Initializes a new multi-category.
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="parent"></param>
-        public Category(string value, Category parent)
+        internal Category(string value, Category parent)
         {
             Name = value ?? throw new ArgumentNullException(nameof(value));
             MainCategory = parent ?? throw new ArgumentNullException(nameof(parent));

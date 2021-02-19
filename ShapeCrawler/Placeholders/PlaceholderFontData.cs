@@ -3,7 +3,7 @@
 namespace ShapeCrawler.Factories.Placeholders
 {
     /// <summary>
-    /// Represents placeholder font data.
+    ///     Represents placeholder font data.
     /// </summary>
     public class PlaceholderFontData : PlaceholderData
     {

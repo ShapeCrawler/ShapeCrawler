@@ -3,38 +3,38 @@
 namespace ShapeCrawler
 {
     /// <summary>
-    /// Main shape content type.
+    ///     Main shape content type.
     /// </summary>
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum ShapeContentType
     {
         /// <summary>
-        /// Chart.
+        ///     Chart.
         /// </summary>
         Chart,
 
         /// <summary>
-        /// Element which has grouped elements.
+        ///     Element which has grouped elements.
         /// </summary>
         Group,
 
         /// <summary>
-        /// Picture.
+        ///     Picture.
         /// </summary>
         Picture,
 
         /// <summary>
-        /// AutoShape.
+        ///     AutoShape.
         /// </summary>
         AutoShape,
 
         /// <summary>
-        /// Table.
+        ///     Table.
         /// </summary>
         Table,
 
         /// <summary>
-        /// OLE Object.
+        ///     OLE Object.
         /// </summary>
         OLEObject
     }

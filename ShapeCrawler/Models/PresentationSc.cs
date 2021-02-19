@@ -5,7 +5,6 @@ using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
@@ -19,6 +18,8 @@ namespace ShapeCrawler
     [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
     public sealed class PresentationSc : IDisposable
     {
+        internal PresentationData PresentationData;
+
         #region Fields
 
         private PresentationDocument _presentationDocument;
@@ -28,33 +29,32 @@ namespace ShapeCrawler
 
         #endregion Fields
 
-        internal PresentationData PresentationData;
-
         #region Public Properties
 
         /// <summary>
-        /// Gets the presentation slides.
+        ///     Gets the presentation slides.
         /// </summary>
         public ISlideCollection Slides => _slides.Value;
 
         /// <summary>
-        /// Gets the presentation slides width.
+        ///     Gets the presentation slides width.
         /// </summary>
         public int SlideWidth => _slideSize.Value.Width;
 
         /// <summary>
-        /// Gets the presentation slides height.
+        ///     Gets the presentation slides height.
         /// </summary>
         public int SlideHeight => _slideSize.Value.Height;
 
-        public SlideMasterCollection SlideMasters => SlideMasterCollection.Create(_presentationDocument.PresentationPart.SlideMasterParts);
+        public SlideMasterCollection SlideMasters =>
+            SlideMasterCollection.Create(_presentationDocument.PresentationPart.SlideMasterParts);
 
         #endregion Properties Public
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationSc"/> class by pptx-file path.
+        ///     Initializes a new instance of the <see cref="PresentationSc" /> class by pptx-file path.
         /// </summary>
         internal PresentationSc(string pptxPath, in bool isEditable)
         {
@@ -64,7 +64,7 @@ namespace ShapeCrawler
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationSc"/> class by pptx-file stream.
+        ///     Initializes a new instance of the <see cref="PresentationSc" /> class by pptx-file stream.
         /// </summary>
         internal PresentationSc(Stream pptxStream, in bool isEditable)
         {
@@ -74,7 +74,7 @@ namespace ShapeCrawler
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresentationSc"/> class by pptx-file stream.
+        ///     Initializes a new instance of the <see cref="PresentationSc" /> class by pptx-file stream.
         /// </summary>
         private PresentationSc(MemoryStream pptxStream, in bool isEditable)
         {
@@ -98,27 +98,27 @@ namespace ShapeCrawler
         }
 
         /// <summary>
-        /// Saves presentation in specified file path.
+        ///     Saves presentation in specified file path.
         /// </summary>
         /// <param name="filePath"></param>
         public void SaveAs(string filePath)
         {
             Check.NotEmpty(filePath, nameof(filePath));
-            _presentationDocument = (PresentationDocument)_presentationDocument.SaveAs(filePath);
+            _presentationDocument = (PresentationDocument) _presentationDocument.SaveAs(filePath);
         }
 
         /// <summary>
-        /// Saves presentation in specified stream.
+        ///     Saves presentation in specified stream.
         /// </summary>
         /// <param name="stream"></param>
         public void SaveAs(Stream stream)
         {
             Check.NotNull(stream, nameof(stream));
-            _presentationDocument = (PresentationDocument)_presentationDocument.Clone(stream);
+            _presentationDocument = (PresentationDocument) _presentationDocument.Clone(stream);
         }
 
         /// <summary>
-        /// Saves and closes the presentation.
+        ///     Saves and closes the presentation.
         /// </summary>
         public void Close()
         {
@@ -181,7 +181,8 @@ namespace ShapeCrawler
             {
                 throw new FileNotFoundException(nameof(path));
             }
-            var  fileInfo = new FileInfo(path);
+
+            var fileInfo = new FileInfo(path);
 
             ThrowIfPptxSizeLarge(fileInfo.Length);
         }

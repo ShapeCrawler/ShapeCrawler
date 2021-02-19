@@ -8,7 +8,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Models.Experiment
 {
     /// <summary>
-    /// Represents a table element on a slide.
+    ///     Represents a table element on a slide.
     /// </summary>
     public class TableNew : BaseShape
     {
@@ -26,19 +26,15 @@ namespace ShapeCrawler.Models.Experiment
 
         internal GroupShapeSc Shape { get; set; }
 
-        #region Constructors
+        public override long Width => throw new NotImplementedException();
 
-        internal TableNew(P.GraphicFrame pGraphicFrame)
-        {
-            _pGraphicFrame = pGraphicFrame ?? throw new ArgumentNullException(nameof(pGraphicFrame));
-        }
+        public override long Height => throw new NotImplementedException();
 
-        internal TableNew(SlideMasterSc slideMaster, P.GraphicFrame pGraphicFrame)
-        {
-            _pGraphicFrame = pGraphicFrame;
-        }
+        public override long X => throw new NotImplementedException();
 
-        #endregion Constructors
+        public override long Y => throw new NotImplementedException();
+
+        public override GeometryType GeometryType => throw new NotImplementedException();
 
         #region Private Methods
 
@@ -52,14 +48,18 @@ namespace ShapeCrawler.Models.Experiment
 
         #endregion Private Methods
 
-        public override long Width => throw new NotImplementedException();
+        #region Constructors
 
-        public override long Height => throw new NotImplementedException();
+        internal TableNew(P.GraphicFrame pGraphicFrame)
+        {
+            _pGraphicFrame = pGraphicFrame ?? throw new ArgumentNullException(nameof(pGraphicFrame));
+        }
 
-        public override long X => throw new NotImplementedException();
+        internal TableNew(SlideMasterSc slideMaster, P.GraphicFrame pGraphicFrame)
+        {
+            _pGraphicFrame = pGraphicFrame;
+        }
 
-        public override long Y => throw new NotImplementedException();
-
-        public override GeometryType GeometryType => throw new NotImplementedException();
+        #endregion Constructors
     }
 }

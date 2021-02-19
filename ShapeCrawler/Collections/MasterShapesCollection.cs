@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ShapeCrawler.Models;
 using ShapeCrawler.Models.Experiment;
 
 namespace ShapeCrawler.Collections

@@ -7,24 +7,42 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace ShapeCrawler.Models.Styles
 {
     /// <summary>
-    /// Represents a shape fill.
+    ///     Represents a shape fill.
     /// </summary>
-    public class ShapeFill
+    public class ShapeFill : IShapeFill
     {
         /// <summary>
-        /// Returns fill type.
+        ///     Returns fill type.
         /// </summary>
         public FillType Type { get; }
 
         /// <summary>
-        /// Returns picture image. Returns <c>null</c> if fill type is not picture.
+        ///     Returns picture image. Returns <c>null</c> if fill type is not picture.
         /// </summary>
         public ImageSc Picture { get; }
 
         /// <summary>
-        /// Returns instance of the <see cref="System.Drawing.Color"/>. Returns <c>null</c> if fill type is not solid color.
+        ///     Returns instance of the <see cref="System.Drawing.Color" />. Returns <c>null</c> if fill type is not solid color.
         /// </summary>
         public Color SolidColor { get; }
+
+        #region Public Methods
+
+        public static ShapeFill FromXmlSolidFill(A.RgbColorModelHex rgbColorModelHex)
+        {
+            var hexColor = rgbColorModelHex.Val.ToString();
+            var hexColorInt = int.Parse(hexColor, NumberStyles.HexNumber, CultureInfo.CurrentCulture);
+            Color clr = Color.FromArgb(hexColorInt);
+
+            return new ShapeFill(clr);
+        }
+
+        #endregion Public Methods
+
+        internal static ShapeFill FromASchemeClr(A.SchemeColor schemeColor)
+        {
+            return new ShapeFill(schemeColor);
+        }
 
         #region Constructors
 
@@ -46,27 +64,8 @@ namespace ShapeCrawler.Models.Styles
 
         private ShapeFill(A.SchemeColor schemeColor)
         {
-            
         }
 
         #endregion Constructors
-
-        #region Public Methods
-
-        public static ShapeFill FromXmlSolidFill(A.RgbColorModelHex rgbColorModelHex)
-        {
-            var hexColor = rgbColorModelHex.Val.ToString();
-            var hexColorInt = int.Parse(hexColor, NumberStyles.HexNumber, CultureInfo.CurrentCulture);
-            Color clr = Color.FromArgb(hexColorInt);
-
-            return new ShapeFill(clr);
-        }
-
-        #endregion Public Methods
-
-        public static ShapeFill FromASchemeClr(A.SchemeColor schemeColor)
-        {
-            return new ShapeFill(schemeColor);
-        }
     }
 }

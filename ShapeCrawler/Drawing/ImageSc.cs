@@ -7,7 +7,7 @@ using ShapeCrawler.Shared;
 namespace ShapeCrawler.Factories.Drawing
 {
     /// <summary>
-    /// Represents an image model.
+    ///     Represents an image model.
     /// </summary>
     public class ImageSc
     {
@@ -42,7 +42,7 @@ namespace ShapeCrawler.Factories.Drawing
 
             using var imgPartStream = GetImagePart().GetStream();
             _bytes = new byte[imgPartStream.Length];
-            await imgPartStream.ReadAsync(_bytes.AsMemory(0, (int)imgPartStream.Length)).ConfigureAwait(false);
+            await imgPartStream.ReadAsync(_bytes.AsMemory(0, (int) imgPartStream.Length)).ConfigureAwait(false);
 
             return _bytes;
         }
@@ -56,7 +56,7 @@ namespace ShapeCrawler.Factories.Drawing
 
             using var imgPartStream = GetImagePart().GetStream();
             _bytes = new byte[imgPartStream.Length];
-            await imgPartStream.ReadAsync(_bytes, 0, (int)imgPartStream.Length).ConfigureAwait(false);
+            await imgPartStream.ReadAsync(_bytes, 0, (int) imgPartStream.Length).ConfigureAwait(false);
 
             return _bytes;
         }
@@ -67,16 +67,18 @@ namespace ShapeCrawler.Factories.Drawing
             {
                 return _bytes; // return from cache
             }
+
             var imgPartStream = GetImagePart().GetStream();
             _bytes = new byte[imgPartStream.Length];
-            await imgPartStream.ReadAsync(_bytes, 0, (int)imgPartStream.Length).ConfigureAwait(false);;
+            await imgPartStream.ReadAsync(_bytes, 0, (int) imgPartStream.Length).ConfigureAwait(false);
+            ;
             imgPartStream.Close();
             return _bytes;
         }
 #endif
 
         /// <summary>
-        /// Sets an image.
+        ///     Sets an image.
         /// </summary>
         /// <param name="stream"></param>
         public void SetImage(Stream stream)

@@ -7,44 +7,18 @@ using ShapeCrawler.Collections;
 using ShapeCrawler.Models;
 using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Pictures;
-using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Tables;
 
 namespace ShapeCrawler.Factories.Drawing
 {
     /// <summary>
-    /// Represents a slide scheme generator.
+    ///     Represents a slide scheme generator.
     /// </summary>
     public class SlideSchemeService
     {
         private const int Scale = 10000;
         private const int BitmapOffset = 50;
         private const int RectangleOffset = 10;
-
-        #region Public Methods
-
-        public static void SaveScheme(ShapesCollection shapes, int sldW, int sldH, string filePath)
-        {
-            var bitmap = GetBitmap(shapes, sldW, sldH);
-            bitmap.Save(filePath);
-            bitmap.Dispose();
-        }
-
-        /// <summary>
-        /// Saves in PNG.
-        /// </summary>
-        /// <param name="shapes"></param>
-        /// <param name="sldW"></param>
-        /// <param name="sldH"></param>
-        /// <param name="stream"></param>
-        public static void SaveScheme(ShapesCollection shapes, int sldW, int sldH, Stream stream)
-        {
-            var bitmap = GetBitmap(shapes, sldW, sldH);
-            bitmap.Save(stream, ImageFormat.Png);
-            bitmap.Dispose();
-        }
-
-        #endregion Public Methods
 
         #region Private Methods
 
@@ -65,10 +39,10 @@ namespace ShapeCrawler.Factories.Drawing
             // Draw shape rectangles
             foreach (IShape shape in shapes)
             {
-                var x = (int)(shape.X / Scale);
-                var y = (int)(shape.Y / Scale);
-                var w = (int)(shape.Width / Scale);
-                var h = (int)(shape.Height / Scale);
+                var x = (int) (shape.X / Scale);
+                var y = (int) (shape.Y / Scale);
+                var w = (int) (shape.Width / Scale);
+                var h = (int) (shape.Height / Scale);
                 var shapeRectangle = new Rectangle(x, y, w, h);
                 switch (shape)
                 {
@@ -94,5 +68,30 @@ namespace ShapeCrawler.Factories.Drawing
         }
 
         #endregion Private Methods
+
+        #region Public Methods
+
+        public static void SaveScheme(ShapesCollection shapes, int sldW, int sldH, string filePath)
+        {
+            var bitmap = GetBitmap(shapes, sldW, sldH);
+            bitmap.Save(filePath);
+            bitmap.Dispose();
+        }
+
+        /// <summary>
+        ///     Saves in PNG.
+        /// </summary>
+        /// <param name="shapes"></param>
+        /// <param name="sldW"></param>
+        /// <param name="sldH"></param>
+        /// <param name="stream"></param>
+        public static void SaveScheme(ShapesCollection shapes, int sldW, int sldH, Stream stream)
+        {
+            var bitmap = GetBitmap(shapes, sldW, sldH);
+            bitmap.Save(stream, ImageFormat.Png);
+            bitmap.Dispose();
+        }
+
+        #endregion Public Methods
     }
 }

@@ -4,21 +4,25 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Shared;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
+
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    /// Represents a collection of the chart category.
+    ///     Represents a collection of the chart category.
     /// </summary>
     public class CategoryCollection : LibraryCollection<Category>
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new collection of the chart categories.
+        ///     Initializes a new collection of the chart categories.
         /// </summary>
-        /// <param name="sdkFirstChartSeries">First series. Actually, it does not matter: all chart series contain the same categories.</param>
+        /// <param name="sdkFirstChartSeries">
+        ///     First series. Actually, it does not matter: all chart series contain the same
+        ///     categories.
+        /// </param>
         public CategoryCollection(OpenXmlElement sdkFirstChartSeries)
         {
             Check.NotNull(sdkFirstChartSeries, nameof(sdkFirstChartSeries));
@@ -43,6 +47,7 @@ namespace ShapeCrawler.Collections
                 {
                     sdkNumericValues = strRef.StringCache.Descendants<C.NumericValue>();
                 }
+
                 CollectionItems = new List<Category>(sdkNumericValues.Count());
                 foreach (var numericValue in sdkNumericValues)
                 {

@@ -1,8 +1,9 @@
 ﻿// ReSharper disable CheckNamespace
+
 namespace ShapeCrawler
 {
     /// <summary>
-    /// Chart types.
+    ///     Chart types.
     /// </summary>
     public enum ChartType
     {

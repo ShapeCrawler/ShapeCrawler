@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    /// Represents a base class for all library collections.
+    ///     Represents a base class for all library collections.
     /// </summary>
     public class LibraryCollection<T> : IReadOnlyCollection<T>
     {
@@ -15,23 +15,29 @@ namespace ShapeCrawler.Collections
         #endregion Fields
 
         /// <summary>
-        /// Gets the generic enumerator that iterates through the collection.
-        /// </summary>
-        public IEnumerator<T> GetEnumerator() => CollectionItems.GetEnumerator();
-
-        /// <summary>
-        /// Gets an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns></returns>
-        IEnumerator IEnumerable.GetEnumerator() => CollectionItems.GetEnumerator();
-
-        /// <summary>
-        /// Gets the element at the specified index.
+        ///     Gets the element at the specified index.
         /// </summary>
         public T this[int index] => CollectionItems[index];
 
         /// <summary>
-        /// Gets the number of series items in the collection.
+        ///     Gets the generic enumerator that iterates through the collection.
+        /// </summary>
+        public IEnumerator<T> GetEnumerator()
+        {
+            return CollectionItems.GetEnumerator();
+        }
+
+        /// <summary>
+        ///     Gets an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return CollectionItems.GetEnumerator();
+        }
+
+        /// <summary>
+        ///     Gets the number of series items in the collection.
         /// </summary>
         public int Count => CollectionItems.Count;
 
@@ -39,7 +45,6 @@ namespace ShapeCrawler.Collections
 
         public LibraryCollection()
         {
-
         }
 
         public LibraryCollection(IEnumerable<T> paragraphItems)

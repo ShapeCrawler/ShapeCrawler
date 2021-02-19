@@ -1,9 +1,9 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Settings;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -12,66 +12,81 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts
 {
-    public class ParagraphCollection : LibraryCollection<ParagraphSc>
+    public class ParagraphCollection : IParagraphCollection
     {
-        private readonly ShapeContext _spContext;
-        private readonly TextBoxSc _parentTextBox;
+        private readonly ResettableLazy<List<ParagraphSc>> _paragraphs;
+
+        private readonly OpenXmlCompositeElement _textBodyCompositeElement;
+        private readonly TextBoxSc _textBox;
 
         #region Constructors
 
-        internal ParagraphCollection() : base(new List<ParagraphSc>())
+        internal ParagraphCollection(OpenXmlCompositeElement textBodyCompositeElement, TextBoxSc textBox)
         {
-        }
+            _textBodyCompositeElement = textBodyCompositeElement;
+            _textBox = textBox;
 
-        internal ParagraphCollection(IEnumerable<ParagraphSc> paragraphItems, ShapeContext spContext, TextBoxSc parentTextBox) 
-            : base(paragraphItems)
-        {
-            _spContext = spContext;
-            _parentTextBox = parentTextBox;
+            _paragraphs = new ResettableLazy<List<ParagraphSc>>(GetParagraphs);
         }
 
         #endregion Constructors
 
-        internal static ParagraphCollection Create(OpenXmlCompositeElement textBodyCompositeElement, ShapeContext spContext, TextBoxSc parentTextBox)
+        private List<ParagraphSc> GetParagraphs()
         {
             // Parse non-empty paragraphs
-            IEnumerable<A.Paragraph> nonEmptyAParagraphs = textBodyCompositeElement.Elements<A.Paragraph>().Where(p => p.Descendants<A.Text>().Any());
+            IEnumerable<A.Paragraph> nonEmptyAParagraphs = _textBodyCompositeElement.Elements<A.Paragraph>()
+                .Where(p => p.Descendants<A.Text>().Any());
 
             var paragraphs = new List<ParagraphSc>(nonEmptyAParagraphs.Count());
-            paragraphs.AddRange(nonEmptyAParagraphs.Select(aParagraph => new ParagraphSc(spContext, aParagraph, parentTextBox)));
+            paragraphs.AddRange(nonEmptyAParagraphs.Select(aParagraph => new ParagraphSc(aParagraph, _textBox)));
 
-            return new ParagraphCollection(paragraphs, spContext, parentTextBox);
+            return paragraphs;
         }
 
         #region Public Methods
+
+        public IEnumerator<ParagraphSc> GetEnumerator()
+        {
+            return _paragraphs.Value.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public ParagraphSc this[int index] => _paragraphs.Value[index];
+
+        public int Count => _paragraphs.Value.Count;
 
         public void RemoveRange(int index, int removeCount)
         {
             // Remove from outer
             for (int removeIdx = index; removeIdx <= removeCount; removeIdx++)
             {
-                CollectionItems[removeIdx].Remove();
+                _paragraphs.Value[removeIdx].Remove();
             }
 
-            // Remove from collection
-            CollectionItems.RemoveRange(index, removeCount);
+            _paragraphs.Reset();
         }
 
         /// <summary>
-        /// Adds a new paragraph in collection.
+        ///     Adds a new paragraph in collection.
         /// </summary>
-        /// <returns>Added <see cref="ParagraphSc"/> instance.</returns>
+        /// <returns>Added <see cref="ParagraphSc" /> instance.</returns>
         public ParagraphSc Add()
         {
             // Create a new paragraph from the last paragraph and insert at the end
-            A.Paragraph lastAParagraph = CollectionItems.Last().AParagraph;
+            A.Paragraph lastAParagraph = _paragraphs.Value.Last().AParagraph;
             A.Paragraph newAParagraph = (A.Paragraph) lastAParagraph.CloneNode(true);
             lastAParagraph.InsertAfterSelf(newAParagraph);
 
-            ParagraphSc newParagraph = new ParagraphSc(_spContext, newAParagraph, _parentTextBox);
-            newParagraph.Text = string.Empty;
-            
-            CollectionItems.Add(newParagraph);
+            ParagraphSc newParagraph = new ParagraphSc(newAParagraph, _textBox)
+            {
+                Text = string.Empty
+            };
+
+            _paragraphs.Reset();
 
             return newParagraph;
         }

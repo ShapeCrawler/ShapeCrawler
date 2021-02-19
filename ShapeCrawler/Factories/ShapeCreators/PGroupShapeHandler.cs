@@ -14,15 +14,15 @@ namespace ShapeCrawler.Factories.ShapeCreators
 {
     internal class PGroupShapeHandler : OpenXmlElementHandler
     {
+        private readonly GeometryFactory _geometryFactory;
         private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly SlidePart _slidePart;
-        private readonly GeometryFactory _geometryFactory;
         private readonly LocationParser _transformFactory;
 
         internal PGroupShapeHandler(ShapeContext.Builder shapeContextBuilder,
-                                    LocationParser transformFactory,
-                                    GeometryFactory geometryFactory,
-                                    SlidePart sdkSldPart)
+            LocationParser transformFactory,
+            GeometryFactory geometryFactory,
+            SlidePart sdkSldPart)
         {
             _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(sdkSldPart));
             _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
@@ -39,7 +39,8 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 var pShapeHandler = new AutoShapeCreator(_shapeContextBuilder, _transformFactory, _geometryFactory);
                 var oleGrFrameHandler = new OleGraphicFrameHandler(_shapeContextBuilder, _transformFactory);
                 var pictureHandler = new PictureHandler(_shapeContextBuilder, _transformFactory, _geometryFactory);
-                var pGroupShapeHandler = new PGroupShapeHandler(_shapeContextBuilder, _transformFactory, _geometryFactory, _slidePart);
+                var pGroupShapeHandler = new PGroupShapeHandler(_shapeContextBuilder, _transformFactory,
+                    _geometryFactory, _slidePart);
                 var chartGrFrameHandler = new ChartGraphicFrameHandler(_shapeContextBuilder, _transformFactory);
                 var tableGrFrameHandler = new TableGraphicFrameHandler(_shapeContextBuilder, _transformFactory);
 
@@ -59,6 +60,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
                         groupedShapes.Add(groupedShape);
                     }
                 }
+
                 var spContext = _shapeContextBuilder.Build(shapeTreeSource);
                 var transformGroup = pGroupShape.GroupShapeProperties.TransformGroup;
                 var innerTransform = new NonPlaceholderTransform(transformGroup);

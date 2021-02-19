@@ -3,29 +3,19 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Models;
 using ShapeCrawler.Settings;
-using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Factories.ShapeCreators
 {
     /// <summary>
-    /// Represents a picture handler for p:pic and picture p:graphicFrame element.
+    ///     Represents a picture handler for p:pic and picture p:graphicFrame element.
     /// </summary>
     internal class PictureHandler : OpenXmlElementHandler
     {
-        #region Fields
-
-        private readonly ShapeContext.Builder _shapeContextBuilder;
-        private readonly LocationParser _transformFactory;
-        private readonly GeometryFactory _geometryFactory;
-
-        #endregion Fields
-
         #region Constructors
 
-        internal PictureHandler(ShapeContext.Builder shapeContextBuilder,
-                              LocationParser transformFactory,
-                              GeometryFactory geometryFactory)
+        internal PictureHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory,
+            GeometryFactory geometryFactory)
         {
             _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
             _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
@@ -36,8 +26,6 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         public override IShape Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
         {
-            Check.NotNull(shapeTreeSource, nameof(shapeTreeSource));
-
             P.Picture pPicture;
             if (shapeTreeSource is P.Picture treePic)
             {
@@ -48,6 +36,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 var framePic = shapeTreeSource.Descendants<P.Picture>().FirstOrDefault();
                 pPicture = framePic;
             }
+
             if (pPicture != null)
             {
                 var pBlipFill = pPicture.GetFirstChild<P.BlipFill>();
@@ -56,6 +45,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 {
                     return null;
                 }
+
                 var spContext = _shapeContextBuilder.Build(shapeTreeSource);
                 var innerTransform = _transformFactory.FromComposite(pPicture);
                 var geometry = _geometryFactory.ForCompositeElement(pPicture, pPicture.ShapeProperties);
@@ -66,5 +56,13 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
             return Successor?.Create(shapeTreeSource, slide);
         }
+
+        #region Fields
+
+        private readonly ShapeContext.Builder _shapeContextBuilder;
+        private readonly LocationParser _transformFactory;
+        private readonly GeometryFactory _geometryFactory;
+
+        #endregion Fields
     }
 }

@@ -28,15 +28,15 @@ namespace ShapeCrawler.Tests.Unit
             _fixture = fixture;
         }
 
-        [Theory(Skip = "In Progress")]
+        [Theory]
         [MemberData(nameof(TestCasesPlaceholderType))]
         public void PlaceholderType_GetterReturnsPlaceholderTypeOfTheShape(IShape shape, PlaceholderType expectedType)
         {
             // Act
-            //PlaceholderType? actualType = shape.Placeholder.PlaceholderType;
+            PlaceholderType actualType = shape.Placeholder.Type;
 
             // Assert
-            //actualType.Should().Be(expectedType);
+            actualType.Should().Be(expectedType);
         }
 
         public static IEnumerable<object[]> TestCasesPlaceholderType()

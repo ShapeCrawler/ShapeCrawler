@@ -11,9 +11,9 @@ namespace ShapeCrawler.Factories.ShapeCreators
 {
     internal class TableGraphicFrameHandler : OpenXmlElementHandler
     {
+        private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/table";
         private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly LocationParser _transformFactory;
-        private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/table";
 
         #region Constructors
 

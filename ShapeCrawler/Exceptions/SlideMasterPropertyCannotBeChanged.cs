@@ -1,4 +1,6 @@
-﻿namespace ShapeCrawler.Exceptions
+﻿using System;
+
+namespace ShapeCrawler.Exceptions
 {
     internal class SlideMasterPropertyCannotBeChanged : ShapeCrawlerException
     {
@@ -10,7 +12,8 @@
         {
         }
 
-        public SlideMasterPropertyCannotBeChanged(string message, System.Exception innerException) : base(message, innerException)
+        public SlideMasterPropertyCannotBeChanged(string message, Exception innerException) : base(message,
+            innerException)
         {
         }
     }

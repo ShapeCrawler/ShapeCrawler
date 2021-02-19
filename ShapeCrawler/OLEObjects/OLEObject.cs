@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories.Drawing;
+using ShapeCrawler.Factories.Placeholders;
 using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Models.Styles;
@@ -27,7 +28,6 @@ namespace ShapeCrawler
         #region Fields
 
         internal ShapeContext Context;
-        private readonly IImageExFactory _imageFactory = new ImageExFactory();
         private bool? _hidden;
         private int _id;
         private string _name;
@@ -118,7 +118,7 @@ namespace ShapeCrawler
             {
                 if (Context.CompositeElement.IsPlaceholder())
                 {
-                    return new Placeholder();
+                    return new Placeholder(ShapeTreeSource);
                 }
 
                 return null;

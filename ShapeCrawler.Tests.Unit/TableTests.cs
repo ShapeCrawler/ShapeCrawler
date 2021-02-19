@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -191,12 +192,14 @@ namespace ShapeCrawler.Tests.Unit
             // Assert
             table[0, 0].IsMergedCell.Should().BeTrue();
             table[0, 1].IsMergedCell.Should().BeTrue();
+            table[0, 0].TextBox.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
 
             presentation.SaveAs(mStream);
             presentation = PresentationSc.Open(mStream, false);
             table = presentation.Slides[2].Shapes.First(sp => sp.Id == 5) as TableSc;
             table[0, 0].IsMergedCell.Should().BeTrue();
             table[0, 1].IsMergedCell.Should().BeTrue();
+            table[0, 0].TextBox.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
         }
 
         [Fact(DisplayName = "MergeCells #2")]
@@ -204,21 +207,27 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             PresentationSc presentation = PresentationSc.Open(Resources._001, true);
-            TableSc table = presentation.Slides[2].Shapes.First(sp => sp.Id == 3) as TableSc;
+            ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
             var mStream = new MemoryStream();
 
             // Act
             table.MergeCells(table[0, 1], table[0, 2]);
 
             // Assert
-            table[0, 1].IsMergedCell.Should().BeTrue();
-            table[0, 2].IsMergedCell.Should().BeTrue();
+            AssertTable(table);
 
             presentation.SaveAs(mStream);
             presentation = PresentationSc.Open(mStream, false);
             table = presentation.Slides[2].Shapes.First(sp => sp.Id == 3) as TableSc;
-            table[0, 1].IsMergedCell.Should().BeTrue();
-            table[0, 2].IsMergedCell.Should().BeTrue();
+            AssertTable(table);
+
+            static void AssertTable(ITable tableSc)
+            {
+                tableSc[0, 1].IsMergedCell.Should().BeTrue();
+                tableSc[0, 2].IsMergedCell.Should().BeTrue();
+                tableSc[0, 1].TextBox.Text.Should().Be("Text0_2");
+                tableSc[0, 2].TextBox.Text.Should().Be("Text0_2");
+            }
         }
 
         [Fact(DisplayName = "MergeCells #3")]
@@ -274,23 +283,29 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             PresentationSc presentation = PresentationSc.Open(Resources._001, true);
-            TableSc table = presentation.Slides[2].Shapes.First(sp => sp.Id == 5) as TableSc;
+            ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 5);
             var mStream = new MemoryStream();
 
             // Act
             table.MergeCells(table[0, 0], table[1, 0]);
 
             // Assert
-            table[0, 0].IsMergedCell.Should().BeTrue();
-            table[1, 0].IsMergedCell.Should().BeTrue();
-            table[0, 1].IsMergedCell.Should().BeFalse();
+            AssertTable(table);
 
             presentation.SaveAs(mStream);
             presentation = PresentationSc.Open(mStream, false);
             table = presentation.Slides[2].Shapes.First(sp => sp.Id == 5) as TableSc;
-            table[0, 0].IsMergedCell.Should().BeTrue();
-            table[1, 0].IsMergedCell.Should().BeTrue();
-            table[0, 1].IsMergedCell.Should().BeFalse();
+            AssertTable(table);
+
+            static void AssertTable(ITable table)
+            {
+                string expectedText = $"id5{Environment.NewLine}Text1_0";
+                table[0, 0].IsMergedCell.Should().BeTrue();
+                table[1, 0].IsMergedCell.Should().BeTrue();
+                table[0, 1].IsMergedCell.Should().BeFalse();
+                table[0, 0].TextBox.Text.Should().Be(expectedText);
+                table[1, 0].TextBox.Text.Should().Be(expectedText);
+            }
         }
 
         [Fact(DisplayName = "MergeCells #6")]
