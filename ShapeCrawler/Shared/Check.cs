@@ -7,12 +7,12 @@ using System.Text.RegularExpressions;
 namespace ShapeCrawler.Shared
 {
     /// <summary>
-    /// Represents parameter checker.
+    ///     Represents parameter checker.
     /// </summary>
     public static class Check
     {
         /// <summary>
-        /// Checks whether specified object is not null.
+        ///     Checks whether specified object is not null.
         /// </summary>
         /// <param name="param"></param>
         /// <param name="paramName"></param>
@@ -31,7 +31,7 @@ namespace ShapeCrawler.Shared
         }
 
         /// <summary>
-        /// Checks whether a specified string is not null, empty, or not consists only of white-space characters.
+        ///     Checks whether a specified string is not null, empty, or not consists only of white-space characters.
         /// </summary>
         /// <param name="param"></param>
         /// <param name="paramName"></param>
@@ -49,7 +49,7 @@ namespace ShapeCrawler.Shared
         }
 
         /// <summary>
-        /// Checks whether a specified collection is not empty.
+        ///     Checks whether a specified collection is not empty.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="param"></param>
@@ -65,12 +65,12 @@ namespace ShapeCrawler.Shared
                     throw new ArgumentException($"Collection {paramName} is empty.");
                 }
 
-                throw new ArgumentException($"Collection is empty.");
+                throw new ArgumentException("Collection is empty.");
             }
         }
 
         /// <summary>
-        /// Determines whether a string is a valid email address.
+        ///     Determines whether a string is a valid email address.
         /// </summary>
         /// <param name="paramEmail"></param>
         /// <returns></returns>
@@ -91,7 +91,7 @@ namespace ShapeCrawler.Shared
         }
 
         /// <summary>
-        /// Determines whether a number is positive. 
+        ///     Determines whether a number is positive.
         /// </summary>
         public static void IsPositive(int number, string paramName)
         {

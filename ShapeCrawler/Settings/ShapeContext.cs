@@ -5,25 +5,12 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Factories.Placeholders;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Statics;
 
 namespace ShapeCrawler.Settings
 {
     public class ShapeContext
     {
         private readonly Lazy<Dictionary<int, int>> _masterOtherStyle;
-
-        #region Internal Properties
-
-        internal SlidePart SlidePart { get; private set; }
-
-        internal OpenXmlCompositeElement CompositeElement { get; private set; }
-
-        internal PlaceholderFontService PlaceholderFontService { get; private set; }
-
-        internal IPlaceholderService PlaceholderService { get; private set; }
-
-        #endregion Internal Properties
 
         #region Constructors
 
@@ -37,7 +24,7 @@ namespace ShapeCrawler.Settings
         #region Public Methods
 
         /// <summary>
-        /// Tries to find matched font height from master/layout slides.
+        ///     Tries to find matched font height from master/layout slides.
         /// </summary>
         /// <param name="paragraphLvl"></param>
         /// <param name="fontSize"></param>
@@ -59,7 +46,9 @@ namespace ShapeCrawler.Settings
 
         private Dictionary<int, int> InitMasterOtherStyle()
         {
-            var result = FontHeightParser.FromCompositeElement(SlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.OtherStyle);
+            var result =
+                FontHeightParser.FromCompositeElement(SlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles
+                    .OtherStyle);
 
             return result;
         }
@@ -70,29 +59,9 @@ namespace ShapeCrawler.Settings
 
         internal class Builder
         {
-            private readonly SlidePart _sdkSldPart;
             private readonly PlaceholderFontService _fontService;
             private readonly IPlaceholderService _placeholderService;
-
-            #region Constructors
-
-            public Builder(PlaceholderFontService fontService, SlidePart sdkSldPart):
-                this(fontService, sdkSldPart, new PlaceholderService(sdkSldPart.SlideLayoutPart))
-            {
-
-            }
-
-            internal Builder(
-                PlaceholderFontService fontService, 
-                SlidePart sdkSldPart, 
-                IPlaceholderService placeholderService)
-            {
-                _fontService = fontService;
-                _sdkSldPart = sdkSldPart;
-                _placeholderService = placeholderService;
-            }
-
-            #endregion Constructors
+            private readonly SlidePart _sdkSldPart;
 
             #region Public Methods
 
@@ -110,8 +79,39 @@ namespace ShapeCrawler.Settings
             }
 
             #endregion Public Methods
+
+            #region Constructors
+
+            public Builder(PlaceholderFontService fontService, SlidePart sdkSldPart) :
+                this(fontService, sdkSldPart, new PlaceholderService(sdkSldPart.SlideLayoutPart))
+            {
+            }
+
+            internal Builder(
+                PlaceholderFontService fontService,
+                SlidePart sdkSldPart,
+                IPlaceholderService placeholderService)
+            {
+                _fontService = fontService;
+                _sdkSldPart = sdkSldPart;
+                _placeholderService = placeholderService;
+            }
+
+            #endregion Constructors
         }
 
         #endregion Builder
+
+        #region Internal Properties
+
+        internal SlidePart SlidePart { get; private set; }
+
+        internal OpenXmlCompositeElement CompositeElement { get; private set; }
+
+        internal PlaceholderFontService PlaceholderFontService { get; private set; }
+
+        internal IPlaceholderService PlaceholderService { get; private set; }
+
+        #endregion Internal Properties
     }
 }

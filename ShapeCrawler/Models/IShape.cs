@@ -1,4 +1,4 @@
-﻿using ShapeCrawler.Factories.Placeholders;
+﻿using ShapeCrawler.Placeholders;
 
 namespace ShapeCrawler.Models
 {

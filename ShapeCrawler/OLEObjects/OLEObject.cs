@@ -1,30 +1,39 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Factories.Drawing;
-using ShapeCrawler.Factories.Placeholders;
-using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.Models.Styles;
-using ShapeCrawler.Models.Transforms;
 using ShapeCrawler.OLEObjects;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Statics;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
+
 // ReSharper disable CheckNamespace
 
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace ShapeCrawler
 {
-
     /// <summary>
-    /// Represents a shape on a slide.
+    ///     Represents a shape on a slide.
     /// </summary>
     public class OLEObject : IOLEObject
     {
+        #region Constructors
+
+        internal OLEObject(
+            OpenXmlCompositeElement shapeTreeSource,
+            ILocation innerTransform,
+            ShapeContext spContext)
+        {
+            ShapeTreeSource = shapeTreeSource;
+            _innerTransform = innerTransform;
+            Context = spContext;
+        }
+
+        #endregion Constructors
+
         #region Fields
 
         internal ShapeContext Context;
@@ -32,16 +41,16 @@ namespace ShapeCrawler
         private int _id;
         private string _name;
         private readonly ILocation _innerTransform;
-        
+
         internal OpenXmlCompositeElement ShapeTreeSource { get; }
         internal SlideSc Slide { get; }
-        
+
         #endregion Fields
 
         #region Public Properties
 
         /// <summary>
-        /// Returns the x-coordinate of the upper-left corner of the shape.
+        ///     Returns the x-coordinate of the upper-left corner of the shape.
         /// </summary>
         public long X
         {
@@ -50,7 +59,7 @@ namespace ShapeCrawler
         }
 
         /// <summary>
-        /// Returns the y-coordinate of the upper-left corner of the shape.
+        ///     Returns the y-coordinate of the upper-left corner of the shape.
         /// </summary>
         public long Y
         {
@@ -59,7 +68,7 @@ namespace ShapeCrawler
         }
 
         /// <summary>
-        /// Returns the width of the shape.
+        ///     Returns the width of the shape.
         /// </summary>
         public long Width
         {
@@ -68,16 +77,16 @@ namespace ShapeCrawler
         }
 
         /// <summary>
-        /// Returns the height of the shape.
+        ///     Returns the height of the shape.
         /// </summary>
         public long Height
         {
             get => _innerTransform.Height;
             set => _innerTransform.SetHeight(value);
         }
-        
+
         /// <summary>
-        /// Returns an element identifier.
+        ///     Returns an element identifier.
         /// </summary>
         public int Id
         {
@@ -89,7 +98,7 @@ namespace ShapeCrawler
         }
 
         /// <summary>
-        /// Gets an element name.
+        ///     Gets an element name.
         /// </summary>
         public string Name
         {
@@ -101,14 +110,14 @@ namespace ShapeCrawler
         }
 
         /// <summary>
-        /// Determines whether the shape is hidden.
+        ///     Determines whether the shape is hidden.
         /// </summary>
         public bool Hidden
         {
             get
             {
                 InitIdHiddenName();
-                return (bool)_hidden;
+                return (bool) _hidden;
             }
         }
 
@@ -135,25 +144,12 @@ namespace ShapeCrawler
 
         #endregion Properties
 
-        #region Constructors
-
-        internal OLEObject(
-            OpenXmlCompositeElement shapeTreeSource,
-            ILocation innerTransform,
-            ShapeContext spContext)
-        {
-            ShapeTreeSource = shapeTreeSource;
-            _innerTransform = innerTransform;
-            Context = spContext;
-        }
-
-        #endregion Constructors
-
         #region Private Methods
 
         private void SetCustomData(string value)
         {
-            var customDataElement = $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
+            var customDataElement =
+                $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
             Context.CompositeElement.InnerXml += customDataElement;
         }
 
@@ -176,6 +172,7 @@ namespace ShapeCrawler
             {
                 return;
             }
+
             var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
             _id = id;
             _hidden = hidden;

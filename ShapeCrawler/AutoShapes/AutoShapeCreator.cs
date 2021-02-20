@@ -25,19 +25,19 @@ namespace ShapeCrawler.AutoShapes
 
         #region Public Methods
 
-        public override IShape Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
+        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide)
         {
-            if (shapeTreeSource is P.Shape pShape)
+            if (pShapeTreeChild is P.Shape pShape)
             {
-                ShapeContext shapeContext = _shapeContextBuilder.Build(shapeTreeSource);
+                ShapeContext shapeContext = _shapeContextBuilder.Build(pShapeTreeChild);
                 ILocation innerTransform = _transformFactory.FromComposite(pShape);
                 GeometryType geometryType = _geometryFactory.ForCompositeElement(pShape, pShape.ShapeProperties);
-                var autoShape = new AutoShape(innerTransform, shapeContext, geometryType, shapeTreeSource, slide);
+                var autoShape = new AutoShape(innerTransform, shapeContext, geometryType, pShape, slide);
 
                 return autoShape;
             }
 
-            return Successor?.Create(shapeTreeSource, slide);
+            return Successor?.Create(pShapeTreeChild, slide);
         }
 
         #endregion Public Methods

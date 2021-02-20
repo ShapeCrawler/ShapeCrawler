@@ -2,23 +2,22 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Models;
 using ShapeCrawler.Models.Experiment;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.SlideMaster
 {
     /// <summary>
-    /// Represents a shape on Slide Master.
+    ///     Represents a shape on Slide Master.
     /// </summary>
     public class MasterShape : BaseShape
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MasterShape"/> class.
+        ///     Initializes a new instance of the <see cref="MasterShape" /> class.
         /// </summary>
         /// <param name="slideMaster"></param>
         /// <param name="shapeTreeSource">Element of the shape tree.</param>
-        public MasterShape(SlideMasterSc slideMaster, OpenXmlCompositeElement shapeTreeSource) 
+        public MasterShape(SlideMasterSc slideMaster, OpenXmlCompositeElement shapeTreeSource)
             : base(slideMaster, shapeTreeSource)
         {
         }
@@ -34,7 +33,7 @@ namespace ShapeCrawler.SlideMaster
         public override GeometryType GeometryType => GetGeometryType();
 
         /// <summary>
-        /// Gets placeholder type. Returns null if the master shape is not a placeholder.
+        ///     Gets placeholder type. Returns null if the master shape is not a placeholder.
         /// </summary>
         public PlaceholderType? PlaceholderType => GetPlaceholderType();
 
@@ -43,9 +42,9 @@ namespace ShapeCrawler.SlideMaster
         private GeometryType GetGeometryType()
         {
             // Get the shape geometry type in SDK format
-            PresetGeometry presetGeometry = CompositeElement.GetFirstChild<P.ShapeProperties>().
-                                                                GetFirstChild<PresetGeometry>();
-            
+            PresetGeometry presetGeometry =
+                CompositeElement.GetFirstChild<P.ShapeProperties>().GetFirstChild<PresetGeometry>();
+
             if (presetGeometry == null)
             {
                 return GeometryType.Custom;
@@ -63,7 +62,8 @@ namespace ShapeCrawler.SlideMaster
 
         private PlaceholderType? GetPlaceholderType()
         {
-            P.PlaceholderShape placeholderShape = CompositeElement.GetApplicationNonVisualDrawingProperties().PlaceholderShape;
+            P.PlaceholderShape placeholderShape =
+                CompositeElement.GetApplicationNonVisualDrawingProperties().PlaceholderShape;
             if (placeholderShape == null)
             {
                 return null;

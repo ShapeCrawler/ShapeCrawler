@@ -5,11 +5,16 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Models.Transforms
 {
-    public class NonPlaceholderTransform : ILocation
+    internal class NonPlaceholderTransform : ILocation
     {
+        private readonly A.Extents _extents;
         private readonly A.Offset _offset;
 
-        private readonly A.Extents _extents;
+        public NonPlaceholderTransform(OpenXmlCompositeElement sdkCompositeElement)
+        {
+            _offset = sdkCompositeElement.Descendants<A.Offset>().First();
+            _extents = sdkCompositeElement.Descendants<A.Extents>().First();
+        }
 
         public long X => _offset.X.Value;
 
@@ -19,15 +24,9 @@ namespace ShapeCrawler.Models.Transforms
 
         public long Height => _extents.Cy.Value;
 
-        public NonPlaceholderTransform(OpenXmlCompositeElement sdkCompositeElement)
-        {
-            _offset = sdkCompositeElement.Descendants<A.Offset>().First();
-            _extents = sdkCompositeElement.Descendants<A.Extents>().First();
-        }
-
         public void SetX(long x)
         {
-            _offset.X.Value = x; 
+            _offset.X.Value = x;
         }
 
         public void SetY(long y)

@@ -7,10 +7,9 @@ namespace ShapeCrawler
 {
     public class MasterOLEObject : MasterShape
     {
-        public MasterOLEObject(SlideMasterSc slideMasterSc, GraphicFrame pGraphicFrame) 
+        public MasterOLEObject(SlideMasterSc slideMasterSc, GraphicFrame pGraphicFrame)
             : base(slideMasterSc, pGraphicFrame)
         {
-
         }
     }
 }

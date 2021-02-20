@@ -17,7 +17,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a slide.
     /// </summary>
-    public class SlideSc
+    public class SlideSc : ISlide
     {
         #region Fields
 

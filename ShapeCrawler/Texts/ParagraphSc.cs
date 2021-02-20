@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -14,11 +13,33 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace ShapeCrawler.Texts
 {
     /// <summary>
-    /// Represents a text paragraph.
+    ///     Represents a text paragraph.
     /// </summary>
     [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
     public class ParagraphSc
     {
+        #region Constructors
+
+        /// <summary>
+        ///     Initializes an instance of the <see cref="ParagraphSc" /> class.
+        /// </summary>
+        // TODO: Replace constructor initialization on static .Create()
+        internal ParagraphSc(A.Paragraph aParagraph, TextBoxSc textBox)
+        {
+            AParagraph = aParagraph;
+            Level = GetInnerLevel(aParagraph);
+            _bullet = new Lazy<Bullet>(GetBullet);
+            TextBox = textBox;
+            _portions = new ResettableLazy<PortionCollection>(() => PortionCollection.Create(AParagraph, this));
+        }
+
+        #endregion Constructors
+
+        internal void Remove()
+        {
+            AParagraph.Remove();
+        }
+
         #region Fields
 
         private readonly Lazy<Bullet> _bullet;
@@ -33,7 +54,7 @@ namespace ShapeCrawler.Texts
         #region Public Properties
 
         /// <summary>
-        /// Gets or sets the the plain text of a paragraph.
+        ///     Gets or sets the the plain text of a paragraph.
         /// </summary>
         public string Text
         {
@@ -42,33 +63,16 @@ namespace ShapeCrawler.Texts
         }
 
         /// <summary>
-        /// Gets collection of paragraph text portions.
+        ///     Gets collection of paragraph text portions.
         /// </summary>
         public PortionCollection Portions => _portions.Value;
 
         /// <summary>
-        /// Gets paragraph bullet. Returns null if bullet does not exist.
+        ///     Gets paragraph bullet. Returns null if bullet does not exist.
         /// </summary>
         public Bullet Bullet => _bullet.Value;
 
         #endregion Public Properties
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes an instance of the <see cref="ParagraphSc"/> class.
-        /// </summary>
-        // TODO: Replace constructor initialization on static .Create()
-        internal ParagraphSc(A.Paragraph aParagraph, TextBoxSc textBox)
-        {
-            AParagraph = aParagraph;
-            Level = GetInnerLevel(aParagraph);
-            _bullet = new Lazy<Bullet>(GetBullet);
-            TextBox = textBox;
-            _portions = new ResettableLazy<PortionCollection>(() => PortionCollection.Create(AParagraph, this));
-        }
-
-        #endregion Constructors
 
         #region Private Methods
 
@@ -104,7 +108,8 @@ namespace ShapeCrawler.Texts
                 basePortion.Text = string.Empty;
                 return;
             }
-            string[] textLines = newText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+            string[] textLines = newText.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
             basePortion.Text = textLines[0];
             OpenXmlElement lastInsertedARunOrLineBreak = basePortion.AText.Parent;
             for (int i = 1; i < textLines.Length; i++)
@@ -124,10 +129,5 @@ namespace ShapeCrawler.Texts
         }
 
         #endregion Private Methods
-
-        internal void Remove()
-        {
-            AParagraph.Remove();
-        }
     }
 }

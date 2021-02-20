@@ -30,7 +30,6 @@ The usage samples below will take you through some work experience with the pres
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using ShapeCrawler;
 using ShapeCrawler.Texts;
 
@@ -38,31 +37,22 @@ public class TextSample
 {
     public static void Text()
     {
-        // Open presentation and get its first slide
+        // Open presentation and get first slide
         using PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: true);
         SlideSc slide = presentation.Slides.First();
 
-        // Print text from all text shapes
-        foreach (ShapeSc shape in slide.Shapes)
-        {
-            if (shape.HasTextBox)
-            {
-                Console.WriteLine(shape.TextBox.Text);
-            }
-        }
-
-        // Get text holder shape
-        ShapeSc textShape = slide.Shapes.First(sp => sp.HasTextBox);
+        // Get text holder auto shape
+        IAutoShape autoShape = (IAutoShape)slide.Shapes.First(sp => sp is IAutoShape);
 
         // Change whole shape text
-        textShape.TextBox.Text = "A new shape text";
+        autoShape.TextBox.Text = "A new shape text";
 
         // Change text for a certain paragraph
-        ParagraphSc paragraph = textShape.TextBox.Paragraphs[1];
+        ParagraphSc paragraph = autoShape.TextBox.Paragraphs[1];
         paragraph.Text = "A new text for second paragraph";
 
         // Print font name and size of a paragraph text portions
-        TextBoxSc textBox = textShape.TextBox;
+        TextBoxSc textBox = autoShape.TextBox;
         IEnumerable<Portion> paragraphPortions = textBox.Paragraphs.First().Portions;
         foreach (Portion portion in paragraphPortions)
         {
@@ -80,7 +70,6 @@ public class TextSample
 ```C#
 using System;
 using System.Linq;
-
 using ShapeCrawler;
 using ShapeCrawler.Tables;
 
@@ -93,7 +82,7 @@ public class TableSample
         SlideSc slide = presentation.Slides.First();
 
         // Get table
-        TableSc table = slide.Shapes.First(sp => sp.ContentType == ShapeContentType.Table).Table;
+        ITable table = (ITable)slide.Shapes.First(sp => sp is ITable);
 
         // Get number of rows in the table
         int rowsCount = table.Rows.Count;
@@ -132,7 +121,6 @@ public class TableSample
 ```C#
 using System;
 using System.Linq;
-
 using ShapeCrawler;
 using ShapeCrawler.Charts;
 
@@ -144,8 +132,7 @@ public class ChartSample
         SlideSc slide = presentation.Slides.First();
 
         // Get chart
-        ShapeSc chartShape = slide.Shapes.First(sp => sp.HasChart == true);
-        ChartSc chart = chartShape.Chart;
+        IChart chart = (IChart)slide.Shapes.First(sp => sp is IChart);
         
         // Print title string if the chart has a title
         if (chart.HasTitle)
@@ -182,7 +169,7 @@ public class SlideMasterSample
         // Get first Slide Master
         SlideMasterSc slideMaster = presentation.SlideMasters[0];
 
-        // Get number of shapes on the Slide Master
+        // Get number of shapes in the Slide Master
         int masterShapeCount = slideMaster.Shapes.Count;
 
         presentation.Close();
@@ -208,9 +195,8 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 Don't hesitate to contact me if you want to get involved!
 
 # Changelog
-## Version 0.15.0 - 2021-02-13
+## Version 0.16.0 - 2021-02-20
 ### Added
-- Added setter for `Column.Width` to change width of a table column (#105) 
-- Added `Row.Height` property to access height of table row (#105)
+- Added `ITable.MergeCells()` API to merge neigbor cells of the table (#109)
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).

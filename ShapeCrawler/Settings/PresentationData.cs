@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -12,19 +11,6 @@ namespace ShapeCrawler.Settings
     internal class PresentationData
     {
         private readonly Lazy<Dictionary<int, int>> _lvlFontHeights;
-
-        #region Properties
-
-        public Dictionary<int, int> LlvFontHeights => _lvlFontHeights.Value;
-
-        /// <summary>
-        /// Returns cache Excel documents instantiated by chart shapes.
-        /// </summary>
-        public Dictionary<EmbeddedPackagePart, SpreadsheetDocument> SpreadsheetCache { get; } //TODO: move it up to Presentation level
-
-        public Lazy<SlideSizeSc> SlideSize { get; }
-
-        #endregion Properties
 
         #region Constructors
 
@@ -63,5 +49,19 @@ namespace ShapeCrawler.Settings
         }
 
         #endregion Private Methods
+
+        #region Properties
+
+        public Dictionary<int, int> LlvFontHeights => _lvlFontHeights.Value;
+
+        /// <summary>
+        ///     Returns cache Excel documents instantiated by chart shapes.
+        /// </summary>
+        public Dictionary<EmbeddedPackagePart, SpreadsheetDocument>
+            SpreadsheetCache { get; } //TODO: move it up to Presentation level
+
+        public Lazy<SlideSizeSc> SlideSize { get; }
+
+        #endregion Properties
     }
 }

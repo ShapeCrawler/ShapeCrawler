@@ -10,40 +10,12 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Texts
 {
     /// <summary>
-    /// Represents a text paragraph portion.
+    ///     Represents a text paragraph portion.
     /// </summary>
     public class Portion
     {
         private readonly ResettableLazy<FontSc> _font;
-
-        internal ParagraphSc Paragraph { get; }
         internal readonly A.Text AText;
-
-        #region Public Properties
-
-        /// <summary>
-        /// Gets or sets paragraph portion text.
-        /// </summary>
-        public string Text
-        {
-            get => GetText();
-            set => SetText(value);
-        }
-
-        /// <summary>
-        /// Gets font.
-        /// </summary>
-        public FontSc Font => _font.Value;
-        
-        /// <summary>
-        /// Removes portion from the paragraph.
-        /// </summary>
-        public void Remove()
-        {
-            Paragraph.Portions.Remove(this);
-        }
-
-        #endregion Public Properties
 
         #region Constructors
 
@@ -55,6 +27,39 @@ namespace ShapeCrawler.Texts
         }
 
         #endregion Constructors
+
+        internal ParagraphSc Paragraph { get; }
+
+        internal A.Run GetARunCopy()
+        {
+            return (A.Run) AText.Parent.CloneNode(true);
+        }
+
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets or sets paragraph portion text.
+        /// </summary>
+        public string Text
+        {
+            get => GetText();
+            set => SetText(value);
+        }
+
+        /// <summary>
+        ///     Gets font.
+        /// </summary>
+        public FontSc Font => _font.Value;
+
+        /// <summary>
+        ///     Removes portion from the paragraph.
+        /// </summary>
+        public void Remove()
+        {
+            Paragraph.Portions.Remove(this);
+        }
+
+        #endregion Public Properties
 
         #region Private Methods
 
@@ -73,13 +78,14 @@ namespace ShapeCrawler.Texts
             }
 
             // If element is placeholder, tries to get from placeholder data
-            P.Shape shapeTreeSource = (P.Shape)Paragraph.TextBox.AutoShape.ShapeTreeSource;
-            if (shapeTreeSource.IsPlaceholder())
+            P.Shape pShape = (P.Shape) Paragraph.TextBox.AutoShape.PShapeTreeChild;
+            if (pShape.IsPlaceholder())
             {
-                int? prFontHeight = Paragraph.TextBox.ShapeContext.PlaceholderFontService.GetFontSizeByParagraphLvl(shapeTreeSource, Paragraph.Level);
+                int? prFontHeight =
+                    Paragraph.TextBox.ShapeContext.PlaceholderFontService.GetFontSizeByParagraphLvl(pShape, Paragraph.Level);
                 if (prFontHeight != null)
                 {
-                    return (int)prFontHeight;
+                    return (int) prFontHeight;
                 }
             }
 
@@ -115,10 +121,5 @@ namespace ShapeCrawler.Texts
         }
 
         #endregion Private Methods
-
-        internal A.Run GetARunCopy()
-        {
-            return (A.Run) AText.Parent.CloneNode(true);
-        }
     }
 }

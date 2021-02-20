@@ -1,22 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+
 // ReSharper disable All
 
 namespace SlideDotNet.Spreadsheet
 {
     /// <summary>
-    /// Represents a cell formula parser.
+    ///     Represents a cell formula parser.
     /// </summary>
     public class CellFormulaParser
     {
-        #region Fields
-
-        private readonly string _cellsFormula;
-        private readonly LinkedList<string> _tempList = new LinkedList<string>();
-
-        #endregion Fields
-
         #region Constructors
 
         public CellFormulaParser(string cellsFormula)
@@ -27,7 +21,7 @@ namespace SlideDotNet.Spreadsheet
         #endregion Constructors
 
         /// <summary>
-        /// Gets collection of the cell's addresses like ['B10','B11','B12'].
+        ///     Gets collection of the cell's addresses like ['B10','B11','B12'].
         /// </summary>
         /// <remarks>input="B10:B12", output=['B10','B11','B12']</remarks>
         public IList<string> GetCellAddresses()
@@ -35,6 +29,13 @@ namespace SlideDotNet.Spreadsheet
             ParseLetter();
             return _tempList.ToArray();
         }
+
+        #region Fields
+
+        private readonly string _cellsFormula;
+        private readonly LinkedList<string> _tempList = new LinkedList<string>();
+
+        #endregion Fields
 
         #region Private Methods
 
@@ -63,6 +64,7 @@ namespace SlideDotNet.Spreadsheet
             {
                 ParseLetterAfterColon(letterPart, digitInt, nextStart);
             }
+
             if (_cellsFormula[endIndex] == ',')
             {
                 ParseLetter(nextStart);
@@ -77,7 +79,9 @@ namespace SlideDotNet.Spreadsheet
                 _tempList.AddLast(letterPart + nextDigitInt);
             }
 
-            var nextStart = startIndex + digitInt.ToString(CultureInfo.CurrentCulture).Length + 1; // skip last digit and separator characters
+            var nextStart =
+                startIndex + digitInt.ToString(CultureInfo.CurrentCulture).Length +
+                1; // skip last digit and separator characters
             if (nextStart < _cellsFormula.Length)
             {
                 ParseLetter(nextStart);

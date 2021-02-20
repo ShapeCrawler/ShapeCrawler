@@ -2,10 +2,9 @@
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories.Drawing;
-using ShapeCrawler.Factories.Placeholders;
-using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Pictures;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Statics;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -16,9 +15,27 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler
 {
-    /// <inheritdoc cref="IPicture"/>
+    /// <inheritdoc cref="IPicture" />
     public class PictureSc : IPicture
     {
+        #region Constructors
+
+        internal PictureSc(
+            SlideSc slide,
+            string blipRelateId,
+            ILocation innerTransform,
+            ShapeContext spContext,
+            GeometryType geometryType)
+        {
+            Slide = slide;
+            Image = new ImageSc(Slide.SlidePart, blipRelateId);
+            _innerTransform = innerTransform;
+            Context = spContext;
+            GeometryType = geometryType;
+        }
+
+        #endregion Constructors
+
         #region Fields
 
         private bool? _hidden;
@@ -83,10 +100,10 @@ namespace ShapeCrawler
             get
             {
                 InitIdHiddenName();
-                return (bool)_hidden;
+                return (bool) _hidden;
             }
         }
-        
+
         public Placeholder Placeholder
         {
             get
@@ -99,7 +116,7 @@ namespace ShapeCrawler
                 return null;
             }
         }
-        
+
         public GeometryType GeometryType { get; }
 
         public string CustomData
@@ -110,29 +127,12 @@ namespace ShapeCrawler
 
         #endregion Properties
 
-        #region Constructors
-
-        internal PictureSc(
-            SlideSc slide,
-            string blipRelateId,
-            ILocation innerTransform,
-            ShapeContext spContext,
-            GeometryType geometryType)
-        {
-            Slide = slide;
-            Image = new ImageSc(Slide.SlidePart, blipRelateId);
-            _innerTransform = innerTransform;
-            Context = spContext;
-            GeometryType = geometryType;
-        }
-
-        #endregion Constructors
-
         #region Private Methods
 
         private void SetCustomData(string value)
         {
-            var customDataElement = $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
+            var customDataElement =
+                $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
             Context.CompositeElement.InnerXml += customDataElement;
         }
 
@@ -155,6 +155,7 @@ namespace ShapeCrawler
             {
                 return;
             }
+
             var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
             _id = id;
             _hidden = hidden;

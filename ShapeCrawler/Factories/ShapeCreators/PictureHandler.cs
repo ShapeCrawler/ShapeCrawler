@@ -24,16 +24,16 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #endregion Constructors
 
-        public override IShape Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
+        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide)
         {
             P.Picture pPicture;
-            if (shapeTreeSource is P.Picture treePic)
+            if (pShapeTreeChild is P.Picture treePic)
             {
                 pPicture = treePic;
             }
             else
             {
-                var framePic = shapeTreeSource.Descendants<P.Picture>().FirstOrDefault();
+                var framePic = pShapeTreeChild.Descendants<P.Picture>().FirstOrDefault();
                 pPicture = framePic;
             }
 
@@ -46,7 +46,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
                     return null;
                 }
 
-                var spContext = _shapeContextBuilder.Build(shapeTreeSource);
+                var spContext = _shapeContextBuilder.Build(pShapeTreeChild);
                 var innerTransform = _transformFactory.FromComposite(pPicture);
                 var geometry = _geometryFactory.ForCompositeElement(pPicture, pPicture.ShapeProperties);
                 var picture = new PictureSc(slide, blipRelateId, innerTransform, spContext, geometry);
@@ -54,7 +54,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 return picture;
             }
 
-            return Successor?.Create(shapeTreeSource, slide);
+            return Successor?.Create(pShapeTreeChild, slide);
         }
 
         #region Fields

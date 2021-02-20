@@ -5,7 +5,6 @@ using FluentAssertions;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Tables;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
@@ -81,13 +80,14 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void FontName_SetterSetsSpecifiedFontName()
+        public void FontName_SetterChangeFontName()
         {
             // Arrange
             const string newFont = "Time New Roman";
             IAutoShape autoShape =
                 PresentationSc.Open(Resources._001, true).Slides[0].Shapes.First(sp => sp.Id == 4) as IAutoShape;
             Portion paragraphPortion = autoShape.TextBox.Paragraphs[0].Portions[0];
+            
             // Act
             paragraphPortion.Font.Name = newFont;
 
@@ -96,13 +96,12 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void FontName_SetterThrowsException_WhenAUserTrySetFontNameForPortionOfAPlaceholderShape()
+        public void FontName_SetterThrowsException_WhenAnUserTryChangeFontNameForPortionOfAPlaceholderShape()
         {
             // Arrange
-            TextBoxSc textBox = ((IAutoShape)PresentationSc.Open(Resources._001, true).Slides[2].Shapes
-                .First(sp => sp.Id == 4)).TextBox;
-            ParagraphCollection paragraphs = textBox.Paragraphs;
-            Portion paragraphPortion = paragraphs[0].Portions[0];
+            IAutoShape autoShape = (IAutoShape) PresentationSc.Open(Resources._001, true).Slides[2].Shapes
+                .First(sp => sp.Id == 4);
+            Portion paragraphPortion = autoShape.TextBox.Paragraphs[0].Portions[0];
 
             // Act
             Action action = () => paragraphPortion.Font.Name = "Time New Roman";
@@ -180,7 +179,7 @@ namespace ShapeCrawler.Tests.Unit
         private static PortionCollection GetPortions(PresentationSc presentation)
         {
             IAutoShape shape5 = presentation.Slides[1].Shapes.First(x => x.Id == 5) as IAutoShape;
-            var portions = shape5.TextBox.Paragraphs.First().Portions;
+            var portions = shape5.TextBox.Paragraphs[0].Portions;
             return portions;
         }
     }

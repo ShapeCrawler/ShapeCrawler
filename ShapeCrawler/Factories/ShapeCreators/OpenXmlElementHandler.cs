@@ -15,8 +15,8 @@ namespace ShapeCrawler.Factories.ShapeCreators
         public OpenXmlElementHandler Successor { get; set; }
 
         /// <summary>
-        ///     Creates shape from child element of the <see cref="P.ShapeTree"/> element.
+        ///     Creates shape from child element of the <see cref="P.ShapeTree" /> element.
         /// </summary>
-        public abstract IShape Create(OpenXmlCompositeElement pShapeTreeSource, SlideSc slide);
+        public abstract IShape Create(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide);
     }
 }

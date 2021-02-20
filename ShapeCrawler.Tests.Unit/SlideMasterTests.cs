@@ -1,8 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+﻿using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Models;
 using ShapeCrawler.Models.Experiment;
 using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Tests.Unit.Helpers;
@@ -10,7 +8,6 @@ using Xunit;
 
 namespace ShapeCrawler.Tests.Unit
 {
-    [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
     public class SlideMasterTests : IClassFixture<PresentationFixture>
     {
         private readonly PresentationFixture _fixture;

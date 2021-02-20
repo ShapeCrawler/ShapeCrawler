@@ -7,16 +7,30 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace ShapeCrawler.Texts
 {
     /// <summary>
-    /// Represents a paragraph bullet class.
+    ///     Represents a paragraph bullet class.
     /// </summary>
     public class Bullet
     {
-        private readonly A.ParagraphProperties _xmlParagraphProperties;
-        private readonly Lazy<string> _colorHex;
         private readonly Lazy<string> _char;
+        private readonly Lazy<string> _colorHex;
         private readonly Lazy<string> _fontName;
         private readonly Lazy<int> _size;
         private readonly Lazy<BulletType> _type;
+        private readonly A.ParagraphProperties _aParagraphProperties;
+
+        #region Constructors
+
+        internal Bullet(A.ParagraphProperties aParagraphProperties)
+        {
+            _aParagraphProperties = aParagraphProperties;
+            _type = new Lazy<BulletType>(ParseType);
+            _colorHex = new Lazy<string>(ParseColorHex);
+            _char = new Lazy<string>(ParseChar);
+            _fontName = new Lazy<string>(ParseFontName);
+            _size = new Lazy<int>(ParseSize);
+        }
+
+        #endregion Constructors
 
         #region Properties
 
@@ -27,7 +41,7 @@ namespace ShapeCrawler.Texts
         public string FontName => _fontName.Value;
 
         /// <summary>
-        /// Gets bullet size, in percent of the text.
+        ///     Gets bullet size, in percent of the text.
         /// </summary>
         public int Size => _size.Value;
 
@@ -35,39 +49,28 @@ namespace ShapeCrawler.Texts
 
         #endregion Properties
 
-        #region Constructors
-
-        public Bullet(A.ParagraphProperties xmlParagraphProperties)
-        {
-            _xmlParagraphProperties = xmlParagraphProperties;
-            _type = new Lazy<BulletType>(ParseType);
-            _colorHex = new Lazy<string>(ParseColorHex);
-            _char = new Lazy<string>(ParseChar);
-            _fontName = new Lazy<string>(ParseFontName);
-            _size = new Lazy<int>(ParseSize);
-        }
-
-        #endregion Constructors
-
         #region Private Methods
 
         private BulletType ParseType()
         {
-            if (_xmlParagraphProperties == null)
+            if (_aParagraphProperties == null)
             {
                 return BulletType.None;
             }
-            var buAutoNum = _xmlParagraphProperties.GetFirstChild<A.AutoNumberedBullet>();
+
+            var buAutoNum = _aParagraphProperties.GetFirstChild<A.AutoNumberedBullet>();
             if (buAutoNum != null)
             {
                 return BulletType.Numbered;
             }
-            var buBlip = _xmlParagraphProperties.GetFirstChild<A.PictureBullet>();
+
+            var buBlip = _aParagraphProperties.GetFirstChild<A.PictureBullet>();
             if (buBlip != null)
             {
                 return BulletType.Picture;
             }
-            var buChar = _xmlParagraphProperties.GetFirstChild<A.CharacterBullet>();
+
+            var buChar = _aParagraphProperties.GetFirstChild<A.CharacterBullet>();
             if (buChar != null)
             {
                 return BulletType.Character;
@@ -83,7 +86,8 @@ namespace ShapeCrawler.Texts
                 return null;
             }
 
-            IEnumerable<A.RgbColorModelHex> aRgbClrModelHexCollection = _xmlParagraphProperties.Descendants<A.RgbColorModelHex>();
+            IEnumerable<A.RgbColorModelHex> aRgbClrModelHexCollection =
+                _aParagraphProperties.Descendants<A.RgbColorModelHex>();
             if (aRgbClrModelHexCollection.Any())
             {
                 return aRgbClrModelHexCollection.Single().Val;
@@ -99,7 +103,7 @@ namespace ShapeCrawler.Texts
                 return null;
             }
 
-            var buChar = _xmlParagraphProperties.GetFirstChild<A.CharacterBullet>();
+            var buChar = _aParagraphProperties.GetFirstChild<A.CharacterBullet>();
             if (buChar == null)
             {
                 throw new RuntimeDefinedPropertyException($"This is not {nameof(BulletType.Character)} type bullet.");
@@ -115,7 +119,7 @@ namespace ShapeCrawler.Texts
                 return null;
             }
 
-            var buFont = _xmlParagraphProperties.GetFirstChild<A.BulletFont>();
+            var buFont = _aParagraphProperties.GetFirstChild<A.BulletFont>();
             return buFont?.Typeface.Value;
         }
 
@@ -126,7 +130,7 @@ namespace ShapeCrawler.Texts
                 return 0;
             }
 
-            var buSzPct = _xmlParagraphProperties.GetFirstChild<A.BulletSizePercentage>();
+            var buSzPct = _aParagraphProperties.GetFirstChild<A.BulletSizePercentage>();
             var basicPoints = buSzPct?.Val.Value ?? 100000;
 
             return basicPoints / 1000;
