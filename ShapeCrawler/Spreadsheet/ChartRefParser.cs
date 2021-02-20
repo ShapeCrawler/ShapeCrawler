@@ -7,12 +7,13 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using ShapeCrawler.Charts;
 using SlideDotNet.Spreadsheet;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
+
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace ShapeCrawler.Spreadsheet
 {
     /// <summary>
-    /// Represents a parser of series point value.
+    ///     Represents a parser of series point value.
     /// </summary>
     internal class ChartRefParser
     {
@@ -26,7 +27,7 @@ namespace ShapeCrawler.Spreadsheet
         #region Public Methods
 
         /// <summary>
-        /// Gets series values from xlsx.
+        ///     Gets series values from xlsx.
         /// </summary>
         /// <param name="numberReference"></param>
         /// <param name="chartPart"></param>
@@ -36,7 +37,8 @@ namespace ShapeCrawler.Spreadsheet
             if (numberReference.NumberingCache != null)
             {
                 // From cache
-                IEnumerable<C.NumericValue> cNumericValues = numberReference.NumberingCache.Descendants<C.NumericValue>();
+                IEnumerable<C.NumericValue> cNumericValues =
+                    numberReference.NumberingCache.Descendants<C.NumericValue>();
                 var pointValues = new List<double>(cNumericValues.Count());
                 foreach (var numericValue in cNumericValues)
                 {
@@ -79,9 +81,11 @@ namespace ShapeCrawler.Spreadsheet
 
         #region Private Methods
 
-        private List<string> GetCellStrValues(C.Formula formula, EmbeddedPackagePart xlsxPackagePart) //EmbeddedPackagePart : OpenXmlPart
+        private List<string>
+            GetCellStrValues(C.Formula formula, EmbeddedPackagePart xlsxPackagePart) //EmbeddedPackagePart : OpenXmlPart
         {
-            var exist = _chart.Slide.Presentation.PresentationData.SpreadsheetCache.TryGetValue(xlsxPackagePart, out var xlsxDoc);
+            var exist = _chart.Slide.Presentation.PresentationData.SpreadsheetCache.TryGetValue(xlsxPackagePart,
+                out var xlsxDoc);
             if (!exist)
             {
                 xlsxDoc = SpreadsheetDocument.Open(xlsxPackagePart.GetStream(), false);
@@ -91,9 +95,11 @@ namespace ShapeCrawler.Spreadsheet
             string filteredFormula = GetFilteredFormula(formula);
             string[] sheetNameAndCellsFormula = filteredFormula.Split('!'); //eg: Sheet1!A2:A5 -> ['Sheet1', 'A2:A5']
             WorkbookPart workbookPart = xlsxDoc.WorkbookPart;
-            string sheetId = workbookPart.Workbook.Sheets.Elements<Sheet>().First(sheet => sheetNameAndCellsFormula[0] == sheet.Name).Id;
-            var worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheetId);
-            IEnumerable<Cell> cells = worksheetPart.Worksheet.GetFirstChild<SheetData>().ChildElements.SelectMany(r => r.Elements<Cell>()); //TODO: use HashSet
+            string sheetId = workbookPart.Workbook.Sheets.Elements<Sheet>()
+                .First(sheet => sheetNameAndCellsFormula[0] == sheet.Name).Id;
+            var worksheetPart = (WorksheetPart) workbookPart.GetPartById(sheetId);
+            IEnumerable<Cell> cells = worksheetPart.Worksheet.GetFirstChild<SheetData>().ChildElements
+                .SelectMany(r => r.Elements<Cell>()); //TODO: use HashSet
             var addresses = new CellFormulaParser(sheetNameAndCellsFormula[1]).GetCellAddresses(); //eg: [1] = 'A2:A5'
 
             var strValues = new List<string>(addresses.Count);

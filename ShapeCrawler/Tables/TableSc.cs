@@ -6,9 +6,8 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Factories.Placeholders;
-using ShapeCrawler.Models;
 using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
@@ -39,7 +38,7 @@ namespace ShapeCrawler
         }
 
         #endregion Constructors
-            
+
         public void MergeCells(CellSc cell1, CellSc cell2) // TODO: Optimize method
         {
             if (CannotBeMerged(cell1, cell2))
@@ -84,7 +83,8 @@ namespace ShapeCrawler
             {
                 // Set row span value for the first cell in the merged cells
                 int verticalMergingCount = maxRowIndex - minRowIndex + 1;
-                IEnumerable<A.TableCell> rowSpanCells = aTableRowList[minRowIndex].Elements<A.TableCell>().Skip(minColIndex)
+                IEnumerable<A.TableCell> rowSpanCells = aTableRowList[minRowIndex].Elements<A.TableCell>()
+                    .Skip(minColIndex)
                     .Take(maxColIndex + 1);
                 foreach (A.TableCell aTblCell in rowSpanCells)
                 {

@@ -6,7 +6,7 @@ namespace ShapeCrawler.Shared
     internal static class EnumerableExtensions
     {
         /// <summary>
-        /// Creates an array from a <see cref="T:System.Collections.Generic.IEnumerable`1"/> with specifying capacity.
+        ///     Creates an array from a <see cref="T:System.Collections.Generic.IEnumerable`1" /> with specifying capacity.
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
         /// <param name="source"></param>
@@ -16,7 +16,7 @@ namespace ShapeCrawler.Shared
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (capacity < 0) throw new ArgumentOutOfRangeException(nameof(capacity));
-            
+
             var array = new TSource[capacity];
             int i = 0;
             foreach (var item in source)
@@ -28,7 +28,7 @@ namespace ShapeCrawler.Shared
         }
 
         /// <summary>
-        /// Creates an list from a <see cref="T:System.Collections.Generic.IEnumerable`1"/> with specifying capacity.
+        ///     Creates an list from a <see cref="T:System.Collections.Generic.IEnumerable`1" /> with specifying capacity.
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
         /// <param name="source"></param>
@@ -38,7 +38,7 @@ namespace ShapeCrawler.Shared
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (capacity < 0) throw new ArgumentOutOfRangeException(nameof(capacity));
-            
+
             var list = new List<TSource>(capacity);
             list.AddRange(source);
 

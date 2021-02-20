@@ -7,8 +7,8 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Factories.Placeholders;
 using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Spreadsheet;
 using ShapeCrawler.Statics;
@@ -18,9 +18,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts
 {
-    /// <summary>
-    ///     Represents a shape on a slide.
-    /// </summary>
+    /// <inheritdoc cref="IChart" />
     public class ChartSc : IChart
     {
         #region Constructors
@@ -31,13 +29,11 @@ namespace ShapeCrawler.Charts
         internal ChartSc(
             P.GraphicFrame pGraphicFrame,
             SlideSc slide,
-            OpenXmlCompositeElement shapeTreeSource,
             ILocation innerTransform,
             ShapeContext spContext)
         {
             _pGraphicFrame = pGraphicFrame;
             Slide = slide;
-            ShapeTreeSource = shapeTreeSource;
             _innerTransform = innerTransform;
             Context = spContext;
 
@@ -74,7 +70,6 @@ namespace ShapeCrawler.Charts
         private readonly P.GraphicFrame _pGraphicFrame;
 
         internal ShapeContext Context { get; }
-        internal OpenXmlCompositeElement ShapeTreeSource { get; }
         internal SlideSc Slide { get; }
 
         #endregion Fields
@@ -168,7 +163,7 @@ namespace ShapeCrawler.Charts
         {
             StringValue chartPartRef = _pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>()
                 .GetFirstChild<C.ChartReference>().Id;
-            _chartPart = Slide.SlidePart.GetPartById(chartPartRef) as ChartPart;
+            _chartPart = (ChartPart) Slide.SlidePart.GetPartById(chartPartRef);
             _sdkCharts = _chartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea
                 .Where(e => e.LocalName.EndsWith("Chart",
                     StringComparison.Ordinal)); // example: <c:barChart>, <c:lineChart>
@@ -354,14 +349,14 @@ namespace ShapeCrawler.Charts
             {
                 if (Context.CompositeElement.IsPlaceholder())
                 {
-                    return new Placeholder(ShapeTreeSource);
+                    return new Placeholder(_pGraphicFrame);
                 }
 
                 return null;
             }
         }
 
-        public GeometryType GeometryType { get; }
+        public GeometryType GeometryType => GeometryType.Rectangle;
 
         public string CustomData
         {

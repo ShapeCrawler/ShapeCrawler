@@ -2,7 +2,8 @@
 using ShapeCrawler.Models.Styles;
 using ShapeCrawler.Texts;
 
-namespace ShapeCrawler.AutoShapes
+// ReSharper disable once CheckNamespace
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents an auto shape on a slide.

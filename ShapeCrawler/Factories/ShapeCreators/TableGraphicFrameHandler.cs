@@ -25,16 +25,16 @@ namespace ShapeCrawler.Factories.ShapeCreators
 
         #endregion Constructors
 
-        public override IShape Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
+        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide)
         {
-            Check.NotNull(shapeTreeSource, nameof(shapeTreeSource));
+            Check.NotNull(pShapeTreeChild, nameof(pShapeTreeChild));
 
-            if (shapeTreeSource is P.GraphicFrame pGraphicFrame)
+            if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
             {
-                A.GraphicData graphicData = shapeTreeSource.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
+                A.GraphicData graphicData = pShapeTreeChild.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
                 if (graphicData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
                 {
-                    ShapeContext spContext = _shapeContextBuilder.Build(shapeTreeSource);
+                    ShapeContext spContext = _shapeContextBuilder.Build(pShapeTreeChild);
                     ILocation innerTransform = _transformFactory.FromComposite(pGraphicFrame);
                     var table = new TableSc(pGraphicFrame, innerTransform, spContext);
 
@@ -42,7 +42,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 }
             }
 
-            return Successor?.Create(shapeTreeSource, slide);
+            return Successor?.Create(pShapeTreeChild, slide);
         }
     }
 }

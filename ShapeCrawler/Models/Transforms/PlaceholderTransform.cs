@@ -5,19 +5,11 @@ using ShapeCrawler.Models.SlideComponents;
 namespace ShapeCrawler.Models.Transforms
 {
     /// <summary>
-    /// <inheritdoc cref="ILocation"/>
+    ///     <inheritdoc cref="ILocation" />
     /// </summary>
-    public class PlaceholderTransform : ILocation
+    class PlaceholderTransform : ILocation
     {
         private readonly PlaceholderLocationData _placeholderLocationData;
-
-        public long X => _placeholderLocationData.X;
-
-        public long Y => _placeholderLocationData.Y;
-
-        public long Width => _placeholderLocationData.Width;
-
-        public long Height => _placeholderLocationData.Height;
 
         #region Constructors
 
@@ -27,6 +19,14 @@ namespace ShapeCrawler.Models.Transforms
         }
 
         #endregion Constructors
+
+        public long X => _placeholderLocationData.X;
+
+        public long Y => _placeholderLocationData.Y;
+
+        public long Width => _placeholderLocationData.Width;
+
+        public long Height => _placeholderLocationData.Height;
 
         #region Public Methods
 

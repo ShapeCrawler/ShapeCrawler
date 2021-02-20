@@ -7,16 +7,8 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Models.Transforms
 {
-    public class NonPlaceholderGroupedTransform : ILocation
+    class NonPlaceholderGroupedTransform : ILocation
     {
-        public long X { get; }
-
-        public long Y { get; }
-
-        public long Width { get; }
-
-        public long Height { get; }
-
         public NonPlaceholderGroupedTransform(OpenXmlCompositeElement xmlElement, P.GroupShape groupShape)
         {
             var offset = xmlElement.Descendants<A.Offset>().First();
@@ -28,6 +20,14 @@ namespace ShapeCrawler.Models.Transforms
             Width = extents.Cx.Value;
             Height = extents.Cy.Value;
         }
+
+        public long X { get; }
+
+        public long Y { get; }
+
+        public long Width { get; }
+
+        public long Height { get; }
 
         public void SetX(long x)
         {

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using DocumentFormat.OpenXml;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories.Drawing;
-using ShapeCrawler.Factories.Placeholders;
 using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Models.Styles;
 using ShapeCrawler.Settings;
@@ -20,7 +17,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler
 {
     /// <inheritdoc cref="IAutoShape" />
-    public class AutoShape : IAutoShape
+    public class AutoShape : Shape, IAutoShape
     {
         #region Constructors
 
@@ -28,14 +25,13 @@ namespace ShapeCrawler
             ILocation innerTransform,
             ShapeContext spContext,
             GeometryType geometryType,
-            OpenXmlCompositeElement shapeTreeSource,
-            SlideSc slide)
+            P.Shape pShape,
+            SlideSc slide) : base(pShape)
         {
             _innerTransform = innerTransform;
             Context = spContext;
             _textBox = new Lazy<TextBoxSc>(GetTextBox);
             _shapeFill = new Lazy<ShapeFill>(TryGetFill);
-            ShapeTreeSource = shapeTreeSource;
             GeometryType = geometryType;
             Slide = slide;
         }
@@ -53,7 +49,6 @@ namespace ShapeCrawler
         private readonly ILocation _innerTransform;
 
         internal ShapeContext Context { get; }
-        internal OpenXmlCompositeElement ShapeTreeSource { get; }
         internal SlideSc Slide { get; }
 
         #endregion Fields
@@ -113,19 +108,6 @@ namespace ShapeCrawler
 
         public TextBoxSc TextBox => _textBox.Value;
 
-        public Placeholder Placeholder
-        {
-            get
-            {
-                if (Context.CompositeElement.IsPlaceholder())
-                {
-                    return new Placeholder(ShapeTreeSource);
-                }
-
-                return null;
-            }
-        }
-
         public ShapeFill Fill => _shapeFill.Value;
 
         public GeometryType GeometryType { get; }
@@ -162,8 +144,7 @@ namespace ShapeCrawler
 
         private TextBoxSc GetTextBox()
         {
-            // TODO: try optimize by avoiding Descendants() using.
-            P.TextBody pTextBody = Context.CompositeElement.Descendants<P.TextBody>().SingleOrDefault();
+            P.TextBody pTextBody = PShapeTreeChild.GetFirstChild<P.TextBody>();
             if (pTextBody == null)
             {
                 return null;
@@ -186,8 +167,7 @@ namespace ShapeCrawler
                 return new ShapeFill(image);
             }
 
-            P.Shape pShape = (P.Shape) Context.CompositeElement;
-            A.SolidFill aSolidFill = pShape.ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
+            A.SolidFill aSolidFill = ((P.Shape) PShapeTreeChild).ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
             if (aSolidFill != null)
             {
                 A.RgbColorModelHex aRgbColorModelHex = aSolidFill.RgbColorModelHex;

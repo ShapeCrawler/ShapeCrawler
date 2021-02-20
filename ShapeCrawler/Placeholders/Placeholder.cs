@@ -1,16 +1,17 @@
 ﻿using DocumentFormat.OpenXml;
+using ShapeCrawler.Factories.Placeholders;
 
-namespace ShapeCrawler.Factories.Placeholders
+namespace ShapeCrawler.Placeholders
 {
     public class Placeholder
     {
-        private readonly OpenXmlCompositeElement _shapeTreeSource;
+        private readonly OpenXmlCompositeElement _pShapeTreeChild;
 
-        internal Placeholder(OpenXmlCompositeElement shapeTreeSource)
+        internal Placeholder(OpenXmlCompositeElement pShapeTreeChild)
         {
-            _shapeTreeSource = shapeTreeSource;
+            _pShapeTreeChild = pShapeTreeChild;
         }
 
-        public PlaceholderType Type => PlaceholderService.GetPlaceholderType(_shapeTreeSource);
+        public PlaceholderType Type => PlaceholderService.GetPlaceholderType(_pShapeTreeChild);
     }
 }

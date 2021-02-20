@@ -3,28 +3,30 @@ using ShapeCrawler.Models;
 
 namespace ShapeCrawler.Charts
 {
+    /// <summary>
+    ///     Represents a chart on  a slide.
+    /// </summary>
     public interface IChart : IShape
     {
         /// <summary>
-        ///     Gets the chart title. Returns null if chart has not a title.
+        ///     Gets chart type.
         /// </summary>
         ChartType Type { get; }
 
         /// <summary>
-        ///     Gets chart title string.
+        ///     Gets the chart title. Returns null if the chart has not a title.
         /// </summary>
         string Title { get; }
 
         /// <summary>
-        ///     Determines whether chart has a title.
+        ///     Determines whether the chart has a title.
         /// </summary>
         public bool HasTitle { get; }
 
-
         /// <summary>
-        ///     Determines whether chart has categories. Some chart types like ScatterChart and BubbleChart does not have
-        ///     categories.
+        ///     Determines whether the chart has categories.
         /// </summary>
+        /// <remarks>Some chart types like ScatterChart and BubbleChart does not have categories.</remarks>
         bool HasCategories { get; }
 
         /// <summary>
@@ -37,8 +39,14 @@ namespace ShapeCrawler.Charts
         /// </summary>
         CategoryCollection Categories { get; }
 
+        /// <summary>
+        ///     Determines whether the chart has x-axis values.
+        /// </summary>
         bool HasXValues { get; }
 
+        /// <summary>
+        ///     Gets collection of x-axis values.
+        /// </summary>
         LibraryCollection<double> XValues { get; }
     }
 }

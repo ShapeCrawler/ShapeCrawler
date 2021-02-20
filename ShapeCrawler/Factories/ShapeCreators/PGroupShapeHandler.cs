@@ -30,11 +30,11 @@ namespace ShapeCrawler.Factories.ShapeCreators
             _slidePart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
         }
 
-        public override IShape Create(OpenXmlCompositeElement shapeTreeSource, SlideSc slide)
+        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide)
         {
-            Check.NotNull(shapeTreeSource, nameof(shapeTreeSource));
+            Check.NotNull(pShapeTreeChild, nameof(pShapeTreeChild));
 
-            if (shapeTreeSource is P.GroupShape pGroupShape)
+            if (pShapeTreeChild is P.GroupShape pGroupShape)
             {
                 var pShapeHandler = new AutoShapeCreator(_shapeContextBuilder, _transformFactory, _geometryFactory);
                 var oleGrFrameHandler = new OleGraphicFrameHandler(_shapeContextBuilder, _transformFactory);
@@ -61,7 +61,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
                     }
                 }
 
-                var spContext = _shapeContextBuilder.Build(shapeTreeSource);
+                var spContext = _shapeContextBuilder.Build(pShapeTreeChild);
                 var transformGroup = pGroupShape.GroupShapeProperties.TransformGroup;
                 var innerTransform = new NonPlaceholderTransform(transformGroup);
                 var groupShape = new GroupShapeSc(innerTransform, spContext, groupedShapes, pGroupShape);
@@ -69,7 +69,7 @@ namespace ShapeCrawler.Factories.ShapeCreators
                 return groupShape;
             }
 
-            return Successor?.Create(shapeTreeSource, slide);
+            return Successor?.Create(pShapeTreeChild, slide);
         }
     }
 }

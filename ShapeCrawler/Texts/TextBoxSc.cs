@@ -28,12 +28,12 @@ namespace ShapeCrawler.Texts
         #region Public Properties
 
         /// <summary>
-        /// Gets text paragraph collection.
+        ///     Gets text paragraph collection.
         /// </summary>
         public ParagraphCollection Paragraphs => new(_compositeElement, this);
 
         /// <summary>
-        /// Gets or sets text box string content. Returns null if the text box is empty.
+        ///     Gets or sets text box string content. Returns null if the text box is empty.
         /// </summary>
         public string Text
         {
@@ -46,7 +46,7 @@ namespace ShapeCrawler.Texts
         #region Constructors
 
         /// <summary>
-        /// Initializes a new empty instance of the <see cref="TextBoxSc"/> class. 
+        ///     Initializes a new empty instance of the <see cref="TextBoxSc" /> class.
         /// </summary>
         /// <param name="baseShape"></param>
         internal TextBoxSc(BaseShape baseShape)
@@ -95,7 +95,7 @@ namespace ShapeCrawler.Texts
         {
             var sb = new StringBuilder();
             sb.Append(Paragraphs[0].Text);
-            
+
             // If the number of paragraphs more than one
             var numPr = Paragraphs.Count;
             var index = 1;

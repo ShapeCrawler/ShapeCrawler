@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+﻿using System.Linq;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -7,12 +6,11 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts
 {
-    [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     public class FontSc
     {
         private readonly A.Text _aText;
-        private readonly Portion _portion;
         private readonly ResettableLazy<A.LatinFont> _latinFont;
+        private readonly Portion _portion;
         private readonly int _size;
 
         #region Constructors
@@ -30,7 +28,7 @@ namespace ShapeCrawler.Texts
         #region Public Properties
 
         /// <summary>
-        /// Gets font name.
+        ///     Gets font name.
         /// </summary>
         public string Name
         {
@@ -39,15 +37,16 @@ namespace ShapeCrawler.Texts
         }
 
         /// <summary>
-        /// Gets or sets font size in EMUs.
+        ///     Gets or sets font size in EMUs.
         /// </summary>
-        public int Size {
+        public int Size
+        {
             get => _size;
             set => SetFontSize(value);
         }
 
         /// <summary>
-        /// Gets value indicating whether font size can be changed.
+        ///     Gets value indicating whether font size can be changed.
         /// </summary>
         public bool SizeCanBeChanged()
         {
@@ -70,6 +69,7 @@ namespace ShapeCrawler.Texts
             {
                 throw new PlaceholderCannotBeChangedException();
             }
+
             A.LatinFont latinFont = _latinFont.Value;
             latinFont.Typeface = fontName;
             _latinFont.Reset();
@@ -80,9 +80,10 @@ namespace ShapeCrawler.Texts
             var runPr = _aText.Parent.GetFirstChild<A.RunProperties>();
             if (runPr == null)
             {
-                const string errorMsg = "The property value cannot be changed on the Slide level since it belongs to Slide Master. " + 
-                                        "Hence, you should change it on Slide Master level. " + 
-                                        "Note: you can check whether the property can be changed via {property_name}CanBeChanged method.";
+                const string errorMsg =
+                    "The property value cannot be changed on the Slide level since it belongs to Slide Master. " +
+                    "Hence, you should change it on Slide Master level. " +
+                    "Note: you can check whether the property can be changed via {property_name}CanBeChanged method.";
                 throw new SlideMasterPropertyCannotBeChanged(errorMsg);
             }
 
