@@ -1,17 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.Placeholders;
+using ShapeCrawler.Factories;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Spreadsheet;
-using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -19,7 +16,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Charts
 {
     /// <inheritdoc cref="IChart" />
-    public class ChartSc : IChart
+    public class ChartSc : Shape, IChart
     {
         #region Constructors
 
@@ -30,7 +27,7 @@ namespace ShapeCrawler.Charts
             P.GraphicFrame pGraphicFrame,
             SlideSc slide,
             ILocation innerTransform,
-            ShapeContext spContext)
+            ShapeContext spContext) : base(pGraphicFrame)
         {
             _pGraphicFrame = pGraphicFrame;
             Slide = slide;
@@ -38,10 +35,10 @@ namespace ShapeCrawler.Charts
             Context = spContext;
 
             _firstSeries = new Lazy<OpenXmlElement>(GetFirstSeries);
-            _xValues = new Lazy<LibraryCollection<double>>(TryGetXValues);
-            _seriesCollection = new Lazy<SeriesCollection>(GetSeriesCollection);
-            _categories = new Lazy<CategoryCollection>(TryGetCategoryCollection);
-            _chartRefParser = new ChartRefParser(this);
+            _xValues = new Lazy<LibraryCollection<double>>(GetXValues);
+            _seriesCollection = new Lazy<SeriesCollection>(() => SeriesCollection.Create(_cXCharts, _chartPart, _chartRefParser));
+            _categories = new Lazy<CategoryCollection>(() => CategoryCollection.Create(_firstSeries.Value, Type));
+            _chartRefParser = new ChartReferencesParser(this);
             _chartType = new Lazy<ChartType>(GetChartType);
 
             Init(); //TODO: convert to lazy loading
@@ -51,9 +48,9 @@ namespace ShapeCrawler.Charts
 
         #region Fields
 
-        // Contains chart elements, e.g. <c:pieChart>. If the chart type is not a combination,
+        // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
         // then collection contains only single item.
-        private IEnumerable<OpenXmlElement> _sdkCharts;
+        private IEnumerable<OpenXmlElement> _cXCharts;
 
         private bool? _hidden;
         private int _id;
@@ -66,7 +63,7 @@ namespace ShapeCrawler.Charts
         private readonly Lazy<LibraryCollection<double>> _xValues;
         private string _chartTitle;
         private ChartPart _chartPart;
-        private readonly ChartRefParser _chartRefParser;
+        private readonly ChartReferencesParser _chartRefParser;
         private readonly P.GraphicFrame _pGraphicFrame;
 
         internal ShapeContext Context { get; }
@@ -119,26 +116,9 @@ namespace ShapeCrawler.Charts
         public SeriesCollection SeriesCollection => _seriesCollection.Value;
 
         /// <summary>
-        ///     Gets collection of the chart category.
+        ///     Gets chart categories. Returns <c>NULL</c> if the chart does not have categories.
         /// </summary>
-        public CategoryCollection Categories
-        {
-            get
-            {
-                if (_categories.Value == null)
-                {
-#if NETSTANDARD2_1 || NETCOREAPP2_0 || NET5_0
-                    var msg = ExceptionMessages.ChartCanNotHaveCategory.Replace("#0", Type.ToString(),
-                        StringComparison.OrdinalIgnoreCase);
-#else
-                    var msg = ExceptionMessages.ChartCanNotHaveCategory.Replace("#0", Type.ToString());
-#endif
-                    throw new NotSupportedException(msg);
-                }
-
-                return _categories.Value;
-            }
-        }
+        public CategoryCollection Categories => _categories.Value;
 
         public bool HasXValues => _xValues.Value != null;
 
@@ -164,26 +144,21 @@ namespace ShapeCrawler.Charts
             StringValue chartPartRef = _pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>()
                 .GetFirstChild<C.ChartReference>().Id;
             _chartPart = (ChartPart) Slide.SlidePart.GetPartById(chartPartRef);
-            _sdkCharts = _chartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea
+            _cXCharts = _chartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea
                 .Where(e => e.LocalName.EndsWith("Chart",
-                    StringComparison.Ordinal)); // example: <c:barChart>, <c:lineChart>
+                    StringComparison.Ordinal));
         }
 
         private ChartType GetChartType()
         {
-            if (_sdkCharts.Count() > 1)
+            if (_cXCharts.Count() > 1)
             {
                 return ChartType.Combination;
             }
 
-            var chartName = _sdkCharts.Single().LocalName;
+            string chartName = _cXCharts.Single().LocalName;
             Enum.TryParse(chartName, true, out ChartType chartType);
             return chartType;
-        }
-
-        private SeriesCollection GetSeriesCollection()
-        {
-            return new SeriesCollection(_sdkCharts, _chartPart, _chartRefParser);
         }
 
         private string TryGetTitle()
@@ -237,17 +212,7 @@ namespace ShapeCrawler.Charts
             return false;
         }
 
-        private CategoryCollection TryGetCategoryCollection()
-        {
-            if (Type == ChartType.BubbleChart || Type == ChartType.ScatterChart)
-            {
-                return null;
-            }
-
-            return new CategoryCollection(_firstSeries.Value);
-        }
-
-        private LibraryCollection<double> TryGetXValues()
+        private LibraryCollection<double> GetXValues()
         {
             var sdkXValues = _firstSeries.Value?.GetFirstChild<C.XValues>();
             if (sdkXValues?.NumberReference == null)
@@ -255,19 +220,18 @@ namespace ShapeCrawler.Charts
                 return null;
             }
 
-            var points = _chartRefParser.GetNumbers(sdkXValues.NumberReference, _chartPart);
+            var points = _chartRefParser.GetNumbersFromCacheOrSpreadsheet(sdkXValues.NumberReference, _chartPart);
 
             return new LibraryCollection<double>(points);
         }
 
         private OpenXmlElement GetFirstSeries()
         {
-            return _sdkCharts.First().ChildElements
+            return _cXCharts.First().ChildElements
                 .FirstOrDefault(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
         }
 
         #endregion Private Methods
-
 
         #region Public Properties
 
@@ -343,52 +307,13 @@ namespace ShapeCrawler.Charts
             }
         }
 
-        public Placeholder Placeholder
-        {
-            get
-            {
-                if (Context.CompositeElement.IsPlaceholder())
-                {
-                    return new Placeholder(_pGraphicFrame);
-                }
-
-                return null;
-            }
-        }
-
         public GeometryType GeometryType => GeometryType.Rectangle;
-
-        public string CustomData
-        {
-            get => GetCustomData();
-            set => SetCustomData(value);
-        }
 
         #endregion Properties
 
         #region Private Methods
 
-        private void SetCustomData(string value)
-        {
-            var customDataElement =
-                $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
-            Context.CompositeElement.InnerXml += customDataElement;
-        }
-
-        private string GetCustomData()
-        {
-            var pattern = @$"<{ConstantStrings.CustomDataElementName}>(.*)<\/{ConstantStrings.CustomDataElementName}>";
-            var regex = new Regex(pattern);
-            var elementText = regex.Match(Context.CompositeElement.InnerXml).Groups[1];
-            if (elementText.Value.Length == 0)
-            {
-                return null;
-            }
-
-            return elementText.Value;
-        }
-
-        private void InitIdHiddenName() // TODO: check, looks like it can be shared
+        private void InitIdHiddenName() // TODO: check, looks like it can be shared and can be moved int base Shape class.
         {
             if (_id != 0)
             {

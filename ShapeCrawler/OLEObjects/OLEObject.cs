@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Factories;
 using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;

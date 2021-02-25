@@ -1,5 +1,6 @@
-﻿using ShapeCrawler.Models;
-using ShapeCrawler.Models.Styles;
+﻿using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Drawing;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Texts;
 
 // ReSharper disable once CheckNamespace

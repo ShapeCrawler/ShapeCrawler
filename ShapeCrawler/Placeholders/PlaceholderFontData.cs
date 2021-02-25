@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ShapeCrawler.Factories.Placeholders
+namespace ShapeCrawler.Placeholders
 {
     /// <summary>
     ///     Represents placeholder font data.

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shared;
 
-namespace ShapeCrawler.Factories.Drawing
+namespace ShapeCrawler.Drawing
 {
     /// <summary>
     ///     Represents an image model.

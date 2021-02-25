@@ -11,34 +11,34 @@ using ShapeCrawler.Spreadsheet;
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    ///     Represents chart series collection.
+    ///     Represents a chart series collection.
     /// </summary>
     public class SeriesCollection : LibraryCollection<Series>
     {
-        #region Constructors
-
-        /// <summary>
-        ///     Initializes a new collection of the chart series.
-        /// </summary>
-        internal SeriesCollection(IEnumerable<OpenXmlElement> sdkCharts, ChartPart sdkChartPart,
-            ChartRefParser chartRefParser)
+        internal SeriesCollection(List<Series> seriesList)
         {
-            var tempSeriesCollection = new LinkedList<Series>(); //TODO: make weak reference
-            foreach (var nextSdkChart in sdkCharts)
+            CollectionItems = seriesList.ToList();
+        }
+
+        internal static SeriesCollection Create(
+            IEnumerable<OpenXmlElement> cXCharts, 
+            ChartPart chartPart,
+            ChartReferencesParser chartRefParser)
+        {
+            var seriesList = new List<Series>();
+            foreach (OpenXmlElement cXChart in cXCharts)
             {
-                Enum.TryParse(nextSdkChart.LocalName, true, out ChartType chartType);
-                var nextSdkChartSeriesCollection = nextSdkChart.ChildElements
+                Enum.TryParse(cXChart.LocalName, true, out ChartType chartType);
+                var nextSdkChartSeriesCollection = cXChart.ChildElements
                     .Where(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
                 foreach (var sdkSeries in nextSdkChartSeriesCollection)
                 {
-                    var series = new Series(chartType, sdkSeries, sdkChartPart, chartRefParser);
-                    tempSeriesCollection.AddLast(series);
+                    var series = new Series(chartType, sdkSeries, chartPart, chartRefParser);
+                    seriesList.Add(series);
                 }
             }
 
-            CollectionItems = new List<Series>(tempSeriesCollection);
+            return new SeriesCollection(seriesList);
         }
-
-        #endregion Constructors
     }
 }

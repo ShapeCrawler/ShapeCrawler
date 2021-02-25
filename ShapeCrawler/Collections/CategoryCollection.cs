@@ -16,55 +16,66 @@ namespace ShapeCrawler.Collections
     {
         #region Constructors
 
-        /// <summary>
-        ///     Initializes a new collection of the chart categories.
-        /// </summary>
-        /// <param name="sdkFirstChartSeries">
-        ///     First series. Actually, it does not matter: all chart series contain the same
-        ///     categories.
-        /// </param>
-        public CategoryCollection(OpenXmlElement sdkFirstChartSeries)
+        internal CategoryCollection(List<Category> categoryList)
         {
-            Check.NotNull(sdkFirstChartSeries, nameof(sdkFirstChartSeries));
-
-            var catAxData = sdkFirstChartSeries.GetFirstChild<C.CategoryAxisData>();
-            var multiLvlStrRef = catAxData.MultiLevelStringReference;
-            var numRef = catAxData.NumberReference;
-            var strRef = catAxData.StringReference;
-
-            if (multiLvlStrRef != null)
-            {
-                AddMultiCategories(multiLvlStrRef);
-            }
-            else
-            {
-                IEnumerable<C.NumericValue> sdkNumericValues;
-                if (numRef != null)
-                {
-                    sdkNumericValues = numRef.NumberingCache.Descendants<C.NumericValue>();
-                }
-                else
-                {
-                    sdkNumericValues = strRef.StringCache.Descendants<C.NumericValue>();
-                }
-
-                CollectionItems = new List<Category>(sdkNumericValues.Count());
-                foreach (var numericValue in sdkNumericValues)
-                {
-                    CollectionItems.Add(new Category(numericValue.InnerText));
-                }
-            }
+            CollectionItems = categoryList;
         }
 
         #endregion Constructors
 
+        internal static CategoryCollection Create(OpenXmlElement firstChartSeries, ChartType chartType)
+        {
+            if (chartType == ChartType.BubbleChart || chartType == ChartType.ScatterChart)
+            {
+                return null;
+            }
+
+            var categoryList = new List<Category>();
+
+            //  Get category data from the first series.
+            //  Actually, it can be any series since all chart series contain the same categories.
+            //  <c:cat>
+            //      <c:strRef>
+            //          <c:f>Sheet1!$A$2:$A$3</c:f>
+            //          <c:strCache>
+            //              <c:ptCount val="2"/>
+            //              <c:pt idx="0">
+            //                  <c:v>Category 1</c:v>
+            //              </c:pt>
+            //              <c:pt idx="1">
+            //                  <c:v>Category 2</c:v>
+            //              </c:pt>
+            //          </c:strCache>
+            //      </c:strRef>
+            //  </c:cat>
+            C.CategoryAxisData cCatAxisData = firstChartSeries.GetFirstChild<C.CategoryAxisData>();
+            
+            C.MultiLevelStringReference cMultiLvlStringRef = cCatAxisData.MultiLevelStringReference;
+            if (cMultiLvlStringRef != null) // does chart have multi-level category
+            {
+                categoryList = GetMultiCategories(cMultiLvlStringRef);
+            }
+            else
+            {
+                C.NumberReference numReference = cCatAxisData.NumberReference;
+                C.StringReference strReference = cCatAxisData.StringReference;
+                IEnumerable<C.NumericValue> cNumericValues = numReference != null ? numReference.NumberingCache.Descendants<C.NumericValue>() 
+                    : strReference.StringCache.Descendants<C.NumericValue>();
+                categoryList.AddRange(cNumericValues.Select(cNumValue => new Category(cNumValue.InnerText)));
+
+
+            }
+
+            return new CategoryCollection(categoryList);
+        }
+
         #region Private Methods
 
-        private void AddMultiCategories(C.MultiLevelStringReference multiLvlStrRef)
+        private static List<Category> GetMultiCategories(C.MultiLevelStringReference multiLvlStrRef)
         {
             var parents = new List<KeyValuePair<uint, Category>>();
-            var levels = multiLvlStrRef.MultiLevelStringCache.Elements<C.Level>().Reverse();
-            foreach (var lvl in levels)
+            IEnumerable<C.Level> levels = multiLvlStrRef.MultiLevelStringCache.Elements<C.Level>().Reverse();
+            foreach (C.Level lvl in levels)
             {
                 var ptElements = lvl.Elements<C.StringPoint>();
                 var nextParents = new List<KeyValuePair<uint, Category>>();
@@ -82,7 +93,7 @@ namespace ShapeCrawler.Collections
                 }
                 else
                 {
-                    foreach (var pt in ptElements)
+                    foreach (C.StringPoint pt in ptElements)
                     {
                         var index = pt.Index;
                         var catName = pt.NumericValue.InnerText;
@@ -94,7 +105,7 @@ namespace ShapeCrawler.Collections
                 parents = nextParents;
             }
 
-            CollectionItems = parents.Select(kvp => kvp.Value).ToList(parents.Count);
+            return parents.Select(kvp => kvp.Value).ToList(parents.Count);
         }
 
         #endregion Private Methods

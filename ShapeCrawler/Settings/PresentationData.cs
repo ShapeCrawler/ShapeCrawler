@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Models.SlideComponents;
+using ShapeCrawler.Models;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Settings

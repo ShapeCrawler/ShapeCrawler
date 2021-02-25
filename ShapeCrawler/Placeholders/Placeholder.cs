@@ -1,5 +1,4 @@
 ﻿using DocumentFormat.OpenXml;
-using ShapeCrawler.Factories.Placeholders;
 
 namespace ShapeCrawler.Placeholders
 {

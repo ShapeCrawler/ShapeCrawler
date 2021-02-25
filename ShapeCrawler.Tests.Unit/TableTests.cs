@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Models.SlideComponents;
 using ShapeCrawler.Tables;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;

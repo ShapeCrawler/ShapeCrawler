@@ -17,7 +17,7 @@ namespace ShapeCrawler.Charts
     {
         #region Constructors
 
-        internal Series(ChartType type, OpenXmlElement sdkSeries, ChartPart sdkChartPart, ChartRefParser chartRefParser)
+        internal Series(ChartType type, OpenXmlElement sdkSeries, ChartPart sdkChartPart, ChartReferencesParser chartRefParser)
         {
             _sdkSeries = sdkSeries ?? throw new ArgumentNullException(nameof(sdkSeries));
             _sdkChartPart = sdkChartPart ?? throw new ArgumentNullException(nameof(sdkChartPart));
@@ -60,7 +60,7 @@ namespace ShapeCrawler.Charts
         private readonly Lazy<string> _name;
         private readonly ChartPart _sdkChartPart;
         private readonly OpenXmlElement _sdkSeries;
-        private readonly ChartRefParser _chartRefParser;
+        private readonly ChartReferencesParser _chartRefParser;
 
         #endregion Fields
 
@@ -79,7 +79,7 @@ namespace ShapeCrawler.Charts
                 numReference = _sdkSeries.GetFirstChild<C.YValues>().NumberReference;
             }
 
-            return _chartRefParser.GetNumbers(numReference, _sdkChartPart);
+            return _chartRefParser.GetNumbersFromCacheOrSpreadsheet(numReference, _sdkChartPart);
         }
 
         private string GetNameOrDefault()

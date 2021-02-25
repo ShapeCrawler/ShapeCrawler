@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Factories.Drawing;
-using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.Models.Styles;
+using ShapeCrawler.Factories;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Statics;
-using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -167,7 +166,8 @@ namespace ShapeCrawler
                 return new ShapeFill(image);
             }
 
-            A.SolidFill aSolidFill = ((P.Shape) PShapeTreeChild).ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
+            A.SolidFill aSolidFill =
+                ((P.Shape) PShapeTreeChild).ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
             if (aSolidFill != null)
             {
                 A.RgbColorModelHex aRgbColorModelHex = aSolidFill.RgbColorModelHex;

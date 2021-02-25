@@ -2,7 +2,7 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
-using ShapeCrawler.Factories.Placeholders;
+using ShapeCrawler.Placeholders;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Factories
@@ -17,7 +17,7 @@ namespace ShapeCrawler.Factories
 
         #region Constructors
 
-        public GeometryFactory(IPlaceholderService placeholderService)
+        internal GeometryFactory(IPlaceholderService placeholderService)
         {
             _placeholderService = placeholderService ?? throw new ArgumentNullException(nameof(placeholderService));
         }
