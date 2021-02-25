@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Tests.Unit.Helpers;
+using ShapeCrawler.Tests.Unit.Properties;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations
@@ -73,17 +76,17 @@ namespace ShapeCrawler.Tests.Unit
         public void TitleAndHasTitle_ReturnChartTitleStringAndFlagIndicatingWhetherChartHasATitle()
         {
             // Arrange
-            IChart chartCase1 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 6) as IChart;
-            IChart chartCase2 = _fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 7) as IChart;
-            IChart chartCase3 = _fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 5) as IChart;
-            IChart chartCase4 = _fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 4) as IChart;
-            IChart chartCase5 = _fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 4) as IChart;
-            IChart chartCase6 = _fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 6) as IChart;
-            IChart chartCase7 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7) as IChart;
-            IChart chartCase8 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 6) as IChart;
-            IChart chartCase9 = _fixture.Pre009.Slides[4].Shapes.First(sp => sp.Id == 6) as IChart;
-            IChart chartCase10 = _fixture.Pre009.Slides[4].Shapes.First(sp => sp.Id == 3) as IChart;
-            IChart chartCase11 = _fixture.Pre009.Slides[4].Shapes.First(sp => sp.Id == 5) as IChart;
+            IChart chartCase1 = (IChart)_fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 6);
+            IChart chartCase2 = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 7);
+            IChart chartCase3 = (IChart)_fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 5);
+            IChart chartCase4 = (IChart)_fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 4);
+            IChart chartCase5 = (IChart)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 4);
+            IChart chartCase6 = (IChart)_fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 6);
+            IChart chartCase7 = (IChart)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7);
+            IChart chartCase8 = (IChart)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 6);
+            IChart chartCase9 = (IChart)_fixture.Pre009.Slides[4].Shapes.First(sp => sp.Id == 6);
+            IChart chartCase10 = (IChart)_fixture.Pre009.Slides[4].Shapes.First(sp => sp.Id == 3);
+            IChart chartCase11 = (IChart)_fixture.Pre009.Slides[4].Shapes.First(sp => sp.Id == 5);
 
             // Act
             string charTitleCase1 = chartCase1.Title;
@@ -100,7 +103,7 @@ namespace ShapeCrawler.Tests.Unit
 
             // Assert
             charTitleCase1.Should().BeEquivalentTo("Test title");
-            charTitleCase2.Should().BeEquivalentTo("Series 1");
+            charTitleCase2.Should().BeEquivalentTo("Series 1_id7");
             charTitleCase3.Should().BeEquivalentTo("Title text");
             charTitleCase5.Should().BeEquivalentTo("Test title");
             charTitleCase7.Should().BeEquivalentTo("Sales");
@@ -136,7 +139,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void CategoryName_ContainsNameOfMainOrSubCategory()
+        public void CategoryName_GetterReturnsNameOfMainOrSubCategoryTitle()
         {
             // Arrange
             IChart chartCase1 = _fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4) as IChart;
@@ -151,6 +154,46 @@ namespace ShapeCrawler.Tests.Unit
             chartCase3.Categories[1].Name.Should().BeEquivalentTo("Q2");
             chartCase3.Categories[2].Name.Should().BeEquivalentTo("Q3");
             chartCase3.Categories[3].Name.Should().BeEquivalentTo("Q4");
+        }
+
+        [Fact(Skip = "In Progress")]
+        public void CategoryName_SetterChangeCategoryName_OfAPieChart()
+        {
+            // Arrange
+            IPresentation presentation = PresentationSc.Open(Resources._025, true);
+            MemoryStream mStream = new();
+            IChart pieChart = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 7);
+            const string newCategoryName = "Category 1_new";
+
+            // Act
+            pieChart.Categories[0].Name = newCategoryName;
+
+            // Assert
+            pieChart.Categories[0].Name.Should().Be(newCategoryName);
+            presentation.SaveAs(mStream);
+            presentation = PresentationSc.Open(mStream, false);
+            pieChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
+            pieChart.Categories[0].Name.Should().Be(newCategoryName);
+        }
+
+        [Fact(Skip = "In Progress")]
+        public void CategoryName_SetterChangeCategoryName_OfABarChartWithMultiLevelCategory()
+        {
+            // Arrange
+            IPresentation presentation = PresentationSc.Open(Resources._025, true);
+            MemoryStream mStream = new();
+            IChart barChart = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4);
+            const string newCategoryName = "DressesNew";
+
+            // Act
+            barChart.Categories[0].Name = newCategoryName;
+
+            // Assert
+            barChart.Categories[0].Name.Should().Be(newCategoryName);
+            presentation.SaveAs(mStream);
+            presentation = PresentationSc.Open(mStream, false);
+            barChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
+            barChart.Categories[0].Name.Should().Be(newCategoryName);
         }
 
         [Fact]

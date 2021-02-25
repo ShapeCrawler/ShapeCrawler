@@ -1,6 +1,6 @@
 ﻿using ShapeCrawler.Shared;
 
-namespace ShapeCrawler.Factories.Placeholders
+namespace ShapeCrawler.Placeholders
 {
     /// <summary>
     ///     Represents placeholder data.

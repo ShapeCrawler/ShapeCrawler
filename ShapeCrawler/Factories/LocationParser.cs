@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Factories.Placeholders;
-using ShapeCrawler.Models.SlideComponents;
-using ShapeCrawler.Models.Transforms;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -23,7 +21,7 @@ namespace ShapeCrawler.Factories
 
         #region Constructors
 
-        public LocationParser(IPlaceholderService phService)
+        internal LocationParser(IPlaceholderService phService)
         {
             _phService = phService ?? throw new ArgumentNullException(nameof(phService));
         }

@@ -10,7 +10,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace ShapeCrawler.Factories.Placeholders
+namespace ShapeCrawler.Placeholders
 {
     public class PlaceholderService : IPlaceholderService
     {

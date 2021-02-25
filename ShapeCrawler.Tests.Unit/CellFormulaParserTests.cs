@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using SlideDotNet.Spreadsheet;
+using ShapeCrawler.Spreadsheet;
 using Xunit;
 
 // ReSharper disable PossibleMultipleEnumeration

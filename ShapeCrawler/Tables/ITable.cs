@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Models;
+using ShapeCrawler.Shapes;
 
 namespace ShapeCrawler.Tables
 {

@@ -17,7 +17,7 @@ namespace ShapeCrawler.Charts
         /// <summary>
         ///     Gets category name.
         /// </summary>
-        public string Name { get; }
+        public string Name { get; set; }
 
         #endregion Properties
 

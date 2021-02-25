@@ -1,10 +1,9 @@
 ﻿using System.Drawing;
 using System.Globalization;
-using ShapeCrawler.Factories.Drawing;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Models.Styles
+namespace ShapeCrawler.Drawing
 {
     /// <summary>
     ///     Represents a shape fill.

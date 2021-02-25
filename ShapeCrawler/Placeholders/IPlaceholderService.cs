@@ -1,6 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 
-namespace ShapeCrawler.Factories.Placeholders
+namespace ShapeCrawler.Placeholders
 {
     /// <summary>
     ///     Represents a Slide Layout placeholder service.

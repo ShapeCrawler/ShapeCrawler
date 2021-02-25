@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Factories;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable PossibleNullReferenceException
 
-namespace ShapeCrawler.Factories.Placeholders
+namespace ShapeCrawler.Placeholders
 {
     /// <summary>
     ///     Represents a font height manager for placeholder elements.

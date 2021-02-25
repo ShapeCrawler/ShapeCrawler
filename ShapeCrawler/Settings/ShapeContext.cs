@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Factories.Placeholders;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
 
 namespace ShapeCrawler.Settings

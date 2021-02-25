@@ -1,4 +1,4 @@
-﻿namespace ShapeCrawler.Models.Styles
+﻿namespace ShapeCrawler.Drawing
 {
     public interface IShapeFill
     {

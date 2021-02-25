@@ -4,6 +4,6 @@ namespace ShapeCrawler.SlideMaster
 {
     public class SlideLayoutSc
     {
-        public ShapesCollection Shapes { get; }
+        public ShapeCollection Shapes { get; }
     }
 }

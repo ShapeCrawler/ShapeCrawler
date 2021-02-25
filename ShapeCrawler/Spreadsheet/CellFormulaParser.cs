@@ -2,20 +2,18 @@
 using System.Globalization;
 using System.Linq;
 
-// ReSharper disable All
-
-namespace SlideDotNet.Spreadsheet
+namespace ShapeCrawler.Spreadsheet
 {
     /// <summary>
-    ///     Represents a cell formula parser.
+    ///     Represents the cell formula parser.
     /// </summary>
     public class CellFormulaParser
     {
         #region Constructors
 
-        public CellFormulaParser(string cellsFormula)
+        public CellFormulaParser(string formula)
         {
-            _cellsFormula = cellsFormula;
+            _formula = formula;
         }
 
         #endregion Constructors
@@ -24,15 +22,16 @@ namespace SlideDotNet.Spreadsheet
         ///     Gets collection of the cell's addresses like ['B10','B11','B12'].
         /// </summary>
         /// <remarks>input="B10:B12", output=['B10','B11','B12']</remarks>
-        public IList<string> GetCellAddresses()
+        public List<string> GetCellAddresses()
         {
             ParseLetter();
-            return _tempList.ToArray();
+
+            return _tempList.ToList();
         }
 
         #region Fields
 
-        private readonly string _cellsFormula;
+        private readonly string _formula;
         private readonly LinkedList<string> _tempList = new LinkedList<string>();
 
         #endregion Fields
@@ -41,7 +40,7 @@ namespace SlideDotNet.Spreadsheet
 
         private void ParseLetter(int startIndex = 0)
         {
-            var letterCharacters = _cellsFormula.Substring(startIndex).TakeWhile(char.IsLetter);
+            var letterCharacters = _formula.Substring(startIndex).TakeWhile(char.IsLetter);
             var letterStr = string.Concat(letterCharacters);
             var nextStart = startIndex + letterCharacters.Count();
 
@@ -50,22 +49,22 @@ namespace SlideDotNet.Spreadsheet
 
         private void ParseDigit(string letterPart, int startIndex)
         {
-            var digitInt = GetDigit(startIndex);
+            int digitInt = GetDigit(startIndex);
             _tempList.AddLast(letterPart + digitInt); // e.g. 'B'+'10' -> B10
 
-            var endIndex = startIndex + digitInt.ToString(CultureInfo.CurrentCulture).Length;
-            if (endIndex >= _cellsFormula.Length)
+            int endIndex = startIndex + digitInt.ToString(CultureInfo.CurrentCulture).Length;
+            if (endIndex >= _formula.Length)
             {
                 return;
             }
 
             var nextStart = endIndex + letterPart.Length + 1; // skip separator and letter lengths
-            if (_cellsFormula[endIndex] == ':')
+            if (_formula[endIndex] == ':')
             {
                 ParseLetterAfterColon(letterPart, digitInt, nextStart);
             }
 
-            if (_cellsFormula[endIndex] == ',')
+            if (_formula[endIndex] == ',')
             {
                 ParseLetter(nextStart);
             }
@@ -82,7 +81,7 @@ namespace SlideDotNet.Spreadsheet
             var nextStart =
                 startIndex + digitInt.ToString(CultureInfo.CurrentCulture).Length +
                 1; // skip last digit and separator characters
-            if (nextStart < _cellsFormula.Length)
+            if (nextStart < _formula.Length)
             {
                 ParseLetter(nextStart);
             }
@@ -90,7 +89,7 @@ namespace SlideDotNet.Spreadsheet
 
         private int GetDigit(int startIndex)
         {
-            var digitChars = _cellsFormula.Substring(startIndex).TakeWhile(char.IsDigit);
+            IEnumerable<char> digitChars = _formula.Substring(startIndex).TakeWhile(char.IsDigit);
             return int.Parse(string.Concat(digitChars), CultureInfo.CurrentCulture);
         }
 
