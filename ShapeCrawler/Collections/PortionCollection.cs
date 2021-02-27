@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Collections

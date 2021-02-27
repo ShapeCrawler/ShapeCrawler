@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 

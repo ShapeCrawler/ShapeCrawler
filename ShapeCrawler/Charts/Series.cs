@@ -17,7 +17,8 @@ namespace ShapeCrawler.Charts
     {
         #region Constructors
 
-        internal Series(ChartType type, OpenXmlElement sdkSeries, ChartPart sdkChartPart, ChartReferencesParser chartRefParser)
+        internal Series(ChartType type, OpenXmlElement sdkSeries, ChartPart sdkChartPart,
+            ChartReferencesParser chartRefParser)
         {
             _sdkSeries = sdkSeries ?? throw new ArgumentNullException(nameof(sdkSeries));
             _sdkChartPart = sdkChartPart ?? throw new ArgumentNullException(nameof(sdkChartPart));

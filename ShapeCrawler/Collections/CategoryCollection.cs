@@ -49,7 +49,7 @@ namespace ShapeCrawler.Collections
             //      </c:strRef>
             //  </c:cat>
             C.CategoryAxisData cCatAxisData = firstChartSeries.GetFirstChild<C.CategoryAxisData>();
-            
+
             C.MultiLevelStringReference cMultiLvlStringRef = cCatAxisData.MultiLevelStringReference;
             if (cMultiLvlStringRef != null) // does chart have multi-level category
             {
@@ -59,11 +59,10 @@ namespace ShapeCrawler.Collections
             {
                 C.NumberReference numReference = cCatAxisData.NumberReference;
                 C.StringReference strReference = cCatAxisData.StringReference;
-                IEnumerable<C.NumericValue> cNumericValues = numReference != null ? numReference.NumberingCache.Descendants<C.NumericValue>() 
+                IEnumerable<C.NumericValue> cNumericValues = numReference != null
+                    ? numReference.NumberingCache.Descendants<C.NumericValue>()
                     : strReference.StringCache.Descendants<C.NumericValue>();
                 categoryList.AddRange(cNumericValues.Select(cNumValue => new Category(cNumValue.InnerText)));
-
-
             }
 
             return new CategoryCollection(categoryList);

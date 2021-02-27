@@ -105,8 +105,7 @@ namespace ShapeCrawler
         /// <param name="filePath"></param>
         public void SaveScheme(string filePath)
         {
-            var sldSize = Presentation.PresentationData.SlideSize.Value;
-            SlideSchemeService.SaveScheme(_shapes.Value, sldSize.Width, sldSize.Height, filePath);
+            SlideSchemeService.SaveScheme(_shapes.Value, Presentation.SlideWidth, Presentation.SlideHeight, filePath);
         }
 
         /// <summary>
@@ -115,8 +114,7 @@ namespace ShapeCrawler
         /// <param name="stream"></param>
         public void SaveScheme(Stream stream)
         {
-            var sldSize = Presentation.PresentationData.SlideSize.Value;
-            SlideSchemeService.SaveScheme(_shapes.Value, sldSize.Width, sldSize.Height, stream);
+            SlideSchemeService.SaveScheme(_shapes.Value, Presentation.SlideWidth, Presentation.SlideHeight, stream);
         }
 #if DEBUG
         public void SaveImage(string filePath)

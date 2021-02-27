@@ -4,36 +4,33 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.Shared;
 
 namespace ShapeCrawler.Settings
 {
-    public class ShapeContext
+    internal class ShapeContext
     {
-        private readonly Lazy<Dictionary<int, int>> _masterOtherStyle;
+        private readonly Lazy<Dictionary<int, FontData>> _masterOtherStyle;
 
         #region Constructors
 
         private ShapeContext()
         {
-            _masterOtherStyle = new Lazy<Dictionary<int, int>>(InitMasterOtherStyle);
+            _masterOtherStyle = new Lazy<Dictionary<int, FontData>>(InitMasterOtherStyle);
         }
 
         #endregion Constructors
 
         #region Public Methods
 
-        /// <summary>
-        ///     Tries to find matched font height from master/layout slides.
-        /// </summary>
-        /// <param name="paragraphLvl"></param>
-        /// <param name="fontSize"></param>
         internal bool TryGetFromMasterOtherStyle(int paragraphLvl, out int fontSize)
         {
             if (_masterOtherStyle.Value.ContainsKey(paragraphLvl))
             {
-                fontSize = _masterOtherStyle.Value[paragraphLvl];
-                return true;
+                if (_masterOtherStyle.Value[paragraphLvl].FontSize != null)
+                {
+                    fontSize = _masterOtherStyle.Value[paragraphLvl].FontSize;
+                    return true;
+                }
             }
 
             fontSize = -1;
@@ -44,10 +41,10 @@ namespace ShapeCrawler.Settings
 
         #region Private Methods
 
-        private Dictionary<int, int> InitMasterOtherStyle()
+        private Dictionary<int, FontData> InitMasterOtherStyle()
         {
             var result =
-                FontHeightParser.FromCompositeElement(SlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles
+                FontDataParser.FromCompositeElement(SlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles
                     .OtherStyle);
 
             return result;
@@ -61,43 +58,33 @@ namespace ShapeCrawler.Settings
         {
             private readonly PlaceholderFontService _fontService;
             private readonly IPlaceholderService _placeholderService;
-            private readonly SlidePart _sdkSldPart;
+            private readonly SlidePart _slidePart;
+
+            #region Constructors
+
+            internal Builder(PlaceholderFontService fontService, SlidePart slidePart)
+            {
+                _fontService = fontService;
+                _slidePart = slidePart;
+                _placeholderService = new PlaceholderService(slidePart.SlideLayoutPart);
+            }
+
+            #endregion Constructors
 
             #region Public Methods
 
-            internal ShapeContext Build(OpenXmlCompositeElement openXmlElement)
+            internal ShapeContext Build(OpenXmlCompositeElement compositeElement)
             {
-                Check.NotNull(openXmlElement, nameof(openXmlElement));
-
                 return new ShapeContext
                 {
                     PlaceholderFontService = _fontService,
                     PlaceholderService = _placeholderService,
-                    SlidePart = _sdkSldPart,
-                    CompositeElement = openXmlElement
+                    SlidePart = _slidePart,
+                    CompositeElement = compositeElement
                 };
             }
 
             #endregion Public Methods
-
-            #region Constructors
-
-            public Builder(PlaceholderFontService fontService, SlidePart sdkSldPart) :
-                this(fontService, sdkSldPart, new PlaceholderService(sdkSldPart.SlideLayoutPart))
-            {
-            }
-
-            internal Builder(
-                PlaceholderFontService fontService,
-                SlidePart sdkSldPart,
-                IPlaceholderService placeholderService)
-            {
-                _fontService = fontService;
-                _sdkSldPart = sdkSldPart;
-                _placeholderService = placeholderService;
-            }
-
-            #endregion Constructors
         }
 
         #endregion Builder

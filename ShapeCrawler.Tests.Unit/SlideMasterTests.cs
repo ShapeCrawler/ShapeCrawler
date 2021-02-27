@@ -85,7 +85,7 @@ namespace ShapeCrawler.Tests.Unit
             geometryTypeCase2.Should().Be(GeometryType.Custom);
         }
 
-        [Fact]
+        [Fact(Skip = "In Progress")]
         public void MasterAutoShapeTextBoxText_ReturnsText_WhenTheAutoShapesTextBoxIsNotEmpty()
         {
             // Arrange

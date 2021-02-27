@@ -1,9 +1,5 @@
 ﻿using System;
-using DocumentFormat.OpenXml;
-using ShapeCrawler.Extensions;
-using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -12,7 +8,7 @@ namespace ShapeCrawler.AutoShapes
     /// <summary>
     ///     Represents a text paragraph portion.
     /// </summary>
-    public class Portion
+    public class Portion // TODO: add interface
     {
         private readonly ResettableLazy<FontSc> _font;
         internal readonly A.Text AText;
@@ -65,44 +61,7 @@ namespace ShapeCrawler.AutoShapes
 
         private FontSc GetFont()
         {
-            int fontSize = GetFontSize();
-            return new FontSc(AText, fontSize, this);
-        }
-
-        private int GetFontSize()
-        {
-            Int32Value aRunPropertiesSize = AText.Parent.GetFirstChild<A.RunProperties>()?.FontSize;
-            if (aRunPropertiesSize != null)
-            {
-                return aRunPropertiesSize.Value;
-            }
-
-            // If element is placeholder, tries to get from placeholder data
-            P.Shape pShape = (P.Shape) Paragraph.TextBox.AutoShape.PShapeTreeChild;
-            if (pShape.IsPlaceholder())
-            {
-                int? prFontHeight =
-                    Paragraph.TextBox.ShapeContext.PlaceholderFontService.GetFontSizeByParagraphLvl(pShape,
-                        Paragraph.Level);
-                if (prFontHeight != null)
-                {
-                    return (int) prFontHeight;
-                }
-            }
-
-            PresentationData presentationData = Paragraph.TextBox.AutoShape.Slide.Presentation.PresentationData;
-            if (presentationData.LlvFontHeights.ContainsKey(Paragraph.Level))
-            {
-                return presentationData.LlvFontHeights[Paragraph.Level];
-            }
-
-            var exist = Paragraph.TextBox.ShapeContext.TryGetFromMasterOtherStyle(Paragraph.Level, out int fh);
-            if (exist)
-            {
-                return fh;
-            }
-
-            return FormatConstants.DefaultFontSize;
+            return new FontSc(AText, this);
         }
 
         private string GetText()

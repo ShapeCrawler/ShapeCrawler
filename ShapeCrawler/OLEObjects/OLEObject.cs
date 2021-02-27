@@ -3,7 +3,6 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.OLEObjects;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Statics;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -18,16 +17,16 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a shape on a slide.
     /// </summary>
-    public class OLEObject : IOLEObject
+    public class OLEObject : Shape, IOLEObject
     {
         #region Constructors
 
         internal OLEObject(
-            OpenXmlCompositeElement shapeTreeSource,
+            OpenXmlCompositeElement shapeTreeChild,
             ILocation innerTransform,
-            ShapeContext spContext)
+            ShapeContext spContext) : base(shapeTreeChild)
         {
-            ShapeTreeSource = shapeTreeSource;
+            ShapeTreeChild = shapeTreeChild;
             _innerTransform = innerTransform;
             Context = spContext;
         }
@@ -42,7 +41,7 @@ namespace ShapeCrawler
         private string _name;
         private readonly ILocation _innerTransform;
 
-        internal OpenXmlCompositeElement ShapeTreeSource { get; }
+        internal OpenXmlCompositeElement ShapeTreeChild { get; }
         internal SlideSc Slide { get; }
 
         #endregion Fields
@@ -118,19 +117,6 @@ namespace ShapeCrawler
             {
                 InitIdHiddenName();
                 return (bool) _hidden;
-            }
-        }
-
-        public Placeholder Placeholder
-        {
-            get
-            {
-                if (Context.CompositeElement.IsPlaceholder())
-                {
-                    return new Placeholder(ShapeTreeSource);
-                }
-
-                return null;
             }
         }
 

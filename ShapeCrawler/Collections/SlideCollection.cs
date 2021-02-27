@@ -18,9 +18,9 @@ namespace ShapeCrawler.Collections
         private readonly PresentationPart _presentationPart;
         private readonly ResettableLazy<List<SlideSc>> _slides;
 
-        internal SlideCollection(PresentationPart presentationPart, PresentationSc presentation)
+        internal SlideCollection(PresentationSc presentation)
         {
-            _presentationPart = presentationPart;
+            _presentationPart = presentation.PresentationPart;
             _presentation = presentation;
 
             _slides = new ResettableLazy<List<SlideSc>>(GetSlides);

@@ -36,7 +36,8 @@ namespace ShapeCrawler.Charts
 
             _firstSeries = new Lazy<OpenXmlElement>(GetFirstSeries);
             _xValues = new Lazy<LibraryCollection<double>>(GetXValues);
-            _seriesCollection = new Lazy<SeriesCollection>(() => SeriesCollection.Create(_cXCharts, _chartPart, _chartRefParser));
+            _seriesCollection =
+                new Lazy<SeriesCollection>(() => SeriesCollection.Create(_cXCharts, _chartPart, _chartRefParser));
             _categories = new Lazy<CategoryCollection>(() => CategoryCollection.Create(_firstSeries.Value, Type));
             _chartRefParser = new ChartReferencesParser(this);
             _chartType = new Lazy<ChartType>(GetChartType);
@@ -45,6 +46,24 @@ namespace ShapeCrawler.Charts
         }
 
         #endregion Constructors
+
+        #region Private Methods
+
+        private void
+            InitIdHiddenName() // TODO: check, looks like it can be shared and can be moved int base Shape class.
+        {
+            if (_id != 0)
+            {
+                return;
+            }
+
+            var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
+            _id = id;
+            _hidden = hidden;
+            _name = name;
+        }
+
+        #endregion
 
         #region Fields
 
@@ -310,22 +329,5 @@ namespace ShapeCrawler.Charts
         public GeometryType GeometryType => GeometryType.Rectangle;
 
         #endregion Properties
-
-        #region Private Methods
-
-        private void InitIdHiddenName() // TODO: check, looks like it can be shared and can be moved int base Shape class.
-        {
-            if (_id != 0)
-            {
-                return;
-            }
-
-            var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
-            _id = id;
-            _hidden = hidden;
-            _name = name;
-        }
-
-        #endregion
     }
 }

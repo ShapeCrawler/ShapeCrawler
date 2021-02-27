@@ -1,6 +1,5 @@
 ﻿using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Statics;
 
@@ -11,25 +10,6 @@ namespace ShapeCrawler
         protected Shape(OpenXmlCompositeElement pShapeTreeChild)
         {
             PShapeTreeChild = pShapeTreeChild;
-        }
-
-        public string CustomData
-        {
-            get => GetCustomData();
-            set => SetCustomData(value);
-        }
-
-        public Placeholder Placeholder
-        {
-            get
-            {
-                if (PShapeTreeChild.IsPlaceholder())
-                {
-                    return new Placeholder(PShapeTreeChild);
-                }
-
-                return null;
-            }
         }
 
         internal OpenXmlCompositeElement PShapeTreeChild { get; }
@@ -53,5 +33,20 @@ namespace ShapeCrawler
 
             return elementText.Value;
         }
+
+        #region Public Properties
+
+        public string CustomData
+        {
+            get => GetCustomData();
+            set => SetCustomData(value);
+        }
+
+        /// <summary>
+        ///     Gets placeholder. Returns <c>NULL</c> if the shape is not a placeholder.
+        /// </summary>
+        public Placeholder Placeholder => Placeholder.Create(PShapeTreeChild);
+
+        #endregion Public Properties
     }
 }

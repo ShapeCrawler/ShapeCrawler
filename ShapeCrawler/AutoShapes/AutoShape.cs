@@ -78,7 +78,7 @@ namespace ShapeCrawler
             set => _innerTransform.SetHeight(value);
         }
 
-        public int Id
+        public int Id //TODO: move to Shape
         {
             get
             {
@@ -87,7 +87,7 @@ namespace ShapeCrawler
             }
         }
 
-        public string Name
+        public string Name //TODO: move to Shape
         {
             get
             {
@@ -96,7 +96,7 @@ namespace ShapeCrawler
             }
         }
 
-        public bool Hidden
+        public bool Hidden //TODO: move to Shape
         {
             get
             {
@@ -105,41 +105,15 @@ namespace ShapeCrawler
             }
         }
 
-        public TextBoxSc TextBox => _textBox.Value;
+        public ITextBox TextBox => _textBox.Value;
 
         public ShapeFill Fill => _shapeFill.Value;
 
         public GeometryType GeometryType { get; }
 
-        public string CustomData
-        {
-            get => GetCustomData();
-            set => SetCustomData(value);
-        }
-
         #endregion Properties
 
         #region Private Methods
-
-        private void SetCustomData(string value)
-        {
-            var customDataElement =
-                $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
-            Context.CompositeElement.InnerXml += customDataElement;
-        }
-
-        private string GetCustomData()
-        {
-            var pattern = @$"<{ConstantStrings.CustomDataElementName}>(.*)<\/{ConstantStrings.CustomDataElementName}>";
-            var regex = new Regex(pattern);
-            var elementText = regex.Match(Context.CompositeElement.InnerXml).Groups[1];
-            if (elementText.Value.Length == 0)
-            {
-                return null;
-            }
-
-            return elementText.Value;
-        }
 
         private TextBoxSc GetTextBox()
         {

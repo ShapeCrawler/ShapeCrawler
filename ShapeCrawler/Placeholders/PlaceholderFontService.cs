@@ -11,41 +11,38 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Placeholders
 {
-    /// <summary>
-    ///     Represents a font height manager for placeholder elements.
-    /// </summary>
-    public class PlaceholderFontService
+    internal class PlaceholderFontService
     {
         private readonly Lazy<HashSet<PlaceholderFontData>> _layoutPlaceholders;
-        private readonly Lazy<Dictionary<int, int>> _masterBodyFontHeights;
+        private readonly Lazy<Dictionary<int, FontData>> _masterBodyFontHeights;
         private readonly Lazy<HashSet<PlaceholderFontData>> _masterPlaceholders;
         private readonly IPlaceholderService _placeholderService;
         private readonly SlidePart _slidePart;
 
         #region Public Methods
 
-        /// <summary>
-        ///     Gets font size. Return null if font size is not defined.
-        /// </summary>
-        /// <param name="pShape">Placeholder element.</param>
-        /// <param name="paragraphLvl">Paragraph level.</param>
-        /// <returns></returns>
         public int? GetFontSizeByParagraphLvl(P.Shape pShape, int paragraphLvl)
         {
             PlaceholderData placeholderData = _placeholderService.CreatePlaceholderData(pShape);
 
             // From slide layout element
             PlaceholderFontData lPlaceholder = _layoutPlaceholders.Value.FirstOrDefault(e => e.Equals(placeholderData));
-            if (lPlaceholder != null && lPlaceholder.LvlFontHeights.ContainsKey(paragraphLvl))
+            if (lPlaceholder != null && lPlaceholder.LvlToFontData.ContainsKey(paragraphLvl))
             {
-                return lPlaceholder.LvlFontHeights[paragraphLvl];
+                if (lPlaceholder.LvlToFontData[paragraphLvl].FontSize != null)
+                {
+                    return lPlaceholder.LvlToFontData[paragraphLvl].FontSize;
+                }
             }
 
             // From slide master element
             PlaceholderFontData mPlaceholder = _masterPlaceholders.Value.FirstOrDefault(e => e.Equals(placeholderData));
-            if (mPlaceholder != null && mPlaceholder.LvlFontHeights.ContainsKey(paragraphLvl))
+            if (mPlaceholder != null && mPlaceholder.LvlToFontData.ContainsKey(paragraphLvl))
             {
-                return mPlaceholder.LvlFontHeights[paragraphLvl];
+                if (mPlaceholder.LvlToFontData[paragraphLvl].FontSize != null)
+                {
+                    return mPlaceholder.LvlToFontData[paragraphLvl].FontSize;
+                }
             }
 
             // Title type
@@ -59,7 +56,10 @@ namespace ShapeCrawler.Placeholders
             // Master body type placeholder settings
             if (_masterBodyFontHeights.Value.ContainsKey(paragraphLvl))
             {
-                return _masterBodyFontHeights.Value[paragraphLvl];
+                if (_masterBodyFontHeights.Value[paragraphLvl].FontSize != null)
+                {
+                    return _masterBodyFontHeights.Value[paragraphLvl].FontSize;
+                }
             }
 
             return null;
@@ -69,16 +69,16 @@ namespace ShapeCrawler.Placeholders
 
         #region Constructors
 
-        public PlaceholderFontService(SlidePart sdkSldPart, IPlaceholderService placeholderService)
+        public PlaceholderFontService(SlidePart slidePart, IPlaceholderService placeholderService)
         {
-            _slidePart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
+            _slidePart = slidePart ?? throw new ArgumentNullException(nameof(slidePart));
             _placeholderService = placeholderService ?? throw new ArgumentNullException(nameof(placeholderService));
 
             P.CommonSlideData layoutSldData = _slidePart.SlideLayoutPart.SlideLayout.CommonSlideData;
             P.CommonSlideData masterSldData = _slidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.CommonSlideData;
             _layoutPlaceholders = new Lazy<HashSet<PlaceholderFontData>>(() => InitLayoutMaster(layoutSldData));
             _masterPlaceholders = new Lazy<HashSet<PlaceholderFontData>>(() => InitLayoutMaster(masterSldData));
-            _masterBodyFontHeights = new Lazy<Dictionary<int, int>>(() => InitBodyTypePlaceholder(_slidePart));
+            _masterBodyFontHeights = new Lazy<Dictionary<int, FontData>>(() => InitBodyTypePlaceholder(_slidePart));
         }
 
         public PlaceholderFontService(SlidePart slidePart)
@@ -93,34 +93,35 @@ namespace ShapeCrawler.Placeholders
         private HashSet<PlaceholderFontData> InitLayoutMaster(P.CommonSlideData layoutMasterCommonSlideData)
         {
             var fontDataPlaceholders = new HashSet<PlaceholderFontData>();
-            foreach (var sdkShape in layoutMasterCommonSlideData.ShapeTree.Elements<P.Shape>()
+            foreach (P.Shape pShape in layoutMasterCommonSlideData.ShapeTree.Elements<P.Shape>()
                 .Where(e => e.IsPlaceholder()))
             {
-                var fontDataPlaceholder = FromLayoutMasterElement(sdkShape);
+                PlaceholderFontData fontDataPlaceholder = FromLayoutMasterElement(pShape);
                 fontDataPlaceholders.Add(fontDataPlaceholder);
             }
 
             return fontDataPlaceholders;
         }
 
-        private static Dictionary<int, int> InitBodyTypePlaceholder(SlidePart slidePart)
+        private static Dictionary<int, FontData> InitBodyTypePlaceholder(SlidePart slidePart)
         {
-            return FontHeightParser.FromCompositeElement(slidePart.SlideLayoutPart.SlideMasterPart.SlideMaster
-                .TextStyles.BodyStyle);
+            P.BodyStyle slideMasterBodyTextStyle =
+                slidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles.BodyStyle;
+            return FontDataParser.FromCompositeElement(slideMasterBodyTextStyle);
         }
 
         private PlaceholderFontData FromLayoutMasterElement(P.Shape pShape)
         {
             var placeholderFontData = _placeholderService.PlaceholderFontDataFromCompositeElement(pShape);
-            placeholderFontData.LvlFontHeights = FontHeightParser.FromCompositeElement(pShape.TextBody.ListStyle);
+            placeholderFontData.LvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
 
-            if (!placeholderFontData.LvlFontHeights.Any()) // font height is still not known
+            if (!placeholderFontData.LvlToFontData.Any()) // font height is still not known
             {
                 var endParaRunPrFs = pShape.TextBody.GetFirstChild<A.Paragraph>()
                     .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
                 if (endParaRunPrFs != null)
                 {
-                    placeholderFontData.LvlFontHeights.Add(1, endParaRunPrFs.Value);
+                    placeholderFontData.LvlToFontData.Add(1, new FontData(endParaRunPrFs));
                 }
             }
 

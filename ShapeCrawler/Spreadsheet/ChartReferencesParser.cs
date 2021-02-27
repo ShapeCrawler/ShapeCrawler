@@ -22,7 +22,8 @@ namespace ShapeCrawler.Spreadsheet
 
         #region Public Methods
 
-        internal IReadOnlyList<double> GetNumbersFromCacheOrSpreadsheet(C.NumberReference numberReference, ChartPart chartPart)
+        internal IReadOnlyList<double> GetNumbersFromCacheOrSpreadsheet(C.NumberReference numberReference,
+            ChartPart chartPart)
         {
             if (numberReference.NumberingCache != null)
             {
@@ -71,7 +72,9 @@ namespace ShapeCrawler.Spreadsheet
 
         #region Private Methods
 
-        private List<string> GetCellStrValues(C.Formula cFormula, EmbeddedPackagePart xlsxPackagePart) //EmbeddedPackagePart : OpenXmlPart
+        private List<string>
+            GetCellStrValues(C.Formula cFormula,
+                EmbeddedPackagePart xlsxPackagePart) //EmbeddedPackagePart : OpenXmlPart
         {
             Dictionary<EmbeddedPackagePart, SpreadsheetDocument> packPartToSpreadsheetDoc =
                 _chart.Slide.Presentation.PresentationData.SpreadsheetCache;
@@ -91,8 +94,9 @@ namespace ShapeCrawler.Spreadsheet
             var worksheetPart = (WorksheetPart) workbookPart.GetPartById(sheetId);
             IEnumerable<Cell> xCells = worksheetPart.Worksheet.GetFirstChild<SheetData>().ChildElements
                 .SelectMany(e => e.Elements<Cell>()); //TODO: use HashSet
-            
-            List<string> formulaCellAddressList = new CellFormulaParser(sheetNameAndCellsFormula[1]).GetCellAddresses(); //eg: [1] = 'A2:A5'
+
+            List<string> formulaCellAddressList =
+                new CellFormulaParser(sheetNameAndCellsFormula[1]).GetCellAddresses(); //eg: [1] = 'A2:A5'
 
             var xCellValues = new List<string>(formulaCellAddressList.Count);
             foreach (string address in formulaCellAddressList)

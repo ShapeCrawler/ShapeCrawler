@@ -6,16 +6,8 @@ using D = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Extensions
 {
-    /// <summary>
-    ///     Extension methods for <see cref="OpenXmlCompositeElement" /> instance.
-    /// </summary>
-    public static class CompositeElementExtensions
+    internal static class CompositeElementExtensions
     {
-        /// <summary>
-        ///     Determines whether element is placeholder.
-        /// </summary>
-        /// <param name="compositeElement"></param>
-        /// <returns></returns>
         public static bool IsPlaceholder(this OpenXmlCompositeElement compositeElement)
         {
             return compositeElement.Descendants<P.PlaceholderShape>().Any();
@@ -28,7 +20,7 @@ namespace ShapeCrawler.Extensions
         public static (int, bool, string) GetNvPrValues(this OpenXmlCompositeElement compositeElement)
         {
             // .First() is used instead .Single() because group shape can have more than one id for its child elements
-            var cNvPr = compositeElement.Descendants<P.NonVisualDrawingProperties>().First();
+            var cNvPr = compositeElement.GetNonVisualDrawingProperties();
             var id = (int) cNvPr.Id.Value;
             var name = cNvPr.Name.Value;
             var parsedHiddenValue = cNvPr.Hidden?.Value;
@@ -40,15 +32,23 @@ namespace ShapeCrawler.Extensions
         public static P.NonVisualDrawingProperties GetNonVisualDrawingProperties(
             this OpenXmlCompositeElement compositeElement)
         {
+            // Get <p:cNvSpPr>
             return compositeElement switch
             {
                 P.GraphicFrame pGraphicFrame => pGraphicFrame.NonVisualGraphicFrameProperties
                     .NonVisualDrawingProperties,
                 P.Shape pShape => pShape.NonVisualShapeProperties.NonVisualDrawingProperties,
+                P.Picture pPicture => pPicture.NonVisualPictureProperties.NonVisualDrawingProperties,
+                P.GroupShape pGroupShape => pGroupShape.NonVisualGroupShapeProperties.NonVisualDrawingProperties,
                 _ => throw new ShapeCrawlerException()
             };
         }
 
+        /// <summary>
+        ///     Gets <see cref="P.ApplicationNonVisualDrawingProperties" /> (p:nvPr).
+        /// </summary>
+        /// <param name="compositeElement"></param>
+        /// <returns></returns>
         public static P.ApplicationNonVisualDrawingProperties GetApplicationNonVisualDrawingProperties(
             this OpenXmlCompositeElement compositeElement)
         {

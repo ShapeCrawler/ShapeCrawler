@@ -31,20 +31,20 @@ namespace ShapeCrawler.Tests.Unit
         public void Text_GetterReturnsShapeTextWhichIsParagraphTextsAggregate()
         {
             // Arrange
-            TextBoxSc textBoxCase1 = ((IAutoShape)_fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2)).TextBox;
-            TextBoxSc textBoxCase2 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 5)).TextBox;
-            TextBoxSc textBoxCase3 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 6)).TextBox;
-            TextBoxSc textBoxCase5 = ((IAutoShape)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox;
-            TextBoxSc textBoxCase6 = ((IAutoShape)_fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61)).TextBox;
-            TextBoxSc textBoxCase7 = ((IAutoShape)_fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5)).TextBox;
-            TextBoxSc textBoxCase8 = ((IAutoShape)_fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 54275)).TextBox;
-            TextBoxSc textBoxCase9 = ((IAutoShape)_fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
-            TextBoxSc textBoxCase10 = ((IAutoShape)_fixture.Pre021.Slides[3].Shapes.First(sp => sp.Id == 2)).TextBox;
-            TextBoxSc textBoxCase11 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox;
-            TextBoxSc textBoxCase12 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
-            TextBoxSc textBoxCase13 = ((IAutoShape)_fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox;
-            TextBoxSc textBoxCase14 = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextBox;
-            TextBoxSc textBoxCase4 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextBox;
+            ITextBox textBoxCase1 = ((IAutoShape)_fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2)).TextBox;
+            ITextBox textBoxCase2 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 5)).TextBox;
+            ITextBox textBoxCase3 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 6)).TextBox;
+            ITextBox textBoxCase5 = ((IAutoShape)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox;
+            ITextBox textBoxCase6 = ((IAutoShape)_fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61)).TextBox;
+            ITextBox textBoxCase7 = ((IAutoShape)_fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5)).TextBox;
+            ITextBox textBoxCase8 = ((IAutoShape)_fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 54275)).TextBox;
+            ITextBox textBoxCase9 = ((IAutoShape)_fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
+            ITextBox textBoxCase10 = ((IAutoShape)_fixture.Pre021.Slides[3].Shapes.First(sp => sp.Id == 2)).TextBox;
+            ITextBox textBoxCase11 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox;
+            ITextBox textBoxCase12 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
+            ITextBox textBoxCase13 = ((IAutoShape)_fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox;
+            ITextBox textBoxCase14 = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextBox;
+            ITextBox textBoxCase4 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextBox;
 
             // Act-Assert
             textBoxCase1.Text.Should().BeEquivalentTo("Title text");
@@ -69,7 +69,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             PresentationSc presentation = PresentationSc.Open(Resources._001, true);
-            TextBoxSc textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
+            ITextBox textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
             const string newText = "Test";
             var mStream = new MemoryStream();
 
@@ -214,14 +214,14 @@ namespace ShapeCrawler.Tests.Unit
         public void ParagraphText_GetterReturnsParagraphText()
         {
             // Arrange
-            TextBoxSc textFrameCase1 = ((IAutoShape)_fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 37)).TextBox;
-            TextBoxSc textFrameCase2 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextBox;
-            TextBoxSc textFrameCase3 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextBox;
+            ITextBox textBox1 = ((IAutoShape)_fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 37)).TextBox;
+            ITextBox textBox2 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextBox;
+            ITextBox textBox3 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextBox;
 
             // Act
-            string paragraphTextCase1 = textFrameCase1.Paragraphs[0].Text;
-            string paragraphTextCase2 = textFrameCase1.Paragraphs[1].Text;
-            string paragraphTextCase3 = textFrameCase2.Paragraphs[0].Text;
+            string paragraphTextCase1 = textBox1.Paragraphs[0].Text;
+            string paragraphTextCase2 = textBox1.Paragraphs[1].Text;
+            string paragraphTextCase3 = textBox2.Paragraphs[0].Text;
 
             // Assert
             paragraphTextCase1.Should().BeEquivalentTo("P1t1 P1t2");
@@ -233,10 +233,10 @@ namespace ShapeCrawler.Tests.Unit
         public void Paragraphs_CollectionCounterReturnsNumberOfParagraphsInTheTextFrame()
         {
             // Arrange
-            TextBoxSc textFrame = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextBox;
+            ITextBox textBox = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextBox;
 
             // Act
-            IEnumerable<ParagraphSc> paragraphs = textFrame.Paragraphs;
+            IEnumerable<ParagraphSc> paragraphs = textBox.Paragraphs;
 
             // Assert
             paragraphs.Should().HaveCount(1);
@@ -246,10 +246,10 @@ namespace ShapeCrawler.Tests.Unit
         public void ParagraphPortions_CollectionCounterReturnsNumberOfTextPortionsInTheParagraph()
         {
             // Arrange
-            TextBoxSc textFrame = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextBox;
+            ITextBox textBox = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextBox;
 
             // Act
-            IEnumerable<Portion> paragraphPortions = textFrame.Paragraphs[0].Portions;
+            IEnumerable<Portion> paragraphPortions = textBox.Paragraphs[0].Portions;
 
             // Assert
             paragraphPortions.Should().HaveCount(2);
@@ -273,7 +273,7 @@ namespace ShapeCrawler.Tests.Unit
             const string TEST_TEXT = "ParagraphsAdd";
             var mStream = new MemoryStream();
             PresentationSc presentation = PresentationSc.Open(Resources._001, true);
-            TextBoxSc textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 4)).TextBox;
+            ITextBox textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 4)).TextBox;
             int originParagraphsCount = textBox.Paragraphs.Count;
 
             // Act

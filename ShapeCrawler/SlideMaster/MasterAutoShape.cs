@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.SlideMaster;
-using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable once CheckNamespace
@@ -43,6 +43,8 @@ namespace ShapeCrawler
         public Placeholder Placeholder { get; }
         public ShapeFill Fill { get; }
         public string CustomData { get; set; }
+
+        ITextBox IAutoShape.TextBox => throw new NotImplementedException();
 
         private TextBoxSc GetTextBox()
         {

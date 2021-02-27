@@ -155,7 +155,7 @@ namespace ShapeCrawler.Tests.Unit
             chartCase3.Categories[2].Name.Should().BeEquivalentTo("Q3");
             chartCase3.Categories[3].Name.Should().BeEquivalentTo("Q4");
         }
-
+#if DEBUG
         [Fact(Skip = "In Progress")]
         public void CategoryName_SetterChangeCategoryName_OfAPieChart()
         {
@@ -195,7 +195,7 @@ namespace ShapeCrawler.Tests.Unit
             barChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
             barChart.Categories[0].Name.Should().Be(newCategoryName);
         }
-
+#endif
         [Fact]
         public void SeriesType_ReturnsChartTypeOfTheSeries()
         {

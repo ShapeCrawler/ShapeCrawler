@@ -1,7 +1,6 @@
 ﻿using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Texts;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler
@@ -20,6 +19,6 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets text box. Returns <c>NULL</c> if shape has not text content.
         /// </summary>
-        TextBoxSc TextBox { get; }
+        ITextBox TextBox { get; }
     }
 }

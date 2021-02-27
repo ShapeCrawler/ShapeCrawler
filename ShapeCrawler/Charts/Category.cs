@@ -14,10 +14,17 @@ namespace ShapeCrawler.Charts
         /// </summary>
         public Category MainCategory { get; }
 
+#if DEBUG
+        /// <summary>
+        ///     Gets or sets category name.
+        /// </summary>
+        public string Name { get; set; }
+#else
         /// <summary>
         ///     Gets category name.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; }
+#endif
 
         #endregion Properties
 
