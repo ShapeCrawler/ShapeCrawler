@@ -8,7 +8,6 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tables;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
-using ShapeCrawler.Texts;
 using Xunit;
 
 // ReSharper disable All
@@ -67,16 +66,32 @@ namespace ShapeCrawler.Tests.Unit
         public void FontName_GetterReturnsFontNameOfTheParagraphPortion()
         {
             // Arrange
-            TextBoxSc textFrameCase1 = ((IAutoShape)_fixture.Pre002.Slides[1].Shapes.First(s => s.Id == 3)).TextBox;
-            TextBoxSc textFrameCase2 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(s => s.Id == 4)).TextBox;
+            ITextBox textBox1 = ((IAutoShape)_fixture.Pre002.Slides[1].Shapes.First(sp => sp.Id == 3)).TextBox;
+            ITextBox textBox2 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 4)).TextBox;
+            ITextBox textBox3 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 7)).TextBox;
 
             // Act
-            string portionFontNameCase1 = textFrameCase1.Paragraphs[0].Portions[0].Font.Name;
-            string portionFontNameCase2 = textFrameCase2.Paragraphs[0].Portions[0].Font.Name;
+            string portionFontNameCase1 = textBox1.Paragraphs[0].Portions[0].Font.Name;
+            string portionFontNameCase2 = textBox2.Paragraphs[0].Portions[0].Font.Name;
+            string portionFontNameCase3 = textBox3.Paragraphs[0].Portions[0].Font.Name;
 
             // Assert
             portionFontNameCase1.Should().BeEquivalentTo("Palatino Linotype");
             portionFontNameCase2.Should().BeEquivalentTo("Broadway");
+            portionFontNameCase3.Should().BeEquivalentTo("Calibri Light");
+        }
+
+        [Fact(Skip = "In Progress")]
+        public void FontName_GetterReturnsCalibriLightAsFontName()
+        {
+            // Arrange
+            ITextBox textBox4 = ((IAutoShape)_fixture.Pre001.Slides[4].Shapes.First(sp => sp.Id == 5)).TextBox;
+
+            // Act
+            string portionFontNameCase4 = textBox4.Paragraphs[0].Portions[0].Font.Name;
+
+            // Assert
+            portionFontNameCase4.Should().BeEquivalentTo("Calibri Light");
         }
 
         [Fact]

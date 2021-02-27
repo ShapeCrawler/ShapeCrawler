@@ -7,7 +7,6 @@ using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
@@ -23,18 +22,19 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a shape on a slide.
     /// </summary>
-    public class TableSc : ITable
+    public class TableSc : Shape, ITable
     {
         #region Constructors
 
-        internal TableSc(OpenXmlCompositeElement shapeTreeSource, ILocation innerTransform, ShapeContext spContext)
+        internal TableSc(OpenXmlCompositeElement pShapeTreeChild, ILocation innerTransform, ShapeContext spContext)
+            : base(pShapeTreeChild)
         {
-            ShapeTreeSource = shapeTreeSource;
+            PShapeTreeChild = pShapeTreeChild;
             _innerTransform = innerTransform;
             Context = spContext;
             _rowCollection =
-                new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) ShapeTreeSource));
-            _pGraphicFrame = shapeTreeSource as P.GraphicFrame;
+                new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) PShapeTreeChild));
+            _pGraphicFrame = pShapeTreeChild as P.GraphicFrame;
         }
 
         #endregion Constructors
@@ -178,7 +178,7 @@ namespace ShapeCrawler
 
         internal ShapeContext Context { get; }
         internal A.Table ATable => _pGraphicFrame.GetATable();
-        internal OpenXmlCompositeElement ShapeTreeSource { get; } // TODO: delete this duplicate of _pGraphicFrame
+        internal OpenXmlCompositeElement PShapeTreeChild { get; } // TODO: delete this duplicate of _pGraphicFrame
 
         #endregion Fields
 
@@ -257,19 +257,6 @@ namespace ShapeCrawler
             {
                 InitIdHiddenName();
                 return (bool) _hidden;
-            }
-        }
-
-        public Placeholder Placeholder
-        {
-            get
-            {
-                if (Context.CompositeElement.IsPlaceholder())
-                {
-                    return new Placeholder(ShapeTreeSource);
-                }
-
-                return null;
             }
         }
 

@@ -12,7 +12,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Placeholders
 {
-    public class PlaceholderService : IPlaceholderService
+    internal class PlaceholderService : IPlaceholderService
     {
         #region Fields
 

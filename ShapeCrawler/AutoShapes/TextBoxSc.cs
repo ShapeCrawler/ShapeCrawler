@@ -12,8 +12,9 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.AutoShapes
 {
     // TODO: Override ToString()
+
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-    public sealed class TextBoxSc
+    public sealed class TextBoxSc : ITextBox
     {
         #region Fields
 

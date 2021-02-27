@@ -2,7 +2,6 @@
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -110,19 +109,6 @@ namespace ShapeCrawler
             {
                 InitIdHiddenName();
                 return (bool) _hidden;
-            }
-        }
-
-        public Placeholder Placeholder
-        {
-            get
-            {
-                if (Context.CompositeElement.IsPlaceholder())
-                {
-                    return new Placeholder(PShapeTreeChild);
-                }
-
-                return null;
             }
         }
 

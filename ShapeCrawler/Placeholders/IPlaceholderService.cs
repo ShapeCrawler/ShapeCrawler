@@ -5,7 +5,7 @@ namespace ShapeCrawler.Placeholders
     /// <summary>
     ///     Represents a Slide Layout placeholder service.
     /// </summary>
-    public interface IPlaceholderService
+    internal interface IPlaceholderService
     {
         /// <summary>
         ///     Tries to get matched <see cref="PlaceholderLocationData" /> instance for specified SDK-element.

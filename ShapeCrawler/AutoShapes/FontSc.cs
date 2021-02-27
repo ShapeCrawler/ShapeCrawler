@@ -1,6 +1,10 @@
-﻿using System.Linq;
+﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Extensions;
+using ShapeCrawler.Placeholders;
+using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -11,14 +15,14 @@ namespace ShapeCrawler.AutoShapes
         private readonly A.Text _aText;
         private readonly ResettableLazy<A.LatinFont> _latinFont;
         private readonly Portion _portion;
-        private readonly int _size;
+        private readonly ResettableLazy<int> _size;
 
         #region Constructors
 
-        internal FontSc(A.Text aText, int fontSize, Portion portion)
+        internal FontSc(A.Text aText, Portion portion)
         {
             _aText = aText;
-            _size = fontSize;
+            _size = new ResettableLazy<int>(GetSize);
             _latinFont = new ResettableLazy<A.LatinFont>(ParseLatinFont);
             _portion = portion;
         }
@@ -41,7 +45,7 @@ namespace ShapeCrawler.AutoShapes
         /// </summary>
         public int Size
         {
-            get => _size;
+            get => _size.Value;
             set => SetFontSize(value);
         }
 
@@ -60,6 +64,13 @@ namespace ShapeCrawler.AutoShapes
 
         private string ParseFontName()
         {
+            const string majorLatinFont = "+mj-lt";
+            if (_latinFont.Value.Typeface == majorLatinFont)
+            {
+                return _portion.Paragraph.TextBox.AutoShape.Slide.SlidePart.SlideLayoutPart.SlideMasterPart
+                    .ThemePart.Theme.ThemeElements.FontScheme.MajorFont.LatinFont.Typeface;
+            }
+
             return _latinFont.Value.Typeface;
         }
 
@@ -77,8 +88,8 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetFontSize(int newFontSize)
         {
-            var runPr = _aText.Parent.GetFirstChild<A.RunProperties>();
-            if (runPr == null)
+            A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
+            if (aRunPr == null)
             {
                 const string errorMsg =
                     "The property value cannot be changed on the Slide level since it belongs to Slide Master. " +
@@ -87,23 +98,64 @@ namespace ShapeCrawler.AutoShapes
                 throw new SlideMasterPropertyCannotBeChanged(errorMsg);
             }
 
-            runPr.FontSize = newFontSize;
+            aRunPr.FontSize = newFontSize;
         }
 
         private A.LatinFont ParseLatinFont()
         {
-            var runPr = _aText.Parent.GetFirstChild<A.RunProperties>();
-            var latinFont = runPr?.GetFirstChild<A.LatinFont>();
-            if (latinFont == null)
+            A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
+            A.LatinFont aLatinFont = aRunPr?.GetFirstChild<A.LatinFont>();
+            if (aLatinFont == null)
             {
                 // Gets font from theme
-                latinFont = _aText.Ancestors<P.Slide>().First()
-                    .SlidePart.SlideLayoutPart.SlideMasterPart
-                    .ThemePart.Theme.ThemeElements.FontScheme.MinorFont
-                    .LatinFont;
+                aLatinFont = _portion.Paragraph.TextBox.AutoShape.Slide.SlidePart.SlideLayoutPart.SlideMasterPart
+                    .ThemePart.Theme.ThemeElements.FontScheme.MinorFont.LatinFont;
             }
 
-            return latinFont;
+            return aLatinFont;
+        }
+
+        private int GetSize()
+        {
+            Int32Value aRunPrFontSize = _portion.AText.Parent.GetFirstChild<A.RunProperties>()?.FontSize;
+            if (aRunPrFontSize != null)
+            {
+                return aRunPrFontSize.Value;
+            }
+
+            ShapeContext shapeContext = _portion.Paragraph.TextBox.ShapeContext;
+            AutoShape parentAutoShape = _portion.Paragraph.TextBox.AutoShape;
+            int paragraphLvl = _portion.Paragraph.Level;
+
+            P.Shape pShape = (P.Shape) parentAutoShape.PShapeTreeChild;
+            if (pShape.IsPlaceholder())
+            {
+                int? prFontHeight =
+                    shapeContext.PlaceholderFontService.GetFontSizeByParagraphLvl(pShape, _portion.Paragraph.Level);
+                if (prFontHeight != null)
+                {
+                    return (int) prFontHeight;
+                }
+            }
+
+            // From presentation level
+            PresentationData presentationData = parentAutoShape.Slide.Presentation.PresentationData;
+            if (presentationData.LlvFontHeights.TryGetValue(_portion.Paragraph.Level, out FontData fontData))
+            {
+                if (fontData.FontSize != null)
+                {
+                    return fontData.FontSize;
+                }
+            }
+
+            // From master other
+            var exist = shapeContext.TryGetFromMasterOtherStyle(_portion.Paragraph.Level, out int fh);
+            if (exist)
+            {
+                return fh;
+            }
+
+            return FormatConstants.DefaultFontSize;
         }
 
         #endregion Private Methods

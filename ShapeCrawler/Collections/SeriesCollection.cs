@@ -21,7 +21,7 @@ namespace ShapeCrawler.Collections
         }
 
         internal static SeriesCollection Create(
-            IEnumerable<OpenXmlElement> cXCharts, 
+            IEnumerable<OpenXmlElement> cXCharts,
             ChartPart chartPart,
             ChartReferencesParser chartRefParser)
         {

@@ -3,7 +3,7 @@
     /// <summary>
     ///     Represents PowerPoint presentation format constants.
     /// </summary>
-    public static class FormatConstants
+    internal static class FormatConstants
     {
         /// <summary>
         ///     Returns max paragraph level value.

@@ -3,7 +3,6 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Statics;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -15,7 +14,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace ShapeCrawler
 {
     /// <inheritdoc cref="IPicture" />
-    public class PictureSc : IPicture
+    public class PictureSc : Shape, IPicture
     {
         #region Constructors
 
@@ -24,7 +23,8 @@ namespace ShapeCrawler
             string blipRelateId,
             ILocation innerTransform,
             ShapeContext spContext,
-            GeometryType geometryType)
+            GeometryType geometryType,
+            P.Picture pPicture) : base(pPicture)
         {
             Slide = slide;
             Image = new ImageSc(Slide.SlidePart, blipRelateId);
@@ -103,26 +103,7 @@ namespace ShapeCrawler
             }
         }
 
-        public Placeholder Placeholder
-        {
-            get
-            {
-                if (Context.CompositeElement.IsPlaceholder())
-                {
-                    return new Placeholder(ShapeTreeSource);
-                }
-
-                return null;
-            }
-        }
-
         public GeometryType GeometryType { get; }
-
-        public string CustomData
-        {
-            get => GetCustomData();
-            set => SetCustomData(value);
-        }
 
         #endregion Properties
 

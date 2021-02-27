@@ -1,0 +1,55 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using DocumentFormat.OpenXml;
+using ShapeCrawler.Placeholders;
+using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
+
+namespace ShapeCrawler.Factories
+{
+    internal static class FontDataParser
+    {
+        /// <summary>
+        ///     Gets font data.
+        /// </summary>
+        /// <param name="compositeElement">Instance of <see cref="P.DefaultTextStyle" /> or <see cref="A.ListStyle" /> class.</param>
+        /// <example>
+        //      <a:lstStyle>
+        //          <a:lvl1pPr>
+        //              <a:defRPr>
+        //                  <a:latin typeface="+mj-lt"/>
+        //              </a:defRPr>
+        //          </a:lvl1pPr>
+        //      </a:lstStyle>
+        //  </example>
+        public static Dictionary<int, FontData>
+            FromCompositeElement(
+                OpenXmlCompositeElement compositeElement) //TODO: set annotation that about it cannot be NULL
+        {
+            var prLvlToFontData = new Dictionary<int, FontData>();
+            foreach (OpenXmlElement textPr in compositeElement.Elements()
+                .Where(e => e.LocalName.StartsWith("lvl", StringComparison.Ordinal))) // <a:lvl1pPr>, <a:lvl2pPr>, etc.
+            {
+                A.DefaultRunProperties aDefRPr = textPr.GetFirstChild<A.DefaultRunProperties>();
+
+                Int32Value fontSize = aDefRPr?.FontSize;
+                A.LatinFont aLatinFont = aDefRPr?.GetFirstChild<A.LatinFont>();
+
+#if NET5_0 || NETSTANDARD2_1
+                // fourth character of LocalName contains level number, example: "lvl1pPr -> 1, lvl2pPr -> 2, etc."
+                ReadOnlySpan<char> localNameAsSpan = textPr.LocalName.AsSpan();
+                int lvl = int.Parse(localNameAsSpan.Slice(3, 1));
+
+#else
+                var lvl = int.Parse(textPr.LocalName[3].ToString(System.Globalization.CultureInfo.CurrentCulture),
+                System.Globalization.CultureInfo.CurrentCulture);
+#endif
+
+                prLvlToFontData.Add(lvl, new FontData(fontSize, aLatinFont));
+            }
+
+            return prLvlToFontData;
+        }
+    }
+}

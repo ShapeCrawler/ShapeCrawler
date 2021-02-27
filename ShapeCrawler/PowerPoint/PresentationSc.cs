@@ -18,6 +18,7 @@ namespace ShapeCrawler
     public sealed class PresentationSc : IPresentation
     {
         internal PresentationData PresentationData;
+        internal PresentationPart PresentationPart;
 
         #region Fields
 
@@ -146,8 +147,8 @@ namespace ShapeCrawler
         private SlideCollection GetSlides()
         {
             PresentationPart presentationPart = _presentationDocument.PresentationPart;
-            PresentationData = new PresentationData(presentationPart.Presentation, _slideSize);
-            SlideCollection slideCollection = new(presentationPart, this);
+            PresentationData = new PresentationData(presentationPart.Presentation);
+            SlideCollection slideCollection = new(this);
 
             return slideCollection;
         }
@@ -199,6 +200,7 @@ namespace ShapeCrawler
             ThrowIfSlidesNumberLarge();
             _slides = new Lazy<SlideCollection>(GetSlides);
             _slideSize = new Lazy<SlideSizeSc>(GetSlideSize);
+            PresentationPart = _presentationDocument.PresentationPart;
         }
 
         private SlideSizeSc GetSlideSize()
