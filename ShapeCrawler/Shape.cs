@@ -1,18 +1,53 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
+using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
+using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler
 {
+    /// <summary>
+    ///     Represents a shape.
+    /// </summary>
     public abstract class Shape
     {
-        protected Shape(OpenXmlCompositeElement pShapeTreeChild)
+        
+        protected Shape(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide)
         {
             PShapeTreeChild = pShapeTreeChild;
+            Slide = slide;
+            
+        }
+
+        internal Dictionary<int, FontData> GetLvlToFontData()
+        {
+            P.Shape pShape = (P.Shape) PShapeTreeChild;
+            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
+
+            if (!lvlToFontData.Any()) // font height is still not known
+            {
+                Int32Value endParaRunPrFs = pShape.TextBody.GetFirstChild<A.Paragraph>()
+                    .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
+                if (endParaRunPrFs != null)
+                {
+                    lvlToFontData.Add(1, new FontData(endParaRunPrFs));
+                }
+            }
+
+            return lvlToFontData;
+        }
+
+        protected Shape()
+        {
         }
 
         internal OpenXmlCompositeElement PShapeTreeChild { get; }
+        internal SlideSc Slide { get; }
 
         protected void SetCustomData(string value)
         {
@@ -45,7 +80,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets placeholder. Returns <c>NULL</c> if the shape is not a placeholder.
         /// </summary>
-        public Placeholder Placeholder => Placeholder.Create(PShapeTreeChild);
+        public abstract IPlaceholder Placeholder { get; }
 
         #endregion Public Properties
     }

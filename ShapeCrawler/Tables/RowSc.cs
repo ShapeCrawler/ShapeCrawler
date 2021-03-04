@@ -16,7 +16,7 @@ namespace ShapeCrawler.Tables
 
         #region Constructors
 
-        internal RowSc(TableSc table, A.TableRow aTableRow, int index)
+        internal RowSc(SlideTable table, A.TableRow aTableRow, int index)
         {
             Table = table;
             ATableRow = aTableRow;
@@ -74,7 +74,7 @@ namespace ShapeCrawler.Tables
         /// </summary>
         public IReadOnlyList<CellSc> Cells => _cells.Value;
 
-        public TableSc Table { get; }
+        public SlideTable Table { get; }
 
         public long Height
         {

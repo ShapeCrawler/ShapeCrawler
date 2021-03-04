@@ -13,7 +13,7 @@ namespace ShapeCrawler.Factories
     /// <summary>
     ///     Represents a slide scheme generator.
     /// </summary>
-    public class SlideSchemeService
+    internal class SlideSchemeService
     {
         private const int Scale = 10000;
         private const int BitmapOffset = 50;

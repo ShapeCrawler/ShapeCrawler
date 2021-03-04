@@ -97,9 +97,9 @@ namespace ShapeCrawler.Tests.Unit
             IShape shapeCase3 = _fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 54275);
 
             // Act-Assert
-            shapeCase1.Should().BeOfType<AutoShape>();
-            shapeCase2.Should().BeOfType<AutoShape>();
-            shapeCase3.Should().BeOfType<AutoShape>();
+            shapeCase1.Should().BeOfType<SlideAutoShape>();
+            shapeCase2.Should().BeOfType<SlideAutoShape>();
+            shapeCase3.Should().BeOfType<SlideAutoShape>();
         }
 
         [Fact]

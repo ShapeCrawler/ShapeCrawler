@@ -63,7 +63,7 @@ namespace ShapeCrawler.Tests.Unit
         public void HasCategories_ReturnsFalse_WhenAChartHasNotCategories()
         {
             // Arrange
-            ChartSc chart = _fixture.Pre021.Slides[2].Shapes.First(sp => sp.Id == 4) as ChartSc;
+            IChart chart = (IChart)_fixture.Pre021.Slides[2].Shapes.First(sp => sp.Id == 4);
 
             // Act
             bool hasChartCategories = chart.HasCategories;
@@ -200,7 +200,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SeriesType_ReturnsChartTypeOfTheSeries()
         {
             // Arrange
-            ChartSc chart = _fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 3) as ChartSc;
+            SlideChart chart = _fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 3) as SlideChart;
             Series series2 = chart.SeriesCollection[1];
             Series series3 = chart.SeriesCollection[2];
 
@@ -217,8 +217,8 @@ namespace ShapeCrawler.Tests.Unit
         public void SeriesCollection_CounterReturnsNumberOfTheSeriesOnTheChart()
         {
             // Arrange
-            ChartSc chartCase1 = _fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 5) as ChartSc;
-            ChartSc chartCase2 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7) as ChartSc;
+            IChart chartCase1 = (IChart)_fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 5);
+            IChart chartCase2 = (IChart)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7);
             
             // Act
             int seriesCountCase1 = chartCase1.SeriesCollection.Count;
@@ -233,10 +233,10 @@ namespace ShapeCrawler.Tests.Unit
         public void SeriesPointValue_ReturnsChartSeriesPointValue()
         {
             // Arrange
-            Series seriesCase1 = ((ChartSc)_fixture.Pre021.Slides[1].Shapes.First(sp => sp.Id == 3)).SeriesCollection[0];
-            Series seriesCase2 = ((ChartSc)_fixture.Pre021.Slides[2].Shapes.First(sp => sp.Id == 4)).SeriesCollection[0];
-            Series seriesCase3 = ((ChartSc)_fixture.Pre025.Slides[1].Shapes.First(sp => sp.Id == 4)).SeriesCollection[0];
-            Series seriesCase4 = ((ChartSc)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7)).SeriesCollection[0];
+            Series seriesCase1 = ((IChart)_fixture.Pre021.Slides[1].Shapes.First(sp => sp.Id == 3)).SeriesCollection[0];
+            Series seriesCase2 = ((IChart)_fixture.Pre021.Slides[2].Shapes.First(sp => sp.Id == 4)).SeriesCollection[0];
+            Series seriesCase3 = ((IChart)_fixture.Pre025.Slides[1].Shapes.First(sp => sp.Id == 4)).SeriesCollection[0];
+            Series seriesCase4 = ((IChart)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7)).SeriesCollection[0];
 
             // Act
             double seriesPointValueCase1 = seriesCase1.PointValues[0];
@@ -257,7 +257,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SeriesName_ReturnsChartSeriesName()
         {
             // Arrange
-            ChartSc chart = _fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 5) as ChartSc;
+            SlideChart chart = _fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 5) as SlideChart;
 
             // Act
             string seriesNameCase1 = chart.SeriesCollection[0].Name;
@@ -272,10 +272,10 @@ namespace ShapeCrawler.Tests.Unit
         public void Type_ReturnsChartType()
         {
             // Arrange
-            ChartSc chartCase1 = _fixture.Pre021.Slides[1].Shapes.First(sp => sp.Id == 3) as ChartSc;
-            ChartSc chartCase2 = _fixture.Pre021.Slides[2].Shapes.First(sp => sp.Id == 4) as ChartSc;
-            ChartSc chartCase3 = _fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 5) as ChartSc;
-            ChartSc chartCase4 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7) as ChartSc;
+            IChart chartCase1 = (IChart)_fixture.Pre021.Slides[1].Shapes.First(sp => sp.Id == 3);
+            IChart chartCase2 = (IChart)_fixture.Pre021.Slides[2].Shapes.First(sp => sp.Id == 4);
+            IChart chartCase3 = (IChart)_fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 5);
+            IChart chartCase4 = (IChart)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7);
 
             // Act
             ChartType chartTypeCase1 = chartCase1.Type;

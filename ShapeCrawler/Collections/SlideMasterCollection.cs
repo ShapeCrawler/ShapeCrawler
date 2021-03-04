@@ -22,5 +22,15 @@ namespace ShapeCrawler.Collections
 
             return new SlideMasterCollection(slideMasters);
         }
+
+        public SlideLayoutSc GetSlideLayout(SlideLayoutPart slideLayoutPart)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public SlideMasterSc GetSlideMaster(SlideLayoutPart slideLayoutPart)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

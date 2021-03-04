@@ -6,6 +6,7 @@ using ShapeCrawler.Collections;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Models;
+using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Statics;
 using SkiaSharp;
@@ -23,16 +24,17 @@ namespace ShapeCrawler
         #region Fields
 
         private readonly Lazy<ImageSc> _backgroundImage;
-        private readonly Lazy<ShapeCollection> _shapes;
+        protected ResettableLazy<ShapeCollection> _shapes { get; set; }
         private readonly SlideNumber _sldNumEntity;
         private Lazy<CustomXmlPart> _customXmlPart;
+        private ResettableLazy<SlideLayoutSc> _slideLayout;
 
         internal PresentationSc Presentation { get; }
         internal SlidePart SlidePart { get; }
 
         #endregion Fields
 
-        #region Properties
+        #region Public Properties
 
         /// <summary>
         ///     Returns a slide shapes.
@@ -57,42 +59,31 @@ namespace ShapeCrawler
 
         public bool Hidden => SlidePart.Slide.Show != null && SlidePart.Slide.Show.Value == false;
 
-#if DEBUG
-        public static SlideLayoutSc Layout => GetSlideLayout();
+        public SlideLayoutSc SlideLayout => Presentation.SlideMasters.GetSlideLayout(SlidePart.SlideLayoutPart);
 
-        private static SlideLayoutSc GetSlideLayout()
-        {
-            return null;
-        }
-#endif
-
-        #endregion Properties
+        #endregion Public Properties
 
         #region Constructors
-
-        internal SlideSc(
-            SlidePart slidePart,
-            SlideNumber slideNumber,
-            PresentationSc presentationEx) :
-            this(slidePart, slideNumber, new SlideSchemeService(), presentationEx)
-        {
-        }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SlideSc" /> class.
         /// </summary>
         internal SlideSc(
-            SlidePart sdkSldPart,
+            SlidePart slidePart,
             SlideNumber sldNum,
-            SlideSchemeService schemeService,
-            PresentationSc presentationEx)
+            PresentationSc presentation)
         {
-            SlidePart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
-            _sldNumEntity = sldNum ?? throw new ArgumentNullException(nameof(sldNum));
-            _shapes = new Lazy<ShapeCollection>(GetShapesCollection);
+            SlidePart = slidePart;
+            _sldNumEntity = sldNum;
+            _shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.CreateForSlide(SlidePart, this));
             _backgroundImage = new Lazy<ImageSc>(TryGetBackground);
             _customXmlPart = new Lazy<CustomXmlPart>(GetSldCustomXmlPart);
-            Presentation = presentationEx;
+            Presentation = presentation;
+        }
+
+        protected SlideSc()
+        {
+            // The constructor is for derived classes
         }
 
         #endregion Constructors
@@ -163,11 +154,6 @@ namespace ShapeCrawler
         #endregion Public Methods
 
         #region Private Methods
-
-        private ShapeCollection GetShapesCollection()
-        {
-            return ShapeCollection.CreateForUserSlide(SlidePart, this);
-        }
 
         private ImageSc TryGetBackground()
         {

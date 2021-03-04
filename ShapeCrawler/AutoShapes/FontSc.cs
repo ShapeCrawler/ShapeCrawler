@@ -124,22 +124,35 @@ namespace ShapeCrawler.AutoShapes
             }
 
             ShapeContext shapeContext = _portion.Paragraph.TextBox.ShapeContext;
-            AutoShape parentAutoShape = _portion.Paragraph.TextBox.AutoShape;
+            AutoShape autoShape = _portion.Paragraph.TextBox.AutoShape;
             int paragraphLvl = _portion.Paragraph.Level;
 
-            P.Shape pShape = (P.Shape) parentAutoShape.PShapeTreeChild;
+            // NEW
+            // Try get font size from placeholder
+            if (autoShape is not MasterAutoShape && autoShape.Placeholder != null)
+            {
+                Placeholder placeholder = (Placeholder)autoShape.Placeholder;
+                AutoShape placeholderAutoShape = (AutoShape)placeholder.Shape;
+                if (placeholderAutoShape.TryGetFontSizeFromShapeOrPlaceholderShape(paragraphLvl, out int fontSize))
+                {
+                    return fontSize;
+                }
+            }
+
+            // OLD
+            P.Shape pShape = (P.Shape)autoShape.PShapeTreeChild;
             if (pShape.IsPlaceholder())
             {
                 int? prFontHeight =
                     shapeContext.PlaceholderFontService.GetFontSizeByParagraphLvl(pShape, _portion.Paragraph.Level);
                 if (prFontHeight != null)
                 {
-                    return (int) prFontHeight;
+                    return (int)prFontHeight;
                 }
             }
 
             // From presentation level
-            PresentationData presentationData = parentAutoShape.Slide.Presentation.PresentationData;
+            PresentationData presentationData = autoShape.Slide.Presentation.PresentationData;
             if (presentationData.LlvFontHeights.TryGetValue(_portion.Paragraph.Level, out FontData fontData))
             {
                 if (fontData.FontSize != null)

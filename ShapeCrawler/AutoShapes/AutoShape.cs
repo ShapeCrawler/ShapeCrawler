@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
-using ShapeCrawler.Statics;
+using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMaster;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -15,9 +17,46 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler
 {
+    public class SlideAutoShape : AutoShape
+    {
+        internal SlideAutoShape(ILocation innerTransform, ShapeContext spContext, GeometryType geometryType, P.Shape pShape, SlideSc slide) : base(innerTransform, spContext, geometryType, pShape, slide)
+        {
+        }
+
+        internal SlideAutoShape(SlideLayoutSc slideLayout, P.Shape pShape) : base(slideLayout, pShape)
+        {
+        }
+    }
+
+    public class LayoutAutoShape : AutoShape
+    {
+        internal LayoutAutoShape(ILocation innerTransform, ShapeContext spContext, GeometryType geometryType, P.Shape pShape, SlideSc slide) : base(innerTransform, spContext, geometryType, pShape, slide)
+        {
+        }
+
+        internal LayoutAutoShape(SlideLayoutSc slideLayout, P.Shape pShape) : base(slideLayout, pShape)
+        {
+        }
+    }
+
+    public class MasterAutoShape : AutoShape
+    {
+        internal MasterAutoShape(ILocation innerTransform, ShapeContext spContext, GeometryType geometryType, P.Shape pShape, SlideSc slide) : base(innerTransform, spContext, geometryType, pShape, slide)
+        {
+        }
+
+        internal MasterAutoShape(SlideLayoutSc slideLayout, P.Shape pShape) : base(slideLayout, pShape)
+        {
+        }
+    }
+
     /// <inheritdoc cref="IAutoShape" />
     public class AutoShape : Shape, IAutoShape
     {
+        internal Dictionary<int, FontData> LvlToFontData => _lvlToFontData.Value;
+        private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
+
+
         #region Constructors
 
         internal AutoShape(
@@ -25,14 +64,14 @@ namespace ShapeCrawler
             ShapeContext spContext,
             GeometryType geometryType,
             P.Shape pShape,
-            SlideSc slide) : base(pShape)
+            SlideSc slide) : base(pShape, slide)
         {
             _innerTransform = innerTransform;
             Context = spContext;
             _textBox = new Lazy<TextBoxSc>(GetTextBox);
             _shapeFill = new Lazy<ShapeFill>(TryGetFill);
             GeometryType = geometryType;
-            Slide = slide;
+            _lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(() => GetLvlToFontData());
         }
 
         #endregion Constructors
@@ -47,8 +86,11 @@ namespace ShapeCrawler
         private string _name;
         private readonly ILocation _innerTransform;
 
+        internal AutoShape(SlideLayoutSc slideLayout, P.Shape pShape) : base(pShape, slideLayout)
+        {
+        }
+
         internal ShapeContext Context { get; }
-        internal SlideSc Slide { get; }
 
         #endregion Fields
 
@@ -111,6 +153,8 @@ namespace ShapeCrawler
 
         public GeometryType GeometryType { get; }
 
+        public override IPlaceholder Placeholder => throw new NotImplementedException();
+
         #endregion Properties
 
         #region Private Methods
@@ -170,5 +214,25 @@ namespace ShapeCrawler
         }
 
         #endregion
+
+        internal bool TryGetFontSizeFromShapeOrPlaceholderShape(int paragraphLvl, out int fontSize)
+        {
+            // Tries get font from Auto Shape
+            if (LvlToFontData.TryGetValue(paragraphLvl, out FontData fontData) && fontData.FontSize != null)
+            {
+                fontSize = fontData.FontSize;
+                return true;
+            }
+
+            // Tries get font from Auto Shape of Placeholder
+            if (Placeholder == null)
+            {
+                fontSize = -1;
+                return false;
+            }
+            Placeholder placeholder = (Placeholder)Placeholder;
+            AutoShape placeholderAutoShape = (AutoShape)placeholder.Shape;
+            return placeholderAutoShape.TryGetFontSizeFromShapeOrPlaceholderShape(paragraphLvl, out fontSize);
+        }
     }
 }

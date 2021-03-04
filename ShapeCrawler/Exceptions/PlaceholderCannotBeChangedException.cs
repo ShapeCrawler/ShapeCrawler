@@ -6,7 +6,7 @@ namespace ShapeCrawler.Exceptions
     {
         private static readonly string ExceptionMessage =
             "The property is part of slide layout placeholder and cannot be changed on a slide level. " +
-            $"If you wanna change some placeholder format value, you can do it by using {nameof(GroupShapeSc.Placeholder)}.";
+            $"If you wanna change some placeholder format value, you can do it by using {nameof(SlideGroupShape.Placeholder)}.";
 
         public PlaceholderCannotBeChangedException(string message) : base(message)
         {

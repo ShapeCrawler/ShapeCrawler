@@ -13,7 +13,7 @@ namespace ShapeCrawler.Tables
     {
         #region Constructors
 
-        internal CellSc(TableSc table, A.TableCell aTableCell, int rowIdx, int columnIdx)
+        internal CellSc(SlideTable table, A.TableCell aTableCell, int rowIdx, int columnIdx)
         {
             Table = table;
             ATableCell = aTableCell;
@@ -30,7 +30,7 @@ namespace ShapeCrawler.Tables
 
         internal int RowIndex { get; }
         internal int ColumnIndex { get; }
-        internal TableSc Table { get; }
+        internal SlideTable Table { get; }
         internal A.TableCell ATableCell { get; init; }
 
         #endregion Fields

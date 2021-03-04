@@ -196,7 +196,7 @@ namespace ShapeCrawler.Tests.Unit
             IShape shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
 
             // Act-Assert
-            shape.Should().BeOfType<PictureSc>();
+            shape.Should().BeOfType<SlidePicture>();
         }
 
 #if DEBUG

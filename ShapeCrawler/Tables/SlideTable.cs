@@ -9,6 +9,7 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Statics;
 using ShapeCrawler.Tables;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -22,14 +23,16 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a shape on a slide.
     /// </summary>
-    public class TableSc : Shape, ITable
+    public class SlideTable : SlideShape, ITable
     {
         #region Constructors
 
-        internal TableSc(OpenXmlCompositeElement pShapeTreeChild, ILocation innerTransform, ShapeContext spContext)
-            : base(pShapeTreeChild)
+        internal SlideTable(
+            OpenXmlCompositeElement pShapeTreeChild,
+            ILocation innerTransform, 
+            ShapeContext spContext,
+            SlideSc slide) : base(pShapeTreeChild, slide)
         {
-            PShapeTreeChild = pShapeTreeChild;
             _innerTransform = innerTransform;
             Context = spContext;
             _rowCollection =
@@ -176,9 +179,12 @@ namespace ShapeCrawler
         private readonly P.GraphicFrame _pGraphicFrame;
         private readonly ResettableLazy<RowCollection> _rowCollection;
 
+        public SlideTable(SlideLayoutSc slideLayout, P.GraphicFrame pGraphicFrame) : base(pGraphicFrame, slideLayout)
+        {
+        }
+
         internal ShapeContext Context { get; }
         internal A.Table ATable => _pGraphicFrame.GetATable();
-        internal OpenXmlCompositeElement PShapeTreeChild { get; } // TODO: delete this duplicate of _pGraphicFrame
 
         #endregion Fields
 

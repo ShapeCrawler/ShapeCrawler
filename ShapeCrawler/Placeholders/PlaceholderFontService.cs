@@ -19,6 +19,27 @@ namespace ShapeCrawler.Placeholders
         private readonly IPlaceholderService _placeholderService;
         private readonly SlidePart _slidePart;
 
+        #region Constructors
+
+        public PlaceholderFontService(SlidePart slidePart, IPlaceholderService placeholderService)
+        {
+            _slidePart = slidePart ?? throw new ArgumentNullException(nameof(slidePart));
+            _placeholderService = placeholderService ?? throw new ArgumentNullException(nameof(placeholderService));
+
+            P.CommonSlideData layoutSldData = _slidePart.SlideLayoutPart.SlideLayout.CommonSlideData;
+            P.CommonSlideData masterSldData = _slidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.CommonSlideData;
+            _layoutPlaceholders = new Lazy<HashSet<PlaceholderFontData>>(() => InitLayoutMaster(layoutSldData));
+            _masterPlaceholders = new Lazy<HashSet<PlaceholderFontData>>(() => InitLayoutMaster(masterSldData));
+            _masterBodyFontHeights = new Lazy<Dictionary<int, FontData>>(() => InitBodyTypePlaceholder(_slidePart));
+        }
+
+        public PlaceholderFontService(SlidePart slidePart)
+            : this(slidePart, new PlaceholderService(slidePart.SlideLayoutPart))
+        {
+        }
+
+        #endregion Constructors
+
         #region Public Methods
 
         public int? GetFontSizeByParagraphLvl(P.Shape pShape, int paragraphLvl)
@@ -63,27 +84,6 @@ namespace ShapeCrawler.Placeholders
             }
 
             return null;
-        }
-
-        #endregion Public Methods
-
-        #region Constructors
-
-        public PlaceholderFontService(SlidePart slidePart, IPlaceholderService placeholderService)
-        {
-            _slidePart = slidePart ?? throw new ArgumentNullException(nameof(slidePart));
-            _placeholderService = placeholderService ?? throw new ArgumentNullException(nameof(placeholderService));
-
-            P.CommonSlideData layoutSldData = _slidePart.SlideLayoutPart.SlideLayout.CommonSlideData;
-            P.CommonSlideData masterSldData = _slidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.CommonSlideData;
-            _layoutPlaceholders = new Lazy<HashSet<PlaceholderFontData>>(() => InitLayoutMaster(layoutSldData));
-            _masterPlaceholders = new Lazy<HashSet<PlaceholderFontData>>(() => InitLayoutMaster(masterSldData));
-            _masterBodyFontHeights = new Lazy<Dictionary<int, FontData>>(() => InitBodyTypePlaceholder(_slidePart));
-        }
-
-        public PlaceholderFontService(SlidePart slidePart)
-            : this(slidePart, new PlaceholderService(slidePart.SlideLayoutPart))
-        {
         }
 
         #endregion Constructors

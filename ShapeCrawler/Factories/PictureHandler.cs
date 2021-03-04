@@ -49,7 +49,7 @@ namespace ShapeCrawler.Factories
                 var spContext = _shapeContextBuilder.Build(pShapeTreeChild);
                 var innerTransform = _transformFactory.FromComposite(pPicture);
                 var geometry = _geometryFactory.ForCompositeElement(pPicture, pPicture.ShapeProperties);
-                var picture = new PictureSc(slide, blipRelateId, innerTransform, spContext, geometry, pPicture);
+                var picture = new SlidePicture(slide, blipRelateId, innerTransform, spContext, geometry, pPicture);
 
                 return picture;
             }

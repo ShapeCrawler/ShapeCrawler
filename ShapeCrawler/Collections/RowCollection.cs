@@ -24,7 +24,7 @@ namespace ShapeCrawler.Collections
 
         #endregion Constructors
 
-        internal static RowCollection Create(TableSc table, P.GraphicFrame pGraphicFrame)
+        internal static RowCollection Create(SlideTable table, P.GraphicFrame pGraphicFrame)
         {
             IEnumerable<A.TableRow> aTableRows = pGraphicFrame.GetATable().Elements<A.TableRow>();
             var rowList = new List<RowSc>(aTableRows.Count());

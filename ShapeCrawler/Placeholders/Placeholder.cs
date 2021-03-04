@@ -1,28 +1,26 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Extensions;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Placeholders
 {
-    public class Placeholder
+    internal abstract class Placeholder : IPlaceholder
     {
-        private readonly P.PlaceholderShape _pPlaceholderShape;
-        private readonly OpenXmlCompositeElement _pShapeTreeChild;
+        internal readonly P.PlaceholderShape PPlaceholderShape;
 
-        internal Placeholder(OpenXmlCompositeElement pShapeTreeChild, P.PlaceholderShape pPlaceholderShape)
+        protected Placeholder(P.PlaceholderShape pPlaceholderShape)
         {
-            _pShapeTreeChild = pShapeTreeChild;
-            _pPlaceholderShape = pPlaceholderShape;
+            PPlaceholderShape = pPlaceholderShape;
         }
 
         public PlaceholderType Type => GetPlaceholderType();
+        internal Shape Shape { get; private set; }
 
         private PlaceholderType GetPlaceholderType()
         {
             // Map SDK placeholder type into library placeholder type
 
-            EnumValue<P.PlaceholderValues> pPlaceholderValue = _pPlaceholderShape.Type;
+            EnumValue<P.PlaceholderValues> pPlaceholderValue = PPlaceholderShape.Type;
             if (pPlaceholderValue == null)
             {
                 return PlaceholderType.Custom;
@@ -36,29 +34,7 @@ namespace ShapeCrawler.Placeholders
             }
 
             //TODO: consider refactor the statement since it looks horrible
-            return (PlaceholderType) Enum.Parse(typeof(PlaceholderType), pPlaceholderValue.Value.ToString());
-        }
-
-        internal bool TryGetFontSizeByParagraphLvl(int paragraphLvl, out int fontSize)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     Create placeholder. Returns <c>NULL</c> if the specified shape is not placeholder.
-        /// </summary>
-        /// <param name="pShapeTreeChild"></param>
-        /// <returns></returns>
-        public static Placeholder Create(OpenXmlCompositeElement pShapeTreeChild)
-        {
-            P.PlaceholderShape pPlaceholderShape =
-                pShapeTreeChild.GetApplicationNonVisualDrawingProperties().GetFirstChild<P.PlaceholderShape>();
-            if (pPlaceholderShape == null)
-            {
-                return null;
-            }
-
-            return new Placeholder(pShapeTreeChild, pPlaceholderShape);
+            return (PlaceholderType)Enum.Parse(typeof(PlaceholderType), pPlaceholderValue.Value.ToString());
         }
     }
 }

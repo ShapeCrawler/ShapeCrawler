@@ -1,92 +1,85 @@
 ﻿using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
-using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Settings;
+using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Statics;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
-
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace ShapeCrawler
 {
-    /// <summary>
-    ///     Represents a shape on a slide.
-    /// </summary>
-    public class OLEObject : Shape, IOLEObject
+    /// <inheritdoc cref="IPicture" />
+    public class SlidePicture : SlideShape, IPicture
     {
         #region Constructors
 
-        internal OLEObject(
-            OpenXmlCompositeElement shapeTreeChild,
+        internal SlidePicture(
+            SlideSc slide,
+            string blipRelateId,
             ILocation innerTransform,
-            ShapeContext spContext) : base(shapeTreeChild)
+            ShapeContext spContext,
+            GeometryType geometryType,
+            P.Picture pPicture) : base(pPicture, slide)
         {
-            ShapeTreeChild = shapeTreeChild;
+            Image = new ImageSc(Slide.SlidePart, blipRelateId);
             _innerTransform = innerTransform;
             Context = spContext;
+            GeometryType = geometryType;
         }
 
         #endregion Constructors
 
         #region Fields
 
-        internal ShapeContext Context;
         private bool? _hidden;
         private int _id;
         private string _name;
         private readonly ILocation _innerTransform;
 
-        internal OpenXmlCompositeElement ShapeTreeChild { get; }
-        internal SlideSc Slide { get; }
+        internal SlidePicture(SlideLayoutSc slideLayout, P.Picture pPicture) : base(pPicture, slideLayout)
+        {
+
+        }
+
+        internal OpenXmlCompositeElement ShapeTreeSource { get; }
+        internal ShapeContext Context { get; }
 
         #endregion Fields
 
         #region Public Properties
 
-        /// <summary>
-        ///     Returns the x-coordinate of the upper-left corner of the shape.
-        /// </summary>
+        public ImageSc Image { get; }
+
         public long X
         {
             get => _innerTransform.X;
             set => _innerTransform.SetX(value);
         }
 
-        /// <summary>
-        ///     Returns the y-coordinate of the upper-left corner of the shape.
-        /// </summary>
         public long Y
         {
             get => _innerTransform.Y;
             set => _innerTransform.SetY(value);
         }
 
-        /// <summary>
-        ///     Returns the width of the shape.
-        /// </summary>
         public long Width
         {
             get => _innerTransform.Width;
             set => _innerTransform.SetWidth(value);
         }
 
-        /// <summary>
-        ///     Returns the height of the shape.
-        /// </summary>
         public long Height
         {
             get => _innerTransform.Height;
             set => _innerTransform.SetHeight(value);
         }
 
-        /// <summary>
-        ///     Returns an element identifier.
-        /// </summary>
         public int Id
         {
             get
@@ -96,9 +89,6 @@ namespace ShapeCrawler
             }
         }
 
-        /// <summary>
-        ///     Gets an element name.
-        /// </summary>
         public string Name
         {
             get
@@ -108,9 +98,6 @@ namespace ShapeCrawler
             }
         }
 
-        /// <summary>
-        ///     Determines whether the shape is hidden.
-        /// </summary>
         public bool Hidden
         {
             get
@@ -120,13 +107,7 @@ namespace ShapeCrawler
             }
         }
 
-        public GeometryType GeometryType => GeometryType.Rectangle;
-
-        public string CustomData
-        {
-            get => GetCustomData();
-            set => SetCustomData(value);
-        }
+        public GeometryType GeometryType { get; }
 
         #endregion Properties
 

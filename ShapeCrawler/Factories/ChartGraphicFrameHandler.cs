@@ -33,7 +33,7 @@ namespace ShapeCrawler.Factories
                 {
                     ShapeContext spContext = _shapeContextBuilder.Build(pShapeTreeChild);
                     ILocation innerTransform = _transformFactory.FromComposite(pGraphicFrame);
-                    var chart = new ChartSc(pGraphicFrame, slide, innerTransform, spContext);
+                    var chart = new SlideChart(pGraphicFrame, slide, innerTransform, spContext);
 
                     return chart;
                 }

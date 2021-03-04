@@ -13,9 +13,9 @@ namespace ShapeCrawler.Spreadsheet
 {
     internal class ChartReferencesParser
     {
-        private readonly ChartSc _chart;
+        private readonly SlideChart _chart;
 
-        internal ChartReferencesParser(ChartSc chart)
+        internal ChartReferencesParser(SlideChart chart)
         {
             _chart = chart;
         }

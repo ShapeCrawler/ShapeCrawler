@@ -19,7 +19,7 @@ namespace ShapeCrawler.SlideMaster
         #region Public Properties
 
         public MasterShapeCollection Shapes =>
-            ShapeCollection.CreateForMasterSlide(this, _pSlideMaster.CommonSlideData.ShapeTree);
+            ShapeCollection.CreateForSlideMaster(this, _pSlideMaster.CommonSlideData.ShapeTree);
 
         public int Number { get; }
         public ImageSc Background { get; }

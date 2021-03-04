@@ -26,8 +26,6 @@ namespace ShapeCrawler.Factories
 
         public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide)
         {
-            Check.NotNull(pShapeTreeChild, nameof(pShapeTreeChild));
-
             if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
             {
                 var grData = pShapeTreeChild.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
@@ -35,7 +33,7 @@ namespace ShapeCrawler.Factories
                 {
                     var spContext = _shapeContextBuilder.Build(pShapeTreeChild);
                     var innerTransform = _transformFactory.FromComposite(pGraphicFrame);
-                    var oleObject = new OLEObject(pGraphicFrame, innerTransform, spContext);
+                    var oleObject = new SlideOLEObject(pGraphicFrame, innerTransform, spContext, slide);
 
                     return oleObject;
                 }
