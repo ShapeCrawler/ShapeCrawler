@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Placeholders
 {
@@ -8,11 +9,18 @@ namespace ShapeCrawler.Placeholders
     {
         private readonly ResettableLazy<Shape> _masterShape;
 
-        public LayoutPlaceholder(DocumentFormat.OpenXml.Presentation.PlaceholderShape pPlaceholderShape, LayoutShape layoutShape)
+        private LayoutPlaceholder(P.PlaceholderShape pPlaceholderShape, LayoutShape layoutShape)
             : base(pPlaceholderShape)
         {
             _masterShape = new ResettableLazy<Shape>(() =>
                 layoutShape.SlideLayout.SlideMaster.Shapes.GetShapeByPPlaceholderShape(pPlaceholderShape));
+        }
+
+        private LayoutPlaceholder(P.PlaceholderShape pPlaceholderShape, LayoutAutoShape layoutAutoShape) 
+            : base(pPlaceholderShape)
+        {
+            _masterShape = new ResettableLazy<Shape>(() =>
+                layoutAutoShape.Slide.SlideLayout.Shapes.GetShapeByPPlaceholderShape(pPlaceholderShape));
         }
 
         /// <summary>
@@ -20,14 +28,25 @@ namespace ShapeCrawler.Placeholders
         /// </summary>
         internal static LayoutPlaceholder Create(OpenXmlCompositeElement pShapeTreeChild, LayoutShape slideShape)
         {
-            DocumentFormat.OpenXml.Presentation.PlaceholderShape pPlaceholderShape =
-                pShapeTreeChild.ApplicationNonVisualDrawingProperties().GetFirstChild<DocumentFormat.OpenXml.Presentation.PlaceholderShape>();
+            P.PlaceholderShape pPlaceholderShape =
+                pShapeTreeChild.ApplicationNonVisualDrawingProperties().GetFirstChild<P.PlaceholderShape>();
             if (pPlaceholderShape == null)
             {
                 return null;
             }
 
             return new LayoutPlaceholder(pPlaceholderShape, slideShape);
+        }
+
+        public static LayoutPlaceholder Create(LayoutAutoShape layoutAutoShape)
+        {
+            P.PlaceholderShape pPlaceholderShape = layoutAutoShape.PShapeTreeChild.ApplicationNonVisualDrawingProperties().GetFirstChild<P.PlaceholderShape>();
+            if (pPlaceholderShape == null)
+            {
+                return null;
+            }
+
+            return new LayoutPlaceholder(pPlaceholderShape, layoutAutoShape);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Experiment;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
@@ -21,7 +22,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             SlideMasterSc slideMaster = _fixture.Pre001.SlideMasters[0];
-            BaseShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
+            IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
 
             // Act
             long shapeXCoordinate = shape.X;
@@ -37,7 +38,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             SlideMasterSc slideMaster = _fixture.Pre001.SlideMasters[0];
-            BaseShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
+            IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
 
             // Act
             long shapeWidth = shape.Width;
@@ -73,8 +74,8 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             SlideMasterSc slideMaster = _fixture.Pre001.SlideMasters[0];
-            BaseShape shapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
-            BaseShape shapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
+            IShape shapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
+            IShape shapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
 
             // Act
             GeometryType geometryTypeCase1 = shapeCase1.GeometryType;

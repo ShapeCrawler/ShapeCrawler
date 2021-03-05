@@ -7,6 +7,7 @@ namespace ShapeCrawler.Placeholders
     internal abstract class Placeholder : IPlaceholder
     {
         internal readonly P.PlaceholderShape PPlaceholderShape;
+        protected internal Shape Shape { get; set; }
 
         protected Placeholder(P.PlaceholderShape pPlaceholderShape)
         {
@@ -14,7 +15,8 @@ namespace ShapeCrawler.Placeholders
         }
 
         public PlaceholderType Type => GetPlaceholderType();
-        internal Shape Shape { get; private set; }
+
+        #region Private Methods
 
         private PlaceholderType GetPlaceholderType()
         {
@@ -36,5 +38,7 @@ namespace ShapeCrawler.Placeholders
             //TODO: consider refactor the statement since it looks horrible
             return (PlaceholderType)Enum.Parse(typeof(PlaceholderType), pPlaceholderValue.Value.ToString());
         }
+
+        #endregion Private Methods
     }
 }

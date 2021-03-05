@@ -96,10 +96,15 @@ namespace ShapeCrawler.Tests.Unit
             IShape shapeCase2 = _fixture.Pre021.Slides[3].Shapes.First(sp => sp.Id == 2);
             IShape shapeCase3 = _fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 54275);
 
-            // Act-Assert
-            shapeCase1.Should().BeOfType<SlideAutoShape>();
-            shapeCase2.Should().BeOfType<SlideAutoShape>();
-            shapeCase3.Should().BeOfType<SlideAutoShape>();
+            // Act
+            var autoShapeCase1 = shapeCase1 as IAutoShape;
+            var autoShapeCase2 = shapeCase2 as IAutoShape;
+            var autoShapeCase3 = shapeCase3 as IAutoShape;
+
+            // Assert
+            autoShapeCase1.Should().NotBeNull();
+            autoShapeCase2.Should().NotBeNull();
+            autoShapeCase3.Should().NotBeNull();
         }
 
         [Fact]

@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Placeholders
 {
@@ -8,9 +9,20 @@ namespace ShapeCrawler.Placeholders
     /// </summary>
     internal class MasterPlaceholder : Placeholder
     {
-        public MasterPlaceholder(DocumentFormat.OpenXml.Presentation.PlaceholderShape pPlaceholderShape) : base(pPlaceholderShape)
+        public MasterPlaceholder(P.PlaceholderShape pPlaceholderShape) : base(pPlaceholderShape)
         {
 
+        }
+
+        internal static MasterPlaceholder Create(MasterAutoShape masterAutoShape)
+        {
+            P.PlaceholderShape pPlaceholderShape = masterAutoShape.PShapeTreeChild.ApplicationNonVisualDrawingProperties().GetFirstChild<P.PlaceholderShape>();
+            if (pPlaceholderShape == null)
+            {
+                return null;
+            }
+
+            return new MasterPlaceholder(pPlaceholderShape);
         }
 
         /// <summary>
@@ -18,8 +30,8 @@ namespace ShapeCrawler.Placeholders
         /// </summary>
         internal static MasterPlaceholder Create(OpenXmlCompositeElement pShapeTreeChild)
         {
-            DocumentFormat.OpenXml.Presentation.PlaceholderShape pPlaceholderShape =
-                pShapeTreeChild.ApplicationNonVisualDrawingProperties().GetFirstChild<DocumentFormat.OpenXml.Presentation.PlaceholderShape>();
+            P.PlaceholderShape pPlaceholderShape =
+                pShapeTreeChild.ApplicationNonVisualDrawingProperties().GetFirstChild<P.PlaceholderShape>();
             if (pPlaceholderShape == null)
             {
                 return null;

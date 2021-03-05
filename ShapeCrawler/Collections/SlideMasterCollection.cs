@@ -5,32 +5,36 @@ using ShapeCrawler.SlideMaster;
 
 namespace ShapeCrawler.Collections
 {
-    public class SlideMasterCollection : LibraryCollection<SlideMasterSc>
+    public class SlideMasterCollection : LibraryCollection<SlideMasterSc> //TODO: add interface
     {
-        private SlideMasterCollection(List<SlideMasterSc> slideMasters)
+        internal PresentationSc Presentation { get; }
+
+        private SlideMasterCollection(PresentationSc presentation, List<SlideMasterSc> slideMasters)
         {
+            Presentation = presentation;
             CollectionItems = slideMasters;
         }
 
-        public static SlideMasterCollection Create(IEnumerable<SlideMasterPart> slideMasterParts)
+        internal static SlideMasterCollection Create(PresentationSc presentation, IEnumerable<SlideMasterPart> slideMasterParts)
         {
             var slideMasters = new List<SlideMasterSc>(slideMasterParts.Count());
             foreach (SlideMasterPart slideMasterPart in slideMasterParts)
             {
-                slideMasters.Add(new SlideMasterSc(slideMasterPart.SlideMaster));
+                slideMasters.Add(new SlideMasterSc(presentation, slideMasterPart.SlideMaster));
             }
 
-            return new SlideMasterCollection(slideMasters);
+            return new SlideMasterCollection(presentation, slideMasters);
         }
 
-        public SlideLayoutSc GetSlideLayout(SlideLayoutPart slideLayoutPart)
+        internal SlideLayoutSc GetSlideLayoutBySlide(SlideSc slide)
         {
-            throw new System.NotImplementedException();
+            return new SlideLayoutSc(slide.SlidePart.SlideLayoutPart, slide.Presentation);
         }
 
-        public SlideMasterSc GetSlideMaster(SlideLayoutPart slideLayoutPart)
+        internal SlideMasterSc GetSlideMasterByLayout(SlideLayoutSc slideLayoutSc)
         {
-            throw new System.NotImplementedException();
+            return CollectionItems.First(sldMaster =>
+                sldMaster.SlideLayouts.Any(sldLayout => sldLayout.SlideLayoutPart == slideLayoutSc.SlideLayoutPart));
         }
     }
 }

@@ -53,7 +53,7 @@ namespace ShapeCrawler.Tests.Unit
         public void AutoShapeFill_ReturnsNull_WhenAutoShapeIsNotFilled()
         {
             // Arrange
-            AutoShape autoShape = (AutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 6);
+            IAutoShape autoShape = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 6);
 
             // Act
             ShapeFill shapeFill = autoShape.Fill;
@@ -66,7 +66,7 @@ namespace ShapeCrawler.Tests.Unit
         public void AutoShapeFill_IsNotNull_WhenAutoShapeIsFilled()
         {
             // Arrange
-            AutoShape autoShape = (AutoShape)_fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 108);
+            IAutoShape autoShape = (IAutoShape)_fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 108);
 
             // Act-Assert
             autoShape.Fill.Should().NotBeNull();
@@ -76,8 +76,8 @@ namespace ShapeCrawler.Tests.Unit
         public void AutoShapeFillType_GetterReturnsFillTypeByWhichTheAutoShapeIsFilled()
         {
             // Arrange
-            AutoShape autoShape1 = (AutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
-            AutoShape autoShape2 = (AutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
+            IAutoShape autoShape1 = (IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
+            IAutoShape autoShape2 = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
 
             // Act
             FillType shapeFillTypeCase1 = autoShape1.Fill.Type;
@@ -92,7 +92,7 @@ namespace ShapeCrawler.Tests.Unit
         public void AutoShapeFillSolidColorName_GetterReturnsSolidColorNameByWhichTheAutoShapeIsFilled()
         {
             // Arrange
-            AutoShape autoShape = (AutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
+            IAutoShape autoShape = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
 
             // Act
             var shapeSolidColorName = autoShape.Fill.SolidColor.Name;
@@ -106,7 +106,7 @@ namespace ShapeCrawler.Tests.Unit
         public async void AutoShapeFillPictureGetImageBytes_ReturnsImageByWhichTheAutoShapeIsFilled()
         {
             // Arrange
-            AutoShape shape = (AutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
+            IAutoShape shape = (IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
 
             // Act
             byte[] imageBytes = await shape.Fill.Picture.GetImageBytes().ConfigureAwait(false);
@@ -120,7 +120,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             PresentationSc presentation = PresentationSc.Open(Resources._009, true);
-            AutoShape autoShape = (AutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 4);
+            IAutoShape autoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 4);
             var newImage = new MemoryStream(Resources.test_image_2);
             var imageSizeBefore = (await autoShape.Fill.Picture.GetImageBytes().ConfigureAwait(false)).Length;
 

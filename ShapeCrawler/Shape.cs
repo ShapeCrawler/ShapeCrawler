@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -16,7 +12,8 @@ namespace ShapeCrawler
     /// </summary>
     public abstract class Shape
     {
-        
+        #region Constructors
+
         protected Shape(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide)
         {
             PShapeTreeChild = pShapeTreeChild;
@@ -24,27 +21,11 @@ namespace ShapeCrawler
             
         }
 
-        internal Dictionary<int, FontData> GetLvlToFontData()
-        {
-            P.Shape pShape = (P.Shape) PShapeTreeChild;
-            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
-
-            if (!lvlToFontData.Any()) // font height is still not known
-            {
-                Int32Value endParaRunPrFs = pShape.TextBody.GetFirstChild<A.Paragraph>()
-                    .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
-                if (endParaRunPrFs != null)
-                {
-                    lvlToFontData.Add(1, new FontData(endParaRunPrFs));
-                }
-            }
-
-            return lvlToFontData;
-        }
-
         protected Shape()
         {
         }
+
+        #endregion Constructors
 
         internal OpenXmlCompositeElement PShapeTreeChild { get; }
         internal SlideSc Slide { get; }

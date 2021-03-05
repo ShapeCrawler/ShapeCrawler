@@ -31,6 +31,7 @@ namespace ShapeCrawler
 
         internal PresentationSc Presentation { get; }
         internal SlidePart SlidePart { get; }
+        internal SlideLayoutSc SlideLayout => Presentation.SlideMasters.GetSlideLayoutBySlide(this);
 
         #endregion Fields
 
@@ -59,7 +60,7 @@ namespace ShapeCrawler
 
         public bool Hidden => SlidePart.Slide.Show != null && SlidePart.Slide.Show.Value == false;
 
-        public SlideLayoutSc SlideLayout => Presentation.SlideMasters.GetSlideLayout(SlidePart.SlideLayoutPart);
+        
 
         #endregion Public Properties
 
@@ -81,9 +82,9 @@ namespace ShapeCrawler
             Presentation = presentation;
         }
 
-        protected SlideSc()
+        protected SlideSc(PresentationSc presentation)
         {
-            // The constructor is for derived classes
+            Presentation = presentation;
         }
 
         #endregion Constructors

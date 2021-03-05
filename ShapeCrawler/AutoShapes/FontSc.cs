@@ -139,18 +139,6 @@ namespace ShapeCrawler.AutoShapes
                 }
             }
 
-            // OLD
-            P.Shape pShape = (P.Shape)autoShape.PShapeTreeChild;
-            if (pShape.IsPlaceholder())
-            {
-                int? prFontHeight =
-                    shapeContext.PlaceholderFontService.GetFontSizeByParagraphLvl(pShape, _portion.Paragraph.Level);
-                if (prFontHeight != null)
-                {
-                    return (int)prFontHeight;
-                }
-            }
-
             // From presentation level
             PresentationData presentationData = autoShape.Slide.Presentation.PresentationData;
             if (presentationData.LlvFontHeights.TryGetValue(_portion.Paragraph.Level, out FontData fontData))

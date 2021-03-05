@@ -82,7 +82,7 @@ namespace ShapeCrawler.Collections
                             if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
                                 StringComparison.Ordinal))
                             {
-                                shapeList.Add(new SlideOLEObject(slideLayout, pGraphicFrame));
+                                shapeList.Add(new LayoutOLEObject(slideLayout, pGraphicFrame));
                                 continue;
                             }
 
@@ -207,6 +207,25 @@ namespace ShapeCrawler.Collections
 
             return mappedShape;
         }
+    }
+
+    internal class LayoutOLEObject : IShape
+    {
+        public LayoutOLEObject(SlideLayoutSc slideLayout, P.GraphicFrame pGraphicFrame)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long X { get; set; }
+        public long Y { get; set; }
+        public long Width { get; set; }
+        public long Height { get; set; }
+        public int Id { get; }
+        public string Name { get; }
+        public bool Hidden { get; }
+        public IPlaceholder Placeholder { get; }
+        public GeometryType GeometryType { get; }
+        public string CustomData { get; set; }
     }
 
     internal class TableNew : ChartScNew

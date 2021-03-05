@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
@@ -17,45 +18,11 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler
 {
-    public class SlideAutoShape : AutoShape
-    {
-        internal SlideAutoShape(ILocation innerTransform, ShapeContext spContext, GeometryType geometryType, P.Shape pShape, SlideSc slide) : base(innerTransform, spContext, geometryType, pShape, slide)
-        {
-        }
-
-        internal SlideAutoShape(SlideLayoutSc slideLayout, P.Shape pShape) : base(slideLayout, pShape)
-        {
-        }
-    }
-
-    public class LayoutAutoShape : AutoShape
-    {
-        internal LayoutAutoShape(ILocation innerTransform, ShapeContext spContext, GeometryType geometryType, P.Shape pShape, SlideSc slide) : base(innerTransform, spContext, geometryType, pShape, slide)
-        {
-        }
-
-        internal LayoutAutoShape(SlideLayoutSc slideLayout, P.Shape pShape) : base(slideLayout, pShape)
-        {
-        }
-    }
-
-    public class MasterAutoShape : AutoShape
-    {
-        internal MasterAutoShape(ILocation innerTransform, ShapeContext spContext, GeometryType geometryType, P.Shape pShape, SlideSc slide) : base(innerTransform, spContext, geometryType, pShape, slide)
-        {
-        }
-
-        internal MasterAutoShape(SlideLayoutSc slideLayout, P.Shape pShape) : base(slideLayout, pShape)
-        {
-        }
-    }
-
     /// <inheritdoc cref="IAutoShape" />
-    public class AutoShape : Shape, IAutoShape
+    internal abstract class AutoShape : Shape, IAutoShape
     {
         internal Dictionary<int, FontData> LvlToFontData => _lvlToFontData.Value;
         private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
-
 
         #region Constructors
 
@@ -153,8 +120,6 @@ namespace ShapeCrawler
 
         public GeometryType GeometryType { get; }
 
-        public override IPlaceholder Placeholder => throw new NotImplementedException();
-
         #endregion Properties
 
         #region Private Methods
@@ -233,6 +198,24 @@ namespace ShapeCrawler
             Placeholder placeholder = (Placeholder)Placeholder;
             AutoShape placeholderAutoShape = (AutoShape)placeholder.Shape;
             return placeholderAutoShape.TryGetFontSizeFromShapeOrPlaceholderShape(paragraphLvl, out fontSize);
+        }
+
+        internal Dictionary<int, FontData> GetLvlToFontData()
+        {
+            P.Shape pShape = (P.Shape)PShapeTreeChild;
+            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
+
+            if (!lvlToFontData.Any()) // font height is still not known
+            {
+                Int32Value endParaRunPrFs = pShape.TextBody.GetFirstChild<A.Paragraph>()
+                    .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
+                if (endParaRunPrFs != null)
+                {
+                    lvlToFontData.Add(1, new FontData(endParaRunPrFs));
+                }
+            }
+
+            return lvlToFontData;
         }
     }
 }
