@@ -1,7 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
@@ -68,7 +66,8 @@ namespace ShapeCrawler.AutoShapes
             const string majorLatinFont = "+mj-lt";
             if (_latinFont.Value.Typeface == majorLatinFont)
             {
-                return _portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.FontScheme.MajorFont.LatinFont.Typeface;
+                return _portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.FontScheme.MajorFont.LatinFont
+                    .Typeface;
             }
 
             return _latinFont.Value.Typeface;
@@ -107,8 +106,7 @@ namespace ShapeCrawler.AutoShapes
             A.LatinFont aLatinFont = aRunPr?.GetFirstChild<A.LatinFont>();
             if (aLatinFont == null)
             {
-                aLatinFont = _portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.FontScheme.MajorFont
-                    .LatinFont;
+                aLatinFont = _portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.FontScheme.MinorFont.LatinFont;
             }
 
             return aLatinFont;
@@ -130,8 +128,8 @@ namespace ShapeCrawler.AutoShapes
             // Try get font size from placeholder
             if (autoShape is not MasterAutoShape && autoShape.Placeholder != null)
             {
-                Placeholder placeholder = (Placeholder)autoShape.Placeholder;
-                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+                Placeholder placeholder = (Placeholder) autoShape.Placeholder;
+                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
                 if (placeholderAutoShape.TryGetFontSize(paragraphLvl, out int fontSize))
                 {
                     return fontSize;

@@ -21,7 +21,6 @@ namespace ShapeCrawler
     /// <inheritdoc cref="IAutoShape" />
     internal class MasterAutoShape : MasterShape, IAutoShape, IAutoShapeInternal
     {
-        internal Dictionary<int, FontData> LvlToFontData => _lvlToFontData.Value;
         private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
 
         #region Constructors
@@ -42,6 +41,40 @@ namespace ShapeCrawler
         }
 
         #endregion Constructors
+
+        internal Dictionary<int, FontData> LvlToFontData => _lvlToFontData.Value;
+
+        bool IAutoShapeInternal.TryGetFontSize(int paragraphLvl, out int fontSize)
+        {
+            // Tries get font from Auto Shape
+            if (LvlToFontData.TryGetValue(paragraphLvl, out FontData fontData) && fontData.FontSize != null)
+            {
+                fontSize = fontData.FontSize;
+                return true;
+            }
+
+
+            fontSize = -1;
+            return false;
+        }
+
+        internal Dictionary<int, FontData> GetLvlToFontData()
+        {
+            P.Shape pShape = (P.Shape) PShapeTreeChild;
+            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
+
+            if (!lvlToFontData.Any()) // font height is still not known
+            {
+                Int32Value endParaRunPrFs = pShape.TextBody.GetFirstChild<A.Paragraph>()
+                    .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
+                if (endParaRunPrFs != null)
+                {
+                    lvlToFontData.Add(1, new FontData(endParaRunPrFs));
+                }
+            }
+
+            return lvlToFontData;
+        }
 
         #region Fields
 
@@ -176,37 +209,5 @@ namespace ShapeCrawler
         }
 
         #endregion
-
-        bool IAutoShapeInternal.TryGetFontSize(int paragraphLvl, out int fontSize)
-        {
-            // Tries get font from Auto Shape
-            if (LvlToFontData.TryGetValue(paragraphLvl, out FontData fontData) && fontData.FontSize != null)
-            {
-                fontSize = fontData.FontSize;
-                return true;
-            }
-
-
-            fontSize = -1;
-            return false;
-        }
-
-        internal Dictionary<int, FontData> GetLvlToFontData()
-        {
-            P.Shape pShape = (P.Shape)PShapeTreeChild;
-            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
-
-            if (!lvlToFontData.Any()) // font height is still not known
-            {
-                Int32Value endParaRunPrFs = pShape.TextBody.GetFirstChild<A.Paragraph>()
-                    .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
-                if (endParaRunPrFs != null)
-                {
-                    lvlToFontData.Add(1, new FontData(endParaRunPrFs));
-                }
-            }
-
-            return lvlToFontData;
-        }
     }
 }

@@ -11,7 +11,6 @@ namespace ShapeCrawler.Placeholders
     {
         public MasterPlaceholder(P.PlaceholderShape pPlaceholderShape) : base(pPlaceholderShape)
         {
-
         }
 
         /// <summary>

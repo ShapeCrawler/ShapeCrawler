@@ -60,8 +60,6 @@ namespace ShapeCrawler
 
         public bool Hidden => SlidePart.Slide.Show != null && SlidePart.Slide.Show.Value == false;
 
-        
-
         #endregion Public Properties
 
         #region Constructors

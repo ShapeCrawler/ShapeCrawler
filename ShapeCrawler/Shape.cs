@@ -13,8 +13,6 @@ namespace ShapeCrawler
     /// </summary>
     public abstract class Shape
     {
-        internal OpenXmlCompositeElement PShapeTreeChild { get; }
-
         #region Constructors
 
         protected Shape(OpenXmlCompositeElement pShapeTreeChild)
@@ -23,6 +21,8 @@ namespace ShapeCrawler
         }
 
         #endregion Constructors
+
+        internal OpenXmlCompositeElement PShapeTreeChild { get; }
 
         protected void SetCustomData(string value)
         {

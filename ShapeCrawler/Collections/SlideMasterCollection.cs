@@ -7,13 +7,13 @@ namespace ShapeCrawler.Collections
 {
     public class SlideMasterCollection : LibraryCollection<SlideMasterSc> //TODO: add interface
     {
-        internal PresentationSc Presentation { get; }
-
         private SlideMasterCollection(PresentationSc presentation, List<SlideMasterSc> slideMasters)
         {
             Presentation = presentation;
             CollectionItems = slideMasters;
         }
+
+        internal PresentationSc Presentation { get; }
 
         internal static SlideMasterCollection Create(PresentationSc presentation)
         {
@@ -31,7 +31,8 @@ namespace ShapeCrawler.Collections
         {
             SlideLayoutPart inputSlideLayoutPart = slide.SlidePart.SlideLayoutPart;
 
-            return CollectionItems.SelectMany(sm => sm.SlideLayouts).First(sl => sl.SlideLayoutPart == inputSlideLayoutPart);
+            return CollectionItems.SelectMany(sm => sm.SlideLayouts)
+                .First(sl => sl.SlideLayoutPart == inputSlideLayoutPart);
         }
 
         internal SlideMasterSc GetSlideMasterByLayout(SlideLayoutSc slideLayout)

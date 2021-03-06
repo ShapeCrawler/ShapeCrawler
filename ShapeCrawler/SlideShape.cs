@@ -9,12 +9,12 @@ namespace ShapeCrawler
     /// </summary>
     public abstract class SlideShape : Shape
     {
-        internal SlideSc Slide { get; }
-
         protected SlideShape(SlideSc slide, OpenXmlCompositeElement pShapeTreeChild) : base(pShapeTreeChild)
         {
             Slide = slide;
         }
+
+        internal SlideSc Slide { get; }
 
         public override IPlaceholder Placeholder => SlidePlaceholder.Create(PShapeTreeChild, this);
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Charts;
 using ShapeCrawler.Experiment;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
@@ -76,32 +75,32 @@ namespace ShapeCrawler.Collections
                         shapeList.Add(new LayoutAutoShape(slideLayout, pShape));
                         continue;
                     case P.GraphicFrame pGraphicFrame:
+                    {
+                        A.GraphicData aGraphicData =
+                            pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
+                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
+                            StringComparison.Ordinal))
                         {
-                            A.GraphicData aGraphicData =
-                                pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
-                            if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
-                                StringComparison.Ordinal))
-                            {
-                                shapeList.Add(new LayoutOLEObject(slideLayout, pGraphicFrame));
-                                continue;
-                            }
-
-                            if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart",
-                                StringComparison.Ordinal))
-                            {
-                                shapeList.Add(new LayoutChart(slideLayout, pGraphicFrame));
-                                continue;
-                            }
-
-                            if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/table",
-                                StringComparison.Ordinal))
-                            {
-                                shapeList.Add(new LayoutTable(slideLayout, pGraphicFrame));
-                                continue;
-                            }
-
-                            break;
+                            shapeList.Add(new LayoutOLEObject(slideLayout, pGraphicFrame));
+                            continue;
                         }
+
+                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart",
+                            StringComparison.Ordinal))
+                        {
+                            shapeList.Add(new LayoutChart(slideLayout, pGraphicFrame));
+                            continue;
+                        }
+
+                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/table",
+                            StringComparison.Ordinal))
+                        {
+                            shapeList.Add(new LayoutTable(slideLayout, pGraphicFrame));
+                            continue;
+                        }
+
+                        break;
+                    }
                 }
 
                 // OLE Objects should be parsed before pictures, since OLE containers can contain p:pic elements,
@@ -191,7 +190,7 @@ namespace ShapeCrawler.Collections
         {
             Shape mappedShape = CollectionItems.OfType<Shape>().First(collectionShape =>
             {
-                P.PlaceholderShape pPlaceholderShape = ((Placeholder)collectionShape.Placeholder).PPlaceholderShape;
+                P.PlaceholderShape pPlaceholderShape = ((Placeholder) collectionShape.Placeholder).PPlaceholderShape;
                 if (pPlaceholderShapeParam.Type != null && pPlaceholderShape.Type != null)
                 {
                     return pPlaceholderShapeParam.Type.Equals(pPlaceholderShape.Type);
@@ -233,10 +232,29 @@ namespace ShapeCrawler.Collections
             throw new NotImplementedException();
         }
 
-        public long X { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public long Y { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public long Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public long Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public long X
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
+
+        public long Y
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
+
+        public long Width
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
+
+        public long Height
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
 
         public int Id => throw new NotImplementedException();
 
@@ -248,7 +266,11 @@ namespace ShapeCrawler.Collections
 
         public GeometryType GeometryType => throw new NotImplementedException();
 
-        public string CustomData { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string CustomData
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
     }
 
     internal class LayoutChart : IShape
@@ -291,7 +313,7 @@ namespace ShapeCrawler.Collections
 
     internal class TableNew : ChartScNew
     {
-        public TableNew(SlideMasterSc slideMasterSc, P.GraphicFrame graphicFrame) : base()
+        public TableNew(SlideMasterSc slideMasterSc, P.GraphicFrame graphicFrame)
         {
             throw new NotImplementedException();
         }

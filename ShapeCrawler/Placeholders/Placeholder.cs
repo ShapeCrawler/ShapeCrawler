@@ -1,19 +1,20 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Placeholders
 {
     internal abstract class Placeholder : IPlaceholder
     {
+        protected ResettableLazy<Shape> _shape;
+        protected internal Shape Shape => _shape.Value;
         internal readonly P.PlaceholderShape PPlaceholderShape;
 
         protected Placeholder(P.PlaceholderShape pPlaceholderShape)
         {
             PPlaceholderShape = pPlaceholderShape;
         }
-
-        protected internal Shape Shape { get; set; }
 
         public PlaceholderType Type => GetPlaceholderType();
 

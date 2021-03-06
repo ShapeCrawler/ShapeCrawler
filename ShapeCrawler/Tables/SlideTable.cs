@@ -9,7 +9,6 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
-using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Statics;
 using ShapeCrawler.Tables;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -25,20 +24,18 @@ namespace ShapeCrawler
     /// </summary>
     public class SlideTable : SlideShape, ITable
     {
-        private bool? _hidden;
-        private int _id;
-        private string _name;
         private readonly ILocation _innerTransform;
         private readonly P.GraphicFrame _pGraphicFrame;
         private readonly ResettableLazy<RowCollection> _rowCollection;
-        internal ShapeContext Context { get; }
-        internal A.Table ATable => _pGraphicFrame.GetATable();
+        private bool? _hidden;
+        private int _id;
+        private string _name;
 
         #region Constructors
 
         internal SlideTable(
             OpenXmlCompositeElement pShapeTreeChild,
-            ILocation innerTransform, 
+            ILocation innerTransform,
             ShapeContext spContext,
             SlideSc slide) : base(slide, pShapeTreeChild)
         {
@@ -50,6 +47,9 @@ namespace ShapeCrawler
         }
 
         #endregion Constructors
+
+        internal ShapeContext Context { get; }
+        internal A.Table ATable => _pGraphicFrame.GetATable();
 
         public void MergeCells(CellSc cell1, CellSc cell2) // TODO: Optimize method
         {

@@ -7,10 +7,11 @@ namespace ShapeCrawler.Collections
 {
     internal class MasterOLEObject : MasterShape
     {
-        private SlideMasterSc slideMaster;
         private P.GraphicFrame pGraphicFrame;
+        private SlideMasterSc slideMaster;
 
-        public MasterOLEObject(SlideMasterSc slideMaster, P.GraphicFrame pGraphicFrame) : base(slideMaster, pGraphicFrame)
+        public MasterOLEObject(SlideMasterSc slideMaster, P.GraphicFrame pGraphicFrame) : base(slideMaster,
+            pGraphicFrame)
         {
             this.slideMaster = slideMaster;
             this.pGraphicFrame = pGraphicFrame;
