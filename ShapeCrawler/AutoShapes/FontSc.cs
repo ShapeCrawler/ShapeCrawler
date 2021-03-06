@@ -136,6 +136,12 @@ namespace ShapeCrawler.AutoShapes
                 }
             }
 
+            // From Slide Master body
+            if (autoShape.SlideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
+            {
+                return fontSizeBody;
+            }
+
             // From presentation level
             PresentationData presentationData = autoShape.Presentation.PresentationData;
             if (presentationData.LlvToFontData.TryGetValue(paragraphLvl, out FontData fontData))
@@ -146,20 +152,11 @@ namespace ShapeCrawler.AutoShapes
                 }
             }
 
-            // From Slide Master
-            if (autoShape.SlideMaster.TryGetFontSize(paragraphLvl, out int fontSizeMaster))
+            // From Slide Master other
+            if (autoShape.SlideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
             {
-                return fontSizeMaster;
+                return fontSizeOther;
             }
-
-            
-
-            // From master other
-            //var exist = shapeContext.TryGetFromMasterOtherStyle(paragraphLvl, out int fh);
-            //if (exist)
-            //{
-            //    return fh;
-            //}
 
             return FormatConstants.DefaultFontSize;
         }

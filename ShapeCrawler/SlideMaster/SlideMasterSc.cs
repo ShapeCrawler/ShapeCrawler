@@ -53,11 +53,11 @@ namespace ShapeCrawler.SlideMaster
 
         #endregion Public Properties
 
-        public bool TryGetFontSize(int paragraphLvl, out int fontSize)
+        public bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
         {
             P.TextStyles pTextStyles = PSlideMaster.TextStyles;
 
-            //Master body type placeholder settings
+            // Master body type placeholder settings
             // TODO: make it lazy
             Dictionary<int, FontData> bodyStyleLvlToFontData = FontDataParser.FromCompositeElement(pTextStyles.BodyStyle);
             if (bodyStyleLvlToFontData.ContainsKey(paragraphLvl))
@@ -70,6 +70,15 @@ namespace ShapeCrawler.SlideMaster
                     
             }
 
+            fontSize = -1;
+            return false;
+        }
+
+        public bool TryGetFontSizeFromOther(int paragraphLvl, out int fontSize)
+        {
+            P.TextStyles pTextStyles = PSlideMaster.TextStyles;
+
+            // Other
             Dictionary<int, FontData> otherStyleLvlToFontData = FontDataParser.FromCompositeElement(pTextStyles.OtherStyle);
             if (otherStyleLvlToFontData.ContainsKey(paragraphLvl))
             {
