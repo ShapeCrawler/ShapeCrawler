@@ -25,18 +25,10 @@ namespace ShapeCrawler
 
         #region Constructors
 
-        internal MasterAutoShape(
-            ILocation innerTransform,
-            ShapeContext spContext,
-            GeometryType geometryType,
-            P.Shape pShape,
-            SlideMasterSc slideMaster) : base(slideMaster, pShape)
+        internal MasterAutoShape(SlideMasterSc slideMaster, P.Shape pShape) : base(slideMaster, pShape)
         {
-            _innerTransform = innerTransform;
-            Context = spContext;
             _textBox = new Lazy<TextBoxSc>(GetTextBox);
             _shapeFill = new Lazy<ShapeFill>(TryGetFill);
-            GeometryType = geometryType;
             _lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(() => GetLvlToFontData());
         }
 
@@ -53,6 +45,23 @@ namespace ShapeCrawler
                 return true;
             }
 
+            // Title type
+            P.TextStyles pTextStyles = SlideMaster.PSlideMaster.TextStyles;
+            if (Placeholder.Type == PlaceholderType.Title)
+            {
+                fontSize = pTextStyles.TitleStyle.Level1ParagraphProperties
+                    .GetFirstChild<A.DefaultRunProperties>().FontSize.Value;
+                return true;
+            }
+
+            // Master body type placeholder settings
+            // TODO: make it lazy
+            Dictionary<int, FontData> bodyStyleLvlToFontData = FontDataParser.FromCompositeElement(pTextStyles.BodyStyle);
+            if (bodyStyleLvlToFontData.ContainsKey(paragraphLvl))
+            {
+                fontSize = bodyStyleLvlToFontData[paragraphLvl].FontSize;
+                return true;
+            }
 
             fontSize = -1;
             return false;

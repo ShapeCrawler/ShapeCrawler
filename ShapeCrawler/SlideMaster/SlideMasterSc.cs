@@ -42,7 +42,7 @@ namespace ShapeCrawler.SlideMaster
 
         #region Public Properties
 
-        public ShapeCollection Shapes { get; }
+        public ShapeCollection Shapes => ShapeCollection.CreateForSlideMaster(this);
         public int Number { get; } //TODO: does it need?
         public ImageSc Background { get; }
         public string CustomData { get; set; } //TODO: does it need?

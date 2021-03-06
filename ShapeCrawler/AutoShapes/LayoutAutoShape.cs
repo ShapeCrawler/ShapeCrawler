@@ -45,6 +45,15 @@ namespace ShapeCrawler
                 return true;
             }
 
+            if (Placeholder != null)
+            {
+                Placeholder placeholder = (Placeholder)Placeholder;
+                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+                if (placeholderAutoShape.TryGetFontSize(paragraphLvl, out fontSize))
+                {
+                    return true;
+                }
+            }
 
             fontSize = -1;
             return false;

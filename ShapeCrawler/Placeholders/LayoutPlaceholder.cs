@@ -7,12 +7,10 @@ namespace ShapeCrawler.Placeholders
 {
     internal class LayoutPlaceholder : Placeholder
     {
-        private readonly ResettableLazy<Shape> _masterShape;
-
         private LayoutPlaceholder(P.PlaceholderShape pPlaceholderShape, LayoutShape layoutShape)
             : base(pPlaceholderShape)
         {
-            _masterShape = new ResettableLazy<Shape>(() =>
+            _shape = new ResettableLazy<Shape>(() =>
                 layoutShape.SlideLayout.SlideMaster.Shapes.GetShapeByPPlaceholderShape(pPlaceholderShape));
         }
 
