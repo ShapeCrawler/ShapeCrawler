@@ -4,6 +4,8 @@ using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Factories;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -50,5 +52,36 @@ namespace ShapeCrawler.SlideMaster
         public IReadOnlyList<SlideLayoutSc> SlideLayouts => _sldLayouts.Value;
 
         #endregion Public Properties
+
+        public bool TryGetFontSize(int paragraphLvl, out int fontSize)
+        {
+            P.TextStyles pTextStyles = PSlideMaster.TextStyles;
+
+            //Master body type placeholder settings
+            // TODO: make it lazy
+            Dictionary<int, FontData> bodyStyleLvlToFontData = FontDataParser.FromCompositeElement(pTextStyles.BodyStyle);
+            if (bodyStyleLvlToFontData.ContainsKey(paragraphLvl))
+            {
+                if (bodyStyleLvlToFontData[paragraphLvl].FontSize != null)
+                {
+                    fontSize = bodyStyleLvlToFontData[paragraphLvl].FontSize;
+                    return true;
+                }
+                    
+            }
+
+            Dictionary<int, FontData> otherStyleLvlToFontData = FontDataParser.FromCompositeElement(pTextStyles.OtherStyle);
+            if (otherStyleLvlToFontData.ContainsKey(paragraphLvl))
+            {
+                if (otherStyleLvlToFontData[paragraphLvl].FontSize != null)
+                {
+                    fontSize = otherStyleLvlToFontData[paragraphLvl].FontSize;
+                    return true;
+                }
+            }
+
+            fontSize = -1;
+            return false;
+        }
     }
 }

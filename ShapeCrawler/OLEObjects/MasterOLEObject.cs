@@ -8,13 +8,8 @@ namespace ShapeCrawler.Collections
 {
     internal class MasterOLEObject : MasterShape, IShape
     {
-        private P.GraphicFrame pGraphicFrame;
-        private SlideMasterSc slideMaster;
-
         public MasterOLEObject(SlideMasterSc slideMaster, P.GraphicFrame pGraphicFrame) : base(slideMaster, pGraphicFrame)
         {
-            this.slideMaster = slideMaster;
-            this.pGraphicFrame = pGraphicFrame;
         }
 
         public long X { get; set; }
@@ -24,7 +19,7 @@ namespace ShapeCrawler.Collections
         public int Id { get; }
         public string Name { get; }
         public bool Hidden { get; }
-        public override IPlaceholder Placeholder => throw new NotImplementedException();
+        public override IPlaceholder Placeholder => MasterPlaceholder.Create(PShapeTreeChild);
         public GeometryType GeometryType { get; }
     }
 }

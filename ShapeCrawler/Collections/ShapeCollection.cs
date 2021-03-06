@@ -187,19 +187,20 @@ namespace ShapeCrawler.Collections
             return new ShapeCollection(shapeList);
         }
 
-        internal Shape GetShapeByPPlaceholderShape(P.PlaceholderShape pPlaceholderShapeParam)
+        internal Shape GetShapeByPPlaceholderShape(P.PlaceholderShape inputPPlaceholderShape)
         {
-            Shape mappedShape = CollectionItems.OfType<Shape>().First(collectionShape =>
+            Shape mappedShape = CollectionItems.Where(sp => sp.Placeholder != null).OfType<Shape>().
+                FirstOrDefault(collectionShape =>
             {
-                P.PlaceholderShape pPlaceholderShape = ((Placeholder) collectionShape.Placeholder).PPlaceholderShape;
-                if (pPlaceholderShapeParam.Type != null && pPlaceholderShape.Type != null)
+                P.PlaceholderShape pPlaceholderShape = ((Placeholder)collectionShape.Placeholder).PPlaceholderShape;
+                if (inputPPlaceholderShape.Type != null && pPlaceholderShape.Type != null)
                 {
-                    return pPlaceholderShapeParam.Type.Equals(pPlaceholderShape.Type);
+                    return inputPPlaceholderShape.Type.Equals(pPlaceholderShape.Type);
                 }
 
-                if (pPlaceholderShapeParam.Type == null && pPlaceholderShape.Type == null)
+                if (inputPPlaceholderShape.Type == null && pPlaceholderShape.Type == null)
                 {
-                    return pPlaceholderShapeParam.Index == pPlaceholderShape.Index;
+                    return inputPPlaceholderShape.Index == pPlaceholderShape.Index;
                 }
 
                 return false;

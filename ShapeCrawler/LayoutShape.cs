@@ -21,5 +21,6 @@ namespace ShapeCrawler
         public override IPlaceholder Placeholder => LayoutPlaceholder.Create(PShapeTreeChild, this);
         public override ThemePart ThemePart => SlideLayout.SlideLayoutPart.SlideMasterPart.ThemePart;
         public override PresentationSc Presentation => SlideLayout.SlideMaster.Presentation;
+        public override SlideMasterSc SlideMaster => SlideLayout.SlideMaster;
     }
 }

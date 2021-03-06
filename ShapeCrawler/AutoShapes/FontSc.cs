@@ -138,7 +138,7 @@ namespace ShapeCrawler.AutoShapes
 
             // From presentation level
             PresentationData presentationData = autoShape.Presentation.PresentationData;
-            if (presentationData.LlvToFontData.TryGetValue(_portion.Paragraph.Level, out FontData fontData))
+            if (presentationData.LlvToFontData.TryGetValue(paragraphLvl, out FontData fontData))
             {
                 if (fontData.FontSize != null)
                 {
@@ -146,12 +146,20 @@ namespace ShapeCrawler.AutoShapes
                 }
             }
 
-            // From master other
-            var exist = shapeContext.TryGetFromMasterOtherStyle(_portion.Paragraph.Level, out int fh);
-            if (exist)
+            // From Slide Master
+            if (autoShape.SlideMaster.TryGetFontSize(paragraphLvl, out int fontSizeMaster))
             {
-                return fh;
+                return fontSizeMaster;
             }
+
+            
+
+            // From master other
+            //var exist = shapeContext.TryGetFromMasterOtherStyle(paragraphLvl, out int fh);
+            //if (exist)
+            //{
+            //    return fh;
+            //}
 
             return FormatConstants.DefaultFontSize;
         }

@@ -49,9 +49,12 @@ namespace ShapeCrawler
             {
                 Placeholder placeholder = (Placeholder)Placeholder;
                 IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
-                if (placeholderAutoShape.TryGetFontSize(paragraphLvl, out fontSize))
+                if (placeholderAutoShape != null)
                 {
-                    return true;
+                    if (placeholderAutoShape.TryGetFontSize(paragraphLvl, out fontSize))
+                    {
+                        return true;
+                    }
                 }
             }
 

@@ -55,13 +55,23 @@ namespace ShapeCrawler
             }
 
             // Master body type placeholder settings
-            // TODO: make it lazy
-            Dictionary<int, FontData> bodyStyleLvlToFontData = FontDataParser.FromCompositeElement(pTextStyles.BodyStyle);
-            if (bodyStyleLvlToFontData.ContainsKey(paragraphLvl))
-            {
-                fontSize = bodyStyleLvlToFontData[paragraphLvl].FontSize;
-                return true;
-            }
+            //// TODO: make it lazy
+            //Dictionary<int, FontData> bodyStyleLvlToFontData = FontDataParser.FromCompositeElement(pTextStyles.BodyStyle);
+            //if (bodyStyleLvlToFontData.ContainsKey(paragraphLvl))
+            //{
+            //    fontSize = bodyStyleLvlToFontData[paragraphLvl].FontSize;
+            //    return true;
+            //}
+
+            //Dictionary<int, FontData> otherStyleLvlToFontData = FontDataParser.FromCompositeElement(pTextStyles.OtherStyle);
+            //if (otherStyleLvlToFontData.ContainsKey(paragraphLvl))
+            //{
+            //    if (otherStyleLvlToFontData[paragraphLvl].FontSize != null)
+            //    {
+            //        fontSize = otherStyleLvlToFontData[paragraphLvl].FontSize;
+            //        return true;
+            //    }
+            //}
 
             fontSize = -1;
             return false;

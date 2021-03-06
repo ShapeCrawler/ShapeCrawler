@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Placeholders;
+using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -59,6 +60,7 @@ namespace ShapeCrawler
 
         public abstract ThemePart ThemePart { get; }
         public abstract PresentationSc Presentation { get; }
+        public abstract SlideMasterSc SlideMaster { get; }
 
         #endregion Public Properties
     }

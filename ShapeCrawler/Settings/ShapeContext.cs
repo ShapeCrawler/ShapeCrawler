@@ -9,13 +9,10 @@ namespace ShapeCrawler.Settings
 {
     internal class ShapeContext
     {
-        private readonly Lazy<Dictionary<int, FontData>> _masterOtherStyle;
-
         #region Constructors
 
         private ShapeContext()
         {
-            _masterOtherStyle = new Lazy<Dictionary<int, FontData>>(InitMasterOtherStyle);
         }
 
         #endregion Constructors
@@ -24,11 +21,14 @@ namespace ShapeCrawler.Settings
 
         internal bool TryGetFromMasterOtherStyle(int paragraphLvl, out int fontSize)
         {
-            if (_masterOtherStyle.Value.ContainsKey(paragraphLvl))
+            Dictionary<int, FontData> masterOtherStyleLvlToFontData = 
+                FontDataParser.FromCompositeElement(SlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles
+                    .OtherStyle);
+            if (masterOtherStyleLvlToFontData.ContainsKey(paragraphLvl))
             {
-                if (_masterOtherStyle.Value[paragraphLvl].FontSize != null)
+                if (masterOtherStyleLvlToFontData[paragraphLvl].FontSize != null)
                 {
-                    fontSize = _masterOtherStyle.Value[paragraphLvl].FontSize;
+                    fontSize = masterOtherStyleLvlToFontData[paragraphLvl].FontSize;
                     return true;
                 }
             }
@@ -38,19 +38,6 @@ namespace ShapeCrawler.Settings
         }
 
         #endregion Public Methods
-
-        #region Private Methods
-
-        private Dictionary<int, FontData> InitMasterOtherStyle()
-        {
-            var result =
-                FontDataParser.FromCompositeElement(SlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles
-                    .OtherStyle);
-
-            return result;
-        }
-
-        #endregion Private Methods
 
         #region Builder
 
