@@ -14,17 +14,6 @@ namespace ShapeCrawler.Placeholders
 
         }
 
-        internal static MasterPlaceholder Create(MasterAutoShape masterAutoShape)
-        {
-            P.PlaceholderShape pPlaceholderShape = masterAutoShape.PShapeTreeChild.ApplicationNonVisualDrawingProperties().GetFirstChild<P.PlaceholderShape>();
-            if (pPlaceholderShape == null)
-            {
-                return null;
-            }
-
-            return new MasterPlaceholder(pPlaceholderShape);
-        }
-
         /// <summary>
         ///     Creates placeholder. Returns <c>NULL</c> if the specified shape is not placeholder.
         /// </summary>

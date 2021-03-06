@@ -25,7 +25,7 @@ namespace ShapeCrawler
             ILocation innerTransform,
             ShapeContext spContext,
             GeometryType geometryType,
-            P.Picture pPicture) : base(pPicture, slide)
+            P.Picture pPicture) : base(slide, pPicture)
         {
             Image = new ImageSc(Slide.SlidePart, blipRelateId);
             _innerTransform = innerTransform;
@@ -41,11 +41,6 @@ namespace ShapeCrawler
         private int _id;
         private string _name;
         private readonly ILocation _innerTransform;
-
-        internal SlidePicture(SlideLayoutSc slideLayout, P.Picture pPicture) : base(pPicture, slideLayout)
-        {
-
-        }
 
         internal OpenXmlCompositeElement ShapeTreeSource { get; }
         internal ShapeContext Context { get; }

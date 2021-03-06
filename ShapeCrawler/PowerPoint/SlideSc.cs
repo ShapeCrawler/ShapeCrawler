@@ -69,22 +69,22 @@ namespace ShapeCrawler
         /// <summary>
         ///     Initializes a new instance of the <see cref="SlideSc" /> class.
         /// </summary>
-        internal SlideSc(
+        internal SlideSc(PresentationSc presentation,
             SlidePart slidePart,
-            SlideNumber sldNum,
-            PresentationSc presentation)
+            SlideNumber sldNum)
         {
+            Presentation = presentation;
             SlidePart = slidePart;
             _sldNumEntity = sldNum;
             _shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.CreateForSlide(SlidePart, this));
             _backgroundImage = new Lazy<ImageSc>(TryGetBackground);
             _customXmlPart = new Lazy<CustomXmlPart>(GetSldCustomXmlPart);
-            Presentation = presentation;
         }
 
-        protected SlideSc(PresentationSc presentation)
+        protected SlideSc(PresentationSc presentation, SlidePart slidePart)
         {
             Presentation = presentation;
+            SlidePart = slidePart;
         }
 
         #endregion Constructors

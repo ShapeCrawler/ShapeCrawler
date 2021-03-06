@@ -12,15 +12,15 @@ namespace ShapeCrawler.SlideMaster
 {
     public class SlideMasterSc : ISlide //TODO: add ISlideMaster interface
     {
-        private readonly P.SlideMaster _pSlideMaster;
         private readonly ResettableLazy<List<SlideLayoutSc>> _sldLayouts;
 
         internal PresentationSc Presentation { get; }
+        internal readonly P.SlideMaster PSlideMaster;
 
         internal SlideMasterSc(PresentationSc presentation, P.SlideMaster pSlideMaster)
         {
             Presentation = presentation;
-            _pSlideMaster = pSlideMaster;
+            PSlideMaster = pSlideMaster;
             _sldLayouts = new ResettableLazy<List<SlideLayoutSc>>(() => GetSlideLayouts());
         }
 
@@ -33,9 +33,16 @@ namespace ShapeCrawler.SlideMaster
         public bool Hidden { get; } //TODO: does it need?
         public IReadOnlyList<SlideLayoutSc> SlideLayouts => _sldLayouts.Value;
 
+        #endregion Public Properties
+
+        public void Hide() //TODO: does it need?
+        {
+            throw new NotImplementedException();
+        }
+
         private List<SlideLayoutSc> GetSlideLayouts()
         {
-            IEnumerable<SlideLayoutPart> sldLayoutParts = _pSlideMaster.SlideMasterPart.SlideLayoutParts;
+            IEnumerable<SlideLayoutPart> sldLayoutParts = PSlideMaster.SlideMasterPart.SlideLayoutParts;
             var slideLayouts = new List<SlideLayoutSc>(sldLayoutParts.Count());
             foreach (SlideLayoutPart sldLayoutPart in sldLayoutParts)
             {
@@ -45,11 +52,5 @@ namespace ShapeCrawler.SlideMaster
             return slideLayouts;
         }
 
-        #endregion Public Properties
-
-        public void Hide() //TODO: does it need?
-        {
-            throw new NotImplementedException();
-        }
     }
 }

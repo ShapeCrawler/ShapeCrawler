@@ -11,7 +11,6 @@ namespace ShapeCrawler.Placeholders
     internal class SlidePlaceholder : Placeholder
     {
         private readonly ResettableLazy<Shape> _layoutShape;
-        private SlideAutoShape slideAutoShape;
 
         #region Constructors
 
@@ -20,14 +19,6 @@ namespace ShapeCrawler.Placeholders
         {
             _layoutShape = new ResettableLazy<Shape>(() =>
                 slideShape.Slide.SlideLayout.Shapes.GetShapeByPPlaceholderShape(pPlaceholderShape));
-        }
-
-        public SlidePlaceholder(P.PlaceholderShape pPlaceholderShape, SlideAutoShape slideAutoShape)
-            : base(pPlaceholderShape)
-        {
-            _layoutShape = new ResettableLazy<Shape>(() =>
-                slideAutoShape.Slide.SlideLayout.Shapes.GetShapeByPPlaceholderShape(pPlaceholderShape));
-            Shape = _layoutShape.Value;
         }
 
         #endregion Constructors
@@ -45,17 +36,6 @@ namespace ShapeCrawler.Placeholders
             }
 
             return new SlidePlaceholder(pPlaceholderShape, slideShape);
-        }
-
-        internal static SlidePlaceholder Create(SlideAutoShape slideAutoShape)
-        {
-            P.PlaceholderShape pPlaceholderShape = slideAutoShape.PShapeTreeChild.ApplicationNonVisualDrawingProperties().GetFirstChild<P.PlaceholderShape>();
-            if (pPlaceholderShape == null)
-            {
-                return null;
-            }
-
-            return new SlidePlaceholder(pPlaceholderShape, slideAutoShape);
         }
     }
 }

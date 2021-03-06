@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -12,23 +13,16 @@ namespace ShapeCrawler
     /// </summary>
     public abstract class Shape
     {
+        internal OpenXmlCompositeElement PShapeTreeChild { get; }
+
         #region Constructors
 
-        protected Shape(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide)
+        protected Shape(OpenXmlCompositeElement pShapeTreeChild)
         {
             PShapeTreeChild = pShapeTreeChild;
-            Slide = slide;
-            
-        }
-
-        protected Shape()
-        {
         }
 
         #endregion Constructors
-
-        internal OpenXmlCompositeElement PShapeTreeChild { get; }
-        internal SlideSc Slide { get; }
 
         protected void SetCustomData(string value)
         {
@@ -62,6 +56,9 @@ namespace ShapeCrawler
         ///     Gets placeholder. Returns <c>NULL</c> if the shape is not a placeholder.
         /// </summary>
         public abstract IPlaceholder Placeholder { get; }
+
+        public abstract ThemePart ThemePart { get; }
+        public abstract PresentationSc Presentation { get; }
 
         #endregion Public Properties
     }

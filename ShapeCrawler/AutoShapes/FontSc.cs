@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
@@ -67,8 +68,7 @@ namespace ShapeCrawler.AutoShapes
             const string majorLatinFont = "+mj-lt";
             if (_latinFont.Value.Typeface == majorLatinFont)
             {
-                return _portion.Paragraph.TextBox.AutoShape.Slide.SlidePart.SlideLayoutPart.SlideMasterPart
-                    .ThemePart.Theme.ThemeElements.FontScheme.MajorFont.LatinFont.Typeface;
+                return _portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.FontScheme.MajorFont.LatinFont.Typeface;
             }
 
             return _latinFont.Value.Typeface;
@@ -107,9 +107,8 @@ namespace ShapeCrawler.AutoShapes
             A.LatinFont aLatinFont = aRunPr?.GetFirstChild<A.LatinFont>();
             if (aLatinFont == null)
             {
-                // Gets font from theme
-                aLatinFont = _portion.Paragraph.TextBox.AutoShape.Slide.SlidePart.SlideLayoutPart.SlideMasterPart
-                    .ThemePart.Theme.ThemeElements.FontScheme.MinorFont.LatinFont;
+                aLatinFont = _portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.FontScheme.MajorFont
+                    .LatinFont;
             }
 
             return aLatinFont;
@@ -124,7 +123,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             ShapeContext shapeContext = _portion.Paragraph.TextBox.ShapeContext;
-            AutoShape autoShape = _portion.Paragraph.TextBox.AutoShape;
+            Shape autoShape = _portion.Paragraph.TextBox.AutoShape;
             int paragraphLvl = _portion.Paragraph.Level;
 
             // NEW
@@ -132,16 +131,16 @@ namespace ShapeCrawler.AutoShapes
             if (autoShape is not MasterAutoShape && autoShape.Placeholder != null)
             {
                 Placeholder placeholder = (Placeholder)autoShape.Placeholder;
-                AutoShape placeholderAutoShape = (AutoShape)placeholder.Shape;
-                if (placeholderAutoShape.TryGetFontSizeFromShapeOrPlaceholderShape(paragraphLvl, out int fontSize))
+                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+                if (placeholderAutoShape.TryGetFontSize(paragraphLvl, out int fontSize))
                 {
                     return fontSize;
                 }
             }
 
             // From presentation level
-            PresentationData presentationData = autoShape.Slide.Presentation.PresentationData;
-            if (presentationData.LlvFontHeights.TryGetValue(_portion.Paragraph.Level, out FontData fontData))
+            PresentationData presentationData = autoShape.Presentation.PresentationData;
+            if (presentationData.LlvToFontData.TryGetValue(_portion.Paragraph.Level, out FontData fontData))
             {
                 if (fontData.FontSize != null)
                 {
@@ -160,5 +159,10 @@ namespace ShapeCrawler.AutoShapes
         }
 
         #endregion Private Methods
+    }
+
+    internal interface IAutoShapeInternal
+    {
+        bool TryGetFontSize(int paragraphLvl, out int i);
     }
 }

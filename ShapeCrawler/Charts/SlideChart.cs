@@ -28,7 +28,7 @@ namespace ShapeCrawler.Charts
             P.GraphicFrame pGraphicFrame,
             SlideSc slide,
             ILocation innerTransform,
-            ShapeContext spContext) : base(pGraphicFrame, slide)
+            ShapeContext spContext) : base(slide, pGraphicFrame)
         {
             _pGraphicFrame = pGraphicFrame;
             _innerTransform = innerTransform;
@@ -84,11 +84,6 @@ namespace ShapeCrawler.Charts
         private ChartPart _chartPart;
         private readonly ChartReferencesParser _chartRefParser;
         private readonly P.GraphicFrame _pGraphicFrame;
-
-        public SlideChart(SlideLayoutSc slideLayoutSc, P.GraphicFrame pGraphicFrame) : base(pGraphicFrame, slideLayoutSc)
-        {
-
-        }
 
         internal ShapeContext Context { get; }
 

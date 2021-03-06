@@ -73,7 +73,7 @@ namespace ShapeCrawler.Collections
                 switch (compositeElement)
                 {
                     case P.Shape pShape:
-                        shapeList.Add(new SlideAutoShape(slideLayout, pShape));
+                        shapeList.Add(new LayoutAutoShape(slideLayout, pShape));
                         continue;
                     case P.GraphicFrame pGraphicFrame:
                         {
@@ -89,14 +89,14 @@ namespace ShapeCrawler.Collections
                             if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart",
                                 StringComparison.Ordinal))
                             {
-                                shapeList.Add(new SlideChart(slideLayout, pGraphicFrame));
+                                shapeList.Add(new LayoutChart(slideLayout, pGraphicFrame));
                                 continue;
                             }
 
                             if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/table",
                                 StringComparison.Ordinal))
                             {
-                                shapeList.Add(new SlideTable(slideLayout, pGraphicFrame));
+                                shapeList.Add(new LayoutTable(slideLayout, pGraphicFrame));
                                 continue;
                             }
 
@@ -119,7 +119,7 @@ namespace ShapeCrawler.Collections
 
                 if (pPicture != null)
                 {
-                    shapeList.Add(new SlidePicture(slideLayout, pPicture));
+                    shapeList.Add(new LayoutPicture(slideLayout, pPicture));
                 }
             }
 
@@ -209,6 +209,67 @@ namespace ShapeCrawler.Collections
         }
     }
 
+    internal class LayoutTable : LayoutShape, IShape
+    {
+        public LayoutTable(SlideLayoutSc slideLayout, P.GraphicFrame pGraphicFrame) : base(slideLayout, pGraphicFrame)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long X { get; set; }
+        public long Y { get; set; }
+        public long Width { get; set; }
+        public long Height { get; set; }
+        public int Id { get; }
+        public string Name { get; }
+        public bool Hidden { get; }
+        public GeometryType GeometryType { get; }
+    }
+
+    internal class LayoutPicture : IShape
+    {
+        public LayoutPicture(SlideLayoutSc slideLayout, P.Picture pPicture)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long X { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public long Y { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public long Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public long Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public int Id => throw new NotImplementedException();
+
+        public string Name => throw new NotImplementedException();
+
+        public bool Hidden => throw new NotImplementedException();
+
+        public IPlaceholder Placeholder => throw new NotImplementedException();
+
+        public GeometryType GeometryType => throw new NotImplementedException();
+
+        public string CustomData { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    }
+
+    internal class LayoutChart : IShape
+    {
+        public LayoutChart(SlideLayoutSc slideLayout, P.GraphicFrame pGraphicFrame)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long X { get; set; }
+        public long Y { get; set; }
+        public long Width { get; set; }
+        public long Height { get; set; }
+        public int Id { get; }
+        public string Name { get; }
+        public bool Hidden { get; }
+        public IPlaceholder Placeholder { get; }
+        public GeometryType GeometryType { get; }
+        public string CustomData { get; set; }
+    }
+
     internal class LayoutOLEObject : IShape
     {
         public LayoutOLEObject(SlideLayoutSc slideLayout, P.GraphicFrame pGraphicFrame)
@@ -235,34 +296,4 @@ namespace ShapeCrawler.Collections
             throw new NotImplementedException();
         }
     }
-
-    internal class MasterOLEObject : Shape
-    {
-        private SlideMasterSc slideMaster;
-        private P.GraphicFrame pGraphicFrame;
-
-        public MasterOLEObject(SlideMasterSc slideMaster, P.GraphicFrame pGraphicFrame) : base()
-        {
-            this.slideMaster = slideMaster;
-            this.pGraphicFrame = pGraphicFrame;
-        }
-
-        public override IPlaceholder Placeholder => throw new NotImplementedException();
-    }
-
-    internal class PictureScNew : Shape
-    {
-        private SlideMasterSc slideMaster;
-        private P.Picture pPicture;
-
-        public PictureScNew(SlideMasterSc slideMaster, P.Picture pPicture) : base()
-        {
-            this.slideMaster = slideMaster;
-            this.pPicture = pPicture;
-        }
-
-        public override IPlaceholder Placeholder => throw new NotImplementedException();
-    }
-
-    
 }

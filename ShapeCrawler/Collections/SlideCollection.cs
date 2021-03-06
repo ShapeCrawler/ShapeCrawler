@@ -105,7 +105,7 @@ namespace ShapeCrawler.Collections
             {
                 SlidePart slidePart = _presentationPart.GetSlidePartByIndex(sldIndex);
                 var slideNumber = new SlideNumber(sldIndex + 1);
-                var newSlide = new SlideSc(slidePart, slideNumber, _presentation);
+                var newSlide = new SlideSc(_presentation, slidePart, slideNumber);
                 slides.Add(newSlide);
             }
 

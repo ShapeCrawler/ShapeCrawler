@@ -25,13 +25,22 @@ namespace ShapeCrawler
     /// </summary>
     public class SlideTable : SlideShape, ITable
     {
+        private bool? _hidden;
+        private int _id;
+        private string _name;
+        private readonly ILocation _innerTransform;
+        private readonly P.GraphicFrame _pGraphicFrame;
+        private readonly ResettableLazy<RowCollection> _rowCollection;
+        internal ShapeContext Context { get; }
+        internal A.Table ATable => _pGraphicFrame.GetATable();
+
         #region Constructors
 
         internal SlideTable(
             OpenXmlCompositeElement pShapeTreeChild,
             ILocation innerTransform, 
             ShapeContext spContext,
-            SlideSc slide) : base(pShapeTreeChild, slide)
+            SlideSc slide) : base(slide, pShapeTreeChild)
         {
             _innerTransform = innerTransform;
             Context = spContext;
@@ -169,24 +178,6 @@ namespace ShapeCrawler
 
             _rowCollection.Reset();
         }
-
-        #region Fields
-
-        private bool? _hidden;
-        private int _id;
-        private string _name;
-        private readonly ILocation _innerTransform;
-        private readonly P.GraphicFrame _pGraphicFrame;
-        private readonly ResettableLazy<RowCollection> _rowCollection;
-
-        public SlideTable(SlideLayoutSc slideLayout, P.GraphicFrame pGraphicFrame) : base(pGraphicFrame, slideLayout)
-        {
-        }
-
-        internal ShapeContext Context { get; }
-        internal A.Table ATable => _pGraphicFrame.GetATable();
-
-        #endregion Fields
 
         #region Public Properties
 

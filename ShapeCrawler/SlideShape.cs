@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Placeholders;
 
 namespace ShapeCrawler
@@ -8,10 +9,16 @@ namespace ShapeCrawler
     /// </summary>
     public abstract class SlideShape : Shape
     {
-        protected SlideShape(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide) : base(pShapeTreeChild, slide)
+        internal SlideSc Slide { get; }
+
+        protected SlideShape(SlideSc slide, OpenXmlCompositeElement pShapeTreeChild) : base(pShapeTreeChild)
         {
+            Slide = slide;
         }
 
         public override IPlaceholder Placeholder => SlidePlaceholder.Create(PShapeTreeChild, this);
+
+        public override ThemePart ThemePart => Slide.SlidePart.SlideLayoutPart.SlideMasterPart.ThemePart;
+        public override PresentationSc Presentation => Slide.Presentation;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Experiment;
 
@@ -19,7 +20,7 @@ namespace ShapeCrawler.Collections
 
         public Shape GetShapeByPPlaceholderShape(PlaceholderShape pPlaceholderShape)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

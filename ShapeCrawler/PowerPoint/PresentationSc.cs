@@ -38,7 +38,7 @@ namespace ShapeCrawler
         public int SlideHeight => _slideSize.Value.Height;
 
         public SlideMasterCollection SlideMasters =>
-            SlideMasterCollection.Create(_presentationDocument.PresentationPart.SlideMasterParts);
+            SlideMasterCollection.Create(this);
 
         #endregion Public Properties
 

@@ -25,7 +25,7 @@ namespace ShapeCrawler
             OpenXmlCompositeElement shapeTreeChild,
             ILocation innerTransform,
             ShapeContext spContext,
-            SlideSc slide) : base(shapeTreeChild, slide)
+            SlideSc slide) : base(slide, shapeTreeChild)
         {
             ShapeTreeChild = shapeTreeChild;
             _innerTransform = innerTransform;
@@ -41,11 +41,6 @@ namespace ShapeCrawler
         private int _id;
         private string _name;
         private readonly ILocation _innerTransform;
-
-        public SlideOLEObject(SlideLayoutSc slideLayout, P.GraphicFrame pGraphicFrame) : base(pGraphicFrame, slideLayout)
-        {
-
-        }
 
         internal OpenXmlCompositeElement ShapeTreeChild { get; }
         internal SlideSc Slide { get; }

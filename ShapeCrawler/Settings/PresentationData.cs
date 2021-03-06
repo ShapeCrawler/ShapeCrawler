@@ -53,7 +53,7 @@ namespace ShapeCrawler.Settings
 
         #region Properties
 
-        public Dictionary<int, FontData> LlvFontHeights => _lvlToFontData.Value;
+        public Dictionary<int, FontData> LlvToFontData => _lvlToFontData.Value;
 
         public Dictionary<EmbeddedPackagePart, SpreadsheetDocument>
             SpreadsheetCache { get; } //TODO: move it up to Presentation level
