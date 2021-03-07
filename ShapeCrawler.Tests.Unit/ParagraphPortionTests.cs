@@ -146,7 +146,7 @@ namespace ShapeCrawler.Tests.Unit
             Portion portionCase15 = ((IAutoShape)_fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52)).TextBox.Paragraphs[0].Portions[0];
 
             // Act-Assert
-            //portionCase1.Font.Size.Should().Be(1800);
+            portionCase1.Font.Size.Should().Be(1800);
             portionCase2.Font.Size.Should().Be(1800);
             portionCase3.Font.Size.Should().Be(1867);
             portionCase4.Font.Size.Should().Be(1800);
