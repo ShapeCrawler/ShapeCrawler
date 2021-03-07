@@ -70,7 +70,6 @@ namespace ShapeCrawler
             P.TextStyles pTextStyles = SlideMaster.PSlideMaster.TextStyles;
             if (Placeholder.Type == PlaceholderType.Title)
             {
-
                 var fontSize = pTextStyles.TitleStyle.Level1ParagraphProperties
                     .GetFirstChild<A.DefaultRunProperties>().FontSize.Value;
                 fontData = new FontData(fontSize);

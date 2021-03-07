@@ -9,7 +9,7 @@ namespace ShapeCrawler.Tables
     /// <summary>
     ///     Represents a cell in a table.
     /// </summary>
-    public class CellSc
+    public class CellSc //TODO: make it internal
     {
         #region Constructors
 

@@ -50,7 +50,7 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public int Id => (int)PShapeTreeChild.GetNonVisualDrawingProperties().Id.Value;
+        public int Id => (int) PShapeTreeChild.GetNonVisualDrawingProperties().Id.Value;
 
         public string CustomData
         {
@@ -97,7 +97,8 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets y-coordinate of the upper-left corner of the shape.
         /// </summary>
-        public long Y {
+        public long Y
+        {
             get => GetY();
             set => SetY(value);
         }
@@ -112,7 +113,7 @@ namespace ShapeCrawler
             A.Offset aOffset = PShapeTreeChild.Descendants<A.Offset>().FirstOrDefault();
             if (aOffset == null)
             {
-                return ((Placeholder)Placeholder).Shape.Y;
+                return ((Placeholder) Placeholder).Shape.Y;
             }
 
             return aOffset.Y;
@@ -121,7 +122,8 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets width of the shape.
         /// </summary>
-        public long Width {
+        public long Width
+        {
             get => GetWidth();
             set => SetWidth(value);
         }
@@ -136,7 +138,7 @@ namespace ShapeCrawler
             A.Extents aExtents = PShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
             {
-                return ((Placeholder)Placeholder).Shape.Width;
+                return ((Placeholder) Placeholder).Shape.Width;
             }
 
             return aExtents.Cx;
@@ -145,7 +147,8 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets height of the shape.
         /// </summary>
-        public long Height {
+        public long Height
+        {
             get => GetHeight();
             set => SetHeight(value);
         }
@@ -160,7 +163,7 @@ namespace ShapeCrawler
             A.Extents aExtents = PShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
             {
-                return ((Placeholder)Placeholder).Shape.Height;
+                return ((Placeholder) Placeholder).Shape.Height;
             }
 
             return aExtents.Cy;
@@ -168,7 +171,7 @@ namespace ShapeCrawler
 
         private GeometryType GetGeometryType()
         {
-            P.ShapeProperties spPr = PShapeTreeChild.Descendants<P.ShapeProperties>().First();// TODO: optimize
+            P.ShapeProperties spPr = PShapeTreeChild.Descendants<P.ShapeProperties>().First(); // TODO: optimize
             A.Transform2D transform2D = spPr.Transform2D;
             if (transform2D != null)
             {
@@ -187,7 +190,7 @@ namespace ShapeCrawler
 
             if (Placeholder != null)
             {
-                return ((Placeholder)Placeholder).Shape.GeometryType;
+                return ((Placeholder) Placeholder).Shape.GeometryType;
             }
 
             return GeometryType.Rectangle; // return default

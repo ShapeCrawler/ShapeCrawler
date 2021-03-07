@@ -16,7 +16,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Charts
 {
     /// <inheritdoc cref="IChart" />
-    public class SlideChart : SlideShape, IChart
+    internal class SlideChart : SlideShape, IChart
     {
         #region Constructors
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Factories;
@@ -21,7 +20,7 @@ namespace ShapeCrawler.Settings
 
         internal bool TryGetFromMasterOtherStyle(int paragraphLvl, out int fontSize)
         {
-            Dictionary<int, FontData> masterOtherStyleLvlToFontData = 
+            Dictionary<int, FontData> masterOtherStyleLvlToFontData =
                 FontDataParser.FromCompositeElement(SlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.TextStyles
                     .OtherStyle);
             if (masterOtherStyleLvlToFontData.ContainsKey(paragraphLvl))

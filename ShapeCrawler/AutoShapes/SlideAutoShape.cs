@@ -76,8 +76,8 @@ namespace ShapeCrawler
                 return false;
             }
 
-            Placeholder placeholder = (Placeholder)Placeholder;
-            IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+            Placeholder placeholder = (Placeholder) Placeholder;
+            IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
             return placeholderAutoShape.TryGetFontData(paragraphLvl, out fontData);
         }
 

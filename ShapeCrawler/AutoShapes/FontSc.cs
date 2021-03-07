@@ -115,8 +115,8 @@ namespace ShapeCrawler.AutoShapes
             int paragraphLvl = _portion.Paragraph.Level;
             if (autoShape.Placeholder != null)
             {
-                Placeholder placeholder = (Placeholder)autoShape.Placeholder;
-                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+                Placeholder placeholder = (Placeholder) autoShape.Placeholder;
+                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
                 if (placeholderAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
                 {
                     if (fontDataPlaceholder.ALatinFont != null)

@@ -24,10 +24,12 @@ namespace ShapeCrawler.Factories
         //      </a:lstStyle>
         //  </example>
         public static Dictionary<int, FontData>
-            FromCompositeElement(OpenXmlCompositeElement compositeElement) //TODO: set annotation that about it cannot be NULL
+            FromCompositeElement(
+                OpenXmlCompositeElement compositeElement) //TODO: set annotation that about it cannot be NULL
         {
             // Get <a:lvlXpPr> elements, eg. <a:lvl1pPr>, <a:lvl2pPr>
-            IEnumerable<OpenXmlElement> lvlParagraphPropertyList = compositeElement.Elements().Where(e => e.LocalName.StartsWith("lvl", StringComparison.Ordinal));
+            IEnumerable<OpenXmlElement> lvlParagraphPropertyList = compositeElement.Elements()
+                .Where(e => e.LocalName.StartsWith("lvl", StringComparison.Ordinal));
 
             var lvlToFontData = new Dictionary<int, FontData>();
             foreach (OpenXmlElement textPr in lvlParagraphPropertyList)

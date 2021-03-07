@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Charts;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Factories;
+using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMaster;
+using ShapeCrawler.Tables;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -136,32 +140,32 @@ namespace ShapeCrawler.Collections
                         shapeList.Add(new MasterAutoShape(slideMaster, pShape));
                         continue;
                     case P.GraphicFrame pGraphicFrame:
+                    {
+                        A.GraphicData aGraphicData =
+                            pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
+                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
+                            StringComparison.Ordinal))
                         {
-                            A.GraphicData aGraphicData =
-                                pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
-                            if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
-                                StringComparison.Ordinal))
-                            {
-                                shapeList.Add(new MasterOLEObject(slideMaster, pGraphicFrame));
-                                continue;
-                            }
-
-                            if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart",
-                                StringComparison.Ordinal))
-                            {
-                                shapeList.Add(new MasterChart(slideMaster, pGraphicFrame));
-                                continue;
-                            }
-
-                            if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/table",
-                                StringComparison.Ordinal))
-                            {
-                                shapeList.Add(new MasterTable(slideMaster, pGraphicFrame));
-                                continue;
-                            }
-
-                            break;
+                            shapeList.Add(new MasterOLEObject(slideMaster, pGraphicFrame));
+                            continue;
                         }
+
+                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart",
+                            StringComparison.Ordinal))
+                        {
+                            shapeList.Add(new MasterChart(slideMaster, pGraphicFrame));
+                            continue;
+                        }
+
+                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/table",
+                            StringComparison.Ordinal))
+                        {
+                            shapeList.Add(new MasterTable(slideMaster, pGraphicFrame));
+                            continue;
+                        }
+
+                        break;
+                    }
                 }
 
                 // OLE Objects should be parsed before pictures, since OLE containers can contain p:pic elements,
@@ -188,76 +192,31 @@ namespace ShapeCrawler.Collections
 
         internal Shape GetShapeByPPlaceholderShape(P.PlaceholderShape inputPPlaceholderShape)
         {
-            Shape mappedShape = CollectionItems.Where(sp => sp.Placeholder != null).OfType<Shape>().
-                FirstOrDefault(collectionShape =>
-            {
-                P.PlaceholderShape pPlaceholderShape = ((Placeholder)collectionShape.Placeholder).PPlaceholderShape;
-                if (inputPPlaceholderShape.Type != null && pPlaceholderShape.Type != null)
+            Shape mappedShape = CollectionItems.Where(sp => sp.Placeholder != null).OfType<Shape>().FirstOrDefault(
+                collectionShape =>
                 {
-                    if (inputPPlaceholderShape.Type == P.PlaceholderValues.Body && inputPPlaceholderShape.Index != null && pPlaceholderShape.Index != null)
+                    P.PlaceholderShape pPlaceholderShape =
+                        ((Placeholder) collectionShape.Placeholder).PPlaceholderShape;
+                    if (inputPPlaceholderShape.Type != null && pPlaceholderShape.Type != null)
+                    {
+                        if (inputPPlaceholderShape.Type == P.PlaceholderValues.Body &&
+                            inputPPlaceholderShape.Index != null && pPlaceholderShape.Index != null)
+                        {
+                            return inputPPlaceholderShape.Index == pPlaceholderShape.Index;
+                        }
+
+                        return inputPPlaceholderShape.Type.Equals(pPlaceholderShape.Type);
+                    }
+
+                    if (inputPPlaceholderShape.Type == null && pPlaceholderShape.Type == null)
                     {
                         return inputPPlaceholderShape.Index == pPlaceholderShape.Index;
                     }
-                    return inputPPlaceholderShape.Type.Equals(pPlaceholderShape.Type);
-                }
 
-                if (inputPPlaceholderShape.Type == null && pPlaceholderShape.Type == null)
-                {
-                    return inputPPlaceholderShape.Index == pPlaceholderShape.Index;
-                }
-
-                return false;
-            });
+                    return false;
+                });
 
             return mappedShape;
         }
-    }
-
-    internal class MasterPicture : MasterShape, IShape
-    {
-        public MasterPicture(SlideMasterSc slideMaster, P.Picture pPicture) : base(slideMaster, pPicture)
-        {
-            throw new NotImplementedException();
-        }
-
-        public long X { get; set; }
-        public long Y { get; set; }
-        public long Width { get; set; }
-        public long Height { get; set; }
-        public int Id { get; }
-        public string Name { get; }
-        public bool Hidden { get; }
-    }
-
-    internal class MasterTable : MasterShape, IShape
-    {
-        public MasterTable(SlideMasterSc slideMaster, P.GraphicFrame pGraphicFrame) : base(slideMaster, pGraphicFrame)
-        {
-        }
-
-        public long X { get; set; }
-        public long Y { get; set; }
-        public long Width { get; set; }
-        public long Height { get; set; }
-        public int Id { get; }
-        public string Name { get; }
-        public bool Hidden { get; }
-    }
-
-    internal class MasterChart : MasterShape, IShape
-    {
-        public MasterChart(SlideMasterSc slideMaster, P.GraphicFrame pGraphicFrame)
-        :base(slideMaster, pGraphicFrame)
-        {
-            throw new NotImplementedException();
-        }
-
-        public long X { get; set; }
-        public long Y { get; set; }
-        public long Width { get; set; }
-        public long Height { get; set; }
-        public int Id { get; }
-        public string Name { get; }
-        public bool Hidden { get; }
     }
 }

@@ -47,8 +47,8 @@ namespace ShapeCrawler
 
             if (Placeholder != null)
             {
-                Placeholder placeholder = (Placeholder)Placeholder;
-                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+                Placeholder placeholder = (Placeholder) Placeholder;
+                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
                 if (placeholderAutoShape != null)
                 {
                     if (placeholderAutoShape.TryGetFontSize(paragraphLvl, out fontSize))
@@ -72,8 +72,8 @@ namespace ShapeCrawler
 
             if (Placeholder != null)
             {
-                Placeholder placeholder = (Placeholder)Placeholder;
-                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+                Placeholder placeholder = (Placeholder) Placeholder;
+                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
                 if (placeholderAutoShape != null)
                 {
                     if (placeholderAutoShape.TryGetFontData(paragraphLvl, out fontData))

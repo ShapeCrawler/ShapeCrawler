@@ -1,9 +1,8 @@
-﻿using System;
-using ShapeCrawler.Shapes;
+﻿using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMaster;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Collections
+namespace ShapeCrawler.Tables
 {
     internal class LayoutTable : LayoutShape, IShape
     {

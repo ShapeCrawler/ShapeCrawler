@@ -4,7 +4,7 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMaster;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Collections
+namespace ShapeCrawler.Drawing
 {
     internal class LayoutPicture : LayoutShape, IShape
     {
