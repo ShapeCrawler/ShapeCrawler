@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Experiment;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
@@ -195,6 +194,10 @@ namespace ShapeCrawler.Collections
                 P.PlaceholderShape pPlaceholderShape = ((Placeholder)collectionShape.Placeholder).PPlaceholderShape;
                 if (inputPPlaceholderShape.Type != null && pPlaceholderShape.Type != null)
                 {
+                    if (inputPPlaceholderShape.Type == P.PlaceholderValues.Body && inputPPlaceholderShape.Index != null && pPlaceholderShape.Index != null)
+                    {
+                        return inputPPlaceholderShape.Index == pPlaceholderShape.Index;
+                    }
                     return inputPPlaceholderShape.Type.Equals(pPlaceholderShape.Type);
                 }
 
@@ -231,7 +234,6 @@ namespace ShapeCrawler.Collections
     {
         public MasterTable(SlideMasterSc slideMaster, P.GraphicFrame pGraphicFrame) : base(slideMaster, pGraphicFrame)
         {
-            throw new NotImplementedException();
         }
 
         public long X { get; set; }

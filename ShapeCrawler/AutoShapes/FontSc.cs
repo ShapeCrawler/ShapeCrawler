@@ -22,7 +22,7 @@ namespace ShapeCrawler.AutoShapes
         {
             _aText = aText;
             _size = new ResettableLazy<int>(GetSize);
-            _latinFont = new ResettableLazy<A.LatinFont>(ParseLatinFont);
+            _latinFont = new ResettableLazy<A.LatinFont>(GetALatinFont);
             _portion = portion;
         }
 
@@ -35,8 +35,8 @@ namespace ShapeCrawler.AutoShapes
         /// </summary>
         public string Name
         {
-            get => ParseFontName();
-            set => SetFontName(value);
+            get => GetName();
+            set => SetName(value);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace ShapeCrawler.AutoShapes
 
         #region Private Methods
 
-        private string ParseFontName()
+        private string GetName()
         {
             const string majorLatinFont = "+mj-lt";
             if (_latinFont.Value.Typeface == majorLatinFont)
@@ -73,7 +73,7 @@ namespace ShapeCrawler.AutoShapes
             return _latinFont.Value.Typeface;
         }
 
-        private void SetFontName(string fontName)
+        private void SetName(string fontName)
         {
             if (_portion.Paragraph.TextBox.AutoShape.Placeholder != null)
             {
@@ -100,16 +100,34 @@ namespace ShapeCrawler.AutoShapes
             aRunPr.FontSize = newFontSize;
         }
 
-        private A.LatinFont ParseLatinFont()
+        private A.LatinFont GetALatinFont()
         {
-            A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
-            A.LatinFont aLatinFont = aRunPr?.GetFirstChild<A.LatinFont>();
-            if (aLatinFont == null)
+            A.RunProperties aRunProperties = _aText.Parent.GetFirstChild<A.RunProperties>();
+            A.LatinFont aLatinFont = aRunProperties?.GetFirstChild<A.LatinFont>();
+
+            if (aLatinFont != null)
             {
-                aLatinFont = _portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.FontScheme.MinorFont.LatinFont;
+                return aLatinFont;
             }
 
-            return aLatinFont;
+            // Trt get from placeholder
+            Shape autoShape = _portion.Paragraph.TextBox.AutoShape;
+            int paragraphLvl = _portion.Paragraph.Level;
+            if (autoShape.Placeholder != null)
+            {
+                Placeholder placeholder = (Placeholder)autoShape.Placeholder;
+                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+                if (placeholderAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
+                {
+                    if (fontDataPlaceholder.ALatinFont != null)
+                    {
+                        return fontDataPlaceholder.ALatinFont;
+                    }
+                }
+            }
+
+            // Get from theme
+            return _portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.FontScheme.MinorFont.LatinFont;
         }
 
         private int GetSize()

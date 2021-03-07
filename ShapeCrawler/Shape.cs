@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Statics;
@@ -46,6 +47,8 @@ namespace ShapeCrawler
         }
 
         #region Public Properties
+
+        public int Id => (int)PShapeTreeChild.GetNonVisualDrawingProperties().Id.Value;
 
         public string CustomData
         {

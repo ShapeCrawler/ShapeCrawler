@@ -81,7 +81,7 @@ namespace ShapeCrawler.Tests.Unit
             portionFontNameCase3.Should().BeEquivalentTo("Calibri Light");
         }
 
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void FontName_GetterReturnsCalibriLightAsFontName_WhenFontNameIsCalibriLight()
         {
             // Arrange

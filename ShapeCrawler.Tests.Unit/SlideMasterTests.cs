@@ -49,24 +49,24 @@ namespace ShapeCrawler.Tests.Unit
             shapeHeight.Should().Be(1325563);
         }
 
-        [Fact(Skip = "In Progress")]
-        public void MasterShapePlaceholderType_ReturnPlaceholderTypeOfTheMasterShape_WhenTheMasterShapeIsPlaceholder()
+        [Fact]
+        public void AutoShapePlaceholderType_ReturnsPlaceholderType()
         {
             // Arrange
-            //SlideMasterSc slideMaster = _fixture.Pre001.SlideMasters[0];
-            //MasterShape masterAutoShapeCase1 = (MasterShape)slideMaster.Shapes.First(sp => sp.Id == 2);
-            //MasterShape masterAutoShapeCase2 = (MasterShape)slideMaster.Shapes.First(sp => sp.Id == 8);
-            //MasterShape masterAutoShapeCase3 = (MasterShape)slideMaster.Shapes.First(sp => sp.Id == 7);
+            SlideMasterSc slideMaster = _fixture.Pre001.SlideMasters[0];
+            IShape masterAutoShapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
+            IShape masterAutoShapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
+            IShape masterAutoShapeCase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
 
-            //// Act
-            //PlaceholderType? shapePlaceholderTypeCase1 = masterAutoShapeCase1.PlaceholderType;
-            //PlaceholderType? shapePlaceholderTypeCase2 = masterAutoShapeCase2.PlaceholderType;
-            //PlaceholderType? shapePlaceholderTypeCase3 = masterAutoShapeCase3.PlaceholderType;
+            // Act
+            PlaceholderType? shapePlaceholderTypeCase1 = masterAutoShapeCase1.Placeholder?.Type;
+            PlaceholderType? shapePlaceholderTypeCase2 = masterAutoShapeCase2.Placeholder?.Type;
+            PlaceholderType? shapePlaceholderTypeCase3 = masterAutoShapeCase3.Placeholder?.Type;
 
-            //// Assert
-            //shapePlaceholderTypeCase1.Should().Be(PlaceholderType.Title);
-            //shapePlaceholderTypeCase2.Should().BeNull();
-            //shapePlaceholderTypeCase3.Should().BeNull();
+            // Assert
+            shapePlaceholderTypeCase1.Should().Be(PlaceholderType.Title);
+            shapePlaceholderTypeCase2.Should().BeNull();
+            shapePlaceholderTypeCase3.Should().BeNull();
         }
 
         [Fact(Skip = "In Progress")]
@@ -86,8 +86,8 @@ namespace ShapeCrawler.Tests.Unit
             geometryTypeCase2.Should().Be(GeometryType.Custom);
         }
 
-        [Fact(Skip = "In Progress")]
-        public void MasterAutoShapeTextBoxText_ReturnsText_WhenTheAutoShapesTextBoxIsNotEmpty()
+        [Fact]
+        public void AutoShapeTextBoxText_ReturnsText_WhenTheSlideMasterAutoShapesTextBoxIsNotEmpty()
         {
             // Arrange
             SlideMasterSc slideMaster = _fixture.Pre001.SlideMasters[0];
@@ -97,18 +97,18 @@ namespace ShapeCrawler.Tests.Unit
             autoShape.TextBox.Text.Should().BeEquivalentTo("id8");
         }
 
-        [Fact(Skip = "In Progress")]
-        public void MasterAutoShapeTextBoxParagraphPortionFontSize_ReturnsTextPortionFontSize()
+        [Fact]
+        public void AutoShapeTextBoxParagraphPortionFontSize_ReturnsTextPortionFontSize()
         {
             // Arrange
-            //SlideMasterSc slideMaster = _fixture.Pre001.SlideMasters[0];
-            //MasterAutoShape masterAutoShape = (MasterAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
+            SlideMasterSc slideMaster = _fixture.Pre001.SlideMasters[0];
+            IAutoShape autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
-            //// Act
-            //int portionFontSize = masterAutoShape.TextBox.Paragraphs[0].Portions[0].Font.Size;
+            // Act
+            int portionFontSize = autoShape.TextBox.Paragraphs[0].Portions[0].Font.Size;
 
-            //// Assert
-            //portionFontSize.Should().Be(1800);
+            // Assert
+            portionFontSize.Should().Be(1800);
         }
     }
 }

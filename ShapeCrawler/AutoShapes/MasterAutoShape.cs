@@ -224,7 +224,7 @@ namespace ShapeCrawler
                 return;
             }
 
-            var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
+            var (id, hidden, name) = PShapeTreeChild.GetNvPrValues();
             _id = id;
             _hidden = hidden;
             _name = name;
