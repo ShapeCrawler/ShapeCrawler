@@ -27,7 +27,6 @@ namespace ShapeCrawler
         internal SlideAutoShape(
             ILocation innerTransform,
             ShapeContext spContext,
-            GeometryType geometryType,
             P.Shape pShape,
             SlideSc slide) : base(slide, pShape)
         {
@@ -35,7 +34,6 @@ namespace ShapeCrawler
             Context = spContext;
             _textBox = new Lazy<TextBoxSc>(GetTextBox);
             _shapeFill = new Lazy<ShapeFill>(TryGetFill);
-            GeometryType = geometryType;
             _lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(() => GetLvlToFontData());
         }
 
@@ -172,8 +170,6 @@ namespace ShapeCrawler
         public ITextBox TextBox => _textBox.Value;
 
         public ShapeFill Fill => _shapeFill.Value;
-
-        public GeometryType GeometryType { get; }
 
         #endregion Properties
 

@@ -18,6 +18,5 @@ namespace ShapeCrawler.Collections
         public int Id { get; }
         public string Name { get; }
         public bool Hidden { get; }
-        public GeometryType GeometryType { get; }
     }
 }

@@ -69,7 +69,7 @@ namespace ShapeCrawler.Tests.Unit
             shapePlaceholderTypeCase3.Should().BeNull();
         }
 
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void ShapeGeometryType_ReturnsShapesGeometryFormType()
         {
             // Arrange

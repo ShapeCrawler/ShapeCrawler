@@ -20,7 +20,6 @@ namespace ShapeCrawler.Collections
         public string Name { get; }
         public bool Hidden { get; }
         public IPlaceholder Placeholder { get; }
-        public GeometryType GeometryType { get; }
         public string CustomData { get; set; }
     }
 }

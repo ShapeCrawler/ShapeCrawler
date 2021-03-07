@@ -227,7 +227,6 @@ namespace ShapeCrawler.Collections
         public int Id { get; }
         public string Name { get; }
         public bool Hidden { get; }
-        public GeometryType GeometryType { get; }
     }
 
     internal class MasterTable : MasterShape, IShape
@@ -243,7 +242,6 @@ namespace ShapeCrawler.Collections
         public int Id { get; }
         public string Name { get; }
         public bool Hidden { get; }
-        public GeometryType GeometryType { get; }
     }
 
     internal class MasterChart : MasterShape, IShape
@@ -261,6 +259,5 @@ namespace ShapeCrawler.Collections
         public int Id { get; }
         public string Name { get; }
         public bool Hidden { get; }
-        public GeometryType GeometryType { get; }
     }
 }

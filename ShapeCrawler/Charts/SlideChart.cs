@@ -324,7 +324,7 @@ namespace ShapeCrawler.Charts
             }
         }
 
-        public GeometryType GeometryType => GeometryType.Rectangle;
+        public override GeometryType GeometryType => GeometryType.Rectangle;
 
         #endregion Properties
     }

@@ -2,14 +2,14 @@
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMaster;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Collections
 {
-    internal class LayoutPicture : IShape
+    internal class LayoutPicture : LayoutShape, IShape
     {
-        public LayoutPicture(SlideLayoutSc slideLayout, DocumentFormat.OpenXml.Presentation.Picture pPicture)
+        public LayoutPicture(SlideLayoutSc slideLayout, P.Picture pPicture) : base(slideLayout, pPicture)
         {
-            throw new NotImplementedException();
         }
 
         public long X
@@ -36,15 +36,11 @@ namespace ShapeCrawler.Collections
             set => throw new NotImplementedException();
         }
 
-        public int Id => throw new NotImplementedException();
-
         public string Name => throw new NotImplementedException();
 
         public bool Hidden => throw new NotImplementedException();
 
         public IPlaceholder Placeholder => throw new NotImplementedException();
-
-        public GeometryType GeometryType => throw new NotImplementedException();
 
         public string CustomData
         {

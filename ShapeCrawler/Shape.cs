@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
@@ -13,7 +15,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a shape.
     /// </summary>
-    public abstract class Shape
+    public abstract class Shape //TODO: make it internal
     {
         #region Constructors
 
@@ -28,7 +30,7 @@ namespace ShapeCrawler
 
         protected void SetCustomData(string value)
         {
-            var customDataElement =
+            string customDataElement =
                 $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
             PShapeTreeChild.InnerXml += customDataElement;
         }
@@ -64,6 +66,35 @@ namespace ShapeCrawler
         public abstract ThemePart ThemePart { get; }
         public abstract PresentationSc Presentation { get; }
         public abstract SlideMasterSc SlideMaster { get; }
+
+        public virtual GeometryType GeometryType => GetGeometryType();
+
+        private GeometryType GetGeometryType()
+        {
+            P.ShapeProperties spPr = PShapeTreeChild.Descendants<P.ShapeProperties>().First();// TODO: optimize
+            A.Transform2D transform2D = spPr.Transform2D;
+            if (transform2D != null)
+            {
+                A.PresetGeometry aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
+
+                // Placeholder can have transform on the slide, without having geometry
+                if (aPresetGeometry == null && spPr.OfType<A.CustomGeometry>().Any())
+                {
+                    return GeometryType.Custom;
+                }
+
+                var name = aPresetGeometry.Preset.Value.ToString();
+                Enum.TryParse(name, true, out GeometryType geometryType);
+                return geometryType;
+            }
+
+            if (Placeholder != null)
+            {
+                return ((Placeholder)Placeholder).Shape.GeometryType;
+            }
+
+            return GeometryType.Rectangle; // return default
+        }
 
         #endregion Public Properties
     }

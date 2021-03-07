@@ -176,8 +176,6 @@ namespace ShapeCrawler
 
         public ShapeFill Fill => _shapeFill.Value;
 
-        public GeometryType GeometryType { get; }
-
         #endregion Properties
 
         #region Private Methods

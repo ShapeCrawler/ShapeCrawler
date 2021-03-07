@@ -19,6 +19,5 @@ namespace ShapeCrawler.Collections
         public string Name { get; }
         public bool Hidden { get; }
         public override IPlaceholder Placeholder => MasterPlaceholder.Create(PShapeTreeChild);
-        public GeometryType GeometryType { get; }
     }
 }

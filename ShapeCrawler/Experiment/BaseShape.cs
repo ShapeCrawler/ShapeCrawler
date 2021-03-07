@@ -18,7 +18,6 @@ namespace ShapeCrawler.Experiment
         public abstract long Width { get; }
 
         public abstract long Height { get; }
-        public abstract GeometryType GeometryType { get; }
 
         #region Constructors
 
