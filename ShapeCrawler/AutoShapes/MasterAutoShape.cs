@@ -58,6 +58,28 @@ namespace ShapeCrawler
             return false;
         }
 
+        public bool TryGetFontData(int paragraphLvl, out FontData fontData)
+        {
+            // Tries get font from Auto Shape
+            if (LvlToFontData.TryGetValue(paragraphLvl, out fontData))
+            {
+                return true;
+            }
+
+            // Title type
+            P.TextStyles pTextStyles = SlideMaster.PSlideMaster.TextStyles;
+            if (Placeholder.Type == PlaceholderType.Title)
+            {
+
+                var fontSize = pTextStyles.TitleStyle.Level1ParagraphProperties
+                    .GetFirstChild<A.DefaultRunProperties>().FontSize.Value;
+                fontData = new FontData(fontSize);
+                return true;
+            }
+
+            return false;
+        }
+
         internal Dictionary<int, FontData> GetLvlToFontData()
         {
             P.Shape pShape = (P.Shape) PShapeTreeChild;

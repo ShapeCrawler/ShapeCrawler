@@ -120,24 +120,22 @@ namespace ShapeCrawler.AutoShapes
                 return aRunPrFontSize.Value;
             }
 
-            ShapeContext shapeContext = _portion.Paragraph.TextBox.ShapeContext;
             Shape autoShape = _portion.Paragraph.TextBox.AutoShape;
             int paragraphLvl = _portion.Paragraph.Level;
 
-            // NEW
             // Try get font size from placeholder
-            if (autoShape is not MasterAutoShape && autoShape.Placeholder != null)
+            if (autoShape.Placeholder != null)
             {
                 Placeholder placeholder = (Placeholder) autoShape.Placeholder;
                 IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
-                if (placeholderAutoShape.TryGetFontSize(paragraphLvl, out int fontSize))
+                if (placeholderAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
                 {
-                    return fontSize;
+                    if (fontDataPlaceholder.FontSize != null)
+                    {
+                        return fontDataPlaceholder.FontSize;
+                    }
                 }
-            }
 
-            if (autoShape.Placeholder != null)
-            {
                 // From Slide Master body
                 if (autoShape.SlideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
                 {
@@ -161,16 +159,9 @@ namespace ShapeCrawler.AutoShapes
                 }
             }
 
-            
-
             return FormatConstants.DefaultFontSize;
         }
 
         #endregion Private Methods
-    }
-
-    internal interface IAutoShapeInternal
-    {
-        bool TryGetFontSize(int paragraphLvl, out int i);
     }
 }

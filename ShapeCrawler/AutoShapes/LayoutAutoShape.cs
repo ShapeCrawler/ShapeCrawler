@@ -62,6 +62,30 @@ namespace ShapeCrawler
             return false;
         }
 
+        public bool TryGetFontData(int paragraphLvl, out FontData fontData)
+        {
+            // Tries get font from Auto Shape
+            if (LvlToFontData.TryGetValue(paragraphLvl, out fontData))
+            {
+                return true;
+            }
+
+            if (Placeholder != null)
+            {
+                Placeholder placeholder = (Placeholder)Placeholder;
+                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+                if (placeholderAutoShape != null)
+                {
+                    if (placeholderAutoShape.TryGetFontData(paragraphLvl, out fontData))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         internal Dictionary<int, FontData> GetLvlToFontData()
         {
             P.Shape pShape = (P.Shape) PShapeTreeChild;

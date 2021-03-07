@@ -82,7 +82,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact(Skip = "In Progress")]
-        public void FontName_GetterReturnsCalibriLightAsFontName()
+        public void FontName_GetterReturnsCalibriLightAsFontName_WhenFontNameIsCalibriLight()
         {
             // Arrange
             ITextBox textBox4 = ((IAutoShape)_fixture.Pre001.Slides[4].Shapes.First(sp => sp.Id == 5)).TextBox;
