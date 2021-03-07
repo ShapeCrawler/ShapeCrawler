@@ -27,7 +27,6 @@ namespace ShapeCrawler
         internal SlideAutoShape(
             ILocation innerTransform,
             ShapeContext spContext,
-            GeometryType geometryType,
             P.Shape pShape,
             SlideSc slide) : base(slide, pShape)
         {
@@ -35,7 +34,6 @@ namespace ShapeCrawler
             Context = spContext;
             _textBox = new Lazy<TextBoxSc>(GetTextBox);
             _shapeFill = new Lazy<ShapeFill>(TryGetFill);
-            GeometryType = geometryType;
             _lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(() => GetLvlToFontData());
         }
 
@@ -64,6 +62,25 @@ namespace ShapeCrawler
             return placeholderAutoShape.TryGetFontSize(paragraphLvl, out fontSize);
         }
 
+        public bool TryGetFontData(int paragraphLvl, out FontData fontData)
+        {
+            // Tries get font from Auto Shape
+            if (LvlToFontData.TryGetValue(paragraphLvl, out fontData))
+            {
+                return true;
+            }
+
+            // Tries get font from Auto Shape of Placeholder
+            if (Placeholder == null)
+            {
+                return false;
+            }
+
+            Placeholder placeholder = (Placeholder) Placeholder;
+            IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
+            return placeholderAutoShape.TryGetFontData(paragraphLvl, out fontData);
+        }
+
         internal Dictionary<int, FontData> GetLvlToFontData()
         {
             P.Shape pShape = (P.Shape) PShapeTreeChild;
@@ -90,7 +107,6 @@ namespace ShapeCrawler
         private bool? _hidden;
         private int _id;
         private string _name;
-        private P.Shape pShape;
         private readonly ILocation _innerTransform;
 
         internal ShapeContext Context { get; }
@@ -153,8 +169,6 @@ namespace ShapeCrawler
         public ITextBox TextBox => _textBox.Value;
 
         public ShapeFill Fill => _shapeFill.Value;
-
-        public GeometryType GeometryType { get; }
 
         #endregion Properties
 

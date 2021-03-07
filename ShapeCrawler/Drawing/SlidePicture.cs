@@ -23,13 +23,11 @@ namespace ShapeCrawler
             string blipRelateId,
             ILocation innerTransform,
             ShapeContext spContext,
-            GeometryType geometryType,
             P.Picture pPicture) : base(slide, pPicture)
         {
             Image = new ImageSc(Slide.SlidePart, blipRelateId);
             _innerTransform = innerTransform;
             Context = spContext;
-            GeometryType = geometryType;
         }
 
         #endregion Constructors
@@ -100,8 +98,6 @@ namespace ShapeCrawler
                 return (bool) _hidden;
             }
         }
-
-        public GeometryType GeometryType { get; }
 
         #endregion Properties
 

@@ -42,24 +42,14 @@ namespace ShapeCrawler.SlideMaster
             return slideLayouts;
         }
 
-        #region Public Properties
-
-        public ShapeCollection Shapes => ShapeCollection.CreateForSlideMaster(this);
-        public int Number { get; } //TODO: does it need?
-        public ImageSc Background { get; }
-        public string CustomData { get; set; } //TODO: does it need?
-        public bool Hidden { get; } //TODO: does it need?
-        public IReadOnlyList<SlideLayoutSc> SlideLayouts => _sldLayouts.Value;
-
-        #endregion Public Properties
-
         public bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
         {
             P.TextStyles pTextStyles = PSlideMaster.TextStyles;
 
             // Master body type placeholder settings
             // TODO: make it lazy
-            Dictionary<int, FontData> bodyStyleLvlToFontData = FontDataParser.FromCompositeElement(pTextStyles.BodyStyle);
+            Dictionary<int, FontData> bodyStyleLvlToFontData =
+                FontDataParser.FromCompositeElement(pTextStyles.BodyStyle);
             if (bodyStyleLvlToFontData.ContainsKey(paragraphLvl))
             {
                 if (bodyStyleLvlToFontData[paragraphLvl].FontSize != null)
@@ -67,7 +57,6 @@ namespace ShapeCrawler.SlideMaster
                     fontSize = bodyStyleLvlToFontData[paragraphLvl].FontSize;
                     return true;
                 }
-                    
             }
 
             fontSize = -1;
@@ -79,7 +68,8 @@ namespace ShapeCrawler.SlideMaster
             P.TextStyles pTextStyles = PSlideMaster.TextStyles;
 
             // Other
-            Dictionary<int, FontData> otherStyleLvlToFontData = FontDataParser.FromCompositeElement(pTextStyles.OtherStyle);
+            Dictionary<int, FontData> otherStyleLvlToFontData =
+                FontDataParser.FromCompositeElement(pTextStyles.OtherStyle);
             if (otherStyleLvlToFontData.ContainsKey(paragraphLvl))
             {
                 if (otherStyleLvlToFontData[paragraphLvl].FontSize != null)
@@ -92,5 +82,16 @@ namespace ShapeCrawler.SlideMaster
             fontSize = -1;
             return false;
         }
+
+        #region Public Properties
+
+        public ShapeCollection Shapes => ShapeCollection.CreateForSlideMaster(this);
+        public int Number { get; } //TODO: does it need?
+        public ImageSc Background { get; }
+        public string CustomData { get; set; } //TODO: does it need?
+        public bool Hidden { get; } //TODO: does it need?
+        public IReadOnlyList<SlideLayoutSc> SlideLayouts => _sldLayouts.Value;
+
+        #endregion Public Properties
     }
 }

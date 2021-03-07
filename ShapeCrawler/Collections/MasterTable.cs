@@ -2,11 +2,11 @@
 using ShapeCrawler.SlideMaster;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Tables
+namespace ShapeCrawler.Collections
 {
-    internal class LayoutTable : LayoutShape, IShape
+    internal class MasterTable : MasterShape, IShape
     {
-        public LayoutTable(SlideLayoutSc slideLayout, P.GraphicFrame pGraphicFrame) : base(slideLayout, pGraphicFrame)
+        public MasterTable(SlideMasterSc slideMaster, P.GraphicFrame pGraphicFrame) : base(slideMaster, pGraphicFrame)
         {
         }
 

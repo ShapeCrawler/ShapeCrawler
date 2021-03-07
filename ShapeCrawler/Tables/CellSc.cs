@@ -9,7 +9,7 @@ namespace ShapeCrawler.Tables
     /// <summary>
     ///     Represents a cell in a table.
     /// </summary>
-    public class CellSc
+    public class CellSc //TODO: make it internal
     {
         #region Constructors
 
@@ -55,7 +55,7 @@ namespace ShapeCrawler.Tables
             if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0
             ) // at least one of <a:t> element contain text
             {
-                return new TextBoxSc(Table.Context, aTxtBody);
+                return new TextBoxSc(aTxtBody);
             }
 
             return null;

@@ -47,8 +47,8 @@ namespace ShapeCrawler
 
             if (Placeholder != null)
             {
-                Placeholder placeholder = (Placeholder)Placeholder;
-                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+                Placeholder placeholder = (Placeholder) Placeholder;
+                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
                 if (placeholderAutoShape != null)
                 {
                     if (placeholderAutoShape.TryGetFontSize(paragraphLvl, out fontSize))
@@ -59,6 +59,30 @@ namespace ShapeCrawler
             }
 
             fontSize = -1;
+            return false;
+        }
+
+        public bool TryGetFontData(int paragraphLvl, out FontData fontData)
+        {
+            // Tries get font from Auto Shape
+            if (LvlToFontData.TryGetValue(paragraphLvl, out fontData))
+            {
+                return true;
+            }
+
+            if (Placeholder != null)
+            {
+                Placeholder placeholder = (Placeholder) Placeholder;
+                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
+                if (placeholderAutoShape != null)
+                {
+                    if (placeholderAutoShape.TryGetFontData(paragraphLvl, out fontData))
+                    {
+                        return true;
+                    }
+                }
+            }
+
             return false;
         }
 
@@ -151,8 +175,6 @@ namespace ShapeCrawler
         public ITextBox TextBox => _textBox.Value;
 
         public ShapeFill Fill => _shapeFill.Value;
-
-        public GeometryType GeometryType { get; }
 
         #endregion Properties
 

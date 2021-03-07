@@ -20,7 +20,7 @@ namespace ShapeCrawler.Extensions
         public static (int, bool, string) GetNvPrValues(this OpenXmlCompositeElement compositeElement)
         {
             // .First() is used instead .Single() because group shape can have more than one id for its child elements
-            var cNvPr = compositeElement.NonVisualDrawingProperties();
+            var cNvPr = compositeElement.GetNonVisualDrawingProperties();
             var id = (int) cNvPr.Id.Value;
             var name = cNvPr.Name.Value;
             var parsedHiddenValue = cNvPr.Hidden?.Value;
@@ -29,7 +29,7 @@ namespace ShapeCrawler.Extensions
             return (id, hidden, name);
         }
 
-        public static P.NonVisualDrawingProperties NonVisualDrawingProperties(
+        public static P.NonVisualDrawingProperties GetNonVisualDrawingProperties(
             this OpenXmlCompositeElement compositeElement)
         {
             // Get <p:cNvSpPr>
@@ -57,6 +57,7 @@ namespace ShapeCrawler.Extensions
                 P.GraphicFrame pGraphicFrame => pGraphicFrame.NonVisualGraphicFrameProperties
                     .ApplicationNonVisualDrawingProperties,
                 P.Shape pShape => pShape.NonVisualShapeProperties.ApplicationNonVisualDrawingProperties,
+                P.Picture pPicture => pPicture.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties,
                 _ => throw new ShapeCrawlerException()
             };
         }

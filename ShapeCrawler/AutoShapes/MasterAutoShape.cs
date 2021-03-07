@@ -58,6 +58,27 @@ namespace ShapeCrawler
             return false;
         }
 
+        public bool TryGetFontData(int paragraphLvl, out FontData fontData)
+        {
+            // Tries get font from Auto Shape
+            if (LvlToFontData.TryGetValue(paragraphLvl, out fontData))
+            {
+                return true;
+            }
+
+            // Title type
+            P.TextStyles pTextStyles = SlideMaster.PSlideMaster.TextStyles;
+            if (Placeholder.Type == PlaceholderType.Title)
+            {
+                var fontSize = pTextStyles.TitleStyle.Level1ParagraphProperties
+                    .GetFirstChild<A.DefaultRunProperties>().FontSize.Value;
+                fontData = new FontData(fontSize);
+                return true;
+            }
+
+            return false;
+        }
+
         internal Dictionary<int, FontData> GetLvlToFontData()
         {
             P.Shape pShape = (P.Shape) PShapeTreeChild;
@@ -93,39 +114,6 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public long X
-        {
-            get => _innerTransform.X;
-            set => _innerTransform.SetX(value);
-        }
-
-        public long Y
-        {
-            get => _innerTransform.Y;
-            set => _innerTransform.SetY(value);
-        }
-
-        public long Width
-        {
-            get => _innerTransform.Width;
-            set => _innerTransform.SetWidth(value);
-        }
-
-        public long Height
-        {
-            get => _innerTransform.Height;
-            set => _innerTransform.SetHeight(value);
-        }
-
-        public int Id //TODO: move to Shape
-        {
-            get
-            {
-                InitIdHiddenName();
-                return _id;
-            }
-        }
-
         public string Name //TODO: move to Shape
         {
             get
@@ -147,8 +135,6 @@ namespace ShapeCrawler
         public ITextBox TextBox => _textBox.Value;
 
         public ShapeFill Fill => _shapeFill.Value;
-
-        public GeometryType GeometryType { get; }
 
         #endregion Properties
 
@@ -202,7 +188,7 @@ namespace ShapeCrawler
                 return;
             }
 
-            var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
+            var (id, hidden, name) = PShapeTreeChild.GetNvPrValues();
             _id = id;
             _hidden = hidden;
             _name = name;

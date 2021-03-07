@@ -27,9 +27,12 @@ namespace ShapeCrawler.Factories
             FromCompositeElement(
                 OpenXmlCompositeElement compositeElement) //TODO: set annotation that about it cannot be NULL
         {
-            var prLvlToFontData = new Dictionary<int, FontData>();
-            foreach (OpenXmlElement textPr in compositeElement.Elements()
-                .Where(e => e.LocalName.StartsWith("lvl", StringComparison.Ordinal))) // <a:lvl1pPr>, <a:lvl2pPr>, etc.
+            // Get <a:lvlXpPr> elements, eg. <a:lvl1pPr>, <a:lvl2pPr>
+            IEnumerable<OpenXmlElement> lvlParagraphPropertyList = compositeElement.Elements()
+                .Where(e => e.LocalName.StartsWith("lvl", StringComparison.Ordinal));
+
+            var lvlToFontData = new Dictionary<int, FontData>();
+            foreach (OpenXmlElement textPr in lvlParagraphPropertyList)
             {
                 A.DefaultRunProperties aDefRPr = textPr.GetFirstChild<A.DefaultRunProperties>();
 
@@ -45,11 +48,13 @@ namespace ShapeCrawler.Factories
                 var lvl = int.Parse(textPr.LocalName[3].ToString(System.Globalization.CultureInfo.CurrentCulture),
                 System.Globalization.CultureInfo.CurrentCulture);
 #endif
-
-                prLvlToFontData.Add(lvl, new FontData(fontSize, aLatinFont));
+                if (fontSize != null || aLatinFont != null)
+                {
+                    lvlToFontData.Add(lvl, new FontData(fontSize, aLatinFont));
+                }
             }
 
-            return prLvlToFontData;
+            return lvlToFontData;
         }
     }
 }

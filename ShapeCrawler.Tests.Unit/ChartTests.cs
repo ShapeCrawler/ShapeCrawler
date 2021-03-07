@@ -200,7 +200,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SeriesType_ReturnsChartTypeOfTheSeries()
         {
             // Arrange
-            SlideChart chart = _fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 3) as SlideChart;
+            IChart chart = (IChart)_fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 3);
             Series series2 = chart.SeriesCollection[1];
             Series series3 = chart.SeriesCollection[2];
 
@@ -257,7 +257,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SeriesName_ReturnsChartSeriesName()
         {
             // Arrange
-            SlideChart chart = _fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 5) as SlideChart;
+            IChart chart = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 5);
 
             // Act
             string seriesNameCase1 = chart.SeriesCollection[0].Name;

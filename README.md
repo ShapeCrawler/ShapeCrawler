@@ -31,7 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ShapeCrawler;
-using ShapeCrawler.Texts;
+using ShapeCrawler.AutoShapes;
 
 public class TextSample
 {
@@ -52,7 +52,7 @@ public class TextSample
         paragraph.Text = "A new text for second paragraph";
 
         // Print font name and size of a paragraph text portions
-        TextBoxSc textBox = autoShape.TextBox;
+        ITextBox textBox = autoShape.TextBox;
         IEnumerable<Portion> paragraphPortions = textBox.Paragraphs.First().Portions;
         foreach (Portion portion in paragraphPortions)
         {
@@ -111,6 +111,9 @@ public class TableSample
 
         // Get cell with row index 0 and column index 1
         CellSc cell = table[0, 1];
+
+        // Merge cells
+        table.MergeCells(table[0,0], table[0, 1]);
 
         presentation.Close();
     }
@@ -195,8 +198,8 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 Don't hesitate to contact me if you want to get involved!
 
 # Changelog
-## Version 0.16.0 - 2021-02-20
-### Added
-- Added `ITable.MergeCells()` API to merge neigbor cells of the table (#109)
+## Version 0.16.1 - 2021-03-08
+### Fixed
+- Fixed parser of font properties
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).

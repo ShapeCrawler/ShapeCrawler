@@ -100,7 +100,7 @@ namespace ShapeCrawler.Tests.Unit
             slideMastersCountCase2.Should().Be(2);
         }
 
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void SlideMasterShapesCount_ReturnsNumberOfShapesOnTheMasterSlide()
         {
             // Arrange

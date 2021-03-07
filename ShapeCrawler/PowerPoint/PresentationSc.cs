@@ -146,8 +146,6 @@ namespace ShapeCrawler
 
         private SlideCollection GetSlides()
         {
-            PresentationPart presentationPart = _presentationDocument.PresentationPart;
-            PresentationData = new PresentationData(presentationPart.Presentation);
             SlideCollection slideCollection = new(this);
 
             return slideCollection;
@@ -201,6 +199,7 @@ namespace ShapeCrawler
             _slides = new Lazy<SlideCollection>(GetSlides);
             _slideSize = new Lazy<SlideSizeSc>(GetSlideSize);
             PresentationPart = _presentationDocument.PresentationPart;
+            PresentationData = new PresentationData(PresentationPart.Presentation);
         }
 
         private SlideSizeSc GetSlideSize()

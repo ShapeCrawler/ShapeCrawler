@@ -4,7 +4,7 @@
     <TargetFrameworks>net5.0;netcoreapp2.0;netstandard2.1;netstandard2.0</TargetFrameworks>
     <AssemblyName>ShapeCrawler</AssemblyName>
     <RootNamespace>ShapeCrawler</RootNamespace>
-    <Version>0.17.0</Version>
+    <Version>0.16.1</Version>
     <Authors>Adam Shakhabov</Authors>
     <Company>ShapeCrawler</Company>
     <Description>ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoint presentations. It provides fluent APIs to process slides without having Microsoft Office installed.
@@ -51,6 +51,10 @@ The library allows to process presentation files without any COM+ or COM interop
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Experiment\" />
   </ItemGroup>
 
 </Project>

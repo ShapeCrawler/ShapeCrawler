@@ -31,24 +31,6 @@ namespace ShapeCrawler.Shared
         }
 
         /// <summary>
-        ///     Checks whether a specified string is not null, empty, or not consists only of white-space characters.
-        /// </summary>
-        /// <param name="param"></param>
-        /// <param name="paramName"></param>
-        public static void NotEmpty(string param, string paramName)
-        {
-            if (string.IsNullOrWhiteSpace(param))
-            {
-                if (!string.IsNullOrWhiteSpace(paramName))
-                {
-                    throw new ArgumentException($"{paramName} is empty.");
-                }
-
-                throw new ArgumentException("String is empty.");
-            }
-        }
-
-        /// <summary>
         ///     Checks whether a specified collection is not empty.
         /// </summary>
         /// <typeparam name="T"></typeparam>

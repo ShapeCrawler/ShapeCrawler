@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Experiment;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -22,8 +21,6 @@ namespace ShapeCrawler.AutoShapes
         private readonly OpenXmlCompositeElement _compositeElement;
 
         internal Shape AutoShape { get; }
-        internal BaseShape BaseShape { get; }
-        internal ShapeContext ShapeContext { get; }
 
         #endregion Fields
 
@@ -47,21 +44,6 @@ namespace ShapeCrawler.AutoShapes
 
         #region Constructors
 
-        /// <summary>
-        ///     Initializes a new empty instance of the <see cref="TextBoxSc" /> class.
-        /// </summary>
-        /// <param name="baseShape"></param>
-        internal TextBoxSc(BaseShape baseShape)
-        {
-            BaseShape = baseShape;
-        }
-
-        internal TextBoxSc(BaseShape baseShape, P.TextBody pTextBody) : this(baseShape)
-        {
-            _compositeElement = pTextBody;
-            _text = new Lazy<string>(GetText);
-        }
-
         internal TextBoxSc(Shape autoShape, P.TextBody pTextBody)
         {
             AutoShape = autoShape;
@@ -70,9 +52,8 @@ namespace ShapeCrawler.AutoShapes
         }
 
         // TODO: Resolve conflict getting text box for autoShape and table
-        internal TextBoxSc(ShapeContext shapeContext, A.TextBody aTextBody)
+        internal TextBoxSc(A.TextBody aTextBody)
         {
-            ShapeContext = shapeContext;
             _compositeElement = aTextBody;
             _text = new Lazy<string>(GetText);
         }

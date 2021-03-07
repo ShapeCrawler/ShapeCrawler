@@ -81,8 +81,8 @@ namespace ShapeCrawler.Tests.Unit
             portionFontNameCase3.Should().BeEquivalentTo("Calibri Light");
         }
 
-        [Fact(Skip = "In Progress")]
-        public void FontName_GetterReturnsCalibriLightAsFontName()
+        [Fact]
+        public void FontName_GetterReturnsCalibriLightAsFontName_WhenFontNameIsCalibriLight()
         {
             // Arrange
             ITextBox textBox4 = ((IAutoShape)_fixture.Pre001.Slides[4].Shapes.First(sp => sp.Id == 5)).TextBox;
