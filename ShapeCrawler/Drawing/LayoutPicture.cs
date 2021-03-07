@@ -12,15 +12,15 @@ namespace ShapeCrawler.Drawing
         {
         }
 
-        public string Name => throw new NotImplementedException();
+        public string Name => "throw new NotImplementedException()"; //TODO: Implement
 
-        public bool Hidden => throw new NotImplementedException();
+        public bool Hidden => false;//TODO: throw new NotImplementedException()
 
-        public IPlaceholder Placeholder => throw new NotImplementedException();
+        public IPlaceholder Placeholder => null; //TODO: throw new NotImplementedException()
 
         public string CustomData
         {
-            get => throw new NotImplementedException();
+            get => null;//TODO: throw new NotImplementedException()
             set => throw new NotImplementedException();
         }
     }

@@ -178,19 +178,25 @@ namespace ShapeCrawler
                 A.PresetGeometry aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
 
                 // Placeholder can have transform on the slide, without having geometry
-                if (aPresetGeometry == null && spPr.OfType<A.CustomGeometry>().Any())
+                if (aPresetGeometry == null)
                 {
-                    return GeometryType.Custom;
+                    if (spPr.OfType<A.CustomGeometry>().Any())
+                    {
+                        return GeometryType.Custom;
+                    }
                 }
-
-                var name = aPresetGeometry.Preset.Value.ToString();
-                Enum.TryParse(name, true, out GeometryType geometryType);
-                return geometryType;
+                else
+                {
+                    var name = aPresetGeometry.Preset.Value.ToString();
+                    Enum.TryParse(name, true, out GeometryType geometryType);
+                    return geometryType;
+                }
             }
 
-            if (Placeholder != null)
+            Placeholder placeholder = (Placeholder) Placeholder;
+            if (placeholder?.Shape != null)
             {
-                return ((Placeholder) Placeholder).Shape.GeometryType;
+                return placeholder.Shape.GeometryType;
             }
 
             return GeometryType.Rectangle; // return default

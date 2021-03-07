@@ -57,6 +57,7 @@ namespace ShapeCrawler.Extensions
                 P.GraphicFrame pGraphicFrame => pGraphicFrame.NonVisualGraphicFrameProperties
                     .ApplicationNonVisualDrawingProperties,
                 P.Shape pShape => pShape.NonVisualShapeProperties.ApplicationNonVisualDrawingProperties,
+                P.Picture pPicture => pPicture.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties,
                 _ => throw new ShapeCrawlerException()
             };
         }
