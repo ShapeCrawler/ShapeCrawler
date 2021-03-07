@@ -2,14 +2,14 @@
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMaster;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Collections
 {
-    internal class LayoutOLEObject : IShape
+    internal class LayoutOLEObject : LayoutShape, IShape
     {
-        public LayoutOLEObject(SlideLayoutSc slideLayout, DocumentFormat.OpenXml.Presentation.GraphicFrame pGraphicFrame)
+        public LayoutOLEObject(SlideLayoutSc slideLayout, P.GraphicFrame pGraphicFrame) : base(slideLayout, pGraphicFrame)
         {
-            throw new NotImplementedException();
         }
 
         public long X { get; set; }

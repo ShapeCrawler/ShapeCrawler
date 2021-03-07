@@ -1,14 +1,14 @@
 ﻿using System;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMaster;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Collections
 {
     internal class LayoutTable : LayoutShape, IShape
     {
-        public LayoutTable(SlideLayoutSc slideLayout, DocumentFormat.OpenXml.Presentation.GraphicFrame pGraphicFrame) : base(slideLayout, pGraphicFrame)
+        public LayoutTable(SlideLayoutSc slideLayout, P.GraphicFrame pGraphicFrame) : base(slideLayout, pGraphicFrame)
         {
-            throw new NotImplementedException();
         }
 
         public long X { get; set; }
