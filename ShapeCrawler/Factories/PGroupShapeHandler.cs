@@ -5,7 +5,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Factories
@@ -30,8 +29,6 @@ namespace ShapeCrawler.Factories
 
         public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide)
         {
-            Check.NotNull(pShapeTreeChild, nameof(pShapeTreeChild));
-
             if (pShapeTreeChild is P.GroupShape pGroupShape)
             {
                 var pShapeHandler = new AutoShapeCreator(_shapeContextBuilder, _transformFactory, _geometryFactory);
@@ -62,7 +59,7 @@ namespace ShapeCrawler.Factories
                 var spContext = _shapeContextBuilder.Build(pShapeTreeChild);
                 var transformGroup = pGroupShape.GroupShapeProperties.TransformGroup;
                 var innerTransform = new NonPlaceholderTransform(transformGroup);
-                var groupShape = new GroupShapeSc(innerTransform, spContext, groupedShapes, pGroupShape);
+                var groupShape = new SlideGroupShape(innerTransform, spContext, groupedShapes, pGroupShape, slide);
 
                 return groupShape;
             }

@@ -29,7 +29,7 @@ namespace ShapeCrawler.Factories
                 ShapeContext shapeContext = _shapeContextBuilder.Build(pShapeTreeChild);
                 ILocation innerTransform = _transformFactory.FromComposite(pShape);
                 GeometryType geometryType = _geometryFactory.ForCompositeElement(pShape, pShape.ShapeProperties);
-                var autoShape = new AutoShape(innerTransform, shapeContext, geometryType, pShape, slide);
+                var autoShape = new SlideAutoShape(innerTransform, shapeContext, geometryType, pShape, slide);
 
                 return autoShape;
             }

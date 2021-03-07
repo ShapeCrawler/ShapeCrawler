@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 
@@ -23,8 +24,8 @@ namespace ShapeCrawler.Tests.Unit
         public async void ImageExGetImageBytes_MethodReturnsNonEmptyShapeImage()
         {
             // Arrange
-            PictureSc shapePicture1 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3) as PictureSc;
-            PictureSc shapePicture2 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7) as PictureSc;
+            IPicture shapePicture1 = (IPicture)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
+            IPicture shapePicture2 = (IPicture)_fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7);
 
             // Act
             byte[] shapePictureContentCase1 = await shapePicture1.Image.GetImageBytes().ConfigureAwait(false);
@@ -40,8 +41,8 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             var customImageStream = new MemoryStream(Properties.Resources.test_image_2);
-            PictureSc picture = PresentationSc.Open(Properties.Resources._009, true).
-                                                            Slides[1].Shapes.First(sp => sp.Id == 3) as PictureSc;
+            SlidePicture picture = PresentationSc.Open(Properties.Resources._009, true).
+                                                            Slides[1].Shapes.First(sp => sp.Id == 3) as SlidePicture;
             var originLength = (await picture.Image.GetImageBytes().ConfigureAwait(false)).Length;
 
             // Act

@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
+using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
-using ShapeCrawler.Statics;
+using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMaster;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -16,26 +19,66 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler
 {
     /// <inheritdoc cref="IAutoShape" />
-    public class AutoShape : Shape, IAutoShape
+    internal class LayoutAutoShape : LayoutShape, IAutoShape, IAutoShapeInternal
     {
+        private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
+
         #region Constructors
 
-        internal AutoShape(
-            ILocation innerTransform,
-            ShapeContext spContext,
-            GeometryType geometryType,
-            P.Shape pShape,
-            SlideSc slide) : base(pShape)
+        internal LayoutAutoShape(SlideLayoutSc slideLayout, P.Shape pShape) : base(slideLayout, pShape)
         {
-            _innerTransform = innerTransform;
-            Context = spContext;
             _textBox = new Lazy<TextBoxSc>(GetTextBox);
             _shapeFill = new Lazy<ShapeFill>(TryGetFill);
-            GeometryType = geometryType;
-            Slide = slide;
+            _lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(() => GetLvlToFontData());
         }
 
         #endregion Constructors
+
+        internal Dictionary<int, FontData> LvlToFontData => _lvlToFontData.Value;
+
+        bool IAutoShapeInternal.TryGetFontSize(int paragraphLvl, out int fontSize)
+        {
+            // Tries get font from Auto Shape
+            if (LvlToFontData.TryGetValue(paragraphLvl, out FontData fontData) && fontData.FontSize != null)
+            {
+                fontSize = fontData.FontSize;
+                return true;
+            }
+
+            if (Placeholder != null)
+            {
+                Placeholder placeholder = (Placeholder)Placeholder;
+                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+                if (placeholderAutoShape != null)
+                {
+                    if (placeholderAutoShape.TryGetFontSize(paragraphLvl, out fontSize))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            fontSize = -1;
+            return false;
+        }
+
+        internal Dictionary<int, FontData> GetLvlToFontData()
+        {
+            P.Shape pShape = (P.Shape) PShapeTreeChild;
+            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
+
+            if (!lvlToFontData.Any()) // font height is still not known
+            {
+                Int32Value endParaRunPrFs = pShape.TextBody.GetFirstChild<A.Paragraph>()
+                    .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
+                if (endParaRunPrFs != null)
+                {
+                    lvlToFontData.Add(1, new FontData(endParaRunPrFs));
+                }
+            }
+
+            return lvlToFontData;
+        }
 
         #region Fields
 
@@ -45,10 +88,10 @@ namespace ShapeCrawler
         private bool? _hidden;
         private int _id;
         private string _name;
+        private P.Shape pShape;
         private readonly ILocation _innerTransform;
 
         internal ShapeContext Context { get; }
-        internal SlideSc Slide { get; }
 
         #endregion Fields
 

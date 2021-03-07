@@ -8,6 +8,14 @@ namespace ShapeCrawler.Experiment
         private readonly GraphicFrame pGraphicFrame;
         private readonly SlideMasterSc slideMaster;
 
+        public ChartScNew()
+        {
+        }
+
+        public ChartScNew(SlideMasterSc slideMaster)
+        {
+        }
+
         public ChartScNew(SlideMasterSc slideMaster, GraphicFrame pGraphicFrame)
         {
             this.slideMaster = slideMaster;

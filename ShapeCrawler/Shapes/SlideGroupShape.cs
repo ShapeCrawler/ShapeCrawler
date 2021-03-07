@@ -13,15 +13,16 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace ShapeCrawler
 {
     /// <inheritdoc cref="IGroupShape" />
-    public class GroupShapeSc : Shape, IGroupShape
+    public class SlideGroupShape : SlideShape, IGroupShape
     {
         #region Constructors
 
-        internal GroupShapeSc(
+        internal SlideGroupShape(
             ILocation innerTransform,
             ShapeContext spContext,
             List<IShape> groupedShapes,
-            OpenXmlCompositeElement pShapeTreeChild) : base(pShapeTreeChild)
+            OpenXmlCompositeElement pShapeTreeChild,
+            SlideSc slide) : base(slide, pShapeTreeChild)
         {
             _innerTransform = innerTransform;
             Context = spContext;

@@ -1,16 +1,27 @@
 ﻿using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Placeholders;
+using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Statics;
+using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler
 {
+    /// <summary>
+    ///     Represents a shape.
+    /// </summary>
     public abstract class Shape
     {
+        #region Constructors
+
         protected Shape(OpenXmlCompositeElement pShapeTreeChild)
         {
             PShapeTreeChild = pShapeTreeChild;
         }
+
+        #endregion Constructors
 
         internal OpenXmlCompositeElement PShapeTreeChild { get; }
 
@@ -45,7 +56,11 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets placeholder. Returns <c>NULL</c> if the shape is not a placeholder.
         /// </summary>
-        public Placeholder Placeholder => Placeholder.Create(PShapeTreeChild);
+        public abstract IPlaceholder Placeholder { get; }
+
+        public abstract ThemePart ThemePart { get; }
+        public abstract PresentationSc Presentation { get; }
+        public abstract SlideMasterSc SlideMaster { get; }
 
         #endregion Public Properties
     }

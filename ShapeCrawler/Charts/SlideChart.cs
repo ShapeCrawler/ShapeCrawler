@@ -16,21 +16,20 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Charts
 {
     /// <inheritdoc cref="IChart" />
-    public class ChartSc : Shape, IChart
+    public class SlideChart : SlideShape, IChart
     {
         #region Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ChartSc" /> class.
+        ///     Initializes a new instance of the <see cref="SlideChart" /> class.
         /// </summary>
-        internal ChartSc(
+        internal SlideChart(
             P.GraphicFrame pGraphicFrame,
             SlideSc slide,
             ILocation innerTransform,
-            ShapeContext spContext) : base(pGraphicFrame)
+            ShapeContext spContext) : base(slide, pGraphicFrame)
         {
             _pGraphicFrame = pGraphicFrame;
-            Slide = slide;
             _innerTransform = innerTransform;
             Context = spContext;
 
@@ -86,7 +85,6 @@ namespace ShapeCrawler.Charts
         private readonly P.GraphicFrame _pGraphicFrame;
 
         internal ShapeContext Context { get; }
-        internal SlideSc Slide { get; }
 
         #endregion Fields
 

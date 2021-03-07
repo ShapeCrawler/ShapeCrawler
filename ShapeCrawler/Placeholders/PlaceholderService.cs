@@ -52,13 +52,6 @@ namespace ShapeCrawler.Placeholders
             return result;
         }
 
-        public static PlaceholderType GetPlaceholderType(OpenXmlElement sdkElement)
-        {
-            var sdkPlaceholder = sdkElement.Descendants<P.PlaceholderShape>().First();
-
-            return GetPlaceholderType(sdkPlaceholder);
-        }
-
         /// <summary>
         ///     Gets placeholder data from SDK-element.
         /// </summary>

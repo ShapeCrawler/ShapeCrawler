@@ -5,22 +5,40 @@ using ShapeCrawler.SlideMaster;
 
 namespace ShapeCrawler.Collections
 {
-    public class SlideMasterCollection : LibraryCollection<SlideMasterSc>
+    public class SlideMasterCollection : LibraryCollection<SlideMasterSc> //TODO: add interface
     {
-        private SlideMasterCollection(List<SlideMasterSc> slideMasters)
+        private SlideMasterCollection(PresentationSc presentation, List<SlideMasterSc> slideMasters)
         {
+            Presentation = presentation;
             CollectionItems = slideMasters;
         }
 
-        public static SlideMasterCollection Create(IEnumerable<SlideMasterPart> slideMasterParts)
+        internal PresentationSc Presentation { get; }
+
+        internal static SlideMasterCollection Create(PresentationSc presentation)
         {
+            IEnumerable<SlideMasterPart> slideMasterParts = presentation.PresentationPart.SlideMasterParts;
             var slideMasters = new List<SlideMasterSc>(slideMasterParts.Count());
             foreach (SlideMasterPart slideMasterPart in slideMasterParts)
             {
-                slideMasters.Add(new SlideMasterSc(slideMasterPart.SlideMaster));
+                slideMasters.Add(new SlideMasterSc(presentation, slideMasterPart.SlideMaster));
             }
 
-            return new SlideMasterCollection(slideMasters);
+            return new SlideMasterCollection(presentation, slideMasters);
+        }
+
+        internal SlideLayoutSc GetSlideLayoutBySlide(SlideSc slide)
+        {
+            SlideLayoutPart inputSlideLayoutPart = slide.SlidePart.SlideLayoutPart;
+
+            return CollectionItems.SelectMany(sm => sm.SlideLayouts)
+                .First(sl => sl.SlideLayoutPart == inputSlideLayoutPart);
+        }
+
+        internal SlideMasterSc GetSlideMasterByLayout(SlideLayoutSc slideLayout)
+        {
+            return CollectionItems.First(sldMaster =>
+                sldMaster.SlideLayouts.Any(sl => sl.SlideLayoutPart == slideLayout.SlideLayoutPart));
         }
     }
 }

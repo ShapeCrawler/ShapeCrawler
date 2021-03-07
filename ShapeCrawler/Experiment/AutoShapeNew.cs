@@ -12,6 +12,6 @@ namespace ShapeCrawler.Experiment
         public long Width { get; set; }
         public long Height { get; }
         public GeometryType GeometryType { get; }
-        public Placeholder Placeholder { get; }
+        public SlidePlaceholder Placeholder { get; }
     }
 }

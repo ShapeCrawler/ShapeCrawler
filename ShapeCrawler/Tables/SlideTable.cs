@@ -22,14 +22,23 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a shape on a slide.
     /// </summary>
-    public class TableSc : Shape, ITable
+    public class SlideTable : SlideShape, ITable
     {
+        private readonly ILocation _innerTransform;
+        private readonly P.GraphicFrame _pGraphicFrame;
+        private readonly ResettableLazy<RowCollection> _rowCollection;
+        private bool? _hidden;
+        private int _id;
+        private string _name;
+
         #region Constructors
 
-        internal TableSc(OpenXmlCompositeElement pShapeTreeChild, ILocation innerTransform, ShapeContext spContext)
-            : base(pShapeTreeChild)
+        internal SlideTable(
+            OpenXmlCompositeElement pShapeTreeChild,
+            ILocation innerTransform,
+            ShapeContext spContext,
+            SlideSc slide) : base(slide, pShapeTreeChild)
         {
-            PShapeTreeChild = pShapeTreeChild;
             _innerTransform = innerTransform;
             Context = spContext;
             _rowCollection =
@@ -38,6 +47,9 @@ namespace ShapeCrawler
         }
 
         #endregion Constructors
+
+        internal ShapeContext Context { get; }
+        internal A.Table ATable => _pGraphicFrame.GetATable();
 
         public void MergeCells(CellSc cell1, CellSc cell2) // TODO: Optimize method
         {
@@ -166,21 +178,6 @@ namespace ShapeCrawler
 
             _rowCollection.Reset();
         }
-
-        #region Fields
-
-        private bool? _hidden;
-        private int _id;
-        private string _name;
-        private readonly ILocation _innerTransform;
-        private readonly P.GraphicFrame _pGraphicFrame;
-        private readonly ResettableLazy<RowCollection> _rowCollection;
-
-        internal ShapeContext Context { get; }
-        internal A.Table ATable => _pGraphicFrame.GetATable();
-        internal OpenXmlCompositeElement PShapeTreeChild { get; } // TODO: delete this duplicate of _pGraphicFrame
-
-        #endregion Fields
 
         #region Public Properties
 

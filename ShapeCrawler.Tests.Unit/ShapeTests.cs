@@ -53,7 +53,7 @@ namespace ShapeCrawler.Tests.Unit
         public void AutoShapeFill_ReturnsNull_WhenAutoShapeIsNotFilled()
         {
             // Arrange
-            AutoShape autoShape = (AutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 6);
+            IAutoShape autoShape = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 6);
 
             // Act
             ShapeFill shapeFill = autoShape.Fill;
@@ -66,7 +66,7 @@ namespace ShapeCrawler.Tests.Unit
         public void AutoShapeFill_IsNotNull_WhenAutoShapeIsFilled()
         {
             // Arrange
-            AutoShape autoShape = (AutoShape)_fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 108);
+            IAutoShape autoShape = (IAutoShape)_fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 108);
 
             // Act-Assert
             autoShape.Fill.Should().NotBeNull();
@@ -76,8 +76,8 @@ namespace ShapeCrawler.Tests.Unit
         public void AutoShapeFillType_GetterReturnsFillTypeByWhichTheAutoShapeIsFilled()
         {
             // Arrange
-            AutoShape autoShape1 = (AutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
-            AutoShape autoShape2 = (AutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
+            IAutoShape autoShape1 = (IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
+            IAutoShape autoShape2 = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
 
             // Act
             FillType shapeFillTypeCase1 = autoShape1.Fill.Type;
@@ -92,7 +92,7 @@ namespace ShapeCrawler.Tests.Unit
         public void AutoShapeFillSolidColorName_GetterReturnsSolidColorNameByWhichTheAutoShapeIsFilled()
         {
             // Arrange
-            AutoShape autoShape = (AutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
+            IAutoShape autoShape = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
 
             // Act
             var shapeSolidColorName = autoShape.Fill.SolidColor.Name;
@@ -106,7 +106,7 @@ namespace ShapeCrawler.Tests.Unit
         public async void AutoShapeFillPictureGetImageBytes_ReturnsImageByWhichTheAutoShapeIsFilled()
         {
             // Arrange
-            AutoShape shape = (AutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
+            IAutoShape shape = (IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
 
             // Act
             byte[] imageBytes = await shape.Fill.Picture.GetImageBytes().ConfigureAwait(false);
@@ -120,7 +120,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             PresentationSc presentation = PresentationSc.Open(Resources._009, true);
-            AutoShape autoShape = (AutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 4);
+            IAutoShape autoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 4);
             var newImage = new MemoryStream(Resources.test_image_2);
             var imageSizeBefore = (await autoShape.Fill.Picture.GetImageBytes().ConfigureAwait(false)).Length;
 
@@ -139,7 +139,7 @@ namespace ShapeCrawler.Tests.Unit
             IShape shapeExCase1 = _fixture.Pre021.Slides[3].Shapes.First(sp => sp.Id == 2);
             IShape shapeExCase2 = _fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3);
             IShape shapeExCase3 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
-            GroupShapeSc groupShape = (GroupShapeSc)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
+            SlideGroupShape groupShape = (SlideGroupShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
             IShape shapeExCase4 = groupShape.Shapes.First(sp => sp.Id.Equals(5));
             IShape shapeExCase5 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7);
             IShape shapeExCase6 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
@@ -195,7 +195,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             IShape shapeCase1 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
-            GroupShapeSc groupShape = (GroupShapeSc) _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
+            SlideGroupShape groupShape = (SlideGroupShape) _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
             IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
             IShape shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
 
@@ -242,7 +242,7 @@ namespace ShapeCrawler.Tests.Unit
             IShape shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 8);
 
             // Act-Assert
-            shape.Should().BeOfType<OLEObject>();
+            shape.Should().BeOfType<SlideOLEObject>();
         }
 
         [Fact]

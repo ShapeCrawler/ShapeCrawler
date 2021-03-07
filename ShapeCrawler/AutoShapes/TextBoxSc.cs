@@ -21,7 +21,7 @@ namespace ShapeCrawler.AutoShapes
         private readonly Lazy<string> _text;
         private readonly OpenXmlCompositeElement _compositeElement;
 
-        internal AutoShape AutoShape { get; }
+        internal Shape AutoShape { get; }
         internal BaseShape BaseShape { get; }
         internal ShapeContext ShapeContext { get; }
 
@@ -62,10 +62,9 @@ namespace ShapeCrawler.AutoShapes
             _text = new Lazy<string>(GetText);
         }
 
-        internal TextBoxSc(AutoShape autoShape, P.TextBody pTextBody)
+        internal TextBoxSc(Shape autoShape, P.TextBody pTextBody)
         {
             AutoShape = autoShape;
-            ShapeContext = autoShape.Context;
             _compositeElement = pTextBody;
             _text = new Lazy<string>(GetText);
         }

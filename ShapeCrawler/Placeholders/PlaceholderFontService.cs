@@ -65,7 +65,7 @@ namespace ShapeCrawler.Placeholders
             return null;
         }
 
-        #endregion Public Methods
+        #endregion Constructors
 
         #region Constructors
 

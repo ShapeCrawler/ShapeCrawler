@@ -155,7 +155,7 @@ namespace ShapeCrawler.Tests.Unit
             portionCase7.Font.Size.Should().Be(3200);
             portionCase8.Font.Size.Should().Be(1800);
             portionCase9.Font.Size.Should().Be(1200);
-            portionCase10.Font.Size.Should().Be(2177); 
+            portionCase10.Font.Size.Should().Be(2177);
             portionCase11.Font.Size.Should().Be(2000);
             portionCase12.Font.Size.Should().Be(1539);
             portionCase13.Font.Size.Should().Be(1200);

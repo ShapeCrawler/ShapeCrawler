@@ -2,7 +2,6 @@
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -26,8 +25,6 @@ namespace ShapeCrawler.Factories
 
         public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide)
         {
-            Check.NotNull(pShapeTreeChild, nameof(pShapeTreeChild));
-
             if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
             {
                 A.GraphicData graphicData = pShapeTreeChild.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
@@ -35,7 +32,7 @@ namespace ShapeCrawler.Factories
                 {
                     ShapeContext spContext = _shapeContextBuilder.Build(pShapeTreeChild);
                     ILocation innerTransform = _transformFactory.FromComposite(pGraphicFrame);
-                    var table = new TableSc(pGraphicFrame, innerTransform, spContext);
+                    var table = new SlideTable(pGraphicFrame, innerTransform, spContext, slide);
 
                     return table;
                 }

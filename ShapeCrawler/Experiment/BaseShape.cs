@@ -9,7 +9,7 @@ namespace ShapeCrawler.Experiment
 
         internal OpenXmlCompositeElement CompositeElement { get; }
 
-        public uint Id => CompositeElement.GetNonVisualDrawingProperties().Id;
+        public uint Id => CompositeElement.NonVisualDrawingProperties().Id;
 
         public abstract long X { get; }
 
