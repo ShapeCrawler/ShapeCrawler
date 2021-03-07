@@ -107,7 +107,6 @@ namespace ShapeCrawler
         private bool? _hidden;
         private int _id;
         private string _name;
-        private P.Shape pShape;
         private readonly ILocation _innerTransform;
 
         internal ShapeContext Context { get; }

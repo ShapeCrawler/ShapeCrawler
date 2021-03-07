@@ -9,13 +9,10 @@ namespace ShapeCrawler.Factories
     {
         #region Constructors
 
-        public AutoShapeCreator(ShapeContext.Builder shapeContextBuilder,
-            LocationParser transformFactory,
-            GeometryFactory geometryFactory)
+        public AutoShapeCreator(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory)
         {
             _shapeContextBuilder = shapeContextBuilder;
             _transformFactory = transformFactory;
-            _geometryFactory = geometryFactory;
         }
 
         #endregion Constructors
@@ -42,7 +39,6 @@ namespace ShapeCrawler.Factories
 
         private readonly ShapeContext.Builder _shapeContextBuilder;
         private readonly LocationParser _transformFactory;
-        private readonly GeometryFactory _geometryFactory;
 
         #endregion Fields
     }

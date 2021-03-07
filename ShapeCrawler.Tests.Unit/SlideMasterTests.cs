@@ -17,7 +17,7 @@ namespace ShapeCrawler.Tests.Unit
             _fixture = fixture;
         }
 
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void ShapeXAndY_ReturnXAndYAxesCoordinatesOfTheMasterShape()
         {
             // Arrange
@@ -33,7 +33,7 @@ namespace ShapeCrawler.Tests.Unit
             shapeYCoordinate.Should().Be(365125);
         }
 
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void ShapeWidthAndHeight_ReturnWidthAndHeightSizesOfTheMaster()
         {
             // Arrange

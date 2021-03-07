@@ -69,6 +69,103 @@ namespace ShapeCrawler
 
         public virtual GeometryType GeometryType => GetGeometryType();
 
+        /// <summary>
+        ///     Gets x-coordinate of the upper-left corner of the shape.
+        /// </summary>
+        public long X
+        {
+            get => GetX();
+            set => SetX(value);
+        }
+
+        private void SetX(long value)
+        {
+            throw new NotImplementedException();
+        }
+
+        private long GetX()
+        {
+            A.Offset aOffset = PShapeTreeChild.Descendants<A.Offset>().FirstOrDefault();
+            if (aOffset == null)
+            {
+                return ((Placeholder) Placeholder).Shape.X;
+            }
+
+            return aOffset.X;
+        }
+
+        /// <summary>
+        ///     Gets y-coordinate of the upper-left corner of the shape.
+        /// </summary>
+        public long Y {
+            get => GetY();
+            set => SetY(value);
+        }
+
+        private void SetY(long value)
+        {
+            throw new NotImplementedException();
+        }
+
+        private long GetY()
+        {
+            A.Offset aOffset = PShapeTreeChild.Descendants<A.Offset>().FirstOrDefault();
+            if (aOffset == null)
+            {
+                return ((Placeholder)Placeholder).Shape.Y;
+            }
+
+            return aOffset.Y;
+        }
+
+        /// <summary>
+        ///     Gets width of the shape.
+        /// </summary>
+        public long Width {
+            get => GetWidth();
+            set => SetWidth(value);
+        }
+
+        private void SetWidth(long value)
+        {
+            throw new NotImplementedException();
+        }
+
+        private long GetWidth()
+        {
+            A.Extents aExtents = PShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
+            if (aExtents == null)
+            {
+                return ((Placeholder)Placeholder).Shape.Width;
+            }
+
+            return aExtents.Cx;
+        }
+
+        /// <summary>
+        ///     Gets height of the shape.
+        /// </summary>
+        public long Height {
+            get => GetHeight();
+            set => SetHeight(value);
+        }
+
+        private void SetHeight(long value)
+        {
+            throw new NotImplementedException();
+        }
+
+        private long GetHeight()
+        {
+            A.Extents aExtents = PShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
+            if (aExtents == null)
+            {
+                return ((Placeholder)Placeholder).Shape.Height;
+            }
+
+            return aExtents.Cy;
+        }
+
         private GeometryType GetGeometryType()
         {
             P.ShapeProperties spPr = PShapeTreeChild.Descendants<P.ShapeProperties>().First();// TODO: optimize

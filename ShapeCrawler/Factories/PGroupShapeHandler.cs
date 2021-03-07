@@ -31,7 +31,7 @@ namespace ShapeCrawler.Factories
         {
             if (pShapeTreeChild is P.GroupShape pGroupShape)
             {
-                var pShapeHandler = new AutoShapeCreator(_shapeContextBuilder, _transformFactory, _geometryFactory);
+                var pShapeHandler = new AutoShapeCreator(_shapeContextBuilder, _transformFactory);
                 var oleGrFrameHandler = new OleGraphicFrameHandler(_shapeContextBuilder, _transformFactory);
                 var pictureHandler = new PictureHandler(_shapeContextBuilder, _transformFactory, _geometryFactory);
                 var pGroupShapeHandler = new PGroupShapeHandler(_shapeContextBuilder, _transformFactory,

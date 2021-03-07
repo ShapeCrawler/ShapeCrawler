@@ -115,39 +115,6 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public long X
-        {
-            get => _innerTransform.X;
-            set => _innerTransform.SetX(value);
-        }
-
-        public long Y
-        {
-            get => _innerTransform.Y;
-            set => _innerTransform.SetY(value);
-        }
-
-        public long Width
-        {
-            get => _innerTransform.Width;
-            set => _innerTransform.SetWidth(value);
-        }
-
-        public long Height
-        {
-            get => _innerTransform.Height;
-            set => _innerTransform.SetHeight(value);
-        }
-
-        public int Id //TODO: move to Shape
-        {
-            get
-            {
-                InitIdHiddenName();
-                return _id;
-            }
-        }
-
         public string Name //TODO: move to Shape
         {
             get
