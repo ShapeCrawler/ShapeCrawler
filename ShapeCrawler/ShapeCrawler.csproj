@@ -53,4 +53,8 @@ The library allows to process presentation files without any COM+ or COM interop
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Experiment\" />
+  </ItemGroup>
+
 </Project>

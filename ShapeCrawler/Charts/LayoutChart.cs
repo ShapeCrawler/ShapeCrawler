@@ -16,11 +16,6 @@ namespace ShapeCrawler.Charts
         public override PresentationSc Presentation { get; }
         public override SlideMasterSc SlideMaster { get; }
 
-        public long X { get; set; }
-        public long Y { get; set; }
-        public long Width { get; set; }
-        public long Height { get; set; }
-        public int Id { get; }
         public string Name { get; }
         public bool Hidden { get; }
         public IPlaceholder Placeholder { get; }

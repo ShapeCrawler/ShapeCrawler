@@ -55,7 +55,7 @@ namespace ShapeCrawler.Tables
             if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0
             ) // at least one of <a:t> element contain text
             {
-                return new TextBoxSc(Table.Context, aTxtBody);
+                return new TextBoxSc(aTxtBody);
             }
 
             return null;

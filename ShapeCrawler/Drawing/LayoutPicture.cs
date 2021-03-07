@@ -12,30 +12,6 @@ namespace ShapeCrawler.Drawing
         {
         }
 
-        public long X
-        {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
-        }
-
-        public long Y
-        {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
-        }
-
-        public long Width
-        {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
-        }
-
-        public long Height
-        {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
-        }
-
         public string Name => throw new NotImplementedException();
 
         public bool Hidden => throw new NotImplementedException();

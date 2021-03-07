@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.Experiment;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Tests.Unit.Helpers;
