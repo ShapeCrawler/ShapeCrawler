@@ -6,7 +6,7 @@ namespace ShapeCrawler.Exceptions
     /// <summary>
     ///     Thrown when number of slides more than allowed.
     /// </summary>
-    public class SlidesMuchMoreException : ShapeCrawlerException
+    internal class SlidesMuchMoreException : ShapeCrawlerException
     {
         #region Constructors
 
@@ -16,7 +16,7 @@ namespace ShapeCrawler.Exceptions
 
         #endregion Constructors
 
-        public SlidesMuchMoreException()
+        internal SlidesMuchMoreException()
         {
         }
 

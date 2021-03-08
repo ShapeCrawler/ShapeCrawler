@@ -17,10 +17,20 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler
 {
-    /// <inheritdoc cref="IAutoShape" />
+    /// <summary>
+    ///     Represents an Auto Shape on a Slide.
+    /// </summary>
     internal class SlideAutoShape : SlideShape, IAutoShape, IAutoShapeInternal
     {
+        private readonly Lazy<TextBoxSc> _textBox;
+        private readonly Lazy<ShapeFill> _shapeFill;
+        private readonly ImageExFactory _imageFactory = new ImageExFactory();
+        private bool? _hidden;
+        private int _id;
+        private string _name;
+        private readonly ILocation _innerTransform;
         private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
+        internal ShapeContext Context { get; }
 
         #region Constructors
 
@@ -40,27 +50,6 @@ namespace ShapeCrawler
         #endregion Constructors
 
         internal Dictionary<int, FontData> LvlToFontData => _lvlToFontData.Value;
-
-        bool IAutoShapeInternal.TryGetFontSize(int paragraphLvl, out int fontSize)
-        {
-            // Tries get font from Auto Shape
-            if (LvlToFontData.TryGetValue(paragraphLvl, out FontData fontData) && fontData.FontSize != null)
-            {
-                fontSize = fontData.FontSize;
-                return true;
-            }
-
-            // Tries get font from Auto Shape of Placeholder
-            if (Placeholder == null)
-            {
-                fontSize = -1;
-                return false;
-            }
-
-            Placeholder placeholder = (Placeholder) Placeholder;
-            IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
-            return placeholderAutoShape.TryGetFontSize(paragraphLvl, out fontSize);
-        }
 
         public bool TryGetFontData(int paragraphLvl, out FontData fontData)
         {
@@ -99,20 +88,6 @@ namespace ShapeCrawler
             return lvlToFontData;
         }
 
-        #region Fields
-
-        private readonly Lazy<TextBoxSc> _textBox;
-        private readonly Lazy<ShapeFill> _shapeFill;
-        private readonly ImageExFactory _imageFactory = new ImageExFactory();
-        private bool? _hidden;
-        private int _id;
-        private string _name;
-        private readonly ILocation _innerTransform;
-
-        internal ShapeContext Context { get; }
-
-        #endregion Fields
-
         #region Public Properties
 
         public long X
@@ -137,33 +112,6 @@ namespace ShapeCrawler
         {
             get => _innerTransform.Height;
             set => _innerTransform.SetHeight(value);
-        }
-
-        public int Id //TODO: move to Shape
-        {
-            get
-            {
-                InitIdHiddenName();
-                return _id;
-            }
-        }
-
-        public string Name //TODO: move to Shape
-        {
-            get
-            {
-                InitIdHiddenName();
-                return _name;
-            }
-        }
-
-        public bool Hidden //TODO: move to Shape
-        {
-            get
-            {
-                InitIdHiddenName();
-                return (bool) _hidden;
-            }
         }
 
         public ITextBox TextBox => _textBox.Value;

@@ -1,20 +1,17 @@
-﻿using ShapeCrawler.Placeholders;
-using ShapeCrawler.Shapes;
+﻿using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMaster;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.OLEObjects
 {
+    /// <summary>
+    ///     Represents a OLE Object on a Slide Layout.
+    /// </summary>
     internal class LayoutOLEObject : LayoutShape, IShape
     {
-        public LayoutOLEObject(SlideLayoutSc slideLayout, P.GraphicFrame pGraphicFrame) : base(slideLayout,
-            pGraphicFrame)
+        internal LayoutOLEObject(SlideLayoutSc slideLayout, P.GraphicFrame pGraphicFrame) 
+            : base(slideLayout, pGraphicFrame)
         {
         }
-
-        public string Name { get; }
-        public bool Hidden { get; }
-        public IPlaceholder Placeholder { get; }
-        public string CustomData { get; set; }
     }
 }

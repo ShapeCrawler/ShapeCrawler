@@ -1,17 +1,17 @@
-﻿using System;
-using ShapeCrawler.Shapes;
+﻿using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMaster;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Collections
 {
+    /// <summary>
+    ///     Represents a chart on a Slide Master.
+    /// </summary>
     internal class MasterChart : MasterShape, IShape
     {
-        public MasterChart(SlideMasterSc slideMaster, P.GraphicFrame pGraphicFrame)
+        internal MasterChart(SlideMasterSc slideMaster, P.GraphicFrame pGraphicFrame)
             : base(slideMaster, pGraphicFrame)
         {
         }
-        public string Name { get; }
-        public bool Hidden { get; }
     }
 }

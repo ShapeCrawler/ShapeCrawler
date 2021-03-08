@@ -51,6 +51,14 @@ namespace ShapeCrawler
         #region Public Properties
 
         public int Id => (int) PShapeTreeChild.GetNonVisualDrawingProperties().Id.Value;
+        public string Name => PShapeTreeChild.GetNonVisualDrawingProperties().Name;
+        public bool Hidden => DefineHidden();
+
+        private bool DefineHidden()
+        {
+            bool? parsedHiddenValue = PShapeTreeChild.GetNonVisualDrawingProperties().Hidden?.Value;
+            return parsedHiddenValue != null && parsedHiddenValue == true;
+        }
 
         public string CustomData
         {
@@ -63,7 +71,7 @@ namespace ShapeCrawler
         /// </summary>
         public abstract IPlaceholder Placeholder { get; }
 
-        public abstract ThemePart ThemePart { get; }
+        internal abstract ThemePart ThemePart { get; }
         public abstract PresentationSc Presentation { get; }
         public abstract SlideMasterSc SlideMaster { get; }
 
@@ -80,7 +88,16 @@ namespace ShapeCrawler
 
         private void SetX(long value)
         {
-            throw new NotImplementedException();
+            A.Offset aOffset = PShapeTreeChild.Descendants<A.Offset>().FirstOrDefault();
+            if (aOffset == null)
+            {
+                Shape placeholderShape = ((Placeholder) Placeholder).Shape;
+                placeholderShape.X = value;
+            }
+            else
+            {
+                aOffset.X = value;
+            }
         }
 
         private long GetX()

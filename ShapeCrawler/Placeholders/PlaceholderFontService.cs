@@ -11,6 +11,5 @@ namespace ShapeCrawler.Placeholders
         public PlaceholderFontService(SlidePart slidePart)
         {
         }
-
     }
 }

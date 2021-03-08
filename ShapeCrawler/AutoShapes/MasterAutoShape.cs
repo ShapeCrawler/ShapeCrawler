@@ -36,28 +36,6 @@ namespace ShapeCrawler
 
         internal Dictionary<int, FontData> LvlToFontData => _lvlToFontData.Value;
 
-        bool IAutoShapeInternal.TryGetFontSize(int paragraphLvl, out int fontSize)
-        {
-            // Tries get font from Auto Shape
-            if (LvlToFontData.TryGetValue(paragraphLvl, out FontData fontData) && fontData.FontSize != null)
-            {
-                fontSize = fontData.FontSize;
-                return true;
-            }
-
-            // Title type
-            P.TextStyles pTextStyles = SlideMaster.PSlideMaster.TextStyles;
-            if (Placeholder.Type == PlaceholderType.Title)
-            {
-                fontSize = pTextStyles.TitleStyle.Level1ParagraphProperties
-                    .GetFirstChild<A.DefaultRunProperties>().FontSize.Value;
-                return true;
-            }
-
-            fontSize = -1;
-            return false;
-        }
-
         public bool TryGetFontData(int paragraphLvl, out FontData fontData)
         {
             // Tries get font from Auto Shape

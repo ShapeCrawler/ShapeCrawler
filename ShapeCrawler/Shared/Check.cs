@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace ShapeCrawler.Shared
@@ -31,27 +29,6 @@ namespace ShapeCrawler.Shared
         }
 
         /// <summary>
-        ///     Checks whether a specified collection is not empty.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="param"></param>
-        /// <param name="paramName"></param>
-        public static void NotEmpty<T>(IEnumerable<T> param, string paramName)
-        {
-            NotNull(param, paramName);
-
-            if (!param.Any())
-            {
-                if (!string.IsNullOrWhiteSpace(paramName))
-                {
-                    throw new ArgumentException($"Collection {paramName} is empty.");
-                }
-
-                throw new ArgumentException("Collection is empty.");
-            }
-        }
-
-        /// <summary>
         ///     Determines whether a string is a valid email address.
         /// </summary>
         /// <param name="paramEmail"></param>
@@ -70,17 +47,6 @@ namespace ShapeCrawler.Shared
             var validEmailRegex = new Regex(validEmailPattern, RegexOptions.IgnoreCase);
 
             return validEmailRegex.IsMatch(paramEmail);
-        }
-
-        /// <summary>
-        ///     Determines whether a number is positive.
-        /// </summary>
-        public static void IsPositive(int number, string paramName)
-        {
-            if (number < 1)
-            {
-                throw new ArgumentOutOfRangeException(paramName);
-            }
         }
     }
 }
