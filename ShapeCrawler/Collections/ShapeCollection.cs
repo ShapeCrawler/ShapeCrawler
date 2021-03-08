@@ -18,7 +18,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    ///     Represents a collection of the slide shapes.
+    ///     Represents a collection of a slide shapes.
     /// </summary>
     public class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
     {
