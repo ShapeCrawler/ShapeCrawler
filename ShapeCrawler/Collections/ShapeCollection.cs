@@ -39,7 +39,7 @@ namespace ShapeCrawler.Collections
             var geometryFactory = new GeometryFactory(phService);
             var shapeContextBuilder = new ShapeContext.Builder(sldPhFontService, slidePart);
 
-            var chartGrFrameHandler = new ChartGraphicFrameHandler(shapeContextBuilder);
+            var chartGrFrameHandler = new ChartGraphicFrameHandler();
             var tableGrFrameHandler = new TableGraphicFrameHandler(shapeContextBuilder, transformFactory);
             var oleGrFrameHandler = new OleGraphicFrameHandler(shapeContextBuilder, transformFactory);
             var pShapeHandler = new AutoShapeCreator(shapeContextBuilder, transformFactory);

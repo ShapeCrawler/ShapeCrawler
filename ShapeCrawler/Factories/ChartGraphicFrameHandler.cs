@@ -11,16 +11,6 @@ namespace ShapeCrawler.Factories
     internal class ChartGraphicFrameHandler : OpenXmlElementHandler
     {
         private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart";
-        private readonly ShapeContext.Builder _shapeContextBuilder;
-
-        #region Constructors
-
-        internal ChartGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder)
-        {
-            _shapeContextBuilder = shapeContextBuilder;
-        }
-
-        #endregion Constructors
 
         public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide)
         {
@@ -29,8 +19,7 @@ namespace ShapeCrawler.Factories
                 A.GraphicData aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
                 if (aGraphicData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
                 {
-                    ShapeContext spContext = _shapeContextBuilder.Build(pShapeTreeChild);
-                    var chart = new SlideChart(pGraphicFrame, slide, spContext);
+                    SlideChart chart = new (pGraphicFrame, slide);
 
                     return chart;
                 }

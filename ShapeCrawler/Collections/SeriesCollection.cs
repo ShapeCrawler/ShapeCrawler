@@ -11,29 +11,26 @@ using ShapeCrawler.Spreadsheet;
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    ///     Represents collection of series.
+    ///     Represents a collection of series.
     /// </summary>
-    public class SeriesCollection : LibraryCollection<Series>
+    internal class SeriesCollection : LibraryCollection<Series>, ISeriesCollection
     {
         internal SeriesCollection(List<Series> seriesList)
         {
             CollectionItems = seriesList;
         }
 
-        internal static SeriesCollection Create(
-            IEnumerable<OpenXmlElement> cXCharts,
-            ChartPart chartPart,
-            ChartReferencesParser chartRefParser)
+        internal static SeriesCollection Create(SlideChart slideChart, IEnumerable<OpenXmlElement> cXCharts, ChartReferencesParser chartRefParser)
         {
             var seriesList = new List<Series>();
             foreach (OpenXmlElement cXChart in cXCharts)
             {
-                Enum.TryParse(cXChart.LocalName, true, out ChartType chartType);
+                Enum.TryParse(cXChart.LocalName, true, out ChartType chartType); //TODO: use Parse instead of TryParse
                 var nextSdkChartSeriesCollection = cXChart.ChildElements
                     .Where(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
-                foreach (var sdkSeries in nextSdkChartSeriesCollection)
+                foreach (OpenXmlElement sdkSeries in nextSdkChartSeriesCollection)
                 {
-                    var series = new Series(chartType, sdkSeries, chartPart, chartRefParser);
+                    var series = new Series(slideChart, chartType, sdkSeries, chartRefParser);
                     seriesList.Add(series);
                 }
             }

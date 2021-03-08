@@ -20,7 +20,7 @@ namespace ShapeCrawler.Spreadsheet
             _chart = chart;
         }
 
-        internal IReadOnlyList<double> GetNumbersFromCacheOrSpreadsheet(C.NumberReference numberReference, ChartPart chartPart)
+        internal IReadOnlyList<double> GetNumbersFromCacheOrSpreadsheet(C.NumberReference numberReference)
         {
             if (numberReference.NumberingCache != null)
             {
@@ -39,7 +39,7 @@ namespace ShapeCrawler.Spreadsheet
             }
 
             // From Spreadsheet
-            List<string> cellStrValues = GetCellStrValues(numberReference.Formula, chartPart.EmbeddedPackagePart);
+            List<string> cellStrValues = GetCellStrValues(numberReference.Formula, _chart.ChartPart.EmbeddedPackagePart);
             var cellNumberValues = new List<double>(cellStrValues.Count); // TODO: consider allocate on stack
             foreach (string cellValue in cellStrValues)
             {

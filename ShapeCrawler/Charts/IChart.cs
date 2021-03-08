@@ -32,7 +32,7 @@ namespace ShapeCrawler.Charts
         /// <summary>
         ///     Gets collection of the chart series.
         /// </summary>
-        SeriesCollection SeriesCollection { get; }
+        ISeriesCollection SeriesCollection { get; }
 
         /// <summary>
         ///     Gets collection of chart categories.

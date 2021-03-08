@@ -15,13 +15,14 @@ namespace ShapeCrawler.Charts
     /// </summary>
     public class Series
     {
+        internal SlideChart SlideChart { get; }
+
         #region Constructors
 
-        internal Series(ChartType type, OpenXmlElement sdkSeries, ChartPart sdkChartPart,
-            ChartReferencesParser chartRefParser)
+        internal Series(SlideChart slideChart, ChartType type, OpenXmlElement seriesXmlElement, ChartReferencesParser chartRefParser)
         {
-            _sdkSeries = sdkSeries ?? throw new ArgumentNullException(nameof(sdkSeries));
-            _chartPart = sdkChartPart ?? throw new ArgumentNullException(nameof(sdkChartPart));
+            SlideChart = slideChart;
+            _seriesXmlElement = seriesXmlElement;
             _chartRefParser = chartRefParser;
             _pointValues = new Lazy<IReadOnlyList<double>>(GetPointValues);
             _name = new Lazy<string>(GetNameOrDefault);
@@ -60,7 +61,7 @@ namespace ShapeCrawler.Charts
         private readonly Lazy<IReadOnlyList<double>> _pointValues;
         private readonly Lazy<string> _name;
         private readonly ChartPart _chartPart;
-        private readonly OpenXmlElement _sdkSeries;
+        private readonly OpenXmlElement _seriesXmlElement;
         private readonly ChartReferencesParser _chartRefParser;
 
         #endregion Fields
@@ -70,22 +71,22 @@ namespace ShapeCrawler.Charts
         private IReadOnlyList<double> GetPointValues()
         {
             C.NumberReference numReference;
-            C.Values cVal = _sdkSeries.GetFirstChild<C.Values>();
+            C.Values cVal = _seriesXmlElement.GetFirstChild<C.Values>();
             if (cVal != null) // scatter type chart does not have <c:val> element
             {
                 numReference = cVal.NumberReference;
             }
             else
             {
-                numReference = _sdkSeries.GetFirstChild<C.YValues>().NumberReference;
+                numReference = _seriesXmlElement.GetFirstChild<C.YValues>().NumberReference;
             }
 
-            return _chartRefParser.GetNumbersFromCacheOrSpreadsheet(numReference, _chartPart);
+            return _chartRefParser.GetNumbersFromCacheOrSpreadsheet(numReference);
         }
 
         private string GetNameOrDefault()
         {
-            var strReference = _sdkSeries.GetFirstChild<C.SeriesText>()?.StringReference;
+            var strReference = _seriesXmlElement.GetFirstChild<C.SeriesText>()?.StringReference;
             if (strReference == null)
             {
                 return null;

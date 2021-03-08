@@ -5,7 +5,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Settings;
 using ShapeCrawler.Spreadsheet;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -18,30 +17,6 @@ namespace ShapeCrawler.Charts
     /// </summary>
     internal class SlideChart : SlideShape, IChart
     {
-        #region Constructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="SlideChart" /> class.
-        /// </summary>
-        internal SlideChart(P.GraphicFrame pGraphicFrame, SlideSc slide, ShapeContext spContext) : 
-            base(slide, pGraphicFrame)
-        {
-            _pGraphicFrame = pGraphicFrame;
-            Context = spContext;
-
-            _firstSeries = new Lazy<OpenXmlElement>(GetFirstSeries);
-            _xValues = new Lazy<LibraryCollection<double>>(GetXValues);
-            _seriesCollection =
-                new Lazy<SeriesCollection>(() => SeriesCollection.Create(_cXCharts, _chartPart, _chartRefParser));
-            _categories = new Lazy<CategoryCollection>(() => CategoryCollection.Create(_firstSeries.Value, Type));
-            _chartRefParser = new ChartReferencesParser(this);
-            _chartType = new Lazy<ChartType>(GetChartType);
-
-            Init(); //TODO: convert to lazy loading
-        }
-
-        #endregion Constructors
-
         #region Fields
 
         // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
@@ -54,12 +29,35 @@ namespace ShapeCrawler.Charts
         private readonly Lazy<CategoryCollection> _categories;
         private readonly Lazy<LibraryCollection<double>> _xValues;
         private string _chartTitle;
-        private ChartPart _chartPart;
         private readonly ChartReferencesParser _chartRefParser;
         private readonly P.GraphicFrame _pGraphicFrame;
-        internal ShapeContext Context { get; }
+        internal ChartPart ChartPart;
 
         #endregion Fields
+
+        #region Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="SlideChart" /> class.
+        /// </summary>
+        internal SlideChart(P.GraphicFrame pGraphicFrame, SlideSc slide) : 
+            base(slide, pGraphicFrame)
+        {
+            _pGraphicFrame = pGraphicFrame;
+            _firstSeries = new Lazy<OpenXmlElement>(GetFirstSeries);
+            _xValues = new Lazy<LibraryCollection<double>>(GetXValues);
+            _seriesCollection =
+                new Lazy<SeriesCollection>(() => Collections.SeriesCollection.Create(this, _cXCharts, _chartRefParser));
+            _categories = new Lazy<CategoryCollection>(() => CategoryCollection.Create(_firstSeries.Value, Type));
+            _chartRefParser = new ChartReferencesParser(this);
+            _chartType = new Lazy<ChartType>(GetChartType);
+
+            Init(); //TODO: convert to lazy loading
+        }
+
+        #endregion Constructors
+
+
 
         #region Public Properties
 
@@ -103,7 +101,7 @@ namespace ShapeCrawler.Charts
         /// <summary>
         ///     Gets collection of the chart series.
         /// </summary>
-        public SeriesCollection SeriesCollection => _seriesCollection.Value;
+        public ISeriesCollection SeriesCollection => _seriesCollection.Value;
 
         /// <summary>
         ///     Gets chart categories. Returns <c>NULL</c> if the chart does not have categories.
@@ -133,12 +131,12 @@ namespace ShapeCrawler.Charts
 
         private void Init()
         {
-            StringValue chartPartRef = _pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>()
-                .GetFirstChild<C.ChartReference>().Id;
-            _chartPart = (ChartPart) Slide.SlidePart.GetPartById(chartPartRef);
-            _cXCharts = _chartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea
-                .Where(e => e.LocalName.EndsWith("Chart",
-                    StringComparison.Ordinal));
+            // Get chart part
+            C.ChartReference cChartReference = _pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>().GetFirstChild<C.ChartReference>();
+            ChartPart = (ChartPart) Slide.SlidePart.GetPartById(cChartReference.Id);
+            
+            C.PlotArea cPlotArea = ChartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea;
+            _cXCharts = cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
         }
 
         private ChartType GetChartType()
@@ -155,30 +153,30 @@ namespace ShapeCrawler.Charts
 
         private string TryGetTitle()
         {
-            var title = _chartPart.ChartSpace.GetFirstChild<C.Chart>().Title;
-            if (title == null) // chart has not title
+            C.Title cTitle = ChartPart.ChartSpace.GetFirstChild<C.Chart>().Title;
+            if (cTitle == null) // chart has not title
             {
                 return null;
             }
 
-            var xmlChartText = title.ChartText;
-            var staticAvailable = TryGetStaticTitle(xmlChartText, out var staticTitle);
+            C.ChartText cChartText = cTitle.ChartText;
+            bool staticAvailable = TryGetStaticTitle(cChartText, out var staticTitle);
             if (staticAvailable)
             {
                 return staticTitle;
             }
 
             // Dynamic title
-            if (xmlChartText != null)
+            if (cChartText != null)
             {
-                return xmlChartText.Descendants<C.StringPoint>().Single().InnerText;
+                return cChartText.Descendants<C.StringPoint>().Single().InnerText;
             }
 
             // PieChart uses only one series for view.
             // However, it can have store multiple series data in the spreadsheet.
             if (Type == ChartType.PieChart)
             {
-                return SeriesCollection.First().Name;
+                return ((SeriesCollection)SeriesCollection).First().Name;
             }
 
             return null;
@@ -212,7 +210,7 @@ namespace ShapeCrawler.Charts
                 return null;
             }
 
-            var points = _chartRefParser.GetNumbersFromCacheOrSpreadsheet(sdkXValues.NumberReference, _chartPart);
+            var points = _chartRefParser.GetNumbersFromCacheOrSpreadsheet(sdkXValues.NumberReference);
 
             return new LibraryCollection<double>(points);
         }

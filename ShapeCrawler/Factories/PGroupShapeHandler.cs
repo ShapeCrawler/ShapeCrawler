@@ -37,11 +37,12 @@ namespace ShapeCrawler.Factories
                 var pictureHandler = new PictureHandler(_shapeContextBuilder, _transformFactory, _geometryFactory);
                 var pGroupShapeHandler = new PGroupShapeHandler(_shapeContextBuilder, _transformFactory,
                     _geometryFactory, _slidePart);
-                var chartGrFrameHandler = new ChartGraphicFrameHandler(_shapeContextBuilder);
+                var chartGrFrameHandler = new ChartGraphicFrameHandler();
                 var tableGrFrameHandler = new TableGraphicFrameHandler(_shapeContextBuilder, _transformFactory);
 
                 pShapeHandler.Successor = pGroupShapeHandler;
                 pGroupShapeHandler.Successor = oleGrFrameHandler;
+                
                 // OLE objects handler must be before pictures handler, cause OLE container can contain p:pic elements, thereby OLE as a picture
                 oleGrFrameHandler.Successor = pictureHandler;
                 pictureHandler.Successor = chartGrFrameHandler;
