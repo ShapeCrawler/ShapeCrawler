@@ -10,7 +10,7 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    ///     Represents a collection of the chart category.
+    ///     Represents a collection of chart categories.
     /// </summary>
     public class CategoryCollection : LibraryCollection<Category>
     {
@@ -51,7 +51,7 @@ namespace ShapeCrawler.Collections
             C.CategoryAxisData cCatAxisData = firstChartSeries.GetFirstChild<C.CategoryAxisData>();
 
             C.MultiLevelStringReference cMultiLvlStringRef = cCatAxisData.MultiLevelStringReference;
-            if (cMultiLvlStringRef != null) // does chart have multi-level category
+            if (cMultiLvlStringRef != null) // is it chart with multi-level category?
             {
                 categoryList = GetMultiCategories(cMultiLvlStringRef);
             }

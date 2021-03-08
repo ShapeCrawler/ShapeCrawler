@@ -11,13 +11,13 @@ using ShapeCrawler.Spreadsheet;
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    ///     Represents a chart series collection.
+    ///     Represents collection of series.
     /// </summary>
     public class SeriesCollection : LibraryCollection<Series>
     {
         internal SeriesCollection(List<Series> seriesList)
         {
-            CollectionItems = seriesList.ToList();
+            CollectionItems = seriesList;
         }
 
         internal static SeriesCollection Create(

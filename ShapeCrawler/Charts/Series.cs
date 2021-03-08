@@ -21,7 +21,7 @@ namespace ShapeCrawler.Charts
             ChartReferencesParser chartRefParser)
         {
             _sdkSeries = sdkSeries ?? throw new ArgumentNullException(nameof(sdkSeries));
-            _sdkChartPart = sdkChartPart ?? throw new ArgumentNullException(nameof(sdkChartPart));
+            _chartPart = sdkChartPart ?? throw new ArgumentNullException(nameof(sdkChartPart));
             _chartRefParser = chartRefParser;
             _pointValues = new Lazy<IReadOnlyList<double>>(GetPointValues);
             _name = new Lazy<string>(GetNameOrDefault);
@@ -31,12 +31,12 @@ namespace ShapeCrawler.Charts
         #endregion Constructors
 
         /// <summary>
-        ///     Returns a chart type.
+        ///     Gets chart type.
         /// </summary>
         public ChartType Type { get; }
 
         /// <summary>
-        ///     Returns a point values.
+        ///     Gets collection of point values.
         /// </summary>
         public IReadOnlyList<double> PointValues => _pointValues.Value;
 
@@ -59,7 +59,7 @@ namespace ShapeCrawler.Charts
 
         private readonly Lazy<IReadOnlyList<double>> _pointValues;
         private readonly Lazy<string> _name;
-        private readonly ChartPart _sdkChartPart;
+        private readonly ChartPart _chartPart;
         private readonly OpenXmlElement _sdkSeries;
         private readonly ChartReferencesParser _chartRefParser;
 
@@ -70,7 +70,7 @@ namespace ShapeCrawler.Charts
         private IReadOnlyList<double> GetPointValues()
         {
             C.NumberReference numReference;
-            var cVal = _sdkSeries.GetFirstChild<C.Values>();
+            C.Values cVal = _sdkSeries.GetFirstChild<C.Values>();
             if (cVal != null) // scatter type chart does not have <c:val> element
             {
                 numReference = cVal.NumberReference;
@@ -80,7 +80,7 @@ namespace ShapeCrawler.Charts
                 numReference = _sdkSeries.GetFirstChild<C.YValues>().NumberReference;
             }
 
-            return _chartRefParser.GetNumbersFromCacheOrSpreadsheet(numReference, _sdkChartPart);
+            return _chartRefParser.GetNumbersFromCacheOrSpreadsheet(numReference, _chartPart);
         }
 
         private string GetNameOrDefault()
@@ -91,7 +91,7 @@ namespace ShapeCrawler.Charts
                 return null;
             }
 
-            return _chartRefParser.GetSingleString(strReference, _sdkChartPart);
+            return _chartRefParser.GetSingleString(strReference, _chartPart);
         }
 
         #endregion Private Methods

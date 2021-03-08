@@ -9,7 +9,7 @@ namespace ShapeCrawler.Drawing
     /// </summary>
     internal class LayoutPicture : LayoutShape, IShape
     {
-        internal LayoutPicture(SlideLayoutSc slideLayout, P.Picture pPicture) 
+        internal LayoutPicture(SlideLayoutSc slideLayout, P.Picture pPicture)
             : base(slideLayout, pPicture)
         {
         }

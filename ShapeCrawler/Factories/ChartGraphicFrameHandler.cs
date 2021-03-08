@@ -12,14 +12,12 @@ namespace ShapeCrawler.Factories
     {
         private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart";
         private readonly ShapeContext.Builder _shapeContextBuilder;
-        private readonly LocationParser _transformFactory;
 
         #region Constructors
 
-        internal ChartGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory)
+        internal ChartGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder)
         {
-            _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
-            _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
+            _shapeContextBuilder = shapeContextBuilder;
         }
 
         #endregion Constructors
@@ -32,8 +30,7 @@ namespace ShapeCrawler.Factories
                 if (aGraphicData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
                 {
                     ShapeContext spContext = _shapeContextBuilder.Build(pShapeTreeChild);
-                    ILocation innerTransform = _transformFactory.FromComposite(pGraphicFrame);
-                    var chart = new SlideChart(pGraphicFrame, slide, innerTransform, spContext);
+                    var chart = new SlideChart(pGraphicFrame, slide, spContext);
 
                     return chart;
                 }

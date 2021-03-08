@@ -31,7 +31,7 @@ namespace ShapeCrawler.Charts
         #region Constructors
 
         /// <summary>
-        ///     Initializes a new non-multi-category.
+        ///     Initializes non-multi-category.
         /// </summary>
         internal Category(string value)
         {
@@ -39,12 +39,12 @@ namespace ShapeCrawler.Charts
         }
 
         /// <summary>
-        ///     Initializes a new multi-category.
+        ///     Initializes multi-category.
         /// </summary>
-        internal Category(string value, Category parent)
+        internal Category(string name, Category main)
         {
-            Name = value ?? throw new ArgumentNullException(nameof(value));
-            MainCategory = parent ?? throw new ArgumentNullException(nameof(parent));
+            Name = name;
+            MainCategory = main;
         }
 
         #endregion Constructors

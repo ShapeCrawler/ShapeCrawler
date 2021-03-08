@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;

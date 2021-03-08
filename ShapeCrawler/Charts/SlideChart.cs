@@ -5,8 +5,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Extensions;
-using ShapeCrawler.Factories;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Spreadsheet;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -15,7 +13,9 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts
 {
-    /// <inheritdoc cref="IChart" />
+    /// <summary>
+    ///     Represents a chart on a Slide.
+    /// </summary>
     internal class SlideChart : SlideShape, IChart
     {
         #region Constructors
@@ -23,14 +23,10 @@ namespace ShapeCrawler.Charts
         /// <summary>
         ///     Initializes a new instance of the <see cref="SlideChart" /> class.
         /// </summary>
-        internal SlideChart(
-            P.GraphicFrame pGraphicFrame,
-            SlideSc slide,
-            ILocation innerTransform,
-            ShapeContext spContext) : base(slide, pGraphicFrame)
+        internal SlideChart(P.GraphicFrame pGraphicFrame, SlideSc slide, ShapeContext spContext) : 
+            base(slide, pGraphicFrame)
         {
             _pGraphicFrame = pGraphicFrame;
-            _innerTransform = innerTransform;
             Context = spContext;
 
             _firstSeries = new Lazy<OpenXmlElement>(GetFirstSeries);
@@ -46,34 +42,12 @@ namespace ShapeCrawler.Charts
 
         #endregion Constructors
 
-        #region Private Methods
-
-        private void
-            InitIdHiddenName() // TODO: check, looks like it can be shared and can be moved int base Shape class.
-        {
-            if (_id != 0)
-            {
-                return;
-            }
-
-            var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
-            _id = id;
-            _hidden = hidden;
-            _name = name;
-        }
-
-        #endregion
-
         #region Fields
 
         // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
         // then collection contains only single item.
         private IEnumerable<OpenXmlElement> _cXCharts;
 
-        private bool? _hidden;
-        private int _id;
-        private string _name;
-        private readonly ILocation _innerTransform;
         private readonly Lazy<ChartType> _chartType;
         private readonly Lazy<OpenXmlElement> _firstSeries;
         private readonly Lazy<SeriesCollection> _seriesCollection;
@@ -83,7 +57,6 @@ namespace ShapeCrawler.Charts
         private ChartPart _chartPart;
         private readonly ChartReferencesParser _chartRefParser;
         private readonly P.GraphicFrame _pGraphicFrame;
-
         internal ShapeContext Context { get; }
 
         #endregion Fields
@@ -151,6 +124,8 @@ namespace ShapeCrawler.Charts
                 return _xValues.Value;
             }
         }
+
+        public override GeometryType GeometryType => GeometryType.Rectangle;
 
         #endregion Public Properties
 
@@ -249,83 +224,5 @@ namespace ShapeCrawler.Charts
         }
 
         #endregion Private Methods
-
-        #region Public Properties
-
-        /// <summary>
-        ///     Returns the x-coordinate of the upper-left corner of the shape.
-        /// </summary>
-        public long X
-        {
-            get => _innerTransform.X;
-            set => _innerTransform.SetX(value);
-        }
-
-        /// <summary>
-        ///     Returns the y-coordinate of the upper-left corner of the shape.
-        /// </summary>
-        public long Y
-        {
-            get => _innerTransform.Y;
-            set => _innerTransform.SetY(value);
-        }
-
-        /// <summary>
-        ///     Returns the width of the shape.
-        /// </summary>
-        public long Width
-        {
-            get => _innerTransform.Width;
-            set => _innerTransform.SetWidth(value);
-        }
-
-        /// <summary>
-        ///     Returns the height of the shape.
-        /// </summary>
-        public long Height
-        {
-            get => _innerTransform.Height;
-            set => _innerTransform.SetHeight(value);
-        }
-
-        /// <summary>
-        ///     Returns an element identifier.
-        /// </summary>
-        public int Id
-        {
-            get
-            {
-                InitIdHiddenName();
-                return _id;
-            }
-        }
-
-        /// <summary>
-        ///     Gets an element name.
-        /// </summary>
-        public string Name
-        {
-            get
-            {
-                InitIdHiddenName();
-                return _name;
-            }
-        }
-
-        /// <summary>
-        ///     Determines whether the shape is hidden.
-        /// </summary>
-        public bool Hidden
-        {
-            get
-            {
-                InitIdHiddenName();
-                return (bool) _hidden;
-            }
-        }
-
-        public override GeometryType GeometryType => GeometryType.Rectangle;
-
-        #endregion Properties
     }
 }

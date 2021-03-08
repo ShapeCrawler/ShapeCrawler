@@ -9,7 +9,7 @@ namespace ShapeCrawler.Tables
     /// </summary>
     internal class LayoutTable : LayoutShape, IShape
     {
-        internal LayoutTable(SlideLayoutSc slideLayout, P.GraphicFrame pGraphicFrame) 
+        internal LayoutTable(SlideLayoutSc slideLayout, P.GraphicFrame pGraphicFrame)
             : base(slideLayout, pGraphicFrame)
         {
         }

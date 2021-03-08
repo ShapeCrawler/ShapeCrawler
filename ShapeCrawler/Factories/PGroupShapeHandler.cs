@@ -16,7 +16,8 @@ namespace ShapeCrawler.Factories
         private readonly SlidePart _slidePart;
         private readonly LocationParser _transformFactory;
 
-        internal PGroupShapeHandler(ShapeContext.Builder shapeContextBuilder,
+        internal PGroupShapeHandler(
+            ShapeContext.Builder shapeContextBuilder,
             LocationParser transformFactory,
             GeometryFactory geometryFactory,
             SlidePart sdkSldPart)
@@ -36,7 +37,7 @@ namespace ShapeCrawler.Factories
                 var pictureHandler = new PictureHandler(_shapeContextBuilder, _transformFactory, _geometryFactory);
                 var pGroupShapeHandler = new PGroupShapeHandler(_shapeContextBuilder, _transformFactory,
                     _geometryFactory, _slidePart);
-                var chartGrFrameHandler = new ChartGraphicFrameHandler(_shapeContextBuilder, _transformFactory);
+                var chartGrFrameHandler = new ChartGraphicFrameHandler(_shapeContextBuilder);
                 var tableGrFrameHandler = new TableGraphicFrameHandler(_shapeContextBuilder, _transformFactory);
 
                 pShapeHandler.Successor = pGroupShapeHandler;

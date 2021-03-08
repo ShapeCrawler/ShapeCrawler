@@ -9,7 +9,7 @@ namespace ShapeCrawler.Collections
     /// </summary>
     internal class MasterPicture : MasterShape, IShape
     {
-        public MasterPicture(SlideMasterSc slideMaster, P.Picture pPicture) 
+        public MasterPicture(SlideMasterSc slideMaster, P.Picture pPicture)
             : base(slideMaster, pPicture)
         {
         }

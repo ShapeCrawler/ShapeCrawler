@@ -20,10 +20,7 @@ namespace ShapeCrawler.Spreadsheet
             _chart = chart;
         }
 
-        #region Public Methods
-
-        internal IReadOnlyList<double> GetNumbersFromCacheOrSpreadsheet(C.NumberReference numberReference,
-            ChartPart chartPart)
+        internal IReadOnlyList<double> GetNumbersFromCacheOrSpreadsheet(C.NumberReference numberReference, ChartPart chartPart)
         {
             if (numberReference.NumberingCache != null)
             {
@@ -68,17 +65,28 @@ namespace ShapeCrawler.Spreadsheet
             return cellStrValues.Single();
         }
 
-        #endregion Public Methods
-
         #region Private Methods
 
-        private List<string>
-            GetCellStrValues(C.Formula cFormula,
-                EmbeddedPackagePart xlsxPackagePart) //EmbeddedPackagePart : OpenXmlPart
+        /// <summary>
+        ///     Gets cell values.
+        /// </summary>
+        /// <param name="cFormula">
+        ///     Cell range formula (c:f).
+        ///     <c:cat>
+        ///        <c:strRef>
+        ///         <c:f>
+        ///             Sheet1!$A$2:$A$3
+        ///         </c:f>
+        ///        </c:strRef>
+        ///     </c:cat>
+        ///  </param>
+        /// <param name="xlsxPackagePart"></param>
+        /// <remarks>EmbeddedPackagePart : OpenXmlPart</remarks>
+        private List<string> GetCellStrValues(C.Formula cFormula, EmbeddedPackagePart xlsxPackagePart) 
         {
             Dictionary<EmbeddedPackagePart, SpreadsheetDocument> packPartToSpreadsheetDoc =
                 _chart.Slide.Presentation.PresentationData.SpreadsheetCache;
-            var cached = packPartToSpreadsheetDoc.TryGetValue(xlsxPackagePart, out var spreadSheetDoc);
+            bool cached = packPartToSpreadsheetDoc.TryGetValue(xlsxPackagePart, out var spreadSheetDoc);
             if (!cached)
             {
                 spreadSheetDoc = SpreadsheetDocument.Open(xlsxPackagePart.GetStream(), false);
@@ -101,7 +109,7 @@ namespace ShapeCrawler.Spreadsheet
             var xCellValues = new List<string>(formulaCellAddressList.Count);
             foreach (string address in formulaCellAddressList)
             {
-                var xCellValue = xCells.First(xCell => xCell.CellReference == address).InnerText;
+                string xCellValue = xCells.First(xCell => xCell.CellReference == address).InnerText;
                 xCellValues.Add(xCellValue);
             }
 

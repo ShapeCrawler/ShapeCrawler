@@ -22,15 +22,14 @@ namespace ShapeCrawler
     /// </summary>
     internal class SlideAutoShape : SlideShape, IAutoShape, IAutoShapeInternal
     {
-        private readonly Lazy<TextBoxSc> _textBox;
-        private readonly Lazy<ShapeFill> _shapeFill;
         private readonly ImageExFactory _imageFactory = new ImageExFactory();
+        private readonly ILocation _innerTransform;
+        private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
+        private readonly Lazy<ShapeFill> _shapeFill;
+        private readonly Lazy<TextBoxSc> _textBox;
         private bool? _hidden;
         private int _id;
         private string _name;
-        private readonly ILocation _innerTransform;
-        private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
-        internal ShapeContext Context { get; }
 
         #region Constructors
 
@@ -48,6 +47,8 @@ namespace ShapeCrawler
         }
 
         #endregion Constructors
+
+        internal ShapeContext Context { get; }
 
         internal Dictionary<int, FontData> LvlToFontData => _lvlToFontData.Value;
 

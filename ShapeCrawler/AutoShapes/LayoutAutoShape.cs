@@ -19,12 +19,11 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler
 {
     /// <summary>
-    /// Represents an Auto Shape on a Slide Layout.
+    ///     Represents an Auto Shape on a Slide Layout.
     /// </summary>
     internal class LayoutAutoShape : LayoutShape, IAutoShape, IAutoShapeInternal
     {
         private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
-        internal Dictionary<int, FontData> LvlToFontData => _lvlToFontData.Value;
 
         #region Constructors
 
@@ -36,6 +35,8 @@ namespace ShapeCrawler
         }
 
         #endregion Constructors
+
+        internal Dictionary<int, FontData> LvlToFontData => _lvlToFontData.Value;
 
         public bool TryGetFontData(int paragraphLvl, out FontData fontData)
         {

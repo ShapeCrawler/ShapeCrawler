@@ -9,7 +9,7 @@ namespace ShapeCrawler.OLEObjects
     /// </summary>
     internal class LayoutOLEObject : LayoutShape, IShape
     {
-        internal LayoutOLEObject(SlideLayoutSc slideLayout, P.GraphicFrame pGraphicFrame) 
+        internal LayoutOLEObject(SlideLayoutSc slideLayout, P.GraphicFrame pGraphicFrame)
             : base(slideLayout, pGraphicFrame)
         {
         }

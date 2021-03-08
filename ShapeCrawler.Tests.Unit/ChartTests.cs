@@ -156,24 +156,24 @@ namespace ShapeCrawler.Tests.Unit
             chartCase3.Categories[3].Name.Should().BeEquivalentTo("Q4");
         }
 #if DEBUG
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void CategoryName_SetterChangeCategoryName_OfAPieChart()
         {
             // Arrange
             IPresentation presentation = PresentationSc.Open(Resources._025, true);
             MemoryStream mStream = new();
-            IChart pieChart = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 7);
+            IChart pieChart4 = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 7);
             const string newCategoryName = "Category 1_new";
 
             // Act
-            pieChart.Categories[0].Name = newCategoryName;
+            pieChart4.Categories[0].Name = newCategoryName;
 
             // Assert
-            pieChart.Categories[0].Name.Should().Be(newCategoryName);
+            pieChart4.Categories[0].Name.Should().Be(newCategoryName);
             presentation.SaveAs(mStream);
             presentation = PresentationSc.Open(mStream, false);
-            pieChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
-            pieChart.Categories[0].Name.Should().Be(newCategoryName);
+            pieChart4 = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
+            pieChart4.Categories[0].Name.Should().Be(newCategoryName);
         }
 
         [Fact(Skip = "In Progress")]
