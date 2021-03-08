@@ -15,11 +15,10 @@ namespace ShapeCrawler.Charts
     /// </summary>
     public class Series
     {
-        internal SlideChart SlideChart { get; }
-
         #region Constructors
 
-        internal Series(SlideChart slideChart, ChartType type, OpenXmlElement seriesXmlElement, ChartReferencesParser chartRefParser)
+        internal Series(SlideChart slideChart, ChartType type, OpenXmlElement seriesXmlElement,
+            ChartReferencesParser chartRefParser)
         {
             SlideChart = slideChart;
             _seriesXmlElement = seriesXmlElement;
@@ -30,6 +29,8 @@ namespace ShapeCrawler.Charts
         }
 
         #endregion Constructors
+
+        internal SlideChart SlideChart { get; }
 
         /// <summary>
         ///     Gets chart type.

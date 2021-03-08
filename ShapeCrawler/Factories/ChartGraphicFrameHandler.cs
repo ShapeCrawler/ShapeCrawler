@@ -1,7 +1,6 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -19,7 +18,7 @@ namespace ShapeCrawler.Factories
                 A.GraphicData aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
                 if (aGraphicData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
                 {
-                    SlideChart chart = new (pGraphicFrame, slide);
+                    SlideChart chart = new(pGraphicFrame, slide);
 
                     return chart;
                 }

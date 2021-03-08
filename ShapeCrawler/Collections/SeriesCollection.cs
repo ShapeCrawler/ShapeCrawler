@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Spreadsheet;
 
@@ -20,7 +19,8 @@ namespace ShapeCrawler.Collections
             CollectionItems = seriesList;
         }
 
-        internal static SeriesCollection Create(SlideChart slideChart, IEnumerable<OpenXmlElement> cXCharts, ChartReferencesParser chartRefParser)
+        internal static SeriesCollection Create(SlideChart slideChart, IEnumerable<OpenXmlElement> cXCharts,
+            ChartReferencesParser chartRefParser)
         {
             var seriesList = new List<Series>();
             foreach (OpenXmlElement cXChart in cXCharts)

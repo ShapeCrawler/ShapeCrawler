@@ -17,6 +17,28 @@ namespace ShapeCrawler.Charts
     /// </summary>
     internal class SlideChart : SlideShape, IChart
     {
+        #region Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="SlideChart" /> class.
+        /// </summary>
+        internal SlideChart(P.GraphicFrame pGraphicFrame, SlideSc slide) :
+            base(slide, pGraphicFrame)
+        {
+            _pGraphicFrame = pGraphicFrame;
+            _firstSeries = new Lazy<OpenXmlElement>(GetFirstSeries);
+            _xValues = new Lazy<LibraryCollection<double>>(GetXValues);
+            _seriesCollection =
+                new Lazy<SeriesCollection>(() => Collections.SeriesCollection.Create(this, _cXCharts, _chartRefParser));
+            _categories = new Lazy<CategoryCollection>(() => CategoryCollection.Create(_firstSeries.Value, Type));
+            _chartRefParser = new ChartReferencesParser(this);
+            _chartType = new Lazy<ChartType>(GetChartType);
+
+            Init(); //TODO: convert to lazy loading
+        }
+
+        #endregion Constructors
+
         #region Fields
 
         // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
@@ -34,29 +56,6 @@ namespace ShapeCrawler.Charts
         internal ChartPart ChartPart;
 
         #endregion Fields
-
-        #region Constructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="SlideChart" /> class.
-        /// </summary>
-        internal SlideChart(P.GraphicFrame pGraphicFrame, SlideSc slide) : 
-            base(slide, pGraphicFrame)
-        {
-            _pGraphicFrame = pGraphicFrame;
-            _firstSeries = new Lazy<OpenXmlElement>(GetFirstSeries);
-            _xValues = new Lazy<LibraryCollection<double>>(GetXValues);
-            _seriesCollection =
-                new Lazy<SeriesCollection>(() => Collections.SeriesCollection.Create(this, _cXCharts, _chartRefParser));
-            _categories = new Lazy<CategoryCollection>(() => CategoryCollection.Create(_firstSeries.Value, Type));
-            _chartRefParser = new ChartReferencesParser(this);
-            _chartType = new Lazy<ChartType>(GetChartType);
-
-            Init(); //TODO: convert to lazy loading
-        }
-
-        #endregion Constructors
-
 
 
         #region Public Properties
@@ -132,9 +131,10 @@ namespace ShapeCrawler.Charts
         private void Init()
         {
             // Get chart part
-            C.ChartReference cChartReference = _pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>().GetFirstChild<C.ChartReference>();
+            C.ChartReference cChartReference = _pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>()
+                .GetFirstChild<C.ChartReference>();
             ChartPart = (ChartPart) Slide.SlidePart.GetPartById(cChartReference.Id);
-            
+
             C.PlotArea cPlotArea = ChartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea;
             _cXCharts = cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
         }
@@ -176,7 +176,7 @@ namespace ShapeCrawler.Charts
             // However, it can have store multiple series data in the spreadsheet.
             if (Type == ChartType.PieChart)
             {
-                return ((SeriesCollection)SeriesCollection).First().Name;
+                return ((SeriesCollection) SeriesCollection).First().Name;
             }
 
             return null;

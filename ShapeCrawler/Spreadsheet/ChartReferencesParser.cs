@@ -39,7 +39,8 @@ namespace ShapeCrawler.Spreadsheet
             }
 
             // From Spreadsheet
-            List<string> cellStrValues = GetCellStrValues(numberReference.Formula, _chart.ChartPart.EmbeddedPackagePart);
+            List<string> cellStrValues =
+                GetCellStrValues(numberReference.Formula, _chart.ChartPart.EmbeddedPackagePart);
             var cellNumberValues = new List<double>(cellStrValues.Count); // TODO: consider allocate on stack
             foreach (string cellValue in cellStrValues)
             {
@@ -73,16 +74,16 @@ namespace ShapeCrawler.Spreadsheet
         /// <param name="cFormula">
         ///     Cell range formula (c:f).
         ///     <c:cat>
-        ///        <c:strRef>
-        ///         <c:f>
-        ///             Sheet1!$A$2:$A$3
-        ///         </c:f>
-        ///        </c:strRef>
+        ///         <c:strRef>
+        ///             <c:f>
+        ///                 Sheet1!$A$2:$A$3
+        ///             </c:f>
+        ///         </c:strRef>
         ///     </c:cat>
-        ///  </param>
+        /// </param>
         /// <param name="xlsxPackagePart"></param>
         /// <remarks>EmbeddedPackagePart : OpenXmlPart</remarks>
-        private List<string> GetCellStrValues(C.Formula cFormula, EmbeddedPackagePart xlsxPackagePart) 
+        private List<string> GetCellStrValues(C.Formula cFormula, EmbeddedPackagePart xlsxPackagePart)
         {
             Dictionary<EmbeddedPackagePart, SpreadsheetDocument> packPartToSpreadsheetDoc =
                 _chart.Slide.Presentation.PresentationData.SpreadsheetCache;

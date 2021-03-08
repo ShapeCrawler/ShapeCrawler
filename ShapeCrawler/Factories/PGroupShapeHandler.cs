@@ -42,7 +42,7 @@ namespace ShapeCrawler.Factories
 
                 pShapeHandler.Successor = pGroupShapeHandler;
                 pGroupShapeHandler.Successor = oleGrFrameHandler;
-                
+
                 // OLE objects handler must be before pictures handler, cause OLE container can contain p:pic elements, thereby OLE as a picture
                 oleGrFrameHandler.Successor = pictureHandler;
                 pictureHandler.Successor = chartGrFrameHandler;
