@@ -29,8 +29,8 @@ namespace ShapeCrawler.Charts
             _firstSeries = new Lazy<OpenXmlElement>(GetFirstSeries);
             _xValues = new Lazy<LibraryCollection<double>>(GetXValues);
             _seriesCollection =
-                new Lazy<SeriesCollection>(() => Collections.SeriesCollection.Create(this, _cXCharts, _chartRefParser));
-            _categories = new Lazy<CategoryCollection>(() => CategoryCollection.Create(_firstSeries.Value, Type));
+                new Lazy<SeriesCollection>(() => Collections.SeriesCollection.Create(this, _cXCharts));
+            _categories = new Lazy<CategoryCollection>(() => CategoryCollection.Create(this, _firstSeries.Value, Type));
             _chartType = new Lazy<ChartType>(GetChartType);
 
             Init(); //TODO: convert to lazy loading
@@ -50,7 +50,6 @@ namespace ShapeCrawler.Charts
         private readonly Lazy<CategoryCollection> _categories;
         private readonly Lazy<LibraryCollection<double>> _xValues;
         private string _chartTitle;
-        private readonly ChartReferencesParser _chartRefParser;
         private readonly P.GraphicFrame _pGraphicFrame;
         internal ChartPart ChartPart;
 

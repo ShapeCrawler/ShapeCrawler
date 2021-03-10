@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using ShapeCrawler.Charts;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
+using X = DocumentFormat.OpenXml.Spreadsheet;
 
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -60,6 +61,11 @@ namespace ShapeCrawler.Spreadsheet
             return cellStrValues.Single();
         }
 
+        internal static Dictionary<int, X.Cell> GetCatIndexToXCellMapByFormula(SlideChart slideChart, C.Formula cFormula)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion Internal Methods
 
         #region Private Methods
@@ -77,11 +83,11 @@ namespace ShapeCrawler.Spreadsheet
         ///         </c:strRef>
         ///     </c:cat>
         /// </param>
-        /// <remarks>EmbeddedPackagePart : OpenXmlPart</remarks>
+        /// <param name="slideChart"></param>
         private static List<string> GetCellStrValues(C.Formula cFormula, SlideChart slideChart)
         {
-            Dictionary<EmbeddedPackagePart, SpreadsheetDocument> packPartToSpreadsheetDoc = slideChart.Slide.Presentation.PresentationData.SpreadsheetCache;
-            EmbeddedPackagePart xlsxPackagePart = slideChart.ChartPart.EmbeddedPackagePart;
+            var packPartToSpreadsheetDoc = slideChart.Slide.Presentation.PresentationData.SpreadsheetCache;
+            EmbeddedPackagePart xlsxPackagePart = slideChart.ChartPart.EmbeddedPackagePart; // EmbeddedPackagePart : OpenXmlPart
             bool cached = packPartToSpreadsheetDoc.TryGetValue(xlsxPackagePart, out var spreadSheetDoc);
             if (!cached)
             {
@@ -91,21 +97,20 @@ namespace ShapeCrawler.Spreadsheet
 
             // Get all <x:c> elements of formula sheet
             string filteredFormula = GetFilteredFormula(cFormula);
-            string[] sheetNameAndCellsFormula = filteredFormula.Split('!'); //eg: Sheet1!A2:A5 -> ['Sheet1', 'A2:A5']
+            string[] sheetNameAndCellsRange = filteredFormula.Split('!'); //eg: Sheet1!A2:A5 -> ['Sheet1', 'A2:A5']
             WorkbookPart workbookPart = spreadSheetDoc.WorkbookPart;
             string sheetId = workbookPart.Workbook.Sheets.Elements<Sheet>()
-                .First(xSheet => sheetNameAndCellsFormula[0] == xSheet.Name).Id;
+                .First(xSheet => sheetNameAndCellsRange[0] == xSheet.Name).Id;
             var worksheetPart = (WorksheetPart) workbookPart.GetPartById(sheetId);
-            IEnumerable<Cell> xCells = worksheetPart.Worksheet.GetFirstChild<SheetData>().ChildElements
+            IEnumerable<Cell> allXCells = worksheetPart.Worksheet.GetFirstChild<SheetData>().ChildElements
                 .SelectMany(e => e.Elements<Cell>()); //TODO: use HashSet
 
-            List<string> formulaCellAddressList =
-                new CellFormulaParser(sheetNameAndCellsFormula[1]).GetCellAddresses(); //eg: [1] = 'A2:A5'
+            List<string> formulaCellAddressList = new CellFormulaParser(sheetNameAndCellsRange[1]).GetCellAddresses();
 
             var xCellValues = new List<string>(formulaCellAddressList.Count);
             foreach (string address in formulaCellAddressList)
             {
-                string xCellValue = xCells.First(xCell => xCell.CellReference == address).InnerText;
+                string xCellValue = allXCells.First(xCell => xCell.CellReference == address).InnerText;
                 xCellValues.Add(xCellValue);
             }
 
@@ -114,7 +119,7 @@ namespace ShapeCrawler.Spreadsheet
 
         private static string GetFilteredFormula(C.Formula formula)
         {
-#if NETSTANDARD2_1 || NETCOREAPP2_0 || NET5_0
+#if NETSTANDARD2_1 || NET5_0 || NETCOREAPP2_1
             var filteredFormula = formula.Text
                 .Replace("'", string.Empty, StringComparison.OrdinalIgnoreCase)
                 .Replace("$", string.Empty,

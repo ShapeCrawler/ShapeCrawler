@@ -19,20 +19,17 @@ namespace ShapeCrawler.Collections
             CollectionItems = seriesList;
         }
 
-        internal static SeriesCollection Create(
-            SlideChart slideChart, 
-            IEnumerable<OpenXmlElement> cXCharts,
-            ChartReferencesParser chartRefParser)
+        internal static SeriesCollection Create(SlideChart slideChart, IEnumerable<OpenXmlElement> cXCharts)
         {
             var seriesList = new List<Series>();
             foreach (OpenXmlElement cXChart in cXCharts)
             {
                 Enum.TryParse(cXChart.LocalName, true, out ChartType chartType); //TODO: use Parse instead of TryParse
-                var nextSdkChartSeriesCollection = cXChart.ChildElements
+                IEnumerable<OpenXmlElement> nextSdkChartSeriesCollection = cXChart.ChildElements
                     .Where(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
                 foreach (OpenXmlElement seriesXmlElement in nextSdkChartSeriesCollection)
                 {
-                    var series = new Series(slideChart, chartType, seriesXmlElement, chartRefParser);
+                    var series = new Series(slideChart, chartType, seriesXmlElement);
                     seriesList.Add(series);
                 }
             }

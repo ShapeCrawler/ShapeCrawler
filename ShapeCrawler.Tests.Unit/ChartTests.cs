@@ -142,9 +142,9 @@ namespace ShapeCrawler.Tests.Unit
         public void CategoryName_GetterReturnsNameOfMainOrSubCategoryTitle()
         {
             // Arrange
-            IChart chartCase1 = _fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4) as IChart;
-            IChart chartCase2 = _fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 4) as IChart;
-            IChart chartCase3 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7) as IChart;
+            IChart chartCase1 = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4);
+            IChart chartCase2 = (IChart)_fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 4);
+            IChart chartCase3 = (IChart)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7);
 
             // Act-Assert
             chartCase1.Categories[0].MainCategory.Name.Should().BeEquivalentTo("Clothing");

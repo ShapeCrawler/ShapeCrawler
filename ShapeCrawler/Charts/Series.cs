@@ -18,7 +18,6 @@ namespace ShapeCrawler.Charts
         private readonly Lazy<IReadOnlyList<double>> _pointValues;
         private readonly Lazy<string> _name;
         private readonly OpenXmlElement _seriesXmlElement;
-        private readonly ChartReferencesParser _chartRefParser;
         internal SlideChart SlideChart { get; }
 
         #region Constructors
@@ -26,12 +25,10 @@ namespace ShapeCrawler.Charts
         internal Series(
             SlideChart slideChart, 
             ChartType type, 
-            OpenXmlElement seriesXmlElement,
-            ChartReferencesParser chartRefParser)
+            OpenXmlElement seriesXmlElement)
         {
             SlideChart = slideChart;
             _seriesXmlElement = seriesXmlElement;
-            _chartRefParser = chartRefParser;
             _pointValues = new Lazy<IReadOnlyList<double>>(GetPointValues);
             _name = new Lazy<string>(GetNameOrDefault);
             Type = type;

@@ -32,7 +32,7 @@ namespace ShapeCrawler.Exceptions
         /// <param name="maxSize"></param>
         public static PresentationIsLargeException FromMax(int maxSize)
         {
-#if NETSTANDARD2_1 || NETCOREAPP2_0 || NET5_0
+#if NETSTANDARD2_1 || NET5_0 || NETCOREAPP2_1
             var message = ExceptionMessages.PresentationIsLarge.Replace("{0}",
                 maxSize.ToString(CultureInfo.CurrentCulture), StringComparison.OrdinalIgnoreCase);
 #else

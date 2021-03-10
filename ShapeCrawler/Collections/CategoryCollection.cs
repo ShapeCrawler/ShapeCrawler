@@ -25,7 +25,7 @@ namespace ShapeCrawler.Collections
 
         #endregion Constructors
 
-        internal static CategoryCollection Create(OpenXmlElement firstChartSeries, ChartType chartType)
+        internal static CategoryCollection Create(SlideChart slideChart, OpenXmlElement firstChartSeries, ChartType chartType)
         {
             if (chartType == ChartType.BubbleChart || chartType == ChartType.ScatterChart)
             {
@@ -59,17 +59,26 @@ namespace ShapeCrawler.Collections
             }
             else
             {
+                C.Formula cFormula;
+                IEnumerable<C.NumericValue> cachedValues; // C.NumericValue (<c:v>) can store string value
                 C.NumberReference cNumReference = cCatAxisData.NumberReference;
                 C.StringReference cStrReference = cCatAxisData.StringReference;
-                IEnumerable<C.NumericValue> cachedValues = cNumReference != null // C.NumericValue (<c:v>) can store string value
-                    ? cNumReference.NumberingCache.Descendants<C.NumericValue>()
-                    : cStrReference.StringCache.Descendants<C.NumericValue>();
+                if (cNumReference != null)
+                {
+                    cFormula = cNumReference.Formula;
+                    cachedValues = cNumReference.NumberingCache.Descendants<C.NumericValue>();
+                }
+                else
+                {
+                    cFormula = cStrReference.Formula;
+                    cachedValues = cStrReference.StringCache.Descendants<C.NumericValue>();
+                }
 
                 int xCellIdx = 0;
-                var xCells = new ResettableLazy<List<X.Cell>>(ChartReferencesParser.GetXCellsByFormula())
+                var catIndexToXCell = new ResettableLazy<Dictionary<int, X.Cell>>(() => ChartReferencesParser.GetCatIndexToXCellMapByFormula(slideChart, cFormula));
                 foreach (C.NumericValue cachedValue in cachedValues)
                 {
-                    categoryList.Add(new Category(xCells, xCellIdx, cachedValue));
+                    categoryList.Add(new Category(catIndexToXCell, xCellIdx++, cachedValue));
                 }
             }
 
