@@ -15,9 +15,18 @@ namespace ShapeCrawler.Charts
     /// </summary>
     public class Series
     {
+        private readonly Lazy<IReadOnlyList<double>> _pointValues;
+        private readonly Lazy<string> _name;
+        private readonly OpenXmlElement _seriesXmlElement;
+        private readonly ChartReferencesParser _chartRefParser;
+        internal SlideChart SlideChart { get; }
+
         #region Constructors
 
-        internal Series(SlideChart slideChart, ChartType type, OpenXmlElement seriesXmlElement,
+        internal Series(
+            SlideChart slideChart, 
+            ChartType type, 
+            OpenXmlElement seriesXmlElement,
             ChartReferencesParser chartRefParser)
         {
             SlideChart = slideChart;
@@ -29,8 +38,6 @@ namespace ShapeCrawler.Charts
         }
 
         #endregion Constructors
-
-        internal SlideChart SlideChart { get; }
 
         /// <summary>
         ///     Gets chart type.
@@ -57,15 +64,6 @@ namespace ShapeCrawler.Charts
             }
         }
 
-        #region Fields
-
-        private readonly Lazy<IReadOnlyList<double>> _pointValues;
-        private readonly Lazy<string> _name;
-        private readonly ChartPart _chartPart;
-        private readonly OpenXmlElement _seriesXmlElement;
-        private readonly ChartReferencesParser _chartRefParser;
-
-        #endregion Fields
 
         #region Private Methods
 
@@ -82,18 +80,18 @@ namespace ShapeCrawler.Charts
                 numReference = _seriesXmlElement.GetFirstChild<C.YValues>().NumberReference;
             }
 
-            return _chartRefParser.GetNumbersFromCacheOrSpreadsheet(numReference);
+            return ChartReferencesParser.GetNumbersFromCacheOrSpreadsheet(numReference, SlideChart);
         }
 
         private string GetNameOrDefault()
         {
-            var strReference = _seriesXmlElement.GetFirstChild<C.SeriesText>()?.StringReference;
-            if (strReference == null)
+            C.StringReference cStringReference = _seriesXmlElement.GetFirstChild<C.SeriesText>()?.StringReference;
+            if (cStringReference == null)
             {
                 return null;
             }
 
-            return _chartRefParser.GetSingleString(strReference, _chartPart);
+            return ChartReferencesParser.GetSingleString(cStringReference, SlideChart);
         }
 
         #endregion Private Methods

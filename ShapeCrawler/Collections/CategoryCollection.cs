@@ -3,7 +3,9 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Spreadsheet;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
+using X = DocumentFormat.OpenXml.Spreadsheet;
 
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -57,12 +59,18 @@ namespace ShapeCrawler.Collections
             }
             else
             {
-                C.NumberReference numReference = cCatAxisData.NumberReference;
-                C.StringReference strReference = cCatAxisData.StringReference;
-                IEnumerable<C.NumericValue> cNumericValues = numReference != null
-                    ? numReference.NumberingCache.Descendants<C.NumericValue>()
-                    : strReference.StringCache.Descendants<C.NumericValue>();
-                categoryList.AddRange(cNumericValues.Select(cNumValue => new Category(cNumValue.InnerText)));
+                C.NumberReference cNumReference = cCatAxisData.NumberReference;
+                C.StringReference cStrReference = cCatAxisData.StringReference;
+                IEnumerable<C.NumericValue> cachedValues = cNumReference != null // C.NumericValue (<c:v>) can store string value
+                    ? cNumReference.NumberingCache.Descendants<C.NumericValue>()
+                    : cStrReference.StringCache.Descendants<C.NumericValue>();
+
+                int xCellIdx = 0;
+                var xCells = new ResettableLazy<List<X.Cell>>(ChartReferencesParser.GetXCellsByFormula())
+                foreach (C.NumericValue cachedValue in cachedValues)
+                {
+                    categoryList.Add(new Category(xCells, xCellIdx, cachedValue));
+                }
             }
 
             return new CategoryCollection(categoryList);

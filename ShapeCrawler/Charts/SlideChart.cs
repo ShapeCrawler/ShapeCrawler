@@ -31,7 +31,6 @@ namespace ShapeCrawler.Charts
             _seriesCollection =
                 new Lazy<SeriesCollection>(() => Collections.SeriesCollection.Create(this, _cXCharts, _chartRefParser));
             _categories = new Lazy<CategoryCollection>(() => CategoryCollection.Create(_firstSeries.Value, Type));
-            _chartRefParser = new ChartReferencesParser(this);
             _chartType = new Lazy<ChartType>(GetChartType);
 
             Init(); //TODO: convert to lazy loading
@@ -210,7 +209,7 @@ namespace ShapeCrawler.Charts
                 return null;
             }
 
-            var points = _chartRefParser.GetNumbersFromCacheOrSpreadsheet(sdkXValues.NumberReference);
+            IReadOnlyList<double> points = ChartReferencesParser.GetNumbersFromCacheOrSpreadsheet(sdkXValues.NumberReference, this);
 
             return new LibraryCollection<double>(points);
         }

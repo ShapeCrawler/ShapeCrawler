@@ -7,6 +7,27 @@ namespace ShapeCrawler.Charts
     /// </summary>
     public class Category
     {
+        #region Constructors
+
+        /// <summary>
+        ///     Initializes non-multi-category.
+        /// </summary>
+        internal Category(string name)
+        {
+            Name = name;
+        }
+
+        /// <summary>
+        ///     Initializes multi-category.
+        /// </summary>
+        internal Category(string name, Category main)
+        {
+            Name = name;
+            MainCategory = main;
+        }
+
+        #endregion Constructors
+
         #region Properties
 
         /// <summary>
@@ -27,26 +48,5 @@ namespace ShapeCrawler.Charts
 #endif
 
         #endregion Properties
-
-        #region Constructors
-
-        /// <summary>
-        ///     Initializes non-multi-category.
-        /// </summary>
-        internal Category(string value)
-        {
-            Name = value ?? throw new ArgumentNullException(nameof(value));
-        }
-
-        /// <summary>
-        ///     Initializes multi-category.
-        /// </summary>
-        internal Category(string name, Category main)
-        {
-            Name = name;
-            MainCategory = main;
-        }
-
-        #endregion Constructors
     }
 }

@@ -13,14 +13,9 @@ namespace ShapeCrawler.Spreadsheet
 {
     internal class ChartReferencesParser
     {
-        private readonly SlideChart _chart;
+        #region Internal Methods
 
-        internal ChartReferencesParser(SlideChart chart)
-        {
-            _chart = chart;
-        }
-
-        internal IReadOnlyList<double> GetNumbersFromCacheOrSpreadsheet(C.NumberReference numberReference)
+        internal static IReadOnlyList<double> GetNumbersFromCacheOrSpreadsheet(C.NumberReference numberReference, SlideChart slideChart)
         {
             if (numberReference.NumberingCache != null)
             {
@@ -39,8 +34,7 @@ namespace ShapeCrawler.Spreadsheet
             }
 
             // From Spreadsheet
-            List<string> cellStrValues =
-                GetCellStrValues(numberReference.Formula, _chart.ChartPart.EmbeddedPackagePart);
+            List<string> cellStrValues = GetCellStrValues(numberReference.Formula, slideChart);
             var cellNumberValues = new List<double>(cellStrValues.Count); // TODO: consider allocate on stack
             foreach (string cellValue in cellStrValues)
             {
@@ -52,19 +46,21 @@ namespace ShapeCrawler.Spreadsheet
             return cellNumberValues;
         }
 
-        internal string GetSingleString(C.StringReference strReference, ChartPart chartPart)
+        internal static string GetSingleString(C.StringReference stringReference, SlideChart slideChart)
         {
-            var fromCache = strReference.StringCache?.GetFirstChild<C.StringPoint>().Single().InnerText;
+            string fromCache = stringReference.StringCache?.GetFirstChild<C.StringPoint>().Single().InnerText;
             if (fromCache != null)
             {
                 return fromCache;
             }
 
-            var formula = strReference.Formula;
-            var cellStrValues = GetCellStrValues(formula, chartPart.EmbeddedPackagePart);
+            C.Formula cFormula = stringReference.Formula;
+            List<string> cellStrValues = GetCellStrValues(cFormula, slideChart);
 
             return cellStrValues.Single();
         }
+
+        #endregion Internal Methods
 
         #region Private Methods
 
@@ -81,12 +77,11 @@ namespace ShapeCrawler.Spreadsheet
         ///         </c:strRef>
         ///     </c:cat>
         /// </param>
-        /// <param name="xlsxPackagePart"></param>
         /// <remarks>EmbeddedPackagePart : OpenXmlPart</remarks>
-        private List<string> GetCellStrValues(C.Formula cFormula, EmbeddedPackagePart xlsxPackagePart)
+        private static List<string> GetCellStrValues(C.Formula cFormula, SlideChart slideChart)
         {
-            Dictionary<EmbeddedPackagePart, SpreadsheetDocument> packPartToSpreadsheetDoc =
-                _chart.Slide.Presentation.PresentationData.SpreadsheetCache;
+            Dictionary<EmbeddedPackagePart, SpreadsheetDocument> packPartToSpreadsheetDoc = slideChart.Slide.Presentation.PresentationData.SpreadsheetCache;
+            EmbeddedPackagePart xlsxPackagePart = slideChart.ChartPart.EmbeddedPackagePart;
             bool cached = packPartToSpreadsheetDoc.TryGetValue(xlsxPackagePart, out var spreadSheetDoc);
             if (!cached)
             {
