@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Spreadsheet;
 
 // ReSharper disable PossibleMultipleEnumeration
 

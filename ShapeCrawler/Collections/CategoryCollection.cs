@@ -87,33 +87,33 @@ namespace ShapeCrawler.Collections
 
         #region Private Methods
 
-        private static List<Category> GetMultiCategories(C.MultiLevelStringReference multiLvlStrRef)
+        private static List<Category> GetMultiCategories(C.MultiLevelStringReference multiLvlStrRef) //TODO: optimize
         {
             var parents = new List<KeyValuePair<uint, Category>>();
-            IEnumerable<C.Level> levels = multiLvlStrRef.MultiLevelStringCache.Elements<C.Level>().Reverse();
-            foreach (C.Level lvl in levels)
+            IEnumerable<C.Level> cLevels = multiLvlStrRef.MultiLevelStringCache.Elements<C.Level>().Reverse();
+            foreach (C.Level lvl in cLevels)
             {
-                var ptElements = lvl.Elements<C.StringPoint>();
+                IEnumerable<C.StringPoint> cStrPoints = lvl.Elements<C.StringPoint>();
                 var nextParents = new List<KeyValuePair<uint, Category>>();
                 if (parents.Any())
                 {
-                    var descParents = parents.OrderByDescending(kvp => kvp.Key).ToList();
-                    foreach (var pt in ptElements)
+                    List<KeyValuePair<uint, Category>> descParents = parents.OrderByDescending(kvp => kvp.Key).ToList();
+                    foreach (C.StringPoint cStrPoint in cStrPoints)
                     {
-                        var index = pt.Index;
-                        var catName = pt.NumericValue.InnerText;
-                        var parent = descParents.First(kvp => kvp.Key <= index);
-                        var category = new Category(catName, parent.Value);
+                        uint index = cStrPoint.Index.Value;
+                        C.NumericValue cachedCatName = cStrPoint.NumericValue;
+                        KeyValuePair<uint, Category> parent = descParents.First(kvp => kvp.Key <= index);
+                        Category category = new (null, -1, cachedCatName, parent.Value);
                         nextParents.Add(new KeyValuePair<uint, Category>(index, category));
                     }
                 }
                 else
                 {
-                    foreach (C.StringPoint pt in ptElements)
+                    foreach (C.StringPoint pt in cStrPoints)
                     {
                         var index = pt.Index;
-                        var catName = pt.NumericValue.InnerText;
-                        var category = new Category(catName);
+                        C.NumericValue cachedCatName = pt.NumericValue;
+                        var category = new Category(null, -1, cachedCatName);
                         nextParents.Add(new KeyValuePair<uint, Category>(index, category));
                     }
                 }

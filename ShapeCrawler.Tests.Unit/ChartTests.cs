@@ -139,7 +139,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void CategoryName_GetterReturnsNameOfMainOrSubCategoryTitle()
+        public void CategoryName_GetterReturnsChartCategoryName()
         {
             // Arrange
             IChart chartCase1 = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4);
@@ -147,7 +147,6 @@ namespace ShapeCrawler.Tests.Unit
             IChart chartCase3 = (IChart)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7);
 
             // Act-Assert
-            chartCase1.Categories[0].MainCategory.Name.Should().BeEquivalentTo("Clothing");
             chartCase1.Categories[0].Name.Should().BeEquivalentTo("Dresses");
             chartCase2.Categories[0].Name.Should().BeEquivalentTo("2015");
             chartCase3.Categories[0].Name.Should().BeEquivalentTo("Q1");
@@ -155,6 +154,17 @@ namespace ShapeCrawler.Tests.Unit
             chartCase3.Categories[2].Name.Should().BeEquivalentTo("Q3");
             chartCase3.Categories[3].Name.Should().BeEquivalentTo("Q4");
         }
+
+        [Fact]
+        public void CategoryName_GetterReturnsChartCategoryName_OfMultiCategoryChart()
+        {
+            // Arrange
+            IChart chartCase1 = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4);
+
+            // Act-Assert
+            chartCase1.Categories[0].MainCategory.Name.Should().BeEquivalentTo("Clothing");
+        }
+
 #if DEBUG
         [Fact]
         public void CategoryName_SetterChangeCategoryName_OfAPieChart()

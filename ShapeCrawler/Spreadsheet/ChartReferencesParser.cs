@@ -35,11 +35,11 @@ namespace ShapeCrawler.Spreadsheet
             }
 
             // From Spreadsheet
-            List<string> cellStrValues = GetCellStrValues(numberReference.Formula, slideChart);
-            var cellNumberValues = new List<double>(cellStrValues.Count); // TODO: consider allocate on stack
-            foreach (string cellValue in cellStrValues)
+            List<X.Cell> xCells = GetXCellsByFormula(numberReference.Formula, slideChart);
+            var cellNumberValues = new List<double>(xCells.Count); // TODO: consider allocate on stack
+            foreach (X.Cell xCell in xCells)
             {
-                string cellValueStr = cellValue;
+                string cellValueStr = xCell.InnerText;
                 cellValueStr = cellValueStr.Length == 0 ? "0" : cellValueStr;
                 cellNumberValues.Add(double.Parse(cellValueStr, CultureInfo.InvariantCulture.NumberFormat));
             }
@@ -55,10 +55,9 @@ namespace ShapeCrawler.Spreadsheet
                 return fromCache;
             }
 
-            C.Formula cFormula = stringReference.Formula;
-            List<string> cellStrValues = GetCellStrValues(cFormula, slideChart);
+            List<X.Cell> xCell = GetXCellsByFormula(stringReference.Formula, slideChart);
 
-            return cellStrValues.Single();
+            return xCell.Single().InnerText;
         }
 
         internal static Dictionary<int, X.Cell> GetCatIndexToXCellMapByFormula(SlideChart slideChart, C.Formula cFormula)
@@ -84,7 +83,7 @@ namespace ShapeCrawler.Spreadsheet
         ///     </c:cat>
         /// </param>
         /// <param name="slideChart"></param>
-        private static List<string> GetCellStrValues(C.Formula cFormula, SlideChart slideChart)
+        private static List<X.Cell> GetXCellsByFormula(C.Formula cFormula, SlideChart slideChart)
         {
             var packPartToSpreadsheetDoc = slideChart.Slide.Presentation.PresentationData.SpreadsheetCache;
             EmbeddedPackagePart xlsxPackagePart = slideChart.ChartPart.EmbeddedPackagePart; // EmbeddedPackagePart : OpenXmlPart
@@ -107,14 +106,14 @@ namespace ShapeCrawler.Spreadsheet
 
             List<string> formulaCellAddressList = new CellFormulaParser(sheetNameAndCellsRange[1]).GetCellAddresses();
 
-            var xCellValues = new List<string>(formulaCellAddressList.Count);
+            var xCells = new List<X.Cell>(formulaCellAddressList.Count);
             foreach (string address in formulaCellAddressList)
             {
-                string xCellValue = allXCells.First(xCell => xCell.CellReference == address).InnerText;
-                xCellValues.Add(xCellValue);
+                X.Cell xCell = allXCells.First(xCell => xCell.CellReference == address);
+                xCells.Add(xCell);
             }
 
-            return xCellValues;
+            return xCells;
         }
 
         private static string GetFilteredFormula(C.Formula formula)

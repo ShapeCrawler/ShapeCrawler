@@ -12,57 +12,24 @@ namespace ShapeCrawler.Charts
     /// </summary>
     public class Category
     {
-        private ResettableLazy<List<Cell>> xCells;
-        private int xCellIdx;
-        private NumericValue cachedValue;
-        private string catName;
-        private Category value;
-        private ResettableLazy<Dictionary<int, Cell>> catIndexToXCell;
-        private int v;
-
+        private int _xCatIdx;
+        private readonly NumericValue _cachedCatName;
+        private ResettableLazy<Dictionary<int, X.Cell>> _catIdxToXCell;
 
         #region Constructors
 
-        public Category(string catName)
+        internal Category(ResettableLazy<Dictionary<int, X.Cell>> catIdxToXCell, int xCatIdx, NumericValue cachedCatName, Category mainCategory)
+            :this(catIdxToXCell, xCatIdx, cachedCatName)
         {
-            this.catName = catName;
+            // TODO: what about creating a new separate class like MultiCategory:Category
+            MainCategory = mainCategory;
         }
 
-        public Category(string catName, Category value)
+        internal Category(ResettableLazy<Dictionary<int, X.Cell>> catIdxToXCell, int xCatIdx, NumericValue cachedCatName)
         {
-            this.catName = catName;
-            this.value = value;
-        }
-
-        public Category(ResettableLazy<List<Cell>> xCells, int xCellIdx, NumericValue cachedValue)
-        {
-            this.xCells = xCells;
-            this.xCellIdx = xCellIdx;
-            this.cachedValue = cachedValue;
-        }
-
-        public Category(ResettableLazy<Dictionary<int, Cell>> catIndexToXCell, int v, NumericValue cachedValue)
-        {
-            this.catIndexToXCell = catIndexToXCell;
-            this.v = v;
-            this.cachedValue = cachedValue;
-        }
-
-        /// <summary>
-        ///     Initializes non-multi-category.
-        /// </summary>
-        internal Category(Shared.ResettableLazy<System.Collections.Generic.List<DocumentFormat.OpenXml.Spreadsheet.Cell>> xCells, int xCellIdx, string name)
-        {
-            Name = name;
-        }
-
-        /// <summary>
-        ///     Initializes multi-category.
-        /// </summary>
-        internal Category(Shared.ResettableLazy<System.Collections.Generic.List<DocumentFormat.OpenXml.Spreadsheet.Cell>> xCells, string name, Category main)
-        {
-            Name = name;
-            MainCategory = main;
+            _catIdxToXCell = catIdxToXCell;
+            _xCatIdx = xCatIdx;
+            Name = cachedCatName.InnerText;
         }
 
         #endregion Constructors
