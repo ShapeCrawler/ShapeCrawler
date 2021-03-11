@@ -1,8 +1,6 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Spreadsheet;
+﻿using System.Collections.Generic;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using ShapeCrawler.Shared;
-using System;
-using System.Collections.Generic;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts
@@ -18,14 +16,16 @@ namespace ShapeCrawler.Charts
 
         #region Constructors
 
-        internal Category(ResettableLazy<Dictionary<int, X.Cell>> catIdxToXCell, int xCatIdx, NumericValue cachedCatName, Category mainCategory)
-            :this(catIdxToXCell, xCatIdx, cachedCatName)
+        internal Category(ResettableLazy<Dictionary<int, X.Cell>> catIdxToXCell, int xCatIdx,
+            NumericValue cachedCatName, Category mainCategory)
+            : this(catIdxToXCell, xCatIdx, cachedCatName)
         {
             // TODO: what about creating a new separate class like MultiCategory:Category
             MainCategory = mainCategory;
         }
 
-        internal Category(ResettableLazy<Dictionary<int, X.Cell>> catIdxToXCell, int xCatIdx, NumericValue cachedCatName)
+        internal Category(ResettableLazy<Dictionary<int, X.Cell>> catIdxToXCell, int xCatIdx,
+            NumericValue cachedCatName)
         {
             _catIdxToXCell = catIdxToXCell;
             _xCatIdx = xCatIdx;

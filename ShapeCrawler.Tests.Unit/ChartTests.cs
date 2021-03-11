@@ -166,7 +166,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
 #if DEBUG
-        [Fact]
+        [Fact(Skip = "In Progress")]
         public void CategoryName_SetterChangeCategoryName_OfAPieChart()
         {
             // Arrange
