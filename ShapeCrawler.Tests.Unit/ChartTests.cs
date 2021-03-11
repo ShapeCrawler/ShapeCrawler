@@ -139,15 +139,14 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void CategoryName_GetterReturnsNameOfMainOrSubCategoryTitle()
+        public void CategoryName_GetterReturnsChartCategoryName()
         {
             // Arrange
-            IChart chartCase1 = _fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4) as IChart;
-            IChart chartCase2 = _fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 4) as IChart;
-            IChart chartCase3 = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7) as IChart;
+            IChart chartCase1 = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4);
+            IChart chartCase2 = (IChart)_fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 4);
+            IChart chartCase3 = (IChart)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7);
 
             // Act-Assert
-            chartCase1.Categories[0].MainCategory.Name.Should().BeEquivalentTo("Clothing");
             chartCase1.Categories[0].Name.Should().BeEquivalentTo("Dresses");
             chartCase2.Categories[0].Name.Should().BeEquivalentTo("2015");
             chartCase3.Categories[0].Name.Should().BeEquivalentTo("Q1");
@@ -155,6 +154,17 @@ namespace ShapeCrawler.Tests.Unit
             chartCase3.Categories[2].Name.Should().BeEquivalentTo("Q3");
             chartCase3.Categories[3].Name.Should().BeEquivalentTo("Q4");
         }
+
+        [Fact]
+        public void CategoryName_GetterReturnsChartCategoryName_OfMultiCategoryChart()
+        {
+            // Arrange
+            IChart chartCase1 = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4);
+
+            // Act-Assert
+            chartCase1.Categories[0].MainCategory.Name.Should().BeEquivalentTo("Clothing");
+        }
+
 #if DEBUG
         [Fact(Skip = "In Progress")]
         public void CategoryName_SetterChangeCategoryName_OfAPieChart()
@@ -162,18 +172,18 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             IPresentation presentation = PresentationSc.Open(Resources._025, true);
             MemoryStream mStream = new();
-            IChart pieChart = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 7);
+            IChart pieChart4 = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 7);
             const string newCategoryName = "Category 1_new";
 
             // Act
-            pieChart.Categories[0].Name = newCategoryName;
+            pieChart4.Categories[0].Name = newCategoryName;
 
             // Assert
-            pieChart.Categories[0].Name.Should().Be(newCategoryName);
+            pieChart4.Categories[0].Name.Should().Be(newCategoryName);
             presentation.SaveAs(mStream);
             presentation = PresentationSc.Open(mStream, false);
-            pieChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
-            pieChart.Categories[0].Name.Should().Be(newCategoryName);
+            pieChart4 = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
+            pieChart4.Categories[0].Name.Should().Be(newCategoryName);
         }
 
         [Fact(Skip = "In Progress")]

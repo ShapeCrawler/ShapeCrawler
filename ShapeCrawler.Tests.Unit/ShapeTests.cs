@@ -139,7 +139,7 @@ namespace ShapeCrawler.Tests.Unit
             IShape shapeExCase1 = _fixture.Pre021.Slides[3].Shapes.First(sp => sp.Id == 2);
             IShape shapeExCase2 = _fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3);
             IShape shapeExCase3 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
-            SlideGroupShape groupShape = (SlideGroupShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
+            IGroupShape groupShape = (IGroupShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
             IShape shapeExCase4 = groupShape.Shapes.First(sp => sp.Id.Equals(5));
             IShape shapeExCase5 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7);
             IShape shapeExCase6 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
@@ -195,7 +195,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             IShape shapeCase1 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
-            SlideGroupShape groupShape = (SlideGroupShape) _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
+            IGroupShape groupShape = (IGroupShape) _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
             IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
             IShape shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
 

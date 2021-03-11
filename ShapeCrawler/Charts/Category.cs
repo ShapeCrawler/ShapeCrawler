@@ -1,4 +1,7 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using ShapeCrawler.Shared;
+using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts
 {
@@ -7,6 +10,30 @@ namespace ShapeCrawler.Charts
     /// </summary>
     public class Category
     {
+        private int _xCatIdx;
+        private readonly NumericValue _cachedCatName;
+        private ResettableLazy<Dictionary<int, X.Cell>> _catIdxToXCell;
+
+        #region Constructors
+
+        internal Category(ResettableLazy<Dictionary<int, X.Cell>> catIdxToXCell, int xCatIdx,
+            NumericValue cachedCatName, Category mainCategory)
+            : this(catIdxToXCell, xCatIdx, cachedCatName)
+        {
+            // TODO: what about creating a new separate class like MultiCategory:Category
+            MainCategory = mainCategory;
+        }
+
+        internal Category(ResettableLazy<Dictionary<int, X.Cell>> catIdxToXCell, int xCatIdx,
+            NumericValue cachedCatName)
+        {
+            _catIdxToXCell = catIdxToXCell;
+            _xCatIdx = xCatIdx;
+            Name = cachedCatName.InnerText;
+        }
+
+        #endregion Constructors
+
         #region Properties
 
         /// <summary>
@@ -27,26 +54,5 @@ namespace ShapeCrawler.Charts
 #endif
 
         #endregion Properties
-
-        #region Constructors
-
-        /// <summary>
-        ///     Initializes a new non-multi-category.
-        /// </summary>
-        internal Category(string value)
-        {
-            Name = value ?? throw new ArgumentNullException(nameof(value));
-        }
-
-        /// <summary>
-        ///     Initializes a new multi-category.
-        /// </summary>
-        internal Category(string value, Category parent)
-        {
-            Name = value ?? throw new ArgumentNullException(nameof(value));
-            MainCategory = parent ?? throw new ArgumentNullException(nameof(parent));
-        }
-
-        #endregion Constructors
     }
 }

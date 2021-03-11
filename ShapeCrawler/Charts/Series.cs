@@ -15,14 +15,20 @@ namespace ShapeCrawler.Charts
     /// </summary>
     public class Series
     {
+        private readonly Lazy<IReadOnlyList<double>> _pointValues;
+        private readonly Lazy<string> _name;
+        private readonly OpenXmlElement _seriesXmlElement;
+        internal SlideChart SlideChart { get; }
+
         #region Constructors
 
-        internal Series(ChartType type, OpenXmlElement sdkSeries, ChartPart sdkChartPart,
-            ChartReferencesParser chartRefParser)
+        internal Series(
+            SlideChart slideChart, 
+            ChartType type, 
+            OpenXmlElement seriesXmlElement)
         {
-            _sdkSeries = sdkSeries ?? throw new ArgumentNullException(nameof(sdkSeries));
-            _sdkChartPart = sdkChartPart ?? throw new ArgumentNullException(nameof(sdkChartPart));
-            _chartRefParser = chartRefParser;
+            SlideChart = slideChart;
+            _seriesXmlElement = seriesXmlElement;
             _pointValues = new Lazy<IReadOnlyList<double>>(GetPointValues);
             _name = new Lazy<string>(GetNameOrDefault);
             Type = type;
@@ -31,12 +37,12 @@ namespace ShapeCrawler.Charts
         #endregion Constructors
 
         /// <summary>
-        ///     Returns a chart type.
+        ///     Gets chart type.
         /// </summary>
         public ChartType Type { get; }
 
         /// <summary>
-        ///     Returns a point values.
+        ///     Gets collection of point values.
         /// </summary>
         public IReadOnlyList<double> PointValues => _pointValues.Value;
 
@@ -55,43 +61,34 @@ namespace ShapeCrawler.Charts
             }
         }
 
-        #region Fields
-
-        private readonly Lazy<IReadOnlyList<double>> _pointValues;
-        private readonly Lazy<string> _name;
-        private readonly ChartPart _sdkChartPart;
-        private readonly OpenXmlElement _sdkSeries;
-        private readonly ChartReferencesParser _chartRefParser;
-
-        #endregion Fields
 
         #region Private Methods
 
         private IReadOnlyList<double> GetPointValues()
         {
             C.NumberReference numReference;
-            var cVal = _sdkSeries.GetFirstChild<C.Values>();
+            C.Values cVal = _seriesXmlElement.GetFirstChild<C.Values>();
             if (cVal != null) // scatter type chart does not have <c:val> element
             {
                 numReference = cVal.NumberReference;
             }
             else
             {
-                numReference = _sdkSeries.GetFirstChild<C.YValues>().NumberReference;
+                numReference = _seriesXmlElement.GetFirstChild<C.YValues>().NumberReference;
             }
 
-            return _chartRefParser.GetNumbersFromCacheOrSpreadsheet(numReference, _sdkChartPart);
+            return ChartReferencesParser.GetNumbersFromCacheOrSpreadsheet(numReference, SlideChart);
         }
 
         private string GetNameOrDefault()
         {
-            var strReference = _sdkSeries.GetFirstChild<C.SeriesText>()?.StringReference;
-            if (strReference == null)
+            C.StringReference cStringReference = _seriesXmlElement.GetFirstChild<C.SeriesText>()?.StringReference;
+            if (cStringReference == null)
             {
                 return null;
             }
 
-            return _chartRefParser.GetSingleString(strReference, _sdkChartPart);
+            return ChartReferencesParser.GetSingleString(cStringReference, SlideChart);
         }
 
         #endregion Private Methods

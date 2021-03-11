@@ -19,7 +19,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a slide.
     /// </summary>
-    public class SlideSc : ISlide
+    public class SlideSc : ISlide // TODO: make it internal
     {
         #region Fields
 
@@ -27,7 +27,6 @@ namespace ShapeCrawler
         protected ResettableLazy<ShapeCollection> _shapes { get; set; }
         private readonly SlideNumber _sldNumEntity;
         private Lazy<CustomXmlPart> _customXmlPart;
-        private ResettableLazy<SlideLayoutSc> _slideLayout;
 
         internal PresentationSc Presentation { get; }
         internal SlidePart SlidePart { get; }

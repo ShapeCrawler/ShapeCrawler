@@ -4,7 +4,7 @@ using ShapeCrawler.Shapes;
 namespace ShapeCrawler.Charts
 {
     /// <summary>
-    ///     Represents a chart on  a slide.
+    ///     Represents a chart.
     /// </summary>
     public interface IChart : IShape
     {
@@ -32,10 +32,10 @@ namespace ShapeCrawler.Charts
         /// <summary>
         ///     Gets collection of the chart series.
         /// </summary>
-        SeriesCollection SeriesCollection { get; }
+        ISeriesCollection SeriesCollection { get; }
 
         /// <summary>
-        ///     Gets collection of the chart category.
+        ///     Gets collection of chart categories.
         /// </summary>
         CategoryCollection Categories { get; }
 

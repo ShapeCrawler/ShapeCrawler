@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
@@ -12,9 +11,15 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler
 {
-    /// <inheritdoc cref="IGroupShape" />
-    public class SlideGroupShape : SlideShape, IGroupShape
+    /// <summary>
+    ///     Represents a group shape on a Slide.
+    /// </summary>
+    internal class SlideGroupShape : SlideShape, IGroupShape
     {
+        private readonly ILocation _innerTransform;
+
+        internal ShapeContext Context;
+
         #region Constructors
 
         internal SlideGroupShape(
@@ -30,35 +35,6 @@ namespace ShapeCrawler
         }
 
         #endregion Constructors
-
-        #region Private Methods
-
-        private void InitIdHiddenName()
-        {
-            if (_id != 0)
-            {
-                return;
-            }
-
-            var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
-            _id = id;
-            _hidden = hidden;
-            _name = name;
-        }
-
-        #endregion Private Methods
-
-        #region Fields
-
-        private bool? _hidden;
-        private int _id;
-        private string _name;
-        private readonly ILocation _innerTransform;
-
-        internal ShapeContext Context;
-        internal SlideSc Slide { get; }
-
-        #endregion Fields
 
         #region Public Properties
 
@@ -85,35 +61,6 @@ namespace ShapeCrawler
             get => _innerTransform.Height;
             set => _innerTransform.SetHeight(value);
         }
-
-        public int Id
-        {
-            get
-            {
-                InitIdHiddenName();
-                return _id;
-            }
-        }
-
-        public string Name
-        {
-            get
-            {
-                InitIdHiddenName();
-                return _name;
-            }
-        }
-
-        public bool Hidden
-        {
-            get
-            {
-                InitIdHiddenName();
-                return (bool) _hidden;
-            }
-        }
-
-        public GeometryType GeometryType => GeometryType.Rectangle;
 
         public IReadOnlyCollection<IShape> Shapes { get; }
 

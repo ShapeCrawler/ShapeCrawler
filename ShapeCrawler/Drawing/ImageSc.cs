@@ -32,7 +32,7 @@ namespace ShapeCrawler.Drawing
 
         #region Public Methods
 
-#if NET5_0 || NETSTANDARD2_1
+#if NET5_0 || NETSTANDARD2_1 || NETCOREAPP2_1
         public async ValueTask<byte[]> GetImageBytes()
         {
             if (_bytes != null)
@@ -43,20 +43,6 @@ namespace ShapeCrawler.Drawing
             using var imgPartStream = GetImagePart().GetStream();
             _bytes = new byte[imgPartStream.Length];
             await imgPartStream.ReadAsync(_bytes.AsMemory(0, (int) imgPartStream.Length)).ConfigureAwait(false);
-
-            return _bytes;
-        }
-#elif NETCOREAPP2_0
-        public async ValueTask<byte[]> GetImageBytes()
-        {
-            if (_bytes != null)
-            {
-                return _bytes; // return from cache
-            }
-
-            using var imgPartStream = GetImagePart().GetStream();
-            _bytes = new byte[imgPartStream.Length];
-            await imgPartStream.ReadAsync(_bytes, 0, (int) imgPartStream.Length).ConfigureAwait(false);
 
             return _bytes;
         }

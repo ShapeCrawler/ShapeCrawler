@@ -27,8 +27,5 @@ namespace ShapeCrawler.Exceptions
 
         public static string NotXValues =>
             $"This chart type has not {nameof(SlideChart.XValues)} property. You can check it via {nameof(SlideChart.HasXValues)} property.";
-
-        public static string ChartCanNotHaveCategory =>
-            $"#0 can not have category. You can check chart type via {nameof(SlideChart.Type)} property.";
     }
 }

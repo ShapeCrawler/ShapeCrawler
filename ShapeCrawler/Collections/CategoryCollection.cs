@@ -3,14 +3,16 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Spreadsheet;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
+using X = DocumentFormat.OpenXml.Spreadsheet;
 
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    ///     Represents a collection of the chart category.
+    ///     Represents a collection of chart categories.
     /// </summary>
     public class CategoryCollection : LibraryCollection<Category>
     {
@@ -23,7 +25,7 @@ namespace ShapeCrawler.Collections
 
         #endregion Constructors
 
-        internal static CategoryCollection Create(OpenXmlElement firstChartSeries, ChartType chartType)
+        internal static CategoryCollection Create(SlideChart slideChart, OpenXmlElement firstChartSeries, ChartType chartType)
         {
             if (chartType == ChartType.BubbleChart || chartType == ChartType.ScatterChart)
             {
@@ -51,18 +53,33 @@ namespace ShapeCrawler.Collections
             C.CategoryAxisData cCatAxisData = firstChartSeries.GetFirstChild<C.CategoryAxisData>();
 
             C.MultiLevelStringReference cMultiLvlStringRef = cCatAxisData.MultiLevelStringReference;
-            if (cMultiLvlStringRef != null) // does chart have multi-level category
+            if (cMultiLvlStringRef != null) // is it chart with multi-level category?
             {
                 categoryList = GetMultiCategories(cMultiLvlStringRef);
             }
             else
             {
-                C.NumberReference numReference = cCatAxisData.NumberReference;
-                C.StringReference strReference = cCatAxisData.StringReference;
-                IEnumerable<C.NumericValue> cNumericValues = numReference != null
-                    ? numReference.NumberingCache.Descendants<C.NumericValue>()
-                    : strReference.StringCache.Descendants<C.NumericValue>();
-                categoryList.AddRange(cNumericValues.Select(cNumValue => new Category(cNumValue.InnerText)));
+                C.Formula cFormula;
+                IEnumerable<C.NumericValue> cachedValues; // C.NumericValue (<c:v>) can store string value
+                C.NumberReference cNumReference = cCatAxisData.NumberReference;
+                C.StringReference cStrReference = cCatAxisData.StringReference;
+                if (cNumReference != null)
+                {
+                    cFormula = cNumReference.Formula;
+                    cachedValues = cNumReference.NumberingCache.Descendants<C.NumericValue>();
+                }
+                else
+                {
+                    cFormula = cStrReference.Formula;
+                    cachedValues = cStrReference.StringCache.Descendants<C.NumericValue>();
+                }
+
+                int xCellIdx = 0;
+                var catIndexToXCell = new ResettableLazy<Dictionary<int, X.Cell>>(() => ChartReferencesParser.GetCatIndexToXCellMapByFormula(slideChart, cFormula));
+                foreach (C.NumericValue cachedValue in cachedValues)
+                {
+                    categoryList.Add(new Category(catIndexToXCell, xCellIdx++, cachedValue));
+                }
             }
 
             return new CategoryCollection(categoryList);
@@ -70,33 +87,33 @@ namespace ShapeCrawler.Collections
 
         #region Private Methods
 
-        private static List<Category> GetMultiCategories(C.MultiLevelStringReference multiLvlStrRef)
+        private static List<Category> GetMultiCategories(C.MultiLevelStringReference multiLvlStrRef) //TODO: optimize
         {
             var parents = new List<KeyValuePair<uint, Category>>();
-            IEnumerable<C.Level> levels = multiLvlStrRef.MultiLevelStringCache.Elements<C.Level>().Reverse();
-            foreach (C.Level lvl in levels)
+            IEnumerable<C.Level> cLevels = multiLvlStrRef.MultiLevelStringCache.Elements<C.Level>().Reverse();
+            foreach (C.Level lvl in cLevels)
             {
-                var ptElements = lvl.Elements<C.StringPoint>();
+                IEnumerable<C.StringPoint> cStrPoints = lvl.Elements<C.StringPoint>();
                 var nextParents = new List<KeyValuePair<uint, Category>>();
                 if (parents.Any())
                 {
-                    var descParents = parents.OrderByDescending(kvp => kvp.Key).ToList();
-                    foreach (var pt in ptElements)
+                    List<KeyValuePair<uint, Category>> descParents = parents.OrderByDescending(kvp => kvp.Key).ToList();
+                    foreach (C.StringPoint cStrPoint in cStrPoints)
                     {
-                        var index = pt.Index;
-                        var catName = pt.NumericValue.InnerText;
-                        var parent = descParents.First(kvp => kvp.Key <= index);
-                        var category = new Category(catName, parent.Value);
+                        uint index = cStrPoint.Index.Value;
+                        C.NumericValue cachedCatName = cStrPoint.NumericValue;
+                        KeyValuePair<uint, Category> parent = descParents.First(kvp => kvp.Key <= index);
+                        Category category = new (null, -1, cachedCatName, parent.Value);
                         nextParents.Add(new KeyValuePair<uint, Category>(index, category));
                     }
                 }
                 else
                 {
-                    foreach (C.StringPoint pt in ptElements)
+                    foreach (C.StringPoint pt in cStrPoints)
                     {
                         var index = pt.Index;
-                        var catName = pt.NumericValue.InnerText;
-                        var category = new Category(catName);
+                        C.NumericValue cachedCatName = pt.NumericValue;
+                        var category = new Category(null, -1, cachedCatName);
                         nextParents.Add(new KeyValuePair<uint, Category>(index, category));
                     }
                 }

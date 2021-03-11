@@ -2,38 +2,33 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Spreadsheet;
 
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    ///     Represents a chart series collection.
+    ///     Represents a collection of series.
     /// </summary>
-    public class SeriesCollection : LibraryCollection<Series>
+    internal class SeriesCollection : LibraryCollection<Series>, ISeriesCollection
     {
         internal SeriesCollection(List<Series> seriesList)
         {
-            CollectionItems = seriesList.ToList();
+            CollectionItems = seriesList;
         }
 
-        internal static SeriesCollection Create(
-            IEnumerable<OpenXmlElement> cXCharts,
-            ChartPart chartPart,
-            ChartReferencesParser chartRefParser)
+        internal static SeriesCollection Create(SlideChart slideChart, IEnumerable<OpenXmlElement> cXCharts)
         {
             var seriesList = new List<Series>();
             foreach (OpenXmlElement cXChart in cXCharts)
             {
-                Enum.TryParse(cXChart.LocalName, true, out ChartType chartType);
-                var nextSdkChartSeriesCollection = cXChart.ChildElements
+                Enum.TryParse(cXChart.LocalName, true, out ChartType chartType); //TODO: use Parse instead of TryParse
+                IEnumerable<OpenXmlElement> nextSdkChartSeriesCollection = cXChart.ChildElements
                     .Where(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
-                foreach (var sdkSeries in nextSdkChartSeriesCollection)
+                foreach (OpenXmlElement seriesXmlElement in nextSdkChartSeriesCollection)
                 {
-                    var series = new Series(chartType, sdkSeries, chartPart, chartRefParser);
+                    var series = new Series(slideChart, chartType, seriesXmlElement);
                     seriesList.Add(series);
                 }
             }

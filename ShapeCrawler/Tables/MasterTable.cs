@@ -4,13 +4,14 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Collections
 {
+    /// <summary>
+    ///     Represents a table on a Slide Master.
+    /// </summary>
     internal class MasterTable : MasterShape, IShape
     {
-        public MasterTable(SlideMasterSc slideMaster, P.GraphicFrame pGraphicFrame) : base(slideMaster, pGraphicFrame)
+        internal MasterTable(SlideMasterSc slideMaster, P.GraphicFrame pGraphicFrame)
+            : base(slideMaster, pGraphicFrame)
         {
         }
-
-        public string Name { get; }
-        public bool Hidden { get; }
     }
 }

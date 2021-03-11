@@ -18,7 +18,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    ///     Represents a collection of the slide shapes.
+    ///     Represents a collection of a slide shapes.
     /// </summary>
     public class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
     {
@@ -39,7 +39,7 @@ namespace ShapeCrawler.Collections
             var geometryFactory = new GeometryFactory(phService);
             var shapeContextBuilder = new ShapeContext.Builder(sldPhFontService, slidePart);
 
-            var chartGrFrameHandler = new ChartGraphicFrameHandler(shapeContextBuilder, transformFactory);
+            var chartGrFrameHandler = new ChartGraphicFrameHandler();
             var tableGrFrameHandler = new TableGraphicFrameHandler(shapeContextBuilder, transformFactory);
             var oleGrFrameHandler = new OleGraphicFrameHandler(shapeContextBuilder, transformFactory);
             var pShapeHandler = new AutoShapeCreator(shapeContextBuilder, transformFactory);

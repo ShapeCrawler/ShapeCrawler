@@ -1,10 +1,11 @@
 ﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Placeholders
 {
     internal class FontData
     {
-        public FontData(Int32Value fontSize, DocumentFormat.OpenXml.Drawing.LatinFont aLatinFont) : this(fontSize)
+        public FontData(Int32Value fontSize, LatinFont aLatinFont) : this(fontSize)
         {
             FontSize = fontSize;
             ALatinFont = aLatinFont;
@@ -16,6 +17,6 @@ namespace ShapeCrawler.Placeholders
         }
 
         public Int32Value FontSize { get; }
-        public DocumentFormat.OpenXml.Drawing.LatinFont ALatinFont { get; }
+        public LatinFont ALatinFont { get; }
     }
 }
