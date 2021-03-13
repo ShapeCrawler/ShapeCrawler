@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Charts;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Models;
@@ -17,17 +19,14 @@ namespace ShapeCrawler
     /// <inheritdoc cref="IPresentation" />
     public sealed class PresentationSc : IPresentation
     {
-        internal PresentationData PresentationData;
-        internal PresentationPart PresentationPart;
-
-        #region Fields
-
         private PresentationDocument _presentationDocument;
         private Lazy<SlideCollection> _slides;
         private Lazy<SlideSizeSc> _slideSize;
         private bool _closed;
-
-        #endregion Fields
+        internal PresentationData PresentationData;
+        internal PresentationPart PresentationPart;
+        internal bool Editable { get; private set; }
+        internal List<ChartWorkbook> ChartWorkbooks { get; } = new();
 
         #region Public Properties
 
@@ -37,39 +36,24 @@ namespace ShapeCrawler
 
         public int SlideHeight => _slideSize.Value.Height;
 
-        public SlideMasterCollection SlideMasters =>
-            SlideMasterCollection.Create(this);
+        public SlideMasterCollection SlideMasters => SlideMasterCollection.Create(this);
 
         #endregion Public Properties
 
         #region Constructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="PresentationSc" /> class by pptx-file path.
-        /// </summary>
-        internal PresentationSc(string pptxPath, in bool isEditable)
+        private PresentationSc(string pptxPath, in bool isEditable)
         {
             ThrowIfSourceInvalid(pptxPath);
             _presentationDocument = PresentationDocument.Open(pptxPath, isEditable);
+            Editable = isEditable;
             Init();
         }
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="PresentationSc" /> class by pptx-file stream.
-        /// </summary>
-        internal PresentationSc(Stream pptxStream, in bool isEditable)
+        private PresentationSc(Stream pptxStream, in bool isEditable)
         {
             ThrowIfSourceInvalid(pptxStream);
-            _presentationDocument = PresentationDocument.Open(pptxStream, isEditable);
-            Init();
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="PresentationSc" /> class by pptx-file stream.
-        /// </summary>
-        private PresentationSc(MemoryStream pptxStream, in bool isEditable)
-        {
-            ThrowIfSourceInvalid(pptxStream);
+            Editable = isEditable;
             _presentationDocument = PresentationDocument.Open(pptxStream, isEditable);
             Init();
         }
@@ -78,7 +62,7 @@ namespace ShapeCrawler
 
         #region Public Methods
 
-        public static PresentationSc Open(string pptxPath, in bool isEditable)
+        public static IPresentation Open(string pptxPath, in bool isEditable)
         {
             return new PresentationSc(pptxPath, isEditable);
         }
@@ -90,7 +74,7 @@ namespace ShapeCrawler
 
         public void SaveAs(string filePath)
         {
-            _presentationDocument = (PresentationDocument) _presentationDocument.SaveAs(filePath);
+            _presentationDocument = (PresentationDocument)_presentationDocument.SaveAs(filePath);
         }
 
         public void SaveAs(Stream stream)
@@ -108,14 +92,8 @@ namespace ShapeCrawler
             // Close SDK presentation documents
             _presentationDocument.Close();
 
-            // Close SpreadsheetDocument instances
-            if (PresentationData != null)
-            {
-                foreach (SpreadsheetDocument spreadsheetDoc in PresentationData.SpreadsheetCache.Values)
-                {
-                    spreadsheetDoc.Close();
-                }
-            }
+            // Close char workbooks
+            ChartWorkbooks.ForEach(cw=>cw.Close());
 
             _closed = true;
         }

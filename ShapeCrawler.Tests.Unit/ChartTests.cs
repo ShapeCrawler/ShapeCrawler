@@ -166,13 +166,13 @@ namespace ShapeCrawler.Tests.Unit
         }
 
 #if DEBUG
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void CategoryName_SetterChangeCategoryName_OfAPieChart()
         {
             // Arrange
             IPresentation presentation = PresentationSc.Open(Resources._025, true);
             MemoryStream mStream = new();
-            IChart pieChart4 = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 7);
+            IChart pieChart4 = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
             const string newCategoryName = "Category 1_new";
 
             // Act

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Shared;
 using ShapeCrawler.Spreadsheet;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -17,6 +19,20 @@ namespace ShapeCrawler.Charts
     /// </summary>
     internal class SlideChart : SlideShape, IChart
     {
+        // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
+        // then collection contains only single item.
+        private IEnumerable<OpenXmlElement> _cXCharts;
+
+        private readonly Lazy<ChartType> _chartType;
+        private readonly Lazy<OpenXmlElement> _firstSeries;
+        private readonly Lazy<SeriesCollection> _seriesCollection;
+        private readonly Lazy<CategoryCollection> _categories;
+        private readonly Lazy<LibraryCollection<double>> _xValues;
+        private string _chartTitle;
+        private readonly P.GraphicFrame _pGraphicFrame;
+        internal ChartPart ChartPart;
+        internal ChartWorkbook ChartWorkbook { get; }
+
         #region Constructors
 
         /// <summary>
@@ -37,24 +53,6 @@ namespace ShapeCrawler.Charts
         }
 
         #endregion Constructors
-
-        #region Fields
-
-        // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
-        // then collection contains only single item.
-        private IEnumerable<OpenXmlElement> _cXCharts;
-
-        private readonly Lazy<ChartType> _chartType;
-        private readonly Lazy<OpenXmlElement> _firstSeries;
-        private readonly Lazy<SeriesCollection> _seriesCollection;
-        private readonly Lazy<CategoryCollection> _categories;
-        private readonly Lazy<LibraryCollection<double>> _xValues;
-        private string _chartTitle;
-        private readonly P.GraphicFrame _pGraphicFrame;
-        internal ChartPart ChartPart;
-
-        #endregion Fields
-
 
         #region Public Properties
 
@@ -220,5 +218,46 @@ namespace ShapeCrawler.Charts
         }
 
         #endregion Private Methods
+    }
+
+    internal class ChartWorkbook
+    {
+        private readonly SlideChart _slideChart;
+        private readonly Lazy<WorkbookPart> _workbookPart;
+        private Stream _packagePartStream;
+        private MemoryStream _resizableStream;
+        internal WorkbookPart WorkbookPart => _workbookPart.Value;
+
+        internal ChartWorkbook(SlideChart slideChart)
+        {
+            _slideChart = slideChart;
+            _workbookPart = new Lazy<WorkbookPart>(() => GetWorkbookPart());
+        }
+
+        internal void Close()
+        {
+            _resizableStream?.WriteTo(_packagePartStream);
+            _packagePartStream?.Close();
+        }
+
+        private WorkbookPart GetWorkbookPart() // TODO: set using statements
+        {
+            SpreadsheetDocument spreadsheetDocument;
+            _packagePartStream = _slideChart.ChartPart.EmbeddedPackagePart.GetStream();
+            if (_slideChart.Presentation.Editable)
+            {
+                _resizableStream = new MemoryStream();
+                _packagePartStream.CopyTo(_resizableStream);
+                spreadsheetDocument = SpreadsheetDocument.Open(_resizableStream, true);
+            }
+            else
+            {
+                spreadsheetDocument = SpreadsheetDocument.Open(_packagePartStream, false);
+            }
+
+            _slideChart.Presentation.ChartWorkbooks.Add(this);
+
+            return spreadsheetDocument.WorkbookPart;
+        }
     }
 }

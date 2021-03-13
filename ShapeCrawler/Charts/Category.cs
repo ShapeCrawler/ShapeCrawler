@@ -10,26 +10,30 @@ namespace ShapeCrawler.Charts
     /// </summary>
     public class Category
     {
-        private int _xCatIdx;
-        private readonly NumericValue _cachedCatName;
-        private ResettableLazy<Dictionary<int, X.Cell>> _catIdxToXCell;
+        private int _catIdx;
+        private NumericValue _cachedCatName;
+        private ResettableLazy<List<X.Cell>> _catIdxToXCell;
 
         #region Constructors
 
-        internal Category(ResettableLazy<Dictionary<int, X.Cell>> catIdxToXCell, int xCatIdx,
-            NumericValue cachedCatName, Category mainCategory)
-            : this(catIdxToXCell, xCatIdx, cachedCatName)
+        internal Category(
+            ResettableLazy<List<X.Cell>> catIdxToXCell, 
+            int catIdx,
+            NumericValue cachedCatName,
+            Category mainCategory) : this(catIdxToXCell, catIdx, cachedCatName)
         {
             // TODO: what about creating a new separate class like MultiCategory:Category
             MainCategory = mainCategory;
         }
 
-        internal Category(ResettableLazy<Dictionary<int, X.Cell>> catIdxToXCell, int xCatIdx,
+        internal Category(
+            ResettableLazy<List<X.Cell>> catIdxToXCell, 
+            int catIdx,
             NumericValue cachedCatName)
         {
             _catIdxToXCell = catIdxToXCell;
-            _xCatIdx = xCatIdx;
-            Name = cachedCatName.InnerText;
+            _catIdx = catIdx;
+            _cachedCatName = cachedCatName;
         }
 
         #endregion Constructors
@@ -45,7 +49,18 @@ namespace ShapeCrawler.Charts
         /// <summary>
         ///     Gets or sets category name.
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _cachedCatName.InnerText;
+            set
+            {
+                _catIdxToXCell.Value[_catIdx].CellValue.Text = value;
+                var s =_catIdxToXCell.Value[_catIdx];
+                //_cachedCatName = new NumericValue(value);
+                _cachedCatName.Text = value;
+                _catIdxToXCell.Reset();
+            }
+        }
 #else
         /// <summary>
         ///     Gets category name.

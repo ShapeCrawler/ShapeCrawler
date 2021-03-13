@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Spreadsheet;
@@ -75,10 +76,10 @@ namespace ShapeCrawler.Collections
                 }
 
                 int xCellIdx = 0;
-                var catIndexToXCell = new ResettableLazy<Dictionary<int, X.Cell>>(() => ChartReferencesParser.GetCatIndexToXCellMapByFormula(slideChart, cFormula));
+                var xCells = new ResettableLazy<List<X.Cell>>(() => ChartReferencesParser.GetXCellsByFormula(cFormula, slideChart));
                 foreach (C.NumericValue cachedValue in cachedValues)
                 {
-                    categoryList.Add(new Category(catIndexToXCell, xCellIdx++, cachedValue));
+                    categoryList.Add(new Category(xCells, xCellIdx++, cachedValue));
                 }
             }
 
