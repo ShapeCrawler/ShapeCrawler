@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Spreadsheet;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -15,16 +14,15 @@ namespace ShapeCrawler.Charts
     /// </summary>
     public class Series
     {
-        private readonly Lazy<IReadOnlyList<double>> _pointValues;
         private readonly Lazy<string> _name;
+        private readonly Lazy<IReadOnlyList<double>> _pointValues;
         private readonly OpenXmlElement _seriesXmlElement;
-        internal SlideChart SlideChart { get; }
 
         #region Constructors
 
         internal Series(
-            SlideChart slideChart, 
-            ChartType type, 
+            SlideChart slideChart,
+            ChartType type,
             OpenXmlElement seriesXmlElement)
         {
             SlideChart = slideChart;
@@ -35,6 +33,8 @@ namespace ShapeCrawler.Charts
         }
 
         #endregion Constructors
+
+        internal SlideChart SlideChart { get; }
 
         /// <summary>
         ///     Gets chart type.

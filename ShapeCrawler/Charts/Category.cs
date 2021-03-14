@@ -10,30 +10,30 @@ namespace ShapeCrawler.Charts
     /// </summary>
     public class Category
     {
-        private int _catIdx;
-        private NumericValue _cachedCatName;
-        private ResettableLazy<List<X.Cell>> _catIdxToXCell;
+        private readonly int _index;
+        private readonly NumericValue _cachedName;
+        private readonly ResettableLazy<List<X.Cell>> _indexToXCell;
 
         #region Constructors
 
         internal Category(
-            ResettableLazy<List<X.Cell>> catIdxToXCell, 
-            int catIdx,
-            NumericValue cachedCatName,
-            Category mainCategory) : this(catIdxToXCell, catIdx, cachedCatName)
+            ResettableLazy<List<X.Cell>> indexToXCell,
+            int index,
+            NumericValue cachedName,
+            Category mainCategory) : this(indexToXCell, index, cachedName)
         {
             // TODO: what about creating a new separate class like MultiCategory:Category
             MainCategory = mainCategory;
         }
 
         internal Category(
-            ResettableLazy<List<X.Cell>> catIdxToXCell, 
-            int catIdx,
-            NumericValue cachedCatName)
+            ResettableLazy<List<X.Cell>> indexToXCell,
+            int index,
+            NumericValue cachedName)
         {
-            _catIdxToXCell = catIdxToXCell;
-            _catIdx = catIdx;
-            _cachedCatName = cachedCatName;
+            _indexToXCell = indexToXCell;
+            _index = index;
+            _cachedName = cachedName;
         }
 
         #endregion Constructors
@@ -51,14 +51,12 @@ namespace ShapeCrawler.Charts
         /// </summary>
         public string Name
         {
-            get => _cachedCatName.InnerText;
+            get => _cachedName.InnerText;
             set
             {
-                _catIdxToXCell.Value[_catIdx].CellValue.Text = value;
-                var s =_catIdxToXCell.Value[_catIdx];
-                //_cachedCatName = new NumericValue(value);
-                _cachedCatName.Text = value;
-                _catIdxToXCell.Reset();
+                _indexToXCell.Value[_index].CellValue.Text = value;
+                _cachedName.Text = value;
+                _indexToXCell.Reset();
             }
         }
 #else

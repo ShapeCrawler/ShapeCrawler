@@ -19,13 +19,13 @@ namespace ShapeCrawler
     /// <inheritdoc cref="IPresentation" />
     public sealed class PresentationSc : IPresentation
     {
+        private bool _closed;
         private PresentationDocument _presentationDocument;
         private Lazy<SlideCollection> _slides;
         private Lazy<SlideSizeSc> _slideSize;
-        private bool _closed;
         internal PresentationData PresentationData;
         internal PresentationPart PresentationPart;
-        internal bool Editable { get; private set; }
+        internal bool Editable { get; }
         internal List<ChartWorkbook> ChartWorkbooks { get; } = new();
 
         #region Public Properties
@@ -74,11 +74,12 @@ namespace ShapeCrawler
 
         public void SaveAs(string filePath)
         {
-            _presentationDocument = (PresentationDocument)_presentationDocument.SaveAs(filePath);
+            _presentationDocument = (PresentationDocument) _presentationDocument.SaveAs(filePath);
         }
 
         public void SaveAs(Stream stream)
         {
+            ChartWorkbooks.ForEach(cw => cw.Close());
             _presentationDocument = (PresentationDocument) _presentationDocument.Clone(stream);
         }
 
@@ -93,7 +94,7 @@ namespace ShapeCrawler
             _presentationDocument.Close();
 
             // Close char workbooks
-            ChartWorkbooks.ForEach(cw=>cw.Close());
+            ChartWorkbooks.ForEach(cw => cw.Close());
 
             _closed = true;
         }

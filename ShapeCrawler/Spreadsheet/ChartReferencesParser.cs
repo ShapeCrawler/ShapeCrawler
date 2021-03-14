@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
 using ShapeCrawler.Charts;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using X = DocumentFormat.OpenXml.Spreadsheet;
@@ -15,9 +13,27 @@ namespace ShapeCrawler.Spreadsheet
 {
     internal class ChartReferencesParser
     {
+        #region Private Methods
+
+        private static string GetFilteredFormula(C.Formula formula)
+        {
+#if NETSTANDARD2_1 || NET5_0 || NETCOREAPP2_1
+            var filteredFormula = formula.Text
+                .Replace("'", string.Empty, StringComparison.OrdinalIgnoreCase)
+                .Replace("$", string.Empty,
+                    StringComparison.OrdinalIgnoreCase); //eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5            
+#else
+            var filteredFormula = formula.Text.Replace("'", string.Empty).Replace("$", string.Empty);
+#endif
+            return filteredFormula;
+        }
+
+        #endregion Private Methods
+
         #region Internal Methods
 
-        internal static IReadOnlyList<double> GetNumbersFromCacheOrSpreadsheet(C.NumberReference numberReference, SlideChart slideChart)
+        internal static IReadOnlyList<double> GetNumbersFromCacheOrSpreadsheet(C.NumberReference numberReference,
+            SlideChart slideChart)
         {
             if (numberReference.NumberingCache != null)
             {
@@ -82,10 +98,11 @@ namespace ShapeCrawler.Spreadsheet
             string[] sheetNameAndCellsRange = filteredFormula.Split('!'); //eg: Sheet1!A2:A5 -> ['Sheet1', 'A2:A5']
             WorkbookPart workbookPart = slideChart.ChartWorkbook.WorkbookPart;
             string chartSheetName = sheetNameAndCellsRange[0];
-            string chartSheetId = workbookPart.Workbook.Sheets.Elements<Sheet>().First(xSheet => xSheet.Name == chartSheetName).Id;
-            WorksheetPart worksheetPart = (WorksheetPart)workbookPart.GetPartById(chartSheetId);
-            IEnumerable<Cell> allXCells = worksheetPart.Worksheet.GetFirstChild<SheetData>().ChildElements
-                .SelectMany(e => e.Elements<Cell>()); //TODO: use HashSet
+            string chartSheetId = workbookPart.Workbook.Sheets.Elements<X.Sheet>()
+                .First(xSheet => xSheet.Name == chartSheetName).Id;
+            WorksheetPart worksheetPart = (WorksheetPart) workbookPart.GetPartById(chartSheetId);
+            IEnumerable<X.Cell> allXCells = worksheetPart.Worksheet.GetFirstChild<X.SheetData>().ChildElements
+                .SelectMany(e => e.Elements<X.Cell>()); //TODO: use HashSet
 
             List<string> formulaCellAddressList = new CellFormulaParser(sheetNameAndCellsRange[1]).GetCellAddresses();
 
@@ -100,22 +117,5 @@ namespace ShapeCrawler.Spreadsheet
         }
 
         #endregion Internal Methods
-
-        #region Private Methods
-
-        private static string GetFilteredFormula(C.Formula formula)
-        {
-#if NETSTANDARD2_1 || NET5_0 || NETCOREAPP2_1
-            var filteredFormula = formula.Text
-                .Replace("'", string.Empty, StringComparison.OrdinalIgnoreCase)
-                .Replace("$", string.Empty,
-                    StringComparison.OrdinalIgnoreCase); //eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5            
-#else
-            var filteredFormula = formula.Text.Replace("'", string.Empty).Replace("$", string.Empty);
-#endif
-            return filteredFormula;
-        }
-
-        #endregion Private Methods
     }
 }

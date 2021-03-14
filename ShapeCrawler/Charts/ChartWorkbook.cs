@@ -10,13 +10,14 @@ namespace ShapeCrawler.Charts
         private readonly Lazy<WorkbookPart> _workbookPart;
         private Stream _packagePartStream;
         private MemoryStream _resizableStream;
-        internal WorkbookPart WorkbookPart => _workbookPart.Value;
 
         internal ChartWorkbook(SlideChart slideChart)
         {
             _slideChart = slideChart;
             _workbookPart = new Lazy<WorkbookPart>(() => GetWorkbookPart());
         }
+
+        internal WorkbookPart WorkbookPart => _workbookPart.Value;
 
         internal void Close()
         {

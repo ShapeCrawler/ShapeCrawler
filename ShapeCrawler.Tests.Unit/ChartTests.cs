@@ -167,7 +167,7 @@ namespace ShapeCrawler.Tests.Unit
 
 #if DEBUG
         [Fact]
-        public void CategoryName_SetterChangeCategoryName_OfAPieChart()
+        public void CategoryName_SetterChangeName_OfCategoryInPieChart()
         {
             // Arrange
             IPresentation presentation = PresentationSc.Open(Resources._025, true);
@@ -187,23 +187,23 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact(Skip = "In Progress")]
-        public void CategoryName_SetterChangeCategoryName_OfABarChartWithMultiLevelCategory()
+        public void CategoryName_SetterChangeName_OfMainCategoryInMultiLevelCategoryBarChart()
         {
             // Arrange
             IPresentation presentation = PresentationSc.Open(Resources._025, true);
             MemoryStream mStream = new();
-            IChart barChart = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4);
-            const string newCategoryName = "DressesNew";
+            IChart barChart2 = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4);
+            const string newMainCategoryName = "Clothing_new";
 
             // Act
-            barChart.Categories[0].Name = newCategoryName;
+            barChart2.Categories[0].MainCategory.Name = newMainCategoryName;
 
             // Assert
-            barChart.Categories[0].Name.Should().Be(newCategoryName);
+            barChart2.Categories[0].Name.Should().Be(newMainCategoryName);
             presentation.SaveAs(mStream);
             presentation = PresentationSc.Open(mStream, false);
-            barChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
-            barChart.Categories[0].Name.Should().Be(newCategoryName);
+            barChart2 = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
+            barChart2.Categories[0].Name.Should().Be(newMainCategoryName);
         }
 #endif
         [Fact]
