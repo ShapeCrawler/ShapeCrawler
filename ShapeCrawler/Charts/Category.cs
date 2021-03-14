@@ -10,26 +10,30 @@ namespace ShapeCrawler.Charts
     /// </summary>
     public class Category
     {
-        private int _xCatIdx;
-        private readonly NumericValue _cachedCatName;
-        private ResettableLazy<Dictionary<int, X.Cell>> _catIdxToXCell;
+        private readonly int _index;
+        private readonly NumericValue _cachedName;
+        private readonly ResettableLazy<List<X.Cell>> _indexToXCell;
 
         #region Constructors
 
-        internal Category(ResettableLazy<Dictionary<int, X.Cell>> catIdxToXCell, int xCatIdx,
-            NumericValue cachedCatName, Category mainCategory)
-            : this(catIdxToXCell, xCatIdx, cachedCatName)
+        internal Category(
+            ResettableLazy<List<X.Cell>> indexToXCell,
+            int index,
+            NumericValue cachedName,
+            Category mainCategory) : this(indexToXCell, index, cachedName)
         {
             // TODO: what about creating a new separate class like MultiCategory:Category
             MainCategory = mainCategory;
         }
 
-        internal Category(ResettableLazy<Dictionary<int, X.Cell>> catIdxToXCell, int xCatIdx,
-            NumericValue cachedCatName)
+        internal Category(
+            ResettableLazy<List<X.Cell>> indexToXCell,
+            int index,
+            NumericValue cachedName)
         {
-            _catIdxToXCell = catIdxToXCell;
-            _xCatIdx = xCatIdx;
-            Name = cachedCatName.InnerText;
+            _indexToXCell = indexToXCell;
+            _index = index;
+            _cachedName = cachedName;
         }
 
         #endregion Constructors
@@ -45,7 +49,16 @@ namespace ShapeCrawler.Charts
         /// <summary>
         ///     Gets or sets category name.
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _cachedName.InnerText;
+            set
+            {
+                _indexToXCell.Value[_index].CellValue.Text = value;
+                _cachedName.Text = value;
+                _indexToXCell.Reset();
+            }
+        }
 #else
         /// <summary>
         ///     Gets category name.

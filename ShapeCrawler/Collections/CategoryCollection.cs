@@ -25,7 +25,8 @@ namespace ShapeCrawler.Collections
 
         #endregion Constructors
 
-        internal static CategoryCollection Create(SlideChart slideChart, OpenXmlElement firstChartSeries, ChartType chartType)
+        internal static CategoryCollection Create(SlideChart slideChart, OpenXmlElement firstChartSeries,
+            ChartType chartType)
         {
             if (chartType == ChartType.BubbleChart || chartType == ChartType.ScatterChart)
             {
@@ -75,10 +76,11 @@ namespace ShapeCrawler.Collections
                 }
 
                 int xCellIdx = 0;
-                var catIndexToXCell = new ResettableLazy<Dictionary<int, X.Cell>>(() => ChartReferencesParser.GetCatIndexToXCellMapByFormula(slideChart, cFormula));
+                var xCells = new ResettableLazy<List<X.Cell>>(() =>
+                    ChartReferencesParser.GetXCellsByFormula(cFormula, slideChart));
                 foreach (C.NumericValue cachedValue in cachedValues)
                 {
-                    categoryList.Add(new Category(catIndexToXCell, xCellIdx++, cachedValue));
+                    categoryList.Add(new Category(xCells, xCellIdx++, cachedValue));
                 }
             }
 
@@ -87,41 +89,80 @@ namespace ShapeCrawler.Collections
 
         #region Private Methods
 
-        private static List<Category> GetMultiCategories(C.MultiLevelStringReference multiLvlStrRef) //TODO: optimize
+        private static List<Category> GetMultiCategories(C.MultiLevelStringReference multiLevelStrRef) //TODO: optimize
         {
-            var parents = new List<KeyValuePair<uint, Category>>();
-            IEnumerable<C.Level> cLevels = multiLvlStrRef.MultiLevelStringCache.Elements<C.Level>().Reverse();
-            foreach (C.Level lvl in cLevels)
+            var indexToCategory = new List<KeyValuePair<uint, Category>>();
+            IEnumerable<C.Level> topDownLevels = multiLevelStrRef.MultiLevelStringCache.Elements<C.Level>().Reverse();
+            foreach (C.Level cLevel in topDownLevels)
             {
-                IEnumerable<C.StringPoint> cStrPoints = lvl.Elements<C.StringPoint>();
-                var nextParents = new List<KeyValuePair<uint, Category>>();
-                if (parents.Any())
+                IEnumerable<C.StringPoint> cStrPoints = cLevel.Elements<C.StringPoint>();
+                var nextIndexToCategory = new List<KeyValuePair<uint, Category>>();
+                if (indexToCategory.Any())
                 {
-                    List<KeyValuePair<uint, Category>> descParents = parents.OrderByDescending(kvp => kvp.Key).ToList();
+                    List<KeyValuePair<uint, Category>> descOrderedMains =
+                        indexToCategory.OrderByDescending(kvp => kvp.Key).ToList();
                     foreach (C.StringPoint cStrPoint in cStrPoints)
                     {
                         uint index = cStrPoint.Index.Value;
                         C.NumericValue cachedCatName = cStrPoint.NumericValue;
-                        KeyValuePair<uint, Category> parent = descParents.First(kvp => kvp.Key <= index);
-                        Category category = new (null, -1, cachedCatName, parent.Value);
-                        nextParents.Add(new KeyValuePair<uint, Category>(index, category));
+                        KeyValuePair<uint, Category> parent = descOrderedMains.First(kvp => kvp.Key <= index);
+                        Category category = new(null, -1, cachedCatName, parent.Value);
+                        nextIndexToCategory.Add(new KeyValuePair<uint, Category>(index, category));
                     }
                 }
                 else
                 {
-                    foreach (C.StringPoint pt in cStrPoints)
+                    foreach (C.StringPoint cStrPoint in cStrPoints)
                     {
-                        var index = pt.Index;
-                        C.NumericValue cachedCatName = pt.NumericValue;
+                        uint index = cStrPoint.Index.Value;
+                        C.NumericValue cachedCatName = cStrPoint.NumericValue;
                         var category = new Category(null, -1, cachedCatName);
-                        nextParents.Add(new KeyValuePair<uint, Category>(index, category));
+                        nextIndexToCategory.Add(new KeyValuePair<uint, Category>(index, category));
                     }
                 }
 
-                parents = nextParents;
+                indexToCategory = nextIndexToCategory;
             }
 
-            return parents.Select(kvp => kvp.Value).ToList(parents.Count);
+            return indexToCategory.Select(kvp => kvp.Value).ToList(indexToCategory.Count);
+        }
+
+        private static List<Category> GetMultiCategoriesNew(C.MultiLevelStringReference multiLevelStrRef)
+        {
+            var indexToCategory = new List<KeyValuePair<uint, Category>>();
+            IEnumerable<C.Level> topDownLevels = multiLevelStrRef.MultiLevelStringCache.Elements<C.Level>().Reverse();
+            foreach (C.Level cLevel in topDownLevels)
+            {
+                IEnumerable<C.StringPoint> cStrPoints = cLevel.Elements<C.StringPoint>();
+                var nextIndexToCategory = new List<KeyValuePair<uint, Category>>();
+                if (indexToCategory.Any())
+                {
+                    List<KeyValuePair<uint, Category>> descOrderedMains =
+                        indexToCategory.OrderByDescending(kvp => kvp.Key).ToList();
+                    foreach (C.StringPoint cStrPoint in cStrPoints)
+                    {
+                        uint index = cStrPoint.Index.Value;
+                        C.NumericValue cachedCatName = cStrPoint.NumericValue;
+                        KeyValuePair<uint, Category> parent = descOrderedMains.First(kvp => kvp.Key <= index);
+                        Category category = new(null, -1, cachedCatName, parent.Value);
+                        nextIndexToCategory.Add(new KeyValuePair<uint, Category>(index, category));
+                    }
+                }
+                else
+                {
+                    foreach (C.StringPoint cStrPoint in cStrPoints)
+                    {
+                        uint index = cStrPoint.Index.Value;
+                        C.NumericValue cachedCatName = cStrPoint.NumericValue;
+                        var category = new Category(null, -1, cachedCatName);
+                        nextIndexToCategory.Add(new KeyValuePair<uint, Category>(index, category));
+                    }
+                }
+
+                indexToCategory = nextIndexToCategory;
+            }
+
+            return indexToCategory.Select(kvp => kvp.Value).ToList(indexToCategory.Count);
         }
 
         #endregion Private Methods

@@ -17,6 +17,20 @@ namespace ShapeCrawler.Charts
     /// </summary>
     internal class SlideChart : SlideShape, IChart
     {
+        // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
+        // then collection contains only single item.
+        private IEnumerable<OpenXmlElement> _cXCharts;
+
+        private readonly Lazy<CategoryCollection> _categories;
+        private readonly Lazy<ChartType> _chartType;
+        private readonly Lazy<OpenXmlElement> _firstSeries;
+        private readonly P.GraphicFrame _pGraphicFrame;
+        private readonly Lazy<SeriesCollection> _seriesCollection;
+        private readonly Lazy<LibraryCollection<double>> _xValues;
+        private string _chartTitle;
+        internal ChartPart ChartPart;
+        internal ChartWorkbook ChartWorkbook { get; }
+
         #region Constructors
 
         /// <summary>
@@ -32,29 +46,12 @@ namespace ShapeCrawler.Charts
                 new Lazy<SeriesCollection>(() => Collections.SeriesCollection.Create(this, _cXCharts));
             _categories = new Lazy<CategoryCollection>(() => CategoryCollection.Create(this, _firstSeries.Value, Type));
             _chartType = new Lazy<ChartType>(GetChartType);
+            ChartWorkbook = new ChartWorkbook(this);
 
             Init(); //TODO: convert to lazy loading
         }
 
         #endregion Constructors
-
-        #region Fields
-
-        // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
-        // then collection contains only single item.
-        private IEnumerable<OpenXmlElement> _cXCharts;
-
-        private readonly Lazy<ChartType> _chartType;
-        private readonly Lazy<OpenXmlElement> _firstSeries;
-        private readonly Lazy<SeriesCollection> _seriesCollection;
-        private readonly Lazy<CategoryCollection> _categories;
-        private readonly Lazy<LibraryCollection<double>> _xValues;
-        private string _chartTitle;
-        private readonly P.GraphicFrame _pGraphicFrame;
-        internal ChartPart ChartPart;
-
-        #endregion Fields
-
 
         #region Public Properties
 
@@ -208,7 +205,8 @@ namespace ShapeCrawler.Charts
                 return null;
             }
 
-            IReadOnlyList<double> points = ChartReferencesParser.GetNumbersFromCacheOrSpreadsheet(sdkXValues.NumberReference, this);
+            IReadOnlyList<double> points =
+                ChartReferencesParser.GetNumbersFromCacheOrSpreadsheet(sdkXValues.NumberReference, this);
 
             return new LibraryCollection<double>(points);
         }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
 using ShapeCrawler.Charts;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using X = DocumentFormat.OpenXml.Spreadsheet;
@@ -14,9 +13,27 @@ namespace ShapeCrawler.Spreadsheet
 {
     internal class ChartReferencesParser
     {
+        #region Private Methods
+
+        private static string GetFilteredFormula(C.Formula formula)
+        {
+#if NETSTANDARD2_1 || NET5_0 || NETCOREAPP2_1
+            var filteredFormula = formula.Text
+                .Replace("'", string.Empty, StringComparison.OrdinalIgnoreCase)
+                .Replace("$", string.Empty,
+                    StringComparison.OrdinalIgnoreCase); //eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5            
+#else
+            var filteredFormula = formula.Text.Replace("'", string.Empty).Replace("$", string.Empty);
+#endif
+            return filteredFormula;
+        }
+
+        #endregion Private Methods
+
         #region Internal Methods
 
-        internal static IReadOnlyList<double> GetNumbersFromCacheOrSpreadsheet(C.NumberReference numberReference, SlideChart slideChart)
+        internal static IReadOnlyList<double> GetNumbersFromCacheOrSpreadsheet(C.NumberReference numberReference,
+            SlideChart slideChart)
         {
             if (numberReference.NumberingCache != null)
             {
@@ -60,15 +77,6 @@ namespace ShapeCrawler.Spreadsheet
             return xCell.Single().InnerText;
         }
 
-        internal static Dictionary<int, X.Cell> GetCatIndexToXCellMapByFormula(SlideChart slideChart, C.Formula cFormula)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion Internal Methods
-
-        #region Private Methods
-
         /// <summary>
         ///     Gets cell values.
         /// </summary>
@@ -83,26 +91,18 @@ namespace ShapeCrawler.Spreadsheet
         ///     </c:cat>
         /// </param>
         /// <param name="slideChart"></param>
-        private static List<X.Cell> GetXCellsByFormula(C.Formula cFormula, SlideChart slideChart)
+        internal static List<X.Cell> GetXCellsByFormula(C.Formula cFormula, SlideChart slideChart)
         {
-            var packPartToSpreadsheetDoc = slideChart.Slide.Presentation.PresentationData.SpreadsheetCache;
-            EmbeddedPackagePart xlsxPackagePart = slideChart.ChartPart.EmbeddedPackagePart; // EmbeddedPackagePart : OpenXmlPart
-            bool cached = packPartToSpreadsheetDoc.TryGetValue(xlsxPackagePart, out var spreadSheetDoc);
-            if (!cached)
-            {
-                spreadSheetDoc = SpreadsheetDocument.Open(xlsxPackagePart.GetStream(), false);
-                packPartToSpreadsheetDoc.Add(xlsxPackagePart, spreadSheetDoc);
-            }
-
             // Get all <x:c> elements of formula sheet
             string filteredFormula = GetFilteredFormula(cFormula);
             string[] sheetNameAndCellsRange = filteredFormula.Split('!'); //eg: Sheet1!A2:A5 -> ['Sheet1', 'A2:A5']
-            WorkbookPart workbookPart = spreadSheetDoc.WorkbookPart;
-            string sheetId = workbookPart.Workbook.Sheets.Elements<Sheet>()
-                .First(xSheet => sheetNameAndCellsRange[0] == xSheet.Name).Id;
-            var worksheetPart = (WorksheetPart) workbookPart.GetPartById(sheetId);
-            IEnumerable<Cell> allXCells = worksheetPart.Worksheet.GetFirstChild<SheetData>().ChildElements
-                .SelectMany(e => e.Elements<Cell>()); //TODO: use HashSet
+            WorkbookPart workbookPart = slideChart.ChartWorkbook.WorkbookPart;
+            string chartSheetName = sheetNameAndCellsRange[0];
+            string chartSheetId = workbookPart.Workbook.Sheets.Elements<X.Sheet>()
+                .First(xSheet => xSheet.Name == chartSheetName).Id;
+            WorksheetPart worksheetPart = (WorksheetPart) workbookPart.GetPartById(chartSheetId);
+            IEnumerable<X.Cell> allXCells = worksheetPart.Worksheet.GetFirstChild<X.SheetData>().ChildElements
+                .SelectMany(e => e.Elements<X.Cell>()); //TODO: use HashSet
 
             List<string> formulaCellAddressList = new CellFormulaParser(sheetNameAndCellsRange[1]).GetCellAddresses();
 
@@ -116,19 +116,6 @@ namespace ShapeCrawler.Spreadsheet
             return xCells;
         }
 
-        private static string GetFilteredFormula(C.Formula formula)
-        {
-#if NETSTANDARD2_1 || NET5_0 || NETCOREAPP2_1
-            var filteredFormula = formula.Text
-                .Replace("'", string.Empty, StringComparison.OrdinalIgnoreCase)
-                .Replace("$", string.Empty,
-                    StringComparison.OrdinalIgnoreCase); //eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5            
-#else
-            var filteredFormula = formula.Text.Replace("'", string.Empty).Replace("$", string.Empty);
-#endif
-            return filteredFormula;
-        }
-
-        #endregion Private Methods
+        #endregion Internal Methods
     }
 }
