@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Spreadsheet;
@@ -26,7 +25,8 @@ namespace ShapeCrawler.Collections
 
         #endregion Constructors
 
-        internal static CategoryCollection Create(SlideChart slideChart, OpenXmlElement firstChartSeries, ChartType chartType)
+        internal static CategoryCollection Create(SlideChart slideChart, OpenXmlElement firstChartSeries,
+            ChartType chartType)
         {
             if (chartType == ChartType.BubbleChart || chartType == ChartType.ScatterChart)
             {
@@ -76,7 +76,8 @@ namespace ShapeCrawler.Collections
                 }
 
                 int xCellIdx = 0;
-                var xCells = new ResettableLazy<List<X.Cell>>(() => ChartReferencesParser.GetXCellsByFormula(cFormula, slideChart));
+                var xCells = new ResettableLazy<List<X.Cell>>(() =>
+                    ChartReferencesParser.GetXCellsByFormula(cFormula, slideChart));
                 foreach (C.NumericValue cachedValue in cachedValues)
                 {
                     categoryList.Add(new Category(xCells, xCellIdx++, cachedValue));
@@ -98,13 +99,14 @@ namespace ShapeCrawler.Collections
                 var nextIndexToCategory = new List<KeyValuePair<uint, Category>>();
                 if (indexToCategory.Any())
                 {
-                    List<KeyValuePair<uint, Category>> descOrderedMains = indexToCategory.OrderByDescending(kvp => kvp.Key).ToList();
+                    List<KeyValuePair<uint, Category>> descOrderedMains =
+                        indexToCategory.OrderByDescending(kvp => kvp.Key).ToList();
                     foreach (C.StringPoint cStrPoint in cStrPoints)
                     {
                         uint index = cStrPoint.Index.Value;
                         C.NumericValue cachedCatName = cStrPoint.NumericValue;
                         KeyValuePair<uint, Category> parent = descOrderedMains.First(kvp => kvp.Key <= index);
-                        Category category = new (null, -1, cachedCatName, parent.Value);
+                        Category category = new(null, -1, cachedCatName, parent.Value);
                         nextIndexToCategory.Add(new KeyValuePair<uint, Category>(index, category));
                     }
                 }
@@ -127,8 +129,6 @@ namespace ShapeCrawler.Collections
 
         private static List<Category> GetMultiCategoriesNew(C.MultiLevelStringReference multiLevelStrRef)
         {
-
-
             var indexToCategory = new List<KeyValuePair<uint, Category>>();
             IEnumerable<C.Level> topDownLevels = multiLevelStrRef.MultiLevelStringCache.Elements<C.Level>().Reverse();
             foreach (C.Level cLevel in topDownLevels)
@@ -137,7 +137,8 @@ namespace ShapeCrawler.Collections
                 var nextIndexToCategory = new List<KeyValuePair<uint, Category>>();
                 if (indexToCategory.Any())
                 {
-                    List<KeyValuePair<uint, Category>> descOrderedMains = indexToCategory.OrderByDescending(kvp => kvp.Key).ToList();
+                    List<KeyValuePair<uint, Category>> descOrderedMains =
+                        indexToCategory.OrderByDescending(kvp => kvp.Key).ToList();
                     foreach (C.StringPoint cStrPoint in cStrPoints)
                     {
                         uint index = cStrPoint.Index.Value;

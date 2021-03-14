@@ -4,7 +4,7 @@ using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Charts
 {
-    internal class ChartWorkbook
+    internal class ChartWorkbook //TODO: implement IDispose to correctly dispose _packagePartStream
     {
         private readonly SlideChart _slideChart;
         private readonly Lazy<WorkbookPart> _workbookPart;
@@ -25,7 +25,7 @@ namespace ShapeCrawler.Charts
             _packagePartStream?.Close();
         }
 
-        private WorkbookPart GetWorkbookPart() // TODO: set using statements
+        private WorkbookPart GetWorkbookPart()
         {
             SpreadsheetDocument spreadsheetDocument;
             _packagePartStream = _slideChart.ChartPart.EmbeddedPackagePart.GetStream();

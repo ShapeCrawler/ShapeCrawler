@@ -90,10 +90,7 @@ namespace ShapeCrawler
                 return;
             }
 
-            // Close SDK presentation documents
             _presentationDocument.Close();
-
-            // Close char workbooks
             ChartWorkbooks.ForEach(cw => cw.Close());
 
             _closed = true;
