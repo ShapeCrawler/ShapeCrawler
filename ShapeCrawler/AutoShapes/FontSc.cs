@@ -48,6 +48,50 @@ namespace ShapeCrawler.AutoShapes
             set => SetFontSize(value);
         }
 
+        public bool IsBold
+        {
+            get => GetBoldFlag();
+            set => SetBoldFlag(value);
+        }
+
+        private void SetBoldFlag(bool value)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        private bool GetBoldFlag()
+        {
+            A.RunProperties aRunProperties = _aText.Parent.GetFirstChild<A.RunProperties>();
+            if (aRunProperties == null)
+            {
+                return false;
+            }
+
+            if (aRunProperties.Bold != null && aRunProperties.Bold == true)
+            {
+                return true;
+            }
+
+            // Trt get from placeholder
+            Shape autoShape = _portion.Paragraph.TextBox.AutoShape;
+            int paragraphLvl = _portion.Paragraph.Level;
+            if (autoShape.Placeholder != null)
+            {
+                Placeholder placeholder = (Placeholder)autoShape.Placeholder;
+                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+                if (placeholder.Shape != null &&
+                    placeholderAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
+                {
+                    if (fontDataPlaceholder.IsBold != null)
+                    {
+                        return fontDataPlaceholder.IsBold.Value;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>
         ///     Gets value indicating whether font size can be changed.
         /// </summary>
