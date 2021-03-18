@@ -17,10 +17,6 @@ namespace ShapeCrawler.Charts
     /// </summary>
     internal class SlideChart : SlideShape, IChart
     {
-        // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
-        // then collection contains only single item.
-        private IEnumerable<OpenXmlElement> _cXCharts;
-
         private readonly Lazy<CategoryCollection> _categories;
         private readonly Lazy<ChartType> _chartType;
         private readonly Lazy<OpenXmlElement> _firstSeries;
@@ -28,6 +24,10 @@ namespace ShapeCrawler.Charts
         private readonly Lazy<SeriesCollection> _seriesCollection;
         private readonly Lazy<LibraryCollection<double>> _xValues;
         private string _chartTitle;
+
+        // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
+        // then collection contains only single item.
+        private IEnumerable<OpenXmlElement> _cXCharts;
         internal ChartPart ChartPart;
         internal ChartWorkbook ChartWorkbook { get; }
 

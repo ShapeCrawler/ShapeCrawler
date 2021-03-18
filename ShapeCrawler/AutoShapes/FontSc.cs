@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml;
+﻿using System;
+using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
@@ -56,7 +57,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetBoldFlag(bool value)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         private bool GetBoldFlag()
@@ -77,8 +78,8 @@ namespace ShapeCrawler.AutoShapes
             int paragraphLvl = _portion.Paragraph.Level;
             if (autoShape.Placeholder != null)
             {
-                Placeholder placeholder = (Placeholder)autoShape.Placeholder;
-                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+                Placeholder placeholder = (Placeholder) autoShape.Placeholder;
+                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
                 if (placeholder.Shape != null &&
                     placeholderAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
                 {

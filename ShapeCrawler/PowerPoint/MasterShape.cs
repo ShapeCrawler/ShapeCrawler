@@ -19,7 +19,7 @@ namespace ShapeCrawler
         internal override ThemePart ThemePart => SlideMaster.PSlideMaster.SlideMasterPart.ThemePart;
 
         public override IPlaceholder Placeholder => MasterPlaceholder.Create(PShapeTreeChild);
-        public override PresentationSc Presentation => SlideMaster.Presentation;
+        public override SCPresentation Presentation => SlideMaster.Presentation;
         public override SlideMasterSc SlideMaster { get; }
     }
 }

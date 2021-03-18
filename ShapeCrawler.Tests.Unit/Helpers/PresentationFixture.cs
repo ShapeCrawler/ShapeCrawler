@@ -2,51 +2,51 @@ namespace ShapeCrawler.Tests.Unit.Helpers
 {
     public class PresentationFixture
     {
-        public PresentationSc Pre001 { get; }
-        public PresentationSc Pre002 { get; }
-        public PresentationSc Pre003 { get; }
-        public PresentationSc Pre004 { get; }
-        public PresentationSc Pre006 { get; }
-        public PresentationSc Pre008 { get; }
-        public PresentationSc Pre009 { get; }
-        public PresentationSc Pre010 { get; }
-        public PresentationSc Pre011 { get; }
-        public PresentationSc Pre012 { get; }
-        public PresentationSc Pre013 { get; }
-        public PresentationSc Pre014 { get; }
-        public PresentationSc Pre015 { get; }
-        public PresentationSc Pre016 { get; }
-        public PresentationSc Pre017 { get; }
-        public PresentationSc Pre018 { get; }
-        public PresentationSc Pre019 { get; }
-        public PresentationSc Pre020 { get; }
-        public PresentationSc Pre021 { get; }
-        public PresentationSc Pre024 { get; }
-        public PresentationSc Pre025 { get; }
+        public SCPresentation Pre001 { get; }
+        public SCPresentation Pre002 { get; }
+        public SCPresentation Pre003 { get; }
+        public SCPresentation Pre004 { get; }
+        public SCPresentation Pre006 { get; }
+        public SCPresentation Pre008 { get; }
+        public SCPresentation Pre009 { get; }
+        public SCPresentation Pre010 { get; }
+        public SCPresentation Pre011 { get; }
+        public SCPresentation Pre012 { get; }
+        public SCPresentation Pre013 { get; }
+        public SCPresentation Pre014 { get; }
+        public SCPresentation Pre015 { get; }
+        public SCPresentation Pre016 { get; }
+        public SCPresentation Pre017 { get; }
+        public SCPresentation Pre018 { get; }
+        public SCPresentation Pre019 { get; }
+        public SCPresentation Pre020 { get; }
+        public SCPresentation Pre021 { get; }
+        public SCPresentation Pre024 { get; }
+        public SCPresentation Pre025 { get; }
 
         public PresentationFixture()
         {
-            Pre001 = PresentationSc.Open(Properties.Resources._001, false);
-            Pre002 = PresentationSc.Open(Properties.Resources._002, false);
-            Pre003 = PresentationSc.Open(Properties.Resources._003, false);
-            Pre004 = PresentationSc.Open(Properties.Resources._004, false);
-            Pre006 = PresentationSc.Open(Properties.Resources._006_1_slides, false);
-            Pre008 = PresentationSc.Open(Properties.Resources._008, false);
-            Pre009 = PresentationSc.Open(Properties.Resources._009, false);
-            Pre010 = PresentationSc.Open(Properties.Resources._010, false);
-            Pre011 = PresentationSc.Open(Properties.Resources._011_dt, false);
-            Pre012 = PresentationSc.Open(Properties.Resources._012_title_placeholder, false);
-            Pre013 = PresentationSc.Open(Properties.Resources._013, false);
-            Pre014 = PresentationSc.Open(Properties.Resources._014, false);
-            Pre015 = PresentationSc.Open(Properties.Resources._015, false);
-            Pre016 = PresentationSc.Open(Properties.Resources._016, false);
-            Pre017 = PresentationSc.Open(Properties.Resources._017, false);
-            Pre018 = PresentationSc.Open(Properties.Resources._018, false);
-            Pre019 = PresentationSc.Open(Properties.Resources._019, false);
-            Pre020 = PresentationSc.Open(Properties.Resources._020, false);
-            Pre021 = PresentationSc.Open(Properties.Resources._021, false);
-            Pre024 = PresentationSc.Open(Properties.Resources._024, false);
-            Pre025 = PresentationSc.Open(Properties.Resources._025, false);
+            Pre001 = SCPresentation.Open(Properties.Resources._001, false);
+            Pre002 = SCPresentation.Open(Properties.Resources._002, false);
+            Pre003 = SCPresentation.Open(Properties.Resources._003, false);
+            Pre004 = SCPresentation.Open(Properties.Resources._004, false);
+            Pre006 = SCPresentation.Open(Properties.Resources._006_1_slides, false);
+            Pre008 = SCPresentation.Open(Properties.Resources._008, false);
+            Pre009 = SCPresentation.Open(Properties.Resources._009, false);
+            Pre010 = SCPresentation.Open(Properties.Resources._010, false);
+            Pre011 = SCPresentation.Open(Properties.Resources._011_dt, false);
+            Pre012 = SCPresentation.Open(Properties.Resources._012_title_placeholder, false);
+            Pre013 = SCPresentation.Open(Properties.Resources._013, false);
+            Pre014 = SCPresentation.Open(Properties.Resources._014, false);
+            Pre015 = SCPresentation.Open(Properties.Resources._015, false);
+            Pre016 = SCPresentation.Open(Properties.Resources._016, false);
+            Pre017 = SCPresentation.Open(Properties.Resources._017, false);
+            Pre018 = SCPresentation.Open(Properties.Resources._018, false);
+            Pre019 = SCPresentation.Open(Properties.Resources._019, false);
+            Pre020 = SCPresentation.Open(Properties.Resources._020, false);
+            Pre021 = SCPresentation.Open(Properties.Resources._021, false);
+            Pre024 = SCPresentation.Open(Properties.Resources._024, false);
+            Pre025 = SCPresentation.Open(Properties.Resources._025, false);
         }
     }
 }

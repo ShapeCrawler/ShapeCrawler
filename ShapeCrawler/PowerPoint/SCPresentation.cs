@@ -17,7 +17,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler
 {
     /// <inheritdoc cref="IPresentation" />
-    public sealed class PresentationSc : IPresentation
+    public sealed class SCPresentation : IPresentation
     {
         private bool _closed;
         private PresentationDocument _presentationDocument;
@@ -42,7 +42,7 @@ namespace ShapeCrawler
 
         #region Constructors
 
-        private PresentationSc(string pptxPath, in bool isEditable)
+        private SCPresentation(string pptxPath, in bool isEditable)
         {
             ThrowIfSourceInvalid(pptxPath);
             _presentationDocument = PresentationDocument.Open(pptxPath, isEditable);
@@ -50,7 +50,7 @@ namespace ShapeCrawler
             Init();
         }
 
-        private PresentationSc(Stream pptxStream, in bool isEditable)
+        private SCPresentation(Stream pptxStream, in bool isEditable)
         {
             ThrowIfSourceInvalid(pptxStream);
             Editable = isEditable;
@@ -64,7 +64,7 @@ namespace ShapeCrawler
 
         public static IPresentation Open(string pptxPath, in bool isEditable)
         {
-            return new PresentationSc(pptxPath, isEditable);
+            return new SCPresentation(pptxPath, isEditable);
         }
 
         public void Save()
@@ -101,19 +101,19 @@ namespace ShapeCrawler
             Close();
         }
 
-        public static PresentationSc Open(byte[] pptxBytes, in bool isEditable)
+        public static SCPresentation Open(byte[] pptxBytes, in bool isEditable)
         {
             ThrowIfSourceInvalid(pptxBytes);
 
             var pptxMemoryStream = new MemoryStream();
             pptxMemoryStream.Write(pptxBytes, 0, pptxBytes.Length);
 
-            return new PresentationSc(pptxMemoryStream, isEditable);
+            return new SCPresentation(pptxMemoryStream, isEditable);
         }
 
-        public static PresentationSc Open(Stream stream, in bool isEditable)
+        public static SCPresentation Open(Stream stream, in bool isEditable)
         {
-            return new PresentationSc(stream, isEditable);
+            return new SCPresentation(stream, isEditable);
         }
 
         #endregion Public Methods

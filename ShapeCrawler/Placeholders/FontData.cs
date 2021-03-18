@@ -20,6 +20,5 @@ namespace ShapeCrawler.Placeholders
         public Int32Value FontSize { get; }
         public LatinFont ALatinFont { get; }
         public bool? IsBold { get; }
-
     }
 }

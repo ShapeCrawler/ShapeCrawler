@@ -138,38 +138,38 @@ namespace ShapeCrawler.Collections
         ///                 Лист1!$A$1:$B$6
         ///             </c:f>
         ///             <c:multiLvlStrCache>
-        ///                 <c:ptCount val="6"/>
+        ///                 <c:ptCount val="6" />
         ///                 <c:lvl>
         ///                     <c:pt idx="0">
         ///                         <c:v>
-        ///                           Dresses
+        ///                             Dresses
         ///                         </c:v>
         ///                     </c:pt>
         ///                     <c:pt idx="1">
         ///                         <c:v>
-        ///                           Tops
+        ///                             Tops
         ///                         </c:v>
         ///                     </c:pt>
         ///                     <c:pt idx="2">
         ///                         <c:v>
-        ///                           Boots
+        ///                             Boots
         ///                         </c:v>
         ///                     </c:pt>
         ///                     <c:pt idx="3">
         ///                         <c:v>
-        ///                           Flats
+        ///                             Flats
         ///                         </c:v>
         ///                     </c:pt>
         ///                 </c:lvl>
         ///                 <c:lvl>
         ///                     <c:pt idx="0">
         ///                         <c:v>
-        ///                           Clothing
+        ///                             Clothing
         ///                         </c:v>
         ///                     </c:pt>
         ///                     <c:pt idx="2">
         ///                         <c:v>
-        ///                           Shoes
+        ///                             Shoes
         ///                         </c:v>
         ///                     </c:pt>
         ///                 </c:lvl>
@@ -191,7 +191,7 @@ namespace ShapeCrawler.Collections
                 {
                     uint catIndex = cStrPoint.Index.Value;
                     C.NumericValue catCachedName = cStrPoint.NumericValue;
-                    var category = new Category(null, (int)catIndex, catCachedName);
+                    var category = new Category(null, (int) catIndex, catCachedName);
                     curCatList.Add(category);
                 }
 
@@ -202,7 +202,6 @@ namespace ShapeCrawler.Collections
                 }
                 else
                 {
-
                     prevCatList = curCatList;
                 }
             }

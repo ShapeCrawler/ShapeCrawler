@@ -31,7 +31,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Hide_MethodHidesSlide_WhenItIsExecuted()
         {
             // Arrange
-            var pre = PresentationSc.Open(Properties.Resources._001, true);
+            var pre = SCPresentation.Open(Properties.Resources._001, true);
             var slide = pre.Slides.First();
 
             // Act
@@ -73,7 +73,7 @@ namespace ShapeCrawler.Tests.Unit
         public async void BackgroundSetImage_ChangesBackground_WhenImageStreamIsPassed()
         {
             // Arrange
-            var pre = PresentationSc.Open(Properties.Resources._009, true);
+            var pre = SCPresentation.Open(Properties.Resources._009, true);
             var backgroundImage = pre.Slides[0].Background;
             var imgStream = new MemoryStream(Properties.Resources.test_image_2);
             var bytesBefore = await backgroundImage.GetImageBytes().ConfigureAwait(false);
@@ -107,7 +107,7 @@ namespace ShapeCrawler.Tests.Unit
             const string customDataString = "Test custom data";
             var origPreStream = new MemoryStream();
             origPreStream.Write(Properties.Resources._001);
-            var originPre = PresentationSc.Open(origPreStream, true);
+            var originPre = SCPresentation.Open(origPreStream, true);
             var slide = originPre.Slides.First();
 
             // Act
@@ -115,7 +115,7 @@ namespace ShapeCrawler.Tests.Unit
 
             var savedPreStream = new MemoryStream();
             originPre.SaveAs(savedPreStream);
-            var savedPre = PresentationSc.Open(savedPreStream, false);
+            var savedPre = SCPresentation.Open(savedPreStream, false);
             var customData = savedPre.Slides.First().CustomData;
 
             // Assert
@@ -152,7 +152,7 @@ namespace ShapeCrawler.Tests.Unit
 
         public static IEnumerable<object[]> TestCasesShapesCount()
         {
-            PresentationSc presentation = PresentationSc.Open(Properties.Resources._009, false);
+            SCPresentation presentation = SCPresentation.Open(Properties.Resources._009, false);
             
             SlideSc slide = presentation.Slides[0];
             yield return new object[] { slide, 6 };
@@ -160,19 +160,19 @@ namespace ShapeCrawler.Tests.Unit
             slide = presentation.Slides[1];
             yield return new object[] { slide, 6 };
             
-            slide = PresentationSc.Open(Properties.Resources._002, false).Slides[0];
+            slide = SCPresentation.Open(Properties.Resources._002, false).Slides[0];
             yield return new object[] { slide, 4 };
             
-            slide = PresentationSc.Open(Properties.Resources._003, false).Slides[0];
+            slide = SCPresentation.Open(Properties.Resources._003, false).Slides[0];
             yield return new object[] { slide, 5 };
             
-            slide = PresentationSc.Open(Properties.Resources._013, false).Slides[0];
+            slide = SCPresentation.Open(Properties.Resources._013, false).Slides[0];
             yield return new object[] { slide, 4 };
             
-            slide = PresentationSc.Open(Properties.Resources._023, false).Slides[0];
+            slide = SCPresentation.Open(Properties.Resources._023, false).Slides[0];
             yield return new object[] { slide, 1 };
 
-            slide = PresentationSc.Open(Properties.Resources._014, false).Slides[2];
+            slide = SCPresentation.Open(Properties.Resources._014, false).Slides[2];
             yield return new object[] { slide, 5 };
         }
 
