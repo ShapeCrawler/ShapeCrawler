@@ -249,21 +249,21 @@ namespace ShapeCrawler.AutoShapes
                 return;
             }
 
-            A.RunProperties aRunProperties = _aText.Parent.GetFirstChild<A.RunProperties>();
-            if (aRunProperties != null)
+            A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
+            if (aRunPr != null)
             {
-                aRunProperties.Bold = new BooleanValue(value);
+                aRunPr.Bold = new BooleanValue(value);
             }
             else
             {
                 Shape autoShape = _portion.Paragraph.TextBox.AutoShape;
-                int paragraphLvl = _portion.Paragraph.Level;
+                int paraLvl = _portion.Paragraph.Level;
                 if (autoShape.Placeholder != null)
                 {
                     Placeholder placeholder = (Placeholder)autoShape.Placeholder;
                     IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
                     if (placeholder.Shape != null &&
-                        placeholderAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
+                        placeholderAutoShape.TryGetFontData(paraLvl, out FontData fontDataPlaceholder))
                     {
                         fontDataPlaceholder.IsBold = new BooleanValue(value);
                     }
