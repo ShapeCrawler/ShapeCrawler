@@ -10,7 +10,7 @@ namespace ShapeCrawler.AutoShapes
     /// </summary>
     public class Portion // TODO: add interface
     {
-        private readonly ResettableLazy<FontSc> _font;
+        private readonly ResettableLazy<SCFont> _font;
         internal readonly A.Text AText;
 
         #region Constructors
@@ -19,7 +19,7 @@ namespace ShapeCrawler.AutoShapes
         {
             AText = aText;
             Paragraph = paragraph;
-            _font = new ResettableLazy<FontSc>(GetFont);
+            _font = new ResettableLazy<SCFont>(GetFont);
         }
 
         #endregion Constructors
@@ -45,7 +45,7 @@ namespace ShapeCrawler.AutoShapes
         /// <summary>
         ///     Gets font.
         /// </summary>
-        public FontSc Font => _font.Value;
+        public IFont Font => _font.Value;
 
         /// <summary>
         ///     Removes portion from the paragraph.
@@ -59,9 +59,9 @@ namespace ShapeCrawler.AutoShapes
 
         #region Private Methods
 
-        private FontSc GetFont()
+        private SCFont GetFont()
         {
-            return new FontSc(AText, this);
+            return new SCFont(AText, this);
         }
 
         private string GetText()
