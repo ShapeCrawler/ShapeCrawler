@@ -119,7 +119,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Chart_Test()
         {
             // Arrange
-            PresentationSc presentation = _fixture.Pre021;
+            IPresentation presentation = _fixture.Pre021;
             var shapes1 = presentation.Slides[0].Shapes;
             var shapes2 = presentation.Slides[1].Shapes; 
             var chart3 = shapes1.First(x => x.Id == 3) as IChart;
@@ -170,7 +170,7 @@ namespace ShapeCrawler.Tests.Unit
         public void CategoryName_SetterChangeName_OfCategoryInPieChart()
         {
             // Arrange
-            IPresentation presentation = PresentationSc.Open(Resources._025, true);
+            IPresentation presentation = SCPresentation.Open(Resources._025, true);
             MemoryStream mStream = new();
             IChart pieChart4 = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
             const string newCategoryName = "Category 1_new";
@@ -181,7 +181,7 @@ namespace ShapeCrawler.Tests.Unit
             // Assert
             pieChart4.Categories[0].Name.Should().Be(newCategoryName);
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             pieChart4 = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
             pieChart4.Categories[0].Name.Should().Be(newCategoryName);
         }
@@ -190,7 +190,7 @@ namespace ShapeCrawler.Tests.Unit
         public void CategoryName_SetterChangeName_OfMainCategoryInMultiLevelCategoryBarChart()
         {
             // Arrange
-            IPresentation presentation = PresentationSc.Open(Resources._025, true);
+            IPresentation presentation = SCPresentation.Open(Resources._025, true);
             MemoryStream mStream = new();
             IChart barChart2 = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4);
             const string newMainCategoryName = "Clothing_new";
@@ -201,7 +201,7 @@ namespace ShapeCrawler.Tests.Unit
             // Assert
             barChart2.Categories[0].Name.Should().Be(newMainCategoryName);
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             barChart2 = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
             barChart2.Categories[0].Name.Should().Be(newMainCategoryName);
         }

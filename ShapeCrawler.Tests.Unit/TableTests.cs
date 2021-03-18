@@ -42,7 +42,7 @@ namespace ShapeCrawler.Tests.Unit
         public void RowRemoveAt_RemovesTableRowWithSpecifiedIndex()
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._009, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._009, true);
             SlideTable table = presentation.Slides[2].Shapes.First(sp => sp.Id == 3) as SlideTable;
             int originRowsCount = table.Rows.Count;
             var mStream = new MemoryStream();
@@ -54,7 +54,7 @@ namespace ShapeCrawler.Tests.Unit
             table.Rows.Should().HaveCountLessThan(originRowsCount);
 
             presentation.SaveAs(mStream);
-            table = PresentationSc.Open(mStream, false).Slides[2].Shapes.First(sp => sp.Id == 3) as SlideTable;
+            table = SCPresentation.Open(mStream, false).Slides[2].Shapes.First(sp => sp.Id == 3) as SlideTable;
             table.Rows.Should().HaveCountLessThan(originRowsCount);
         }
 
@@ -93,13 +93,13 @@ namespace ShapeCrawler.Tests.Unit
 
         public static IEnumerable<object[]> TestCasesCellIsMergedCell()
         {
-            SlideTable table = PresentationSc.Open(Resources._001, false).Slides[1].Shapes.First(sp => sp.Id == 3) as SlideTable;
+            SlideTable table = SCPresentation.Open(Resources._001, false).Slides[1].Shapes.First(sp => sp.Id == 3) as SlideTable;
             yield return new object[] {table[0, 0], table[1, 0]};
 
-            table = PresentationSc.Open(Resources._001, false).Slides[1].Shapes.First(sp => sp.Id == 5) as SlideTable;
+            table = SCPresentation.Open(Resources._001, false).Slides[1].Shapes.First(sp => sp.Id == 5) as SlideTable;
             yield return new object[] { table[1, 1], table[2, 1] };
 
-            table = PresentationSc.Open(Resources._001, false).Slides[3].Shapes.First(sp => sp.Id == 4) as SlideTable;
+            table = SCPresentation.Open(Resources._001, false).Slides[3].Shapes.First(sp => sp.Id == 4) as SlideTable;
             yield return new object[] { table[0, 1], table[1, 1] };
         }
 
@@ -134,7 +134,7 @@ namespace ShapeCrawler.Tests.Unit
         public void ColumnWidthSetter_ChangeTableColumnWidth()
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
             SlideTable table = presentation.Slides[1].Shapes.First(sp => sp.Id == 3) as SlideTable;
             const long newColumnWidth = 4074000;
             var mStream = new MemoryStream();
@@ -146,7 +146,7 @@ namespace ShapeCrawler.Tests.Unit
             table.Columns[0].Width.Should().Be(newColumnWidth);
 
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             table = presentation.Slides[1].Shapes.First(sp => sp.Id == 3) as SlideTable;
             table.Columns[0].Width.Should().Be(newColumnWidth);
         }
@@ -159,7 +159,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_MergesSpecifiedCellsRange(int rowIdx1, int colIdx1, int rowIdx2, int colIdx2)
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
             SlideTable table = presentation.Slides[1].Shapes.First(sp => sp.Id == 4) as SlideTable;
             var mStream = new MemoryStream();
 
@@ -171,7 +171,7 @@ namespace ShapeCrawler.Tests.Unit
             table[rowIdx2, colIdx2].IsMergedCell.Should().BeTrue();
 
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             table = presentation.Slides[1].Shapes.First(sp => sp.Id == 4) as SlideTable;
             table[rowIdx1, colIdx1].IsMergedCell.Should().BeTrue();
             table[rowIdx2, colIdx2].IsMergedCell.Should().BeTrue();
@@ -181,7 +181,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_Merges0x0And0x1CellsOf2x2Table()
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
             SlideTable table = presentation.Slides[2].Shapes.First(sp => sp.Id == 5) as SlideTable;
             var mStream = new MemoryStream();
 
@@ -194,7 +194,7 @@ namespace ShapeCrawler.Tests.Unit
             table[0, 0].TextBox.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
 
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             table = presentation.Slides[2].Shapes.First(sp => sp.Id == 5) as SlideTable;
             table[0, 0].IsMergedCell.Should().BeTrue();
             table[0, 1].IsMergedCell.Should().BeTrue();
@@ -205,7 +205,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_Merges0x1And0x2CellsOf3x2Table()
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
             ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
             var mStream = new MemoryStream();
 
@@ -216,7 +216,7 @@ namespace ShapeCrawler.Tests.Unit
             AssertTable(table);
 
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             table = presentation.Slides[2].Shapes.First(sp => sp.Id == 3) as SlideTable;
             AssertTable(table);
 
@@ -233,7 +233,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_Merges0x0And0x1And0x2CellsOf3x2Table()
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
             SlideTable table = presentation.Slides[2].Shapes.First(sp => sp.Id == 3) as SlideTable;
             var mStream = new MemoryStream();
 
@@ -246,7 +246,7 @@ namespace ShapeCrawler.Tests.Unit
             table[0, 2].IsMergedCell.Should().BeTrue();
 
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             table = presentation.Slides[2].Shapes.First(sp => sp.Id == 3) as SlideTable;
             table[0, 0].IsMergedCell.Should().BeTrue();
             table[0, 1].IsMergedCell.Should().BeTrue();
@@ -257,7 +257,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_Merges0x0And0x1MergedCellsWith0x2CellIn3x2Table()
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
             SlideTable table = presentation.Slides[2].Shapes.First(sp => sp.Id == 7) as SlideTable;
             var mStream = new MemoryStream();
 
@@ -270,7 +270,7 @@ namespace ShapeCrawler.Tests.Unit
             table[0, 2].IsMergedCell.Should().BeTrue();
 
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             table = presentation.Slides[2].Shapes.First(sp => sp.Id == 7) as SlideTable;
             table[0, 0].IsMergedCell.Should().BeTrue();
             table[0, 1].IsMergedCell.Should().BeTrue();
@@ -281,7 +281,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_Merges0x0And1x0CellsOf2x2Table()
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
             ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 5);
             var mStream = new MemoryStream();
 
@@ -292,7 +292,7 @@ namespace ShapeCrawler.Tests.Unit
             AssertTable(table);
 
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             table = presentation.Slides[2].Shapes.First(sp => sp.Id == 5) as SlideTable;
             AssertTable(table);
 
@@ -311,7 +311,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_Merges0x1And1x1CellsOf3x2Table()
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
             SlideTable table = presentation.Slides[2].Shapes.First(sp => sp.Id == 3) as SlideTable;
             var mStream = new MemoryStream();
 
@@ -324,7 +324,7 @@ namespace ShapeCrawler.Tests.Unit
             table[0, 0].IsMergedCell.Should().BeFalse();
 
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             table = presentation.Slides[2].Shapes.First(sp => sp.Id == 3) as SlideTable;
             table[0, 1].IsMergedCell.Should().BeTrue();
             table[1, 1].IsMergedCell.Should().BeTrue();
@@ -335,7 +335,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_Merges0x0To1x1RangeOf3x3Table()
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
             SlideTable table = presentation.Slides[2].Shapes.First(sp => sp.Id == 10) as SlideTable;
             var mStream = new MemoryStream();
 
@@ -350,7 +350,7 @@ namespace ShapeCrawler.Tests.Unit
             table[0, 2].IsMergedCell.Should().BeFalse();
 
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             table = presentation.Slides[2].Shapes.First(sp => sp.Id == 10) as SlideTable;
             table[0, 0].IsMergedCell.Should().BeTrue();
             table[0, 1].IsMergedCell.Should().BeTrue();
@@ -363,7 +363,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_MergesMergedCellWithNonMergedCell()
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
             SlideTable table = presentation.Slides[1].Shapes.First(sp => sp.Id == 5) as SlideTable;
             var mStream = new MemoryStream();
 
@@ -377,7 +377,7 @@ namespace ShapeCrawler.Tests.Unit
             table[3, 2].IsMergedCell.Should().BeFalse();
 
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             table = presentation.Slides[1].Shapes.First(sp => sp.Id == 5) as SlideTable;
             table[1, 1].IsMergedCell.Should().BeTrue();
             table[1, 2].IsMergedCell.Should().BeTrue();
@@ -389,7 +389,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_MergesTwoMergedCells()
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
             SlideTable table = presentation.Slides[3].Shapes.First(sp => sp.Id == 2) as SlideTable;
             var mStream = new MemoryStream();
 
@@ -405,7 +405,7 @@ namespace ShapeCrawler.Tests.Unit
             table[0, 2].IsMergedCell.Should().BeFalse();
 
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             table = presentation.Slides[3].Shapes.First(sp => sp.Id == 2) as SlideTable;
             table[0, 0].IsMergedCell.Should().BeTrue();
             table[0, 1].IsMergedCell.Should().BeTrue();
@@ -419,7 +419,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_Converts2X1TableInto1X1_WhenAllCellsAreMerged()
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
             SlideTable table = presentation.Slides[3].Shapes.First(sp => sp.Id == 3) as SlideTable;
             var mStream = new MemoryStream();
             long totalColWidth = table.Columns[0].Width + table.Columns[1].Width;
@@ -434,7 +434,7 @@ namespace ShapeCrawler.Tests.Unit
             table.Rows[0].Cells.Should().HaveCount(1);
 
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             table = presentation.Slides[3].Shapes.First(sp => sp.Id == 3) as SlideTable;
             table.Columns.Should().HaveCount(1);
             table.Columns[0].Width.Should().Be(totalColWidth);
@@ -446,7 +446,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_Converts2X2TableInto1X1_WhenAllCellsAreMerged()
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
             SlideTable table = presentation.Slides[2].Shapes.First(sp => sp.Id == 5) as SlideTable;
             var mStream = new MemoryStream();
             long mergedColumnWidth = table.Columns[0].Width + table.Columns[1].Width;
@@ -459,7 +459,7 @@ namespace ShapeCrawler.Tests.Unit
             AssertTable(table, mergedColumnWidth, mergedRowHeight);
 
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             table = presentation.Slides[2].Shapes.First(sp => sp.Id == 5) as SlideTable;
             AssertTable(table, mergedColumnWidth, mergedRowHeight);
 
@@ -477,7 +477,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_Merges0x0and0x1CellsIn3x1Table()
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
             SlideTable table = presentation.Slides[3].Shapes.First(sp => sp.Id == 6) as SlideTable;
             var mStream = new MemoryStream();
             long mergedColumnWidth = table.Columns[0].Width + table.Columns[1].Width;
@@ -489,7 +489,7 @@ namespace ShapeCrawler.Tests.Unit
             AssertTable(table, mergedColumnWidth);
 
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             table = presentation.Slides[3].Shapes.First(sp => sp.Id == 6) as SlideTable;
             AssertTable(table, mergedColumnWidth);
 
@@ -506,7 +506,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_Merges0x1and0x2CellsIn3x1Table()
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
             SlideTable table = presentation.Slides[3].Shapes.First(sp => sp.Id == 6) as SlideTable;
             var mStream = new MemoryStream();
             long mergedColumnWidth = table.Columns[1].Width + table.Columns[2].Width;
@@ -518,7 +518,7 @@ namespace ShapeCrawler.Tests.Unit
             AssertTable(table, mergedColumnWidth);
 
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             table = presentation.Slides[3].Shapes.First(sp => sp.Id == 6) as SlideTable;
             AssertTable(table, mergedColumnWidth);
 

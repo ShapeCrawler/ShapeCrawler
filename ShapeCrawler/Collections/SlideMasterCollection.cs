@@ -7,15 +7,15 @@ namespace ShapeCrawler.Collections
 {
     public class SlideMasterCollection : LibraryCollection<SlideMasterSc> //TODO: add interface
     {
-        private SlideMasterCollection(PresentationSc presentation, List<SlideMasterSc> slideMasters)
+        private SlideMasterCollection(SCPresentation presentation, List<SlideMasterSc> slideMasters)
         {
             Presentation = presentation;
             CollectionItems = slideMasters;
         }
 
-        internal PresentationSc Presentation { get; }
+        internal SCPresentation Presentation { get; }
 
-        internal static SlideMasterCollection Create(PresentationSc presentation)
+        internal static SlideMasterCollection Create(SCPresentation presentation)
         {
             IEnumerable<SlideMasterPart> slideMasterParts = presentation.PresentationPart.SlideMasterParts;
             var slideMasters = new List<SlideMasterSc>(slideMasterParts.Count());

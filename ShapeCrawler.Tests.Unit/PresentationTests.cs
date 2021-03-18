@@ -25,7 +25,7 @@ namespace ShapeCrawler.Tests.Unit
             var bytes = new byte[Limitations.MaxPresentationSize + 1];
 
             // Act
-            Action act = () => PresentationSc.Open(bytes, false);
+            Action act = () => SCPresentation.Open(bytes, false);
 
             // Assert
             act.Should().Throw<PresentationIsLargeException>();
@@ -35,7 +35,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SlideWidthAndSlideHeight_ReturnWidthAndHeightSizesOfThePresentationSlides()
         {
             // Arrange
-            PresentationSc presentation = _fixture.Pre009;
+            SCPresentation presentation = _fixture.Pre009;
 
             // Act
             int slideWidth = presentation.SlideWidth;
@@ -63,7 +63,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SlidesRemove_RemovesFirstSlideFromPresentation_WhenFirstSlideObjectWasPassed(byte[] pptxBytes, int expectedSlidesCount)
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(pptxBytes, true);
+            SCPresentation presentation = SCPresentation.Open(pptxBytes, true);
             SlideSc removingSlide = presentation.Slides[0];
             var mStream = new MemoryStream();
 
@@ -74,7 +74,7 @@ namespace ShapeCrawler.Tests.Unit
             presentation.Slides.Should().HaveCount(expectedSlidesCount);
 
             presentation.SaveAs(mStream);
-            presentation = PresentationSc.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream, false);
             presentation.Slides.Should().HaveCount(expectedSlidesCount);
         }
 
@@ -88,8 +88,8 @@ namespace ShapeCrawler.Tests.Unit
         public void SlideMastersCount_ReturnsNumberOfMasterSlidesInThePresentation()
         {
             // Arrange
-            PresentationSc presentationCase1 = _fixture.Pre001;
-            PresentationSc presentationCase2 = _fixture.Pre002;
+            SCPresentation presentationCase1 = _fixture.Pre001;
+            SCPresentation presentationCase2 = _fixture.Pre002;
 
             // Act
             int slideMastersCountCase1 = presentationCase1.SlideMasters.Count;
@@ -104,7 +104,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SlideMasterShapesCount_ReturnsNumberOfShapesOnTheMasterSlide()
         {
             // Arrange
-            PresentationSc presentation = _fixture.Pre001;
+            SCPresentation presentation = _fixture.Pre001;
 
             // Act
             int slideMasterShapesCount = presentation.SlideMasters[0].Shapes.Count;

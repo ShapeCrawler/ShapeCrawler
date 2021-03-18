@@ -37,6 +37,7 @@ namespace ShapeCrawler.Factories
                 A.DefaultRunProperties aDefRPr = textPr.GetFirstChild<A.DefaultRunProperties>();
 
                 Int32Value fontSize = aDefRPr?.FontSize;
+                bool? isBold = aDefRPr?.Bold?.Value;
                 A.LatinFont aLatinFont = aDefRPr?.GetFirstChild<A.LatinFont>();
 
 #if NET5_0 || NETSTANDARD2_1
@@ -48,9 +49,9 @@ namespace ShapeCrawler.Factories
                 var lvl = int.Parse(textPr.LocalName[3].ToString(System.Globalization.CultureInfo.CurrentCulture),
                 System.Globalization.CultureInfo.CurrentCulture);
 #endif
-                if (fontSize != null || aLatinFont != null)
+                if (fontSize != null || aLatinFont != null || isBold != null)
                 {
-                    lvlToFontData.Add(lvl, new FontData(fontSize, aLatinFont));
+                    lvlToFontData.Add(lvl, new FontData(fontSize, aLatinFont, isBold));
                 }
             }
 

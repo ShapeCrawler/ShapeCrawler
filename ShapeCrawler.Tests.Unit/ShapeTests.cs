@@ -36,16 +36,16 @@ namespace ShapeCrawler.Tests.Unit
 
         public static IEnumerable<object[]> TestCasesPlaceholderType()
         {
-            IShape shape = PresentationSc.Open(Resources._021, false).Slides[3].Shapes.First(sp => sp.Id == 2);
+            IShape shape = SCPresentation.Open(Resources._021, false).Slides[3].Shapes.First(sp => sp.Id == 2);
             yield return new object[] { shape, PlaceholderType.Footer };
 
-            shape = PresentationSc.Open(Resources._008, false).Slides[0].Shapes.First(sp => sp.Id == 3);
+            shape = SCPresentation.Open(Resources._008, false).Slides[0].Shapes.First(sp => sp.Id == 3);
             yield return new object[] { shape, PlaceholderType.DateAndTime };
 
-            shape = PresentationSc.Open(Resources._019, false).Slides[0].Shapes.First(sp => sp.Id == 2);
+            shape = SCPresentation.Open(Resources._019, false).Slides[0].Shapes.First(sp => sp.Id == 2);
             yield return new object[] { shape, PlaceholderType.SlideNumber };
 
-            shape = PresentationSc.Open(Resources._013, false).Slides[0].Shapes.First(sp => sp.Id == 281);
+            shape = SCPresentation.Open(Resources._013, false).Slides[0].Shapes.First(sp => sp.Id == 281);
             yield return new object[] { shape, PlaceholderType.Custom };
         }
 
@@ -119,7 +119,7 @@ namespace ShapeCrawler.Tests.Unit
         public async void AutoShapeFillPictureSetImage_ChangeFilledPictureImage()
         {
             // Arrange
-            PresentationSc presentation = PresentationSc.Open(Resources._009, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._009, true);
             IAutoShape autoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 4);
             var newImage = new MemoryStream(Resources.test_image_2);
             var imageSizeBefore = (await autoShape.Fill.Picture.GetImageBytes().ConfigureAwait(false)).Length;
@@ -172,7 +172,7 @@ namespace ShapeCrawler.Tests.Unit
         public void XAndWidth_SettersSetXAndWidthOfTheShape()
         {
             // Arrange
-            var presentation = PresentationSc.Open(Resources._006_1_slides, true);
+            var presentation = SCPresentation.Open(Resources._006_1_slides, true);
             var shape = presentation.Slides.First().Shapes.First(sp => sp.Id == 3);
             var stream = new MemoryStream();
             const int newX = 4000000;
@@ -184,7 +184,7 @@ namespace ShapeCrawler.Tests.Unit
             presentation.SaveAs(stream);
 
             // Assert
-            presentation = PresentationSc.Open(stream, false);
+            presentation = SCPresentation.Open(stream, false);
             shape = presentation.Slides.First().Shapes.First(sp => sp.Id == 3);
             shape.X.Should().Be(newX);
             shape.Width.Should().Be(newWidth);
@@ -226,7 +226,7 @@ namespace ShapeCrawler.Tests.Unit
 
         public static IEnumerable<object[]> GeometryTypeTestCases()
         {
-            var pre021 = PresentationSc.Open(Resources._021, false);
+            var pre021 = SCPresentation.Open(Resources._021, false);
             var shapes = pre021.Slides[3].Shapes;
             var shapeCase1 = shapes.First(sp => sp.Id == 2);
             var shapeCase2 = shapes.First(sp => sp.Id == 3);
@@ -286,7 +286,7 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             const string customDataString = "Test custom data";
             var savedPreStream = new MemoryStream();
-            var presentation = PresentationSc.Open(Resources._009, true);
+            var presentation = SCPresentation.Open(Resources._009, true);
             var shape = presentation.Slides.First().Shapes.First();
 
             // Act
@@ -294,7 +294,7 @@ namespace ShapeCrawler.Tests.Unit
             presentation.SaveAs(savedPreStream);
 
             // Assert
-            presentation = PresentationSc.Open(savedPreStream, false);
+            presentation = SCPresentation.Open(savedPreStream, false);
             shape = presentation.Slides.First().Shapes.First();
             shape.CustomData.Should().Be(customDataString);
         }

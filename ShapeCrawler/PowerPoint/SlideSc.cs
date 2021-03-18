@@ -28,7 +28,7 @@ namespace ShapeCrawler
         private readonly SlideNumber _sldNumEntity;
         private Lazy<CustomXmlPart> _customXmlPart;
 
-        internal PresentationSc Presentation { get; }
+        internal SCPresentation Presentation { get; }
         internal SlidePart SlidePart { get; }
         internal SlideLayoutSc SlideLayout => Presentation.SlideMasters.GetSlideLayoutBySlide(this);
 
@@ -66,7 +66,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Initializes a new instance of the <see cref="SlideSc" /> class.
         /// </summary>
-        internal SlideSc(PresentationSc presentation,
+        internal SlideSc(SCPresentation presentation,
             SlidePart slidePart,
             SlideNumber sldNum)
         {
@@ -78,7 +78,7 @@ namespace ShapeCrawler
             _customXmlPart = new Lazy<CustomXmlPart>(GetSldCustomXmlPart);
         }
 
-        protected SlideSc(PresentationSc presentation, SlidePart slidePart)
+        protected SlideSc(SCPresentation presentation, SlidePart slidePart)
         {
             Presentation = presentation;
             SlidePart = slidePart;

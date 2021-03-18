@@ -22,7 +22,7 @@ namespace ShapeCrawler
 
         internal override ThemePart ThemePart => SlideLayout.SlideLayoutPart.SlideMasterPart.ThemePart;
 
-        public override PresentationSc Presentation => SlideLayout.SlideMaster.Presentation;
+        public override SCPresentation Presentation => SlideLayout.SlideMaster.Presentation;
 
         public override SlideMasterSc SlideMaster => SlideLayout.SlideMaster;
     }

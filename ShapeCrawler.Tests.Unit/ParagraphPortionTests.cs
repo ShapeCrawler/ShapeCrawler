@@ -29,7 +29,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Remove_RemovesPortionFromCollection()
         {
             // Arrange
-            var presentation = PresentationSc.Open(Resources._002, true);
+            var presentation = SCPresentation.Open(Resources._002, true);
             var portions = GetPortions(presentation);
             var portion = portions.First();
             var countBefore = portions.Count;
@@ -43,7 +43,7 @@ namespace ShapeCrawler.Tests.Unit
 
             var memoryStream = new MemoryStream();
             presentation.SaveAs(memoryStream);
-            var savedPresentation = PresentationSc.Open(memoryStream, false);
+            var savedPresentation = SCPresentation.Open(memoryStream, false);
             portions = GetPortions(savedPresentation);
             portions.Should().HaveCount(1);
         }
@@ -100,7 +100,7 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             const string newFont = "Time New Roman";
             IAutoShape autoShape =
-                PresentationSc.Open(Resources._001, true).Slides[0].Shapes.First(sp => sp.Id == 4) as IAutoShape;
+                SCPresentation.Open(Resources._001, true).Slides[0].Shapes.First(sp => sp.Id == 4) as IAutoShape;
             Portion paragraphPortion = autoShape.TextBox.Paragraphs[0].Portions[0];
             
             // Act
@@ -114,7 +114,7 @@ namespace ShapeCrawler.Tests.Unit
         public void FontName_SetterThrowsException_WhenAnUserTryChangeFontNameForPortionOfAPlaceholderShape()
         {
             // Arrange
-            IAutoShape autoShape = (IAutoShape) PresentationSc.Open(Resources._001, true).Slides[2].Shapes
+            IAutoShape autoShape = (IAutoShape) SCPresentation.Open(Resources._001, true).Slides[2].Shapes
                 .First(sp => sp.Id == 4);
             Portion paragraphPortion = autoShape.TextBox.Paragraphs[0].Portions[0];
 
@@ -167,15 +167,9 @@ namespace ShapeCrawler.Tests.Unit
         public void FontSize_SetterChangesFontSizeOfParagraphPortion()
         {
             // Arrange
-            static Portion GetPortion(PresentationSc presentation)
-            {
-                IAutoShape autoShape = presentation.Slides[0].Shapes.First(sp => sp.Id == 4) as IAutoShape;
-                Portion portion = autoShape.TextBox.Paragraphs[0].Portions[0];
-                return portion;
-            }
             int newFontSize = 28;
             var savedPreStream = new MemoryStream();
-            PresentationSc presentation = PresentationSc.Open(Resources._001, true);
+            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
             Portion portion = GetPortion(presentation);
             int oldFontSize = portion.Font.Size;
 
@@ -184,18 +178,102 @@ namespace ShapeCrawler.Tests.Unit
             presentation.SaveAs(savedPreStream);
 
             // Assert
-            presentation = PresentationSc.Open(savedPreStream, false);
+            presentation = SCPresentation.Open(savedPreStream, false);
             portion = GetPortion(presentation);
             portion.Font.Size.Should().NotBe(oldFontSize);
             portion.Font.Size.Should().Be(newFontSize);
             portion.Font.SizeCanBeChanged().Should().BeTrue();
         }
 
-        private static PortionCollection GetPortions(PresentationSc presentation)
+        [Fact]
+        public void FontIsBold_GetterReturnsTrue_WhenFontOfNonPlaceholderTextIsBold()
+        {
+            // Arrange
+            IAutoShape nonPlaceholderAutoShape = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3);
+            Portion portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+
+            // Act
+            bool isBold = portion.Font.IsBold;
+
+            // Assert
+            isBold.Should().BeTrue();
+        }
+
+        [Fact]
+        public void FontIsBold_GetterReturnsTrue_WhenFontOfPlaceholderTextIsBold()
+        {
+            // Arrange
+            IAutoShape placeholderAutoShape = (IAutoShape)_fixture.Pre020.Slides[1].Shapes.First(sp => sp.Id == 6);
+            Portion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+
+            // Act
+            bool isBold = portion.Font.IsBold;
+
+            // Assert
+            isBold.Should().BeTrue();
+        }
+
+        [Fact]
+        public void FontIsBold_GetterReturnsFalse_WhenFontOfNonPlaceholderTextIsNotBold()
+        {
+            // Arrange
+            IAutoShape nonPlaceholderAutoShape = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
+            Portion portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+
+            // Act
+            bool isBold = portion.Font.IsBold;
+
+            // Assert
+            isBold.Should().BeFalse();
+        }
+
+        [Fact]
+        public void FontIsBold_GetterReturnsFalse_WhenFontOfPlaceholderTextIsNotBold()
+        {
+            // Arrange
+            IAutoShape placeholderAutoShape = (IAutoShape)_fixture.Pre020.Slides[2].Shapes.First(sp => sp.Id == 7);
+            Portion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+
+            // Act
+            bool isBold = portion.Font.IsBold;
+
+            // Assert
+            isBold.Should().BeFalse();
+        }
+
+        [Fact(Skip = "In Progress")]
+        public void FontIsBold_Setter_AddsBoldForNonPlaceholderTextFont()
+        {
+            // Arrange
+            var mStream = new MemoryStream();
+            IPresentation presentation = SCPresentation.Open(Resources._020, true);
+            IAutoShape nonPlaceholderAutoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3);
+            Portion portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+
+            // Act
+            portion.Font.IsBold = true;
+
+            // Assert
+            portion.Font.IsBold.Should().BeTrue();
+            presentation.SaveAs(mStream);
+            presentation = SCPresentation.Open(mStream, false);
+            nonPlaceholderAutoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3);
+            portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+            portion.Font.IsBold.Should().BeTrue();
+        }
+
+        private static PortionCollection GetPortions(SCPresentation presentation)
         {
             IAutoShape shape5 = presentation.Slides[1].Shapes.First(x => x.Id == 5) as IAutoShape;
             var portions = shape5.TextBox.Paragraphs[0].Portions;
             return portions;
+        }
+
+        private static Portion GetPortion(SCPresentation presentation)
+        {
+            IAutoShape autoShape = presentation.Slides[0].Shapes.First(sp => sp.Id == 4) as IAutoShape;
+            Portion portion = autoShape.TextBox.Paragraphs[0].Portions[0];
+            return portion;
         }
     }
 }

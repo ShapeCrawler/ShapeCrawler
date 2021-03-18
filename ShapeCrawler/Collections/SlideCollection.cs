@@ -14,11 +14,11 @@ namespace ShapeCrawler.Collections
     /// </summary>
     public class SlideCollection : ISlideCollection
     {
-        private readonly PresentationSc _presentation;
+        private readonly SCPresentation _presentation;
         private readonly PresentationPart _presentationPart;
         private readonly ResettableLazy<List<SlideSc>> _slides;
 
-        internal SlideCollection(PresentationSc presentation)
+        internal SlideCollection(SCPresentation presentation)
         {
             _presentationPart = presentation.PresentationPart;
             _presentation = presentation;

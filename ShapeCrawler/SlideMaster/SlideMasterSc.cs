@@ -16,14 +16,14 @@ namespace ShapeCrawler.SlideMaster
         private readonly ResettableLazy<List<SlideLayoutSc>> _sldLayouts;
         internal readonly P.SlideMaster PSlideMaster;
 
-        internal SlideMasterSc(PresentationSc presentation, P.SlideMaster pSlideMaster)
+        internal SlideMasterSc(SCPresentation presentation, P.SlideMaster pSlideMaster)
         {
             Presentation = presentation;
             PSlideMaster = pSlideMaster;
             _sldLayouts = new ResettableLazy<List<SlideLayoutSc>>(() => GetSlideLayouts());
         }
 
-        internal PresentationSc Presentation { get; }
+        internal SCPresentation Presentation { get; }
 
         public void Hide() //TODO: does it need?
         {
