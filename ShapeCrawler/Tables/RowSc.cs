@@ -10,9 +10,9 @@ namespace ShapeCrawler.Tables
     public class RowSc
     {
         private readonly Lazy<List<CellSc>> _cells;
-
         internal readonly A.TableRow ATableRow;
         internal readonly int Index;
+        internal SlideTable Table { get; }
 
         #region Constructors
 
@@ -73,8 +73,6 @@ namespace ShapeCrawler.Tables
         ///     Returns row's cells.
         /// </summary>
         public IReadOnlyList<CellSc> Cells => _cells.Value;
-
-        public SlideTable Table { get; }
 
         public long Height
         {

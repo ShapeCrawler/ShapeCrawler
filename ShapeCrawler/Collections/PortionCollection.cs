@@ -43,7 +43,13 @@ namespace ShapeCrawler.Collections
             CollectionItems = portions;
         }
 
-        internal static PortionCollection Create(A.Paragraph aParagraph, ParagraphSc paragraph)
+        /// <summary>
+        ///     Gets collection of paragraph portions. Returns <c>NULL</c> if paragraph is empty.
+        /// </summary>
+        /// <param name="aParagraph"></param>
+        /// <param name="paragraph"></param>
+        /// <returns></returns>
+        internal static PortionCollection Create(A.Paragraph aParagraph, SCParagraph paragraph)
         {
             IEnumerable<A.Run> aRuns = aParagraph.Elements<A.Run>();
             if (aRuns.Any())
@@ -54,17 +60,20 @@ namespace ShapeCrawler.Collections
                     var newPortion = new Portion(aRun.Text, paragraph);
                     portions.Add(newPortion);
                 }
-
                 return new PortionCollection(portions);
             }
-            else
+
+            A.Field aField = aParagraph.GetFirstChild<A.Field>();
+            if (aField != null)
             {
                 A.Text aText = aParagraph.GetFirstChild<A.Field>().GetFirstChild<A.Text>();
                 var newPortion = new Portion(aText, paragraph);
-                var portions = new List<Portion>(new[] {newPortion});
+                var portions = new List<Portion>(new[] { newPortion });
 
                 return new PortionCollection(portions);
             }
+
+            return null;
         }
 
         #endregion Internal Methods

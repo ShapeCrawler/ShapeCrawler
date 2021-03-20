@@ -40,7 +40,7 @@ namespace ShapeCrawler.Tables
         /// <summary>
         ///     Gets text box.
         /// </summary>
-        public TextBoxSc TextBox => _textBox.Value;
+        public ITextBox TextBox => _textBox.Value;
 
         public bool IsMergedCell => DefineWhetherCellIsMerged();
 

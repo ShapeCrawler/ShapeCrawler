@@ -16,15 +16,22 @@ namespace ShapeCrawler.AutoShapes
     ///     Represents a text paragraph.
     /// </summary>
     [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
-    public class ParagraphSc
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public class SCParagraph
     {
+        private readonly Lazy<Bullet> _bullet;
+        private readonly ResettableLazy<PortionCollection> _portions;
+        internal TextBoxSc TextBox { get; }
+        internal A.Paragraph AParagraph { get; }
+        internal int Level { get; }
+
         #region Constructors
 
         /// <summary>
-        ///     Initializes an instance of the <see cref="ParagraphSc" /> class.
+        ///     Initializes an instance of the <see cref="SCParagraph" /> class.
         /// </summary>
         // TODO: Replace constructor initialization on static .Create()
-        internal ParagraphSc(A.Paragraph aParagraph, TextBoxSc textBox)
+        internal SCParagraph(A.Paragraph aParagraph, TextBoxSc textBox)
         {
             AParagraph = aParagraph;
             Level = GetInnerLevel(aParagraph);
@@ -39,17 +46,6 @@ namespace ShapeCrawler.AutoShapes
         {
             AParagraph.Remove();
         }
-
-        #region Fields
-
-        private readonly Lazy<Bullet> _bullet;
-        private readonly ResettableLazy<PortionCollection> _portions;
-
-        internal TextBoxSc TextBox { get; }
-        internal A.Paragraph AParagraph { get; }
-        internal int Level { get; }
-
-        #endregion Fields
 
         #region Public Properties
 
@@ -84,15 +80,20 @@ namespace ShapeCrawler.AutoShapes
         private static int GetInnerLevel(A.Paragraph aParagraph)
         {
             // XML-paragraph enumeration started from zero. Null is also zero
-            Int32Value sdkParagraphLvl = aParagraph.ParagraphProperties?.Level ?? 0;
-            int paragraphLvl = ++sdkParagraphLvl;
+            Int32Value xmlParagraphLvl = aParagraph.ParagraphProperties?.Level ?? 0;
+            int paragraphLvl = ++xmlParagraphLvl;
 
             return paragraphLvl;
         }
 
         private string GetText()
         {
-            return Portions.Select(p => p.Text).Aggregate((result, next) => result + next);
+            if (Portions == null)
+            {
+                return string.Empty;
+            }
+
+            return Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next);
         }
 
         private void SetText(string newText)

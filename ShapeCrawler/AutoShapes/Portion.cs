@@ -15,7 +15,7 @@ namespace ShapeCrawler.AutoShapes
 
         #region Constructors
 
-        internal Portion(A.Text aText, ParagraphSc paragraph)
+        internal Portion(A.Text aText, SCParagraph paragraph)
         {
             AText = aText;
             Paragraph = paragraph;
@@ -24,7 +24,7 @@ namespace ShapeCrawler.AutoShapes
 
         #endregion Constructors
 
-        internal ParagraphSc Paragraph { get; }
+        internal SCParagraph Paragraph { get; }
 
         internal A.Run GetARunCopy()
         {

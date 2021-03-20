@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Placeholders;
@@ -10,26 +11,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes
 {
-    public interface IFont
-    {
-        /// <summary>
-        ///     Gets font name.
-        /// </summary>
-        string Name { get; set; }
-
-        /// <summary>
-        ///     Gets or sets font size in EMUs.
-        /// </summary>
-        int Size { get; set; }
-
-        bool IsBold { get; set; }
-
-        /// <summary>
-        ///     Gets value indicating whether font size can be changed.
-        /// </summary>
-        bool SizeCanBeChanged();
-    }
-
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal class SCFont : IFont
     {
         private readonly A.Text _aText;
@@ -270,7 +252,7 @@ namespace ShapeCrawler.AutoShapes
                 }
                 else
                 {
-                    throw new ShapeCrawlerException();
+                    _aText.Parent.NextSibling<A.EndParagraphRunProperties>().Bold = new BooleanValue(true);
                 }
             }
         }

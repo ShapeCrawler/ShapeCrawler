@@ -3,8 +3,8 @@ using ShapeCrawler.AutoShapes;
 
 namespace ShapeCrawler.Collections
 {
-    public interface IParagraphCollection : IReadOnlyList<ParagraphSc>
+    public interface IParagraphCollection : IReadOnlyList<SCParagraph>
     {
-        ParagraphSc Add();
+        SCParagraph Add();
     }
 }

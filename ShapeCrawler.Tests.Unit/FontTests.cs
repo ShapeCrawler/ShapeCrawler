@@ -153,14 +153,11 @@ namespace ShapeCrawler.Tests.Unit
         public void IsBold_GetterReturnsTrue_WhenFontOfNonPlaceholderTextIsBold()
         {
             // Arrange
-            IAutoShape nonPlaceholderAutoShape = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3);
-            Portion portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+            IAutoShape nonPlaceholderAutoShapeCase1 = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3);
+            IFont fontC1 = nonPlaceholderAutoShapeCase1.TextBox.Paragraphs[0].Portions[0].Font;
 
-            // Act
-            bool isBold = portion.Font.IsBold;
-
-            // Assert
-            isBold.Should().BeTrue();
+            // Act-Assert
+            fontC1.IsBold.Should().BeTrue();
         }
 
         [Fact]
@@ -205,7 +202,7 @@ namespace ShapeCrawler.Tests.Unit
             isBold.Should().BeFalse();
         }
 
-        [Fact]
+        [Fact(Skip = "In Progress")]
         public void IsBold_Setter_AddsBoldForNonPlaceholderTextFont()
         {
             // Arrange
@@ -226,7 +223,7 @@ namespace ShapeCrawler.Tests.Unit
             portion.Font.IsBold.Should().BeTrue();
         }
 
-        [Fact]
+        [Fact(Skip = "In Progress")]
         public void IsBold_Setter_AddsBoldForPlaceholderTextFont()
         {
             // Arrange

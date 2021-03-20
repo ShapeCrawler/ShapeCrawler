@@ -12,7 +12,7 @@ namespace ShapeCrawler.AutoShapes
     // TODO: Override ToString()
 
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-    public sealed class TextBoxSc : ITextBox
+    internal sealed class TextBoxSc : ITextBox
     {
         #region Fields
 
