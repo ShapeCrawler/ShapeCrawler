@@ -205,7 +205,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_Merges0x1And0x2CellsOf3x2Table()
         {
             // Arrange
-            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
+            IPresentation presentation = SCPresentation.Open(Resources._001, true);
             ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
             var mStream = new MemoryStream();
 
@@ -214,12 +214,10 @@ namespace ShapeCrawler.Tests.Unit
 
             // Assert
             AssertTable(table);
-
             presentation.SaveAs(mStream);
             presentation = SCPresentation.Open(mStream, false);
-            table = presentation.Slides[2].Shapes.First(sp => sp.Id == 3) as SlideTable;
+            table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
             AssertTable(table);
-
             static void AssertTable(ITable tableSc)
             {
                 tableSc[0, 1].IsMergedCell.Should().BeTrue();

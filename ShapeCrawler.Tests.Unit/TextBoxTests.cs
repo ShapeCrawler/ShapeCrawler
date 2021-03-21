@@ -60,15 +60,15 @@ namespace ShapeCrawler.Tests.Unit
             textBoxCase10.Text.Should().BeEquivalentTo("test footer");
             textBoxCase11.Text.Should().BeEquivalentTo("Test title text");
             textBoxCase12.Text.Should().BeEquivalentTo("P1 P2");
-            textBoxCase13.Text.Should().BeEquivalentTo("P1");
+            textBoxCase13.Text.Should().BeEquivalentTo($"P1{Environment.NewLine}");
             textBoxCase14.Text.Should().BeEquivalentTo("id3");
         }
 
         [Fact]
-        public void Text_SetterChangesTextByUsingFirstParagraphAsBasicSingleParagraph()
+        public void Text_SetterChangesTextBoxContent()
         {
             // Arrange
-            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
+            IPresentation presentation = SCPresentation.Open(Resources._001, true);
             ITextBox textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
             const string newText = "Test";
             var mStream = new MemoryStream();
@@ -82,8 +82,33 @@ namespace ShapeCrawler.Tests.Unit
             
             presentation.SaveAs(mStream);
             presentation.Close();
+
             presentation = SCPresentation.Open(mStream, false);
             textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
+            textBox.Text.Should().BeEquivalentTo(newText);
+            textBox.Paragraphs.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public void Text_SetterChangesTextBoxContent_WhenTheFirstParagraphIsEmpty()
+        {
+            // Arrange
+            IPresentation presentation = SCPresentation.Open(Resources._020, true);
+            ITextBox textBox = ((IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 8)).TextBox;
+            const string newText = "Test";
+            var mStream = new MemoryStream();
+
+            // Act
+            textBox.Text = newText;
+
+            // Assert
+            textBox.Text.Should().BeEquivalentTo(newText);
+            textBox.Paragraphs.Should().HaveCount(1);
+
+            presentation.SaveAs(mStream);
+            presentation.Close();
+            presentation = SCPresentation.Open(mStream, false);
+            textBox = ((IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 8)).TextBox;
             textBox.Text.Should().BeEquivalentTo(newText);
             textBox.Paragraphs.Should().HaveCount(1);
         }
@@ -174,7 +199,7 @@ namespace ShapeCrawler.Tests.Unit
             int expectedNumPortions)
         {
             // Arrange
-            ParagraphSc paragraph = TestHelper.GetParagraph(presentation, prRequest);
+            SCParagraph paragraph = TestHelper.GetParagraph(presentation, prRequest);
             var presentationStream = new MemoryStream();
 
             // Act
@@ -238,13 +263,16 @@ namespace ShapeCrawler.Tests.Unit
         public void Paragraphs_CollectionCounterReturnsNumberOfParagraphsInTheTextFrame()
         {
             // Arrange
-            ITextBox textBox = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextBox;
+            ITextBox textBoxCase1 = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextBox;
+            ITextBox textBoxCase2 = ((IAutoShape)_fixture.Pre020.Slides[2].Shapes.First(sp => sp.Id == 8)).TextBox;
 
             // Act
-            IEnumerable<ParagraphSc> paragraphs = textBox.Paragraphs;
+            IEnumerable<SCParagraph> paragraphsC1 = textBoxCase1.Paragraphs;
+            IEnumerable<SCParagraph> paragraphsC2 = textBoxCase2.Paragraphs;
 
             // Assert
-            paragraphs.Should().HaveCount(1);
+            paragraphsC1.Should().HaveCount(1);
+            paragraphsC2.Should().HaveCount(2);
         }
 
         [Fact]
@@ -265,7 +293,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             ITable table = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3) as ITable;
-            TextBoxSc textBox = table.Rows[0].Cells[0].TextBox;
+            ITextBox textBox = table.Rows[0].Cells[0].TextBox;
 
             // Act-Assert
             textBox.Paragraphs.Should().HaveCount(2);
@@ -282,7 +310,7 @@ namespace ShapeCrawler.Tests.Unit
             int originParagraphsCount = textBox.Paragraphs.Count;
 
             // Act
-            ParagraphSc newParagraph = textBox.Paragraphs.Add();
+            SCParagraph newParagraph = textBox.Paragraphs.Add();
             newParagraph.Text = TEST_TEXT;
 
             // Assert

@@ -18,7 +18,6 @@ namespace ShapeCrawler.Settings
         public PresentationData(P.Presentation pPresentation)
         {
             _lvlToFontData = new Lazy<Dictionary<int, FontData>>(() => ParseFontHeights(pPresentation));
-            SpreadsheetCache = new Dictionary<EmbeddedPackagePart, SpreadsheetDocument>();
         }
 
         #endregion Constructors
@@ -54,9 +53,6 @@ namespace ShapeCrawler.Settings
         #region Properties
 
         public Dictionary<int, FontData> LlvToFontData => _lvlToFontData.Value;
-
-        public Dictionary<EmbeddedPackagePart, SpreadsheetDocument>
-            SpreadsheetCache { get; } //TODO: move it up to Presentation level
 
         #endregion Properties
     }

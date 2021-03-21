@@ -6,7 +6,7 @@
 
 <h3 align="center">
 
-[![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=orange)](https://www.nuget.org/packages/ShapeCrawler) [![.NET Standard](https://img.shields.io/badge/.NET%20Core-5.0-orange)](#) [![.NET Standard](https://img.shields.io/badge/.NET%20Core-2.0-orange)](#) [![.NET Standard](https://img.shields.io/badge/.NET%20Standard-%3E%3D%202.0-orange.svg)](#) [![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE) 
+[![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=orange)](https://www.nuget.org/packages/ShapeCrawler) ![Nuget](https://img.shields.io/nuget/dt/ShapeCrawler?color=orange) [![.NET Standard](https://img.shields.io/badge/.NET%20Core-5.0-orange)](#) [![.NET Standard](https://img.shields.io/badge/.NET%20Core-2.1-orange)](#) [![.NET Standard](https://img.shields.io/badge/.NET%20Standard-%3E%3D%202.0-orange.svg)](#) [![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE) 
 
 </h3>
 
@@ -38,7 +38,7 @@ public class TextSample
     public static void Text()
     {
         // Open presentation and get first slide
-        using PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: true);
+        using IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: true);
         SlideSc slide = presentation.Slides.First();
 
         // Get text holder auto shape
@@ -48,16 +48,16 @@ public class TextSample
         autoShape.TextBox.Text = "A new shape text";
 
         // Change text for a certain paragraph
-        ParagraphSc paragraph = autoShape.TextBox.Paragraphs[1];
+        SCParagraph paragraph = autoShape.TextBox.Paragraphs[1];
         paragraph.Text = "A new text for second paragraph";
 
-        // Print font name and size of a paragraph text portions
-        ITextBox textBox = autoShape.TextBox;
-        IEnumerable<Portion> paragraphPortions = textBox.Paragraphs.First().Portions;
+        // Print font properties
+        PortionCollection paragraphPortions = autoShape.TextBox.Paragraphs.First().Portions;
         foreach (Portion portion in paragraphPortions)
         {
             Console.WriteLine($"Font name: {portion.Font.Name}");
             Console.WriteLine($"Font size: {portion.Font.Size}");
+            Console.WriteLine($"Is bold font?: {portion.Font.IsBold}");
         }
 
         // Save and close the presentation
@@ -78,7 +78,7 @@ public class TableSample
     public static void Table()
     {
         // Get first slide
-        using PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: false);
+        using IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: false);
         SlideSc slide = presentation.Slides.First();
 
         // Get table
@@ -131,7 +131,7 @@ public class ChartSample
 {
     public static void Chart()
     {
-        using PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: false);
+        using IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: false);
         SlideSc slide = presentation.Slides.First();
 
         // Get chart
@@ -164,7 +164,7 @@ public class SlideMasterSample
     public static void SlideMaster()
     {
         // Open presentation in the read mode
-        using PresentationSc presentation = PresentationSc.Open("helloWorld.pptx", isEditable: false);
+        using IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: false);
 
         // Get number of Slide Masters in the presentation
         int slideMastersCount = presentation.SlideMasters.Count;
@@ -198,8 +198,8 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 Don't hesitate to contact me if you want to get involved!
 
 # Changelog
-## Version 0.16.1 - 2021-03-08
-### Fixed
-- Fixed parser of font properties
+## Version 0.17.0 - 2021-03-21
+### Added
+- Added `IFont.IsBold` property to define whether font is bold.
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).

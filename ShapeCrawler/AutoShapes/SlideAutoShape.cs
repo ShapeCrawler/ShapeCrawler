@@ -26,7 +26,7 @@ namespace ShapeCrawler
         private readonly ILocation _innerTransform;
         private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
         private readonly Lazy<ShapeFill> _shapeFill;
-        private readonly Lazy<TextBoxSc> _textBox;
+        private readonly Lazy<SCTextBox> _textBox;
         private bool? _hidden;
         private int _id;
         private string _name;
@@ -41,7 +41,7 @@ namespace ShapeCrawler
         {
             _innerTransform = innerTransform;
             Context = spContext;
-            _textBox = new Lazy<TextBoxSc>(GetTextBox);
+            _textBox = new Lazy<SCTextBox>(GetTextBox);
             _shapeFill = new Lazy<ShapeFill>(TryGetFill);
             _lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(() => GetLvlToFontData());
         }
@@ -123,7 +123,7 @@ namespace ShapeCrawler
 
         #region Private Methods
 
-        private TextBoxSc GetTextBox()
+        private SCTextBox GetTextBox()
         {
             P.TextBody pTextBody = PShapeTreeChild.GetFirstChild<P.TextBody>();
             if (pTextBody == null)
@@ -134,7 +134,7 @@ namespace ShapeCrawler
             var aTexts = pTextBody.Descendants<A.Text>();
             if (aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element with text must be exist
             {
-                return new TextBoxSc(this, pTextBody);
+                return new SCTextBox(this, pTextBody);
             }
 
             return null;

@@ -19,10 +19,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler
 {
-    /// <summary>
-    ///     Represents a shape on a slide.
-    /// </summary>
-    public class SlideTable : SlideShape, ITable
+    public class SlideTable : SlideShape, ITable // TODO: make internal
     {
         private readonly ILocation _innerTransform;
         private readonly P.GraphicFrame _pGraphicFrame;
@@ -79,13 +76,7 @@ namespace ShapeCrawler
                     {
                         aTblCell.HorizontalMerge = new BooleanValue(true);
 
-                        // Copy paragraphs into merged cell
-                        IEnumerable<A.Paragraph> aParagraphsWithARun = aTblCell.TextBody.Elements<A.Paragraph>()
-                            .Where(p => p.Elements<A.Run>().Any());
-                        foreach (A.Paragraph aParagraph in aParagraphsWithARun)
-                        {
-                            this[minRowIndex, minColIndex].ATableCell.TextBody.Append(aParagraph.CloneNode(true));
-                        }
+                        MergeParagraphs(minRowIndex, minColIndex, aTblCell);
                     }
                 }
             }
@@ -110,13 +101,7 @@ namespace ShapeCrawler
                     {
                         aTblCell.VerticalMerge = new BooleanValue(true);
 
-                        // Copy paragraphs into merged cell
-                        IEnumerable<A.Paragraph> aParagraphsWithARun = aTblCell.TextBody.Elements<A.Paragraph>()
-                            .Where(p => p.Elements<A.Run>().Any());
-                        foreach (A.Paragraph aParagraph in aParagraphsWithARun)
-                        {
-                            this[minRowIndex, minColIndex].ATableCell.TextBody.Append(aParagraph.CloneNode(true));
-                        }
+                        MergeParagraphs(minRowIndex, minColIndex, aTblCell);
                     }
                 }
             }
@@ -179,6 +164,27 @@ namespace ShapeCrawler
             _rowCollection.Reset();
         }
 
+        private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
+        {
+            A.TextBody mergedCellTextBody = this[minRowIndex, minColIndex].ATableCell.TextBody;
+            bool hasMoreOnePara = false;
+            IEnumerable<A.Paragraph> aParagraphsWithARun =
+                aTblCell.TextBody.Elements<A.Paragraph>().Where(p => !p.IsEmpty());
+            foreach (A.Paragraph aParagraph in aParagraphsWithARun)
+            {
+                mergedCellTextBody.Append(aParagraph.CloneNode(true));
+                hasMoreOnePara = true;
+            }
+
+            if (hasMoreOnePara)
+            {
+                foreach (A.Paragraph aParagraph in mergedCellTextBody.Elements<A.Paragraph>().Where(p => p.IsEmpty()))
+                {
+                    aParagraph.Remove();
+                }
+            }
+        }
+
         #region Public Properties
 
         public IReadOnlyList<Column> Columns => GetColumnList(); //TODO: make lazy
@@ -197,7 +203,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Returns the y-coordinate of the upper-left corner of the shape.
         /// </summary>
-        public long Y
+        public long Y // TODO: fix warning
         {
             get => _innerTransform.Y;
             set => _innerTransform.SetY(value);
@@ -206,7 +212,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Returns the width of the shape.
         /// </summary>
-        public long Width
+        public long Width // TODO: fix warning
         {
             get => _innerTransform.Width;
             set => _innerTransform.SetWidth(value);
@@ -215,7 +221,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Returns the height of the shape.
         /// </summary>
-        public long Height
+        public long Height // TODO: fix warning
         {
             get => _innerTransform.Height;
             set => _innerTransform.SetHeight(value);
@@ -224,7 +230,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Returns an element identifier.
         /// </summary>
-        public int Id
+        public int Id // TODO: fix warning
         {
             get
             {

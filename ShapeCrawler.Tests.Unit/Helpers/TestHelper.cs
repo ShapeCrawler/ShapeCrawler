@@ -8,14 +8,14 @@ namespace ShapeCrawler.Tests.Unit.Helpers
 {
     public class TestHelper
     {
-        public static ParagraphSc GetParagraph(SCPresentation presentation, ElementRequest paragraphRequest)
+        public static SCParagraph GetParagraph(SCPresentation presentation, ElementRequest paragraphRequest)
         {
             IAutoShape autoShape = presentation.Slides[paragraphRequest.SlideIndex]
                 .Shapes.First(sp => sp.Id == paragraphRequest.ShapeId) as IAutoShape;
             return autoShape.TextBox.Paragraphs[paragraphRequest.ParagraphIndex];
         }
 
-        public static ParagraphSc GetParagraph(MemoryStream presentationStream, ElementRequest paragraphRequest)
+        public static SCParagraph GetParagraph(MemoryStream presentationStream, ElementRequest paragraphRequest)
         {
             SCPresentation presentation = SCPresentation.Open(presentationStream, false);
             IAutoShape autoShape = presentation.Slides[paragraphRequest.SlideIndex]

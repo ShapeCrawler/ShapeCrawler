@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Placeholders;
@@ -10,7 +11,8 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes
 {
-    public class FontSc
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    internal class SCFont : IFont
     {
         private readonly A.Text _aText;
         private readonly ResettableLazy<A.LatinFont> _latinFont;
@@ -19,7 +21,7 @@ namespace ShapeCrawler.AutoShapes
 
         #region Constructors
 
-        internal FontSc(A.Text aText, Portion portion)
+        internal SCFont(A.Text aText, Portion portion)
         {
             _aText = aText;
             _size = new ResettableLazy<int>(GetSize);
@@ -53,44 +55,6 @@ namespace ShapeCrawler.AutoShapes
         {
             get => GetBoldFlag();
             set => SetBoldFlag(value);
-        }
-
-        private void SetBoldFlag(bool value)
-        {
-            throw new NotImplementedException();
-        }
-
-        private bool GetBoldFlag()
-        {
-            A.RunProperties aRunProperties = _aText.Parent.GetFirstChild<A.RunProperties>();
-            if (aRunProperties == null)
-            {
-                return false;
-            }
-
-            if (aRunProperties.Bold != null && aRunProperties.Bold == true)
-            {
-                return true;
-            }
-
-            // Trt get from placeholder
-            Shape autoShape = _portion.Paragraph.TextBox.AutoShape;
-            int paragraphLvl = _portion.Paragraph.Level;
-            if (autoShape.Placeholder != null)
-            {
-                Placeholder placeholder = (Placeholder) autoShape.Placeholder;
-                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
-                if (placeholder.Shape != null &&
-                    placeholderAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
-                {
-                    if (fontDataPlaceholder.IsBold != null)
-                    {
-                        return fontDataPlaceholder.IsBold.Value;
-                    }
-                }
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -225,6 +189,72 @@ namespace ShapeCrawler.AutoShapes
             }
 
             return FormatConstants.DefaultFontSize;
+        }
+
+        private bool GetBoldFlag()
+        {
+            A.RunProperties aRunProperties = _aText.Parent.GetFirstChild<A.RunProperties>();
+            if (aRunProperties == null)
+            {
+                return false;
+            }
+
+            if (aRunProperties.Bold != null && aRunProperties.Bold == true)
+            {
+                return true;
+            }
+
+            // Trt get from placeholder
+            Shape autoShape = _portion.Paragraph.TextBox.AutoShape;
+            int paragraphLvl = _portion.Paragraph.Level;
+            if (autoShape.Placeholder != null)
+            {
+                Placeholder placeholder = (Placeholder)autoShape.Placeholder;
+                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+                if (placeholder.Shape != null &&
+                    placeholderAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
+                {
+                    if (fontDataPlaceholder.IsBold != null)
+                    {
+                        return fontDataPlaceholder.IsBold.Value;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private void SetBoldFlag(bool value)
+        {
+            if (IsBold == value)
+            {
+                return;
+            }
+
+            A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
+            if (aRunPr != null)
+            {
+                aRunPr.Bold = new BooleanValue(value);
+            }
+            else
+            {
+                Shape autoShape = _portion.Paragraph.TextBox.AutoShape;
+                int paraLvl = _portion.Paragraph.Level;
+                if (autoShape.Placeholder != null)
+                {
+                    Placeholder placeholder = (Placeholder)autoShape.Placeholder;
+                    IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+                    if (placeholder.Shape != null &&
+                        placeholderAutoShape.TryGetFontData(paraLvl, out FontData fontDataPlaceholder))
+                    {
+                        fontDataPlaceholder.IsBold = new BooleanValue(value);
+                    }
+                }
+                else
+                {
+                    _aText.Parent.NextSibling<A.EndParagraphRunProperties>().Bold = new BooleanValue(true);
+                }
+            }
         }
 
         #endregion Private Methods

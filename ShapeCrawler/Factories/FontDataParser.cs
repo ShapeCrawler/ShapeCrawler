@@ -37,7 +37,7 @@ namespace ShapeCrawler.Factories
                 A.DefaultRunProperties aDefRPr = textPr.GetFirstChild<A.DefaultRunProperties>();
 
                 Int32Value fontSize = aDefRPr?.FontSize;
-                bool? isBold = aDefRPr?.Bold?.Value;
+                BooleanValue isBold = aDefRPr?.Bold;
                 A.LatinFont aLatinFont = aDefRPr?.GetFirstChild<A.LatinFont>();
 
 #if NET5_0 || NETSTANDARD2_1

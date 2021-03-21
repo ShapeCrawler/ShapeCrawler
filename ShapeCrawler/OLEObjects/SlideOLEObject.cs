@@ -22,12 +22,10 @@ namespace ShapeCrawler
 
         internal SlideOLEObject(
             OpenXmlCompositeElement shapeTreeChild,
-            ILocation innerTransform,
             ShapeContext spContext,
             SlideSc slide) : base(slide, shapeTreeChild)
         {
             ShapeTreeChild = shapeTreeChild;
-            _innerTransform = innerTransform;
             Context = spContext;
         }
 
@@ -36,89 +34,13 @@ namespace ShapeCrawler
         #region Fields
 
         internal ShapeContext Context;
-        private bool? _hidden;
         private int _id;
-        private string _name;
-        private readonly ILocation _innerTransform;
 
         internal OpenXmlCompositeElement ShapeTreeChild { get; }
-        internal SlideSc Slide { get; }
 
         #endregion Fields
 
         #region Public Properties
-
-        /// <summary>
-        ///     Returns the x-coordinate of the upper-left corner of the shape.
-        /// </summary>
-        public long X
-        {
-            get => _innerTransform.X;
-            set => _innerTransform.SetX(value);
-        }
-
-        /// <summary>
-        ///     Returns the y-coordinate of the upper-left corner of the shape.
-        /// </summary>
-        public long Y
-        {
-            get => _innerTransform.Y;
-            set => _innerTransform.SetY(value);
-        }
-
-        /// <summary>
-        ///     Returns the width of the shape.
-        /// </summary>
-        public long Width
-        {
-            get => _innerTransform.Width;
-            set => _innerTransform.SetWidth(value);
-        }
-
-        /// <summary>
-        ///     Returns the height of the shape.
-        /// </summary>
-        public long Height
-        {
-            get => _innerTransform.Height;
-            set => _innerTransform.SetHeight(value);
-        }
-
-        /// <summary>
-        ///     Returns an element identifier.
-        /// </summary>
-        public int Id
-        {
-            get
-            {
-                InitIdHiddenName();
-                return _id;
-            }
-        }
-
-        /// <summary>
-        ///     Gets an element name.
-        /// </summary>
-        public string Name
-        {
-            get
-            {
-                InitIdHiddenName();
-                return _name;
-            }
-        }
-
-        /// <summary>
-        ///     Determines whether the shape is hidden.
-        /// </summary>
-        public bool Hidden
-        {
-            get
-            {
-                InitIdHiddenName();
-                return (bool) _hidden;
-            }
-        }
 
         public GeometryType GeometryType => GeometryType.Rectangle;
 
@@ -150,19 +72,6 @@ namespace ShapeCrawler
             }
 
             return elementText.Value;
-        }
-
-        private void InitIdHiddenName()
-        {
-            if (_id != 0)
-            {
-                return;
-            }
-
-            var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
-            _id = id;
-            _hidden = hidden;
-            _name = name;
         }
 
         #endregion

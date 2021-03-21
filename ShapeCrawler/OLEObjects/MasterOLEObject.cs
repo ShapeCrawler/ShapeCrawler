@@ -11,13 +11,6 @@ namespace ShapeCrawler.OLEObjects
             pGraphicFrame)
         {
         }
-
-        public long X { get; set; }
-        public long Y { get; set; }
-        public long Width { get; set; }
-        public long Height { get; set; }
-        public string Name { get; }
-        public bool Hidden { get; }
         public override IPlaceholder Placeholder => MasterPlaceholder.Create(PShapeTreeChild);
     }
 }

@@ -38,30 +38,6 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public long X
-        {
-            get => _innerTransform.X;
-            set => _innerTransform.SetX(value);
-        }
-
-        public long Y
-        {
-            get => _innerTransform.Y;
-            set => _innerTransform.SetY(value);
-        }
-
-        public long Width
-        {
-            get => _innerTransform.Width;
-            set => _innerTransform.SetWidth(value);
-        }
-
-        public long Height
-        {
-            get => _innerTransform.Height;
-            set => _innerTransform.SetHeight(value);
-        }
-
         public IReadOnlyCollection<IShape> Shapes { get; }
 
         #endregion Properties
