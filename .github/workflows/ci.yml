@@ -12,7 +12,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 2.1.814
+        dotnet-version: 5.0.201
     - name: Install dependencies
       run: dotnet restore
     - name: Build
