@@ -12,12 +12,10 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.201
+        dotnet-version: 2.1.814
     - name: Install dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --configuration Release --no-restore
-    - name: Test .NET 5.0
-    #   run: dotnet test --no-restore --verbosity normal -f net5.0
-    # - name: Test .NET Core 2.1
+      run: dotnet build --configuration Release --no-restore -f netcoreapp2.1
+    - name: Test
       run: dotnet test --no-restore --verbosity normal -f netcoreapp2.1
