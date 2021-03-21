@@ -19,3 +19,5 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     - name: Test .NET 5.0
       run: dotnet test --no-restore --verbosity normal -f net5.0
+    - name: Test .NET Framework 4.6.1
+      run: dotnet test --no-restore --verbosity normal -f net461
