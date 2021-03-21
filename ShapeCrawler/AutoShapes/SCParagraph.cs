@@ -41,11 +41,6 @@ namespace ShapeCrawler.AutoShapes
 
         #endregion Constructors
 
-        internal void Remove()
-        {
-            AParagraph.Remove();
-        }
-
         #region Public Properties
 
         /// <summary>

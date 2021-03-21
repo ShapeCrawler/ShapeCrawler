@@ -87,7 +87,7 @@ namespace ShapeCrawler.Tests.Unit
             IChart chartCase9 = (IChart)_fixture.Pre009.Slides[4].Shapes.First(sp => sp.Id == 6);
             IChart chartCase10 = (IChart)_fixture.Pre009.Slides[4].Shapes.First(sp => sp.Id == 3);
             IChart chartCase11 = (IChart)_fixture.Pre009.Slides[4].Shapes.First(sp => sp.Id == 5);
-
+            
             // Act
             string charTitleCase1 = chartCase1.Title;
             string charTitleCase2 = chartCase2.Title;
@@ -298,6 +298,16 @@ namespace ShapeCrawler.Tests.Unit
             chartTypeCase2.Should().Be(ChartType.ScatterChart);
             chartTypeCase3.Should().Be(ChartType.Combination);
             chartTypeCase4.Should().Be(ChartType.PieChart);
+        }
+
+        [Fact]
+        public void GeometryType_GetterReturnsRectangle()
+        {
+            // Arrange
+            IChart chart = (IChart)_fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 6);
+
+            // Act-Assert
+            chart.GeometryType.Should().Be(GeometryType.Rectangle);
         }
     }
 }

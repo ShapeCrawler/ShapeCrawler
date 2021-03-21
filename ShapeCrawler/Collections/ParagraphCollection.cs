@@ -58,17 +58,6 @@ namespace ShapeCrawler.Texts
 
         public int Count => _paragraphs.Value.Count;
 
-        public void RemoveRange(int index, int removeCount)
-        {
-            // Remove from outer
-            for (int removeIdx = index; removeIdx <= removeCount; removeIdx++)
-            {
-                _paragraphs.Value[removeIdx].Remove();
-            }
-
-            _paragraphs.Reset();
-        }
-
         /// <summary>
         ///     Adds a new paragraph in collection.
         /// </summary>

@@ -32,7 +32,7 @@ namespace ShapeCrawler.Factories
                 {
                     var spContext = _shapeContextBuilder.Build(pShapeTreeChild);
                     var innerTransform = _transformFactory.FromComposite(pGraphicFrame);
-                    var oleObject = new SlideOLEObject(pGraphicFrame, innerTransform, spContext, slide);
+                    var oleObject = new SlideOLEObject(pGraphicFrame, spContext, slide);
 
                     return oleObject;
                 }
