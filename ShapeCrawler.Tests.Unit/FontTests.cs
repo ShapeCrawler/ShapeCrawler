@@ -202,6 +202,7 @@ namespace ShapeCrawler.Tests.Unit
             isBold.Should().BeFalse();
         }
 
+#if DEBUG
         [Fact(Skip = "In Progress")]
         public void IsBold_Setter_AddsBoldForNonPlaceholderTextFont()
         {
@@ -244,7 +245,7 @@ namespace ShapeCrawler.Tests.Unit
             portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
             portion.Font.IsBold.Should().BeTrue();
         }
-
+#endif
         private static Portion GetPortion(SCPresentation presentation)
         {
             IAutoShape autoShape = presentation.Slides[0].Shapes.First(sp => sp.Id == 4) as IAutoShape;

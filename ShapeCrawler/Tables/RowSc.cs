@@ -12,7 +12,6 @@ namespace ShapeCrawler.Tables
         private readonly Lazy<List<CellSc>> _cells;
         internal readonly A.TableRow ATableRow;
         internal readonly int Index;
-        internal SlideTable Table { get; }
 
         #region Constructors
 
@@ -30,6 +29,8 @@ namespace ShapeCrawler.Tables
         }
 
         #endregion Constructors
+
+        internal SlideTable Table { get; }
 
         #region Private Methods
 

@@ -68,11 +68,6 @@ namespace ShapeCrawler.Collections
             }
 
             return null;
-
-            //A.EndParagraphRunProperties aEndParaRunPr = aParagraph.GetFirstChild<A.EndParagraphRunProperties>();
-            //var aEndParaRPrPortions = new List<Portion>(new[] { new Portion(aEndParaRunPr, paragraph) });
-
-            //return new PortionCollection(aEndParaRPrPortions);
         }
 
         #endregion Internal Methods

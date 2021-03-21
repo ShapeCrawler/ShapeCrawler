@@ -168,7 +168,8 @@ namespace ShapeCrawler
         {
             A.TextBody mergedCellTextBody = this[minRowIndex, minColIndex].ATableCell.TextBody;
             bool hasMoreOnePara = false;
-            IEnumerable<A.Paragraph> aParagraphsWithARun = aTblCell.TextBody.Elements<A.Paragraph>().Where(p => !p.IsEmpty());
+            IEnumerable<A.Paragraph> aParagraphsWithARun =
+                aTblCell.TextBody.Elements<A.Paragraph>().Where(p => !p.IsEmpty());
             foreach (A.Paragraph aParagraph in aParagraphsWithARun)
             {
                 mergedCellTextBody.Append(aParagraph.CloneNode(true));
