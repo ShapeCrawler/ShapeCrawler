@@ -65,10 +65,10 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Text_SetterChangesTextByUsingFirstParagraphAsBasicSingleParagraph()
+        public void Text_SetterChangesTextBoxContent()
         {
             // Arrange
-            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
+            IPresentation presentation = SCPresentation.Open(Resources._001, true);
             ITextBox textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
             const string newText = "Test";
             var mStream = new MemoryStream();
@@ -82,8 +82,33 @@ namespace ShapeCrawler.Tests.Unit
             
             presentation.SaveAs(mStream);
             presentation.Close();
+
             presentation = SCPresentation.Open(mStream, false);
             textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
+            textBox.Text.Should().BeEquivalentTo(newText);
+            textBox.Paragraphs.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public void Text_SetterChangesTextBoxContent_WhenTheFirstParagraphIsEmpty()
+        {
+            // Arrange
+            IPresentation presentation = SCPresentation.Open(Resources._020, true);
+            ITextBox textBox = ((IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 8)).TextBox;
+            const string newText = "Test";
+            var mStream = new MemoryStream();
+
+            // Act
+            textBox.Text = newText;
+
+            // Assert
+            textBox.Text.Should().BeEquivalentTo(newText);
+            textBox.Paragraphs.Should().HaveCount(1);
+
+            presentation.SaveAs(mStream);
+            presentation.Close();
+            presentation = SCPresentation.Open(mStream, false);
+            textBox = ((IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 8)).TextBox;
             textBox.Text.Should().BeEquivalentTo(newText);
             textBox.Paragraphs.Should().HaveCount(1);
         }

@@ -91,5 +91,6 @@ namespace ShapeCrawler.Texts
         }
 
         #endregion Public Methods
+
     }
 }

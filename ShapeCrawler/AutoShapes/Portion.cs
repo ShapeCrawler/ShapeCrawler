@@ -1,4 +1,5 @@
 ﻿using System;
+using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -12,6 +13,7 @@ namespace ShapeCrawler.AutoShapes
     {
         private readonly ResettableLazy<SCFont> _font;
         internal readonly A.Text AText;
+        private EndParagraphRunProperties aEndParaRunPr;
 
         #region Constructors
 
@@ -20,6 +22,12 @@ namespace ShapeCrawler.AutoShapes
             AText = aText;
             Paragraph = paragraph;
             _font = new ResettableLazy<SCFont>(GetFont);
+        }
+
+        internal Portion(EndParagraphRunProperties aEndParaRunPr, SCParagraph paragraph)
+        {
+            this.aEndParaRunPr = aEndParaRunPr;
+            Paragraph = paragraph;
         }
 
         #endregion Constructors
