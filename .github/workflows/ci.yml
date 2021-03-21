@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Dotnet Side by Side testing sample
+    name: Pipeline
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET 5.0
@@ -22,5 +22,7 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
-    - name: Test
+    - name: Test .NET 5.0
+      run: dotnet test --no-restore --verbosity normal -f net5.0
+    - name: Test .NET Core 2.1
       run: dotnet test --no-restore --verbosity normal -f netcoreapp2.1
