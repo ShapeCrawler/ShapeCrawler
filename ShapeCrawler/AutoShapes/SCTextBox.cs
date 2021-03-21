@@ -10,10 +10,9 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes
 {
-    // TODO: Override ToString()
-
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-    internal sealed class TextBoxSc : ITextBox
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    internal sealed class SCTextBox : ITextBox
     {
         #region Fields
 
@@ -44,7 +43,7 @@ namespace ShapeCrawler.AutoShapes
 
         #region Constructors
 
-        internal TextBoxSc(Shape autoShape, P.TextBody pTextBody)
+        internal SCTextBox(Shape autoShape, P.TextBody pTextBody)
         {
             AutoShape = autoShape;
             _compositeElement = pTextBody;
@@ -53,7 +52,7 @@ namespace ShapeCrawler.AutoShapes
         }
 
         // TODO: Resolve conflict getting text box for autoShape and table
-        internal TextBoxSc(A.TextBody aTextBody)
+        internal SCTextBox(A.TextBody aTextBody)
         {
             _compositeElement = aTextBody;
             _text = new Lazy<string>(GetText);

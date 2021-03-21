@@ -21,7 +21,7 @@ namespace ShapeCrawler.AutoShapes
     {
         private readonly Lazy<Bullet> _bullet;
         private readonly ResettableLazy<PortionCollection> _portions;
-        internal TextBoxSc TextBox { get; }
+        internal SCTextBox TextBox { get; }
         internal A.Paragraph AParagraph { get; }
         internal int Level { get; }
 
@@ -30,8 +30,7 @@ namespace ShapeCrawler.AutoShapes
         /// <summary>
         ///     Initializes an instance of the <see cref="SCParagraph" /> class.
         /// </summary>
-        // TODO: Replace constructor initialization on static .Create()
-        internal SCParagraph(A.Paragraph aParagraph, TextBoxSc textBox)
+        internal SCParagraph(A.Paragraph aParagraph, SCTextBox textBox)
         {
             AParagraph = aParagraph;
             Level = GetInnerLevel(aParagraph);

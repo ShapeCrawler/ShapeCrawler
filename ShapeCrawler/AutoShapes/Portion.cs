@@ -9,11 +9,10 @@ namespace ShapeCrawler.AutoShapes
     /// <summary>
     ///     Represents a text paragraph portion.
     /// </summary>
-    public class Portion // TODO: add interface
+    public class Portion : IPortion // TODO: make internal
     {
         private readonly ResettableLazy<SCFont> _font;
         internal readonly A.Text AText;
-        private EndParagraphRunProperties aEndParaRunPr;
 
         #region Constructors
 
@@ -22,12 +21,6 @@ namespace ShapeCrawler.AutoShapes
             AText = aText;
             Paragraph = paragraph;
             _font = new ResettableLazy<SCFont>(GetFont);
-        }
-
-        internal Portion(EndParagraphRunProperties aEndParaRunPr, SCParagraph paragraph)
-        {
-            this.aEndParaRunPr = aEndParaRunPr;
-            Paragraph = paragraph;
         }
 
         #endregion Constructors

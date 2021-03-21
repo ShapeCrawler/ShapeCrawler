@@ -19,14 +19,14 @@ namespace ShapeCrawler.Tables
             ATableCell = aTableCell;
             RowIndex = rowIdx;
             ColumnIndex = columnIdx;
-            _textBox = new ResettableLazy<TextBoxSc>(() => GetTextBox());
+            _textBox = new ResettableLazy<SCTextBox>(() => GetTextBox());
         }
 
         #endregion Constructors
 
         #region Fields
 
-        private readonly ResettableLazy<TextBoxSc> _textBox;
+        private readonly ResettableLazy<SCTextBox> _textBox;
 
         internal int RowIndex { get; }
         internal int ColumnIndex { get; }
@@ -48,14 +48,14 @@ namespace ShapeCrawler.Tables
 
         #region Private Methods
 
-        private TextBoxSc GetTextBox()
+        private SCTextBox GetTextBox()
         {
             var aTxtBody = ATableCell.TextBody;
             var aTexts = aTxtBody.Descendants<A.Text>();
             if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0
             ) // at least one of <a:t> element contain text
             {
-                return new TextBoxSc(aTxtBody);
+                return new SCTextBox(aTxtBody);
             }
 
             return null;

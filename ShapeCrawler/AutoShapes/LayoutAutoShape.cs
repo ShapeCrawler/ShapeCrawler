@@ -29,7 +29,7 @@ namespace ShapeCrawler
 
         internal LayoutAutoShape(SlideLayoutSc slideLayout, P.Shape pShape) : base(slideLayout, pShape)
         {
-            _textBox = new Lazy<TextBoxSc>(GetTextBox);
+            _textBox = new Lazy<SCTextBox>(GetTextBox);
             _shapeFill = new Lazy<ShapeFill>(TryGetFill);
             _lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(() => GetLvlToFontData());
         }
@@ -82,71 +82,15 @@ namespace ShapeCrawler
 
         #region Fields
 
-        private readonly Lazy<TextBoxSc> _textBox;
+        private readonly Lazy<SCTextBox> _textBox;
         private readonly Lazy<ShapeFill> _shapeFill;
         private readonly ImageExFactory _imageFactory = new ImageExFactory();
-        private bool? _hidden;
-        private int _id;
-        private string _name;
-        private P.Shape pShape;
-        private readonly ILocation _innerTransform;
 
         internal ShapeContext Context { get; }
 
         #endregion Fields
 
         #region Public Properties
-
-        public long X
-        {
-            get => _innerTransform.X;
-            set => _innerTransform.SetX(value);
-        }
-
-        public long Y
-        {
-            get => _innerTransform.Y;
-            set => _innerTransform.SetY(value);
-        }
-
-        public long Width
-        {
-            get => _innerTransform.Width;
-            set => _innerTransform.SetWidth(value);
-        }
-
-        public long Height
-        {
-            get => _innerTransform.Height;
-            set => _innerTransform.SetHeight(value);
-        }
-
-        public int Id //TODO: move to Shape
-        {
-            get
-            {
-                InitIdHiddenName();
-                return _id;
-            }
-        }
-
-        public string Name //TODO: move to Shape
-        {
-            get
-            {
-                InitIdHiddenName();
-                return _name;
-            }
-        }
-
-        public bool Hidden //TODO: move to Shape
-        {
-            get
-            {
-                InitIdHiddenName();
-                return (bool) _hidden;
-            }
-        }
 
         public ITextBox TextBox => _textBox.Value;
 
@@ -156,7 +100,7 @@ namespace ShapeCrawler
 
         #region Private Methods
 
-        private TextBoxSc GetTextBox()
+        private SCTextBox GetTextBox()
         {
             P.TextBody pTextBody = PShapeTreeChild.GetFirstChild<P.TextBody>();
             if (pTextBody == null)
@@ -167,7 +111,7 @@ namespace ShapeCrawler
             var aTexts = pTextBody.Descendants<A.Text>();
             if (aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element with text must be exist
             {
-                return new TextBoxSc(this, pTextBody);
+                return new SCTextBox(this, pTextBody);
             }
 
             return null;
@@ -195,19 +139,6 @@ namespace ShapeCrawler
             }
 
             return null;
-        }
-
-        private void InitIdHiddenName()
-        {
-            if (_id != 0)
-            {
-                return;
-            }
-
-            var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
-            _id = id;
-            _hidden = hidden;
-            _name = name;
         }
 
         #endregion

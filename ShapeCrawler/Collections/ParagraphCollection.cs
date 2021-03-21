@@ -18,11 +18,11 @@ namespace ShapeCrawler.Texts
         private readonly ResettableLazy<List<SCParagraph>> _paragraphs;
 
         private readonly OpenXmlCompositeElement _textBodyCompositeElement;
-        private readonly TextBoxSc _textBox;
+        private readonly SCTextBox _textBox;
 
         #region Constructors
 
-        internal ParagraphCollection(OpenXmlCompositeElement textBodyCompositeElement, TextBoxSc textBox)
+        internal ParagraphCollection(OpenXmlCompositeElement textBodyCompositeElement, SCTextBox textBox)
         {
             _textBodyCompositeElement = textBodyCompositeElement;
             _textBox = textBox;
