@@ -8,9 +8,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added `IFont.IsBold` property to define whether font is bold.
 
-### Fixed
-- Fixed parser of font properties
-
 ## Version 0.16.1 - 2021-03-08
 ### Fixed
 - Fixed parser of font properties

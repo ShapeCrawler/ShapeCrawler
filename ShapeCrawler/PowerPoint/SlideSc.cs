@@ -183,7 +183,7 @@ namespace ShapeCrawler
             {
                 var newSlideCustomXmlPart = SlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
                 customXmlPartStream = newSlideCustomXmlPart.GetStream();
-#if NETSTANDARD2_0
+#if NET461
                 _customXmlPart = new Lazy<CustomXmlPart>(() => newSlideCustomXmlPart);
 #else
                 _customXmlPart = new Lazy<CustomXmlPart>(newSlideCustomXmlPart);

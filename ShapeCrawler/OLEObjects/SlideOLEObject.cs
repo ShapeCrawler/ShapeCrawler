@@ -34,7 +34,6 @@ namespace ShapeCrawler
         #region Fields
 
         internal ShapeContext Context;
-        private int _id;
 
         internal OpenXmlCompositeElement ShapeTreeChild { get; }
 

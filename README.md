@@ -6,7 +6,7 @@
 
 <h3 align="center">
 
-[![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=orange)](https://www.nuget.org/packages/ShapeCrawler) ![Nuget](https://img.shields.io/nuget/dt/ShapeCrawler?color=orange) [![.NET Standard](https://img.shields.io/badge/.NET%20Core-5.0-orange)](#) [![.NET Standard](https://img.shields.io/badge/.NET%20Core-2.1-orange)](#) [![.NET Standard](https://img.shields.io/badge/.NET%20Standard-%3E%3D%202.0-orange.svg)](#) [![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE) 
+[![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=orange)](https://www.nuget.org/packages/ShapeCrawler) ![Nuget](https://img.shields.io/nuget/dt/ShapeCrawler?color=orange) [![.NET Standard](https://img.shields.io/badge/.NET%20-5.0+-orange)](#) [![.NET Core](https://img.shields.io/badge/.NET%20Core-2.1+-orange)](#) [![.NET Standard](https://img.shields.io/badge/.NET%20Standard-2.0+-orange.svg)](#) [![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE) 
 
 </h3>
 

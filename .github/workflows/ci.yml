@@ -17,5 +17,5 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
+    - name: Test .NET 5.0
+      run: dotnet test --no-restore --verbosity normal -f net5.0
