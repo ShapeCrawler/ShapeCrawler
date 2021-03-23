@@ -12,14 +12,12 @@
         /// </summary>
         int Size { get; set; }
 
-#if DEBUG
         /// <summary>
         ///     Gets or sets flag indicating whether font is bold.
         /// </summary>
         bool IsBold { get; set; }
-#else
-        bool IsBold { get; }
-#endif
+
+        bool IsItalic { get; set; }
 
         /// <summary>
         ///     Gets value indicating whether font size can be changed.
