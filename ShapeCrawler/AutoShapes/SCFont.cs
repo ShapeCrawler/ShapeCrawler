@@ -63,13 +63,6 @@ namespace ShapeCrawler.AutoShapes
             set => SetItalicFlag(value);
         }
 
-        private void SetItalicFlag(bool value)
-        {
-            throw new NotImplementedException();
-        }
-
-
-
         /// <summary>
         ///     Gets value indicating whether font size can be changed.
         /// </summary>
@@ -82,6 +75,26 @@ namespace ShapeCrawler.AutoShapes
         #endregion Public Properties
 
         #region Private Methods
+
+        private void SetItalicFlag(bool value)
+        {
+            A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
+            if (aRunPr != null)
+            {
+                aRunPr.Italic = new BooleanValue(value);
+            }
+            else
+            {
+                if (TryGetFontDataFromPlaceholder(out FontData phFontData))
+                { 
+                    phFontData.IsItalic = new BooleanValue(value);
+                }
+                else
+                {
+                    _aText.Parent.NextSibling<A.EndParagraphRunProperties>().Italic = new BooleanValue(true);
+                }
+            }
+        }
 
         private string GetName()
         {
@@ -132,20 +145,11 @@ namespace ShapeCrawler.AutoShapes
                 return aLatinFont;
             }
 
-            // Trt get from placeholder
-            Shape autoShape = _portion.Paragraph.TextBox.AutoShape;
-            int paragraphLvl = _portion.Paragraph.Level;
-            if (autoShape.Placeholder != null)
+            if (TryGetFontDataFromPlaceholder(out FontData phFontData))
             {
-                Placeholder placeholder = (Placeholder) autoShape.Placeholder;
-                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
-                if (placeholder.Shape != null &&
-                    placeholderAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
+                if (phFontData.ALatinFont != null)
                 {
-                    if (fontDataPlaceholder.ALatinFont != null)
-                    {
-                        return fontDataPlaceholder.ALatinFont;
-                    }
+                    return phFontData.ALatinFont;
                 }
             }
 
@@ -217,7 +221,19 @@ namespace ShapeCrawler.AutoShapes
                 return true;
             }
 
-            // Trt get from placeholder
+            if (TryGetFontDataFromPlaceholder(out FontData phFontData))
+            {
+                if (phFontData.IsBold != null)
+                {
+                    return phFontData.IsBold.Value;
+                }
+            }
+
+            return false;
+        }
+
+        private bool TryGetFontDataFromPlaceholder(out FontData phFontData)
+        {
             Shape autoShape = _portion.Paragraph.TextBox.AutoShape;
             int paragraphLvl = _portion.Paragraph.Level;
             if (autoShape.Placeholder != null)
@@ -225,15 +241,13 @@ namespace ShapeCrawler.AutoShapes
                 Placeholder placeholder = (Placeholder)autoShape.Placeholder;
                 IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
                 if (placeholder.Shape != null &&
-                    placeholderAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
+                    placeholderAutoShape.TryGetFontData(paragraphLvl, out phFontData))
                 {
-                    if (fontDataPlaceholder.IsBold != null)
-                    {
-                        return fontDataPlaceholder.IsBold.Value;
-                    }
+                    return true;
                 }
             }
 
+            phFontData = null;
             return false;
         }
 
@@ -250,20 +264,11 @@ namespace ShapeCrawler.AutoShapes
                 return true;
             }
 
-            // Trt get from placeholder
-            Shape autoShape = _portion.Paragraph.TextBox.AutoShape;
-            int paragraphLvl = _portion.Paragraph.Level;
-            if (autoShape.Placeholder != null)
+            if (TryGetFontDataFromPlaceholder(out FontData phFontData))
             {
-                Placeholder placeholder = (Placeholder)autoShape.Placeholder;
-                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
-                if (placeholder.Shape != null &&
-                    placeholderAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
+                if (phFontData.IsItalic != null)
                 {
-                    if (fontDataPlaceholder.IsItalic != null)
-                    {
-                        return fontDataPlaceholder.IsItalic.Value;
-                    }
+                    return phFontData.IsItalic.Value;
                 }
             }
 
@@ -284,17 +289,9 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                Shape autoShape = _portion.Paragraph.TextBox.AutoShape;
-                int paraLvl = _portion.Paragraph.Level;
-                if (autoShape.Placeholder != null)
-                {
-                    Placeholder placeholder = (Placeholder)autoShape.Placeholder;
-                    IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
-                    if (placeholder.Shape != null &&
-                        placeholderAutoShape.TryGetFontData(paraLvl, out FontData fontDataPlaceholder))
-                    {
-                        fontDataPlaceholder.IsBold = new BooleanValue(value);
-                    }
+                if (TryGetFontDataFromPlaceholder(out FontData phFontData))
+                { 
+                    phFontData.IsBold = new BooleanValue(value);
                 }
                 else
                 {
