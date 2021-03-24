@@ -85,13 +85,15 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                if (TryGetFontDataFromPlaceholder(out FontData phFontData))
-                { 
-                    phFontData.IsItalic = new BooleanValue(value);
+                A.EndParagraphRunProperties aEndParaRPr = _aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                if (aEndParaRPr != null)
+                {
+                    aEndParaRPr.Italic = new BooleanValue(value);
                 }
                 else
                 {
-                    _aText.Parent.NextSibling<A.EndParagraphRunProperties>().Italic = new BooleanValue(true);
+                    aRunPr = new A.RunProperties { Italic = new BooleanValue(value) };
+                    _aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
                 }
             }
         }
@@ -277,11 +279,6 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetBoldFlag(bool value)
         {
-            if (IsBold == value)
-            {
-                return;
-            }
-
             A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
             if (aRunPr != null)
             {
@@ -295,7 +292,16 @@ namespace ShapeCrawler.AutoShapes
                 }
                 else
                 {
-                    _aText.Parent.NextSibling<A.EndParagraphRunProperties>().Bold = new BooleanValue(true);
+                    A.EndParagraphRunProperties aEndParaRPr = _aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                    if (aEndParaRPr != null)
+                    {
+                        aEndParaRPr.Bold = new BooleanValue(value);
+                    }
+                    else
+                    {
+                        aRunPr = new A.RunProperties { Bold = new BooleanValue(value) };
+                        _aText.Parent.InsertAt(aRunPr,0); // append to <a:r>
+                    }
                 }
             }
         }

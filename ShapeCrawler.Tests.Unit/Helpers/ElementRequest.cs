@@ -5,5 +5,6 @@ namespace ShapeCrawler.Tests.Unit.Helpers
         public int SlideIndex { get; set; }
         public int ShapeId { get; set; }
         public int ParagraphIndex { get; set; }
+        public int PortionIndex { get; set; }
     }
 }
