@@ -7,15 +7,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    name: Pipeline
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core
+    - name: Setup .NET 5.0
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.201
+    - name: Setup .NET Core 2.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.1.814
     - name: Install dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
+    - name: Test .NET 5.0
+      run: dotnet test --no-restore --verbosity normal -f net5.0
+    - name: Test .NET Core 2.1
+      run: dotnet test --no-restore --verbosity normal -f netcoreapp2.1

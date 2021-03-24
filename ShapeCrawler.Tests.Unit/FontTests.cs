@@ -202,8 +202,7 @@ namespace ShapeCrawler.Tests.Unit
             isBold.Should().BeFalse();
         }
 
-#if DEBUG
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void IsBold_Setter_AddsBoldForNonPlaceholderTextFont()
         {
             // Arrange
@@ -224,7 +223,7 @@ namespace ShapeCrawler.Tests.Unit
             portion.Font.IsBold.Should().BeTrue();
         }
 
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void IsBold_Setter_AddsBoldForPlaceholderTextFont()
         {
             // Arrange
@@ -245,7 +244,75 @@ namespace ShapeCrawler.Tests.Unit
             portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
             portion.Font.IsBold.Should().BeTrue();
         }
-#endif
+
+        [Fact]
+        public void IsItalic_GetterReturnsTrue_WhenFontOfNonPlaceholderTextIsItalic()
+        {
+            // Arrange
+            IAutoShape nonPlaceholderAutoShape = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3);
+            IFont font = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0].Font;
+
+            // Act
+            bool isItalicFont = font.IsItalic;
+
+            // Assert
+            isItalicFont.Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsItalic_GetterReturnsTrue_WhenFontOfPlaceholderTextIsItalic()
+        {
+            // Arrange
+            IAutoShape placeholderAutoShape = (IAutoShape)_fixture.Pre020.Slides[2].Shapes.First(sp => sp.Id == 7);
+            Portion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+
+            // Act-Assert
+            portion.Font.IsItalic.Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsItalic_Setter_SetsItalicFontForForNonPlaceholderText()
+        {
+            // Arrange
+            var mStream = new MemoryStream();
+            IPresentation presentation = SCPresentation.Open(Resources._020, true);
+            IAutoShape nonPlaceholderAutoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 2);
+            Portion portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+
+            // Act
+            portion.Font.IsItalic = true;
+
+            // Assert
+            portion.Font.IsItalic.Should().BeTrue();
+            presentation.SaveAs(mStream);
+            presentation = SCPresentation.Open(mStream, false);
+            nonPlaceholderAutoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 2);
+            portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+            portion.Font.IsItalic.Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsItalic_SetterSetsNonItalicFontForPlaceholderText_WhenFalseValueIsPassed()
+        {
+            // Arrange
+            var mStream = new MemoryStream();
+            IPresentation presentation = SCPresentation.Open(Resources._020, true);
+            IAutoShape placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
+            Portion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+
+            // Act
+            portion.Font.IsItalic = false;
+
+            // Assert
+            portion.Font.IsItalic.Should().BeFalse();
+            presentation.SaveAs(mStream);
+
+            presentation = SCPresentation.Open(mStream, false);
+            placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
+            portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+            portion.Font.IsItalic.Should().BeFalse();
+        }
+
         private static Portion GetPortion(SCPresentation presentation)
         {
             IAutoShape autoShape = presentation.Slides[0].Shapes.First(sp => sp.Id == 4) as IAutoShape;

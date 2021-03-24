@@ -105,9 +105,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             const string customDataString = "Test custom data";
-            var origPreStream = new MemoryStream();
-            origPreStream.Write(Properties.Resources._001);
-            var originPre = SCPresentation.Open(origPreStream, true);
+            var originPre = SCPresentation.Open(Properties.Resources._001, true);
             var slide = originPre.Slides.First();
 
             // Act

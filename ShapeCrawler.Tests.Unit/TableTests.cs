@@ -294,7 +294,7 @@ namespace ShapeCrawler.Tests.Unit
             table = presentation.Slides[2].Shapes.First(sp => sp.Id == 5) as SlideTable;
             AssertTable(table);
 
-            static void AssertTable(ITable table)
+            void AssertTable(ITable table)
             {
                 string expectedText = $"id5{Environment.NewLine}Text1_0";
                 table[0, 0].IsMergedCell.Should().BeTrue();
@@ -491,7 +491,7 @@ namespace ShapeCrawler.Tests.Unit
             table = presentation.Slides[3].Shapes.First(sp => sp.Id == 6) as SlideTable;
             AssertTable(table, mergedColumnWidth);
 
-            static void AssertTable(SlideTable tableSc, long expectedMergedColumnWidth)
+            void AssertTable(SlideTable tableSc, long expectedMergedColumnWidth)
             {
                 tableSc.Columns.Should().HaveCount(2);
                 tableSc.Columns[0].Width.Should().Be(expectedMergedColumnWidth);
