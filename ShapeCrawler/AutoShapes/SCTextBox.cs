@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -18,7 +17,6 @@ namespace ShapeCrawler.AutoShapes
 
         private readonly Lazy<string> _text;
         private readonly OpenXmlCompositeElement _compositeElement;
-        private ParagraphCollection _paragraphs;
         internal Shape AutoShape { get; }
 
         #endregion Fields
@@ -28,7 +26,7 @@ namespace ShapeCrawler.AutoShapes
         /// <summary>
         ///     Gets text paragraph collection.
         /// </summary>
-        public ParagraphCollection Paragraphs => _paragraphs;
+        public ParagraphCollection Paragraphs { get; private set; }
 
         /// <summary>
         ///     Gets or sets text box string content. Returns null if the text box is empty.
@@ -48,7 +46,7 @@ namespace ShapeCrawler.AutoShapes
             AutoShape = autoShape;
             _compositeElement = pTextBody;
             _text = new Lazy<string>(GetText);
-            _paragraphs = new ParagraphCollection(_compositeElement, this);
+            Paragraphs = new ParagraphCollection(_compositeElement, this);
         }
 
         // TODO: Resolve conflict getting text box for autoShape and table
@@ -56,7 +54,7 @@ namespace ShapeCrawler.AutoShapes
         {
             _compositeElement = aTextBody;
             _text = new Lazy<string>(GetText);
-            _paragraphs = new ParagraphCollection(_compositeElement, this);
+            Paragraphs = new ParagraphCollection(_compositeElement, this);
         }
 
         #endregion Constructors
@@ -70,7 +68,8 @@ namespace ShapeCrawler.AutoShapes
             {
                 removingPara.AParagraph.Remove();
             }
-            _paragraphs = new ParagraphCollection(_compositeElement, this);            
+
+            Paragraphs = new ParagraphCollection(_compositeElement, this);
 
             Paragraphs.Single().Text = value;
         }

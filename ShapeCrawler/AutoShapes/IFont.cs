@@ -1,6 +1,6 @@
 ﻿namespace ShapeCrawler.AutoShapes
 {
-    public interface IFont
+    public interface IFont //TODO: consider moving font properties on Portion level
     {
         /// <summary>
         ///     Gets font name.

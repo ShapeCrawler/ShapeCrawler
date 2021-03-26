@@ -56,6 +56,7 @@ namespace ShapeCrawler.Collections
                 {
                     runPortions.Add(new Portion(aRun.Text, paragraph));
                 }
+
                 return new PortionCollection(runPortions);
             }
 
@@ -63,7 +64,7 @@ namespace ShapeCrawler.Collections
             if (aField != null)
             {
                 A.Text aText = aParagraph.GetFirstChild<A.Field>().GetFirstChild<A.Text>();
-                var aFieldPortions = new List<Portion>(new[] { new Portion(aText, paragraph) });
+                var aFieldPortions = new List<Portion>(new[] {new Portion(aText, paragraph)});
                 return new PortionCollection(aFieldPortions);
             }
 

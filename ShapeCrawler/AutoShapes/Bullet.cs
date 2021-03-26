@@ -34,6 +34,9 @@ namespace ShapeCrawler.AutoShapes
 
         #region Properties
 
+        /// <summary>
+        ///     Gets RGB color in HEX format.
+        /// </summary>
         public string ColorHex => _colorHex.Value;
 
         public string Char => _char.Value;

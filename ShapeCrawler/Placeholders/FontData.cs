@@ -5,7 +5,8 @@ namespace ShapeCrawler.Placeholders
 {
     internal class FontData
     {
-        public FontData(Int32Value fontSize, LatinFont aLatinFont, BooleanValue isBold, BooleanValue isItalic) : this(fontSize)
+        public FontData(Int32Value fontSize, LatinFont aLatinFont, BooleanValue isBold, BooleanValue isItalic) :
+            this(fontSize)
         {
             FontSize = fontSize;
             ALatinFont = aLatinFont;

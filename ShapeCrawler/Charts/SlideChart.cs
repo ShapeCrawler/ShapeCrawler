@@ -29,7 +29,6 @@ namespace ShapeCrawler.Charts
         // then collection contains only single item.
         private IEnumerable<OpenXmlElement> _cXCharts;
         internal ChartPart ChartPart;
-        internal ChartWorkbook ChartWorkbook { get; }
 
         #region Constructors
 
@@ -52,6 +51,8 @@ namespace ShapeCrawler.Charts
         }
 
         #endregion Constructors
+
+        internal ChartWorkbook ChartWorkbook { get; }
 
         #region Public Properties
 

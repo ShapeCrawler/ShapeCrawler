@@ -1,7 +1,5 @@
 ﻿using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Extensions;
-using ShapeCrawler.Factories;
 using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Statics;

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Placeholders;
@@ -92,7 +91,7 @@ namespace ShapeCrawler.AutoShapes
                 }
                 else
                 {
-                    aRunPr = new A.RunProperties { Italic = new BooleanValue(value) };
+                    aRunPr = new A.RunProperties {Italic = new BooleanValue(value)};
                     _aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
                 }
             }
@@ -240,8 +239,8 @@ namespace ShapeCrawler.AutoShapes
             int paragraphLvl = _portion.Paragraph.Level;
             if (autoShape.Placeholder != null)
             {
-                Placeholder placeholder = (Placeholder)autoShape.Placeholder;
-                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+                Placeholder placeholder = (Placeholder) autoShape.Placeholder;
+                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
                 if (placeholder.Shape != null &&
                     placeholderAutoShape.TryGetFontData(paragraphLvl, out phFontData))
                 {
@@ -287,7 +286,7 @@ namespace ShapeCrawler.AutoShapes
             else
             {
                 if (TryGetFontDataFromPlaceholder(out FontData phFontData))
-                { 
+                {
                     phFontData.IsBold = new BooleanValue(value);
                 }
                 else
@@ -299,8 +298,8 @@ namespace ShapeCrawler.AutoShapes
                     }
                     else
                     {
-                        aRunPr = new A.RunProperties { Bold = new BooleanValue(value) };
-                        _aText.Parent.InsertAt(aRunPr,0); // append to <a:r>
+                        aRunPr = new A.RunProperties {Bold = new BooleanValue(value)};
+                        _aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
                     }
                 }
             }
