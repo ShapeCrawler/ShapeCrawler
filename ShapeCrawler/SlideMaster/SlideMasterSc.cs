@@ -7,9 +7,11 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMaster;
 using P = DocumentFormat.OpenXml.Presentation;
+// ReSharper disable CheckNamespace
 
-namespace ShapeCrawler.SlideMaster
+namespace ShapeCrawler
 {
     public class SlideMasterSc : ISlide //TODO: add ISlideMaster interface
     {

@@ -2,15 +2,17 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
+// ReSharper disable CheckNamespace
 
 // ReSharper disable PossibleMultipleEnumeration
 // ReSharper disable SuggestVarOrType_SimpleTypes
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 
-namespace ShapeCrawler.AutoShapes
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a text paragraph.

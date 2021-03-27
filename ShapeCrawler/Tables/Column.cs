@@ -1,6 +1,7 @@
 ﻿using A = DocumentFormat.OpenXml.Drawing;
+// ReSharper disable CheckNamespace
 
-namespace ShapeCrawler.Tables
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a table's column.
