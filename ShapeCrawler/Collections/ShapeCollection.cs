@@ -31,7 +31,7 @@ namespace ShapeCrawler.Collections
 
         #endregion Constructors
 
-        internal static ShapeCollection CreateForSlide(SlidePart slidePart, SlideSc slide)
+        internal static ShapeCollection CreateForSlide(SlidePart slidePart, SCSlide slide)
         {
             var sldPhFontService = new PlaceholderFontService(slidePart);
             var phService = new PlaceholderService(slidePart.SlideLayoutPart);

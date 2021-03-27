@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -21,6 +20,12 @@ namespace ShapeCrawler.Settings
         }
 
         #endregion Constructors
+
+        #region Properties
+
+        public Dictionary<int, FontData> LlvToFontData => _lvlToFontData.Value;
+
+        #endregion Properties
 
         #region Private Methods
 
@@ -49,11 +54,5 @@ namespace ShapeCrawler.Settings
         }
 
         #endregion Private Methods
-
-        #region Properties
-
-        public Dictionary<int, FontData> LlvToFontData => _lvlToFontData.Value;
-
-        #endregion Properties
     }
 }

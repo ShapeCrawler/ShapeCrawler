@@ -11,6 +11,7 @@ namespace ShapeCrawler.OLEObjects
             pGraphicFrame)
         {
         }
+
         public override IPlaceholder Placeholder => MasterPlaceholder.Create(PShapeTreeChild);
     }
 }

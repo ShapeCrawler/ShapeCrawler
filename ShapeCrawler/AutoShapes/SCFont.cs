@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using DocumentFormat.OpenXml;
+﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
@@ -11,7 +9,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes
 {
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal class SCFont : IFont
     {
         private readonly A.Text _aText;
@@ -63,6 +60,45 @@ namespace ShapeCrawler.AutoShapes
             set => SetItalicFlag(value);
         }
 
+        public string ColorHex
+        {
+            get => GetColorHex();
+            set => SetColorHex(value);
+        }
+
+        private void SetColorHex(string value)
+        {
+        }
+
+        private string GetColorHex()
+        {
+            P.Shape pShape = (P.Shape) _portion.Paragraph.TextBox.AutoShape.PShapeTreeChild;
+            A.SolidFill aSolidFill = pShape.ShapeProperties.GetFirstChild<A.SolidFill>();
+            if (aSolidFill != null)
+            {
+            }
+
+            P.ShapeStyle pShapeStyle = pShape.ShapeStyle;
+            A.SchemeColorValues fontSchemeColorValue = pShapeStyle.FontReference.SchemeColor.Val.Value;
+            A.ColorScheme aColorScheme = _portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.ColorScheme;
+            return fontSchemeColorValue switch
+            {
+                A.SchemeColorValues.Dark1 => aColorScheme.Dark1Color.RgbColorModelHex.Val.Value,
+                A.SchemeColorValues.Background1 => aColorScheme.Dark1Color.RgbColorModelHex.Val.Value,
+                A.SchemeColorValues.Light1 => aColorScheme.Light1Color.RgbColorModelHex.Val.Value,
+                A.SchemeColorValues.Dark2 => aColorScheme.Dark2Color.RgbColorModelHex.Val.Value,
+                A.SchemeColorValues.Light2 => aColorScheme.Light2Color.RgbColorModelHex.Val.Value,
+                A.SchemeColorValues.Accent1 => aColorScheme.Accent1Color.RgbColorModelHex.Val.Value,
+                A.SchemeColorValues.Accent2 => aColorScheme.Accent2Color.RgbColorModelHex.Val.Value,
+                A.SchemeColorValues.Accent3 => aColorScheme.Accent3Color.RgbColorModelHex.Val.Value,
+                A.SchemeColorValues.Accent4 => aColorScheme.Accent4Color.RgbColorModelHex.Val.Value,
+                A.SchemeColorValues.Accent5 => aColorScheme.Accent5Color.RgbColorModelHex.Val.Value,
+                A.SchemeColorValues.Accent6 => aColorScheme.Accent6Color.RgbColorModelHex.Val.Value,
+                A.SchemeColorValues.Hyperlink => aColorScheme.Hyperlink.RgbColorModelHex.Val.Value,
+                _ => aColorScheme.FollowedHyperlinkColor.RgbColorModelHex.Val.Value
+            };
+        }
+
         /// <summary>
         ///     Gets value indicating whether font size can be changed.
         /// </summary>
@@ -85,13 +121,15 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                if (TryGetFontDataFromPlaceholder(out FontData phFontData))
-                { 
-                    phFontData.IsItalic = new BooleanValue(value);
+                A.EndParagraphRunProperties aEndParaRPr = _aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                if (aEndParaRPr != null)
+                {
+                    aEndParaRPr.Italic = new BooleanValue(value);
                 }
                 else
                 {
-                    _aText.Parent.NextSibling<A.EndParagraphRunProperties>().Italic = new BooleanValue(true);
+                    aRunPr = new A.RunProperties {Italic = new BooleanValue(value)};
+                    _aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
                 }
             }
         }
@@ -238,8 +276,8 @@ namespace ShapeCrawler.AutoShapes
             int paragraphLvl = _portion.Paragraph.Level;
             if (autoShape.Placeholder != null)
             {
-                Placeholder placeholder = (Placeholder)autoShape.Placeholder;
-                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal)placeholder.Shape;
+                Placeholder placeholder = (Placeholder) autoShape.Placeholder;
+                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
                 if (placeholder.Shape != null &&
                     placeholderAutoShape.TryGetFontData(paragraphLvl, out phFontData))
                 {
@@ -277,11 +315,6 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetBoldFlag(bool value)
         {
-            if (IsBold == value)
-            {
-                return;
-            }
-
             A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
             if (aRunPr != null)
             {
@@ -290,12 +323,21 @@ namespace ShapeCrawler.AutoShapes
             else
             {
                 if (TryGetFontDataFromPlaceholder(out FontData phFontData))
-                { 
+                {
                     phFontData.IsBold = new BooleanValue(value);
                 }
                 else
                 {
-                    _aText.Parent.NextSibling<A.EndParagraphRunProperties>().Bold = new BooleanValue(true);
+                    A.EndParagraphRunProperties aEndParaRPr = _aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                    if (aEndParaRPr != null)
+                    {
+                        aEndParaRPr.Bold = new BooleanValue(value);
+                    }
+                    else
+                    {
+                        aRunPr = new A.RunProperties {Bold = new BooleanValue(value)};
+                        _aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
+                    }
                 }
             }
         }

@@ -14,7 +14,7 @@ namespace ShapeCrawler.Charts
         internal ChartWorkbook(SlideChart slideChart)
         {
             _slideChart = slideChart;
-            _workbookPart = new Lazy<WorkbookPart>(() => GetWorkbookPart());
+            _workbookPart = new Lazy<WorkbookPart>(GetWorkbookPart);
         }
 
         internal WorkbookPart WorkbookPart => _workbookPart.Value;

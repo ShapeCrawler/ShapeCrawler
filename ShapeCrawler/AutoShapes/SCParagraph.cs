@@ -21,9 +21,6 @@ namespace ShapeCrawler.AutoShapes
     {
         private readonly Lazy<Bullet> _bullet;
         private readonly ResettableLazy<PortionCollection> _portions;
-        internal SCTextBox TextBox { get; }
-        internal A.Paragraph AParagraph { get; }
-        internal int Level { get; }
 
         #region Constructors
 
@@ -40,6 +37,10 @@ namespace ShapeCrawler.AutoShapes
         }
 
         #endregion Constructors
+
+        internal SCTextBox TextBox { get; }
+        internal A.Paragraph AParagraph { get; }
+        internal int Level { get; }
 
         #region Public Properties
 

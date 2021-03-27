@@ -4,7 +4,6 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
@@ -106,7 +105,7 @@ namespace ShapeCrawler
             var aTexts = pTextBody.Descendants<A.Text>();
             if (aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element with text must be exist
             {
-                return new SCTextBox(this, pTextBody);
+                return new SCTextBox(pTextBody, this);
             }
 
             return null;
@@ -114,7 +113,7 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill()
         {
-            ImageSc image = _imageFactory.TryFromSdkShape(Context.SlidePart, Context.CompositeElement);
+            SCImage image = _imageFactory.TryFromSdkShape(Context.SlidePart, Context.CompositeElement);
             if (image != null)
             {
                 return new ShapeFill(image);

@@ -27,7 +27,7 @@ namespace ShapeCrawler.Collections
             return new SlideMasterCollection(presentation, slideMasters);
         }
 
-        internal SlideLayoutSc GetSlideLayoutBySlide(SlideSc slide)
+        internal SlideLayoutSc GetSlideLayoutBySlide(SCSlide slide)
         {
             SlideLayoutPart inputSlideLayoutPart = slide.SlidePart.SlideLayoutPart;
 

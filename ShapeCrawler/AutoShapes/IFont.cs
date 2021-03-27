@@ -1,6 +1,6 @@
 ﻿namespace ShapeCrawler.AutoShapes
 {
-    public interface IFont
+    public interface IFont //TODO: consider moving font properties on Portion level
     {
         /// <summary>
         ///     Gets font name.
@@ -10,7 +10,7 @@
         /// <summary>
         ///     Gets or sets font size in EMUs.
         /// </summary>
-        int Size { get; set; }
+        int Size { get; set; } //TODO: create test to verify font size of table cell's text portion
 
         /// <summary>
         ///     Gets or sets flag indicating whether font is bold.
@@ -18,6 +18,10 @@
         bool IsBold { get; set; }
 
         bool IsItalic { get; set; }
+
+#if DEBUG
+        string ColorHex { get; set; }
+#endif
 
         /// <summary>
         ///     Gets value indicating whether font size can be changed.

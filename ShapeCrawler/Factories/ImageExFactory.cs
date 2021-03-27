@@ -15,13 +15,13 @@ namespace ShapeCrawler.Factories
     {
         #region Private Methods
 
-        private static ImageSc TryFromBlipFill(SlidePart sldPart, A.BlipFill aBlipFill)
+        private static SCImage TryFromBlipFill(SlidePart sldPart, A.BlipFill aBlipFill)
         {
-            ImageSc backgroundImage = null;
+            SCImage backgroundImage = null;
             var blipRelateId = aBlipFill?.Blip?.Embed?.Value; // try to get blip relationship ID
             if (blipRelateId != null)
             {
-                backgroundImage = new ImageSc(sldPart, blipRelateId);
+                backgroundImage = new SCImage(sldPart, blipRelateId);
             }
 
             return backgroundImage;
@@ -36,11 +36,11 @@ namespace ShapeCrawler.Factories
         /// </summary>
         /// <param name="xmlSldPart"></param>
         /// <returns></returns>
-        public ImageSc TryFromSdkSlide(SlidePart xmlSldPart)
+        public SCImage TryFromSdkSlide(SlidePart xmlSldPart)
         {
             Check.NotNull(xmlSldPart, nameof(xmlSldPart));
 
-            ImageSc backgroundImage = null;
+            SCImage backgroundImage = null;
             var background = xmlSldPart.Slide.CommonSlideData.Background;
             if (background != null)
             {
@@ -54,14 +54,14 @@ namespace ShapeCrawler.Factories
         /// <summary>
         ///     <inheritdoc cref="IImageExFactory.TryFromSdkShape" />
         /// </summary>
-        public ImageSc TryFromSdkShape(SlidePart xmlSldPart, OpenXmlCompositeElement ce)
+        public SCImage TryFromSdkShape(SlidePart xmlSldPart, OpenXmlCompositeElement ce)
         {
             Check.NotNull(xmlSldPart, nameof(xmlSldPart));
             Check.NotNull(ce, nameof(ce));
 
             var shape = (P.Shape) ce;
             var aBlipFill = shape.ShapeProperties.GetFirstChild<A.BlipFill>();
-            ImageSc backgroundImage = TryFromBlipFill(xmlSldPart, aBlipFill);
+            SCImage backgroundImage = TryFromBlipFill(xmlSldPart, aBlipFill);
 
             return backgroundImage;
         }

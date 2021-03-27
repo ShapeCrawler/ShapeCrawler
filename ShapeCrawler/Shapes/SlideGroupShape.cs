@@ -27,7 +27,7 @@ namespace ShapeCrawler
             ShapeContext spContext,
             List<IShape> groupedShapes,
             OpenXmlCompositeElement pShapeTreeChild,
-            SlideSc slide) : base(slide, pShapeTreeChild)
+            SCSlide slide) : base(slide, pShapeTreeChild)
         {
             _innerTransform = innerTransform;
             Context = spContext;

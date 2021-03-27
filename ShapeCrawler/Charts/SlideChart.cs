@@ -29,14 +29,13 @@ namespace ShapeCrawler.Charts
         // then collection contains only single item.
         private IEnumerable<OpenXmlElement> _cXCharts;
         internal ChartPart ChartPart;
-        internal ChartWorkbook ChartWorkbook { get; }
 
         #region Constructors
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SlideChart" /> class.
         /// </summary>
-        internal SlideChart(P.GraphicFrame pGraphicFrame, SlideSc slide) :
+        internal SlideChart(P.GraphicFrame pGraphicFrame, SCSlide slide) :
             base(slide, pGraphicFrame)
         {
             _pGraphicFrame = pGraphicFrame;
@@ -52,6 +51,8 @@ namespace ShapeCrawler.Charts
         }
 
         #endregion Constructors
+
+        internal ChartWorkbook ChartWorkbook { get; }
 
         #region Public Properties
 

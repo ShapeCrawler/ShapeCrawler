@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
@@ -223,27 +224,66 @@ namespace ShapeCrawler.Tests.Unit
             portion.Font.IsBold.Should().BeTrue();
         }
 
-        [Fact]
-        public void IsBold_Setter_AddsBoldForPlaceholderTextFont()
+        [Theory]
+        [MemberData(nameof(TestCasesIsBold))]
+        public void IsBold_Setter_AddsBoldForPlaceholderTextFont(SCPresentation presentation, ElementRequest portionRequest)
         {
             // Arrange
             var mStream = new MemoryStream();
-            IPresentation presentation = SCPresentation.Open(Resources._020, true);
-            IAutoShape placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
-            Portion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+            Portion portion = TestHelper.GetPortion(presentation, portionRequest);
 
             // Act
             portion.Font.IsBold = true;
 
             // Assert
             portion.Font.IsBold.Should().BeTrue();
-            presentation.SaveAs(mStream);
 
+            presentation.SaveAs(mStream);
             presentation = SCPresentation.Open(mStream, false);
-            placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
-            portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+            portion = TestHelper.GetPortion(presentation, portionRequest);
             portion.Font.IsBold.Should().BeTrue();
         }
+
+        public static IEnumerable<object[]> TestCasesIsBold()
+        {
+            SCPresentation presentationCase1 = SCPresentation.Open(Resources._020, true);
+            ElementRequest portionRequestCase1 = new();
+            portionRequestCase1.SlideIndex = 2;
+            portionRequestCase1.ShapeId = 7;
+            portionRequestCase1.ParagraphIndex = 0;
+            portionRequestCase1.PortionIndex = 0;
+
+            SCPresentation presentationCase2 = SCPresentation.Open(Resources._026, true);
+            ElementRequest portionRequestCase2 = new();
+            portionRequestCase2.SlideIndex = 0;
+            portionRequestCase2.ShapeId = 128;
+            portionRequestCase2.ParagraphIndex = 0;
+            portionRequestCase2.PortionIndex = 0;
+
+            var testCases = new List<object[]>
+            {
+                new object[] {presentationCase1, portionRequestCase1},
+                new object[] {presentationCase2, portionRequestCase2}
+            };
+
+            return testCases;
+        }
+
+#if DEBUG
+        [Fact]
+        public void ColorHex_GetterReturnsRGBColorInHEXformat()
+        {
+            // Arrange
+            IAutoShape nonPlaceholderAutoShape = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
+            IFont font = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0].Font;
+
+            // Act
+            string fontColorHex = font.ColorHex;
+
+            // Assert
+            fontColorHex.Should().Be("000000");
+        }
+#endif
 
         [Fact]
         public void IsItalic_GetterReturnsTrue_WhenFontOfNonPlaceholderTextIsItalic()

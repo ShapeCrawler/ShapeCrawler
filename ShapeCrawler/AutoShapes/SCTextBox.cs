@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -17,8 +16,7 @@ namespace ShapeCrawler.AutoShapes
         #region Fields
 
         private readonly Lazy<string> _text;
-        private readonly OpenXmlCompositeElement _compositeElement;
-        private ParagraphCollection _paragraphs;
+        private readonly OpenXmlCompositeElement _textBodyCompositeElement;
         internal Shape AutoShape { get; }
 
         #endregion Fields
@@ -26,9 +24,9 @@ namespace ShapeCrawler.AutoShapes
         #region Public Properties
 
         /// <summary>
-        ///     Gets text paragraph collection.
+        ///     Gets collection of text paragraphs.
         /// </summary>
-        public ParagraphCollection Paragraphs => _paragraphs;
+        public ParagraphCollection Paragraphs { get; private set; }
 
         /// <summary>
         ///     Gets or sets text box string content. Returns null if the text box is empty.
@@ -43,20 +41,20 @@ namespace ShapeCrawler.AutoShapes
 
         #region Constructors
 
-        internal SCTextBox(Shape autoShape, P.TextBody pTextBody)
+        internal SCTextBox(P.TextBody autoShapePTextBody, Shape autoShape)
         {
-            AutoShape = autoShape;
-            _compositeElement = pTextBody;
+            _textBodyCompositeElement = autoShapePTextBody;
             _text = new Lazy<string>(GetText);
-            _paragraphs = new ParagraphCollection(_compositeElement, this);
+            Paragraphs = new ParagraphCollection(_textBodyCompositeElement, this);
+
+            AutoShape = autoShape;
         }
 
-        // TODO: Resolve conflict getting text box for autoShape and table
-        internal SCTextBox(A.TextBody aTextBody)
+        internal SCTextBox(A.TextBody tblCellATextBody)
         {
-            _compositeElement = aTextBody;
+            _textBodyCompositeElement = tblCellATextBody;
             _text = new Lazy<string>(GetText);
-            _paragraphs = new ParagraphCollection(_compositeElement, this);
+            Paragraphs = new ParagraphCollection(_textBodyCompositeElement, this);
         }
 
         #endregion Constructors
@@ -70,7 +68,8 @@ namespace ShapeCrawler.AutoShapes
             {
                 removingPara.AParagraph.Remove();
             }
-            _paragraphs = new ParagraphCollection(_compositeElement, this);            
+
+            Paragraphs = new ParagraphCollection(_textBodyCompositeElement, this);
 
             Paragraphs.Single().Text = value;
         }

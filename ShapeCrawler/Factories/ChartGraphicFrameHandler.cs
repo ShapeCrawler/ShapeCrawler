@@ -11,7 +11,7 @@ namespace ShapeCrawler.Factories
     {
         private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart";
 
-        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide)
+        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide)
         {
             if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
             {

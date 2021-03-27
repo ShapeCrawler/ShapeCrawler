@@ -1,8 +1,6 @@
-using ShapeCrawler.Texts;
 using System.IO;
 using System.Linq;
 using ShapeCrawler.AutoShapes;
-using ShapeCrawler.SlideMaster;
 
 namespace ShapeCrawler.Tests.Unit.Helpers
 {
@@ -21,6 +19,13 @@ namespace ShapeCrawler.Tests.Unit.Helpers
             IAutoShape autoShape = presentation.Slides[paragraphRequest.SlideIndex]
                 .Shapes.First(sp => sp.Id == paragraphRequest.ShapeId) as IAutoShape;
             return autoShape.TextBox.Paragraphs[paragraphRequest.ParagraphIndex];
+        }
+
+        public static Portion GetPortion(SCPresentation presentation, ElementRequest elementRequest)
+        {
+            IAutoShape autoShape = (IAutoShape)presentation.Slides[elementRequest.SlideIndex].Shapes.First(sp => sp.Id == elementRequest.ShapeId);
+            
+            return autoShape.TextBox.Paragraphs[elementRequest.ParagraphIndex].Portions[elementRequest.PortionIndex];
         }
     }
 }

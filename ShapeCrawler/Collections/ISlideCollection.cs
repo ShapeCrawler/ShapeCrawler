@@ -2,8 +2,8 @@
 
 namespace ShapeCrawler.Collections
 {
-    public interface ISlideCollection : IReadOnlyList<SlideSc>
+    public interface ISlideCollection : IReadOnlyList<SCSlide>
     {
-        void Remove(SlideSc removingSlide);
+        void Remove(SCSlide removingSlide);
     }
 }

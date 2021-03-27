@@ -24,7 +24,7 @@ namespace ShapeCrawler.Factories
 
         #endregion Constructors
 
-        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide)
+        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide)
         {
             P.Picture pPicture;
             if (pShapeTreeChild is P.Picture treePic)
@@ -47,8 +47,7 @@ namespace ShapeCrawler.Factories
                 }
 
                 var spContext = _shapeContextBuilder.Build(pShapeTreeChild);
-                var innerTransform = _transformFactory.FromComposite(pPicture);
-                var picture = new SlidePicture(slide, blipRelateId, innerTransform, spContext, pPicture);
+                var picture = new SlidePicture(slide, blipRelateId, spContext, pPicture);
 
                 return picture;
             }

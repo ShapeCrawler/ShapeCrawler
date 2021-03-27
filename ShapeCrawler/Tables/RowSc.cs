@@ -9,7 +9,7 @@ namespace ShapeCrawler.Tables
     /// </summary>
     public class RowSc
     {
-        private readonly Lazy<List<CellSc>> _cells;
+        private readonly Lazy<List<SCTableCell>> _cells;
         internal readonly A.TableRow ATableRow;
         internal readonly int Index;
 
@@ -24,7 +24,7 @@ namespace ShapeCrawler.Tables
 #if NETSTANDARD2_0
             _cells = new Lazy<List<CellSc>>(() => GetCells());
 #else
-            _cells = new Lazy<List<CellSc>>(GetCells);
+            _cells = new Lazy<List<SCTableCell>>(GetCells);
 #endif
         }
 
@@ -34,30 +34,30 @@ namespace ShapeCrawler.Tables
 
         #region Private Methods
 
-        private List<CellSc> GetCells()
+        private List<SCTableCell> GetCells()
         {
-            var cellList = new List<CellSc>();
+            var cellList = new List<SCTableCell>();
             IEnumerable<A.TableCell> aTableCells = ATableRow.Elements<A.TableCell>();
-            CellSc addedCell = null;
+            SCTableCell addedScCell = null;
 
             int columnIdx = 0;
             foreach (A.TableCell aTableCell in aTableCells)
             {
                 if (aTableCell.HorizontalMerge != null)
                 {
-                    cellList.Add(addedCell);
+                    cellList.Add(addedScCell);
                 }
                 else if (aTableCell.VerticalMerge != null)
                 {
                     int upRowIdx = Index - 1;
-                    CellSc upNeighborCell = Table[upRowIdx, columnIdx];
-                    cellList.Add(upNeighborCell);
-                    addedCell = upNeighborCell;
+                    SCTableCell upNeighborScCell = (SCTableCell) Table[upRowIdx, columnIdx];
+                    cellList.Add(upNeighborScCell);
+                    addedScCell = upNeighborScCell;
                 }
                 else
                 {
-                    addedCell = new CellSc(Table, aTableCell, Index, columnIdx);
-                    cellList.Add(addedCell);
+                    addedScCell = new SCTableCell(Table, aTableCell, Index, columnIdx);
+                    cellList.Add(addedScCell);
                 }
 
                 columnIdx++;
@@ -73,7 +73,7 @@ namespace ShapeCrawler.Tables
         /// <summary>
         ///     Returns row's cells.
         /// </summary>
-        public IReadOnlyList<CellSc> Cells => _cells.Value;
+        public IReadOnlyList<ITableCell> Cells => _cells.Value;
 
         public long Height
         {

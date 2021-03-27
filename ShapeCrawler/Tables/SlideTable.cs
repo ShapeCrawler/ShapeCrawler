@@ -34,7 +34,7 @@ namespace ShapeCrawler
             OpenXmlCompositeElement pShapeTreeChild,
             ILocation innerTransform,
             ShapeContext spContext,
-            SlideSc slide) : base(slide, pShapeTreeChild)
+            SCSlide slide) : base(slide, pShapeTreeChild)
         {
             _innerTransform = innerTransform;
             Context = spContext;
@@ -48,8 +48,11 @@ namespace ShapeCrawler
         internal ShapeContext Context { get; }
         internal A.Table ATable => _pGraphicFrame.GetATable();
 
-        public void MergeCells(CellSc cell1, CellSc cell2) // TODO: Optimize method
+
+        public void MergeCells(ITableCell inputCell1, ITableCell inputCell2) // TODO: Optimize method
         {
+            SCTableCell cell1 = (SCTableCell) inputCell1;
+            SCTableCell cell2 = (SCTableCell) inputCell2;
             if (CannotBeMerged(cell1, cell2))
             {
                 return;
@@ -109,8 +112,9 @@ namespace ShapeCrawler
             // Delete a:gridCol and a:tc elements if all columns are merged
             for (int colIdx = 0; colIdx < Columns.Count;)
             {
-                int? gridSpan = Rows[0].Cells[colIdx].ATableCell.GridSpan?.Value;
-                if (gridSpan > 1 && Rows.All(r => r.Cells[colIdx].ATableCell.GridSpan?.Value == gridSpan))
+                int? gridSpan = ((SCTableCell) Rows[0].Cells[colIdx]).ATableCell.GridSpan?.Value;
+                if (gridSpan > 1 && Rows.All(row =>
+                    ((SCTableCell) row.Cells[colIdx]).ATableCell.GridSpan?.Value == gridSpan))
                 {
                     int deleteColumnCount = gridSpan.Value - 1;
 
@@ -142,8 +146,8 @@ namespace ShapeCrawler
             // Delete a:tr
             for (int rowIdx = 0; rowIdx < Rows.Count;)
             {
-                int? rowSpan = Rows[rowIdx].Cells[0].ATableCell.RowSpan?.Value;
-                if (rowSpan > 1 && Rows[rowIdx].Cells.All(c => c.ATableCell.RowSpan?.Value == rowSpan))
+                int? rowSpan = ((SCTableCell) Rows[rowIdx].Cells[0]).ATableCell.RowSpan?.Value;
+                if (rowSpan > 1 && Rows[rowIdx].Cells.All(c => ((SCTableCell) c).ATableCell.RowSpan?.Value == rowSpan))
                 {
                     int deleteRowsCount = rowSpan.Value - 1;
 
@@ -166,7 +170,7 @@ namespace ShapeCrawler
 
         private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
         {
-            A.TextBody mergedCellTextBody = this[minRowIndex, minColIndex].ATableCell.TextBody;
+            A.TextBody mergedCellTextBody = ((SCTableCell) this[minRowIndex, minColIndex]).ATableCell.TextBody;
             bool hasMoreOnePara = false;
             IEnumerable<A.Paragraph> aParagraphsWithARun =
                 aTblCell.TextBody.Elements<A.Paragraph>().Where(p => !p.IsEmpty());
@@ -189,7 +193,7 @@ namespace ShapeCrawler
 
         public IReadOnlyList<Column> Columns => GetColumnList(); //TODO: make lazy
         public RowCollection Rows => _rowCollection.Value;
-        public CellSc this[int rowIndex, int columnIndex] => Rows[rowIndex].Cells[columnIndex];
+        public ITableCell this[int rowIndex, int columnIndex] => Rows[rowIndex].Cells[columnIndex];
 
         /// <summary>
         ///     Returns the x-coordinate of the upper-left corner of the shape.
@@ -284,7 +288,7 @@ namespace ShapeCrawler
             return columnList;
         }
 
-        private static bool CannotBeMerged(CellSc cell1, CellSc cell2)
+        private static bool CannotBeMerged(SCTableCell cell1, SCTableCell cell2)
         {
             if (cell1 == cell2)
             {
