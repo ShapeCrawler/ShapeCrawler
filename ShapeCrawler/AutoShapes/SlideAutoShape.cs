@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
-using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -26,7 +21,6 @@ namespace ShapeCrawler
         private readonly ILocation _innerTransform;
         private readonly Lazy<ShapeFill> _shapeFill;
         private readonly Lazy<SCTextBox> _textBox;
-        internal ShapeContext Context { get; }
 
         #region Constructors
 
@@ -43,6 +37,8 @@ namespace ShapeCrawler
         }
 
         #endregion Constructors
+
+        internal ShapeContext Context { get; }
 
         #region Public Properties
 

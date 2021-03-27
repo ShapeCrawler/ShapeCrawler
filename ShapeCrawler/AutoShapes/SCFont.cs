@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using DocumentFormat.OpenXml;
+﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
@@ -61,7 +60,7 @@ namespace ShapeCrawler.AutoShapes
             set => SetItalicFlag(value);
         }
 
-        public string ColorHex 
+        public string ColorHex
         {
             get => GetColorHex();
             set => SetColorHex(value);
@@ -69,17 +68,14 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetColorHex(string value)
         {
-
-            
         }
 
         private string GetColorHex()
         {
-            P.Shape pShape = (P.Shape)_portion.Paragraph.TextBox.AutoShape.PShapeTreeChild;
+            P.Shape pShape = (P.Shape) _portion.Paragraph.TextBox.AutoShape.PShapeTreeChild;
             A.SolidFill aSolidFill = pShape.ShapeProperties.GetFirstChild<A.SolidFill>();
             if (aSolidFill != null)
             {
-                
             }
 
             P.ShapeStyle pShapeStyle = pShape.ShapeStyle;

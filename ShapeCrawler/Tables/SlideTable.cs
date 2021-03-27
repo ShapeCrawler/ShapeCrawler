@@ -27,8 +27,6 @@ namespace ShapeCrawler
         private bool? _hidden;
         private int _id;
         private string _name;
-        internal ShapeContext Context { get; }
-        internal A.Table ATable => _pGraphicFrame.GetATable();
 
         #region Constructors
 
@@ -46,6 +44,9 @@ namespace ShapeCrawler
         }
 
         #endregion Constructors
+
+        internal ShapeContext Context { get; }
+        internal A.Table ATable => _pGraphicFrame.GetATable();
 
 
         public void MergeCells(ITableCell inputCell1, ITableCell inputCell2) // TODO: Optimize method
@@ -111,8 +112,9 @@ namespace ShapeCrawler
             // Delete a:gridCol and a:tc elements if all columns are merged
             for (int colIdx = 0; colIdx < Columns.Count;)
             {
-                int? gridSpan = ((SCTableCell)Rows[0].Cells[colIdx]).ATableCell.GridSpan?.Value;
-                if (gridSpan > 1 && Rows.All(row => ((SCTableCell)row.Cells[colIdx]).ATableCell.GridSpan?.Value == gridSpan))
+                int? gridSpan = ((SCTableCell) Rows[0].Cells[colIdx]).ATableCell.GridSpan?.Value;
+                if (gridSpan > 1 && Rows.All(row =>
+                    ((SCTableCell) row.Cells[colIdx]).ATableCell.GridSpan?.Value == gridSpan))
                 {
                     int deleteColumnCount = gridSpan.Value - 1;
 
@@ -144,8 +146,8 @@ namespace ShapeCrawler
             // Delete a:tr
             for (int rowIdx = 0; rowIdx < Rows.Count;)
             {
-                int? rowSpan = ((SCTableCell)Rows[rowIdx].Cells[0]).ATableCell.RowSpan?.Value;
-                if (rowSpan > 1 && Rows[rowIdx].Cells.All(c =>((SCTableCell)c).ATableCell.RowSpan?.Value == rowSpan))
+                int? rowSpan = ((SCTableCell) Rows[rowIdx].Cells[0]).ATableCell.RowSpan?.Value;
+                if (rowSpan > 1 && Rows[rowIdx].Cells.All(c => ((SCTableCell) c).ATableCell.RowSpan?.Value == rowSpan))
                 {
                     int deleteRowsCount = rowSpan.Value - 1;
 
@@ -168,7 +170,7 @@ namespace ShapeCrawler
 
         private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
         {
-            A.TextBody mergedCellTextBody = ((SCTableCell)this[minRowIndex, minColIndex]).ATableCell.TextBody;
+            A.TextBody mergedCellTextBody = ((SCTableCell) this[minRowIndex, minColIndex]).ATableCell.TextBody;
             bool hasMoreOnePara = false;
             IEnumerable<A.Paragraph> aParagraphsWithARun =
                 aTblCell.TextBody.Elements<A.Paragraph>().Where(p => !p.IsEmpty());

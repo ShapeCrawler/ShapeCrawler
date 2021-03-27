@@ -1,10 +1,5 @@
-﻿using System.Text.RegularExpressions;
-using DocumentFormat.OpenXml;
-using ShapeCrawler.Drawing;
-using ShapeCrawler.Extensions;
-using ShapeCrawler.Factories;
+﻿using ShapeCrawler.Drawing;
 using ShapeCrawler.Settings;
-using ShapeCrawler.Statics;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -16,8 +11,6 @@ namespace ShapeCrawler
     /// <inheritdoc cref="IPicture" />
     internal class SlidePicture : SlideShape, IPicture
     {
-        internal ShapeContext Context { get; }
-
         #region Constructors
 
         internal SlidePicture(
@@ -31,6 +24,8 @@ namespace ShapeCrawler
         }
 
         #endregion Constructors
+
+        internal ShapeContext Context { get; }
 
         #region Public Properties
 

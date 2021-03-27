@@ -50,7 +50,7 @@ namespace ShapeCrawler.Tables
                 else if (aTableCell.VerticalMerge != null)
                 {
                     int upRowIdx = Index - 1;
-                    SCTableCell upNeighborScCell = (SCTableCell)Table[upRowIdx, columnIdx];
+                    SCTableCell upNeighborScCell = (SCTableCell) Table[upRowIdx, columnIdx];
                     cellList.Add(upNeighborScCell);
                     addedScCell = upNeighborScCell;
                 }

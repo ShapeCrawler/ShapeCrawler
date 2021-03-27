@@ -1,9 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Settings;
-using ShapeCrawler.Statics;
 using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -31,6 +29,12 @@ namespace ShapeCrawler
 
         #endregion Constructors
 
+        #region Public Properties
+
+        public override GeometryType GeometryType => GeometryType.Rectangle;
+
+        #endregion Public Properties
+
         #region Fields
 
         internal ShapeContext Context;
@@ -38,11 +42,5 @@ namespace ShapeCrawler
         internal OpenXmlCompositeElement ShapeTreeChild { get; }
 
         #endregion Fields
-
-        #region Public Properties
-
-        public override GeometryType GeometryType => GeometryType.Rectangle;
-
-        #endregion Public Properties
     }
 }

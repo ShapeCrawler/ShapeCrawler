@@ -2,7 +2,7 @@
 using ShapeCrawler.SlideMaster;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Collections
+namespace ShapeCrawler.Drawing
 {
     /// <summary>
     ///     Represents a picture on a Slide Master.

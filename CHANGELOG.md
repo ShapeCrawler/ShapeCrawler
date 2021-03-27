@@ -4,10 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Version 0.18.0 - Unreleased
+## Version 0.18.0 - 2021-03-28
 ### Added
-- Added setter for `IFont.IsBold` to set up bold font.
-- Added `IFont.IsItalic` to define whether font is italic.
+- Added setter for `IFont.IsBold` property to set up bold font.
+- Added `IFont.IsItalic` property to define whether font is italic.
 
 ## Version 0.17.0 - 2021-03-21
 ### Added
