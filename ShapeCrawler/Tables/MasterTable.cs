@@ -2,7 +2,7 @@
 using ShapeCrawler.SlideMaster;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Collections
+namespace ShapeCrawler.Tables
 {
     /// <summary>
     ///     Represents a table on a Slide Master.
