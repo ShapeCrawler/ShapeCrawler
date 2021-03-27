@@ -269,6 +269,22 @@ namespace ShapeCrawler.Tests.Unit
             return testCases;
         }
 
+#if DEBUG
+        [Fact]
+        public void ColorHex_GetterReturnsRGBColorInHEXformat()
+        {
+            // Arrange
+            IAutoShape nonPlaceholderAutoShape = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
+            IFont font = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0].Font;
+
+            // Act
+            string fontColorHex = font.ColorHex;
+
+            // Assert
+            fontColorHex.Should().Be("000000");
+        }
+#endif
+
         [Fact]
         public void IsItalic_GetterReturnsTrue_WhenFontOfNonPlaceholderTextIsItalic()
         {
