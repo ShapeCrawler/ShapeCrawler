@@ -10,7 +10,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes
 {
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal class SCFont : IFont
     {
         private readonly A.Text _aText;
@@ -70,6 +69,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetColorHex(string value)
         {
+
             
         }
 
@@ -90,7 +90,6 @@ namespace ShapeCrawler.AutoShapes
                 A.SchemeColorValues.Dark1 => aColorScheme.Dark1Color.RgbColorModelHex.Val.Value,
                 A.SchemeColorValues.Background1 => aColorScheme.Dark1Color.RgbColorModelHex.Val.Value,
                 A.SchemeColorValues.Light1 => aColorScheme.Light1Color.RgbColorModelHex.Val.Value,
-                A.SchemeColorValues.ba => aColorScheme.Dark1Color.RgbColorModelHex.Val.Value,
                 A.SchemeColorValues.Dark2 => aColorScheme.Dark2Color.RgbColorModelHex.Val.Value,
                 A.SchemeColorValues.Light2 => aColorScheme.Light2Color.RgbColorModelHex.Val.Value,
                 A.SchemeColorValues.Accent1 => aColorScheme.Accent1Color.RgbColorModelHex.Val.Value,

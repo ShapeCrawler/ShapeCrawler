@@ -19,7 +19,7 @@ namespace ShapeCrawler.Factories
 
         #region Public Methods
 
-        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide)
+        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide)
         {
             if (pShapeTreeChild is P.Shape pShape)
             {

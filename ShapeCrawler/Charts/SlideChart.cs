@@ -35,7 +35,7 @@ namespace ShapeCrawler.Charts
         /// <summary>
         ///     Initializes a new instance of the <see cref="SlideChart" /> class.
         /// </summary>
-        internal SlideChart(P.GraphicFrame pGraphicFrame, SlideSc slide) :
+        internal SlideChart(P.GraphicFrame pGraphicFrame, SCSlide slide) :
             base(slide, pGraphicFrame)
         {
             _pGraphicFrame = pGraphicFrame;

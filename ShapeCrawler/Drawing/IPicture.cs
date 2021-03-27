@@ -10,6 +10,6 @@ namespace ShapeCrawler.Drawing
         /// <summary>
         ///     Gets image.
         /// </summary>
-        ImageSc Image { get; }
+        SCImage Image { get; }
     }
 }

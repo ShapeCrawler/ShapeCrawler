@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Settings;
@@ -14,14 +15,15 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a shape on a slide.
     /// </summary>
-    public class SlideOLEObject : SlideShape, IOLEObject
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public class SlideOLEObject : SlideShape, IOLEObject //Make internal
     {
         #region Constructors
 
         internal SlideOLEObject(
             OpenXmlCompositeElement shapeTreeChild,
             ShapeContext spContext,
-            SlideSc slide) : base(slide, shapeTreeChild)
+            SCSlide slide) : base(slide, shapeTreeChild)
         {
             ShapeTreeChild = shapeTreeChild;
             Context = spContext;
@@ -39,38 +41,8 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public GeometryType GeometryType => GeometryType.Rectangle;
+        public override GeometryType GeometryType => GeometryType.Rectangle;
 
-        public string CustomData
-        {
-            get => GetCustomData();
-            set => SetCustomData(value);
-        }
-
-        #endregion Properties
-
-        #region Private Methods
-
-        private void SetCustomData(string value)
-        {
-            var customDataElement =
-                $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
-            Context.CompositeElement.InnerXml += customDataElement;
-        }
-
-        private string GetCustomData()
-        {
-            var pattern = @$"<{ConstantStrings.CustomDataElementName}>(.*)<\/{ConstantStrings.CustomDataElementName}>";
-            var regex = new Regex(pattern);
-            var elementText = regex.Match(Context.CompositeElement.InnerXml).Groups[1];
-            if (elementText.Value.Length == 0)
-            {
-                return null;
-            }
-
-            return elementText.Value;
-        }
-
-        #endregion
+        #endregion Public Properties
     }
 }

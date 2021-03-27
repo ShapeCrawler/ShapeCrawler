@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Packaging;
@@ -9,7 +10,8 @@ namespace ShapeCrawler.Drawing
     /// <summary>
     ///     Represents an image model.
     /// </summary>
-    public class ImageSc
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public class SCImage
     {
         #region Fields
 
@@ -22,7 +24,7 @@ namespace ShapeCrawler.Drawing
 
         #region Constructors
 
-        public ImageSc(SlidePart sdkSlidePart, string blipRelateId)
+        public SCImage(SlidePart sdkSlidePart, string blipRelateId)
         {
             _slidePart = sdkSlidePart ?? throw new ArgumentNullException(nameof(sdkSlidePart));
             _blipRelateId = blipRelateId ?? throw new ArgumentNullException(nameof(blipRelateId));

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -19,11 +20,12 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a slide.
     /// </summary>
-    public class SlideSc : ISlide // TODO: make it internal
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public class SCSlide : ISlide // TODO: make it internal
     {
         #region Fields
 
-        private readonly Lazy<ImageSc> _backgroundImage;
+        private readonly Lazy<SCImage> _backgroundImage;
         protected ResettableLazy<ShapeCollection> _shapes { get; set; }
         private readonly SlideNumber _sldNumEntity;
         private Lazy<CustomXmlPart> _customXmlPart;
@@ -49,7 +51,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Returns a background image of the slide. Returns <c>null</c>if slide does not have background image.
         /// </summary>
-        public ImageSc Background => _backgroundImage.Value;
+        public SCImage Background => _backgroundImage.Value;
 
         public string CustomData
         {
@@ -64,9 +66,9 @@ namespace ShapeCrawler
         #region Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SlideSc" /> class.
+        ///     Initializes a new instance of the <see cref="SCSlide" /> class.
         /// </summary>
-        internal SlideSc(SCPresentation presentation,
+        internal SCSlide(SCPresentation presentation,
             SlidePart slidePart,
             SlideNumber sldNum)
         {
@@ -74,11 +76,11 @@ namespace ShapeCrawler
             SlidePart = slidePart;
             _sldNumEntity = sldNum;
             _shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.CreateForSlide(SlidePart, this));
-            _backgroundImage = new Lazy<ImageSc>(TryGetBackground);
+            _backgroundImage = new Lazy<SCImage>(TryGetBackground);
             _customXmlPart = new Lazy<CustomXmlPart>(GetSldCustomXmlPart);
         }
 
-        protected SlideSc(SCPresentation presentation, SlidePart slidePart)
+        protected SCSlide(SCPresentation presentation, SlidePart slidePart)
         {
             Presentation = presentation;
             SlidePart = slidePart;
@@ -153,7 +155,7 @@ namespace ShapeCrawler
 
         #region Private Methods
 
-        private ImageSc TryGetBackground()
+        private SCImage TryGetBackground()
         {
             var backgroundImageFactory = new ImageExFactory();
             return backgroundImageFactory.TryFromSdkSlide(SlidePart);

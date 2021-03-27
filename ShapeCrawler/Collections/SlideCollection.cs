@@ -16,17 +16,17 @@ namespace ShapeCrawler.Collections
     {
         private readonly SCPresentation _presentation;
         private readonly PresentationPart _presentationPart;
-        private readonly ResettableLazy<List<SlideSc>> _slides;
+        private readonly ResettableLazy<List<SCSlide>> _slides;
 
         internal SlideCollection(SCPresentation presentation)
         {
             _presentationPart = presentation.PresentationPart;
             _presentation = presentation;
 
-            _slides = new ResettableLazy<List<SlideSc>>(GetSlides);
+            _slides = new ResettableLazy<List<SCSlide>>(GetSlides);
         }
 
-        public IEnumerator<SlideSc> GetEnumerator()
+        public IEnumerator<SCSlide> GetEnumerator()
         {
             return _slides.Value.GetEnumerator();
         }
@@ -36,14 +36,14 @@ namespace ShapeCrawler.Collections
             return GetEnumerator();
         }
 
-        public SlideSc this[int index] => _slides.Value[index];
+        public SCSlide this[int index] => _slides.Value[index];
 
         public int Count => _slides.Value.Count;
 
         /// <summary>
         ///     Removes the specified slide.
         /// </summary>
-        public void Remove(SlideSc removingSlide)
+        public void Remove(SCSlide removingSlide)
         {
             P.Presentation presentation = _presentationPart.Presentation;
 
@@ -97,15 +97,15 @@ namespace ShapeCrawler.Collections
             _slides.Reset();
         }
 
-        private List<SlideSc> GetSlides()
+        private List<SCSlide> GetSlides()
         {
             int slidesCount = _presentationPart.SlideParts.Count();
-            var slides = new List<SlideSc>(slidesCount);
+            var slides = new List<SCSlide>(slidesCount);
             for (var sldIndex = 0; sldIndex < slidesCount; sldIndex++)
             {
                 SlidePart slidePart = _presentationPart.GetSlidePartByIndex(sldIndex);
                 var slideNumber = new SlideNumber(sldIndex + 1);
-                var newSlide = new SlideSc(_presentation, slidePart, slideNumber);
+                var newSlide = new SCSlide(_presentation, slidePart, slideNumber);
                 slides.Add(newSlide);
             }
 

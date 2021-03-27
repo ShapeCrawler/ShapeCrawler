@@ -45,7 +45,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Hidden_GetterReturnsTrue_WhenTheSlideIsHidden()
         { 
             // Arrange
-            SlideSc slideEx = _fixture.Pre002.Slides[2];
+            SCSlide slideEx = _fixture.Pre002.Slides[2];
 
             // Act
             bool hidden = slideEx.Hidden;
@@ -59,7 +59,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SaveScheme_CreatesAndSavesSlideSchemeImageInSpecifiedStream()
         {
             // Arrange
-            SlideSc slide = _fixture.Pre025.Slides[2];
+            SCSlide slide = _fixture.Pre025.Slides[2];
             var stream = new MemoryStream();
 
             // Act
@@ -91,10 +91,10 @@ namespace ShapeCrawler.Tests.Unit
         public void Background_ImageIsNull_WhenTheSlideHasNotBackground()
         {
             // Arrange
-            SlideSc slide = _fixture.Pre009.Slides[1];
+            SCSlide slide = _fixture.Pre009.Slides[1];
 
             // Act
-            ImageSc backgroundImage = slide.Background;
+            SCImage backgroundImage = slide.Background;
 
             // Assert
             backgroundImage.Should().BeNull();
@@ -139,7 +139,7 @@ namespace ShapeCrawler.Tests.Unit
 
         [Theory]
         [MemberData(nameof(TestCasesShapesCount))]
-        public void ShapesCount_ReturnsNumberOfShapesOnTheSlide(SlideSc slide, int expectedShapesCount)
+        public void ShapesCount_ReturnsNumberOfShapesOnTheSlide(SCSlide slide, int expectedShapesCount)
         {
             // Act
             int shapesCount = slide.Shapes.Count;
@@ -152,7 +152,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             SCPresentation presentation = SCPresentation.Open(Properties.Resources._009, false);
             
-            SlideSc slide = presentation.Slides[0];
+            SCSlide slide = presentation.Slides[0];
             yield return new object[] { slide, 6 };
             
             slide = presentation.Slides[1];
@@ -194,7 +194,8 @@ namespace ShapeCrawler.Tests.Unit
             IShape shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
 
             // Act-Assert
-            shape.Should().BeOfType<SlidePicture>();
+            IPicture picture = shape as IPicture;
+            picture.Should().NotBeNull();
         }
 
 #if DEBUG
@@ -202,7 +203,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SaveImage_GenerateAndSavesSlideImageInSpecifiedFilePath()
         {
             // Arrange
-            SlideSc slide = _fixture.Pre001.Slides[0];
+            SCSlide slide = _fixture.Pre001.Slides[0];
 
             // Act
             slide.SaveImage(@"c:\1\SlideScSaveImage.png");

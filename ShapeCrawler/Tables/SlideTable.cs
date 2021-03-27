@@ -34,7 +34,7 @@ namespace ShapeCrawler
             OpenXmlCompositeElement pShapeTreeChild,
             ILocation innerTransform,
             ShapeContext spContext,
-            SlideSc slide) : base(slide, pShapeTreeChild)
+            SCSlide slide) : base(slide, pShapeTreeChild)
         {
             _innerTransform = innerTransform;
             Context = spContext;

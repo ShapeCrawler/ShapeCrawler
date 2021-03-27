@@ -118,7 +118,7 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill()
         {
-            ImageSc image = _imageFactory.TryFromSdkShape(Context.SlidePart, Context.CompositeElement);
+            SCImage image = _imageFactory.TryFromSdkShape(Context.SlidePart, Context.CompositeElement);
             if (image != null)
             {
                 return new ShapeFill(image);

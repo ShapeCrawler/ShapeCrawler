@@ -37,7 +37,7 @@ namespace ShapeCrawler
             ILocation innerTransform,
             ShapeContext spContext,
             P.Shape pShape,
-            SlideSc slide) : base(slide, pShape)
+            SCSlide slide) : base(slide, pShape)
         {
             _innerTransform = innerTransform;
             Context = spContext;
@@ -91,30 +91,6 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public long X
-        {
-            get => _innerTransform.X;
-            set => _innerTransform.SetX(value);
-        }
-
-        public long Y
-        {
-            get => _innerTransform.Y;
-            set => _innerTransform.SetY(value);
-        }
-
-        public long Width
-        {
-            get => _innerTransform.Width;
-            set => _innerTransform.SetWidth(value);
-        }
-
-        public long Height
-        {
-            get => _innerTransform.Height;
-            set => _innerTransform.SetHeight(value);
-        }
-
         public ITextBox TextBox => _textBox.Value;
 
         public ShapeFill Fill => _shapeFill.Value;
@@ -142,7 +118,7 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill()
         {
-            ImageSc image = _imageFactory.TryFromSdkShape(Context.SlidePart, Context.CompositeElement);
+            SCImage image = _imageFactory.TryFromSdkShape(Context.SlidePart, Context.CompositeElement);
             if (image != null)
             {
                 return new ShapeFill(image);

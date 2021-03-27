@@ -28,7 +28,7 @@ namespace ShapeCrawler.Factories
             _slidePart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
         }
 
-        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SlideSc slide)
+        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide)
         {
             if (pShapeTreeChild is P.GroupShape pGroupShape)
             {

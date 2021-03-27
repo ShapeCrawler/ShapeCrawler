@@ -87,7 +87,7 @@ namespace ShapeCrawler.SlideMaster
 
         public ShapeCollection Shapes => ShapeCollection.CreateForSlideMaster(this);
         public int Number { get; } //TODO: does it need?
-        public ImageSc Background { get; }
+        public SCImage Background { get; }
         public string CustomData { get; set; } //TODO: does it need?
         public bool Hidden { get; } //TODO: does it need?
         public IReadOnlyList<SlideLayoutSc> SlideLayouts => _sldLayouts.Value;

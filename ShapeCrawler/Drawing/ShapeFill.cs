@@ -18,7 +18,7 @@ namespace ShapeCrawler.Drawing
         /// <summary>
         ///     Returns picture image. Returns <c>null</c> if fill type is not picture.
         /// </summary>
-        public ImageSc Picture { get; }
+        public SCImage Picture { get; }
 
         /// <summary>
         ///     Returns instance of the <see cref="System.Drawing.Color" />. Returns <c>null</c> if fill type is not solid color.
@@ -45,7 +45,7 @@ namespace ShapeCrawler.Drawing
 
         #region Constructors
 
-        public ShapeFill(ImageSc image)
+        public ShapeFill(SCImage image)
         {
             Check.NotNull(image, nameof(image));
 
