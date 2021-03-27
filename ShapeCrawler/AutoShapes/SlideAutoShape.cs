@@ -20,16 +20,13 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents an Auto Shape on a Slide.
     /// </summary>
-    internal class SlideAutoShape : SlideShape, IAutoShape, IAutoShapeInternal
+    internal class SlideAutoShape : SlideShape, IAutoShape
     {
         private readonly ImageExFactory _imageFactory = new ImageExFactory();
         private readonly ILocation _innerTransform;
-        private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
         private readonly Lazy<ShapeFill> _shapeFill;
         private readonly Lazy<SCTextBox> _textBox;
-        private bool? _hidden;
-        private int _id;
-        private string _name;
+        internal ShapeContext Context { get; }
 
         #region Constructors
 
@@ -43,51 +40,9 @@ namespace ShapeCrawler
             Context = spContext;
             _textBox = new Lazy<SCTextBox>(GetTextBox);
             _shapeFill = new Lazy<ShapeFill>(TryGetFill);
-            _lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(() => GetLvlToFontData());
         }
 
         #endregion Constructors
-
-        internal ShapeContext Context { get; }
-
-        internal Dictionary<int, FontData> LvlToFontData => _lvlToFontData.Value;
-
-        public bool TryGetFontData(int paragraphLvl, out FontData fontData)
-        {
-            // Tries get font from Auto Shape
-            if (LvlToFontData.TryGetValue(paragraphLvl, out fontData))
-            {
-                return true;
-            }
-
-            // Tries get font from Auto Shape of Placeholder
-            if (Placeholder == null)
-            {
-                return false;
-            }
-
-            Placeholder placeholder = (Placeholder) Placeholder;
-            IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
-            return placeholderAutoShape.TryGetFontData(paragraphLvl, out fontData);
-        }
-
-        internal Dictionary<int, FontData> GetLvlToFontData()
-        {
-            P.Shape pShape = (P.Shape) PShapeTreeChild;
-            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
-
-            if (!lvlToFontData.Any()) // font height is still not known
-            {
-                Int32Value endParaRunPrFs = pShape.TextBody.GetFirstChild<A.Paragraph>()
-                    .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
-                if (endParaRunPrFs != null)
-                {
-                    lvlToFontData.Add(1, new FontData(endParaRunPrFs));
-                }
-            }
-
-            return lvlToFontData;
-        }
 
         #region Public Properties
 
@@ -164,19 +119,6 @@ namespace ShapeCrawler
             return null;
         }
 
-        private void InitIdHiddenName()
-        {
-            if (_id != 0)
-            {
-                return;
-            }
-
-            var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
-            _id = id;
-            _hidden = hidden;
-            _name = name;
-        }
-
-        #endregion
+        #endregion Private Methods
     }
 }
