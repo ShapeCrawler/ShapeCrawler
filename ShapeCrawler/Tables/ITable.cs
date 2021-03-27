@@ -22,11 +22,11 @@ namespace ShapeCrawler.Tables
         /// <summary>
         ///     Gets cell by row and column indexes.
         /// </summary>
-        CellSc this[int rowIndex, int columnIndex] { get; }
+        ITableCell this[int rowIndex, int columnIndex] { get; }
 
         /// <summary>
         ///     Merge neighbor cells.
         /// </summary>
-        void MergeCells(CellSc cell1, CellSc cell2);
+        void MergeCells(ITableCell inputCell1, ITableCell inputCell2);
     }
 }

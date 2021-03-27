@@ -110,7 +110,7 @@ namespace ShapeCrawler
             var aTexts = pTextBody.Descendants<A.Text>();
             if (aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element with text must be exist
             {
-                return new SCTextBox(this, pTextBody);
+                return new SCTextBox(pTextBody, this);
             }
 
             return null;

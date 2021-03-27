@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -9,11 +10,12 @@ namespace ShapeCrawler.Tables
     /// <summary>
     ///     Represents a cell in a table.
     /// </summary>
-    public class CellSc //TODO: make it internal
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    internal class SCTableCell : ITableCell //TODO: make it internal
     {
         #region Constructors
 
-        internal CellSc(SlideTable table, A.TableCell aTableCell, int rowIdx, int columnIdx)
+        internal SCTableCell(SlideTable table, A.TableCell aTableCell, int rowIdx, int columnIdx)
         {
             Table = table;
             ATableCell = aTableCell;

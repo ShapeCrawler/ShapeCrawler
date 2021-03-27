@@ -10,7 +10,7 @@
         /// <summary>
         ///     Gets or sets font size in EMUs.
         /// </summary>
-        int Size { get; set; }
+        int Size { get; set; } //TODO: create test to verify font size of table cell's text portion
 
         /// <summary>
         ///     Gets or sets flag indicating whether font is bold.

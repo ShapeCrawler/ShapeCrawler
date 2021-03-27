@@ -31,7 +31,7 @@ namespace ShapeCrawler.Tests.Unit
 
             // Act
             RowCollection tableRows = table.Rows;
-            IEnumerable<CellSc> rowCells = tableRows.First().Cells;
+            IEnumerable<ITableCell> rowCells = tableRows.First().Cells;
 
             // Assert
             tableRows.Should().HaveCount(3);
@@ -73,8 +73,8 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             RowSc row = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4)).Rows[1];
-            CellSc cell1x0 = row.Cells[0];
-            CellSc cell1x1 = row.Cells[1];
+            ITableCell cell1x0 = row.Cells[0];
+            ITableCell cell1x1 = row.Cells[1];
 
             // Act-Assert
             cell1x0.IsMergedCell.Should().BeTrue();
@@ -84,7 +84,7 @@ namespace ShapeCrawler.Tests.Unit
 
         [Theory]
         [MemberData(nameof(TestCasesCellIsMergedCell))]
-        public void CellIsMergedCell_ReturnsTrue_WhenCellMergedWithOtherVertically(CellSc cell1, CellSc cell2)
+        public void CellIsMergedCell_ReturnsTrue_WhenCellMergedWithOtherVertically(ITableCell cell1, ITableCell cell2)
         {
             cell1.IsMergedCell.Should().BeTrue();
             cell2.IsMergedCell.Should().BeTrue();
@@ -538,12 +538,12 @@ namespace ShapeCrawler.Tests.Unit
             ITable tableCase2 = (ITable)_fixture.Pre001.Slides[3].Shapes.First(sp => sp.Id == 4);
 
             // Act
-            CellSc cellCase1 = tableCase1[0, 0];
-            CellSc cellCase2 = tableCase2[1, 1];
+            ITableCell scCellCase1 = tableCase1[0, 0];
+            ITableCell scCellCase2 = tableCase2[1, 1];
 
             // Assert
-            cellCase1.Should().NotBeNull();
-            cellCase2.Should().NotBeNull();
+            scCellCase1.Should().NotBeNull();
+            scCellCase2.Should().NotBeNull();
         }
     }
 }
