@@ -33,7 +33,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ShapeCrawler;
-using ShapeCrawler.AutoShapes;
 
 public class TextSample
 {
@@ -41,7 +40,7 @@ public class TextSample
     {
         // Open presentation and get first slide
         using IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: true);
-        SlideSc slide = presentation.Slides.First();
+        SCSlide slide = presentation.Slides.First();
 
         // Get text holder auto shape
         IAutoShape autoShape = (IAutoShape)slide.Shapes.First(sp => sp is IAutoShape);
@@ -53,14 +52,13 @@ public class TextSample
         SCParagraph paragraph = autoShape.TextBox.Paragraphs[1];
         paragraph.Text = "A new text for second paragraph";
 
-        // Print font properties
-        PortionCollection paragraphPortions = autoShape.TextBox.Paragraphs.First().Portions;
-        foreach (Portion portion in paragraphPortions)
-        {
-            Console.WriteLine($"Font name: {portion.Font.Name}");
-            Console.WriteLine($"Font size: {portion.Font.Size}");
-            Console.WriteLine($"Is bold font?: {portion.Font.IsBold}");
-        }
+        // Get font name and size
+        Portion paragraphPortion = autoShape.TextBox.Paragraphs.First().Portions.First();
+        Console.WriteLine($"Font name: {paragraphPortion.Font.Name}");
+        Console.WriteLine($"Font size: {paragraphPortion.Font.Size}");
+
+        // Set bold font
+        paragraphPortion.Font.IsBold = true;
 
         // Save and close the presentation
         presentation.Close();
@@ -73,7 +71,6 @@ public class TextSample
 using System;
 using System.Linq;
 using ShapeCrawler;
-using ShapeCrawler.Tables;
 
 public class TableSample
 {
@@ -81,7 +78,7 @@ public class TableSample
     {
         // Get first slide
         using IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: false);
-        SlideSc slide = presentation.Slides.First();
+        SCSlide slide = presentation.Slides.First();
 
         // Get table
         ITable table = (ITable)slide.Shapes.First(sp => sp is ITable);
@@ -95,7 +92,7 @@ public class TableSample
         // Print a message if the cell is a part of a merged cells group
         foreach (RowSc row in table.Rows)
         {
-            foreach (CellSc cellItem in row.Cells)
+            foreach (ITableCell cellItem in row.Cells)
             {
                 if (cellItem.IsMergedCell)
                 {
@@ -112,7 +109,7 @@ public class TableSample
         long rowHeight = table.Rows[0].Height;
 
         // Get cell with row index 0 and column index 1
-        CellSc cell = table[0, 1];
+        ITableCell cell = table[0, 1];
 
         // Merge cells
         table.MergeCells(table[0,0], table[0, 1]);
@@ -127,14 +124,13 @@ public class TableSample
 using System;
 using System.Linq;
 using ShapeCrawler;
-using ShapeCrawler.Charts;
 
 public class ChartSample
 {
     public static void Chart()
     {
         using IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: false);
-        SlideSc slide = presentation.Slides.First();
+        SCSlide slide = presentation.Slides.First();
 
         // Get chart
         IChart chart = (IChart)slide.Shapes.First(sp => sp is IChart);
@@ -159,7 +155,6 @@ public class ChartSample
 
 ```C#
 using ShapeCrawler;
-using ShapeCrawler.SlideMaster;
 
 public class SlideMasterSample
 {
@@ -200,8 +195,9 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 Don't hesitate to contact me if you want to get involved!
 
 # Changelog
-## Version 0.17.0 - 2021-03-21
+## Version 0.18.0 - 2021-03-28
 ### Added
-- Added `IFont.IsBold` property to define whether font is bold.
+- Added setter for `IFont.IsBold` property to set up bold font.
+- Added `IFont.IsItalic` property to define whether font is italic.
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).

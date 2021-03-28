@@ -1,9 +1,11 @@
 ﻿using System;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
+// ReSharper disable CheckNamespace
 
-namespace ShapeCrawler.AutoShapes
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a text paragraph portion.

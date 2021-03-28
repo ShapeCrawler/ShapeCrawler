@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
+// ReSharper disable CheckNamespace
 
-namespace ShapeCrawler.Tables
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a row in a table.

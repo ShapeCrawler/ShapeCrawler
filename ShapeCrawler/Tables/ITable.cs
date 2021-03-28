@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Tables;
 
-namespace ShapeCrawler.Tables
+// ReSharper disable CheckNamespace
+
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a table on a slide.

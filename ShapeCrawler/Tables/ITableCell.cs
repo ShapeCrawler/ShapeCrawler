@@ -1,6 +1,7 @@
 ﻿using ShapeCrawler.AutoShapes;
+// ReSharper disable CheckNamespace
 
-namespace ShapeCrawler.Tables
+namespace ShapeCrawler
 {
     public interface ITableCell
     {

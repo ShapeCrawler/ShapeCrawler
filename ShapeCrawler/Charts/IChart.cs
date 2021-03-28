@@ -1,7 +1,8 @@
 ﻿using ShapeCrawler.Collections;
 using ShapeCrawler.Shapes;
+// ReSharper disable CheckNamespace
 
-namespace ShapeCrawler.Charts
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a chart.
