@@ -6,8 +6,8 @@ using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
-// ReSharper disable CheckNamespace
 
+// ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
 // ReSharper disable SuggestVarOrType_SimpleTypes
 // ReSharper disable SuggestVarOrType_BuiltInTypes

@@ -269,21 +269,19 @@ namespace ShapeCrawler.Tests.Unit
             return testCases;
         }
 
-#if DEBUG
         [Fact]
-        public void ColorHex_GetterReturnsRGBColorInHEXformat()
+        public void Color_GetterReturnsRGBColorInHEXformat()
         {
             // Arrange
-            IAutoShape nonPlaceholderAutoShape = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
-            IFont font = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0].Font;
+            IAutoShape nonPlaceholderAutoShapeCase1 = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
+            IAutoShape nonPlaceholderAutoShapeCase2 = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3);
+            IFont fontC1 = nonPlaceholderAutoShapeCase1.TextBox.Paragraphs[0].Portions[0].Font;
+            IFont fontC2 = nonPlaceholderAutoShapeCase2.TextBox.Paragraphs[0].Portions[0].Font;
 
-            // Act
-            string fontColorHex = font.ColorHex;
-
-            // Assert
-            fontColorHex.Should().Be("000000");
+            // Act-Assert
+            fontC1.Color.Should().Be("000000");
+            fontC2.Color.Should().Be("000000");
         }
-#endif
 
         [Fact]
         public void IsItalic_GetterReturnsTrue_WhenFontOfNonPlaceholderTextIsItalic()
