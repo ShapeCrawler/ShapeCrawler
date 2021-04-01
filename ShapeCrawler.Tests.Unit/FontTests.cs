@@ -273,14 +273,20 @@ namespace ShapeCrawler.Tests.Unit
         public void Color_GetterReturnsRGBColorInHEXformat()
         {
             // Arrange
-            IAutoShape nonPlaceholderAutoShapeCase1 = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
-            IAutoShape nonPlaceholderAutoShapeCase2 = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3);
-            IFont fontC1 = nonPlaceholderAutoShapeCase1.TextBox.Paragraphs[0].Portions[0].Font;
-            IFont fontC2 = nonPlaceholderAutoShapeCase2.TextBox.Paragraphs[0].Portions[0].Font;
+            IAutoShape nonPhAutoShapeCase1 = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
+            IAutoShape nonPhAutoShapeCase2 = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3);
+            IAutoShape nonPhAutoShapeCase3 = (IAutoShape)_fixture.Pre020.Slides[2].Shapes.First(sp => sp.Id == 8);
+            IAutoShape nonPhAutoShapeCase4 = (IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 4);
+            IFont fontC1 = nonPhAutoShapeCase1.TextBox.Paragraphs[0].Portions[0].Font;
+            IFont fontC2 = nonPhAutoShapeCase2.TextBox.Paragraphs[0].Portions[0].Font;
+            IFont fontC3 = nonPhAutoShapeCase3.TextBox.Paragraphs[1].Portions[0].Font;
+            IFont fontC4 = nonPhAutoShapeCase4.TextBox.Paragraphs[0].Portions[0].Font;
 
             // Act-Assert
             fontC1.Color.Should().Be("000000");
             fontC2.Color.Should().Be("000000");
+            fontC3.Color.Should().Be("FFFF00");
+            fontC4.Color.Should().Be("000000");
         }
 
         [Fact]

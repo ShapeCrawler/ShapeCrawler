@@ -56,12 +56,12 @@ namespace ShapeCrawler
         }
 
         /// <summary>
-        ///     Gets collection of paragraph text portions.
+        ///     Gets collection of paragraph portions. Returns <c>NULL</c> if paragraph is empty.
         /// </summary>
         public PortionCollection Portions => _portions.Value;
 
         /// <summary>
-        ///     Gets paragraph bullet. Returns null if bullet does not exist.
+        ///     Gets paragraph bullet. Returns <c>NULL</c> if bullet does not exist.
         /// </summary>
         public Bullet Bullet => _bullet.Value;
 
