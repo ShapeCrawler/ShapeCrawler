@@ -24,7 +24,7 @@ namespace ShapeCrawler
 
         #region Constructors
 
-        internal MasterAutoShape(SlideMasterSc slideMaster, P.Shape pShape) : base(slideMaster, pShape)
+        internal MasterAutoShape(SCSlideMaster slideMaster, P.Shape pShape) : base(slideMaster, pShape)
         {
             _textBox = new Lazy<SCTextBox>(GetTextBox);
             _shapeFill = new Lazy<ShapeFill>(TryGetFill);

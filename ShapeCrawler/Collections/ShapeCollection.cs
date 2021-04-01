@@ -128,7 +128,7 @@ namespace ShapeCrawler.Collections
             return new ShapeCollection(shapeList);
         }
 
-        internal static ShapeCollection CreateForSlideMaster(SlideMasterSc slideMaster)
+        internal static ShapeCollection CreateForSlideMaster(SCSlideMaster slideMaster)
         {
             P.ShapeTree pShapeTree = slideMaster.PSlideMaster.CommonSlideData.ShapeTree;
             var shapeList = new List<IShape>();

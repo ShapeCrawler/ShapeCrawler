@@ -10,9 +10,9 @@ namespace ShapeCrawler.SlideMaster
     public class SlideLayoutSc
     {
         private readonly ResettableLazy<ShapeCollection> _shapes;
-        private readonly SlideMasterSc _slideMaster;
+        private readonly SCSlideMaster _slideMaster;
 
-        internal SlideLayoutSc(SlideMasterSc slideMaster, SlideLayoutPart sldLayoutPart)
+        internal SlideLayoutSc(SCSlideMaster slideMaster, SlideLayoutPart sldLayoutPart)
         {
             _slideMaster = slideMaster;
             SlideLayoutPart = sldLayoutPart;
@@ -23,6 +23,6 @@ namespace ShapeCrawler.SlideMaster
         internal SlideLayoutPart SlideLayoutPart { get; }
 
         public ShapeCollection Shapes => _shapes.Value;
-        public SlideMasterSc SlideMaster => _slideMaster.Presentation.SlideMasters.GetSlideMasterByLayout(this);
+        public SCSlideMaster SlideMaster => _slideMaster.Presentation.SlideMasters.GetSlideMasterByLayout(this);
     }
 }

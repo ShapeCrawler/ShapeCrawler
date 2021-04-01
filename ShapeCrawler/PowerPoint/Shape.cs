@@ -73,7 +73,7 @@ namespace ShapeCrawler
 
         internal abstract ThemePart ThemePart { get; }
         public abstract SCPresentation Presentation { get; }
-        public abstract SlideMasterSc SlideMaster { get; }
+        public abstract SCSlideMaster SlideMaster { get; }
 
         public virtual GeometryType GeometryType => GetGeometryType();
 

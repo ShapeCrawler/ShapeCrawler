@@ -270,7 +270,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Color_GetterReturnsRGBColorInHEXformat()
+        public void Color_GetterReturnsRGBColorInHEXformat_OfNonPlaceholder()
         {
             // Arrange
             IAutoShape nonPhAutoShapeCase1 = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
@@ -287,6 +287,20 @@ namespace ShapeCrawler.Tests.Unit
             fontC2.Color.Should().Be("000000");
             fontC3.Color.Should().Be("FFFF00");
             fontC4.Color.Should().Be("000000");
+        }
+
+        [Fact(Skip = "In Progress")]
+        public void Color_GetterReturnsRGBColorInHEXformat_OfPlaceholder()
+        {
+            // Arrange
+            IAutoShape placeholderCase1 = (IAutoShape)_fixture.Pre001.Slides[2].Shapes.First(sp => sp.Id == 4);
+            IAutoShape placeholderCase2 = (IAutoShape)_fixture.Pre001.Slides[4].Shapes.First(sp => sp.Id == 5);
+            IFont fontC1 = placeholderCase1.TextBox.Paragraphs[0].Portions[0].Font;
+            IFont fontC2 = placeholderCase2.TextBox.Paragraphs[0].Portions[0].Font;
+
+            // Act-Assert
+            fontC1.Color.Should().Be("000000");
+            fontC2.Color.Should().Be("000000");
         }
 
         [Fact]

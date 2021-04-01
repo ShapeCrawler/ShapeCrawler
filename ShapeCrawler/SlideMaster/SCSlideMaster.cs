@@ -13,19 +13,19 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler
 {
-    public class SlideMasterSc : ISlide //TODO: add ISlideMaster interface
+    public class SCSlideMaster : ISlide //TODO: add ISlideMaster interface
     {
         private readonly ResettableLazy<List<SlideLayoutSc>> _sldLayouts;
         internal readonly P.SlideMaster PSlideMaster;
+        internal SCPresentation Presentation { get; }
 
-        internal SlideMasterSc(SCPresentation presentation, P.SlideMaster pSlideMaster)
+        internal SCSlideMaster(SCPresentation presentation, P.SlideMaster pSlideMaster)
         {
             Presentation = presentation;
             PSlideMaster = pSlideMaster;
             _sldLayouts = new ResettableLazy<List<SlideLayoutSc>>(() => GetSlideLayouts());
         }
 
-        internal SCPresentation Presentation { get; }
 
         public void Hide() //TODO: does it need?
         {
@@ -44,7 +44,7 @@ namespace ShapeCrawler
             return slideLayouts;
         }
 
-        public bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
+        internal bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
         {
             P.TextStyles pTextStyles = PSlideMaster.TextStyles;
 

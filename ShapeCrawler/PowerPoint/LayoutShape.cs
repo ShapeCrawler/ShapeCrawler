@@ -24,6 +24,6 @@ namespace ShapeCrawler
 
         public override SCPresentation Presentation => SlideLayout.SlideMaster.Presentation;
 
-        public override SlideMasterSc SlideMaster => SlideLayout.SlideMaster;
+        public override SCSlideMaster SlideMaster => SlideLayout.SlideMaster;
     }
 }

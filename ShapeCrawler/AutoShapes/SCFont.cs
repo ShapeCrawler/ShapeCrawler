@@ -91,7 +91,17 @@ namespace ShapeCrawler.AutoShapes
             }
 
             // Get color from SHAPE level
-            P.Shape pShape = (P.Shape)_portion.Paragraph.TextBox.AutoShape.PShapeTreeChild;
+            P.Shape pShape;
+            Shape parentAutoShape = _portion.Paragraph.TextBox.AutoShape;
+            if (parentAutoShape.Placeholder is Placeholder placeholder)
+            {
+                pShape = (P.Shape)placeholder.Shape.PShapeTreeChild;
+            }
+            else
+            {
+                pShape = (P.Shape)parentAutoShape.PShapeTreeChild;
+            }
+            
             A.SchemeColorValues shapeFontSchemeColor = pShape.ShapeStyle.FontReference.SchemeColor.Val.Value;
             return GetThemeColor(shapeFontSchemeColor);
         }
@@ -279,8 +289,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 Placeholder placeholder = (Placeholder) autoShape.Placeholder;
                 IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
-                if (placeholderAutoShape != null &&
-                    placeholderAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
+                if (placeholderAutoShape != null && placeholderAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
                 {
                     if (fontDataPlaceholder.FontSize != null)
                     {
@@ -340,14 +349,11 @@ namespace ShapeCrawler.AutoShapes
 
         private bool TryGetFontDataFromPlaceholder(out FontData phFontData)
         {
-            Shape autoShape = _portion.Paragraph.TextBox.AutoShape;
-            int paragraphLvl = _portion.Paragraph.Level;
-            if (autoShape.Placeholder != null)
+            if (_portion.Paragraph.TextBox.AutoShape.Placeholder is Placeholder placeholder)
             {
-                Placeholder placeholder = (Placeholder) autoShape.Placeholder;
+                int paragraphLvl = _portion.Paragraph.Level;
                 IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
-                if (placeholder.Shape != null &&
-                    placeholderAutoShape.TryGetFontData(paragraphLvl, out phFontData))
+                if (placeholder.Shape != null && placeholderAutoShape.TryGetFontData(paragraphLvl, out phFontData))
                 {
                     return true;
                 }
