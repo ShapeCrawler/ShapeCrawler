@@ -277,16 +277,19 @@ namespace ShapeCrawler.Tests.Unit
             IAutoShape nonPhAutoShapeCase2 = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3);
             IAutoShape nonPhAutoShapeCase3 = (IAutoShape)_fixture.Pre020.Slides[2].Shapes.First(sp => sp.Id == 8);
             IAutoShape nonPhAutoShapeCase4 = (IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 4);
+            IAutoShape nonPhAutoShapeCase5 = (IAutoShape)_fixture.Pre002.Slides[1].Shapes.First(sp => sp.Id == 3);
             IFont fontC1 = nonPhAutoShapeCase1.TextBox.Paragraphs[0].Portions[0].Font;
             IFont fontC2 = nonPhAutoShapeCase2.TextBox.Paragraphs[0].Portions[0].Font;
             IFont fontC3 = nonPhAutoShapeCase3.TextBox.Paragraphs[1].Portions[0].Font;
             IFont fontC4 = nonPhAutoShapeCase4.TextBox.Paragraphs[0].Portions[0].Font;
+            IFont fontC5 = nonPhAutoShapeCase5.TextBox.Paragraphs[0].Portions[0].Font;
 
             // Act-Assert
             fontC1.Color.Should().Be("000000");
             fontC2.Color.Should().Be("000000");
             fontC3.Color.Should().Be("FFFF00");
             fontC4.Color.Should().Be("000000");
+            fontC5.Color.Should().Be("000000");
         }
 
         [Fact]
@@ -295,12 +298,15 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             IAutoShape placeholderCase1 = (IAutoShape)_fixture.Pre001.Slides[2].Shapes.First(sp => sp.Id == 4);
             IAutoShape placeholderCase2 = (IAutoShape)_fixture.Pre001.Slides[4].Shapes.First(sp => sp.Id == 5);
+            IAutoShape placeholderCase3 = (IAutoShape)_fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61);
             IFont fontC1 = placeholderCase1.TextBox.Paragraphs[0].Portions[0].Font;
             IFont fontC2 = placeholderCase2.TextBox.Paragraphs[0].Portions[0].Font;
+            IFont fontC3 = placeholderCase3.TextBox.Paragraphs[0].Portions[0].Font;
 
             // Act-Assert
             fontC1.Color.Should().Be("000000");
             fontC2.Color.Should().Be("000000");
+            fontC3.Color.Should().Be("595959");
         }
 
         [Fact]

@@ -5,7 +5,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -17,10 +16,6 @@ namespace ShapeCrawler
     /// </summary>
     public abstract class Shape //TODO: make it internal
     {
-        internal OpenXmlCompositeElement PShapeTreeChild { get; }
-        internal abstract ThemePart ThemePart { get; }
-
-
         #region Constructors
 
         protected Shape(OpenXmlCompositeElement pShapeTreeChild)
@@ -30,9 +25,13 @@ namespace ShapeCrawler
 
         #endregion Constructors
 
-        public int Id => (int)PShapeTreeChild.GetNonVisualDrawingProperties().Id.Value;
+        internal OpenXmlCompositeElement PShapeTreeChild { get; }
+        internal abstract ThemePart ThemePart { get; }
+
+        public int Id => (int) PShapeTreeChild.GetNonVisualDrawingProperties().Id.Value;
         public string Name => PShapeTreeChild.GetNonVisualDrawingProperties().Name;
         public bool Hidden => DefineHidden();
+
         public string CustomData
         {
             get => GetCustomData();
@@ -84,6 +83,7 @@ namespace ShapeCrawler
             get => GetWidth();
             set => SetWidth(value);
         }
+
         /// <summary>
         ///     Gets x-coordinate of the upper-left corner of the shape.
         /// </summary>
@@ -98,6 +98,7 @@ namespace ShapeCrawler
             bool? parsedHiddenValue = PShapeTreeChild.GetNonVisualDrawingProperties().Hidden?.Value;
             return parsedHiddenValue != null && parsedHiddenValue == true;
         }
+
         private string GetCustomData()
         {
             var pattern = @$"<{ConstantStrings.CustomDataElementName}>(.*)<\/{ConstantStrings.CustomDataElementName}>";

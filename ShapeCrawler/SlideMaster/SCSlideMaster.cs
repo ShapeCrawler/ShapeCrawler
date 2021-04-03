@@ -21,7 +21,6 @@ namespace ShapeCrawler
     {
         private readonly ResettableLazy<List<SCSlideLayout>> _sldLayouts;
         internal readonly P.SlideMaster PSlideMaster;
-        internal SCPresentation Presentation { get; }
 
         internal SCSlideMaster(SCPresentation presentation, P.SlideMaster pSlideMaster)
         {
@@ -29,6 +28,8 @@ namespace ShapeCrawler
             PSlideMaster = pSlideMaster;
             _sldLayouts = new ResettableLazy<List<SCSlideLayout>>(GetSlideLayouts);
         }
+
+        internal SCPresentation Presentation { get; }
 
 
         public void Hide() //TODO: does it need?
@@ -50,7 +51,8 @@ namespace ShapeCrawler
 
         internal bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
         {
-            Dictionary<int, FontData> bodyParaLvlToFontData = FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.BodyStyle);
+            Dictionary<int, FontData> bodyParaLvlToFontData =
+                FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.BodyStyle);
             if (bodyParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
             {
                 if (fontData.FontSize != null)
@@ -66,14 +68,16 @@ namespace ShapeCrawler
 
         internal A.SchemeColorValues GetFontColorHexFromBody(int paragraphLvl)
         {
-            Dictionary<int, FontData> bodyParaLvlToFontData = FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.BodyStyle);
-            
+            Dictionary<int, FontData> bodyParaLvlToFontData =
+                FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.BodyStyle);
+
             return bodyParaLvlToFontData[paragraphLvl].ASchemeColor.Val;
         }
 
         internal A.SchemeColorValues GetFontColorHexFromTitle(int paragraphLvl)
         {
-            Dictionary<int, FontData> bodyParaLvlToFontData = FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.TitleStyle);
+            Dictionary<int, FontData> bodyParaLvlToFontData =
+                FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.TitleStyle);
 
             return bodyParaLvlToFontData[paragraphLvl].ASchemeColor.Val;
         }

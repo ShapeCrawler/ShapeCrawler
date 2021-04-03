@@ -23,7 +23,9 @@ namespace ShapeCrawler.Factories
         //          </a:lvl1pPr>
         //      </a:lstStyle>
         //  </example>
-        public static Dictionary<int, FontData> FromCompositeElement(OpenXmlCompositeElement compositeElement) //TODO: set annotation that about it cannot be NULL
+        public static Dictionary<int, FontData>
+            FromCompositeElement(
+                OpenXmlCompositeElement compositeElement) //TODO: set annotation that about it cannot be NULL
         {
             // Get <a:lvlXpPr> elements, eg. <a:lvl1pPr>, <a:lvl2pPr>
             IEnumerable<OpenXmlElement> lvlParagraphPropertyList = compositeElement.Elements()
