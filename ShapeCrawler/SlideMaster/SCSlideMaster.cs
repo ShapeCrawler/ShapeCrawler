@@ -9,7 +9,9 @@ using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMaster;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
+
 // ReSharper disable CheckNamespace
 
 namespace ShapeCrawler
@@ -25,7 +27,7 @@ namespace ShapeCrawler
         {
             Presentation = presentation;
             PSlideMaster = pSlideMaster;
-            _sldLayouts = new ResettableLazy<List<SCSlideLayout>>(() => GetSlideLayouts());
+            _sldLayouts = new ResettableLazy<List<SCSlideLayout>>(GetSlideLayouts);
         }
 
 
@@ -62,11 +64,18 @@ namespace ShapeCrawler
             return false;
         }
 
-        internal string GetFontColorHexFromBody(int paragraphLvl)
+        internal A.SchemeColorValues GetFontColorHexFromBody(int paragraphLvl)
         {
             Dictionary<int, FontData> bodyParaLvlToFontData = FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.BodyStyle);
             
-            return bodyParaLvlToFontData[paragraphLvl].FontColorHex;
+            return bodyParaLvlToFontData[paragraphLvl].ASchemeColor.Val;
+        }
+
+        internal A.SchemeColorValues GetFontColorHexFromTitle(int paragraphLvl)
+        {
+            Dictionary<int, FontData> bodyParaLvlToFontData = FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.TitleStyle);
+
+            return bodyParaLvlToFontData[paragraphLvl].ASchemeColor.Val;
         }
 
         internal bool TryGetFontSizeFromOther(int paragraphLvl, out int fontSize)

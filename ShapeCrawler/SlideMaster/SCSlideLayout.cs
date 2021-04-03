@@ -13,7 +13,6 @@ namespace ShapeCrawler.SlideMaster
     {
         private readonly ResettableLazy<ShapeCollection> _shapes;
         private readonly SCSlideMaster _slideMaster;
-        internal SlideLayoutPart SlideLayoutPart { get; }
 
         internal SCSlideLayout(SCSlideMaster slideMaster, SlideLayoutPart sldLayoutPart)
         {
@@ -22,6 +21,8 @@ namespace ShapeCrawler.SlideMaster
             _shapes = new ResettableLazy<ShapeCollection>(() =>
                 ShapeCollection.CreateForSlideLayout(sldLayoutPart.SlideLayout.CommonSlideData.ShapeTree, this));
         }
+
+        internal SlideLayoutPart SlideLayoutPart { get; }
 
         public ShapeCollection Shapes => _shapes.Value;
         public SCSlideMaster SlideMaster => _slideMaster.Presentation.SlideMasters.GetSlideMasterByLayout(this);

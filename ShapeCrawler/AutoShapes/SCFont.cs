@@ -91,18 +91,31 @@ namespace ShapeCrawler.AutoShapes
             }
 
             // Get color from SHAPE level
-            P.Shape pShape;
             Shape parentAutoShape = _portion.Paragraph.TextBox.AutoShape;
             if (parentAutoShape.Placeholder is Placeholder placeholder)
             {
-                pShape = (P.Shape)placeholder.Shape.PShapeTreeChild;
+                P.Shape phShape = (P.Shape)placeholder.Shape.PShapeTreeChild;
+                if (phShape.ShapeStyle != null)
+                {
+                    A.SchemeColorValues phShapeFontSchemeColor = phShape.ShapeStyle.FontReference.SchemeColor.Val.Value;
+                    return GetThemeColor(phShapeFontSchemeColor);
+                }
+                if (placeholder.Type == PlaceholderType.Title)
+                {
+                    int paragraphLvl = _portion.Paragraph.Level;
+                    A.SchemeColorValues titleFontSchemeColor = parentAutoShape.SlideMaster.GetFontColorHexFromTitle(paragraphLvl);
+                    return GetThemeColor(titleFontSchemeColor);
+                }
+                if (placeholder.Type == PlaceholderType.Body)
+                {
+                    int paragraphLvl = _portion.Paragraph.Level;
+                    A.SchemeColorValues bodyFontSchemeColor = parentAutoShape.SlideMaster.GetFontColorHexFromBody(paragraphLvl);
+                    return GetThemeColor(bodyFontSchemeColor);
+                }
             }
-            else
-            {
-                pShape = (P.Shape)parentAutoShape.PShapeTreeChild;
-            }
-            
-            A.SchemeColorValues shapeFontSchemeColor = pShape.ShapeStyle.FontReference.SchemeColor.Val.Value;
+
+            P.Shape parentShape = (P.Shape)parentAutoShape.PShapeTreeChild;
+            A.SchemeColorValues shapeFontSchemeColor = parentShape.ShapeStyle.FontReference.SchemeColor.Val.Value;
             return GetThemeColor(shapeFontSchemeColor);
         }
 
@@ -133,21 +146,21 @@ namespace ShapeCrawler.AutoShapes
                     ? themeAColorScheme.Accent6Color.RgbColorModelHex.Val.Value : themeAColorScheme.Accent6Color.SystemColor.LastColor.Value,
                 A.SchemeColorValues.Hyperlink => themeAColorScheme.Hyperlink.RgbColorModelHex != null
                     ? themeAColorScheme.Hyperlink.RgbColorModelHex.Val.Value : themeAColorScheme.Hyperlink.SystemColor.LastColor.Value,
-                _ => GetThemeMappedColor(fontSchemeColor.ToString())
+                _ => GetThemeMappedColor(fontSchemeColor)
             };
 
-            string GetThemeMappedColor(string fontSchemeColor)
+            string GetThemeMappedColor(A.SchemeColorValues fontSchemeColor)
             {
                 P.ColorMap slideMasterPColorMap = _portion.Paragraph.TextBox.AutoShape.SlideMaster.PSlideMaster.ColorMap;
-                if (fontSchemeColor == A.SchemeColorValues.Text1.ToString())
+                if (fontSchemeColor == A.SchemeColorValues.Text1)
                 {
                     return GetThemeColorByString(slideMasterPColorMap.Text1.ToString());
                 }
-                if (fontSchemeColor == A.SchemeColorValues.Text2.ToString())
+                if (fontSchemeColor == A.SchemeColorValues.Text2)
                 {
                     return GetThemeColorByString(slideMasterPColorMap.Text2.ToString());
                 }
-                if (fontSchemeColor == A.SchemeColorValues.Background1.ToString())
+                if (fontSchemeColor == A.SchemeColorValues.Background1)
                 {
                     return GetThemeColorByString(slideMasterPColorMap.Background1.ToString());
                 }
@@ -160,20 +173,43 @@ namespace ShapeCrawler.AutoShapes
 
         private string GetThemeColorByString(string fontSchemeColor)
         {
-            A.ColorScheme themeAColorScheme = _portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.ColorScheme;
+            A.ColorScheme themeAColorScheme =
+                _portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.ColorScheme;
             return fontSchemeColor switch
             {
-                "dk1" => themeAColorScheme.Dark1Color.RgbColorModelHex.Val.Value,
-                "lt1" => themeAColorScheme.Light1Color.RgbColorModelHex.Val.Value,
-                "dk2" => themeAColorScheme.Dark2Color.RgbColorModelHex.Val.Value,
-                "lt2" => themeAColorScheme.Light2Color.RgbColorModelHex.Val.Value,
-                "accent1" => themeAColorScheme.Accent1Color.RgbColorModelHex.Val.Value,
-                "accent2" => themeAColorScheme.Accent2Color.RgbColorModelHex.Val.Value,
-                "accent3" => themeAColorScheme.Accent3Color.RgbColorModelHex.Val.Value,
-                "accent4" => themeAColorScheme.Accent4Color.RgbColorModelHex.Val.Value,
-                "accent5" => themeAColorScheme.Accent5Color.RgbColorModelHex.Val.Value,
-                "accent6" => themeAColorScheme.Accent6Color.RgbColorModelHex.Val.Value,
-                _ => themeAColorScheme.Hyperlink.RgbColorModelHex.Val.Value,
+                "dk1" => themeAColorScheme.Dark1Color.RgbColorModelHex != null
+                    ? themeAColorScheme.Dark1Color.RgbColorModelHex.Val.Value
+                    : themeAColorScheme.Dark1Color.SystemColor.LastColor.Value,
+                "lt1" => themeAColorScheme.Light1Color.RgbColorModelHex != null
+                    ? themeAColorScheme.Light1Color.RgbColorModelHex.Val.Value
+                    : themeAColorScheme.Light1Color.SystemColor.LastColor.Value,
+                "dk2" => themeAColorScheme.Dark2Color.RgbColorModelHex != null
+                    ? themeAColorScheme.Dark2Color.RgbColorModelHex.Val.Value
+                    : themeAColorScheme.Dark2Color.SystemColor.LastColor.Value,
+                "lt2" => themeAColorScheme.Light2Color.RgbColorModelHex != null
+                    ? themeAColorScheme.Light2Color.RgbColorModelHex.Val.Value
+                    : themeAColorScheme.Light2Color.SystemColor.LastColor.Value,
+                "accent1" => themeAColorScheme.Accent1Color.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent1Color.RgbColorModelHex.Val.Value
+                    : themeAColorScheme.Accent1Color.SystemColor.LastColor.Value,
+                "accent2" => themeAColorScheme.Accent2Color.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent2Color.RgbColorModelHex.Val.Value
+                    : themeAColorScheme.Accent2Color.SystemColor.LastColor.Value,
+                "accent3" => themeAColorScheme.Accent3Color.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent3Color.RgbColorModelHex.Val.Value
+                    : themeAColorScheme.Accent3Color.SystemColor.LastColor.Value,
+                "accent4" => themeAColorScheme.Accent4Color.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent4Color.RgbColorModelHex.Val.Value
+                    : themeAColorScheme.Accent4Color.SystemColor.LastColor.Value,
+                "accent5" => themeAColorScheme.Accent5Color.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent5Color.RgbColorModelHex.Val.Value
+                    : themeAColorScheme.Accent5Color.SystemColor.LastColor.Value,
+                "accent6" => themeAColorScheme.Accent6Color.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent6Color.RgbColorModelHex.Val.Value
+                    : themeAColorScheme.Accent6Color.SystemColor.LastColor.Value,
+                _ => themeAColorScheme.Hyperlink.RgbColorModelHex != null // hlink
+                    ? themeAColorScheme.Hyperlink.RgbColorModelHex.Val.Value
+                    : themeAColorScheme.Hyperlink.SystemColor.LastColor.Value
             };
         }
 

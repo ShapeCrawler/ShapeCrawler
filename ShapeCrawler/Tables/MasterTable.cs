@@ -1,5 +1,4 @@
 ﻿using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMaster;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tables

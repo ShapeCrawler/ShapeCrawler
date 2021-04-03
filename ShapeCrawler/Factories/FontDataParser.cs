@@ -38,7 +38,7 @@ namespace ShapeCrawler.Factories
                 BooleanValue isBold = aDefRPr?.Bold;
                 BooleanValue isItalic = aDefRPr?.Italic;
                 A.LatinFont aLatinFont = aDefRPr?.GetFirstChild<A.LatinFont>();
-                string fontColorHex = aDefRPr?.GetFirstChild<A.SolidFill>()?.SchemeColor?.Val.Value.ToString();
+                A.SchemeColor aSchemeColor = aDefRPr?.GetFirstChild<A.SolidFill>()?.SchemeColor;
 
 #if NET5_0 || NETSTANDARD2_1
                 // fourth character of LocalName contains level number, example: "lvl1pPr -> 1, lvl2pPr -> 2, etc."
@@ -51,7 +51,7 @@ namespace ShapeCrawler.Factories
 #endif
                 if (fontSize != null || aLatinFont != null || isBold != null || isItalic != null)
                 {
-                    lvlToFontData.Add(lvl, new FontData(fontSize, aLatinFont, isBold, isItalic, fontColorHex));
+                    lvlToFontData.Add(lvl, new FontData(fontSize, aLatinFont, isBold, isItalic, aSchemeColor));
                 }
             }
 

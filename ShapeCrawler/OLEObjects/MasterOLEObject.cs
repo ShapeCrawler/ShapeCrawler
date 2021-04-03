@@ -1,6 +1,5 @@
 ﻿using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMaster;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.OLEObjects

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
+
 // ReSharper disable CheckNamespace
 
 namespace ShapeCrawler
