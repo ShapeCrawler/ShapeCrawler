@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
@@ -13,9 +14,10 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class SCSlideMaster : ISlide //TODO: add ISlideMaster interface
     {
-        private readonly ResettableLazy<List<SlideLayoutSc>> _sldLayouts;
+        private readonly ResettableLazy<List<SCSlideLayout>> _sldLayouts;
         internal readonly P.SlideMaster PSlideMaster;
         internal SCPresentation Presentation { get; }
 
@@ -23,7 +25,7 @@ namespace ShapeCrawler
         {
             Presentation = presentation;
             PSlideMaster = pSlideMaster;
-            _sldLayouts = new ResettableLazy<List<SlideLayoutSc>>(() => GetSlideLayouts());
+            _sldLayouts = new ResettableLazy<List<SCSlideLayout>>(() => GetSlideLayouts());
         }
 
 
@@ -32,13 +34,13 @@ namespace ShapeCrawler
             throw new NotImplementedException();
         }
 
-        private List<SlideLayoutSc> GetSlideLayouts()
+        private List<SCSlideLayout> GetSlideLayouts()
         {
             IEnumerable<SlideLayoutPart> sldLayoutParts = PSlideMaster.SlideMasterPart.SlideLayoutParts;
-            var slideLayouts = new List<SlideLayoutSc>(sldLayoutParts.Count());
+            var slideLayouts = new List<SCSlideLayout>(sldLayoutParts.Count());
             foreach (SlideLayoutPart sldLayoutPart in sldLayoutParts)
             {
-                slideLayouts.Add(new SlideLayoutSc(this, sldLayoutPart));
+                slideLayouts.Add(new SCSlideLayout(this, sldLayoutPart));
             }
 
             return slideLayouts;
@@ -46,17 +48,12 @@ namespace ShapeCrawler
 
         internal bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
         {
-            P.TextStyles pTextStyles = PSlideMaster.TextStyles;
-
-            // Master body type placeholder settings
-            // TODO: make it lazy
-            Dictionary<int, FontData> bodyStyleLvlToFontData =
-                FontDataParser.FromCompositeElement(pTextStyles.BodyStyle);
-            if (bodyStyleLvlToFontData.ContainsKey(paragraphLvl))
+            Dictionary<int, FontData> bodyParaLvlToFontData = FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.BodyStyle);
+            if (bodyParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
             {
-                if (bodyStyleLvlToFontData[paragraphLvl].FontSize != null)
+                if (fontData.FontSize != null)
                 {
-                    fontSize = bodyStyleLvlToFontData[paragraphLvl].FontSize;
+                    fontSize = fontData.FontSize;
                     return true;
                 }
             }
@@ -65,7 +62,14 @@ namespace ShapeCrawler
             return false;
         }
 
-        public bool TryGetFontSizeFromOther(int paragraphLvl, out int fontSize)
+        internal string GetFontColorHexFromBody(int paragraphLvl)
+        {
+            Dictionary<int, FontData> bodyParaLvlToFontData = FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.BodyStyle);
+            
+            return bodyParaLvlToFontData[paragraphLvl].FontColorHex;
+        }
+
+        internal bool TryGetFontSizeFromOther(int paragraphLvl, out int fontSize)
         {
             P.TextStyles pTextStyles = PSlideMaster.TextStyles;
 
@@ -92,7 +96,7 @@ namespace ShapeCrawler
         public SCImage Background { get; }
         public string CustomData { get; set; } //TODO: does it need?
         public bool Hidden { get; } //TODO: does it need?
-        public IReadOnlyList<SlideLayoutSc> SlideLayouts => _sldLayouts.Value;
+        public IReadOnlyList<SCSlideLayout> SlideLayouts => _sldLayouts.Value;
 
         #endregion Public Properties
     }

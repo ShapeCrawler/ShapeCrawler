@@ -67,7 +67,7 @@ namespace ShapeCrawler.Collections
             return new ShapeCollection(shapes);
         }
 
-        internal static ShapeCollection CreateForSlideLayout(P.ShapeTree pShapeTree, SlideLayoutSc slideLayout)
+        internal static ShapeCollection CreateForSlideLayout(P.ShapeTree pShapeTree, SCSlideLayout slideLayout)
         {
             var shapeList = new List<IShape>();
             foreach (OpenXmlCompositeElement compositeElement in pShapeTree.OfType<OpenXmlCompositeElement>())

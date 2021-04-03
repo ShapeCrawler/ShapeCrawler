@@ -23,9 +23,7 @@ namespace ShapeCrawler.Factories
         //          </a:lvl1pPr>
         //      </a:lstStyle>
         //  </example>
-        public static Dictionary<int, FontData>
-            FromCompositeElement(
-                OpenXmlCompositeElement compositeElement) //TODO: set annotation that about it cannot be NULL
+        public static Dictionary<int, FontData> FromCompositeElement(OpenXmlCompositeElement compositeElement) //TODO: set annotation that about it cannot be NULL
         {
             // Get <a:lvlXpPr> elements, eg. <a:lvl1pPr>, <a:lvl2pPr>
             IEnumerable<OpenXmlElement> lvlParagraphPropertyList = compositeElement.Elements()
@@ -40,6 +38,7 @@ namespace ShapeCrawler.Factories
                 BooleanValue isBold = aDefRPr?.Bold;
                 BooleanValue isItalic = aDefRPr?.Italic;
                 A.LatinFont aLatinFont = aDefRPr?.GetFirstChild<A.LatinFont>();
+                string fontColorHex = aDefRPr?.GetFirstChild<A.SolidFill>()?.SchemeColor?.Val.Value.ToString();
 
 #if NET5_0 || NETSTANDARD2_1
                 // fourth character of LocalName contains level number, example: "lvl1pPr -> 1, lvl2pPr -> 2, etc."
@@ -52,7 +51,7 @@ namespace ShapeCrawler.Factories
 #endif
                 if (fontSize != null || aLatinFont != null || isBold != null || isItalic != null)
                 {
-                    lvlToFontData.Add(lvl, new FontData(fontSize, aLatinFont, isBold, isItalic));
+                    lvlToFontData.Add(lvl, new FontData(fontSize, aLatinFont, isBold, isItalic, fontColorHex));
                 }
             }
 

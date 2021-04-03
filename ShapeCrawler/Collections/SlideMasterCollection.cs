@@ -27,7 +27,7 @@ namespace ShapeCrawler.Collections
             return new SlideMasterCollection(presentation, slideMasters);
         }
 
-        internal SlideLayoutSc GetSlideLayoutBySlide(SCSlide slide)
+        internal SCSlideLayout GetSlideLayoutBySlide(SCSlide slide)
         {
             SlideLayoutPart inputSlideLayoutPart = slide.SlidePart.SlideLayoutPart;
 
@@ -35,7 +35,7 @@ namespace ShapeCrawler.Collections
                 .First(sl => sl.SlideLayoutPart == inputSlideLayoutPart);
         }
 
-        internal SCSlideMaster GetSlideMasterByLayout(SlideLayoutSc slideLayout)
+        internal SCSlideMaster GetSlideMasterByLayout(SCSlideLayout slideLayout)
         {
             return CollectionItems.First(sldMaster =>
                 sldMaster.SlideLayouts.Any(sl => sl.SlideLayoutPart == slideLayout.SlideLayoutPart));

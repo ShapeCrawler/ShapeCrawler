@@ -32,7 +32,7 @@ namespace ShapeCrawler
 
         internal SCPresentation Presentation { get; }
         internal SlidePart SlidePart { get; }
-        internal SlideLayoutSc SlideLayout => Presentation.SlideMasters.GetSlideLayoutBySlide(this);
+        internal SCSlideLayout SlideLayout => Presentation.SlideMasters.GetSlideLayoutBySlide(this);
 
         #endregion Fields
 
