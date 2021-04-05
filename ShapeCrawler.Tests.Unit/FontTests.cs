@@ -292,7 +292,7 @@ namespace ShapeCrawler.Tests.Unit
             fontC5.Color.Should().Be("000000");
         }
 
-        [Fact]
+        [Fact(Skip = "In Progress")]
         public void Color_GetterReturnsRGBColorInHEXformat_OfPlaceholder()
         {
             // Arrange

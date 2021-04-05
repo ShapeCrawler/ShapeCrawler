@@ -18,15 +18,13 @@ namespace ShapeCrawler.Settings
 
         internal class Builder
         {
-            private readonly PlaceholderFontService _fontService;
             private readonly IPlaceholderService _placeholderService;
             private readonly SlidePart _slidePart;
 
             #region Constructors
 
-            internal Builder(PlaceholderFontService fontService, SlidePart slidePart)
+            internal Builder(SlidePart slidePart)
             {
-                _fontService = fontService;
                 _slidePart = slidePart;
                 _placeholderService = new PlaceholderService(slidePart.SlideLayoutPart);
             }
@@ -39,7 +37,6 @@ namespace ShapeCrawler.Settings
             {
                 return new ShapeContext
                 {
-                    PlaceholderFontService = _fontService,
                     PlaceholderService = _placeholderService,
                     SlidePart = _slidePart,
                     CompositeElement = compositeElement
@@ -56,8 +53,6 @@ namespace ShapeCrawler.Settings
         internal SlidePart SlidePart { get; private set; }
 
         internal OpenXmlCompositeElement CompositeElement { get; private set; }
-
-        internal PlaceholderFontService PlaceholderFontService { get; private set; }
 
         internal IPlaceholderService PlaceholderService { get; private set; }
 

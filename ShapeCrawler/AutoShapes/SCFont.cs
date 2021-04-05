@@ -15,9 +15,9 @@ namespace ShapeCrawler.AutoShapes
     {
         private readonly A.Text _aText;
         private readonly ResettableLazy<A.LatinFont> _latinFont;
+        private readonly int _paragraphLvl;
         private readonly Portion _portion;
         private readonly ResettableLazy<int> _size;
-        private readonly int _paragraphLvl;
 
         #region Constructors
 
@@ -104,7 +104,6 @@ namespace ShapeCrawler.AutoShapes
 
                 if (placeholder.Type == PlaceholderType.Title)
                 {
-                    
                     A.SchemeColorValues phTitleFontSchemeColor =
                         parentShape.SlideMaster.GetFontColorHexFromTitle(_paragraphLvl);
                     return GetThemeColor(phTitleFontSchemeColor);

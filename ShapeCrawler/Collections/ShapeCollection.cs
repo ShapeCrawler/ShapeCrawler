@@ -33,11 +33,10 @@ namespace ShapeCrawler.Collections
 
         internal static ShapeCollection CreateForSlide(SlidePart slidePart, SCSlide slide)
         {
-            var sldPhFontService = new PlaceholderFontService(slidePart);
             var phService = new PlaceholderService(slidePart.SlideLayoutPart);
             var transformFactory = new LocationParser(phService);
             var geometryFactory = new GeometryFactory(phService);
-            var shapeContextBuilder = new ShapeContext.Builder(sldPhFontService, slidePart);
+            var shapeContextBuilder = new ShapeContext.Builder(slidePart);
 
             var chartGrFrameHandler = new ChartGraphicFrameHandler();
             var tableGrFrameHandler = new TableGraphicFrameHandler(shapeContextBuilder, transformFactory);

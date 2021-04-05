@@ -15,7 +15,7 @@ namespace ShapeCrawler.Placeholders
         public SlidePlaceholder(P.PlaceholderShape pPlaceholderShape, SlideShape slideShape)
             : base(pPlaceholderShape)
         {
-            _shape = new ResettableLazy<Shape>(() =>
+            MainShape = new ResettableLazy<Shape>(() =>
                 slideShape.Slide.SlideLayout.Shapes.GetShapeByPPlaceholderShape(pPlaceholderShape));
         }
 
