@@ -95,7 +95,7 @@ namespace ShapeCrawler.AutoShapes
             Shape parentShape = _portion.Paragraph.TextBox.AutoShape;
             if (parentShape.Placeholder is Placeholder placeholder)
             {
-                P.Shape phShape = (P.Shape) placeholder.Shape.PShapeTreeChild;
+                P.Shape phShape = (P.Shape) placeholder.ReferencedShape.PShapeTreeChild;
                 if (phShape.ShapeStyle != null)
                 {
                     A.SchemeColorValues phShapeFontSchemeColor = phShape.ShapeStyle.FontReference.SchemeColor.Val.Value;
@@ -319,7 +319,7 @@ namespace ShapeCrawler.AutoShapes
             if (parentAutoShape.Placeholder != null)
             {
                 Placeholder placeholder = (Placeholder) parentAutoShape.Placeholder;
-                IFontDataReader phAutoShape = (IFontDataReader) placeholder.Shape;
+                IFontDataReader phAutoShape = (IFontDataReader) placeholder.ReferencedShape;
                 if (phAutoShape != null && phAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
                 {
                     if (fontDataPlaceholder.FontSize != null)
@@ -407,8 +407,8 @@ namespace ShapeCrawler.AutoShapes
             if (_portion.Paragraph.TextBox.AutoShape.Placeholder is Placeholder placeholder)
             {
                 int paragraphLvl = _portion.Paragraph.Level;
-                IFontDataReader placeholderAutoShape = (IFontDataReader) placeholder.Shape;
-                if (placeholder.Shape != null && placeholderAutoShape.TryGetFontData(paragraphLvl, out phFontData))
+                IFontDataReader placeholderAutoShape = (IFontDataReader) placeholder.ReferencedShape;
+                if (placeholder.ReferencedShape != null && placeholderAutoShape.TryGetFontData(paragraphLvl, out phFontData))
                 {
                     return true;
                 }

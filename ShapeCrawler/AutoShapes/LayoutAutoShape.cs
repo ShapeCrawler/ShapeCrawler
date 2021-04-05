@@ -52,7 +52,7 @@ namespace ShapeCrawler
             if (Placeholder != null)
             {
                 Placeholder placeholder = (Placeholder) Placeholder;
-                IFontDataReader placeholderAutoShape = (IFontDataReader) placeholder.Shape;
+                IFontDataReader placeholderAutoShape = (IFontDataReader) placeholder.ReferencedShape;
                 if (placeholderAutoShape != null)
                 {
                     if (placeholderAutoShape.TryGetFontData(paragraphLvl, out fontData))
