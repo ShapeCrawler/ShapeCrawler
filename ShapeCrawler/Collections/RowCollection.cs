@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 

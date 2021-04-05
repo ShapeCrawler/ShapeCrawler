@@ -5,9 +5,9 @@ using ShapeCrawler.SlideMaster;
 
 namespace ShapeCrawler.Collections
 {
-    public class SlideMasterCollection : LibraryCollection<SlideMasterSc> //TODO: add interface
+    public class SlideMasterCollection : LibraryCollection<SCSlideMaster> //TODO: add interface
     {
-        private SlideMasterCollection(SCPresentation presentation, List<SlideMasterSc> slideMasters)
+        private SlideMasterCollection(SCPresentation presentation, List<SCSlideMaster> slideMasters)
         {
             Presentation = presentation;
             CollectionItems = slideMasters;
@@ -18,16 +18,16 @@ namespace ShapeCrawler.Collections
         internal static SlideMasterCollection Create(SCPresentation presentation)
         {
             IEnumerable<SlideMasterPart> slideMasterParts = presentation.PresentationPart.SlideMasterParts;
-            var slideMasters = new List<SlideMasterSc>(slideMasterParts.Count());
+            var slideMasters = new List<SCSlideMaster>(slideMasterParts.Count());
             foreach (SlideMasterPart slideMasterPart in slideMasterParts)
             {
-                slideMasters.Add(new SlideMasterSc(presentation, slideMasterPart.SlideMaster));
+                slideMasters.Add(new SCSlideMaster(presentation, slideMasterPart.SlideMaster));
             }
 
             return new SlideMasterCollection(presentation, slideMasters);
         }
 
-        internal SlideLayoutSc GetSlideLayoutBySlide(SCSlide slide)
+        internal SCSlideLayout GetSlideLayoutBySlide(SCSlide slide)
         {
             SlideLayoutPart inputSlideLayoutPart = slide.SlidePart.SlideLayoutPart;
 
@@ -35,7 +35,7 @@ namespace ShapeCrawler.Collections
                 .First(sl => sl.SlideLayoutPart == inputSlideLayoutPart);
         }
 
-        internal SlideMasterSc GetSlideMasterByLayout(SlideLayoutSc slideLayout)
+        internal SCSlideMaster GetSlideMasterByLayout(SCSlideLayout slideLayout)
         {
             return CollectionItems.First(sldMaster =>
                 sldMaster.SlideLayouts.Any(sl => sl.SlideLayoutPart == slideLayout.SlideLayoutPart));

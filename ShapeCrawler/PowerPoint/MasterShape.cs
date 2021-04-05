@@ -1,7 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.SlideMaster;
 
 namespace ShapeCrawler
 {
@@ -10,7 +9,7 @@ namespace ShapeCrawler
     /// </summary>
     public abstract class MasterShape : Shape
     {
-        protected MasterShape(SlideMasterSc slideMaster, OpenXmlCompositeElement pShapeTreeChild) : base(
+        protected MasterShape(SCSlideMaster slideMaster, OpenXmlCompositeElement pShapeTreeChild) : base(
             pShapeTreeChild)
         {
             SlideMaster = slideMaster;
@@ -20,6 +19,6 @@ namespace ShapeCrawler
 
         public override IPlaceholder Placeholder => MasterPlaceholder.Create(PShapeTreeChild);
         public override SCPresentation Presentation => SlideMaster.Presentation;
-        public override SlideMasterSc SlideMaster { get; }
+        public override SCSlideMaster SlideMaster { get; }
     }
 }

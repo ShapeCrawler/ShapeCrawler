@@ -1,7 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.SlideMaster;
 
 namespace ShapeCrawler
 {
@@ -21,6 +20,6 @@ namespace ShapeCrawler
 
         internal override ThemePart ThemePart => Slide.SlidePart.SlideLayoutPart.SlideMasterPart.ThemePart;
         public override SCPresentation Presentation => Slide.Presentation;
-        public override SlideMasterSc SlideMaster => Slide.SlideLayout.SlideMaster;
+        public override SCSlideMaster SlideMaster => Slide.SlideLayout.SlideMaster;
     }
 }

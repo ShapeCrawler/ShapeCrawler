@@ -8,14 +8,15 @@ namespace ShapeCrawler.Placeholders
     internal abstract class Placeholder : IPlaceholder
     {
         internal readonly P.PlaceholderShape PPlaceholderShape;
-        protected ResettableLazy<Shape> _shape;
+
+        protected ResettableLazy<Shape> BaseShape;
 
         protected Placeholder(P.PlaceholderShape pPlaceholderShape)
         {
             PPlaceholderShape = pPlaceholderShape;
         }
 
-        protected internal Shape Shape => _shape.Value;
+        protected internal Shape Shape => BaseShape.Value;
 
         public PlaceholderType Type => GetPlaceholderType();
 

@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using System.Diagnostics.CodeAnalysis;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Shared;
 
@@ -7,12 +8,13 @@ namespace ShapeCrawler.SlideMaster
     /// <summary>
     ///     Represents a Slide Layout.
     /// </summary>
-    public class SlideLayoutSc
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public class SCSlideLayout
     {
         private readonly ResettableLazy<ShapeCollection> _shapes;
-        private readonly SlideMasterSc _slideMaster;
+        private readonly SCSlideMaster _slideMaster;
 
-        internal SlideLayoutSc(SlideMasterSc slideMaster, SlideLayoutPart sldLayoutPart)
+        internal SCSlideLayout(SCSlideMaster slideMaster, SlideLayoutPart sldLayoutPart)
         {
             _slideMaster = slideMaster;
             SlideLayoutPart = sldLayoutPart;
@@ -23,6 +25,6 @@ namespace ShapeCrawler.SlideMaster
         internal SlideLayoutPart SlideLayoutPart { get; }
 
         public ShapeCollection Shapes => _shapes.Value;
-        public SlideMasterSc SlideMaster => _slideMaster.Presentation.SlideMasters.GetSlideMasterByLayout(this);
+        public SCSlideMaster SlideMaster => _slideMaster.Presentation.SlideMasters.GetSlideMasterByLayout(this);
     }
 }

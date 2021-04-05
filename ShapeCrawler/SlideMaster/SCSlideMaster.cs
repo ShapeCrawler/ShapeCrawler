@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
@@ -8,55 +9,55 @@ using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMaster;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
+
 // ReSharper disable CheckNamespace
 
 namespace ShapeCrawler
 {
-    public class SlideMasterSc : ISlide //TODO: add ISlideMaster interface
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public class SCSlideMaster : ISlide //TODO: add ISlideMaster interface
     {
-        private readonly ResettableLazy<List<SlideLayoutSc>> _sldLayouts;
+        private readonly ResettableLazy<List<SCSlideLayout>> _sldLayouts;
         internal readonly P.SlideMaster PSlideMaster;
 
-        internal SlideMasterSc(SCPresentation presentation, P.SlideMaster pSlideMaster)
+        internal SCSlideMaster(SCPresentation presentation, P.SlideMaster pSlideMaster)
         {
             Presentation = presentation;
             PSlideMaster = pSlideMaster;
-            _sldLayouts = new ResettableLazy<List<SlideLayoutSc>>(() => GetSlideLayouts());
+            _sldLayouts = new ResettableLazy<List<SCSlideLayout>>(GetSlideLayouts);
         }
 
         internal SCPresentation Presentation { get; }
+
 
         public void Hide() //TODO: does it need?
         {
             throw new NotImplementedException();
         }
 
-        private List<SlideLayoutSc> GetSlideLayouts()
+        private List<SCSlideLayout> GetSlideLayouts()
         {
             IEnumerable<SlideLayoutPart> sldLayoutParts = PSlideMaster.SlideMasterPart.SlideLayoutParts;
-            var slideLayouts = new List<SlideLayoutSc>(sldLayoutParts.Count());
+            var slideLayouts = new List<SCSlideLayout>(sldLayoutParts.Count());
             foreach (SlideLayoutPart sldLayoutPart in sldLayoutParts)
             {
-                slideLayouts.Add(new SlideLayoutSc(this, sldLayoutPart));
+                slideLayouts.Add(new SCSlideLayout(this, sldLayoutPart));
             }
 
             return slideLayouts;
         }
 
-        public bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
+        internal bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
         {
-            P.TextStyles pTextStyles = PSlideMaster.TextStyles;
-
-            // Master body type placeholder settings
-            // TODO: make it lazy
-            Dictionary<int, FontData> bodyStyleLvlToFontData =
-                FontDataParser.FromCompositeElement(pTextStyles.BodyStyle);
-            if (bodyStyleLvlToFontData.ContainsKey(paragraphLvl))
+            Dictionary<int, FontData> bodyParaLvlToFontData =
+                FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.BodyStyle);
+            if (bodyParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
             {
-                if (bodyStyleLvlToFontData[paragraphLvl].FontSize != null)
+                if (fontData.FontSize != null)
                 {
-                    fontSize = bodyStyleLvlToFontData[paragraphLvl].FontSize;
+                    fontSize = fontData.FontSize;
                     return true;
                 }
             }
@@ -65,7 +66,23 @@ namespace ShapeCrawler
             return false;
         }
 
-        public bool TryGetFontSizeFromOther(int paragraphLvl, out int fontSize)
+        internal A.SchemeColorValues GetFontColorHexFromBody(int paragraphLvl)
+        {
+            Dictionary<int, FontData> bodyParaLvlToFontData =
+                FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.BodyStyle);
+
+            return bodyParaLvlToFontData[paragraphLvl].ASchemeColor.Val;
+        }
+
+        internal A.SchemeColorValues GetFontColorHexFromTitle(int paragraphLvl)
+        {
+            Dictionary<int, FontData> bodyParaLvlToFontData =
+                FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.TitleStyle);
+
+            return bodyParaLvlToFontData[paragraphLvl].ASchemeColor.Val;
+        }
+
+        internal bool TryGetFontSizeFromOther(int paragraphLvl, out int fontSize)
         {
             P.TextStyles pTextStyles = PSlideMaster.TextStyles;
 
@@ -92,7 +109,7 @@ namespace ShapeCrawler
         public SCImage Background { get; }
         public string CustomData { get; set; } //TODO: does it need?
         public bool Hidden { get; } //TODO: does it need?
-        public IReadOnlyList<SlideLayoutSc> SlideLayouts => _sldLayouts.Value;
+        public IReadOnlyList<SCSlideLayout> SlideLayouts => _sldLayouts.Value;
 
         #endregion Public Properties
     }

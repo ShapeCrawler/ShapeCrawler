@@ -5,7 +5,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -27,12 +26,77 @@ namespace ShapeCrawler
         #endregion Constructors
 
         internal OpenXmlCompositeElement PShapeTreeChild { get; }
+        internal abstract ThemePart ThemePart { get; }
+
+        public int Id => (int) PShapeTreeChild.GetNonVisualDrawingProperties().Id.Value;
+        public string Name => PShapeTreeChild.GetNonVisualDrawingProperties().Name;
+        public bool Hidden => DefineHidden();
+
+        public string CustomData
+        {
+            get => GetCustomData();
+            set => SetCustomData(value);
+        }
 
         protected void SetCustomData(string value)
         {
             string customDataElement =
                 $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
             PShapeTreeChild.InnerXml += customDataElement;
+        }
+
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets placeholder. Returns <c>NULL</c> if the shape is not a placeholder.
+        /// </summary>
+        public abstract IPlaceholder Placeholder { get; }
+
+        public abstract SCPresentation Presentation { get; }
+        public abstract SCSlideMaster SlideMaster { get; }
+
+        public virtual GeometryType GeometryType => GetGeometryType();
+
+        /// <summary>
+        ///     Gets y-coordinate of the upper-left corner of the shape.
+        /// </summary>
+        public long Y
+        {
+            get => GetY();
+            set => SetY(value);
+        }
+
+        /// <summary>
+        ///     Gets height of the shape.
+        /// </summary>
+        public long Height
+        {
+            get => GetHeight();
+            set => SetHeight(value);
+        }
+
+        /// <summary>
+        ///     Gets width of the shape.
+        /// </summary>
+        public long Width
+        {
+            get => GetWidth();
+            set => SetWidth(value);
+        }
+
+        /// <summary>
+        ///     Gets x-coordinate of the upper-left corner of the shape.
+        /// </summary>
+        public long X
+        {
+            get => GetX();
+            set => SetX(value);
+        }
+
+        private bool DefineHidden()
+        {
+            bool? parsedHiddenValue = PShapeTreeChild.GetNonVisualDrawingProperties().Hidden?.Value;
+            return parsedHiddenValue != null && parsedHiddenValue == true;
         }
 
         private string GetCustomData()
@@ -46,44 +110,6 @@ namespace ShapeCrawler
             }
 
             return elementText.Value;
-        }
-
-        #region Public Properties
-
-        public int Id => (int) PShapeTreeChild.GetNonVisualDrawingProperties().Id.Value;
-        public string Name => PShapeTreeChild.GetNonVisualDrawingProperties().Name;
-        public bool Hidden => DefineHidden();
-
-        private bool DefineHidden()
-        {
-            bool? parsedHiddenValue = PShapeTreeChild.GetNonVisualDrawingProperties().Hidden?.Value;
-            return parsedHiddenValue != null && parsedHiddenValue == true;
-        }
-
-        public string CustomData
-        {
-            get => GetCustomData();
-            set => SetCustomData(value);
-        }
-
-        /// <summary>
-        ///     Gets placeholder. Returns <c>NULL</c> if the shape is not a placeholder.
-        /// </summary>
-        public abstract IPlaceholder Placeholder { get; }
-
-        internal abstract ThemePart ThemePart { get; }
-        public abstract SCPresentation Presentation { get; }
-        public abstract SlideMasterSc SlideMaster { get; }
-
-        public virtual GeometryType GeometryType => GetGeometryType();
-
-        /// <summary>
-        ///     Gets x-coordinate of the upper-left corner of the shape.
-        /// </summary>
-        public long X
-        {
-            get => GetX();
-            set => SetX(value);
         }
 
         private void SetX(long value)
@@ -111,14 +137,6 @@ namespace ShapeCrawler
             return aOffset.X;
         }
 
-        /// <summary>
-        ///     Gets y-coordinate of the upper-left corner of the shape.
-        /// </summary>
-        public long Y
-        {
-            get => GetY();
-            set => SetY(value);
-        }
 
         private void SetY(long value)
         {
@@ -136,15 +154,6 @@ namespace ShapeCrawler
             return aOffset.Y;
         }
 
-        /// <summary>
-        ///     Gets width of the shape.
-        /// </summary>
-        public long Width
-        {
-            get => GetWidth();
-            set => SetWidth(value);
-        }
-
         private void SetWidth(long value)
         {
             throw new NotImplementedException();
@@ -159,15 +168,6 @@ namespace ShapeCrawler
             }
 
             return aExtents.Cx;
-        }
-
-        /// <summary>
-        ///     Gets height of the shape.
-        /// </summary>
-        public long Height
-        {
-            get => GetHeight();
-            set => SetHeight(value);
         }
 
         private void SetHeight(long value)

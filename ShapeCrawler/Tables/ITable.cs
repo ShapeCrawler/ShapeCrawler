@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Tables;
 
 // ReSharper disable CheckNamespace
 

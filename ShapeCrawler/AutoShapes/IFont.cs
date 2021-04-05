@@ -19,9 +19,10 @@
 
         bool IsItalic { get; set; }
 
-#if DEBUG
-        string ColorHex { get; set; }
-#endif
+        /// <summary>
+        ///     Gets or sets font color in HEX format.
+        /// </summary>
+        string Color { get; set; }
 
         /// <summary>
         ///     Gets value indicating whether font size can be changed.

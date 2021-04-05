@@ -1,12 +1,10 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using ShapeCrawler.Charts;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Tables;
 
 namespace ShapeCrawler.Factories
 {

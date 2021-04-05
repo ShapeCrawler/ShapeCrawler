@@ -8,7 +8,6 @@ using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
-using ShapeCrawler.SlideMaster;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -24,7 +23,7 @@ namespace ShapeCrawler
 
         #region Constructors
 
-        internal MasterAutoShape(SlideMasterSc slideMaster, P.Shape pShape) : base(slideMaster, pShape)
+        internal MasterAutoShape(SCSlideMaster slideMaster, P.Shape pShape) : base(slideMaster, pShape)
         {
             _textBox = new Lazy<SCTextBox>(GetTextBox);
             _shapeFill = new Lazy<ShapeFill>(TryGetFill);
