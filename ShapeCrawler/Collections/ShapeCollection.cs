@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
@@ -189,31 +190,34 @@ namespace ShapeCrawler.Collections
             return new ShapeCollection(shapeList);
         }
 
-        internal Shape GetShapeByPPlaceholderShape(P.PlaceholderShape inputPPlaceholderShape)
+        internal Shape GetShapeByPPlaceholderShape(P.PlaceholderShape inpPPlaceholderShape)
         {
-            Shape mappedShape = CollectionItems.Where(sp => sp.Placeholder != null).OfType<Shape>().FirstOrDefault(
-                collectionShape =>
+            IEnumerable<Shape> placeholderShapes = CollectionItems.Where(sp => sp.Placeholder != null).OfType<Shape>();
+            Shape mappedShape = placeholderShapes.FirstOrDefault(IsEqual);
+
+            bool IsEqual(Shape collectionShape)
+            {
+                Placeholder placeholder = (Placeholder) collectionShape.Placeholder;
+                P.PlaceholderShape colPPlaceholderShape = placeholder.PPlaceholderShape;
+
+                if (inpPPlaceholderShape.Index != null && colPPlaceholderShape.Index != null &&
+                    inpPPlaceholderShape.Index == colPPlaceholderShape.Index)
                 {
-                    P.PlaceholderShape pPlaceholderShape =
-                        ((Placeholder) collectionShape.Placeholder).PPlaceholderShape;
-                    if (inputPPlaceholderShape.Type != null && pPlaceholderShape.Type != null)
+                    return true;
+                }
+                if (inpPPlaceholderShape.Type != null && colPPlaceholderShape.Type != null)
+                {
+                    if (inpPPlaceholderShape.Type == P.PlaceholderValues.Body &&
+                        inpPPlaceholderShape.Index != null && colPPlaceholderShape.Index != null)
                     {
-                        if (inputPPlaceholderShape.Type == P.PlaceholderValues.Body &&
-                            inputPPlaceholderShape.Index != null && pPlaceholderShape.Index != null)
-                        {
-                            return inputPPlaceholderShape.Index == pPlaceholderShape.Index;
-                        }
-
-                        return inputPPlaceholderShape.Type.Equals(pPlaceholderShape.Type);
+                        return inpPPlaceholderShape.Index == colPPlaceholderShape.Index;
                     }
 
-                    if (inputPPlaceholderShape.Type == null && pPlaceholderShape.Type == null)
-                    {
-                        return inputPPlaceholderShape.Index == pPlaceholderShape.Index;
-                    }
+                    return inpPPlaceholderShape.Type.Equals(colPPlaceholderShape.Type);
+                }
 
-                    return false;
-                });
+                return false;
+            }
 
             return mappedShape;
         }

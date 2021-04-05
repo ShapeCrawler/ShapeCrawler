@@ -282,33 +282,6 @@ namespace ShapeCrawler.AutoShapes
             return _latinFont.Value.Typeface;
         }
 
-        private void SetName(string fontName)
-        {
-            if (_portion.Paragraph.TextBox.AutoShape.Placeholder != null)
-            {
-                throw new PlaceholderCannotBeChangedException();
-            }
-
-            A.LatinFont latinFont = _latinFont.Value;
-            latinFont.Typeface = fontName;
-            _latinFont.Reset();
-        }
-
-        private void SetFontSize(int newFontSize)
-        {
-            A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
-            if (aRunPr == null)
-            {
-                const string errorMsg =
-                    "The property value cannot be changed on the Slide level since it belongs to Slide Master. " +
-                    "Hence, you should change it on Slide Master level. " +
-                    "Note: you can check whether the property can be changed via {property_name}CanBeChanged method.";
-                throw new SlideMasterPropertyCannotBeChanged(errorMsg);
-            }
-
-            aRunPr.FontSize = newFontSize;
-        }
-
         private A.LatinFont GetALatinFont()
         {
             A.RunProperties aRunProperties = _aText.Parent.GetFirstChild<A.RunProperties>();
@@ -339,16 +312,15 @@ namespace ShapeCrawler.AutoShapes
                 return aRunPrFontSize.Value;
             }
 
-            Shape autoShape = _portion.Paragraph.TextBox.AutoShape;
+            Shape parentAutoShape = _portion.Paragraph.TextBox.AutoShape;
             int paragraphLvl = _portion.Paragraph.Level;
 
             // Try get font size from placeholder
-            if (autoShape.Placeholder != null)
+            if (parentAutoShape.Placeholder != null)
             {
-                Placeholder placeholder = (Placeholder) autoShape.Placeholder;
-                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
-                if (placeholderAutoShape != null &&
-                    placeholderAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
+                Placeholder placeholder = (Placeholder) parentAutoShape.Placeholder;
+                IFontDataReader phAutoShape = (IFontDataReader) placeholder.Shape;
+                if (phAutoShape != null && phAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
                 {
                     if (fontDataPlaceholder.FontSize != null)
                     {
@@ -357,20 +329,20 @@ namespace ShapeCrawler.AutoShapes
                 }
 
                 // From Slide Master body
-                if (autoShape.SlideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
+                if (parentAutoShape.SlideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
                 {
                     return fontSizeBody;
                 }
 
                 // From Slide Master other
-                if (autoShape.SlideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
+                if (parentAutoShape.SlideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
                 {
                     return fontSizeOther;
                 }
             }
 
             // From presentation level
-            PresentationData presentationData = autoShape.Presentation.PresentationData;
+            PresentationData presentationData = parentAutoShape.Presentation.PresentationData;
             if (presentationData.LlvToFontData.TryGetValue(paragraphLvl, out FontData fontData))
             {
                 if (fontData.FontSize != null)
@@ -406,22 +378,6 @@ namespace ShapeCrawler.AutoShapes
             return false;
         }
 
-        private bool TryGetFontDataFromPlaceholder(out FontData phFontData)
-        {
-            if (_portion.Paragraph.TextBox.AutoShape.Placeholder is Placeholder placeholder)
-            {
-                int paragraphLvl = _portion.Paragraph.Level;
-                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
-                if (placeholder.Shape != null && placeholderAutoShape.TryGetFontData(paragraphLvl, out phFontData))
-                {
-                    return true;
-                }
-            }
-
-            phFontData = null;
-            return false;
-        }
-
         private bool GetItalicFlag()
         {
             A.RunProperties aRunProperties = _aText.Parent.GetFirstChild<A.RunProperties>();
@@ -445,6 +401,23 @@ namespace ShapeCrawler.AutoShapes
 
             return false;
         }
+
+        private bool TryGetFontDataFromPlaceholder(out FontData phFontData)
+        {
+            if (_portion.Paragraph.TextBox.AutoShape.Placeholder is Placeholder placeholder)
+            {
+                int paragraphLvl = _portion.Paragraph.Level;
+                IFontDataReader placeholderAutoShape = (IFontDataReader) placeholder.Shape;
+                if (placeholder.Shape != null && placeholderAutoShape.TryGetFontData(paragraphLvl, out phFontData))
+                {
+                    return true;
+                }
+            }
+
+            phFontData = null;
+            return false;
+        }
+
 
         private void SetBoldFlag(bool value)
         {
@@ -473,6 +446,34 @@ namespace ShapeCrawler.AutoShapes
                     }
                 }
             }
+        }
+
+
+        private void SetName(string fontName)
+        {
+            if (_portion.Paragraph.TextBox.AutoShape.Placeholder != null)
+            {
+                throw new PlaceholderCannotBeChangedException();
+            }
+
+            A.LatinFont latinFont = _latinFont.Value;
+            latinFont.Typeface = fontName;
+            _latinFont.Reset();
+        }
+
+        private void SetFontSize(int newFontSize)
+        {
+            A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
+            if (aRunPr == null)
+            {
+                const string errorMsg =
+                    "The property value cannot be changed on the Slide level since it belongs to Slide Master. " +
+                    "Hence, you should change it on Slide Master level. " +
+                    "Note: you can check whether the property can be changed via {property_name}CanBeChanged method.";
+                throw new SlideMasterPropertyCannotBeChanged(errorMsg);
+            }
+
+            aRunPr.FontSize = newFontSize;
         }
 
         #endregion Private Methods

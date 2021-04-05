@@ -117,7 +117,7 @@ namespace ShapeCrawler
             A.Offset aOffset = PShapeTreeChild.Descendants<A.Offset>().FirstOrDefault();
             if (aOffset == null)
             {
-                Shape placeholderShape = ((Placeholder) Placeholder).Shape;
+                Shape placeholderShape = ((Placeholder) Placeholder).ReferencedShape;
                 placeholderShape.X = value;
             }
             else
@@ -131,7 +131,7 @@ namespace ShapeCrawler
             A.Offset aOffset = PShapeTreeChild.Descendants<A.Offset>().FirstOrDefault();
             if (aOffset == null)
             {
-                return ((Placeholder) Placeholder).Shape.X;
+                return ((Placeholder) Placeholder).ReferencedShape.X;
             }
 
             return aOffset.X;
@@ -148,7 +148,7 @@ namespace ShapeCrawler
             A.Offset aOffset = PShapeTreeChild.Descendants<A.Offset>().FirstOrDefault();
             if (aOffset == null)
             {
-                return ((Placeholder) Placeholder).Shape.Y;
+                return ((Placeholder) Placeholder).ReferencedShape.Y;
             }
 
             return aOffset.Y;
@@ -164,7 +164,7 @@ namespace ShapeCrawler
             A.Extents aExtents = PShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
             {
-                return ((Placeholder) Placeholder).Shape.Width;
+                return ((Placeholder) Placeholder).ReferencedShape.Width;
             }
 
             return aExtents.Cx;
@@ -180,7 +180,7 @@ namespace ShapeCrawler
             A.Extents aExtents = PShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
             {
-                return ((Placeholder) Placeholder).Shape.Height;
+                return ((Placeholder) Placeholder).ReferencedShape.Height;
             }
 
             return aExtents.Cy;
@@ -211,9 +211,9 @@ namespace ShapeCrawler
             }
 
             Placeholder placeholder = (Placeholder) Placeholder;
-            if (placeholder?.Shape != null)
+            if (placeholder?.ReferencedShape != null)
             {
-                return placeholder.Shape.GeometryType;
+                return placeholder.ReferencedShape.GeometryType;
             }
 
             return GeometryType.Rectangle; // return default

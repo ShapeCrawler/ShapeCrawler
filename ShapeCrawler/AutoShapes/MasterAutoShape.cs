@@ -17,7 +17,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler
 {
     /// <inheritdoc cref="IAutoShape" />
-    internal class MasterAutoShape : MasterShape, IAutoShape, IAutoShapeInternal
+    internal class MasterAutoShape : MasterShape, IAutoShape, IFontDataReader
     {
         private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
 

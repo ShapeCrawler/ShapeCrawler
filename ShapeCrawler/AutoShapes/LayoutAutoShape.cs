@@ -20,8 +20,12 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents an Auto Shape on a Slide Layout.
     /// </summary>
-    internal class LayoutAutoShape : LayoutShape, IAutoShape, IAutoShapeInternal
+    internal class LayoutAutoShape : LayoutShape, IAutoShape, IFontDataReader
     {
+        private readonly Lazy<SCTextBox> _textBox;
+        private readonly Lazy<ShapeFill> _shapeFill;
+        private readonly ImageExFactory _imageFactory = new ImageExFactory();
+        internal ShapeContext Context { get; } //TODO: resolve warning
         private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
 
         #region Constructors
@@ -48,7 +52,7 @@ namespace ShapeCrawler
             if (Placeholder != null)
             {
                 Placeholder placeholder = (Placeholder) Placeholder;
-                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
+                IFontDataReader placeholderAutoShape = (IFontDataReader) placeholder.Shape;
                 if (placeholderAutoShape != null)
                 {
                     if (placeholderAutoShape.TryGetFontData(paragraphLvl, out fontData))
@@ -81,11 +85,7 @@ namespace ShapeCrawler
 
         #region Fields
 
-        private readonly Lazy<SCTextBox> _textBox;
-        private readonly Lazy<ShapeFill> _shapeFill;
-        private readonly ImageExFactory _imageFactory = new ImageExFactory();
 
-        internal ShapeContext Context { get; }
 
         #endregion Fields
 

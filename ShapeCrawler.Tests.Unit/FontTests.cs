@@ -129,6 +129,20 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
+        public void Size_GetterReturnsFontSize_OfPlaceholder()
+        {
+            // Arrange
+            IAutoShape autoShapeCase1 = (IAutoShape) _fixture.Pre028.Slides[0].Shapes.First(sp => sp.Id == 4098);
+            IAutoShape autoShapeCase2 = (IAutoShape) _fixture.Pre029.Slides[0].Shapes.First(sp => sp.Id == 3);
+            Portion portionC1 = autoShapeCase1.TextBox.Paragraphs[0].Portions[0];
+            Portion portionC2 = autoShapeCase2.TextBox.Paragraphs[0].Portions[0];
+
+            // Act-Assert
+            portionC1.Font.Size.Should().Be(3200);
+            portionC2.Font.Size.Should().Be(2500);
+        }
+
+        [Fact]
         public void Size_SetterChangesFontSizeOfParagraphPortion()
         {
             // Arrange
