@@ -20,7 +20,7 @@
         bool IsItalic { get; set; }
 
         /// <summary>
-        ///     Gets or sets font color in HEX format.
+        ///     Gets RGB color in HEX format.
         /// </summary>
         string Color { get; set; }
 

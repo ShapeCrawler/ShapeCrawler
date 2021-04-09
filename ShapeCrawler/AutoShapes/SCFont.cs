@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
@@ -67,12 +68,10 @@ namespace ShapeCrawler.AutoShapes
         public string Color
         {
             get => GetColorHex();
-            set => SetColorHex(value);
+            set => SetSolidColorHex(value);
         }
 
-        private void SetColorHex(string value)
-        {
-        }
+      
 
         private string GetColorHex()
         {
@@ -250,27 +249,7 @@ namespace ShapeCrawler.AutoShapes
 
         #region Private Methods
 
-        private void SetItalicFlag(bool value)
-        {
-            A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
-            if (aRunPr != null)
-            {
-                aRunPr.Italic = new BooleanValue(value);
-            }
-            else
-            {
-                A.EndParagraphRunProperties aEndParaRPr = _aText.Parent.NextSibling<A.EndParagraphRunProperties>();
-                if (aEndParaRPr != null)
-                {
-                    aEndParaRPr.Italic = new BooleanValue(value);
-                }
-                else
-                {
-                    aRunPr = new A.RunProperties {Italic = new BooleanValue(value)};
-                    _aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
-                }
-            }
-        }
+
 
         private string GetName()
         {
@@ -373,7 +352,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             FontData phFontData = new();
-            GetFontDataFromPlaceholder(ref phFontData);
+            GetFontDataFromPlaceholder(ref phFontData); //TODO: looks like it can change property for all shapes based on this placeholder
             if (phFontData.IsBold != null)
             {
                 return phFontData.IsBold.Value;
@@ -449,8 +428,27 @@ namespace ShapeCrawler.AutoShapes
                 }
             }
         }
-
-
+        private void SetItalicFlag(bool value)
+        {
+            A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
+            if (aRunPr != null)
+            {
+                aRunPr.Italic = new BooleanValue(value);
+            }
+            else
+            {
+                A.EndParagraphRunProperties aEndParaRPr = _aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                if (aEndParaRPr != null)
+                {
+                    aEndParaRPr.Italic = new BooleanValue(value);
+                }
+                else
+                {
+                    aRunPr = new A.RunProperties { Italic = new BooleanValue(value) };
+                    _aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
+                }
+            }
+        }
         private void SetName(string fontName)
         {
             if (_portion.Paragraph.TextBox.AutoShape.Placeholder != null)
@@ -476,6 +474,31 @@ namespace ShapeCrawler.AutoShapes
             }
 
             aRunPr.FontSize = newFontSize;
+        }
+
+        private void SetSolidColorHex(string value)
+        {
+            A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
+            if (aRunPr != null)
+            {
+                var aSolidFill = new A.SolidFill
+                {
+                    RgbColorModelHex = new A.RgbColorModelHex { Val = value }
+                };
+
+                aRunPr.SolidFill()?.Remove(); // remove old color
+                aRunPr.InsertAt(aSolidFill, 0);
+            }
+            else
+            {
+                var aSolidFill = new A.SolidFill
+                {
+                    RgbColorModelHex = new A.RgbColorModelHex { Val = value }
+                };
+
+                aRunPr = new A.RunProperties(aSolidFill);
+                _aText.Parent.InsertAt(aRunPr, 0);
+            }
         }
 
         #endregion Private Methods

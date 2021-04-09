@@ -306,6 +306,54 @@ namespace ShapeCrawler.Tests.Unit
             fontC5.Color.Should().Be("000000");
         }
 
+
+        [Theory]
+        [MemberData(nameof(TestCasesColorSetter))]
+        public void Color_SetterSetsGreenColorForFont_WhenGreenIsSpecified(SCPresentation presentation, ElementRequest portionRequest)
+        {
+            // Arrange
+            const string GreenRgb = "008000";
+            var mStream = new MemoryStream();
+            Portion portion = TestHelper.GetPortion(presentation, portionRequest);
+
+            // Act
+            portion.Font.Color = GreenRgb;
+
+            // Assert
+            portion.Font.Color.Should().BeEquivalentTo(GreenRgb);
+
+            presentation.SaveAs(mStream);
+            //presentation.SaveAs(@"c:\GitRepositories\ShapeCrawler\ShapeCrawler.Tests.Unit\Resource\020_output.pptx");
+            presentation = SCPresentation.Open(mStream, false);
+            portion = TestHelper.GetPortion(presentation, portionRequest);
+            portion.Font.Color.Should().BeEquivalentTo(GreenRgb);
+        }
+
+        public static IEnumerable<object[]> TestCasesColorSetter()
+        {
+            SCPresentation presentationCase1 = SCPresentation.Open(Resources._020, true);
+            ElementRequest portionRequestCase1 = new();
+            portionRequestCase1.SlideIndex = 0;
+            portionRequestCase1.ShapeId = 2;
+            portionRequestCase1.ParagraphIndex = 0;
+            portionRequestCase1.PortionIndex = 0;
+
+            SCPresentation presentationCase2 = SCPresentation.Open(Resources._020, true);
+            ElementRequest portionRequestCase2 = new();
+            portionRequestCase2.SlideIndex = 0;
+            portionRequestCase2.ShapeId = 3;
+            portionRequestCase2.ParagraphIndex = 0;
+            portionRequestCase2.PortionIndex = 0;
+
+            var testCases = new List<object[]>
+            {
+                new object[] {presentationCase1, portionRequestCase1},
+                new object[] {presentationCase2, portionRequestCase2}
+            };
+
+            return testCases;
+        }
+
         [Fact]
         public void Color_GetterReturnsRGBColorInHEXformat_OfPlaceholder()
         {
