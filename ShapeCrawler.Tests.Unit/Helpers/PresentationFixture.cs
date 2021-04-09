@@ -23,6 +23,8 @@ namespace ShapeCrawler.Tests.Unit.Helpers
         public SCPresentation Pre021 { get; }
         public SCPresentation Pre024 { get; }
         public SCPresentation Pre025 { get; }
+        public SCPresentation Pre028 { get; }
+        public SCPresentation Pre029 { get; }
 
         public PresentationFixture()
         {
@@ -47,6 +49,8 @@ namespace ShapeCrawler.Tests.Unit.Helpers
             Pre021 = SCPresentation.Open(Properties.Resources._021, false);
             Pre024 = SCPresentation.Open(Properties.Resources._024, false);
             Pre025 = SCPresentation.Open(Properties.Resources._025, false);
+            Pre028 = SCPresentation.Open(Properties.Resources._028, false);
+            Pre029 = SCPresentation.Open(Properties.Resources._029, false);
         }
     }
 }

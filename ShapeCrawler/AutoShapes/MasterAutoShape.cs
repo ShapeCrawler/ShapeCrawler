@@ -17,9 +17,12 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler
 {
     /// <inheritdoc cref="IAutoShape" />
-    internal class MasterAutoShape : MasterShape, IAutoShape, IAutoShapeInternal
+    internal class MasterAutoShape : MasterShape, IAutoShape, IFontDataReader
     {
+        private readonly ImageExFactory _imageFactory = new ImageExFactory();
         private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
+        private readonly Lazy<ShapeFill> _shapeFill;
+        private readonly Lazy<SCTextBox> _textBox;
 
         #region Constructors
 
@@ -27,35 +30,35 @@ namespace ShapeCrawler
         {
             _textBox = new Lazy<SCTextBox>(GetTextBox);
             _shapeFill = new Lazy<ShapeFill>(TryGetFill);
-            _lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(() => GetLvlToFontData());
+            _lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(GetLvlToFontData);
         }
 
         #endregion Constructors
 
+        internal ShapeContext Context { get; }
         internal Dictionary<int, FontData> LvlToFontData => _lvlToFontData.Value;
 
-        public bool TryGetFontData(int paragraphLvl, out FontData fontData)
+        public void FillFontData(int paragraphLvl, ref FontData fontData)
         {
-            // Tries get font from Auto Shape
-            if (LvlToFontData.TryGetValue(paragraphLvl, out fontData))
+            if (LvlToFontData.TryGetValue(paragraphLvl, out FontData masterFontData) && !fontData.IsFilled())
             {
-                return true;
+                masterFontData.Fill(fontData);
+                return;
             }
 
-            // Title type
             P.TextStyles pTextStyles = SlideMaster.PSlideMaster.TextStyles;
             if (Placeholder.Type == PlaceholderType.Title)
             {
-                var fontSize = pTextStyles.TitleStyle.Level1ParagraphProperties
+                int titleFontSize = pTextStyles.TitleStyle.Level1ParagraphProperties
                     .GetFirstChild<A.DefaultRunProperties>().FontSize.Value;
-                fontData = new FontData(fontSize);
-                return true;
+                if (fontData.FontSize == null)
+                {
+                    fontData.FontSize = new Int32Value(titleFontSize);
+                }
             }
-
-            return false;
         }
 
-        internal Dictionary<int, FontData> GetLvlToFontData()
+        internal Dictionary<int, FontData> GetLvlToFontData() // TODO: duplicate code in LayoutAutoShape
         {
             P.Shape pShape = (P.Shape) PShapeTreeChild;
             Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
@@ -73,27 +76,7 @@ namespace ShapeCrawler
             return lvlToFontData;
         }
 
-        #region Fields
-
-        private readonly Lazy<SCTextBox> _textBox;
-        private readonly Lazy<ShapeFill> _shapeFill;
-        private readonly ImageExFactory _imageFactory = new ImageExFactory();
-
-        internal ShapeContext Context { get; }
-
-        #endregion Fields
-
-        #region Public Properties
-
-        public ITextBox TextBox => _textBox.Value;
-
-        public ShapeFill Fill => _shapeFill.Value;
-
-        #endregion Properties
-
-        #region Private Methods
-
-        private SCTextBox GetTextBox()
+        private SCTextBox GetTextBox() //TODO: duplicate code in LayoutAutoShape
         {
             P.TextBody pTextBody = PShapeTreeChild.GetFirstChild<P.TextBody>();
             if (pTextBody == null)
@@ -110,7 +93,7 @@ namespace ShapeCrawler
             return null;
         }
 
-        private ShapeFill TryGetFill()
+        private ShapeFill TryGetFill() //TODO: duplicate code in LayoutAutoShape
         {
             SCImage image = _imageFactory.TryFromSdkShape(Context.SlidePart, Context.CompositeElement);
             if (image != null)
@@ -134,6 +117,12 @@ namespace ShapeCrawler
             return null;
         }
 
-        #endregion
+        #region Public Properties
+
+        public ITextBox TextBox => _textBox.Value;
+
+        public ShapeFill Fill => _shapeFill.Value;
+
+        #endregion Public Properties
     }
 }

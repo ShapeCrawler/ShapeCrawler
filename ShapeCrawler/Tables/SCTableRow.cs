@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -10,7 +12,8 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a row in a table.
     /// </summary>
-    public class RowSc
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public class SCTableRow // TODO: extract interface
     {
         private readonly Lazy<List<SCTableCell>> _cells;
         internal readonly A.TableRow ATableRow;
@@ -18,7 +21,7 @@ namespace ShapeCrawler
 
         #region Constructors
 
-        internal RowSc(SlideTable table, A.TableRow aTableRow, int index)
+        internal SCTableRow(SlideTable table, A.TableRow aTableRow, int index)
         {
             Table = table;
             ATableRow = aTableRow;

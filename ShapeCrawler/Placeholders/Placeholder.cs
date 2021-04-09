@@ -16,7 +16,7 @@ namespace ShapeCrawler.Placeholders
             PPlaceholderShape = pPlaceholderShape;
         }
 
-        protected internal Shape Shape => BaseShape.Value;
+        protected internal Shape ReferencedShape => BaseShape.Value;
 
         public PlaceholderType Type => GetPlaceholderType();
 

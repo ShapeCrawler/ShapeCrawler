@@ -80,51 +80,53 @@ namespace ShapeCrawler.AutoShapes
             A.SolidFill aSolidFill = _portion.AText.PreviousSibling<A.RunProperties>()?.GetFirstChild<A.SolidFill>();
             if (aSolidFill != null)
             {
+                // Try get solid color
                 A.RgbColorModelHex hexModel = aSolidFill.RgbColorModelHex;
                 if (hexModel != null)
                 {
                     return hexModel.Val;
                 }
 
-                // Get color from scheme
+                // Get from scheme color
                 A.SchemeColorValues runFontSchemeColor = aSolidFill.SchemeColor.Val.Value;
                 return GetThemeColor(runFontSchemeColor);
             }
 
             // Get color from SHAPE level
-            Shape parentShape = _portion.Paragraph.TextBox.AutoShape;
-            if (parentShape.Placeholder is Placeholder placeholder)
+            Shape fontParentShape = _portion.Paragraph.TextBox.AutoShape;
+            if (fontParentShape.Placeholder is Placeholder placeholder)
             {
-                P.Shape phShape = (P.Shape) placeholder.Shape.PShapeTreeChild;
-                if (phShape.ShapeStyle != null)
+                FontData phFontData = new();
+                GetFontDataFromPlaceholder(ref phFontData);
+                if (phFontData.ASchemeColor != null)
                 {
-                    A.SchemeColorValues phShapeFontSchemeColor = phShape.ShapeStyle.FontReference.SchemeColor.Val.Value;
-                    return GetThemeColor(phShapeFontSchemeColor);
+                    return GetThemeColor(phFontData.ASchemeColor.Val);
                 }
 
                 if (placeholder.Type == PlaceholderType.Title)
                 {
                     A.SchemeColorValues phTitleFontSchemeColor =
-                        parentShape.SlideMaster.GetFontColorHexFromTitle(_paragraphLvl);
+                        fontParentShape.SlideMaster.GetFontColorHexFromTitle(_paragraphLvl);
                     return GetThemeColor(phTitleFontSchemeColor);
                 }
 
                 if (placeholder.Type == PlaceholderType.Body)
                 {
                     A.SchemeColorValues phBodyFontSchemeColor =
-                        parentShape.SlideMaster.GetFontColorHexFromBody(_paragraphLvl);
+                        fontParentShape.SlideMaster.GetFontColorHexFromBody(_paragraphLvl);
                     return GetThemeColor(phBodyFontSchemeColor);
                 }
             }
 
-            P.Shape parentPShape = (P.Shape) parentShape.PShapeTreeChild;
+            P.Shape parentPShape = (P.Shape) fontParentShape.PShapeTreeChild;
             if (parentPShape.ShapeStyle != null)
             {
                 A.SchemeColorValues shapeFontSchemeColor = parentPShape.ShapeStyle.FontReference.SchemeColor.Val.Value;
                 return GetThemeColor(shapeFontSchemeColor);
             }
 
-            A.SchemeColorValues bodyFontSchemeColor = parentShape.SlideMaster.GetFontColorHexFromBody(_paragraphLvl);
+            A.SchemeColorValues bodyFontSchemeColor =
+                fontParentShape.SlideMaster.GetFontColorHexFromBody(_paragraphLvl);
             return GetThemeColor(bodyFontSchemeColor);
         }
 
@@ -282,6 +284,173 @@ namespace ShapeCrawler.AutoShapes
             return _latinFont.Value.Typeface;
         }
 
+        private A.LatinFont GetALatinFont()
+        {
+            A.RunProperties aRunProperties = _aText.Parent.GetFirstChild<A.RunProperties>();
+            A.LatinFont aLatinFont = aRunProperties?.GetFirstChild<A.LatinFont>();
+
+            if (aLatinFont != null)
+            {
+                return aLatinFont;
+            }
+
+            FontData phFontData = new();
+            GetFontDataFromPlaceholder(ref phFontData);
+            {
+                if (phFontData.ALatinFont != null)
+                {
+                    return phFontData.ALatinFont;
+                }
+            }
+
+            // Get from theme
+            return _portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.FontScheme.MinorFont.LatinFont;
+        }
+
+        private int GetSize()
+        {
+            Int32Value aRunPrFontSize = _portion.AText.Parent.GetFirstChild<A.RunProperties>()?.FontSize;
+            if (aRunPrFontSize != null)
+            {
+                return aRunPrFontSize.Value;
+            }
+
+            Shape fontParentShape = _portion.Paragraph.TextBox.AutoShape;
+            int paragraphLvl = _portion.Paragraph.Level;
+
+            // Try get font size from placeholder
+            if (fontParentShape.Placeholder != null)
+            {
+                Placeholder placeholder = (Placeholder) fontParentShape.Placeholder;
+                IFontDataReader phReferencedShape = (IFontDataReader) placeholder.ReferencedShape;
+                FontData fontDataPlaceholder = new();
+                if (phReferencedShape != null)
+                {
+                    phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
+                    if (fontDataPlaceholder.FontSize != null)
+                    {
+                        return fontDataPlaceholder.FontSize;
+                    }
+                }
+
+                // From Slide Master body
+                if (fontParentShape.SlideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
+                {
+                    return fontSizeBody;
+                }
+
+                // From Slide Master other
+                if (fontParentShape.SlideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
+                {
+                    return fontSizeOther;
+                }
+            }
+
+            // From presentation level
+            PresentationData presentationData = fontParentShape.Presentation.PresentationData;
+            if (presentationData.LlvToFontData.TryGetValue(paragraphLvl, out FontData fontData))
+            {
+                if (fontData.FontSize != null)
+                {
+                    return fontData.FontSize;
+                }
+            }
+
+            return FormatConstants.DefaultFontSize;
+        }
+
+        private bool GetBoldFlag()
+        {
+            A.RunProperties aRunProperties = _aText.Parent.GetFirstChild<A.RunProperties>();
+            if (aRunProperties == null)
+            {
+                return false;
+            }
+
+            if (aRunProperties.Bold != null && aRunProperties.Bold == true)
+            {
+                return true;
+            }
+
+            FontData phFontData = new();
+            GetFontDataFromPlaceholder(ref phFontData);
+            if (phFontData.IsBold != null)
+            {
+                return phFontData.IsBold.Value;
+            }
+
+            return false;
+        }
+
+        private bool GetItalicFlag()
+        {
+            A.RunProperties aRunProperties = _aText.Parent.GetFirstChild<A.RunProperties>();
+            if (aRunProperties == null)
+            {
+                return false;
+            }
+
+            if (aRunProperties.Italic != null && aRunProperties.Italic == true)
+            {
+                return true;
+            }
+
+            FontData phFontData = new();
+            GetFontDataFromPlaceholder(ref phFontData);
+            if (phFontData.IsItalic != null)
+            {
+                return phFontData.IsItalic.Value;
+            }
+
+            return false;
+        }
+
+        private void GetFontDataFromPlaceholder(ref FontData phFontData)
+        {
+            Shape fontParentShape = _portion.Paragraph.TextBox.AutoShape;
+            int paragraphLvl = _portion.Paragraph.Level;
+            if (fontParentShape.Placeholder == null)
+            {
+                return;
+            }
+
+            Placeholder placeholder = (Placeholder) fontParentShape.Placeholder;
+            IFontDataReader phReferencedShape = (IFontDataReader) placeholder.ReferencedShape;
+            phReferencedShape?.FillFontData(paragraphLvl, ref phFontData);
+        }
+
+        private void SetBoldFlag(bool value)
+        {
+            A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
+            if (aRunPr != null)
+            {
+                aRunPr.Bold = new BooleanValue(value);
+            }
+            else
+            {
+                FontData phFontData = new();
+                GetFontDataFromPlaceholder(ref phFontData);
+                if (phFontData.IsBold != null)
+                {
+                    phFontData.IsBold = new BooleanValue(value);
+                }
+                else
+                {
+                    A.EndParagraphRunProperties aEndParaRPr = _aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                    if (aEndParaRPr != null)
+                    {
+                        aEndParaRPr.Bold = new BooleanValue(value);
+                    }
+                    else
+                    {
+                        aRunPr = new A.RunProperties {Bold = new BooleanValue(value)};
+                        _aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
+                    }
+                }
+            }
+        }
+
+
         private void SetName(string fontName)
         {
             if (_portion.Paragraph.TextBox.AutoShape.Placeholder != null)
@@ -307,172 +476,6 @@ namespace ShapeCrawler.AutoShapes
             }
 
             aRunPr.FontSize = newFontSize;
-        }
-
-        private A.LatinFont GetALatinFont()
-        {
-            A.RunProperties aRunProperties = _aText.Parent.GetFirstChild<A.RunProperties>();
-            A.LatinFont aLatinFont = aRunProperties?.GetFirstChild<A.LatinFont>();
-
-            if (aLatinFont != null)
-            {
-                return aLatinFont;
-            }
-
-            if (TryGetFontDataFromPlaceholder(out FontData phFontData))
-            {
-                if (phFontData.ALatinFont != null)
-                {
-                    return phFontData.ALatinFont;
-                }
-            }
-
-            // Get from theme
-            return _portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.FontScheme.MinorFont.LatinFont;
-        }
-
-        private int GetSize()
-        {
-            Int32Value aRunPrFontSize = _portion.AText.Parent.GetFirstChild<A.RunProperties>()?.FontSize;
-            if (aRunPrFontSize != null)
-            {
-                return aRunPrFontSize.Value;
-            }
-
-            Shape autoShape = _portion.Paragraph.TextBox.AutoShape;
-            int paragraphLvl = _portion.Paragraph.Level;
-
-            // Try get font size from placeholder
-            if (autoShape.Placeholder != null)
-            {
-                Placeholder placeholder = (Placeholder) autoShape.Placeholder;
-                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
-                if (placeholderAutoShape != null &&
-                    placeholderAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
-                {
-                    if (fontDataPlaceholder.FontSize != null)
-                    {
-                        return fontDataPlaceholder.FontSize;
-                    }
-                }
-
-                // From Slide Master body
-                if (autoShape.SlideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
-                {
-                    return fontSizeBody;
-                }
-
-                // From Slide Master other
-                if (autoShape.SlideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
-                {
-                    return fontSizeOther;
-                }
-            }
-
-            // From presentation level
-            PresentationData presentationData = autoShape.Presentation.PresentationData;
-            if (presentationData.LlvToFontData.TryGetValue(paragraphLvl, out FontData fontData))
-            {
-                if (fontData.FontSize != null)
-                {
-                    return fontData.FontSize;
-                }
-            }
-
-            return FormatConstants.DefaultFontSize;
-        }
-
-        private bool GetBoldFlag()
-        {
-            A.RunProperties aRunProperties = _aText.Parent.GetFirstChild<A.RunProperties>();
-            if (aRunProperties == null)
-            {
-                return false;
-            }
-
-            if (aRunProperties.Bold != null && aRunProperties.Bold == true)
-            {
-                return true;
-            }
-
-            if (TryGetFontDataFromPlaceholder(out FontData phFontData))
-            {
-                if (phFontData.IsBold != null)
-                {
-                    return phFontData.IsBold.Value;
-                }
-            }
-
-            return false;
-        }
-
-        private bool TryGetFontDataFromPlaceholder(out FontData phFontData)
-        {
-            if (_portion.Paragraph.TextBox.AutoShape.Placeholder is Placeholder placeholder)
-            {
-                int paragraphLvl = _portion.Paragraph.Level;
-                IAutoShapeInternal placeholderAutoShape = (IAutoShapeInternal) placeholder.Shape;
-                if (placeholder.Shape != null && placeholderAutoShape.TryGetFontData(paragraphLvl, out phFontData))
-                {
-                    return true;
-                }
-            }
-
-            phFontData = null;
-            return false;
-        }
-
-        private bool GetItalicFlag()
-        {
-            A.RunProperties aRunProperties = _aText.Parent.GetFirstChild<A.RunProperties>();
-            if (aRunProperties == null)
-            {
-                return false;
-            }
-
-            if (aRunProperties.Italic != null && aRunProperties.Italic == true)
-            {
-                return true;
-            }
-
-            if (TryGetFontDataFromPlaceholder(out FontData phFontData))
-            {
-                if (phFontData.IsItalic != null)
-                {
-                    return phFontData.IsItalic.Value;
-                }
-            }
-
-            return false;
-        }
-
-        private void SetBoldFlag(bool value)
-        {
-            A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
-            if (aRunPr != null)
-            {
-                aRunPr.Bold = new BooleanValue(value);
-            }
-            else
-            {
-                if (TryGetFontDataFromPlaceholder(out FontData phFontData))
-                {
-                    phFontData.IsBold = new BooleanValue(value);
-                }
-                else
-                {
-                    A.EndParagraphRunProperties aEndParaRPr = _aText.Parent.NextSibling<A.EndParagraphRunProperties>();
-                    if (aEndParaRPr != null)
-                    {
-                        aEndParaRPr.Bold = new BooleanValue(value);
-                    }
-                    else
-                    {
-                        aRunPr = new A.RunProperties {Bold = new BooleanValue(value)};
-                        _aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
-                    }
-                }
-            }
         }
 
         #endregion Private Methods

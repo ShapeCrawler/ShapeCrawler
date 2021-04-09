@@ -72,9 +72,9 @@ namespace ShapeCrawler.Tests.Unit
         public void CellIsMergedCell_ReturnsTrue_WhenCellMergedWithOtherHorizontally()
         {
             // Arrange
-            RowSc row = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4)).Rows[1];
-            ITableCell cell1x0 = row.Cells[0];
-            ITableCell cell1x1 = row.Cells[1];
+            SCTableRow scTableRow = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4)).Rows[1];
+            ITableCell cell1x0 = scTableRow.Cells[0];
+            ITableCell cell1x1 = scTableRow.Cells[1];
 
             // Act-Assert
             cell1x0.IsMergedCell.Should().BeTrue();
