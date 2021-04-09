@@ -80,51 +80,52 @@ namespace ShapeCrawler.AutoShapes
             A.SolidFill aSolidFill = _portion.AText.PreviousSibling<A.RunProperties>()?.GetFirstChild<A.SolidFill>();
             if (aSolidFill != null)
             {
+                // Try get solid color
                 A.RgbColorModelHex hexModel = aSolidFill.RgbColorModelHex;
                 if (hexModel != null)
                 {
                     return hexModel.Val;
                 }
 
-                // Get color from scheme
+                // Get from scheme color
                 A.SchemeColorValues runFontSchemeColor = aSolidFill.SchemeColor.Val.Value;
                 return GetThemeColor(runFontSchemeColor);
             }
 
             // Get color from SHAPE level
-            Shape parentShape = _portion.Paragraph.TextBox.AutoShape;
-            if (parentShape.Placeholder is Placeholder placeholder)
+            Shape fontParentShape = _portion.Paragraph.TextBox.AutoShape;
+            if (fontParentShape.Placeholder is Placeholder placeholder)
             {
-                P.Shape phShape = (P.Shape) placeholder.ReferencedShape.PShapeTreeChild;
-                if (phShape.ShapeStyle != null)
+                FontData phFontData = new();
+                GetFontDataFromPlaceholder(ref phFontData);
+                if (phFontData.ASchemeColor != null)
                 {
-                    A.SchemeColorValues phShapeFontSchemeColor = phShape.ShapeStyle.FontReference.SchemeColor.Val.Value;
-                    return GetThemeColor(phShapeFontSchemeColor);
+                    return GetThemeColor(phFontData.ASchemeColor.Val);
                 }
 
                 if (placeholder.Type == PlaceholderType.Title)
                 {
                     A.SchemeColorValues phTitleFontSchemeColor =
-                        parentShape.SlideMaster.GetFontColorHexFromTitle(_paragraphLvl);
+                        fontParentShape.SlideMaster.GetFontColorHexFromTitle(_paragraphLvl);
                     return GetThemeColor(phTitleFontSchemeColor);
                 }
 
                 if (placeholder.Type == PlaceholderType.Body)
                 {
                     A.SchemeColorValues phBodyFontSchemeColor =
-                        parentShape.SlideMaster.GetFontColorHexFromBody(_paragraphLvl);
+                        fontParentShape.SlideMaster.GetFontColorHexFromBody(_paragraphLvl);
                     return GetThemeColor(phBodyFontSchemeColor);
                 }
             }
 
-            P.Shape parentPShape = (P.Shape) parentShape.PShapeTreeChild;
+            P.Shape parentPShape = (P.Shape) fontParentShape.PShapeTreeChild;
             if (parentPShape.ShapeStyle != null)
             {
                 A.SchemeColorValues shapeFontSchemeColor = parentPShape.ShapeStyle.FontReference.SchemeColor.Val.Value;
                 return GetThemeColor(shapeFontSchemeColor);
             }
 
-            A.SchemeColorValues bodyFontSchemeColor = parentShape.SlideMaster.GetFontColorHexFromBody(_paragraphLvl);
+            A.SchemeColorValues bodyFontSchemeColor = fontParentShape.SlideMaster.GetFontColorHexFromBody(_paragraphLvl);
             return GetThemeColor(bodyFontSchemeColor);
         }
 
@@ -292,7 +293,8 @@ namespace ShapeCrawler.AutoShapes
                 return aLatinFont;
             }
 
-            if (TryGetFontDataFromPlaceholder(out FontData phFontData))
+            FontData phFontData = new();
+            GetFontDataFromPlaceholder(ref phFontData);
             {
                 if (phFontData.ALatinFont != null)
                 {
@@ -312,16 +314,18 @@ namespace ShapeCrawler.AutoShapes
                 return aRunPrFontSize.Value;
             }
 
-            Shape parentAutoShape = _portion.Paragraph.TextBox.AutoShape;
+            Shape fontParentShape = _portion.Paragraph.TextBox.AutoShape;
             int paragraphLvl = _portion.Paragraph.Level;
 
             // Try get font size from placeholder
-            if (parentAutoShape.Placeholder != null)
+            if (fontParentShape.Placeholder != null)
             {
-                Placeholder placeholder = (Placeholder) parentAutoShape.Placeholder;
-                IFontDataReader phAutoShape = (IFontDataReader) placeholder.ReferencedShape;
-                if (phAutoShape != null && phAutoShape.TryGetFontData(paragraphLvl, out FontData fontDataPlaceholder))
+                Placeholder placeholder = (Placeholder) fontParentShape.Placeholder;
+                IFontDataReader phReferencedShape = (IFontDataReader) placeholder.ReferencedShape;
+                FontData fontDataPlaceholder = new ();
+                if (phReferencedShape != null)
                 {
+                    phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
                     if (fontDataPlaceholder.FontSize != null)
                     {
                         return fontDataPlaceholder.FontSize;
@@ -329,20 +333,20 @@ namespace ShapeCrawler.AutoShapes
                 }
 
                 // From Slide Master body
-                if (parentAutoShape.SlideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
+                if (fontParentShape.SlideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
                 {
                     return fontSizeBody;
                 }
 
                 // From Slide Master other
-                if (parentAutoShape.SlideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
+                if (fontParentShape.SlideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
                 {
                     return fontSizeOther;
                 }
             }
 
             // From presentation level
-            PresentationData presentationData = parentAutoShape.Presentation.PresentationData;
+            PresentationData presentationData = fontParentShape.Presentation.PresentationData;
             if (presentationData.LlvToFontData.TryGetValue(paragraphLvl, out FontData fontData))
             {
                 if (fontData.FontSize != null)
@@ -367,12 +371,11 @@ namespace ShapeCrawler.AutoShapes
                 return true;
             }
 
-            if (TryGetFontDataFromPlaceholder(out FontData phFontData))
+            FontData phFontData = new();
+            GetFontDataFromPlaceholder(ref phFontData);
+            if (phFontData.IsBold != null)
             {
-                if (phFontData.IsBold != null)
-                {
-                    return phFontData.IsBold.Value;
-                }
+                return phFontData.IsBold.Value;
             }
 
             return false;
@@ -391,33 +394,28 @@ namespace ShapeCrawler.AutoShapes
                 return true;
             }
 
-            if (TryGetFontDataFromPlaceholder(out FontData phFontData))
+            FontData phFontData = new();
+            GetFontDataFromPlaceholder(ref phFontData);
+            if (phFontData.IsItalic != null)
             {
-                if (phFontData.IsItalic != null)
-                {
-                    return phFontData.IsItalic.Value;
-                }
+                return phFontData.IsItalic.Value;
             }
 
             return false;
         }
 
-        private bool TryGetFontDataFromPlaceholder(out FontData phFontData)
+        private void GetFontDataFromPlaceholder(ref FontData phFontData)
         {
-            if (_portion.Paragraph.TextBox.AutoShape.Placeholder is Placeholder placeholder)
+            Shape fontParentShape = _portion.Paragraph.TextBox.AutoShape;
+            int paragraphLvl = _portion.Paragraph.Level;
+            if (fontParentShape.Placeholder == null)
             {
-                int paragraphLvl = _portion.Paragraph.Level;
-                IFontDataReader placeholderAutoShape = (IFontDataReader) placeholder.ReferencedShape;
-                if (placeholder.ReferencedShape != null && placeholderAutoShape.TryGetFontData(paragraphLvl, out phFontData))
-                {
-                    return true;
-                }
+                return;
             }
-
-            phFontData = null;
-            return false;
+            Placeholder placeholder = (Placeholder) fontParentShape.Placeholder;
+            IFontDataReader phReferencedShape = (IFontDataReader) placeholder.ReferencedShape;
+            phReferencedShape?.FillFontData(paragraphLvl, ref phFontData);
         }
-
 
         private void SetBoldFlag(bool value)
         {
@@ -428,7 +426,9 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                if (TryGetFontDataFromPlaceholder(out FontData phFontData))
+                FontData phFontData = new();
+                GetFontDataFromPlaceholder(ref phFontData);
+                if (phFontData.IsBold != null)
                 {
                     phFontData.IsBold = new BooleanValue(value);
                 }

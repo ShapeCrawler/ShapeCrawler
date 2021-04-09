@@ -4,6 +4,6 @@ namespace ShapeCrawler.AutoShapes
 {
     internal interface IFontDataReader
     {
-        bool TryGetFontData(int paragraphLvl, out FontData fontData);
+        void FillFontData(int paragraphLvl, ref FontData fontData);
     }
 }

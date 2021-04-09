@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
@@ -205,6 +204,7 @@ namespace ShapeCrawler.Collections
                 {
                     return true;
                 }
+
                 if (inpPPlaceholderShape.Type != null && colPPlaceholderShape.Type != null)
                 {
                     if (inpPPlaceholderShape.Type == P.PlaceholderValues.Body &&

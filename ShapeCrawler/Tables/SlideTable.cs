@@ -152,7 +152,7 @@ namespace ShapeCrawler
                     int deleteRowsCount = rowSpan.Value - 1;
 
                     // Delete a:gridCol elements
-                    foreach (RowSc row in Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
+                    foreach (SCTableRow row in Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
                     {
                         row.ATableRow.Remove();
                         Rows[rowIdx].Height += row.Height;

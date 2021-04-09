@@ -20,13 +20,12 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents an Auto Shape on a Slide Layout.
     /// </summary>
-    internal class LayoutAutoShape : LayoutShape, IAutoShape, IFontDataReader
+    internal class LayoutAutoShape : LayoutShape, IAutoShape, IFontDataReader //TODO: IFontDataReader is needed?
     {
-        private readonly Lazy<SCTextBox> _textBox;
-        private readonly Lazy<ShapeFill> _shapeFill;
         private readonly ImageExFactory _imageFactory = new ImageExFactory();
-        internal ShapeContext Context { get; } //TODO: resolve warning
         private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
+        private readonly Lazy<ShapeFill> _shapeFill;
+        private readonly Lazy<SCTextBox> _textBox;
 
         #region Constructors
 
@@ -34,43 +33,60 @@ namespace ShapeCrawler
         {
             _textBox = new Lazy<SCTextBox>(GetTextBox);
             _shapeFill = new Lazy<ShapeFill>(TryGetFill);
-            _lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(() => GetLvlToFontData());
+            _lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(GetLvlToFontData);
         }
 
         #endregion Constructors
 
         internal Dictionary<int, FontData> LvlToFontData => _lvlToFontData.Value;
+        internal ShapeContext Context { get; } //TODO: resolve warning
 
-        public bool TryGetFontData(int paragraphLvl, out FontData fontData)
+        public void FillFontData(int paragraphLvl, ref FontData fontData)
         {
             // Tries get font from Auto Shape
-            if (LvlToFontData.TryGetValue(paragraphLvl, out fontData))
+            if (LvlToFontData.TryGetValue(paragraphLvl, out FontData layoutFontData))
             {
-                return true;
+                fontData = layoutFontData;
+                if (!fontData.IsFilled() && Placeholder != null)
+                {
+                    Placeholder placeholder = (Placeholder) Placeholder;
+                    IFontDataReader referencedMasterShape = (IFontDataReader) placeholder.ReferencedShape;
+                    if (referencedMasterShape != null)
+                    {
+                        referencedMasterShape.FillFontData(paragraphLvl, ref fontData);
+                    }
+                }
+
+                return;
             }
 
             if (Placeholder != null)
             {
                 Placeholder placeholder = (Placeholder) Placeholder;
-                IFontDataReader placeholderAutoShape = (IFontDataReader) placeholder.ReferencedShape;
-                if (placeholderAutoShape != null)
+                IFontDataReader referencedMasterShape = (IFontDataReader) placeholder.ReferencedShape;
+                if (referencedMasterShape != null)
                 {
-                    if (placeholderAutoShape.TryGetFontData(paragraphLvl, out fontData))
-                    {
-                        return true;
-                    }
+                    referencedMasterShape.FillFontData(paragraphLvl, ref fontData);
                 }
             }
-
-            return false;
         }
 
-        internal Dictionary<int, FontData> GetLvlToFontData()
+        #region Public Properties
+
+        public ITextBox TextBox => _textBox.Value;
+
+        public ShapeFill Fill => _shapeFill.Value;
+
+        #endregion Public Properties
+
+        #region Private Methods
+
+        private Dictionary<int, FontData> GetLvlToFontData()
         {
             P.Shape pShape = (P.Shape) PShapeTreeChild;
             Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
 
-            if (!lvlToFontData.Any()) // font height is still not known
+            if (!lvlToFontData.Any())
             {
                 Int32Value endParaRunPrFs = pShape.TextBody.GetFirstChild<A.Paragraph>()
                     .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
@@ -82,22 +98,6 @@ namespace ShapeCrawler
 
             return lvlToFontData;
         }
-
-        #region Fields
-
-
-
-        #endregion Fields
-
-        #region Public Properties
-
-        public ITextBox TextBox => _textBox.Value;
-
-        public ShapeFill Fill => _shapeFill.Value;
-
-        #endregion Properties
-
-        #region Private Methods
 
         private SCTextBox GetTextBox()
         {
@@ -140,6 +140,6 @@ namespace ShapeCrawler
             return null;
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }

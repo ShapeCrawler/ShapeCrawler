@@ -50,17 +50,17 @@ namespace ShapeCrawler.Tests.Unit
         public void Name_GetterReturnsCalibriLightAsFontName_WhenFontNameIsCalibriLight()
         {
             // Arrange
-            ITextBox textBox4 = ((IAutoShape)_fixture.Pre001.Slides[4].Shapes.First(sp => sp.Id == 5)).TextBox;
+            ITextBox textBox = ((IAutoShape)_fixture.Pre001.Slides[4].Shapes.First(sp => sp.Id == 5)).TextBox;
 
             // Act
-            string portionFontNameCase4 = textBox4.Paragraphs[0].Portions[0].Font.Name;
+            string portionFontName = textBox.Paragraphs[0].Portions[0].Font.Name;
 
             // Assert
-            portionFontNameCase4.Should().BeEquivalentTo("Calibri Light");
+            portionFontName.Should().BeEquivalentTo("Calibri Light");
         }
 
         [Fact]
-        public void Name_SetterChangeFontName()
+        public void Name_SetterChangesFontName()
         {
             // Arrange
             const string newFont = "Time New Roman";
@@ -306,7 +306,7 @@ namespace ShapeCrawler.Tests.Unit
             fontC5.Color.Should().Be("000000");
         }
 
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void Color_GetterReturnsRGBColorInHEXformat_OfPlaceholder()
         {
             // Arrange

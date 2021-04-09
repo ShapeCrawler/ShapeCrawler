@@ -51,10 +51,7 @@ namespace ShapeCrawler.Factories
                 var lvl = int.Parse(textPr.LocalName[3].ToString(System.Globalization.CultureInfo.CurrentCulture),
                 System.Globalization.CultureInfo.CurrentCulture);
 #endif
-                if (fontSize != null || aLatinFont != null || isBold != null || isItalic != null)
-                {
-                    lvlToFontData.Add(lvl, new FontData(fontSize, aLatinFont, isBold, isItalic, aSchemeColor));
-                }
+                lvlToFontData.Add(lvl, new FontData(fontSize, aLatinFont, isBold, isItalic, aSchemeColor));
             }
 
             return lvlToFontData;

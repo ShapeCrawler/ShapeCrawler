@@ -12,11 +12,11 @@ namespace ShapeCrawler.Collections
     /// <summary>
     ///     Represents a table rows collection.
     /// </summary>
-    public class RowCollection : EditableCollection<RowSc>
+    public class RowCollection : EditableCollection<SCTableRow>
     {
         #region Constructors
 
-        internal RowCollection(List<RowSc> rowList)
+        internal RowCollection(List<SCTableRow> rowList)
         {
             CollectionItems = rowList;
         }
@@ -26,9 +26,9 @@ namespace ShapeCrawler.Collections
         internal static RowCollection Create(SlideTable table, P.GraphicFrame pGraphicFrame)
         {
             IEnumerable<A.TableRow> aTableRows = pGraphicFrame.GetATable().Elements<A.TableRow>();
-            var rowList = new List<RowSc>(aTableRows.Count());
+            var rowList = new List<SCTableRow>(aTableRows.Count());
             int rowIndex = 0;
-            rowList.AddRange(aTableRows.Select(aTblRow => new RowSc(table, aTblRow, rowIndex++)));
+            rowList.AddRange(aTableRows.Select(aTblRow => new SCTableRow(table, aTblRow, rowIndex++)));
 
             return new RowCollection(rowList);
         }
@@ -38,11 +38,11 @@ namespace ShapeCrawler.Collections
         /// <summary>
         ///     Removes the specified table row.
         /// </summary>
-        /// <param name="row"></param>
-        public override void Remove(RowSc row)
+        /// <param name="scTableRow"></param>
+        public override void Remove(SCTableRow scTableRow)
         {
-            row.ATableRow.Remove();
-            CollectionItems.Remove(row);
+            scTableRow.ATableRow.Remove();
+            CollectionItems.Remove(scTableRow);
         }
 
         /// <summary>
