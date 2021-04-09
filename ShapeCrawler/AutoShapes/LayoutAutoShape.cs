@@ -86,7 +86,7 @@ namespace ShapeCrawler
             P.Shape pShape = (P.Shape) PShapeTreeChild;
             Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
 
-            if (!lvlToFontData.Any())
+            if (!lvlToFontData.Any()) // TODO: move this block to FontDataParser.FromCompositeElement()
             {
                 Int32Value endParaRunPrFs = pShape.TextBody.GetFirstChild<A.Paragraph>()
                     .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
