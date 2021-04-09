@@ -125,7 +125,8 @@ namespace ShapeCrawler.AutoShapes
                 return GetThemeColor(shapeFontSchemeColor);
             }
 
-            A.SchemeColorValues bodyFontSchemeColor = fontParentShape.SlideMaster.GetFontColorHexFromBody(_paragraphLvl);
+            A.SchemeColorValues bodyFontSchemeColor =
+                fontParentShape.SlideMaster.GetFontColorHexFromBody(_paragraphLvl);
             return GetThemeColor(bodyFontSchemeColor);
         }
 
@@ -322,7 +323,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 Placeholder placeholder = (Placeholder) fontParentShape.Placeholder;
                 IFontDataReader phReferencedShape = (IFontDataReader) placeholder.ReferencedShape;
-                FontData fontDataPlaceholder = new ();
+                FontData fontDataPlaceholder = new();
                 if (phReferencedShape != null)
                 {
                     phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
@@ -412,6 +413,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 return;
             }
+
             Placeholder placeholder = (Placeholder) fontParentShape.Placeholder;
             IFontDataReader phReferencedShape = (IFontDataReader) placeholder.ReferencedShape;
             phReferencedShape?.FillFontData(paragraphLvl, ref phFontData);

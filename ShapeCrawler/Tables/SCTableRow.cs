@@ -18,7 +18,7 @@ namespace ShapeCrawler
         private readonly Lazy<List<SCTableCell>> _cells;
         internal readonly A.TableRow ATableRow;
         internal readonly int Index;
-        
+
         #region Constructors
 
         internal SCTableRow(SlideTable table, A.TableRow aTableRow, int index)
@@ -42,8 +42,6 @@ namespace ShapeCrawler
 
         private List<SCTableCell> GetCells()
         {
-            Color
-            
             var cellList = new List<SCTableCell>();
             IEnumerable<A.TableCell> aTableCells = ATableRow.Elements<A.TableCell>();
             SCTableCell addedScCell = null;
