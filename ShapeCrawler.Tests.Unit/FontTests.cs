@@ -345,10 +345,26 @@ namespace ShapeCrawler.Tests.Unit
             portionRequestCase2.ParagraphIndex = 0;
             portionRequestCase2.PortionIndex = 0;
 
+            SCPresentation presentationCase3 = SCPresentation.Open(Resources._001, true);
+            ElementRequest portionRequestCase3 = new();
+            portionRequestCase3.SlideIndex = 2;
+            portionRequestCase3.ShapeId = 4;
+            portionRequestCase3.ParagraphIndex = 0;
+            portionRequestCase3.PortionIndex = 0;
+
+            SCPresentation presentationCase4 = SCPresentation.Open(Resources._001, true);
+            ElementRequest portionRequestCase4 = new();
+            portionRequestCase4.SlideIndex = 4;
+            portionRequestCase4.ShapeId = 5;
+            portionRequestCase4.ParagraphIndex = 0;
+            portionRequestCase4.PortionIndex = 0;
+
             var testCases = new List<object[]>
             {
                 new object[] {presentationCase1, portionRequestCase1},
-                new object[] {presentationCase2, portionRequestCase2}
+                new object[] {presentationCase2, portionRequestCase2},
+                new object[] {presentationCase3, portionRequestCase3},
+                new object[] {presentationCase4, portionRequestCase4}
             };
 
             return testCases;
@@ -361,14 +377,17 @@ namespace ShapeCrawler.Tests.Unit
             IAutoShape placeholderCase1 = (IAutoShape)_fixture.Pre001.Slides[2].Shapes.First(sp => sp.Id == 4);
             IAutoShape placeholderCase2 = (IAutoShape)_fixture.Pre001.Slides[4].Shapes.First(sp => sp.Id == 5);
             IAutoShape placeholderCase3 = (IAutoShape)_fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61);
+            IAutoShape placeholderCase4 = (IAutoShape)_fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52);
             IFont fontC1 = placeholderCase1.TextBox.Paragraphs[0].Portions[0].Font;
             IFont fontC2 = placeholderCase2.TextBox.Paragraphs[0].Portions[0].Font;
             IFont fontC3 = placeholderCase3.TextBox.Paragraphs[0].Portions[0].Font;
+            IFont fontC4 = placeholderCase4.TextBox.Paragraphs[0].Portions[0].Font;
 
             // Act-Assert
             fontC1.Color.Should().Be("000000");
             fontC2.Color.Should().Be("000000");
             fontC3.Color.Should().Be("595959");
+            fontC4.Color.Should().Be("FFFFFF");
         }
 
         [Fact]

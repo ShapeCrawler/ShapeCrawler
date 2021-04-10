@@ -71,8 +71,6 @@ namespace ShapeCrawler.AutoShapes
             set => SetSolidColorHex(value);
         }
 
-      
-
         private string GetColorHex()
         {
             // Try get color from PORTION level
@@ -97,6 +95,11 @@ namespace ShapeCrawler.AutoShapes
             {
                 FontData phFontData = new();
                 GetFontDataFromPlaceholder(ref phFontData);
+                if (phFontData.ARgbColorModelHex != null)
+                {
+                    return phFontData.ARgbColorModelHex.Val.Value;
+                }
+                
                 if (phFontData.ASchemeColor != null)
                 {
                     return GetThemeColor(phFontData.ASchemeColor.Val);
