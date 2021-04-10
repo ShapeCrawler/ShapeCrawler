@@ -1,5 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
@@ -19,6 +21,7 @@ namespace ShapeCrawler.AutoShapes
         private readonly int _paragraphLvl;
         private readonly Portion _portion;
         private readonly ResettableLazy<int> _size;
+        private readonly Lazy<ColorFormat> _colorFormat;
 
         #region Constructors
 
@@ -27,6 +30,7 @@ namespace ShapeCrawler.AutoShapes
             _aText = aText;
             _size = new ResettableLazy<int>(GetSize);
             _latinFont = new ResettableLazy<A.LatinFont>(GetALatinFont);
+            _colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
             _portion = portion;
             _paragraphLvl = _portion.Paragraph.Level;
         }
@@ -71,10 +75,12 @@ namespace ShapeCrawler.AutoShapes
             set => SetSolidColorHex(value);
         }
 
+        public IColorFormat ColorFormat => _colorFormat.Value;
+
         private string GetColorHex()
         {
             // Try get color from PORTION level
-            A.SolidFill aSolidFill = _portion.AText.PreviousSibling<A.RunProperties>()?.GetFirstChild<A.SolidFill>();
+            A.SolidFill aSolidFill = _portion.AText.PreviousSibling<A.RunProperties>()?.SolidFill();
             if (aSolidFill != null)
             {
                 // Try get solid color
@@ -127,9 +133,13 @@ namespace ShapeCrawler.AutoShapes
                 return GetThemeColor(shapeFontSchemeColor);
             }
 
-            A.SchemeColorValues bodyFontSchemeColor =
-                fontParentShape.SlideMaster.GetFontColorHexFromBody(_paragraphLvl);
-            return GetThemeColor(bodyFontSchemeColor);
+            FontData masterBodyFontData = fontParentShape.SlideMaster.BodyParaLvlToFontData[_paragraphLvl];
+            if (masterBodyFontData.ARgbColorModelHex != null)
+            {
+                return masterBodyFontData.ARgbColorModelHex.Val.Value;
+            }
+
+            return GetThemeColor(masterBodyFontData.ASchemeColor.Val);
         }
 
         private string GetThemeColor(A.SchemeColorValues fontSchemeColor)
@@ -251,8 +261,6 @@ namespace ShapeCrawler.AutoShapes
         #endregion Public Properties
 
         #region Private Methods
-
-
 
         private string GetName()
         {
