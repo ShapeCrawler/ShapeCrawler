@@ -144,14 +144,14 @@ namespace ShapeCrawler.Tests.Unit
         public void ColorType_ReturnsColorType_OfNonPlaceholder()
         {
             // Arrange
-            IAutoShape nonPhAutoShapeCase1 = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
-            IColorFormat colorFormatC1 = nonPhAutoShapeCase1.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+            IAutoShape nonPhAutoShape = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
+            IColorFormat colorFormat = nonPhAutoShape.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
 
             // Act
-            SCColorType colorTypeC1 = colorFormatC1.ColorType;
+            SCColorType colorType = colorFormat.ColorType;
 
             // Assert
-            colorTypeC1.Should().Be(SCColorType.Scheme);
+            colorType.Should().Be(SCColorType.Scheme);
         }
     }
 }

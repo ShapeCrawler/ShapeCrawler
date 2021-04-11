@@ -21,11 +21,6 @@ namespace ShapeCrawler.AutoShapes
 
         bool IsItalic { get; set; }
 
-        /// <summary>
-        ///     Gets RGB color in HEX format.
-        /// </summary>
-        string Color { get; set; }
-
         IColorFormat ColorFormat { get; }
 
         /// <summary>
