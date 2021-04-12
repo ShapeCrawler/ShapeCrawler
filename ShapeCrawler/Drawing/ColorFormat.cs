@@ -17,12 +17,11 @@ namespace ShapeCrawler.Drawing
         }
 
         public SCColorType ColorType { get; private set; }
-        public Color Color { get; private set; }
+        public Color Color { get; set; }
 
         private void InitColor()
         {
             int paragraphLevel = _font.Portion.Paragraph.Level;
-            string colorHexVariant;
 
             // Try get color from PORTION level
             A.SolidFill aSolidFill = _font.Portion.AText.PreviousSibling<A.RunProperties>()?.SolidFill();
@@ -47,6 +46,7 @@ namespace ShapeCrawler.Drawing
             {
                 // Get color from SHAPE level
                 Shape fontParentShape = _font.Portion.Paragraph.TextBox.AutoShape;
+                string colorHexVariant;
                 if (fontParentShape.Placeholder is Placeholder placeholder)
                 {
                     FontData phFontData = new();

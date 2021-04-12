@@ -1,6 +1,6 @@
 namespace ShapeCrawler.Tests.Unit.Helpers
 {
-    public class ElementRequest
+    public class SlideElementQuery
     {
         public int SlideIndex { get; set; }
         public int ShapeId { get; set; }

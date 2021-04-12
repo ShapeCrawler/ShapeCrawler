@@ -233,7 +233,7 @@ namespace ShapeCrawler.Tests.Unit
 
         [Theory]
         [MemberData(nameof(TestCasesIsBold))]
-        public void IsBold_Setter_AddsBoldForPlaceholderTextFont(SCPresentation presentation, ElementRequest portionRequest)
+        public void IsBold_Setter_AddsBoldForPlaceholderTextFont(SCPresentation presentation, SlideElementQuery portionRequest)
         {
             // Arrange
             var mStream = new MemoryStream();
@@ -254,14 +254,14 @@ namespace ShapeCrawler.Tests.Unit
         public static IEnumerable<object[]> TestCasesIsBold()
         {
             SCPresentation presentationCase1 = SCPresentation.Open(Resources._020, true);
-            ElementRequest portionRequestCase1 = new();
+            SlideElementQuery portionRequestCase1 = new();
             portionRequestCase1.SlideIndex = 2;
             portionRequestCase1.ShapeId = 7;
             portionRequestCase1.ParagraphIndex = 0;
             portionRequestCase1.PortionIndex = 0;
 
             SCPresentation presentationCase2 = SCPresentation.Open(Resources._026, true);
-            ElementRequest portionRequestCase2 = new();
+            SlideElementQuery portionRequestCase2 = new();
             portionRequestCase2.SlideIndex = 0;
             portionRequestCase2.ShapeId = 128;
             portionRequestCase2.ParagraphIndex = 0;
