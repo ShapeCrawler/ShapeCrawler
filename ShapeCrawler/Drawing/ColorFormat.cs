@@ -83,8 +83,6 @@ namespace ShapeCrawler.Drawing
 
                 A.PresetColor aPresetColor = aSolidFill.PresetColor;
                 _colorType = SCColorType.Preset;
-                var d = aPresetColor.Val.Value.ToString();
-                //Color.AliceBlue.to
             }
             else
             {

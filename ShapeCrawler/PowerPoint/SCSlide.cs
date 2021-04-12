@@ -80,12 +80,6 @@ namespace ShapeCrawler
             _customXmlPart = new Lazy<CustomXmlPart>(GetSldCustomXmlPart);
         }
 
-        protected SCSlide(SCPresentation presentation, SlidePart slidePart)
-        {
-            Presentation = presentation;
-            SlidePart = slidePart;
-        }
-
         #endregion Constructors
 
         #region Public Methods
