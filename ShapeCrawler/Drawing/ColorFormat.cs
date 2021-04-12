@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
@@ -12,9 +11,9 @@ namespace ShapeCrawler.Drawing
     internal class ColorFormat : IColorFormat
     {
         private readonly SCFont _font;
-        private bool _initialized;
-        private SCColorType _colorType;
         private Color _color;
+        private SCColorType _colorType;
+        private bool _initialized;
 
         public ColorFormat(SCFont font)
         {
@@ -26,10 +25,7 @@ namespace ShapeCrawler.Drawing
         public Color Color
         {
             get => GetColor();
-            set
-            {
-
-            }
+            set { }
         }
 
         private SCColorType GetColorType()
@@ -120,7 +116,8 @@ namespace ShapeCrawler.Drawing
 
                     if (placeholder.Type == PlaceholderType.Body)
                     {
-                        A.SchemeColorValues phBodyFontSchemeColor = fontParentShape.SlideMaster.GetFontColorHexFromBody(paragraphLevel);
+                        A.SchemeColorValues phBodyFontSchemeColor =
+                            fontParentShape.SlideMaster.GetFontColorHexFromBody(paragraphLevel);
                         colorHexVariant = GetThemeColor(phBodyFontSchemeColor);
                         _colorType = SCColorType.Scheme;
                         _color = ColorTranslator.FromHtml($"#{colorHexVariant}");
@@ -128,10 +125,11 @@ namespace ShapeCrawler.Drawing
                     }
                 }
 
-                P.Shape parentPShape = (P.Shape)fontParentShape.PShapeTreeChild;
+                P.Shape parentPShape = (P.Shape) fontParentShape.PShapeTreeChild;
                 if (parentPShape.ShapeStyle != null)
                 {
-                    A.SchemeColorValues shapeFontSchemeColor = parentPShape.ShapeStyle.FontReference.SchemeColor.Val.Value;
+                    A.SchemeColorValues shapeFontSchemeColor =
+                        parentPShape.ShapeStyle.FontReference.SchemeColor.Val.Value;
                     colorHexVariant = GetThemeColor(shapeFontSchemeColor);
                     _colorType = SCColorType.Scheme;
                     _color = ColorTranslator.FromHtml($"#{colorHexVariant}");

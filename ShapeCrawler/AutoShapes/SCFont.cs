@@ -18,11 +18,11 @@ namespace ShapeCrawler.AutoShapes
     internal class SCFont : IFont
     {
         private readonly A.Text _aText;
+        private readonly Lazy<ColorFormat> _colorFormat;
         private readonly ResettableLazy<A.LatinFont> _latinFont;
         private readonly int _paragraphLvl;
-        internal readonly Portion Portion;
         private readonly ResettableLazy<int> _size;
-        private readonly Lazy<ColorFormat> _colorFormat;
+        internal readonly Portion Portion;
 
         #region Constructors
 
@@ -248,6 +248,7 @@ namespace ShapeCrawler.AutoShapes
                 }
             }
         }
+
         private void SetItalicFlag(bool value)
         {
             A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
@@ -264,11 +265,12 @@ namespace ShapeCrawler.AutoShapes
                 }
                 else
                 {
-                    aRunPr = new A.RunProperties { Italic = new BooleanValue(value) };
+                    aRunPr = new A.RunProperties {Italic = new BooleanValue(value)};
                     _aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
                 }
             }
         }
+
         private void SetName(string fontName)
         {
             if (Portion.Paragraph.TextBox.AutoShape.Placeholder != null)
@@ -303,7 +305,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 var aSolidFill = new A.SolidFill
                 {
-                    RgbColorModelHex = new A.RgbColorModelHex { Val = value }
+                    RgbColorModelHex = new A.RgbColorModelHex {Val = value}
                 };
 
                 aRunPr.SolidFill()?.Remove(); // remove old color
@@ -313,7 +315,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 var aSolidFill = new A.SolidFill
                 {
-                    RgbColorModelHex = new A.RgbColorModelHex { Val = value }
+                    RgbColorModelHex = new A.RgbColorModelHex {Val = value}
                 };
 
                 aRunPr = new A.RunProperties(aSolidFill);

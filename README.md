@@ -30,7 +30,6 @@ The usage samples below will take you through some work experience with the pres
 ### Working with Texts
 ```C#
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using ShapeCrawler;
 
@@ -49,11 +48,11 @@ public class TextSample
         autoShape.TextBox.Text = "A new shape text";
 
         // Change text for a certain paragraph
-        SCParagraph paragraph = autoShape.TextBox.Paragraphs[1];
+        IParagraph paragraph = autoShape.TextBox.Paragraphs[1];
         paragraph.Text = "A new text for second paragraph";
 
         // Get font name and size
-        Portion paragraphPortion = autoShape.TextBox.Paragraphs.First().Portions.First();
+        IPortion paragraphPortion = autoShape.TextBox.Paragraphs.First().Portions.First();
         Console.WriteLine($"Font name: {paragraphPortion.Font.Name}");
         Console.WriteLine($"Font size: {paragraphPortion.Font.Size}");
 
@@ -90,7 +89,7 @@ public class TableSample
         int rowCellsCount = table.Rows[0].Cells.Count;
 
         // Print a message if the cell is a part of a merged cells group
-        foreach (RowSc row in table.Rows)
+        foreach (SCTableRow row in table.Rows)
         {
             foreach (ITableCell cellItem in row.Cells)
             {
@@ -167,7 +166,7 @@ public class SlideMasterSample
         int slideMastersCount = presentation.SlideMasters.Count;
 
         // Get first Slide Master
-        SlideMasterSc slideMaster = presentation.SlideMasters[0];
+        SCSlideMaster slideMaster = presentation.SlideMasters[0];
 
         // Get number of shapes in the Slide Master
         int masterShapeCount = slideMaster.Shapes.Count;

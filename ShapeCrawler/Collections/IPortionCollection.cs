@@ -5,9 +5,6 @@ namespace ShapeCrawler.Collections
 {
     public interface IPortionCollection : IEnumerable<IPortion>
     {
-        void Remove(IPortion row);
-        void Remove(IList<IPortion> removingPortions);
-
         /// <summary>
         ///     Gets the element at the specified index.
         /// </summary>
@@ -17,5 +14,8 @@ namespace ShapeCrawler.Collections
         ///     Gets the number of series items in the collection.
         /// </summary>
         int Count { get; }
+
+        void Remove(IPortion row);
+        void Remove(IList<IPortion> removingPortions);
     }
 }

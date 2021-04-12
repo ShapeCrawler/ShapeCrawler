@@ -34,17 +34,20 @@ namespace ShapeCrawler.Factories
         }
 
         public void SetY(long y)
-        {// TODO: add implementation
-            throw new ShapeCrawlerException(ExceptionMessages.ForGroupedCanNotChanged); 
+        {
+            // TODO: add implementation
+            throw new ShapeCrawlerException(ExceptionMessages.ForGroupedCanNotChanged);
         }
 
         public void SetWidth(long w)
-        {// TODO: add implementation
+        {
+            // TODO: add implementation
             throw new ShapeCrawlerException(ExceptionMessages.ForGroupedCanNotChanged);
         }
 
         public void SetHeight(long h)
-        {// TODO: add implementation
+        {
+            // TODO: add implementation
             throw new ShapeCrawlerException(ExceptionMessages.ForGroupedCanNotChanged);
         }
     }

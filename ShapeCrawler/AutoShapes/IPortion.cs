@@ -1,4 +1,8 @@
-﻿namespace ShapeCrawler.AutoShapes
+﻿// ReSharper disable CheckNamespace
+
+using ShapeCrawler.AutoShapes;
+
+namespace ShapeCrawler
 {
     public interface IPortion
     {

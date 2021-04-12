@@ -23,6 +23,25 @@ namespace ShapeCrawler
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class SCSlide : ISlide // TODO: make it internal
     {
+        #region Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="SCSlide" /> class.
+        /// </summary>
+        internal SCSlide(SCPresentation presentation,
+            SlidePart slidePart,
+            SlideNumber sldNum)
+        {
+            Presentation = presentation;
+            SlidePart = slidePart;
+            _sldNumEntity = sldNum;
+            _shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.CreateForSlide(SlidePart, this));
+            _backgroundImage = new Lazy<SCImage>(TryGetBackground);
+            _customXmlPart = new Lazy<CustomXmlPart>(GetSldCustomXmlPart);
+        }
+
+        #endregion Constructors
+
         #region Fields
 
         private readonly Lazy<SCImage> _backgroundImage;
@@ -63,25 +82,6 @@ namespace ShapeCrawler
 
         #endregion Public Properties
 
-        #region Constructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="SCSlide" /> class.
-        /// </summary>
-        internal SCSlide(SCPresentation presentation,
-            SlidePart slidePart,
-            SlideNumber sldNum)
-        {
-            Presentation = presentation;
-            SlidePart = slidePart;
-            _sldNumEntity = sldNum;
-            _shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.CreateForSlide(SlidePart, this));
-            _backgroundImage = new Lazy<SCImage>(TryGetBackground);
-            _customXmlPart = new Lazy<CustomXmlPart>(GetSldCustomXmlPart);
-        }
-
-        #endregion Constructors
-
         #region Public Methods
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace ShapeCrawler
         {
             ShapeCollection shapes = Shapes;
 
-            SKImageInfo imageInfo = new (500, 600);
+            SKImageInfo imageInfo = new(500, 600);
             using SKSurface surface = SKSurface.Create(imageInfo);
             SKCanvas canvas = surface.Canvas;
 

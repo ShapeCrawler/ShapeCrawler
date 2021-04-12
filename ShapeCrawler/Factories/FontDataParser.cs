@@ -20,8 +20,8 @@ namespace ShapeCrawler.Factories
                 return;
             }
 
-            Placeholder placeholder = (Placeholder)fontParentShape.Placeholder;
-            IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
+            Placeholder placeholder = (Placeholder) fontParentShape.Placeholder;
+            IFontDataReader phReferencedShape = (IFontDataReader) placeholder.ReferencedShape;
             phReferencedShape?.FillFontData(paragraphLvl, ref phFontData);
         }
 

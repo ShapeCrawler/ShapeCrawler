@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ShapeCrawler.AutoShapes;
 
 namespace ShapeCrawler.Collections
 {

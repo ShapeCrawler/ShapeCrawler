@@ -14,7 +14,7 @@ namespace ShapeCrawler
         ///     Color which is taken from theme scheme.
         /// </summary>
         Scheme = 4,
-        
+
         System = 5,
 
         /// <summary>

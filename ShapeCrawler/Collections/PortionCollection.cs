@@ -17,14 +17,14 @@ namespace ShapeCrawler.Collections
     {
         public override void Remove(IPortion portion)
         {
-            if (!CollectionItems.Contains(portion))
+            if (portion == null || !CollectionItems.Contains(portion))
             {
                 return;
             }
 
             CollectionItems.Remove(portion);
 
-            ((Portion)portion).AText.Parent.Remove(); // removes from DOM
+            ((Portion) portion).AText.Parent.Remove(); // removes from DOM
         }
 
         public void Remove(IList<IPortion> removingPortions)
@@ -32,7 +32,7 @@ namespace ShapeCrawler.Collections
             foreach (var portion in removingPortions)
             {
                 CollectionItems.Remove(portion);
-                ((Portion)portion).AText.Parent.Remove();
+                ((Portion) portion).AText.Parent.Remove();
             }
         }
 
