@@ -11,7 +11,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a text paragraph portion.
     /// </summary>
-    public class Portion : IPortion // TODO: make internal
+    internal class Portion : IPortion // TODO: make internal
     {
         private readonly ResettableLazy<SCFont> _font;
         internal readonly A.Text AText;

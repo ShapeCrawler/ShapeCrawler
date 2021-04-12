@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -10,17 +11,46 @@ namespace ShapeCrawler.Drawing
     internal class ColorFormat : IColorFormat
     {
         private readonly SCFont _font;
+        private Color _color;
+        private SCColorType _colorType;
+        private bool _initialized;
 
         public ColorFormat(SCFont font)
         {
             _font = font;
         }
 
-        public SCColorType ColorType { get; private set; }
-        public Color Color { get; set; }
+        public SCColorType ColorType => GetColorType();
+
+        public Color Color
+        {
+            get => GetColor();
+            set { }
+        }
+
+        private SCColorType GetColorType()
+        {
+            if (!_initialized)
+            {
+                InitColor();
+            }
+
+            return _colorType;
+        }
+
+        private Color GetColor()
+        {
+            if (!_initialized)
+            {
+                InitColor();
+            }
+
+            return _color;
+        }
 
         private void InitColor()
         {
+            _initialized = true;
             int paragraphLevel = _font.Portion.Paragraph.Level;
 
             // Try get color from PORTION level
@@ -31,16 +61,24 @@ namespace ShapeCrawler.Drawing
                 A.RgbColorModelHex hexModel = aSolidFill.RgbColorModelHex;
                 if (hexModel != null)
                 {
-                    ColorType = SCColorType.RGB;
-                    Color = ColorTranslator.FromHtml($"#{hexModel.Val}");
+                    _colorType = SCColorType.RGB;
+                    _color = ColorTranslator.FromHtml($"#{hexModel.Val}");
                     return;
                 }
 
-                // Get from scheme color
-                A.SchemeColorValues runFontSchemeColor = aSolidFill.SchemeColor.Val.Value;
-                string colorHex = GetThemeColor(runFontSchemeColor);
-                ColorType = SCColorType.Scheme;
-                Color = ColorTranslator.FromHtml($"#{colorHex}");
+                // Try get from scheme color
+                A.SchemeColor aSchemeColor = aSolidFill.SchemeColor;
+                if (aSchemeColor != null)
+                {
+                    A.SchemeColorValues runFontSchemeColor = aSolidFill.SchemeColor.Val.Value;
+                    string colorHex = GetThemeColor(runFontSchemeColor);
+                    _colorType = SCColorType.Scheme;
+                    _color = ColorTranslator.FromHtml($"#{colorHex}");
+                    return;
+                }
+
+                A.PresetColor aPresetColor = aSolidFill.PresetColor;
+                _colorType = SCColorType.Preset;
             }
             else
             {
@@ -50,19 +88,19 @@ namespace ShapeCrawler.Drawing
                 if (fontParentShape.Placeholder is Placeholder placeholder)
                 {
                     FontData phFontData = new();
-                    PlaceholderFontDataParser.GetFontDataFromPlaceholder(ref phFontData, _font.Portion);
+                    FontDataParser.GetFontDataFromPlaceholder(ref phFontData, _font.Portion.Paragraph);
                     if (phFontData.ARgbColorModelHex != null)
                     {
-                        ColorType = SCColorType.RGB;
-                        Color = ColorTranslator.FromHtml($"#{phFontData.ARgbColorModelHex.Val.Value}");
+                        _colorType = SCColorType.RGB;
+                        _color = ColorTranslator.FromHtml($"#{phFontData.ARgbColorModelHex.Val.Value}");
                         return;
                     }
 
                     if (phFontData.ASchemeColor != null)
                     {
                         colorHexVariant = GetThemeColor(phFontData.ASchemeColor.Val);
-                        ColorType = SCColorType.Scheme;
-                        Color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                        _colorType = SCColorType.Scheme;
+                        _color = ColorTranslator.FromHtml($"#{colorHexVariant}");
                         return;
                     }
 
@@ -71,42 +109,44 @@ namespace ShapeCrawler.Drawing
                         A.SchemeColorValues phTitleFontSchemeColor =
                             fontParentShape.SlideMaster.GetFontColorHexFromTitle(paragraphLevel);
                         colorHexVariant = GetThemeColor(phTitleFontSchemeColor);
-                        ColorType = SCColorType.Scheme;
-                        Color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                        _colorType = SCColorType.Scheme;
+                        _color = ColorTranslator.FromHtml($"#{colorHexVariant}");
                         return;
                     }
 
                     if (placeholder.Type == PlaceholderType.Body)
                     {
-                        A.SchemeColorValues phBodyFontSchemeColor = fontParentShape.SlideMaster.GetFontColorHexFromBody(paragraphLevel);
+                        A.SchemeColorValues phBodyFontSchemeColor =
+                            fontParentShape.SlideMaster.GetFontColorHexFromBody(paragraphLevel);
                         colorHexVariant = GetThemeColor(phBodyFontSchemeColor);
-                        ColorType = SCColorType.Scheme;
-                        Color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                        _colorType = SCColorType.Scheme;
+                        _color = ColorTranslator.FromHtml($"#{colorHexVariant}");
                         return;
                     }
                 }
 
-                P.Shape parentPShape = (P.Shape)fontParentShape.PShapeTreeChild;
+                P.Shape parentPShape = (P.Shape) fontParentShape.PShapeTreeChild;
                 if (parentPShape.ShapeStyle != null)
                 {
-                    A.SchemeColorValues shapeFontSchemeColor = parentPShape.ShapeStyle.FontReference.SchemeColor.Val.Value;
+                    A.SchemeColorValues shapeFontSchemeColor =
+                        parentPShape.ShapeStyle.FontReference.SchemeColor.Val.Value;
                     colorHexVariant = GetThemeColor(shapeFontSchemeColor);
-                    ColorType = SCColorType.Scheme;
-                    Color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                    _colorType = SCColorType.Scheme;
+                    _color = ColorTranslator.FromHtml($"#{colorHexVariant}");
                     return;
                 }
 
                 FontData masterBodyFontData = fontParentShape.SlideMaster.BodyParaLvlToFontData[paragraphLevel];
                 if (masterBodyFontData.ARgbColorModelHex != null)
                 {
-                    ColorType = SCColorType.RGB;
-                    Color = ColorTranslator.FromHtml($"#{masterBodyFontData.ARgbColorModelHex.Val.Value}");
+                    _colorType = SCColorType.RGB;
+                    _color = ColorTranslator.FromHtml($"#{masterBodyFontData.ARgbColorModelHex.Val.Value}");
                     return;
                 }
 
                 string colorHex = GetThemeColor(masterBodyFontData.ASchemeColor.Val);
-                ColorType = SCColorType.Scheme;
-                Color = ColorTranslator.FromHtml($"#{colorHex}");
+                _colorType = SCColorType.Scheme;
+                _color = ColorTranslator.FromHtml($"#{colorHex}");
             }
         }
 

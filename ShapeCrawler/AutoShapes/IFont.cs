@@ -21,8 +21,9 @@ namespace ShapeCrawler.AutoShapes
 
         bool IsItalic { get; set; }
 
+#if DEBUG
         IColorFormat ColorFormat { get; }
-
+#endif
         /// <summary>
         ///     Gets value indicating whether font size can be changed.
         /// </summary>

@@ -199,7 +199,7 @@ namespace ShapeCrawler.Tests.Unit
             int expectedNumPortions)
         {
             // Arrange
-            SCParagraph paragraph = TestHelper.GetParagraph(presentation, prRequest);
+            IParagraph paragraph = TestHelper.GetParagraph(presentation, prRequest);
             var presentationStream = new MemoryStream();
 
             // Act
@@ -267,8 +267,8 @@ namespace ShapeCrawler.Tests.Unit
             ITextBox textBoxCase2 = ((IAutoShape)_fixture.Pre020.Slides[2].Shapes.First(sp => sp.Id == 8)).TextBox;
 
             // Act
-            IEnumerable<SCParagraph> paragraphsC1 = textBoxCase1.Paragraphs;
-            IEnumerable<SCParagraph> paragraphsC2 = textBoxCase2.Paragraphs;
+            IEnumerable<IParagraph> paragraphsC1 = textBoxCase1.Paragraphs;
+            IEnumerable<IParagraph> paragraphsC2 = textBoxCase2.Paragraphs;
 
             // Assert
             paragraphsC1.Should().HaveCount(1);
@@ -282,7 +282,7 @@ namespace ShapeCrawler.Tests.Unit
             ITextBox textBox = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextBox;
 
             // Act
-            IEnumerable<Portion> paragraphPortions = textBox.Paragraphs[0].Portions;
+            IEnumerable<IPortion> paragraphPortions = textBox.Paragraphs[0].Portions;
 
             // Assert
             paragraphPortions.Should().HaveCount(2);
@@ -310,7 +310,7 @@ namespace ShapeCrawler.Tests.Unit
             int originParagraphsCount = textBox.Paragraphs.Count;
 
             // Act
-            SCParagraph newParagraph = textBox.Paragraphs.Add();
+            IParagraph newParagraph = textBox.Paragraphs.Add();
             newParagraph.Text = TEST_TEXT;
 
             // Assert

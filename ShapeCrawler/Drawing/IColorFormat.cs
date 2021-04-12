@@ -11,6 +11,5 @@ namespace ShapeCrawler.Drawing
 #else
         Color Color { get; }
 #endif
-
     }
 }

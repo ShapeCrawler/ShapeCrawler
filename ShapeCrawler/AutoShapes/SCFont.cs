@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
@@ -13,32 +14,15 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes
 {
-    internal class PlaceholderFontDataParser
-    {
-        public static void GetFontDataFromPlaceholder(ref FontData phFontData, Portion portion)
-        {
-            Shape fontParentShape = portion.Paragraph.TextBox.AutoShape;
-            int paragraphLvl = portion.Paragraph.Level;
-            if (fontParentShape.Placeholder == null)
-            {
-                return;
-            }
-
-            Placeholder placeholder = (Placeholder) fontParentShape.Placeholder;
-            IFontDataReader phReferencedShape = (IFontDataReader) placeholder.ReferencedShape;
-            phReferencedShape?.FillFontData(paragraphLvl, ref phFontData);
-        }
-    }
-
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal class SCFont : IFont
     {
         private readonly A.Text _aText;
+        private readonly Lazy<ColorFormat> _colorFormat;
         private readonly ResettableLazy<A.LatinFont> _latinFont;
         private readonly int _paragraphLvl;
-        internal readonly Portion Portion;
         private readonly ResettableLazy<int> _size;
-        private readonly Lazy<ColorFormat> _colorFormat;
+        internal readonly Portion Portion;
 
         #region Constructors
 
@@ -124,7 +108,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             FontData phFontData = new();
-            PlaceholderFontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion);
+            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.Paragraph);
             {
                 if (phFontData.ALatinFont != null)
                 {
@@ -202,7 +186,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             FontData phFontData = new();
-            PlaceholderFontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion);
+            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.Paragraph);
             if (phFontData.IsBold != null)
             {
                 return phFontData.IsBold.Value;
@@ -225,7 +209,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             FontData phFontData = new();
-            PlaceholderFontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion);
+            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.Paragraph);
             if (phFontData.IsItalic != null)
             {
                 return phFontData.IsItalic.Value;
@@ -244,7 +228,7 @@ namespace ShapeCrawler.AutoShapes
             else
             {
                 FontData phFontData = new();
-                PlaceholderFontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion);
+                FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.Paragraph);
                 if (phFontData.IsBold != null)
                 {
                     phFontData.IsBold = new BooleanValue(value);
@@ -264,6 +248,7 @@ namespace ShapeCrawler.AutoShapes
                 }
             }
         }
+
         private void SetItalicFlag(bool value)
         {
             A.RunProperties aRunPr = _aText.Parent.GetFirstChild<A.RunProperties>();
@@ -280,11 +265,12 @@ namespace ShapeCrawler.AutoShapes
                 }
                 else
                 {
-                    aRunPr = new A.RunProperties { Italic = new BooleanValue(value) };
+                    aRunPr = new A.RunProperties {Italic = new BooleanValue(value)};
                     _aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
                 }
             }
         }
+
         private void SetName(string fontName)
         {
             if (Portion.Paragraph.TextBox.AutoShape.Placeholder != null)
@@ -319,7 +305,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 var aSolidFill = new A.SolidFill
                 {
-                    RgbColorModelHex = new A.RgbColorModelHex { Val = value }
+                    RgbColorModelHex = new A.RgbColorModelHex {Val = value}
                 };
 
                 aRunPr.SolidFill()?.Remove(); // remove old color
@@ -329,7 +315,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 var aSolidFill = new A.SolidFill
                 {
-                    RgbColorModelHex = new A.RgbColorModelHex { Val = value }
+                    RgbColorModelHex = new A.RgbColorModelHex {Val = value}
                 };
 
                 aRunPr = new A.RunProperties(aSolidFill);

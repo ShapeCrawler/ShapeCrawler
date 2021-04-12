@@ -13,7 +13,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts
 {
-    public class ParagraphCollection : IParagraphCollection
+    internal class ParagraphCollection : IParagraphCollection
     {
         private readonly ResettableLazy<List<SCParagraph>> _paragraphs;
 
@@ -44,7 +44,7 @@ namespace ShapeCrawler.Texts
 
         #region Public Methods
 
-        public IEnumerator<SCParagraph> GetEnumerator()
+        public IEnumerator<IParagraph> GetEnumerator()
         {
             return _paragraphs.Value.GetEnumerator();
         }
@@ -54,7 +54,7 @@ namespace ShapeCrawler.Texts
             return GetEnumerator();
         }
 
-        public SCParagraph this[int index] => _paragraphs.Value[index];
+        public IParagraph this[int index] => _paragraphs.Value[index];
 
         public int Count => _paragraphs.Value.Count;
 
@@ -62,14 +62,14 @@ namespace ShapeCrawler.Texts
         ///     Adds a new paragraph in collection.
         /// </summary>
         /// <returns>Added <see cref="SCParagraph" /> instance.</returns>
-        public SCParagraph Add()
+        public IParagraph Add()
         {
             // Create a new paragraph from the last paragraph and insert at the end
             A.Paragraph lastAParagraph = _paragraphs.Value.Last().AParagraph;
             A.Paragraph newAParagraph = (A.Paragraph) lastAParagraph.CloneNode(true);
             lastAParagraph.InsertAfterSelf(newAParagraph);
 
-            SCParagraph newParagraph = new SCParagraph(newAParagraph, _textBox)
+            var newParagraph = new SCParagraph(newAParagraph, _textBox)
             {
                 Text = string.Empty
             };

@@ -12,7 +12,7 @@ namespace ShapeCrawler.Collections
     /// <summary>
     ///     Represents a table rows collection.
     /// </summary>
-    public class RowCollection : EditableCollection<SCTableRow>
+    public class RowCollection : EditableCollection<SCTableRow> //TODO extract interface and convert to internal
     {
         #region Constructors
 

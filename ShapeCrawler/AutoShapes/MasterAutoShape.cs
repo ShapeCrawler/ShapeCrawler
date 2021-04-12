@@ -19,7 +19,7 @@ namespace ShapeCrawler
     /// <inheritdoc cref="IAutoShape" />
     internal class MasterAutoShape : MasterShape, IAutoShape, IFontDataReader
     {
-        private readonly ImageExFactory _imageFactory = new ImageExFactory();
+        private readonly ImageExFactory _imageFactory = new();
         private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
         private readonly Lazy<ShapeFill> _shapeFill;
         private readonly Lazy<SCTextBox> _textBox;

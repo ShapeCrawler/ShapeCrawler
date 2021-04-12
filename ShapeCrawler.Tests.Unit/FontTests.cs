@@ -59,7 +59,7 @@ namespace ShapeCrawler.Tests.Unit
             const string newFont = "Time New Roman";
             IAutoShape autoShape =
                 SCPresentation.Open(Resources._001, true).Slides[0].Shapes.First(sp => sp.Id == 4) as IAutoShape;
-            Portion paragraphPortion = autoShape.TextBox.Paragraphs[0].Portions[0];
+            IPortion paragraphPortion = autoShape.TextBox.Paragraphs[0].Portions[0];
 
             // Act
             paragraphPortion.Font.Name = newFont;
@@ -74,7 +74,7 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             IAutoShape autoShape = (IAutoShape)SCPresentation.Open(Resources._001, true).Slides[2].Shapes
                 .First(sp => sp.Id == 4);
-            Portion paragraphPortion = autoShape.TextBox.Paragraphs[0].Portions[0];
+            IPortion paragraphPortion = autoShape.TextBox.Paragraphs[0].Portions[0];
 
             // Act
             Action action = () => paragraphPortion.Font.Name = "Time New Roman";
@@ -87,21 +87,21 @@ namespace ShapeCrawler.Tests.Unit
         public void Size_GetterReturnsFontSizeOfTheParagraphPortion()
         {
             // Arrange
-            Portion portionCase1 = ((IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase2 = ((IAutoShape)_fixture.Pre015.Slides[0].Shapes.First(sp => sp.Id == 5)).TextBox.Paragraphs[0].Portions[2];
-            Portion portionCase3 = ((IAutoShape)_fixture.Pre015.Slides[1].Shapes.First(sp => sp.Id == 61)).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase4 = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase5 = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[1];
-            Portion portionCase6 = ((IAutoShape)_fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase7 = ((IAutoShape)_fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 3)).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase8 = ((IAutoShape)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 4103)).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase9 = ((IAutoShape)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase10 = ((IAutoShape)_fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5)).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase11 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase12 = ((IAutoShape)_fixture.Pre010.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase13 = ((IAutoShape)_fixture.Pre014.Slides[3].Shapes.First(sp => sp.Id == 5)).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase14 = ((IAutoShape)_fixture.Pre014.Slides[4].Shapes.First(sp => sp.Id == 4)).TextBox.Paragraphs[0].Portions[0];
-            Portion portionCase15 = ((IAutoShape)_fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52)).TextBox.Paragraphs[0].Portions[0];
+            IPortion portionCase1 = ((IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox.Paragraphs[0].Portions[0];
+            IPortion portionCase2 = ((IAutoShape)_fixture.Pre015.Slides[0].Shapes.First(sp => sp.Id == 5)).TextBox.Paragraphs[0].Portions[2];
+            IPortion portionCase3 = ((IAutoShape)_fixture.Pre015.Slides[1].Shapes.First(sp => sp.Id == 61)).TextBox.Paragraphs[0].Portions[0];
+            IPortion portionCase4 = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[0];
+            IPortion portionCase5 = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[1];
+            IPortion portionCase6 = ((IAutoShape)_fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[0];
+            IPortion portionCase7 = ((IAutoShape)_fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 3)).TextBox.Paragraphs[0].Portions[0];
+            IPortion portionCase8 = ((IAutoShape)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 4103)).TextBox.Paragraphs[0].Portions[0];
+            IPortion portionCase9 = ((IAutoShape)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[0];
+            IPortion portionCase10 = ((IAutoShape)_fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5)).TextBox.Paragraphs[0].Portions[0];
+            IPortion portionCase11 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[0];
+            IPortion portionCase12 = ((IAutoShape)_fixture.Pre010.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox.Paragraphs[0].Portions[0];
+            IPortion portionCase13 = ((IAutoShape)_fixture.Pre014.Slides[3].Shapes.First(sp => sp.Id == 5)).TextBox.Paragraphs[0].Portions[0];
+            IPortion portionCase14 = ((IAutoShape)_fixture.Pre014.Slides[4].Shapes.First(sp => sp.Id == 4)).TextBox.Paragraphs[0].Portions[0];
+            IPortion portionCase15 = ((IAutoShape)_fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52)).TextBox.Paragraphs[0].Portions[0];
 
             // Act-Assert
             portionCase1.Font.Size.Should().Be(1800);
@@ -127,8 +127,8 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             IAutoShape autoShapeCase1 = (IAutoShape) _fixture.Pre028.Slides[0].Shapes.First(sp => sp.Id == 4098);
             IAutoShape autoShapeCase2 = (IAutoShape) _fixture.Pre029.Slides[0].Shapes.First(sp => sp.Id == 3);
-            Portion portionC1 = autoShapeCase1.TextBox.Paragraphs[0].Portions[0];
-            Portion portionC2 = autoShapeCase2.TextBox.Paragraphs[0].Portions[0];
+            IPortion portionC1 = autoShapeCase1.TextBox.Paragraphs[0].Portions[0];
+            IPortion portionC2 = autoShapeCase2.TextBox.Paragraphs[0].Portions[0];
 
             // Act-Assert
             portionC1.Font.Size.Should().Be(3200);
@@ -142,7 +142,7 @@ namespace ShapeCrawler.Tests.Unit
             int newFontSize = 28;
             var savedPreStream = new MemoryStream();
             SCPresentation presentation = SCPresentation.Open(Resources._001, true);
-            Portion portion = GetPortion(presentation);
+            IPortion portion = GetPortion(presentation);
             int oldFontSize = portion.Font.Size;
 
             // Act
@@ -173,7 +173,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             IAutoShape placeholderAutoShape = (IAutoShape)_fixture.Pre020.Slides[1].Shapes.First(sp => sp.Id == 6);
-            Portion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+            IPortion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
             // Act
             bool isBold = portion.Font.IsBold;
@@ -187,7 +187,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             IAutoShape nonPlaceholderAutoShape = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
-            Portion portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+            IPortion portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
             // Act
             bool isBold = portion.Font.IsBold;
@@ -201,7 +201,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             IAutoShape placeholderAutoShape = (IAutoShape)_fixture.Pre020.Slides[2].Shapes.First(sp => sp.Id == 7);
-            Portion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+            IPortion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
             // Act
             bool isBold = portion.Font.IsBold;
@@ -217,7 +217,7 @@ namespace ShapeCrawler.Tests.Unit
             var mStream = new MemoryStream();
             IPresentation presentation = SCPresentation.Open(Resources._020, true);
             IAutoShape nonPlaceholderAutoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 2);
-            Portion portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+            IPortion portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
             // Act
             portion.Font.IsBold = true;
@@ -236,8 +236,8 @@ namespace ShapeCrawler.Tests.Unit
         public void IsBold_Setter_AddsBoldForPlaceholderTextFont(SCPresentation presentation, SlideElementQuery portionRequest)
         {
             // Arrange
-            var mStream = new MemoryStream();
-            Portion portion = TestHelper.GetPortion(presentation, portionRequest);
+            MemoryStream mStream = new ();
+            IPortion portion = TestHelper.GetPortion(presentation, portionRequest);
 
             // Act
             portion.Font.IsBold = true;
@@ -295,7 +295,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             IAutoShape placeholderAutoShape = (IAutoShape)_fixture.Pre020.Slides[2].Shapes.First(sp => sp.Id == 7);
-            Portion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+            IPortion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
             // Act-Assert
             portion.Font.IsItalic.Should().BeTrue();
@@ -308,7 +308,7 @@ namespace ShapeCrawler.Tests.Unit
             var mStream = new MemoryStream();
             IPresentation presentation = SCPresentation.Open(Resources._020, true);
             IAutoShape nonPlaceholderAutoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 2);
-            Portion portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+            IPortion portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
             // Act
             portion.Font.IsItalic = true;
@@ -329,7 +329,7 @@ namespace ShapeCrawler.Tests.Unit
             var mStream = new MemoryStream();
             IPresentation presentation = SCPresentation.Open(Resources._020, true);
             IAutoShape placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
-            Portion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
+            IPortion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
             // Act
             portion.Font.IsItalic = false;
@@ -344,10 +344,10 @@ namespace ShapeCrawler.Tests.Unit
             portion.Font.IsItalic.Should().BeFalse();
         }
 
-        private static Portion GetPortion(SCPresentation presentation)
+        private static IPortion GetPortion(SCPresentation presentation)
         {
             IAutoShape autoShape = presentation.Slides[0].Shapes.First(sp => sp.Id == 4) as IAutoShape;
-            Portion portion = autoShape.TextBox.Paragraphs[0].Portions[0];
+            IPortion portion = autoShape.TextBox.Paragraphs[0].Portions[0];
             return portion;
         }
     }

@@ -85,7 +85,8 @@ namespace ShapeCrawler.Tests.Unit
             return testCases;
         }
 
-        [Fact(Skip = "In Progress")]
+#if DEBUG
+        [Fact]
         public void Color_GetterReturnsRGBColorInHexFormat_OfNonPlaceholder()
         {
             // Arrange
@@ -112,7 +113,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact(Skip = "In Progress")]
-        public void Color_GetterReturnsWhiteColorInHexFormat_WhenColorIsWhite()
+        public void Color_GetterReturnsWhiteColor_WhenColorIsWhiteFromPredefinedCollectionOfColors()
         {
             // Arrange
             IAutoShape nonPhAutoShapeCase = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 4);
@@ -122,8 +123,8 @@ namespace ShapeCrawler.Tests.Unit
             colorFormat.Color.Should().Be(Color.White);
         }
 
-        [Fact(Skip = "In Progress")]
-        public void Color_GetterReturnsRGBColorInHexFormat_OfPlaceholder()
+        [Fact]
+        public void Color_GetterReturnsColor_OfPlaceholder()
         {
             // Arrange
             IAutoShape placeholderCase1 = (IAutoShape)_fixture.Pre001.Slides[2].Shapes.First(sp => sp.Id == 4);
@@ -136,14 +137,14 @@ namespace ShapeCrawler.Tests.Unit
             IColorFormat colorFormatC4 = placeholderCase4.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
 
             // Act-Assert
-            colorFormatC1.Color.Should().Be(Color.Black);
-            colorFormatC2.Color.Should().Be(Color.Black);
-            colorFormatC3.Color.Should().Be("595959");
-            colorFormatC4.Color.Should().Be(Color.White);
+            colorFormatC1.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
+            colorFormatC2.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
+            colorFormatC3.Color.Should().Be(ColorTranslator.FromHtml("#595959"));
+            colorFormatC4.Color.Should().Be(ColorTranslator.FromHtml("#FFFFFF"));
         }
 
-        [Fact(Skip = "In Progress")]
-        public void ColorType_ReturnsColorType_OfNonPlaceholder()
+        [Fact]
+        public void ColorType_ReturnsSchemeColorType_WhenFontColorIsTakenFromThemeScheme()
         {
             // Arrange
             IAutoShape nonPhAutoShape = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
@@ -155,5 +156,20 @@ namespace ShapeCrawler.Tests.Unit
             // Assert
             colorType.Should().Be(SCColorType.Scheme);
         }
+
+        [Fact]
+        public void ColorType_ReturnsSchemeColorType_WhenFontColorIsSetAsRGB()
+        {
+            // Arrange
+            IAutoShape placeholder = (IAutoShape)_fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52);
+            IColorFormat colorFormat = placeholder.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+
+            // Act
+            SCColorType colorType = colorFormat.ColorType;
+
+            // Assert
+            colorType.Should().Be(SCColorType.RGB);
+        }
+#endif
     }
 }

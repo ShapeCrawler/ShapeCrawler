@@ -19,7 +19,7 @@ namespace ShapeCrawler
     /// </summary>
     [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public class SCParagraph
+    internal class SCParagraph : IParagraph
     {
         private readonly Lazy<Bullet> _bullet;
         private readonly ResettableLazy<PortionCollection> _portions;
@@ -58,7 +58,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets collection of paragraph portions. Returns <c>NULL</c> if paragraph is empty.
         /// </summary>
-        public PortionCollection Portions => _portions.Value;
+        public IPortionCollection Portions => _portions.Value;
 
         /// <summary>
         ///     Gets paragraph bullet. Returns <c>NULL</c> if bullet does not exist.
@@ -98,7 +98,7 @@ namespace ShapeCrawler
             // To set a paragraph text we use a single portion which is the first paragraph portion.
             // Rest of the portions are deleted from the paragraph.
             Portions.Remove(Portions.Skip(1).ToList());
-            Portion basePortion = Portions.Single();
+            IPortion basePortion = Portions.Single();
             if (newText == string.Empty)
             {
                 basePortion.Text = string.Empty;
@@ -107,11 +107,11 @@ namespace ShapeCrawler
 
             string[] textLines = newText.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
             basePortion.Text = textLines[0];
-            OpenXmlElement lastInsertedARunOrLineBreak = basePortion.AText.Parent;
+            OpenXmlElement lastInsertedARunOrLineBreak = ((Portion) basePortion).AText.Parent;
             for (int i = 1; i < textLines.Length; i++)
             {
                 lastInsertedARunOrLineBreak = lastInsertedARunOrLineBreak.InsertAfterSelf(new A.Break());
-                A.Run newARun = basePortion.GetARunCopy();
+                A.Run newARun = ((Portion) basePortion).GetARunCopy();
                 newARun.Text.Text = textLines[i];
                 lastInsertedARunOrLineBreak = lastInsertedARunOrLineBreak.InsertAfterSelf(newARun);
             }

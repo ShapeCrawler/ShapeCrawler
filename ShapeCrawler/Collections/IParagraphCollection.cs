@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using ShapeCrawler.AutoShapes;
 
 namespace ShapeCrawler.Collections
 {
-    public interface IParagraphCollection : IReadOnlyList<SCParagraph>
+    public interface IParagraphCollection : IReadOnlyList<IParagraph>
     {
-        SCParagraph Add();
+        IParagraph Add();
     }
 }

@@ -17,7 +17,7 @@ ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoin
 This library provides a simplified object model on top of the [Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK) for manipulating PowerPoint documents.
 
 ## Getting Started
-Support targets: .NET Framework 4.6.1+, .NET Standard 2.1, .NET Core 2.1+ and .NET 5+
+Support targets: .NET Framework 4.6.1+, .NET Core 2.1+ and .NET 5+
 
 To get started use ShapeCrawler APIs install it from [NuGet](https://nuget.org/packages/ShapeCrawler):
 ```console
@@ -30,7 +30,6 @@ The usage samples below will take you through some work experience with the pres
 ### Working with Texts
 ```C#
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using ShapeCrawler;
 
@@ -49,11 +48,11 @@ public class TextSample
         autoShape.TextBox.Text = "A new shape text";
 
         // Change text for a certain paragraph
-        SCParagraph paragraph = autoShape.TextBox.Paragraphs[1];
+        IParagraph paragraph = autoShape.TextBox.Paragraphs[1];
         paragraph.Text = "A new text for second paragraph";
 
         // Get font name and size
-        Portion paragraphPortion = autoShape.TextBox.Paragraphs.First().Portions.First();
+        IPortion paragraphPortion = autoShape.TextBox.Paragraphs.First().Portions.First();
         Console.WriteLine($"Font name: {paragraphPortion.Font.Name}");
         Console.WriteLine($"Font size: {paragraphPortion.Font.Size}");
 
@@ -90,7 +89,7 @@ public class TableSample
         int rowCellsCount = table.Rows[0].Cells.Count;
 
         // Print a message if the cell is a part of a merged cells group
-        foreach (RowSc row in table.Rows)
+        foreach (SCTableRow row in table.Rows)
         {
             foreach (ITableCell cellItem in row.Cells)
             {
@@ -167,7 +166,7 @@ public class SlideMasterSample
         int slideMastersCount = presentation.SlideMasters.Count;
 
         // Get first Slide Master
-        SlideMasterSc slideMaster = presentation.SlideMasters[0];
+        SCSlideMaster slideMaster = presentation.SlideMasters[0];
 
         // Get number of shapes in the Slide Master
         int masterShapeCount = slideMaster.Shapes.Count;
@@ -195,9 +194,8 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 Don't hesitate to contact me if you want to get involved!
 
 # Changelog
-## Version 0.18.0 - 2021-03-28
+## Version 0.19.0 - 2021-04-13
 ### Added
-- Added setter for `IFont.IsBold` property to set up bold font.
-- Added `IFont.IsItalic` property to define whether font is italic.
+- Added .NET Standard 2.0 target.
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).

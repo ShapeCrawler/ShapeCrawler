@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Collections;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -26,7 +27,7 @@ namespace ShapeCrawler.AutoShapes
         /// <summary>
         ///     Gets collection of text paragraphs.
         /// </summary>
-        public ParagraphCollection Paragraphs { get; private set; }
+        public IParagraphCollection Paragraphs { get; private set; }
 
         /// <summary>
         ///     Gets or sets text box string content. Returns null if the text box is empty.
@@ -63,7 +64,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetText(string value)
         {
-            SCParagraph paragraph = Paragraphs.First(p => p.Portions != null);
+            IParagraph paragraph = Paragraphs.First(p => p.Portions != null);
             foreach (SCParagraph removingPara in Paragraphs.Where(p => p != paragraph))
             {
                 removingPara.AParagraph.Remove();
