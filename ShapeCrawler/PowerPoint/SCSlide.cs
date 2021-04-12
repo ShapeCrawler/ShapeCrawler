@@ -112,7 +112,7 @@ namespace ShapeCrawler
         {
             ShapeCollection shapes = Shapes;
 
-            SKImageInfo imageInfo = new SKImageInfo(500, 600);
+            SKImageInfo imageInfo = new (500, 600);
             using SKSurface surface = SKSurface.Create(imageInfo);
             SKCanvas canvas = surface.Canvas;
 

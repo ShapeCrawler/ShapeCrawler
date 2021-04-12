@@ -17,7 +17,7 @@ namespace ShapeCrawler
     /// </summary>
     internal class SlideAutoShape : SlideShape, IAutoShape
     {
-        private readonly ImageExFactory _imageFactory = new ImageExFactory();
+        private readonly ImageExFactory _imageFactory = new();
         private readonly ILocation _innerTransform;
         private readonly Lazy<ShapeFill> _shapeFill;
         private readonly Lazy<SCTextBox> _textBox;
@@ -42,7 +42,7 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public long X
+        public long X //TODO: remove this hides
         {
             get => _innerTransform.X;
             set => _innerTransform.SetX(value);

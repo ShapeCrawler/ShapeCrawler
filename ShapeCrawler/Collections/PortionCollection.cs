@@ -6,27 +6,6 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Collections
 {
-    public interface IPortionCollection : IEnumerable<IPortion>
-    {
-        void Remove(IPortion row);
-        void Remove(IList<IPortion> removingPortions);
-
-        /// <summary>
-        ///     Gets the element at the specified index.
-        /// </summary>
-        IPortion this[int index] { get; }
-
-        /// <summary>
-        ///     Gets the generic enumerator that iterates through the collection.
-        /// </summary>
-        IEnumerator<IPortion> GetEnumerator();
-
-        /// <summary>
-        ///     Gets the number of series items in the collection.
-        /// </summary>
-        int Count { get; }
-    }
-
     /// <summary>
     ///     Represents collection of paragraph text portions.
     /// </summary>

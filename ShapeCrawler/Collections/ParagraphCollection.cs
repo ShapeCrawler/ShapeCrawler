@@ -69,7 +69,7 @@ namespace ShapeCrawler.Texts
             A.Paragraph newAParagraph = (A.Paragraph) lastAParagraph.CloneNode(true);
             lastAParagraph.InsertAfterSelf(newAParagraph);
 
-            SCParagraph newParagraph = new SCParagraph(newAParagraph, _textBox)
+            var newParagraph = new SCParagraph(newAParagraph, _textBox)
             {
                 Text = string.Empty
             };
