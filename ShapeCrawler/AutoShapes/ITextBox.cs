@@ -1,4 +1,5 @@
-﻿using ShapeCrawler.Texts;
+﻿using ShapeCrawler.Collections;
+using ShapeCrawler.Texts;
 
 namespace ShapeCrawler.AutoShapes
 {
@@ -7,7 +8,7 @@ namespace ShapeCrawler.AutoShapes
         /// <summary>
         ///     Gets text paragraph collection.
         /// </summary>
-        ParagraphCollection Paragraphs { get; }
+        IParagraphCollection Paragraphs { get; }
 
         /// <summary>
         ///     Gets or sets text box string content. Returns <c>NULL</c> if the text box is empty.

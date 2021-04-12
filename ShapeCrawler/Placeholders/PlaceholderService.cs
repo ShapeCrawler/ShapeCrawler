@@ -122,7 +122,7 @@ namespace ShapeCrawler.Placeholders
             {
                 layoutHolders.Add(mHolder);
             }
-#if NET461
+#if NETSTANDARD2_0
             _phLocations = ToCustomHashSet(layoutHolders);
 #else
             _phLocations = layoutHolders.ToHashSet();

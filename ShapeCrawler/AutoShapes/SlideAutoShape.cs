@@ -91,9 +91,9 @@ namespace ShapeCrawler
             return null;
         }
 
-        private ShapeFill TryGetFill()
+        private ShapeFill TryGetFill() //TODO: duplicate of LayoutAutoShape.TryGetFill()
         {
-            SCImage image = _imageFactory.TryFromSdkShape(Context.SlidePart, Context.CompositeElement);
+            SCImage image = _imageFactory.TryFromSdkShape(Slide.SlidePart, PShapeTreeChild);
             if (image != null)
             {
                 return new ShapeFill(image);

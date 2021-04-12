@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
@@ -13,23 +14,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes
 {
-    internal class PlaceholderFontDataParser
-    {
-        public static void GetFontDataFromPlaceholder(ref FontData phFontData, Portion portion)
-        {
-            Shape fontParentShape = portion.Paragraph.TextBox.AutoShape;
-            int paragraphLvl = portion.Paragraph.Level;
-            if (fontParentShape.Placeholder == null)
-            {
-                return;
-            }
-
-            Placeholder placeholder = (Placeholder) fontParentShape.Placeholder;
-            IFontDataReader phReferencedShape = (IFontDataReader) placeholder.ReferencedShape;
-            phReferencedShape?.FillFontData(paragraphLvl, ref phFontData);
-        }
-    }
-
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal class SCFont : IFont
     {
@@ -124,7 +108,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             FontData phFontData = new();
-            PlaceholderFontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion);
+            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.Paragraph);
             {
                 if (phFontData.ALatinFont != null)
                 {
@@ -202,7 +186,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             FontData phFontData = new();
-            PlaceholderFontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion);
+            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.Paragraph);
             if (phFontData.IsBold != null)
             {
                 return phFontData.IsBold.Value;
@@ -225,7 +209,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             FontData phFontData = new();
-            PlaceholderFontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion);
+            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.Paragraph);
             if (phFontData.IsItalic != null)
             {
                 return phFontData.IsItalic.Value;
@@ -244,7 +228,7 @@ namespace ShapeCrawler.AutoShapes
             else
             {
                 FontData phFontData = new();
-                PlaceholderFontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion);
+                FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.Paragraph);
                 if (phFontData.IsBold != null)
                 {
                     phFontData.IsBold = new BooleanValue(value);

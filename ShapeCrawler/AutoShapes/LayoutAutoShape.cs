@@ -73,9 +73,9 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public ITextBox TextBox => _textBox.Value;
+        public ITextBox TextBox => _textBox.Value; // TODO: add test
 
-        public ShapeFill Fill => _shapeFill.Value;
+        public ShapeFill Fill => _shapeFill.Value; // TODO: add test
 
         #endregion Public Properties
 
@@ -86,7 +86,7 @@ namespace ShapeCrawler
             P.Shape pShape = (P.Shape) PShapeTreeChild;
             Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
 
-            if (!lvlToFontData.Any()) // TODO: move this block to FontDataParser.FromCompositeElement()
+            if (!lvlToFontData.Any()) // TODO: move this block to FontDataParser.FromCompositeElement()?
             {
                 Int32Value endParaRunPrFs = pShape.TextBody.GetFirstChild<A.Paragraph>()
                     .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
@@ -116,9 +116,9 @@ namespace ShapeCrawler
             return null;
         }
 
-        private ShapeFill TryGetFill()
+        private ShapeFill TryGetFill() //TODO: duplicate of SlideAutoShape.TryGetFill()
         {
-            SCImage image = _imageFactory.TryFromSdkShape(Context.SlidePart, Context.CompositeElement);
+            SCImage image = _imageFactory.TryFromSdkShape(Context.SlidePart, PShapeTreeChild);
             if (image != null)
             {
                 return new ShapeFill(image);

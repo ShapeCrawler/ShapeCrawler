@@ -52,7 +52,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Text_GetterReturnsParagraphPortionText()
         {
             // Arrange
-            Portion portion = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextBox
+            IPortion portion = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextBox
                 .Paragraphs[0].Portions[0];
 
             // Act
@@ -62,7 +62,7 @@ namespace ShapeCrawler.Tests.Unit
             paragraphPortionText.Should().BeEquivalentTo("0:0_p1_lvl1");
         }
 
-        private static PortionCollection GetPortions(SCPresentation presentation)
+        private static IPortionCollection GetPortions(SCPresentation presentation)
         {
             IAutoShape shape5 = presentation.Slides[1].Shapes.First(x => x.Id == 5) as IAutoShape;
             var portions = shape5.TextBox.Paragraphs[0].Portions;

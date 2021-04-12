@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Placeholders;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -10,6 +11,20 @@ namespace ShapeCrawler.Factories
 {
     internal static class FontDataParser
     {
+        public static void GetFontDataFromPlaceholder(ref FontData phFontData, SCParagraph paragraph)
+        {
+            Shape fontParentShape = paragraph.TextBox.AutoShape;
+            int paragraphLvl = paragraph.Level;
+            if (fontParentShape.Placeholder == null)
+            {
+                return;
+            }
+
+            Placeholder placeholder = (Placeholder)fontParentShape.Placeholder;
+            IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
+            phReferencedShape?.FillFontData(paragraphLvl, ref phFontData);
+        }
+
         /// <summary>
         ///     Gets font data.
         /// </summary>

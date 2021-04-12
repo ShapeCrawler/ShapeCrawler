@@ -27,7 +27,7 @@ namespace ShapeCrawler
             Index = index;
 
 #if NETSTANDARD2_0
-            _cells = new Lazy<List<CellSc>>(() => GetCells());
+            _cells = new Lazy<List<SCTableCell>>(() => GetCells());
 #else
             _cells = new Lazy<List<SCTableCell>>(GetCells);
 #endif

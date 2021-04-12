@@ -1,10 +1,32 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using ShapeCrawler.AutoShapes;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Collections
 {
+    public interface IPortionCollection : IEnumerable<IPortion>
+    {
+        void Remove(IPortion row);
+        void Remove(IList<IPortion> removingPortions);
+
+        /// <summary>
+        ///     Gets the element at the specified index.
+        /// </summary>
+        IPortion this[int index] { get; }
+
+        /// <summary>
+        ///     Gets the generic enumerator that iterates through the collection.
+        /// </summary>
+        IEnumerator<IPortion> GetEnumerator();
+
+        /// <summary>
+        ///     Gets the number of series items in the collection.
+        /// </summary>
+        int Count { get; }
+    }
+
     /// <summary>
     ///     Represents collection of paragraph text portions.
     /// </summary>
@@ -12,32 +34,32 @@ namespace ShapeCrawler.Collections
     [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
     [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
     [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
-    public class PortionCollection : EditableCollection<Portion>
+    internal class PortionCollection : EditableCollection<IPortion>, IPortionCollection
     {
-        public override void Remove(Portion row)
+        public override void Remove(IPortion portion)
         {
-            if (!CollectionItems.Contains(row))
+            if (!CollectionItems.Contains(portion))
             {
                 return;
             }
 
-            CollectionItems.Remove(row);
+            CollectionItems.Remove(portion);
 
-            row.AText.Parent.Remove(); // removes from DOM
+            ((Portion)portion).AText.Parent.Remove(); // removes from DOM
         }
 
-        public void Remove(IList<Portion> removingPortions)
+        public void Remove(IList<IPortion> removingPortions)
         {
             foreach (var portion in removingPortions)
             {
                 CollectionItems.Remove(portion);
-                portion.AText.Parent.Remove();
+                ((Portion)portion).AText.Parent.Remove();
             }
         }
 
         #region Internal Methods
 
-        internal PortionCollection(List<Portion> portions)
+        internal PortionCollection(List<IPortion> portions)
         {
             CollectionItems = portions;
         }
@@ -50,7 +72,7 @@ namespace ShapeCrawler.Collections
             IEnumerable<A.Run> aRuns = aParagraph.Elements<A.Run>();
             if (aRuns.Any())
             {
-                var runPortions = new List<Portion>(aRuns.Count());
+                var runPortions = new List<IPortion>(aRuns.Count());
                 foreach (A.Run aRun in aRuns)
                 {
                     runPortions.Add(new Portion(aRun.Text, paragraph));
@@ -63,7 +85,7 @@ namespace ShapeCrawler.Collections
             if (aField != null)
             {
                 A.Text aText = aParagraph.GetFirstChild<A.Field>().GetFirstChild<A.Text>();
-                var aFieldPortions = new List<Portion>(new[] {new Portion(aText, paragraph)});
+                var aFieldPortions = new List<IPortion>(new[] {new Portion(aText, paragraph)});
                 return new PortionCollection(aFieldPortions);
             }
 
