@@ -10,6 +10,7 @@ namespace ShapeCrawler.Placeholders
             A.LatinFont aLatinFont,
             BooleanValue isBold,
             BooleanValue isItalic,
+            A.RgbColorModelHex aRgbColorModelHex,
             A.SchemeColor aSchemeColor) : this(fontSize)
         {
             FontSize = fontSize;
@@ -17,6 +18,7 @@ namespace ShapeCrawler.Placeholders
             IsBold = isBold;
             IsItalic = isItalic;
             ASchemeColor = aSchemeColor;
+            ARgbColorModelHex = aRgbColorModelHex;
         }
 
         public FontData()
@@ -33,6 +35,7 @@ namespace ShapeCrawler.Placeholders
         public A.LatinFont ALatinFont { get; set; }
         public BooleanValue IsBold { get; set; }
         public BooleanValue IsItalic { get; set; }
+        public A.RgbColorModelHex ARgbColorModelHex { get; set; }
         public A.SchemeColor ASchemeColor { get; set; }
 
         public bool IsFilled()
@@ -65,6 +68,11 @@ namespace ShapeCrawler.Placeholders
             if (fontData.ASchemeColor == null && ASchemeColor != null)
             {
                 fontData.ASchemeColor = ASchemeColor;
+            }
+
+            if (fontData.ARgbColorModelHex == null && ARgbColorModelHex != null)
+            {
+                fontData.ARgbColorModelHex = ARgbColorModelHex;
             }
         }
 

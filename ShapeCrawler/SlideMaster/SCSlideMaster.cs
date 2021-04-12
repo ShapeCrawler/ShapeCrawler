@@ -31,6 +31,8 @@ namespace ShapeCrawler
 
         internal SCPresentation Presentation { get; }
 
+        internal Dictionary<int, FontData> BodyParaLvlToFontData =>
+            FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.BodyStyle);
 
         public void Hide() //TODO: does it need?
         {

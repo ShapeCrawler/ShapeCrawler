@@ -194,7 +194,7 @@ namespace ShapeCrawler.Tests.Unit
         [MemberData(nameof(TestCasesParagraphText))]
         public void ParagraphText_SetterChangesParagraphText(
             SCPresentation presentation, 
-            ElementRequest prRequest, 
+            SlideElementQuery prRequest, 
             string newPrText,
             int expectedNumPortions)
         {
@@ -218,7 +218,7 @@ namespace ShapeCrawler.Tests.Unit
 
         public static IEnumerable<object[]> TestCasesParagraphText()
         {
-            var paragraphRequest = new ElementRequest
+            var paragraphRequest = new SlideElementQuery
             {
                 SlideIndex = 1,
                 ShapeId = 4,

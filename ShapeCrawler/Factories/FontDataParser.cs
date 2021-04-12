@@ -40,6 +40,7 @@ namespace ShapeCrawler.Factories
                 BooleanValue isBold = aDefRPr?.Bold;
                 BooleanValue isItalic = aDefRPr?.Italic;
                 A.LatinFont aLatinFont = aDefRPr?.GetFirstChild<A.LatinFont>();
+                A.RgbColorModelHex aRgbColorModelHex = aDefRPr?.GetFirstChild<A.SolidFill>()?.RgbColorModelHex;
                 A.SchemeColor aSchemeColor = aDefRPr?.GetFirstChild<A.SolidFill>()?.SchemeColor;
 
 #if NET5_0 || NETSTANDARD2_1
@@ -51,7 +52,8 @@ namespace ShapeCrawler.Factories
                 var lvl = int.Parse(textPr.LocalName[3].ToString(System.Globalization.CultureInfo.CurrentCulture),
                 System.Globalization.CultureInfo.CurrentCulture);
 #endif
-                lvlToFontData.Add(lvl, new FontData(fontSize, aLatinFont, isBold, isItalic, aSchemeColor));
+                lvlToFontData.Add(lvl,
+                    new FontData(fontSize, aLatinFont, isBold, isItalic, aRgbColorModelHex, aSchemeColor));
             }
 
             return lvlToFontData;

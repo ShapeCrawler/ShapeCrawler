@@ -1,4 +1,6 @@
-﻿namespace ShapeCrawler.AutoShapes
+﻿using ShapeCrawler.Drawing;
+
+namespace ShapeCrawler.AutoShapes
 {
     public interface IFont //TODO: consider moving font properties on Portion level
     {
@@ -19,10 +21,7 @@
 
         bool IsItalic { get; set; }
 
-        /// <summary>
-        ///     Gets or sets font color in HEX format.
-        /// </summary>
-        string Color { get; set; }
+        IColorFormat ColorFormat { get; }
 
         /// <summary>
         ///     Gets value indicating whether font size can be changed.
