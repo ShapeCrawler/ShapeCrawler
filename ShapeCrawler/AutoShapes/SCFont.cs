@@ -48,7 +48,7 @@ namespace ShapeCrawler.AutoShapes
             _size = new ResettableLazy<int>(GetSize);
             _latinFont = new ResettableLazy<A.LatinFont>(GetALatinFont);
             _colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
-            _paragraphLvl = Portion.Paragraph.Level;
+            _paragraphLvl = portion.Paragraph.Level;
             Portion = portion;
         }
 
