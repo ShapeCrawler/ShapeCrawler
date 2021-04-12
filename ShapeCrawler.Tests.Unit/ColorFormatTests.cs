@@ -85,6 +85,7 @@ namespace ShapeCrawler.Tests.Unit
             return testCases;
         }
 
+#if DEBUG
         [Fact]
         public void Color_GetterReturnsRGBColorInHexFormat_OfNonPlaceholder()
         {
@@ -169,5 +170,6 @@ namespace ShapeCrawler.Tests.Unit
             // Assert
             colorType.Should().Be(SCColorType.RGB);
         }
+#endif
     }
 }
