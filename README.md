@@ -17,7 +17,7 @@ ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoin
 This library provides a simplified object model on top of the [Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK) for manipulating PowerPoint documents.
 
 ## Getting Started
-Support targets: .NET Framework 4.6.1+, .NET Standard 2.1, .NET Core 2.1+ and .NET 5+
+Support targets: .NET Framework 4.6.1+, .NET Core 2.1+ and .NET 5+
 
 To get started use ShapeCrawler APIs install it from [NuGet](https://nuget.org/packages/ShapeCrawler):
 ```console
@@ -194,9 +194,8 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 Don't hesitate to contact me if you want to get involved!
 
 # Changelog
-## Version 0.18.0 - 2021-03-28
+## Version 0.19.0 - 2021-04-13
 ### Added
-- Added setter for `IFont.IsBold` property to set up bold font.
-- Added `IFont.IsItalic` property to define whether font is italic.
+- Added .NET Standard 2.0 target.
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).
