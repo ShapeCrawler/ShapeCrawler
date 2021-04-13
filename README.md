@@ -17,9 +17,9 @@ ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoin
 This library provides a simplified object model on top of the [Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK) for manipulating PowerPoint documents.
 
 ## Getting Started
-Support targets: .NET Framework 4.6.1+, .NET Core 2.1+ and .NET 5+
+Support targets: .NET Framework 4.6.1+, .NET Core 2.0+ and .NET 5+
 
-To get started use ShapeCrawler APIs install it from [NuGet](https://nuget.org/packages/ShapeCrawler):
+To get started, install ShapeCrawler from [NuGet](https://nuget.org/packages/ShapeCrawler):
 ```console
 dotnet add package ShapeCrawler
 ```
