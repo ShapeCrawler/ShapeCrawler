@@ -160,8 +160,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             // From presentation level
-            PresentationData presentationData = fontParentShape.Presentation.PresentationData;
-            if (presentationData.LlvToFontData.TryGetValue(paragraphLvl, out FontData fontData))
+            if (fontParentShape.Presentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
             {
                 if (fontData.FontSize != null)
                 {

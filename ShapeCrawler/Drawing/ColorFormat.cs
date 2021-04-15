@@ -214,7 +214,7 @@ namespace ShapeCrawler.Drawing
                 if (aSchemeColor != null)
                 {
                     A.SchemeColorValues runFontSchemeColor = aSolidFill.SchemeColor.Val.Value;
-                    string colorHex = GetThemeColor(runFontSchemeColor);
+                    string colorHex = GetHexVariantByScheme(runFontSchemeColor);
                     _colorType = SCColorType.Scheme;
                     _color = ColorTranslator.FromHtml($"#{colorHex}");
                     return;
@@ -242,7 +242,7 @@ namespace ShapeCrawler.Drawing
 
                     if (phFontData.ASchemeColor != null)
                     {
-                        colorHexVariant = GetThemeColor(phFontData.ASchemeColor.Val);
+                        colorHexVariant = GetHexVariantByScheme(phFontData.ASchemeColor.Val);
                         _colorType = SCColorType.Scheme;
                         _color = ColorTranslator.FromHtml($"#{colorHexVariant}");
                         return;
@@ -252,7 +252,7 @@ namespace ShapeCrawler.Drawing
                     {
                         A.SchemeColorValues phTitleFontSchemeColor =
                             fontParentShape.SlideMaster.GetFontColorHexFromTitle(paragraphLevel);
-                        colorHexVariant = GetThemeColor(phTitleFontSchemeColor);
+                        colorHexVariant = GetHexVariantByScheme(phTitleFontSchemeColor);
                         _colorType = SCColorType.Scheme;
                         _color = ColorTranslator.FromHtml($"#{colorHexVariant}");
                         return;
@@ -262,7 +262,7 @@ namespace ShapeCrawler.Drawing
                     {
                         A.SchemeColorValues phBodyFontSchemeColor =
                             fontParentShape.SlideMaster.GetFontColorHexFromBody(paragraphLevel);
-                        colorHexVariant = GetThemeColor(phBodyFontSchemeColor);
+                        colorHexVariant = GetHexVariantByScheme(phBodyFontSchemeColor);
                         _colorType = SCColorType.Scheme;
                         _color = ColorTranslator.FromHtml($"#{colorHexVariant}");
                         return;
@@ -274,7 +274,7 @@ namespace ShapeCrawler.Drawing
                 {
                     A.SchemeColorValues shapeFontSchemeColor =
                         parentPShape.ShapeStyle.FontReference.SchemeColor.Val.Value;
-                    colorHexVariant = GetThemeColor(shapeFontSchemeColor);
+                    colorHexVariant = GetHexVariantByScheme(shapeFontSchemeColor);
                     _colorType = SCColorType.Scheme;
                     _color = ColorTranslator.FromHtml($"#{colorHexVariant}");
                     return;
@@ -292,15 +292,20 @@ namespace ShapeCrawler.Drawing
 
                 if (masterBodyFontData.ASchemeColor != null)
                 {
-                    string colorHex = GetThemeColor(masterBodyFontData.ASchemeColor.Val);
+                    colorHexVariant = GetHexVariantByScheme(masterBodyFontData.ASchemeColor.Val);
                     _colorType = SCColorType.Scheme;
-                    _color = ColorTranslator.FromHtml($"#{colorHex}");
+                    _color = ColorTranslator.FromHtml($"#{colorHexVariant}");
                     return;
                 }
+
+                FontData preDefaultTxtStyleFontData = fontParentShape.Presentation.ParaLvlToFontData[paragraphLevel];
+                colorHexVariant = GetHexVariantByScheme(preDefaultTxtStyleFontData.ASchemeColor.Val);
+                _colorType = SCColorType.Scheme;
+                _color = ColorTranslator.FromHtml($"#{colorHexVariant}");
             }
         }
 
-        private string GetThemeColor(A.SchemeColorValues fontSchemeColor)
+        private string GetHexVariantByScheme(A.SchemeColorValues fontSchemeColor)
         {
             A.ColorScheme themeAColorScheme =
                 _font.Portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.ColorScheme;
