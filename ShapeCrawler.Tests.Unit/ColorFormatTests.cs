@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using DocumentFormat.OpenXml.Presentation;
 using FluentAssertions;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
@@ -24,12 +22,12 @@ namespace ShapeCrawler.Tests.Unit
 #if DEBUG
         [Theory(Skip = "In Progress")]
         [MemberData(nameof(TestCasesColorSetter))]
-        public void Color_SetterSetsGreenColorForFont_WhenGreenIsSpecified(SCPresentation presentation, SlideElementQuery portionRequest)
+        public void Color_SetterSetsGreenColorForFont_WhenGreenIsSpecified(SCPresentation presentation, SlideElementQuery portionQuery)
         {
             // Arrange
             Color greenColor = ColorTranslator.FromHtml("#008000");
             MemoryStream mStream = new ();
-            IColorFormat colorFormat = TestHelper.GetPortion(presentation, portionRequest).Font.ColorFormat;
+            IColorFormat colorFormat = TestHelper.GetParagraphPortion(presentation, portionQuery).Font.ColorFormat;
 
             // Act
             colorFormat.Color = greenColor;
@@ -39,7 +37,7 @@ namespace ShapeCrawler.Tests.Unit
 
             presentation.SaveAs(mStream);
             presentation = SCPresentation.Open(mStream, false);
-            colorFormat = TestHelper.GetPortion(presentation, portionRequest).Font.ColorFormat;
+            colorFormat = TestHelper.GetParagraphPortion(presentation, portionQuery).Font.ColorFormat;
             colorFormat.Color.Should().Be(greenColor);
         }
 #endif
@@ -87,7 +85,7 @@ namespace ShapeCrawler.Tests.Unit
 
 #if DEBUG
         [Fact]
-        public void Color_GetterReturnsRGBColorInHexFormat_OfNonPlaceholder()
+        public void Color_GetterReturnsColor()
         {
             // Arrange
             IAutoShape nonPhAutoShapeCase1 = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
@@ -96,12 +94,14 @@ namespace ShapeCrawler.Tests.Unit
             IAutoShape nonPhAutoShapeCase4 = (IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 4);
             IAutoShape nonPhAutoShapeCase5 = (IAutoShape)_fixture.Pre002.Slides[1].Shapes.First(sp => sp.Id == 3);
             IAutoShape nonPhAutoShapeCase6 = (IAutoShape)_fixture.Pre026.Slides[0].Shapes.First(sp => sp.Id == 128);
+            IAutoShape nonPhAutoShapeCase7 = (IAutoShape)_fixture.Pre030.Slides[0].Shapes.First(sp => sp.Id == 5);
             IColorFormat colorFormatC1 = nonPhAutoShapeCase1.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
             IColorFormat colorFormatC2 = nonPhAutoShapeCase2.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
             IColorFormat colorFormatC3 = nonPhAutoShapeCase3.TextBox.Paragraphs[1].Portions[0].Font.ColorFormat;
             IColorFormat colorFormatC4 = nonPhAutoShapeCase4.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
             IColorFormat colorFormatC5 = nonPhAutoShapeCase5.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
             IColorFormat colorFormatC6 = nonPhAutoShapeCase6.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+            IColorFormat colorFormatC7 = nonPhAutoShapeCase7.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
 
             // Act-Assert
             colorFormatC1.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
@@ -110,10 +110,11 @@ namespace ShapeCrawler.Tests.Unit
             colorFormatC4.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
             colorFormatC5.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
             colorFormatC6.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
+            colorFormatC7.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
         }
 
-        [Fact(Skip = "In Progress")]
-        public void Color_GetterReturnsWhiteColor_WhenColorIsWhiteFromPredefinedCollectionOfColors()
+        [Fact]
+        public void Color_GetterReturnsWhiteColor_WhenFontHasPredefinedWhiteColor()
         {
             // Arrange
             IAutoShape nonPhAutoShapeCase = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 4);

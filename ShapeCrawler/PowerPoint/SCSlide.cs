@@ -151,8 +151,8 @@ namespace ShapeCrawler
 
         private SCImage TryGetBackground()
         {
-            var backgroundImageFactory = new ImageExFactory();
-            return backgroundImageFactory.TryFromSdkSlide(SlidePart);
+            var backgroundImageFactory = new SCImageFactory();
+            return backgroundImageFactory.FromSlidePart(SlidePart);
         }
 
         private string GetCustomData()

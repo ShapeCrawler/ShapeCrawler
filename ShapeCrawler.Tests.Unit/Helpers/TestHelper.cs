@@ -21,7 +21,7 @@ namespace ShapeCrawler.Tests.Unit.Helpers
             return autoShape.TextBox.Paragraphs[paragraphRequest.ParagraphIndex];
         }
 
-        public static IPortion GetPortion(SCPresentation presentation, SlideElementQuery elementRequest)
+        public static IPortion GetParagraphPortion(SCPresentation presentation, SlideElementQuery elementRequest)
         {
             IAutoShape autoShape = (IAutoShape)presentation.Slides[elementRequest.SlideIndex].Shapes.First(sp => sp.Id == elementRequest.ShapeId);
             

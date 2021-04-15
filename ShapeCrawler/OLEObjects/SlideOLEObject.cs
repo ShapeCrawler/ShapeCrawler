@@ -14,7 +14,7 @@ namespace ShapeCrawler
     ///     Represents a shape on a slide.
     /// </summary>
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public class SlideOLEObject : SlideShape, IOLEObject //Make internal
+    internal class SlideOLEObject : SlideShape, IOLEObject //Make internal
     {
         #region Constructors
 

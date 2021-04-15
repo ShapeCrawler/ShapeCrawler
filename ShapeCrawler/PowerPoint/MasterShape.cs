@@ -7,7 +7,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a shape on a Slide Master.
     /// </summary>
-    public abstract class MasterShape : Shape
+    internal abstract class MasterShape : Shape
     {
         protected MasterShape(SCSlideMaster slideMaster, OpenXmlCompositeElement pShapeTreeChild) : base(
             pShapeTreeChild)

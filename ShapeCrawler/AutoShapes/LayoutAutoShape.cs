@@ -22,7 +22,7 @@ namespace ShapeCrawler
     /// </summary>
     internal class LayoutAutoShape : LayoutShape, IAutoShape, IFontDataReader //TODO: IFontDataReader is needed?
     {
-        private readonly ImageExFactory _imageFactory = new();
+        private readonly SCImageFactory _imageFactory = new();
         private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
         private readonly Lazy<ShapeFill> _shapeFill;
         private readonly Lazy<SCTextBox> _textBox;
@@ -118,7 +118,7 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill() //TODO: duplicate of SlideAutoShape.TryGetFill()
         {
-            SCImage image = _imageFactory.TryFromSdkShape(Context.SlidePart, PShapeTreeChild);
+            SCImage image = _imageFactory.FromSlidePart(Context.SlidePart, PShapeTreeChild);
             if (image != null)
             {
                 return new ShapeFill(image);

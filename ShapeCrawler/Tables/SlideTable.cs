@@ -19,7 +19,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler
 {
-    public class SlideTable : SlideShape, ITable // TODO: make internal
+    internal class SlideTable : SlideShape, ITable // TODO: make internal
     {
         private readonly ILocation _innerTransform;
         private readonly P.GraphicFrame _pGraphicFrame;
