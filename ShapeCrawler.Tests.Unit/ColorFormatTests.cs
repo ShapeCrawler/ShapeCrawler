@@ -95,6 +95,7 @@ namespace ShapeCrawler.Tests.Unit
             IAutoShape nonPhAutoShapeCase5 = (IAutoShape)_fixture.Pre002.Slides[1].Shapes.First(sp => sp.Id == 3);
             IAutoShape nonPhAutoShapeCase6 = (IAutoShape)_fixture.Pre026.Slides[0].Shapes.First(sp => sp.Id == 128);
             IAutoShape nonPhAutoShapeCase7 = (IAutoShape)_fixture.Pre030.Slides[0].Shapes.First(sp => sp.Id == 5);
+            IAutoShape nonPhAutoShapeCase8 = (IAutoShape)_fixture.Pre031.Slides[0].Shapes.First(sp => sp.Id == 44);
             IColorFormat colorFormatC1 = nonPhAutoShapeCase1.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
             IColorFormat colorFormatC2 = nonPhAutoShapeCase2.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
             IColorFormat colorFormatC3 = nonPhAutoShapeCase3.TextBox.Paragraphs[1].Portions[0].Font.ColorFormat;
@@ -102,6 +103,7 @@ namespace ShapeCrawler.Tests.Unit
             IColorFormat colorFormatC5 = nonPhAutoShapeCase5.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
             IColorFormat colorFormatC6 = nonPhAutoShapeCase6.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
             IColorFormat colorFormatC7 = nonPhAutoShapeCase7.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+            IColorFormat colorFormatC8 = nonPhAutoShapeCase8.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
 
             // Act-Assert
             colorFormatC1.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
@@ -111,6 +113,7 @@ namespace ShapeCrawler.Tests.Unit
             colorFormatC5.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
             colorFormatC6.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
             colorFormatC7.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
+            colorFormatC8.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
         }
 
         [Fact]
