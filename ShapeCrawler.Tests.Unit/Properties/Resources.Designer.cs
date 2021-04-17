@@ -373,6 +373,36 @@ namespace ShapeCrawler.Tests.Unit.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] _034 {
+            get {
+                object obj = ResourceManager.GetObject("_034", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] _035 {
+            get {
+                object obj = ResourceManager.GetObject("_035", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] _036 {
+            get {
+                object obj = ResourceManager.GetObject("_036", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] test_image_2 {
             get {
                 object obj = ResourceManager.GetObject("test_image_2", resourceCulture);

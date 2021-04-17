@@ -139,11 +139,17 @@ namespace ShapeCrawler.Tests.Unit
             IAutoShape placeholderCase3 = (IAutoShape)_fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61);
             IAutoShape placeholderCase4 = (IAutoShape)_fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52);
             IAutoShape placeholderCase5 = (IAutoShape)_fixture.Pre032.Slides[0].Shapes.First(sp => sp.Id == 10242);
+            IAutoShape titlePhCase6 = (IAutoShape)_fixture.Pre034.Slides[0].Shapes.First(sp => sp.Id == 2);
+            IAutoShape titlePhCase7 = (IAutoShape)_fixture.Pre035.Slides[0].Shapes.First(sp => sp.Id == 9);
+            IAutoShape bodyPhCase8 = (IAutoShape)_fixture.Pre036.Slides[0].Shapes.First(sp => sp.Id == 6146);
             IColorFormat colorFormatC1 = placeholderCase1.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
             IColorFormat colorFormatC2 = placeholderCase2.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
             IColorFormat colorFormatC3 = placeholderCase3.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
             IColorFormat colorFormatC4 = placeholderCase4.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
             IColorFormat colorFormatC5 = placeholderCase5.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+            IColorFormat colorFormatC6 = titlePhCase6.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+            IColorFormat colorFormatC7 = titlePhCase7.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+            IColorFormat colorFormatC8 = bodyPhCase8.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
 
             // Act-Assert
             colorFormatC1.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
@@ -151,6 +157,9 @@ namespace ShapeCrawler.Tests.Unit
             colorFormatC3.Color.Should().Be(ColorTranslator.FromHtml("#595959"));
             colorFormatC4.Color.Should().Be(ColorTranslator.FromHtml("#FFFFFF"));
             colorFormatC5.Color.Should().Be(ColorTranslator.FromHtml("#0070C0"));
+            colorFormatC6.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
+            colorFormatC7.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
+            colorFormatC8.Color.Should().Be(ColorTranslator.FromHtml("#404040"));
         }
 
         [Fact]

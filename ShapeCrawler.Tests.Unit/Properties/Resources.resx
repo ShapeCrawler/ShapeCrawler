@@ -214,4 +214,13 @@
   <data name="_033" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\033.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="_034" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resource\034.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="_035" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resource\035.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="_036" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resource\036.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

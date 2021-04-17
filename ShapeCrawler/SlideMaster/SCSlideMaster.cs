@@ -21,6 +21,9 @@ namespace ShapeCrawler
     {
         private readonly ResettableLazy<List<SCSlideLayout>> _sldLayouts;
         internal readonly P.SlideMaster PSlideMaster;
+        internal SCPresentation Presentation { get; }
+        internal Dictionary<int, FontData> BodyParaLvlToFontData => FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.BodyStyle);
+        internal Dictionary<int, FontData> TitleParaLvlToFontData => FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.TitleStyle);
 
         internal SCSlideMaster(SCPresentation presentation, P.SlideMaster pSlideMaster)
         {
@@ -28,14 +31,6 @@ namespace ShapeCrawler
             PSlideMaster = pSlideMaster;
             _sldLayouts = new ResettableLazy<List<SCSlideLayout>>(GetSlideLayouts);
         }
-
-        internal SCPresentation Presentation { get; }
-
-        internal Dictionary<int, FontData> BodyParaLvlToFontData =>
-            FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.BodyStyle);
-
-
-        internal Dictionary<int, FontData> TitleParaLvlToFontData => FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.TitleStyle);
 
         public void Hide() //TODO: does it need?
         {
