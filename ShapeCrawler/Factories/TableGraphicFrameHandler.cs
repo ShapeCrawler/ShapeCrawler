@@ -2,8 +2,8 @@
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
-using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Factories
 {

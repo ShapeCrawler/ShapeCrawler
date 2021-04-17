@@ -9,7 +9,6 @@ using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable PossibleMultipleEnumeration
-
 namespace ShapeCrawler.Placeholders
 {
     internal class PlaceholderService : IPlaceholderService
@@ -20,17 +19,11 @@ namespace ShapeCrawler.Placeholders
 
         #endregion Fields
 
-        #region Constructors
-
         public PlaceholderService(SlideLayoutPart sldLtPart)
         {
             Check.NotNull(sldLtPart, nameof(sldLtPart));
             Init(sldLtPart);
         }
-
-        #endregion Constructors
-
-        #region Public Methods
 
         public PlaceholderLocationData TryGetLocation(OpenXmlCompositeElement sdkCompositeElement)
         {
@@ -82,13 +75,9 @@ namespace ShapeCrawler.Placeholders
             return new PlaceholderFontData
             {
                 PlaceholderType = placeholderData.PlaceholderType,
-                Index = placeholderData.Index
+                Index = placeholderData.Index,
             };
         }
-
-        #endregion
-
-        #region Private Methods
 
         private static PlaceholderType GetPlaceholderType(P.PlaceholderShape sdkPlaceholder)
         {
@@ -160,7 +149,7 @@ namespace ShapeCrawler.Placeholders
                     X = t2D.Offset.X.Value,
                     Y = t2D.Offset.Y.Value,
                     Width = t2D.Extents.Cx.Value,
-                    Height = t2D.Extents.Cy.Value
+                    Height = t2D.Extents.Cy.Value,
                 };
 
                 var presetGeometry = spPr.GetFirstChild<PresetGeometry>();
@@ -193,7 +182,5 @@ namespace ShapeCrawler.Placeholders
 
             return filteredList;
         }
-
-        #endregion
     }
 }

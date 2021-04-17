@@ -32,7 +32,7 @@ namespace ShapeCrawler.Texts
 
         #endregion Constructors
 
-        private List<SCParagraph> GetParagraphs()
+        private List<SCParagraph> GetParagraphs() //TODO: return null if text box is empty
         {
             IEnumerable<A.Paragraph> aParagraphs = _textBodyCompositeElement.Elements<A.Paragraph>();
 
@@ -71,7 +71,7 @@ namespace ShapeCrawler.Texts
 
             var newParagraph = new SCParagraph(newAParagraph, _textBox)
             {
-                Text = string.Empty
+                Text = string.Empty,
             };
 
             _paragraphs.Reset();

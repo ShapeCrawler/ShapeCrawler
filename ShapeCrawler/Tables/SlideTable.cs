@@ -11,8 +11,8 @@ using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
 using ShapeCrawler.Tables;
-using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration

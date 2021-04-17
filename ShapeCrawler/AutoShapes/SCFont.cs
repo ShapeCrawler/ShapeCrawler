@@ -314,7 +314,10 @@ namespace ShapeCrawler.AutoShapes
             {
                 var aSolidFill = new A.SolidFill
                 {
-                    RgbColorModelHex = new A.RgbColorModelHex {Val = value}
+                    RgbColorModelHex = new A.RgbColorModelHex
+                    {
+                        Val = value,
+                    },
                 };
 
                 aRunPr = new A.RunProperties(aSolidFill);

@@ -20,7 +20,6 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a slide.
     /// </summary>
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class SCSlide : ISlide // TODO: make it internal
     {
         #region Constructors
@@ -63,7 +62,7 @@ namespace ShapeCrawler
         public ShapeCollection Shapes => _shapes.Value;
 
         /// <summary>
-        ///     Returns a slide number in presentation.
+        ///     Gets a slide number in presentation.
         /// </summary>
         public int Number => _sldNumEntity.Number;
 
@@ -136,7 +135,7 @@ namespace ShapeCrawler
         {
             if (SlidePart.Slide.Show == null)
             {
-                var showAttribute = new OpenXmlAttribute("show", "", "0");
+                var showAttribute = new OpenXmlAttribute("show", string.Empty, "0");
                 SlidePart.Slide.SetAttribute(showAttribute);
             }
             else
