@@ -71,7 +71,7 @@ namespace ShapeCrawler.Texts
 
             var newParagraph = new SCParagraph(newAParagraph, _textBox)
             {
-                Text = string.Empty,
+                Text = string.Empty
             };
 
             _paragraphs.Reset();

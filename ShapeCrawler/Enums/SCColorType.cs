@@ -20,6 +20,6 @@ namespace ShapeCrawler
         /// <summary>
         ///     Color which is bound to one of a predefined collection of colors.
         /// </summary>
-        Preset = 6,
+        Preset = 6
     }
 }

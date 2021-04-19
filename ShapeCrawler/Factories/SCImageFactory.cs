@@ -3,7 +3,6 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -12,6 +11,22 @@ namespace ShapeCrawler.Factories
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal class SCImageFactory //TODO: make internal
     {
+        #region Private Methods
+
+        private static SCImage TryFromBlipFill(SlidePart slidePart, A.BlipFill aBlipFill)
+        {
+            SCImage backgroundImage = null;
+            var blipRelateId = aBlipFill?.Blip?.Embed?.Value; // try to get blip relationship ID
+            if (blipRelateId != null)
+            {
+                backgroundImage = new SCImage(slidePart, blipRelateId);
+            }
+
+            return backgroundImage;
+        }
+
+        #endregion Private Methods
+
         #region Public Methods
 
         public SCImage FromSlidePart(SlidePart slidePart)
@@ -37,21 +52,5 @@ namespace ShapeCrawler.Factories
         }
 
         #endregion Public Methods
-
-        #region Private Methods
-
-        private static SCImage TryFromBlipFill(SlidePart slidePart, A.BlipFill aBlipFill)
-        {
-            SCImage backgroundImage = null;
-            var blipRelateId = aBlipFill?.Blip?.Embed?.Value; // try to get blip relationship ID
-            if (blipRelateId != null)
-            {
-                backgroundImage = new SCImage(slidePart, blipRelateId);
-            }
-
-            return backgroundImage;
-        }
-
-        #endregion Private Methods
     }
 }

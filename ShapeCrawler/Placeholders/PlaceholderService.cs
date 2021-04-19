@@ -75,7 +75,7 @@ namespace ShapeCrawler.Placeholders
             return new PlaceholderFontData
             {
                 PlaceholderType = placeholderData.PlaceholderType,
-                Index = placeholderData.Index,
+                Index = placeholderData.Index
             };
         }
 
@@ -149,7 +149,7 @@ namespace ShapeCrawler.Placeholders
                     X = t2D.Offset.X.Value,
                     Y = t2D.Offset.Y.Value,
                     Width = t2D.Extents.Cx.Value,
-                    Height = t2D.Extents.Cy.Value,
+                    Height = t2D.Extents.Cy.Value
                 };
 
                 var presetGeometry = spPr.GetFirstChild<PresetGeometry>();

@@ -6,7 +6,6 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -316,8 +315,8 @@ namespace ShapeCrawler.AutoShapes
                 {
                     RgbColorModelHex = new A.RgbColorModelHex
                     {
-                        Val = value,
-                    },
+                        Val = value
+                    }
                 };
 
                 aRunPr = new A.RunProperties(aSolidFill);

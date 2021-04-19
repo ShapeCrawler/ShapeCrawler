@@ -5,6 +5,16 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1200:Using directives should be placed correctly", Justification = "<Pending>")]
-[assembly: SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1124:Do not use regions", Justification = "<Pending>", Scope = "member", Target = "~M:ShapeCrawler.LayoutAutoShape.#ctor(ShapeCrawler.SlideMaster.SCSlideLayout,DocumentFormat.OpenXml.Presentation.Shape)")]
-[assembly: SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1124:Do not use regions", Justification = "<Pending>", Scope = "member", Target = "~M:ShapeCrawler.MasterAutoShape.#ctor(ShapeCrawler.SCSlideMaster,DocumentFormat.OpenXml.Presentation.Shape)")]
+[assembly:
+    SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1200:Using directives should be placed correctly",
+        Justification = "<Pending>")]
+[assembly:
+    SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1124:Do not use regions", Justification = "<Pending>",
+        Scope = "member",
+        Target =
+            "~M:ShapeCrawler.LayoutAutoShape.#ctor(ShapeCrawler.SlideMaster.SCSlideLayout,DocumentFormat.OpenXml.Presentation.Shape)")]
+[assembly:
+    SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1124:Do not use regions", Justification = "<Pending>",
+        Scope = "member",
+        Target =
+            "~M:ShapeCrawler.MasterAutoShape.#ctor(ShapeCrawler.SCSlideMaster,DocumentFormat.OpenXml.Presentation.Shape)")]

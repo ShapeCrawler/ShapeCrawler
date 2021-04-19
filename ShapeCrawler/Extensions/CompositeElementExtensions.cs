@@ -2,7 +2,6 @@
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
 using D = DocumentFormat.OpenXml.Drawing;
-
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Extensions

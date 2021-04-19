@@ -11,152 +11,153 @@ namespace ShapeCrawler.Drawing
 {
     internal class ColorFormat : IColorFormat
     {
+        private static readonly Dictionary<A.PresetColorValues, Color> PresentColorToColor = new()
+        {
+            {A.PresetColorValues.AliceBlue, Color.AliceBlue},
+            {A.PresetColorValues.AntiqueWhite, Color.AntiqueWhite},
+            {A.PresetColorValues.Aqua, Color.Aqua},
+            {A.PresetColorValues.Aquamarine, Color.Aquamarine},
+            {A.PresetColorValues.Azure, Color.Azure},
+            {A.PresetColorValues.Beige, Color.Beige},
+            {A.PresetColorValues.Bisque, Color.Bisque},
+            {A.PresetColorValues.Black, Color.Black},
+            {A.PresetColorValues.BlanchedAlmond, Color.BlanchedAlmond},
+            {A.PresetColorValues.Blue, Color.Blue},
+            {A.PresetColorValues.BlueViolet, Color.BlueViolet},
+            {A.PresetColorValues.Brown, Color.Brown},
+            {A.PresetColorValues.BurlyWood, Color.BurlyWood},
+            {A.PresetColorValues.CadetBlue, Color.CadetBlue},
+            {A.PresetColorValues.Chartreuse, Color.Chartreuse},
+            {A.PresetColorValues.Chocolate, Color.Chocolate},
+            {A.PresetColorValues.Coral, Color.Coral},
+            {A.PresetColorValues.CornflowerBlue, Color.CornflowerBlue},
+            {A.PresetColorValues.Cornsilk, Color.Cornsilk},
+            {A.PresetColorValues.Crimson, Color.Crimson},
+            {A.PresetColorValues.Cyan, Color.Cyan},
+            {A.PresetColorValues.DarkBlue, Color.DarkBlue},
+            {A.PresetColorValues.DarkCyan, Color.DarkCyan},
+            {A.PresetColorValues.DarkGoldenrod, Color.DarkGoldenrod},
+            {A.PresetColorValues.DarkGray, Color.DarkGray},
+            {A.PresetColorValues.DarkGreen, Color.DarkGreen},
+            {A.PresetColorValues.DarkKhaki, Color.DarkKhaki},
+            {A.PresetColorValues.DarkMagenta, Color.DarkMagenta},
+            {A.PresetColorValues.DarkOliveGreen, Color.DarkOliveGreen},
+            {A.PresetColorValues.DarkOrange, Color.DarkOrange},
+            {A.PresetColorValues.DarkOrchid, Color.DarkOrchid},
+            {A.PresetColorValues.DarkRed, Color.DarkRed},
+            {A.PresetColorValues.DarkSalmon, Color.DarkSalmon},
+            {A.PresetColorValues.DarkSeaGreen, Color.DarkSeaGreen},
+            {A.PresetColorValues.DarkSlateBlue, Color.DarkSlateBlue},
+            {A.PresetColorValues.DarkSlateGray, Color.DarkSlateGray},
+            {A.PresetColorValues.DarkTurquoise, Color.DarkTurquoise},
+            {A.PresetColorValues.DarkViolet, Color.DarkViolet},
+            {A.PresetColorValues.DeepPink, Color.DeepPink},
+            {A.PresetColorValues.DeepSkyBlue, Color.DeepSkyBlue},
+            {A.PresetColorValues.DimGray, Color.DimGray},
+            {A.PresetColorValues.DodgerBlue, Color.DodgerBlue},
+            {A.PresetColorValues.Firebrick, Color.Firebrick},
+            {A.PresetColorValues.FloralWhite, Color.FloralWhite},
+            {A.PresetColorValues.ForestGreen, Color.ForestGreen},
+            {A.PresetColorValues.Fuchsia, Color.Fuchsia},
+            {A.PresetColorValues.Gainsboro, Color.Gainsboro},
+            {A.PresetColorValues.GhostWhite, Color.GhostWhite},
+            {A.PresetColorValues.Gold, Color.Gold},
+            {A.PresetColorValues.Goldenrod, Color.Goldenrod},
+            {A.PresetColorValues.Gray, Color.Gray},
+            {A.PresetColorValues.Green, Color.Green},
+            {A.PresetColorValues.GreenYellow, Color.GreenYellow},
+            {A.PresetColorValues.Honeydew, Color.Honeydew},
+            {A.PresetColorValues.HotPink, Color.HotPink},
+            {A.PresetColorValues.IndianRed, Color.IndianRed},
+            {A.PresetColorValues.Indigo, Color.Indigo},
+            {A.PresetColorValues.Ivory, Color.Ivory},
+            {A.PresetColorValues.Khaki, Color.Khaki},
+            {A.PresetColorValues.Lavender, Color.Lavender},
+            {A.PresetColorValues.LavenderBlush, Color.LavenderBlush},
+            {A.PresetColorValues.LawnGreen, Color.LawnGreen},
+            {A.PresetColorValues.LemonChiffon, Color.LemonChiffon},
+            {A.PresetColorValues.LightBlue, Color.LightBlue},
+            {A.PresetColorValues.LightCoral, Color.LightCoral},
+            {A.PresetColorValues.LightCyan, Color.LightCyan},
+            {A.PresetColorValues.LightGoldenrodYellow, Color.LightGoldenrodYellow},
+            {A.PresetColorValues.LightGray, Color.LightGray},
+            {A.PresetColorValues.LightGreen, Color.LightGreen},
+            {A.PresetColorValues.LightPink, Color.LightPink},
+            {A.PresetColorValues.LightSalmon, Color.LightSalmon},
+            {A.PresetColorValues.LightSeaGreen, Color.LightSeaGreen},
+            {A.PresetColorValues.LightSkyBlue, Color.LightSkyBlue},
+            {A.PresetColorValues.LightSlateGray, Color.LightSlateGray},
+            {A.PresetColorValues.LightSteelBlue, Color.LightSteelBlue},
+            {A.PresetColorValues.LightYellow, Color.LightYellow},
+            {A.PresetColorValues.Lime, Color.Lime},
+            {A.PresetColorValues.LimeGreen, Color.LimeGreen},
+            {A.PresetColorValues.Linen, Color.Linen},
+            {A.PresetColorValues.Magenta, Color.Magenta},
+            {A.PresetColorValues.Maroon, Color.Maroon},
+            {A.PresetColorValues.MediumBlue, Color.MediumBlue},
+            {A.PresetColorValues.MediumOrchid, Color.MediumOrchid},
+            {A.PresetColorValues.MediumPurple, Color.MediumPurple},
+            {A.PresetColorValues.MediumSeaGreen, Color.MediumSeaGreen},
+            {A.PresetColorValues.MediumSlateBlue, Color.MediumSlateBlue},
+            {A.PresetColorValues.MediumSpringGreen, Color.MediumSpringGreen},
+            {A.PresetColorValues.MediumTurquoise, Color.MediumTurquoise},
+            {A.PresetColorValues.MediumVioletRed, Color.MediumVioletRed},
+            {A.PresetColorValues.MidnightBlue, Color.MidnightBlue},
+            {A.PresetColorValues.MintCream, Color.MintCream},
+            {A.PresetColorValues.MistyRose, Color.MistyRose},
+            {A.PresetColorValues.Moccasin, Color.Moccasin},
+            {A.PresetColorValues.NavajoWhite, Color.NavajoWhite},
+            {A.PresetColorValues.Navy, Color.Navy},
+            {A.PresetColorValues.OldLace, Color.OldLace},
+            {A.PresetColorValues.Olive, Color.Olive},
+            {A.PresetColorValues.OliveDrab, Color.OliveDrab},
+            {A.PresetColorValues.Orange, Color.Orange},
+            {A.PresetColorValues.OrangeRed, Color.OrangeRed},
+            {A.PresetColorValues.Orchid, Color.Orchid},
+            {A.PresetColorValues.PaleGoldenrod, Color.PaleGoldenrod},
+            {A.PresetColorValues.PaleGreen, Color.PaleGreen},
+            {A.PresetColorValues.PaleTurquoise, Color.PaleTurquoise},
+            {A.PresetColorValues.PaleVioletRed, Color.PaleVioletRed},
+            {A.PresetColorValues.PapayaWhip, Color.PapayaWhip},
+            {A.PresetColorValues.PeachPuff, Color.PeachPuff},
+            {A.PresetColorValues.Peru, Color.Peru},
+            {A.PresetColorValues.Pink, Color.Pink},
+            {A.PresetColorValues.Plum, Color.Plum},
+            {A.PresetColorValues.PowderBlue, Color.PowderBlue},
+            {A.PresetColorValues.Purple, Color.Purple},
+            {A.PresetColorValues.Red, Color.Red},
+            {A.PresetColorValues.RosyBrown, Color.RosyBrown},
+            {A.PresetColorValues.RoyalBlue, Color.RoyalBlue},
+            {A.PresetColorValues.SaddleBrown, Color.SaddleBrown},
+            {A.PresetColorValues.Salmon, Color.Salmon},
+            {A.PresetColorValues.SandyBrown, Color.SandyBrown},
+            {A.PresetColorValues.SeaGreen, Color.SeaGreen},
+            {A.PresetColorValues.SeaShell, Color.SeaShell},
+            {A.PresetColorValues.Sienna, Color.Sienna},
+            {A.PresetColorValues.Silver, Color.Silver},
+            {A.PresetColorValues.SkyBlue, Color.SkyBlue},
+            {A.PresetColorValues.SlateBlue, Color.SlateBlue},
+            {A.PresetColorValues.SlateGray, Color.SlateGray},
+            {A.PresetColorValues.Snow, Color.Snow},
+            {A.PresetColorValues.SpringGreen, Color.SpringGreen},
+            {A.PresetColorValues.SteelBlue, Color.SteelBlue},
+            {A.PresetColorValues.Tan, Color.Tan},
+            {A.PresetColorValues.Teal, Color.Teal},
+            {A.PresetColorValues.Thistle, Color.Thistle},
+            {A.PresetColorValues.Tomato, Color.Tomato},
+            {A.PresetColorValues.Turquoise, Color.Turquoise},
+            {A.PresetColorValues.Violet, Color.Violet},
+            {A.PresetColorValues.Wheat, Color.Wheat},
+            {A.PresetColorValues.White, Color.White},
+            {A.PresetColorValues.WhiteSmoke, Color.WhiteSmoke},
+            {A.PresetColorValues.Yellow, Color.Yellow},
+            {A.PresetColorValues.YellowGreen, Color.YellowGreen}
+        };
+
         private readonly SCFont _font;
         private Color _color;
         private SCColorType _colorType;
         private bool _initialized;
-        private static readonly Dictionary<A.PresetColorValues, Color> PresentColorToColor = new()
-        {
-            { A.PresetColorValues.AliceBlue, Color.AliceBlue },
-            { A.PresetColorValues.AntiqueWhite, Color.AntiqueWhite },
-            { A.PresetColorValues.Aqua, Color.Aqua },
-            { A.PresetColorValues.Aquamarine, Color.Aquamarine },
-            { A.PresetColorValues.Azure, Color.Azure },
-            { A.PresetColorValues.Beige, Color.Beige },
-            { A.PresetColorValues.Bisque, Color.Bisque },
-            { A.PresetColorValues.Black, Color.Black },
-            { A.PresetColorValues.BlanchedAlmond, Color.BlanchedAlmond },
-            { A.PresetColorValues.Blue, Color.Blue },
-            { A.PresetColorValues.BlueViolet, Color.BlueViolet },
-            { A.PresetColorValues.Brown, Color.Brown },
-            { A.PresetColorValues.BurlyWood, Color.BurlyWood },
-            { A.PresetColorValues.CadetBlue, Color.CadetBlue },
-            { A.PresetColorValues.Chartreuse, Color.Chartreuse },
-            { A.PresetColorValues.Chocolate, Color.Chocolate },
-            { A.PresetColorValues.Coral, Color.Coral },
-            { A.PresetColorValues.CornflowerBlue, Color.CornflowerBlue },
-            { A.PresetColorValues.Cornsilk, Color.Cornsilk },
-            { A.PresetColorValues.Crimson, Color.Crimson },
-            { A.PresetColorValues.Cyan, Color.Cyan },
-            { A.PresetColorValues.DarkBlue, Color.DarkBlue },
-            { A.PresetColorValues.DarkCyan, Color.DarkCyan },
-            { A.PresetColorValues.DarkGoldenrod, Color.DarkGoldenrod },
-            { A.PresetColorValues.DarkGray, Color.DarkGray },
-            { A.PresetColorValues.DarkGreen, Color.DarkGreen },
-            { A.PresetColorValues.DarkKhaki, Color.DarkKhaki },
-            { A.PresetColorValues.DarkMagenta, Color.DarkMagenta },
-            { A.PresetColorValues.DarkOliveGreen, Color.DarkOliveGreen },
-            { A.PresetColorValues.DarkOrange, Color.DarkOrange },
-            { A.PresetColorValues.DarkOrchid, Color.DarkOrchid },
-            { A.PresetColorValues.DarkRed, Color.DarkRed },
-            { A.PresetColorValues.DarkSalmon, Color.DarkSalmon },
-            { A.PresetColorValues.DarkSeaGreen, Color.DarkSeaGreen },
-            { A.PresetColorValues.DarkSlateBlue, Color.DarkSlateBlue },
-            { A.PresetColorValues.DarkSlateGray, Color.DarkSlateGray },
-            { A.PresetColorValues.DarkTurquoise, Color.DarkTurquoise },
-            { A.PresetColorValues.DarkViolet, Color.DarkViolet },
-            { A.PresetColorValues.DeepPink, Color.DeepPink },
-            { A.PresetColorValues.DeepSkyBlue, Color.DeepSkyBlue },
-            { A.PresetColorValues.DimGray, Color.DimGray },
-            { A.PresetColorValues.DodgerBlue, Color.DodgerBlue },
-            { A.PresetColorValues.Firebrick, Color.Firebrick },
-            { A.PresetColorValues.FloralWhite, Color.FloralWhite },
-            { A.PresetColorValues.ForestGreen, Color.ForestGreen },
-            { A.PresetColorValues.Fuchsia, Color.Fuchsia },
-            { A.PresetColorValues.Gainsboro, Color.Gainsboro },
-            { A.PresetColorValues.GhostWhite, Color.GhostWhite },
-            { A.PresetColorValues.Gold, Color.Gold },
-            { A.PresetColorValues.Goldenrod, Color.Goldenrod },
-            { A.PresetColorValues.Gray, Color.Gray },
-            { A.PresetColorValues.Green, Color.Green },
-            { A.PresetColorValues.GreenYellow, Color.GreenYellow },
-            { A.PresetColorValues.Honeydew, Color.Honeydew },
-            { A.PresetColorValues.HotPink, Color.HotPink },
-            { A.PresetColorValues.IndianRed, Color.IndianRed },
-            { A.PresetColorValues.Indigo, Color.Indigo },
-            { A.PresetColorValues.Ivory, Color.Ivory },
-            { A.PresetColorValues.Khaki, Color.Khaki },
-            { A.PresetColorValues.Lavender, Color.Lavender },
-            { A.PresetColorValues.LavenderBlush, Color.LavenderBlush },
-            { A.PresetColorValues.LawnGreen, Color.LawnGreen },
-            { A.PresetColorValues.LemonChiffon, Color.LemonChiffon },
-            { A.PresetColorValues.LightBlue, Color.LightBlue },
-            { A.PresetColorValues.LightCoral, Color.LightCoral },
-            { A.PresetColorValues.LightCyan, Color.LightCyan },
-            { A.PresetColorValues.LightGoldenrodYellow, Color.LightGoldenrodYellow },
-            { A.PresetColorValues.LightGray, Color.LightGray },
-            { A.PresetColorValues.LightGreen, Color.LightGreen },
-            { A.PresetColorValues.LightPink, Color.LightPink },
-            { A.PresetColorValues.LightSalmon, Color.LightSalmon },
-            { A.PresetColorValues.LightSeaGreen, Color.LightSeaGreen },
-            { A.PresetColorValues.LightSkyBlue, Color.LightSkyBlue },
-            { A.PresetColorValues.LightSlateGray, Color.LightSlateGray },
-            { A.PresetColorValues.LightSteelBlue, Color.LightSteelBlue },
-            { A.PresetColorValues.LightYellow, Color.LightYellow },
-            { A.PresetColorValues.Lime, Color.Lime },
-            { A.PresetColorValues.LimeGreen, Color.LimeGreen },
-            { A.PresetColorValues.Linen, Color.Linen },
-            { A.PresetColorValues.Magenta, Color.Magenta },
-            { A.PresetColorValues.Maroon, Color.Maroon },
-            { A.PresetColorValues.MediumBlue, Color.MediumBlue },
-            { A.PresetColorValues.MediumOrchid, Color.MediumOrchid },
-            { A.PresetColorValues.MediumPurple, Color.MediumPurple },
-            { A.PresetColorValues.MediumSeaGreen, Color.MediumSeaGreen },
-            { A.PresetColorValues.MediumSlateBlue, Color.MediumSlateBlue },
-            { A.PresetColorValues.MediumSpringGreen, Color.MediumSpringGreen },
-            { A.PresetColorValues.MediumTurquoise, Color.MediumTurquoise },
-            { A.PresetColorValues.MediumVioletRed, Color.MediumVioletRed },
-            { A.PresetColorValues.MidnightBlue, Color.MidnightBlue },
-            { A.PresetColorValues.MintCream, Color.MintCream },
-            { A.PresetColorValues.MistyRose, Color.MistyRose },
-            { A.PresetColorValues.Moccasin, Color.Moccasin },
-            { A.PresetColorValues.NavajoWhite, Color.NavajoWhite },
-            { A.PresetColorValues.Navy, Color.Navy },
-            { A.PresetColorValues.OldLace, Color.OldLace },
-            { A.PresetColorValues.Olive, Color.Olive },
-            { A.PresetColorValues.OliveDrab, Color.OliveDrab },
-            { A.PresetColorValues.Orange, Color.Orange },
-            { A.PresetColorValues.OrangeRed, Color.OrangeRed },
-            { A.PresetColorValues.Orchid, Color.Orchid },
-            { A.PresetColorValues.PaleGoldenrod, Color.PaleGoldenrod },
-            { A.PresetColorValues.PaleGreen, Color.PaleGreen },
-            { A.PresetColorValues.PaleTurquoise, Color.PaleTurquoise },
-            { A.PresetColorValues.PaleVioletRed, Color.PaleVioletRed },
-            { A.PresetColorValues.PapayaWhip, Color.PapayaWhip },
-            { A.PresetColorValues.PeachPuff, Color.PeachPuff },
-            { A.PresetColorValues.Peru, Color.Peru },
-            { A.PresetColorValues.Pink, Color.Pink },
-            { A.PresetColorValues.Plum, Color.Plum },
-            { A.PresetColorValues.PowderBlue, Color.PowderBlue },
-            { A.PresetColorValues.Purple, Color.Purple },
-            { A.PresetColorValues.Red, Color.Red },
-            { A.PresetColorValues.RosyBrown, Color.RosyBrown },
-            { A.PresetColorValues.RoyalBlue, Color.RoyalBlue },
-            { A.PresetColorValues.SaddleBrown, Color.SaddleBrown },
-            { A.PresetColorValues.Salmon, Color.Salmon },
-            { A.PresetColorValues.SandyBrown, Color.SandyBrown },
-            { A.PresetColorValues.SeaGreen, Color.SeaGreen },
-            { A.PresetColorValues.SeaShell, Color.SeaShell },
-            { A.PresetColorValues.Sienna, Color.Sienna },
-            { A.PresetColorValues.Silver, Color.Silver },
-            { A.PresetColorValues.SkyBlue, Color.SkyBlue },
-            { A.PresetColorValues.SlateBlue, Color.SlateBlue },
-            { A.PresetColorValues.SlateGray, Color.SlateGray },
-            { A.PresetColorValues.Snow, Color.Snow },
-            { A.PresetColorValues.SpringGreen, Color.SpringGreen },
-            { A.PresetColorValues.SteelBlue, Color.SteelBlue },
-            { A.PresetColorValues.Tan, Color.Tan },
-            { A.PresetColorValues.Teal, Color.Teal },
-            { A.PresetColorValues.Thistle, Color.Thistle },
-            { A.PresetColorValues.Tomato, Color.Tomato },
-            { A.PresetColorValues.Turquoise, Color.Turquoise },
-            { A.PresetColorValues.Violet, Color.Violet },
-            { A.PresetColorValues.Wheat, Color.Wheat },
-            { A.PresetColorValues.White, Color.White },
-            { A.PresetColorValues.WhiteSmoke, Color.WhiteSmoke },
-            { A.PresetColorValues.Yellow, Color.Yellow },
-            { A.PresetColorValues.YellowGreen, Color.YellowGreen }
-        };
 
         public ColorFormat(SCFont font)
         {
@@ -264,9 +265,10 @@ namespace ShapeCrawler.Drawing
                     {
                         case PlaceholderType.Title:
                         {
-                            FontData masterTitleFontData = fontParentShape.SlideMaster.TitleParaLvlToFontData.ContainsKey(paragraphLevel) 
-                                ? fontParentShape.SlideMaster.TitleParaLvlToFontData[paragraphLevel] 
-                                : fontParentShape.SlideMaster.TitleParaLvlToFontData[1];
+                            FontData masterTitleFontData =
+                                fontParentShape.SlideMaster.TitleParaLvlToFontData.ContainsKey(paragraphLevel)
+                                    ? fontParentShape.SlideMaster.TitleParaLvlToFontData[paragraphLevel]
+                                    : fontParentShape.SlideMaster.TitleParaLvlToFontData[1];
                             if (masterTitleFontData.ASchemeColor != null)
                             {
                                 colorHexVariant = GetHexVariantByScheme(masterTitleFontData.ASchemeColor.Val);
@@ -295,9 +297,9 @@ namespace ShapeCrawler.Drawing
                             if (masterBodyFontData.ASchemeColor != null)
                             {
                                 A.SchemeColorValues phBodyFontSchemeColor = masterBodyFontData.ASchemeColor.Val;
-                            colorHexVariant = GetHexVariantByScheme(phBodyFontSchemeColor);
-                            _colorType = SCColorType.Scheme;
-                            _color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                                colorHexVariant = GetHexVariantByScheme(phBodyFontSchemeColor);
+                                _colorType = SCColorType.Scheme;
+                                _color = ColorTranslator.FromHtml($"#{colorHexVariant}");
                             }
                             else
                             {
@@ -307,7 +309,6 @@ namespace ShapeCrawler.Drawing
                             }
 
                             return;
-                                
                         }
                     }
                 }
@@ -324,7 +325,7 @@ namespace ShapeCrawler.Drawing
                 }
 
                 // Try get from Slide Master
-                
+
                 masterBodyFontData = fontParentShape.SlideMaster.BodyParaLvlToFontData[paragraphLevel];
                 if (masterBodyFontData.ARgbColorModelHex != null)
                 {
@@ -343,7 +344,8 @@ namespace ShapeCrawler.Drawing
                 }
 
                 // Try get from presentation global
-                if (fontParentShape.Presentation.ParaLvlToFontData.TryGetValue(paragraphLevel, out FontData preFontData))
+                if (fontParentShape.Presentation.ParaLvlToFontData.TryGetValue(paragraphLevel,
+                    out FontData preFontData))
                 {
                     colorHexVariant = GetHexVariantByScheme(preFontData.ASchemeColor.Val);
                     _colorType = SCColorType.Scheme;
