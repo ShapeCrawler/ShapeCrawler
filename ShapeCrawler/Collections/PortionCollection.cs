@@ -1,75 +1,98 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    ///     Represents collection of paragraph text portions.
+    ///     <inheritdoc cref="IPortionCollection"/>
     /// </summary>
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
     [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
     [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
-    internal class PortionCollection : EditableCollection<IPortion>, IPortionCollection
+    internal class PortionCollection : IPortionCollection
     {
-        public override void Remove(IPortion portion)
+        private readonly ResettableLazy<List<Portion>> portions;
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PortionCollection"/> class.
+        /// </summary>
+        public PortionCollection(A.Paragraph aParagraph, SCParagraph paragraph)
         {
-            if (portion == null || !CollectionItems.Contains(portion))
+            this.portions = new ResettableLazy<List<Portion>>(() => this.GetPortions(aParagraph, paragraph));
+        }
+
+        /// <summary>
+        ///     Gets the number of paragraph portions.
+        /// </summary>
+        public int Count => this.portions.Value.Count;
+
+        public IPortion this[int index] => this.portions.Value[index];
+
+        public void Remove(IPortion removingPortion)
+        {
+            if (removingPortion == null || !this.portions.Value.Contains(removingPortion))
             {
                 return;
             }
 
-            CollectionItems.Remove(portion);
+            ((Portion)removingPortion).AText.Parent.Remove();
 
-            ((Portion) portion).AText.Parent.Remove(); // removes from DOM
+            this.portions.Reset();
         }
 
         public void Remove(IList<IPortion> removingPortions)
         {
             foreach (var portion in removingPortions)
             {
-                CollectionItems.Remove(portion);
-                ((Portion) portion).AText.Parent.Remove();
+                ((Portion)portion).AText.Parent.Remove();
             }
-        }
 
-        #region Internal Methods
-
-        internal PortionCollection(List<IPortion> portions)
-        {
-            CollectionItems = portions;
+            this.portions.Reset();
         }
 
         /// <summary>
-        ///     Gets collection of paragraph portions. Returns <c>NULL</c> if paragraph is empty.
+        ///     Gets an enumerator that iterates through the paragraph portion collection.
         /// </summary>
-        internal static PortionCollection Create(A.Paragraph aParagraph, SCParagraph paragraph)
+        public IEnumerator<IPortion> GetEnumerator()
+        {
+            return this.portions.Value.GetEnumerator();
+        }
+
+        public List<Portion> GetPortions (A.Paragraph aParagraph, SCParagraph paragraph)
         {
             IEnumerable<A.Run> aRuns = aParagraph.Elements<A.Run>();
             if (aRuns.Any())
             {
-                var runPortions = new List<IPortion>(aRuns.Count());
+                var runPortions = new List<Portion>(aRuns.Count());
                 foreach (A.Run aRun in aRuns)
                 {
                     runPortions.Add(new Portion(aRun.Text, paragraph));
                 }
 
-                return new PortionCollection(runPortions);
+                return runPortions;
             }
 
             A.Field aField = aParagraph.GetFirstChild<A.Field>();
             if (aField != null)
             {
                 A.Text aText = aParagraph.GetFirstChild<A.Field>().GetFirstChild<A.Text>();
-                var aFieldPortions = new List<IPortion>(new[] {new Portion(aText, paragraph)});
-                return new PortionCollection(aFieldPortions);
+                var aFieldPortions = new List<Portion>(new[] {new Portion(aText, paragraph)});
+                return aFieldPortions;
             }
 
-            return null;
+            return new List<Portion>();
         }
 
-        #endregion Internal Methods
+        
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
     }
 }

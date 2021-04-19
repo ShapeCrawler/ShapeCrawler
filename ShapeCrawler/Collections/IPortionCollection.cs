@@ -2,6 +2,9 @@ using System.Collections.Generic;
 
 namespace ShapeCrawler.Collections
 {
+    /// <summary>
+    ///     Represents collection of paragraph text portions.
+    /// </summary>
     public interface IPortionCollection : IEnumerable<IPortion>
     {
         /// <summary>
@@ -14,7 +17,14 @@ namespace ShapeCrawler.Collections
         /// </summary>
         int Count { get; }
 
-        void Remove(IPortion row);
-        void Remove(IList<IPortion> removingPortions);
+        /// <summary>
+        ///     Removes portion item from collection.
+        /// </summary>
+        void Remove(IPortion removingPortion);
+
+        /// <summary>
+        ///     Removes portion items from collection.
+        /// </summary>
+        void Remove(IList<IPortion> portions);
     }
 }

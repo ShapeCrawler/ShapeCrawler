@@ -17,55 +17,50 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a text paragraph.
     /// </summary>
-    [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC - ShapeCrawler")]
     internal class SCParagraph : IParagraph
     {
-        private readonly Lazy<Bullet> _bullet;
-        private readonly ResettableLazy<PortionCollection> _portions;
-
-        #region Constructors
+        private readonly Lazy<Bullet> bullet;
+        private readonly ResettableLazy<PortionCollection> portions;
 
         /// <summary>
-        ///     Initializes an instance of the <see cref="SCParagraph" /> class.
+        ///     Initializes a new instance of the <see cref="SCParagraph"/> class.
         /// </summary>
         internal SCParagraph(A.Paragraph aParagraph, SCTextBox textBox)
         {
-            AParagraph = aParagraph;
-            Level = GetInnerLevel(aParagraph);
-            _bullet = new Lazy<Bullet>(GetBullet);
-            TextBox = textBox;
-            _portions = new ResettableLazy<PortionCollection>(() => PortionCollection.Create(AParagraph, this));
+            this.AParagraph = aParagraph;
+            this.Level = GetInnerLevel(aParagraph);
+            this.bullet = new Lazy<Bullet>(this.GetBullet);
+            this.TextBox = textBox;
+            this.portions = new ResettableLazy<PortionCollection>(() => new PortionCollection(this.AParagraph, this));
         }
-
-        #endregion Constructors
-
-        internal SCTextBox TextBox { get; }
-        internal A.Paragraph AParagraph { get; }
-        internal int Level { get; }
-
-        #region Public Properties
 
         /// <summary>
         ///     Gets or sets the the plain text of a paragraph.
         /// </summary>
         public string Text
         {
-            get => GetText();
-            set => SetText(value);
+            get => this.GetText();
+            set => this.SetText(value);
         }
 
         /// <summary>
         ///     Gets collection of paragraph portions. Returns <c>NULL</c> if paragraph is empty.
         /// </summary>
-        public IPortionCollection Portions => _portions.Value;
+        public IPortionCollection Portions => this.portions.Value;
 
         /// <summary>
         ///     Gets paragraph bullet. Returns <c>NULL</c> if bullet does not exist.
         /// </summary>
-        public Bullet Bullet => _bullet.Value;
+        public Bullet Bullet => bullet.Value;
 
-        #endregion Public Properties
+        internal SCTextBox TextBox { get; }
+
+        internal A.Paragraph AParagraph { get; }
+
+        internal int Level { get; }
+
+       
 
         #region Private Methods
 
@@ -85,7 +80,7 @@ namespace ShapeCrawler
 
         private string GetText()
         {
-            if (Portions == null)
+            if (this.Portions.Count == 0)
             {
                 return string.Empty;
             }
@@ -121,7 +116,7 @@ namespace ShapeCrawler
                 lastInsertedARunOrLineBreak.InsertAfterSelf(new A.Break());
             }
 
-            _portions.Reset();
+            portions.Reset();
         }
 
         #endregion Private Methods

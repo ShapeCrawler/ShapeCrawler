@@ -5,6 +5,9 @@ namespace ShapeCrawler
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum SCColorType
     {
+        /// <summary>
+        ///     Color is not defined.
+        /// </summary>
         NotDefined = 0,
         RGB = 1,
         RGBPercentage = 2,

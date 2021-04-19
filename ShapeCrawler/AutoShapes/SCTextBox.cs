@@ -64,7 +64,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetText(string value)
         {
-            IParagraph paragraph = Paragraphs.First(p => p.Portions != null);
+            IParagraph paragraph = Paragraphs.First(p => p.Portions.Count != 0);
             foreach (SCParagraph removingPara in Paragraphs.Where(p => p != paragraph))
             {
                 removingPara.AParagraph.Remove();

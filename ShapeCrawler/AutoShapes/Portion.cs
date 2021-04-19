@@ -13,8 +13,8 @@ namespace ShapeCrawler
     /// </summary>
     internal class Portion : IPortion // TODO: make internal
     {
-        private readonly ResettableLazy<SCFont> _font;
         internal readonly A.Text AText;
+        private readonly ResettableLazy<SCFont> _font;
 
         #region Constructors
 

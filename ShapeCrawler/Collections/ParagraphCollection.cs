@@ -13,31 +13,34 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts
 {
+    /// <summary>
+    ///     <inheritdoc cref="IParagraphCollection"/>
+    /// </summary>
     internal class ParagraphCollection : IParagraphCollection
     {
-        private readonly ResettableLazy<List<SCParagraph>> _paragraphs;
+        private readonly ResettableLazy<List<SCParagraph>> paragraphs;
 
-        private readonly OpenXmlCompositeElement _textBodyCompositeElement;
-        private readonly SCTextBox _textBox;
+        private readonly OpenXmlCompositeElement textBodyCompositeElement;
+        private readonly SCTextBox textBox;
 
         #region Constructors
 
         internal ParagraphCollection(OpenXmlCompositeElement textBodyCompositeElement, SCTextBox textBox)
         {
-            _textBodyCompositeElement = textBodyCompositeElement;
-            _textBox = textBox;
+            this.textBodyCompositeElement = textBodyCompositeElement;
+            this.textBox = textBox;
 
-            _paragraphs = new ResettableLazy<List<SCParagraph>>(GetParagraphs);
+            paragraphs = new ResettableLazy<List<SCParagraph>>(GetParagraphs);
         }
 
         #endregion Constructors
 
         private List<SCParagraph> GetParagraphs() //TODO: return null if text box is empty
         {
-            IEnumerable<A.Paragraph> aParagraphs = _textBodyCompositeElement.Elements<A.Paragraph>();
+            IEnumerable<A.Paragraph> aParagraphs = textBodyCompositeElement.Elements<A.Paragraph>();
 
             var paragraphs = new List<SCParagraph>(aParagraphs.Count());
-            paragraphs.AddRange(aParagraphs.Select(aParagraph => new SCParagraph(aParagraph, _textBox)));
+            paragraphs.AddRange(aParagraphs.Select(aParagraph => new SCParagraph(aParagraph, textBox)));
 
             return paragraphs;
         }
@@ -46,7 +49,7 @@ namespace ShapeCrawler.Texts
 
         public IEnumerator<IParagraph> GetEnumerator()
         {
-            return _paragraphs.Value.GetEnumerator();
+            return paragraphs.Value.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -54,9 +57,9 @@ namespace ShapeCrawler.Texts
             return GetEnumerator();
         }
 
-        public IParagraph this[int index] => _paragraphs.Value[index];
+        public IParagraph this[int index] => paragraphs.Value[index];
 
-        public int Count => _paragraphs.Value.Count;
+        public int Count => paragraphs.Value.Count;
 
         /// <summary>
         ///     Adds a new paragraph in collection.
@@ -65,16 +68,16 @@ namespace ShapeCrawler.Texts
         public IParagraph Add()
         {
             // Create a new paragraph from the last paragraph and insert at the end
-            A.Paragraph lastAParagraph = _paragraphs.Value.Last().AParagraph;
+            A.Paragraph lastAParagraph = paragraphs.Value.Last().AParagraph;
             A.Paragraph newAParagraph = (A.Paragraph) lastAParagraph.CloneNode(true);
             lastAParagraph.InsertAfterSelf(newAParagraph);
 
-            var newParagraph = new SCParagraph(newAParagraph, _textBox)
+            var newParagraph = new SCParagraph(newAParagraph, textBox)
             {
                 Text = string.Empty
             };
 
-            _paragraphs.Reset();
+            paragraphs.Reset();
 
             return newParagraph;
         }
