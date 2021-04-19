@@ -34,6 +34,9 @@ namespace ShapeCrawler
         internal Dictionary<int, FontData> BodyParaLvlToFontData =>
             FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.BodyStyle);
 
+        internal Dictionary<int, FontData> TitleParaLvlToFontData =>
+            FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.TitleStyle);
+
         public void Hide() //TODO: does it need?
         {
             throw new NotImplementedException();
@@ -72,14 +75,6 @@ namespace ShapeCrawler
         {
             Dictionary<int, FontData> bodyParaLvlToFontData =
                 FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.BodyStyle);
-
-            return bodyParaLvlToFontData[paragraphLvl].ASchemeColor.Val;
-        }
-
-        internal A.SchemeColorValues GetFontColorHexFromTitle(int paragraphLvl)
-        {
-            Dictionary<int, FontData> bodyParaLvlToFontData =
-                FontDataParser.FromCompositeElement(PSlideMaster.TextStyles.TitleStyle);
 
             return bodyParaLvlToFontData[paragraphLvl].ASchemeColor.Val;
         }

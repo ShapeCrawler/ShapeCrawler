@@ -76,7 +76,7 @@ namespace ShapeCrawler
         #region Public Properties
 
         /// <summary>
-        ///     Returns row's cells.
+        ///     Gets row's cells.
         /// </summary>
         public IReadOnlyList<ITableCell> Cells => _cells.Value;
 

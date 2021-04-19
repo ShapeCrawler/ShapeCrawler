@@ -11,15 +11,15 @@ using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
 using ShapeCrawler.Tables;
-using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace ShapeCrawler
 {
-    public class SlideTable : SlideShape, ITable // TODO: make internal
+    internal class SlideTable : SlideShape, ITable // TODO: make internal
     {
         private readonly ILocation _innerTransform;
         private readonly P.GraphicFrame _pGraphicFrame;

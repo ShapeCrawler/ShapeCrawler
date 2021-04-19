@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
@@ -239,10 +240,10 @@ namespace ShapeCrawler.Tests.Unit
         public void Shape_IsOLEObject()
         {
             // Arrange
-            IShape shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 8);
+            IOLEObject oleObject = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 8) as IOLEObject;
 
             // Act-Assert
-            shape.Should().BeOfType<SlideOLEObject>();
+            oleObject.Should().NotBeNull();
         }
 
         [Fact]

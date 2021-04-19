@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -20,7 +19,6 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a slide.
     /// </summary>
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class SCSlide : ISlide // TODO: make it internal
     {
         #region Constructors
@@ -63,7 +61,7 @@ namespace ShapeCrawler
         public ShapeCollection Shapes => _shapes.Value;
 
         /// <summary>
-        ///     Returns a slide number in presentation.
+        ///     Gets a slide number in presentation.
         /// </summary>
         public int Number => _sldNumEntity.Number;
 
@@ -136,7 +134,7 @@ namespace ShapeCrawler
         {
             if (SlidePart.Slide.Show == null)
             {
-                var showAttribute = new OpenXmlAttribute("show", "", "0");
+                var showAttribute = new OpenXmlAttribute("show", string.Empty, "0");
                 SlidePart.Slide.SetAttribute(showAttribute);
             }
             else
@@ -151,8 +149,8 @@ namespace ShapeCrawler
 
         private SCImage TryGetBackground()
         {
-            var backgroundImageFactory = new ImageExFactory();
-            return backgroundImageFactory.TryFromSdkSlide(SlidePart);
+            var backgroundImageFactory = new SCImageFactory();
+            return backgroundImageFactory.FromSlidePart(SlidePart);
         }
 
         private string GetCustomData()

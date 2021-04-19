@@ -14,7 +14,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a shape.
     /// </summary>
-    public abstract class Shape //TODO: make it internal
+    internal abstract class Shape
     {
         #region Constructors
 

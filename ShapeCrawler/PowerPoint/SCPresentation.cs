@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Factories;
 using ShapeCrawler.Models;
-using ShapeCrawler.Settings;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
@@ -17,16 +20,44 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler
 {
     /// <inheritdoc cref="IPresentation" />
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public sealed class SCPresentation : IPresentation
     {
         private bool _closed;
+
+        private Lazy<Dictionary<int, FontData>> _paraLvlToFontData;
         private PresentationDocument _presentationDocument;
         private Lazy<SlideCollection> _slides;
         private Lazy<SlideSizeSc> _slideSize;
-        internal PresentationData PresentationData;
         internal PresentationPart PresentationPart;
         internal bool Editable { get; }
         internal List<ChartWorkbook> ChartWorkbooks { get; } = new();
+
+        internal Dictionary<int, FontData> ParaLvlToFontData => _paraLvlToFontData.Value;
+
+        private static Dictionary<int, FontData> ParseFontHeights(P.Presentation pPresentation)
+        {
+            var lvlToFontData = new Dictionary<int, FontData>();
+
+            // from presentation default text settings
+            if (pPresentation.DefaultTextStyle != null)
+            {
+                lvlToFontData = FontDataParser.FromCompositeElement(pPresentation.DefaultTextStyle);
+            }
+
+            // from theme default text settings
+            if (lvlToFontData.Any(kvp => kvp.Value.FontSize == null))
+            {
+                A.TextDefault themeTextDefault =
+                    pPresentation.PresentationPart.ThemePart.Theme.ObjectDefaults.TextDefault;
+                if (themeTextDefault != null)
+                {
+                    lvlToFontData = FontDataParser.FromCompositeElement(themeTextDefault.ListStyle);
+                }
+            }
+
+            return lvlToFontData;
+        }
 
         #region Public Properties
 
@@ -175,7 +206,8 @@ namespace ShapeCrawler
             _slides = new Lazy<SlideCollection>(GetSlides);
             _slideSize = new Lazy<SlideSizeSc>(GetSlideSize);
             PresentationPart = _presentationDocument.PresentationPart;
-            PresentationData = new PresentationData(PresentationPart.Presentation);
+            _paraLvlToFontData =
+                new Lazy<Dictionary<int, FontData>>(() => ParseFontHeights(PresentationPart.Presentation));
         }
 
         private SlideSizeSc GetSlideSize()

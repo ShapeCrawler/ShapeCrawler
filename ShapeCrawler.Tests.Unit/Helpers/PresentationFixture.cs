@@ -26,6 +26,14 @@ namespace ShapeCrawler.Tests.Unit.Helpers
         public SCPresentation Pre026 { get; }
         public SCPresentation Pre028 { get; }
         public SCPresentation Pre029 { get; }
+        public SCPresentation Pre030 { get; }
+        public SCPresentation Pre031 { get; }
+        public SCPresentation Pre032 { get; }
+        public SCPresentation Pre033 { get; }
+        public SCPresentation Pre034 { get; }
+        public SCPresentation Pre035 { get; }
+        public SCPresentation Pre036 { get; }
+        public SCPresentation Pre037 { get; }
 
         public PresentationFixture()
         {
@@ -53,6 +61,13 @@ namespace ShapeCrawler.Tests.Unit.Helpers
             Pre026 = SCPresentation.Open(Properties.Resources._026, false);
             Pre028 = SCPresentation.Open(Properties.Resources._028, false);
             Pre029 = SCPresentation.Open(Properties.Resources._029, false);
+            Pre030 = SCPresentation.Open(Properties.Resources._030, false);
+            Pre031 = SCPresentation.Open(Properties.Resources._031, false);
+            Pre032 = SCPresentation.Open(Properties.Resources._032, false);
+            Pre033 = SCPresentation.Open(Properties.Resources._033, false);
+            Pre034 = SCPresentation.Open(Properties.Resources._034, false);
+            Pre035 = SCPresentation.Open(Properties.Resources._035, false);
+            Pre036 = SCPresentation.Open(Properties.Resources._036, false);
         }
     }
 }

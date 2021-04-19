@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
-using P = DocumentFormat.OpenXml.Presentation;
 using D = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Extensions
 {

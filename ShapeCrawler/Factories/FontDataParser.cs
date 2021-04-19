@@ -29,18 +29,9 @@ namespace ShapeCrawler.Factories
         ///     Gets font data.
         /// </summary>
         /// <param name="compositeElement">Instance of <see cref="P.DefaultTextStyle" /> or <see cref="A.ListStyle" /> class.</param>
-        /// <example>
-        //      <a:lstStyle>
-        //          <a:lvl1pPr>
-        //              <a:defRPr>
-        //                  <a:latin typeface="+mj-lt"/>
-        //              </a:defRPr>
-        //          </a:lvl1pPr>
-        //      </a:lstStyle>
-        //  </example>
         public static Dictionary<int, FontData>
             FromCompositeElement(
-                OpenXmlCompositeElement compositeElement) //TODO: set annotation that about it cannot be NULL
+                OpenXmlCompositeElement compositeElement) // TODO: set annotation that about it cannot be NULL
         {
             // Get <a:lvlXpPr> elements, eg. <a:lvl1pPr>, <a:lvl2pPr>
             IEnumerable<OpenXmlElement> lvlParagraphPropertyList = compositeElement.Elements()

@@ -6,7 +6,6 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -160,8 +159,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             // From presentation level
-            PresentationData presentationData = fontParentShape.Presentation.PresentationData;
-            if (presentationData.LlvToFontData.TryGetValue(paragraphLvl, out FontData fontData))
+            if (fontParentShape.Presentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
             {
                 if (fontData.FontSize != null)
                 {
@@ -315,7 +313,10 @@ namespace ShapeCrawler.AutoShapes
             {
                 var aSolidFill = new A.SolidFill
                 {
-                    RgbColorModelHex = new A.RgbColorModelHex {Val = value}
+                    RgbColorModelHex = new A.RgbColorModelHex
+                    {
+                        Val = value
+                    }
                 };
 
                 aRunPr = new A.RunProperties(aSolidFill);

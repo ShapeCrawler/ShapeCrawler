@@ -26,7 +26,9 @@ namespace ShapeCrawler.Collections
 
         #endregion Constructors
 
-        internal static CategoryCollection Create(SlideChart slideChart, OpenXmlElement firstChartSeries,
+        internal static CategoryCollection Create(
+            SlideChart slideChart,
+            OpenXmlElement firstChartSeries,
             ChartType chartType)
         {
             if (chartType == ChartType.BubbleChart || chartType == ChartType.ScatterChart)
@@ -177,7 +179,6 @@ namespace ShapeCrawler.Collections
         ///         </c:multiLvlStrRef>
         ///     </c:cat>
         /// </param>
-        /// <returns></returns>
         private static List<Category> GetMultiCategoriesNew(C.MultiLevelStringReference multiLevelStrRef)
         {
             List<C.Level> cLevels = multiLevelStrRef.MultiLevelStringCache.Elements<C.Level>().ToList();

@@ -237,7 +237,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             MemoryStream mStream = new ();
-            IPortion portion = TestHelper.GetPortion(presentation, portionRequest);
+            IPortion portion = TestHelper.GetParagraphPortion(presentation, portionRequest);
 
             // Act
             portion.Font.IsBold = true;
@@ -247,7 +247,7 @@ namespace ShapeCrawler.Tests.Unit
 
             presentation.SaveAs(mStream);
             presentation = SCPresentation.Open(mStream, false);
-            portion = TestHelper.GetPortion(presentation, portionRequest);
+            portion = TestHelper.GetParagraphPortion(presentation, portionRequest);
             portion.Font.IsBold.Should().BeTrue();
         }
 
