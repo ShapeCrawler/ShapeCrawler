@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Collections;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Tables;

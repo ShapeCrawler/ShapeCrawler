@@ -32,4 +32,6 @@ dotnet_diagnostic.SA1200.severity = none
 # SA1615ElementReturnValueMustBeDocumented
 dotnet_diagnostic.SA1615.severity = none
 
+# SA1413UseTrailingCommasInMultiLineInitializers
+dotnet_diagnostic.SA1413.severity = none
 

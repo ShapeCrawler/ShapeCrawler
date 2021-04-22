@@ -4,6 +4,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -31,7 +32,7 @@ namespace ShapeCrawler
             this.AParagraph = aParagraph;
             this.Level = GetInnerLevel(aParagraph);
             this.bullet = new Lazy<Bullet>(this.GetBullet);
-            this.TextBox = textBox;
+            this.ParentTextBox = textBox;
             this.portions = new ResettableLazy<PortionCollection>(() => new PortionCollection(this.AParagraph, this));
         }
 
@@ -54,13 +55,11 @@ namespace ShapeCrawler
         /// </summary>
         public Bullet Bullet => bullet.Value;
 
-        internal SCTextBox TextBox { get; }
+        internal SCTextBox ParentTextBox { get; }
 
         internal A.Paragraph AParagraph { get; }
 
         internal int Level { get; }
-
-       
 
         #region Private Methods
 
@@ -85,28 +84,28 @@ namespace ShapeCrawler
                 return string.Empty;
             }
 
-            return Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next);
+            return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next);
         }
 
         private void SetText(string newText)
         {
             // To set a paragraph text we use a single portion which is the first paragraph portion.
             // Rest of the portions are deleted from the paragraph.
-            Portions.Remove(Portions.Skip(1).ToList());
-            IPortion basePortion = Portions.Single();
+            this.Portions.Remove(this.Portions.Skip(1).ToList());
+            Portion basePortion = (Portion)this.portions.Value.Single();
             if (newText == string.Empty)
             {
                 basePortion.Text = string.Empty;
                 return;
             }
 
-            string[] textLines = newText.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
+            string[] textLines = newText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             basePortion.Text = textLines[0];
-            OpenXmlElement lastInsertedARunOrLineBreak = ((Portion) basePortion).AText.Parent;
+            OpenXmlElement lastInsertedARunOrLineBreak = basePortion.AText.Parent;
             for (int i = 1; i < textLines.Length; i++)
             {
                 lastInsertedARunOrLineBreak = lastInsertedARunOrLineBreak.InsertAfterSelf(new A.Break());
-                A.Run newARun = ((Portion) basePortion).GetARunCopy();
+                A.Run newARun = (A.Run)basePortion.AText.Parent.CloneNode(true);
                 newARun.Text.Text = textLines[i];
                 lastInsertedARunOrLineBreak = lastInsertedARunOrLineBreak.InsertAfterSelf(newARun);
             }
@@ -116,9 +115,23 @@ namespace ShapeCrawler
                 lastInsertedARunOrLineBreak.InsertAfterSelf(new A.Break());
             }
 
-            portions.Reset();
+            this.portions.Reset();
         }
 
         #endregion Private Methods
+
+        public void ThrowIfRemoved()
+        {
+            if (this.IsRemoved)
+            {
+                throw new ElementIsRemovedException("Paragraph was removed.");
+            }
+            else
+            {
+                this.ParentTextBox.ThrowIfRemoved();
+            }
+        }
+
+        public bool IsRemoved { get; set; }
     }
 }

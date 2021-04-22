@@ -10,83 +10,81 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes
 {
+    /// <summary>
+    ///     <inheritdoc cref="ITextBox"/>
+    /// </summary>
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal sealed class SCTextBox : ITextBox
     {
         #region Fields
 
-        private readonly Lazy<string> _text;
-        private readonly OpenXmlCompositeElement _textBodyCompositeElement;
-        internal Shape AutoShape { get; }
-
-        #endregion Fields
-
-        #region Public Properties
+        private readonly Lazy<string> text;
+        private readonly OpenXmlCompositeElement textBodyCompositeElement;
 
         /// <summary>
-        ///     Gets collection of text paragraphs.
+        ///     Initializes a new instance of the <see cref="SCTextBox"/> class for Auto Shape.
         /// </summary>
-        public IParagraphCollection Paragraphs { get; private set; }
-
-        /// <summary>
-        ///     Gets or sets text box string content. Returns null if the text box is empty.
-        /// </summary>
-        public string Text
-        {
-            get => _text.Value;
-            set => SetText(value);
-        }
-
-        #endregion Public Properties
-
-        #region Constructors
-
         internal SCTextBox(P.TextBody autoShapePTextBody, Shape autoShape)
         {
-            _textBodyCompositeElement = autoShapePTextBody;
-            _text = new Lazy<string>(GetText);
-            Paragraphs = new ParagraphCollection(_textBodyCompositeElement, this);
-
-            AutoShape = autoShape;
+            this.textBodyCompositeElement = autoShapePTextBody;
+            this.text = new Lazy<string>(this.GetText);
+            this.Paragraphs = new ParagraphCollection(this.textBodyCompositeElement, this);
+            this.ParentAutoShape = autoShape;
         }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="SCTextBox"/> class for Table Cell.
+        /// </summary>
         internal SCTextBox(A.TextBody tblCellATextBody)
         {
-            _textBodyCompositeElement = tblCellATextBody;
-            _text = new Lazy<string>(GetText);
-            Paragraphs = new ParagraphCollection(_textBodyCompositeElement, this);
+            this.textBodyCompositeElement = tblCellATextBody;
+            this.text = new Lazy<string>(this.GetText);
+            this.Paragraphs = new ParagraphCollection(this.textBodyCompositeElement, this);
         }
 
-        #endregion Constructors
+        /// <inheritdoc/>
+        public IParagraphCollection Paragraphs { get; private set; }
 
-        #region Private Methods
+        /// <inheritdoc/>
+        public string Text
+        {
+            get => this.text.Value;
+            set => this.SetText(value);
+        }
+
+        internal Shape ParentAutoShape { get; }
 
         private void SetText(string value)
         {
-            IParagraph paragraph = Paragraphs.First(p => p.Portions.Count != 0);
-            foreach (SCParagraph removingPara in Paragraphs.Where(p => p != paragraph))
+            bool changed = false;
+            SCParagraph paragraph = (SCParagraph)this.Paragraphs.First(p => p.Portions.Any());
+            foreach (SCParagraph removingPara in this.Paragraphs.Where(p => p != paragraph))
             {
                 removingPara.AParagraph.Remove();
+                changed = true;
             }
 
-            Paragraphs = new ParagraphCollection(_textBodyCompositeElement, this);
+            if (changed)
+            {
+                this.Paragraphs = new ParagraphCollection(this.textBodyCompositeElement, this);
+            }
 
-            Paragraphs.Single().Text = value;
+            this.Paragraphs.Single().Text = value;
         }
 
         private string GetText()
         {
             var sb = new StringBuilder();
-            sb.Append(Paragraphs[0].Text);
+            sb.Append(this.Paragraphs[0].Text);
 
             // If the number of paragraphs more than one
-            var numPr = Paragraphs.Count;
+            var numPr = this.Paragraphs.Count;
             var index = 1;
             while (index < numPr)
             {
                 sb.AppendLine();
-                sb.Append(Paragraphs[index].Text);
+                sb.Append(this.Paragraphs[index].Text);
 
                 index++;
             }
@@ -95,5 +93,10 @@ namespace ShapeCrawler.AutoShapes
         }
 
         #endregion Private Methods
+
+        public void ThrowIfRemoved()
+        {
+            this.ParentAutoShape.ThrowIfRemoved();
+        }
     }
 }

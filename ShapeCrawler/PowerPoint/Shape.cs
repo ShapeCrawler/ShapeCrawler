@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Statics;
@@ -12,58 +13,56 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler
 {
     /// <summary>
-    ///     Represents a shape.
+    ///     Represents a base class for shapes located on Slide, Slide Layout or Master Slide.
     /// </summary>
     internal abstract class Shape
     {
-        #region Constructors
-
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Shape"/> class.
+        /// </summary>
         protected Shape(OpenXmlCompositeElement pShapeTreeChild)
         {
-            PShapeTreeChild = pShapeTreeChild;
-        }
-
-        #endregion Constructors
-
-        internal OpenXmlCompositeElement PShapeTreeChild { get; }
-        internal abstract ThemePart ThemePart { get; }
-
-        public int Id => (int) PShapeTreeChild.GetNonVisualDrawingProperties().Id.Value;
-        public string Name => PShapeTreeChild.GetNonVisualDrawingProperties().Name;
-        public bool Hidden => DefineHidden();
-
-        public string CustomData
-        {
-            get => GetCustomData();
-            set => SetCustomData(value);
-        }
-
-        protected void SetCustomData(string value)
-        {
-            string customDataElement =
-                $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
-            PShapeTreeChild.InnerXml += customDataElement;
+            this.PShapeTreeChild = pShapeTreeChild;
         }
 
         #region Public Properties
+
+        public int Id => (int)this.PShapeTreeChild.GetNonVisualDrawingProperties().Id.Value;
+
+        public string Name => this.PShapeTreeChild.GetNonVisualDrawingProperties().Name;
+
+        public bool Hidden => this.DefineHidden();
+
+        public string CustomData
+        {
+            get => this.GetCustomData();
+            set => this.SetCustomData(value);
+        }
 
         /// <summary>
         ///     Gets placeholder. Returns <c>NULL</c> if the shape is not a placeholder.
         /// </summary>
         public abstract IPlaceholder Placeholder { get; }
 
+        /// <summary>
+        ///     Gets parent presentation.
+        /// </summary>
         public abstract SCPresentation Presentation { get; }
+
+        /// <summary>
+        ///     Gets parent Slide Master.
+        /// </summary>
         public abstract SCSlideMaster SlideMaster { get; }
 
-        public virtual GeometryType GeometryType => GetGeometryType();
+        public virtual GeometryType GeometryType => this.GetGeometryType();
 
         /// <summary>
         ///     Gets y-coordinate of the upper-left corner of the shape.
         /// </summary>
         public long Y
         {
-            get => GetY();
-            set => SetY(value);
+            get => this.GetY();
+            set => this.SetY(value);
         }
 
         /// <summary>
@@ -71,8 +70,8 @@ namespace ShapeCrawler
         /// </summary>
         public long Height
         {
-            get => GetHeight();
-            set => SetHeight(value);
+            get => this.GetHeight();
+            set => this.SetHeight(value);
         }
 
         /// <summary>
@@ -91,6 +90,19 @@ namespace ShapeCrawler
         {
             get => GetX();
             set => SetX(value);
+        }
+
+        #endregion Public Properties
+
+        internal OpenXmlCompositeElement PShapeTreeChild { get; }
+
+        internal abstract ThemePart ThemePart { get; }
+
+        protected void SetCustomData(string value)
+        {
+            string customDataElement =
+                $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
+            this.PShapeTreeChild.InnerXml += customDataElement;
         }
 
         private bool DefineHidden()
@@ -219,6 +231,18 @@ namespace ShapeCrawler
             return GeometryType.Rectangle; // return default
         }
 
-        #endregion Public Properties
+        internal void ThrowIfRemoved()
+        {
+            if (this.IsRemoved)
+            {
+                throw new ElementIsRemovedException("Shape was removed.");
+            }
+            else
+            {
+                
+            }
+        }
+
+        public bool IsRemoved { get; set; }
     }
 }

@@ -17,7 +17,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public class SCSlideMaster : ISlide //TODO: add ISlideMaster interface and make internal
+    public class SCSlideMaster : IBaseSlide //TODO: add ISlideMaster interface and make internal
     {
         private readonly ResettableLazy<List<SCSlideLayout>> _sldLayouts;
         internal readonly P.SlideMaster PSlideMaster;

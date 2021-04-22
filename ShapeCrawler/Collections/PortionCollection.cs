@@ -10,10 +10,6 @@ namespace ShapeCrawler.Collections
     /// <summary>
     ///     <inheritdoc cref="IPortionCollection"/>
     /// </summary>
-    [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-    [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-    [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
-    [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
     internal class PortionCollection : IPortionCollection
     {
         private readonly ResettableLazy<List<Portion>> portions;
@@ -26,44 +22,38 @@ namespace ShapeCrawler.Collections
             this.portions = new ResettableLazy<List<Portion>>(() => this.GetPortions(aParagraph, paragraph));
         }
 
-        /// <summary>
-        ///     Gets the number of paragraph portions.
-        /// </summary>
+        /// <inheritdoc/>
         public int Count => this.portions.Value.Count;
 
+        /// <inheritdoc/>
         public IPortion this[int index] => this.portions.Value[index];
 
+        /// <inheritdoc/>
         public void Remove(IPortion removingPortion)
         {
-            if (removingPortion == null || !this.portions.Value.Contains(removingPortion))
-            {
-                return;
-            }
-
-            ((Portion)removingPortion).AText.Parent.Remove();
+            Portion removingInnerPortion = (Portion)removingPortion;
+            removingInnerPortion.AText.Parent.Remove(); // remove parent <a:r>
+            removingInnerPortion.IsRemoved = true;
 
             this.portions.Reset();
         }
 
+        /// <inheritdoc/>
         public void Remove(IList<IPortion> removingPortions)
         {
-            foreach (var portion in removingPortions)
+            foreach (Portion portion in removingPortions.Cast<Portion>())
             {
-                ((Portion)portion).AText.Parent.Remove();
+                this.Remove(portion);
             }
-
-            this.portions.Reset();
         }
 
-        /// <summary>
-        ///     Gets an enumerator that iterates through the paragraph portion collection.
-        /// </summary>
+        /// <inheritdoc/>
         public IEnumerator<IPortion> GetEnumerator()
         {
             return this.portions.Value.GetEnumerator();
         }
 
-        public List<Portion> GetPortions (A.Paragraph aParagraph, SCParagraph paragraph)
+        private List<Portion> GetPortions (A.Paragraph aParagraph, SCParagraph paragraph)
         {
             IEnumerable<A.Run> aRuns = aParagraph.Elements<A.Run>();
             if (aRuns.Any())
@@ -87,8 +77,6 @@ namespace ShapeCrawler.Collections
 
             return new List<Portion>();
         }
-
-        
 
         IEnumerator IEnumerable.GetEnumerator()
         {

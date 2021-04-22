@@ -26,29 +26,6 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Remove_RemovesPortionFromCollection()
-        {
-            // Arrange
-            var presentation = SCPresentation.Open(Resources._002, true);
-            var portions = GetPortions(presentation);
-            var portion = portions.First();
-            var countBefore = portions.Count;
-
-            // Act
-            portion.Remove();
-
-            // Assert
-            portions.Should().HaveCount(1);
-            portions.Should().HaveCountLessThan(countBefore);
-
-            var memoryStream = new MemoryStream();
-            presentation.SaveAs(memoryStream);
-            var savedPresentation = SCPresentation.Open(memoryStream, false);
-            portions = GetPortions(savedPresentation);
-            portions.Should().HaveCount(1);
-        }
-
-        [Fact]
         public void Text_GetterReturnsParagraphPortionText()
         {
             // Arrange
@@ -62,13 +39,18 @@ namespace ShapeCrawler.Tests.Unit
             paragraphPortionText.Should().BeEquivalentTo("0:0_p1_lvl1");
         }
 
-        private static IPortionCollection GetPortions(SCPresentation presentation)
+        [Fact]
+        public void Text_GetterThrowsElementIsRemovedException_WhenPortionIsRemoved()
         {
-            IAutoShape shape5 = presentation.Slides[1].Shapes.First(x => x.Id == 5) as IAutoShape;
-            var portions = shape5.TextBox.Paragraphs[0].Portions;
-            return portions;
-        }
+            // Arrange
+            IPresentation presentation = SCPresentation.Open(Resources._001, true);
+            IAutoShape autoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 5);
+            IPortionCollection portions = autoShape.TextBox.Paragraphs[0].Portions;
+            IPortion portion = portions[0];
+            portions.Remove(portion);
 
-        
+            // Act-Assert
+            portion.Invoking(p => p.Text).Should().Throw<ElementIsRemovedException>();
+        }
     }
 }

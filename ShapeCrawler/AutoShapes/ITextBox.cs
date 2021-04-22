@@ -2,6 +2,9 @@
 
 namespace ShapeCrawler.AutoShapes
 {
+    /// <summary>
+    ///     Represents a text box.
+    /// </summary>
     public interface ITextBox
     {
         /// <summary>

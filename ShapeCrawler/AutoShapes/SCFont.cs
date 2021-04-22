@@ -31,7 +31,7 @@ namespace ShapeCrawler.AutoShapes
             _size = new ResettableLazy<int>(GetSize);
             _latinFont = new ResettableLazy<A.LatinFont>(GetALatinFont);
             _colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
-            _paragraphLvl = portion.Paragraph.Level;
+            _paragraphLvl = portion.ParentParagraph.Level;
             Portion = portion;
         }
 
@@ -89,7 +89,7 @@ namespace ShapeCrawler.AutoShapes
             const string majorLatinFont = "+mj-lt";
             if (_latinFont.Value.Typeface == majorLatinFont)
             {
-                return Portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.FontScheme.MajorFont.LatinFont
+                return Portion.ParentParagraph.ParentTextBox.ParentAutoShape.ThemePart.Theme.ThemeElements.FontScheme.MajorFont.LatinFont
                     .Typeface;
             }
 
@@ -107,7 +107,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             FontData phFontData = new();
-            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.Paragraph);
+            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.ParentParagraph);
             {
                 if (phFontData.ALatinFont != null)
                 {
@@ -116,7 +116,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             // Get from theme
-            return Portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.FontScheme.MinorFont.LatinFont;
+            return Portion.ParentParagraph.ParentTextBox.ParentAutoShape.ThemePart.Theme.ThemeElements.FontScheme.MinorFont.LatinFont;
         }
 
         private int GetSize()
@@ -127,8 +127,8 @@ namespace ShapeCrawler.AutoShapes
                 return aRunPrFontSize.Value;
             }
 
-            Shape fontParentShape = Portion.Paragraph.TextBox.AutoShape;
-            int paragraphLvl = Portion.Paragraph.Level;
+            Shape fontParentShape = Portion.ParentParagraph.ParentTextBox.ParentAutoShape;
+            int paragraphLvl = Portion.ParentParagraph.Level;
 
             // Try get font size from placeholder
             if (fontParentShape.Placeholder != null)
@@ -184,7 +184,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             FontData phFontData = new();
-            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.Paragraph);
+            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.ParentParagraph);
             if (phFontData.IsBold != null)
             {
                 return phFontData.IsBold.Value;
@@ -207,7 +207,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             FontData phFontData = new();
-            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.Paragraph);
+            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.ParentParagraph);
             if (phFontData.IsItalic != null)
             {
                 return phFontData.IsItalic.Value;
@@ -226,7 +226,7 @@ namespace ShapeCrawler.AutoShapes
             else
             {
                 FontData phFontData = new();
-                FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.Paragraph);
+                FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.ParentParagraph);
                 if (phFontData.IsBold != null)
                 {
                     phFontData.IsBold = new BooleanValue(value);
@@ -271,7 +271,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetName(string fontName)
         {
-            if (Portion.Paragraph.TextBox.AutoShape.Placeholder != null)
+            if (Portion.ParentParagraph.ParentTextBox.ParentAutoShape.Placeholder != null)
             {
                 throw new PlaceholderCannotBeChangedException();
             }

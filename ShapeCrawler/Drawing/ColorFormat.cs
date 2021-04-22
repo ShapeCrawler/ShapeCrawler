@@ -195,7 +195,7 @@ namespace ShapeCrawler.Drawing
         private void InitColor()
         {
             _initialized = true;
-            int paragraphLevel = _font.Portion.Paragraph.Level;
+            int paragraphLevel = _font.Portion.ParentParagraph.Level;
             string colorHexVariant;
 
             // Try get color from PORTION level
@@ -239,12 +239,12 @@ namespace ShapeCrawler.Drawing
             else
             {
                 // Get color from SHAPE level
-                Shape fontParentShape = _font.Portion.Paragraph.TextBox.AutoShape;
+                Shape fontParentShape = _font.Portion.ParentParagraph.ParentTextBox.ParentAutoShape;
                 FontData masterBodyFontData;
                 if (fontParentShape.Placeholder is Placeholder placeholder)
                 {
                     FontData phFontData = new();
-                    FontDataParser.GetFontDataFromPlaceholder(ref phFontData, _font.Portion.Paragraph);
+                    FontDataParser.GetFontDataFromPlaceholder(ref phFontData, _font.Portion.ParentParagraph);
                     if (phFontData.ARgbColorModelHex != null)
                     {
                         colorHexVariant = phFontData.ARgbColorModelHex.Val;
@@ -363,7 +363,7 @@ namespace ShapeCrawler.Drawing
         private string GetHexVariantByScheme(A.SchemeColorValues fontSchemeColor)
         {
             A.ColorScheme themeAColorScheme =
-                _font.Portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.ColorScheme;
+                _font.Portion.ParentParagraph.ParentTextBox.ParentAutoShape.ThemePart.Theme.ThemeElements.ColorScheme;
             return fontSchemeColor switch
             {
                 A.SchemeColorValues.Dark1 => themeAColorScheme.Dark1Color.RgbColorModelHex != null
@@ -406,7 +406,7 @@ namespace ShapeCrawler.Drawing
         private string GetThemeMappedColor(A.SchemeColorValues fontSchemeColor)
         {
             P.ColorMap slideMasterPColorMap =
-                _font.Portion.Paragraph.TextBox.AutoShape.SlideMaster.PSlideMaster.ColorMap;
+                _font.Portion.ParentParagraph.ParentTextBox.ParentAutoShape.SlideMaster.PSlideMaster.ColorMap;
             if (fontSchemeColor == A.SchemeColorValues.Text1)
             {
                 return GetThemeColorByString(slideMasterPColorMap.Text1.ToString());
@@ -428,7 +428,7 @@ namespace ShapeCrawler.Drawing
         private string GetThemeColorByString(string fontSchemeColor)
         {
             A.ColorScheme themeAColorScheme =
-                _font.Portion.Paragraph.TextBox.AutoShape.ThemePart.Theme.ThemeElements.ColorScheme;
+                _font.Portion.ParentParagraph.ParentTextBox.ParentAutoShape.ThemePart.Theme.ThemeElements.ColorScheme;
             return fontSchemeColor switch
             {
                 "dk1" => themeAColorScheme.Dark1Color.RgbColorModelHex != null
