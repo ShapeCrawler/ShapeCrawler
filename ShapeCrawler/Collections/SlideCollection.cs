@@ -12,23 +12,29 @@ namespace ShapeCrawler.Collections
     /// <summary>
     ///     Represents a slide collection.
     /// </summary>
-    public class SlideCollection : ISlideCollection
+    public class SlideCollection : ISlideCollection // TODO: make internal
     {
-        private readonly SCPresentation _presentation;
-        private readonly PresentationPart _presentationPart;
-        private readonly ResettableLazy<List<SCSlide>> _slides;
+        private readonly SCPresentation parentPresentation;
+        private readonly PresentationPart presentationPart;
+        private readonly ResettableLazy<List<SCSlide>> slides;
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="SlideCollection"/> class.
+        /// </summary>
         internal SlideCollection(SCPresentation presentation)
         {
-            _presentationPart = presentation.PresentationPart;
-            _presentation = presentation;
-
-            _slides = new ResettableLazy<List<SCSlide>>(GetSlides);
+            this.presentationPart = presentation.PresentationPart;
+            this.parentPresentation = presentation;
+            this.slides = new ResettableLazy<List<SCSlide>>(this.GetSlides);
         }
 
-        public IEnumerator<SCSlide> GetEnumerator()
+        public int Count => this.slides.Value.Count;
+
+        public ISlide this[int index] => this.slides.Value[index];
+
+        public IEnumerator<ISlide> GetEnumerator()
         {
-            return _slides.Value.GetEnumerator();
+            return this.slides.Value.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -36,16 +42,12 @@ namespace ShapeCrawler.Collections
             return GetEnumerator();
         }
 
-        public SCSlide this[int index] => _slides.Value[index];
-
-        public int Count => _slides.Value.Count;
-
         /// <summary>
         ///     Removes the specified slide.
         /// </summary>
-        public void Remove(SCSlide removingSlide)
+        public void Remove(ISlide removingSlide)
         {
-            P.Presentation presentation = _presentationPart.Presentation;
+            P.Presentation presentation = this.presentationPart.Presentation;
 
             // Get the list of slide identifiers in the presentation
             P.SlideIdList slideIdList = presentation.SlideIdList;
@@ -90,22 +92,22 @@ namespace ShapeCrawler.Collections
             }
 
             // Gets the slide part for the specified slide
-            SlidePart slidePart = _presentationPart.GetPartById(slideRelId) as SlidePart;
+            SlidePart slidePart = this.presentationPart.GetPartById(slideRelId) as SlidePart;
 
-            _presentationPart.DeletePart(slidePart);
-            _presentationPart.Presentation.Save();
-            _slides.Reset();
+            this.presentationPart.DeletePart(slidePart);
+            this.presentationPart.Presentation.Save();
+            this.slides.Reset();
         }
 
         private List<SCSlide> GetSlides()
         {
-            int slidesCount = _presentationPart.SlideParts.Count();
+            int slidesCount = this.presentationPart.SlideParts.Count();
             var slides = new List<SCSlide>(slidesCount);
-            for (var sldIndex = 0; sldIndex < slidesCount; sldIndex++)
+            for (var slideIndex = 0; slideIndex < slidesCount; slideIndex++)
             {
-                SlidePart slidePart = _presentationPart.GetSlidePartByIndex(sldIndex);
-                var slideNumber = new SlideNumber(sldIndex + 1);
-                var newSlide = new SCSlide(_presentation, slidePart, slideNumber);
+                SlidePart slidePart = this.presentationPart.GetSlidePartByIndex(slideIndex);
+                int slideNumber = slideIndex + 1;
+                var newSlide = new SCSlide(this.parentPresentation, slidePart, slideNumber);
                 slides.Add(newSlide);
             }
 

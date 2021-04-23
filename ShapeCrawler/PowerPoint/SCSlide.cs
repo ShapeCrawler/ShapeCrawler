@@ -19,10 +19,9 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a slide.
     /// </summary>
-    public class SCSlide : IBaseSlide, IRemovable // TODO: make it internal
+    internal class SCSlide : ISlide, IRemovable // TODO: make it internal
     {
         private readonly Lazy<SCImage> backgroundImage;
-        private readonly SlideNumber sldNumEntity;
         private Lazy<CustomXmlPart> customXmlPart;
 
         /// <summary>
@@ -31,11 +30,11 @@ namespace ShapeCrawler
         internal SCSlide(
             SCPresentation presentation,
             SlidePart slidePart,
-            SlideNumber sldNum)
+            int slideNumber)
         {
             this.ParentPresentation = presentation;
             this.SlidePart = slidePart;
-            this.sldNumEntity = sldNum;
+            this.Number = slideNumber;
             this._shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.CreateForSlide(this.SlidePart, this));
             this.backgroundImage = new Lazy<SCImage>(this.TryGetBackground);
             this.customXmlPart = new Lazy<CustomXmlPart>(this.GetSldCustomXmlPart);
@@ -59,7 +58,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets a slide number in presentation.
         /// </summary>
-        public int Number => sldNumEntity.Number;
+        public int Number { get; }
 
         /// <summary>
         ///     Returns a background image of the slide. Returns <c>null</c>if slide does not have background image.

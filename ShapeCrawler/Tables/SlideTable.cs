@@ -19,14 +19,15 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler
 {
-    internal class SlideTable : SlideShape, ITable // TODO: make internal
+    /// <inheritdoc cref="ITable"/>
+    internal class SlideTable : SlideShape, ITable
     {
-        private readonly ILocation _innerTransform;
-        private readonly P.GraphicFrame _pGraphicFrame;
-        private readonly ResettableLazy<RowCollection> _rowCollection;
-        private bool? _hidden;
-        private int _id;
-        private string _name;
+        private readonly ILocation innerTransform;
+        private readonly P.GraphicFrame pGraphicFrame;
+        private readonly ResettableLazy<RowCollection> rowCollection;
+        private bool? hidden;
+        private int id;
+        private string name;
 
         #region Constructors
 
@@ -36,18 +37,18 @@ namespace ShapeCrawler
             ShapeContext spContext,
             SCSlide slide) : base(slide, pShapeTreeChild)
         {
-            _innerTransform = innerTransform;
+            this.innerTransform = innerTransform;
             Context = spContext;
-            _rowCollection =
+            rowCollection =
                 new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) PShapeTreeChild));
-            _pGraphicFrame = pShapeTreeChild as P.GraphicFrame;
+            pGraphicFrame = pShapeTreeChild as P.GraphicFrame;
         }
 
         #endregion Constructors
 
         internal ShapeContext Context { get; }
-        internal A.Table ATable => _pGraphicFrame.GetATable();
 
+        internal A.Table ATable => pGraphicFrame.GetATable();
 
         public void MergeCells(ITableCell inputCell1, ITableCell inputCell2) // TODO: Optimize method
         {
@@ -64,7 +65,7 @@ namespace ShapeCrawler
             int maxColIndex = cell1.ColumnIndex > cell2.ColumnIndex ? cell1.ColumnIndex : cell2.ColumnIndex;
 
             // Horizontal merging
-            List<A.TableRow> aTableRowList = cell1.Table.ATable.Elements<A.TableRow>().ToList();
+            List<A.TableRow> aTableRowList = this.ATable.Elements<A.TableRow>().ToList();
             if (minColIndex != maxColIndex)
             {
                 int horizontalMergingCount = maxColIndex - minColIndex + 1;
@@ -165,7 +166,7 @@ namespace ShapeCrawler
                 rowIdx++;
             }
 
-            _rowCollection.Reset();
+            rowCollection.Reset();
         }
 
         private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
@@ -192,7 +193,7 @@ namespace ShapeCrawler
         #region Public Properties
 
         public IReadOnlyList<Column> Columns => GetColumnList(); //TODO: make lazy
-        public RowCollection Rows => _rowCollection.Value;
+        public RowCollection Rows => rowCollection.Value;
         public ITableCell this[int rowIndex, int columnIndex] => Rows[rowIndex].Cells[columnIndex];
 
         /// <summary>
@@ -200,8 +201,8 @@ namespace ShapeCrawler
         /// </summary>
         public long X
         {
-            get => _innerTransform.X;
-            set => _innerTransform.SetX(value);
+            get => innerTransform.X;
+            set => innerTransform.SetX(value);
         }
 
         /// <summary>
@@ -209,8 +210,8 @@ namespace ShapeCrawler
         /// </summary>
         public long Y // TODO: fix warning
         {
-            get => _innerTransform.Y;
-            set => _innerTransform.SetY(value);
+            get => innerTransform.Y;
+            set => innerTransform.SetY(value);
         }
 
         /// <summary>
@@ -218,8 +219,8 @@ namespace ShapeCrawler
         /// </summary>
         public long Width // TODO: fix warning
         {
-            get => _innerTransform.Width;
-            set => _innerTransform.SetWidth(value);
+            get => innerTransform.Width;
+            set => innerTransform.SetWidth(value);
         }
 
         /// <summary>
@@ -227,8 +228,8 @@ namespace ShapeCrawler
         /// </summary>
         public long Height // TODO: fix warning
         {
-            get => _innerTransform.Height;
-            set => _innerTransform.SetHeight(value);
+            get => innerTransform.Height;
+            set => innerTransform.SetHeight(value);
         }
 
         /// <summary>
@@ -239,7 +240,7 @@ namespace ShapeCrawler
             get
             {
                 InitIdHiddenName();
-                return _id;
+                return id;
             }
         }
 
@@ -251,7 +252,7 @@ namespace ShapeCrawler
             get
             {
                 InitIdHiddenName();
-                return _name;
+                return name;
             }
         }
 
@@ -263,7 +264,7 @@ namespace ShapeCrawler
             get
             {
                 InitIdHiddenName();
-                return (bool) _hidden;
+                return (bool) hidden;
             }
         }
 
@@ -296,11 +297,6 @@ namespace ShapeCrawler
                 return true;
             }
 
-            if (cell1.Table != cell2.Table)
-            {
-                throw new ShapeCrawlerException("Specified cells are from different tables.");
-            }
-
             return false;
         }
 
@@ -326,15 +322,15 @@ namespace ShapeCrawler
 
         private void InitIdHiddenName()
         {
-            if (_id != 0)
+            if (this.id != 0)
             {
                 return;
             }
 
             var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
-            _id = id;
-            _hidden = hidden;
-            _name = name;
+            this.id = id;
+            this.hidden = hidden;
+            this.name = name;
         }
 
         #endregion Private Methods

@@ -45,7 +45,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Hidden_GetterReturnsTrue_WhenTheSlideIsHidden()
         { 
             // Arrange
-            SCSlide slideEx = _fixture.Pre002.Slides[2];
+            ISlide slideEx = _fixture.Pre002.Slides[2];
 
             // Act
             bool hidden = slideEx.Hidden;
@@ -59,7 +59,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SaveScheme_CreatesAndSavesSlideSchemeImageInSpecifiedStream()
         {
             // Arrange
-            SCSlide slide = _fixture.Pre025.Slides[2];
+            ISlide slide = _fixture.Pre025.Slides[2];
             var stream = new MemoryStream();
 
             // Act
@@ -91,7 +91,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Background_ImageIsNull_WhenTheSlideHasNotBackground()
         {
             // Arrange
-            SCSlide slide = _fixture.Pre009.Slides[1];
+            ISlide slide = _fixture.Pre009.Slides[1];
 
             // Act
             SCImage backgroundImage = slide.Background;
@@ -139,7 +139,7 @@ namespace ShapeCrawler.Tests.Unit
 
         [Theory]
         [MemberData(nameof(TestCasesShapesCount))]
-        public void ShapesCount_ReturnsNumberOfShapesOnTheSlide(SCSlide slide, int expectedShapesCount)
+        public void ShapesCount_ReturnsNumberOfShapesOnTheSlide(ISlide slide, int expectedShapesCount)
         {
             // Act
             int shapesCount = slide.Shapes.Count;
@@ -152,7 +152,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             SCPresentation presentation = SCPresentation.Open(Properties.Resources._009, false);
             
-            SCSlide slide = presentation.Slides[0];
+            ISlide slide = presentation.Slides[0];
             yield return new object[] { slide, 6 };
             
             slide = presentation.Slides[1];
@@ -203,7 +203,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SaveImage_GenerateAndSavesSlideImageInSpecifiedFilePath()
         {
             // Arrange
-            SCSlide slide = _fixture.Pre001.Slides[0];
+            ISlide slide = _fixture.Pre001.Slides[0];
 
             // Act
             slide.SaveImage(@"c:\1\SlideScSaveImage.png");

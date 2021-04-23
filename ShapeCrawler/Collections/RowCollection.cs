@@ -12,13 +12,13 @@ namespace ShapeCrawler.Collections
     /// <summary>
     ///     Represents a table rows collection.
     /// </summary>
-    public class RowCollection : EditableCollection<SCTableRow> //TODO extract interface and convert to internal
+    public class RowCollection : EditableCollection<SCTableRow> // TODO extract interface and convert to internal
     {
         #region Constructors
 
         internal RowCollection(List<SCTableRow> rowList)
         {
-            CollectionItems = rowList;
+            this.CollectionItems = rowList;
         }
 
         #endregion Constructors
@@ -35,29 +35,25 @@ namespace ShapeCrawler.Collections
 
         #region Public Methods
 
-        /// <summary>
-        ///     Removes the specified table row.
-        /// </summary>
-        /// <param name="scTableRow"></param>
+        /// <inheritdoc/>
         public override void Remove(SCTableRow scTableRow)
         {
             scTableRow.ATableRow.Remove();
-            CollectionItems.Remove(scTableRow);
+            this.CollectionItems.Remove(scTableRow);
         }
 
         /// <summary>
         ///     Removes table row by index.
         /// </summary>
-        /// <param name="index"></param>
         public void RemoveAt(int index)
         {
-            if (index < 0 || index >= CollectionItems.Count)
+            if (index < 0 || index >= this.CollectionItems.Count)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
 
-            var innerRow = CollectionItems[index];
-            Remove(innerRow);
+            var innerRow = this.CollectionItems[index];
+            this.Remove(innerRow);
         }
 
         #endregion Public Methods

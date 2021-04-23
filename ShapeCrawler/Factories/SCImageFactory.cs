@@ -9,7 +9,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Factories
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    internal class SCImageFactory //TODO: make internal
+    internal class SCImageFactory
     {
         #region Private Methods
 
@@ -29,7 +29,7 @@ namespace ShapeCrawler.Factories
 
         #region Public Methods
 
-        public SCImage FromSlidePart(SlidePart slidePart)
+        public static SCImage FromSlidePart(SlidePart slidePart)
         {
             SCImage backgroundImage = null;
             P.Background pBackground = slidePart.Slide.CommonSlideData.Background;

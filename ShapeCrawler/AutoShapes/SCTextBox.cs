@@ -10,50 +10,30 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes
 {
-    /// <summary>
-    ///     <inheritdoc cref="ITextBox"/>
-    /// </summary>
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    internal sealed class SCTextBox : ITextBox
+    internal class SCTextBox : ITextBox
     {
-        #region Fields
-
         private readonly Lazy<string> text;
-        private readonly OpenXmlCompositeElement textBodyCompositeElement;
+        private readonly OpenXmlCompositeElement textBodyCompositeElement; // instance of A.TextBody or P.TextBody class
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="SCTextBox"/> class for Auto Shape.
-        /// </summary>
-        internal SCTextBox(P.TextBody autoShapePTextBody, Shape autoShape)
+        internal SCTextBox(OpenXmlCompositeElement textBodyCompositeElement, ITextBoxContainer textBoxContainer)
         {
-            this.textBodyCompositeElement = autoShapePTextBody;
             this.text = new Lazy<string>(this.GetText);
+            this.textBodyCompositeElement = textBodyCompositeElement;
             this.Paragraphs = new ParagraphCollection(this.textBodyCompositeElement, this);
-            this.ParentAutoShape = autoShape;
+            this.ITextBoxContainer = textBoxContainer;
         }
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="SCTextBox"/> class for Table Cell.
-        /// </summary>
-        internal SCTextBox(A.TextBody tblCellATextBody)
-        {
-            this.textBodyCompositeElement = tblCellATextBody;
-            this.text = new Lazy<string>(this.GetText);
-            this.Paragraphs = new ParagraphCollection(this.textBodyCompositeElement, this);
-        }
-
-        /// <inheritdoc/>
         public IParagraphCollection Paragraphs { get; private set; }
-
-        /// <inheritdoc/>
+        public ITextBoxContainer ITextBoxContainer { get; }
         public string Text
         {
             get => this.text.Value;
             set => this.SetText(value);
         }
 
-        internal Shape ParentAutoShape { get; }
+        internal ITextBoxContainer ParentTextBoxContainer { get; }
 
         private void SetText(string value)
         {
@@ -92,11 +72,14 @@ namespace ShapeCrawler.AutoShapes
             return sb.ToString();
         }
 
-        #endregion Private Methods
-
-        public void ThrowIfRemoved()
+        public void ThrowIfRemoved() // TODO: make internal
         {
-            this.ParentAutoShape.ThrowIfRemoved();
+            this.ParentTextBoxContainer.ThrowIfRemoved();
         }
+    }
+
+    internal interface ITextBoxContainer
+    {
+        void ThrowIfRemoved();
     }
 }

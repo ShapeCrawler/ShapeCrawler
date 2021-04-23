@@ -64,7 +64,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             SCPresentation presentation = SCPresentation.Open(pptxBytes, true);
-            SCSlide removingSlide = presentation.Slides[0];
+            ISlide removingSlide = presentation.Slides[0];
             var mStream = new MemoryStream();
 
             // Act

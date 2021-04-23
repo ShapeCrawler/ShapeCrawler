@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Shared;
@@ -7,57 +8,48 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tables
 {
-    /// <summary>
-    ///     Represents a cell in a table.
-    /// </summary>
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
-    internal class SCTableCell : ITableCell //TODO: make it internal
+    /// <inheritdoc cref="ITable"/>
+    internal class SCTableCell : ITableCell, ITextBoxContainer
     {
-        #region Constructors
+        private readonly ResettableLazy<SCTextBox> textBox;
 
-        internal SCTableCell(SlideTable table, A.TableCell aTableCell, int rowIdx, int columnIdx)
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="SCTableCell"/> class.
+        /// </summary>
+        internal SCTableCell(SCTableRow parentTableRow, A.TableCell aTableCell, int rowIndex, int columnIndex)
         {
-            Table = table;
-            ATableCell = aTableCell;
-            RowIndex = rowIdx;
-            ColumnIndex = columnIdx;
-            _textBox = new ResettableLazy<SCTextBox>(() => GetTextBox());
+            this.ParentTableRow = parentTableRow;
+            this.ATableCell = aTableCell;
+            this.RowIndex = rowIndex;
+            this.ColumnIndex = columnIndex;
+            this.textBox = new ResettableLazy<SCTextBox>(this.GetTextBox);
         }
-
-        #endregion Constructors
-
-        #region Fields
-
-        private readonly ResettableLazy<SCTextBox> _textBox;
-
-        internal int RowIndex { get; }
-        internal int ColumnIndex { get; }
-        internal SlideTable Table { get; }
-        internal A.TableCell ATableCell { get; init; }
-
-        #endregion Fields
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets text box.
-        /// </summary>
-        public ITextBox TextBox => _textBox.Value;
+        /// <inheritdoc/>
+        public ITextBox TextBox => this.textBox.Value;
 
-        public bool IsMergedCell => DefineWhetherCellIsMerged();
+        /// <inheritdoc/>
+        public bool IsMergedCell => this.DefineWhetherCellIsMerged();
 
         #endregion Public Properties
 
-        #region Private Methods
+        internal int RowIndex { get; }
+
+        internal int ColumnIndex { get; }
+
+        internal SCTableRow ParentTableRow { get; }
+
+        internal A.TableCell ATableCell { get; init; }
 
         private SCTextBox GetTextBox()
         {
-            var aTxtBody = ATableCell.TextBody;
-            var aTexts = aTxtBody.Descendants<A.Text>();
-            if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0
-            ) // at least one of <a:t> element contain text
+            A.TextBody aTextBody = this.ATableCell.TextBody;
+            IEnumerable<A.Text> aTexts = aTextBody.Descendants<A.Text>();
+            if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0)
             {
-                return new SCTextBox(aTxtBody);
+                return new SCTextBox(aTextBody, this);
             }
 
             return null;
@@ -65,12 +57,15 @@ namespace ShapeCrawler.Tables
 
         private bool DefineWhetherCellIsMerged()
         {
-            return ATableCell.GridSpan != null ||
-                   ATableCell.RowSpan != null ||
-                   ATableCell.HorizontalMerge != null ||
-                   ATableCell.VerticalMerge != null;
+            return this.ATableCell.GridSpan != null ||
+                   this.ATableCell.RowSpan != null ||
+                   this.ATableCell.HorizontalMerge != null ||
+                   this.ATableCell.VerticalMerge != null;
         }
 
-        #endregion Private Methods
+        public void ThrowIfRemoved()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

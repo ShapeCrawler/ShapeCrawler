@@ -15,9 +15,9 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents an Auto Shape on a Slide.
     /// </summary>
-    internal class SlideAutoShape : SlideShape, IAutoShape
+    internal class SlideAutoShape : SlideShape, IAutoShape, ITextBoxContainer
     {
-        private readonly SCImageFactory _imageFactory = new();
+        private readonly SCImageFactory imageFactory = new (); // TODO: make it static call
         private readonly ILocation _innerTransform;
         private readonly Lazy<ShapeFill> _shapeFill;
         private readonly Lazy<SCTextBox> _textBox;
@@ -93,7 +93,7 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill() //TODO: duplicate of LayoutAutoShape.TryGetFill()
         {
-            SCImage image = _imageFactory.FromSlidePart(Slide.SlidePart, PShapeTreeChild);
+            SCImage image = imageFactory.FromSlidePart(Slide.SlidePart, PShapeTreeChild);
             if (image != null)
             {
                 return new ShapeFill(image);
@@ -116,5 +116,10 @@ namespace ShapeCrawler
         }
 
         #endregion Private Methods
+
+        public void ThrowIfRemoved()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
