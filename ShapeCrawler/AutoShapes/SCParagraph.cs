@@ -4,6 +4,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -11,68 +12,44 @@ using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable PossibleMultipleEnumeration
 // ReSharper disable SuggestVarOrType_SimpleTypes
 // ReSharper disable SuggestVarOrType_BuiltInTypes
-
 namespace ShapeCrawler
 {
-    /// <summary>
-    ///     Represents a text paragraph.
-    /// </summary>
-    [SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC - ShapeCrawler")]
     internal class SCParagraph : IParagraph
     {
-        private readonly Lazy<Bullet> _bullet;
-        private readonly ResettableLazy<PortionCollection> _portions;
+        private readonly Lazy<Bullet> bullet;
+        private readonly ResettableLazy<PortionCollection> portions;
 
-        #region Constructors
-
-        /// <summary>
-        ///     Initializes an instance of the <see cref="SCParagraph" /> class.
-        /// </summary>
         internal SCParagraph(A.Paragraph aParagraph, SCTextBox textBox)
         {
-            AParagraph = aParagraph;
-            Level = GetInnerLevel(aParagraph);
-            _bullet = new Lazy<Bullet>(GetBullet);
-            TextBox = textBox;
-            _portions = new ResettableLazy<PortionCollection>(() => PortionCollection.Create(AParagraph, this));
+            this.AParagraph = aParagraph;
+            this.Level = GetInnerLevel(aParagraph);
+            this.bullet = new Lazy<Bullet>(this.GetBullet);
+            this.ParentTextBox = textBox;
+            this.portions = new ResettableLazy<PortionCollection>(() => new PortionCollection(this.AParagraph, this));
         }
-
-        #endregion Constructors
-
-        internal SCTextBox TextBox { get; }
-        internal A.Paragraph AParagraph { get; }
-        internal int Level { get; }
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets or sets the the plain text of a paragraph.
-        /// </summary>
         public string Text
         {
-            get => GetText();
-            set => SetText(value);
+            get => this.GetText();
+            set => this.SetText(value);
         }
 
-        /// <summary>
-        ///     Gets collection of paragraph portions. Returns <c>NULL</c> if paragraph is empty.
-        /// </summary>
-        public IPortionCollection Portions => _portions.Value;
+        public IPortionCollection Portions => this.portions.Value;
 
-        /// <summary>
-        ///     Gets paragraph bullet. Returns <c>NULL</c> if bullet does not exist.
-        /// </summary>
-        public Bullet Bullet => _bullet.Value;
+        public Bullet Bullet => this.bullet.Value;
 
         #endregion Public Properties
 
-        #region Private Methods
+        internal SCTextBox ParentTextBox { get; }
 
-        private Bullet GetBullet()
-        {
-            return new Bullet(AParagraph.ParagraphProperties);
-        }
+        internal A.Paragraph AParagraph { get; }
+
+        internal int Level { get; }
+
+        #region Private Methods
 
         private static int GetInnerLevel(A.Paragraph aParagraph)
         {
@@ -83,35 +60,40 @@ namespace ShapeCrawler
             return paragraphLvl;
         }
 
+        private Bullet GetBullet()
+        {
+            return new Bullet(this.AParagraph.ParagraphProperties);
+        }
+
         private string GetText()
         {
-            if (Portions == null)
+            if (this.Portions.Count == 0)
             {
                 return string.Empty;
             }
 
-            return Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next);
+            return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next);
         }
 
         private void SetText(string newText)
         {
             // To set a paragraph text we use a single portion which is the first paragraph portion.
             // Rest of the portions are deleted from the paragraph.
-            Portions.Remove(Portions.Skip(1).ToList());
-            IPortion basePortion = Portions.Single();
+            this.Portions.Remove(this.Portions.Skip(1).ToList());
+            Portion basePortion = (Portion)this.portions.Value.Single();
             if (newText == string.Empty)
             {
                 basePortion.Text = string.Empty;
                 return;
             }
 
-            string[] textLines = newText.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
+            string[] textLines = newText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             basePortion.Text = textLines[0];
-            OpenXmlElement lastInsertedARunOrLineBreak = ((Portion) basePortion).AText.Parent;
+            OpenXmlElement lastInsertedARunOrLineBreak = basePortion.AText.Parent;
             for (int i = 1; i < textLines.Length; i++)
             {
                 lastInsertedARunOrLineBreak = lastInsertedARunOrLineBreak.InsertAfterSelf(new A.Break());
-                A.Run newARun = ((Portion) basePortion).GetARunCopy();
+                A.Run newARun = (A.Run)basePortion.AText.Parent.CloneNode(true);
                 newARun.Text.Text = textLines[i];
                 lastInsertedARunOrLineBreak = lastInsertedARunOrLineBreak.InsertAfterSelf(newARun);
             }
@@ -121,9 +103,23 @@ namespace ShapeCrawler
                 lastInsertedARunOrLineBreak.InsertAfterSelf(new A.Break());
             }
 
-            _portions.Reset();
+            this.portions.Reset();
         }
 
         #endregion Private Methods
+
+        public void ThrowIfRemoved()
+        {
+            if (this.IsRemoved)
+            {
+                throw new ElementIsRemovedException("Paragraph was removed.");
+            }
+            else
+            {
+                this.ParentTextBox.ThrowIfRemoved();
+            }
+        }
+
+        public bool IsRemoved { get; set; }
     }
 }

@@ -1,20 +1,13 @@
-﻿using ShapeCrawler.Collections;
+﻿using System.IO;
 using ShapeCrawler.Drawing;
-
-// ReSharper disable CheckNamespace
 
 namespace ShapeCrawler
 {
     /// <summary>
-    ///     Represents a slide in a presentation.
+    ///     Represents a slide.
     /// </summary>
-    public interface ISlide
+    public interface ISlide : IBaseSlide
     {
-        /// <summary>
-        ///     Gets slide collection.
-        /// </summary>
-        ShapeCollection Shapes { get; }
-
         /// <summary>
         ///     Gets slide number.
         /// </summary>
@@ -39,5 +32,13 @@ namespace ShapeCrawler
         ///     Hides slide.
         /// </summary>
         void Hide();
+
+        void SaveScheme(Stream stream);
+
+        void SaveScheme(string filePath);
+
+#if DEBUG
+        void SaveImage(string filePath);
+#endif
     }
 }

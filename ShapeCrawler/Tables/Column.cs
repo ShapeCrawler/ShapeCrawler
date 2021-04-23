@@ -11,15 +11,15 @@ namespace ShapeCrawler
     {
         internal Column(A.GridColumn aGridColumn)
         {
-            AGridColumn = aGridColumn;
+            this.AGridColumn = aGridColumn;
         }
 
         internal A.GridColumn AGridColumn { get; init; }
 
         public long Width
         {
-            get => AGridColumn.Width.Value;
-            set => AGridColumn.Width.Value = value;
+            get => this.AGridColumn.Width.Value;
+            set => this.AGridColumn.Width.Value = value;
         }
     }
 }

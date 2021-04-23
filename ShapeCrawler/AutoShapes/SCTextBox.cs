@@ -12,81 +12,63 @@ namespace ShapeCrawler.AutoShapes
 {
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    internal sealed class SCTextBox : ITextBox
+    internal class SCTextBox : ITextBox
     {
-        #region Fields
+        private readonly Lazy<string> text;
+        private readonly OpenXmlCompositeElement textBodyCompositeElement; // instance of A.TextBody or P.TextBody class
 
-        private readonly Lazy<string> _text;
-        private readonly OpenXmlCompositeElement _textBodyCompositeElement;
-        internal Shape AutoShape { get; }
-
-        #endregion Fields
+        internal SCTextBox(OpenXmlCompositeElement textBodyCompositeElement, ITextBoxContainer parentTextBoxContainer)
+        {
+            this.text = new Lazy<string>(this.GetText);
+            this.textBodyCompositeElement = textBodyCompositeElement;
+            this.Paragraphs = new ParagraphCollection(this.textBodyCompositeElement, this);
+            this.ParentTextBoxContainer = parentTextBoxContainer;
+        }
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets collection of text paragraphs.
-        /// </summary>
         public IParagraphCollection Paragraphs { get; private set; }
 
-        /// <summary>
-        ///     Gets or sets text box string content. Returns null if the text box is empty.
-        /// </summary>
         public string Text
         {
-            get => _text.Value;
-            set => SetText(value);
+            get => this.text.Value;
+            set => this.SetText(value);
         }
 
         #endregion Public Properties
 
-        #region Constructors
-
-        internal SCTextBox(P.TextBody autoShapePTextBody, Shape autoShape)
-        {
-            _textBodyCompositeElement = autoShapePTextBody;
-            _text = new Lazy<string>(GetText);
-            Paragraphs = new ParagraphCollection(_textBodyCompositeElement, this);
-
-            AutoShape = autoShape;
-        }
-
-        internal SCTextBox(A.TextBody tblCellATextBody)
-        {
-            _textBodyCompositeElement = tblCellATextBody;
-            _text = new Lazy<string>(GetText);
-            Paragraphs = new ParagraphCollection(_textBodyCompositeElement, this);
-        }
-
-        #endregion Constructors
-
-        #region Private Methods
+        internal ITextBoxContainer ParentTextBoxContainer { get; }
 
         private void SetText(string value)
         {
-            IParagraph paragraph = Paragraphs.First(p => p.Portions != null);
-            foreach (SCParagraph removingPara in Paragraphs.Where(p => p != paragraph))
+            bool changed = false;
+            SCParagraph paragraph = (SCParagraph)this.Paragraphs.First(p => p.Portions.Any());
+            foreach (SCParagraph removingPara in this.Paragraphs.Where(p => p != paragraph))
             {
                 removingPara.AParagraph.Remove();
+                changed = true;
             }
 
-            Paragraphs = new ParagraphCollection(_textBodyCompositeElement, this);
+            if (changed)
+            {
+                this.Paragraphs = new ParagraphCollection(this.textBodyCompositeElement, this);
+            }
 
-            Paragraphs.Single().Text = value;
+            this.Paragraphs.Single().Text = value;
         }
 
         private string GetText()
         {
             var sb = new StringBuilder();
-            sb.Append(Paragraphs[0].Text);
+            sb.Append(this.Paragraphs[0].Text);
 
             // If the number of paragraphs more than one
-            var numPr = Paragraphs.Count;
+            var numPr = this.Paragraphs.Count;
             var index = 1;
             while (index < numPr)
             {
                 sb.AppendLine();
-                sb.Append(Paragraphs[index].Text);
+                sb.Append(this.Paragraphs[index].Text);
 
                 index++;
             }
@@ -94,6 +76,9 @@ namespace ShapeCrawler.AutoShapes
             return sb.ToString();
         }
 
-        #endregion Private Methods
+        public void ThrowIfRemoved() // TODO: make internal
+        {
+            ((Shape)this.ParentTextBoxContainer).ThrowIfRemoved();
+        }
     }
 }

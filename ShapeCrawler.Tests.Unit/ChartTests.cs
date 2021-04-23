@@ -45,8 +45,8 @@ namespace ShapeCrawler.Tests.Unit
         public void HasXValues()
         {
             // Arrange
-            SCSlide slide1 = _fixture.Pre025.Slides[0];
-            SCSlide slide2 = _fixture.Pre025.Slides[1];
+            ISlide slide1 = _fixture.Pre025.Slides[0];
+            ISlide slide2 = _fixture.Pre025.Slides[1];
             IChart chart8 = slide1.Shapes.First(x => x.Id == 8) as IChart;
             IChart chart11 = slide2.Shapes.First(x => x.Id == 11) as IChart;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -8,69 +9,67 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler
 {
-    /// <summary>
-    ///     Represents a text paragraph portion.
-    /// </summary>
+    /// <inheritdoc cref="IPortion"/>
     internal class Portion : IPortion // TODO: make internal
     {
-        private readonly ResettableLazy<SCFont> _font;
-        internal readonly A.Text AText;
+        private readonly ResettableLazy<SCFont> font;
 
-        #region Constructors
-
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Portion"/> class.
+        /// </summary>
         internal Portion(A.Text aText, SCParagraph paragraph)
         {
-            AText = aText;
-            Paragraph = paragraph;
-            _font = new ResettableLazy<SCFont>(GetFont);
-        }
-
-        #endregion Constructors
-
-        internal SCParagraph Paragraph { get; }
-
-        internal A.Run GetARunCopy()
-        {
-            return (A.Run) AText.Parent.CloneNode(true);
+            this.AText = aText;
+            this.ParentParagraph = paragraph;
+            this.font = new ResettableLazy<SCFont>(this.GetFont);
         }
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets or sets paragraph portion text.
-        /// </summary>
+        /// <inheritdoc/>
         public string Text
         {
-            get => GetText();
-            set => SetText(value);
+            get => this.GetText();
+
+            set
+            {
+                this.ThrowIfRemoved();
+                this.SetText(value);
+            }
         }
 
-        /// <summary>
-        ///     Gets font.
-        /// </summary>
-        public IFont Font => _font.Value;
-
-        /// <summary>
-        ///     Removes portion from the paragraph.
-        /// </summary>
-        public void Remove()
-        {
-            Paragraph.Portions.Remove(this);
-        }
+        /// <inheritdoc/>
+        public IFont Font => this.font.Value;
 
         #endregion Public Properties
 
-        #region Private Methods
+        internal bool IsRemoved { get; set; }
+
+        internal SCParagraph ParentParagraph { get; }
+
+        internal A.Text AText { get; }
+
+        private void ThrowIfRemoved()
+        {
+            if (this.IsRemoved)
+            {
+                throw new ElementIsRemovedException("Paragraph portion was removed.");
+            }
+            else
+            {
+                this.ParentParagraph.ThrowIfRemoved();
+            }
+        }
 
         private SCFont GetFont()
         {
-            return new SCFont(AText, this);
+            return new SCFont(this.AText, this);
         }
 
         private string GetText()
         {
-            string portionText = AText.Text;
-            if (AText.Parent.NextSibling<A.Break>() != null)
+            string portionText = this.AText.Text;
+            if (this.AText.Parent.NextSibling<A.Break>() != null)
             {
                 portionText += Environment.NewLine;
             }
@@ -80,9 +79,7 @@ namespace ShapeCrawler
 
         private void SetText(string text)
         {
-            AText.Text = text;
+            this.AText.Text = text;
         }
-
-        #endregion Private Methods
     }
 }

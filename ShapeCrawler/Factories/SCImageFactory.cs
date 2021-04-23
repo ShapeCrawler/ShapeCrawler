@@ -9,7 +9,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Factories
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    internal class SCImageFactory //TODO: make internal
+    internal class SCImageFactory
     {
         #region Private Methods
 

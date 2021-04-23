@@ -6,7 +6,7 @@ using ShapeCrawler.Shapes;
 namespace ShapeCrawler
 {
     /// <summary>
-    ///     Represents an auto shape on a slide.
+    ///     Represents an AutoShape.
     /// </summary>
     public interface IAutoShape : IShape
     {

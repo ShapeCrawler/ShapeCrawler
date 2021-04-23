@@ -14,42 +14,36 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
-
 namespace ShapeCrawler
 {
-    /// <summary>
-    ///     Represents an Auto Shape on a Slide Layout.
-    /// </summary>
-    internal class LayoutAutoShape : LayoutShape, IAutoShape, IFontDataReader //TODO: IFontDataReader is needed?
+    internal class LayoutAutoShape : LayoutShape, IAutoShape, IFontDataReader, ITextBoxContainer // TODO: IFontDataReader is needed?
     {
-        private readonly SCImageFactory _imageFactory = new();
-        private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
-        private readonly Lazy<ShapeFill> _shapeFill;
-        private readonly Lazy<SCTextBox> _textBox;
+        private readonly SCImageFactory imageFactory = new ();
+        private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
+        private readonly Lazy<ShapeFill> shapeFill;
+        private readonly Lazy<SCTextBox> textBox;
 
-        #region Constructors
-
-        internal LayoutAutoShape(SCSlideLayout slideLayout, P.Shape pShape) : base(slideLayout, pShape)
+        internal LayoutAutoShape(SCSlideLayout slideLayout, P.Shape pShape)
+            : base(slideLayout, pShape)
         {
-            _textBox = new Lazy<SCTextBox>(GetTextBox);
-            _shapeFill = new Lazy<ShapeFill>(TryGetFill);
-            _lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(GetLvlToFontData);
+            this.textBox = new Lazy<SCTextBox>(this.GetTextBox);
+            this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
+            this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
         }
 
-        #endregion Constructors
+        internal Dictionary<int, FontData> LvlToFontData => this.lvlToFontData.Value;
 
-        internal Dictionary<int, FontData> LvlToFontData => _lvlToFontData.Value;
-        internal ShapeContext Context { get; } //TODO: resolve warning
+        internal ShapeContext Context { get; } // TODO: resolve warning
 
         public void FillFontData(int paragraphLvl, ref FontData fontData)
         {
             // Tries get font from Auto Shape
-            if (LvlToFontData.TryGetValue(paragraphLvl, out FontData layoutFontData))
+            if (this.LvlToFontData.TryGetValue(paragraphLvl, out FontData layoutFontData))
             {
                 fontData = layoutFontData;
-                if (!fontData.IsFilled() && Placeholder != null)
+                if (!fontData.IsFilled() && this.Placeholder != null)
                 {
-                    Placeholder placeholder = (Placeholder) Placeholder;
+                    Placeholder placeholder = (Placeholder) this.Placeholder;
                     IFontDataReader referencedMasterShape = (IFontDataReader) placeholder.ReferencedShape;
                     if (referencedMasterShape != null)
                     {
@@ -60,7 +54,7 @@ namespace ShapeCrawler
                 return;
             }
 
-            if (Placeholder != null)
+            if (this.Placeholder != null)
             {
                 Placeholder placeholder = (Placeholder) Placeholder;
                 IFontDataReader referencedMasterShape = (IFontDataReader) placeholder.ReferencedShape;
@@ -73,9 +67,11 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public ITextBox TextBox => _textBox.Value; // TODO: add test
+        public ITextBox TextBox => textBox.Value; // TODO: add test
 
-        public ShapeFill Fill => _shapeFill.Value; // TODO: add test
+        public ShapeFill Fill => shapeFill.Value; // TODO: add test
+
+        public Shape ParentShape { get; }
 
         #endregion Public Properties
 
@@ -86,7 +82,8 @@ namespace ShapeCrawler
             P.Shape pShape = (P.Shape) PShapeTreeChild;
             Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
 
-            if (!lvlToFontData.Any()) // TODO: move this block to FontDataParser.FromCompositeElement()?
+            // TODO: move this block to FontDataParser.FromCompositeElement()?
+            if (!lvlToFontData.Any()) 
             {
                 Int32Value endParaRunPrFs = pShape.TextBody.GetFirstChild<A.Paragraph>()
                     .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
@@ -101,14 +98,14 @@ namespace ShapeCrawler
 
         private SCTextBox GetTextBox()
         {
-            P.TextBody pTextBody = PShapeTreeChild.GetFirstChild<P.TextBody>();
+            P.TextBody pTextBody = this.PShapeTreeChild.GetFirstChild<P.TextBody>();
             if (pTextBody == null)
             {
                 return null;
             }
 
-            var aTexts = pTextBody.Descendants<A.Text>();
-            if (aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element with text must be exist
+            IEnumerable<A.Text> aTexts = pTextBody.Descendants<A.Text>();
+            if (aTexts.Sum(t => t.Text.Length) > 0)
             {
                 return new SCTextBox(pTextBody, this);
             }
@@ -116,16 +113,16 @@ namespace ShapeCrawler
             return null;
         }
 
-        private ShapeFill TryGetFill() //TODO: duplicate of SlideAutoShape.TryGetFill()
+        private ShapeFill TryGetFill() // TODO: duplicate of SlideAutoShape.TryGetFill()
         {
-            SCImage image = _imageFactory.FromSlidePart(Context.SlidePart, PShapeTreeChild);
+            SCImage image = this.imageFactory.FromSlidePart(this.Context.SlidePart, this.PShapeTreeChild);
             if (image != null)
             {
                 return new ShapeFill(image);
             }
 
             A.SolidFill aSolidFill =
-                ((P.Shape) PShapeTreeChild).ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
+                ((P.Shape) this.PShapeTreeChild).ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
             if (aSolidFill != null)
             {
                 A.RgbColorModelHex aRgbColorModelHex = aSolidFill.RgbColorModelHex;

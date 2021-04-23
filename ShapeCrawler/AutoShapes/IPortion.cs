@@ -4,10 +4,13 @@ using ShapeCrawler.AutoShapes;
 
 namespace ShapeCrawler
 {
+    /// <summary>
+    ///     Represents a portion of a paragraph.
+    /// </summary>
     public interface IPortion
     {
         /// <summary>
-        ///     Gets or sets paragraph portion text.
+        ///     Gets or sets text.
         /// </summary>
         string Text { get; set; }
 
@@ -15,10 +18,5 @@ namespace ShapeCrawler
         ///     Gets font.
         /// </summary>
         IFont Font { get; }
-
-        /// <summary>
-        ///     Removes portion from the paragraph.
-        /// </summary>
-        void Remove();
     }
 }

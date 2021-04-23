@@ -13,92 +13,76 @@ using SkiaSharp;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
-
 namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a slide.
     /// </summary>
-    public class SCSlide : ISlide // TODO: make it internal
+    internal class SCSlide : ISlide, IRemovable // TODO: make it internal
     {
-        #region Constructors
+        private readonly Lazy<SCImage> backgroundImage;
+        private Lazy<CustomXmlPart> customXmlPart;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SCSlide" /> class.
         /// </summary>
-        internal SCSlide(SCPresentation presentation,
+        internal SCSlide(
+            SCPresentation parentPresentation,
             SlidePart slidePart,
-            SlideNumber sldNum)
+            int slideNumber)
         {
-            Presentation = presentation;
-            SlidePart = slidePart;
-            _sldNumEntity = sldNum;
-            _shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.CreateForSlide(SlidePart, this));
-            _backgroundImage = new Lazy<SCImage>(TryGetBackground);
-            _customXmlPart = new Lazy<CustomXmlPart>(GetSldCustomXmlPart);
+            this.ParentPresentation = parentPresentation;
+            this.SlidePart = slidePart;
+            this.Number = slideNumber;
+            this._shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.CreateForSlide(this.SlidePart, this));
+            this.backgroundImage = new Lazy<SCImage>(this.TryGetBackground);
+            this.customXmlPart = new Lazy<CustomXmlPart>(this.GetSldCustomXmlPart);
         }
-
-        #endregion Constructors
-
-        #region Fields
-
-        private readonly Lazy<SCImage> _backgroundImage;
-        protected ResettableLazy<ShapeCollection> _shapes { get; set; }
-        private readonly SlideNumber _sldNumEntity;
-        private Lazy<CustomXmlPart> _customXmlPart;
-
-        internal SCPresentation Presentation { get; }
-        internal SlidePart SlidePart { get; }
-        internal SCSlideLayout SlideLayout => Presentation.SlideMasters.GetSlideLayoutBySlide(this);
-
-        #endregion Fields
 
         #region Public Properties
 
-        /// <summary>
-        ///     Returns a slide shapes.
-        /// </summary>
-        public ShapeCollection Shapes => _shapes.Value;
+        public SCSlideLayout Layout => this.ParentPresentation.SlideMasters.GetSlideLayoutBySlide(this);
 
-        /// <summary>
-        ///     Gets a slide number in presentation.
-        /// </summary>
-        public int Number => _sldNumEntity.Number;
+        public ShapeCollection Shapes => this._shapes.Value;
 
-        /// <summary>
-        ///     Returns a background image of the slide. Returns <c>null</c>if slide does not have background image.
-        /// </summary>
-        public SCImage Background => _backgroundImage.Value;
+        public int Number { get; }
+
+        public SCImage Background => this.backgroundImage.Value;
 
         public string CustomData
         {
-            get => GetCustomData();
-            set => SetCustomData(value);
+            get => this.GetCustomData();
+            set => this.SetCustomData(value);
         }
 
-        public bool Hidden => SlidePart.Slide.Show != null && SlidePart.Slide.Show.Value == false;
+        public bool Hidden => this.SlidePart.Slide.Show != null && this.SlidePart.Slide.Show.Value == false;
+
+        public bool IsRemoved { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         #endregion Public Properties
 
-        #region Public Methods
+        internal SCPresentation ParentPresentation { get; }
+
+        internal SlidePart SlidePart { get; }
+
+        protected ResettableLazy<ShapeCollection> _shapes { get; }
 
         /// <summary>
         ///     Saves slide scheme in PNG file.
         /// </summary>
-        /// <param name="filePath"></param>
         public void SaveScheme(string filePath)
         {
-            SlideSchemeService.SaveScheme(_shapes.Value, Presentation.SlideWidth, Presentation.SlideHeight, filePath);
+            SlideSchemeService.SaveScheme(this._shapes.Value, this.ParentPresentation.SlideWidth, this.ParentPresentation.SlideHeight, filePath);
         }
 
         /// <summary>
         ///     Saves slide scheme in stream.
         /// </summary>
-        /// <param name="stream"></param>
         public void SaveScheme(Stream stream)
         {
-            SlideSchemeService.SaveScheme(_shapes.Value, Presentation.SlideWidth, Presentation.SlideHeight, stream);
+            SlideSchemeService.SaveScheme(this._shapes.Value, this.ParentPresentation.SlideWidth, this.ParentPresentation.SlideHeight, stream);
         }
+
 #if DEBUG
         public void SaveImage(string filePath)
         {
@@ -143,24 +127,22 @@ namespace ShapeCrawler
             }
         }
 
-        #endregion Public Methods
-
         #region Private Methods
 
         private SCImage TryGetBackground()
         {
             var backgroundImageFactory = new SCImageFactory();
-            return backgroundImageFactory.FromSlidePart(SlidePart);
+            return backgroundImageFactory.FromSlidePart(this.SlidePart);
         }
 
         private string GetCustomData()
         {
-            if (_customXmlPart.Value == null)
+            if (customXmlPart.Value == null)
             {
                 return null;
             }
 
-            var customXmlPartStream = _customXmlPart.Value.GetStream();
+            var customXmlPartStream = customXmlPart.Value.GetStream();
             using var customXmlStreamReader = new StreamReader(customXmlPartStream);
             var raw = customXmlStreamReader.ReadToEnd();
 #if NET5_0
@@ -173,19 +155,19 @@ namespace ShapeCrawler
         private void SetCustomData(string value)
         {
             Stream customXmlPartStream;
-            if (_customXmlPart.Value == null)
+            if (customXmlPart.Value == null)
             {
                 var newSlideCustomXmlPart = SlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
                 customXmlPartStream = newSlideCustomXmlPart.GetStream();
 #if NETSTANDARD2_0
-                _customXmlPart = new Lazy<CustomXmlPart>(() => newSlideCustomXmlPart);
+                customXmlPart = new Lazy<CustomXmlPart>(() => newSlideCustomXmlPart);
 #else
-                _customXmlPart = new Lazy<CustomXmlPart>(newSlideCustomXmlPart);
+                customXmlPart = new Lazy<CustomXmlPart>(newSlideCustomXmlPart);
 #endif
             }
             else
             {
-                customXmlPartStream = _customXmlPart.Value.GetStream();
+                customXmlPartStream = customXmlPart.Value.GetStream();
             }
 
             using var customXmlStreamReader = new StreamWriter(customXmlPartStream);

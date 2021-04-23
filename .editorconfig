@@ -8,14 +8,30 @@ dotnet_diagnostic.CA1717.severity = error
 dotnet_diagnostic.CA2007.severity = error
 dotnet_diagnostic.CA2211.severity = error
 
-# CA1062: In externally visible method 'SeriesCollection.SeriesCollection(IEnumerable<OpenXmlElement> sdkCharts, ChartPart sdkChartPart)', validate parameter 'sdkCharts' is non-null before using it. If appropriate, throw an ArgumentNullException when the argument is null or add a Code Contract precondition asserting non-null argument.
-dotnet_diagnostic.CA1062.severity = none
-
 # CA1307: The behavior of 'string.Equals(string)' could vary based on the current user's locale settings. Replace this call in 'SlideDotNet.Collections.SeriesCollection.SeriesCollection(System.Collections.Generic.IEnumerable<DocumentFormat.OpenXml.OpenXmlElement>, DocumentFormat.OpenXml.Packaging.ChartPart)' with a call to 'string.Equals(string, System.StringComparison)'.
 dotnet_diagnostic.CA1307.severity = error
-
 
 dotnet_diagnostic.CA1720.severity = suggestion
 
 # IDE0044: Add readonly modifier
 dotnet_diagnostic.IDE0044.severity = error
+
+# CA1062: In externally visible method 'SeriesCollection.SeriesCollection(IEnumerable<OpenXmlElement> sdkCharts, ChartPart sdkChartPart)', validate parameter 'sdkCharts' is non-null before using it. If appropriate, throw an ArgumentNullException when the argument is null or add a Code Contract precondition asserting non-null argument.
+dotnet_diagnostic.CA1062.severity = none
+
+dotnet_diagnostic.IDE0003.severity = none
+
+dotnet_diagnostic.SA1611.severity = none
+
+# SA1124DoNotUseRegions
+dotnet_diagnostic.SA1124.severity = none
+
+# SA1200UsingDirectivesMustBePlacedCorrectly
+dotnet_diagnostic.SA1200.severity = none
+
+# SA1615ElementReturnValueMustBeDocumented
+dotnet_diagnostic.SA1615.severity = none
+
+# SA1413UseTrailingCommasInMultiLineInitializers
+dotnet_diagnostic.SA1413.severity = none
+
