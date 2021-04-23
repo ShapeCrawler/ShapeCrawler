@@ -29,11 +29,7 @@ namespace ShapeCrawler
         /// <inheritdoc/>
         public string Text
         {
-            get
-            {
-                this.ThrowIfRemoved();
-                return this.GetText();
-            }
+            get => this.GetText();
 
             set
             {

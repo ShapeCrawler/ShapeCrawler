@@ -8,14 +8,11 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tables
 {
-    /// <inheritdoc cref="ITable"/>
+    /// <inheritdoc cref="ITableCell"/>
     internal class SCTableCell : ITableCell, ITextBoxContainer
     {
         private readonly ResettableLazy<SCTextBox> textBox;
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="SCTableCell"/> class.
-        /// </summary>
         internal SCTableCell(SCTableRow parentTableRow, A.TableCell aTableCell, int rowIndex, int columnIndex)
         {
             this.ParentTableRow = parentTableRow;
@@ -62,6 +59,8 @@ namespace ShapeCrawler.Tables
                    this.ATableCell.HorizontalMerge != null ||
                    this.ATableCell.VerticalMerge != null;
         }
+
+        public Shape ParentShape { get; }
 
         public void ThrowIfRemoved()
         {

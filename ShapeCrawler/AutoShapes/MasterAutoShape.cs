@@ -13,41 +13,40 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
-
 namespace ShapeCrawler
 {
-    /// <inheritdoc cref="IAutoShape" />
-    internal class MasterAutoShape : MasterShape, IAutoShape, IFontDataReader
+    /// <summary>
+    ///     Represents an AutoShape on a Slide Master.
+    /// </summary>
+    internal class MasterAutoShape : MasterShape, IAutoShape, ITextBoxContainer, IFontDataReader
     {
-        private readonly SCImageFactory _imageFactory = new();
-        private readonly ResettableLazy<Dictionary<int, FontData>> _lvlToFontData;
-        private readonly Lazy<ShapeFill> _shapeFill;
-        private readonly Lazy<SCTextBox> _textBox;
+        private readonly SCImageFactory imageFactory = new ();
+        private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
+        private readonly Lazy<ShapeFill> shapeFill;
+        private readonly Lazy<SCTextBox> textBox;
 
-        #region Constructors
-
-        internal MasterAutoShape(SCSlideMaster slideMaster, P.Shape pShape) : base(slideMaster, pShape)
+        internal MasterAutoShape(SCSlideMaster slideMaster, P.Shape pShape)
+            : base(slideMaster, pShape)
         {
-            _textBox = new Lazy<SCTextBox>(GetTextBox);
-            _shapeFill = new Lazy<ShapeFill>(TryGetFill);
-            _lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(GetLvlToFontData);
+            this.textBox = new Lazy<SCTextBox>(this.GetTextBox);
+            this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
+            this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
         }
 
-        #endregion Constructors
-
         internal ShapeContext Context { get; }
-        internal Dictionary<int, FontData> LvlToFontData => _lvlToFontData.Value;
+
+        internal Dictionary<int, FontData> LvlToFontData => this.lvlToFontData.Value;
 
         public void FillFontData(int paragraphLvl, ref FontData fontData)
         {
-            if (LvlToFontData.TryGetValue(paragraphLvl, out FontData masterFontData) && !fontData.IsFilled())
+            if (this.LvlToFontData.TryGetValue(paragraphLvl, out FontData masterFontData) && !fontData.IsFilled())
             {
                 masterFontData.Fill(fontData);
                 return;
             }
 
-            P.TextStyles pTextStyles = SlideMaster.PSlideMaster.TextStyles;
-            if (Placeholder.Type == PlaceholderType.Title)
+            P.TextStyles pTextStyles = this.SlideMaster.PSlideMaster.TextStyles;
+            if (this.Placeholder.Type == PlaceholderType.Title)
             {
                 int titleFontSize = pTextStyles.TitleStyle.Level1ParagraphProperties
                     .GetFirstChild<A.DefaultRunProperties>().FontSize.Value;
@@ -60,10 +59,10 @@ namespace ShapeCrawler
 
         internal Dictionary<int, FontData> GetLvlToFontData() // TODO: duplicate code in LayoutAutoShape
         {
-            P.Shape pShape = (P.Shape) PShapeTreeChild;
+            P.Shape pShape = (P.Shape) this.PShapeTreeChild;
             Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
 
-            if (!lvlToFontData.Any()) // font height is still not known
+            if (!lvlToFontData.Any())
             {
                 Int32Value endParaRunPrFs = pShape.TextBody.GetFirstChild<A.Paragraph>()
                     .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
@@ -76,7 +75,7 @@ namespace ShapeCrawler
             return lvlToFontData;
         }
 
-        private SCTextBox GetTextBox() //TODO: duplicate code in LayoutAutoShape
+        private SCTextBox GetTextBox() // TODO: duplicate code in LayoutAutoShape
         {
             P.TextBody pTextBody = PShapeTreeChild.GetFirstChild<P.TextBody>();
             if (pTextBody == null)
@@ -84,8 +83,8 @@ namespace ShapeCrawler
                 return null;
             }
 
-            var aTexts = pTextBody.Descendants<A.Text>();
-            if (aTexts.Sum(t => t.Text.Length) > 0) // at least one of <a:t> element with text must be exist
+            IEnumerable<A.Text> aTexts = pTextBody.Descendants<A.Text>();
+            if (aTexts.Sum(t => t.Text.Length) > 0) 
             {
                 return new SCTextBox(pTextBody, this);
             }
@@ -95,7 +94,7 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill() //TODO: duplicate code in LayoutAutoShape
         {
-            SCImage image = _imageFactory.FromSlidePart(Context.SlidePart, Context.CompositeElement);
+            SCImage image = imageFactory.FromSlidePart(Context.SlidePart, Context.CompositeElement);
             if (image != null)
             {
                 return new ShapeFill(image);
@@ -117,11 +116,13 @@ namespace ShapeCrawler
             return null;
         }
 
+        public Shape ParentShape { get; }
+
         #region Public Properties
 
-        public ITextBox TextBox => _textBox.Value;
+        public ITextBox TextBox => textBox.Value;
 
-        public ShapeFill Fill => _shapeFill.Value;
+        public ShapeFill Fill => shapeFill.Value;
 
         #endregion Public Properties
     }

@@ -13,7 +13,6 @@ using SkiaSharp;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
-
 namespace ShapeCrawler
 {
     /// <summary>
@@ -28,11 +27,11 @@ namespace ShapeCrawler
         ///     Initializes a new instance of the <see cref="SCSlide" /> class.
         /// </summary>
         internal SCSlide(
-            SCPresentation presentation,
+            SCPresentation parentPresentation,
             SlidePart slidePart,
             int slideNumber)
         {
-            this.ParentPresentation = presentation;
+            this.ParentPresentation = parentPresentation;
             this.SlidePart = slidePart;
             this.Number = slideNumber;
             this._shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.CreateForSlide(this.SlidePart, this));
@@ -40,30 +39,15 @@ namespace ShapeCrawler
             this.customXmlPart = new Lazy<CustomXmlPart>(this.GetSldCustomXmlPart);
         }
 
-        protected ResettableLazy<ShapeCollection> _shapes { get; }
-
-        internal SCPresentation ParentPresentation { get; }
-
-        internal SlidePart SlidePart { get; }
-
         #region Public Properties
 
         public SCSlideLayout Layout => this.ParentPresentation.SlideMasters.GetSlideLayoutBySlide(this);
 
-        /// <summary>
-        ///     Returns a slide shapes.
-        /// </summary>
-        public ShapeCollection Shapes => _shapes.Value;
+        public ShapeCollection Shapes => this._shapes.Value;
 
-        /// <summary>
-        ///     Gets a slide number in presentation.
-        /// </summary>
         public int Number { get; }
 
-        /// <summary>
-        ///     Returns a background image of the slide. Returns <c>null</c>if slide does not have background image.
-        /// </summary>
-        public SCImage Background => backgroundImage.Value;
+        public SCImage Background => this.backgroundImage.Value;
 
         public string CustomData
         {
@@ -71,20 +55,24 @@ namespace ShapeCrawler
             set => this.SetCustomData(value);
         }
 
-        public bool Hidden => SlidePart.Slide.Show != null && SlidePart.Slide.Show.Value == false;
+        public bool Hidden => this.SlidePart.Slide.Show != null && this.SlidePart.Slide.Show.Value == false;
 
         public bool IsRemoved { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         #endregion Public Properties
 
-        #region Public Methods
+        internal SCPresentation ParentPresentation { get; }
+
+        internal SlidePart SlidePart { get; }
+
+        protected ResettableLazy<ShapeCollection> _shapes { get; }
 
         /// <summary>
         ///     Saves slide scheme in PNG file.
         /// </summary>
         public void SaveScheme(string filePath)
         {
-            SlideSchemeService.SaveScheme(_shapes.Value, ParentPresentation.SlideWidth, ParentPresentation.SlideHeight, filePath);
+            SlideSchemeService.SaveScheme(this._shapes.Value, this.ParentPresentation.SlideWidth, this.ParentPresentation.SlideHeight, filePath);
         }
 
         /// <summary>
@@ -92,7 +80,7 @@ namespace ShapeCrawler
         /// </summary>
         public void SaveScheme(Stream stream)
         {
-            SlideSchemeService.SaveScheme(_shapes.Value, ParentPresentation.SlideWidth, ParentPresentation.SlideHeight, stream);
+            SlideSchemeService.SaveScheme(this._shapes.Value, this.ParentPresentation.SlideWidth, this.ParentPresentation.SlideHeight, stream);
         }
 
 #if DEBUG
@@ -139,14 +127,12 @@ namespace ShapeCrawler
             }
         }
 
-        #endregion Public Methods
-
         #region Private Methods
 
         private SCImage TryGetBackground()
         {
             var backgroundImageFactory = new SCImageFactory();
-            return backgroundImageFactory.FromSlidePart(SlidePart);
+            return backgroundImageFactory.FromSlidePart(this.SlidePart);
         }
 
         private string GetCustomData()

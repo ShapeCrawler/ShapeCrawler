@@ -17,21 +17,25 @@ namespace ShapeCrawler.AutoShapes
         private readonly Lazy<string> text;
         private readonly OpenXmlCompositeElement textBodyCompositeElement; // instance of A.TextBody or P.TextBody class
 
-        internal SCTextBox(OpenXmlCompositeElement textBodyCompositeElement, ITextBoxContainer textBoxContainer)
+        internal SCTextBox(OpenXmlCompositeElement textBodyCompositeElement, ITextBoxContainer parentTextBoxContainer)
         {
             this.text = new Lazy<string>(this.GetText);
             this.textBodyCompositeElement = textBodyCompositeElement;
             this.Paragraphs = new ParagraphCollection(this.textBodyCompositeElement, this);
-            this.ITextBoxContainer = textBoxContainer;
+            this.ParentTextBoxContainer = parentTextBoxContainer;
         }
 
+        #region Public Properties
+
         public IParagraphCollection Paragraphs { get; private set; }
-        public ITextBoxContainer ITextBoxContainer { get; }
+
         public string Text
         {
             get => this.text.Value;
             set => this.SetText(value);
         }
+
+        #endregion Public Properties
 
         internal ITextBoxContainer ParentTextBoxContainer { get; }
 
@@ -74,12 +78,7 @@ namespace ShapeCrawler.AutoShapes
 
         public void ThrowIfRemoved() // TODO: make internal
         {
-            this.ParentTextBoxContainer.ThrowIfRemoved();
+            ((Shape)this.ParentTextBoxContainer).ThrowIfRemoved();
         }
-    }
-
-    internal interface ITextBoxContainer
-    {
-        void ThrowIfRemoved();
     }
 }

@@ -12,21 +12,14 @@ using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable PossibleMultipleEnumeration
 // ReSharper disable SuggestVarOrType_SimpleTypes
 // ReSharper disable SuggestVarOrType_BuiltInTypes
-
 namespace ShapeCrawler
 {
-    /// <summary>
-    ///     Represents a text paragraph.
-    /// </summary>
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC - ShapeCrawler")]
     internal class SCParagraph : IParagraph
     {
         private readonly Lazy<Bullet> bullet;
         private readonly ResettableLazy<PortionCollection> portions;
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="SCParagraph"/> class.
-        /// </summary>
         internal SCParagraph(A.Paragraph aParagraph, SCTextBox textBox)
         {
             this.AParagraph = aParagraph;
@@ -36,24 +29,19 @@ namespace ShapeCrawler
             this.portions = new ResettableLazy<PortionCollection>(() => new PortionCollection(this.AParagraph, this));
         }
 
-        /// <summary>
-        ///     Gets or sets the the plain text of a paragraph.
-        /// </summary>
+        #region Public Properties
+
         public string Text
         {
             get => this.GetText();
             set => this.SetText(value);
         }
 
-        /// <summary>
-        ///     Gets collection of paragraph portions. Returns <c>NULL</c> if paragraph is empty.
-        /// </summary>
         public IPortionCollection Portions => this.portions.Value;
 
-        /// <summary>
-        ///     Gets paragraph bullet. Returns <c>NULL</c> if bullet does not exist.
-        /// </summary>
-        public Bullet Bullet => bullet.Value;
+        public Bullet Bullet => this.bullet.Value;
+
+        #endregion Public Properties
 
         internal SCTextBox ParentTextBox { get; }
 
@@ -63,11 +51,6 @@ namespace ShapeCrawler
 
         #region Private Methods
 
-        private Bullet GetBullet()
-        {
-            return new Bullet(AParagraph.ParagraphProperties);
-        }
-
         private static int GetInnerLevel(A.Paragraph aParagraph)
         {
             // XML-paragraph enumeration started from zero. Null is also zero
@@ -75,6 +58,11 @@ namespace ShapeCrawler
             int paragraphLvl = ++xmlParagraphLvl;
 
             return paragraphLvl;
+        }
+
+        private Bullet GetBullet()
+        {
+            return new Bullet(this.AParagraph.ParagraphProperties);
         }
 
         private string GetText()

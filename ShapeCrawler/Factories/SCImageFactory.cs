@@ -29,7 +29,7 @@ namespace ShapeCrawler.Factories
 
         #region Public Methods
 
-        public static SCImage FromSlidePart(SlidePart slidePart)
+        public SCImage FromSlidePart(SlidePart slidePart)
         {
             SCImage backgroundImage = null;
             P.Background pBackground = slidePart.Slide.CommonSlideData.Background;

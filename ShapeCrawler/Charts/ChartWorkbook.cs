@@ -29,7 +29,7 @@ namespace ShapeCrawler.Charts
         {
             SpreadsheetDocument spreadsheetDocument;
             _packagePartStream = _slideChart.ChartPart.EmbeddedPackagePart.GetStream();
-            if (_slideChart.Presentation.Editable)
+            if (_slideChart.ParentPresentation.Editable)
             {
                 _resizableStream = new MemoryStream();
                 _packagePartStream.CopyTo(_resizableStream);
@@ -40,7 +40,7 @@ namespace ShapeCrawler.Charts
                 spreadsheetDocument = SpreadsheetDocument.Open(_packagePartStream, false);
             }
 
-            _slideChart.Presentation.ChartWorkbooks.Add(this);
+            _slideChart.ParentPresentation.ChartWorkbooks.Add(this);
 
             return spreadsheetDocument.WorkbookPart;
         }

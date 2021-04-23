@@ -2,7 +2,7 @@
 
 namespace ShapeCrawler.AutoShapes
 {
-    public interface IFont //TODO: consider moving font properties on Portion level
+    public interface IFont // TODO: consider moving font properties on Portion level
     {
         /// <summary>
         ///     Gets or sets font name.
@@ -24,6 +24,7 @@ namespace ShapeCrawler.AutoShapes
 #if DEBUG
         IColorFormat ColorFormat { get; }
 #endif
+
         /// <summary>
         ///     Gets value indicating whether font size can be changed.
         /// </summary>

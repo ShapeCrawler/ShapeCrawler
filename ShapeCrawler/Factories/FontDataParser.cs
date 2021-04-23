@@ -13,7 +13,7 @@ namespace ShapeCrawler.Factories
     {
         public static void GetFontDataFromPlaceholder(ref FontData phFontData, SCParagraph paragraph)
         {
-            Shape fontParentShape = paragraph.ParentTextBox.ParentAutoShape;
+            Shape fontParentShape = (Shape)paragraph.ParentTextBox.ParentTextBoxContainer;
             int paragraphLvl = paragraph.Level;
             if (fontParentShape.Placeholder == null)
             {
@@ -49,17 +49,14 @@ namespace ShapeCrawler.Factories
                 A.RgbColorModelHex aRgbColorModelHex = aDefRPr?.GetFirstChild<A.SolidFill>()?.RgbColorModelHex;
                 A.SchemeColor aSchemeColor = aDefRPr?.GetFirstChild<A.SolidFill>()?.SchemeColor;
 
-#if NET5_0 || NETSTANDARD2_1
+#if NETSTANDARD2_0
+                var lvl = int.Parse(textPr.LocalName[3].ToString(System.Globalization.CultureInfo.CurrentCulture), System.Globalization.CultureInfo.CurrentCulture);
+#else
                 // fourth character of LocalName contains level number, example: "lvl1pPr -> 1, lvl2pPr -> 2, etc."
                 ReadOnlySpan<char> localNameAsSpan = textPr.LocalName.AsSpan();
                 int lvl = int.Parse(localNameAsSpan.Slice(3, 1));
-
-#else
-                var lvl = int.Parse(textPr.LocalName[3].ToString(System.Globalization.CultureInfo.CurrentCulture),
-                System.Globalization.CultureInfo.CurrentCulture);
 #endif
-                lvlToFontData.Add(lvl,
-                    new FontData(fontSize, aLatinFont, isBold, isItalic, aRgbColorModelHex, aSchemeColor));
+                lvlToFontData.Add(lvl, new FontData(fontSize, aLatinFont, isBold, isItalic, aRgbColorModelHex, aSchemeColor));
             }
 
             return lvlToFontData;

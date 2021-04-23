@@ -9,16 +9,20 @@ namespace ShapeCrawler
     /// </summary>
     internal abstract class MasterShape : Shape
     {
-        protected MasterShape(SCSlideMaster slideMaster, OpenXmlCompositeElement pShapeTreeChild) : base(
-            pShapeTreeChild)
+        protected MasterShape(SCSlideMaster slideMaster, OpenXmlCompositeElement pShapeTreeChild)
+            : base(pShapeTreeChild)
         {
-            SlideMaster = slideMaster;
+            this.SlideMaster = slideMaster;
         }
 
-        internal override ThemePart ThemePart => SlideMaster.PSlideMaster.SlideMasterPart.ThemePart;
+        public override IPlaceholder Placeholder => MasterPlaceholder.Create(this.PShapeTreeChild);
 
-        public override IPlaceholder Placeholder => MasterPlaceholder.Create(PShapeTreeChild);
-        public override SCPresentation Presentation => SlideMaster.Presentation;
+        public override SCPresentation ParentPresentation => this.SlideMaster.Presentation;
+
         public override SCSlideMaster SlideMaster { get; }
+
+        internal override ThemePart ThemePart => this.SlideMaster.PSlideMaster.SlideMasterPart.ThemePart;
+
+
     }
 }
