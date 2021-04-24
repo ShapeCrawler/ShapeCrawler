@@ -32,6 +32,7 @@ namespace ShapeCrawler.Collections
         public void Remove(IPortion removingPortion)
         {
             Portion removingInnerPortion = (Portion)removingPortion;
+
             removingInnerPortion.AText.Parent.Remove(); // remove parent <a:r>
             removingInnerPortion.IsRemoved = true;
 

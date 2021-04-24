@@ -223,4 +223,7 @@
   <data name="_036" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\036.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="_037" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resource\037.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

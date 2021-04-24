@@ -68,6 +68,7 @@ namespace ShapeCrawler.Tests.Unit.Helpers
             Pre034 = SCPresentation.Open(Properties.Resources._034, false);
             Pre035 = SCPresentation.Open(Properties.Resources._035, false);
             Pre036 = SCPresentation.Open(Properties.Resources._036, false);
+            Pre037 = SCPresentation.Open(Properties.Resources._037, false);
         }
     }
 }
