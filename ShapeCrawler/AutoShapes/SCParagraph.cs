@@ -77,6 +77,8 @@ namespace ShapeCrawler
 
         private void SetText(string newText)
         {
+            this.ThrowIfRemoved();
+
             // To set a paragraph text we use a single portion which is the first paragraph portion.
             // Rest of the portions are deleted from the paragraph.
             this.Portions.Remove(this.Portions.Skip(1).ToList());

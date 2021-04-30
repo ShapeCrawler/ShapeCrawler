@@ -40,8 +40,8 @@ namespace ShapeCrawler.Tests.Unit
             paragraphPortionText.Should().BeEquivalentTo("0:0_p1_lvl1");
         }
 
-        [Fact(Skip = "WIP")]
-        public void Text_GetterThrowsElementIsRemovedException_WhenPortionIsRemoved()
+        [Fact]
+        public void Text_SetterThrowsElementIsRemovedException_WhenPortionIsRemoved()
         {
             // Arrange
             IPresentation presentation = SCPresentation.Open(Resources._001, true);
@@ -51,7 +51,7 @@ namespace ShapeCrawler.Tests.Unit
             portions.Remove(portion);
 
             // Act-Assert
-            portion.Invoking(p => p.Text).Should().Throw<ElementIsRemovedException>();
+            portion.Invoking(p => p.Text = "new text").Should().Throw<ElementIsRemovedException>();
         }
     }
 }

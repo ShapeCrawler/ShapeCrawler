@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Statics;
@@ -57,6 +58,33 @@ namespace ShapeCrawler.Tests.Unit
             numberSlidesCase1.Should().Be(1);
             numberSlidesCase2.Should().Be(1);
         }
+
+#if DEBUG
+        [Fact(Skip = "In Progress: https://github.com/ShapeCrawler/ShapeCrawler/issues/12")]
+        public void SlidesAddExternal_AddsSpecifiedExternalSlideWithKeepingSourceFormatting_WhenKeepSourceFormatFlagIsTrue()
+        {
+            // Arrange
+            IPresentation sourPresentation = _fixture.Pre001;
+            IPresentation destPresentation = SCPresentation.Open(Properties.Resources._002, true);
+            int originSlidesCount = destPresentation.Slides.Count;
+            int originFontSize = 60;
+            ISlide copiedSlide = sourPresentation.Slides[0];
+            var mStream = new MemoryStream();
+
+            // Act
+            ISlide addedSlide = destPresentation.Slides.AddExternal(copiedSlide, true);
+
+            // Arrange
+            destPresentation.Slides.Count.Should().Be(originSlidesCount + 1);
+            IAutoShape addedShape = (IAutoShape)addedSlide.Shapes.First(sp => sp.Id == 2);
+            addedShape.TextBox.Paragraphs[0].Portions[0].Font.Size.Should().Be(originFontSize);
+
+            destPresentation.SaveAs(mStream);
+            destPresentation = SCPresentation.Open(mStream, false);
+            addedShape = (IAutoShape)destPresentation.Slides.Last().Shapes.First(sp => sp.Id == 2);
+            addedShape.TextBox.Paragraphs[0].Portions[0].Font.Size.Should().Be(originFontSize);
+        }
+#endif
 
         [Theory]
         [MemberData(nameof(TestCasesSlidesRemove))]

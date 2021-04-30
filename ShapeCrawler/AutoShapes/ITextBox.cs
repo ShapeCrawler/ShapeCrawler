@@ -14,6 +14,7 @@ namespace ShapeCrawler.AutoShapes
 
         /// <summary>
         ///     Gets or sets text box string content. Returns <c>NULL</c> if the text box is empty.
+        ///     <para>NOTE: setter removes all paragraphs except first, which will be used as the single paragraph to set box content.</para>
         /// </summary>
         string Text { get; set; }
     }

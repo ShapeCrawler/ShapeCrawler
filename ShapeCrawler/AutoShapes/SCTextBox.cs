@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -41,20 +42,11 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetText(string value)
         {
-            bool changed = false;
-            SCParagraph paragraph = (SCParagraph)this.Paragraphs.First(p => p.Portions.Any());
-            foreach (SCParagraph removingPara in this.Paragraphs.Where(p => p != paragraph))
-            {
-                removingPara.AParagraph.Remove();
-                changed = true;
-            }
+            IParagraph baseParagraph = this.Paragraphs.First(p => p.Portions.Any());
+            IEnumerable<IParagraph> removingParagraphs = this.Paragraphs.Where(p => p != baseParagraph);
+            this.Paragraphs.Remove(removingParagraphs);
 
-            if (changed)
-            {
-                this.Paragraphs = new ParagraphCollection(this.textBodyCompositeElement, this);
-            }
-
-            this.Paragraphs.Single().Text = value;
+            baseParagraph.Text = value;
         }
 
         private string GetText()

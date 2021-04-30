@@ -192,6 +192,20 @@ namespace ShapeCrawler.Tests.Unit
             bulletSize.Should().Be(120);
         }
 
+        [Fact]
+        public void ParagraphTextSetter_ThrowsException_WhenParagraphWasRemoved()
+        {
+            IPresentation presentation = SCPresentation.Open(Properties.Resources._020, true);
+            IAutoShape autoShape = (IAutoShape) presentation.Slides[2].Shapes.First(sp => sp.Id == 8);
+            ITextBox textBox = autoShape.TextBox;
+            IParagraph paragraph = textBox.Paragraphs.First();
+            textBox.Text = "new box content";
+
+            // Act-Assert
+            paragraph.Invoking(p => p.Text = "new paragraph text")
+                .Should().Throw<ElementIsRemovedException>("because paragraph was being removed while changing box content.");
+        }
+
         [Theory]
         [MemberData(nameof(TestCasesParagraphText))]
         public void ParagraphText_SetterChangesParagraphText(
@@ -324,6 +338,23 @@ namespace ShapeCrawler.Tests.Unit
             textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 4)).TextBox;
             textBox.Paragraphs.Last().Text.Should().BeEquivalentTo(TEST_TEXT);
             textBox.Paragraphs.Should().HaveCountGreaterThan(originParagraphsCount);
+        }
+
+        [Fact]
+        public void ParagraphsAdd_AddsANewTextParagraphAtTheEndOfTheTextBoxAndReturnsAddedParagraph_WhenParagraphIsAddedAfterTextBoxContentChanged()
+        {
+            IPresentation presentation = SCPresentation.Open(Properties.Resources._001, true);
+            IAutoShape autoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3);
+            ITextBox textBox = autoShape.TextBox;
+            IParagraphCollection paragraphs = textBox.Paragraphs;
+            IParagraph paragraph = textBox.Paragraphs.First();
+            textBox.Text = "A new text";
+
+            // Act
+            IParagraph newParagraph = paragraphs.Add();
+
+            // Assert
+            newParagraph.Should().NotBeNull();
         }
     }
 }
