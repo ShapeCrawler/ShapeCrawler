@@ -12,7 +12,7 @@ namespace ShapeCrawler.Collections
     /// <summary>
     ///     Represents a slide collection.
     /// </summary>
-    public class SlideCollection : ISlideCollection // TODO: make internal
+    internal class SlideCollection : ISlideCollection // TODO: make internal
     {
         private readonly SCPresentation parentPresentation;
         private readonly PresentationPart presentationPart;
@@ -39,7 +39,7 @@ namespace ShapeCrawler.Collections
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            return this.GetEnumerator();
         }
 
         /// <summary>
@@ -112,6 +112,11 @@ namespace ShapeCrawler.Collections
             }
 
             return slides;
+        }
+
+        public ISlide AddExternal(ISlide copiedSlide, bool keepSourceFormat)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
