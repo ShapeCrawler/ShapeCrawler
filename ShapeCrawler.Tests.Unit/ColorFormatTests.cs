@@ -130,7 +130,7 @@ namespace ShapeCrawler.Tests.Unit
             colorFormat.Color.Should().Be(Color.White);
         }
 
-        [Fact(Skip = "WIP: https://github.com/ShapeCrawler/ShapeCrawler/issues/60")]
+        [Fact]
         public void Color_GetterReturnsColor_OfPlaceholder()
         {
             // Arrange
@@ -162,7 +162,7 @@ namespace ShapeCrawler.Tests.Unit
             colorFormatC6.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
             colorFormatC7.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
             colorFormatC8.Color.Should().Be(ColorTranslator.FromHtml("#404040"));
-            colorFormatC9.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
+            colorFormatC9.Color.Should().Be(ColorTranslator.FromHtml("#1A1A1A"));
         }
 
         [Fact]

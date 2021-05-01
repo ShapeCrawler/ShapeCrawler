@@ -31,6 +31,16 @@ namespace ShapeCrawler
             this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
         }
 
+        #region Public Properties
+
+        public ITextBox TextBox => this.textBox.Value; // TODO: add test
+
+        public ShapeFill Fill => this.shapeFill.Value; // TODO: add test
+
+        public Shape ParentShape { get; }
+
+        #endregion Public Properties
+
         internal Dictionary<int, FontData> LvlToFontData => this.lvlToFontData.Value;
 
         internal ShapeContext Context { get; } // TODO: resolve warning
@@ -43,12 +53,9 @@ namespace ShapeCrawler
                 fontData = layoutFontData;
                 if (!fontData.IsFilled() && this.Placeholder != null)
                 {
-                    Placeholder placeholder = (Placeholder) this.Placeholder;
+                    Placeholder placeholder = (Placeholder)this.Placeholder;
                     IFontDataReader referencedMasterShape = (IFontDataReader) placeholder.ReferencedShape;
-                    if (referencedMasterShape != null)
-                    {
-                        referencedMasterShape.FillFontData(paragraphLvl, ref fontData);
-                    }
+                    referencedMasterShape?.FillFontData(paragraphLvl, ref fontData);
                 }
 
                 return;
@@ -56,7 +63,7 @@ namespace ShapeCrawler
 
             if (this.Placeholder != null)
             {
-                Placeholder placeholder = (Placeholder) Placeholder;
+                Placeholder placeholder = (Placeholder) this.Placeholder;
                 IFontDataReader referencedMasterShape = (IFontDataReader) placeholder.ReferencedShape;
                 if (referencedMasterShape != null)
                 {
@@ -65,31 +72,23 @@ namespace ShapeCrawler
             }
         }
 
-        #region Public Properties
-
-        public ITextBox TextBox => textBox.Value; // TODO: add test
-
-        public ShapeFill Fill => shapeFill.Value; // TODO: add test
-
-        public Shape ParentShape { get; }
-
-        #endregion Public Properties
-
-        #region Private Methods
-
         private Dictionary<int, FontData> GetLvlToFontData()
         {
-            P.Shape pShape = (P.Shape) PShapeTreeChild;
+            P.Shape pShape = (P.Shape)this.PShapeTreeChild;
             Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
 
             // TODO: move this block to FontDataParser.FromCompositeElement()?
-            if (!lvlToFontData.Any()) 
+            if (!lvlToFontData.Any())
             {
                 Int32Value endParaRunPrFs = pShape.TextBody.GetFirstChild<A.Paragraph>()
                     .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
                 if (endParaRunPrFs != null)
                 {
-                    lvlToFontData.Add(1, new FontData(endParaRunPrFs));
+                    var fontData = new FontData
+                    {
+                        FontSize = endParaRunPrFs
+                    };
+                    lvlToFontData.Add(1, fontData);
                 }
             }
 
@@ -136,7 +135,5 @@ namespace ShapeCrawler
 
             return null;
         }
-
-        #endregion Private Methods
     }
 }

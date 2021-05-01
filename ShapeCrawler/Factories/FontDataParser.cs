@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -20,8 +22,8 @@ namespace ShapeCrawler.Factories
                 return;
             }
 
-            Placeholder placeholder = (Placeholder) fontParentShape.Placeholder;
-            IFontDataReader phReferencedShape = (IFontDataReader) placeholder.ReferencedShape;
+            Placeholder placeholder = (Placeholder)fontParentShape.Placeholder;
+            IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
             phReferencedShape?.FillFontData(paragraphLvl, ref phFontData);
         }
 
@@ -42,21 +44,54 @@ namespace ShapeCrawler.Factories
             {
                 A.DefaultRunProperties aDefRPr = textPr.GetFirstChild<A.DefaultRunProperties>();
 
-                Int32Value fontSize = aDefRPr?.FontSize;
+                Int32Value fontSize = aDefRPr?.FontSize; // TODO: consider to use int? instead of Int32Value
                 BooleanValue isBold = aDefRPr?.Bold;
                 BooleanValue isItalic = aDefRPr?.Italic;
                 A.LatinFont aLatinFont = aDefRPr?.GetFirstChild<A.LatinFont>();
-                A.RgbColorModelHex aRgbColorModelHex = aDefRPr?.GetFirstChild<A.SolidFill>()?.RgbColorModelHex;
-                A.SchemeColor aSchemeColor = aDefRPr?.GetFirstChild<A.SolidFill>()?.SchemeColor;
+
+                A.RgbColorModelHex aRgbColorModelHex;
+                A.SchemeColor aSchemeColor;
+                A.SystemColor aSystemColor;
+                A.PresetColor aPresetColor;
+
+                // Try get color from <a:solidFill>
+                A.SolidFill aSolidFill = aDefRPr?.SolidFill();
+                if (aSolidFill != null)
+                {
+                    aRgbColorModelHex = aSolidFill.RgbColorModelHex;
+                    aSchemeColor = aSolidFill.SchemeColor;
+                    aSystemColor = aSolidFill.SystemColor;
+                    aPresetColor = aSolidFill.PresetColor;
+                }
+                else
+                {
+                    A.GradientStop aGradientStop = aDefRPr?.GetFirstChild<A.GradientFill>()?.GradientStopList
+                        .GetFirstChild<A.GradientStop>();
+                    aRgbColorModelHex = aGradientStop?.RgbColorModelHex;
+                    aSchemeColor = aGradientStop?.SchemeColor;
+                    aSystemColor = aGradientStop?.SystemColor;
+                    aPresetColor = aGradientStop?.PresetColor;
+                }
 
 #if NETSTANDARD2_0
-                var lvl = int.Parse(textPr.LocalName[3].ToString(System.Globalization.CultureInfo.CurrentCulture), System.Globalization.CultureInfo.CurrentCulture);
+                var paragraphLvl = int.Parse(textPr.LocalName[3].ToString(System.Globalization.CultureInfo.CurrentCulture), System.Globalization.CultureInfo.CurrentCulture);
 #else
                 // fourth character of LocalName contains level number, example: "lvl1pPr -> 1, lvl2pPr -> 2, etc."
                 ReadOnlySpan<char> localNameAsSpan = textPr.LocalName.AsSpan();
-                int lvl = int.Parse(localNameAsSpan.Slice(3, 1));
+                int paragraphLvl = int.Parse(localNameAsSpan.Slice(3, 1));
 #endif
-                lvlToFontData.Add(lvl, new FontData(fontSize, aLatinFont, isBold, isItalic, aRgbColorModelHex, aSchemeColor));
+                var fontData = new FontData
+                {
+                    FontSize = fontSize,
+                    ALatinFont = aLatinFont,
+                    IsBold = isBold,
+                    IsItalic = isItalic,
+                    ARgbColorModelHex = aRgbColorModelHex,
+                    ASchemeColor = aSchemeColor,
+                    ASystemColor = aSystemColor,
+                    APresetColor = aPresetColor
+                };
+                lvlToFontData.Add(paragraphLvl, fontData);
             }
 
             return lvlToFontData;

@@ -58,10 +58,9 @@ namespace ShapeCrawler.Drawing
             string colorHexVariant;
 
             // Try get color from PORTION level
-            A.SolidFill aSolidFill = this.font.Portion.AText.PreviousSibling<A.RunProperties>()?.SolidFill();
+            A.SolidFill aSolidFill = this.font.Portion.AText.Parent.GetFirstChild<A.RunProperties>()?.SolidFill();
             if (aSolidFill != null)
             {
-                // Try get solid color
                 A.RgbColorModelHex hexModel = aSolidFill.RgbColorModelHex;
                 if (hexModel != null)
                 {
@@ -71,7 +70,6 @@ namespace ShapeCrawler.Drawing
                     return;
                 }
 
-                // Try get scheme color
                 A.SchemeColor aSchemeColor = aSolidFill.SchemeColor;
                 if (aSchemeColor != null)
                 {
@@ -81,7 +79,6 @@ namespace ShapeCrawler.Drawing
                     return;
                 }
 
-                // Try get system color
                 A.SystemColor aSystemColor = aSolidFill.SystemColor;
                 if (aSystemColor != null)
                 {
@@ -98,25 +95,39 @@ namespace ShapeCrawler.Drawing
             else
             {
                 // Get color from SHAPE level
-                Shape fontParentShape = this.parentShape;
                 FontData masterBodyFontData;
-                if (fontParentShape.Placeholder is Placeholder placeholder)
+                if (this.parentShape.Placeholder is Placeholder placeholder)
                 {
-                    FontData phFontData = new ();
-                    FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.font.Portion.ParentParagraph);
-                    if (phFontData.ARgbColorModelHex != null)
+                    FontData placeholderFontData = new ();
+                    FontDataParser.GetFontDataFromPlaceholder(ref placeholderFontData, this.font.Portion.ParentParagraph);
+                    if (placeholderFontData.ARgbColorModelHex != null)
                     {
-                        colorHexVariant = phFontData.ARgbColorModelHex.Val;
+                        colorHexVariant = placeholderFontData.ARgbColorModelHex.Val;
                         this.colorType = SCColorType.RGB;
                         this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
                         return;
                     }
 
-                    if (phFontData.ASchemeColor != null)
+                    if (placeholderFontData.ASchemeColor != null)
                     {
-                        colorHexVariant = this.GetHexVariantByScheme(phFontData.ASchemeColor.Val);
+                        colorHexVariant = this.GetHexVariantByScheme(placeholderFontData.ASchemeColor.Val);
                         this.colorType = SCColorType.Scheme;
                         this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                        return;
+                    }
+
+                    if (placeholderFontData.ASystemColor != null)
+                    {
+                        colorHexVariant = placeholderFontData.ASystemColor.LastColor;
+                        this.colorType = SCColorType.System;
+                        this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                        return;
+                    }
+
+                    if (placeholderFontData.APresetColor != null)
+                    {
+                        this.colorType = SCColorType.Preset;
+                        this.color = Color.FromName(placeholderFontData.APresetColor.Val.Value.ToString());
                         return;
                     }
 
@@ -125,9 +136,9 @@ namespace ShapeCrawler.Drawing
                         case PlaceholderType.Title:
                         {
                             FontData masterTitleFontData =
-                                fontParentShape.SlideMaster.TitleParaLvlToFontData.ContainsKey(paragraphLevel)
-                                    ? fontParentShape.SlideMaster.TitleParaLvlToFontData[paragraphLevel]
-                                    : fontParentShape.SlideMaster.TitleParaLvlToFontData[1];
+                                this.parentShape.SlideMaster.TitleParaLvlToFontData.ContainsKey(paragraphLevel)
+                                    ? this.parentShape.SlideMaster.TitleParaLvlToFontData[paragraphLevel]
+                                    : this.parentShape.SlideMaster.TitleParaLvlToFontData[1];
                             if (masterTitleFontData.ASchemeColor != null)
                             {
                                 colorHexVariant = this.GetHexVariantByScheme(masterTitleFontData.ASchemeColor.Val);
@@ -153,7 +164,7 @@ namespace ShapeCrawler.Drawing
 
                         case PlaceholderType.Body:
                         {
-                            masterBodyFontData = fontParentShape.SlideMaster.BodyParaLvlToFontData[paragraphLevel];
+                            masterBodyFontData = this.parentShape.SlideMaster.BodyParaLvlToFontData[paragraphLevel];
                             if (masterBodyFontData.ASchemeColor != null)
                             {
                                 A.SchemeColorValues phBodyFontSchemeColor = masterBodyFontData.ASchemeColor.Val;
@@ -173,19 +184,44 @@ namespace ShapeCrawler.Drawing
                     }
                 }
 
-                P.Shape parentPShape = (P.Shape) fontParentShape.PShapeTreeChild;
+                // Shape level
+                P.Shape parentPShape = (P.Shape)this.parentShape.PShapeTreeChild;
                 if (parentPShape.ShapeStyle != null)
                 {
-                    A.SchemeColorValues shapeFontSchemeColor =
-                        parentPShape.ShapeStyle.FontReference.SchemeColor.Val.Value;
-                    colorHexVariant = this.GetHexVariantByScheme(shapeFontSchemeColor);
-                    this.colorType = SCColorType.Scheme;
-                    this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
-                    return;
+                    A.RgbColorModelHex hexModel = parentPShape.ShapeStyle.FontReference.RgbColorModelHex;
+                    if (hexModel != null)
+                    {
+                        colorHexVariant = hexModel.Val;
+                        this.colorType = SCColorType.RGB;
+                        this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                        return;
+                    }
+
+                    A.SchemeColor aSchemeColor = parentPShape.ShapeStyle.FontReference.SchemeColor;
+                    if (aSchemeColor != null)
+                    {
+                        colorHexVariant = this.GetHexVariantByScheme(aSchemeColor.Val);
+                        this.colorType = SCColorType.Scheme;
+                        this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                        return;
+                    }
+
+                    A.SystemColor aSystemColor = parentPShape.ShapeStyle.FontReference.SystemColor;
+                    if (aSystemColor != null)
+                    {
+                        colorHexVariant = aSystemColor.LastColor;
+                        this.colorType = SCColorType.System;
+                        this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                        return;
+                    }
+
+                    A.PresetColor aPresetColor = parentPShape.ShapeStyle.FontReference.PresetColor;
+                    this.colorType = SCColorType.Preset;
+                    this.color = Color.FromName(aPresetColor.Val.Value.ToString());
                 }
 
-                // Try get from Slide Master
-                masterBodyFontData = fontParentShape.SlideMaster.BodyParaLvlToFontData[paragraphLevel];
+                // Slide Master level
+                masterBodyFontData = this.parentShape.SlideMaster.BodyParaLvlToFontData[paragraphLevel];
                 if (masterBodyFontData.ARgbColorModelHex != null)
                 {
                     colorHexVariant = masterBodyFontData.ARgbColorModelHex.Val.Value;
@@ -202,8 +238,8 @@ namespace ShapeCrawler.Drawing
                     return;
                 }
 
-                // Try get from presentation global
-                if (fontParentShape.ParentPresentation.ParaLvlToFontData.TryGetValue(
+                // Presentation level
+                if (this.parentShape.ParentPresentation.ParaLvlToFontData.TryGetValue(
                     paragraphLevel,
                     out FontData preFontData))
                 {

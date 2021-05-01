@@ -59,7 +59,7 @@ namespace ShapeCrawler
 
         internal Dictionary<int, FontData> GetLvlToFontData() // TODO: duplicate code in LayoutAutoShape
         {
-            P.Shape pShape = (P.Shape) this.PShapeTreeChild;
+            P.Shape pShape = (P.Shape)this.PShapeTreeChild;
             Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
 
             if (!lvlToFontData.Any())
@@ -68,7 +68,11 @@ namespace ShapeCrawler
                     .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
                 if (endParaRunPrFs != null)
                 {
-                    lvlToFontData.Add(1, new FontData(endParaRunPrFs));
+                    var fontData = new FontData
+                    {
+                        FontSize = endParaRunPrFs
+                    };
+                    lvlToFontData.Add(1, fontData);
                 }
             }
 
@@ -77,7 +81,7 @@ namespace ShapeCrawler
 
         private SCTextBox GetTextBox() // TODO: duplicate code in LayoutAutoShape
         {
-            P.TextBody pTextBody = PShapeTreeChild.GetFirstChild<P.TextBody>();
+            P.TextBody pTextBody = this.PShapeTreeChild.GetFirstChild<P.TextBody>();
             if (pTextBody == null)
             {
                 return null;
