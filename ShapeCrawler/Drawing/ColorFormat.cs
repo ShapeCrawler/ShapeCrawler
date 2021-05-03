@@ -20,7 +20,7 @@ namespace ShapeCrawler.Drawing
         internal ColorFormat(SCFont font)
         {
             this.font = font;
-            this.parentShape = (Shape)font.Portion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
+            this.parentShape = (Shape)font.ParentPortion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
         }
 
         public SCColorType ColorType => this.GetColorType();
@@ -54,191 +54,39 @@ namespace ShapeCrawler.Drawing
         private void InitColor()
         {
             this.initialized = true;
-            int paragraphLevel = this.font.Portion.ParentParagraph.Level;
-            string colorHexVariant;
+            SCParagraph parentParagraph = this.font.ParentPortion.ParentParagraph;
+            int paragraphLevel = parentParagraph.Level;
 
-            // Try get color from PORTION level
-            A.SolidFill aSolidFill = this.font.Portion.AText.Parent.GetFirstChild<A.RunProperties>()?.SolidFill();
+            A.SolidFill aSolidFill = this.font.ParentPortion.AText.Parent.GetFirstChild<A.RunProperties>()?.SolidFill();
             if (aSolidFill != null)
             {
-                A.RgbColorModelHex hexModel = aSolidFill.RgbColorModelHex;
-                if (hexModel != null)
-                {
-                    colorHexVariant = hexModel.Val;
-                    this.colorType = SCColorType.RGB;
-                    this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
-                    return;
-                }
-
-                A.SchemeColor aSchemeColor = aSolidFill.SchemeColor;
-                if (aSchemeColor != null)
-                {
-                    colorHexVariant = this.GetHexVariantByScheme(aSchemeColor.Val);
-                    this.colorType = SCColorType.Scheme;
-                    this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
-                    return;
-                }
-
-                A.SystemColor aSystemColor = aSolidFill.SystemColor;
-                if (aSystemColor != null)
-                {
-                    colorHexVariant = aSystemColor.LastColor;
-                    this.colorType = SCColorType.System;
-                    this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
-                    return;
-                }
-
-                A.PresetColor aPresetColor = aSolidFill.PresetColor;
-                this.colorType = SCColorType.Preset;
-                this.color = Color.FromName(aPresetColor.Val.Value.ToString());
+                this.FromRunSolidFill(aSolidFill);
             }
             else
             {
-                // Get color from SHAPE level
-                FontData masterBodyFontData;
-                if (this.parentShape.Placeholder is Placeholder placeholder)
+                if (this.TryFromTextBody(parentParagraph, paragraphLevel))
                 {
-                    FontData placeholderFontData = new ();
-                    FontDataParser.GetFontDataFromPlaceholder(ref placeholderFontData, this.font.Portion.ParentParagraph);
-                    if (placeholderFontData.ARgbColorModelHex != null)
-                    {
-                        colorHexVariant = placeholderFontData.ARgbColorModelHex.Val;
-                        this.colorType = SCColorType.RGB;
-                        this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
-                        return;
-                    }
-
-                    if (placeholderFontData.ASchemeColor != null)
-                    {
-                        colorHexVariant = this.GetHexVariantByScheme(placeholderFontData.ASchemeColor.Val);
-                        this.colorType = SCColorType.Scheme;
-                        this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
-                        return;
-                    }
-
-                    if (placeholderFontData.ASystemColor != null)
-                    {
-                        colorHexVariant = placeholderFontData.ASystemColor.LastColor;
-                        this.colorType = SCColorType.System;
-                        this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
-                        return;
-                    }
-
-                    if (placeholderFontData.APresetColor != null)
-                    {
-                        this.colorType = SCColorType.Preset;
-                        this.color = Color.FromName(placeholderFontData.APresetColor.Val.Value.ToString());
-                        return;
-                    }
-
-                    switch (placeholder.Type)
-                    {
-                        case PlaceholderType.Title:
-                        {
-                            FontData masterTitleFontData =
-                                this.parentShape.SlideMaster.TitleParaLvlToFontData.ContainsKey(paragraphLevel)
-                                    ? this.parentShape.SlideMaster.TitleParaLvlToFontData[paragraphLevel]
-                                    : this.parentShape.SlideMaster.TitleParaLvlToFontData[1];
-                            if (masterTitleFontData.ASchemeColor != null)
-                            {
-                                colorHexVariant = this.GetHexVariantByScheme(masterTitleFontData.ASchemeColor.Val);
-                                this.colorType = SCColorType.Scheme;
-                                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
-                            }
-                            else if (masterTitleFontData.ARgbColorModelHex != null)
-                            {
-                                colorHexVariant = masterTitleFontData.ARgbColorModelHex.Val;
-                                this.colorType = SCColorType.RGB;
-                                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
-                            }
-                            else
-                            {
-                                // Get default
-                                colorHexVariant = this.GetThemeMappedColor(A.SchemeColorValues.Text1);
-                                this.colorType = SCColorType.Scheme;
-                                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
-                            }
-
-                            return;
-                        }
-
-                        case PlaceholderType.Body:
-                        {
-                            masterBodyFontData = this.parentShape.SlideMaster.BodyParaLvlToFontData[paragraphLevel];
-                            if (masterBodyFontData.ASchemeColor != null)
-                            {
-                                A.SchemeColorValues phBodyFontSchemeColor = masterBodyFontData.ASchemeColor.Val;
-                                colorHexVariant = this.GetHexVariantByScheme(phBodyFontSchemeColor);
-                                this.colorType = SCColorType.Scheme;
-                                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
-                            }
-                            else
-                            {
-                                colorHexVariant = masterBodyFontData.ARgbColorModelHex.Val;
-                                this.colorType = SCColorType.RGB;
-                                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
-                            }
-
-                            return;
-                        }
-                    }
-                }
-
-                // Shape level
-                P.Shape parentPShape = (P.Shape)this.parentShape.PShapeTreeChild;
-                if (parentPShape.ShapeStyle != null)
-                {
-                    A.RgbColorModelHex hexModel = parentPShape.ShapeStyle.FontReference.RgbColorModelHex;
-                    if (hexModel != null)
-                    {
-                        colorHexVariant = hexModel.Val;
-                        this.colorType = SCColorType.RGB;
-                        this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
-                        return;
-                    }
-
-                    A.SchemeColor aSchemeColor = parentPShape.ShapeStyle.FontReference.SchemeColor;
-                    if (aSchemeColor != null)
-                    {
-                        colorHexVariant = this.GetHexVariantByScheme(aSchemeColor.Val);
-                        this.colorType = SCColorType.Scheme;
-                        this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
-                        return;
-                    }
-
-                    A.SystemColor aSystemColor = parentPShape.ShapeStyle.FontReference.SystemColor;
-                    if (aSystemColor != null)
-                    {
-                        colorHexVariant = aSystemColor.LastColor;
-                        this.colorType = SCColorType.System;
-                        this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
-                        return;
-                    }
-
-                    A.PresetColor aPresetColor = parentPShape.ShapeStyle.FontReference.PresetColor;
-                    this.colorType = SCColorType.Preset;
-                    this.color = Color.FromName(aPresetColor.Val.Value.ToString());
-                }
-
-                // Slide Master level
-                masterBodyFontData = this.parentShape.SlideMaster.BodyParaLvlToFontData[paragraphLevel];
-                if (masterBodyFontData.ARgbColorModelHex != null)
-                {
-                    colorHexVariant = masterBodyFontData.ARgbColorModelHex.Val.Value;
-                    this.colorType = SCColorType.RGB;
-                    this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
                     return;
                 }
 
-                if (masterBodyFontData.ASchemeColor != null)
+                if (this.TryFromShapeFontReference())
                 {
-                    colorHexVariant = this.GetHexVariantByScheme(masterBodyFontData.ASchemeColor.Val);
-                    this.colorType = SCColorType.Scheme;
-                    this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                    return;
+                }
+
+                if (this.TryFromPlaceholder(paragraphLevel))
+                {
+                    return;
+                }
+
+                FontData masterBodyFontData = this.parentShape.SlideMaster.BodyParaLvlToFontData[paragraphLevel];
+                if (this.TryFromFontData(masterBodyFontData))
+                {
                     return;
                 }
 
                 // Presentation level
+                string colorHexVariant;
                 if (this.parentShape.ParentPresentation.ParaLvlToFontData.TryGetValue(
                     paragraphLevel,
                     out FontData preFontData))
@@ -254,6 +102,156 @@ namespace ShapeCrawler.Drawing
                 this.colorType = SCColorType.Scheme;
                 this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
             }
+        }
+
+        private bool TryFromTextBody(SCParagraph parentParagraph, int paragraphLevel)
+        {
+            A.ListStyle txBodyListStyle = parentParagraph.ParentTextBox.APTextBody.GetFirstChild<A.ListStyle>();
+            Dictionary<int, FontData> paraLvlToFontData = FontDataParser.FromCompositeElement(txBodyListStyle);
+            if (!paraLvlToFontData.TryGetValue(paragraphLevel, out FontData txBodyFontData))
+            {
+                return false;
+            }
+
+            return this.TryFromFontData(txBodyFontData);
+        }
+
+        private bool TryFromShapeFontReference()
+        {
+            P.Shape parentPShape = (P.Shape)this.parentShape.PShapeTreeChild;
+            if (parentPShape.ShapeStyle == null)
+            {
+                return false;
+            }
+
+            A.FontReference aFontReference = parentPShape.ShapeStyle.FontReference;
+            FontData fontReferenceFontData = new ()
+            {
+                ARgbColorModelHex = aFontReference.RgbColorModelHex,
+                ASchemeColor = aFontReference.SchemeColor,
+                ASystemColor = aFontReference.SystemColor,
+                APresetColor = aFontReference.PresetColor
+            };
+
+            return this.TryFromFontData(fontReferenceFontData);
+        }
+
+        private bool TryFromPlaceholder(int paragraphLevel)
+        {
+            if (this.parentShape.Placeholder is not Placeholder placeholder)
+            {
+                return false;
+            }
+
+            FontData placeholderFontData = new ();
+            FontDataParser.GetFontDataFromPlaceholder(ref placeholderFontData, this.font.ParentPortion.ParentParagraph);
+            if (this.TryFromFontData(placeholderFontData))
+            {
+                return true;
+            }
+
+            switch (placeholder.Type)
+            {
+                case PlaceholderType.Title:
+                {
+                    Dictionary<int, FontData> titleParaLvlToFontData = this.parentShape.SlideMaster.TitleParaLvlToFontData;
+                    FontData masterTitleFontData = titleParaLvlToFontData.ContainsKey(paragraphLevel)
+                        ? titleParaLvlToFontData[paragraphLevel]
+                        : titleParaLvlToFontData[1];
+                    if (this.TryFromFontData(masterTitleFontData))
+                    {
+                        return true;
+                    }
+
+                    break;
+                }
+
+                case PlaceholderType.Body:
+                {
+                    Dictionary<int, FontData> bodyParaLvlToFontData = this.parentShape.SlideMaster.BodyParaLvlToFontData;
+                    FontData masterBodyFontData = bodyParaLvlToFontData[paragraphLevel];
+                    if (this.TryFromFontData(masterBodyFontData))
+                    {
+                        return true;
+                    }
+
+                    break;
+                }
+            }
+
+            return false;
+        }
+
+        private bool TryFromFontData(FontData fontData)
+        {
+            string colorHexVariant;
+            if (fontData.ARgbColorModelHex != null)
+            {
+                colorHexVariant = fontData.ARgbColorModelHex.Val;
+                this.colorType = SCColorType.RGB;
+                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                return true;
+            }
+
+            if (fontData.ASchemeColor != null)
+            {
+                colorHexVariant = this.GetHexVariantByScheme(fontData.ASchemeColor.Val);
+                this.colorType = SCColorType.Scheme;
+                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                return true;
+            }
+
+            if (fontData.ASystemColor != null)
+            {
+                colorHexVariant = fontData.ASystemColor.LastColor;
+                this.colorType = SCColorType.System;
+                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                return true;
+            }
+
+            if (fontData.APresetColor != null)
+            {
+                this.colorType = SCColorType.Preset;
+                this.color = Color.FromName(fontData.APresetColor.Val.Value.ToString());
+                return true;
+            }
+
+            return false;
+        }
+
+        private void FromRunSolidFill(A.SolidFill aSolidFill)
+        {
+            A.RgbColorModelHex hexModel = aSolidFill.RgbColorModelHex;
+            string colorHexVariant;
+            if (hexModel != null)
+            {
+                colorHexVariant = hexModel.Val;
+                this.colorType = SCColorType.RGB;
+                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                return;
+            }
+
+            A.SchemeColor aSchemeColor = aSolidFill.SchemeColor;
+            if (aSchemeColor != null)
+            {
+                colorHexVariant = this.GetHexVariantByScheme(aSchemeColor.Val);
+                this.colorType = SCColorType.Scheme;
+                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                return;
+            }
+
+            A.SystemColor aSystemColor = aSolidFill.SystemColor;
+            if (aSystemColor != null)
+            {
+                colorHexVariant = aSystemColor.LastColor;
+                this.colorType = SCColorType.System;
+                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                return;
+            }
+
+            A.PresetColor aPresetColor = aSolidFill.PresetColor;
+            this.colorType = SCColorType.Preset;
+            this.color = Color.FromName(aPresetColor.Val.Value.ToString());
         }
 
         private string GetHexVariantByScheme(A.SchemeColorValues fontSchemeColor)

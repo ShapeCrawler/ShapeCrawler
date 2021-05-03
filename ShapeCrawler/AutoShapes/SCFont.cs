@@ -14,7 +14,7 @@ namespace ShapeCrawler.AutoShapes
 {
     internal class SCFont : IFont
     {
-        internal readonly Portion Portion;
+        internal readonly Portion ParentPortion;
 
         private readonly A.Text aText;
         private readonly A.FontScheme aFontScheme;
@@ -28,7 +28,7 @@ namespace ShapeCrawler.AutoShapes
             this.size = new ResettableLazy<int>(this.GetSize);
             this.latinFont = new ResettableLazy<A.LatinFont>(this.GetALatinFont);
             this.colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
-            this.Portion = portion;
+            this.ParentPortion = portion;
             this.aFontScheme = ((Shape)portion.ParentParagraph.ParentTextBox.ParentTextBoxContainer).ThemePart.Theme.ThemeElements.FontScheme;
         }
 
@@ -90,7 +90,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             FontData phFontData = new ();
-            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.Portion.ParentParagraph);
+            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
             {
                 if (phFontData.ALatinFont != null)
                 {
@@ -104,14 +104,14 @@ namespace ShapeCrawler.AutoShapes
 
         private int GetSize()
         {
-            Int32Value aRunPrFontSize = this.Portion.AText.Parent.GetFirstChild<A.RunProperties>()?.FontSize;
+            Int32Value aRunPrFontSize = this.ParentPortion.AText.Parent.GetFirstChild<A.RunProperties>()?.FontSize;
             if (aRunPrFontSize != null)
             {
                 return aRunPrFontSize.Value;
             }
 
-            Shape fontParentShape = (Shape)this.Portion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
-            int paragraphLvl = this.Portion.ParentParagraph.Level;
+            Shape fontParentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
+            int paragraphLvl = this.ParentPortion.ParentParagraph.Level;
 
             // Try get font size from placeholder
             if (fontParentShape.Placeholder != null)
@@ -167,7 +167,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             FontData phFontData = new();
-            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.Portion.ParentParagraph);
+            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
             if (phFontData.IsBold != null)
             {
                 return phFontData.IsBold.Value;
@@ -190,7 +190,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             FontData phFontData = new();
-            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.ParentParagraph);
+            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, ParentPortion.ParentParagraph);
             if (phFontData.IsItalic != null)
             {
                 return phFontData.IsItalic.Value;
@@ -209,7 +209,7 @@ namespace ShapeCrawler.AutoShapes
             else
             {
                 FontData phFontData = new();
-                FontDataParser.GetFontDataFromPlaceholder(ref phFontData, Portion.ParentParagraph);
+                FontDataParser.GetFontDataFromPlaceholder(ref phFontData, ParentPortion.ParentParagraph);
                 if (phFontData.IsBold != null)
                 {
                     phFontData.IsBold = new BooleanValue(value);
@@ -254,7 +254,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetName(string fontName)
         {
-            Shape parentShape = (Shape)this.Portion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
+            Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
             if (parentShape.Placeholder != null)
             {
                 throw new PlaceholderCannotBeChangedException();
