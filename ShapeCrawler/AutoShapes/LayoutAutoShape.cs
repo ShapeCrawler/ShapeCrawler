@@ -8,7 +8,7 @@ using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
-using ShapeCrawler.SlideMaster;
+using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -135,5 +135,7 @@ namespace ShapeCrawler
 
             return null;
         }
+
+        public override SCSlideMaster ParentSlideMaster { get; }
     }
 }

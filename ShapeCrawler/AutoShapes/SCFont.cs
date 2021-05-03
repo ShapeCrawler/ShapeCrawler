@@ -128,14 +128,16 @@ namespace ShapeCrawler.AutoShapes
                     }
                 }
 
+                SCSlideMaster slideMaster = (SCSlideMaster)fontParentShape.ParentSlideMaster;
+
                 // From Slide Master body
-                if (fontParentShape.SlideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
+                if (slideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
                 {
                     return fontSizeBody;
                 }
 
                 // From Slide Master other
-                if (fontParentShape.SlideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
+                if (slideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
                 {
                     return fontSizeOther;
                 }

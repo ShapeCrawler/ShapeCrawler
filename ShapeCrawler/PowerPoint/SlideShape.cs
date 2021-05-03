@@ -21,7 +21,7 @@ namespace ShapeCrawler
 
         public override SCPresentation ParentPresentation => Slide.ParentPresentation;
 
-        public override SCSlideMaster SlideMaster => Slide.Layout.SlideMaster;
+        public override SCSlideMaster ParentSlideMaster => (SCSlideMaster)Slide.ParentSlideLayout.ParentSlideMaster;
 
         #endregion Public Properties
 

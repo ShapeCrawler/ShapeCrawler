@@ -3,11 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMaster;
-using ShapeCrawler.Tables;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 

@@ -80,7 +80,7 @@ namespace ShapeCrawler.Drawing
                     return;
                 }
 
-                FontData masterBodyFontData = this.parentShape.SlideMaster.BodyParaLvlToFontData[paragraphLevel];
+                FontData masterBodyFontData = ((SCSlideMaster)this.parentShape.ParentSlideMaster).BodyParaLvlToFontData[paragraphLevel];
                 if (this.TryFromFontData(masterBodyFontData))
                 {
                     return;
@@ -155,7 +155,7 @@ namespace ShapeCrawler.Drawing
             {
                 case PlaceholderType.Title:
                 {
-                    Dictionary<int, FontData> titleParaLvlToFontData = this.parentShape.SlideMaster.TitleParaLvlToFontData;
+                    Dictionary<int, FontData> titleParaLvlToFontData = ((SCSlideMaster)this.parentShape.ParentSlideMaster).TitleParaLvlToFontData;
                     FontData masterTitleFontData = titleParaLvlToFontData.ContainsKey(paragraphLevel)
                         ? titleParaLvlToFontData[paragraphLevel]
                         : titleParaLvlToFontData[1];
@@ -169,7 +169,7 @@ namespace ShapeCrawler.Drawing
 
                 case PlaceholderType.Body:
                 {
-                    Dictionary<int, FontData> bodyParaLvlToFontData = this.parentShape.SlideMaster.BodyParaLvlToFontData;
+                    Dictionary<int, FontData> bodyParaLvlToFontData = ((SCSlideMaster)this.parentShape.ParentSlideMaster).BodyParaLvlToFontData;
                     FontData masterBodyFontData = bodyParaLvlToFontData[paragraphLevel];
                     if (this.TryFromFontData(masterBodyFontData))
                     {
@@ -299,7 +299,7 @@ namespace ShapeCrawler.Drawing
 
         private string GetThemeMappedColor(A.SchemeColorValues fontSchemeColor)
         {
-            P.ColorMap slideMasterPColorMap = this.parentShape.SlideMaster.PSlideMaster.ColorMap;
+            P.ColorMap slideMasterPColorMap = ((SCSlideMaster)this.parentShape.ParentSlideMaster).PSlideMaster.ColorMap;
             if (fontSchemeColor == A.SchemeColorValues.Text1)
             {
                 return this.GetThemeColorByString(slideMasterPColorMap.Text1.ToString());

@@ -61,7 +61,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets parent Slide Master.
         /// </summary>
-        public abstract SCSlideMaster SlideMaster { get; } // TODO: Slide Master should not be on Shape level
+        public abstract SCSlideMaster ParentSlideMaster { get; } // TODO: Slide Master should not be on Shape level
 
         /// <summary>
         ///     Gets geometry form type.

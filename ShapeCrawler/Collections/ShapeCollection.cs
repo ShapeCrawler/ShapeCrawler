@@ -10,10 +10,10 @@ using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMaster;
+using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Tables;
-using P = DocumentFormat.OpenXml.Presentation;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Collections
 {

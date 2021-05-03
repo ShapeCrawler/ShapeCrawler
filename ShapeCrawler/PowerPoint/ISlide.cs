@@ -19,12 +19,12 @@ namespace ShapeCrawler
         SCImage Background { get; }
 
         /// <summary>
-        ///     Gets custom data.
+        ///     Gets or sets custom data.
         /// </summary>
         string CustomData { get; set; }
 
         /// <summary>
-        ///     Determines whether slide is hidden.
+        ///     Gets a value indicating whether slide hidden.
         /// </summary>
         bool Hidden { get; }
 
@@ -33,8 +33,14 @@ namespace ShapeCrawler
         /// </summary>
         void Hide();
 
+        /// <summary>
+        ///     Saves slide scheme to stream.
+        /// </summary>
         void SaveScheme(Stream stream);
 
+        /// <summary>
+        ///     Saves slide scheme to file.
+        /// </summary>
         void SaveScheme(string filePath);
 
 #if DEBUG

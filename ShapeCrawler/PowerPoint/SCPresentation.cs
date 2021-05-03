@@ -20,20 +20,22 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler
 {
     /// <inheritdoc cref="IPresentation" />
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrawler")]
     public sealed class SCPresentation : IPresentation
     {
-        private bool _closed;
-
-        private Lazy<Dictionary<int, FontData>> _paraLvlToFontData;
-        private PresentationDocument _presentationDocument;
-        private Lazy<SlideCollection> _slides;
-        private Lazy<SlideSizeSc> _slideSize;
         internal PresentationPart PresentationPart;
+
         internal bool Editable { get; }
+
         internal List<ChartWorkbook> ChartWorkbooks { get; } = new();
 
-        internal Dictionary<int, FontData> ParaLvlToFontData => _paraLvlToFontData.Value;
+        private bool closed;
+        private Lazy<Dictionary<int, FontData>> paraLvlToFontData;
+        private PresentationDocument presentationDocument;
+        private Lazy<SlideCollection> slides;
+        private Lazy<SlideSizeSc> slideSize;
+
+        internal Dictionary<int, FontData> ParaLvlToFontData => paraLvlToFontData.Value;
 
         private static Dictionary<int, FontData> ParseFontHeights(P.Presentation pPresentation)
         {
@@ -61,13 +63,13 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public ISlideCollection Slides => _slides.Value;
+        public ISlideCollection Slides => slides.Value;
 
-        public int SlideWidth => _slideSize.Value.Width;
+        public int SlideWidth => slideSize.Value.Width;
 
-        public int SlideHeight => _slideSize.Value.Height;
+        public int SlideHeight => slideSize.Value.Height;
 
-        public SlideMasterCollection SlideMasters => SlideMasterCollection.Create(this);
+        public ISlideMasterCollection SlideMasters => SlideMasterCollection.Create(this);
 
         #endregion Public Properties
 
@@ -76,7 +78,7 @@ namespace ShapeCrawler
         private SCPresentation(string pptxPath, in bool isEditable)
         {
             ThrowIfSourceInvalid(pptxPath);
-            _presentationDocument = PresentationDocument.Open(pptxPath, isEditable);
+            presentationDocument = PresentationDocument.Open(pptxPath, isEditable);
             Editable = isEditable;
             Init();
         }
@@ -85,7 +87,7 @@ namespace ShapeCrawler
         {
             ThrowIfSourceInvalid(pptxStream);
             Editable = isEditable;
-            _presentationDocument = PresentationDocument.Open(pptxStream, isEditable);
+            presentationDocument = PresentationDocument.Open(pptxStream, isEditable);
             Init();
         }
 
@@ -100,31 +102,31 @@ namespace ShapeCrawler
 
         public void Save()
         {
-            _presentationDocument.Save();
+            presentationDocument.Save();
         }
 
         public void SaveAs(string filePath)
         {
-            _presentationDocument = (PresentationDocument) _presentationDocument.SaveAs(filePath);
+            presentationDocument = (PresentationDocument) presentationDocument.SaveAs(filePath);
         }
 
         public void SaveAs(Stream stream)
         {
             ChartWorkbooks.ForEach(cw => cw.Close());
-            _presentationDocument = (PresentationDocument) _presentationDocument.Clone(stream);
+            presentationDocument = (PresentationDocument) presentationDocument.Clone(stream);
         }
 
         public void Close()
         {
-            if (_closed)
+            if (closed)
             {
                 return;
             }
 
-            _presentationDocument.Close();
+            presentationDocument.Close();
             ChartWorkbooks.ForEach(cw => cw.Close());
 
-            _closed = true;
+            closed = true;
         }
 
         public void Dispose()
@@ -192,7 +194,7 @@ namespace ShapeCrawler
 
         private void ThrowIfSlidesNumberLarge()
         {
-            var nbSlides = _presentationDocument.PresentationPart.SlideParts.Count();
+            var nbSlides = presentationDocument.PresentationPart.SlideParts.Count();
             if (nbSlides > Limitations.MaxSlidesNumber)
             {
                 Close();
@@ -203,16 +205,16 @@ namespace ShapeCrawler
         private void Init()
         {
             ThrowIfSlidesNumberLarge();
-            _slides = new Lazy<SlideCollection>(GetSlides);
-            _slideSize = new Lazy<SlideSizeSc>(GetSlideSize);
-            PresentationPart = _presentationDocument.PresentationPart;
-            _paraLvlToFontData =
+            slides = new Lazy<SlideCollection>(GetSlides);
+            slideSize = new Lazy<SlideSizeSc>(GetSlideSize);
+            PresentationPart = presentationDocument.PresentationPart;
+            paraLvlToFontData =
                 new Lazy<Dictionary<int, FontData>>(() => ParseFontHeights(PresentationPart.Presentation));
         }
 
         private SlideSizeSc GetSlideSize()
         {
-            P.SlideSize pSlideSize = _presentationDocument.PresentationPart.Presentation.SlideSize;
+            P.SlideSize pSlideSize = presentationDocument.PresentationPart.Presentation.SlideSize;
             return new SlideSizeSc(pSlideSize.Cx.Value, pSlideSize.Cy.Value);
         }
 

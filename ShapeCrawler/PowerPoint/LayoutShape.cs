@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.SlideMaster;
+using ShapeCrawler.SlideMasters;
 
 namespace ShapeCrawler
 {
@@ -10,20 +10,20 @@ namespace ShapeCrawler
     /// </summary>
     internal abstract class LayoutShape : Shape
     {
-        protected LayoutShape(SCSlideLayout slideLayout, OpenXmlCompositeElement pShapeTreeChild) : base(
-            pShapeTreeChild)
+        protected LayoutShape(SCSlideLayout slideLayout, OpenXmlCompositeElement pShapeTreeChild)
+            : base(pShapeTreeChild)
         {
-            SlideLayout = slideLayout;
+            this.SlideLayout = slideLayout;
         }
 
+        public override IPlaceholder Placeholder => LayoutPlaceholder.Create(this.PShapeTreeChild, this);
+
+        public override SCPresentation ParentPresentation => ((SCSlideMaster)this.SlideLayout.ParentSlideMaster).ParentPresentation;
+
+        //public override SCSlideMaster SlideMaster => this.SlideLayout.ParentSlideMaster;
+
+        internal override ThemePart ThemePart => this.SlideLayout.SlideLayoutPart.SlideMasterPart.ThemePart;
+
         internal SCSlideLayout SlideLayout { get; }
-
-        public override IPlaceholder Placeholder => LayoutPlaceholder.Create(PShapeTreeChild, this);
-
-        internal override ThemePart ThemePart => SlideLayout.SlideLayoutPart.SlideMasterPart.ThemePart;
-
-        public override SCPresentation ParentPresentation => SlideLayout.SlideMaster.Presentation;
-
-        public override SCSlideMaster SlideMaster => SlideLayout.SlideMaster;
     }
 }

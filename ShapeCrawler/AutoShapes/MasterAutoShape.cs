@@ -45,7 +45,7 @@ namespace ShapeCrawler
                 return;
             }
 
-            P.TextStyles pTextStyles = this.SlideMaster.PSlideMaster.TextStyles;
+            P.TextStyles pTextStyles = ((SCSlideMaster)this.ParentSlideMaster).PSlideMaster.TextStyles;
             if (this.Placeholder.Type == PlaceholderType.Title)
             {
                 int titleFontSize = pTextStyles.TitleStyle.Level1ParagraphProperties

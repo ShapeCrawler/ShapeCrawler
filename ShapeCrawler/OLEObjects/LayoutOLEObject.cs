@@ -1,5 +1,5 @@
 ﻿using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMaster;
+using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.OLEObjects
@@ -13,5 +13,7 @@ namespace ShapeCrawler.OLEObjects
             : base(slideLayout, pGraphicFrame)
         {
         }
+
+        public override SCSlideMaster ParentSlideMaster { get; }
     }
 }

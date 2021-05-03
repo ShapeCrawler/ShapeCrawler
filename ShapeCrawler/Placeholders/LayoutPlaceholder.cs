@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
+using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -11,7 +12,7 @@ namespace ShapeCrawler.Placeholders
             : base(pPlaceholderShape)
         {
             BaseShape = new ResettableLazy<Shape>(() =>
-                layoutShape.SlideLayout.SlideMaster.Shapes.GetShapeByPPlaceholderShape(pPlaceholderShape));
+                ((ShapeCollection)layoutShape.SlideLayout.ParentSlideMaster.Shapes).GetShapeByPPlaceholderShape(pPlaceholderShape));
         }
 
         /// <summary>
