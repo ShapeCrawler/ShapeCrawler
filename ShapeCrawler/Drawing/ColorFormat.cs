@@ -54,17 +54,18 @@ namespace ShapeCrawler.Drawing
         private void InitColor()
         {
             this.initialized = true;
-            SCParagraph parentParagraph = this.font.ParentPortion.ParentParagraph;
+            SCPortion parentPortion = this.font.ParentPortion;
+            SCParagraph parentParagraph = parentPortion.ParentParagraph;
             int paragraphLevel = parentParagraph.Level;
 
-            A.SolidFill aSolidFill = this.font.ParentPortion.AText.Parent.GetFirstChild<A.RunProperties>()?.SolidFill();
+            A.SolidFill aSolidFill = parentPortion.AText.Parent.GetFirstChild<A.RunProperties>()?.SolidFill();
             if (aSolidFill != null)
             {
                 this.FromRunSolidFill(aSolidFill);
             }
             else
             {
-                if (this.TryFromTextBody(parentParagraph, paragraphLevel))
+                if (this.TryFromTextBody(parentParagraph))
                 {
                     return;
                 }
@@ -104,11 +105,11 @@ namespace ShapeCrawler.Drawing
             }
         }
 
-        private bool TryFromTextBody(SCParagraph parentParagraph, int paragraphLevel)
+        private bool TryFromTextBody(SCParagraph paragraph)
         {
-            A.ListStyle txBodyListStyle = parentParagraph.ParentTextBox.APTextBody.GetFirstChild<A.ListStyle>();
+            A.ListStyle txBodyListStyle = paragraph.ParentTextBox.APTextBody.GetFirstChild<A.ListStyle>();
             Dictionary<int, FontData> paraLvlToFontData = FontDataParser.FromCompositeElement(txBodyListStyle);
-            if (!paraLvlToFontData.TryGetValue(paragraphLevel, out FontData txBodyFontData))
+            if (!paraLvlToFontData.TryGetValue(paragraph.Level, out FontData txBodyFontData))
             {
                 return false;
             }

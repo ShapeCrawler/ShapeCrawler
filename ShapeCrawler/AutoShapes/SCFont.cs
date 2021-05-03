@@ -14,7 +14,7 @@ namespace ShapeCrawler.AutoShapes
 {
     internal class SCFont : IFont
     {
-        internal readonly Portion ParentPortion;
+        internal readonly SCPortion ParentPortion;
 
         private readonly A.Text aText;
         private readonly A.FontScheme aFontScheme;
@@ -22,7 +22,7 @@ namespace ShapeCrawler.AutoShapes
         private readonly ResettableLazy<A.LatinFont> latinFont;
         private readonly ResettableLazy<int> size;
 
-        internal SCFont(A.Text aText, Portion portion)
+        internal SCFont(A.Text aText, SCPortion portion)
         {
             this.aText = aText;
             this.size = new ResettableLazy<int>(this.GetSize);
