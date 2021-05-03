@@ -12,7 +12,7 @@ namespace ShapeCrawler.Placeholders
             : base(pPlaceholderShape)
         {
             BaseShape = new ResettableLazy<Shape>(() =>
-                ((ShapeCollection)layoutShape.SlideLayout.ParentSlideMaster.Shapes).GetShapeByPPlaceholderShape(pPlaceholderShape));
+                ((ShapeCollection)layoutShape.ParentSlideLayout.ParentSlideMaster.Shapes).GetShapeByPPlaceholderShape(pPlaceholderShape));
         }
 
         /// <summary>

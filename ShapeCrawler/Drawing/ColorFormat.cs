@@ -80,7 +80,7 @@ namespace ShapeCrawler.Drawing
                     return;
                 }
 
-                FontData masterBodyFontData = ((SCSlideMaster)this.parentShape.ParentSlideMaster).BodyParaLvlToFontData[paragraphLevel];
+                FontData masterBodyFontData = parentShape.ParentSlideMaster.BodyParaLvlToFontData[paragraphLevel];
                 if (this.TryFromFontData(masterBodyFontData))
                 {
                     return;
@@ -155,7 +155,7 @@ namespace ShapeCrawler.Drawing
             {
                 case PlaceholderType.Title:
                 {
-                    Dictionary<int, FontData> titleParaLvlToFontData = ((SCSlideMaster)this.parentShape.ParentSlideMaster).TitleParaLvlToFontData;
+                    Dictionary<int, FontData> titleParaLvlToFontData = this.parentShape.ParentSlideMaster.TitleParaLvlToFontData;
                     FontData masterTitleFontData = titleParaLvlToFontData.ContainsKey(paragraphLevel)
                         ? titleParaLvlToFontData[paragraphLevel]
                         : titleParaLvlToFontData[1];
