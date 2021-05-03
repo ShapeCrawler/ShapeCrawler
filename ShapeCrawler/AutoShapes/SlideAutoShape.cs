@@ -20,6 +20,7 @@ namespace ShapeCrawler
         private readonly ILocation innerTransform;
         private readonly Lazy<ShapeFill> shapeFill;
         private readonly Lazy<SCTextBox> textBox;
+        private readonly P.Shape pShape;
 
         internal SlideAutoShape(
             ILocation innerTransform,
@@ -32,6 +33,7 @@ namespace ShapeCrawler
             this.Context = spContext;
             this.textBox = new Lazy<SCTextBox>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
+            this.pShape = pShape;
         }
 
         internal ShapeContext Context { get; }
@@ -93,8 +95,7 @@ namespace ShapeCrawler
                 return new ShapeFill(image);
             }
 
-            A.SolidFill aSolidFill =
-                ((P.Shape)this.PShapeTreeChild).ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
+            A.SolidFill aSolidFill = this.pShape.ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
             if (aSolidFill != null)
             {
                 A.RgbColorModelHex aRgbColorModelHex = aSolidFill.RgbColorModelHex;
@@ -108,7 +109,5 @@ namespace ShapeCrawler
 
             return null;
         }
-
-        public Shape ParentShape { get; } // TODO: is it needed
     }
 }

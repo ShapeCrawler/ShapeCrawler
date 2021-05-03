@@ -22,6 +22,7 @@ namespace ShapeCrawler
         private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
         private readonly Lazy<ShapeFill> shapeFill;
         private readonly Lazy<SCTextBox> textBox;
+        private readonly P.Shape pShape;
 
         internal LayoutAutoShape(SCSlideLayout parentSlideLayout, P.Shape pShape)
             : base(parentSlideLayout, pShape)
@@ -29,6 +30,7 @@ namespace ShapeCrawler
             this.textBox = new Lazy<SCTextBox>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
             this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
+            this.pShape = pShape;
         }
 
         #region Public Properties
@@ -36,8 +38,6 @@ namespace ShapeCrawler
         public ITextBox TextBox => this.textBox.Value; // TODO: add test
 
         public ShapeFill Fill => this.shapeFill.Value; // TODO: add test
-
-        public Shape ParentShape { get; }
 
         #endregion Public Properties
 
@@ -56,7 +56,7 @@ namespace ShapeCrawler
                 if (!fontData.IsFilled() && this.Placeholder != null)
                 {
                     Placeholder placeholder = (Placeholder)this.Placeholder;
-                    IFontDataReader referencedMasterShape = (IFontDataReader) placeholder.ReferencedShape;
+                    IFontDataReader referencedMasterShape = (IFontDataReader)placeholder.ReferencedShape;
                     referencedMasterShape?.FillFontData(paragraphLvl, ref fontData);
                 }
 
@@ -65,8 +65,8 @@ namespace ShapeCrawler
 
             if (this.Placeholder != null)
             {
-                Placeholder placeholder = (Placeholder) this.Placeholder;
-                IFontDataReader referencedMasterShape = (IFontDataReader) placeholder.ReferencedShape;
+                Placeholder placeholder = (Placeholder)this.Placeholder;
+                IFontDataReader referencedMasterShape = (IFontDataReader)placeholder.ReferencedShape;
                 if (referencedMasterShape != null)
                 {
                     referencedMasterShape.FillFontData(paragraphLvl, ref fontData);
@@ -76,8 +76,7 @@ namespace ShapeCrawler
 
         private Dictionary<int, FontData> GetLvlToFontData()
         {
-            P.Shape pShape = (P.Shape)this.PShapeTreeChild;
-            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
+            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(this.pShape.TextBody.ListStyle);
 
             // TODO: move this block to FontDataParser.FromCompositeElement()?
             if (!lvlToFontData.Any())
@@ -122,20 +121,20 @@ namespace ShapeCrawler
                 return new ShapeFill(image);
             }
 
-            A.SolidFill aSolidFill =
-                ((P.Shape) this.PShapeTreeChild).ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
-            if (aSolidFill != null)
+            // TODO: create some AutoShape abstract class and move "(P.Shape)this.PShapeTreeChild)" in there
+            A.SolidFill aSolidFill = ((P.Shape)this.PShapeTreeChild).ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
+            if (aSolidFill == null)
             {
-                A.RgbColorModelHex aRgbColorModelHex = aSolidFill.RgbColorModelHex;
-                if (aRgbColorModelHex != null)
-                {
-                    return ShapeFill.FromXmlSolidFill(aRgbColorModelHex);
-                }
-
-                return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
+                return null;
             }
 
-            return null;
+            A.RgbColorModelHex aRgbColorModelHex = aSolidFill.RgbColorModelHex;
+            if (aRgbColorModelHex != null)
+            {
+                return ShapeFill.FromXmlSolidFill(aRgbColorModelHex);
+            }
+
+            return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
         }
     }
 }

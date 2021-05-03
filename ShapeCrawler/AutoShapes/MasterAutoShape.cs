@@ -24,6 +24,7 @@ namespace ShapeCrawler
         private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
         private readonly Lazy<ShapeFill> shapeFill;
         private readonly Lazy<SCTextBox> textBox;
+        private readonly P.Shape pShape;
 
         internal MasterAutoShape(SCSlideMaster slideMaster, P.Shape pShape)
             : base(slideMaster, pShape)
@@ -31,6 +32,7 @@ namespace ShapeCrawler
             this.textBox = new Lazy<SCTextBox>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
             this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
+            this.pShape = pShape;
         }
 
         internal ShapeContext Context { get; }
@@ -59,12 +61,11 @@ namespace ShapeCrawler
 
         internal Dictionary<int, FontData> GetLvlToFontData() // TODO: duplicate code in LayoutAutoShape
         {
-            P.Shape pShape = (P.Shape)this.PShapeTreeChild;
-            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(pShape.TextBody.ListStyle);
+            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(this.pShape.TextBody.ListStyle);
 
             if (!lvlToFontData.Any())
             {
-                Int32Value endParaRunPrFs = pShape.TextBody.GetFirstChild<A.Paragraph>()
+                Int32Value endParaRunPrFs = this.pShape.TextBody.GetFirstChild<A.Paragraph>()
                     .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
                 if (endParaRunPrFs != null)
                 {
@@ -96,16 +97,15 @@ namespace ShapeCrawler
             return null;
         }
 
-        private ShapeFill TryGetFill() //TODO: duplicate code in LayoutAutoShape
+        private ShapeFill TryGetFill() // TODO: duplicate code in LayoutAutoShape
         {
-            SCImage image = imageFactory.FromSlidePart(Context.SlidePart, Context.CompositeElement);
+            SCImage image = this.imageFactory.FromSlidePart(Context.SlidePart, Context.CompositeElement);
             if (image != null)
             {
                 return new ShapeFill(image);
             }
 
-            A.SolidFill aSolidFill =
-                ((P.Shape) PShapeTreeChild).ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
+            A.SolidFill aSolidFill = this.pShape.ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
             if (aSolidFill != null)
             {
                 A.RgbColorModelHex aRgbColorModelHex = aSolidFill.RgbColorModelHex;
@@ -120,13 +120,11 @@ namespace ShapeCrawler
             return null;
         }
 
-        public Shape ParentShape { get; }
-
         #region Public Properties
 
-        public ITextBox TextBox => textBox.Value;
+        public ITextBox TextBox => this.textBox.Value;
 
-        public ShapeFill Fill => shapeFill.Value;
+        public ShapeFill Fill => this.shapeFill.Value;
 
         #endregion Public Properties
     }

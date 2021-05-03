@@ -3,8 +3,7 @@
     /// <summary>
     ///     Represents a text box container.
     /// </summary>
-    internal interface ITextBoxContainer // TODO: is it needed
+    internal interface ITextBoxContainer // TODO: what about replace with abstract class?
     {
-        Shape ParentShape { get; }
     }
 }
