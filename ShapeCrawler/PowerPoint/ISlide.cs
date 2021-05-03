@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.SlideMasters;
 
 namespace ShapeCrawler
 {
@@ -42,6 +43,8 @@ namespace ShapeCrawler
         ///     Saves slide scheme to file.
         /// </summary>
         void SaveScheme(string filePath);
+
+        ISlideLayout ParentSlideLayout { get; }
 
 #if DEBUG
         void SaveImage(string filePath);

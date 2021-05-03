@@ -28,7 +28,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets collection of Slide Layouts.
         /// </summary>
-        IReadOnlyList<SCSlideLayout> SlideLayouts { get; }
+        IReadOnlyList<ISlideLayout> SlideLayouts { get; }
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrawler")]
@@ -105,7 +105,7 @@ namespace ShapeCrawler
 
         public SCImage Background => throw new NotImplementedException();
 
-        public IReadOnlyList<SCSlideLayout> SlideLayouts => this.slideLayouts.Value;
+        public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
         IShapeCollection IBaseSlide.Shapes => ShapeCollection.CreateForSlideMaster(this);
 

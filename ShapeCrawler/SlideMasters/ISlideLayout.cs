@@ -8,8 +8,19 @@ namespace ShapeCrawler.SlideMasters
     /// <summary>
     ///     Represents a Slide Layout.
     /// </summary>
+    public interface ISlideLayout : IBaseSlide
+    {
+        /// <summary>
+        ///     Gets parent Slide Master.
+        /// </summary>
+        ISlideMaster ParentSlideMaster { get; }
+    }
+
+    /// <summary>
+    ///     Represents a Slide Layout.
+    /// </summary>
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — Shape Crawler")]
-    public class SCSlideLayout // TODO: extract interface and make internal
+    internal class SCSlideLayout : ISlideLayout
     {
         private readonly ResettableLazy<ShapeCollection> shapes;
         private readonly SCSlideMaster slideMaster;
@@ -22,7 +33,7 @@ namespace ShapeCrawler.SlideMasters
                 ShapeCollection.CreateForSlideLayout(slideLayoutPart.SlideLayout.CommonSlideData.ShapeTree, this));
         }
 
-        public ShapeCollection Shapes => this.shapes.Value;
+        public IShapeCollection Shapes => this.shapes.Value;
 
         public ISlideMaster ParentSlideMaster => this.slideMaster;
 

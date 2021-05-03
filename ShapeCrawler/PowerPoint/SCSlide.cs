@@ -41,7 +41,7 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public SCSlideLayout ParentSlideLayout => ((SlideMasterCollection)this.ParentPresentation.SlideMasters).GetSlideLayoutBySlide(this);
+        public ISlideLayout ParentSlideLayout => ((SlideMasterCollection)this.ParentPresentation.SlideMasters).GetSlideLayoutBySlide(this);
 
         public IShapeCollection Shapes => this._shapes.Value;
 

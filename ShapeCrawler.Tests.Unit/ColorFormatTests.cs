@@ -134,7 +134,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Color_GetterReturnsColor_OfPlaceholder()
+        public void Color_GetterReturnsColor_OfSlidePlaceholder()
         {
             // Arrange
             IAutoShape placeholderCase1 = (IAutoShape)_fixture.Pre001.Slides[2].Shapes.First(sp => sp.Id == 4);
@@ -166,6 +166,18 @@ namespace ShapeCrawler.Tests.Unit
             colorFormatC7.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
             colorFormatC8.Color.Should().Be(ColorTranslator.FromHtml("#404040"));
             colorFormatC9.Color.Should().Be(ColorTranslator.FromHtml("#1A1A1A"));
+        }
+
+        [Fact]
+        public void Color_GetterReturnsColor_OfSlideLayoutPlaceholder()
+        {
+            // Arrange
+            IAutoShape titlePh = (IAutoShape)_fixture.Pre001.Slides[0].ParentSlideLayout.Shapes.First(sp => sp.Id == 2);
+            IColorFormat colorFormat = titlePh.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+            
+
+            // Act-Assert
+            colorFormat.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
         }
 
         [Fact]

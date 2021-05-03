@@ -54,14 +54,16 @@ namespace ShapeCrawler.Collections
         {
             SlideLayoutPart inputSlideLayoutPart = slide.SlidePart.SlideLayoutPart;
 
-            return this.slideMasters.SelectMany(sm => sm.SlideLayouts)
-                .First(sl => sl.SlideLayoutPart == inputSlideLayoutPart);
+            ISlideLayout slideLayout = this.slideMasters.SelectMany(sm => sm.SlideLayouts)
+                .First(sl => ((SCSlideLayout) sl).SlideLayoutPart == inputSlideLayoutPart);
+
+            return (SCSlideLayout)slideLayout;
         }
 
         internal ISlideMaster GetSlideMasterByLayout(SCSlideLayout slideLayout)
         {
             return this.slideMasters.First(sldMaster =>
-                sldMaster.SlideLayouts.Any(sl => sl.SlideLayoutPart == slideLayout.SlideLayoutPart));
+                sldMaster.SlideLayouts.Any(sl => ((SCSlideLayout)sl).SlideLayoutPart == slideLayout.SlideLayoutPart));
         }
 
         public ISlideMaster this[int index] => this.slideMasters[index];
