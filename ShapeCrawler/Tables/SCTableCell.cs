@@ -67,6 +67,7 @@ namespace ShapeCrawler.Tables
         }
 
         public SCSlideMaster ParentSlideMaster => this.ParentTableRow.ParentTable.ParentSlideMaster;
-        public Placeholder Placeholder => this.Placeholder;
+
+        public IPlaceholder Placeholder => throw new System.NotImplementedException();
     }
 }

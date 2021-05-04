@@ -110,7 +110,5 @@ namespace ShapeCrawler
 
             return null;
         }
-
-        public Placeholder Placeholder => this.Placeholder;
     }
 }

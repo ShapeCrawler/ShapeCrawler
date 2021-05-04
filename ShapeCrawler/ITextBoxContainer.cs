@@ -8,6 +8,6 @@ namespace ShapeCrawler
     internal interface ITextBoxContainer // TODO: what about replace with abstract class?
     {
         SCSlideMaster ParentSlideMaster { get; }
-        Placeholder Placeholder { get; }
+        IPlaceholder Placeholder { get; }
     }
 }
