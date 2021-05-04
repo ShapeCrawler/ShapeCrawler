@@ -25,8 +25,6 @@ namespace ShapeCrawler
 
         #endregion Public Properties
 
-        internal override ThemePart ThemePart => this.Slide.SlidePart.SlideLayoutPart.SlideMasterPart.ThemePart;
-
         internal SCSlide Slide { get; }
     }
 }

@@ -37,7 +37,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets a value indicating whether shape is hidden.
         /// </summary>
-        public bool Hidden => this.DefineHidden();
+        public bool Hidden => this.DefineHidden(); // TODO: the Shape is inherited by LayoutShape, hence do we need this property?
 
         /// <summary>
         ///     Gets or sets custom data.
@@ -61,7 +61,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets parent Slide Master.
         /// </summary>
-        public abstract SCSlideMaster ParentSlideMaster { get; } // TODO: Slide Master should not be on Shape level
+        public abstract SCSlideMaster ParentSlideMaster { get; }
 
         /// <summary>
         ///     Gets geometry form type.
@@ -107,8 +107,6 @@ namespace ShapeCrawler
         #endregion Public Properties
 
         internal OpenXmlCompositeElement PShapeTreeChild { get; }
-
-        internal abstract ThemePart ThemePart { get; }
 
         internal bool IsRemoved { get; set; }
 

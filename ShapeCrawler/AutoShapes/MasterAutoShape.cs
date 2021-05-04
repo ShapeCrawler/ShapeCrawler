@@ -127,5 +127,7 @@ namespace ShapeCrawler
         public ShapeFill Fill => this.shapeFill.Value;
 
         #endregion Public Properties
+
+        public Placeholder Placeholder => this.Placeholder;
     }
 }

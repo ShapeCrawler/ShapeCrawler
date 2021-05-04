@@ -11,16 +11,18 @@ namespace ShapeCrawler.Drawing
 {
     internal class ColorFormat : IColorFormat
     {
-        private readonly SCFont font;
-        private readonly Shape parentShape;
+        private readonly SCFont parentFont;
+        private readonly ITextBoxContainer parentTextBoxContainer;
+        private readonly SCSlideMaster parentSlideMaster;
         private Color color;
         private SCColorType colorType;
         private bool initialized;
 
-        internal ColorFormat(SCFont font)
+        internal ColorFormat(SCFont parentFont)
         {
-            this.font = font;
-            this.parentShape = (Shape)font.ParentPortion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
+            this.parentFont = parentFont;
+            this.parentTextBoxContainer = parentFont.ParentPortion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
+            this.parentSlideMaster = this.parentTextBoxContainer.ParentSlideMaster;
         }
 
         public SCColorType ColorType => this.GetColorType();
@@ -54,7 +56,7 @@ namespace ShapeCrawler.Drawing
         private void InitColor()
         {
             this.initialized = true;
-            SCPortion parentPortion = this.font.ParentPortion;
+            SCPortion parentPortion = this.parentFont.ParentPortion;
             SCParagraph parentParagraph = parentPortion.ParentParagraph;
             int paragraphLevel = parentParagraph.Level;
 
@@ -80,7 +82,7 @@ namespace ShapeCrawler.Drawing
                     return;
                 }
 
-                FontData masterBodyFontData = parentShape.ParentSlideMaster.BodyParaLvlToFontData[paragraphLevel];
+                FontData masterBodyFontData = this.parentSlideMaster.BodyParaLvlToFontData[paragraphLevel];
                 if (this.TryFromFontData(masterBodyFontData))
                 {
                     return;
@@ -88,9 +90,7 @@ namespace ShapeCrawler.Drawing
 
                 // Presentation level
                 string colorHexVariant;
-                if (this.parentShape.ParentPresentation.ParaLvlToFontData.TryGetValue(
-                    paragraphLevel,
-                    out FontData preFontData))
+                if (this.parentSlideMaster.ParentPresentation.ParaLvlToFontData.TryGetValue(paragraphLevel, out FontData preFontData))
                 {
                     colorHexVariant = this.GetHexVariantByScheme(preFontData.ASchemeColor.Val);
                     this.colorType = SCColorType.Scheme;
@@ -119,33 +119,38 @@ namespace ShapeCrawler.Drawing
 
         private bool TryFromShapeFontReference()
         {
-            P.Shape parentPShape = (P.Shape)this.parentShape.PShapeTreeChild;
-            if (parentPShape.ShapeStyle == null)
+            if (this.parentTextBoxContainer is Shape parentShape)
             {
-                return false;
+                P.Shape parentPShape = (P.Shape) parentShape.PShapeTreeChild;
+                if (parentPShape.ShapeStyle == null)
+                {
+                    return false;
+                }
+
+                A.FontReference aFontReference = parentPShape.ShapeStyle.FontReference;
+                FontData fontReferenceFontData = new()
+                {
+                    ARgbColorModelHex = aFontReference.RgbColorModelHex,
+                    ASchemeColor = aFontReference.SchemeColor,
+                    ASystemColor = aFontReference.SystemColor,
+                    APresetColor = aFontReference.PresetColor
+                };
+
+                return this.TryFromFontData(fontReferenceFontData);
             }
 
-            A.FontReference aFontReference = parentPShape.ShapeStyle.FontReference;
-            FontData fontReferenceFontData = new ()
-            {
-                ARgbColorModelHex = aFontReference.RgbColorModelHex,
-                ASchemeColor = aFontReference.SchemeColor,
-                ASystemColor = aFontReference.SystemColor,
-                APresetColor = aFontReference.PresetColor
-            };
-
-            return this.TryFromFontData(fontReferenceFontData);
+            return false;
         }
 
         private bool TryFromPlaceholder(int paragraphLevel)
         {
-            if (this.parentShape.Placeholder is not Placeholder placeholder)
+            if (this.parentTextBoxContainer.Placeholder is not Placeholder placeholder)
             {
                 return false;
             }
 
             FontData placeholderFontData = new ();
-            FontDataParser.GetFontDataFromPlaceholder(ref placeholderFontData, this.font.ParentPortion.ParentParagraph);
+            FontDataParser.GetFontDataFromPlaceholder(ref placeholderFontData, this.parentFont.ParentPortion.ParentParagraph);
             if (this.TryFromFontData(placeholderFontData))
             {
                 return true;
@@ -155,7 +160,7 @@ namespace ShapeCrawler.Drawing
             {
                 case PlaceholderType.Title:
                 {
-                    Dictionary<int, FontData> titleParaLvlToFontData = this.parentShape.ParentSlideMaster.TitleParaLvlToFontData;
+                    Dictionary<int, FontData> titleParaLvlToFontData = this.parentSlideMaster.TitleParaLvlToFontData;
                     FontData masterTitleFontData = titleParaLvlToFontData.ContainsKey(paragraphLevel)
                         ? titleParaLvlToFontData[paragraphLevel]
                         : titleParaLvlToFontData[1];
@@ -169,7 +174,7 @@ namespace ShapeCrawler.Drawing
 
                 case PlaceholderType.Body:
                 {
-                    Dictionary<int, FontData> bodyParaLvlToFontData = ((SCSlideMaster)this.parentShape.ParentSlideMaster).BodyParaLvlToFontData;
+                    Dictionary<int, FontData> bodyParaLvlToFontData = this.parentSlideMaster.BodyParaLvlToFontData;
                     FontData masterBodyFontData = bodyParaLvlToFontData[paragraphLevel];
                     if (this.TryFromFontData(masterBodyFontData))
                     {
@@ -257,7 +262,7 @@ namespace ShapeCrawler.Drawing
 
         private string GetHexVariantByScheme(A.SchemeColorValues fontSchemeColor)
         {
-            A.ColorScheme themeAColorScheme = this.parentShape.ThemePart.Theme.ThemeElements.ColorScheme;
+            A.ColorScheme themeAColorScheme = this.parentSlideMaster.ThemePart.Theme.ThemeElements.ColorScheme;
             return fontSchemeColor switch
             {
                 A.SchemeColorValues.Dark1 => themeAColorScheme.Dark1Color.RgbColorModelHex != null
@@ -299,7 +304,7 @@ namespace ShapeCrawler.Drawing
 
         private string GetThemeMappedColor(A.SchemeColorValues fontSchemeColor)
         {
-            P.ColorMap slideMasterPColorMap = ((SCSlideMaster)this.parentShape.ParentSlideMaster).PSlideMaster.ColorMap;
+            P.ColorMap slideMasterPColorMap = this.parentSlideMaster.PSlideMaster.ColorMap;
             if (fontSchemeColor == A.SchemeColorValues.Text1)
             {
                 return this.GetThemeColorByString(slideMasterPColorMap.Text1.ToString());
@@ -320,7 +325,7 @@ namespace ShapeCrawler.Drawing
 
         private string GetThemeColorByString(string fontSchemeColor)
         {
-            A.ColorScheme themeAColorScheme = this.parentShape.ThemePart.Theme.ThemeElements.ColorScheme;
+            A.ColorScheme themeAColorScheme = this.parentSlideMaster.ThemePart.Theme.ThemeElements.ColorScheme;
             return fontSchemeColor switch
             {
                 "dk1" => themeAColorScheme.Dark1Color.RgbColorModelHex != null

@@ -3,6 +3,7 @@ using System.Linq;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Factories;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -109,5 +110,7 @@ namespace ShapeCrawler
 
             return null;
         }
+
+        public Placeholder Placeholder => this.Placeholder;
     }
 }

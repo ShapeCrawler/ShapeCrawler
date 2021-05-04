@@ -42,6 +42,7 @@ namespace ShapeCrawler
         #endregion Public Properties
 
         public override SCSlideMaster ParentSlideMaster => (SCSlideMaster)this.ParentSlideLayout.ParentSlideMaster;
+        public Placeholder Placeholder => this.Placeholder;
 
         internal Dictionary<int, FontData> LvlToFontData => this.lvlToFontData.Value;
 

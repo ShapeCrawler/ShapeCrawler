@@ -20,9 +20,5 @@ namespace ShapeCrawler
         public override SCPresentation ParentPresentation => ParentSlideMaster.ParentPresentation; // TODO: remove presentation from shape level
 
         public override SCSlideMaster ParentSlideMaster { get; }
-
-        internal override ThemePart ThemePart => ParentSlideMaster.PSlideMaster.SlideMasterPart.ThemePart;
-
-
     }
 }

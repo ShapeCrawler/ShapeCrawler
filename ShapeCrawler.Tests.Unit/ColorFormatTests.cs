@@ -175,9 +175,44 @@ namespace ShapeCrawler.Tests.Unit
             IAutoShape titlePh = (IAutoShape)_fixture.Pre001.Slides[0].ParentSlideLayout.Shapes.First(sp => sp.Id == 2);
             IColorFormat colorFormat = titlePh.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
             
-
             // Act-Assert
             colorFormat.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
+        }
+
+        [Fact]
+        public void Color_GetterReturnsColor_OfSlideMasterNonPlaceholder()
+        {
+            // Arrange
+            Color whiteColor = ColorTranslator.FromHtml("#FFFFFF");
+            IAutoShape nonPlaceholder = (IAutoShape)_fixture.Pre001.SlideMasters[0].Shapes.First(sp => sp.Id == 8);
+            IColorFormat colorFormat = nonPlaceholder.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+
+            // Act-Assert
+            colorFormat.Color.Should().Be(whiteColor);
+        }
+
+        [Fact]
+        public void Color_GetterReturnsColor_OfTitlePlaceholderOnSlideMaster()
+        {
+            // Arrange
+            Color blackColor = ColorTranslator.FromHtml("#000000");
+            IAutoShape titlePlaceholder = (IAutoShape)_fixture.Pre001.SlideMasters[0].Shapes.First(sp => sp.Id == 2);
+            IColorFormat colorFormat = titlePlaceholder.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+
+            // Act-Assert
+            colorFormat.Color.Should().Be(blackColor);
+        }
+
+        [Fact]
+        public void Color_GetterReturnsColor_OfTableCellOnSlide()
+        {
+            // Arrange
+            Color redColor = ColorTranslator.FromHtml("#FF0000");
+            ITable table = (ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4);
+            IColorFormat colorFormat = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+
+            // Act-Assert
+            colorFormat.Color.Should().Be(redColor);
         }
 
         [Fact]

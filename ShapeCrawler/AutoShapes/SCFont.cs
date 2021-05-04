@@ -29,7 +29,7 @@ namespace ShapeCrawler.AutoShapes
             this.latinFont = new ResettableLazy<A.LatinFont>(this.GetALatinFont);
             this.colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
             this.ParentPortion = portion;
-            this.aFontScheme = ((Shape)portion.ParentParagraph.ParentTextBox.ParentTextBoxContainer).ThemePart.Theme.ThemeElements.FontScheme;
+            this.aFontScheme = portion.ParentParagraph.ParentTextBox.ParentTextBoxContainer.ParentSlideMaster.ThemePart.Theme.ThemeElements.FontScheme;
         }
 
         #region Public Properties

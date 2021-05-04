@@ -6,19 +6,21 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Placeholders
 {
+    /// <summary>
+    ///     Represents a placeholder located on a Slide Layout.
+    /// </summary>
     internal class LayoutPlaceholder : Placeholder
     {
-        private LayoutPlaceholder(P.PlaceholderShape pPlaceholderShape, LayoutShape layoutShape)
+        private readonly LayoutShape parentLayoutShape;
+
+        private LayoutPlaceholder(P.PlaceholderShape pPlaceholderShape, LayoutShape parentLayoutShape)
             : base(pPlaceholderShape)
         {
-            BaseShape = new ResettableLazy<Shape>(() =>
-                ((ShapeCollection)layoutShape.ParentSlideLayout.ParentSlideMaster.Shapes).GetShapeByPPlaceholderShape(pPlaceholderShape));
+            this.parentLayoutShape = parentLayoutShape;
+            this.referencedShape = new ResettableLazy<Shape>(this.GetReferencedShape);
         }
 
-        /// <summary>
-        ///     Creates placeholder. Returns <c>NULL</c> if the specified shape is not placeholder.
-        /// </summary>
-        internal static LayoutPlaceholder Create(OpenXmlCompositeElement pShapeTreeChild, LayoutShape slideShape)
+        internal static LayoutPlaceholder Create(OpenXmlCompositeElement pShapeTreeChild, LayoutShape layoutShape)
         {
             P.PlaceholderShape pPlaceholderShape =
                 pShapeTreeChild.ApplicationNonVisualDrawingProperties().GetFirstChild<P.PlaceholderShape>();
@@ -27,7 +29,14 @@ namespace ShapeCrawler.Placeholders
                 return null;
             }
 
-            return new LayoutPlaceholder(pPlaceholderShape, slideShape);
+            return new LayoutPlaceholder(pPlaceholderShape, layoutShape);
+        }
+
+        private Shape GetReferencedShape()
+        {
+            ShapeCollection shapeCollection = (ShapeCollection)this.parentLayoutShape.ParentSlideLayout.ParentSlideMaster.Shapes;
+
+            return shapeCollection.GetShapeByPPlaceholderShape(this.PPlaceholderShape);
         }
     }
 }

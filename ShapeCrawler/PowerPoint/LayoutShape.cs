@@ -20,8 +20,6 @@ namespace ShapeCrawler
 
         public override SCPresentation ParentPresentation => ((SCSlideMaster)this.ParentSlideLayout.ParentSlideMaster).ParentPresentation;
 
-        internal override ThemePart ThemePart => this.ParentSlideLayout.SlideLayoutPart.SlideMasterPart.ThemePart;
-
         internal SCSlideLayout ParentSlideLayout { get; }
     }
 }

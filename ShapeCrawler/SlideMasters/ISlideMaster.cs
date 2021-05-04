@@ -52,6 +52,8 @@ namespace ShapeCrawler
         internal Dictionary<int, FontData> TitleParaLvlToFontData =>
             FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles.TitleStyle);
 
+        internal ThemePart ThemePart => this.PSlideMaster.SlideMasterPart.ThemePart;
+
         private List<SCSlideLayout> GetSlideLayouts()
         {
             IEnumerable<SlideLayoutPart> sldLayoutParts = this.PSlideMaster.SlideMasterPart.SlideLayoutParts;

@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -60,11 +61,12 @@ namespace ShapeCrawler.Tables
                    this.ATableCell.VerticalMerge != null;
         }
 
-        public Shape ParentShape { get; }
-
         public void ThrowIfRemoved()
         {
             throw new System.NotImplementedException();
         }
+
+        public SCSlideMaster ParentSlideMaster => this.ParentTableRow.ParentTable.ParentSlideMaster;
+        public Placeholder Placeholder => this.Placeholder;
     }
 }
