@@ -38,5 +38,10 @@ namespace ShapeCrawler.SlideMasters
         public ISlideMaster ParentSlideMaster => this.slideMaster;
 
         internal SlideLayoutPart SlideLayoutPart { get; }
+
+        public void ThrowIfRemoved()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

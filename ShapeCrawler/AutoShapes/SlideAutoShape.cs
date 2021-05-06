@@ -73,7 +73,7 @@ namespace ShapeCrawler
 
         private SCTextBox GetTextBox()
         {
-            P.TextBody pTextBody = this.PShapeTreeChild.GetFirstChild<P.TextBody>();
+            P.TextBody pTextBody = this.SdkPShapeTreeChild.GetFirstChild<P.TextBody>();
             if (pTextBody == null)
             {
                 return null;
@@ -90,7 +90,7 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()
         {
-            SCImage image = this.imageFactory.FromSlidePart(this.Slide.SlidePart, this.PShapeTreeChild);
+            SCImage image = this.imageFactory.FromSlidePart(this.ParentSlide.SlidePart, this.SdkPShapeTreeChild);
             if (image != null)
             {
                 return new ShapeFill(image);

@@ -121,7 +121,7 @@ namespace ShapeCrawler.Drawing
         {
             if (this.parentTextBoxContainer is Shape parentShape)
             {
-                P.Shape parentPShape = (P.Shape) parentShape.PShapeTreeChild;
+                P.Shape parentPShape = (P.Shape) parentShape.SdkPShapeTreeChild;
                 if (parentPShape.ShapeStyle == null)
                 {
                     return false;

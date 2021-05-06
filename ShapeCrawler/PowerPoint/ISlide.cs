@@ -29,6 +29,8 @@ namespace ShapeCrawler
         /// </summary>
         bool Hidden { get; }
 
+        ISlideLayout ParentSlideLayout { get; }
+
         /// <summary>
         ///     Hides slide.
         /// </summary>
@@ -43,8 +45,6 @@ namespace ShapeCrawler
         ///     Saves slide scheme to file.
         /// </summary>
         void SaveScheme(string filePath);
-
-        ISlideLayout ParentSlideLayout { get; }
 
 #if DEBUG
         void SaveImage(string filePath);

@@ -1,19 +1,15 @@
 namespace ShapeCrawler.Exceptions
 {
     /// <summary>
-    ///     Thrown in access to property of removed presentation element.
+    ///     Thrown when access to removed presentation element.
     /// </summary>
     public class ElementIsRemovedException : ShapeCrawlerException
     {
-        public ElementIsRemovedException(string message, System.Exception innerException) : base(message, innerException)
-        {
-        }
-
-        public ElementIsRemovedException(string message) : base(message)
-        {
-        }
-
-        public ElementIsRemovedException()
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ElementIsRemovedException"/> class.
+        /// </summary>
+        public ElementIsRemovedException(string message)
+            : base(message)
         {
         }
     }

@@ -12,5 +12,7 @@ namespace ShapeCrawler
         ///     Gets slide collection.
         /// </summary>
         IShapeCollection Shapes { get; }
+
+        void ThrowIfRemoved();
     }
 }

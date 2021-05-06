@@ -188,6 +188,11 @@ namespace ShapeCrawler
             return null;
         }
 
+        public void ThrowIfRemoved()
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion Private Methods
     }
 }

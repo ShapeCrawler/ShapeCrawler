@@ -182,7 +182,7 @@ namespace ShapeCrawler.Tests.Unit
 
             // Act
             var bulletColorHex = shape4Pr2Bullet.ColorHex;
-            var bulletChar = shape4Pr2Bullet.Char;
+            var bulletChar = shape4Pr2Bullet.Character;
             var bulletSize = shape4Pr2Bullet.Size;
 
             // Assert

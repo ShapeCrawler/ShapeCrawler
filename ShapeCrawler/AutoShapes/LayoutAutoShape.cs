@@ -16,26 +16,26 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler
 {
-    internal class LayoutAutoShape : LayoutShape, IAutoShape, IFontDataReader, ITextBoxContainer // TODO: IFontDataReader is needed?
+    internal class LayoutAutoShape : LayoutShape, IAutoShape, IFontDataReader, ITextBoxContainer
     {
         private readonly SCImageFactory imageFactory = new ();
         private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
         private readonly Lazy<ShapeFill> shapeFill;
         private readonly Lazy<SCTextBox> textBox;
-        private readonly P.Shape pShape;
+        private readonly P.Shape sdkPShape;
 
-        internal LayoutAutoShape(SCSlideLayout parentSlideLayout, P.Shape pShape)
-            : base(parentSlideLayout, pShape)
+        internal LayoutAutoShape(SCSlideLayout parentSlideLayout, P.Shape sdkPShape)
+            : base(parentSlideLayout, sdkPShape)
         {
             this.textBox = new Lazy<SCTextBox>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
             this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
-            this.pShape = pShape;
+            this.sdkPShape = sdkPShape;
         }
 
         #region Public Properties
 
-        public ITextBox TextBox => this.textBox.Value; // TODO: add test
+        public ITextBox TextBox => this.textBox.Value;
 
         public ShapeFill Fill => this.shapeFill.Value; // TODO: add test
 
@@ -76,12 +76,11 @@ namespace ShapeCrawler
 
         private Dictionary<int, FontData> GetLvlToFontData()
         {
-            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(this.pShape.TextBody.ListStyle);
+            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(this.sdkPShape.TextBody.ListStyle);
 
-            // TODO: move this block to FontDataParser.FromCompositeElement()?
             if (!lvlToFontData.Any())
             {
-                Int32Value endParaRunPrFs = pShape.TextBody.GetFirstChild<A.Paragraph>()
+                Int32Value endParaRunPrFs = this.sdkPShape.TextBody.GetFirstChild<A.Paragraph>()
                     .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
                 if (endParaRunPrFs != null)
                 {
@@ -98,7 +97,7 @@ namespace ShapeCrawler
 
         private SCTextBox GetTextBox()
         {
-            P.TextBody pTextBody = this.PShapeTreeChild.GetFirstChild<P.TextBody>();
+            P.TextBody pTextBody = this.SdkPShapeTreeChild.GetFirstChild<P.TextBody>();
             if (pTextBody == null)
             {
                 return null;
@@ -115,14 +114,14 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill() // TODO: duplicate of SlideAutoShape.TryGetFill()
         {
-            SCImage image = this.imageFactory.FromSlidePart(this.Context.SlidePart, this.PShapeTreeChild);
+            SCImage image = this.imageFactory.FromSlidePart(this.Context.SlidePart, this.SdkPShapeTreeChild);
             if (image != null)
             {
                 return new ShapeFill(image);
             }
 
             // TODO: create some AutoShape abstract class and move "(P.Shape)this.PShapeTreeChild)" in there
-            A.SolidFill aSolidFill = ((P.Shape)this.PShapeTreeChild).ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
+            A.SolidFill aSolidFill = ((P.Shape)this.SdkPShapeTreeChild).ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
             if (aSolidFill == null)
             {
                 return null;

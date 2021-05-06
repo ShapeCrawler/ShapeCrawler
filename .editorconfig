@@ -1,6 +1,5 @@
 ﻿[*.cs]
 
-dotnet_diagnostic.CA1032.severity = error
 dotnet_diagnostic.CA1051.severity = error
 dotnet_diagnostic.CA1305.severity = error
 dotnet_diagnostic.CA1310.severity = error
@@ -34,4 +33,7 @@ dotnet_diagnostic.SA1615.severity = none
 
 # SA1413UseTrailingCommasInMultiLineInitializers
 dotnet_diagnostic.SA1413.severity = none
+
+# SA1633FileMustHaveHeader
+dotnet_diagnostic.SA1633.severity = none
 

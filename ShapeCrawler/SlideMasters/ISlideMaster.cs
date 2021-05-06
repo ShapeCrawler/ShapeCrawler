@@ -103,6 +103,11 @@ namespace ShapeCrawler
             return false;
         }
 
+        public void ThrowIfRemoved()
+        {
+            throw new NotImplementedException();
+        }
+
         #region Public Properties
 
         public SCImage Background => throw new NotImplementedException();

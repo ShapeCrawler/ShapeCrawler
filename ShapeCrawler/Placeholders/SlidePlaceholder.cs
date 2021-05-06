@@ -17,7 +17,7 @@ namespace ShapeCrawler.Placeholders
             : base(pPlaceholderShape)
         {
             this.referencedShape = new ResettableLazy<Shape>(() =>
-                ((ShapeCollection)slideShape.Slide.ParentSlideLayout.Shapes).GetShapeByPPlaceholderShape(pPlaceholderShape));
+                ((ShapeCollection)slideShape.ParentSlide.ParentSlideLayout.Shapes).GetShapeByPPlaceholderShape(pPlaceholderShape));
         }
 
         #endregion Constructors

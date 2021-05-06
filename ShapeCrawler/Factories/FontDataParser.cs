@@ -44,9 +44,24 @@ namespace ShapeCrawler.Factories
             {
                 A.DefaultRunProperties aDefRPr = textPr.GetFirstChild<A.DefaultRunProperties>();
 
-                Int32Value fontSize = aDefRPr?.FontSize; // TODO: consider to use int? instead of Int32Value
-                BooleanValue isBold = aDefRPr?.Bold;
-                BooleanValue isItalic = aDefRPr?.Italic;
+                int? fontSize = null;
+                if (aDefRPr?.FontSize != null)
+                {
+                    fontSize = aDefRPr.FontSize.Value;
+                }
+
+                bool? isBold = null;
+                if (aDefRPr?.Bold != null)
+                {
+                    isBold = aDefRPr.Bold.Value;
+                }
+
+                bool? isItalic = null;
+                if (aDefRPr?.Italic != null)
+                {
+                    isItalic = aDefRPr.Italic;
+                }
+
                 A.LatinFont aLatinFont = aDefRPr?.GetFirstChild<A.LatinFont>();
 
                 A.RgbColorModelHex aRgbColorModelHex;

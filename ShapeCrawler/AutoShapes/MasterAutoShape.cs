@@ -82,7 +82,7 @@ namespace ShapeCrawler
 
         private SCTextBox GetTextBox() // TODO: duplicate code in LayoutAutoShape
         {
-            P.TextBody pTextBody = this.PShapeTreeChild.GetFirstChild<P.TextBody>();
+            P.TextBody pTextBody = this.SdkPShapeTreeChild.GetFirstChild<P.TextBody>();
             if (pTextBody == null)
             {
                 return null;

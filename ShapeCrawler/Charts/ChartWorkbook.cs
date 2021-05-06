@@ -28,7 +28,7 @@ namespace ShapeCrawler.Charts
         private WorkbookPart GetWorkbookPart()
         {
             SpreadsheetDocument spreadsheetDocument;
-            _packagePartStream = _slideChart.ChartPart.EmbeddedPackagePart.GetStream();
+            _packagePartStream = _slideChart.SdkChartPart.EmbeddedPackagePart.GetStream();
             if (_slideChart.ParentPresentation.Editable)
             {
                 _resizableStream = new MemoryStream();
