@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Placeholders
@@ -9,13 +10,13 @@ namespace ShapeCrawler.Placeholders
     /// </summary>
     internal class MasterPlaceholder : Placeholder
     {
-        public MasterPlaceholder(P.PlaceholderShape pPlaceholderShape) : base(pPlaceholderShape)
+        public MasterPlaceholder(P.PlaceholderShape pPlaceholderShape)
+            : base(pPlaceholderShape)
         {
+            // Slide Master is the lowest slide level, therefore its placeholders do not have referenced shape.
+            this.referencedShape = new ResettableLazy<Shape>(() => null);
         }
 
-        /// <summary>
-        ///     Creates placeholder. Returns <c>NULL</c> if the specified shape is not placeholder.
-        /// </summary>
         internal static MasterPlaceholder Create(OpenXmlCompositeElement pShapeTreeChild)
         {
             P.PlaceholderShape pPlaceholderShape =

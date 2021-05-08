@@ -7,7 +7,6 @@ using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMaster;
 using ShapeCrawler.Tables;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
@@ -183,7 +182,7 @@ namespace ShapeCrawler.Tests.Unit
 
             // Act
             var bulletColorHex = shape4Pr2Bullet.ColorHex;
-            var bulletChar = shape4Pr2Bullet.Char;
+            var bulletChar = shape4Pr2Bullet.Character;
             var bulletSize = shape4Pr2Bullet.Size;
 
             // Assert

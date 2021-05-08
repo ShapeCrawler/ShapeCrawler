@@ -19,7 +19,7 @@ namespace ShapeCrawler
             ShapeContext spContext,
             P.Picture pPicture) : base(slide, pPicture)
         {
-            Image = new SCImage(Slide.SlidePart, blipRelateId);
+            Image = new SCImage(ParentSlide.SlidePart, blipRelateId);
             Context = spContext;
         }
 

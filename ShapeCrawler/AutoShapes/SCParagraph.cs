@@ -82,7 +82,7 @@ namespace ShapeCrawler
             // To set a paragraph text we use a single portion which is the first paragraph portion.
             // Rest of the portions are deleted from the paragraph.
             this.Portions.Remove(this.Portions.Skip(1).ToList());
-            Portion basePortion = (Portion)this.portions.Value.Single();
+            SCPortion basePortion = (SCPortion)this.portions.Value.Single();
             if (newText == string.Empty)
             {
                 basePortion.Text = string.Empty;

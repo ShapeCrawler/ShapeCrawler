@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
-
 namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a row in a table.
     /// </summary>
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrwaler")]
     public class SCTableRow // TODO: extract interface
     {
         private readonly Lazy<List<SCTableCell>> cells;
-        internal readonly A.TableRow ATableRow;
+        internal readonly A.TableRow SdkATableRow;
         internal readonly int Index;
+        private readonly bool isRemoved;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SCTableRow"/> class.
@@ -24,7 +25,7 @@ namespace ShapeCrawler
         internal SCTableRow(SlideTable table, A.TableRow aTableRow, int index)
         {
             this.ParentTable = table;
-            this.ATableRow = aTableRow;
+            this.SdkATableRow = aTableRow;
             this.Index = index;
 
 #if NETSTANDARD2_0
@@ -41,8 +42,8 @@ namespace ShapeCrawler
 
         public long Height
         {
-            get => this.ATableRow.Height.Value;
-            set => this.ATableRow.Height.Value = value;
+            get => this.SdkATableRow.Height.Value;
+            set => this.SdkATableRow.Height.Value = value;
         }
 
         internal SlideTable ParentTable { get; }
@@ -52,7 +53,7 @@ namespace ShapeCrawler
         private List<SCTableCell> GetCells()
         {
             var cellList = new List<SCTableCell>();
-            IEnumerable<A.TableCell> aTableCells = this.ATableRow.Elements<A.TableCell>();
+            IEnumerable<A.TableCell> aTableCells = this.SdkATableRow.Elements<A.TableCell>();
             SCTableCell addedScCell = null;
 
             int columnIdx = 0;
@@ -79,6 +80,16 @@ namespace ShapeCrawler
             }
 
             return cellList;
+        }
+
+        internal void ThrowIfRemoved()
+        {
+            if (this.isRemoved)
+            {
+                throw new ElementIsRemovedException("Table Row was removed.");
+            }
+
+            this.ParentTable.ThrowIfRemoved();
         }
 
         #endregion

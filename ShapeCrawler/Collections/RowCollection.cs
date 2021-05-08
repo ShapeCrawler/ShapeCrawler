@@ -38,7 +38,7 @@ namespace ShapeCrawler.Collections
         /// <inheritdoc/>
         public override void Remove(SCTableRow scTableRow)
         {
-            scTableRow.ATableRow.Remove();
+            scTableRow.SdkATableRow.Remove();
             this.CollectionItems.Remove(scTableRow);
         }
 

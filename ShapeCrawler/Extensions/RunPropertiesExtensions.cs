@@ -2,15 +2,11 @@
 
 namespace ShapeCrawler.Extensions
 {
-    public static class RunPropertiesExtensions
+    internal static class TextCharacterPropertiesTypeExtensions
     {
-        /// <summary>
-        ///     Gets instance of the <see cref="A.SolidFill" /> class.
-        /// </summary>
-        /// <returns><see cref="A.SolidFill" /> instance or NULL.</returns>
-        public static A.SolidFill SolidFill(this A.RunProperties aRunProperties)
+        public static A.SolidFill SolidFill(this A.TextCharacterPropertiesType aTextCharPropertyType)
         {
-            return aRunProperties.GetFirstChild<A.SolidFill>();
+            return aTextCharPropertyType.GetFirstChild<A.SolidFill>();
         }
     }
 }

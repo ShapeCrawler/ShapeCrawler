@@ -7,7 +7,7 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Models;
 using ShapeCrawler.Shared;
-using ShapeCrawler.SlideMaster;
+using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
 using SkiaSharp;
 
@@ -41,9 +41,9 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public SCSlideLayout Layout => this.ParentPresentation.SlideMasters.GetSlideLayoutBySlide(this);
+        public ISlideLayout ParentSlideLayout => ((SlideMasterCollection)this.ParentPresentation.SlideMasters).GetSlideLayoutBySlide(this);
 
-        public ShapeCollection Shapes => this._shapes.Value;
+        public IShapeCollection Shapes => this._shapes.Value;
 
         public int Number { get; }
 
@@ -86,8 +86,6 @@ namespace ShapeCrawler
 #if DEBUG
         public void SaveImage(string filePath)
         {
-            ShapeCollection shapes = Shapes;
-
             SKImageInfo imageInfo = new(500, 600);
             using SKSurface surface = SKSurface.Create(imageInfo);
             SKCanvas canvas = surface.Canvas;
@@ -188,6 +186,11 @@ namespace ShapeCrawler
             }
 
             return null;
+        }
+
+        public void ThrowIfRemoved()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion Private Methods

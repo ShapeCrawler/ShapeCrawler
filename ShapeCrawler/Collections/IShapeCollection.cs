@@ -3,7 +3,7 @@ using ShapeCrawler.Shapes;
 
 namespace ShapeCrawler.Collections
 {
-    public interface IShapeCollection
+    public interface IShapeCollection : IEnumerable<IShape>
     {
         /// <summary>
         ///     Gets the element at the specified index.

@@ -40,7 +40,7 @@ namespace ShapeCrawler
             this.innerTransform = innerTransform;
             Context = spContext;
             rowCollection =
-                new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) PShapeTreeChild));
+                new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) SdkPShapeTreeChild));
             pGraphicFrame = pShapeTreeChild as P.GraphicFrame;
         }
 
@@ -113,9 +113,9 @@ namespace ShapeCrawler
             // Delete a:gridCol and a:tc elements if all columns are merged
             for (int colIdx = 0; colIdx < Columns.Count;)
             {
-                int? gridSpan = ((SCTableCell) Rows[0].Cells[colIdx]).ATableCell.GridSpan?.Value;
+                int? gridSpan = ((SCTableCell) Rows[0].Cells[colIdx]).SdkATableCell.GridSpan?.Value;
                 if (gridSpan > 1 && Rows.All(row =>
-                    ((SCTableCell) row.Cells[colIdx]).ATableCell.GridSpan?.Value == gridSpan))
+                    ((SCTableCell) row.Cells[colIdx]).SdkATableCell.GridSpan?.Value == gridSpan))
                 {
                     int deleteColumnCount = gridSpan.Value - 1;
 
@@ -147,15 +147,15 @@ namespace ShapeCrawler
             // Delete a:tr
             for (int rowIdx = 0; rowIdx < Rows.Count;)
             {
-                int? rowSpan = ((SCTableCell) Rows[rowIdx].Cells[0]).ATableCell.RowSpan?.Value;
-                if (rowSpan > 1 && Rows[rowIdx].Cells.All(c => ((SCTableCell) c).ATableCell.RowSpan?.Value == rowSpan))
+                int? rowSpan = ((SCTableCell) Rows[rowIdx].Cells[0]).SdkATableCell.RowSpan?.Value;
+                if (rowSpan > 1 && Rows[rowIdx].Cells.All(c => ((SCTableCell) c).SdkATableCell.RowSpan?.Value == rowSpan))
                 {
                     int deleteRowsCount = rowSpan.Value - 1;
 
                     // Delete a:gridCol elements
                     foreach (SCTableRow row in Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
                     {
-                        row.ATableRow.Remove();
+                        row.SdkATableRow.Remove();
                         Rows[rowIdx].Height += row.Height;
                     }
 
@@ -171,7 +171,7 @@ namespace ShapeCrawler
 
         private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
         {
-            A.TextBody mergedCellTextBody = ((SCTableCell) this[minRowIndex, minColIndex]).ATableCell.TextBody;
+            A.TextBody mergedCellTextBody = ((SCTableCell) this[minRowIndex, minColIndex]).SdkATableCell.TextBody;
             bool hasMoreOnePara = false;
             IEnumerable<A.Paragraph> aParagraphsWithARun =
                 aTblCell.TextBody.Elements<A.Paragraph>().Where(p => !p.IsEmpty());

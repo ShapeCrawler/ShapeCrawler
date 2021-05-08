@@ -22,7 +22,7 @@ namespace ShapeCrawler
         /// </summary>
         int SlideHeight { get; }
 
-        SlideMasterCollection SlideMasters { get; }
+        ISlideMasterCollection SlideMasters { get; }
         void Save();
 
         /// <summary>

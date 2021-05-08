@@ -11,24 +11,22 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes
 {
-    [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrawler")]
     internal class SCTextBox : ITextBox
     {
         private readonly Lazy<string> text;
-        private readonly OpenXmlCompositeElement textBodyCompositeElement; // instance of A.TextBody or P.TextBody class
 
-        internal SCTextBox(OpenXmlCompositeElement textBodyCompositeElement, ITextBoxContainer parentTextBoxContainer)
+        internal SCTextBox(OpenXmlCompositeElement txBodyCompositeElement, ITextBoxContainer parentTextBoxContainer)
         {
             this.text = new Lazy<string>(this.GetText);
-            this.textBodyCompositeElement = textBodyCompositeElement;
-            this.Paragraphs = new ParagraphCollection(this.textBodyCompositeElement, this);
+            this.APTextBody = txBodyCompositeElement;
+            this.Paragraphs = new ParagraphCollection(this.APTextBody, this);
             this.ParentTextBoxContainer = parentTextBoxContainer;
         }
 
         #region Public Properties
 
-        public IParagraphCollection Paragraphs { get; private set; }
+        public IParagraphCollection Paragraphs { get; }
 
         public string Text
         {
@@ -39,6 +37,14 @@ namespace ShapeCrawler.AutoShapes
         #endregion Public Properties
 
         internal ITextBoxContainer ParentTextBoxContainer { get; }
+
+        internal OpenXmlCompositeElement APTextBody { get; }
+
+        internal void ThrowIfRemoved()
+        {
+            // TODO: Add ThrowIfRemoved to ITextBoxContainer to be able to call also from Table Cell
+            ((Shape)this.ParentTextBoxContainer).ThrowIfRemoved();
+        }
 
         private void SetText(string value)
         {
@@ -68,9 +74,5 @@ namespace ShapeCrawler.AutoShapes
             return sb.ToString();
         }
 
-        public void ThrowIfRemoved() // TODO: make internal
-        {
-            ((Shape)this.ParentTextBoxContainer).ThrowIfRemoved();
-        }
     }
 }

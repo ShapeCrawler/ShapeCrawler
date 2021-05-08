@@ -2,7 +2,10 @@
 
 namespace ShapeCrawler.AutoShapes
 {
-    public interface IFont // TODO: consider moving font properties on Portion level
+    /// <summary>
+    ///     Represents the font interface.
+    /// </summary>
+    public interface IFont
     {
         /// <summary>
         ///     Gets or sets font name.
@@ -15,15 +18,19 @@ namespace ShapeCrawler.AutoShapes
         int Size { get; set; } // TODO: create test to verify font size of table cell's text portion
 
         /// <summary>
-        ///     Gets or sets flag indicating whether font is bold.
+        ///     Gets or sets a value indicating whether font width is bold.
         /// </summary>
         bool IsBold { get; set; }
 
+        /// <summary>
+        ///     Gets or sets a value indicating whether font is italic.
+        /// </summary>
         bool IsItalic { get; set; }
 
-#if DEBUG
+        /// <summary>
+        ///     Gets color.
+        /// </summary>
         IColorFormat ColorFormat { get; }
-#endif
 
         /// <summary>
         ///     Gets value indicating whether font size can be changed.

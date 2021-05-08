@@ -10,14 +10,14 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler
 {
     /// <inheritdoc cref="IPortion"/>
-    internal class Portion : IPortion // TODO: make internal
+    internal class SCPortion : IPortion // TODO: make internal
     {
         private readonly ResettableLazy<SCFont> font;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Portion"/> class.
+        ///     Initializes a new instance of the <see cref="SCPortion"/> class.
         /// </summary>
-        internal Portion(A.Text aText, SCParagraph paragraph)
+        internal SCPortion(A.Text aText, SCParagraph paragraph)
         {
             this.AText = aText;
             this.ParentParagraph = paragraph;

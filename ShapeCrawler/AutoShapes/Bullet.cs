@@ -7,74 +7,77 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace ShapeCrawler.AutoShapes
 {
     /// <summary>
-    ///     Represents a paragraph bullet class.
+    ///     Represents a paragraph bullet.
     /// </summary>
     public class Bullet
     {
-        private readonly A.ParagraphProperties _aParagraphProperties;
-        private readonly Lazy<string> _char;
-        private readonly Lazy<string> _colorHex;
-        private readonly Lazy<string> _fontName;
-        private readonly Lazy<int> _size;
-        private readonly Lazy<BulletType> _type;
-
-        #region Constructors
+        private readonly A.ParagraphProperties aParagraphProperties;
+        private readonly Lazy<string> character;
+        private readonly Lazy<string> colorHex;
+        private readonly Lazy<string> fontName;
+        private readonly Lazy<int> size;
+        private readonly Lazy<BulletType> type;
 
         internal Bullet(A.ParagraphProperties aParagraphProperties)
         {
-            _aParagraphProperties = aParagraphProperties;
-            _type = new Lazy<BulletType>(ParseType);
-            _colorHex = new Lazy<string>(ParseColorHex);
-            _char = new Lazy<string>(ParseChar);
-            _fontName = new Lazy<string>(ParseFontName);
-            _size = new Lazy<int>(ParseSize);
+            this.aParagraphProperties = aParagraphProperties;
+            this.type = new Lazy<BulletType>(this.ParseType);
+            this.colorHex = new Lazy<string>(this.ParseColorHex);
+            this.character = new Lazy<string>(this.ParseChar);
+            this.fontName = new Lazy<string>(this.ParseFontName);
+            this.size = new Lazy<int>(this.ParseSize);
         }
 
-        #endregion Constructors
-
-        #region Properties
+        #region Public Properties
 
         /// <summary>
         ///     Gets RGB color in HEX format.
         /// </summary>
-        public string ColorHex => _colorHex.Value;
-
-        public string Char => _char.Value;
-
-        public string FontName => _fontName.Value;
+        public string ColorHex => this.colorHex.Value;
 
         /// <summary>
-        ///     Gets bullet size, in percent of the text.
+        ///     Gets bullet character.
         /// </summary>
-        public int Size => _size.Value;
+        public string Character => this.character.Value;
 
-        public BulletType Type => _type.Value;
+        /// <summary>
+        ///     Gets bullet font name.
+        /// </summary>
+        public string FontName => this.fontName.Value;
 
-        #endregion Properties
+        /// <summary>
+        ///     Gets bullet size.
+        /// </summary>
+        public int Size => this.size.Value;
 
-        #region Private Methods
+        /// <summary>
+        ///     Gets bullet type.
+        /// </summary>
+        public BulletType Type => this.type.Value;
+
+        #endregion Public Properties
 
         private BulletType ParseType()
         {
-            if (_aParagraphProperties == null)
+            if (this.aParagraphProperties == null)
             {
                 return BulletType.None;
             }
 
-            var buAutoNum = _aParagraphProperties.GetFirstChild<A.AutoNumberedBullet>();
-            if (buAutoNum != null)
+            A.AutoNumberedBullet aAutoNumeredBullet = this.aParagraphProperties.GetFirstChild<A.AutoNumberedBullet>();
+            if (aAutoNumeredBullet != null)
             {
                 return BulletType.Numbered;
             }
 
-            var buBlip = _aParagraphProperties.GetFirstChild<A.PictureBullet>();
-            if (buBlip != null)
+            A.PictureBullet aPictureBullet = this.aParagraphProperties.GetFirstChild<A.PictureBullet>();
+            if (aPictureBullet != null)
             {
                 return BulletType.Picture;
             }
 
-            var buChar = _aParagraphProperties.GetFirstChild<A.CharacterBullet>();
-            if (buChar != null)
+            A.CharacterBullet aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>();
+            if (aCharBullet != null)
             {
                 return BulletType.Character;
             }
@@ -84,13 +87,12 @@ namespace ShapeCrawler.AutoShapes
 
         private string ParseColorHex()
         {
-            if (Type == BulletType.None)
+            if (this.Type == BulletType.None)
             {
                 return null;
             }
 
-            IEnumerable<A.RgbColorModelHex> aRgbClrModelHexCollection =
-                _aParagraphProperties.Descendants<A.RgbColorModelHex>();
+            IEnumerable<A.RgbColorModelHex> aRgbClrModelHexCollection = this.aParagraphProperties.Descendants<A.RgbColorModelHex>();
             if (aRgbClrModelHexCollection.Any())
             {
                 return aRgbClrModelHexCollection.Single().Val;
@@ -101,44 +103,42 @@ namespace ShapeCrawler.AutoShapes
 
         private string ParseChar()
         {
-            if (Type == BulletType.None)
+            if (this.Type == BulletType.None)
             {
                 return null;
             }
 
-            var buChar = _aParagraphProperties.GetFirstChild<A.CharacterBullet>();
-            if (buChar == null)
+            A.CharacterBullet aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>();
+            if (aCharBullet == null)
             {
                 throw new RuntimeDefinedPropertyException($"This is not {nameof(BulletType.Character)} type bullet.");
             }
 
-            return buChar.Char.Value;
+            return aCharBullet.Char.Value;
         }
 
         private string ParseFontName()
         {
-            if (Type == BulletType.None)
+            if (this.Type == BulletType.None)
             {
                 return null;
             }
 
-            var buFont = _aParagraphProperties.GetFirstChild<A.BulletFont>();
-            return buFont?.Typeface.Value;
+            A.BulletFont aBulletFont = this.aParagraphProperties.GetFirstChild<A.BulletFont>();
+            return aBulletFont?.Typeface.Value;
         }
 
         private int ParseSize()
         {
-            if (Type == BulletType.None)
+            if (this.Type == BulletType.None)
             {
                 return 0;
             }
 
-            var buSzPct = _aParagraphProperties.GetFirstChild<A.BulletSizePercentage>();
-            var basicPoints = buSzPct?.Val.Value ?? 100000;
+            A.BulletSizePercentage aBulletSizePercent = this.aParagraphProperties.GetFirstChild<A.BulletSizePercentage>();
+            int basicPoints = aBulletSizePercent?.Val.Value ?? 100000;
 
             return basicPoints / 1000;
         }
-
-        #endregion Private Methods
     }
 }
