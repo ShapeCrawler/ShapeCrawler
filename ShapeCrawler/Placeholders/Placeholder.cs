@@ -7,19 +7,19 @@ namespace ShapeCrawler.Placeholders
 {
     internal abstract class Placeholder : IPlaceholder
     {
-        internal readonly P.PlaceholderShape PPlaceholderShape;
+        internal readonly P.PlaceholderShape SdkPPlaceholderShape;
 
-        protected ResettableLazy<Shape> referencedShape;
+        protected ResettableLazy<Shape> layoutReferencedShape;
 
         protected Placeholder(P.PlaceholderShape pPlaceholderShape)
         {
-            this.PPlaceholderShape = pPlaceholderShape;
+            this.SdkPPlaceholderShape = pPlaceholderShape;
         }
 
         /// <summary>
         ///     Gets referenced shape from lower level slide.
         /// </summary>
-        protected internal Shape ReferencedShape => this.referencedShape.Value;
+        protected internal Shape ReferencedShape => this.layoutReferencedShape.Value;
 
         public PlaceholderType Type => this.GetPlaceholderType();
 
@@ -28,7 +28,7 @@ namespace ShapeCrawler.Placeholders
         private PlaceholderType GetPlaceholderType()
         {
             // Map SDK placeholder type into library placeholder type
-            EnumValue<P.PlaceholderValues> pPlaceholderValue = this.PPlaceholderShape.Type;
+            EnumValue<P.PlaceholderValues> pPlaceholderValue = this.SdkPPlaceholderShape.Type;
             if (pPlaceholderValue == null)
             {
                 return PlaceholderType.Custom;

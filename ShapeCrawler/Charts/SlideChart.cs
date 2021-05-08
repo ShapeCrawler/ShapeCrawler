@@ -119,36 +119,37 @@ namespace ShapeCrawler.Charts
         private void Init()
         {
             // Get chart part
-            C.ChartReference cChartReference = pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>()
+            C.ChartReference cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>()
                 .GetFirstChild<C.ChartReference>();
-            SdkChartPart = (ChartPart) ParentSlide.SlidePart.GetPartById(cChartReference.Id);
+            this.SdkChartPart = (ChartPart) this.ParentSlide.SlidePart.GetPartById(cChartReference.Id);
 
-            C.PlotArea cPlotArea = SdkChartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea;
-            cXCharts = cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
+            C.PlotArea cPlotArea = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea;
+            this.cXCharts = cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
         }
 
         private ChartType GetChartType()
         {
-            if (cXCharts.Count() > 1)
+            if (this.cXCharts.Count() > 1)
             {
                 return ChartType.Combination;
             }
 
-            string chartName = cXCharts.Single().LocalName;
+            string chartName = this.cXCharts.Single().LocalName;
             Enum.TryParse(chartName, true, out ChartType chartType);
             return chartType;
         }
 
         private string TryGetTitle()
         {
-            C.Title cTitle = SdkChartPart.ChartSpace.GetFirstChild<C.Chart>().Title;
-            if (cTitle == null) // chart has not title
+            C.Title cTitle = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>().Title;
+            if (cTitle == null) 
             {
+                // chart has not title
                 return null;
             }
 
             C.ChartText cChartText = cTitle.ChartText;
-            bool staticAvailable = TryGetStaticTitle(cChartText, out var staticTitle);
+            bool staticAvailable = this.TryGetStaticTitle(cChartText, out var staticTitle);
             if (staticAvailable)
             {
                 return staticTitle;
@@ -164,7 +165,7 @@ namespace ShapeCrawler.Charts
             // However, it can have store multiple series data in the spreadsheet.
             if (Type == ChartType.PieChart)
             {
-                return ((SeriesCollection) SeriesCollection).First().Name;
+                return ((SeriesCollection) this.SeriesCollection).First().Name;
             }
 
             return null;

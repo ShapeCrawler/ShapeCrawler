@@ -17,7 +17,7 @@ namespace ShapeCrawler
 
         public override IPlaceholder Placeholder => MasterPlaceholder.Create(this.SdkPShapeTreeChild);
 
-        public override SCPresentation ParentPresentation => ParentSlideMaster.ParentPresentation; // TODO: remove presentation from shape level
+        internal override SCPresentation ParentPresentation => ParentSlideMaster.ParentPresentation; // TODO: remove presentation from shape level
 
         public override SCSlideMaster ParentSlideMaster { get; }
     }
