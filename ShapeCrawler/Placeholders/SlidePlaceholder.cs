@@ -11,16 +11,21 @@ namespace ShapeCrawler.Placeholders
     /// </summary>
     internal class SlidePlaceholder : Placeholder
     {
-        #region Constructors
+        private readonly SlideShape parentSlideShape;
 
-        public SlidePlaceholder(P.PlaceholderShape pPlaceholderShape, SlideShape slideShape)
-            : base(pPlaceholderShape)
+        public SlidePlaceholder(P.PlaceholderShape sdkPPlaceholderShape, SlideShape parentSlideShape)
+            : base(sdkPPlaceholderShape)
         {
-            this.referencedShape = new ResettableLazy<Shape>(() =>
-                ((ShapeCollection)slideShape.ParentSlide.ParentSlideLayout.Shapes).GetShapeByPPlaceholderShape(pPlaceholderShape));
+            this.parentSlideShape = parentSlideShape;
+            this.layoutReferencedShape = new ResettableLazy<Shape>(() => this.GetReferencedLayoutShape());
         }
 
-        #endregion Constructors
+        private Shape GetReferencedLayoutShape()
+        {
+            ShapeCollection shapes = (ShapeCollection)this.parentSlideShape.ParentSlide.ParentSlideLayout.Shapes;
+
+            return shapes.GetShapeByPPlaceholderShape(this.SdkPPlaceholderShape);
+        }
 
         /// <summary>
         ///     Creates placeholder. Returns <c>NULL</c> if the specified shape is not placeholder.

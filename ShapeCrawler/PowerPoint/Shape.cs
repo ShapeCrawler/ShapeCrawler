@@ -17,10 +17,10 @@ namespace ShapeCrawler
     /// </summary>
     internal abstract class Shape
     {
-        protected Shape(OpenXmlCompositeElement sdkPShapeTreeChild, IBaseSlide parentSlide)
+        protected Shape(OpenXmlCompositeElement sdkPShapeTreeChild, IBaseSlide parentBaseSlide)
         {
             this.SdkPShapeTreeChild = sdkPShapeTreeChild;
-            this.ParentSlide = parentSlide;
+            this.ParentBaseSlide = parentBaseSlide;
         }
 
         #region Public Properties
@@ -57,7 +57,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets parent presentation.
         /// </summary>
-        public abstract SCPresentation ParentPresentation { get; } // TODO: move it on Slide level
+        internal abstract SCPresentation ParentPresentation { get; } // TODO: move it on Slide level
 
         /// <summary>
         ///     Gets parent Slide Master.
@@ -105,10 +105,13 @@ namespace ShapeCrawler
             set => this.SetXCoordinate(value);
         }
 
+        public IBaseSlide ParentBaseSlide { get; }
+
+
         #endregion Public Properties
 
         internal OpenXmlCompositeElement SdkPShapeTreeChild { get; }
-        public IBaseSlide ParentSlide { get; }
+
         internal bool IsRemoved { get; set; }
 
         protected void SetCustomData(string value)

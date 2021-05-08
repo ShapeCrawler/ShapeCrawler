@@ -39,7 +39,7 @@ public class TextSample
     {
         // Open presentation and get first slide
         using IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: true);
-        SCSlide slide = presentation.Slides.First();
+        ISlide slide = presentation.Slides.First();
 
         // Get text holder auto shape
         IAutoShape autoShape = (IAutoShape)slide.Shapes.First(sp => sp is IAutoShape);
@@ -59,6 +59,9 @@ public class TextSample
         // Set bold font
         paragraphPortion.Font.IsBold = true;
 
+        // Get font ARGB color
+        Color fontColor = paragraphPortion.Font.ColorFormat.Color;
+
         // Save and close the presentation
         presentation.Close();
     }
@@ -77,7 +80,7 @@ public class TableSample
     {
         // Get first slide
         using IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: false);
-        SCSlide slide = presentation.Slides.First();
+        ISlide slide = presentation.Slides.First();
 
         // Get table
         ITable table = (ITable)slide.Shapes.First(sp => sp is ITable);
@@ -129,7 +132,7 @@ public class ChartSample
     public static void Chart()
     {
         using IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: false);
-        SCSlide slide = presentation.Slides.First();
+        ISlide slide = presentation.Slides.First();
 
         // Get chart
         IChart chart = (IChart)slide.Shapes.First(sp => sp is IChart);
@@ -166,7 +169,7 @@ public class SlideMasterSample
         int slideMastersCount = presentation.SlideMasters.Count;
 
         // Get first Slide Master
-        SCSlideMaster slideMaster = presentation.SlideMasters[0];
+        ISlideMaster slideMaster = presentation.SlideMasters[0];
 
         // Get number of shapes in the Slide Master
         int masterShapeCount = slideMaster.Shapes.Count;
@@ -194,8 +197,8 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 Don't hesitate to contact me if you want to get involved!
 
 # Changelog
-## Version 0.19.0 - 2021-04-13
+## Version 0.20.0 - 2021-05-08
 ### Added
-- Added .NET Standard 2.0 target.
+- Added `Portion.Font.ColorFormat` to read color properties of font.
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).

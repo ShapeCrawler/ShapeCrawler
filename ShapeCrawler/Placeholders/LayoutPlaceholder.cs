@@ -17,7 +17,7 @@ namespace ShapeCrawler.Placeholders
             : base(pPlaceholderShape)
         {
             this.parentLayoutShape = parentLayoutShape;
-            this.referencedShape = new ResettableLazy<Shape>(this.GetReferencedShape);
+            this.layoutReferencedShape = new ResettableLazy<Shape>(this.GetReferencedShape);
         }
 
         internal static LayoutPlaceholder Create(OpenXmlCompositeElement pShapeTreeChild, LayoutShape layoutShape)
@@ -36,7 +36,7 @@ namespace ShapeCrawler.Placeholders
         {
             ShapeCollection shapeCollection = (ShapeCollection)this.parentLayoutShape.ParentSlideLayout.ParentSlideMaster.Shapes;
 
-            return shapeCollection.GetShapeByPPlaceholderShape(this.PPlaceholderShape);
+            return shapeCollection.GetShapeByPPlaceholderShape(this.SdkPPlaceholderShape);
         }
     }
 }

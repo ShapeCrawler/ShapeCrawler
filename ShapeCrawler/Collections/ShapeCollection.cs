@@ -197,7 +197,7 @@ namespace ShapeCrawler.Collections
             bool IsEqual(Shape collectionShape)
             {
                 Placeholder placeholder = (Placeholder) collectionShape.Placeholder;
-                P.PlaceholderShape colPPlaceholderShape = placeholder.PPlaceholderShape;
+                P.PlaceholderShape colPPlaceholderShape = placeholder.SdkPPlaceholderShape;
 
                 if (inpPPlaceholderShape.Index != null && colPPlaceholderShape.Index != null &&
                     inpPPlaceholderShape.Index == colPPlaceholderShape.Index)
