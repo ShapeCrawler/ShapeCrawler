@@ -1,4 +1,4 @@
-name: CI
+name: ShapeCrawler - CI
 
 on:
   pull_request:

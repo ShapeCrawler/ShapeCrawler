@@ -18,7 +18,6 @@ namespace ShapeCrawler
 {
     internal class LayoutAutoShape : LayoutShape, IAutoShape, IFontDataReader, ITextBoxContainer
     {
-        private readonly SCImageFactory imageFactory = new ();
         private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
         private readonly Lazy<ShapeFill> shapeFill;
         private readonly Lazy<SCTextBox> textBox;
@@ -114,7 +113,7 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill() // TODO: duplicate of SlideAutoShape.TryGetFill()
         {
-            SCImage image = this.imageFactory.FromSlidePart(this.Context.SlidePart, this.SdkPShapeTreeChild);
+            SCImage image = SCImage.GetFillImageOrDefault(this, this.Context.SlidePart, this.SdkPShapeTreeChild);
             if (image != null)
             {
                 return new ShapeFill(image);
@@ -134,6 +133,11 @@ namespace ShapeCrawler
             }
 
             return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
+        }
+
+        public void ThrowIfRemoved()
+        {
+            base.ThrowIfRemoved();
         }
     }
 }

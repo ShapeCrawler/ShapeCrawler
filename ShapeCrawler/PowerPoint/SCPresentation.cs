@@ -21,45 +21,21 @@ namespace ShapeCrawler
 {
     /// <inheritdoc cref="IPresentation" />
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrawler")]
-    public sealed class SCPresentation : IPresentation
+    public sealed class SCPresentation : IPresentation // TODO: Make internal
     {
-        internal PresentationPart PresentationPart;
-
-        internal bool Editable { get; }
-
-        internal List<ChartWorkbook> ChartWorkbooks { get; } = new();
-
         private bool closed;
         private Lazy<Dictionary<int, FontData>> paraLvlToFontData;
         private PresentationDocument presentationDocument;
         private Lazy<SlideCollection> slides;
         private Lazy<SlideSizeSc> slideSize;
 
+        internal PresentationPart PresentationPart;
+
+        internal bool Editable { get; }
+
+        internal List<ChartWorkbook> ChartWorkbooks { get; } = new ();
+
         internal Dictionary<int, FontData> ParaLvlToFontData => paraLvlToFontData.Value;
-
-        private static Dictionary<int, FontData> ParseFontHeights(P.Presentation pPresentation)
-        {
-            var lvlToFontData = new Dictionary<int, FontData>();
-
-            // from presentation default text settings
-            if (pPresentation.DefaultTextStyle != null)
-            {
-                lvlToFontData = FontDataParser.FromCompositeElement(pPresentation.DefaultTextStyle);
-            }
-
-            // from theme default text settings
-            if (lvlToFontData.Any(kvp => kvp.Value.FontSize == null))
-            {
-                A.TextDefault themeTextDefault =
-                    pPresentation.PresentationPart.ThemePart.Theme.ObjectDefaults.TextDefault;
-                if (themeTextDefault != null)
-                {
-                    lvlToFontData = FontDataParser.FromCompositeElement(themeTextDefault.ListStyle);
-                }
-            }
-
-            return lvlToFontData;
-        }
 
         #region Public Properties
 
@@ -70,6 +46,15 @@ namespace ShapeCrawler
         public int SlideHeight => slideSize.Value.Height;
 
         public ISlideMasterCollection SlideMasters => SlideMasterCollection.Create(this);
+        
+        public List<ImagePart> ImageParts => GetImageParts();
+
+        private List<ImagePart> GetImageParts()
+        {
+            IEnumerable<SlidePicture> slidePictures = this.Slides.SelectMany(sp => sp.Shapes).Where(x => x is SlidePicture).OfType<SlidePicture>();
+
+            return slidePictures.Select(x => x.Image.ImagePart).ToList();
+        }
 
         #endregion Public Properties
 
@@ -118,20 +103,20 @@ namespace ShapeCrawler
 
         public void Close()
         {
-            if (closed)
+            if (this.closed)
             {
                 return;
             }
 
-            presentationDocument.Close();
+            this.presentationDocument.Close();
             ChartWorkbooks.ForEach(cw => cw.Close());
 
-            closed = true;
+            this.closed = true;
         }
 
         public void Dispose()
         {
-            Close();
+            this.Close();
         }
 
         public static SCPresentation Open(byte[] pptxBytes, in bool isEditable)
@@ -153,12 +138,32 @@ namespace ShapeCrawler
 
         #region Private Methods
 
-        private SlideCollection GetSlides()
-        {
-            SlideCollection slideCollection = new(this);
 
-            return slideCollection;
+        private static Dictionary<int, FontData> ParseFontHeights(P.Presentation pPresentation)
+        {
+            var lvlToFontData = new Dictionary<int, FontData>();
+
+            // from presentation default text settings
+            if (pPresentation.DefaultTextStyle != null)
+            {
+                lvlToFontData = FontDataParser.FromCompositeElement(pPresentation.DefaultTextStyle);
+            }
+
+            // from theme default text settings
+            if (lvlToFontData.Any(kvp => kvp.Value.FontSize == null))
+            {
+                A.TextDefault themeTextDefault =
+                    pPresentation.PresentationPart.ThemePart.Theme.ObjectDefaults.TextDefault;
+                if (themeTextDefault != null)
+                {
+                    lvlToFontData = FontDataParser.FromCompositeElement(themeTextDefault.ListStyle);
+                }
+            }
+
+            return lvlToFontData;
         }
+
+
 
         private static void ThrowIfSourceInvalid(string path)
         {
@@ -192,6 +197,12 @@ namespace ShapeCrawler
             }
         }
 
+        private SlideCollection GetSlides()
+        {
+            SlideCollection slideCollection = new(this);
+
+            return slideCollection;
+        }
         private void ThrowIfSlidesNumberLarge()
         {
             var nbSlides = presentationDocument.PresentationPart.SlideParts.Count();
@@ -204,20 +215,28 @@ namespace ShapeCrawler
 
         private void Init()
         {
-            ThrowIfSlidesNumberLarge();
-            slides = new Lazy<SlideCollection>(GetSlides);
-            slideSize = new Lazy<SlideSizeSc>(GetSlideSize);
-            PresentationPart = presentationDocument.PresentationPart;
-            paraLvlToFontData =
+            this.ThrowIfSlidesNumberLarge();
+            this.slides = new Lazy<SlideCollection>(this.GetSlides);
+            this.slideSize = new Lazy<SlideSizeSc>(this.GetSlideSize);
+            this.PresentationPart = this.presentationDocument.PresentationPart;
+            this.paraLvlToFontData =
                 new Lazy<Dictionary<int, FontData>>(() => ParseFontHeights(PresentationPart.Presentation));
         }
 
         private SlideSizeSc GetSlideSize()
         {
-            P.SlideSize pSlideSize = presentationDocument.PresentationPart.Presentation.SlideSize;
+            P.SlideSize pSlideSize = this.presentationDocument.PresentationPart.Presentation.SlideSize;
             return new SlideSizeSc(pSlideSize.Cx.Value, pSlideSize.Cy.Value);
         }
 
         #endregion Private Methods
+
+        internal void ThrowIfClosed()
+        {
+            if (this.closed)
+            {
+                throw new ShapeCrawlerException("The presentation is closed.");
+            }
+        }
     }
 }

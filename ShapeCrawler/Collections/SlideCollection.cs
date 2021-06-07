@@ -96,6 +96,8 @@ namespace ShapeCrawler.Collections
 
             this.presentationPart.DeletePart(slidePart);
             this.presentationPart.Presentation.Save();
+            ((IRemovable)removingSlide).IsRemoved = true;
+
             this.slides.Reset();
         }
 

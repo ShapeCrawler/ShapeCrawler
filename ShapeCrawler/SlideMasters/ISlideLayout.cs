@@ -39,6 +39,8 @@ namespace ShapeCrawler.SlideMasters
 
         internal SlideLayoutPart SlideLayoutPart { get; }
 
+        public bool IsRemoved { get; set; }
+
         public void ThrowIfRemoved()
         {
             throw new System.NotImplementedException();

@@ -20,7 +20,6 @@ namespace ShapeCrawler
     /// </summary>
     internal class MasterAutoShape : MasterShape, IAutoShape, ITextBoxContainer, IFontDataReader
     {
-        private readonly SCImageFactory imageFactory = new ();
         private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
         private readonly Lazy<ShapeFill> shapeFill;
         private readonly Lazy<SCTextBox> textBox;
@@ -99,7 +98,7 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill() // TODO: duplicate code in LayoutAutoShape
         {
-            SCImage image = this.imageFactory.FromSlidePart(Context.SlidePart, Context.CompositeElement);
+            SCImage image = SCImage.GetFillImageOrDefault(this, Context.SlidePart, Context.CompositeElement);
             if (image != null)
             {
                 return new ShapeFill(image);
@@ -127,5 +126,10 @@ namespace ShapeCrawler
         public ShapeFill Fill => this.shapeFill.Value;
 
         #endregion Public Properties
+
+        public void ThrowIfRemoved()
+        {
+            base.ThrowIfRemoved();
+        }
     }
 }

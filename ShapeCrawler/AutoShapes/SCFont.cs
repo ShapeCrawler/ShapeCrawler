@@ -128,7 +128,7 @@ namespace ShapeCrawler.AutoShapes
                     }
                 }
 
-                SCSlideMaster slideMaster = (SCSlideMaster)fontParentShape.ParentSlideMaster;
+                SCSlideMaster slideMaster = fontParentShape.ParentSlideMaster;
 
                 // From Slide Master body
                 if (slideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
@@ -144,7 +144,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             // From presentation level
-            if (fontParentShape.ParentPresentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
+            if (fontParentShape.ParentSlideMaster.ParentPresentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
             {
                 if (fontData.FontSize != null)
                 {

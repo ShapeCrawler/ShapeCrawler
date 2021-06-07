@@ -42,7 +42,7 @@ namespace ShapeCrawler.Collections
             var tableGrFrameHandler = new TableGraphicFrameHandler(shapeContextBuilder, transformFactory);
             var oleGrFrameHandler = new OleGraphicFrameHandler(shapeContextBuilder, transformFactory);
             var pShapeHandler = new AutoShapeCreator(shapeContextBuilder, transformFactory);
-            var pictureHandler = new PictureHandler(shapeContextBuilder, transformFactory, geometryFactory);
+            var pictureHandler = new PictureHandler(shapeContextBuilder);
             var sdkGroupShapeHandler =
                 new PGroupShapeHandler(shapeContextBuilder, transformFactory, geometryFactory, slidePart);
 

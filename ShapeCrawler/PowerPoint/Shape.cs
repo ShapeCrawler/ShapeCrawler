@@ -15,7 +15,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a shape.
     /// </summary>
-    internal abstract class Shape
+    internal abstract class Shape : IRemovable
     {
         protected Shape(OpenXmlCompositeElement sdkPShapeTreeChild, IBaseSlide parentBaseSlide)
         {
@@ -53,11 +53,6 @@ namespace ShapeCrawler
         ///     Gets placeholder. Returns <c>NULL</c> if the shape is not a placeholder.
         /// </summary>
         public abstract IPlaceholder Placeholder { get; }
-
-        /// <summary>
-        ///     Gets parent presentation.
-        /// </summary>
-        internal abstract SCPresentation ParentPresentation { get; } // TODO: move it on Slide level
 
         /// <summary>
         ///     Gets parent Slide Master.
@@ -107,12 +102,21 @@ namespace ShapeCrawler
 
         public IBaseSlide ParentBaseSlide { get; }
 
-
         #endregion Public Properties
 
         internal OpenXmlCompositeElement SdkPShapeTreeChild { get; }
 
-        internal bool IsRemoved { get; set; }
+        bool IRemovable.IsRemoved { get; set; }
+
+        public void ThrowIfRemoved()
+        {
+            if (((IRemovable)this).IsRemoved)
+            {
+                throw new ElementIsRemovedException("Shape was removed.");
+            }
+
+            this.ParentBaseSlide.ThrowIfRemoved();
+        }
 
         protected void SetCustomData(string value)
         {
@@ -244,15 +248,6 @@ namespace ShapeCrawler
             }
 
             return GeometryType.Rectangle; // return default
-        }
-
-        internal void ThrowIfRemoved()
-        {
-            if (this.IsRemoved)
-            {
-                throw new ElementIsRemovedException("Shape was removed.");
-            }
-            
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Factories
@@ -12,17 +14,12 @@ namespace ShapeCrawler.Factories
     /// </summary>
     internal class PictureHandler : OpenXmlElementHandler
     {
-        #region Constructors
+        private readonly ShapeContext.Builder shapeContextBuilder;
 
-        internal PictureHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory,
-            GeometryFactory geometryFactory)
+        internal PictureHandler(ShapeContext.Builder shapeContextBuilder)
         {
-            _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
-            _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
-            _geometryFactory = geometryFactory ?? throw new ArgumentNullException(nameof(geometryFactory));
+            this.shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
         }
-
-        #endregion Constructors
 
         public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide)
         {
@@ -33,34 +30,24 @@ namespace ShapeCrawler.Factories
             }
             else
             {
-                var framePic = pShapeTreeChild.Descendants<P.Picture>().FirstOrDefault();
-                pPicture = framePic;
+                pPicture = pShapeTreeChild.Descendants<P.Picture>().FirstOrDefault();
             }
 
-            if (pPicture != null)
+            if (pPicture == null)
             {
-                var pBlipFill = pPicture.GetFirstChild<P.BlipFill>();
-                var blipRelateId = pBlipFill?.Blip?.Embed?.Value;
-                if (blipRelateId == null)
-                {
-                    return null;
-                }
-
-                var spContext = _shapeContextBuilder.Build(pShapeTreeChild);
-                var picture = new SlidePicture(slide, blipRelateId, spContext, pPicture);
-
-                return picture;
+                return this.Successor?.Create(pShapeTreeChild, slide);
             }
 
-            return Successor?.Create(pShapeTreeChild, slide);
+            StringValue picReference = pPicture.GetFirstChild<P.BlipFill>()?.Blip?.Embed;
+            if (picReference == null)
+            {
+                return null;
+            }
+
+            ShapeContext spContext = this.shapeContextBuilder.Build(pShapeTreeChild);
+            SlidePicture picture = new (slide, spContext, pPicture, picReference);
+
+            return picture;
         }
-
-        #region Fields
-
-        private readonly ShapeContext.Builder _shapeContextBuilder;
-        private readonly LocationParser _transformFactory;
-        private readonly GeometryFactory _geometryFactory;
-
-        #endregion Fields
     }
 }

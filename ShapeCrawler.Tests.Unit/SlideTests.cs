@@ -73,14 +73,14 @@ namespace ShapeCrawler.Tests.Unit
             var pre = SCPresentation.Open(Properties.Resources._009, true);
             var backgroundImage = pre.Slides[0].Background;
             var imgStream = new MemoryStream(Properties.Resources.test_image_2);
-            var bytesBefore = await backgroundImage.GetImageBytes().ConfigureAwait(false);
+            var bytesBefore = await backgroundImage.GetBytes().ConfigureAwait(false);
 
             // Act
             backgroundImage.SetImage(imgStream);
             backgroundImage.SetImage(imgStream);
 
             // Assert
-            var bytesAfter = await backgroundImage.GetImageBytes().ConfigureAwait(false);
+            var bytesAfter = await backgroundImage.GetBytes().ConfigureAwait(false);
             bytesAfter.Length.Should().NotBe(bytesBefore.Length);
         }
 

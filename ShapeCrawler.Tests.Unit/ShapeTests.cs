@@ -110,27 +110,50 @@ namespace ShapeCrawler.Tests.Unit
             IAutoShape shape = (IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
 
             // Act
-            byte[] imageBytes = await shape.Fill.Picture.GetImageBytes().ConfigureAwait(false);
+            byte[] imageBytes = await shape.Fill.Picture.GetBytes().ConfigureAwait(false);
 
             // Assert
             imageBytes.Length.Should().BePositive();
         }
 
         [Fact]
-        public async void AutoShapeFillPictureSetImage_ChangeFilledPictureImage()
+        public void AutoShapeFillPictureSetImage_ChangesPicture()
         {
             // Arrange
-            SCPresentation presentation = SCPresentation.Open(Resources._009, true);
+            IPresentation presentation = SCPresentation.Open(TestFiles.Presentations.pre009, true);
             IAutoShape autoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 4);
-            var newImage = new MemoryStream(Resources.test_image_2);
-            var imageSizeBefore = (await autoShape.Fill.Picture.GetImageBytes().ConfigureAwait(false)).Length;
+            MemoryStream newImage = TestFiles.Images.img02_stream;
+            int imageSizeBefore = autoShape.Fill.Picture.GetBytes().GetAwaiter().GetResult().Length;
 
             // Act
             autoShape.Fill.Picture.SetImage(newImage);
 
             // Assert
-            var imageSizeAfter = (await autoShape.Fill.Picture.GetImageBytes().ConfigureAwait(false)).Length;
-            imageSizeAfter.Should().NotBe(imageSizeBefore);
+            int imageSizeAfter = autoShape.Fill.Picture.GetBytes().GetAwaiter().GetResult().Length;
+            imageSizeAfter.Should().NotBe(imageSizeBefore, "because image has been changed");
+        }
+
+        [Fact]
+        public void AutoShapeFillPictureSetImage_ShouldNotImpactOtherPictureImage_WhenItsOriginImageIsShared()
+        {
+            // Arrange
+            IPresentation presentation = SCPresentation.Open(TestFiles.Presentations.pre009, true);
+            IPicture picture5 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 5);
+            IPicture picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
+            int pic6LengthBefore = picture6.Image.GetBytes().GetAwaiter().GetResult().Length;
+            MemoryStream modifiedPresentation = new();
+
+            // Act
+            picture5.Image.SetImage(TestFiles.Images.img02);
+
+            // Assert
+            int pic6LengthAfter = picture6.Image.GetBytes().GetAwaiter().GetResult().Length;
+            pic6LengthAfter.Should().Be(pic6LengthBefore);
+
+            presentation.SaveAs(modifiedPresentation);
+            picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
+            pic6LengthBefore = picture6.Image.GetBytes().GetAwaiter().GetResult().Length;
+            pic6LengthAfter.Should().Be(pic6LengthBefore);
         }
 
         [Fact]
@@ -323,6 +346,20 @@ namespace ShapeCrawler.Tests.Unit
             // Act-Assert
             shapeCase1.Hidden.Should().BeTrue();
             shapeCase2.Hidden.Should().BeFalse();
+        }
+    }
+
+    public static class TestFiles
+    {
+        public static class Images
+        {
+            public static byte[] img02 => Resources.test_image_2;
+            public static MemoryStream img02_stream => new(Resources.test_image_2);
+        }
+
+        public static class Presentations
+        {
+            public static byte[] pre009 => Resources._009;
         }
     }
 }

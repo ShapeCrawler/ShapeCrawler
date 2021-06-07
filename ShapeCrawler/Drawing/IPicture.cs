@@ -1,6 +1,7 @@
 ﻿using ShapeCrawler.Shapes;
+// ReSharper disable CheckNamespace
 
-namespace ShapeCrawler.Drawing
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a picture shape on a slide.

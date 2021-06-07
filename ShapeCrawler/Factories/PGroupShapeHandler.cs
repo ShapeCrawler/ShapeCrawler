@@ -11,10 +11,10 @@ namespace ShapeCrawler.Factories
 {
     internal class PGroupShapeHandler : OpenXmlElementHandler
     {
-        private readonly GeometryFactory _geometryFactory;
-        private readonly ShapeContext.Builder _shapeContextBuilder;
-        private readonly SlidePart _slidePart;
-        private readonly LocationParser _transformFactory;
+        private readonly GeometryFactory geometryFactory;
+        private readonly ShapeContext.Builder shapeContextBuilder;
+        private readonly SlidePart slidePart;
+        private readonly LocationParser transformFactory;
 
         internal PGroupShapeHandler(
             ShapeContext.Builder shapeContextBuilder,
@@ -22,23 +22,23 @@ namespace ShapeCrawler.Factories
             GeometryFactory geometryFactory,
             SlidePart sdkSldPart)
         {
-            _shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(sdkSldPart));
-            _transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
-            _geometryFactory = geometryFactory ?? throw new ArgumentNullException(nameof(geometryFactory));
-            _slidePart = sdkSldPart ?? throw new ArgumentNullException(nameof(sdkSldPart));
+            this.shapeContextBuilder = shapeContextBuilder;
+            this.transformFactory = transformFactory;
+            this.geometryFactory = geometryFactory;
+            this.slidePart = sdkSldPart;
         }
 
         public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide)
         {
             if (pShapeTreeChild is P.GroupShape pGroupShape)
             {
-                var pShapeHandler = new AutoShapeCreator(_shapeContextBuilder, _transformFactory);
-                var oleGrFrameHandler = new OleGraphicFrameHandler(_shapeContextBuilder, _transformFactory);
-                var pictureHandler = new PictureHandler(_shapeContextBuilder, _transformFactory, _geometryFactory);
-                var pGroupShapeHandler = new PGroupShapeHandler(_shapeContextBuilder, _transformFactory,
-                    _geometryFactory, _slidePart);
+                var pShapeHandler = new AutoShapeCreator(this.shapeContextBuilder, this.transformFactory);
+                var oleGrFrameHandler = new OleGraphicFrameHandler(this.shapeContextBuilder, this.transformFactory);
+                var pictureHandler = new PictureHandler(this.shapeContextBuilder);
+                var pGroupShapeHandler = new PGroupShapeHandler(this.shapeContextBuilder, this.transformFactory,
+                    this.geometryFactory, this.slidePart);
                 var chartGrFrameHandler = new ChartGraphicFrameHandler();
-                var tableGrFrameHandler = new TableGraphicFrameHandler(_shapeContextBuilder, _transformFactory);
+                var tableGrFrameHandler = new TableGraphicFrameHandler(this.shapeContextBuilder, this.transformFactory);
 
                 pShapeHandler.Successor = pGroupShapeHandler;
                 pGroupShapeHandler.Successor = oleGrFrameHandler;
@@ -58,7 +58,7 @@ namespace ShapeCrawler.Factories
                     }
                 }
 
-                var spContext = _shapeContextBuilder.Build(pShapeTreeChild);
+                var spContext = this.shapeContextBuilder.Build(pShapeTreeChild);
                 var transformGroup = pGroupShape.GroupShapeProperties.TransformGroup;
                 var innerTransform = new NonPlaceholderTransform(transformGroup);
                 var groupShape = new SlideGroupShape(innerTransform, spContext, groupedShapes, pGroupShape, slide);
@@ -66,7 +66,7 @@ namespace ShapeCrawler.Factories
                 return groupShape;
             }
 
-            return Successor?.Create(pShapeTreeChild, slide);
+            return this.Successor?.Create(pShapeTreeChild, slide);
         }
     }
 }
