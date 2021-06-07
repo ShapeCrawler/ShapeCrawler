@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.20.1 - 2021-06-07
+### Fixed
+- Fixed changing picture source with shared image source.
+
 ## Version 0.20.0 - 2021-05-08
 ### Added
 - Added `Portion.Font.ColorFormat` to read color properties of font.
