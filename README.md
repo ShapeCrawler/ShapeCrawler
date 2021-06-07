@@ -121,6 +121,25 @@ public class TableSample
 }
 ```
 
+### Working with Pictures
+```C#
+using System.Linq;
+using ShapeCrawler;
+
+public class PictureSamples
+{
+    public static void Picture()
+    {
+        using IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: true);
+
+        // Get picture shape
+        IPicture picture = presentation.Slides[0].Shapes.OfType<IPicture>().First();
+
+        // Change image
+        picture.Image.SetImage("new-image.png");
+    }
+}
+```
 ### Working with Charts
 ```C#
 using System;
@@ -197,8 +216,8 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 Don't hesitate to contact me if you want to get involved!
 
 # Changelog
-## Version 0.20.0 - 2021-05-08
-### Added
-- Added `Portion.Font.ColorFormat` to read color properties of font.
+## Version 0.20.1 - 2021-06-07
+### Fixed
+- Fixed changing picture source with shared image source.
 
 To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).
