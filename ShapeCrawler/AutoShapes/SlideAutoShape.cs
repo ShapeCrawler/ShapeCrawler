@@ -17,7 +17,6 @@ namespace ShapeCrawler
     /// </summary>
     internal class SlideAutoShape : SlideShape, IAutoShape, ITextBoxContainer
     {
-        private readonly SCImageFactory imageFactory = new (); // TODO: make it static call
         private readonly ILocation innerTransform;
         private readonly Lazy<ShapeFill> shapeFill;
         private readonly Lazy<SCTextBox> textBox;
@@ -65,7 +64,7 @@ namespace ShapeCrawler
             set => this.innerTransform.SetHeight(value);
         }
 
-        public ITextBox TextBox => this.textBox.Value;
+        public ITextBox TextBox => this.textBox.Value; // TODO: move to ITextBoxContainer
 
         public ShapeFill Fill => this.shapeFill.Value;
 
@@ -90,25 +89,31 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()
         {
-            SCImage image = this.imageFactory.FromSlidePart(this.ParentSlide.SlidePart, this.SdkPShapeTreeChild);
+            SCImage image = SCImage.GetFillImageOrDefault(this, this.ParentSlide.SlidePart, this.SdkPShapeTreeChild);
+
             if (image != null)
             {
                 return new ShapeFill(image);
             }
 
             A.SolidFill aSolidFill = this.pShape.ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
-            if (aSolidFill != null)
+            if (aSolidFill == null)
             {
-                A.RgbColorModelHex aRgbColorModelHex = aSolidFill.RgbColorModelHex;
-                if (aRgbColorModelHex != null)
-                {
-                    return ShapeFill.FromXmlSolidFill(aRgbColorModelHex);
-                }
-
-                return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
+                return null;
             }
 
-            return null;
+            A.RgbColorModelHex aRgbColorModelHex = aSolidFill.RgbColorModelHex;
+            if (aRgbColorModelHex != null)
+            {
+                return ShapeFill.FromXmlSolidFill(aRgbColorModelHex);
+            }
+
+            return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
+        }
+
+        public void ThrowIfRemoved()
+        {
+            base.ThrowIfRemoved();
         }
     }
 }

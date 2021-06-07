@@ -1,90 +1,171 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shared;
+using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
+// ReSharper disable CheckNamespace
 
-namespace ShapeCrawler.Drawing
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents an image model.
     /// </summary>
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class SCImage
     {
-        #region Fields
+        private readonly SCPresentation parentPresentation;
 
-        private readonly SlidePart _slidePart;
-        private ImagePart _imagePart;
-        private byte[] _bytes;
-        private readonly string _blipRelateId;
+        internal ImagePart ImagePart { get; set; }
+        private readonly IRemovable parentRemovableImageContainer;
+        private readonly StringValue picReference;
+        private readonly SlidePart slidePart;
+        private byte[] bytes;
 
-        #endregion Fields
-
-        #region Constructors
-
-        public SCImage(SlidePart sdkSlidePart, string blipRelateId)
+        private SCImage(
+            SCPresentation parentPresentation, 
+            ImagePart imagePart, 
+            IRemovable parentRemovableImageContainer,
+            StringValue picReference,
+            SlidePart slidePart)
         {
-            _slidePart = sdkSlidePart ?? throw new ArgumentNullException(nameof(sdkSlidePart));
-            _blipRelateId = blipRelateId ?? throw new ArgumentNullException(nameof(blipRelateId));
+            this.parentPresentation = parentPresentation;
+            this.ImagePart = imagePart;
+            this.parentRemovableImageContainer = parentRemovableImageContainer;
+            this.picReference = picReference;
+            this.slidePart = slidePart;
         }
 
-        #endregion Constructors
-
-        #region Public Methods
+        #region Public Members
 
 #if NET5_0 || NETSTANDARD2_1 || NETCOREAPP2_1
-        public async ValueTask<byte[]> GetImageBytes()
+
+        /// <summary>
+        ///     Gets bytes content.
+        /// </summary>
+        public async ValueTask<byte[]> GetBytes()
         {
-            if (_bytes != null)
-            {
-                return _bytes; // return from cache
-            }
+            await using Stream stream = this.ImagePart.GetStream();
+            this.bytes = new byte[stream.Length];
+            await stream.ReadAsync(this.bytes.AsMemory(0, (int)stream.Length)).ConfigureAwait(false);
 
-            using var imgPartStream = GetImagePart().GetStream();
-            _bytes = new byte[imgPartStream.Length];
-            await imgPartStream.ReadAsync(_bytes.AsMemory(0, (int) imgPartStream.Length)).ConfigureAwait(false);
-
-            return _bytes;
+            return this.bytes;
         }
+
 #else
-        public async Task<byte[]> GetImageBytes()
+        public async Task<byte[]> GetBytes()
         {
-            if (_bytes != null)
+            if (bytes != null)
             {
-                return _bytes; // return from cache
+                return bytes; // return from cache
             }
 
-            var imgPartStream = GetImagePart().GetStream();
-            _bytes = new byte[imgPartStream.Length];
-            await imgPartStream.ReadAsync(_bytes, 0, (int) imgPartStream.Length).ConfigureAwait(false);
-            ;
-            imgPartStream.Close();
-            return _bytes;
+            Stream stream = this.ImagePart.GetStream();
+            bytes = new byte[stream.Length];
+            await stream.ReadAsync(bytes, 0, (int) stream.Length).ConfigureAwait(false);
+            stream.Close();
+            return bytes;
         }
 #endif
 
         /// <summary>
-        ///     Sets an image.
+        ///     Sets image with stream.
         /// </summary>
-        /// <param name="stream"></param>
-        public void SetImage(Stream stream)
+        public void SetImage(Stream sourceStream)
         {
-            Check.NotNull(stream, nameof(stream));
-            GetImagePart().FeedData(stream);
-            _bytes = null; // resets cache
+            this.parentRemovableImageContainer.ThrowIfRemoved();
+
+            bool isSharedImagePart = this.parentPresentation.ImageParts.Count(ip => ip == this.ImagePart) > 1;
+            if (isSharedImagePart)
+            {
+                string rId = $"rId{Guid.NewGuid().ToString().Substring(0,5)}";
+                this.ImagePart = this.slidePart.AddNewPart<ImagePart>("image/png", rId);
+                this.picReference.Value = rId;
+            }
+
+            sourceStream.Position = 0;
+            this.ImagePart.FeedData(sourceStream);
+            this.bytes = null; // resets cache
         }
 
-        #endregion Public Methods
-
-        #region Private Methods
-
-        private ImagePart GetImagePart()
+        /// <summary>
+        ///     Sets image with byte array.
+        /// </summary>
+        public void SetImage(byte[] sourceBytes)
         {
-            return _imagePart ??= (ImagePart) _slidePart.GetPartById(_blipRelateId);
+            var stream = new MemoryStream();
+            stream.Write(sourceBytes, 0, sourceBytes.Length);
+            this.SetImage(stream);
         }
 
-        #endregion Private Methods
+#if NETSTANDARD2_0
+        public void SetImage(string filePath)
+        {
+            byte[] sourceBytes = File.ReadAllBytes(filePath);
+            this.SetImage(sourceBytes);
+        }
+#else
+
+        /// <summary>
+        ///     Sets image from file contents.
+        /// </summary>
+        public async Task SetImage(string filePath)
+        {
+            byte[] sourceBytes = await File.ReadAllBytesAsync(filePath).ConfigureAwait(false);
+            this.SetImage(sourceBytes);
+        }
+#endif
+
+        #endregion Public Members
+
+        internal static SCImage GetPictureImage(Shape parentPicture, SlidePart slidePart, StringValue picReference)
+        {
+            SCPresentation parentPresentation = parentPicture.ParentSlideMaster.ParentPresentation;
+            ImagePart imagePart = (ImagePart)slidePart.GetPartById(picReference.Value);
+
+            return new SCImage(parentPresentation, imagePart, parentPicture, picReference, slidePart);
+        }
+
+        internal static SCImage GetSlideBackgroundImageOrDefault(SCSlide parentSlide)
+        {
+            P.Background pBackground = parentSlide.SlidePart.Slide.CommonSlideData.Background;
+            if (pBackground == null)
+            {
+                return null;
+            }
+
+            A.BlipFill aBlipFill = pBackground.Descendants<A.BlipFill>().SingleOrDefault();
+            StringValue picReference = aBlipFill?.Blip?.Embed;
+            if (picReference == null)
+            {
+                return null;
+            }
+
+            SCPresentation parentPresentation = parentSlide.ParentPresentation;
+            ImagePart imagePart = (ImagePart)parentSlide.SlidePart.GetPartById(picReference.Value);
+            SCImage backgroundImage = new SCImage(parentPresentation, imagePart, parentSlide, picReference, parentSlide.SlidePart);
+
+            return backgroundImage;
+        }
+
+        internal static SCImage GetFillImageOrDefault(Shape parentShape, SlidePart slidePart, OpenXmlCompositeElement compositeElement)
+        {
+            P.Shape pShape = (P.Shape)compositeElement;
+            A.BlipFill aBlipFill = pShape.ShapeProperties.GetFirstChild<A.BlipFill>();
+
+            StringValue picReference = aBlipFill?.Blip?.Embed;
+            if (picReference == null)
+            {
+                return null;
+            }
+
+            SCPresentation parentPresentation = parentShape.ParentSlideMaster.ParentPresentation;
+            ImagePart imagePart = (ImagePart)slidePart.GetPartById(picReference.Value);
+            return new SCImage(parentPresentation, imagePart, parentShape, picReference, slidePart);
+
+        }
     }
 }

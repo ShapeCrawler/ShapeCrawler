@@ -28,15 +28,24 @@ namespace ShapeCrawler.Collections
 
     internal class SlideMasterCollection : ISlideMasterCollection // TODO: add interface
     {
-        readonly List<ISlideMaster> slideMasters;
-        
+        private readonly List<ISlideMaster> slideMasters;
+
         private SlideMasterCollection(SCPresentation presentation, List<ISlideMaster> slideMasters)
         {
-            Presentation = presentation;
+            this.Presentation = presentation;
             this.slideMasters = slideMasters;
         }
 
+        public int Count => this.slideMasters.Count;
+
         internal SCPresentation Presentation { get; }
+
+        public ISlideMaster this[int index] => this.slideMasters[index];
+
+        public IEnumerator<ISlideMaster> GetEnumerator()
+        {
+            return this.slideMasters.GetEnumerator();
+        }
 
         internal static ISlideMasterCollection Create(SCPresentation presentation)
         {
@@ -58,20 +67,6 @@ namespace ShapeCrawler.Collections
                 .First(sl => ((SCSlideLayout) sl).SlideLayoutPart == inputSlideLayoutPart);
 
             return (SCSlideLayout)slideLayout;
-        }
-
-        internal ISlideMaster GetSlideMasterByLayout(SCSlideLayout slideLayout)
-        {
-            return this.slideMasters.First(sldMaster =>
-                sldMaster.SlideLayouts.Any(sl => ((SCSlideLayout)sl).SlideLayoutPart == slideLayout.SlideLayoutPart));
-        }
-
-        public ISlideMaster this[int index] => this.slideMasters[index];
-
-        public int Count => this.slideMasters.Count;
-        public IEnumerator<ISlideMaster> GetEnumerator()
-        {
-            return this.slideMasters.GetEnumerator();
         }
     }
 }

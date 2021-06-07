@@ -29,6 +29,9 @@ namespace ShapeCrawler
         /// </summary>
         bool Hidden { get; }
 
+        /// <summary>
+        ///     Gets parent (referenced) Slide Layout.
+        /// </summary>
         ISlideLayout ParentSlideLayout { get; }
 
         /// <summary>

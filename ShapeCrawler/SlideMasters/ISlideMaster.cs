@@ -103,6 +103,8 @@ namespace ShapeCrawler
             return false;
         }
 
+        public bool IsRemoved { get; set; }
+
         public void ThrowIfRemoved()
         {
             throw new NotImplementedException();

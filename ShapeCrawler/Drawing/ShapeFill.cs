@@ -11,17 +11,17 @@ namespace ShapeCrawler.Drawing
     public class ShapeFill : IShapeFill
     {
         /// <summary>
-        ///     Returns fill type.
+        ///     Gets fill type.
         /// </summary>
         public FillType Type { get; }
 
         /// <summary>
-        ///     Returns picture image. Returns <c>null</c> if fill type is not picture.
+        ///     Gets picture image. Returns <c>null</c> if fill type is not picture.
         /// </summary>
         public SCImage Picture { get; }
 
         /// <summary>
-        ///     Returns instance of the <see cref="System.Drawing.Color" />. Returns <c>null</c> if fill type is not solid color.
+        ///     Gets instance of the <see cref="System.Drawing.Color" />. Returns <c>null</c> if fill type is not solid color.
         /// </summary>
         public Color SolidColor { get; }
 
@@ -47,8 +47,6 @@ namespace ShapeCrawler.Drawing
 
         public ShapeFill(SCImage image)
         {
-            Check.NotNull(image, nameof(image));
-
             Picture = image;
             Type = FillType.Picture;
         }
