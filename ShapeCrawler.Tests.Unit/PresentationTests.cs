@@ -60,29 +60,25 @@ namespace ShapeCrawler.Tests.Unit
         }
 
 #if DEBUG
-        [Fact(Skip = "In Progress: https://github.com/ShapeCrawler/ShapeCrawler/issues/12")]
-        public void SlidesAddExternal_AddsSpecifiedExternalSlideWithKeepingSourceFormatting_WhenKeepSourceFormatFlagIsTrue()
+        [Fact(Skip = "In Progress")]
+        public void SlidesAdd_AddsSpecifiedSlideAtTheEndOFTheSlideCollection()
         {
             // Arrange
-            IPresentation sourPresentation = _fixture.Pre001;
-            IPresentation destPresentation = SCPresentation.Open(Properties.Resources._002, true);
-            int originSlidesCount = destPresentation.Slides.Count;
-            int originFontSize = 60;
-            ISlide copiedSlide = sourPresentation.Slides[0];
-            var mStream = new MemoryStream();
+            IPresentation destPre = SCPresentation.Open(Properties.Resources._002, true);
+            int originSlidesCount = destPre.Slides.Count;
+            int expectedSlidesCount = originSlidesCount + 1;
+            ISlide addingSlide = _fixture.Pre001.Slides[0];
+            MemoryStream savedPre = new ();
 
             // Act
-            ISlide addedSlide = destPresentation.Slides.AddExternal(copiedSlide, true);
+            destPre.Slides.Add(addingSlide);
 
-            // Arrange
-            destPresentation.Slides.Count.Should().Be(originSlidesCount + 1);
-            IAutoShape addedShape = (IAutoShape)addedSlide.Shapes.First(sp => sp.Id == 2);
-            addedShape.TextBox.Paragraphs[0].Portions[0].Font.Size.Should().Be(originFontSize);
+            // Assert
+            destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
 
-            destPresentation.SaveAs(mStream);
-            destPresentation = SCPresentation.Open(mStream, false);
-            addedShape = (IAutoShape)destPresentation.Slides.Last().Shapes.First(sp => sp.Id == 2);
-            addedShape.TextBox.Paragraphs[0].Portions[0].Font.Size.Should().Be(originFontSize);
+            destPre.SaveAs(savedPre);
+            destPre = SCPresentation.Open(savedPre, false);
+            destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
         }
 #endif
 

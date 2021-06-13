@@ -3,7 +3,7 @@
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    ///     Represent a collection of slides.
+    ///     Represents a collection of slides.
     /// </summary>
     public interface ISlideCollection : IReadOnlyList<ISlide>
     {
@@ -14,12 +14,9 @@ namespace ShapeCrawler.Collections
 
 #if DEBUG
         /// <summary>
-        ///     Adds existing slide from other presentation.
+        ///     Adds slide.
         /// </summary>
-        /// <param name="copiedSlide">Slide of other presentation.</param>
-        /// <param name="keepSourceFormat">Value indicating whether keep the formatting of the copying slide.</param>
-        /// <returns>Added slide.</returns>
-        ISlide AddExternal(ISlide copiedSlide, bool keepSourceFormat);
+        void Add(ISlide addingSlide);
 #endif
     }
 }

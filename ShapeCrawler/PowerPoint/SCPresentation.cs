@@ -25,10 +25,10 @@ namespace ShapeCrawler
     {
         private bool closed;
         private Lazy<Dictionary<int, FontData>> paraLvlToFontData;
-        private PresentationDocument presentationDocument;
         private Lazy<SlideCollection> slides;
         private Lazy<SlideSizeSc> slideSize;
 
+        internal PresentationDocument presentationDocument;
         internal PresentationPart PresentationPart;
 
         internal bool Editable { get; }

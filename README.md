@@ -198,6 +198,24 @@ public class SlideMasterSample
 }
 ```
 
+### Remove slide
+
+```C#
+using System.Linq;
+using ShapeCrawler;
+
+public class RemoveSlideSample
+{
+    public static void RemoveSlide()
+    {
+        // Remove first slide
+        using IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: true);
+        ISlide removingSlide = presentation.Slides.First();
+        presentation.Slides.Remove(removingSlide);
+    }
+}
+```
+
 # Known Issue
 **Font Size** is a tricky part of PowerPoint document structure since obtaining this value leads to parsing different presentation layers —  Slide, Slide Layout or Slide Master. Hence, If you note that font size was incorrect defined, please report [an issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) with attaching your pptx-file example.
 
