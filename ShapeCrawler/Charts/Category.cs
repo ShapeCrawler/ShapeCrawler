@@ -10,9 +10,9 @@ namespace ShapeCrawler.Charts
     /// </summary>
     public class Category
     {
-        private readonly int _index;
-        private readonly NumericValue _cachedName;
-        private readonly ResettableLazy<List<X.Cell>> _indexToXCell;
+        private readonly int index;
+        private readonly NumericValue cachedName;
+        private readonly ResettableLazy<List<X.Cell>> indexToXCell;
 
         #region Constructors
 
@@ -20,10 +20,11 @@ namespace ShapeCrawler.Charts
             ResettableLazy<List<X.Cell>> indexToXCell,
             int index,
             NumericValue cachedName,
-            Category mainCategory) : this(indexToXCell, index, cachedName)
+            Category mainCategory)
+            : this(indexToXCell, index, cachedName)
         {
             // TODO: what about creating a new separate class like MultiCategory:Category
-            MainCategory = mainCategory;
+            this.MainCategory = mainCategory;
         }
 
         internal Category(
@@ -31,9 +32,9 @@ namespace ShapeCrawler.Charts
             int index,
             NumericValue cachedName)
         {
-            _indexToXCell = indexToXCell;
-            _index = index;
-            _cachedName = cachedName;
+            this.indexToXCell = indexToXCell;
+            this.index = index;
+            this.cachedName = cachedName;
         }
 
         #endregion Constructors
@@ -51,12 +52,12 @@ namespace ShapeCrawler.Charts
         /// </summary>
         public string Name
         {
-            get => this._cachedName.InnerText;
+            get => this.cachedName.InnerText;
             set
             {
-                _indexToXCell.Value[_index].CellValue.Text = value;
-                _cachedName.Text = value;
-                _indexToXCell.Reset();
+                this.indexToXCell.Value[index].CellValue.Text = value;
+                this.cachedName.Text = value;
+                this.indexToXCell.Reset();
             }
         }
 #else

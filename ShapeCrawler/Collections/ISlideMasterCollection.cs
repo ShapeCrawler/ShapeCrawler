@@ -47,9 +47,9 @@ namespace ShapeCrawler.Collections
             return this.slideMasters.GetEnumerator();
         }
 
-        internal static ISlideMasterCollection Create(SCPresentation presentation)
+        internal static SlideMasterCollection Create(SCPresentation presentation)
         {
-            IEnumerable<SlideMasterPart> slideMasterParts = presentation.PresentationPart.SlideMasterParts;
+            IEnumerable<SlideMasterPart> slideMasterParts = presentation.PresentationDocument.PresentationPart.SlideMasterParts;
             var slideMasters = new List<ISlideMaster>(slideMasterParts.Count());
             foreach (SlideMasterPart slideMasterPart in slideMasterParts)
             {

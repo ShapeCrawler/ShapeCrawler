@@ -21,62 +21,52 @@ namespace ShapeCrawler
 {
     /// <inheritdoc cref="IPresentation" />
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrawler")]
-    public sealed class SCPresentation : IPresentation // TODO: Make internal
+    public sealed class SCPresentation : IPresentation
     {
         private bool closed;
         private Lazy<Dictionary<int, FontData>> paraLvlToFontData;
         private Lazy<SlideCollection> slides;
         private Lazy<SlideSizeSc> slideSize;
+        internal ResettableLazy<SlideMasterCollection> slideMasters;
 
-        internal PresentationDocument presentationDocument;
-        internal PresentationPart PresentationPart;
+        internal PresentationDocument PresentationDocument { get; private set; }
 
         internal bool Editable { get; }
 
         internal List<ChartWorkbook> ChartWorkbooks { get; } = new ();
 
-        internal Dictionary<int, FontData> ParaLvlToFontData => paraLvlToFontData.Value;
+        internal Dictionary<int, FontData> ParaLvlToFontData => this.paraLvlToFontData.Value;
 
         #region Public Properties
 
-        public ISlideCollection Slides => slides.Value;
+        public ISlideCollection Slides => this.slides.Value;
 
-        public int SlideWidth => slideSize.Value.Width;
+        public int SlideWidth => this.slideSize.Value.Width;
 
-        public int SlideHeight => slideSize.Value.Height;
+        public int SlideHeight => this.slideSize.Value.Height;
 
-        public ISlideMasterCollection SlideMasters => SlideMasterCollection.Create(this);
-        
-        public List<ImagePart> ImageParts => GetImageParts();
-
-        private List<ImagePart> GetImageParts()
-        {
-            IEnumerable<SlidePicture> slidePictures = this.Slides.SelectMany(sp => sp.Shapes).Where(x => x is SlidePicture).OfType<SlidePicture>();
-
-            return slidePictures.Select(x => x.Image.ImagePart).ToList();
-        }
+        public ISlideMasterCollection SlideMasters => this.slideMasters.Value;
 
         #endregion Public Properties
 
-        #region Constructors
+        internal List<ImagePart> ImageParts => this.GetImageParts();
 
         private SCPresentation(string pptxPath, in bool isEditable)
         {
             ThrowIfSourceInvalid(pptxPath);
-            presentationDocument = PresentationDocument.Open(pptxPath, isEditable);
-            Editable = isEditable;
-            Init();
+
+            this.PresentationDocument = PresentationDocument.Open(pptxPath, isEditable);
+            this.Editable = isEditable;
+            this.Init();
         }
 
         private SCPresentation(Stream pptxStream, in bool isEditable)
         {
             ThrowIfSourceInvalid(pptxStream);
-            Editable = isEditable;
-            presentationDocument = PresentationDocument.Open(pptxStream, isEditable);
-            Init();
+            this.PresentationDocument = PresentationDocument.Open(pptxStream, isEditable);
+            this.Editable = isEditable;
+            this.Init();
         }
-
-        #endregion Constructors
 
         #region Public Methods
 
@@ -87,18 +77,18 @@ namespace ShapeCrawler
 
         public void Save()
         {
-            presentationDocument.Save();
+            PresentationDocument.Save();
         }
 
         public void SaveAs(string filePath)
         {
-            presentationDocument = (PresentationDocument) presentationDocument.SaveAs(filePath);
+            PresentationDocument = (PresentationDocument) PresentationDocument.SaveAs(filePath);
         }
 
         public void SaveAs(Stream stream)
         {
             ChartWorkbooks.ForEach(cw => cw.Close());
-            presentationDocument = (PresentationDocument) presentationDocument.Clone(stream);
+            PresentationDocument = (PresentationDocument) PresentationDocument.Clone(stream);
         }
 
         public void Close()
@@ -108,7 +98,7 @@ namespace ShapeCrawler
                 return;
             }
 
-            this.presentationDocument.Close();
+            this.PresentationDocument.Close();
             ChartWorkbooks.ForEach(cw => cw.Close());
 
             this.closed = true;
@@ -136,8 +126,12 @@ namespace ShapeCrawler
 
         #endregion Public Methods
 
-        #region Private Methods
+        private List<ImagePart> GetImageParts()
+        {
+            IEnumerable<SlidePicture> slidePictures = this.Slides.SelectMany(sp => sp.Shapes).Where(x => x is SlidePicture).OfType<SlidePicture>();
 
+            return slidePictures.Select(x => x.Image.ImagePart).ToList();
+        }
 
         private static Dictionary<int, FontData> ParseFontHeights(P.Presentation pPresentation)
         {
@@ -162,8 +156,6 @@ namespace ShapeCrawler
 
             return lvlToFontData;
         }
-
-
 
         private static void ThrowIfSourceInvalid(string path)
         {
@@ -203,9 +195,10 @@ namespace ShapeCrawler
 
             return slideCollection;
         }
+
         private void ThrowIfSlidesNumberLarge()
         {
-            var nbSlides = presentationDocument.PresentationPart.SlideParts.Count();
+            var nbSlides = PresentationDocument.PresentationPart.SlideParts.Count();
             if (nbSlides > Limitations.MaxSlidesNumber)
             {
                 Close();
@@ -218,18 +211,16 @@ namespace ShapeCrawler
             this.ThrowIfSlidesNumberLarge();
             this.slides = new Lazy<SlideCollection>(this.GetSlides);
             this.slideSize = new Lazy<SlideSizeSc>(this.GetSlideSize);
-            this.PresentationPart = this.presentationDocument.PresentationPart;
+            this.slideMasters = new ResettableLazy<SlideMasterCollection>(() => SlideMasterCollection.Create(this));
             this.paraLvlToFontData =
-                new Lazy<Dictionary<int, FontData>>(() => ParseFontHeights(PresentationPart.Presentation));
+                new Lazy<Dictionary<int, FontData>>(() => ParseFontHeights(this.PresentationDocument.PresentationPart.Presentation));
         }
 
         private SlideSizeSc GetSlideSize()
         {
-            P.SlideSize pSlideSize = this.presentationDocument.PresentationPart.Presentation.SlideSize;
+            P.SlideSize pSlideSize = this.PresentationDocument.PresentationPart.Presentation.SlideSize;
             return new SlideSizeSc(pSlideSize.Cx.Value, pSlideSize.Cy.Value);
         }
-
-        #endregion Private Methods
 
         internal void ThrowIfClosed()
         {

@@ -60,8 +60,8 @@ namespace ShapeCrawler.Tests.Unit
         }
 
 #if DEBUG
-        [Fact(Skip = "In Progress")]
-        public void SlidesAdd_AddsSpecifiedSlideAtTheEndOFTheSlideCollection()
+        [Fact]
+        public void SlidesAdd_AddsSpecifiedSlideAtTheEndOfTheSlideCollection()
         {
             // Arrange
             IPresentation destPre = SCPresentation.Open(Properties.Resources._002, true);
