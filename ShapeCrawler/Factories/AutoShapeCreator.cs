@@ -11,8 +11,8 @@ namespace ShapeCrawler.Factories
 
         public AutoShapeCreator(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory)
         {
-            _shapeContextBuilder = shapeContextBuilder;
-            _transformFactory = transformFactory;
+            this._shapeContextBuilder = shapeContextBuilder;
+            this._transformFactory = transformFactory;
         }
 
         #endregion Constructors

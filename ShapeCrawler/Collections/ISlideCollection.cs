@@ -12,11 +12,9 @@ namespace ShapeCrawler.Collections
         /// </summary>
         void Remove(ISlide removingSlide);
 
-#if DEBUG
         /// <summary>
         ///     Adds slide.
         /// </summary>
-        void Add(ISlide addingSlide);
-#endif
+        void Add(ISlide outerSlide);
     }
 }
