@@ -134,7 +134,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void AutoShapeFillPictureSetImage_ShouldNotImpactOtherPictureImage_WhenItsOriginImageIsShared()
+        public void PictureSetImage_ShouldNotImpactOtherPictureImage_WhenItsOriginImageIsShared()
         {
             // Arrange
             IPresentation presentation = SCPresentation.Open(TestFiles.Presentations.pre009, true);
@@ -346,20 +346,6 @@ namespace ShapeCrawler.Tests.Unit
             // Act-Assert
             shapeCase1.Hidden.Should().BeTrue();
             shapeCase2.Hidden.Should().BeFalse();
-        }
-    }
-
-    public static class TestFiles
-    {
-        public static class Images
-        {
-            public static byte[] img02 => Resources.test_image_2;
-            public static MemoryStream img02_stream => new(Resources.test_image_2);
-        }
-
-        public static class Presentations
-        {
-            public static byte[] pre009 => Resources._009;
         }
     }
 }

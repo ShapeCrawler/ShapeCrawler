@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Models;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -15,12 +16,9 @@ namespace ShapeCrawler.Collections
     internal class SlideCollection : ISlideCollection // TODO: make internal
     {
         private readonly SCPresentation parentPresentation;
-        private readonly PresentationPart presentationPart;
+        private PresentationPart presentationPart;
         private readonly ResettableLazy<List<SCSlide>> slides;
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="SlideCollection"/> class.
-        /// </summary>
         internal SlideCollection(SCPresentation presentation)
         {
             this.presentationPart = presentation.PresentationPart;
@@ -42,9 +40,6 @@ namespace ShapeCrawler.Collections
             return this.GetEnumerator();
         }
 
-        /// <summary>
-        ///     Removes the specified slide.
-        /// </summary>
         public void Remove(ISlide removingSlide)
         {
             P.Presentation presentation = this.presentationPart.Presentation;
@@ -96,13 +91,19 @@ namespace ShapeCrawler.Collections
 
             this.presentationPart.DeletePart(slidePart);
             this.presentationPart.Presentation.Save();
-            ((IRemovable)removingSlide).IsRemoved = true;
+            removingSlide.IsRemoved = true;
 
             this.slides.Reset();
         }
 
+        public void Add(ISlide addingSlide)
+        {
+            throw new NotImplementedException();
+        }
+
         private List<SCSlide> GetSlides()
         {
+            this.presentationPart = this.parentPresentation.presentationDocument.PresentationPart;
             int slidesCount = this.presentationPart.SlideParts.Count();
             var slides = new List<SCSlide>(slidesCount);
             for (var slideIndex = 0; slideIndex < slidesCount; slideIndex++)
@@ -114,11 +115,6 @@ namespace ShapeCrawler.Collections
             }
 
             return slides;
-        }
-
-        public ISlide AddExternal(ISlide copiedSlide, bool keepSourceFormat)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

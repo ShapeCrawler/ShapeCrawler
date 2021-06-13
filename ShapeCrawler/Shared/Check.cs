@@ -11,9 +11,6 @@ namespace ShapeCrawler.Shared
         /// <summary>
         ///     Checks whether specified object is not null.
         /// </summary>
-        /// <param name="param"></param>
-        /// <param name="paramName"></param>
-        [SuppressMessage("ReSharper", "InvertIf")]
         public static void NotNull(object param, string paramName)
         {
             if (param == null)

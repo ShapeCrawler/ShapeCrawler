@@ -128,7 +128,7 @@ namespace ShapeCrawler.Drawing
                 }
 
                 A.FontReference aFontReference = parentPShape.ShapeStyle.FontReference;
-                FontData fontReferenceFontData = new()
+                FontData fontReferenceFontData = new ()
                 {
                     ARgbColorModelHex = aFontReference.RgbColorModelHex,
                     ASchemeColor = aFontReference.SchemeColor,

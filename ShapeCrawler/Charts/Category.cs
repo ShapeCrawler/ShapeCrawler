@@ -51,7 +51,7 @@ namespace ShapeCrawler.Charts
         /// </summary>
         public string Name
         {
-            get => _cachedName.InnerText;
+            get => this._cachedName.InnerText;
             set
             {
                 _indexToXCell.Value[_index].CellValue.Text = value;

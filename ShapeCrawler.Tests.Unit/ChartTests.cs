@@ -166,6 +166,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
 #if DEBUG
+
         [Fact]
         public void CategoryName_SetterChangeName_OfCategoryInPieChart()
         {
