@@ -64,7 +64,6 @@ namespace ShapeCrawler.Collections
         {
             SlideLayoutPart inputSlideLayoutPart = slide.SlidePart.SlideLayoutPart;
             IEnumerable<SCSlideLayout> allLayouts = this.slideMasters.SelectMany(sm => sm.SlideLayouts).OfType<SCSlideLayout>();
-            IEnumerable<Uri> layoutUris = allLayouts.Select(s => s.SlideLayoutPart.Uri);
             
             return allLayouts.First(sl => sl.SlideLayoutPart.Uri == inputSlideLayoutPart.Uri);
         }
