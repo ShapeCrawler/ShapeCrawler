@@ -29,6 +29,15 @@ namespace ShapeCrawler
         private Lazy<SlideSizeSc> slideSize;
         internal ResettableLazy<SlideMasterCollection> slideMasters;
 
+        private SCPresentation(string pptxPath, in bool isEditable)
+        {
+            ThrowIfSourceInvalid(pptxPath);
+
+            this.PresentationDocument = PresentationDocument.Open(pptxPath, isEditable);
+            this.Editable = isEditable;
+            this.Init();
+        }
+
         internal PresentationDocument PresentationDocument { get; private set; }
 
         internal bool Editable { get; }
@@ -39,7 +48,7 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public ISlideCollection Slides => this.slides.Value;
+        public ISlideCollection Slides => new SlideCollection(this);
 
         public int SlideWidth => this.slideSize.Value.Width;
 
@@ -47,18 +56,19 @@ namespace ShapeCrawler
 
         public ISlideMasterCollection SlideMasters => this.slideMasters.Value;
 
+        public byte[] ByteArray => GetByteArray();
+
+        private byte[] GetByteArray()
+        {
+            var stream = new MemoryStream();
+            this.PresentationDocument.Clone(stream);
+
+            return stream.ToArray();
+        }
+
         #endregion Public Properties
 
         internal List<ImagePart> ImageParts => this.GetImageParts();
-
-        private SCPresentation(string pptxPath, in bool isEditable)
-        {
-            ThrowIfSourceInvalid(pptxPath);
-
-            this.PresentationDocument = PresentationDocument.Open(pptxPath, isEditable);
-            this.Editable = isEditable;
-            this.Init();
-        }
 
         private SCPresentation(Stream pptxStream, in bool isEditable)
         {
@@ -70,14 +80,38 @@ namespace ShapeCrawler
 
         #region Public Methods
 
+        /// <summary>
+        ///     Opens existing presentation from specified file path.
+        /// </summary>
         public static IPresentation Open(string pptxPath, in bool isEditable)
         {
             return new SCPresentation(pptxPath, isEditable);
         }
 
+        /// <summary>
+        ///     Opens presentation from specified byte array.
+        /// </summary>
+        public static SCPresentation Open(byte[] pptxBytes, in bool isEditable)
+        {
+            ThrowIfSourceInvalid(pptxBytes);
+
+            var pptxMemoryStream = new MemoryStream();
+            pptxMemoryStream.Write(pptxBytes, 0, pptxBytes.Length);
+
+            return new SCPresentation(pptxMemoryStream, isEditable);
+        }
+
+        /// <summary>
+        ///     Opens presentation from stream.
+        /// </summary>
+        public static SCPresentation Open(Stream stream, in bool isEditable)
+        {
+            return new SCPresentation(stream, isEditable);
+        }
+
         public void Save()
         {
-            PresentationDocument.Save();
+            this.PresentationDocument.Save();
         }
 
         public void SaveAs(string filePath)
@@ -87,8 +121,8 @@ namespace ShapeCrawler
 
         public void SaveAs(Stream stream)
         {
-            ChartWorkbooks.ForEach(cw => cw.Close());
-            PresentationDocument = (PresentationDocument) PresentationDocument.Clone(stream);
+            this.ChartWorkbooks.ForEach(cw => cw.Close());
+            this.PresentationDocument = (PresentationDocument)this.PresentationDocument.Clone(stream);
         }
 
         public void Close()
@@ -107,21 +141,6 @@ namespace ShapeCrawler
         public void Dispose()
         {
             this.Close();
-        }
-
-        public static SCPresentation Open(byte[] pptxBytes, in bool isEditable)
-        {
-            ThrowIfSourceInvalid(pptxBytes);
-
-            var pptxMemoryStream = new MemoryStream();
-            pptxMemoryStream.Write(pptxBytes, 0, pptxBytes.Length);
-
-            return new SCPresentation(pptxMemoryStream, isEditable);
-        }
-
-        public static SCPresentation Open(Stream stream, in bool isEditable)
-        {
-            return new SCPresentation(stream, isEditable);
         }
 
         #endregion Public Methods
@@ -189,13 +208,6 @@ namespace ShapeCrawler
             }
         }
 
-        private SlideCollection GetSlides()
-        {
-            SlideCollection slideCollection = new(this);
-
-            return slideCollection;
-        }
-
         private void ThrowIfSlidesNumberLarge()
         {
             var nbSlides = PresentationDocument.PresentationPart.SlideParts.Count();
@@ -209,7 +221,6 @@ namespace ShapeCrawler
         private void Init()
         {
             this.ThrowIfSlidesNumberLarge();
-            this.slides = new Lazy<SlideCollection>(this.GetSlides);
             this.slideSize = new Lazy<SlideSizeSc>(this.GetSlideSize);
             this.slideMasters = new ResettableLazy<SlideMasterCollection>(() => SlideMasterCollection.Create(this));
             this.paraLvlToFontData =

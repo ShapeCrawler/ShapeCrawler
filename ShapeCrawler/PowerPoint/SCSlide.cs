@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Models;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
@@ -29,12 +30,10 @@ namespace ShapeCrawler
         /// </summary>
         internal SCSlide(
             SCPresentation parentPresentation,
-            SlidePart slidePart,
-            int slideNumber)
+            SlidePart slidePart)
         {
             this.ParentPresentation = parentPresentation;
             this.SlidePart = slidePart;
-            this.Number = slideNumber;
             this._shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.CreateForSlide(this.SlidePart, this));
             this.backgroundImage = new Lazy<SCImage>(() => SCImage.GetSlideBackgroundImageOrDefault(this));
             this.customXmlPart = new Lazy<CustomXmlPart>(this.GetSldCustomXmlPart);
@@ -46,7 +45,72 @@ namespace ShapeCrawler
 
         public IShapeCollection Shapes => this._shapes.Value;
 
-        public int Number { get; }
+        public int Number
+        {
+            get => this.GetNumber();
+            set => this.SetNumber(value);
+        }
+
+        private int GetNumber()
+        {
+            string currentSlidePartId =
+                this.ParentPresentation.PresentationDocument.PresentationPart.GetIdOfPart(this.SlidePart);
+            List<SlideId> slideIdList = this.ParentPresentation.PresentationDocument.PresentationPart.Presentation
+                .SlideIdList.ChildElements.OfType<SlideId>().ToList();
+            for (int i = 0; i < slideIdList.Count; i++)
+            {
+                if (slideIdList[i].RelationshipId == currentSlidePartId)
+                {
+                    return i + 1;
+                }
+            }
+
+            throw new ShapeCrawlerException("An error occurred while parsing slide number.");
+        }
+
+        private void SetNumber(int newSlideNumber)
+        {
+            int from = this.Number - 1;
+            int to = newSlideNumber - 1;
+
+            if (to < 0 || from >= this.ParentPresentation.Slides.Count || to == from)
+            {
+                throw new ArgumentOutOfRangeException(nameof(to));
+            }
+
+            PresentationPart presentationPart = this.ParentPresentation.PresentationDocument.PresentationPart;
+
+            Presentation presentation = presentationPart.Presentation;
+            SlideIdList slideIdList = presentation.SlideIdList;
+
+            // Get the slide ID of the source slide.
+            SlideId sourceSlide = slideIdList.ChildElements[from] as SlideId;
+
+            SlideId targetSlide;
+
+            // Identify the position of the target slide after which to move the source slide
+            if (to == 0)
+            {
+                targetSlide = null;
+            }
+            else if (from < to)
+            {
+                targetSlide = (SlideId)slideIdList.ChildElements[to];
+            }
+            else
+            {
+                targetSlide = (SlideId)slideIdList.ChildElements[to - 1];
+            }
+
+            // Remove the source slide from its current position.
+            sourceSlide.Remove();
+
+            // Insert the source slide at its new position after the target slide.
+            slideIdList.InsertAfter(sourceSlide, targetSlide);
+
+            // Save the modified presentation.
+            presentation.Save();
+        }
 
         public SCImage Background => this.backgroundImage.Value;
 
@@ -62,11 +126,11 @@ namespace ShapeCrawler
 
         public bool IsRemoved { get; set; }
 
+        public SCPresentation ParentPresentation { get; }
+
         internal SlidePart SlidePart { get; }
 
         protected ResettableLazy<ShapeCollection> _shapes { get; }
-
-        public SCPresentation ParentPresentation { get; }
 
         /// <summary>
         ///     Saves slide scheme in PNG file.

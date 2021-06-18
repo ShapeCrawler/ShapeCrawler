@@ -185,6 +185,29 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
+        public void NumberSetter_MovesSlide()
+        {
+            // Arrange
+            Stream preStream = TestFiles.Presentations.pre001_stream;
+            IPresentation presentation = SCPresentation.Open(preStream, true);
+            ISlide slide1 = presentation.Slides[0];
+            slide1.CustomData = "old-number-1";
+            ISlide slide2 = presentation.Slides[1];
+
+            // Act
+            slide1.Number = 2;
+
+            // Assert
+            slide1.Number.Should().Be(2);
+            slide2.Number.Should().Be(1, "because the first slide was inserted to its position.");
+            
+            presentation.Close();
+            presentation = SCPresentation.Open(preStream, false);
+            slide2 = presentation.Slides.First(s => s.CustomData == "old-number-1");
+            slide2.Number.Should().Be(2);
+        }
+
+        [Fact]
         public void Shape_IsAPicture()
         {
             // Arrange

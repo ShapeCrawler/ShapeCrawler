@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.SlideMasters;
@@ -26,7 +27,7 @@ namespace ShapeCrawler.Collections
         IEnumerator<ISlideMaster> GetEnumerator();
     }
 
-    internal class SlideMasterCollection : ISlideMasterCollection // TODO: add interface
+    internal class SlideMasterCollection : ISlideMasterCollection
     {
         private readonly List<ISlideMaster> slideMasters;
 
@@ -62,11 +63,10 @@ namespace ShapeCrawler.Collections
         internal SCSlideLayout GetSlideLayoutBySlide(SCSlide slide)
         {
             SlideLayoutPart inputSlideLayoutPart = slide.SlidePart.SlideLayoutPart;
-
-            ISlideLayout slideLayout = this.slideMasters.SelectMany(sm => sm.SlideLayouts)
-                .First(sl => ((SCSlideLayout) sl).SlideLayoutPart == inputSlideLayoutPart);
-
-            return (SCSlideLayout)slideLayout;
+            IEnumerable<SCSlideLayout> allLayouts = this.slideMasters.SelectMany(sm => sm.SlideLayouts).OfType<SCSlideLayout>();
+            IEnumerable<Uri> layoutUris = allLayouts.Select(s => s.SlideLayoutPart.Uri);
+            
+            return allLayouts.First(sl => sl.SlideLayoutPart.Uri == inputSlideLayoutPart.Uri);
         }
     }
 }

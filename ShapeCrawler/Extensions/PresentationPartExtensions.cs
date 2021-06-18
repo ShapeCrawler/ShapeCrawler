@@ -17,8 +17,8 @@ namespace ShapeCrawler.Extensions
             // Get the collection of slide IDs
             OpenXmlElementList slideIds = prePart.Presentation.SlideIdList.ChildElements;
 
-            SlideId sldId = (SlideId)slideIds[sldIndex];
-            string relId = sldId.RelationshipId;
+            SlideId pSldId = (SlideId)slideIds[sldIndex];
+            string relId = pSldId.RelationshipId;
 
             // Get the specified slide part from the relationship ID
             SlidePart slidePart = (SlidePart)prePart.GetPartById(relId);
