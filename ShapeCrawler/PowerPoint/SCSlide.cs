@@ -2,6 +2,7 @@
 using System.IO;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
@@ -23,6 +24,7 @@ namespace ShapeCrawler
     {
         private readonly Lazy<SCImage> backgroundImage;
         private Lazy<CustomXmlPart> customXmlPart;
+        private int currentSlideNumber;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SCSlide" /> class.
@@ -46,7 +48,55 @@ namespace ShapeCrawler
 
         public IShapeCollection Shapes => this._shapes.Value;
 
-        public int Number { get; }
+        public int Number
+        {
+            get => this.currentSlideNumber;
+            set => this.SetNumber(value);
+        }
+
+        private void SetNumber(int newSlideNumber)
+        {
+            int from = this.currentSlideNumber - 1;
+            int to = newSlideNumber - 1;
+
+            if (to < 0 || from >= this.ParentPresentation.Slides.Count || to == from)
+            {
+                throw new ArgumentOutOfRangeException(nameof(to));
+            }
+
+            PresentationPart presentationPart = this.ParentPresentation.PresentationDocument.PresentationPart;
+
+            Presentation presentation = presentationPart.Presentation;
+            SlideIdList slideIdList = presentation.SlideIdList;
+
+            // Get the slide ID of the source slide.
+            SlideId sourceSlide = slideIdList.ChildElements[from] as SlideId;
+
+            SlideId targetSlide;
+
+            // Identify the position of the target slide after which to move the source slide
+            if (to == 0)
+            {
+                targetSlide = null;
+            }
+            else if (from < to)
+            {
+                targetSlide = (SlideId)slideIdList.ChildElements[to];
+            }
+            else
+            {
+                targetSlide = (SlideId)slideIdList.ChildElements[to - 1];
+            }
+
+            // Remove the source slide from its current position.
+            sourceSlide.Remove();
+
+            // Insert the source slide at its new position after the target slide.
+            slideIdList.InsertAfter(sourceSlide, targetSlide);
+
+            // Save the modified presentation.
+            presentation.Save();
+        }
 
         public SCImage Background => this.backgroundImage.Value;
 
@@ -62,11 +112,11 @@ namespace ShapeCrawler
 
         public bool IsRemoved { get; set; }
 
+        public SCPresentation ParentPresentation { get; }
+
         internal SlidePart SlidePart { get; }
 
         protected ResettableLazy<ShapeCollection> _shapes { get; }
-
-        public SCPresentation ParentPresentation { get; }
 
         /// <summary>
         ///     Saves slide scheme in PNG file.

@@ -5,6 +5,9 @@ using ShapeCrawler.Collections;
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler
 {
+    /// <summary>
+    ///     Represents a presentation document.
+    /// </summary>
     public interface IPresentation : IDisposable
     {
         /// <summary>
@@ -22,19 +25,29 @@ namespace ShapeCrawler
         /// </summary>
         int SlideHeight { get; }
 
+        /// <summary>
+        ///     Gets collection of the slide masters.
+        /// </summary>
         ISlideMasterCollection SlideMasters { get; }
+
+        /// <summary>
+        ///     Gets presentation byte array.
+        /// </summary>
+        byte[] ByteArray { get; }
+
+        /// <summary>
+        ///     Saves presentation.
+        /// </summary>
         void Save();
 
         /// <summary>
         ///     Saves presentation in specified file path.
         /// </summary>
-        /// <param name="filePath"></param>
         void SaveAs(string filePath);
 
         /// <summary>
         ///     Saves presentation in specified stream.
         /// </summary>
-        /// <param name="stream"></param>
         void SaveAs(Stream stream);
 
         /// <summary>

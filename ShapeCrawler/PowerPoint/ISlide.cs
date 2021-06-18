@@ -12,7 +12,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets slide number.
         /// </summary>
-        int Number { get; }
+        int Number { get; set; }
 
         /// <summary>
         ///     Gets background image of the slide. Returns <c>NULL</c> if the slide does not have background.
