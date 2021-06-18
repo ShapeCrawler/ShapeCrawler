@@ -188,8 +188,7 @@ namespace ShapeCrawler.Collections
             for (var slideIndex = 0; slideIndex < slidesCount; slideIndex++)
             {
                 SlidePart slidePart = this.presentationPart.GetSlidePartByIndex(slideIndex);
-                int slideNumber = slideIndex + 1;
-                var newSlide = new SCSlide(this.parentPresentation, slidePart, slideNumber);
+                var newSlide = new SCSlide(this.parentPresentation, slidePart);
                 slides.Add(newSlide);
             }
 

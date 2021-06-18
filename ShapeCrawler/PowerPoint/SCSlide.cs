@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Models;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
@@ -24,19 +24,16 @@ namespace ShapeCrawler
     {
         private readonly Lazy<SCImage> backgroundImage;
         private Lazy<CustomXmlPart> customXmlPart;
-        private int currentSlideNumber;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SCSlide" /> class.
         /// </summary>
         internal SCSlide(
             SCPresentation parentPresentation,
-            SlidePart slidePart,
-            int slideNumber)
+            SlidePart slidePart)
         {
             this.ParentPresentation = parentPresentation;
             this.SlidePart = slidePart;
-            this.Number = slideNumber;
             this._shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.CreateForSlide(this.SlidePart, this));
             this.backgroundImage = new Lazy<SCImage>(() => SCImage.GetSlideBackgroundImageOrDefault(this));
             this.customXmlPart = new Lazy<CustomXmlPart>(this.GetSldCustomXmlPart);
@@ -50,13 +47,30 @@ namespace ShapeCrawler
 
         public int Number
         {
-            get => this.currentSlideNumber;
+            get => this.GetNumber();
             set => this.SetNumber(value);
+        }
+
+        private int GetNumber()
+        {
+            string currentSlidePartId =
+                this.ParentPresentation.PresentationDocument.PresentationPart.GetIdOfPart(this.SlidePart);
+            List<SlideId> slideIdList = this.ParentPresentation.PresentationDocument.PresentationPart.Presentation
+                .SlideIdList.ChildElements.OfType<SlideId>().ToList();
+            for (int i = 0; i < slideIdList.Count; i++)
+            {
+                if (slideIdList[i].RelationshipId == currentSlidePartId)
+                {
+                    return i + 1;
+                }
+            }
+
+            throw new ShapeCrawlerException("An error occurred while parsing slide number.");
         }
 
         private void SetNumber(int newSlideNumber)
         {
-            int from = this.currentSlideNumber - 1;
+            int from = this.Number - 1;
             int to = newSlideNumber - 1;
 
             if (to < 0 || from >= this.ParentPresentation.Slides.Count || to == from)

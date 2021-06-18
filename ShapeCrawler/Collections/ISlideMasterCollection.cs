@@ -62,11 +62,9 @@ namespace ShapeCrawler.Collections
         internal SCSlideLayout GetSlideLayoutBySlide(SCSlide slide)
         {
             SlideLayoutPart inputSlideLayoutPart = slide.SlidePart.SlideLayoutPart;
+            IEnumerable<SCSlideLayout> allLayouts = this.slideMasters.SelectMany(sm => sm.SlideLayouts).OfType<SCSlideLayout>();
 
-            ISlideLayout slideLayout = this.slideMasters.SelectMany(sm => sm.SlideLayouts)
-                .First(sl => ((SCSlideLayout) sl).SlideLayoutPart == inputSlideLayoutPart);
-
-            return (SCSlideLayout)slideLayout;
+            return allLayouts.First(sl => sl.SlideLayoutPart == inputSlideLayoutPart);
         }
     }
 }
