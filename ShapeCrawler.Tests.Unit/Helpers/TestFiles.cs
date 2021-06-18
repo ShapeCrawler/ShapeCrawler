@@ -14,7 +14,17 @@ namespace ShapeCrawler.Tests.Unit.Helpers
         public static class Presentations
         {
             public static byte[] pre001 => Resources._001;
-            public static Stream pre001_stream => new MemoryStream(Resources._001);
+
+            public static Stream pre001_stream
+            {
+                get
+                {
+                    var stream = new MemoryStream();
+                    stream.Write(Resources._001, 0, Resources._001.Length);
+                    return stream;
+                }
+            }
+            
             public static byte[] pre009 => Resources._009;
         }
     }

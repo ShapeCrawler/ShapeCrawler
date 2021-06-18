@@ -121,12 +121,12 @@ namespace ShapeCrawler
 
         #endregion Public Members
 
-        internal static SCImage GetPictureImage(Shape parentPicture, SlidePart slidePart, StringValue picReference)
+        internal static SCImage CreatePictureImage(Shape picture, SlidePart slidePart, StringValue picReference)
         {
-            SCPresentation parentPresentation = parentPicture.ParentSlideMaster.ParentPresentation;
+            SCPresentation parentPresentation = picture.ParentSlideMaster.ParentPresentation;
             ImagePart imagePart = (ImagePart)slidePart.GetPartById(picReference.Value);
 
-            return new SCImage(parentPresentation, imagePart, parentPicture, picReference, slidePart);
+            return new SCImage(parentPresentation, imagePart, picture, picReference, slidePart);
         }
 
         internal static SCImage GetSlideBackgroundImageOrDefault(SCSlide parentSlide)

@@ -1,5 +1,4 @@
 ﻿using DocumentFormat.OpenXml;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Settings;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -26,11 +25,10 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public SCImage Image => SCImage.GetPictureImage(this, this.ParentSlide.SlidePart, this.picReference);
+        public SCImage Image => SCImage.CreatePictureImage(this, this.ParentSlide.SlidePart, this.picReference);
 
         #endregion Public Properties
 
         internal ShapeContext Context { get; }
-        public SCPresentation ParentPresentation => this.ParentSlideMaster.ParentPresentation;
     }
 }

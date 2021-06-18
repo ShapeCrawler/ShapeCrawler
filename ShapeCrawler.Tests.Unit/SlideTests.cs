@@ -191,6 +191,7 @@ namespace ShapeCrawler.Tests.Unit
             Stream preStream = TestFiles.Presentations.pre001_stream;
             IPresentation presentation = SCPresentation.Open(preStream, true);
             ISlide slide1 = presentation.Slides[0];
+            slide1.CustomData = "old-number-1";
             ISlide slide2 = presentation.Slides[1];
 
             // Act
@@ -199,10 +200,10 @@ namespace ShapeCrawler.Tests.Unit
             // Assert
             slide1.Number.Should().Be(2);
             slide2.Number.Should().Be(1, "because the first slide was inserted to its position.");
-
+            
             presentation.Close();
             presentation = SCPresentation.Open(preStream, false);
-            slide2 = presentation.Slides.First(s => s.CustomData == "old1");
+            slide2 = presentation.Slides.First(s => s.CustomData == "old-number-1");
             slide2.Number.Should().Be(2);
         }
 

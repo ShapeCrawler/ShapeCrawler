@@ -151,6 +151,7 @@ namespace ShapeCrawler.Tests.Unit
             pic6LengthAfter.Should().Be(pic6LengthBefore);
 
             presentation.SaveAs(modifiedPresentation);
+            presentation = SCPresentation.Open(modifiedPresentation, false);
             picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
             pic6LengthBefore = picture6.Image.GetBytes().GetAwaiter().GetResult().Length;
             pic6LengthAfter.Should().Be(pic6LengthBefore);
