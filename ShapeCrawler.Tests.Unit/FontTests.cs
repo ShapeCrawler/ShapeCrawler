@@ -8,6 +8,7 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
 using Xunit;
+// ReSharper disable SuggestVarOrType_SimpleTypes
 
 namespace ShapeCrawler.Tests.Unit
 {
@@ -84,7 +85,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Size_GetterReturnsFontSizeOfTheParagraphPortion()
+        public void Size_Getter_ReturnsFontSize_OfParagraphPortion()
         {
             // Arrange
             IPortion portionCase1 = ((IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox.Paragraphs[0].Portions[0];
@@ -122,7 +123,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Size_GetterReturnsFontSize_OfPlaceholder()
+        public void Size_Getter_ReturnsFontSize_OfPlaceholder()
         {
             // Arrange
             IAutoShape autoShapeCase1 = (IAutoShape) _fixture.Pre028.Slides[0].Shapes.First(sp => sp.Id == 4098);
@@ -136,7 +137,18 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Size_SetterChangesFontSizeOfParagraphPortion()
+        public void Size_Getter_ReturnsFontSize_OfNonPlaceholderTable()
+        {
+            // Arrange
+            ITable table = (ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3);
+            IPortion cellPortion = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0];
+
+            // Act-Assert
+            cellPortion.Font.Size.Should().Be(1800);
+        }
+
+        [Fact]
+        public void Size_Setter_ChangesFontSizeOfParagraphPortion()
         {
             // Arrange
             int newFontSize = 28;

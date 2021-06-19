@@ -59,19 +59,18 @@ namespace ShapeCrawler.Tests.Unit
             numberSlidesCase2.Should().Be(1);
         }
 
-#if DEBUG
         [Fact]
         public void SlidesAdd_AddsSpecifiedSlideAtTheEndOfTheSlideCollection()
         {
             // Arrange
+            ISlide sourceSlide = _fixture.Pre001.Slides[0];
             IPresentation destPre = SCPresentation.Open(Properties.Resources._002, true);
             int originSlidesCount = destPre.Slides.Count;
             int expectedSlidesCount = originSlidesCount + 1;
-            ISlide addingSlide = _fixture.Pre001.Slides[0];
             MemoryStream savedPre = new ();
 
             // Act
-            destPre.Slides.Add(addingSlide);
+            destPre.Slides.Add(sourceSlide);
 
             // Assert
             destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
@@ -80,7 +79,6 @@ namespace ShapeCrawler.Tests.Unit
             destPre = SCPresentation.Open(savedPre, false);
             destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
         }
-#endif
 
         [Theory]
         [MemberData(nameof(TestCasesSlidesRemove))]

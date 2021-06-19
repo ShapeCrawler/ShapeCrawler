@@ -15,7 +15,7 @@ namespace ShapeCrawler.AutoShapes
         /// <summary>
         ///     Gets or sets font size in EMUs.
         /// </summary>
-        int Size { get; set; } // TODO: create test to verify font size of table cell's text portion
+        int Size { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether font width is bold.

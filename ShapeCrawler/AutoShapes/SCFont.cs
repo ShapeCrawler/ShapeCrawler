@@ -110,41 +110,46 @@ namespace ShapeCrawler.AutoShapes
                 return aRunPrFontSize.Value;
             }
 
-            Shape fontParentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
-            int paragraphLvl = this.ParentPortion.ParentParagraph.Level;
+            SCParagraph parentParagraph = this.ParentPortion.ParentParagraph;
+            ITextBoxContainer parentTextBoxContainer = parentParagraph.ParentTextBox.ParentTextBoxContainer;
+            //Shape parentShape = (Shape)parentParagraph.ParentTextBox.ParentTextBoxContainer;
+            int paragraphLvl = parentParagraph.Level;
 
-            // Try get font size from placeholder
-            if (fontParentShape.Placeholder != null)
+            if (parentTextBoxContainer is Shape parentShape)
             {
-                Placeholder placeholder = (Placeholder)fontParentShape.Placeholder;
-                IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
-                FontData fontDataPlaceholder = new ();
-                if (phReferencedShape != null)
+                if (parentShape.Placeholder is not null)
                 {
-                    phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
-                    if (fontDataPlaceholder.FontSize != null)
+                    Placeholder placeholder = (Placeholder)parentShape.Placeholder;
+                    IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
+                    FontData fontDataPlaceholder = new();
+                    if (phReferencedShape != null)
                     {
-                        return fontDataPlaceholder.FontSize;
+                        phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
+                        if (fontDataPlaceholder.FontSize != null)
+                        {
+                            return fontDataPlaceholder.FontSize;
+                        }
+                    }
+
+                    SCSlideMaster slideMaster = parentShape.ParentSlideMaster;
+
+                    // From Slide Master body
+                    if (slideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
+                    {
+                        return fontSizeBody;
+                    }
+
+                    // From Slide Master other
+                    if (slideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
+                    {
+                        return fontSizeOther;
                     }
                 }
-
-                SCSlideMaster slideMaster = fontParentShape.ParentSlideMaster;
-
-                // From Slide Master body
-                if (slideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
-                {
-                    return fontSizeBody;
-                }
-
-                // From Slide Master other
-                if (slideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
-                {
-                    return fontSizeOther;
-                }
             }
+           
 
             // From presentation level
-            if (fontParentShape.ParentSlideMaster.ParentPresentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
+            if (parentTextBoxContainer.ParentSlideMaster.ParentPresentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
             {
                 if (fontData.FontSize != null)
                 {
