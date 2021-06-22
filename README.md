@@ -192,13 +192,11 @@ public class SlideMasterSample
 
         // Get number of shapes in the Slide Master
         int masterShapeCount = slideMaster.Shapes.Count;
-
-        presentation.Close();
     }
 }
 ```
 
-### Remove slide
+### Update slide collection
 
 ```C#
 using System.Linq;

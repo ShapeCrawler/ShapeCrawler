@@ -34,6 +34,14 @@ namespace ShapeCrawler
             this.pShape = pShape;
         }
 
+        #region Public Properties
+
+        public ITextBox TextBox => this.textBox.Value;
+
+        public ShapeFill Fill => this.shapeFill.Value;
+
+        #endregion Public Properties
+
         internal ShapeContext Context { get; }
 
         internal Dictionary<int, FontData> LvlToFontData => this.lvlToFontData.Value;
@@ -98,7 +106,7 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill() // TODO: duplicate code in LayoutAutoShape
         {
-            SCImage image = SCImage.GetFillImageOrDefault(this, Context.SlidePart, Context.CompositeElement);
+            SCImage image = SCImage.GetFillImageOrDefault(this, this.Context.SlidePart, this.Context.CompositeElement);
             if (image != null)
             {
                 return new ShapeFill(image);
@@ -117,19 +125,6 @@ namespace ShapeCrawler
             }
 
             return null;
-        }
-
-        #region Public Properties
-
-        public ITextBox TextBox => this.textBox.Value;
-
-        public ShapeFill Fill => this.shapeFill.Value;
-
-        #endregion Public Properties
-
-        public void ThrowIfRemoved()
-        {
-            base.ThrowIfRemoved();
         }
     }
 }

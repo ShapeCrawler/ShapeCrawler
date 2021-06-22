@@ -134,10 +134,5 @@ namespace ShapeCrawler
 
             return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
         }
-
-        public void ThrowIfRemoved()
-        {
-            base.ThrowIfRemoved();
-        }
     }
 }

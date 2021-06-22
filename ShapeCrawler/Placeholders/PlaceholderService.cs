@@ -68,11 +68,11 @@ namespace ShapeCrawler.Placeholders
             return result;
         }
 
-        public PlaceholderFontData PlaceholderFontDataFromCompositeElement(OpenXmlCompositeElement sdkCompositeElement)
+        public PlaceholderData PlaceholderFontDataFromCompositeElement(OpenXmlCompositeElement sdkCompositeElement)
         {
             var placeholderData = CreatePlaceholderData(sdkCompositeElement);
 
-            return new PlaceholderFontData
+            return new PlaceholderData
             {
                 PlaceholderType = placeholderData.PlaceholderType,
                 Index = placeholderData.Index
