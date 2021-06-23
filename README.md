@@ -192,26 +192,33 @@ public class SlideMasterSample
 
         // Get number of shapes in the Slide Master
         int masterShapeCount = slideMaster.Shapes.Count;
-
-        presentation.Close();
     }
 }
 ```
 
-### Remove slide
+### Update slide collection
 
 ```C#
 using System.Linq;
 using ShapeCrawler;
 
-public class RemoveSlideSample
+public class UpdateSlideCollection
 {
-    public static void RemoveSlide()
+    public static void Update()
     {
         // Remove first slide
-        using IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: true);
+        using IPresentation presentation = SCPresentation.Open("test.pptx", true);
         ISlide removingSlide = presentation.Slides.First();
         presentation.Slides.Remove(removingSlide);
+
+        // Move second slide to first position
+        presentation.Slides[1].Number = 2;
+
+        // Copy second slide from source into dest
+        using IPresentation source = SCPresentation.Open("source.pptx", true);
+        using IPresentation dest = SCPresentation.Open("dest.pptx", true);
+        ISlide copyingSlide = presentation.Slides[1];
+        dest.Slides.Add(copyingSlide);
     }
 }
 ```
@@ -232,10 +239,3 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 5. Create a new Pull Request.
 
 Don't hesitate to contact me if you want to get involved!
-
-# Changelog
-## Version 0.20.1 - 2021-06-07
-### Fixed
-- Fixed changing picture source with shared image source.
-
-To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).

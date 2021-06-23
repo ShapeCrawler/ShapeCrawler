@@ -15,9 +15,5 @@ namespace ShapeCrawler.Placeholders
         ///     Placeholder can have their location and size property values data on the slide.
         /// </remarks>
         PlaceholderLocationData TryGetLocation(OpenXmlCompositeElement sdkCompositeElement);
-
-        PlaceholderFontData PlaceholderFontDataFromCompositeElement(OpenXmlCompositeElement sdkCompositeElement);
-
-        PlaceholderData CreatePlaceholderData(OpenXmlElement sdkElement);
     }
 }

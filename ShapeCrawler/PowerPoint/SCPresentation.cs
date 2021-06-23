@@ -8,7 +8,6 @@ using ShapeCrawler.Charts;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Models;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;

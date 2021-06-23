@@ -8,7 +8,6 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
 // ReSharper disable PossibleMultipleEnumeration
-
 namespace ShapeCrawler.Spreadsheet
 {
     internal class ChartReferencesParser

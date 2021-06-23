@@ -8,6 +8,7 @@ using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -33,6 +34,14 @@ namespace ShapeCrawler
             this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
             this.pShape = pShape;
         }
+
+        #region Public Properties
+
+        public ITextBox TextBox => this.textBox.Value;
+
+        public ShapeFill Fill => this.shapeFill.Value;
+
+        #endregion Public Properties
 
         internal ShapeContext Context { get; }
 
@@ -98,7 +107,7 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill() // TODO: duplicate code in LayoutAutoShape
         {
-            SCImage image = SCImage.GetFillImageOrDefault(this, Context.SlidePart, Context.CompositeElement);
+            SCImage image = SCImage.GetFillImageOrDefault(this, this.Context.SlidePart, this.Context.CompositeElement);
             if (image != null)
             {
                 return new ShapeFill(image);
@@ -117,19 +126,6 @@ namespace ShapeCrawler
             }
 
             return null;
-        }
-
-        #region Public Properties
-
-        public ITextBox TextBox => this.textBox.Value;
-
-        public ShapeFill Fill => this.shapeFill.Value;
-
-        #endregion Public Properties
-
-        public void ThrowIfRemoved()
-        {
-            base.ThrowIfRemoved();
         }
     }
 }

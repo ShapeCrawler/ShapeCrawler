@@ -6,6 +6,7 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -14,8 +15,6 @@ namespace ShapeCrawler.AutoShapes
 {
     internal class SCFont : IFont
     {
-        internal readonly SCPortion ParentPortion;
-
         private readonly A.Text aText;
         private readonly A.FontScheme aFontScheme;
         private readonly Lazy<ColorFormat> colorFormat;
@@ -31,6 +30,9 @@ namespace ShapeCrawler.AutoShapes
             this.ParentPortion = portion;
             this.aFontScheme = portion.ParentParagraph.ParentTextBox.ParentTextBoxContainer.ParentSlideMaster.ThemePart.Theme.ThemeElements.FontScheme;
         }
+
+        internal SCPortion ParentPortion { get; }
+
 
         #region Public Properties
 
@@ -110,41 +112,44 @@ namespace ShapeCrawler.AutoShapes
                 return aRunPrFontSize.Value;
             }
 
-            Shape fontParentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
-            int paragraphLvl = this.ParentPortion.ParentParagraph.Level;
+            SCParagraph parentParagraph = this.ParentPortion.ParentParagraph;
+            ITextBoxContainer parentTextBoxContainer = parentParagraph.ParentTextBox.ParentTextBoxContainer;
+            int paragraphLvl = parentParagraph.Level;
 
-            // Try get font size from placeholder
-            if (fontParentShape.Placeholder != null)
+            if (parentTextBoxContainer is Shape parentShape)
             {
-                Placeholder placeholder = (Placeholder)fontParentShape.Placeholder;
-                IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
-                FontData fontDataPlaceholder = new ();
-                if (phReferencedShape != null)
+                if (parentShape.Placeholder is not null)
                 {
-                    phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
-                    if (fontDataPlaceholder.FontSize != null)
+                    Placeholder placeholder = (Placeholder)parentShape.Placeholder;
+                    IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
+                    FontData fontDataPlaceholder = new ();
+                    if (phReferencedShape != null)
                     {
-                        return fontDataPlaceholder.FontSize;
+                        phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
+                        if (fontDataPlaceholder.FontSize != null)
+                        {
+                            return fontDataPlaceholder.FontSize;
+                        }
                     }
-                }
 
-                SCSlideMaster slideMaster = fontParentShape.ParentSlideMaster;
+                    SCSlideMaster slideMaster = parentShape.ParentSlideMaster;
 
-                // From Slide Master body
-                if (slideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
-                {
-                    return fontSizeBody;
-                }
+                    // From Slide Master body
+                    if (slideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
+                    {
+                        return fontSizeBody;
+                    }
 
-                // From Slide Master other
-                if (slideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
-                {
-                    return fontSizeOther;
+                    // From Slide Master other
+                    if (slideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
+                    {
+                        return fontSizeOther;
+                    }
                 }
             }
 
             // From presentation level
-            if (fontParentShape.ParentSlideMaster.ParentPresentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
+            if (parentTextBoxContainer.ParentSlideMaster.ParentPresentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
             {
                 if (fontData.FontSize != null)
                 {
@@ -168,7 +173,7 @@ namespace ShapeCrawler.AutoShapes
                 return true;
             }
 
-            FontData phFontData = new();
+            FontData phFontData = new ();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
             if (phFontData.IsBold != null)
             {
@@ -180,7 +185,7 @@ namespace ShapeCrawler.AutoShapes
 
         private bool GetItalicFlag()
         {
-            A.RunProperties aRunProperties = aText.Parent.GetFirstChild<A.RunProperties>();
+            A.RunProperties aRunProperties = this.aText.Parent.GetFirstChild<A.RunProperties>();
             if (aRunProperties == null)
             {
                 return false;
@@ -191,8 +196,8 @@ namespace ShapeCrawler.AutoShapes
                 return true;
             }
 
-            FontData phFontData = new();
-            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, ParentPortion.ParentParagraph);
+            FontData phFontData = new ();
+            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
             if (phFontData.IsItalic != null)
             {
                 return phFontData.IsItalic.Value;
@@ -203,30 +208,30 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetBoldFlag(bool value)
         {
-            A.RunProperties aRunPr = aText.Parent.GetFirstChild<A.RunProperties>();
+            A.RunProperties aRunPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
             if (aRunPr != null)
             {
                 aRunPr.Bold = new BooleanValue(value);
             }
             else
             {
-                FontData phFontData = new();
-                FontDataParser.GetFontDataFromPlaceholder(ref phFontData, ParentPortion.ParentParagraph);
+                FontData phFontData = new ();
+                FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
                 if (phFontData.IsBold != null)
                 {
                     phFontData.IsBold = new BooleanValue(value);
                 }
                 else
                 {
-                    A.EndParagraphRunProperties aEndParaRPr = aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                    A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
                     if (aEndParaRPr != null)
                     {
                         aEndParaRPr.Bold = new BooleanValue(value);
                     }
                     else
                     {
-                        aRunPr = new A.RunProperties {Bold = new BooleanValue(value)};
-                        aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
+                        aRunPr = new A.RunProperties { Bold = new BooleanValue(value) };
+                        this.aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
                     }
                 }
             }
@@ -234,21 +239,21 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetItalicFlag(bool value)
         {
-            A.RunProperties aRunPr = aText.Parent.GetFirstChild<A.RunProperties>();
+            A.RunProperties aRunPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
             if (aRunPr != null)
             {
                 aRunPr.Italic = new BooleanValue(value);
             }
             else
             {
-                A.EndParagraphRunProperties aEndParaRPr = aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
                 if (aEndParaRPr != null)
                 {
                     aEndParaRPr.Italic = new BooleanValue(value);
                 }
                 else
                 {
-                    aRunPr = new A.RunProperties {Italic = new BooleanValue(value)};
+                    aRunPr = new A.RunProperties { Italic = new BooleanValue(value) };
                     this.aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
                 }
             }

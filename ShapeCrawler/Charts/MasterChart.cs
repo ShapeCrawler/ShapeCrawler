@@ -1,4 +1,5 @@
 ﻿using ShapeCrawler.Shapes;
+using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts

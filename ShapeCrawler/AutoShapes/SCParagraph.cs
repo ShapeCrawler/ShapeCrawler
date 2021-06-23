@@ -43,6 +43,18 @@ namespace ShapeCrawler
 
         #endregion Public Properties
 
+        internal void ThrowIfRemoved()
+        {
+            if (this.IsRemoved)
+            {
+                throw new ElementIsRemovedException("Paragraph was removed.");
+            }
+            else
+            {
+                this.ParentTextBox.ThrowIfRemoved();
+            }
+        }
+
         internal SCTextBox ParentTextBox { get; }
 
         internal A.Paragraph AParagraph { get; }
@@ -109,18 +121,6 @@ namespace ShapeCrawler
         }
 
         #endregion Private Methods
-
-        public void ThrowIfRemoved()
-        {
-            if (this.IsRemoved)
-            {
-                throw new ElementIsRemovedException("Paragraph was removed.");
-            }
-            else
-            {
-                this.ParentTextBox.ThrowIfRemoved();
-            }
-        }
 
         public bool IsRemoved { get; set; }
     }

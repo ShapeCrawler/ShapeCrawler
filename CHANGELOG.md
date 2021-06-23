@@ -1,8 +1,10 @@
 # Changelog
 
-## Version 0.21.0 - Unreleased
+## Version 0.21.0 - 2021-06-23
 ### Added
 - Added `void ISlideCollection.Add(ISlide addingSlide)` to add outer slide.
+- Added setter for `ISlide.Number` to change slide position.
+
 ## Version 0.20.1 - 2021-06-07
 ### Fixed
 - Fixed changing picture source with shared image source.

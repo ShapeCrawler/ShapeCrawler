@@ -21,7 +21,7 @@ namespace ShapeCrawler
         {
             this.AText = aText;
             this.ParentParagraph = paragraph;
-            this.font = new ResettableLazy<SCFont>(this.GetFont);
+            this.font = new ResettableLazy<SCFont>(() => new SCFont(this.AText, this));
         }
 
         #region Public Properties
@@ -59,11 +59,6 @@ namespace ShapeCrawler
             {
                 this.ParentParagraph.ThrowIfRemoved();
             }
-        }
-
-        private SCFont GetFont()
-        {
-            return new SCFont(this.AText, this);
         }
 
         private string GetText()
