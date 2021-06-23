@@ -28,7 +28,6 @@ namespace ShapeCrawler.Charts
         // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
         // then collection contains only single item.
         private IEnumerable<OpenXmlElement> cXCharts;
-        internal ChartPart SdkChartPart;
 
         internal SlideChart(P.GraphicFrame pGraphicFrame, SCSlide slide)
             : base(slide, pGraphicFrame)
@@ -37,21 +36,19 @@ namespace ShapeCrawler.Charts
             this.firstSeries = new Lazy<OpenXmlElement>(this.GetFirstSeries);
             this.xValues = new Lazy<LibraryCollection<double>>(this.GetXValues);
             this.seriesCollection = new Lazy<SeriesCollection>(() => Collections.SeriesCollection.Create(this, this.cXCharts));
-            this.categories = new Lazy<CategoryCollection>(() => CategoryCollection.Create(this, firstSeries.Value, Type));
-            chartType = new Lazy<ChartType>(GetChartType);
-            ChartWorkbook = new ChartWorkbook(this);
+            this.categories = new Lazy<CategoryCollection>(() => CategoryCollection.Create(this, this.firstSeries.Value, this.Type));
+            this.chartType = new Lazy<ChartType>(this.GetChartType);
+            this.ChartWorkbook = new ChartWorkbook(this);
 
-            Init(); // TODO: convert to lazy loading
+            this.Init(); // TODO: convert to lazy loading
         }
-
-        internal ChartWorkbook ChartWorkbook { get; }
 
         #region Public Properties
 
         /// <summary>
         ///     Gets the chart title. Returns null if chart has not a title.
         /// </summary>
-        public ChartType Type => chartType.Value;
+        public ChartType Type => this.chartType.Value;
 
         /// <summary>
         ///     Gets chart title string.
@@ -101,12 +98,12 @@ namespace ShapeCrawler.Charts
         {
             get
             {
-                if (xValues.Value == null)
+                if (this.xValues.Value == null)
                 {
                     throw new NotSupportedException(ExceptionMessages.NotXValues);
                 }
 
-                return xValues.Value;
+                return this.xValues.Value;
             }
         }
 
@@ -114,7 +111,9 @@ namespace ShapeCrawler.Charts
 
         #endregion Public Properties
 
-        #region Private Methods
+        internal ChartWorkbook ChartWorkbook { get; }
+
+        internal ChartPart SdkChartPart { get; private set; }
 
         private void Init()
         {
@@ -211,6 +210,5 @@ namespace ShapeCrawler.Charts
                 .FirstOrDefault(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
         }
 
-        #endregion Private Methods
     }
 }

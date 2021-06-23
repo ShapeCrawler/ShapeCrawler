@@ -6,7 +6,7 @@ namespace ShapeCrawler.Charts
 {
     internal class LayoutChart : LayoutShape, IShape
     {
-        public LayoutChart(SCSlideLayout slideLayout, P.GraphicFrame pGraphicFrame) 
+        public LayoutChart(SCSlideLayout slideLayout, P.GraphicFrame pGraphicFrame)
             : base(slideLayout, pGraphicFrame)
         {
         }
