@@ -1,4 +1,5 @@
 ﻿using ShapeCrawler.Placeholders;
+using ShapeCrawler.SlideMasters;
 
 namespace ShapeCrawler
 {

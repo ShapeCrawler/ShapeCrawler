@@ -9,6 +9,7 @@ namespace ShapeCrawler.Charts
         public LayoutChart(SCSlideLayout slideLayout, P.GraphicFrame pGraphicFrame)
             : base(slideLayout, pGraphicFrame)
         {
+            // TODO: add test for reading chart placeholder on Layout
         }
 
         public override SCSlideMaster ParentSlideMaster { get; }

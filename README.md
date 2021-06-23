@@ -230,10 +230,3 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 5. Create a new Pull Request.
 
 Don't hesitate to contact me if you want to get involved!
-
-# Changelog
-## Version 0.20.1 - 2021-06-07
-### Fixed
-- Fixed changing picture source with shared image source.
-
-To find out more, please check out the [CHANGELOG](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md).

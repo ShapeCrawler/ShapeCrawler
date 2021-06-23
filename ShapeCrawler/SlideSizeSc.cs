@@ -1,4 +1,4 @@
-﻿namespace ShapeCrawler.Models
+﻿namespace ShapeCrawler
 {
     /// <summary>
     ///     Represent presentation slides size.
