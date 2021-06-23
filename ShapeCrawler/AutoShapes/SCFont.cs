@@ -114,7 +114,6 @@ namespace ShapeCrawler.AutoShapes
 
             SCParagraph parentParagraph = this.ParentPortion.ParentParagraph;
             ITextBoxContainer parentTextBoxContainer = parentParagraph.ParentTextBox.ParentTextBoxContainer;
-            //Shape parentShape = (Shape)parentParagraph.ParentTextBox.ParentTextBoxContainer;
             int paragraphLvl = parentParagraph.Level;
 
             if (parentTextBoxContainer is Shape parentShape)
@@ -123,7 +122,7 @@ namespace ShapeCrawler.AutoShapes
                 {
                     Placeholder placeholder = (Placeholder)parentShape.Placeholder;
                     IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
-                    FontData fontDataPlaceholder = new();
+                    FontData fontDataPlaceholder = new ();
                     if (phReferencedShape != null)
                     {
                         phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
