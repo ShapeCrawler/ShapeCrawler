@@ -202,14 +202,23 @@ public class SlideMasterSample
 using System.Linq;
 using ShapeCrawler;
 
-public class RemoveSlideSample
+public class UpdateSlideCollection
 {
-    public static void RemoveSlide()
+    public static void Update()
     {
         // Remove first slide
-        using IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: true);
+        using IPresentation presentation = SCPresentation.Open("test.pptx", true);
         ISlide removingSlide = presentation.Slides.First();
         presentation.Slides.Remove(removingSlide);
+
+        // Move second slide to first position
+        presentation.Slides[1].Number = 2;
+
+        // Copy second slide from source into dest
+        using IPresentation source = SCPresentation.Open("source.pptx", true);
+        using IPresentation dest = SCPresentation.Open("dest.pptx", true);
+        ISlide copyingSlide = presentation.Slides[1];
+        dest.Slides.Add(copyingSlide);
     }
 }
 ```
