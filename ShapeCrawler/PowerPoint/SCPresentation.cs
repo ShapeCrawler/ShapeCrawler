@@ -115,7 +115,7 @@ namespace ShapeCrawler
 
         public void SaveAs(string filePath)
         {
-            PresentationDocument = (PresentationDocument) PresentationDocument.SaveAs(filePath);
+            this.PresentationDocument = (PresentationDocument)this.PresentationDocument.SaveAs(filePath);
         }
 
         public void SaveAs(Stream stream)
