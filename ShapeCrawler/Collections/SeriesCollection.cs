@@ -18,7 +18,7 @@ namespace ShapeCrawler.Collections
             CollectionItems = seriesList;
         }
 
-        internal static SeriesCollection Create(SlideChart slideChart, IEnumerable<OpenXmlElement> cXCharts)
+        internal static SeriesCollection Create(SCChart slideChart, IEnumerable<OpenXmlElement> cXCharts)
         {
             var seriesList = new List<Series>();
             foreach (OpenXmlElement cXChart in cXCharts)

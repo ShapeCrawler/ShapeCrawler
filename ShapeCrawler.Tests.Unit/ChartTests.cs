@@ -165,8 +165,6 @@ namespace ShapeCrawler.Tests.Unit
             chartCase1.Categories[0].MainCategory.Name.Should().BeEquivalentTo("Clothing");
         }
 
-#if DEBUG
-
         [Fact]
         public void CategoryName_SetterChangeName_OfCategoryInPieChart()
         {
@@ -191,9 +189,9 @@ namespace ShapeCrawler.Tests.Unit
         public void CategoryName_SetterChangeName_OfMainCategoryInMultiLevelCategoryBarChart()
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources._025, true);
-            MemoryStream mStream = new();
-            IChart barChart2 = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4);
+            Stream presentationStream = TestFiles.Presentations.pre025_pptxStream;
+            IPresentation presentation = SCPresentation.Open(presentationStream, true);
+            IChart barChart2 = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
             const string newMainCategoryName = "Clothing_new";
 
             // Act
@@ -201,12 +199,13 @@ namespace ShapeCrawler.Tests.Unit
 
             // Assert
             barChart2.Categories[0].Name.Should().Be(newMainCategoryName);
-            presentation.SaveAs(mStream);
-            presentation = SCPresentation.Open(mStream, false);
+
+            presentation.Close();
+            presentation = SCPresentation.Open(presentationStream, false);
             barChart2 = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
             barChart2.Categories[0].Name.Should().Be(newMainCategoryName);
         }
-#endif
+
         [Fact]
         public void SeriesType_ReturnsChartTypeOfTheSeries()
         {

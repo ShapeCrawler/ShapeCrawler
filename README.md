@@ -63,6 +63,7 @@ public class TextSample
         Color fontColor = paragraphPortion.Font.ColorFormat.Color;
 
         // Save and close the presentation
+        presentation.Save();
         presentation.Close();
     }
 }
@@ -116,6 +117,7 @@ public class TableSample
         // Merge cells
         table.MergeCells(table[0,0], table[0, 1]);
 
+        presentation.Save();
         presentation.Close();
     }
 }
@@ -137,6 +139,8 @@ public class PictureSamples
 
         // Change image
         picture.Image.SetImage("new-image.png");
+
+        presentation.Save();
     }
 }
 ```
@@ -165,9 +169,7 @@ public class ChartSample
         if (chart.Type == ChartType.BarChart)
         {
             Console.WriteLine("Chart type is BarChart.");
-        }
-
-        presentation.Close();
+        }        
     }
 }
 ```
@@ -219,6 +221,8 @@ public class UpdateSlideCollection
         using IPresentation dest = SCPresentation.Open("dest.pptx", true);
         ISlide copyingSlide = presentation.Slides[1];
         dest.Slides.Add(copyingSlide);
+
+        presentation.Save();
     }
 }
 ```
@@ -231,11 +235,11 @@ The project is in development, and I’m pretty sure there are still lots of thi
 
 Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issues) if you find bugs. Your valuable feedback is much appreciated to improve this project better. If you find this useful, please give it a star to show your support. 
 
-# Contributing
+# Contributing and Support
 1. Fork it (https://github.com/ShapeCrawler/ShapeCrawler/fork)
 2. Create your feature branch (`git checkout -b my-new-feature`) from *master*.
 3. Commit your changes (`git commit -am 'Add some feature'`).
 4. Push to the branch (`git push origin my-new-feature`).
 5. Create a new Pull Request.
 
-Don't hesitate to contact me if you want to get involved!
+Don't hesitate to contact me (theadamo86@gmail.com) if you have a questions or wanna be involved!

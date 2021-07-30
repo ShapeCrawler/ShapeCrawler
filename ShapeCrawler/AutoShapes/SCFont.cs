@@ -33,7 +33,6 @@ namespace ShapeCrawler.AutoShapes
 
         internal SCPortion ParentPortion { get; }
 
-
         #region Public Properties
 
         public string Name

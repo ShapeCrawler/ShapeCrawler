@@ -32,7 +32,7 @@ namespace ShapeCrawler.Spreadsheet
         #region Internal Methods
 
         internal static IReadOnlyList<double> GetNumbersFromCacheOrSpreadsheet(C.NumberReference numberReference,
-            SlideChart slideChart)
+            SCChart slideChart)
         {
             if (numberReference.NumberingCache != null)
             {
@@ -63,7 +63,7 @@ namespace ShapeCrawler.Spreadsheet
             return cellNumberValues;
         }
 
-        internal static string GetSingleString(C.StringReference stringReference, SlideChart slideChart)
+        internal static string GetSingleString(C.StringReference stringReference, SCChart slideChart)
         {
             string fromCache = stringReference.StringCache?.GetFirstChild<C.StringPoint>().Single().InnerText;
             if (fromCache != null)
@@ -90,7 +90,7 @@ namespace ShapeCrawler.Spreadsheet
         ///     </c:cat>
         /// </param>
         /// <param name="slideChart"></param>
-        internal static List<X.Cell> GetXCellsByFormula(C.Formula cFormula, SlideChart slideChart)
+        internal static List<X.Cell> GetXCellsByFormula(C.Formula cFormula, SCChart slideChart)
         {
             // Get all <x:c> elements of formula sheet
             string filteredFormula = GetFilteredFormula(cFormula);

@@ -20,6 +20,29 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
+        public void Close_ClosesPresentationAndReleasesResources()
+        {
+            // Arrange
+            string originFilePath = Path.GetTempFileName();
+            string savedAsFilePath = Path.GetTempFileName();
+            File.WriteAllBytes(originFilePath, TestFiles.Presentations.pre001);
+            IPresentation presentation = SCPresentation.Open(originFilePath, true);
+            presentation.SaveAs(savedAsFilePath);
+
+            // Act
+            presentation.Close();
+
+            // Assert
+            Action act = () => presentation = SCPresentation.Open(originFilePath, true);
+            act.Should().NotThrow<IOException>();
+            presentation.Close();
+
+            // Clean up
+            File.Delete(originFilePath);
+            File.Delete(savedAsFilePath);
+        }
+
+        [Fact]
         public void Open_ThrowsPresentationIsLargeException_WhenThePresentationContentSizeIsBeyondThePermitted()
         {
             // Arrange

@@ -2,7 +2,6 @@
 using ShapeCrawler.Shapes;
 
 // ReSharper disable CheckNamespace
-
 namespace ShapeCrawler
 {
     /// <summary>
@@ -21,12 +20,12 @@ namespace ShapeCrawler
         string Title { get; }
 
         /// <summary>
-        ///     Determines whether the chart has a title.
+        ///     Gets a value indicating whether the chart has a title.
         /// </summary>
         public bool HasTitle { get; }
 
         /// <summary>
-        ///     Determines whether the chart has categories.
+        ///     Gets a value indicating whether the chart has categories.
         /// </summary>
         /// <remarks>Some chart types like ScatterChart and BubbleChart does not have categories.</remarks>
         bool HasCategories { get; }
@@ -42,7 +41,7 @@ namespace ShapeCrawler
         CategoryCollection Categories { get; }
 
         /// <summary>
-        ///     Determines whether the chart has x-axis values.
+        ///     Gets a value indicating whether the chart has x-axis values.
         /// </summary>
         bool HasXValues { get; }
 

@@ -18,7 +18,7 @@ namespace ShapeCrawler.Factories
                 A.GraphicData aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
                 if (aGraphicData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
                 {
-                    SlideChart chart = new(pGraphicFrame, slide);
+                    SCChart chart = new(pGraphicFrame, slide);
 
                     return chart;
                 }

@@ -6,12 +6,12 @@ namespace ShapeCrawler.Charts
 {
     internal class ChartWorkbook //TODO: implement IDispose to correctly dispose _packagePartStream
     {
-        private readonly SlideChart _slideChart;
+        private readonly SCChart _slideChart;
         private readonly Lazy<WorkbookPart> _workbookPart;
         private Stream _packagePartStream;
         private MemoryStream _resizableStream;
 
-        internal ChartWorkbook(SlideChart slideChart)
+        internal ChartWorkbook(SCChart slideChart)
         {
             _slideChart = slideChart;
             _workbookPart = new Lazy<WorkbookPart>(GetWorkbookPart);

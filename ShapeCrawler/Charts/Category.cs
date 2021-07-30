@@ -8,31 +8,31 @@ namespace ShapeCrawler.Charts
     /// <summary>
     ///     Represents a chart category.
     /// </summary>
-    public class Category
+    public class Category // TODO: should be internal?
     {
         private readonly int index;
         private readonly NumericValue cachedName;
-        private readonly ResettableLazy<List<X.Cell>> indexToXCell;
+        private readonly ResettableLazy<List<X.Cell>> _xCells;
 
         #region Constructors
 
         internal Category(
-            ResettableLazy<List<X.Cell>> indexToXCell,
+            ResettableLazy<List<X.Cell>> xCells,
             int index,
             NumericValue cachedName,
             Category mainCategory)
-            : this(indexToXCell, index, cachedName)
+            : this(xCells, index, cachedName)
         {
             // TODO: what about creating a new separate class like MultiCategory:Category
             this.MainCategory = mainCategory;
         }
 
         internal Category(
-            ResettableLazy<List<X.Cell>> indexToXCell,
+            ResettableLazy<List<X.Cell>> xCells,
             int index,
             NumericValue cachedName)
         {
-            this.indexToXCell = indexToXCell;
+            this._xCells = xCells;
             this.index = index;
             this.cachedName = cachedName;
         }
@@ -42,11 +42,10 @@ namespace ShapeCrawler.Charts
         #region Properties
 
         /// <summary>
-        ///     Gets main category. Returns <c>NULL</c> if the chart is not a multi-category chart type.
+        ///     Gets main category. Returns <c>NULL</c> if the chart is not a multi-level.
         /// </summary>
         public Category MainCategory { get; }
 
-#if DEBUG
         /// <summary>
         ///     Gets or sets category name.
         /// </summary>
@@ -55,17 +54,11 @@ namespace ShapeCrawler.Charts
             get => this.cachedName.InnerText;
             set
             {
-                this.indexToXCell.Value[index].CellValue.Text = value;
+                this._xCells.Value[this.index].CellValue.Text = value;
                 this.cachedName.Text = value;
-                this.indexToXCell.Reset();
+                this._xCells.Reset();
             }
         }
-#else
-        /// <summary>
-        ///     Gets category name.
-        /// </summary>
-        public string Name { get; }
-#endif
 
         #endregion Properties
     }
