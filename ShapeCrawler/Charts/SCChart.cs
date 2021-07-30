@@ -12,10 +12,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts
 {
-    /// <summary>
-    ///     Represents a chart on a Slide.
-    /// </summary>
-    internal class SlideChart : SlideShape, IChart
+    internal class SCChart : SlideShape, IChart
     {
         private readonly Lazy<CategoryCollection> categories;
         private readonly Lazy<ChartType> chartType;
@@ -23,13 +20,13 @@ namespace ShapeCrawler.Charts
         private readonly P.GraphicFrame pGraphicFrame;
         private readonly Lazy<SeriesCollection> seriesCollection;
         private readonly Lazy<LibraryCollection<double>> xValues;
-        private string chartTitle;
+        private string? chartTitle;
 
         // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
         // then collection contains only single item.
         private IEnumerable<OpenXmlElement> cXCharts;
 
-        internal SlideChart(P.GraphicFrame pGraphicFrame, SCSlide slide)
+        internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide slide)
             : base(slide, pGraphicFrame)
         {
             this.pGraphicFrame = pGraphicFrame;
@@ -51,46 +48,33 @@ namespace ShapeCrawler.Charts
         public ChartType Type => this.chartType.Value;
 
         /// <summary>
-        ///     Gets chart title string.
+        ///     Gets chart title. Return <c>NULL</c> if chart does not have title.
         /// </summary>
         public string Title
         {
             get
             {
-                this.chartTitle ??= this.TryGetTitle();
+                this.chartTitle = this.GetTitleOrDefault();
 
-                return this.chartTitle ?? throw new NotSupportedException(ExceptionMessages.NotTitle);
+                return this.chartTitle;
             }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether chart has a title.
-        /// </summary>
         public bool HasTitle
         {
             get
             {
-                this.chartTitle ??= this.TryGetTitle();
+                this.chartTitle ??= this.GetTitleOrDefault();
 
                 return this.chartTitle != null;
             }
         }
 
-        /// <summary>
-        ///     Determines whether chart has categories. Some chart types like ScatterChart and BubbleChart does not have
-        ///     categories.
-        /// </summary>
         public bool HasCategories => categories.Value != null;
 
-        /// <summary>
-        ///     Gets collection of the chart series.
-        /// </summary>
-        public ISeriesCollection SeriesCollection => seriesCollection.Value;
+        public ISeriesCollection SeriesCollection => this.seriesCollection.Value;
 
-        /// <summary>
-        ///     Gets chart categories. Returns <c>NULL</c> if the chart does not have categories.
-        /// </summary>
-        public CategoryCollection Categories => categories.Value;
+        public CategoryCollection Categories => this.categories.Value;
 
         public bool HasXValues => xValues.Value != null;
 
@@ -138,7 +122,7 @@ namespace ShapeCrawler.Charts
             return chartType;
         }
 
-        private string TryGetTitle()
+        private string GetTitleOrDefault()
         {
             C.Title cTitle = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>().Title;
             if (cTitle == null) 

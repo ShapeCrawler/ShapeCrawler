@@ -27,6 +27,7 @@ Added setter for ISlide.Number to change slide position.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <nullable>enable</nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

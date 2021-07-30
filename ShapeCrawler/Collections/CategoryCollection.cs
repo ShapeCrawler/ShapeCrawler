@@ -9,36 +9,32 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
 // ReSharper disable PossibleMultipleEnumeration
-
 namespace ShapeCrawler.Collections
 {
     /// <summary>
     ///     Represents a collection of chart categories.
     /// </summary>
-    public class CategoryCollection : LibraryCollection<Category>
+    public class CategoryCollection : LibraryCollection<Category> // TODO: convert to internal
     {
-        #region Constructors
-
         internal CategoryCollection(List<Category> categoryList)
         {
-            CollectionItems = categoryList;
+            this.CollectionItems = categoryList;
         }
 
-        #endregion Constructors
-
-        internal static CategoryCollection Create(
-            SlideChart slideChart,
+        internal static CategoryCollection? Create(
+            SCChart slideChart,
             OpenXmlElement firstChartSeries,
             ChartType chartType)
         {
-            if (chartType == ChartType.BubbleChart || chartType == ChartType.ScatterChart)
+            if (chartType is ChartType.BubbleChart or ChartType.ScatterChart)
             {
+                // Bubble and Scatter charts do not have categories
                 return null;
             }
 
             var categoryList = new List<Category>();
 
-            //  Get category data from the first series.
+            // Get category data from the first series.
             //  Actually, it can be any series since all chart series contain the same categories.
             //  <c:cat>
             //      <c:strRef>
@@ -54,10 +50,10 @@ namespace ShapeCrawler.Collections
             //          </c:strCache>
             //      </c:strRef>
             //  </c:cat>
-            C.CategoryAxisData cCatAxisData = firstChartSeries.GetFirstChild<C.CategoryAxisData>();
+            C.CategoryAxisData cCatAxisData = (C.CategoryAxisData)firstChartSeries.First(x => x is C.CategoryAxisData);
 
-            C.MultiLevelStringReference cMultiLvlStringRef = cCatAxisData.MultiLevelStringReference;
-            if (cMultiLvlStringRef != null) // is it chart with multi-level category?
+            C.MultiLevelStringReference? cMultiLvlStringRef = cCatAxisData.MultiLevelStringReference;
+            if (cMultiLvlStringRef != null)
             {
                 categoryList = GetMultiCategories(cMultiLvlStringRef);
             }
@@ -65,9 +61,9 @@ namespace ShapeCrawler.Collections
             {
                 C.Formula cFormula;
                 IEnumerable<C.NumericValue> cachedValues; // C.NumericValue (<c:v>) can store string value
-                C.NumberReference cNumReference = cCatAxisData.NumberReference;
-                C.StringReference cStrReference = cCatAxisData.StringReference;
-                if (cNumReference != null)
+                C.NumberReference? cNumReference = cCatAxisData.NumberReference;
+                C.StringReference? cStrReference = cCatAxisData.StringReference;
+                if (cNumReference is not null)
                 {
                     cFormula = cNumReference.Formula;
                     cachedValues = cNumReference.NumberingCache.Descendants<C.NumericValue>();
@@ -78,12 +74,12 @@ namespace ShapeCrawler.Collections
                     cachedValues = cStrReference.StringCache.Descendants<C.NumericValue>();
                 }
 
-                int xCellIdx = 0;
+                int catIndex = 0;
                 var xCells = new ResettableLazy<List<X.Cell>>(() =>
                     ChartReferencesParser.GetXCellsByFormula(cFormula, slideChart));
                 foreach (C.NumericValue cachedValue in cachedValues)
                 {
-                    categoryList.Add(new Category(xCells, xCellIdx++, cachedValue));
+                    categoryList.Add(new Category(xCells, catIndex++, cachedValue));
                 }
             }
 
@@ -92,7 +88,7 @@ namespace ShapeCrawler.Collections
 
         #region Private Methods
 
-        private static List<Category> GetMultiCategories(C.MultiLevelStringReference multiLevelStrRef) //TODO: optimize
+        private static List<Category> GetMultiCategories(C.MultiLevelStringReference multiLevelStrRef)
         {
             var indexToCategory = new List<KeyValuePair<uint, Category>>();
             IEnumerable<C.Level> topDownLevels = multiLevelStrRef.MultiLevelStringCache.Elements<C.Level>().Reverse();

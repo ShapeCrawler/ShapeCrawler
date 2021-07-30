@@ -21,7 +21,7 @@ namespace ShapeCrawler.Charts
         #region Constructors
 
         internal Series(
-            SlideChart slideChart,
+            SCChart slideChart,
             ChartType type,
             OpenXmlElement seriesXmlElement)
         {
@@ -34,7 +34,7 @@ namespace ShapeCrawler.Charts
 
         #endregion Constructors
 
-        internal SlideChart SlideChart { get; }
+        internal SCChart SlideChart { get; }
 
         /// <summary>
         ///     Gets chart type.

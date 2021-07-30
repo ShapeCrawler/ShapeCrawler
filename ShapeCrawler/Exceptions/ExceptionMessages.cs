@@ -26,6 +26,6 @@ namespace ShapeCrawler.Exceptions
             $"The Series does not have a name. Use {nameof(Series.HasName)} to check whether series has a name.";
 
         public static string NotXValues =>
-            $"This chart type has not {nameof(SlideChart.XValues)} property. You can check it via {nameof(SlideChart.HasXValues)} property.";
+            $"This chart type has not {nameof(SCChart.XValues)} property. You can check it via {nameof(SCChart.HasXValues)} property.";
     }
 }

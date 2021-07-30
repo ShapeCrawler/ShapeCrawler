@@ -231,11 +231,11 @@ The project is in development, and I’m pretty sure there are still lots of thi
 
 Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issues) if you find bugs. Your valuable feedback is much appreciated to improve this project better. If you find this useful, please give it a star to show your support. 
 
-# Contributing
+# Contributing and Support
 1. Fork it (https://github.com/ShapeCrawler/ShapeCrawler/fork)
 2. Create your feature branch (`git checkout -b my-new-feature`) from *master*.
 3. Commit your changes (`git commit -am 'Add some feature'`).
 4. Push to the branch (`git push origin my-new-feature`).
 5. Create a new Pull Request.
 
-Don't hesitate to contact me if you want to get involved!
+Don't hesitate to contact me (theadamo86@gmail.com) if you have a questions or wanna be involved!

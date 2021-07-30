@@ -24,7 +24,17 @@ namespace ShapeCrawler.Tests.Unit.Helpers
                     return stream;
                 }
             }
-            
+
+            public static Stream pre025_pptxStream
+            {
+                get
+                {
+                    var stream = new MemoryStream();
+                    stream.Write(Resources._025, 0, Resources._025.Length);
+                    return stream;
+                }
+            }
+
             public static byte[] pre009 => Resources._009;
         }
     }
