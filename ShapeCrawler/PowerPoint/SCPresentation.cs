@@ -28,14 +28,7 @@ namespace ShapeCrawler
         private Lazy<SlideSizeSc> slideSize;
         internal ResettableLazy<SlideMasterCollection> slideMasters;
 
-        private SCPresentation(string pptxPath, in bool isEditable)
-        {
-            ThrowIfSourceInvalid(pptxPath);
-
-            this.PresentationDocument = PresentationDocument.Open(pptxPath, isEditable);
-            this.Editable = isEditable;
-            this.Init();
-        }
+        
 
         internal PresentationDocument PresentationDocument { get; private set; }
 
@@ -69,14 +62,6 @@ namespace ShapeCrawler
 
         internal List<ImagePart> ImageParts => this.GetImageParts();
 
-        private SCPresentation(Stream pptxStream, in bool isEditable)
-        {
-            ThrowIfSourceInvalid(pptxStream);
-            this.PresentationDocument = PresentationDocument.Open(pptxStream, isEditable);
-            this.Editable = isEditable;
-            this.Init();
-        }
-
         #region Public Methods
 
         /// <summary>
@@ -97,7 +82,7 @@ namespace ShapeCrawler
             var pptxMemoryStream = new MemoryStream();
             pptxMemoryStream.Write(pptxBytes, 0, pptxBytes.Length);
 
-            return new SCPresentation(pptxMemoryStream, isEditable);
+            return Open(pptxMemoryStream, isEditable);
         }
 
         /// <summary>
@@ -115,6 +100,7 @@ namespace ShapeCrawler
 
         public void SaveAs(string filePath)
         {
+            PresentationDocument currentVersion = this.PresentationDocument;
             this.PresentationDocument = (PresentationDocument)this.PresentationDocument.SaveAs(filePath);
         }
 
@@ -132,7 +118,7 @@ namespace ShapeCrawler
             }
 
             this.PresentationDocument.Close();
-            ChartWorkbooks.ForEach(cw => cw.Close());
+            this.ChartWorkbooks.ForEach(cw => cw.Close());
 
             this.closed = true;
         }
@@ -143,6 +129,28 @@ namespace ShapeCrawler
         }
 
         #endregion Public Methods
+
+        private SCPresentation(string pptxPath, in bool isEditable)
+        {
+            this.Editable = isEditable;
+            var option = new OpenSettings { AutoSave = false };
+
+            ThrowIfSourceInvalid(pptxPath);
+
+            this.PresentationDocument = PresentationDocument.Open(pptxPath, isEditable, option);
+            this.Init();
+        }
+
+        private SCPresentation(Stream pptxStream, in bool isEditable)
+        {
+            this.Editable = isEditable;
+            var option = new OpenSettings { AutoSave = false };
+
+            ThrowIfSourceInvalid(pptxStream);
+
+            this.PresentationDocument = PresentationDocument.Open(pptxStream, isEditable, option);
+            this.Init();
+        }
 
         private List<ImagePart> GetImageParts()
         {
