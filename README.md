@@ -63,6 +63,7 @@ public class TextSample
         Color fontColor = paragraphPortion.Font.ColorFormat.Color;
 
         // Save and close the presentation
+        presentation.Save();
         presentation.Close();
     }
 }
@@ -116,6 +117,7 @@ public class TableSample
         // Merge cells
         table.MergeCells(table[0,0], table[0, 1]);
 
+        presentation.Save();
         presentation.Close();
     }
 }
@@ -137,6 +139,8 @@ public class PictureSamples
 
         // Change image
         picture.Image.SetImage("new-image.png");
+
+        presentation.Save();
     }
 }
 ```
@@ -165,9 +169,7 @@ public class ChartSample
         if (chart.Type == ChartType.BarChart)
         {
             Console.WriteLine("Chart type is BarChart.");
-        }
-
-        presentation.Close();
+        }        
     }
 }
 ```
@@ -219,6 +221,8 @@ public class UpdateSlideCollection
         using IPresentation dest = SCPresentation.Open("dest.pptx", true);
         ISlide copyingSlide = presentation.Slides[1];
         dest.Slides.Add(copyingSlide);
+
+        presentation.Save();
     }
 }
 ```
