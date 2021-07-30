@@ -33,8 +33,9 @@ namespace ShapeCrawler.Tests.Unit
             presentation.Close();
 
             // Assert
-            Action act = () => SCPresentation.Open(originFilePath, true);
+            Action act = () => presentation = SCPresentation.Open(originFilePath, true);
             act.Should().NotThrow<IOException>();
+            presentation.Close();
 
             // Clean up
             File.Delete(originFilePath);

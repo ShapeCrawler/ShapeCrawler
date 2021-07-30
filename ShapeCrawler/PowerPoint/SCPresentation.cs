@@ -24,11 +24,8 @@ namespace ShapeCrawler
     {
         private bool closed;
         private Lazy<Dictionary<int, FontData>> paraLvlToFontData;
-        private Lazy<SlideCollection> slides;
         private Lazy<SlideSizeSc> slideSize;
         internal ResettableLazy<SlideMasterCollection> slideMasters;
-
-        
 
         internal PresentationDocument PresentationDocument { get; private set; }
 
@@ -100,14 +97,20 @@ namespace ShapeCrawler
 
         public void SaveAs(string filePath)
         {
-            PresentationDocument currentVersion = this.PresentationDocument;
-            this.PresentationDocument = (PresentationDocument)this.PresentationDocument.SaveAs(filePath);
+            this.ChartWorkbooks.ForEach(cw => cw.Close()); // closes cached Excel documents
+
+            PresentationDocument savedDoc = (PresentationDocument)this.PresentationDocument.Clone(filePath);
+            this.PresentationDocument.Close();
+            this.PresentationDocument = savedDoc;
         }
 
         public void SaveAs(Stream stream)
         {
             this.ChartWorkbooks.ForEach(cw => cw.Close());
-            this.PresentationDocument = (PresentationDocument)this.PresentationDocument.Clone(stream);
+
+            PresentationDocument savedDoc = (PresentationDocument)this.PresentationDocument.Clone(stream);
+            this.PresentationDocument.Close();
+            this.PresentationDocument = savedDoc;
         }
 
         public void Close()
