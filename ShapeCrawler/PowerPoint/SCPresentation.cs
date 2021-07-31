@@ -45,7 +45,9 @@ namespace ShapeCrawler
 
         public ISlideMasterCollection SlideMasters => this.slideMasters.Value;
 
-        public byte[] ByteArray => GetByteArray();
+        public byte[] ByteArray => this.GetByteArray();
+
+        internal List<ImagePart> ImageParts => this.GetImageParts();
 
         private byte[] GetByteArray()
         {
@@ -56,8 +58,6 @@ namespace ShapeCrawler
         }
 
         #endregion Public Properties
-
-        internal List<ImagePart> ImageParts => this.GetImageParts();
 
         #region Public Methods
 
@@ -120,8 +120,8 @@ namespace ShapeCrawler
                 return;
             }
 
-            this.PresentationDocument.Close();
             this.ChartWorkbooks.ForEach(cw => cw.Close());
+            this.PresentationDocument.Close();
 
             this.closed = true;
         }

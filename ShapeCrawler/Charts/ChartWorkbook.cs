@@ -4,43 +4,51 @@ using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Charts
 {
-    internal class ChartWorkbook //TODO: implement IDispose to correctly dispose _packagePartStream
+    internal class ChartWorkbook // TODO: implement IDispose to correctly dispose _packagePartStream
     {
-        private readonly SCChart _slideChart;
-        private readonly Lazy<WorkbookPart> _workbookPart;
-        private Stream _packagePartStream;
-        private MemoryStream _resizableStream;
+        private readonly SCChart chart;
+        private readonly Lazy<WorkbookPart> sdkWorkbookPart;
+        private Stream packagePartStream;
+        private MemoryStream resizableStream;
+        private bool closed;
 
-        internal ChartWorkbook(SCChart slideChart)
+        internal ChartWorkbook(SCChart chart)
         {
-            _slideChart = slideChart;
-            _workbookPart = new Lazy<WorkbookPart>(GetWorkbookPart);
+            this.chart = chart;
+            this.sdkWorkbookPart = new Lazy<WorkbookPart>(this.GetWorkbookPart);
         }
 
-        internal WorkbookPart WorkbookPart => _workbookPart.Value;
+        internal WorkbookPart WorkbookPart => this.sdkWorkbookPart.Value;
 
         internal void Close()
         {
-            _resizableStream?.WriteTo(_packagePartStream);
-            _packagePartStream?.Close();
+            if (this.closed)
+            {
+                return;
+            }
+
+            this.resizableStream?.WriteTo(this.packagePartStream);
+            this.packagePartStream?.Close();
+
+            this.closed = true;
         }
 
         private WorkbookPart GetWorkbookPart()
         {
             SpreadsheetDocument spreadsheetDocument;
-            _packagePartStream = _slideChart.SdkChartPart.EmbeddedPackagePart.GetStream();
-            if (_slideChart.ParentPresentation.Editable)
+            this.packagePartStream = this.chart.SdkChartPart.EmbeddedPackagePart.GetStream();
+            if (this.chart.ParentPresentation.Editable)
             {
-                _resizableStream = new MemoryStream();
-                _packagePartStream.CopyTo(_resizableStream);
-                spreadsheetDocument = SpreadsheetDocument.Open(_resizableStream, true);
+                this.resizableStream = new MemoryStream();
+                this.packagePartStream.CopyTo(this.resizableStream);
+                spreadsheetDocument = SpreadsheetDocument.Open(this.resizableStream, true);
             }
             else
             {
-                spreadsheetDocument = SpreadsheetDocument.Open(_packagePartStream, false);
+                spreadsheetDocument = SpreadsheetDocument.Open(this.packagePartStream, false);
             }
 
-            _slideChart.ParentPresentation.ChartWorkbooks.Add(this);
+            this.chart.ParentPresentation.ChartWorkbooks.Add(this);
 
             return spreadsheetDocument.WorkbookPart;
         }
