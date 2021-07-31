@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using ShapeCrawler.Shared;
 using X = DocumentFormat.OpenXml.Spreadsheet;
@@ -12,7 +13,7 @@ namespace ShapeCrawler.Charts
     {
         private readonly int index;
         private readonly NumericValue cachedName;
-        private readonly ResettableLazy<List<X.Cell>> _xCells;
+        private readonly ResettableLazy<List<X.Cell>> xCells;
 
         #region Constructors
 
@@ -32,7 +33,7 @@ namespace ShapeCrawler.Charts
             int index,
             NumericValue cachedName)
         {
-            this._xCells = xCells;
+            this.xCells = xCells;
             this.index = index;
             this.cachedName = cachedName;
         }
@@ -42,9 +43,9 @@ namespace ShapeCrawler.Charts
         #region Properties
 
         /// <summary>
-        ///     Gets main category. Returns <c>NULL</c> if the chart is not a multi-level.
+        ///     Gets main category. Returns <c>NULL</c> if the chart is not Multi-Category.
         /// </summary>
-        public Category MainCategory { get; }
+        public Category? MainCategory { get; }
 
         /// <summary>
         ///     Gets or sets category name.
@@ -54,9 +55,18 @@ namespace ShapeCrawler.Charts
             get => this.cachedName.InnerText;
             set
             {
-                this._xCells.Value[this.index].CellValue.Text = value;
+                if (this.MainCategory != null)
+                {
+                    const string msg = 
+                        "Sorry, but updating the category name of Multi-Category charts have not yet been supported by ShapeCrawler." + 
+                        "If it is critical for you, you are always welcome for this implementation. " +
+                        "We will wait for your Pull Request on https://github.com/ShapeCrawler/ShapeCrawler.";
+                    throw new NotSupportedException(msg);
+                }
+
+                this.xCells.Value[this.index].CellValue.Text = value;
                 this.cachedName.Text = value;
-                this._xCells.Reset();
+                this.xCells.Reset();
             }
         }
 

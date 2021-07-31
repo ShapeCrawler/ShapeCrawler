@@ -166,7 +166,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void CategoryName_SetterChangeName_OfCategoryInPieChart()
+        public void CategoryName_SetterChangeName_OfCategoryInNonMultiCategoryPieChart()
         {
             // Arrange
             IPresentation presentation = SCPresentation.Open(Resources._025, true);
@@ -185,25 +185,25 @@ namespace ShapeCrawler.Tests.Unit
             pieChart4.Categories[0].Name.Should().Be(newCategoryName);
         }
 
-        [Fact(Skip = "In Progress")]
-        public void CategoryName_SetterChangeName_OfMainCategoryInMultiLevelCategoryBarChart()
+        [Fact(Skip = "On Hold")]
+        public void CategoryName_SetterChangeName_OfSecondaryCategoryInMultiCategoryBarChart()
         {
             // Arrange
-            Stream presentationStream = TestFiles.Presentations.pre025_pptxStream;
-            IPresentation presentation = SCPresentation.Open(presentationStream, true);
-            IChart barChart2 = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
-            const string newMainCategoryName = "Clothing_new";
+            Stream preStream = TestFiles.Presentations.pre025_byteArray.ToStream();
+            IPresentation presentation = SCPresentation.Open(preStream, true);
+            IChart barChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
+            const string newCategoryName = "Clothing_new";
 
             // Act
-            barChart2.Categories[0].MainCategory.Name = newMainCategoryName;
+            barChart.Categories[0].Name = newCategoryName;
 
             // Assert
-            barChart2.Categories[0].Name.Should().Be(newMainCategoryName);
+            barChart.Categories[0].Name.Should().Be(newCategoryName);
 
-            presentation.Close();
-            presentation = SCPresentation.Open(presentationStream, false);
-            barChart2 = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
-            barChart2.Categories[0].Name.Should().Be(newMainCategoryName);
+            presentation.Save();
+            presentation = SCPresentation.Open(preStream, false);
+            barChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
+            barChart.Categories[0].Name.Should().Be(newCategoryName);
         }
 
         [Fact]

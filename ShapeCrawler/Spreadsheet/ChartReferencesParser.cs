@@ -105,10 +105,10 @@ namespace ShapeCrawler.Spreadsheet
 
             List<string> formulaCellAddressList = new CellFormulaParser(sheetNameAndCellsRange[1]).GetCellAddresses();
 
-            var xCells = new List<X.Cell>(formulaCellAddressList.Count);
+            List<X.Cell> xCells = new (formulaCellAddressList.Count);
             foreach (string address in formulaCellAddressList)
             {
-                X.Cell xCell = allXCells.First(xCell => xCell.CellReference == address);
+                X.Cell xCell = allXCells.First(cell => cell.CellReference == address);
                 xCells.Add(xCell);
             }
 

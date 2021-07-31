@@ -31,22 +31,22 @@ namespace ShapeCrawler.Factories
 
         public void SetX(long x)
         {
-            throw new NextVersionFeatureException(ExceptionMessages.PropertyCanChangedInNextVersion);
+            throw new NotSupportedFeature(ExceptionMessages.PropertyCanChangedInNextVersion);
         }
 
         public void SetY(long y)
         {
-            throw new NextVersionFeatureException(ExceptionMessages.PropertyCanChangedInNextVersion);
+            throw new NotSupportedFeature(ExceptionMessages.PropertyCanChangedInNextVersion);
         }
 
         public void SetWidth(long w)
         {
-            throw new NextVersionFeatureException(ExceptionMessages.PropertyCanChangedInNextVersion);
+            throw new NotSupportedFeature(ExceptionMessages.PropertyCanChangedInNextVersion);
         }
 
         public void SetHeight(long h)
         {
-            throw new NextVersionFeatureException(ExceptionMessages.PropertyCanChangedInNextVersion);
+            throw new NotSupportedFeature(ExceptionMessages.PropertyCanChangedInNextVersion);
         }
 
         #endregion Public Methods
