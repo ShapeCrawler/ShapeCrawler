@@ -10,6 +10,7 @@ namespace ShapeCrawler.Charts
         private readonly Lazy<WorkbookPart> sdkWorkbookPart;
         private Stream packagePartStream;
         private MemoryStream resizableStream;
+        private SpreadsheetDocument spreadsheetDocument;
         private bool closed;
 
         internal ChartWorkbook(SCChart chart)
@@ -27,30 +28,19 @@ namespace ShapeCrawler.Charts
                 return;
             }
 
-            this.resizableStream?.WriteTo(this.packagePartStream);
-            this.packagePartStream?.Close();
+
+            this.spreadsheetDocument.Close();
 
             this.closed = true;
         }
 
         private WorkbookPart GetWorkbookPart()
         {
-            SpreadsheetDocument spreadsheetDocument;
             this.packagePartStream = this.chart.SdkChartPart.EmbeddedPackagePart.GetStream();
-            if (this.chart.ParentPresentation.Editable)
-            {
-                this.resizableStream = new MemoryStream();
-                this.packagePartStream.CopyTo(this.resizableStream);
-                spreadsheetDocument = SpreadsheetDocument.Open(this.resizableStream, true);
-            }
-            else
-            {
-                spreadsheetDocument = SpreadsheetDocument.Open(this.packagePartStream, false);
-            }
-
+            this.spreadsheetDocument = SpreadsheetDocument.Open(packagePartStream, true);
             this.chart.ParentPresentation.ChartWorkbooks.Add(this);
 
-            return spreadsheetDocument.WorkbookPart;
+            return this.spreadsheetDocument.WorkbookPart;
         }
     }
 }

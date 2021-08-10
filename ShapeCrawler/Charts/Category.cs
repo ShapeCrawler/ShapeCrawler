@@ -12,7 +12,7 @@ namespace ShapeCrawler.Charts
     public class Category // TODO: should be internal?
     {
         private readonly int index;
-        private readonly NumericValue cachedName;
+        private NumericValue cachedName;
         private readonly ResettableLazy<List<X.Cell>> xCells;
 
         #region Constructors
@@ -64,8 +64,12 @@ namespace ShapeCrawler.Charts
                     throw new NotSupportedException(msg);
                 }
 
-                this.xCells.Value[this.index].CellValue.Text = value;
                 this.cachedName.Text = value;
+
+                X.Cell cell = this.xCells.Value[this.index];
+                cell.DataType = new DocumentFormat.OpenXml.EnumValue<X.CellValues>(X.CellValues.String);
+                cell.CellValue = new X.CellValue(value);
+
                 this.xCells.Reset();
             }
         }

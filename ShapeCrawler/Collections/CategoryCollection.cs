@@ -72,8 +72,14 @@ namespace ShapeCrawler.Collections
                 }
 
                 int catIndex = 0;
-                var xCells = new ResettableLazy<List<X.Cell>>(() =>
-                    ChartReferencesParser.GetXCellsByFormula(cFormula, chart));
+
+                ResettableLazy<List<X.Cell>> xCells = null;
+                if (chart.ParentPresentation.Editable)
+                {
+                    xCells = new ResettableLazy<List<X.Cell>>(() =>
+                        ChartReferencesParser.GetXCellsByFormula(cFormula, chart));
+                }
+
                 foreach (C.NumericValue cachedValue in cachedValues)
                 {
                     categoryList.Add(new Category(xCells, catIndex++, cachedValue));
