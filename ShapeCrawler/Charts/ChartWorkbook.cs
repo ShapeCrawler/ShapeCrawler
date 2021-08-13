@@ -8,6 +8,7 @@ namespace ShapeCrawler.Charts
     {
         private readonly SCChart chart;
         private readonly Lazy<WorkbookPart> sdkWorkbookPart;
+        private Stream embeddedPackagePartStream;
         private SpreadsheetDocument spreadsheetDocument;
         private bool closed;
 
@@ -29,12 +30,14 @@ namespace ShapeCrawler.Charts
             }
 
             this.spreadsheetDocument?.Close();
+            this.embeddedPackagePartStream?.Close();
             this.closed = true;
         }
 
         private WorkbookPart GetWorkbookPart()
         {
-            this.spreadsheetDocument = SpreadsheetDocument.Open(this.chart.SdkChartPart.EmbeddedPackagePart.GetStream(), this.chart.ParentPresentation.Editable);
+            this.embeddedPackagePartStream = this.chart.SdkChartPart.EmbeddedPackagePart.GetStream();
+            this.spreadsheetDocument = SpreadsheetDocument.Open(this.embeddedPackagePartStream, this.chart.ParentPresentation.Editable);
             this.chart.ParentPresentation.ChartWorkbooks.Add(this);
 
             return this.spreadsheetDocument.WorkbookPart;
