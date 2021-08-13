@@ -93,6 +93,8 @@ namespace ShapeCrawler.Charts
 
         public override GeometryType GeometryType => GeometryType.Rectangle;
 
+        public byte[] SpreadsheetByteArray => this.ChartWorkbook.ByteArray;
+
         #endregion Public Properties
 
         internal ChartWorkbook ChartWorkbook { get; }
@@ -104,7 +106,7 @@ namespace ShapeCrawler.Charts
             // Get chart part
             C.ChartReference cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>()
                 .GetFirstChild<C.ChartReference>();
-            this.SdkChartPart = (ChartPart) this.ParentSlide.SlidePart.GetPartById(cChartReference.Id);
+            this.SdkChartPart = (ChartPart)this.ParentSlide.SlidePart.GetPartById(cChartReference.Id);
 
             C.PlotArea cPlotArea = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea;
             this.cXCharts = cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));

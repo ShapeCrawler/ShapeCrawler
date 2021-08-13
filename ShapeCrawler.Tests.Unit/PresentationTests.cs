@@ -43,6 +43,23 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
+        public void Close_ShouldNotThrowObjectDisposedException()
+        {
+            // Arrange
+            IPresentation presentation = SCPresentation.Open(TestFiles.Presentations.pre025_byteArray, true);
+            MemoryStream mStream = new();
+            IChart chart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
+            chart.Categories[0].Name = "new name";
+            presentation.SaveAs(mStream);
+
+            // Act
+            Action act = () => presentation.Close();
+
+            // Assert
+            act.Should().NotThrow<ObjectDisposedException>();
+        }
+
+        [Fact]
         public void Open_ThrowsPresentationIsLargeException_WhenThePresentationContentSizeIsBeyondThePermitted()
         {
             // Arrange

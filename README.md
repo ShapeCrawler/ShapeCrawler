@@ -62,9 +62,8 @@ public class TextSample
         // Get font ARGB color
         Color fontColor = paragraphPortion.Font.ColorFormat.Color;
 
-        // Save and close the presentation
+        // Save changes presentation
         presentation.Save();
-        presentation.Close();
     }
 }
 ```
@@ -117,8 +116,8 @@ public class TableSample
         // Merge cells
         table.MergeCells(table[0,0], table[0, 1]);
 
+        // Save changes
         presentation.Save();
-        presentation.Close();
     }
 }
 ```
@@ -140,6 +139,7 @@ public class PictureSamples
         // Change image
         picture.Image.SetImage("new-image.png");
 
+        // Save changes
         presentation.Save();
     }
 }
@@ -222,6 +222,7 @@ public class UpdateSlideCollection
         ISlide copyingSlide = presentation.Slides[1];
         dest.Slides.Add(copyingSlide);
 
+        // Save changes
         presentation.Save();
     }
 }

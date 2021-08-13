@@ -21,10 +21,7 @@ namespace ShapeCrawler.Collections
             this.CollectionItems = categoryList;
         }
 
-        internal static CategoryCollection? Create(
-            SCChart slideChart,
-            OpenXmlElement firstChartSeries,
-            ChartType chartType)
+        internal static CategoryCollection? Create(SCChart chart, OpenXmlElement firstChartSeries, ChartType chartType)
         {
             if (chartType is ChartType.BubbleChart or ChartType.ScatterChart)
             {
@@ -75,8 +72,14 @@ namespace ShapeCrawler.Collections
                 }
 
                 int catIndex = 0;
-                var xCells = new ResettableLazy<List<X.Cell>>(() =>
-                    ChartReferencesParser.GetXCellsByFormula(cFormula, slideChart));
+
+                ResettableLazy<List<X.Cell>> xCells = null;
+                if (chart.ParentPresentation.Editable)
+                {
+                    xCells = new ResettableLazy<List<X.Cell>>(() =>
+                        ChartReferencesParser.GetXCellsByFormula(cFormula, chart));
+                }
+
                 foreach (C.NumericValue cachedValue in cachedValues)
                 {
                     categoryList.Add(new Category(xCells, catIndex++, cachedValue));

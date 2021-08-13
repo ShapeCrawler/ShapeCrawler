@@ -89,12 +89,11 @@ namespace ShapeCrawler.Spreadsheet
         ///         </c:strRef>
         ///     </c:cat>
         /// </param>
-        /// <param name="slideChart"></param>
         internal static List<X.Cell> GetXCellsByFormula(C.Formula cFormula, SCChart slideChart)
         {
             // Get all <x:c> elements of formula sheet
             string filteredFormula = GetFilteredFormula(cFormula);
-            string[] sheetNameAndCellsRange = filteredFormula.Split('!'); //eg: Sheet1!A2:A5 -> ['Sheet1', 'A2:A5']
+            string[] sheetNameAndCellsRange = filteredFormula.Split('!'); // eg: Sheet1!A2:A5 -> ['Sheet1', 'A2:A5']
             WorkbookPart workbookPart = slideChart.ChartWorkbook.WorkbookPart;
             string chartSheetName = sheetNameAndCellsRange[0];
             string chartSheetId = workbookPart.Workbook.Sheets.Elements<X.Sheet>()
@@ -105,10 +104,10 @@ namespace ShapeCrawler.Spreadsheet
 
             List<string> formulaCellAddressList = new CellFormulaParser(sheetNameAndCellsRange[1]).GetCellAddresses();
 
-            var xCells = new List<X.Cell>(formulaCellAddressList.Count);
+            List<X.Cell> xCells = new (formulaCellAddressList.Count);
             foreach (string address in formulaCellAddressList)
             {
-                X.Cell xCell = allXCells.First(xCell => xCell.CellReference == address);
+                X.Cell xCell = allXCells.First(cell => cell.CellReference == address);
                 xCells.Add(xCell);
             }
 

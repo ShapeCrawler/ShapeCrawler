@@ -4,45 +4,51 @@ using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Charts
 {
-    internal class ChartWorkbook //TODO: implement IDispose to correctly dispose _packagePartStream
+    internal class ChartWorkbook // TODO: implement IDispose to correctly dispose _packagePartStream
     {
-        private readonly SCChart _slideChart;
-        private readonly Lazy<WorkbookPart> _workbookPart;
-        private Stream _packagePartStream;
-        private MemoryStream _resizableStream;
+        private readonly SCChart chart;
+        private readonly Lazy<WorkbookPart> sdkWorkbookPart;
+        private Stream embeddedPackagePartStream;
+        private SpreadsheetDocument spreadsheetDocument;
+        private bool closed;
 
-        internal ChartWorkbook(SCChart slideChart)
+        public ChartWorkbook(SCChart chart)
         {
-            _slideChart = slideChart;
-            _workbookPart = new Lazy<WorkbookPart>(GetWorkbookPart);
+            this.chart = chart;
+            this.sdkWorkbookPart = new Lazy<WorkbookPart>(this.GetWorkbookPart);
         }
 
-        internal WorkbookPart WorkbookPart => _workbookPart.Value;
+        public WorkbookPart WorkbookPart => this.sdkWorkbookPart.Value;
 
-        internal void Close()
+        public byte[] ByteArray => this.GetByteArray();
+
+        public void Close()
         {
-            _resizableStream?.WriteTo(_packagePartStream);
-            _packagePartStream?.Close();
+            if (this.closed)
+            {
+                return;
+            }
+
+            this.spreadsheetDocument?.Close();
+            this.embeddedPackagePartStream?.Close();
+            this.closed = true;
         }
 
         private WorkbookPart GetWorkbookPart()
         {
-            SpreadsheetDocument spreadsheetDocument;
-            _packagePartStream = _slideChart.SdkChartPart.EmbeddedPackagePart.GetStream();
-            if (_slideChart.ParentPresentation.Editable)
-            {
-                _resizableStream = new MemoryStream();
-                _packagePartStream.CopyTo(_resizableStream);
-                spreadsheetDocument = SpreadsheetDocument.Open(_resizableStream, true);
-            }
-            else
-            {
-                spreadsheetDocument = SpreadsheetDocument.Open(_packagePartStream, false);
-            }
+            this.embeddedPackagePartStream = this.chart.SdkChartPart.EmbeddedPackagePart.GetStream();
+            this.spreadsheetDocument = SpreadsheetDocument.Open(this.embeddedPackagePartStream, this.chart.ParentPresentation.Editable);
+            this.chart.ParentPresentation.ChartWorkbooks.Add(this);
 
-            _slideChart.ParentPresentation.ChartWorkbooks.Add(this);
+            return this.spreadsheetDocument.WorkbookPart;
+        }
 
-            return spreadsheetDocument.WorkbookPart;
+        private byte[] GetByteArray()
+        {
+            var mStream = new MemoryStream();
+            this.spreadsheetDocument.Clone(mStream);
+
+            return mStream.ToArray();
         }
     }
 }

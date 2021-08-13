@@ -49,5 +49,7 @@ namespace ShapeCrawler
         ///     Gets collection of x-axis values.
         /// </summary>
         LibraryCollection<double> XValues { get; }
+
+        byte[] SpreadsheetByteArray { get; }
     }
 }

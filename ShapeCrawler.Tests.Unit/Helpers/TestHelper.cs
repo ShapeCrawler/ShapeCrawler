@@ -4,7 +4,7 @@ using ShapeCrawler.AutoShapes;
 
 namespace ShapeCrawler.Tests.Unit.Helpers
 {
-    public class TestHelper
+    public static class TestHelper
     {
         public static IParagraph GetParagraph(SCPresentation presentation, SlideElementQuery paragraphRequest)
         {
@@ -26,6 +26,14 @@ namespace ShapeCrawler.Tests.Unit.Helpers
             IAutoShape autoShape = (IAutoShape)presentation.Slides[elementRequest.SlideIndex].Shapes.First(sp => sp.Id == elementRequest.ShapeId);
             
             return autoShape.TextBox.Paragraphs[elementRequest.ParagraphIndex].Portions[elementRequest.PortionIndex];
+        }
+
+        public static MemoryStream ToStream(this byte[] byteArray)
+        {
+            var stream = new MemoryStream();
+            stream.Write(byteArray, 0, byteArray.Length);
+
+            return stream;
         }
     }
 }

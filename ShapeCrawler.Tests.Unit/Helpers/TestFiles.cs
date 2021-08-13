@@ -25,6 +25,8 @@ namespace ShapeCrawler.Tests.Unit.Helpers
                 }
             }
 
+            public static byte[] pre025_byteArray => Resources._025;
+
             public static Stream pre025_pptxStream
             {
                 get

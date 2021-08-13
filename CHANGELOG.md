@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.21.1 - 2021-07-30
+### Fixed
+- Fixed `IPresentation.SaveAs()`. It did not release underlying resources in the right way.
+
 ## Version 0.21.0 - 2021-06-23
 ### Added
 - Added `void ISlideCollection.Add(ISlide addingSlide)` to add outer slide.

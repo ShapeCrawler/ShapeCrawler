@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using ClosedXML.Excel;
 using FluentAssertions;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Tests.Unit.Helpers;
@@ -166,7 +167,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void CategoryName_SetterChangeName_OfCategoryInPieChart()
+        public void CategoryName_SetterChangesName_OfCategoryInNonMultiCategoryPieChart()
         {
             // Arrange
             IPresentation presentation = SCPresentation.Open(Resources._025, true);
@@ -185,25 +186,43 @@ namespace ShapeCrawler.Tests.Unit
             pieChart4.Categories[0].Name.Should().Be(newCategoryName);
         }
 
-        [Fact(Skip = "In Progress")]
-        public void CategoryName_SetterChangeName_OfMainCategoryInMultiLevelCategoryBarChart()
+        [Fact]
+        public void CategoryName_SetterShouldChangeValueOfCorrespondingExcelCell()
         {
             // Arrange
-            Stream presentationStream = TestFiles.Presentations.pre025_pptxStream;
-            IPresentation presentation = SCPresentation.Open(presentationStream, true);
-            IChart barChart2 = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
-            const string newMainCategoryName = "Clothing_new";
+            IPresentation presentation = SCPresentation.Open(Resources._025, true);
+            IChart lineChart = (IChart)presentation.Slides[3].Shapes.First(sp => sp.Id == 13);
+            const string newCategoryName = "Category 1_new";
 
             // Act
-            barChart2.Categories[0].MainCategory.Name = newMainCategoryName;
+            lineChart.Categories[0].Name = newCategoryName;
 
             // Assert
-            barChart2.Categories[0].Name.Should().Be(newMainCategoryName);
+            MemoryStream mStream = new (lineChart.SpreadsheetByteArray);
+            XLWorkbook workbook = new (mStream);
+            string cellValue = workbook.Worksheets.First().Cell("A2").Value.ToString();
+            cellValue.Should().BeEquivalentTo(newCategoryName);
+        }
 
-            presentation.Close();
-            presentation = SCPresentation.Open(presentationStream, false);
-            barChart2 = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
-            barChart2.Categories[0].Name.Should().Be(newMainCategoryName);
+        [Fact(Skip = "On Hold")]
+        public void CategoryName_SetterChangeName_OfSecondaryCategoryInMultiCategoryBarChart()
+        {
+            // Arrange
+            Stream preStream = TestFiles.Presentations.pre025_byteArray.ToStream();
+            IPresentation presentation = SCPresentation.Open(preStream, true);
+            IChart barChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
+            const string newCategoryName = "Clothing_new";
+
+            // Act
+            barChart.Categories[0].Name = newCategoryName;
+
+            // Assert
+            barChart.Categories[0].Name.Should().Be(newCategoryName);
+
+            presentation.Save();
+            presentation = SCPresentation.Open(preStream, false);
+            barChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
+            barChart.Categories[0].Name.Should().Be(newCategoryName);
         }
 
         [Fact]
