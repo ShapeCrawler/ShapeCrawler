@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using ClosedXML.Excel;
 using FluentAssertions;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Tests.Unit.Helpers;
@@ -166,7 +167,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void CategoryName_SetterChangeName_OfCategoryInNonMultiCategoryPieChart()
+        public void CategoryName_SetterChangesName_OfCategoryInNonMultiCategoryPieChart()
         {
             // Arrange
             IPresentation presentation = SCPresentation.Open(Resources._025, true);
@@ -183,6 +184,24 @@ namespace ShapeCrawler.Tests.Unit
             presentation = SCPresentation.Open(mStream, false);
             pieChart4 = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
             pieChart4.Categories[0].Name.Should().Be(newCategoryName);
+        }
+
+        [Fact]
+        public void CategoryName_SetterShouldChangeValueOfCorrespondingExcelCell()
+        {
+            // Arrange
+            IPresentation presentation = SCPresentation.Open(Resources._025, true);
+            IChart lineChart = (IChart)presentation.Slides[3].Shapes.First(sp => sp.Id == 13);
+            const string newCategoryName = "Category 1_new";
+
+            // Act
+            lineChart.Categories[0].Name = newCategoryName;
+
+            // Assert
+            MemoryStream mStream = new (lineChart.SpreadsheetByteArray);
+            XLWorkbook workbook = new (mStream);
+            string cellValue = workbook.Worksheets.First().Cell("A2").Value.ToString();
+            cellValue.Should().BeEquivalentTo(newCategoryName);
         }
 
         [Fact(Skip = "On Hold")]

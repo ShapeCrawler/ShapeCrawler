@@ -12,7 +12,7 @@ namespace ShapeCrawler.Charts
     public class Category // TODO: should be internal?
     {
         private readonly int index;
-        private NumericValue cachedName;
+        private readonly NumericValue cachedName;
         private readonly ResettableLazy<List<X.Cell>> xCells;
 
         #region Constructors

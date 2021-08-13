@@ -8,39 +8,44 @@ namespace ShapeCrawler.Charts
     {
         private readonly SCChart chart;
         private readonly Lazy<WorkbookPart> sdkWorkbookPart;
-        private Stream packagePartStream;
-        private MemoryStream resizableStream;
         private SpreadsheetDocument spreadsheetDocument;
         private bool closed;
 
-        internal ChartWorkbook(SCChart chart)
+        public ChartWorkbook(SCChart chart)
         {
             this.chart = chart;
             this.sdkWorkbookPart = new Lazy<WorkbookPart>(this.GetWorkbookPart);
         }
 
-        internal WorkbookPart WorkbookPart => this.sdkWorkbookPart.Value;
+        public WorkbookPart WorkbookPart => this.sdkWorkbookPart.Value;
 
-        internal void Close()
+        public byte[] ByteArray => this.GetByteArray();
+
+        public void Close()
         {
             if (this.closed)
             {
                 return;
             }
 
-
-            this.spreadsheetDocument.Close();
-
+            this.spreadsheetDocument?.Close();
             this.closed = true;
         }
 
         private WorkbookPart GetWorkbookPart()
         {
-            this.packagePartStream = this.chart.SdkChartPart.EmbeddedPackagePart.GetStream();
-            this.spreadsheetDocument = SpreadsheetDocument.Open(packagePartStream, true);
+            this.spreadsheetDocument = SpreadsheetDocument.Open(this.chart.SdkChartPart.EmbeddedPackagePart.GetStream(), this.chart.ParentPresentation.Editable);
             this.chart.ParentPresentation.ChartWorkbooks.Add(this);
 
             return this.spreadsheetDocument.WorkbookPart;
+        }
+
+        private byte[] GetByteArray()
+        {
+            var mStream = new MemoryStream();
+            this.spreadsheetDocument.Clone(mStream);
+
+            return mStream.ToArray();
         }
     }
 }
