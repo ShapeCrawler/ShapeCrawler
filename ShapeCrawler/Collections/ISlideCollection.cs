@@ -13,8 +13,15 @@ namespace ShapeCrawler.Collections
         void Remove(ISlide removingSlide);
 
         /// <summary>
-        ///     Adds slide.
+        ///     Adds a slide into the collection at the specified position.
         /// </summary>
         void Add(ISlide outerSlide);
+
+        /// <summary>
+        ///     Inserts slide.
+        /// </summary>
+        /// <param name="position">Position (number) at which slide should be inserted.</param>
+        /// <param name="outerSlide">The slide to insert.</param>
+        void Insert(int position, ISlide outerSlide);
     }
 }
