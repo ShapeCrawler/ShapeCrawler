@@ -19,7 +19,7 @@ namespace ShapeCrawler.Collections
 
         internal SlideCollection(SCPresentation presentation)
         {
-            this.presentationPart = presentation.PresentationDocument.PresentationPart;
+            this.presentationPart = presentation.PresentationDocument.PresentationPart ?? throw new ArgumentNullException("PresentationPart");
             this.parentPresentation = presentation;
             this.slides = new ResettableLazy<List<SCSlide>>(this.GetSlides);
         }
@@ -147,6 +147,21 @@ namespace ShapeCrawler.Collections
 
                 slideMasterPart.SlideMaster.Save();
             }
+
+            this.slides.Reset();
+            this.parentPresentation.slideMasters.Reset();
+        }
+
+        public void Insert(int position, ISlide outerSlide)
+        {
+            if (position < 1 || position > this.slides.Value.Count + 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(position));
+            }
+
+            this.Add(outerSlide);
+            int addedSlideIndex = this.slides.Value.Count - 1;
+            this.slides.Value[addedSlideIndex].Number = position;
 
             this.slides.Reset();
             this.parentPresentation.slideMasters.Reset();

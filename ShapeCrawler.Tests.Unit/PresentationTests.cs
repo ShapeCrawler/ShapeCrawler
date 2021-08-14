@@ -120,6 +120,22 @@ namespace ShapeCrawler.Tests.Unit
             destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
         }
 
+        [Fact]
+        public void SlidesInsert_InsertsSpecifiedSlideAtTheSpecifiedPosition()
+        {
+            // Arrange
+            ISlide sourceSlide = SCPresentation.Open(TestFiles.Presentations.pre001, true).Slides[0];
+            string sourceSlideId = Guid.NewGuid().ToString();
+            sourceSlide.CustomData = sourceSlideId;
+            IPresentation destPre = SCPresentation.Open(Properties.Resources._002, true);
+
+            // Act
+            destPre.Slides.Insert(2, sourceSlide);
+
+            // Assert
+            destPre.Slides[1].CustomData.Should().Be(sourceSlideId);
+        }
+
         [Theory]
         [MemberData(nameof(TestCasesSlidesRemove))]
         public void SlidesRemove_RemovesFirstSlideFromPresentation_WhenFirstSlideObjectWasPassed(byte[] pptxBytes, int expectedSlidesCount)
