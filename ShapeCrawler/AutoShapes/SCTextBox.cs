@@ -6,8 +6,6 @@ using System.Text;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Texts;
-using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes
 {
@@ -42,8 +40,7 @@ namespace ShapeCrawler.AutoShapes
 
         internal void ThrowIfRemoved()
         {
-            // TODO: Add ThrowIfRemoved to ITextBoxContainer to be able to call also from Table Cell
-            ((Shape)this.ParentTextBoxContainer).ThrowIfRemoved();
+            this.ParentTextBoxContainer.ThrowIfRemoved();
         }
 
         private void SetText(string value)

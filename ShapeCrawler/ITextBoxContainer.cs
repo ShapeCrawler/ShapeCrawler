@@ -1,4 +1,5 @@
-﻿using ShapeCrawler.Placeholders;
+﻿using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.SlideMasters;
 
 namespace ShapeCrawler
@@ -8,5 +9,9 @@ namespace ShapeCrawler
         SCSlideMaster ParentSlideMaster { get; }
 
         IPlaceholder Placeholder { get; }
+
+        void ThrowIfRemoved();
+
+        ITextBox TextBox { get; }
     }
 }
