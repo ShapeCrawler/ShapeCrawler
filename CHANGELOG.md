@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.22.0 - 2021-08-14
+- Added ability to update chart category.
+
 ## Version 0.21.1 - 2021-07-30
 ### Fixed
 - Fixed `IPresentation.SaveAs()`. It did not release underlying resources in the right way.

@@ -59,24 +59,19 @@ namespace ShapeCrawler.AutoShapes
 
         private BulletType ParseType()
         {
-            if (this.aParagraphProperties == null)
-            {
-                return BulletType.None;
-            }
-
-            A.AutoNumberedBullet aAutoNumeredBullet = this.aParagraphProperties.GetFirstChild<A.AutoNumberedBullet>();
+            A.AutoNumberedBullet? aAutoNumeredBullet = this.aParagraphProperties.GetFirstChild<A.AutoNumberedBullet>();
             if (aAutoNumeredBullet != null)
             {
                 return BulletType.Numbered;
             }
 
-            A.PictureBullet aPictureBullet = this.aParagraphProperties.GetFirstChild<A.PictureBullet>();
+            A.PictureBullet? aPictureBullet = this.aParagraphProperties.GetFirstChild<A.PictureBullet>();
             if (aPictureBullet != null)
             {
                 return BulletType.Picture;
             }
 
-            A.CharacterBullet aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>();
+            A.CharacterBullet? aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>();
             if (aCharBullet != null)
             {
                 return BulletType.Character;
@@ -85,7 +80,7 @@ namespace ShapeCrawler.AutoShapes
             return BulletType.None;
         }
 
-        private string ParseColorHex()
+        private string? ParseColorHex()
         {
             if (this.Type == BulletType.None)
             {
@@ -101,31 +96,31 @@ namespace ShapeCrawler.AutoShapes
             return null;
         }
 
-        private string ParseChar()
+        private string? ParseChar()
         {
             if (this.Type == BulletType.None)
             {
                 return null;
             }
 
-            A.CharacterBullet aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>();
+            A.CharacterBullet? aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>();
             if (aCharBullet == null)
             {
                 throw new RuntimeDefinedPropertyException($"This is not {nameof(BulletType.Character)} type bullet.");
             }
 
-            return aCharBullet.Char.Value;
+            return aCharBullet.Char?.Value;
         }
 
-        private string ParseFontName()
+        private string? ParseFontName()
         {
             if (this.Type == BulletType.None)
             {
                 return null;
             }
 
-            A.BulletFont aBulletFont = this.aParagraphProperties.GetFirstChild<A.BulletFont>();
-            return aBulletFont?.Typeface.Value;
+            A.BulletFont? aBulletFont = this.aParagraphProperties.GetFirstChild<A.BulletFont>();
+            return aBulletFont?.Typeface?.Value;
         }
 
         private int ParseSize()
@@ -135,8 +130,8 @@ namespace ShapeCrawler.AutoShapes
                 return 0;
             }
 
-            A.BulletSizePercentage aBulletSizePercent = this.aParagraphProperties.GetFirstChild<A.BulletSizePercentage>();
-            int basicPoints = aBulletSizePercent?.Val.Value ?? 100000;
+            A.BulletSizePercentage? aBulletSizePercent = this.aParagraphProperties.GetFirstChild<A.BulletSizePercentage>();
+            int basicPoints = aBulletSizePercent?.Val?.Value ?? 100000;
 
             return basicPoints / 1000;
         }

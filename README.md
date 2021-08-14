@@ -154,13 +154,13 @@ public class ChartSample
 {
     public static void Chart()
     {
-        using IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: false);
+        using IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: true);
         ISlide slide = presentation.Slides.First();
 
         // Get chart
         IChart chart = (IChart)slide.Shapes.First(sp => sp is IChart);
         
-        // Print title string if the chart has a title
+        // Print chart title
         if (chart.HasTitle)
         {
             Console.WriteLine(chart.Title);
@@ -169,7 +169,10 @@ public class ChartSample
         if (chart.Type == ChartType.BarChart)
         {
             Console.WriteLine("Chart type is BarChart.");
-        }        
+        }
+
+        // Update category
+        chart.Categories[0].Name = "Price";       
     }
 }
 ```

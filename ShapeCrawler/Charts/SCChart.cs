@@ -76,7 +76,7 @@ namespace ShapeCrawler.Charts
 
         public CategoryCollection Categories => this.categories.Value;
 
-        public bool HasXValues => xValues.Value != null;
+        public bool HasXValues => this.xValues.Value != null;
 
         public LibraryCollection<double> XValues
         {

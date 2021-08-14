@@ -6,11 +6,10 @@ using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
-
 namespace ShapeCrawler
 {
     /// <inheritdoc cref="IPortion"/>
-    internal class SCPortion : IPortion // TODO: make internal
+    internal class SCPortion : IPortion
     {
         private readonly ResettableLazy<SCFont> font;
 

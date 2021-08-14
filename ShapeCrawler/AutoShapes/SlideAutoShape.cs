@@ -64,7 +64,7 @@ namespace ShapeCrawler
             set => this.innerTransform.SetHeight(value);
         }
 
-        public ITextBox TextBox => this.textBox.Value; // TODO: move to ITextBoxContainer
+        public ITextBox TextBox => this.textBox.Value;
 
         public ShapeFill Fill => this.shapeFill.Value;
 
