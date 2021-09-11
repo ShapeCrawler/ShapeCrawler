@@ -16,11 +16,12 @@ namespace ShapeCrawler.Charts
         private readonly Lazy<string> name;
         private readonly OpenXmlElement seriesXmlElement;
 
-        internal Series(SCChart parentChart, OpenXmlElement seriesXmlElement)
+        internal Series(SCChart parentChart, OpenXmlElement seriesXmlElement, ChartType seriesChartType)
         {
             this.ParentChart = parentChart;
             this.seriesXmlElement = seriesXmlElement;
             this.name = new Lazy<string>(this.GetNameOrDefault);
+            this.Type = seriesChartType;
         }
 
         internal SCChart ParentChart { get; }
@@ -28,7 +29,7 @@ namespace ShapeCrawler.Charts
         /// <summary>
         ///     Gets chart type.
         /// </summary>
-        public ChartType Type => this.ParentChart.Type;
+        public ChartType Type { get; }
 
         public IChartPointCollection Points =>
             ChartPointCollection.Create(this.ParentChart, this.seriesXmlElement);
