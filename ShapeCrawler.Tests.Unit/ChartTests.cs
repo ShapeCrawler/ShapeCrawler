@@ -283,11 +283,6 @@ namespace ShapeCrawler.Tests.Unit
             
         }
 
-        public void SeriesPointValue_SetterUpdateSeriesValue()
-        {
-
-        }
-
         [Fact]
         public void SeriesName_ReturnsChartSeriesName()
         {

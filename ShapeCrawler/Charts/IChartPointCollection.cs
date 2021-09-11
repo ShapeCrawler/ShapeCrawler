@@ -13,11 +13,11 @@ namespace ShapeCrawler.Charts
 
     internal class ChartPointCollection : IChartPointCollection
     {
-        private readonly ChartPoint[] chartPoints;
+        private readonly List<ChartPoint> chartPoints;
 
         public ChartPointCollection(List<ChartPoint> points)
         {
-            this.chartPoints = points.ToArray();
+            this.chartPoints = points;
         }
 
         public IChartPoint this[int index] => this.chartPoints[index];
@@ -50,12 +50,12 @@ namespace ShapeCrawler.Charts
 
         public IEnumerator<IChartPoint> GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            return this.chartPoints.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            return this.GetEnumerator();
         }
     }
 }
