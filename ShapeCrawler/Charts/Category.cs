@@ -28,10 +28,7 @@ namespace ShapeCrawler.Charts
             this.MainCategory = mainCategory;
         }
 
-        internal Category(
-            ResettableLazy<List<X.Cell>> xCells,
-            int index,
-            NumericValue cachedName)
+        internal Category(ResettableLazy<List<X.Cell>> xCells, int index, NumericValue cachedName)
         {
             this.xCells = xCells;
             this.index = index;

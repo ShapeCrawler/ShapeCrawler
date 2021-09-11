@@ -93,7 +93,7 @@ namespace ShapeCrawler.Charts
 
         public override GeometryType GeometryType => GeometryType.Rectangle;
 
-        public byte[] SpreadsheetByteArray => this.ChartWorkbook.ByteArray;
+        public byte[] WorkbookByteArray => this.ChartWorkbook.ByteArray;
 
         #endregion Public Properties
 
@@ -185,7 +185,7 @@ namespace ShapeCrawler.Charts
             }
 
             IReadOnlyList<double> points =
-                ChartReferencesParser.GetNumbersFromCacheOrSpreadsheet(sdkXValues.NumberReference, this);
+                ChartReferencesParser.GetNumbersFromCacheOrWorkbook(sdkXValues.NumberReference, this);
 
             return new LibraryCollection<double>(points);
         }
