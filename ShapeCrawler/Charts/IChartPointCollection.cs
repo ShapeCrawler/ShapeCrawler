@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Spreadsheet;
-using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Charts
 {
@@ -27,8 +26,8 @@ namespace ShapeCrawler.Charts
 
         public static ChartPointCollection Create(SCChart chart, OpenXmlElement cSerXmlElement)
         {
-            C.NumberReference numReference;
-            C.Values? cVal = cSerXmlElement.GetFirstChild<C.Values>();
+            DocumentFormat.OpenXml.Drawing.Charts.NumberReference numReference;
+            DocumentFormat.OpenXml.Drawing.Charts.Values? cVal = cSerXmlElement.GetFirstChild<DocumentFormat.OpenXml.Drawing.Charts.Values>();
             if (cVal != null)
             {
                 // Some charts do have <c:val> element, for example, scatter chart.
@@ -36,7 +35,7 @@ namespace ShapeCrawler.Charts
             }
             else
             {
-                numReference = cSerXmlElement.GetFirstChild<C.YValues>() !.NumberReference!;
+                numReference = cSerXmlElement.GetFirstChild<DocumentFormat.OpenXml.Drawing.Charts.YValues>()!.NumberReference!;
             }
 
             IReadOnlyList<double> pointValues = ChartReferencesParser.GetNumbersFromCacheOrWorkbook(numReference, chart);
@@ -58,20 +57,5 @@ namespace ShapeCrawler.Charts
         {
             throw new System.NotImplementedException();
         }
-    }
-
-    internal class ChartPoint : IChartPoint
-    {
-        public ChartPoint(double value)
-        {
-            this.Value = value;
-        }
-
-        public double Value { get; }
-    }
-
-    public interface IChartPoint
-    {
-        public double Value { get; }
     }
 }

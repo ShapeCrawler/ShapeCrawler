@@ -1,7 +1,8 @@
 # Changelog
 
-## Version 0.23.0 - Unreleased
+## Version 0.23.0 - 2021-08-11
 - Added `ISlideCollection.Insert(int position, ISlide outerSlide)` to insert slide at certain position.
+- Fixed case when `ISlideCollection.Add()` breaks presentation.
 
 ## Version 0.22.0 - 2021-08-14
 - Added ability to update chart category.
