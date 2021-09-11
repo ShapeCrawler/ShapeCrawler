@@ -114,13 +114,12 @@ namespace ShapeCrawler.Collections
             SlideId addingSlideId = (SlideId)addingPresentationPart.Presentation.SlideIdList.ChildElements[addingSlideIndex];
             SlidePart addingSlidePart = (SlidePart)addingPresentationPart.GetPartById(addingSlideId.RelationshipId);
 
-            NotesSlidePart noticePart = addingSlidePart.GetPartsOfType<NotesSlidePart>().FirstOrDefault();
+            SlidePart addedSlidePart = destPresentationPart.AddPart(addingSlidePart);
+            NotesSlidePart noticePart = addedSlidePart.GetPartsOfType<NotesSlidePart>().FirstOrDefault();
             if (noticePart != null)
             {
-                addingSlidePart.DeletePart(noticePart);
+                addedSlidePart.DeletePart(noticePart);
             }
-
-            SlidePart addedSlidePart = destPresentationPart.AddPart(addingSlidePart);
             SlideMasterPart addedSlideMasterPart = destPresentationPart.AddPart(addedSlidePart.SlideLayoutPart.SlideMasterPart);
 
             // Create new slide ID
