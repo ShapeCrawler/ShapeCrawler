@@ -50,6 +50,9 @@ namespace ShapeCrawler
         /// </summary>
         LibraryCollection<double> XValues { get; }
 
-        byte[] SpreadsheetByteArray { get; }
+        /// <summary>
+        ///     Gets workbook byte array containing chart data.
+        /// </summary>
+        byte[] WorkbookByteArray { get; }
     }
 }

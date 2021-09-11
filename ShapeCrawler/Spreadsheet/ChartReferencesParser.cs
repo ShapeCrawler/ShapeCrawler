@@ -12,26 +12,10 @@ namespace ShapeCrawler.Spreadsheet
 {
     internal class ChartReferencesParser
     {
-        #region Private Methods
-
-        private static string GetFilteredFormula(C.Formula formula)
-        {
-#if NETSTANDARD2_1 || NET5_0 || NETCOREAPP2_1
-            var filteredFormula = formula.Text
-                .Replace("'", string.Empty, StringComparison.OrdinalIgnoreCase)
-                .Replace("$", string.Empty,
-                    StringComparison.OrdinalIgnoreCase); //eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5            
-#else
-            var filteredFormula = formula.Text.Replace("'", string.Empty).Replace("$", string.Empty);
-#endif
-            return filteredFormula;
-        }
-
-        #endregion Private Methods
-
         #region Internal Methods
 
-        internal static IReadOnlyList<double> GetNumbersFromCacheOrSpreadsheet(C.NumberReference numberReference,
+        internal static IReadOnlyList<double> GetNumbersFromCacheOrWorkbook(
+            C.NumberReference numberReference,
             SCChart slideChart)
         {
             if (numberReference.NumberingCache != null)
@@ -115,5 +99,18 @@ namespace ShapeCrawler.Spreadsheet
         }
 
         #endregion Internal Methods
+
+        private static string GetFilteredFormula(C.Formula formula)
+        {
+#if NETSTANDARD2_1 || NET5_0 || NETCOREAPP2_1
+            var filteredFormula = formula.Text
+                .Replace("'", string.Empty, StringComparison.OrdinalIgnoreCase)
+                .Replace("$", string.Empty,
+                    StringComparison.OrdinalIgnoreCase); // eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5            
+#else
+            var filteredFormula = formula.Text.Replace("'", string.Empty).Replace("$", string.Empty);
+#endif
+            return filteredFormula;
+        }
     }
 }

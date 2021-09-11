@@ -59,27 +59,25 @@ namespace ShapeCrawler.Collections
                 C.Formula cFormula;
                 IEnumerable<C.NumericValue> cachedValues; // C.NumericValue (<c:v>) can store string value
                 C.NumberReference? cNumReference = cCatAxisData.NumberReference;
-                C.StringReference? cStrReference = cCatAxisData.StringReference;
+                C.StringReference cStrReference = cCatAxisData.StringReference!;
                 if (cNumReference is not null)
                 {
-                    cFormula = cNumReference.Formula;
-                    cachedValues = cNumReference.NumberingCache.Descendants<C.NumericValue>();
+                    cFormula = cNumReference.Formula!;
+                    cachedValues = cNumReference.NumberingCache!.Descendants<C.NumericValue>();
                 }
                 else
                 {
-                    cFormula = cStrReference.Formula;
-                    cachedValues = cStrReference.StringCache.Descendants<C.NumericValue>();
+                    cFormula = cStrReference.Formula!;
+                    cachedValues = cStrReference.StringCache!.Descendants<C.NumericValue>();
                 }
 
                 int catIndex = 0;
-
                 ResettableLazy<List<X.Cell>> xCells = null;
                 if (chart.ParentPresentation.Editable)
                 {
                     xCells = new ResettableLazy<List<X.Cell>>(() =>
                         ChartReferencesParser.GetXCellsByFormula(cFormula, chart));
                 }
-
                 foreach (C.NumericValue cachedValue in cachedValues)
                 {
                     categoryList.Add(new Category(xCells, catIndex++, cachedValue));

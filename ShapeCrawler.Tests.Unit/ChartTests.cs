@@ -128,15 +128,15 @@ namespace ShapeCrawler.Tests.Unit
             var lineChartSeries = sld2Chart4.SeriesCollection[1];
 
             // Act
-            var barChartPointValue = chart3.SeriesCollection[1].PointValues[0];
-            var scatterChartPointValue = chart3.SeriesCollection[2].PointValues[0];
-            IReadOnlyList<double> pointValues = lineChartSeries.PointValues;
-            var lineChartPointValue = pointValues[0];
+            IChartPoint barChartPointValue = chart3.SeriesCollection[1].Points[0];
+            IChartPoint scatterChartPointValue = chart3.SeriesCollection[2].Points[0];
+            IChartPointCollection points = lineChartSeries.Points;
+            var lineChartPointValue = points[0];
 
             // Assert
-            Assert.Equal(56, barChartPointValue);
-            Assert.Equal(44, scatterChartPointValue);
-            Assert.Equal(17.35, lineChartPointValue);
+            Assert.Equal(56, barChartPointValue.Value);
+            Assert.Equal(44, scatterChartPointValue.Value);
+            Assert.Equal(17.35, lineChartPointValue.Value);
         }
 
         [Fact]
@@ -198,7 +198,7 @@ namespace ShapeCrawler.Tests.Unit
             lineChart.Categories[0].Name = newCategoryName;
 
             // Assert
-            MemoryStream mStream = new (lineChart.SpreadsheetByteArray);
+            MemoryStream mStream = new (lineChart.WorkbookByteArray);
             XLWorkbook workbook = new (mStream);
             string cellValue = workbook.Worksheets.First().Cell("A2").Value.ToString();
             cellValue.Should().BeEquivalentTo(newCategoryName);
@@ -259,7 +259,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void SeriesPointValue_ReturnsChartSeriesPointValue()
+        public void SeriesPointValue_GetterReturnsSeriesValue()
         {
             // Arrange
             Series seriesCase1 = ((IChart)_fixture.Pre021.Slides[1].Shapes.First(sp => sp.Id == 3)).SeriesCollection[0];
@@ -268,11 +268,11 @@ namespace ShapeCrawler.Tests.Unit
             Series seriesCase4 = ((IChart)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7)).SeriesCollection[0];
 
             // Act
-            double seriesPointValueCase1 = seriesCase1.PointValues[0];
-            double seriesPointValueCase2 = seriesCase2.PointValues[0];
-            double seriesPointValueCase3 = seriesCase3.PointValues[0];
-            double seriesPointValueCase4 = seriesCase4.PointValues[0];
-            double seriesPointValueCase5 = seriesCase4.PointValues[1];
+            double seriesPointValueCase1 = seriesCase1.Points[0].Value;
+            double seriesPointValueCase2 = seriesCase2.Points[0].Value;
+            double seriesPointValueCase3 = seriesCase3.Points[0].Value;
+            double seriesPointValueCase4 = seriesCase4.Points[0].Value;
+            double seriesPointValueCase5 = seriesCase4.Points[1].Value;
 
             // Assert
             seriesPointValueCase1.Should().Be(20.4);
@@ -280,6 +280,7 @@ namespace ShapeCrawler.Tests.Unit
             seriesPointValueCase3.Should().Be(72.7);
             seriesPointValueCase4.Should().Be(8.2);
             seriesPointValueCase5.Should().Be(3.2);
+            
         }
 
         [Fact]
