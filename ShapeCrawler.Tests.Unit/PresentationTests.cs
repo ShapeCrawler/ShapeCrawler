@@ -121,6 +121,23 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
+        public void SlidesAdd_ShouldNotBreakPresentation()
+        {
+            // Arrange
+            ISlide sourceSlide = _fixture.Pre001.Slides[0];
+            IPresentation destPre = SCPresentation.Open(Properties.Resources._002, true);
+            MemoryStream modified = new();
+
+            // Act
+            destPre.Slides.Add(sourceSlide);
+
+            // Assert
+            destPre.SaveAs(modified);
+            ValidateResponse response = PptxValidator.Validate(modified);
+            response.IsValid.Should().BeTrue();
+        }
+
+        [Fact]
         public void SlidesInsert_InsertsSpecifiedSlideAtTheSpecifiedPosition()
         {
             // Arrange
