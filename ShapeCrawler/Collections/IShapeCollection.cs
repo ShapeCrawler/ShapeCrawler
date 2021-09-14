@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using ShapeCrawler.Audio;
 using ShapeCrawler.Shapes;
 
 namespace ShapeCrawler.Collections
@@ -19,5 +21,7 @@ namespace ShapeCrawler.Collections
         ///     Gets the generic enumerator that iterates through the collection.
         /// </summary>
         IEnumerator<IShape> GetEnumerator();
+
+        IAudioShape AddNewAudio(int x, int y, Stream audioStream);
     }
 }

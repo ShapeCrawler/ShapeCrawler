@@ -15,29 +15,16 @@ namespace ShapeCrawler.Tests.Unit.Helpers
         {
             public static byte[] pre001 => Resources._001;
 
-            public static Stream pre001_stream
-            {
-                get
-                {
-                    var stream = new MemoryStream();
-                    stream.Write(Resources._001, 0, Resources._001.Length);
-                    return stream;
-                }
-            }
+            public static Stream pre001_stream => Resources._001.ToResizeableStream();
 
             public static byte[] pre025_byteArray => Resources._025;
 
-            public static Stream pre025_pptxStream
-            {
-                get
-                {
-                    var stream = new MemoryStream();
-                    stream.Write(Resources._025, 0, Resources._025.Length);
-                    return stream;
-                }
-            }
-
             public static byte[] pre009 => Resources._009;
+        }
+
+        public class Audio
+        {
+            public static Stream TestMp3 => Resources.test_mp3.ToResizeableStream();
         }
     }
 }
