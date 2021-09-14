@@ -208,7 +208,7 @@ namespace ShapeCrawler.Tests.Unit
         public void CategoryName_SetterChangeName_OfSecondaryCategoryInMultiCategoryBarChart()
         {
             // Arrange
-            Stream preStream = TestFiles.Presentations.pre025_byteArray.ToStream();
+            Stream preStream = TestFiles.Presentations.pre025_byteArray.ToResizeableStream();
             IPresentation presentation = SCPresentation.Open(preStream, true);
             IChart barChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
             const string newCategoryName = "Clothing_new";

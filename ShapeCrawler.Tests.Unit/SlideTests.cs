@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.Audio;
+using ShapeCrawler.Collections;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Unit.Helpers;
@@ -143,6 +146,35 @@ namespace ShapeCrawler.Tests.Unit
 
             // Assert
             shapesCount.Should().Be(expectedShapesCount);
+        }
+
+        [Fact(Skip = "In Progress")]
+        public void Shapes_AddNewAudio_AddsAudio()
+        {
+            // Arrange
+            //Stream preStream = TestFiles.Presentations.pre001_stream;
+            //IPresentation presentation = SCPresentation.Open(preStream, true);
+            File.Copy(@"c:\Documents\ShapeCrawler\Issues\SC-159_Add API to add audio content on slide\base.pptx",
+                @"c:\temp\base.pptx", true);
+            IPresentation presentation = SCPresentation.Open(@"c:\temp\base.pptx", true);
+            IShapeCollection shapes = presentation.Slides[0].Shapes;
+            Stream audioStream = TestFiles.Audio.TestMp3;
+            string customText = Guid.NewGuid().ToString();
+
+            // Act
+            IAudioShape audioShape = shapes.AddNewAudio(50, 50, audioStream);
+            presentation.SaveAs(@"c:\temp\modified.pptx");
+            presentation.Close();
+            return;
+            //audioShape.CustomData = customText;
+            //presentation.Save();
+            //presentation.Close();
+            
+            //presentation = SCPresentation.Open(preStream, false);
+            //audioShape = presentation.Slides[0].Shapes.OfType<IAudioShape>().FirstOrDefault(sp => sp.CustomData == customText);
+
+            //// Assert
+            //audioShape.Should().NotBeNull();
         }
 
         public static IEnumerable<object[]> TestCasesShapesCount()

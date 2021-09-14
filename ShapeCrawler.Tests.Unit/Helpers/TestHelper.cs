@@ -28,7 +28,7 @@ namespace ShapeCrawler.Tests.Unit.Helpers
             return autoShape.TextBox.Paragraphs[elementRequest.ParagraphIndex].Portions[elementRequest.PortionIndex];
         }
 
-        public static MemoryStream ToStream(this byte[] byteArray)
+        public static MemoryStream ToResizeableStream(this byte[] byteArray)
         {
             var stream = new MemoryStream();
             stream.Write(byteArray, 0, byteArray.Length);
