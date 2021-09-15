@@ -148,7 +148,7 @@ namespace ShapeCrawler.Tests.Unit
             shapesCount.Should().Be(expectedShapesCount);
         }
 
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void Shapes_AddNewAudio_AddsAudio()
         {
             // Arrange
