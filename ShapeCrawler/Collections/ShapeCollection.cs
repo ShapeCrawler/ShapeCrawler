@@ -213,6 +213,10 @@ namespace ShapeCrawler.Collections
             var data = File.OpenRead(
                 @"c:\Documents\ShapeCrawler\Issues\SC-159_Add API to add audio content on slide\image1.png");
             imagePart1.FeedData(data);
+
+            AudioReferenceRelationship audioRr = this.slide.SlidePart.AddAudioReferenceRelationship(mediaDataPart1);
+            MediaReferenceRelationship mediaRr = this.slide.SlidePart.AddMediaReferenceRelationship(mediaDataPart1);
+
             data.Close();
 
             P.Picture picture1 = new ();
@@ -241,13 +245,13 @@ namespace ShapeCrawler.Collections
             nonVisualPictureDrawingProperties1.Append(pictureLocks1);
 
             P.ApplicationNonVisualDrawingProperties applicationNonVisualDrawingProperties2 = new ();
-            A.AudioFromFile audioFromFile1 = new A.AudioFromFile() { Link = "rId22" };
+            A.AudioFromFile audioFromFile1 = new A.AudioFromFile() { Link = audioRr.Id };
 
             P.ApplicationNonVisualDrawingPropertiesExtensionList applicationNonVisualDrawingPropertiesExtensionList1 = new ();
 
             P.ApplicationNonVisualDrawingPropertiesExtension applicationNonVisualDrawingPropertiesExtension1 = new () { Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" };
 
-            P14.Media media1 = new P14.Media() { Embed = "rId11" };
+            P14.Media media1 = new P14.Media() { Embed = mediaRr.Id };
             media1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
             applicationNonVisualDrawingPropertiesExtension1.Append(media1);
@@ -298,181 +302,169 @@ namespace ShapeCrawler.Collections
             P14.CreationId creationId1 = new P14.CreationId() { Val = (UInt32Value)3972997422U };
             creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
-            P.Timing timing1 = new P.Timing();
+            //P.Timing timing1 = new P.Timing();
 
-            P.TimeNodeList timeNodeList1 = new P.TimeNodeList();
+            //P.TimeNodeList timeNodeList1 = new P.TimeNodeList();
 
-            P.ParallelTimeNode parallelTimeNode1 = new P.ParallelTimeNode();
+            //P.ParallelTimeNode parallelTimeNode1 = new P.ParallelTimeNode();
 
-            P.CommonTimeNode commonTimeNode1 = new P.CommonTimeNode() { Id = (UInt32Value)1U, Duration = "indefinite", Restart = P.TimeNodeRestartValues.Never, NodeType = P.TimeNodeValues.TmingRoot };
+            //P.CommonTimeNode commonTimeNode1 = new P.CommonTimeNode() { Id = (UInt32Value)1U, Duration = "indefinite", Restart = P.TimeNodeRestartValues.Never, NodeType = P.TimeNodeValues.TmingRoot };
 
-            P.ChildTimeNodeList childTimeNodeList1 = new P.ChildTimeNodeList();
+            //P.ChildTimeNodeList childTimeNodeList1 = new P.ChildTimeNodeList();
 
-            P.SequenceTimeNode sequenceTimeNode1 = new P.SequenceTimeNode() { Concurrent = true, NextAction = P.NextActionValues.Seek };
+            //P.SequenceTimeNode sequenceTimeNode1 = new P.SequenceTimeNode() { Concurrent = true, NextAction = P.NextActionValues.Seek };
 
-            P.CommonTimeNode commonTimeNode2 = new P.CommonTimeNode() { Id = (UInt32Value)2U, Duration = "indefinite", NodeType = P.TimeNodeValues.MainSequence };
+            //P.CommonTimeNode commonTimeNode2 = new P.CommonTimeNode() { Id = (UInt32Value)2U, Duration = "indefinite", NodeType = P.TimeNodeValues.MainSequence };
 
-            P.ChildTimeNodeList childTimeNodeList2 = new P.ChildTimeNodeList();
+            //P.ChildTimeNodeList childTimeNodeList2 = new P.ChildTimeNodeList();
 
-            P.ParallelTimeNode parallelTimeNode2 = new P.ParallelTimeNode();
+            //P.ParallelTimeNode parallelTimeNode2 = new P.ParallelTimeNode();
 
-            P.CommonTimeNode commonTimeNode3 = new P.CommonTimeNode() { Id = (UInt32Value)3U, Fill = P.TimeNodeFillValues.Hold };
+            //P.CommonTimeNode commonTimeNode3 = new P.CommonTimeNode() { Id = (UInt32Value)3U, Fill = P.TimeNodeFillValues.Hold };
 
-            P.StartConditionList startConditionList1 = new P.StartConditionList();
-            P.Condition condition1 = new P.Condition() { Delay = "indefinite" };
+            //P.StartConditionList startConditionList1 = new P.StartConditionList();
+            //P.Condition condition1 = new P.Condition() { Delay = "indefinite" };
 
-            startConditionList1.Append(condition1);
+            //startConditionList1.Append(condition1);
 
-            P.ChildTimeNodeList childTimeNodeList3 = new P.ChildTimeNodeList();
+            //P.ChildTimeNodeList childTimeNodeList3 = new P.ChildTimeNodeList();
 
-            P.ParallelTimeNode parallelTimeNode3 = new P.ParallelTimeNode();
+            //P.ParallelTimeNode parallelTimeNode3 = new P.ParallelTimeNode();
 
-            P.CommonTimeNode commonTimeNode4 = new P.CommonTimeNode() { Id = (UInt32Value)4U, Fill = P.TimeNodeFillValues.Hold };
+            //P.CommonTimeNode commonTimeNode4 = new P.CommonTimeNode() { Id = (UInt32Value)4U, Fill = P.TimeNodeFillValues.Hold };
 
-            P.StartConditionList startConditionList2 = new P.StartConditionList();
-            P.Condition condition2 = new P.Condition() { Delay = "0" };
+            //P.StartConditionList startConditionList2 = new P.StartConditionList();
+            //P.Condition condition2 = new P.Condition() { Delay = "0" };
 
-            startConditionList2.Append(condition2);
+            //startConditionList2.Append(condition2);
 
-            P.ChildTimeNodeList childTimeNodeList4 = new P.ChildTimeNodeList();
+            //P.ChildTimeNodeList childTimeNodeList4 = new P.ChildTimeNodeList();
 
-            P.ParallelTimeNode parallelTimeNode4 = new P.ParallelTimeNode();
+            //P.ParallelTimeNode parallelTimeNode4 = new P.ParallelTimeNode();
 
-            P.CommonTimeNode commonTimeNode5 = new P.CommonTimeNode() { Id = (UInt32Value)5U, PresetId = 1, PresetClass = P.TimeNodePresetClassValues.MediaCall, PresetSubtype = 0, Fill = P.TimeNodeFillValues.Hold, NodeType = P.TimeNodeValues.ClickEffect };
+            //P.CommonTimeNode commonTimeNode5 = new P.CommonTimeNode() { Id = (UInt32Value)5U, PresetId = 1, PresetClass = P.TimeNodePresetClassValues.MediaCall, PresetSubtype = 0, Fill = P.TimeNodeFillValues.Hold, NodeType = P.TimeNodeValues.ClickEffect };
 
-            P.StartConditionList startConditionList3 = new P.StartConditionList();
-            P.Condition condition3 = new P.Condition() { Delay = "0" };
+            //P.StartConditionList startConditionList3 = new P.StartConditionList();
+            //P.Condition condition3 = new P.Condition() { Delay = "0" };
 
-            startConditionList3.Append(condition3);
+            //startConditionList3.Append(condition3);
 
-            P.ChildTimeNodeList childTimeNodeList5 = new P.ChildTimeNodeList();
+            //P.ChildTimeNodeList childTimeNodeList5 = new P.ChildTimeNodeList();
 
-            Command command1 = new Command() { Type = P.CommandValues.Call, CommandName = "playFrom(0.0)" };
+            //Command command1 = new Command() { Type = P.CommandValues.Call, CommandName = "playFrom(0.0)" };
 
-            P.CommonBehavior commonBehavior1 = new P.CommonBehavior();
-            P.CommonTimeNode commonTimeNode6 = new P.CommonTimeNode() { Id = (UInt32Value)6U, Duration = "120163", Fill = P.TimeNodeFillValues.Hold };
+            //P.CommonBehavior commonBehavior1 = new P.CommonBehavior();
+            //P.CommonTimeNode commonTimeNode6 = new P.CommonTimeNode() { Id = (UInt32Value)6U, Duration = "120163", Fill = P.TimeNodeFillValues.Hold };
 
-            P.TargetElement targetElement1 = new P.TargetElement();
-            P.ShapeTarget shapeTarget1 = new P.ShapeTarget() { ShapeId = "2" };
+            //P.TargetElement targetElement1 = new P.TargetElement();
+            //P.ShapeTarget shapeTarget1 = new P.ShapeTarget() { ShapeId = "2" };
 
-            targetElement1.Append(shapeTarget1);
+            //targetElement1.Append(shapeTarget1);
 
-            commonBehavior1.Append(commonTimeNode6);
-            commonBehavior1.Append(targetElement1);
+            //commonBehavior1.Append(commonTimeNode6);
+            //commonBehavior1.Append(targetElement1);
 
-            command1.Append(commonBehavior1);
+            //command1.Append(commonBehavior1);
 
-            childTimeNodeList5.Append(command1);
+            //childTimeNodeList5.Append(command1);
 
-            commonTimeNode5.Append(startConditionList3);
-            commonTimeNode5.Append(childTimeNodeList5);
+            //commonTimeNode5.Append(startConditionList3);
+            //commonTimeNode5.Append(childTimeNodeList5);
 
-            parallelTimeNode4.Append(commonTimeNode5);
+            //parallelTimeNode4.Append(commonTimeNode5);
 
-            childTimeNodeList4.Append(parallelTimeNode4);
+            //childTimeNodeList4.Append(parallelTimeNode4);
 
-            commonTimeNode4.Append(startConditionList2);
-            commonTimeNode4.Append(childTimeNodeList4);
+            //commonTimeNode4.Append(startConditionList2);
+            //commonTimeNode4.Append(childTimeNodeList4);
 
-            parallelTimeNode3.Append(commonTimeNode4);
+            //parallelTimeNode3.Append(commonTimeNode4);
 
-            childTimeNodeList3.Append(parallelTimeNode3);
+            //childTimeNodeList3.Append(parallelTimeNode3);
 
-            commonTimeNode3.Append(startConditionList1);
-            commonTimeNode3.Append(childTimeNodeList3);
+            //commonTimeNode3.Append(startConditionList1);
+            //commonTimeNode3.Append(childTimeNodeList3);
 
-            parallelTimeNode2.Append(commonTimeNode3);
+            //parallelTimeNode2.Append(commonTimeNode3);
 
-            childTimeNodeList2.Append(parallelTimeNode2);
+            //childTimeNodeList2.Append(parallelTimeNode2);
 
-            commonTimeNode2.Append(childTimeNodeList2);
+            //commonTimeNode2.Append(childTimeNodeList2);
 
-            P.PreviousConditionList previousConditionList1 = new P.PreviousConditionList();
+            //P.PreviousConditionList previousConditionList1 = new P.PreviousConditionList();
 
-            P.Condition condition4 = new P.Condition() { Event = P.TriggerEventValues.OnPrevious, Delay = "0" };
+            //P.Condition condition4 = new P.Condition() { Event = P.TriggerEventValues.OnPrevious, Delay = "0" };
 
-            P.TargetElement targetElement2 = new P.TargetElement();
-            P.SlideTarget slideTarget1 = new P.SlideTarget();
+            //P.TargetElement targetElement2 = new P.TargetElement();
+            //P.SlideTarget slideTarget1 = new P.SlideTarget();
 
-            targetElement2.Append(slideTarget1);
+            //targetElement2.Append(slideTarget1);
 
-            condition4.Append(targetElement2);
+            //condition4.Append(targetElement2);
 
-            previousConditionList1.Append(condition4);
+            //previousConditionList1.Append(condition4);
 
-            P.NextConditionList nextConditionList1 = new P.NextConditionList();
+            //P.NextConditionList nextConditionList1 = new P.NextConditionList();
 
-            P.Condition condition5 = new P.Condition() { Event = P.TriggerEventValues.OnNext, Delay = "0" };
+            //P.Condition condition5 = new P.Condition() { Event = P.TriggerEventValues.OnNext, Delay = "0" };
 
-            P.TargetElement targetElement3 = new P.TargetElement();
-            P.SlideTarget slideTarget2 = new P.SlideTarget();
+            //P.TargetElement targetElement3 = new P.TargetElement();
+            //P.SlideTarget slideTarget2 = new P.SlideTarget();
 
-            targetElement3.Append(slideTarget2);
+            //targetElement3.Append(slideTarget2);
 
-            condition5.Append(targetElement3);
+            //condition5.Append(targetElement3);
 
-            nextConditionList1.Append(condition5);
+            //nextConditionList1.Append(condition5);
 
-            sequenceTimeNode1.Append(commonTimeNode2);
-            sequenceTimeNode1.Append(previousConditionList1);
-            sequenceTimeNode1.Append(nextConditionList1);
+            //sequenceTimeNode1.Append(commonTimeNode2);
+            //sequenceTimeNode1.Append(previousConditionList1);
+            //sequenceTimeNode1.Append(nextConditionList1);
 
-            P.Audio audio1 = new ();
+            //P.Audio audio1 = new ();
 
-            P.CommonMediaNode commonMediaNode1 = new P.CommonMediaNode() { Volume = 80000 };
+            //P.CommonMediaNode commonMediaNode1 = new P.CommonMediaNode() { Volume = 80000 };
 
-            P.CommonTimeNode commonTimeNode7 = new P.CommonTimeNode() { Id = (UInt32Value)7U, Fill = P.TimeNodeFillValues.Hold, Display = false };
+            //P.CommonTimeNode commonTimeNode7 = new P.CommonTimeNode() { Id = (UInt32Value)7U, Fill = P.TimeNodeFillValues.Hold, Display = false };
 
-            P.StartConditionList startConditionList4 = new P.StartConditionList();
-            P.Condition condition6 = new P.Condition() { Delay = "indefinite" };
+            //P.StartConditionList startConditionList4 = new P.StartConditionList();
+            //P.Condition condition6 = new P.Condition() { Delay = "indefinite" };
 
-            startConditionList4.Append(condition6);
+            //startConditionList4.Append(condition6);
 
-            P.EndConditionList endConditionList1 = new P.EndConditionList();
+            //P.EndConditionList endConditionList1 = new P.EndConditionList();
 
-            P.Condition condition7 = new P.Condition() { Event = P.TriggerEventValues.OnStopAudio, Delay = "0" };
+            //P.Condition condition7 = new P.Condition() { Event = P.TriggerEventValues.OnStopAudio, Delay = "0" };
 
-            P.TargetElement targetElement4 = new P.TargetElement();
-            P.SlideTarget slideTarget3 = new P.SlideTarget();
+            //P.TargetElement targetElement4 = new P.TargetElement();
+            //P.SlideTarget slideTarget3 = new P.SlideTarget();
 
-            targetElement4.Append(slideTarget3);
+            //targetElement4.Append(slideTarget3);
 
-            condition7.Append(targetElement4);
+            //condition7.Append(targetElement4);
 
-            endConditionList1.Append(condition7);
+            //endConditionList1.Append(condition7);
 
-            commonTimeNode7.Append(startConditionList4);
-            commonTimeNode7.Append(endConditionList1);
+            //commonTimeNode7.Append(startConditionList4);
+            //commonTimeNode7.Append(endConditionList1);
 
-            P.TargetElement targetElement5 = new P.TargetElement();
-            P.ShapeTarget shapeTarget2 = new P.ShapeTarget() { ShapeId = "2" };
+            //P.TargetElement targetElement5 = new P.TargetElement();
+            //P.ShapeTarget shapeTarget2 = new P.ShapeTarget() { ShapeId = "2" };
 
-            targetElement5.Append(shapeTarget2);
+            //targetElement5.Append(shapeTarget2);
 
-            commonMediaNode1.Append(commonTimeNode7);
-            commonMediaNode1.Append(targetElement5);
+            //commonMediaNode1.Append(commonTimeNode7);
+            //commonMediaNode1.Append(targetElement5);
 
-            audio1.Append(commonMediaNode1);
+            //audio1.Append(commonMediaNode1);
 
-            childTimeNodeList1.Append(sequenceTimeNode1);
-            childTimeNodeList1.Append(audio1);
+            //childTimeNodeList1.Append(sequenceTimeNode1);
+            //childTimeNodeList1.Append(audio1);
 
-            commonTimeNode1.Append(childTimeNodeList1);
+            //commonTimeNode1.Append(childTimeNodeList1);
 
-            parallelTimeNode1.Append(commonTimeNode1);
+            //parallelTimeNode1.Append(commonTimeNode1);
 
-            timeNodeList1.Append(parallelTimeNode1);
-
-            timing1.Append(timeNodeList1);
-
-            this.slide.SlidePart.Slide.Append(timing1);
-            this.slide.SlidePart.AddExternalRelationship(
-                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio", new Uri("/ppt/media/media1.mp3", UriKind.Relative), "rId22");
-            this.slide.SlidePart.AddExternalRelationship(
-                "http://schemas.microsoft.com/office/2007/relationships/media", new Uri("/ppt/media/media1.mp3", UriKind.Relative), "rId11");
-
-            //this.slide.SlidePart.AddAudioReferenceRelationship(mediaDataPart1, "rId22");
-            //this.slide.SlidePart.AddMediaReferenceRelationship(mediaDataPart1, "rId11");
 
             return null;
         }
