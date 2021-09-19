@@ -62,7 +62,7 @@ namespace ShapeCrawler.Tests.Unit
         public void RowHeightGetter_ReturnsHeightOfTableRow()
         {
             // Arrange
-            ITable table = (ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 3);
+            ITable table = (ITable)_fixture.Presentation.Slides[1].Shapes.First(sp => sp.Id == 3);
 
             // Act-Assert
             table.Rows[0].Height.Should().Be(370840);
@@ -72,7 +72,7 @@ namespace ShapeCrawler.Tests.Unit
         public void CellIsMergedCell_ReturnsTrue_WhenCellMergedWithOtherHorizontally()
         {
             // Arrange
-            SCTableRow scTableRow = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4)).Rows[1];
+            SCTableRow scTableRow = ((ITable)_fixture.Presentation.Slides[1].Shapes.First(sp => sp.Id == 4)).Rows[1];
             ITableCell cell1x0 = scTableRow.Cells[0];
             ITableCell cell1x1 = scTableRow.Cells[1];
 
@@ -107,7 +107,7 @@ namespace ShapeCrawler.Tests.Unit
         public void ColumnsCount_ReturnsNumberOfColumnsInTheTable()
         {
             // Arrange
-            ITable table = (ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4);
+            ITable table = (ITable)_fixture.Presentation.Slides[1].Shapes.First(sp => sp.Id == 4);
 
             // Act
             int columnsCount = table.Columns.Count;
@@ -120,7 +120,7 @@ namespace ShapeCrawler.Tests.Unit
         public void ColumnWidthGetter_ReturnsTableColumnWidthInEMU()
         {
             // Arrange
-            ITable table = (ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4);
+            ITable table = (ITable)_fixture.Presentation.Slides[1].Shapes.First(sp => sp.Id == 4);
             Column column = table.Columns[0];
 
             // Act
@@ -534,8 +534,8 @@ namespace ShapeCrawler.Tests.Unit
         public void Indexer_ReturnsCellByRowAndColumnIndexes()
         {
             // Arrange
-            ITable tableCase1 = (ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4);
-            ITable tableCase2 = (ITable)_fixture.Pre001.Slides[3].Shapes.First(sp => sp.Id == 4);
+            ITable tableCase1 = (ITable)_fixture.Presentation.Slides[1].Shapes.First(sp => sp.Id == 4);
+            ITable tableCase2 = (ITable)_fixture.Presentation.Slides[3].Shapes.First(sp => sp.Id == 4);
 
             // Act
             ITableCell scCellCase1 = tableCase1[0, 0];

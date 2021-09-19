@@ -26,8 +26,8 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             ITextBox textBox1 = ((IAutoShape)_fixture.Pre002.Slides[1].Shapes.First(sp => sp.Id == 3)).TextBox;
-            ITextBox textBox2 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 4)).TextBox;
-            ITextBox textBox3 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 7)).TextBox;
+            ITextBox textBox2 = ((IAutoShape)_fixture.Presentation.Slides[0].Shapes.First(sp => sp.Id == 4)).TextBox;
+            ITextBox textBox3 = ((IAutoShape)_fixture.Presentation.Slides[0].Shapes.First(sp => sp.Id == 7)).TextBox;
 
             // Act
             string portionFontNameCase1 = textBox1.Paragraphs[0].Portions[0].Font.Name;
@@ -44,7 +44,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Name_GetterReturnsCalibriLightAsFontName_WhenFontNameIsCalibriLight()
         {
             // Arrange
-            ITextBox textBox = ((IAutoShape)_fixture.Pre001.Slides[4].Shapes.First(sp => sp.Id == 5)).TextBox;
+            ITextBox textBox = ((IAutoShape)_fixture.Presentation.Slides[4].Shapes.First(sp => sp.Id == 5)).TextBox;
 
             // Act
             string portionFontName = textBox.Paragraphs[0].Portions[0].Font.Name;

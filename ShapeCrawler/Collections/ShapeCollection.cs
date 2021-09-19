@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -204,27 +206,37 @@ namespace ShapeCrawler.Collections
             return new ShapeCollection(shapeList);
         }
 
-        public IAudioShape AddNewAudio(int x, int y, Stream audioStream)
+        public IAudioShape AddNewAudio(int xPixels, int yPixels, Stream mp3Stream)
         {
-            MediaDataPart mediaDataPart1 = this.slide.ParentPresentation.PresentationDocument.CreateMediaDataPart("audio/mpeg", "mp3");
-            audioStream.Position = 0;
-            mediaDataPart1.FeedData(audioStream);
-            ImagePart imagePart1 = this.slide.SlidePart.AddNewPart<ImagePart>("image/png", "rId44");
-            var data = File.OpenRead(
-                @"c:\Documents\ShapeCrawler\Issues\SC-159_Add API to add audio content on slide\image1.png");
-            imagePart1.FeedData(data);
-            data.Close();
+            Bitmap bm = new(xPixels, yPixels);
+            long xEmu = bm.Width * (long)(914400 / bm.HorizontalResolution);
+            long yEmu = bm.Height * (long)(914400 / bm.VerticalResolution);
+
+            MediaDataPart mediaDataPart = this.slide.ParentPresentation.PresentationDocument.CreateMediaDataPart("audio/mpeg", ".mp3");
+
+            mp3Stream.Position = 0;
+            mediaDataPart.FeedData(mp3Stream);
+            string imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
+            ImagePart imagePart = this.slide.SlidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
+            MemoryStream ms = new ();
+            Properties.Resources.audio_image.Save(ms, ImageFormat.Png);
+            ms.Position = 0;
+            imagePart.FeedData(ms);
+
+            AudioReferenceRelationship audioRr = this.slide.SlidePart.AddAudioReferenceRelationship(mediaDataPart);
+            MediaReferenceRelationship mediaRr = this.slide.SlidePart.AddMediaReferenceRelationship(mediaDataPart);
 
             P.Picture picture1 = new ();
 
             P.NonVisualPictureProperties nonVisualPictureProperties1 = new ();
 
-            P.NonVisualDrawingProperties nonVisualDrawingProperties2 = new () { Id = (UInt32Value)2U, Name = "test" };
+            uint shapeId = (uint)this.CollectionItems.Max(sp => sp.Id) + 1;
+            P.NonVisualDrawingProperties nonVisualDrawingProperties2 = new () { Id = shapeId, Name = $"Audio{shapeId}" };
             A.HyperlinkOnClick hyperlinkOnClick1 = new A.HyperlinkOnClick() { Id = "", Action = "ppaction://media" };
 
-            A.NonVisualDrawingPropertiesExtensionList nonVisualDrawingPropertiesExtensionList1 = new A.NonVisualDrawingPropertiesExtensionList();
+            A.NonVisualDrawingPropertiesExtensionList nonVisualDrawingPropertiesExtensionList1 = new ();
 
-            A.NonVisualDrawingPropertiesExtension nonVisualDrawingPropertiesExtension1 = new A.NonVisualDrawingPropertiesExtension() { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
+            A.NonVisualDrawingPropertiesExtension nonVisualDrawingPropertiesExtension1 = new () { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
 
             OpenXmlUnknownElement openXmlUnknownElement1 = OpenXmlUnknownElement.CreateOpenXmlUnknownElement("<a16:creationId xmlns:a16=\"http://schemas.microsoft.com/office/drawing/2014/main\" id=\"{2FF36D28-5328-4DA3-BF85-A2B65D7EE127}\" />");
 
@@ -241,13 +253,13 @@ namespace ShapeCrawler.Collections
             nonVisualPictureDrawingProperties1.Append(pictureLocks1);
 
             P.ApplicationNonVisualDrawingProperties applicationNonVisualDrawingProperties2 = new ();
-            A.AudioFromFile audioFromFile1 = new A.AudioFromFile() { Link = "rId22" };
+            A.AudioFromFile audioFromFile1 = new A.AudioFromFile() { Link = audioRr.Id };
 
             P.ApplicationNonVisualDrawingPropertiesExtensionList applicationNonVisualDrawingPropertiesExtensionList1 = new ();
 
             P.ApplicationNonVisualDrawingPropertiesExtension applicationNonVisualDrawingPropertiesExtension1 = new () { Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" };
 
-            P14.Media media1 = new P14.Media() { Embed = "rId11" };
+            P14.Media media1 = new P14.Media() { Embed = mediaRr.Id };
             media1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
             applicationNonVisualDrawingPropertiesExtension1.Append(media1);
@@ -262,10 +274,10 @@ namespace ShapeCrawler.Collections
             nonVisualPictureProperties1.Append(applicationNonVisualDrawingProperties2);
 
             P.BlipFill blipFill1 = new ();
-            A.Blip blip1 = new A.Blip() { Embed = "rId44" };
+            A.Blip blip1 = new() { Embed = imgPartRId };
 
-            A.Stretch stretch1 = new A.Stretch();
-            A.FillRectangle fillRectangle1 = new A.FillRectangle();
+            A.Stretch stretch1 = new();
+            A.FillRectangle fillRectangle1 = new();
 
             stretch1.Append(fillRectangle1);
 
@@ -274,15 +286,15 @@ namespace ShapeCrawler.Collections
 
             P.ShapeProperties shapeProperties1 = new ();
 
-            A.Transform2D transform2D1 = new A.Transform2D();
-            A.Offset offset2 = new A.Offset() { X = 5791200L, Y = 3124200L };
-            A.Extents extents2 = new A.Extents() { Cx = 609600L, Cy = 609600L };
+            A.Transform2D transform2D1 = new();
+            A.Offset offset2 = new() { X = xEmu, Y = yEmu };
+            A.Extents extents2 = new() { Cx = 609600L, Cy = 609600L };
 
             transform2D1.Append(offset2);
             transform2D1.Append(extents2);
 
-            A.PresetGeometry presetGeometry1 = new A.PresetGeometry() { Preset = A.ShapeTypeValues.Rectangle };
-            A.AdjustValueList adjustValueList1 = new A.AdjustValueList();
+            A.PresetGeometry presetGeometry1 = new() { Preset = A.ShapeTypeValues.Rectangle };
+            A.AdjustValueList adjustValueList1 = new();
 
             presetGeometry1.Append(adjustValueList1);
 
@@ -295,186 +307,10 @@ namespace ShapeCrawler.Collections
 
             this.shapeTree.Append(picture1);
 
-            P14.CreationId creationId1 = new P14.CreationId() { Val = (UInt32Value)3972997422U };
+            P14.CreationId creationId1 = new() { Val = (UInt32Value)3972997422U };
             creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
-            P.Timing timing1 = new P.Timing();
-
-            P.TimeNodeList timeNodeList1 = new P.TimeNodeList();
-
-            P.ParallelTimeNode parallelTimeNode1 = new P.ParallelTimeNode();
-
-            P.CommonTimeNode commonTimeNode1 = new P.CommonTimeNode() { Id = (UInt32Value)1U, Duration = "indefinite", Restart = P.TimeNodeRestartValues.Never, NodeType = P.TimeNodeValues.TmingRoot };
-
-            P.ChildTimeNodeList childTimeNodeList1 = new P.ChildTimeNodeList();
-
-            P.SequenceTimeNode sequenceTimeNode1 = new P.SequenceTimeNode() { Concurrent = true, NextAction = P.NextActionValues.Seek };
-
-            P.CommonTimeNode commonTimeNode2 = new P.CommonTimeNode() { Id = (UInt32Value)2U, Duration = "indefinite", NodeType = P.TimeNodeValues.MainSequence };
-
-            P.ChildTimeNodeList childTimeNodeList2 = new P.ChildTimeNodeList();
-
-            P.ParallelTimeNode parallelTimeNode2 = new P.ParallelTimeNode();
-
-            P.CommonTimeNode commonTimeNode3 = new P.CommonTimeNode() { Id = (UInt32Value)3U, Fill = P.TimeNodeFillValues.Hold };
-
-            P.StartConditionList startConditionList1 = new P.StartConditionList();
-            P.Condition condition1 = new P.Condition() { Delay = "indefinite" };
-
-            startConditionList1.Append(condition1);
-
-            P.ChildTimeNodeList childTimeNodeList3 = new P.ChildTimeNodeList();
-
-            P.ParallelTimeNode parallelTimeNode3 = new P.ParallelTimeNode();
-
-            P.CommonTimeNode commonTimeNode4 = new P.CommonTimeNode() { Id = (UInt32Value)4U, Fill = P.TimeNodeFillValues.Hold };
-
-            P.StartConditionList startConditionList2 = new P.StartConditionList();
-            P.Condition condition2 = new P.Condition() { Delay = "0" };
-
-            startConditionList2.Append(condition2);
-
-            P.ChildTimeNodeList childTimeNodeList4 = new P.ChildTimeNodeList();
-
-            P.ParallelTimeNode parallelTimeNode4 = new P.ParallelTimeNode();
-
-            P.CommonTimeNode commonTimeNode5 = new P.CommonTimeNode() { Id = (UInt32Value)5U, PresetId = 1, PresetClass = P.TimeNodePresetClassValues.MediaCall, PresetSubtype = 0, Fill = P.TimeNodeFillValues.Hold, NodeType = P.TimeNodeValues.ClickEffect };
-
-            P.StartConditionList startConditionList3 = new P.StartConditionList();
-            P.Condition condition3 = new P.Condition() { Delay = "0" };
-
-            startConditionList3.Append(condition3);
-
-            P.ChildTimeNodeList childTimeNodeList5 = new P.ChildTimeNodeList();
-
-            Command command1 = new Command() { Type = P.CommandValues.Call, CommandName = "playFrom(0.0)" };
-
-            P.CommonBehavior commonBehavior1 = new P.CommonBehavior();
-            P.CommonTimeNode commonTimeNode6 = new P.CommonTimeNode() { Id = (UInt32Value)6U, Duration = "120163", Fill = P.TimeNodeFillValues.Hold };
-
-            P.TargetElement targetElement1 = new P.TargetElement();
-            P.ShapeTarget shapeTarget1 = new P.ShapeTarget() { ShapeId = "2" };
-
-            targetElement1.Append(shapeTarget1);
-
-            commonBehavior1.Append(commonTimeNode6);
-            commonBehavior1.Append(targetElement1);
-
-            command1.Append(commonBehavior1);
-
-            childTimeNodeList5.Append(command1);
-
-            commonTimeNode5.Append(startConditionList3);
-            commonTimeNode5.Append(childTimeNodeList5);
-
-            parallelTimeNode4.Append(commonTimeNode5);
-
-            childTimeNodeList4.Append(parallelTimeNode4);
-
-            commonTimeNode4.Append(startConditionList2);
-            commonTimeNode4.Append(childTimeNodeList4);
-
-            parallelTimeNode3.Append(commonTimeNode4);
-
-            childTimeNodeList3.Append(parallelTimeNode3);
-
-            commonTimeNode3.Append(startConditionList1);
-            commonTimeNode3.Append(childTimeNodeList3);
-
-            parallelTimeNode2.Append(commonTimeNode3);
-
-            childTimeNodeList2.Append(parallelTimeNode2);
-
-            commonTimeNode2.Append(childTimeNodeList2);
-
-            P.PreviousConditionList previousConditionList1 = new P.PreviousConditionList();
-
-            P.Condition condition4 = new P.Condition() { Event = P.TriggerEventValues.OnPrevious, Delay = "0" };
-
-            P.TargetElement targetElement2 = new P.TargetElement();
-            P.SlideTarget slideTarget1 = new P.SlideTarget();
-
-            targetElement2.Append(slideTarget1);
-
-            condition4.Append(targetElement2);
-
-            previousConditionList1.Append(condition4);
-
-            P.NextConditionList nextConditionList1 = new P.NextConditionList();
-
-            P.Condition condition5 = new P.Condition() { Event = P.TriggerEventValues.OnNext, Delay = "0" };
-
-            P.TargetElement targetElement3 = new P.TargetElement();
-            P.SlideTarget slideTarget2 = new P.SlideTarget();
-
-            targetElement3.Append(slideTarget2);
-
-            condition5.Append(targetElement3);
-
-            nextConditionList1.Append(condition5);
-
-            sequenceTimeNode1.Append(commonTimeNode2);
-            sequenceTimeNode1.Append(previousConditionList1);
-            sequenceTimeNode1.Append(nextConditionList1);
-
-            P.Audio audio1 = new ();
-
-            P.CommonMediaNode commonMediaNode1 = new P.CommonMediaNode() { Volume = 80000 };
-
-            P.CommonTimeNode commonTimeNode7 = new P.CommonTimeNode() { Id = (UInt32Value)7U, Fill = P.TimeNodeFillValues.Hold, Display = false };
-
-            P.StartConditionList startConditionList4 = new P.StartConditionList();
-            P.Condition condition6 = new P.Condition() { Delay = "indefinite" };
-
-            startConditionList4.Append(condition6);
-
-            P.EndConditionList endConditionList1 = new P.EndConditionList();
-
-            P.Condition condition7 = new P.Condition() { Event = P.TriggerEventValues.OnStopAudio, Delay = "0" };
-
-            P.TargetElement targetElement4 = new P.TargetElement();
-            P.SlideTarget slideTarget3 = new P.SlideTarget();
-
-            targetElement4.Append(slideTarget3);
-
-            condition7.Append(targetElement4);
-
-            endConditionList1.Append(condition7);
-
-            commonTimeNode7.Append(startConditionList4);
-            commonTimeNode7.Append(endConditionList1);
-
-            P.TargetElement targetElement5 = new P.TargetElement();
-            P.ShapeTarget shapeTarget2 = new P.ShapeTarget() { ShapeId = "2" };
-
-            targetElement5.Append(shapeTarget2);
-
-            commonMediaNode1.Append(commonTimeNode7);
-            commonMediaNode1.Append(targetElement5);
-
-            audio1.Append(commonMediaNode1);
-
-            childTimeNodeList1.Append(sequenceTimeNode1);
-            childTimeNodeList1.Append(audio1);
-
-            commonTimeNode1.Append(childTimeNodeList1);
-
-            parallelTimeNode1.Append(commonTimeNode1);
-
-            timeNodeList1.Append(parallelTimeNode1);
-
-            timing1.Append(timeNodeList1);
-
-            this.slide.SlidePart.Slide.Append(timing1);
-            this.slide.SlidePart.AddExternalRelationship(
-                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio", new Uri("/ppt/media/media1.mp3", UriKind.Relative), "rId22");
-            this.slide.SlidePart.AddExternalRelationship(
-                "http://schemas.microsoft.com/office/2007/relationships/media", new Uri("/ppt/media/media1.mp3", UriKind.Relative), "rId11");
-
-            //this.slide.SlidePart.AddAudioReferenceRelationship(mediaDataPart1, "rId22");
-            //this.slide.SlidePart.AddMediaReferenceRelationship(mediaDataPart1, "rId11");
-
-            return null;
+            return new AudioShape(this.slide, this.shapeTree);
         }
 
         internal Shape GetShapeByPPlaceholderShape(P.PlaceholderShape inpPPlaceholderShape)

@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -119,17 +119,11 @@ namespace ShapeCrawler
             this.ParentBaseSlide.ThrowIfRemoved();
         }
 
-        protected void SetCustomData(string value)
+        private void SetCustomData(string value)
         {
             string customDataElement =
                 $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
             this.SdkPShapeTreeChild.InnerXml += customDataElement;
-        }
-
-        private bool DefineHidden()
-        {
-            bool? parsedHiddenValue = this.SdkPShapeTreeChild.GetNonVisualDrawingProperties().Hidden?.Value;
-            return parsedHiddenValue is true;
         }
 
         private string GetCustomData()
@@ -143,6 +137,12 @@ namespace ShapeCrawler
             }
 
             return elementText.Value;
+        }
+
+        private bool DefineHidden()
+        {
+            bool? parsedHiddenValue = this.SdkPShapeTreeChild.GetNonVisualDrawingProperties().Hidden?.Value;
+            return parsedHiddenValue is true;
         }
 
         private void SetXCoordinate(long value)
@@ -172,7 +172,13 @@ namespace ShapeCrawler
 
         private void SetY(long value)
         {
-            throw new NotImplementedException();
+            A.Offset aOffset = this.SdkPShapeTreeChild.Descendants<A.Offset>().FirstOrDefault();
+            if (this.Placeholder is not null)
+            {
+                throw new PlaceholderCannotBeChangedException();
+            }
+
+            aOffset.X = value;
         }
 
         private long GetY()
@@ -186,11 +192,6 @@ namespace ShapeCrawler
             return aOffset.Y;
         }
 
-        private void SetWidth(long value)
-        {
-            throw new NotImplementedException();
-        }
-
         private long GetWidth()
         {
             A.Extents aExtents = this.SdkPShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
@@ -202,9 +203,15 @@ namespace ShapeCrawler
             return aExtents.Cx;
         }
 
-        private void SetHeight(long value)
+        private void SetWidth(long value)
         {
-            throw new NotImplementedException();
+            A.Extents aExtents = this.SdkPShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
+            if (aExtents == null)
+            {
+                throw new PlaceholderCannotBeChangedException();
+            }
+
+            aExtents.Cx = value;
         }
 
         private long GetHeight()
@@ -216,6 +223,17 @@ namespace ShapeCrawler
             }
 
             return aExtents.Cy;
+        }
+
+        private void SetHeight(long value)
+        {
+            A.Extents aExtents = this.SdkPShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
+            if (aExtents == null)
+            {
+                throw new PlaceholderCannotBeChangedException();
+            }
+
+            aExtents.Cy = value;
         }
 
         private GeometryType GetGeometryType()

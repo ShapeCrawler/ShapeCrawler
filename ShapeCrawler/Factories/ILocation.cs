@@ -3,7 +3,7 @@
     /// <summary>
     ///     Represents a shape location and size data.
     /// </summary>
-    public interface ILocation
+    internal interface ILocation
     {
         long X { get; }
 

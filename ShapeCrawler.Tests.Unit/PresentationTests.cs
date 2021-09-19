@@ -103,7 +103,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SlidesAdd_AddsSpecifiedSlideAtTheEndOfTheSlideCollection()
         {
             // Arrange
-            ISlide sourceSlide = _fixture.Pre001.Slides[0];
+            ISlide sourceSlide = _fixture.Presentation.Slides[0];
             IPresentation destPre = SCPresentation.Open(Properties.Resources._002, true);
             int originSlidesCount = destPre.Slides.Count;
             int expectedSlidesCount = originSlidesCount + 1;
@@ -124,7 +124,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SlidesAdd_ShouldNotBreakPresentation()
         {
             // Arrange
-            ISlide sourceSlide = _fixture.Pre001.Slides[0];
+            ISlide sourceSlide = _fixture.Presentation.Slides[0];
             IPresentation destPre = SCPresentation.Open(Properties.Resources._002, true);
             MemoryStream modified = new();
 
@@ -183,7 +183,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SlideMastersCount_ReturnsNumberOfMasterSlidesInThePresentation()
         {
             // Arrange
-            SCPresentation presentationCase1 = _fixture.Pre001;
+            SCPresentation presentationCase1 = _fixture.Presentation;
             SCPresentation presentationCase2 = _fixture.Pre002;
 
             // Act
@@ -199,7 +199,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SlideMasterShapesCount_ReturnsNumberOfShapesOnTheMasterSlide()
         {
             // Arrange
-            SCPresentation presentation = _fixture.Pre001;
+            SCPresentation presentation = _fixture.Presentation;
 
             // Act
             int slideMasterShapesCount = presentation.SlideMasters[0].Shapes.Count;

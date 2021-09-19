@@ -124,10 +124,10 @@ namespace ShapeCrawler.Tests.Unit
         public void Shapes_ContainsParticularShapeTypes()
         {
             // Arrange
-            var pre = _fixture.Pre003;
+            IPresentation pre = _fixture.Pre003;
 
             // Act
-            var shapes = pre.Slides.First().Shapes;
+            IShapeCollection shapes = pre.Slides.First().Shapes;
 
             // Assert
             Assert.Single(shapes.Where(sp => sp is IAutoShape));
@@ -135,6 +135,30 @@ namespace ShapeCrawler.Tests.Unit
             Assert.Single(shapes.Where(sp => sp is ITable));
             Assert.Single(shapes.Where(sp => sp is IChart));
             Assert.Single(shapes.Where(sp => sp is IGroupShape));
+        }
+
+        [Fact]
+        public void Shapes_contains_picture()
+        {
+            // Arrange
+            IShape shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
+
+            // Act-Assert
+            IPicture picture = shape as IPicture;
+            picture.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void Shapes_contains_audio()
+        {
+            // Arrange
+            IShape shape = _fixture.Presentation.Slides[0].Shapes.First(sp => sp.Id == 8);
+
+            // Act
+            bool isAudio = shape is IAudioShape;
+
+            // Act-Assert
+            isAudio.Should().BeTrue();
         }
 
         [Theory]
@@ -152,29 +176,28 @@ namespace ShapeCrawler.Tests.Unit
         public void Shapes_AddNewAudio_AddsAudio()
         {
             // Arrange
-            //Stream preStream = TestFiles.Presentations.pre001_stream;
-            //IPresentation presentation = SCPresentation.Open(preStream, true);
-            File.Copy(@"c:\Documents\ShapeCrawler\Issues\SC-159_Add API to add audio content on slide\base.pptx",
-                @"c:\temp\base.pptx", true);
-            IPresentation presentation = SCPresentation.Open(@"c:\temp\base.pptx", true);
-            IShapeCollection shapes = presentation.Slides[0].Shapes;
-            Stream audioStream = TestFiles.Audio.TestMp3;
-            string customText = Guid.NewGuid().ToString();
+            Stream preStream = TestFiles.Presentations.pre001_stream;
+            IPresentation presentation = SCPresentation.Open(preStream, true);
+            IShapeCollection shapes = presentation.Slides[1].Shapes;
+            Stream mp3 = TestFiles.Audio.TestMp3;
+            string customId = Guid.NewGuid().ToString();
+            int xPxCoordinate = 300;
+            int yPxCoordinate = 100;
 
             // Act
-            IAudioShape audioShape = shapes.AddNewAudio(50, 50, audioStream);
-            presentation.SaveAs(@"c:\temp\modified.pptx");
-            presentation.Close();
-            return;
-            //audioShape.CustomData = customText;
-            //presentation.Save();
-            //presentation.Close();
-            
-            //presentation = SCPresentation.Open(preStream, false);
-            //audioShape = presentation.Slides[0].Shapes.OfType<IAudioShape>().FirstOrDefault(sp => sp.CustomData == customText);
+            IAudioShape audioShape = shapes.AddNewAudio(xPxCoordinate, yPxCoordinate, mp3);
 
-            //// Assert
-            //audioShape.Should().NotBeNull();
+            audioShape.CustomData = customId;
+            presentation.SaveAs(@"c:\temp\test.pptx");
+            presentation.Save();
+            presentation.Close();
+            presentation = SCPresentation.Open(preStream, false);
+            List<IAudioShape> audioShapes = presentation.Slides[0].Shapes.OfType<IAudioShape>().ToList();
+            audioShape = audioShapes.FirstOrDefault(sp => sp.CustomData == customId);
+
+            // Assert
+            audioShape.X.Should().Be(xPxCoordinate);
+            audioShape.Y.Should().Be(yPxCoordinate);
         }
 
         public static IEnumerable<object[]> TestCasesShapesCount()
@@ -207,7 +230,7 @@ namespace ShapeCrawler.Tests.Unit
         public void CustomData_PropertyIsNull_WhenTheSlideHasNotCustomData()
         {
             // Arrange
-            var slide = _fixture.Pre001.Slides.First();
+            var slide = _fixture.Presentation.Slides.First();
 
             // Act
             var sldCustomData = slide.CustomData;
@@ -239,23 +262,12 @@ namespace ShapeCrawler.Tests.Unit
             slide2.Number.Should().Be(2);
         }
 
-        [Fact]
-        public void Shape_IsAPicture()
-        {
-            // Arrange
-            IShape shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
-
-            // Act-Assert
-            IPicture picture = shape as IPicture;
-            picture.Should().NotBeNull();
-        }
-
 #if DEBUG
         [Fact(Skip = "The feature is in progress")]
         public void SaveImage_GenerateAndSavesSlideImageInSpecifiedFilePath()
         {
             // Arrange
-            ISlide slide = _fixture.Pre001.Slides[0];
+            ISlide slide = _fixture.Presentation.Slides[0];
 
             // Act
             slide.SaveImage(@"c:\1\SlideScSaveImage.png");

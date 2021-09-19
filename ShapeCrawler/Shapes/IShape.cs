@@ -8,22 +8,22 @@ namespace ShapeCrawler.Shapes
     public interface IShape
     {
         /// <summary>
-        ///     Gets x-coordinate of the upper-left corner of the shape.
+        ///     Gets or sets x-coordinate of the upper-left corner of the shape.
         /// </summary>
         long X { get; set; }
 
         /// <summary>
-        ///     Gets y-coordinate of the upper-left corner of the shape.
+        ///     Gets or sets y-coordinate of the upper-left corner of the shape.
         /// </summary>
         long Y { get; set; }
 
         /// <summary>
-        ///     Gets width of the shape.
+        ///     Gets or sets width of the shape.
         /// </summary>
         long Width { get; set; }
 
         /// <summary>
-        ///     Gets height of the shape.
+        ///     Gets or sets height of the shape.
         /// </summary>
         long Height { get; set; }
 
@@ -38,7 +38,7 @@ namespace ShapeCrawler.Shapes
         string Name { get; }
 
         /// <summary>
-        ///     Determines whether shape is hidden.
+        ///     Gets a value indicating whether shape is hidden.
         /// </summary>
         bool Hidden { get; }
 

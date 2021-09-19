@@ -33,8 +33,8 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             ITextBox textBoxCase1 = ((IAutoShape)_fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2)).TextBox;
-            ITextBox textBoxCase2 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 5)).TextBox;
-            ITextBox textBoxCase3 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 6)).TextBox;
+            ITextBox textBoxCase2 = ((IAutoShape)_fixture.Presentation.Slides[0].Shapes.First(sp => sp.Id == 5)).TextBox;
+            ITextBox textBoxCase3 = ((IAutoShape)_fixture.Presentation.Slides[0].Shapes.First(sp => sp.Id == 6)).TextBox;
             ITextBox textBoxCase5 = ((IAutoShape)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox;
             ITextBox textBoxCase6 = ((IAutoShape)_fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61)).TextBox;
             ITextBox textBoxCase7 = ((IAutoShape)_fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5)).TextBox;
@@ -44,7 +44,7 @@ namespace ShapeCrawler.Tests.Unit
             ITextBox textBoxCase11 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox;
             ITextBox textBoxCase12 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
             ITextBox textBoxCase13 = ((IAutoShape)_fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 2)).TextBox;
-            ITextBox textBoxCase14 = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextBox;
+            ITextBox textBoxCase14 = ((ITable)_fixture.Presentation.Slides[1].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextBox;
             ITextBox textBoxCase4 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextBox;
 
             // Act-Assert
