@@ -52,7 +52,6 @@ This library provides a simplified object model on top of the Open XML SDK for m
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="audio-image.png" />
     <None Remove="stylecop.json" />
   </ItemGroup>
 
@@ -60,11 +59,6 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="audio-image.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.13.1" />
