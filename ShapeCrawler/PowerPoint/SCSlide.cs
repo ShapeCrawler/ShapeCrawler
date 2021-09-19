@@ -214,10 +214,10 @@ namespace ShapeCrawler
             Stream customXmlPartStream;
             if (this.customXmlPart.Value == null)
             {
-                var newSlideCustomXmlPart = this.SlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
+                CustomXmlPart newSlideCustomXmlPart = this.SlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
                 customXmlPartStream = newSlideCustomXmlPart.GetStream();
 #if NETSTANDARD2_0
-                customXmlPart = new Lazy<CustomXmlPart>(() => newSlideCustomXmlPart);
+                this.customXmlPart = new Lazy<CustomXmlPart>(() => newSlideCustomXmlPart);
 #else
                 this.customXmlPart = new Lazy<CustomXmlPart>(newSlideCustomXmlPart);
 #endif

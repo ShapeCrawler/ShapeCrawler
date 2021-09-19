@@ -2,7 +2,7 @@ namespace ShapeCrawler.Tests.Unit.Helpers
 {
     public class PresentationFixture
     {
-        public SCPresentation Pre001 { get; }
+        public SCPresentation Presentation { get; }
         public SCPresentation Pre002 { get; }
         public SCPresentation Pre003 { get; }
         public SCPresentation Pre004 { get; }
@@ -38,7 +38,7 @@ namespace ShapeCrawler.Tests.Unit.Helpers
 
         public PresentationFixture()
         {
-            Pre001 = SCPresentation.Open(Properties.Resources._001, false);
+            Presentation = SCPresentation.Open(Properties.Resources._001, false);
             Pre002 = SCPresentation.Open(Properties.Resources._002, false);
             Pre003 = SCPresentation.Open(Properties.Resources._003, false);
             Pre004 = SCPresentation.Open(Properties.Resources._004, false);

@@ -16,15 +16,11 @@ namespace ShapeCrawler
             this.ParentSlide = parentSlide;
         }
 
-        #region Public Properties
-
         public override IPlaceholder Placeholder => SlidePlaceholder.Create(this.SdkPShapeTreeChild, this);
-
-        public SCPresentation ParentPresentation => this.ParentSlide.ParentPresentation;
 
         public override SCSlideMaster ParentSlideMaster => (SCSlideMaster)this.ParentSlide.ParentSlideLayout.ParentSlideMaster;
 
-        #endregion Public Properties
+        public SCPresentation ParentPresentation => this.ParentSlide.ParentPresentation;
 
         internal SCSlide ParentSlide { get; }
     }

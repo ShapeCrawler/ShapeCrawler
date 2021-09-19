@@ -6,41 +6,41 @@ namespace ShapeCrawler.Factories
 {
     internal class NonPlaceholderTransform : ILocation
     {
-        private readonly A.Extents _extents;
-        private readonly A.Offset _offset;
+        private readonly A.Extents aExtents;
+        private readonly A.Offset aOffset;
 
         public NonPlaceholderTransform(OpenXmlCompositeElement sdkCompositeElement)
         {
-            _offset = sdkCompositeElement.Descendants<A.Offset>().First();
-            _extents = sdkCompositeElement.Descendants<A.Extents>().First();
+            this.aOffset = sdkCompositeElement.Descendants<A.Offset>().First();
+            this.aExtents = sdkCompositeElement.Descendants<A.Extents>().First();
         }
 
-        public long X => _offset.X.Value;
+        public long X => aOffset.X.Value;
 
-        public long Y => _offset.Y.Value;
+        public long Y => aOffset.Y.Value;
 
-        public long Width => _extents.Cx.Value;
+        public long Width => aExtents.Cx.Value;
 
-        public long Height => _extents.Cy.Value;
+        public long Height => aExtents.Cy.Value;
 
         public void SetX(long x)
         {
-            _offset.X.Value = x;
+            aOffset.X.Value = x;
         }
 
         public void SetY(long y)
         {
-            _offset.Y.Value = y;
+            aOffset.Y.Value = y;
         }
 
         public void SetWidth(long w)
         {
-            _extents.Cx.Value = w;
+            aExtents.Cx.Value = w;
         }
 
         public void SetHeight(long y)
         {
-            _extents.Cy.Value = y;
+            aExtents.Cy.Value = y;
         }
     }
 }

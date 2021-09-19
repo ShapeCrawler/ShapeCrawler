@@ -91,7 +91,7 @@ namespace ShapeCrawler.Tests.Unit
             IAutoShape nonPhAutoShapeCase1 = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
             IAutoShape nonPhAutoShapeCase2 = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3);
             IAutoShape nonPhAutoShapeCase3 = (IAutoShape)_fixture.Pre020.Slides[2].Shapes.First(sp => sp.Id == 8);
-            IAutoShape nonPhAutoShapeCase4 = (IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 4);
+            IAutoShape nonPhAutoShapeCase4 = (IAutoShape)_fixture.Presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
             IAutoShape nonPhAutoShapeCase5 = (IAutoShape)_fixture.Pre002.Slides[1].Shapes.First(sp => sp.Id == 3);
             IAutoShape nonPhAutoShapeCase6 = (IAutoShape)_fixture.Pre026.Slides[0].Shapes.First(sp => sp.Id == 128);
             IAutoShape nonPhAutoShapeCase7 = (IAutoShape)_fixture.Pre030.Slides[0].Shapes.First(sp => sp.Id == 5);
@@ -137,8 +137,8 @@ namespace ShapeCrawler.Tests.Unit
         public void Color_GetterReturnsColor_OfSlidePlaceholder()
         {
             // Arrange
-            IAutoShape placeholderCase1 = (IAutoShape)_fixture.Pre001.Slides[2].Shapes.First(sp => sp.Id == 4);
-            IAutoShape placeholderCase2 = (IAutoShape)_fixture.Pre001.Slides[4].Shapes.First(sp => sp.Id == 5);
+            IAutoShape placeholderCase1 = (IAutoShape)_fixture.Presentation.Slides[2].Shapes.First(sp => sp.Id == 4);
+            IAutoShape placeholderCase2 = (IAutoShape)_fixture.Presentation.Slides[4].Shapes.First(sp => sp.Id == 5);
             IAutoShape placeholderCase3 = (IAutoShape)_fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61);
             IAutoShape placeholderCase4 = (IAutoShape)_fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52);
             IAutoShape placeholderCase5 = (IAutoShape)_fixture.Pre032.Slides[0].Shapes.First(sp => sp.Id == 10242);
@@ -172,7 +172,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Color_GetterReturnsColor_OfSlideLayoutPlaceholder()
         {
             // Arrange
-            IAutoShape titlePh = (IAutoShape)_fixture.Pre001.Slides[0].ParentSlideLayout.Shapes.First(sp => sp.Id == 2);
+            IAutoShape titlePh = (IAutoShape)_fixture.Presentation.Slides[0].ParentSlideLayout.Shapes.First(sp => sp.Id == 2);
             IColorFormat colorFormat = titlePh.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
             
             // Act-Assert
@@ -184,7 +184,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             Color whiteColor = ColorTranslator.FromHtml("#FFFFFF");
-            IAutoShape nonPlaceholder = (IAutoShape)_fixture.Pre001.SlideMasters[0].Shapes.First(sp => sp.Id == 8);
+            IAutoShape nonPlaceholder = (IAutoShape)_fixture.Presentation.SlideMasters[0].Shapes.First(sp => sp.Id == 8);
             IColorFormat colorFormat = nonPlaceholder.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
 
             // Act-Assert
@@ -196,7 +196,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             Color blackColor = ColorTranslator.FromHtml("#000000");
-            IAutoShape titlePlaceholder = (IAutoShape)_fixture.Pre001.SlideMasters[0].Shapes.First(sp => sp.Id == 2);
+            IAutoShape titlePlaceholder = (IAutoShape)_fixture.Presentation.SlideMasters[0].Shapes.First(sp => sp.Id == 2);
             IColorFormat colorFormat = titlePlaceholder.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
 
             // Act-Assert
@@ -208,7 +208,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             Color redColor = ColorTranslator.FromHtml("#FF0000");
-            ITable table = (ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4);
+            ITable table = (ITable)_fixture.Presentation.Slides[1].Shapes.First(sp => sp.Id == 4);
             IColorFormat colorFormat = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
 
             // Act-Assert

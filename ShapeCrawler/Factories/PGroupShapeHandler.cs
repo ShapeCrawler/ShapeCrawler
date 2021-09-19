@@ -61,7 +61,7 @@ namespace ShapeCrawler.Factories
                 var spContext = this.shapeContextBuilder.Build(pShapeTreeChild);
                 var transformGroup = pGroupShape.GroupShapeProperties.TransformGroup;
                 var innerTransform = new NonPlaceholderTransform(transformGroup);
-                var groupShape = new SlideGroupShape(innerTransform, spContext, groupedShapes, pGroupShape, slide);
+                var groupShape = new SlideGroupShape(spContext, groupedShapes, pGroupShape, slide);
 
                 return groupShape;
             }

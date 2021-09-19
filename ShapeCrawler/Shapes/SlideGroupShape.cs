@@ -16,20 +16,16 @@ namespace ShapeCrawler
     /// </summary>
     internal class SlideGroupShape : SlideShape, IGroupShape
     {
-        private readonly ILocation _innerTransform;
-
         internal ShapeContext Context;
 
         #region Constructors
 
         internal SlideGroupShape(
-            ILocation innerTransform,
             ShapeContext spContext,
             List<IShape> groupedShapes,
             OpenXmlCompositeElement pShapeTreeChild,
             SCSlide slide) : base(slide, pShapeTreeChild)
         {
-            _innerTransform = innerTransform;
             Context = spContext;
             Shapes = groupedShapes;
         }

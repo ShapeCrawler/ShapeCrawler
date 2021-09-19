@@ -30,7 +30,7 @@ namespace ShapeCrawler.Factories
 
         #region Public Methods
 
-        public ILocation FromComposite(OpenXmlCompositeElement sdkCompositeElement)
+        internal ILocation FromComposite(OpenXmlCompositeElement sdkCompositeElement)
         {
             Check.NotNull(sdkCompositeElement, nameof(sdkCompositeElement));
 

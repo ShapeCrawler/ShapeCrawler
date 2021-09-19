@@ -7,9 +7,6 @@ dotnet_diagnostic.CA1717.severity = error
 dotnet_diagnostic.CA2007.severity = error
 dotnet_diagnostic.CA2211.severity = error
 
-# CA1307: The behavior of 'string.Equals(string)' could vary based on the current user's locale settings. Replace this call in 'SlideDotNet.Collections.SeriesCollection.SeriesCollection(System.Collections.Generic.IEnumerable<DocumentFormat.OpenXml.OpenXmlElement>, DocumentFormat.OpenXml.Packaging.ChartPart)' with a call to 'string.Equals(string, System.StringComparison)'.
-dotnet_diagnostic.CA1307.severity = error
-
 dotnet_diagnostic.CA1720.severity = suggestion
 
 # IDE0044: Add readonly modifier

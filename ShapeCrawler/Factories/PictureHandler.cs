@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Audio;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
@@ -26,6 +27,13 @@ namespace ShapeCrawler.Factories
             P.Picture pPicture;
             if (pShapeTreeChild is P.Picture treePic)
             {
+                A.AudioFromFile aAudioFile = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
+                    .GetFirstChild<A.AudioFromFile>();
+                if (aAudioFile != null)
+                {
+                    return new AudioShape(slide, pShapeTreeChild);
+                }
+
                 pPicture = treePic;
             }
             else

@@ -22,6 +22,12 @@ namespace ShapeCrawler.Collections
         /// </summary>
         IEnumerator<IShape> GetEnumerator();
 
-        IAudioShape AddNewAudio(int x, int y, Stream audioStream);
+        /// <summary>
+        ///     Create a new audio shape from stream and adds it to the end of the collection.
+        /// </summary>
+        /// <param name="xPixel">The X coordinate for the left side of the shape.</param>
+        /// <param name="yPixels">The Y coordinate for the left side of the shape.</param>
+        /// <param name="mp3Stream">Audio stream data.</param>
+        IAudioShape AddNewAudio(int xPixel, int yPixels, Stream mp3Stream);
     }
 }
