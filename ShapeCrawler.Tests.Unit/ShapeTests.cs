@@ -275,7 +275,7 @@ namespace ShapeCrawler.Tests.Unit
             IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
             IShape shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
             Bitmap bm = new(100, 100);
-            float stubVerticalResolution = 96;
+            float verticalResulution = TestHelper.GetVerticalResolution();
 
             // Act
             int height1 = shapeCase1.Height;
@@ -283,9 +283,9 @@ namespace ShapeCrawler.Tests.Unit
             int height3 = shapeCase3.Height;
 
             // Assert
-            (height1 * 914400 / stubVerticalResolution).Should().Be(1419225);
-            (height2 * 914400 / stubVerticalResolution).Should().Be(647700);
-            (height3 * 914400 / stubVerticalResolution).Should().Be(371475);
+            (height1 * 914400 / verticalResulution).Should().Be(1419225);
+            (height2 * 914400 / verticalResulution).Should().Be(647700);
+            (height3 * 914400 / verticalResulution).Should().Be(371475);
         }
 
         [Theory]
