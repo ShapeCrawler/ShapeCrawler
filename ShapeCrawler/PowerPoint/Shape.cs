@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;

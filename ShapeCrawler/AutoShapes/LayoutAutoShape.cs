@@ -36,7 +36,7 @@ namespace ShapeCrawler
 
         public ITextBox TextBox => this.textBox.Value;
 
-        public ShapeFill Fill => this.shapeFill.Value; // TODO: add test
+        public ShapeFill Fill => this.shapeFill.Value;
 
         #endregion Public Properties
 
@@ -44,7 +44,7 @@ namespace ShapeCrawler
 
         internal Dictionary<int, FontData> LvlToFontData => this.lvlToFontData.Value;
 
-        internal ShapeContext Context { get; } // TODO: resolve warning
+        internal ShapeContext Context { get; }
 
         public void FillFontData(int paragraphLvl, ref FontData fontData)
         {

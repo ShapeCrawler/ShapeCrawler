@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -29,7 +28,7 @@ namespace ShapeCrawler.Factories
         {
             if (pShapeTreeChild is P.GroupShape pGroupShape)
             {
-                var pShapeHandler = new AutoShapeCreator(this.shapeContextBuilder);
+                var pShapeHandler = new AutoShapeCreator();
                 var oleGrFrameHandler = new OleGraphicFrameHandler(this.shapeContextBuilder);
                 var pictureHandler = new PictureHandler(this.shapeContextBuilder);
                 var pGroupShapeHandler = new PGroupShapeHandler(this.shapeContextBuilder, this.geometryFactory, this.slidePart);
@@ -45,17 +44,16 @@ namespace ShapeCrawler.Factories
                 chartGrFrameHandler.Successor = tableGrFrameHandler;
 
                 var groupedShapes = new List<IShape>(pGroupShape.Count());
-                foreach (var item in pGroupShape.OfType<OpenXmlCompositeElement>())
+                foreach (OpenXmlCompositeElement childItem in pGroupShape.OfType<OpenXmlCompositeElement>())
                 {
-                    var groupedShape = pShapeHandler.Create(item, slide);
+                    IShape groupedShape = pShapeHandler.Create(childItem, slide);
                     if (groupedShape != null)
                     {
                         groupedShapes.Add(groupedShape);
                     }
                 }
 
-                var spContext = this.shapeContextBuilder.Build(pShapeTreeChild);
-                var groupShape = new SlideGroupShape(spContext, groupedShapes, pGroupShape, slide);
+                var groupShape = new SlideGroupShape(groupedShapes, pGroupShape, slide);
 
                 return groupShape;
             }

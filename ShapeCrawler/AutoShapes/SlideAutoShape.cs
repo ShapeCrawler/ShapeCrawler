@@ -18,18 +18,14 @@ namespace ShapeCrawler
         private readonly P.Shape pShape;
 
         internal SlideAutoShape(
-            ShapeContext spContext,
             P.Shape pShape,
             SCSlide slide)
             : base(slide, pShape)
         {
-            this.Context = spContext;
             this.textBox = new Lazy<SCTextBox>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
             this.pShape = pShape;
         }
-
-        internal ShapeContext Context { get; }
 
         #region Public Properties
 
@@ -78,11 +74,6 @@ namespace ShapeCrawler
             }
 
             return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
-        }
-
-        public void ThrowIfRemoved()
-        {
-            base.ThrowIfRemoved();
         }
     }
 }

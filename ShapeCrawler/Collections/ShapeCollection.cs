@@ -58,12 +58,12 @@ namespace ShapeCrawler.Collections
             var chartGrFrameHandler = new ChartGraphicFrameHandler();
             var tableGrFrameHandler = new TableGraphicFrameHandler(shapeContextBuilder);
             var oleGrFrameHandler = new OleGraphicFrameHandler(shapeContextBuilder);
-            var pShapeHandler = new AutoShapeCreator(shapeContextBuilder);
+            var autoShapeCreator = new AutoShapeCreator();
             var pictureHandler = new PictureHandler(shapeContextBuilder);
             var sdkGroupShapeHandler =
                 new PGroupShapeHandler(shapeContextBuilder, geometryFactory, slidePart);
 
-            pShapeHandler.Successor = sdkGroupShapeHandler;
+            autoShapeCreator.Successor = sdkGroupShapeHandler;
             sdkGroupShapeHandler.Successor = oleGrFrameHandler;
             oleGrFrameHandler.Successor = pictureHandler;
             pictureHandler.Successor = chartGrFrameHandler;
@@ -73,7 +73,7 @@ namespace ShapeCrawler.Collections
             var shapes = new List<IShape>(shapeTree.Count());
             foreach (OpenXmlCompositeElement compositeElement in shapeTree.OfType<OpenXmlCompositeElement>())
             {
-                IShape shape = pShapeHandler.Create(compositeElement, slide);
+                IShape shape = autoShapeCreator.Create(compositeElement, slide);
                 if (shape != null)
                 {
                     shapes.Add(shape);

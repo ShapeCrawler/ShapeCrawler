@@ -185,7 +185,7 @@ namespace ShapeCrawler.Tests.Unit
             xCoordinateCase7.Should().Be((int)(757383 * horizontalResolution / 914400));          
         }
 
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void X_ReturnsXCoordinateInPixels_OfGroupedShape()
         {
             // Arrange
