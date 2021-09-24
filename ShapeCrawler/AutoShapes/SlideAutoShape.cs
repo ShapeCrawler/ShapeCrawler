@@ -3,7 +3,6 @@ using System.Linq;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -12,24 +11,18 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler
 {
-    /// <summary>
-    ///     Represents an AutoShape on a slide.
-    /// </summary>
     internal class SlideAutoShape : SlideShape, IAutoShape, ITextBoxContainer
     {
-        private readonly ILocation innerTransform;
         private readonly Lazy<ShapeFill> shapeFill;
         private readonly Lazy<SCTextBox> textBox;
         private readonly P.Shape pShape;
 
         internal SlideAutoShape(
-            ILocation innerTransform,
             ShapeContext spContext,
             P.Shape pShape,
             SCSlide slide)
             : base(slide, pShape)
         {
-            this.innerTransform = innerTransform;
             this.Context = spContext;
             this.textBox = new Lazy<SCTextBox>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
@@ -39,30 +32,6 @@ namespace ShapeCrawler
         internal ShapeContext Context { get; }
 
         #region Public Properties
-
-        public long X // TODO: remove this hides
-        {
-            get => this.innerTransform.X;
-            set => this.innerTransform.SetX(value);
-        }
-
-        public long Y
-        {
-            get => this.innerTransform.Y;
-            set => this.innerTransform.SetY(value);
-        }
-
-        public long Width
-        {
-            get => this.innerTransform.Width;
-            set => this.innerTransform.SetWidth(value);
-        }
-
-        public long Height
-        {
-            get => this.innerTransform.Height;
-            set => this.innerTransform.SetHeight(value);
-        }
 
         public ITextBox TextBox => this.textBox.Value;
 

@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -43,8 +44,10 @@ namespace ShapeCrawler.Tests.Unit
         [Fact]
         public void Text_SetterThrowsElementIsRemovedException_WhenPortionIsRemoved()
         {
+            //Rectangle resolution = Screen.PrimaryScreen.Bounds;
+
             // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources._001, true);
+            IPresentation presentation = SCPresentation.Open(TestFiles.Presentations.pre001, true);
             IAutoShape autoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 5);
             IPortionCollection portions = autoShape.TextBox.Paragraphs[0].Portions;
             IPortion portion = portions[0];

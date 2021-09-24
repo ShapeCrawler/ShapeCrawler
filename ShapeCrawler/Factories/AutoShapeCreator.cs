@@ -7,12 +7,13 @@ namespace ShapeCrawler.Factories
 {
     internal class AutoShapeCreator : OpenXmlElementHandler
     {
+        private readonly ShapeContext.Builder _shapeContextBuilder;
+
         #region Constructors
 
-        public AutoShapeCreator(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory)
+        public AutoShapeCreator(ShapeContext.Builder shapeContextBuilder)
         {
             this._shapeContextBuilder = shapeContextBuilder;
-            this._transformFactory = transformFactory;
         }
 
         #endregion Constructors
@@ -24,8 +25,7 @@ namespace ShapeCrawler.Factories
             if (pShapeTreeChild is P.Shape pShape)
             {
                 ShapeContext shapeContext = _shapeContextBuilder.Build(pShapeTreeChild);
-                ILocation innerTransform = _transformFactory.FromComposite(pShape);
-                var autoShape = new SlideAutoShape(innerTransform, shapeContext, pShape, slide);
+                var autoShape = new SlideAutoShape(shapeContext, pShape, slide);
 
                 return autoShape;
             }
@@ -34,12 +34,5 @@ namespace ShapeCrawler.Factories
         }
 
         #endregion Public Methods
-
-        #region Fields
-
-        private readonly ShapeContext.Builder _shapeContextBuilder;
-        private readonly LocationParser _transformFactory;
-
-        #endregion Fields
     }
 }

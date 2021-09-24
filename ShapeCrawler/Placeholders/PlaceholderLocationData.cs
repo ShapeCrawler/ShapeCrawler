@@ -5,13 +5,10 @@ namespace ShapeCrawler.Placeholders
     /// <summary>
     ///     Represents placeholder data.
     /// </summary>
-    public class PlaceholderLocationData : PlaceholderData
+    public class PlaceholderLocationData : PlaceholderData // TODO: convert to internal
     {
         #region Constructors
 
-        /// <summary>
-        ///     Creates a new <see cref="PlaceholderLocationData" /> instance from <see cref="PlaceholderData" />.
-        /// </summary>
         public PlaceholderLocationData(PlaceholderData phData)
         {
             Check.NotNull(phData, nameof(phData));
@@ -27,22 +24,22 @@ namespace ShapeCrawler.Placeholders
         /// <summary>
         ///     Gets or sets X-coordinate's value.
         /// </summary>
-        public long X { get; set; }
+        public int X { get; set; }
 
         /// <summary>
         ///     Gets or sets Y-coordinate's value.
         /// </summary>
-        public long Y { get; set; }
+        public int Y { get; set; }
 
         /// <summary>
         ///     Gets or sets width value.
         /// </summary>
-        public long Width { get; set; }
+        public int Width { get; set; }
 
         /// <summary>
         ///     Gets or sets height value.
         /// </summary>
-        public long Height { get; set; }
+        public int Height { get; set; }
 
         public GeometryType Geometry { get; set; } = GeometryType.Rectangle;
 

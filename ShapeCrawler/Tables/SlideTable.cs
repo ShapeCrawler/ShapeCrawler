@@ -22,7 +22,6 @@ namespace ShapeCrawler
     /// <inheritdoc cref="ITable"/>
     internal class SlideTable : SlideShape, ITable
     {
-        private readonly ILocation innerTransform;
         private readonly P.GraphicFrame pGraphicFrame;
         private readonly ResettableLazy<RowCollection> rowCollection;
         private bool? hidden;
@@ -33,15 +32,14 @@ namespace ShapeCrawler
 
         internal SlideTable(
             OpenXmlCompositeElement pShapeTreeChild,
-            ILocation innerTransform,
             ShapeContext spContext,
-            SCSlide slide) : base(slide, pShapeTreeChild)
+            SCSlide slide)
+            : base(slide, pShapeTreeChild)
         {
-            this.innerTransform = innerTransform;
-            Context = spContext;
-            rowCollection =
-                new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) SdkPShapeTreeChild));
-            pGraphicFrame = pShapeTreeChild as P.GraphicFrame;
+            this.Context = spContext;
+            this.rowCollection =
+                new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) this.SdkPShapeTreeChild));
+            this.pGraphicFrame = pShapeTreeChild as P.GraphicFrame;
         }
 
         #endregion Constructors
@@ -192,45 +190,9 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public IReadOnlyList<Column> Columns => GetColumnList(); //TODO: make lazy
+        public IReadOnlyList<Column> Columns => GetColumnList(); // TODO: make lazy
         public RowCollection Rows => rowCollection.Value;
         public ITableCell this[int rowIndex, int columnIndex] => Rows[rowIndex].Cells[columnIndex];
-
-        /// <summary>
-        ///     Returns the x-coordinate of the upper-left corner of the shape.
-        /// </summary>
-        public long X
-        {
-            get => innerTransform.X;
-            set => innerTransform.SetX(value);
-        }
-
-        /// <summary>
-        ///     Returns the y-coordinate of the upper-left corner of the shape.
-        /// </summary>
-        public long Y // TODO: fix warning
-        {
-            get => innerTransform.Y;
-            set => innerTransform.SetY(value);
-        }
-
-        /// <summary>
-        ///     Returns the width of the shape.
-        /// </summary>
-        public long Width // TODO: fix warning
-        {
-            get => innerTransform.Width;
-            set => innerTransform.SetWidth(value);
-        }
-
-        /// <summary>
-        ///     Returns the height of the shape.
-        /// </summary>
-        public long Height // TODO: fix warning
-        {
-            get => innerTransform.Height;
-            set => innerTransform.SetHeight(value);
-        }
 
         /// <summary>
         ///     Returns an element identifier.

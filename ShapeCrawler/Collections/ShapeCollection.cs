@@ -17,6 +17,7 @@ using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
+using ShapeCrawler.Statics;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -51,17 +52,16 @@ namespace ShapeCrawler.Collections
         internal static ShapeCollection CreateForSlide(SlidePart slidePart, SCSlide slide)
         {
             var phService = new PlaceholderService(slidePart.SlideLayoutPart);
-            var transformFactory = new LocationParser(phService);
             var geometryFactory = new GeometryFactory(phService);
             var shapeContextBuilder = new ShapeContext.Builder(slidePart);
 
             var chartGrFrameHandler = new ChartGraphicFrameHandler();
-            var tableGrFrameHandler = new TableGraphicFrameHandler(shapeContextBuilder, transformFactory);
-            var oleGrFrameHandler = new OleGraphicFrameHandler(shapeContextBuilder, transformFactory);
-            var pShapeHandler = new AutoShapeCreator(shapeContextBuilder, transformFactory);
+            var tableGrFrameHandler = new TableGraphicFrameHandler(shapeContextBuilder);
+            var oleGrFrameHandler = new OleGraphicFrameHandler(shapeContextBuilder);
+            var pShapeHandler = new AutoShapeCreator(shapeContextBuilder);
             var pictureHandler = new PictureHandler(shapeContextBuilder);
             var sdkGroupShapeHandler =
-                new PGroupShapeHandler(shapeContextBuilder, transformFactory, geometryFactory, slidePart);
+                new PGroupShapeHandler(shapeContextBuilder, geometryFactory, slidePart);
 
             pShapeHandler.Successor = sdkGroupShapeHandler;
             sdkGroupShapeHandler.Successor = oleGrFrameHandler;
@@ -208,9 +208,8 @@ namespace ShapeCrawler.Collections
 
         public IAudioShape AddNewAudio(int xPixels, int yPixels, Stream mp3Stream)
         {
-            Bitmap bm = new(xPixels, yPixels);
-            long xEmu = bm.Width * (long)(914400 / bm.HorizontalResolution);
-            long yEmu = bm.Height * (long)(914400 / bm.VerticalResolution);
+            long xEmu = PixelConverter.HorizontalPixelToEmu(xPixels);
+            long yEmu = PixelConverter.VerticalPixelToEmu(yPixels);
 
             MediaDataPart mediaDataPart = this.slide.ParentPresentation.PresentationDocument.CreateMediaDataPart("audio/mpeg", ".mp3");
 

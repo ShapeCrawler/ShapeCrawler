@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
@@ -66,39 +67,39 @@ namespace ShapeCrawler
         public virtual GeometryType GeometryType => this.GetGeometryType();
 
         /// <summary>
+        ///     Gets or sets x-coordinate of the upper-left corner of the shape.
+        /// </summary>
+        public int X
+        {
+            get => this.GetXCoordinate();
+            set => this.SetXCoordinate(value);
+        }
+
+        /// <summary>
         ///     Gets or sets y-coordinate of the upper-left corner of the shape.
         /// </summary>
-        public long Y
+        public int Y
         {
-            get => this.GetY();
-            set => this.SetY(value);
+            get => this.GetYCoordinate();
+            set => this.SetYCoordinate(value);
         }
 
         /// <summary>
         ///     Gets or sets height of the shape.
         /// </summary>
-        public long Height
+        public int Height
         {
-            get => this.GetHeight();
+            get => this.GetHeightPixels();
             set => this.SetHeight(value);
         }
 
         /// <summary>
         ///     Gets or sets width of the shape.
         /// </summary>
-        public long Width
+        public int Width
         {
-            get => this.GetWidth();
+            get => this.GetWidthPixels();
             set => this.SetWidth(value);
-        }
-
-        /// <summary>
-        ///     Gets or sets x-coordinate of the upper-left corner of the shape.
-        /// </summary>
-        public long X
-        {
-            get => this.GetXCoordinate();
-            set => this.SetXCoordinate(value);
         }
 
         public IBaseSlide ParentBaseSlide { get; }
@@ -145,7 +146,7 @@ namespace ShapeCrawler
             return parsedHiddenValue is true;
         }
 
-        private void SetXCoordinate(long value)
+        private void SetXCoordinate(int value)
         {
             A.Offset aOffset = this.SdkPShapeTreeChild.Descendants<A.Offset>().FirstOrDefault();
             if (aOffset == null)
@@ -155,11 +156,11 @@ namespace ShapeCrawler
             }
             else
             {
-                aOffset.X = value;
+                aOffset.X = PixelConverter.HorizontalPixelToEmu(value);
             }
         }
 
-        private long GetXCoordinate()
+        private int GetXCoordinate()
         {
             A.Offset aOffset = this.SdkPShapeTreeChild.Descendants<A.Offset>().FirstOrDefault();
             if (aOffset == null)
@@ -167,10 +168,10 @@ namespace ShapeCrawler
                 return ((Placeholder) this.Placeholder).ReferencedShape.X;
             }
 
-            return aOffset.X;
+            return PixelConverter.HorizontalEmuToPixel(aOffset.X);
         }
 
-        private void SetY(long value)
+        private void SetYCoordinate(long value)
         {
             A.Offset aOffset = this.SdkPShapeTreeChild.Descendants<A.Offset>().FirstOrDefault();
             if (this.Placeholder is not null)
@@ -178,10 +179,10 @@ namespace ShapeCrawler
                 throw new PlaceholderCannotBeChangedException();
             }
 
-            aOffset.X = value;
+            aOffset.Y = PixelConverter.VerticalEmuToPixel(value);
         }
 
-        private long GetY()
+        private int GetYCoordinate()
         {
             A.Offset aOffset = this.SdkPShapeTreeChild.Descendants<A.Offset>().FirstOrDefault();
             if (aOffset == null)
@@ -189,10 +190,10 @@ namespace ShapeCrawler
                 return ((Placeholder)this.Placeholder).ReferencedShape.Y;
             }
 
-            return aOffset.Y;
+            return PixelConverter.VerticalEmuToPixel(aOffset.Y);
         }
 
-        private long GetWidth()
+        private int GetWidthPixels()
         {
             A.Extents aExtents = this.SdkPShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
@@ -200,10 +201,10 @@ namespace ShapeCrawler
                 return ((Placeholder)this.Placeholder).ReferencedShape.Width;
             }
 
-            return aExtents.Cx;
+            return PixelConverter.HorizontalEmuToPixel(aExtents.Cx);
         }
 
-        private void SetWidth(long value)
+        private void SetWidth(int pixels)
         {
             A.Extents aExtents = this.SdkPShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
@@ -211,10 +212,10 @@ namespace ShapeCrawler
                 throw new PlaceholderCannotBeChangedException();
             }
 
-            aExtents.Cx = value;
+            aExtents.Cx = PixelConverter.HorizontalPixelToEmu(pixels);
         }
 
-        private long GetHeight()
+        private int GetHeightPixels()
         {
             A.Extents aExtents = this.SdkPShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
@@ -222,10 +223,10 @@ namespace ShapeCrawler
                 return ((Placeholder)this.Placeholder).ReferencedShape.Height;
             }
 
-            return aExtents.Cy;
+            return PixelConverter.VerticalEmuToPixel(aExtents.Cy);
         }
 
-        private void SetHeight(long value)
+        private void SetHeight(int pixels)
         {
             A.Extents aExtents = this.SdkPShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
@@ -233,7 +234,7 @@ namespace ShapeCrawler
                 throw new PlaceholderCannotBeChangedException();
             }
 
-            aExtents.Cy = value;
+            aExtents.Cy = PixelConverter.VerticalPixelToEmu(pixels);
         }
 
         private GeometryType GetGeometryType()

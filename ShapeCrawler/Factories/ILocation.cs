@@ -1,24 +1,21 @@
 ﻿namespace ShapeCrawler.Factories
 {
-    /// <summary>
-    ///     Represents a shape location and size data.
-    /// </summary>
     internal interface ILocation
     {
-        long X { get; }
+        int X { get; }
 
-        long Y { get; }
+        int Y { get; }
 
-        long Width { get; }
+        int Width { get; }
 
-        long Height { get; }
+        int Height { get; }
 
-        void SetX(long x);
+        void SetX(int x);
 
-        void SetY(long y);
+        void SetY(int y);
 
-        void SetWidth(long w);
+        void SetWidth(int w);
 
-        void SetHeight(long h);
+        void SetHeight(int h);
     }
 }

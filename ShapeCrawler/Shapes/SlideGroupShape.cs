@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Factories;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
-using P = DocumentFormat.OpenXml.Presentation;
-using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
@@ -24,10 +21,11 @@ namespace ShapeCrawler
             ShapeContext spContext,
             List<IShape> groupedShapes,
             OpenXmlCompositeElement pShapeTreeChild,
-            SCSlide slide) : base(slide, pShapeTreeChild)
+            SCSlide slide)
+            : base(slide, pShapeTreeChild)
         {
-            Context = spContext;
-            Shapes = groupedShapes;
+            this.Context = spContext;
+            this.Shapes = groupedShapes;
         }
 
         #endregion Constructors

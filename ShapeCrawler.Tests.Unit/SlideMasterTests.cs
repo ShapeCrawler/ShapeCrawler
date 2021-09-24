@@ -19,39 +19,41 @@ namespace ShapeCrawler.Tests.Unit
         public void ShapeXAndY_ReturnXAndYAxesCoordinatesOfTheMasterShape()
         {
             // Arrange
-            ISlideMaster slideMaster = _fixture.Presentation.SlideMasters[0];
+            ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
             IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
 
             // Act
-            long shapeXCoordinate = shape.X;
-            long shapeYCoordinate = shape.Y;
+            int shapeXCoordinate = shape.X;
+            int shapeYCoordinate = shape.Y;
 
             // Assert
-            shapeXCoordinate.Should().Be(838200);
-            shapeYCoordinate.Should().Be(365125);
+            shapeXCoordinate.Should().Be((int)(838200 * TestHelper.HorizontalResolution / 914400));
+            shapeYCoordinate.Should().Be((int)(365125 * TestHelper.VerticalResolution / 914400));
         }
 
         [Fact]
         public void ShapeWidthAndHeight_ReturnWidthAndHeightSizesOfTheMaster()
         {
             // Arrange
-            ISlideMaster slideMaster = _fixture.Presentation.SlideMasters[0];
+            ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
             IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
+            float horizontalResolution = TestHelper.HorizontalResolution;
+            float verticalResolution = TestHelper.VerticalResolution;
 
             // Act
-            long shapeWidth = shape.Width;
-            long shapeHeight = shape.Height;
+            int shapeWidth = shape.Width;
+            int shapeHeight = shape.Height;
 
             // Assert
-            shapeWidth.Should().Be(10515600);
-            shapeHeight.Should().Be(1325563);
+            shapeWidth.Should().Be((int)(10515600 * horizontalResolution / 914400));
+            shapeHeight.Should().Be((int)(1325563 * verticalResolution / 914400));
         }
 
         [Fact]
         public void AutoShapePlaceholderType_ReturnsPlaceholderType()
         {
             // Arrange
-            ISlideMaster slideMaster = _fixture.Presentation.SlideMasters[0];
+            ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
             IShape masterAutoShapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
             IShape masterAutoShapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
             IShape masterAutoShapeCase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
@@ -71,7 +73,7 @@ namespace ShapeCrawler.Tests.Unit
         public void ShapeGeometryType_ReturnsShapesGeometryFormType()
         {
             // Arrange
-            ISlideMaster slideMaster = _fixture.Presentation.SlideMasters[0];
+            ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
             IShape shapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
             IShape shapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
 
@@ -88,7 +90,7 @@ namespace ShapeCrawler.Tests.Unit
         public void AutoShapeTextBoxText_ReturnsText_WhenTheSlideMasterAutoShapesTextBoxIsNotEmpty()
         {
             // Arrange
-            ISlideMaster slideMaster = _fixture.Presentation.SlideMasters[0];
+            ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
             IAutoShape autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
             // Act-Assert
@@ -99,7 +101,7 @@ namespace ShapeCrawler.Tests.Unit
         public void AutoShapeTextBoxParagraphPortionFontSize_ReturnsTextPortionFontSize()
         {
             // Arrange
-            ISlideMaster slideMaster = _fixture.Presentation.SlideMasters[0];
+            ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
             IAutoShape autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
             // Act

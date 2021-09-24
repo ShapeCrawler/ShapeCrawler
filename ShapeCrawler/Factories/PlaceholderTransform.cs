@@ -19,32 +19,32 @@ namespace ShapeCrawler.Factories
 
         #endregion Constructors
 
-        public long X => _placeholderLocationData.X;
+        public int X => _placeholderLocationData.X;
 
-        public long Y => _placeholderLocationData.Y;
+        public int Y => _placeholderLocationData.Y;
 
-        public long Width => _placeholderLocationData.Width;
+        public int Width => _placeholderLocationData.Width;
 
-        public long Height => _placeholderLocationData.Height;
+        public int Height => _placeholderLocationData.Height;
 
         #region Public Methods
 
-        public void SetX(long x)
+        public void SetX(int x)
         {
             throw new NotSupportedFeature(ExceptionMessages.PropertyCanChangedInNextVersion);
         }
 
-        public void SetY(long y)
+        public void SetY(int y)
         {
             throw new NotSupportedFeature(ExceptionMessages.PropertyCanChangedInNextVersion);
         }
 
-        public void SetWidth(long w)
+        public void SetWidth(int w)
         {
             throw new NotSupportedFeature(ExceptionMessages.PropertyCanChangedInNextVersion);
         }
 
-        public void SetHeight(long h)
+        public void SetHeight(int h)
         {
             throw new NotSupportedFeature(ExceptionMessages.PropertyCanChangedInNextVersion);
         }

@@ -1,11 +1,24 @@
+using System.Drawing;
 using System.IO;
 using System.Linq;
-using ShapeCrawler.AutoShapes;
 
 namespace ShapeCrawler.Tests.Unit.Helpers
 {
     public static class TestHelper
     {
+        static TestHelper()
+        {
+            var bm = new Bitmap(100, 100);
+            if (bm.HorizontalResolution == 0)
+            {
+                // Set default resolution
+                bm.SetResolution(96, 96);
+            }
+
+            HorizontalResolution = bm.HorizontalResolution;
+            VerticalResolution = bm.VerticalResolution;
+        }
+
         public static IParagraph GetParagraph(SCPresentation presentation, SlideElementQuery paragraphRequest)
         {
             IAutoShape autoShape = presentation.Slides[paragraphRequest.SlideIndex]
@@ -35,5 +48,9 @@ namespace ShapeCrawler.Tests.Unit.Helpers
 
             return stream;
         }
+
+        public static readonly float HorizontalResolution;
+        
+        public static readonly float VerticalResolution;
     }
 }

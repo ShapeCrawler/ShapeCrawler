@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
@@ -158,65 +159,92 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void XAndY_ReturnXAndYAxesShapeCoordinatesOnTheSlide()
+        public void X_ReturnsXCoordinateInPixels()
         {
             // Arrange
-            IShape shapeExCase1 = _fixture.Pre021.Slides[3].Shapes.First(sp => sp.Id == 2);
-            IShape shapeExCase2 = _fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3);
-            IShape shapeExCase3 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
-            IGroupShape groupShape = (IGroupShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
-            IShape shapeExCase4 = groupShape.Shapes.First(sp => sp.Id.Equals(5));
-            IShape shapeExCase5 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7);
-            IShape shapeExCase6 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
-            IShape shapeExCase7 = _fixture.Pre025.Slides[2].Shapes.First(sp => sp.Id == 7);
+            IShape shapeCase1 = _fixture.Pre021.Slides[3].Shapes.First(sp => sp.Id == 2);
+            IShape shapeCase2 = _fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3);
+            IShape shapeCase3 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
+            IShape shapeCase4 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7);
+            IShape shapeCase5 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
+            IShape shapeCase6 = _fixture.Pre025.Slides[2].Shapes.First(sp => sp.Id == 7);
+            float horizontalResolution = TestHelper.HorizontalResolution;
 
             // Act
-            long xCoordinateCase1 = shapeExCase1.X;
-            long xCoordinateCase2 = shapeExCase2.X;
-            long xCoordinateCase3 = shapeExCase3.X;
-            long xCoordinateCase4 = shapeExCase4.X;
-            long xCoordinateCase6 = shapeExCase6.X;
-            long xCoordinateCase7 = shapeExCase7.X;
-            long yCoordinateCase3 = shapeExCase3.Y;
-            long yCoordinateCase5 = shapeExCase5.Y;
-            long yCoordinateCase6 = shapeExCase6.Y;
+            int xCoordinateCase1 = shapeCase1.X;
+            int xCoordinateCase2 = shapeCase2.X;
+            int xCoordinateCase3 = shapeCase3.X;
+            int xCoordinateCase6 = shapeCase5.X;
+            int xCoordinateCase7 = shapeCase6.X;
 
             // Assert
-            xCoordinateCase1.Should().Be(3653579);
-            xCoordinateCase2.Should().Be(628650);
-            xCoordinateCase3.Should().Be(1524000);
-            xCoordinateCase4.Should().Be(1581846);
-            xCoordinateCase6.Should().Be(699323);
-            xCoordinateCase7.Should().Be(757383);
-            yCoordinateCase3.Should().Be(1122363);
-            yCoordinateCase5.Should().Be(4);
-            yCoordinateCase6.Should().Be(3463288);
+            xCoordinateCase1.Should().Be((int)(3653579 * horizontalResolution / 914400));
+            xCoordinateCase2.Should().Be((int)(628650 * horizontalResolution / 914400));
+            xCoordinateCase3.Should().Be((int)(1524000 * horizontalResolution / 914400));
+            xCoordinateCase6.Should().Be((int)(699323 * horizontalResolution / 914400));
+            xCoordinateCase7.Should().Be((int)(757383 * horizontalResolution / 914400));          
+        }
+
+        [Fact(Skip = "In Progress")]
+        public void X_ReturnsXCoordinateInPixels_OfGroupedShape()
+        {
+            // Arrange
+            IGroupShape groupShape = (IGroupShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
+            IShape groupedShape = groupShape.Shapes.First(sp => sp.Id == 5);
+            float horizontalResolution = TestHelper.HorizontalResolution;
+
+            // Act
+            int xCoordinate = groupedShape.X;
+
+            // Assert
+            xCoordinate.Should().Be((int)(1581846 * horizontalResolution / 914400));
         }
 
         [Fact]
-        public void XAndWidth_SettersSetXAndWidthOfTheShape()
+        public void Y_ReturnsYCoordinateInPixels()
         {
             // Arrange
-            var presentation = SCPresentation.Open(Resources._006_1_slides, true);
-            var shape = presentation.Slides.First().Shapes.First(sp => sp.Id == 3);
-            var stream = new MemoryStream();
-            const int newX = 4000000;
-            const int newWidth = 6000000;
+            IShape shapeCase1 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
+            IShape shapeCase2 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7);
+            IShape shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
+            float verticalResoulution = TestHelper.VerticalResolution;
 
             // Act
-            shape.X = newX;
-            shape.Width = newWidth;
-            presentation.SaveAs(stream);
+            int yCoordinate1 = shapeCase1.Y;
+            int yCoordinate2 = shapeCase2.Y;
+            int yCoordinate3 = shapeCase3.Y;
 
             // Assert
+            yCoordinate1.Should().Be((int)(1122363 * verticalResoulution / 914400));
+            yCoordinate2.Should().Be((int)(4 * verticalResoulution / 914400));
+            yCoordinate3.Should().Be((int)(3463288 * verticalResoulution / 914400));
+        }
+
+        [Fact]
+        public void XAndWidth_SetterSetXAndWidthOfTheShape()
+        {
+            // Arrange
+            IPresentation presentation = SCPresentation.Open(Resources._006_1_slides, true);
+            IShape shape = presentation.Slides.First().Shapes.First(sp => sp.Id == 3);
+            Stream stream = new MemoryStream();
+            const int xPixels = 400;
+            const int widthPixels = 600;
+
+            // Act
+            shape.X = xPixels;
+            shape.Width = widthPixels;
+
+            // Assert
+            presentation.SaveAs(stream);
             presentation = SCPresentation.Open(stream, false);
             shape = presentation.Slides.First().Shapes.First(sp => sp.Id == 3);
-            shape.X.Should().Be(newX);
-            shape.Width.Should().Be(newWidth);
+
+            shape.X.Should().Be(xPixels);
+            shape.Width.Should().Be(widthPixels);
         }
 
         [Fact]
-        public void WidthAndHeight_ReturnWidthAndHeightSizesOfTheShape()
+        public void Width_ReturnsWidthInPixels()
         {
             // Arrange
             IShape shapeCase1 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
@@ -225,20 +253,35 @@ namespace ShapeCrawler.Tests.Unit
             IShape shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
 
             // Act
-            long shapeWidthCase1 = shapeCase1.Width;
-            long shapeWidthCase2 = shapeCase2.Width;
-            long shapeWidthCase3 = shapeCase3.Width;
-            long shapeHeightCase1 = shapeCase1.Height;
-            long shapeHeightCase2 = shapeCase2.Height;
-            long shapeHeightCase3 = shapeCase3.Height;
+            int width1 = shapeCase1.Width;
+            int width2 = shapeCase2.Width;
+            int width3 = shapeCase3.Width;
 
             // Assert
-            shapeWidthCase1.Should().Be(9144000);
-            shapeWidthCase2.Should().Be(1181377);
-            shapeWidthCase3.Should().Be(485775);
-            shapeHeightCase1.Should().Be(1425528);
-            shapeHeightCase2.Should().Be(654096);
-            shapeHeightCase3.Should().Be(373062);
+            (width1 * 914400 / TestHelper.HorizontalResolution).Should().Be(9144000);
+            (width2 * 914400 / TestHelper.HorizontalResolution).Should().Be(1181100);
+            (width3 * 914400 / TestHelper.HorizontalResolution).Should().Be(485775);
+        }
+
+        [Fact]
+        public void Height_ReturnsHeightInPixels()
+        {
+            // Arrange
+            IShape shapeCase1 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
+            IGroupShape groupShape = (IGroupShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
+            IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
+            IShape shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
+            float verticalResulution = TestHelper.VerticalResolution;
+
+            // Act
+            int height1 = shapeCase1.Height;
+            int height2 = shapeCase2.Height;
+            int height3 = shapeCase3.Height;
+
+            // Assert
+            (height1 * 914400 / verticalResulution).Should().Be(1419225);
+            (height2 * 914400 / verticalResulution).Should().Be(647700);
+            (height3 * 914400 / verticalResulution).Should().Be(371475);
         }
 
         [Theory]
