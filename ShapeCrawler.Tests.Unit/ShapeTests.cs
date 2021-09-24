@@ -145,7 +145,7 @@ namespace ShapeCrawler.Tests.Unit
             MemoryStream modifiedPresentation = new();
 
             // Act
-            picture5.Image.SetImage(TestFiles.Images.img02);
+            picture5.Image.SetImage(TestFiles.Images.imageByteArray02);
 
             // Assert
             int pic6LengthAfter = picture6.Image.GetBytes().GetAwaiter().GetResult().Length;

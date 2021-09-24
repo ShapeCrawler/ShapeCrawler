@@ -7,7 +7,7 @@ namespace ShapeCrawler.Tests.Unit.Helpers
     {
         public static class Images
         {
-            public static byte[] img02 => Resources.test_image_2;
+            public static byte[] imageByteArray02 => Resources.test_image_2;
             public static MemoryStream img02_stream => new(Resources.test_image_2);
         }
 
