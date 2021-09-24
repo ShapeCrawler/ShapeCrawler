@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Drawing;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -10,45 +12,60 @@ namespace ShapeCrawler.Factories
     {
         public NonPlaceholderGroupedTransform(OpenXmlCompositeElement xmlElement, P.GroupShape groupShape)
         {
-            var offset = xmlElement.Descendants<A.Offset>().First();
-            var transformGroup = groupShape.GroupShapeProperties.TransformGroup;
-            X = offset.X - transformGroup.ChildOffset.X + transformGroup.Offset.X;
-            Y = offset.Y - transformGroup.ChildOffset.Y + transformGroup.Offset.Y;
+            A.Offset offset = xmlElement.Descendants<A.Offset>().First();
+            A.TransformGroup transformGroup = groupShape.GroupShapeProperties.TransformGroup;
+            this.X = PixelConverter.HorizontalEmuToPixel(offset.X - transformGroup.ChildOffset.X + transformGroup.Offset.X);
+            this.Y = PixelConverter.VerticalEmuToPixel(offset.Y - transformGroup.ChildOffset.Y + transformGroup.Offset.Y);
 
-            var extents = xmlElement.Descendants<A.Extents>().First();
-            Width = extents.Cx.Value;
-            Height = extents.Cy.Value;
+            A.Extents extents = xmlElement.Descendants<A.Extents>().First();
+            this.Width = PixelConverter.HorizontalEmuToPixel(extents.Cx.Value);
+            this.Height = PixelConverter.VerticalEmuToPixel(extents.Cy.Value);
         }
 
-        public long X { get; }
+        public int X { get; }
 
-        public long Y { get; }
+        public int Y { get; }
 
-        public long Width { get; }
+        public int Width { get; }
 
-        public long Height { get; }
+        public int Height { get; }
 
-        public void SetX(long x)
+        public void SetX(int x)
         {
             throw new ShapeCrawlerException(ExceptionMessages.ForGroupedCanNotChanged); // TODO: add implementation
         }
 
-        public void SetY(long y)
+        public void SetY(int y)
         {
             // TODO: add implementation
             throw new ShapeCrawlerException(ExceptionMessages.ForGroupedCanNotChanged);
         }
 
-        public void SetWidth(long w)
+        public void SetWidth(int w)
         {
             // TODO: add implementation
             throw new ShapeCrawlerException(ExceptionMessages.ForGroupedCanNotChanged);
         }
 
-        public void SetHeight(long h)
+        public void SetHeight(int h)
         {
             // TODO: add implementation
             throw new ShapeCrawlerException(ExceptionMessages.ForGroupedCanNotChanged);
+        }
+    }
+
+    internal class PixelConverter
+    {
+        private static readonly Bitmap Bitmap = new Bitmap(100, 100);
+
+        internal static int HorizontalEmuToPixel(long horizontalEmu)
+        {
+            return (int)(horizontalEmu * Bitmap.HorizontalResolution / 914400);
+        }
+
+        internal static int VerticalEmuToPixel(long verticalEmu)
+        {
+            return (int)(verticalEmu * Bitmap.VerticalResolution / 914400);
         }
     }
 }

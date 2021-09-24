@@ -10,22 +10,22 @@ namespace ShapeCrawler.Shapes
         /// <summary>
         ///     Gets or sets x-coordinate of the upper-left corner of the shape.
         /// </summary>
-        long X { get; set; }
+        int X { get; set; }
 
         /// <summary>
         ///     Gets or sets y-coordinate of the upper-left corner of the shape.
         /// </summary>
-        long Y { get; set; }
+        int Y { get; set; }
 
         /// <summary>
         ///     Gets or sets width of the shape.
         /// </summary>
-        long Width { get; set; }
+        int Width { get; set; }
 
         /// <summary>
         ///     Gets or sets height of the shape.
         /// </summary>
-        long Height { get; set; }
+        int Height { get; set; }
 
         /// <summary>
         ///     Gets identifier of the shape.

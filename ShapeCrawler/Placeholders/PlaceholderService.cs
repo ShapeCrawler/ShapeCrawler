@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Factories;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -146,10 +147,10 @@ namespace ShapeCrawler.Placeholders
                 var t2D = spPr.Transform2D;
                 var placeholderLocationData = new PlaceholderLocationData(placeholderData)
                 {
-                    X = t2D.Offset.X.Value,
-                    Y = t2D.Offset.Y.Value,
-                    Width = t2D.Extents.Cx.Value,
-                    Height = t2D.Extents.Cy.Value
+                    X = PixelConverter.HorizontalEmuToPixel(t2D.Offset.X),
+                    Y = PixelConverter.VerticalEmuToPixel(t2D.Offset.Y.Value),
+                    Width = PixelConverter.HorizontalEmuToPixel(t2D.Extents.Cx),
+                    Height = PixelConverter.VerticalEmuToPixel(t2D.Extents.Cy)
                 };
 
                 var presetGeometry = spPr.GetFirstChild<PresetGeometry>();

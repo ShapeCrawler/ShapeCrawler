@@ -51,17 +51,16 @@ namespace ShapeCrawler.Collections
         internal static ShapeCollection CreateForSlide(SlidePart slidePart, SCSlide slide)
         {
             var phService = new PlaceholderService(slidePart.SlideLayoutPart);
-            var transformFactory = new LocationParser(phService);
             var geometryFactory = new GeometryFactory(phService);
             var shapeContextBuilder = new ShapeContext.Builder(slidePart);
 
             var chartGrFrameHandler = new ChartGraphicFrameHandler();
-            var tableGrFrameHandler = new TableGraphicFrameHandler(shapeContextBuilder, transformFactory);
-            var oleGrFrameHandler = new OleGraphicFrameHandler(shapeContextBuilder, transformFactory);
-            var pShapeHandler = new AutoShapeCreator(shapeContextBuilder, transformFactory);
+            var tableGrFrameHandler = new TableGraphicFrameHandler(shapeContextBuilder);
+            var oleGrFrameHandler = new OleGraphicFrameHandler(shapeContextBuilder);
+            var pShapeHandler = new AutoShapeCreator(shapeContextBuilder);
             var pictureHandler = new PictureHandler(shapeContextBuilder);
             var sdkGroupShapeHandler =
-                new PGroupShapeHandler(shapeContextBuilder, transformFactory, geometryFactory, slidePart);
+                new PGroupShapeHandler(shapeContextBuilder, geometryFactory, slidePart);
 
             pShapeHandler.Successor = sdkGroupShapeHandler;
             sdkGroupShapeHandler.Successor = oleGrFrameHandler;

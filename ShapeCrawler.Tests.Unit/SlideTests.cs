@@ -172,7 +172,7 @@ namespace ShapeCrawler.Tests.Unit
             shapesCount.Should().Be(expectedShapesCount);
         }
 
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void Shapes_AddNewAudio_AddsAudio()
         {
             // Arrange
@@ -180,24 +180,20 @@ namespace ShapeCrawler.Tests.Unit
             IPresentation presentation = SCPresentation.Open(preStream, true);
             IShapeCollection shapes = presentation.Slides[1].Shapes;
             Stream mp3 = TestFiles.Audio.TestMp3;
-            string customId = Guid.NewGuid().ToString();
             int xPxCoordinate = 300;
             int yPxCoordinate = 100;
 
             // Act
-            IAudioShape audioShape = shapes.AddNewAudio(xPxCoordinate, yPxCoordinate, mp3);
+            shapes.AddNewAudio(xPxCoordinate, yPxCoordinate, mp3);
 
-            audioShape.CustomData = customId;
-            presentation.SaveAs(@"c:\temp\test.pptx");
             presentation.Save();
             presentation.Close();
             presentation = SCPresentation.Open(preStream, false);
-            List<IAudioShape> audioShapes = presentation.Slides[0].Shapes.OfType<IAudioShape>().ToList();
-            audioShape = audioShapes.FirstOrDefault(sp => sp.CustomData == customId);
+            IAudioShape addedAudio = presentation.Slides[1].Shapes.OfType<IAudioShape>().Last();
 
             // Assert
-            audioShape.X.Should().Be(xPxCoordinate);
-            audioShape.Y.Should().Be(yPxCoordinate);
+            addedAudio.X.Should().Be(xPxCoordinate);
+            addedAudio.Y.Should().Be(yPxCoordinate);
         }
 
         public static IEnumerable<object[]> TestCasesShapesCount()

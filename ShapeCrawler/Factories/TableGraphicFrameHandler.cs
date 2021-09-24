@@ -11,12 +11,10 @@ namespace ShapeCrawler.Factories
     {
         private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/table";
         private readonly ShapeContext.Builder shapeContextBuilder;
-        private readonly LocationParser transformFactory;
 
-        internal TableGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder, LocationParser transformFactory)
+        internal TableGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder)
         {
             this.shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
-            this.transformFactory = transformFactory ?? throw new ArgumentNullException(nameof(transformFactory));
         }
 
         public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide)
@@ -30,8 +28,7 @@ namespace ShapeCrawler.Factories
                 }
 
                 ShapeContext spContext = this.shapeContextBuilder.Build(pShapeTreeChild);
-                ILocation innerTransform = this.transformFactory.FromComposite(pGraphicFrame);
-                var table = new SlideTable(pGraphicFrame, innerTransform, spContext, slide);
+                var table = new SlideTable(pGraphicFrame, spContext, slide);
 
                 return table;
             }

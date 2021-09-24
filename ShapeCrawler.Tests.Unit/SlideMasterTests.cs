@@ -23,12 +23,12 @@ namespace ShapeCrawler.Tests.Unit
             IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
 
             // Act
-            long shapeXCoordinate = shape.X;
-            long shapeYCoordinate = shape.Y;
+            int shapeXCoordinate = shape.X;
+            int shapeYCoordinate = shape.Y;
 
             // Assert
-            shapeXCoordinate.Should().Be(838200);
-            shapeYCoordinate.Should().Be(365125);
+            shapeXCoordinate.Should().Be((int)(838200 * TestHelper.GetHorizontalResolution() / 914400));
+            shapeYCoordinate.Should().Be((int)(365125 * TestHelper.GetVerticalResolution() / 914400));
         }
 
         [Fact]
@@ -37,14 +37,16 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             ISlideMaster slideMaster = _fixture.Presentation.SlideMasters[0];
             IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
+            float horizontalResolution = TestHelper.GetHorizontalResolution();
+            float verticalResolution = TestHelper.GetVerticalResolution();
 
             // Act
-            long shapeWidth = shape.Width;
-            long shapeHeight = shape.Height;
+            int shapeWidth = shape.Width;
+            int shapeHeight = shape.Height;
 
             // Assert
-            shapeWidth.Should().Be(10515600);
-            shapeHeight.Should().Be(1325563);
+            shapeWidth.Should().Be((int)(10515600 * horizontalResolution / 914400));
+            shapeHeight.Should().Be((int)(1325563 * verticalResolution / 914400));
         }
 
         [Fact]

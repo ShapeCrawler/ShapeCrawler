@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 

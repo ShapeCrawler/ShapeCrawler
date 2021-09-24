@@ -15,30 +15,30 @@ namespace ShapeCrawler.Factories
             this.aExtents = sdkCompositeElement.Descendants<A.Extents>().First();
         }
 
-        public long X => aOffset.X.Value;
+        public int X => PixelConverter.HorizontalEmuToPixel(aOffset.X);
 
-        public long Y => aOffset.Y.Value;
+        public int Y => PixelConverter.VerticalEmuToPixel(aOffset.Y);
 
-        public long Width => aExtents.Cx.Value;
+        public int Width => PixelConverter.HorizontalEmuToPixel(aExtents.Cx);
 
-        public long Height => aExtents.Cy.Value;
+        public int Height => PixelConverter.HorizontalEmuToPixel(aExtents.Cy);
 
-        public void SetX(long x)
+        public void SetX(int x)
         {
             aOffset.X.Value = x;
         }
 
-        public void SetY(long y)
+        public void SetY(int y)
         {
             aOffset.Y.Value = y;
         }
 
-        public void SetWidth(long w)
+        public void SetWidth(int w)
         {
             aExtents.Cx.Value = w;
         }
 
-        public void SetHeight(long y)
+        public void SetHeight(int y)
         {
             aExtents.Cy.Value = y;
         }

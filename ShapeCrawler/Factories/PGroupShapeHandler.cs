@@ -14,16 +14,13 @@ namespace ShapeCrawler.Factories
         private readonly GeometryFactory geometryFactory;
         private readonly ShapeContext.Builder shapeContextBuilder;
         private readonly SlidePart slidePart;
-        private readonly LocationParser transformFactory;
 
         internal PGroupShapeHandler(
             ShapeContext.Builder shapeContextBuilder,
-            LocationParser transformFactory,
             GeometryFactory geometryFactory,
             SlidePart sdkSldPart)
         {
             this.shapeContextBuilder = shapeContextBuilder;
-            this.transformFactory = transformFactory;
             this.geometryFactory = geometryFactory;
             this.slidePart = sdkSldPart;
         }
@@ -32,13 +29,12 @@ namespace ShapeCrawler.Factories
         {
             if (pShapeTreeChild is P.GroupShape pGroupShape)
             {
-                var pShapeHandler = new AutoShapeCreator(this.shapeContextBuilder, this.transformFactory);
-                var oleGrFrameHandler = new OleGraphicFrameHandler(this.shapeContextBuilder, this.transformFactory);
+                var pShapeHandler = new AutoShapeCreator(this.shapeContextBuilder);
+                var oleGrFrameHandler = new OleGraphicFrameHandler(this.shapeContextBuilder);
                 var pictureHandler = new PictureHandler(this.shapeContextBuilder);
-                var pGroupShapeHandler = new PGroupShapeHandler(this.shapeContextBuilder, this.transformFactory,
-                    this.geometryFactory, this.slidePart);
+                var pGroupShapeHandler = new PGroupShapeHandler(this.shapeContextBuilder, this.geometryFactory, this.slidePart);
                 var chartGrFrameHandler = new ChartGraphicFrameHandler();
-                var tableGrFrameHandler = new TableGraphicFrameHandler(this.shapeContextBuilder, this.transformFactory);
+                var tableGrFrameHandler = new TableGraphicFrameHandler(this.shapeContextBuilder);
 
                 pShapeHandler.Successor = pGroupShapeHandler;
                 pGroupShapeHandler.Successor = oleGrFrameHandler;
@@ -59,8 +55,6 @@ namespace ShapeCrawler.Factories
                 }
 
                 var spContext = this.shapeContextBuilder.Build(pShapeTreeChild);
-                var transformGroup = pGroupShape.GroupShapeProperties.TransformGroup;
-                var innerTransform = new NonPlaceholderTransform(transformGroup);
                 var groupShape = new SlideGroupShape(spContext, groupedShapes, pGroupShape, slide);
 
                 return groupShape;
