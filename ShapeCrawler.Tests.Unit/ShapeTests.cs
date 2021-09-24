@@ -251,7 +251,6 @@ namespace ShapeCrawler.Tests.Unit
             IGroupShape groupShape = (IGroupShape) _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
             IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
             IShape shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
-            float stubHorizontalResolution = 96;
 
             // Act
             int width1 = shapeCase1.Width;
@@ -259,9 +258,9 @@ namespace ShapeCrawler.Tests.Unit
             int width3 = shapeCase3.Width;
 
             // Assert
-            (width1 * 914400 / stubHorizontalResolution).Should().Be(9144000);
-            (width2 * 914400 / stubHorizontalResolution).Should().Be(1181100);
-            (width3 * 914400 / stubHorizontalResolution).Should().Be(485775);
+            (width1 * 914400 / TestHelper.HorizontalResolution).Should().Be(9144000);
+            (width2 * 914400 / TestHelper.HorizontalResolution).Should().Be(1181100);
+            (width3 * 914400 / TestHelper.HorizontalResolution).Should().Be(485775);
         }
 
         [Fact]

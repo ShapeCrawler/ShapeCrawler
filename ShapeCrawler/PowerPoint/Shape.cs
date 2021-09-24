@@ -89,7 +89,7 @@ namespace ShapeCrawler
         /// </summary>
         public int Height
         {
-            get => this.GetHeight();
+            get => this.GetHeightPixels();
             set => this.SetHeight(value);
         }
 
@@ -98,7 +98,7 @@ namespace ShapeCrawler
         /// </summary>
         public int Width
         {
-            get => this.GetWidth();
+            get => this.GetWidthPixels();
             set => this.SetWidth(value);
         }
 
@@ -156,8 +156,7 @@ namespace ShapeCrawler
             }
             else
             {
-                Bitmap bm = new(100, 100);
-                aOffset.X = (long)(value * 914400 / bm.HorizontalResolution);
+                aOffset.X = PixelConverter.HorizontalPixelToEmu(value);
             }
         }
 
@@ -180,8 +179,7 @@ namespace ShapeCrawler
                 throw new PlaceholderCannotBeChangedException();
             }
 
-            Bitmap bm = new(100, 100);
-            aOffset.Y = (long)(value * 914400 / bm.VerticalResolution);
+            aOffset.Y = PixelConverter.VerticalEmuToPixel(value);
         }
 
         private int GetYCoordinate()
@@ -195,7 +193,7 @@ namespace ShapeCrawler
             return PixelConverter.VerticalEmuToPixel(aOffset.Y);
         }
 
-        private int GetWidth()
+        private int GetWidthPixels()
         {
             A.Extents aExtents = this.SdkPShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
@@ -203,8 +201,7 @@ namespace ShapeCrawler
                 return ((Placeholder)this.Placeholder).ReferencedShape.Width;
             }
 
-            Bitmap bm = new(100, 100);
-            return (int)(aExtents.Cx * bm.HorizontalResolution / 914400);
+            return PixelConverter.HorizontalEmuToPixel(aExtents.Cx);
         }
 
         private void SetWidth(int pixels)
@@ -215,11 +212,10 @@ namespace ShapeCrawler
                 throw new PlaceholderCannotBeChangedException();
             }
 
-            Bitmap bm = new (100, 100);
-            aExtents.Cx = (long)(pixels * 914400 / bm.HorizontalResolution);
+            aExtents.Cx = PixelConverter.HorizontalPixelToEmu(pixels);
         }
 
-        private int GetHeight()
+        private int GetHeightPixels()
         {
             A.Extents aExtents = this.SdkPShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
@@ -227,8 +223,7 @@ namespace ShapeCrawler
                 return ((Placeholder)this.Placeholder).ReferencedShape.Height;
             }
 
-            Bitmap bm = new(100, 100);
-            return (int)(aExtents.Cy * bm.VerticalResolution / 914400);
+            return PixelConverter.VerticalEmuToPixel(aExtents.Cy);
         }
 
         private void SetHeight(int pixels)
@@ -239,8 +234,7 @@ namespace ShapeCrawler
                 throw new PlaceholderCannotBeChangedException();
             }
 
-            Bitmap bm = new (100, 100);
-            aExtents.Cy = (long)(pixels * 914400 / bm.VerticalResolution);
+            aExtents.Cy = PixelConverter.VerticalPixelToEmu(pixels);
         }
 
         private GeometryType GetGeometryType()
