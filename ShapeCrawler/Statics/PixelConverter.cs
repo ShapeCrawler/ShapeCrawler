@@ -11,7 +11,12 @@ namespace ShapeCrawler.Statics
         static PixelConverter()
         {
             var bm = new Bitmap(100, 100);
-            bm.SetResolution(96, 96);
+            if (bm.HorizontalResolution == 0)
+            {
+                // Set default resolution
+                bm.SetResolution(96, 96);
+            }
+
             HorizontalResolution = bm.HorizontalResolution;
             VerticalResolution = bm.VerticalResolution;
         }

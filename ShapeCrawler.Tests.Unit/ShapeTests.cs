@@ -209,7 +209,7 @@ namespace ShapeCrawler.Tests.Unit
             IShape shapeCase1 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
             IShape shapeCase2 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7);
             IShape shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
-            float verticalResoulution = TestHelper.GetVerticalResolution();
+            float verticalResoulution = TestHelper.VerticalResolution;
 
             // Act
             int yCoordinate1 = shapeCase1.Y;
@@ -275,7 +275,7 @@ namespace ShapeCrawler.Tests.Unit
             IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
             IShape shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
             Bitmap bm = new(100, 100);
-            float verticalResulution = TestHelper.GetVerticalResolution();
+            float verticalResulution = TestHelper.VerticalResolution;
 
             // Act
             int height1 = shapeCase1.Height;

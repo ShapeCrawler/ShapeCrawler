@@ -6,7 +6,18 @@ namespace ShapeCrawler.Tests.Unit.Helpers
 {
     public static class TestHelper
     {
-        private static readonly Bitmap bitmap = new(100, 100);
+        static TestHelper()
+        {
+            var bm = new Bitmap(100, 100);
+            if (bm.HorizontalResolution == 0)
+            {
+                // Set default resolution
+                bm.SetResolution(96, 96);
+            }
+
+            HorizontalResolution = bm.HorizontalResolution;
+            VerticalResolution = bm.VerticalResolution;
+        }
 
         public static IParagraph GetParagraph(SCPresentation presentation, SlideElementQuery paragraphRequest)
         {
@@ -38,14 +49,8 @@ namespace ShapeCrawler.Tests.Unit.Helpers
             return stream;
         }
 
-        public static float GetHorizontalResolution()
-        {            
-            return bitmap.HorizontalResolution;
-        }
-
-        public static float GetVerticalResolution()
-        {
-            return bitmap.HorizontalResolution;
-        }
+        public static readonly float HorizontalResolution;
+        
+        public static readonly float VerticalResolution;
     }
 }
