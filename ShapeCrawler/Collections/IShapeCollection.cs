@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using ShapeCrawler.Audio;
 using ShapeCrawler.Shapes;
 
-namespace ShapeCrawler.Collections
+namespace ShapeCrawler
 {
+    /// <summary>
+    ///     Represents a shape collection.
+    /// </summary>
     public interface IShapeCollection : IEnumerable<IShape>
     {
         /// <summary>
