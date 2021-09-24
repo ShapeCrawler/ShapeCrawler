@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Factories

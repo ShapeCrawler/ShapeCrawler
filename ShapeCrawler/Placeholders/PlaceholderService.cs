@@ -5,8 +5,8 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Factories;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Statics;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable PossibleMultipleEnumeration

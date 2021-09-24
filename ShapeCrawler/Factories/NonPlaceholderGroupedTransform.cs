@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -51,21 +52,6 @@ namespace ShapeCrawler.Factories
         {
             // TODO: add implementation
             throw new ShapeCrawlerException(ExceptionMessages.ForGroupedCanNotChanged);
-        }
-    }
-
-    internal class PixelConverter
-    {
-        private static readonly Bitmap Bitmap = new Bitmap(100, 100);
-
-        internal static int HorizontalEmuToPixel(long horizontalEmu)
-        {
-            return (int)(horizontalEmu * Bitmap.HorizontalResolution / 914400);
-        }
-
-        internal static int VerticalEmuToPixel(long verticalEmu)
-        {
-            return (int)(verticalEmu * Bitmap.VerticalResolution / 914400);
         }
     }
 }

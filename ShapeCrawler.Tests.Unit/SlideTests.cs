@@ -152,7 +152,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Shapes_contains_audio()
         {
             // Arrange
-            IShape shape = _fixture.Presentation.Slides[0].Shapes.First(sp => sp.Id == 8);
+            IShape shape = _fixture.Pre039.Slides[0].Shapes.First(sp => sp.Id == 8);
 
             // Act
             bool isAudio = shape is IAudioShape;
@@ -226,7 +226,7 @@ namespace ShapeCrawler.Tests.Unit
         public void CustomData_PropertyIsNull_WhenTheSlideHasNotCustomData()
         {
             // Arrange
-            var slide = _fixture.Presentation.Slides.First();
+            var slide = _fixture.Pre001.Slides.First();
 
             // Act
             var sldCustomData = slide.CustomData;
@@ -263,7 +263,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SaveImage_GenerateAndSavesSlideImageInSpecifiedFilePath()
         {
             // Arrange
-            ISlide slide = _fixture.Presentation.Slides[0];
+            ISlide slide = _fixture.Pre001.Slides[0];
 
             // Act
             slide.SaveImage(@"c:\1\SlideScSaveImage.png");

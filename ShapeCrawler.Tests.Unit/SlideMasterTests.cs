@@ -19,7 +19,7 @@ namespace ShapeCrawler.Tests.Unit
         public void ShapeXAndY_ReturnXAndYAxesCoordinatesOfTheMasterShape()
         {
             // Arrange
-            ISlideMaster slideMaster = _fixture.Presentation.SlideMasters[0];
+            ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
             IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
 
             // Act
@@ -35,7 +35,7 @@ namespace ShapeCrawler.Tests.Unit
         public void ShapeWidthAndHeight_ReturnWidthAndHeightSizesOfTheMaster()
         {
             // Arrange
-            ISlideMaster slideMaster = _fixture.Presentation.SlideMasters[0];
+            ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
             IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
             float horizontalResolution = TestHelper.GetHorizontalResolution();
             float verticalResolution = TestHelper.GetVerticalResolution();
@@ -53,7 +53,7 @@ namespace ShapeCrawler.Tests.Unit
         public void AutoShapePlaceholderType_ReturnsPlaceholderType()
         {
             // Arrange
-            ISlideMaster slideMaster = _fixture.Presentation.SlideMasters[0];
+            ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
             IShape masterAutoShapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
             IShape masterAutoShapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
             IShape masterAutoShapeCase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
@@ -73,7 +73,7 @@ namespace ShapeCrawler.Tests.Unit
         public void ShapeGeometryType_ReturnsShapesGeometryFormType()
         {
             // Arrange
-            ISlideMaster slideMaster = _fixture.Presentation.SlideMasters[0];
+            ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
             IShape shapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
             IShape shapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
 
@@ -90,7 +90,7 @@ namespace ShapeCrawler.Tests.Unit
         public void AutoShapeTextBoxText_ReturnsText_WhenTheSlideMasterAutoShapesTextBoxIsNotEmpty()
         {
             // Arrange
-            ISlideMaster slideMaster = _fixture.Presentation.SlideMasters[0];
+            ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
             IAutoShape autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
             // Act-Assert
@@ -101,7 +101,7 @@ namespace ShapeCrawler.Tests.Unit
         public void AutoShapeTextBoxParagraphPortionFontSize_ReturnsTextPortionFontSize()
         {
             // Arrange
-            ISlideMaster slideMaster = _fixture.Presentation.SlideMasters[0];
+            ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
             IAutoShape autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
             // Act

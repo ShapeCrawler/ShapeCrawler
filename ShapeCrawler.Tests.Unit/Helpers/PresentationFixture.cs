@@ -2,7 +2,7 @@ namespace ShapeCrawler.Tests.Unit.Helpers
 {
     public class PresentationFixture
     {
-        public SCPresentation Presentation { get; }
+        public SCPresentation Pre001 { get; }
         public SCPresentation Pre002 { get; }
         public SCPresentation Pre003 { get; }
         public SCPresentation Pre004 { get; }
@@ -35,10 +35,11 @@ namespace ShapeCrawler.Tests.Unit.Helpers
         public SCPresentation Pre036 { get; }
         public SCPresentation Pre037 { get; }
         public SCPresentation Pre038 { get; }
+        public SCPresentation Pre039 { get; }
 
         public PresentationFixture()
         {
-            Presentation = SCPresentation.Open(Properties.Resources._001, false);
+            Pre001 = SCPresentation.Open(Properties.Resources._001, false);
             Pre002 = SCPresentation.Open(Properties.Resources._002, false);
             Pre003 = SCPresentation.Open(Properties.Resources._003, false);
             Pre004 = SCPresentation.Open(Properties.Resources._004, false);
@@ -71,6 +72,7 @@ namespace ShapeCrawler.Tests.Unit.Helpers
             Pre036 = SCPresentation.Open(Properties.Resources._036, false);
             Pre037 = SCPresentation.Open(Properties.Resources._037, false);
             Pre038 = SCPresentation.Open(Properties.Resources._038, false);
+            Pre039 = SCPresentation.Open(Properties.Resources._039_audio, false);
         }
     }
 }
