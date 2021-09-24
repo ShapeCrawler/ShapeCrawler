@@ -11,13 +11,13 @@ namespace ShapeCrawler.Statics
         static PixelConverter()
         {
             var bm = new Bitmap(100, 100);
+            bm.SetResolution(96, 96);
             HorizontalResolution = bm.HorizontalResolution;
             VerticalResolution = bm.VerticalResolution;
         }
 
         internal static int HorizontalEmuToPixel(long horizontalEmus)
         {
-            Console.WriteLine($"HorizontalResolution: {HorizontalResolution}");
             return (int)(horizontalEmus * HorizontalResolution / 914400);
         }
 
