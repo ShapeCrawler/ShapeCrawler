@@ -20,7 +20,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public async void ImageExGetImageBytes_MethodReturnsNonEmptyShapeImage()
+        public async void ImageGetBytes_ReturnsImageByteArray()
         {
             // Arrange
             IPicture shapePicture1 = (IPicture)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
@@ -36,7 +36,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public async void ImageExSetImage_MethodSetsShapeImage_WhenCustomImageStreamIsPassed()
+        public async void ImageSetImage_UpdatesPictureImage()
         {
             // Arrange
             var customImageStream = new MemoryStream(Properties.Resources.test_image_2);
@@ -51,7 +51,6 @@ namespace ShapeCrawler.Tests.Unit
             var editedLength = (await picture.Image.GetBytes().ConfigureAwait(false)).Length;
             editedLength.Should().NotBe(originLength);
         }
-
 
         [Fact]
         public void Picture_DoNotParseStrangePicture_Test()
