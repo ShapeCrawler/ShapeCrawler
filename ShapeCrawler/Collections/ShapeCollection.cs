@@ -17,6 +17,7 @@ using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
+using ShapeCrawler.Statics;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -207,9 +208,8 @@ namespace ShapeCrawler.Collections
 
         public IAudioShape AddNewAudio(int xPixels, int yPixels, Stream mp3Stream)
         {
-            Bitmap bm = new(xPixels, yPixels);
-            long xEmu = bm.Width * (long)(914400 / bm.HorizontalResolution);
-            long yEmu = bm.Height * (long)(914400 / bm.VerticalResolution);
+            long xEmu = PixelConverter.HorizontalPixelToEmu(xPixels);
+            long yEmu = PixelConverter.VerticalPixelToEmu(yPixels);
 
             MediaDataPart mediaDataPart = this.slide.ParentPresentation.PresentationDocument.CreateMediaDataPart("audio/mpeg", ".mp3");
 

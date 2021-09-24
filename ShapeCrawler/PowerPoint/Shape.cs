@@ -169,10 +169,7 @@ namespace ShapeCrawler
                 return ((Placeholder) this.Placeholder).ReferencedShape.X;
             }
 
-            Bitmap bm = new(100, 100);
-            int xPx = (int) (aOffset.X * bm.HorizontalResolution / 914400);
-
-            return xPx;
+            return PixelConverter.HorizontalEmuToPixel(aOffset.X);
         }
 
         private void SetYCoordinate(long value)
@@ -195,8 +192,7 @@ namespace ShapeCrawler
                 return ((Placeholder)this.Placeholder).ReferencedShape.Y;
             }
 
-            Bitmap bm = new(100, 100);
-            return (int)(aOffset.Y * bm.VerticalResolution / 914400);
+            return PixelConverter.VerticalEmuToPixel(aOffset.Y);
         }
 
         private int GetWidth()
