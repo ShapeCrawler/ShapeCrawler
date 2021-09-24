@@ -168,8 +168,7 @@ namespace ShapeCrawler.Tests.Unit
             IShape shapeCase4 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7);
             IShape shapeCase5 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
             IShape shapeCase6 = _fixture.Pre025.Slides[2].Shapes.First(sp => sp.Id == 7);
-            Bitmap bm = new(100, 100);
-            float horizontalResolution = bm.HorizontalResolution;
+            float horizontalResolution = TestHelper.HorizontalResolution;
 
             // Act
             int xCoordinateCase1 = shapeCase1.X;
@@ -192,8 +191,7 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             IGroupShape groupShape = (IGroupShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
             IShape groupedShape = groupShape.Shapes.First(sp => sp.Id == 5);
-            Bitmap bm = new(100, 100);
-            float horizontalResolution = bm.HorizontalResolution;
+            float horizontalResolution = TestHelper.HorizontalResolution;
 
             // Act
             int xCoordinate = groupedShape.X;
@@ -274,7 +272,6 @@ namespace ShapeCrawler.Tests.Unit
             IGroupShape groupShape = (IGroupShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
             IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
             IShape shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
-            Bitmap bm = new(100, 100);
             float verticalResulution = TestHelper.VerticalResolution;
 
             // Act
