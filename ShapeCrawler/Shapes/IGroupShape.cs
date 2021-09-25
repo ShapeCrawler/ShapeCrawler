@@ -8,7 +8,7 @@ namespace ShapeCrawler.Shapes
     public interface IGroupShape : IShape
     {
         /// <summary>
-        ///     Gets collection of the grouped shapes.
+        ///     Gets the collection of shapes inside the group.
         /// </summary>
         IReadOnlyCollection<IShape> Shapes { get; }
     }

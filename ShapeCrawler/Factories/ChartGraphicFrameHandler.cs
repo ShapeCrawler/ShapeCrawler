@@ -26,5 +26,10 @@ namespace ShapeCrawler.Factories
 
             return Successor?.Create(pShapeTreeChild, slide);
         }
+
+        public override IShape CreateGroupedShape(OpenXmlCompositeElement pShapeTreesChild, SCSlide slide, SlideGroupShape groupShape)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

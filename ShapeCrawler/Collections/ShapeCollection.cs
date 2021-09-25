@@ -51,29 +51,33 @@ namespace ShapeCrawler.Collections
 
         internal static ShapeCollection CreateForSlide(SlidePart slidePart, SCSlide slide)
         {
-            var phService = new PlaceholderService(slidePart.SlideLayoutPart);
-            var geometryFactory = new GeometryFactory(phService);
             var shapeContextBuilder = new ShapeContext.Builder(slidePart);
 
             var chartGrFrameHandler = new ChartGraphicFrameHandler();
             var tableGrFrameHandler = new TableGraphicFrameHandler(shapeContextBuilder);
             var oleGrFrameHandler = new OleGraphicFrameHandler(shapeContextBuilder);
             var autoShapeCreator = new AutoShapeCreator();
-            var pictureHandler = new PictureHandler(shapeContextBuilder);
-            var sdkGroupShapeHandler =
-                new PGroupShapeHandler(shapeContextBuilder, geometryFactory, slidePart);
+            var pictureHandler = new PictureHandler();
 
-            autoShapeCreator.Successor = sdkGroupShapeHandler;
-            sdkGroupShapeHandler.Successor = oleGrFrameHandler;
+            autoShapeCreator.Successor = oleGrFrameHandler;
             oleGrFrameHandler.Successor = pictureHandler;
             pictureHandler.Successor = chartGrFrameHandler;
             chartGrFrameHandler.Successor = tableGrFrameHandler;
 
             P.ShapeTree shapeTree = slidePart.Slide.CommonSlideData.ShapeTree;
             var shapes = new List<IShape>(shapeTree.Count());
-            foreach (OpenXmlCompositeElement compositeElement in shapeTree.OfType<OpenXmlCompositeElement>())
+            foreach (OpenXmlCompositeElement shapeTreesChildElement in shapeTree.OfType<OpenXmlCompositeElement>())
             {
-                IShape shape = autoShapeCreator.Create(compositeElement, slide);
+                IShape shape;
+                if (shapeTreesChildElement is P.GroupShape pGroupShape)
+                {
+                    shape = new SlideGroupShape(slide, pGroupShape);
+                }
+                else
+                {
+                    shape = autoShapeCreator.Create(shapeTreesChildElement, slide);
+                }
+
                 if (shape != null)
                 {
                     shapes.Add(shape);

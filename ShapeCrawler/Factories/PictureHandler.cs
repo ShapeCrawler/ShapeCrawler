@@ -15,13 +15,6 @@ namespace ShapeCrawler.Factories
     /// </summary>
     internal class PictureHandler : OpenXmlElementHandler
     {
-        private readonly ShapeContext.Builder shapeContextBuilder;
-
-        internal PictureHandler(ShapeContext.Builder shapeContextBuilder)
-        {
-            this.shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
-        }
-
         public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide)
         {
             P.Picture pPicture;
@@ -52,10 +45,14 @@ namespace ShapeCrawler.Factories
                 return null;
             }
 
-            ShapeContext spContext = this.shapeContextBuilder.Build(pShapeTreeChild);
-            SlidePicture picture = new (slide, spContext, pPicture, picReference);
+            SlidePicture picture = new (slide, pPicture, picReference);
 
             return picture;
+        }
+
+        public override IShape CreateGroupedShape(OpenXmlCompositeElement pShapeTreesChild, SCSlide slide, SlideGroupShape groupShape)
+        {
+            throw new NotImplementedException();
         }
     }
 }

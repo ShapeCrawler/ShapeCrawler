@@ -12,23 +12,12 @@ namespace ShapeCrawler
     {
         private readonly StringValue picReference;
 
-        internal SlidePicture(
-            SCSlide slide,
-            ShapeContext spContext,
-            P.Picture pPicture,
-            StringValue picReference)
+        internal SlidePicture(SCSlide slide, P.Picture pPicture, StringValue picReference)
             : base(slide, pPicture)
         {
-            this.Context = spContext;
             this.picReference = picReference;
         }
 
-        #region Public Properties
-
         public SCImage Image => SCImage.CreatePictureImage(this, this.ParentSlide.SlidePart, this.picReference);
-
-        #endregion Public Properties
-
-        internal ShapeContext Context { get; }
     }
 }

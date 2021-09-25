@@ -30,7 +30,7 @@ namespace ShapeCrawler
         {
             this.Context = spContext;
             this.rowCollection =
-                new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) this.SdkPShapeTreeChild));
+                new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) this.PShapeTreesChild));
             this.pGraphicFrame = pShapeTreeChild as P.GraphicFrame;
         }
 

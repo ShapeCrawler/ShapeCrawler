@@ -2,29 +2,41 @@
 using DocumentFormat.OpenXml;
 using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Settings;
-using P = DocumentFormat.OpenXml.Presentation;
-using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
-
 namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a shape on a slide.
     /// </summary>
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
-    internal class SlideOLEObject : SlideShape, IOLEObject //Make internal
+    internal class SlideOLEObject : SlideShape, IOLEObject // TODO: make it internal
     {
+        internal ShapeContext Context;
+
+        internal OpenXmlCompositeElement PShapeTreesChild { get; } // TODO: is it extra property?
+
         #region Constructors
 
         internal SlideOLEObject(
-            OpenXmlCompositeElement shapeTreeChild,
-            ShapeContext spContext,
-            SCSlide slide) : base(slide, shapeTreeChild)
+            SCSlide parentSlide,
+            OpenXmlCompositeElement pShapeTreesChild,
+            ShapeContext spContext)
+            : base(parentSlide, pShapeTreesChild)
         {
-            ShapeTreeChild = shapeTreeChild;
-            Context = spContext;
+            //this.PShapeTreesChild = pShapeTreesChild;
+            this.Context = spContext;
+        }
+
+        internal SlideOLEObject(
+            SCSlide parentSlide,
+            OpenXmlCompositeElement pShapeTreesChild, 
+            ShapeContext spContext, 
+            SlideGroupShape parentGroupShape)
+            : base(parentSlide, pShapeTreesChild, parentGroupShape)
+        {
+            //this.PShapeTreesChild = pShapeTreesChild;
+            this.Context = spContext;
         }
 
         #endregion Constructors
@@ -34,13 +46,5 @@ namespace ShapeCrawler
         public override GeometryType GeometryType => GeometryType.Rectangle;
 
         #endregion Public Properties
-
-        #region Fields
-
-        internal ShapeContext Context;
-
-        internal OpenXmlCompositeElement ShapeTreeChild { get; }
-
-        #endregion Fields
     }
 }

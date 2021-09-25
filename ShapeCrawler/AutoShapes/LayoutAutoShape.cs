@@ -96,7 +96,7 @@ namespace ShapeCrawler
 
         private SCTextBox GetTextBox()
         {
-            P.TextBody pTextBody = this.SdkPShapeTreeChild.GetFirstChild<P.TextBody>();
+            P.TextBody pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
             if (pTextBody == null)
             {
                 return null;
@@ -113,14 +113,14 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill() // TODO: duplicate of SlideAutoShape.TryGetFill()
         {
-            SCImage image = SCImage.GetFillImageOrDefault(this, this.Context.SlidePart, this.SdkPShapeTreeChild);
+            SCImage image = SCImage.GetFillImageOrDefault(this, this.Context.SlidePart, this.PShapeTreesChild);
             if (image != null)
             {
                 return new ShapeFill(image);
             }
 
             // TODO: create some AutoShape abstract class and move "(P.Shape)this.PShapeTreeChild)" in there
-            A.SolidFill aSolidFill = ((P.Shape)this.SdkPShapeTreeChild).ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
+            A.SolidFill aSolidFill = ((P.Shape)this.PShapeTreesChild).ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
             if (aSolidFill == null)
             {
                 return null;

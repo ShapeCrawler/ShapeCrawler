@@ -6,17 +6,23 @@ using ShapeCrawler.SlideMasters;
 namespace ShapeCrawler
 {
     /// <summary>
-    ///     Represents a shape on a Slide.
+    ///     Represents a shape on a slide.
     /// </summary>
     internal abstract class SlideShape : Shape, IPresentationComponent
     {
-        protected SlideShape(SCSlide parentSlide, OpenXmlCompositeElement sdkPShapeTreeChild)
-            : base(sdkPShapeTreeChild, parentSlide)
+        protected SlideShape(SCSlide parentSlide, OpenXmlCompositeElement pShapeTreesChild, Shape parentGroupShape)
+            : base(pShapeTreesChild, parentSlide, parentGroupShape)
         {
             this.ParentSlide = parentSlide;
         }
 
-        public override IPlaceholder Placeholder => SlidePlaceholder.Create(this.SdkPShapeTreeChild, this);
+        protected SlideShape(SCSlide parentSlide, OpenXmlCompositeElement pShapeTreesChild)
+            : base(pShapeTreesChild, parentSlide)
+        {
+            this.ParentSlide = parentSlide;
+        }
+
+        public override IPlaceholder Placeholder => SlidePlaceholder.Create(this.PShapeTreesChild, this);
 
         public override SCSlideMaster ParentSlideMaster => (SCSlideMaster)this.ParentSlide.ParentSlideLayout.ParentSlideMaster;
 

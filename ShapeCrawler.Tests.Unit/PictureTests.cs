@@ -50,7 +50,7 @@ namespace ShapeCrawler.Tests.Unit
 
             // Assert
             presentation.SaveAs(preStream);
-            //presentation.Close();
+            presentation.Close();
             presentation = SCPresentation.Open(preStream, false);
             picture = (IPicture)presentation.Slides[1].Shapes.First(sp => sp.Id == 3);
             int lengthAfter = picture.Image.GetBytes().Result.Length;

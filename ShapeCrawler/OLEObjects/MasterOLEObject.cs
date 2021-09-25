@@ -12,6 +12,6 @@ namespace ShapeCrawler.OLEObjects
         {
         }
 
-        public override IPlaceholder Placeholder => MasterPlaceholder.Create(SdkPShapeTreeChild);
+        public override IPlaceholder Placeholder => MasterPlaceholder.Create(PShapeTreesChild);
     }
 }
