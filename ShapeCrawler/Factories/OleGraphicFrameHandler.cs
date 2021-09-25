@@ -17,7 +17,7 @@ namespace ShapeCrawler.Factories
             this.shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
         }
 
-        public override IShape Create(OpenXmlCompositeElement pShapeTreesChild, SCSlide slide)
+        public override IShape Create(OpenXmlCompositeElement pShapeTreesChild, SCSlide slide, SlideGroupShape groupShape)
         {
             if (pShapeTreesChild is P.GraphicFrame pGraphicFrame)
             {
@@ -25,30 +25,13 @@ namespace ShapeCrawler.Factories
                 if (aGraphicData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
                 {
                     ShapeContext spContext = this.shapeContextBuilder.Build(pShapeTreesChild);
-                    SlideOLEObject oleObject = new (slide, pGraphicFrame, spContext);
+                    SlideOLEObject oleObject = new (pGraphicFrame, slide, spContext, groupShape);
 
                     return oleObject;
                 }
             }
 
-            return this.Successor?.Create(pShapeTreesChild, slide);
-        }
-
-        public override IShape CreateGroupedShape(OpenXmlCompositeElement pShapeTreesChild, SCSlide slide, SlideGroupShape groupShape)
-        {
-            if (pShapeTreesChild is P.GraphicFrame pGraphicFrame)
-            {
-                A.GraphicData aGraphicData = pShapeTreesChild.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
-                if (aGraphicData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
-                {
-                    ShapeContext spContext = shapeContextBuilder.Build(pShapeTreesChild);
-                    SlideOLEObject oleObject = new(slide, pGraphicFrame, spContext, groupShape);
-
-                    return oleObject;
-                }
-            }
-
-            return this.Successor?.CreateGroupedShape(pShapeTreesChild, slide, groupShape);
+            return this.Successor?.Create(pShapeTreesChild, slide, groupShape);
         }
     }
 }

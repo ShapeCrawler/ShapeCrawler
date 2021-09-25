@@ -4,8 +4,8 @@ namespace ShapeCrawler.Audio
 {
     internal class AudioShape : SlideShape, IAudioShape
     {
-        public AudioShape(SCSlide parentSlide, OpenXmlCompositeElement sdkPShapeTreeChild)
-            : base(parentSlide, sdkPShapeTreeChild)
+        public AudioShape(OpenXmlCompositeElement pShapeTreesChild, SCSlide parentSlide)
+            : base(pShapeTreesChild, parentSlide, null)
         {
         }
 

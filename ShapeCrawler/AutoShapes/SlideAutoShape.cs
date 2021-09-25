@@ -15,16 +15,8 @@ namespace ShapeCrawler
         private readonly Lazy<SCTextBox> textBox;
         private readonly P.Shape pShape;
 
-        public SlideAutoShape(SCSlide parentSlide, P.Shape pShape, SlideGroupShape parentGroupShape)
-            : base(parentSlide, pShape, parentGroupShape)
-        {
-            this.textBox = new Lazy<SCTextBox>(this.GetTextBox);
-            this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
-            this.pShape = pShape;
-        }
-
-        public SlideAutoShape(SCSlide parentSlide, P.Shape pShape)
-            : base(parentSlide, pShape)
+        public SlideAutoShape(P.Shape pShape, SCSlide parentSlide, SlideGroupShape parentGroupShape)
+            : base(pShape, parentSlide, parentGroupShape)
         {
             this.textBox = new Lazy<SCTextBox>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);

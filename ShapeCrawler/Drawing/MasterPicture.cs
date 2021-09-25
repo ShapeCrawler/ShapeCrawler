@@ -9,8 +9,8 @@ namespace ShapeCrawler.Drawing
     /// </summary>
     internal class MasterPicture : MasterShape, IShape
     {
-        public MasterPicture(SCSlideMaster slideMaster, P.Picture pPicture)
-            : base(slideMaster, pPicture)
+        public MasterPicture(P.Picture pPicture, SCSlideMaster parentSlideMaster)
+            : base(pPicture, parentSlideMaster)
         {
         }
     }

@@ -14,32 +14,15 @@ namespace ShapeCrawler
     {
         internal ShapeContext Context;
 
-        internal OpenXmlCompositeElement PShapeTreesChild { get; } // TODO: is it extra property?
-
-        #region Constructors
-
         internal SlideOLEObject(
-            SCSlide parentSlide,
             OpenXmlCompositeElement pShapeTreesChild,
-            ShapeContext spContext)
-            : base(parentSlide, pShapeTreesChild)
-        {
-            //this.PShapeTreesChild = pShapeTreesChild;
-            this.Context = spContext;
-        }
-
-        internal SlideOLEObject(
             SCSlide parentSlide,
-            OpenXmlCompositeElement pShapeTreesChild, 
-            ShapeContext spContext, 
+            ShapeContext spContext,
             SlideGroupShape parentGroupShape)
-            : base(parentSlide, pShapeTreesChild, parentGroupShape)
+            : base(pShapeTreesChild, parentSlide, parentGroupShape)
         {
-            //this.PShapeTreesChild = pShapeTreesChild;
             this.Context = spContext;
         }
-
-        #endregion Constructors
 
         #region Public Properties
 

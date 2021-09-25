@@ -11,25 +11,20 @@ namespace ShapeCrawler.Factories
     {
         private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart";
 
-        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide)
+        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, SlideGroupShape groupShape)
         {
             if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
             {
                 A.GraphicData aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
                 if (aGraphicData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
                 {
-                    SCChart chart = new(pGraphicFrame, slide);
+                    SCChart chart = new (pGraphicFrame, slide);
 
                     return chart;
                 }
             }
 
-            return Successor?.Create(pShapeTreeChild, slide);
-        }
-
-        public override IShape CreateGroupedShape(OpenXmlCompositeElement pShapeTreesChild, SCSlide slide, SlideGroupShape groupShape)
-        {
-            throw new NotImplementedException();
+            return Successor?.Create(pShapeTreeChild, slide, groupShape);
         }
     }
 }

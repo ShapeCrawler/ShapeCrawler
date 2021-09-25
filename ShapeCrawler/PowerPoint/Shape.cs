@@ -18,15 +18,10 @@ namespace ShapeCrawler
     internal abstract class Shape : IRemovable
     {
         protected Shape(OpenXmlCompositeElement pShapeTreesChild, IBaseSlide parentBaseSlide, Shape parentGroupShape)
-            : this(pShapeTreesChild, parentBaseSlide)
-        {
-            this.ParentGroupShape = parentGroupShape;
-        }
-
-        protected Shape(OpenXmlCompositeElement pShapeTreesChild, IBaseSlide parentBaseSlide)
         {
             this.PShapeTreesChild = pShapeTreesChild;
             this.ParentBaseSlide = parentBaseSlide;
+            this.ParentGroupShape = parentGroupShape;
         }
 
         #region Public Properties

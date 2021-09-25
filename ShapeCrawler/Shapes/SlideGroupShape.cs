@@ -20,8 +20,8 @@ namespace ShapeCrawler
         private readonly GroupShape pGroupShape;
         private readonly SCSlide slide;
 
-        public SlideGroupShape(SCSlide parentSlide, P.GroupShape pGroupShape)
-            : base(parentSlide, pGroupShape)
+        public SlideGroupShape(P.GroupShape pGroupShape, SCSlide parentSlide, Shape parentGroupShape)
+            : base(pGroupShape, parentSlide, parentGroupShape)
         {
             this.pGroupShape = pGroupShape;
             this.slide = parentSlide;
@@ -51,11 +51,11 @@ namespace ShapeCrawler
                 IShape shape;
                 if (child is P.GroupShape pGroupShape)
                 {
-                    shape = new SlideGroupShape(this.slide, pGroupShape);
+                    shape = new SlideGroupShape(pGroupShape, this.slide, this);
                 }
                 else
                 {
-                    shape = autoShapeCreator.CreateGroupedShape(child, this.slide, this);
+                    shape = autoShapeCreator.Create(child, this.slide, this);
                 }
 
                 if (shape != null)

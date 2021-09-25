@@ -17,8 +17,6 @@ namespace ShapeCrawler.Factories
         /// <summary>
         ///     Creates shape from child element of the <see cref="P.ShapeTree" /> element.
         /// </summary>
-        public abstract IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide);
-
-        public abstract IShape CreateGroupedShape(OpenXmlCompositeElement pShapeTreesChild, SCSlide slide, SlideGroupShape groupShape);
+        public abstract IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, SlideGroupShape groupShape);
     }
 }

@@ -71,11 +71,11 @@ namespace ShapeCrawler.Collections
                 IShape shape;
                 if (shapeTreesChildElement is P.GroupShape pGroupShape)
                 {
-                    shape = new SlideGroupShape(slide, pGroupShape);
+                    shape = new SlideGroupShape(pGroupShape, slide, null);
                 }
                 else
                 {
-                    shape = autoShapeCreator.Create(shapeTreesChildElement, slide);
+                    shape = autoShapeCreator.Create(shapeTreesChildElement, slide, null);
                 }
 
                 if (shape != null)
@@ -157,7 +157,7 @@ namespace ShapeCrawler.Collections
                 switch (compositeElement)
                 {
                     case P.Shape pShape:
-                        shapeList.Add(new MasterAutoShape(slideMaster, pShape));
+                        shapeList.Add(new MasterAutoShape(pShape, slideMaster));
                         continue;
                     case P.GraphicFrame pGraphicFrame:
                     {
@@ -166,7 +166,7 @@ namespace ShapeCrawler.Collections
                         if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
                             StringComparison.Ordinal))
                         {
-                            shapeList.Add(new MasterOLEObject(slideMaster, pGraphicFrame));
+                            shapeList.Add(new MasterOLEObject(pGraphicFrame, slideMaster));
                             continue;
                         }
 
@@ -180,7 +180,7 @@ namespace ShapeCrawler.Collections
                         if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/table",
                             StringComparison.Ordinal))
                         {
-                            shapeList.Add(new MasterTable(slideMaster, pGraphicFrame));
+                            shapeList.Add(new MasterTable(pGraphicFrame, slideMaster));
                             continue;
                         }
 
@@ -203,7 +203,7 @@ namespace ShapeCrawler.Collections
 
                 if (pPicture != null)
                 {
-                    shapeList.Add(new MasterPicture(slideMaster, pPicture));
+                    shapeList.Add(new MasterPicture(pPicture, slideMaster));
                 }
             }
 
@@ -313,7 +313,7 @@ namespace ShapeCrawler.Collections
             P14.CreationId creationId1 = new() { Val = (UInt32Value)3972997422U };
             creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
-            return new AudioShape(this.slide, this.shapeTree);
+            return new AudioShape(this.shapeTree, this.slide);
         }
 
         internal Shape GetShapeByPPlaceholderShape(P.PlaceholderShape inpPPlaceholderShape)

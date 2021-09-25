@@ -1,5 +1,4 @@
 ﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.SlideMasters;
 
@@ -10,14 +9,8 @@ namespace ShapeCrawler
     /// </summary>
     internal abstract class SlideShape : Shape, IPresentationComponent
     {
-        protected SlideShape(SCSlide parentSlide, OpenXmlCompositeElement pShapeTreesChild, Shape parentGroupShape)
+        protected SlideShape(OpenXmlCompositeElement pShapeTreesChild, SCSlide parentSlide, Shape parentGroupShape)
             : base(pShapeTreesChild, parentSlide, parentGroupShape)
-        {
-            this.ParentSlide = parentSlide;
-        }
-
-        protected SlideShape(SCSlide parentSlide, OpenXmlCompositeElement pShapeTreesChild)
-            : base(pShapeTreesChild, parentSlide)
         {
             this.ParentSlide = parentSlide;
         }

@@ -22,16 +22,13 @@ namespace ShapeCrawler
 
         #region Constructors
 
-        internal SlideTable(
-            OpenXmlCompositeElement pShapeTreeChild,
-            ShapeContext spContext,
-            SCSlide slide)
-            : base(slide, pShapeTreeChild)
+        internal SlideTable(OpenXmlCompositeElement pShapeTreesChild, SCSlide parentSlide, SlideGroupShape parentGroupShape, ShapeContext spContext)
+            : base(pShapeTreesChild, parentSlide, parentGroupShape)
         {
             this.Context = spContext;
             this.rowCollection =
                 new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) this.PShapeTreesChild));
-            this.pGraphicFrame = pShapeTreeChild as P.GraphicFrame;
+            this.pGraphicFrame = pShapeTreesChild as P.GraphicFrame;
         }
 
         #endregion Constructors
