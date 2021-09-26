@@ -20,11 +20,25 @@ namespace ShapeCrawler.Factories
             P.Picture? pPicture;
             if (pShapeTreesChild is P.Picture treePic)
             {
-                A.AudioFromFile? aAudioFile = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
-                    .GetFirstChild<A.AudioFromFile>();
-                if (aAudioFile is not null)
+                OpenXmlElement element = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties.ChildElements.FirstOrDefault();
+
+                if (element is A.AudioFromFile)
                 {
-                    return new AudioShape(pShapeTreesChild, slide);
+                    A.AudioFromFile? aAudioFile = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
+                    .GetFirstChild<A.AudioFromFile>();
+                    if (aAudioFile is not null)
+                    {
+                        return new AudioShape(pShapeTreesChild, slide);
+                    }
+                }
+                else if(element is A.VideoFromFile)
+                {
+                    A.VideoFromFile aVideoFile = (A.VideoFromFile)element;
+
+                    if (aVideoFile != null)
+                    {
+                        return new VideoShape(slide, pShapeTreesChild);
+                    }
                 }
 
                 pPicture = treePic;

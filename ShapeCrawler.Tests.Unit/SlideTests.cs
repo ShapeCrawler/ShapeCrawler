@@ -264,7 +264,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Shapes_Contains_Video()
         {
             // Arrange
-            IShape shape = _fixture.Pre040.Slides[0].Shapes.First(sp => sp.Id == 9);
+            IShape shape = _fixture.Pre040.Slides[0].Shapes.First(sp => sp.Id == 8);
             
             // Act
             bool isVideo = shape is IVideoShape;
