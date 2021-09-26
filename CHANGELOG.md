@@ -1,7 +1,7 @@
 # Changelog
 
-## Version 0.24.0 - Unreleased
-- Added `IShapeCollection.AddNewAudio(int xPixel, int yPixels, Stream mp3Stream)` to add a new audi shape on a slide.
+## Version 0.24.0 - 2021-09-26
+- Added `IShapeCollection.AddNewAudio(int xPixel, int yPixels, Stream mp3Stream)` to add a new audio shape on a slide.
 - Added setter for `IShape.Width` and `IShape.Height` properties to change width and height sizes.
 
 ## Version 0.23.0 - 2021-09-11
