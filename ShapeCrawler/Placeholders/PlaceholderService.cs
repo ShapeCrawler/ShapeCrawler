@@ -69,17 +69,6 @@ namespace ShapeCrawler.Placeholders
             return result;
         }
 
-        public PlaceholderData PlaceholderFontDataFromCompositeElement(OpenXmlCompositeElement sdkCompositeElement)
-        {
-            var placeholderData = CreatePlaceholderData(sdkCompositeElement);
-
-            return new PlaceholderData
-            {
-                PlaceholderType = placeholderData.PlaceholderType,
-                Index = placeholderData.Index
-            };
-        }
-
         private static PlaceholderType GetPlaceholderType(P.PlaceholderShape sdkPlaceholder)
         {
             var phTypeXml = sdkPlaceholder.Type;

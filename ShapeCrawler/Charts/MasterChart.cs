@@ -10,7 +10,7 @@ namespace ShapeCrawler.Charts
     internal class MasterChart : MasterShape, IShape
     {
         internal MasterChart(SCSlideMaster slideMaster, P.GraphicFrame pGraphicFrame)
-            : base(slideMaster, pGraphicFrame)
+            : base(pGraphicFrame, slideMaster)
         {
         }
     }

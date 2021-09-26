@@ -51,29 +51,33 @@ namespace ShapeCrawler.Collections
 
         internal static ShapeCollection CreateForSlide(SlidePart slidePart, SCSlide slide)
         {
-            var phService = new PlaceholderService(slidePart.SlideLayoutPart);
-            var geometryFactory = new GeometryFactory(phService);
             var shapeContextBuilder = new ShapeContext.Builder(slidePart);
 
             var chartGrFrameHandler = new ChartGraphicFrameHandler();
             var tableGrFrameHandler = new TableGraphicFrameHandler(shapeContextBuilder);
             var oleGrFrameHandler = new OleGraphicFrameHandler(shapeContextBuilder);
-            var pShapeHandler = new AutoShapeCreator(shapeContextBuilder);
-            var pictureHandler = new PictureHandler(shapeContextBuilder);
-            var sdkGroupShapeHandler =
-                new PGroupShapeHandler(shapeContextBuilder, geometryFactory, slidePart);
+            var autoShapeCreator = new AutoShapeCreator();
+            var pictureHandler = new PictureHandler();
 
-            pShapeHandler.Successor = sdkGroupShapeHandler;
-            sdkGroupShapeHandler.Successor = oleGrFrameHandler;
+            autoShapeCreator.Successor = oleGrFrameHandler;
             oleGrFrameHandler.Successor = pictureHandler;
             pictureHandler.Successor = chartGrFrameHandler;
             chartGrFrameHandler.Successor = tableGrFrameHandler;
 
             P.ShapeTree shapeTree = slidePart.Slide.CommonSlideData.ShapeTree;
             var shapes = new List<IShape>(shapeTree.Count());
-            foreach (OpenXmlCompositeElement compositeElement in shapeTree.OfType<OpenXmlCompositeElement>())
+            foreach (OpenXmlCompositeElement shapeTreesChildElement in shapeTree.OfType<OpenXmlCompositeElement>())
             {
-                IShape shape = pShapeHandler.Create(compositeElement, slide);
+                IShape shape;
+                if (shapeTreesChildElement is P.GroupShape pGroupShape)
+                {
+                    shape = new SlideGroupShape(pGroupShape, slide, null);
+                }
+                else
+                {
+                    shape = autoShapeCreator.Create(shapeTreesChildElement, slide, null);
+                }
+
                 if (shape != null)
                 {
                     shapes.Add(shape);
@@ -153,7 +157,7 @@ namespace ShapeCrawler.Collections
                 switch (compositeElement)
                 {
                     case P.Shape pShape:
-                        shapeList.Add(new MasterAutoShape(slideMaster, pShape));
+                        shapeList.Add(new MasterAutoShape(pShape, slideMaster));
                         continue;
                     case P.GraphicFrame pGraphicFrame:
                     {
@@ -162,7 +166,7 @@ namespace ShapeCrawler.Collections
                         if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
                             StringComparison.Ordinal))
                         {
-                            shapeList.Add(new MasterOLEObject(slideMaster, pGraphicFrame));
+                            shapeList.Add(new MasterOLEObject(pGraphicFrame, slideMaster));
                             continue;
                         }
 
@@ -176,7 +180,7 @@ namespace ShapeCrawler.Collections
                         if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/table",
                             StringComparison.Ordinal))
                         {
-                            shapeList.Add(new MasterTable(slideMaster, pGraphicFrame));
+                            shapeList.Add(new MasterTable(pGraphicFrame, slideMaster));
                             continue;
                         }
 
@@ -199,7 +203,7 @@ namespace ShapeCrawler.Collections
 
                 if (pPicture != null)
                 {
-                    shapeList.Add(new MasterPicture(slideMaster, pPicture));
+                    shapeList.Add(new MasterPicture(pPicture, slideMaster));
                 }
             }
 
@@ -309,7 +313,7 @@ namespace ShapeCrawler.Collections
             P14.CreationId creationId1 = new() { Val = (UInt32Value)3972997422U };
             creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
-            return new AudioShape(this.slide, this.shapeTree);
+            return new AudioShape(this.shapeTree, this.slide);
         }
 
         internal Shape GetShapeByPPlaceholderShape(P.PlaceholderShape inpPPlaceholderShape)

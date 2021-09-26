@@ -2,45 +2,32 @@
 using DocumentFormat.OpenXml;
 using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Settings;
-using P = DocumentFormat.OpenXml.Presentation;
-using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
-
 namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a shape on a slide.
     /// </summary>
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
-    internal class SlideOLEObject : SlideShape, IOLEObject //Make internal
+    internal class SlideOLEObject : SlideShape, IOLEObject // TODO: make it internal
     {
-        #region Constructors
+        internal ShapeContext Context;
 
         internal SlideOLEObject(
-            OpenXmlCompositeElement shapeTreeChild,
+            OpenXmlCompositeElement pShapeTreesChild,
+            SCSlide parentSlide,
             ShapeContext spContext,
-            SCSlide slide) : base(slide, shapeTreeChild)
+            SlideGroupShape parentGroupShape)
+            : base(pShapeTreesChild, parentSlide, parentGroupShape)
         {
-            ShapeTreeChild = shapeTreeChild;
-            Context = spContext;
+            this.Context = spContext;
         }
-
-        #endregion Constructors
 
         #region Public Properties
 
         public override GeometryType GeometryType => GeometryType.Rectangle;
 
         #endregion Public Properties
-
-        #region Fields
-
-        internal ShapeContext Context;
-
-        internal OpenXmlCompositeElement ShapeTreeChild { get; }
-
-        #endregion Fields
     }
 }

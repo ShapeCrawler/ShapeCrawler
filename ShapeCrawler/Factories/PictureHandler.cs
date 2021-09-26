@@ -2,8 +2,6 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Audio;
-using ShapeCrawler.Drawing;
-using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -11,49 +9,41 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Factories
 {
     /// <summary>
-    ///     Represents a picture handler for p:pic and picture p:graphicFrame element.
+    ///     Represents handler for p:pic and p:graphicFrame elements.
     /// </summary>
     internal class PictureHandler : OpenXmlElementHandler
     {
-        private readonly ShapeContext.Builder shapeContextBuilder;
-
-        internal PictureHandler(ShapeContext.Builder shapeContextBuilder)
+        public override IShape? Create(OpenXmlCompositeElement pShapeTreesChild, SCSlide slide, SlideGroupShape groupShape)
         {
-            this.shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
-        }
-
-        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide)
-        {
-            P.Picture pPicture;
-            if (pShapeTreeChild is P.Picture treePic)
+            P.Picture? pPicture;
+            if (pShapeTreesChild is P.Picture treePic)
             {
-                A.AudioFromFile aAudioFile = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
+                A.AudioFromFile? aAudioFile = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
                     .GetFirstChild<A.AudioFromFile>();
-                if (aAudioFile != null)
+                if (aAudioFile is not null)
                 {
-                    return new AudioShape(slide, pShapeTreeChild);
+                    return new AudioShape(pShapeTreesChild, slide);
                 }
 
                 pPicture = treePic;
             }
             else
             {
-                pPicture = pShapeTreeChild.Descendants<P.Picture>().FirstOrDefault();
+                pPicture = pShapeTreesChild.Descendants<P.Picture>().FirstOrDefault();
             }
 
             if (pPicture == null)
             {
-                return this.Successor?.Create(pShapeTreeChild, slide);
+                return this.Successor?.Create(pShapeTreesChild, slide, groupShape);
             }
 
-            StringValue picReference = pPicture.GetFirstChild<P.BlipFill>()?.Blip?.Embed;
-            if (picReference == null)
+            StringValue? picReference = pPicture.GetFirstChild<P.BlipFill>()?.Blip?.Embed;
+            if (picReference is null)
             {
                 return null;
             }
 
-            ShapeContext spContext = this.shapeContextBuilder.Build(pShapeTreeChild);
-            SlidePicture picture = new (slide, spContext, pPicture, picReference);
+            SlidePicture picture = new (pPicture, slide, picReference);
 
             return picture;
         }

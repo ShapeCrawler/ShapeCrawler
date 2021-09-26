@@ -1,7 +1,7 @@
-﻿using System;
-using DocumentFormat.OpenXml;
+﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
+using System;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -12,30 +12,26 @@ namespace ShapeCrawler.Factories
         private const string Uri = "http://schemas.openxmlformats.org/presentationml/2006/ole";
         private readonly ShapeContext.Builder shapeContextBuilder;
 
-        #region Constructors
-
         internal OleGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder)
         {
             this.shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
         }
 
-        #endregion Constructors
-
-        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide)
+        public override IShape Create(OpenXmlCompositeElement pShapeTreesChild, SCSlide slide, SlideGroupShape groupShape)
         {
-            if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
+            if (pShapeTreesChild is P.GraphicFrame pGraphicFrame)
             {
-                var grData = pShapeTreeChild.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
-                if (grData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
+                A.GraphicData aGraphicData = pShapeTreesChild.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
+                if (aGraphicData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
                 {
-                    var spContext = shapeContextBuilder.Build(pShapeTreeChild);
-                    var oleObject = new SlideOLEObject(pGraphicFrame, spContext, slide);
+                    ShapeContext spContext = this.shapeContextBuilder.Build(pShapeTreesChild);
+                    SlideOLEObject oleObject = new (pGraphicFrame, slide, spContext, groupShape);
 
                     return oleObject;
                 }
             }
 
-            return Successor?.Create(pShapeTreeChild, slide);
+            return this.Successor?.Create(pShapeTreesChild, slide, groupShape);
         }
     }
 }

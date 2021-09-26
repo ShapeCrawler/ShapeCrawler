@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.24.0 - Unreleased
+- Added `IShapeCollection.AddNewAudio(int xPixel, int yPixels, Stream mp3Stream)` to add a new audi shape on a slide.
+- Added setter for `IShape.Width` and `IShape.Height` properties to change width and height sizes.
+
 ## Version 0.23.0 - 2021-09-11
 - Added `ISlideCollection.Insert(int position, ISlide outerSlide)` to insert slide at certain position.
 - Fixed case when `ISlideCollection.Add()` breaks presentation.

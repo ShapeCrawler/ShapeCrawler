@@ -144,6 +144,28 @@ public class PictureSamples
     }
 }
 ```
+
+### Working with Audio
+```C#
+using System.IO;
+using ShapeCrawler;
+
+public class WorkingWithAudio
+{
+    public static void AddAudioShape()
+    {
+        // Add audio
+        IPresentation presentation = SCPresentation.Open("helloWorld.pptx", isEditable: true);                
+        IShapeCollection shapes = presentation.Slides[0].Shapes;
+        using Stream mp3Stream = File.OpenRead("audio.mp3");
+        IAudioShape addedAudioShape = shapes.AddNewAudio(xPixel: 300, yPixels: 100, mp3Stream);
+
+        presentation.Save();
+        presentation.Close();      
+    }
+}
+```
+
 ### Working with Charts
 ```C#
 using System;
@@ -230,9 +252,6 @@ public class UpdateSlideCollection
     }
 }
 ```
-
-# Known Issue
-**Font Size** is a tricky part of PowerPoint document structure since obtaining this value leads to parsing different presentation layers —  Slide, Slide Layout or Slide Master. Hence, If you note that font size was incorrect defined, please report [an issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) with attaching your pptx-file example.
 
 # Feedback and Give a Star! :star:
 The project is in development, and I’m pretty sure there are still lots of things to add in this library. Try it out and let me know your thoughts.
