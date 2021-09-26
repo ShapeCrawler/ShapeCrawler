@@ -13,7 +13,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler
 {
     /// <summary>
-    ///     Represents a shape.
+    ///     Represents a shape located on slide, slide layout or slide master.
     /// </summary>
     internal abstract class Shape : IRemovable
     {
@@ -128,7 +128,7 @@ namespace ShapeCrawler
             this.PShapeTreesChild.InnerXml += customDataElement;
         }
 
-        private string GetCustomData()
+        private string? GetCustomData()
         {
             var pattern = @$"<{ConstantStrings.CustomDataElementName}>(.*)<\/{ConstantStrings.CustomDataElementName}>";
             var regex = new Regex(pattern);
@@ -149,6 +149,11 @@ namespace ShapeCrawler
 
         private void SetXCoordinate(int value)
         {
+            if (this.ParentGroupShape is not null)
+            {
+                throw new RuntimeDefinedPropertyException("X coordinate of grouped shape cannnot be changed.");
+            }
+
             A.Offset aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
             if (aOffset == null)
             {
@@ -163,18 +168,31 @@ namespace ShapeCrawler
 
         private int GetXCoordinate()
         {
-            A.Offset aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
+            A.Offset? aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
             if (aOffset == null)
             {
-                return ((Placeholder) this.Placeholder).ReferencedShape.X;
+                return ((Placeholder)this.Placeholder).ReferencedShape.X;
             }
 
-            return PixelConverter.HorizontalEmuToPixel(aOffset.X);
+            long xEmu = aOffset.X;
+
+            if (this.ParentGroupShape is not null)
+            {
+                A.TransformGroup transformGroup = ((P.GroupShape)this.ParentGroupShape.PShapeTreesChild).GroupShapeProperties.TransformGroup;
+                xEmu = xEmu - transformGroup.ChildOffset.X + transformGroup.Offset.X;
+            }
+
+            return PixelConverter.HorizontalEmuToPixel(xEmu);
         }
 
         private void SetYCoordinate(long value)
         {
-            A.Offset aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
+            if (this.ParentGroupShape is not null)
+            {
+                throw new RuntimeDefinedPropertyException("Y coordinate of grouped shape cannnot be changed.");
+            }
+
+            A.Offset aOffset = this.PShapeTreesChild.Descendants<A.Offset>().First();
             if (this.Placeholder is not null)
             {
                 throw new PlaceholderCannotBeChangedException();
@@ -185,18 +203,26 @@ namespace ShapeCrawler
 
         private int GetYCoordinate()
         {
-            A.Offset aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
+            A.Offset? aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
             if (aOffset == null)
             {
                 return ((Placeholder)this.Placeholder).ReferencedShape.Y;
             }
 
-            return PixelConverter.VerticalEmuToPixel(aOffset.Y);
+            long yEmu = aOffset.Y;
+
+            if (this.ParentGroupShape is not null)
+            {
+                A.TransformGroup transformGroup = ((P.GroupShape)this.ParentGroupShape.PShapeTreesChild).GroupShapeProperties.TransformGroup;
+                yEmu = yEmu - transformGroup.ChildOffset.Y + transformGroup.Offset.Y;
+            }
+
+            return PixelConverter.VerticalEmuToPixel(yEmu);
         }
 
         private int GetWidthPixels()
         {
-            A.Extents aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
+            A.Extents? aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
             {
                 return ((Placeholder)this.Placeholder).ReferencedShape.Width;
@@ -218,7 +244,7 @@ namespace ShapeCrawler
 
         private int GetHeightPixels()
         {
-            A.Extents aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
+            A.Extents? aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
             {
                 return ((Placeholder)this.Placeholder).ReferencedShape.Height;
@@ -229,7 +255,7 @@ namespace ShapeCrawler
 
         private void SetHeight(int pixels)
         {
-            A.Extents aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
+            A.Extents? aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
             {
                 throw new PlaceholderCannotBeChangedException();

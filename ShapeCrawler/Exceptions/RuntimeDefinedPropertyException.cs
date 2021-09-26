@@ -9,16 +9,17 @@ namespace ShapeCrawler.Exceptions
     {
         #region Constructors
 
+        public RuntimeDefinedPropertyException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
         public RuntimeDefinedPropertyException(string message)
             : base(message, ExceptionCode.RuntimeDefinedPropertyException)
         {
         }
 
         public RuntimeDefinedPropertyException()
-        {
-        }
-
-        public RuntimeDefinedPropertyException(string message, Exception innerException) : base(message, innerException)
         {
         }
 
