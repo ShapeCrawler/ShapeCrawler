@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Audio;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Video;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -27,11 +29,25 @@ namespace ShapeCrawler.Factories
             P.Picture pPicture;
             if (pShapeTreeChild is P.Picture treePic)
             {
-                A.AudioFromFile aAudioFile = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
-                    .GetFirstChild<A.AudioFromFile>();
-                if (aAudioFile != null)
+                OpenXmlElement element = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties.ChildElements.FirstOrDefault();
+                if (element is A.AudioFromFile)
                 {
-                    return new AudioShape(slide, pShapeTreeChild);
+                    A.AudioFromFile aAudioFile = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
+                        .GetFirstChild<A.AudioFromFile>();
+
+                    if (aAudioFile != null)
+                    {
+                        return new AudioShape(slide, pShapeTreeChild);
+                    }
+                }
+                else if (element is A.VideoFromFile)
+                {
+                    A.VideoFromFile aVideoFile = (A.VideoFromFile)element;
+
+                    if (aVideoFile != null)
+                    {
+                        return new VideoShape(slide, pShapeTreeChild);
+                    }
                 }
 
                 pPicture = treePic;
@@ -53,7 +69,7 @@ namespace ShapeCrawler.Factories
             }
 
             ShapeContext spContext = this.shapeContextBuilder.Build(pShapeTreeChild);
-            SlidePicture picture = new (slide, spContext, pPicture, picReference);
+            SlidePicture picture = new(slide, spContext, pPicture, picReference);
 
             return picture;
         }
