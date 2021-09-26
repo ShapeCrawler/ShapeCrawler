@@ -1,7 +1,10 @@
 ﻿using ShapeCrawler.Shapes;
 
-namespace ShapeCrawler.Audio
+namespace ShapeCrawler
 {
+    /// <summary>
+    ///     Represents an audio shape.
+    /// </summary>
     public interface IAudioShape : IShape
     {
         /// <summary>

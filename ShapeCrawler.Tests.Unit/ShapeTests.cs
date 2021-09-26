@@ -145,7 +145,7 @@ namespace ShapeCrawler.Tests.Unit
             MemoryStream modifiedPresentation = new();
 
             // Act
-            picture5.Image.SetImage(TestFiles.Images.img02);
+            picture5.Image.SetImage(TestFiles.Images.imageByteArray02);
 
             // Assert
             int pic6LengthAfter = picture6.Image.GetBytes().GetAwaiter().GetResult().Length;
@@ -185,7 +185,7 @@ namespace ShapeCrawler.Tests.Unit
             xCoordinateCase7.Should().Be((int)(757383 * horizontalResolution / 914400));          
         }
 
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void X_ReturnsXCoordinateInPixels_OfGroupedShape()
         {
             // Arrange

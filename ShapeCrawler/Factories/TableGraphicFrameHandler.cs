@@ -17,23 +17,23 @@ namespace ShapeCrawler.Factories
             this.shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
         }
 
-        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide)
+        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, SlideGroupShape groupShape)
         {
             if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
             {
                 A.GraphicData graphicData = pGraphicFrame.Graphic.GraphicData;
                 if (!graphicData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
                 {
-                    return this.Successor?.Create(pShapeTreeChild, slide);
+                    return this.Successor?.Create(pShapeTreeChild, slide, groupShape);
                 }
 
                 ShapeContext spContext = this.shapeContextBuilder.Build(pShapeTreeChild);
-                var table = new SlideTable(pGraphicFrame, spContext, slide);
+                var table = new SlideTable(pGraphicFrame, slide, groupShape, spContext);
 
                 return table;
             }
 
-            return this.Successor?.Create(pShapeTreeChild, slide);
+            return this.Successor?.Create(pShapeTreeChild, slide, groupShape);
         }
     }
 }

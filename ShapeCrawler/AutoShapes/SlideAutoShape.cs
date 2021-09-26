@@ -2,8 +2,6 @@
 using System.Linq;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Factories;
-using ShapeCrawler.Settings;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -17,19 +15,13 @@ namespace ShapeCrawler
         private readonly Lazy<SCTextBox> textBox;
         private readonly P.Shape pShape;
 
-        internal SlideAutoShape(
-            ShapeContext spContext,
-            P.Shape pShape,
-            SCSlide slide)
-            : base(slide, pShape)
+        public SlideAutoShape(P.Shape pShape, SCSlide parentSlide, SlideGroupShape parentGroupShape)
+            : base(pShape, parentSlide, parentGroupShape)
         {
-            this.Context = spContext;
             this.textBox = new Lazy<SCTextBox>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
             this.pShape = pShape;
         }
-
-        internal ShapeContext Context { get; }
 
         #region Public Properties
 
@@ -37,11 +29,11 @@ namespace ShapeCrawler
 
         public ShapeFill Fill => this.shapeFill.Value;
 
-        #endregion Properties
+        #endregion Public Properties
 
         private SCTextBox GetTextBox()
         {
-            P.TextBody pTextBody = this.SdkPShapeTreeChild.GetFirstChild<P.TextBody>();
+            P.TextBody pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
             if (pTextBody == null)
             {
                 return null;
@@ -58,7 +50,7 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()
         {
-            SCImage image = SCImage.GetFillImageOrDefault(this, this.ParentSlide.SlidePart, this.SdkPShapeTreeChild);
+            SCImage image = SCImage.GetFillImageOrDefault(this, this.ParentSlide.SlidePart, this.PShapeTreesChild);
 
             if (image != null)
             {
@@ -78,11 +70,6 @@ namespace ShapeCrawler
             }
 
             return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
-        }
-
-        public void ThrowIfRemoved()
-        {
-            base.ThrowIfRemoved();
         }
     }
 }

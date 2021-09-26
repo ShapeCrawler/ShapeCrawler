@@ -1,27 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using ShapeCrawler.Audio;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Video;
 
-namespace ShapeCrawler.Collections
+namespace ShapeCrawler
 {
+    /// <summary>
+    ///     Represents a shape collection.
+    /// </summary>
     public interface IShapeCollection : IEnumerable<IShape>
     {
-        /// <summary>
-        ///     Gets the element at the specified index.
-        /// </summary>
-        IShape this[int index] { get; }
-
         /// <summary>
         ///     Gets the number of series items in the collection.
         /// </summary>
         int Count { get; }
 
         /// <summary>
-        ///     Gets the generic enumerator that iterates through the collection.
+        ///     Gets the element at the specified index.
         /// </summary>
-        IEnumerator<IShape> GetEnumerator();
+        IShape this[int index] { get; }
 
         /// <summary>
         ///     Create a new audio shape from stream and adds it to the end of the collection.

@@ -1,6 +1,4 @@
 ﻿using DocumentFormat.OpenXml;
-using ShapeCrawler.Settings;
-using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
@@ -12,23 +10,12 @@ namespace ShapeCrawler
     {
         private readonly StringValue picReference;
 
-        internal SlidePicture(
-            SCSlide slide,
-            ShapeContext spContext,
-            P.Picture pPicture,
-            StringValue picReference)
-            : base(slide, pPicture)
+        internal SlidePicture(P.Picture pPicture, SCSlide parentSlide, StringValue picReference)
+            : base(pPicture, parentSlide, null)
         {
-            this.Context = spContext;
             this.picReference = picReference;
         }
 
-        #region Public Properties
-
         public SCImage Image => SCImage.CreatePictureImage(this, this.ParentSlide.SlidePart, this.picReference);
-
-        #endregion Public Properties
-
-        internal ShapeContext Context { get; }
     }
 }

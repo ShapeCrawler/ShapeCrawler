@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Factories;
 using ShapeCrawler.Settings;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Statics;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -19,34 +15,35 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler
 {
-    /// <inheritdoc cref="ITable"/>
     internal class SlideTable : SlideShape, ITable
     {
         private readonly P.GraphicFrame pGraphicFrame;
         private readonly ResettableLazy<RowCollection> rowCollection;
-        private bool? hidden;
-        private int id;
-        private string name;
 
         #region Constructors
 
-        internal SlideTable(
-            OpenXmlCompositeElement pShapeTreeChild,
-            ShapeContext spContext,
-            SCSlide slide)
-            : base(slide, pShapeTreeChild)
+        internal SlideTable(OpenXmlCompositeElement pShapeTreesChild, SCSlide parentSlide, SlideGroupShape parentGroupShape, ShapeContext spContext)
+            : base(pShapeTreesChild, parentSlide, parentGroupShape)
         {
             this.Context = spContext;
             this.rowCollection =
-                new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) this.SdkPShapeTreeChild));
-            this.pGraphicFrame = pShapeTreeChild as P.GraphicFrame;
+                new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) this.PShapeTreesChild));
+            this.pGraphicFrame = pShapeTreesChild as P.GraphicFrame;
         }
 
         #endregion Constructors
 
         internal ShapeContext Context { get; }
 
-        internal A.Table ATable => pGraphicFrame.GetATable();
+        internal A.Table ATable => this.pGraphicFrame.GetATable();
+
+        public IReadOnlyList<Column> Columns => this.GetColumnList(); // TODO: make lazy
+
+        public RowCollection Rows => this.rowCollection.Value;
+
+        public ITableCell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
+
+        public GeometryType GeometryType => GeometryType.Rectangle;
 
         public void MergeCells(ITableCell inputCell1, ITableCell inputCell2) // TODO: Optimize method
         {
@@ -188,58 +185,6 @@ namespace ShapeCrawler
             }
         }
 
-        #region Public Properties
-
-        public IReadOnlyList<Column> Columns => GetColumnList(); // TODO: make lazy
-        public RowCollection Rows => rowCollection.Value;
-        public ITableCell this[int rowIndex, int columnIndex] => Rows[rowIndex].Cells[columnIndex];
-
-        /// <summary>
-        ///     Returns an element identifier.
-        /// </summary>
-        public int Id // TODO: fix warning
-        {
-            get
-            {
-                InitIdHiddenName();
-                return id;
-            }
-        }
-
-        /// <summary>
-        ///     Gets an element name.
-        /// </summary>
-        public string Name
-        {
-            get
-            {
-                InitIdHiddenName();
-                return name;
-            }
-        }
-
-        /// <summary>
-        ///     Determines whether the shape is hidden.
-        /// </summary>
-        public bool Hidden
-        {
-            get
-            {
-                InitIdHiddenName();
-                return (bool) hidden;
-            }
-        }
-
-        public GeometryType GeometryType => GeometryType.Rectangle;
-
-        public string CustomData
-        {
-            get => GetCustomData();
-            set => SetCustomData(value);
-        }
-
-        #endregion Public Properties
-
         #region Private Methods
 
         private IReadOnlyList<Column> GetColumnList()
@@ -260,39 +205,6 @@ namespace ShapeCrawler
             }
 
             return false;
-        }
-
-        private void SetCustomData(string value)
-        {
-            var customDataElement =
-                $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
-            Context.CompositeElement.InnerXml += customDataElement;
-        }
-
-        private string GetCustomData()
-        {
-            var pattern = @$"<{ConstantStrings.CustomDataElementName}>(.*)<\/{ConstantStrings.CustomDataElementName}>";
-            var regex = new Regex(pattern);
-            var elementText = regex.Match(Context.CompositeElement.InnerXml).Groups[1];
-            if (elementText.Value.Length == 0)
-            {
-                return null;
-            }
-
-            return elementText.Value;
-        }
-
-        private void InitIdHiddenName()
-        {
-            if (this.id != 0)
-            {
-                return;
-            }
-
-            var (id, hidden, name) = Context.CompositeElement.GetNvPrValues();
-            this.id = id;
-            this.hidden = hidden;
-            this.name = name;
         }
 
         #endregion Private Methods

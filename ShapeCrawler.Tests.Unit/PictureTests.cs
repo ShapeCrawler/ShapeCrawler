@@ -20,7 +20,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public async void ImageExGetImageBytes_MethodReturnsNonEmptyShapeImage()
+        public async void ImageGetBytes_ReturnsImageByteArray()
         {
             // Arrange
             IPicture shapePicture1 = (IPicture)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
@@ -36,22 +36,27 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public async void ImageExSetImage_MethodSetsShapeImage_WhenCustomImageStreamIsPassed()
+        public void ImageSetImage_UpdatesPictureImage()
         {
             // Arrange
-            var customImageStream = new MemoryStream(Properties.Resources.test_image_2);
-            IPicture picture = (IPicture) SCPresentation.Open(Properties.Resources._009, true).Slides[1].Shapes
-                .First(sp => sp.Id == 3);
-            var originLength = (await picture.Image.GetBytes().ConfigureAwait(false)).Length;
+            IPresentation presentation = SCPresentation.Open(Properties.Resources._009, true);
+            MemoryStream imageStream = new (TestFiles.Images.imageByteArray02);
+            MemoryStream preStream = new();
+            IPicture picture = (IPicture) presentation.Slides[1].Shapes.First(sp => sp.Id == 3);
+            int lengthBefore = picture.Image.GetBytes().Result.Length;
 
             // Act
-            picture.Image.SetImage(customImageStream);
+            picture.Image.SetImage(imageStream);
 
             // Assert
-            var editedLength = (await picture.Image.GetBytes().ConfigureAwait(false)).Length;
-            editedLength.Should().NotBe(originLength);
-        }
+            presentation.SaveAs(preStream);
+            presentation.Close();
+            presentation = SCPresentation.Open(preStream, false);
+            picture = (IPicture)presentation.Slides[1].Shapes.First(sp => sp.Id == 3);
+            int lengthAfter = picture.Image.GetBytes().Result.Length;
 
+            lengthAfter.Should().NotBe(lengthBefore);
+        }
 
         [Fact]
         public void Picture_DoNotParseStrangePicture_Test()
