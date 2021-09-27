@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using DocumentFormat.OpenXml.Packaging;
 using FluentAssertions;
 using ShapeCrawler.Audio;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Unit.Helpers;
+using ShapeCrawler.Video;
 using Xunit;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
@@ -256,6 +258,43 @@ namespace ShapeCrawler.Tests.Unit
             presentation = SCPresentation.Open(preStream, false);
             slide2 = presentation.Slides.First(s => s.CustomData == "old-number-1");
             slide2.Number.Should().Be(2);
+        }
+
+        [Fact]
+        public void Shapes_Contains_Video()
+        {
+            // Arrange
+            IShape shape = _fixture.Pre040.Slides[0].Shapes.First(sp => sp.Id == 8);
+            
+            // Act
+            bool isVideo = shape is IVideoShape;
+
+            // Act-Assert
+            isVideo.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Shapes_AddNewVideo_AddsVideo()
+        {
+            // Arrange
+            Stream preStream = TestFiles.Presentations.pre001_stream;
+            IPresentation presentation = SCPresentation.Open(preStream, true);
+            IShapeCollection shapes = presentation.Slides[1].Shapes;
+            Stream video = TestFiles.Video.TestVideo;
+            int xPxCoordinate = 300;
+            int yPxCoordinate = 100;
+
+            // Act
+            shapes.AddNewVideo(xPxCoordinate, yPxCoordinate, video);
+
+            presentation.Save();
+            presentation.Close();
+            presentation = SCPresentation.Open(preStream, false);
+            IVideoShape addedVideo = presentation.Slides[1].Shapes.OfType<IVideoShape>().Last();
+
+            // Assert
+            addedVideo.X.Should().Be(xPxCoordinate);
+            addedVideo.Y.Should().Be(yPxCoordinate);
         }
 
 #if DEBUG

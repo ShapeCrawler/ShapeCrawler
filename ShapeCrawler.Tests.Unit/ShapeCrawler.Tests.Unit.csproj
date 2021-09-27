@@ -24,10 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resource\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ShapeCrawler\ShapeCrawler.csproj" />
   </ItemGroup>
 
