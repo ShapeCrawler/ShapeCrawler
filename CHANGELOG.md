@@ -1,4 +1,6 @@
 # Changelog
+## Version 0.25.0 - 2021-12-16
+- Added `IShapeCollection.AddNewVideo()` to add a new video shape on a slide.
 
 ## Version 0.24.0 - 2021-09-26
 - Added `IShapeCollection.AddNewAudio(int xPixel, int yPixels, Stream mp3Stream)` to add a new audio shape on a slide.
