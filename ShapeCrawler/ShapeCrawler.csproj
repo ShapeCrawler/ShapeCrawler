@@ -18,8 +18,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Copyright>MIT</Copyright>
     <LangVersion>9.0</LangVersion>
     <ApplicationIcon>logo.ico</ApplicationIcon>
-    <PackageReleaseNotes>- Added `ISlideCollection.Insert(int position, ISlide outerSlide)` to insert slide at certain position.
-- Fixed case when `ISlideCollection.Add()` breaks presentation.</PackageReleaseNotes>
+    <PackageReleaseNotes>- Added `IShapeCollection.AddNewVideo()` to add a new video shape on a slide.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
@@ -31,6 +30,8 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <AssemblyVersion>0.23.0.0</AssemblyVersion>
     <FileVersion>0.23.0.0</FileVersion>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+    <PackageVersion>0.25.0</PackageVersion>
+    <Title>ShapeCrawler</Title>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -61,7 +62,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
 
 
   <ItemGroup>
-    <PackageReference Include="DocumentFormat.OpenXml" Version="2.13.1" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.14.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

@@ -8,8 +8,8 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
-// ReSharper disable CheckNamespace
 
+// ReSharper disable CheckNamespace
 namespace ShapeCrawler
 {
     /// <summary>
@@ -18,16 +18,16 @@ namespace ShapeCrawler
     public class SCImage
     {
         private readonly SCPresentation parentPresentation;
-
-        internal ImagePart ImagePart { get; set; }
         private readonly IRemovable parentRemovableImageContainer;
         private readonly StringValue picReference;
         private readonly SlidePart slidePart;
         private byte[] bytes;
 
+        internal ImagePart ImagePart { get; set; }
+
         private SCImage(
-            SCPresentation parentPresentation, 
-            ImagePart imagePart, 
+            SCPresentation parentPresentation,
+            ImagePart imagePart,
             IRemovable parentRemovableImageContainer,
             StringValue picReference,
             SlidePart slidePart)
@@ -48,10 +48,11 @@ namespace ShapeCrawler
         /// </summary>
         public async ValueTask<byte[]> GetBytes()
         {
-            await using Stream stream = this.ImagePart.GetStream();
+            var stream = this.ImagePart.GetStream();
             this.bytes = new byte[stream.Length];
             await stream.ReadAsync(this.bytes.AsMemory(0, (int)stream.Length)).ConfigureAwait(false);
-
+            
+            stream.Close();
             return this.bytes;
         }
 
