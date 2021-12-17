@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;netstandard2.1;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
     <AssemblyName>ShapeCrawler</AssemblyName>
     <RootNamespace>ShapeCrawler</RootNamespace>
     <Version>0.23.0</Version>
@@ -16,7 +16,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageIcon>logo.jpg</PackageIcon>
     <PackageIconUrl />
     <Copyright>MIT</Copyright>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10</LangVersion>
     <ApplicationIcon>logo.ico</ApplicationIcon>
     <PackageReleaseNotes>- Added `IShapeCollection.AddNewVideo()` to add a new video shape on a slide.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>

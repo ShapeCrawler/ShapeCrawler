@@ -41,7 +41,7 @@ namespace ShapeCrawler
 
         #region Public Members
 
-#if NET5_0 || NETSTANDARD2_1 || NETCOREAPP2_1
+#if NET5_0
 
         /// <summary>
         ///     Gets bytes content.
