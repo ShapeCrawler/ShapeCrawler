@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Texts;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.AutoShapes
 {
@@ -22,8 +22,6 @@ namespace ShapeCrawler.AutoShapes
             this.ParentTextBoxContainer = parentTextBoxContainer;
         }
 
-        #region Public Properties
-
         public IParagraphCollection Paragraphs { get; }
 
         public string Text
@@ -32,7 +30,7 @@ namespace ShapeCrawler.AutoShapes
             set => this.SetText(value);
         }
 
-        #endregion Public Properties
+        public AutoFitType AutofitType => ParseAutofitType();
 
         internal ITextBoxContainer ParentTextBoxContainer { get; }
 
@@ -43,10 +41,26 @@ namespace ShapeCrawler.AutoShapes
             this.ParentTextBoxContainer.ThrowIfRemoved();
         }
 
+        private AutoFitType ParseAutofitType()
+        {
+            var aBodyPr = this.APTextBody.GetFirstChild<A.BodyProperties>();
+            if (aBodyPr!.GetFirstChild<A.NormalAutoFit>() != null)
+            {
+                return AutoFitType.Shrink;
+            }
+
+            if (aBodyPr.GetFirstChild<A.ShapeAutoFit>() != null)
+            {
+                return AutoFitType.Resize;
+            }
+
+            return AutoFitType.None;
+        }
+
         private void SetText(string value)
         {
-            IParagraph baseParagraph = this.Paragraphs.First(p => p.Portions.Any());
-            IEnumerable<IParagraph> removingParagraphs = this.Paragraphs.Where(p => p != baseParagraph);
+            var baseParagraph = this.Paragraphs.First(p => p.Portions.Any());
+            var removingParagraphs = this.Paragraphs.Where(p => p != baseParagraph);
             this.Paragraphs.Remove(removingParagraphs);
 
             baseParagraph.Text = value;

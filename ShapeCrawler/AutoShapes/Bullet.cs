@@ -59,6 +59,11 @@ namespace ShapeCrawler.AutoShapes
 
         private BulletType ParseType()
         {
+            if (this.aParagraphProperties == null)
+            {
+                return BulletType.None;
+            }
+
             A.AutoNumberedBullet? aAutoNumeredBullet = this.aParagraphProperties.GetFirstChild<A.AutoNumberedBullet>();
             if (aAutoNumeredBullet != null)
             {

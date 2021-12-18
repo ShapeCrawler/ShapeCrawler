@@ -1,9 +1,8 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace ShapeCrawler.Statics
 {
-    internal class PixelConverter
+    internal static class PixelConverter
     {
         private static readonly float HorizontalResolution;
         private static readonly float VerticalResolution;

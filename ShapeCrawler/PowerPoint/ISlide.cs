@@ -48,9 +48,5 @@ namespace ShapeCrawler
         ///     Saves slide scheme to file.
         /// </summary>
         void SaveScheme(string filePath);
-
-#if DEBUG
-        void SaveImage(string filePath);
-#endif
     }
 }

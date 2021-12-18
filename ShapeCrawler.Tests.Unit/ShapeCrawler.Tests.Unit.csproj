@@ -4,7 +4,7 @@
     <IsPackable>false</IsPackable>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <LangVersion>9.0</LangVersion>
-    <TargetFrameworks>net5.0;net6.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;net5.0;netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -40,6 +40,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Remove="Resource\001.pptx" />
+    <EmbeddedResource Include="Resource\001.pptx" />
   </ItemGroup>
 
 </Project>

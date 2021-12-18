@@ -11,7 +11,6 @@ using ShapeCrawler.Factories;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
-using SkiaSharp;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
@@ -147,35 +146,6 @@ namespace ShapeCrawler
         {
             SlideSchemeService.SaveScheme(this._shapes.Value, this.ParentPresentation.SlideWidth, this.ParentPresentation.SlideHeight, stream);
         }
-
-#if DEBUG
-        public void SaveImage(string filePath)
-        {
-            SKImageInfo imageInfo = new(500, 600);
-            using SKSurface surface = SKSurface.Create(imageInfo);
-            SKCanvas canvas = surface.Canvas;
-
-            canvas.Clear(SKColors.Red);
-
-            using SKPaint paint = new SKPaint
-            {
-                Color = SKColors.Blue,
-                IsAntialias = true,
-                StrokeWidth = 15,
-                Style = SKPaintStyle.Stroke
-            };
-            canvas.DrawCircle(70, 70, 50, paint);
-
-            using SKPaint textPaint = new SKPaint();
-            textPaint.Color = SKColors.Green;
-            textPaint.IsAntialias = true;
-            textPaint.TextSize = 48;
-
-            using SKImage image = surface.Snapshot();
-            using SKData data = image.Encode(SKEncodedImageFormat.Png, 100);
-            File.WriteAllBytes(filePath, data.ToArray());
-        }
-#endif
 
         public void Hide()
         {

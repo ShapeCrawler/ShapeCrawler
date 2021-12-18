@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
@@ -31,6 +32,8 @@ namespace ShapeCrawler
 
         #region Public Properties
 
+        public bool IsRemoved { get; set; }
+        
         public string Text
         {
             get => this.GetText();
@@ -121,7 +124,5 @@ namespace ShapeCrawler
         }
 
         #endregion Private Methods
-
-        public bool IsRemoved { get; set; }
     }
 }

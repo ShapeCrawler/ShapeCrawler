@@ -17,5 +17,7 @@ namespace ShapeCrawler.AutoShapes
         ///     <para>NOTE: setter removes all paragraphs except first, which will be used as the single paragraph to set box content.</para>
         /// </summary>
         string Text { get; set; }
+
+        AutoFitType AutofitType { get; }
     }
 }
