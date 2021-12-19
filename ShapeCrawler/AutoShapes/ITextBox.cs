@@ -18,6 +18,6 @@ namespace ShapeCrawler.AutoShapes
         /// </summary>
         string Text { get; set; }
 
-        AutoFitType AutofitType { get; }
+        AutofitType AutofitType { get; }
     }
 }

@@ -30,7 +30,7 @@ namespace ShapeCrawler.AutoShapes
             set => this.SetText(value);
         }
 
-        public AutoFitType AutofitType => ParseAutofitType();
+        public AutofitType AutofitType => ParseAutofitType();
 
         internal ITextBoxContainer ParentTextBoxContainer { get; }
 
@@ -41,20 +41,20 @@ namespace ShapeCrawler.AutoShapes
             this.ParentTextBoxContainer.ThrowIfRemoved();
         }
 
-        private AutoFitType ParseAutofitType()
+        private AutofitType ParseAutofitType()
         {
             var aBodyPr = this.APTextBody.GetFirstChild<A.BodyProperties>();
             if (aBodyPr!.GetFirstChild<A.NormalAutoFit>() != null)
             {
-                return AutoFitType.Shrink;
+                return AutofitType.Shrink;
             }
 
             if (aBodyPr.GetFirstChild<A.ShapeAutoFit>() != null)
             {
-                return AutoFitType.Resize;
+                return AutofitType.Resize;
             }
 
-            return AutoFitType.None;
+            return AutofitType.None;
         }
 
         private void SetText(string value)

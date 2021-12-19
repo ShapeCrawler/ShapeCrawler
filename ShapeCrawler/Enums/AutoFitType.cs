@@ -1,6 +1,6 @@
 ﻿namespace ShapeCrawler;
 
-public enum AutoFitType
+public enum AutofitType
 {
     /// <summary>
     ///     Do not Autofit.
