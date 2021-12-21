@@ -1,5 +1,5 @@
-﻿using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Placeholders;
+﻿using ShapeCrawler.Placeholders;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 
 namespace ShapeCrawler
@@ -11,7 +11,7 @@ namespace ShapeCrawler
         IPlaceholder Placeholder { get; }
 
         void ThrowIfRemoved();
-
-        ITextBox TextBox { get; }
+        
+        IShape Shape { get; }
     }
 }

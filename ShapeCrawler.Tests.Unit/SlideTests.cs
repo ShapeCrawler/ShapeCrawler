@@ -289,6 +289,7 @@ namespace ShapeCrawler.Tests.Unit
 
             // Assert
             presentation.Save();
+            presentation.Close();
             presentation = SCPresentation.Open(preStream, false);
             var addedVideo = presentation.Slides[1].Shapes.OfType<IVideoShape>().Last();
             addedVideo.X.Should().Be(xPxCoordinate);

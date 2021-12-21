@@ -7,6 +7,7 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Settings;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -41,6 +42,8 @@ namespace ShapeCrawler
         #endregion Public Properties
 
         public override SCSlideMaster ParentSlideMaster => (SCSlideMaster)this.ParentSlideLayout.ParentSlideMaster;
+
+        public IShape Shape { get; }
 
         internal Dictionary<int, FontData> LvlToFontData => this.lvlToFontData.Value;
 

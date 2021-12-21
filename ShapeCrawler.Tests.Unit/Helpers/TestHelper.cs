@@ -55,10 +55,10 @@ namespace ShapeCrawler.Tests.Unit.Helpers
         
         public static readonly float VerticalResolution;
 
-        public static IAutoShape GetAutoShape(string fileName, int slideNumber, int shapeId)
+        public static IAutoShape GetAutoShape(string presentation, int slideNumber, int shapeId)
         {
-            var presentation = GetPresentation(fileName);
-            var slide = presentation.Slides.First(s => s.Number == slideNumber);
+            var scPresentation = GetPresentation(presentation);
+            var slide = scPresentation.Slides.First(s => s.Number == slideNumber);
             var shape = slide.Shapes.First(sp => sp.Id == shapeId);
 
             return (IAutoShape) shape;

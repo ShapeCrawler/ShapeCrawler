@@ -2,6 +2,7 @@
 using System.Linq;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -29,11 +30,13 @@ namespace ShapeCrawler
 
         public ShapeFill Fill => this.shapeFill.Value;
 
+        public IShape Shape => this;
+
         #endregion Public Properties
 
-        private SCTextBox GetTextBox()
+        private SCTextBox? GetTextBox()
         {
-            P.TextBody pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
+            var pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
             if (pTextBody == null)
             {
                 return null;

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Wordprocessing;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -14,7 +16,7 @@ namespace ShapeCrawler.AutoShapes
     {
         private readonly Lazy<string> text;
 
-        internal SCTextBox(OpenXmlCompositeElement txBodyCompositeElement, ITextBoxContainer parentTextBoxContainer)
+        public SCTextBox(OpenXmlCompositeElement txBodyCompositeElement, ITextBoxContainer parentTextBoxContainer)
         {
             this.text = new Lazy<string>(this.GetText);
             this.APTextBody = txBodyCompositeElement;
@@ -62,6 +64,19 @@ namespace ShapeCrawler.AutoShapes
             var baseParagraph = this.Paragraphs.First(p => p.Portions.Any());
             var removingParagraphs = this.Paragraphs.Where(p => p != baseParagraph);
             this.Paragraphs.Remove(removingParagraphs);
+
+            if (this.AutofitType == AutofitType.Shrink)
+            {
+                var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count()).First().First();
+                var fontFamilyName = popularPortion.Font.Name;
+                var fontSize = popularPortion.Font.Size;
+                var font = new System.Drawing.Font(fontFamilyName, fontSize);
+                var stringFormat = new StringFormat
+                {
+                    Trimming = StringTrimming.Word
+                };
+                var bm = new Bitmap(this.ParentTextBoxContainer.Shape.X, this.ParentTextBoxContainer.Shape.Y);
+            }
 
             baseParagraph.Text = value;
         }
