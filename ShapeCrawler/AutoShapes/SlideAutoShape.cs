@@ -13,20 +13,20 @@ namespace ShapeCrawler
     internal class SlideAutoShape : SlideShape, IAutoShape, ITextBoxContainer
     {
         private readonly Lazy<ShapeFill> shapeFill;
-        private readonly Lazy<SCTextBox> textBox;
+        private readonly Lazy<SCTextBox?> textBox;
         private readonly P.Shape pShape;
 
         public SlideAutoShape(P.Shape pShape, SCSlide parentSlide, SlideGroupShape parentGroupShape)
             : base(pShape, parentSlide, parentGroupShape)
         {
-            this.textBox = new Lazy<SCTextBox>(this.GetTextBox);
+            this.textBox = new Lazy<SCTextBox?>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
             this.pShape = pShape;
         }
 
         #region Public Properties
 
-        public ITextBox TextBox => this.textBox.Value;
+        public ITextBox? TextBox => this.textBox.Value;
 
         public ShapeFill Fill => this.shapeFill.Value;
 

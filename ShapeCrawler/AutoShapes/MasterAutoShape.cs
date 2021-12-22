@@ -24,13 +24,13 @@ namespace ShapeCrawler
     {
         private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
         private readonly Lazy<ShapeFill> shapeFill;
-        private readonly Lazy<SCTextBox> textBox;
+        private readonly Lazy<SCTextBox?> textBox;
         private readonly P.Shape pShape;
 
         internal MasterAutoShape(P.Shape pShape, SCSlideMaster parentSlideMaster)
             : base(pShape, parentSlideMaster)
         {
-            this.textBox = new Lazy<SCTextBox>(this.GetTextBox);
+            this.textBox = new Lazy<SCTextBox?>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
             this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
             this.pShape = pShape;
@@ -38,7 +38,7 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public ITextBox TextBox => this.textBox.Value;
+        public ITextBox? TextBox => this.textBox.Value;
 
         public ShapeFill Fill => this.shapeFill.Value;
 

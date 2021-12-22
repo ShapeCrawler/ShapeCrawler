@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Wordprocessing;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -70,7 +69,7 @@ namespace ShapeCrawler.AutoShapes
                 var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count()).First().First();
                 var fontFamilyName = popularPortion.Font.Name;
                 var fontSize = popularPortion.Font.Size;
-                var font = new System.Drawing.Font(fontFamilyName, fontSize);
+                var font = new Font(fontFamilyName, fontSize);
                 var stringFormat = new StringFormat
                 {
                     Trimming = StringTrimming.Word

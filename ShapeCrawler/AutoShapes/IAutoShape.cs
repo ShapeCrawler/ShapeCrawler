@@ -19,6 +19,6 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets text box. Returns <c>NULL</c> if shape has not text content.
         /// </summary>
-        ITextBox TextBox { get; }
+        ITextBox? TextBox { get; }
     }
 }
