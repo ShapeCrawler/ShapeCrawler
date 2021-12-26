@@ -38,8 +38,6 @@ namespace ShapeCrawler
             this.customXmlPart = new Lazy<CustomXmlPart>(this.GetSldCustomXmlPart);
         }
 
-        #region Public Properties
-
         public ISlideLayout ParentSlideLayout => ((SlideMasterCollection)this.ParentPresentation.SlideMasters).GetSlideLayoutBySlide(this);
 
         public IShapeCollection Shapes => this._shapes.Value;
@@ -120,8 +118,6 @@ namespace ShapeCrawler
         }
 
         public bool Hidden => this.SlidePart.Slide.Show != null && this.SlidePart.Slide.Show.Value == false;
-
-        #endregion Public Properties
 
         public bool IsRemoved { get; set; }
 

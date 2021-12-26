@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using ShapeCrawler.Spreadsheet;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Charts
 {
@@ -15,7 +17,7 @@ namespace ShapeCrawler.Charts
     {
         private readonly List<ChartPoint> chartPoints;
 
-        public ChartPointCollection(List<ChartPoint> points)
+        private ChartPointCollection(List<ChartPoint> points)
         {
             this.chartPoints = points;
         }
@@ -26,24 +28,11 @@ namespace ShapeCrawler.Charts
 
         public static ChartPointCollection Create(SCChart chart, OpenXmlElement cSerXmlElement)
         {
-            DocumentFormat.OpenXml.Drawing.Charts.NumberReference numReference;
-            DocumentFormat.OpenXml.Drawing.Charts.Values? cVal = cSerXmlElement.GetFirstChild<DocumentFormat.OpenXml.Drawing.Charts.Values>();
-            if (cVal != null)
-            {
-                // Some charts do have <c:val> element, for example, scatter chart.
-                numReference = cVal.NumberReference!;
-            }
-            else
-            {
-                numReference = cSerXmlElement.GetFirstChild<DocumentFormat.OpenXml.Drawing.Charts.YValues>()!.NumberReference!;
-            }
+            var cVal = cSerXmlElement.GetFirstChild<Values>();
+            var numReference = cVal != null ? cVal.NumberReference! : cSerXmlElement.GetFirstChild<YValues>()!.NumberReference!;
 
             IReadOnlyList<double> pointValues = ChartReferencesParser.GetNumbersFromCacheOrWorkbook(numReference, chart);
-            List<ChartPoint> points = new();
-            foreach (double point in pointValues)
-            {
-                points.Add(new ChartPoint(point));
-            }
+            List<ChartPoint> points = pointValues.Select(point => new ChartPoint(point)).ToList();
 
             return new ChartPointCollection(points);
         }
