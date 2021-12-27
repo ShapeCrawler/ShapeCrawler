@@ -148,7 +148,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Size_Setter_ChangesFontSizeOfParagraphPortion()
+        public void Size_Setter_changes_Font_Size_of_paragraph_portion()
         {
             // Arrange
             int newFontSize = 28;
@@ -159,9 +159,9 @@ namespace ShapeCrawler.Tests.Unit
 
             // Act
             portion.Font.Size = newFontSize;
-            presentation.SaveAs(savedPreStream);
 
             // Assert
+            presentation.SaveAs(savedPreStream);
             presentation = SCPresentation.Open(savedPreStream, false);
             portion = GetPortion(presentation);
             portion.Font.Size.Should().NotBe(oldFontSize);

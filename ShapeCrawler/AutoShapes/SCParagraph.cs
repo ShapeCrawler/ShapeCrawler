@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
@@ -64,6 +63,15 @@ namespace ShapeCrawler
 
         internal int Level { get; }
 
+        
+        public void SetFontSize(int fontSize)
+        {
+            foreach (var portion in this.Portions)
+            {
+                portion.Font.Size = fontSize;
+            }
+        }
+        
         #region Private Methods
 
         private static int GetInnerLevel(A.Paragraph aParagraph)

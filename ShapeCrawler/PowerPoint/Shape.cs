@@ -151,7 +151,7 @@ namespace ShapeCrawler
         {
             if (this.ParentGroupShape is not null)
             {
-                throw new RuntimeDefinedPropertyException("X coordinate of grouped shape cannnot be changed.");
+                throw new RuntimeDefinedPropertyException("X coordinate of grouped shape cannot be changed.");
             }
 
             A.Offset aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
@@ -189,7 +189,7 @@ namespace ShapeCrawler
         {
             if (this.ParentGroupShape is not null)
             {
-                throw new RuntimeDefinedPropertyException("Y coordinate of grouped shape cannnot be changed.");
+                throw new RuntimeDefinedPropertyException("Y coordinate of grouped shape cannot be changed.");
             }
 
             A.Offset aOffset = this.PShapeTreesChild.Descendants<A.Offset>().First();

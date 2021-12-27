@@ -10,7 +10,11 @@ jobs:
     name: Pipeline
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET 5.0
+    - name: Setup .NET 6
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.101
+    - name: Setup .NET 5
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.210
@@ -22,6 +26,8 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
+    - name: Test .NET 6.0
+      run: dotnet test --no-restore --verbosity normal -f net6.0
     - name: Test .NET 5.0
       run: dotnet test --no-restore --verbosity normal -f net5.0
     - name: Test .NET Core 3.1

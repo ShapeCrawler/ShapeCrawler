@@ -4,9 +4,11 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Spreadsheet;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
+using Font = System.Drawing.Font;
 
 namespace ShapeCrawler.AutoShapes
 {
@@ -31,7 +33,7 @@ namespace ShapeCrawler.AutoShapes
             set => this.SetText(value);
         }
 
-        public AutofitType AutofitType => ParseAutofitType();
+        public AutofitType AutofitType => this.ParseAutofitType();
 
         internal ITextBoxContainer ParentTextBoxContainer { get; }
 
@@ -58,7 +60,7 @@ namespace ShapeCrawler.AutoShapes
             return AutofitType.None;
         }
 
-        private void SetText(string value)
+        private void SetText(string newText)
         {
             var baseParagraph = this.Paragraphs.First(p => p.Portions.Any());
             var removingParagraphs = this.Paragraphs.Where(p => p != baseParagraph);
@@ -69,15 +71,30 @@ namespace ShapeCrawler.AutoShapes
                 var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count()).First().First();
                 var fontFamilyName = popularPortion.Font.Name;
                 var fontSize = popularPortion.Font.Size;
-                var font = new Font(fontFamilyName, fontSize);
-                var stringFormat = new StringFormat
+                var stringFormat = new StringFormat { Trimming = StringTrimming.Word };
+                var shape = this.ParentTextBoxContainer.Shape;
+                var bm = new Bitmap(shape.Width, shape.Height);
+                using var graphic = Graphics.FromImage(bm);
+                var rectangle = new Rectangle(0, 0, shape.Width, shape.Height);
+                graphic.DrawRectangle(Pens.Black, rectangle);
+                var availSize = new SizeF(rectangle.Width, rectangle.Height);
+            
+                int charsFitted;
+                do
                 {
-                    Trimming = StringTrimming.Word
-                };
-                var bm = new Bitmap(this.ParentTextBoxContainer.Shape.X, this.ParentTextBoxContainer.Shape.Y);
+                    var font = new Font(fontFamilyName, fontSize);
+                    graphic.MeasureString(newText, font, availSize, stringFormat, out charsFitted, out _);
+                    fontSize--;
+                }
+                while (newText.Length != charsFitted);
+                
+                var paragraphInternal = (SCParagraph) baseParagraph;
+                paragraphInternal.SetFontSize(fontSize);
             }
-
-            baseParagraph.Text = value;
+            else
+            {
+                baseParagraph.Text = newText;
+            }
         }
 
         private string GetText()

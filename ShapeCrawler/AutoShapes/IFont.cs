@@ -3,7 +3,7 @@
 namespace ShapeCrawler.AutoShapes
 {
     /// <summary>
-    ///     Represents the font interface.
+    ///     Represents a font.
     /// </summary>
     public interface IFont
     {
@@ -13,12 +13,12 @@ namespace ShapeCrawler.AutoShapes
         string Name { get; set; }
 
         /// <summary>
-        ///     Gets or sets font size in EMUs.
+        ///     Gets or sets font size in points.
         /// </summary>
         int Size { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether font width is bold.
+        ///     Gets or sets a value indicating whether font's width is bold.
         /// </summary>
         bool IsBold { get; set; }
 
@@ -28,7 +28,7 @@ namespace ShapeCrawler.AutoShapes
         bool IsItalic { get; set; }
 
         /// <summary>
-        ///     Gets color.
+        ///     Gets font color.
         /// </summary>
         IColorFormat ColorFormat { get; }
 
