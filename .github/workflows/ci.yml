@@ -9,26 +9,19 @@ jobs:
     runs-on: ubuntu-latest
     name: Pipeline
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET 6
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.101
-    - name: Setup .NET 5
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.210
-    - name: Setup .NET Core 3.1
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.416
-    - name: Install dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-    - name: Test .NET 6.0
-      run: dotnet test --no-restore --verbosity normal -f net6.0
-    - name: Test .NET 5.0
-      run: dotnet test --no-restore --verbosity normal -f net5.0
-    - name: Test .NET Core 3.1
-      run: dotnet test --no-restore --verbosity normal -f netcoreapp3.1
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Setup .NET 5 and .NET Core 3.1 
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: |
+            5.0.210
+            3.1.416
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      - name: Run tests for .NET 5 target
+        run: dotnet test --no-restore --verbosity normal -f net5.0
+      - name: Run tests for .NET 3.1 Core target
+        run: dotnet test --no-restore --verbosity normal -f netcoreapp3.1
