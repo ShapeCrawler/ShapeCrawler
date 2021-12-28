@@ -92,7 +92,7 @@ namespace ShapeCrawler.Tests.Unit
             textBox.Paragraphs.Should().HaveCount(1);
         }
         
-        [Fact]
+        [Fact(Skip = "In Progress")]
         public void Text_Setter_reduces_font_size_When_text_is_overflow()
         {
             // Arrange

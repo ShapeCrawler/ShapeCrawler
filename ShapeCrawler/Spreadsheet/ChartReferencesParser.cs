@@ -102,7 +102,7 @@ namespace ShapeCrawler.Spreadsheet
 
         private static string GetFilteredFormula(C.Formula formula)
         {
-#if NETSTANDARD2_1 || NET5_0 || NETCOREAPP2_1
+#if NET5_0
             var filteredFormula = formula.Text
                 .Replace("'", string.Empty, StringComparison.OrdinalIgnoreCase)
                 .Replace("$", string.Empty,
