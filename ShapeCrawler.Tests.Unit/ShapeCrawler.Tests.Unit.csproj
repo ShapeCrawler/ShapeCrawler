@@ -4,7 +4,7 @@
     <IsPackable>false</IsPackable>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <LangVersion>9.0</LangVersion>
-    <TargetFrameworks>net472;net5.0;net6.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net472;net5.0;netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
