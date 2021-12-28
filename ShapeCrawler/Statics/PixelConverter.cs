@@ -2,42 +2,52 @@
 
 namespace ShapeCrawler.Statics
 {
-    internal static class PixelConverter
+    public static class PixelConverter
     {
-        private static readonly float HorizontalResolution;
-        private static readonly float VerticalResolution;
+        private static float horizontalResolution;
+        private static float verticalResolution;
 
         static PixelConverter()
         {
-            var bm = new Bitmap(100, 100);
+            var bm = new Bitmap(1, 1);
             if (bm.HorizontalResolution == 0)
             {
                 // Set default resolution
                 bm.SetResolution(96, 96);
             }
 
-            HorizontalResolution = bm.HorizontalResolution;
-            VerticalResolution = bm.VerticalResolution;
+            horizontalResolution = bm.HorizontalResolution;
+            verticalResolution = bm.VerticalResolution;
         }
+
+#if TEST
+
+        public static void SetDpi(int dpi)
+        {
+            horizontalResolution = dpi;
+            verticalResolution = dpi;
+        }
+
+#endif
 
         internal static int HorizontalEmuToPixel(long horizontalEmus)
         {
-            return (int)(horizontalEmus * HorizontalResolution / 914400);
+            return (int)(horizontalEmus * horizontalResolution / 914400);
         }
 
         internal static int VerticalEmuToPixel(long verticalEmus)
         {
-            return (int)(verticalEmus * VerticalResolution / 914400);
+            return (int)(verticalEmus * verticalResolution / 914400);
         }
 
         internal static long HorizontalPixelToEmu(int horizontalPixels)
         {
-            return (long)(horizontalPixels * 914400 / HorizontalResolution);
+            return (long)(horizontalPixels * 914400 / horizontalResolution);
         }
 
         internal static long VerticalPixelToEmu(int verticalPixels)
         {
-            return (long)(verticalPixels * 914400 / VerticalResolution);
+            return (long)(verticalPixels * 914400 / verticalResolution);
         }
     }
 }

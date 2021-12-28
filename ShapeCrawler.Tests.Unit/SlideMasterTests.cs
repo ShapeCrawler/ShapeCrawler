@@ -98,17 +98,17 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void AutoShapeTextBoxParagraphPortionFontSize_ReturnsTextPortionFontSize()
+        public void AutoShape_TextBox_Paragraph_Portion_FontSize_returns_Font_Size()
         {
             // Arrange
-            ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
-            IAutoShape autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
+            var slideMaster = _fixture.Pre001.SlideMasters[0];
+            var autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
             // Act
             int portionFontSize = autoShape.TextBox.Paragraphs[0].Portions[0].Font.Size;
 
             // Assert
-            portionFontSize.Should().Be(1800);
+            portionFontSize.Should().Be(18);
         }
     }
 }

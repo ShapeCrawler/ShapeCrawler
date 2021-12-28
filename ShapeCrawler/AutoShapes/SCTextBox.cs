@@ -75,10 +75,10 @@ namespace ShapeCrawler.AutoShapes
                 var shape = this.ParentTextBoxContainer.Shape;
                 var bm = new Bitmap(shape.Width, shape.Height);
                 using var graphic = Graphics.FromImage(bm);
-                var rectangle = new Rectangle(0, 0, shape.Width, shape.Height);
-                graphic.DrawRectangle(Pens.Black, rectangle);
+                var margin = 7;
+                var rectangle = new Rectangle(margin, margin, shape.Width - 2 * margin, shape.Height - 2 * margin);
                 var availSize = new SizeF(rectangle.Width, rectangle.Height);
-            
+
                 int charsFitted;
                 do
                 {
@@ -87,14 +87,12 @@ namespace ShapeCrawler.AutoShapes
                     fontSize--;
                 }
                 while (newText.Length != charsFitted);
-                
-                var paragraphInternal = (SCParagraph) baseParagraph;
+
+                var paragraphInternal = (SCParagraph)baseParagraph;
                 paragraphInternal.SetFontSize(fontSize);
             }
-            else
-            {
-                baseParagraph.Text = newText;
-            }
+
+            baseParagraph.Text = newText;
         }
 
         private string GetText()

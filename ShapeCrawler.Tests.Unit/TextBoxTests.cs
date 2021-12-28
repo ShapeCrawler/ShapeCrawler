@@ -1,18 +1,17 @@
+#if TEST
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using DocumentFormat.OpenXml.Math;
-using DocumentFormat.OpenXml.Vml.Office;
 using FluentAssertions;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Tables;
+using ShapeCrawler.Statics;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
-using ShapeCrawler.Texts;
 using Xunit;
 
 // ReSharper disable All
@@ -92,23 +91,26 @@ namespace ShapeCrawler.Tests.Unit
             textBox.Paragraphs.Should().HaveCount(1);
         }
         
-        [Fact(Skip = "In Progress")]
-        public void Text_Setter_reduces_font_size_When_text_is_overflow()
+        [Fact]
+        public void Text_Setter_updates_text_box_content_and_Reduces_font_size_When_text_is_Overflow()
         {
             // Arrange
             var autoShape = TestHelper.GetAutoShape("001.pptx", 1, 9);
             var textBox = autoShape.TextBox;
             var fontSizeBefore = textBox.Paragraphs[0].Portions[0].Font.Size;
+            var newText = "Shrink text on overflow";
+            PixelConverter.SetDpi(96);
 
             // Act
-            textBox.Text = "Shrink text on overflow";
+            textBox.Text = newText;
 
             // Assert
-            textBox.Paragraphs[0].Portions[0].Font.Size.Should().BeLessThan(fontSizeBefore);
+            textBox.Text.Should().BeEquivalentTo(newText);
+            textBox.Paragraphs[0].Portions[0].Font.Size.Should().Be(8);
         }
 
         [Fact]
-        public void Text_Setter_changes_text_box_content_When_the_first_paragraph_is_empty()
+        public void Text_Setter_updates_text_box_content()
         {
             // Arrange
             IPresentation presentation = SCPresentation.Open(Resources._020, true);
@@ -402,3 +404,5 @@ namespace ShapeCrawler.Tests.Unit
         }
     }
 }
+
+#endif

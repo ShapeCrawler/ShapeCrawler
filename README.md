@@ -265,4 +265,5 @@ Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issu
 
 # Contributing and Support
 
-Don't hesitate to contact me (theadamo86@gmail.com) if you have a questions or wanna be involved!
+- Do you have a question? Please [join our Discussions Forum](https://github.com/ShapeCrawler/ShapeCrawler/discussions) or don't hesitate to contact me (theadamo86@gmail.com).
+- Please read our [Contribution Guide](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CONTRIBUTING.md) before opening issues or pull requests.

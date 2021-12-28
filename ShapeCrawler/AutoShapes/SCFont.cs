@@ -108,7 +108,7 @@ namespace ShapeCrawler.AutoShapes
             var fontSize = this.ParentPortion.AText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize?.Value;
             if (fontSize != null)
             {
-                return fontSize.Value;
+                return fontSize.Value / 100;
             }
 
             var parentParagraph = this.ParentPortion.ParentParagraph;
@@ -127,7 +127,7 @@ namespace ShapeCrawler.AutoShapes
                         phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
                         if (fontDataPlaceholder.FontSize != null)
                         {
-                            return fontDataPlaceholder.FontSize;
+                            return fontDataPlaceholder.FontSize / 100;
                         }
                     }
 
@@ -136,13 +136,13 @@ namespace ShapeCrawler.AutoShapes
                     // From Slide Master body
                     if (slideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
                     {
-                        return fontSizeBody;
+                        return fontSizeBody / 100;
                     }
 
                     // From Slide Master other
                     if (slideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
                     {
-                        return fontSizeOther;
+                        return fontSizeOther / 100;
                     }
                 }
             }
@@ -152,7 +152,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 if (fontData.FontSize != null)
                 {
-                    return fontData.FontSize;
+                    return fontData.FontSize / 100;
                 }
             }
 
@@ -283,7 +283,7 @@ namespace ShapeCrawler.AutoShapes
                 throw new SlideMasterPropertyCannotBeChanged(errorMsg);
             }
 
-            aRunPr.FontSize = newFontSize;
+            aRunPr.FontSize = newFontSize * 100;
         }
     }
 }

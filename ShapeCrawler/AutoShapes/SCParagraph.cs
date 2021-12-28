@@ -63,7 +63,6 @@ namespace ShapeCrawler
 
         internal int Level { get; }
 
-        
         public void SetFontSize(int fontSize)
         {
             foreach (var portion in this.Portions)
@@ -71,7 +70,7 @@ namespace ShapeCrawler
                 portion.Font.Size = fontSize;
             }
         }
-        
+
         #region Private Methods
 
         private static int GetInnerLevel(A.Paragraph aParagraph)
