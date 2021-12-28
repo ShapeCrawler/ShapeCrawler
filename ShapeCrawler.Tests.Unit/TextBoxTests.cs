@@ -107,7 +107,7 @@ namespace ShapeCrawler.Tests.Unit
             textBox.Paragraphs[0].Portions[0].Font.Size.Should().BeLessThan(fontSizeBefore);
         }
 
-        [Fact]
+        [Fact (Skip = "In Progress")]
         public void Text_Setter_changes_text_box_content_When_the_first_paragraph_is_empty()
         {
             // Arrange
