@@ -10,10 +10,6 @@ jobs:
     name: Pipeline
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET 6
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.101
     - name: Setup .NET 5.0
       uses: actions/setup-dotnet@v1
       with:
