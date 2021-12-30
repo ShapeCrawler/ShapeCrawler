@@ -29,12 +29,12 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets shape identifier.
         /// </summary>
-        public int Id => (int)this.PShapeTreesChild.GetNonVisualDrawingProperties().Id.Value;
+        public int Id => (int)this.PShapeTreesChild.GetNonVisualDrawingProperties().Id!.Value;
 
         /// <summary>
         ///     Gets shape name.
         /// </summary>
-        public string Name => this.PShapeTreesChild.GetNonVisualDrawingProperties().Name;
+        public string Name => this.PShapeTreesChild.GetNonVisualDrawingProperties().Name!;
 
         /// <summary>
         ///     Gets a value indicating whether shape is hidden.
@@ -44,10 +44,10 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets or sets custom data.
         /// </summary>
-        public string CustomData
+        public string? CustomData
         {
             get => this.GetCustomData();
-            set => this.SetCustomData(value);
+            set => this.SetCustomData(value ?? throw new ArgumentNullException(nameof(value)));
         }
 
         /// <summary>
@@ -101,15 +101,15 @@ namespace ShapeCrawler
             set => this.SetWidth(value);
         }
 
-        public IBaseSlide ParentBaseSlide { get; }
-
-        public Shape? ParentGroupShape { get; }
+        bool IRemovable.IsRemoved { get; set; }
 
         internal OpenXmlCompositeElement PShapeTreesChild { get; }
 
-        #endregion Public Properties
+        private IBaseSlide ParentBaseSlide { get; }
 
-        bool IRemovable.IsRemoved { get; set; }
+        private Shape? ParentGroupShape { get; }
+
+        #endregion Public Properties
 
         public void ThrowIfRemoved()
         {
@@ -143,7 +143,7 @@ namespace ShapeCrawler
 
         private bool DefineHidden()
         {
-            bool? parsedHiddenValue = this.PShapeTreesChild.GetNonVisualDrawingProperties().Hidden?.Value;
+            var parsedHiddenValue = this.PShapeTreesChild.GetNonVisualDrawingProperties().Hidden?.Value;
             return parsedHiddenValue is true;
         }
 
@@ -154,10 +154,10 @@ namespace ShapeCrawler
                 throw new RuntimeDefinedPropertyException("X coordinate of grouped shape cannot be changed.");
             }
 
-            A.Offset aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
+            var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
             if (aOffset == null)
             {
-                Shape placeholderShape = ((Placeholder) this.Placeholder).ReferencedShape;
+                var placeholderShape = ((Placeholder)this.Placeholder).ReferencedShape;
                 placeholderShape.X = value;
             }
             else
@@ -168,18 +168,18 @@ namespace ShapeCrawler
 
         private int GetXCoordinate()
         {
-            A.Offset? aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
+            var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
             if (aOffset == null)
             {
                 return ((Placeholder)this.Placeholder).ReferencedShape.X;
             }
 
-            long xEmu = aOffset.X;
+            long xEmu = aOffset.X!;
 
             if (this.ParentGroupShape is not null)
             {
-                A.TransformGroup transformGroup = ((P.GroupShape)this.ParentGroupShape.PShapeTreesChild).GroupShapeProperties.TransformGroup;
-                xEmu = xEmu - transformGroup.ChildOffset.X + transformGroup.Offset.X;
+                var aTransformGroup = ((P.GroupShape)this.ParentGroupShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup;
+                xEmu = xEmu - aTransformGroup!.ChildOffset!.X! + aTransformGroup!.Offset!.X!;
             }
 
             return PixelConverter.HorizontalEmuToPixel(xEmu);
@@ -192,7 +192,7 @@ namespace ShapeCrawler
                 throw new RuntimeDefinedPropertyException("Y coordinate of grouped shape cannot be changed.");
             }
 
-            A.Offset aOffset = this.PShapeTreesChild.Descendants<A.Offset>().First();
+            var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().First();
             if (this.Placeholder is not null)
             {
                 throw new PlaceholderCannotBeChangedException();
@@ -203,18 +203,18 @@ namespace ShapeCrawler
 
         private int GetYCoordinate()
         {
-            A.Offset? aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
+            var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
             if (aOffset == null)
             {
                 return ((Placeholder)this.Placeholder).ReferencedShape.Y;
             }
 
-            long yEmu = aOffset.Y;
+            var yEmu = aOffset.Y!;
 
             if (this.ParentGroupShape is not null)
             {
-                A.TransformGroup transformGroup = ((P.GroupShape)this.ParentGroupShape.PShapeTreesChild).GroupShapeProperties.TransformGroup;
-                yEmu = yEmu - transformGroup.ChildOffset.Y + transformGroup.Offset.Y;
+                var aTransformGroup = ((P.GroupShape)this.ParentGroupShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup!;
+                yEmu = yEmu - aTransformGroup.ChildOffset!.Y! + aTransformGroup!.Offset!.Y!;
             }
 
             return PixelConverter.VerticalEmuToPixel(yEmu);
@@ -222,18 +222,18 @@ namespace ShapeCrawler
 
         private int GetWidthPixels()
         {
-            A.Extents? aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
+            var aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
             {
                 return ((Placeholder)this.Placeholder).ReferencedShape.Width;
             }
 
-            return PixelConverter.HorizontalEmuToPixel(aExtents.Cx);
+            return PixelConverter.HorizontalEmuToPixel(aExtents!.Cx!);
         }
 
         private void SetWidth(int pixels)
         {
-            A.Extents aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
+            var aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
             {
                 throw new PlaceholderCannotBeChangedException();
@@ -244,18 +244,18 @@ namespace ShapeCrawler
 
         private int GetHeightPixels()
         {
-            A.Extents? aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
+            var aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
             {
                 return ((Placeholder)this.Placeholder).ReferencedShape.Height;
             }
 
-            return PixelConverter.VerticalEmuToPixel(aExtents.Cy);
+            return PixelConverter.VerticalEmuToPixel(aExtents!.Cy!);
         }
 
         private void SetHeight(int pixels)
         {
-            A.Extents? aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
+            var aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
             {
                 throw new PlaceholderCannotBeChangedException();
@@ -266,11 +266,11 @@ namespace ShapeCrawler
 
         private GeometryType GetGeometryType()
         {
-            P.ShapeProperties spPr = this.PShapeTreesChild.Descendants<P.ShapeProperties>().First(); // TODO: optimize
-            A.Transform2D transform2D = spPr.Transform2D;
-            if (transform2D != null)
+            var spPr = this.PShapeTreesChild.Descendants<P.ShapeProperties>().First(); // TODO: optimize
+            var aTransform2D = spPr.Transform2D;
+            if (aTransform2D != null)
             {
-                A.PresetGeometry aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
+                var aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
 
                 // Placeholder can have transform on the slide, without having geometry
                 if (aPresetGeometry == null)
@@ -282,13 +282,13 @@ namespace ShapeCrawler
                 }
                 else
                 {
-                    var name = aPresetGeometry.Preset.Value.ToString();
+                    var name = aPresetGeometry.Preset!.Value.ToString();
                     Enum.TryParse(name, true, out GeometryType geometryType);
                     return geometryType;
                 }
             }
 
-            Placeholder placeholder = (Placeholder)this.Placeholder;
+            var placeholder = (Placeholder)this.Placeholder;
             if (placeholder?.ReferencedShape != null)
             {
                 return placeholder.ReferencedShape.GeometryType;
