@@ -1,3 +1,5 @@
+#if TEST
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,10 +9,9 @@ using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Tables;
+using ShapeCrawler.Statics;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
-using ShapeCrawler.Texts;
 using Xunit;
 
 // ReSharper disable All
@@ -89,9 +90,27 @@ namespace ShapeCrawler.Tests.Unit
             textBox.Text.Should().BeEquivalentTo(newText);
             textBox.Paragraphs.Should().HaveCount(1);
         }
+        
+        [Fact]
+        public void Text_Setter_updates_text_box_content_and_Reduces_font_size_When_text_is_Overflow()
+        {
+            // Arrange
+            var autoShape = TestHelper.GetAutoShape("001.pptx", 1, 9);
+            var textBox = autoShape.TextBox;
+            var fontSizeBefore = textBox.Paragraphs[0].Portions[0].Font.Size;
+            var newText = "Shrink text on overflow";
+            PixelConverter.SetDpi(96);
+
+            // Act
+            textBox.Text = newText;
+
+            // Assert
+            textBox.Text.Should().BeEquivalentTo(newText);
+            textBox.Paragraphs[0].Portions[0].Font.Size.Should().Be(8);
+        }
 
         [Fact]
-        public void Text_SetterChangesTextBoxContent_WhenTheFirstParagraphIsEmpty()
+        public void Text_Setter_updates_text_box_content()
         {
             // Arrange
             IPresentation presentation = SCPresentation.Open(Resources._020, true);
@@ -114,6 +133,20 @@ namespace ShapeCrawler.Tests.Unit
             textBox.Paragraphs.Should().HaveCount(1);
         }
 
+        [Fact]
+        public void AutofitType_Getter_returns_text_autofit_type()
+        {
+            // Arrange
+            IAutoShape autoShape = TestHelper.GetAutoShape(presentation: "001.pptx", slideNumber: 1, shapeId: 9);
+            var textBox = autoShape.TextBox;
+
+            // Act
+            var autofitType = textBox.AutofitType;
+
+            // Assert
+            autofitType.Should().Be(AutofitType.Shrink);
+        }
+        
         [Fact]
         public void Shape_IsAutoShape()
         {
@@ -151,7 +184,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void ParagraphBulletTypeProperty_ReturnsCorrectValue()
+        public void Paragraph_Bullet_Type_Getter_returns_bullet_type()
         {
             // Arrange
             var shapeList = _fixture.Pre002.Slides[1].Shapes;
@@ -170,6 +203,20 @@ namespace ShapeCrawler.Tests.Unit
             shape5Pr1BulletType.Should().BeEquivalentTo(BulletType.Numbered);
             shape5Pr2BulletType.Should().BeEquivalentTo(BulletType.Picture);
             shape4Pr2BulletType.Should().BeEquivalentTo(BulletType.Character);
+        }
+        
+        [Fact]
+        public void Paragraph_Bullet_Type_Getter_returns_None_value_When_paragraph_doesnt_have_bullet()
+        {
+            // Arrange
+            IAutoShape autoShape = TestHelper.GetAutoShape(presentation: "001.pptx", slideNumber: 1, shapeId: 2);
+            var bullet = autoShape.TextBox.Paragraphs[0].Bullet;
+
+            // Act
+            var bulletType = bullet.Type;
+
+            // Assert
+            bulletType.Should().Be(BulletType.None);
         }
 
         [Fact]
@@ -357,3 +404,5 @@ namespace ShapeCrawler.Tests.Unit
         }
     }
 }
+
+#endif

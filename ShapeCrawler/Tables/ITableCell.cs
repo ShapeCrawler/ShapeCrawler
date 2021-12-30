@@ -1,7 +1,6 @@
 ﻿using ShapeCrawler.AutoShapes;
 
 // ReSharper disable CheckNamespace
-
 namespace ShapeCrawler
 {
     /// <summary>

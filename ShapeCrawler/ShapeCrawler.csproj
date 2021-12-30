@@ -1,22 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;netstandard2.1;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net5.0;netstandard2.0</TargetFrameworks>
     <AssemblyName>ShapeCrawler</AssemblyName>
     <RootNamespace>ShapeCrawler</RootNamespace>
     <Version>0.23.0</Version>
     <Authors>Adam Shakhabov</Authors>
     <Company>ShapeCrawler</Company>
     <Description>ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoint presentations. It provides fluent APIs to process slides without having Microsoft Office installed.
-
 This library provides a simplified object model on top of the Open XML SDK for manipulating PowerPoint documents without any COM+ or COM interop layers.</Description>
-    <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML SlideDotNet</PackageTags>
+    <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>logo.jpg</PackageIcon>
     <PackageIconUrl />
     <Copyright>MIT</Copyright>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>9</LangVersion>
     <ApplicationIcon>logo.ico</ApplicationIcon>
     <PackageReleaseNotes>- Added `IShapeCollection.AddNewVideo()` to add a new video shape on a slide.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
@@ -27,8 +26,8 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <nullable>enable</nullable>
-    <AssemblyVersion>0.23.0.0</AssemblyVersion>
-    <FileVersion>0.23.0.0</FileVersion>
+    <AssemblyVersion>0.25.0.0</AssemblyVersion>
+    <FileVersion>0.25.0.0</FileVersion>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
     <PackageVersion>0.25.0</PackageVersion>
     <Title>ShapeCrawler</Title>
@@ -36,6 +35,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DefineConstants>TRACE;TEST</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
@@ -62,17 +62,12 @@ This library provides a simplified object model on top of the Open XML SDK for m
 
 
   <ItemGroup>
-    <PackageReference Include="DocumentFormat.OpenXml" Version="2.14.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="SkiaSharp" Version="2.80.2" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.15.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Drawing.Common" Version="5.0.1" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
   </ItemGroup>
 

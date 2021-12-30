@@ -85,7 +85,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Size_Getter_ReturnsFontSize_OfParagraphPortion()
+        public void Size_Getter_returns_font_size()
         {
             // Arrange
             IPortion portionCase1 = ((IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox.Paragraphs[0].Portions[0];
@@ -105,25 +105,25 @@ namespace ShapeCrawler.Tests.Unit
             IPortion portionCase15 = ((IAutoShape)_fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52)).TextBox.Paragraphs[0].Portions[0];
 
             // Act-Assert
-            portionCase1.Font.Size.Should().Be(1800);
-            portionCase2.Font.Size.Should().Be(1800);
-            portionCase3.Font.Size.Should().Be(1867);
-            portionCase4.Font.Size.Should().Be(1800);
-            portionCase5.Font.Size.Should().Be(2000);
-            portionCase6.Font.Size.Should().Be(4400);
-            portionCase7.Font.Size.Should().Be(3200);
-            portionCase8.Font.Size.Should().Be(1800);
-            portionCase9.Font.Size.Should().Be(1200);
-            portionCase10.Font.Size.Should().Be(2177);
-            portionCase11.Font.Size.Should().Be(2000);
-            portionCase12.Font.Size.Should().Be(1539);
-            portionCase13.Font.Size.Should().Be(1200);
-            portionCase14.Font.Size.Should().Be(1200);
-            portionCase15.Font.Size.Should().Be(2700);
+            portionCase1.Font.Size.Should().Be(18);
+            portionCase2.Font.Size.Should().Be(18);
+            portionCase3.Font.Size.Should().Be(18);
+            portionCase4.Font.Size.Should().Be(18);
+            portionCase5.Font.Size.Should().Be(20);
+            portionCase6.Font.Size.Should().Be(44);
+            portionCase7.Font.Size.Should().Be(32);
+            portionCase8.Font.Size.Should().Be(18);
+            portionCase9.Font.Size.Should().Be(12);
+            portionCase10.Font.Size.Should().Be(21);
+            portionCase11.Font.Size.Should().Be(20);
+            portionCase12.Font.Size.Should().Be(15);
+            portionCase13.Font.Size.Should().Be(12);
+            portionCase14.Font.Size.Should().Be(12);
+            portionCase15.Font.Size.Should().Be(27);
         }
 
         [Fact]
-        public void Size_Getter_ReturnsFontSize_OfPlaceholder()
+        public void Size_Getter_returns_font_size_of_Placeholder()
         {
             // Arrange
             IAutoShape autoShapeCase1 = (IAutoShape) _fixture.Pre028.Slides[0].Shapes.First(sp => sp.Id == 4098);
@@ -132,23 +132,23 @@ namespace ShapeCrawler.Tests.Unit
             IPortion portionC2 = autoShapeCase2.TextBox.Paragraphs[0].Portions[0];
 
             // Act-Assert
-            portionC1.Font.Size.Should().Be(3200);
-            portionC2.Font.Size.Should().Be(2500);
+            portionC1.Font.Size.Should().Be(32);
+            portionC2.Font.Size.Should().Be(25);
         }
 
         [Fact]
-        public void Size_Getter_ReturnsFontSize_OfNonPlaceholderTable()
+        public void Size_Getter_returns_Font_Size_of_Non_Placeholder_Table()
         {
             // Arrange
-            ITable table = (ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3);
-            IPortion cellPortion = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0];
+            var table = (ITable) this._fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3);
+            var cellPortion = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0];
 
             // Act-Assert
-            cellPortion.Font.Size.Should().Be(1800);
+            cellPortion.Font.Size.Should().Be(18);
         }
 
         [Fact]
-        public void Size_Setter_ChangesFontSizeOfParagraphPortion()
+        public void Size_Setter_changes_Font_Size_of_paragraph_portion()
         {
             // Arrange
             int newFontSize = 28;
@@ -159,9 +159,9 @@ namespace ShapeCrawler.Tests.Unit
 
             // Act
             portion.Font.Size = newFontSize;
-            presentation.SaveAs(savedPreStream);
 
             // Assert
+            presentation.SaveAs(savedPreStream);
             presentation = SCPresentation.Open(savedPreStream, false);
             portion = GetPortion(presentation);
             portion.Font.Size.Should().NotBe(oldFontSize);

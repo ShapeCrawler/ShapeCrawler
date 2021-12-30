@@ -1,11 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Spreadsheet;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Texts;
+using A = DocumentFormat.OpenXml.Drawing;
+using Font = System.Drawing.Font;
 
 namespace ShapeCrawler.AutoShapes
 {
@@ -14,15 +17,13 @@ namespace ShapeCrawler.AutoShapes
     {
         private readonly Lazy<string> text;
 
-        internal SCTextBox(OpenXmlCompositeElement txBodyCompositeElement, ITextBoxContainer parentTextBoxContainer)
+        public SCTextBox(OpenXmlCompositeElement txBodyCompositeElement, ITextBoxContainer parentTextBoxContainer)
         {
             this.text = new Lazy<string>(this.GetText);
             this.APTextBody = txBodyCompositeElement;
             this.Paragraphs = new ParagraphCollection(this.APTextBody, this);
             this.ParentTextBoxContainer = parentTextBoxContainer;
         }
-
-        #region Public Properties
 
         public IParagraphCollection Paragraphs { get; }
 
@@ -32,7 +33,7 @@ namespace ShapeCrawler.AutoShapes
             set => this.SetText(value);
         }
 
-        #endregion Public Properties
+        public AutofitType AutofitType => this.ParseAutofitType();
 
         internal ITextBoxContainer ParentTextBoxContainer { get; }
 
@@ -43,13 +44,55 @@ namespace ShapeCrawler.AutoShapes
             this.ParentTextBoxContainer.ThrowIfRemoved();
         }
 
-        private void SetText(string value)
+        private AutofitType ParseAutofitType()
         {
-            IParagraph baseParagraph = this.Paragraphs.First(p => p.Portions.Any());
-            IEnumerable<IParagraph> removingParagraphs = this.Paragraphs.Where(p => p != baseParagraph);
+            var aBodyPr = this.APTextBody.GetFirstChild<A.BodyProperties>();
+            if (aBodyPr!.GetFirstChild<A.NormalAutoFit>() != null)
+            {
+                return AutofitType.Shrink;
+            }
+
+            if (aBodyPr.GetFirstChild<A.ShapeAutoFit>() != null)
+            {
+                return AutofitType.Resize;
+            }
+
+            return AutofitType.None;
+        }
+
+        private void SetText(string newText)
+        {
+            var baseParagraph = this.Paragraphs.First(p => p.Portions.Any());
+            var removingParagraphs = this.Paragraphs.Where(p => p != baseParagraph);
             this.Paragraphs.Remove(removingParagraphs);
 
-            baseParagraph.Text = value;
+            if (this.AutofitType == AutofitType.Shrink)
+            {
+                var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count()).First().First();
+                var fontFamilyName = popularPortion.Font.Name;
+                var fontSize = popularPortion.Font.Size;
+                var stringFormat = new StringFormat { Trimming = StringTrimming.Word };
+                var shape = this.ParentTextBoxContainer.Shape;
+                var bm = new Bitmap(shape.Width, shape.Height);
+                using var graphic = Graphics.FromImage(bm);
+                var margin = 7;
+                var rectangle = new Rectangle(margin, margin, shape.Width - 2 * margin, shape.Height - 2 * margin);
+                var availSize = new SizeF(rectangle.Width, rectangle.Height);
+
+                int charsFitted;
+                do
+                {
+                    var font = new Font(fontFamilyName, fontSize);
+                    graphic.MeasureString(newText, font, availSize, stringFormat, out charsFitted, out _);
+                    fontSize--;
+                }
+                while (newText.Length != charsFitted);
+
+                var paragraphInternal = (SCParagraph)baseParagraph;
+                paragraphInternal.SetFontSize(fontSize);
+            }
+
+            baseParagraph.Text = newText;
         }
 
         private string GetText()

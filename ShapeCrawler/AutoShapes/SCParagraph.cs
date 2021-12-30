@@ -31,6 +31,8 @@ namespace ShapeCrawler
 
         #region Public Properties
 
+        public bool IsRemoved { get; set; }
+
         public string Text
         {
             get => this.GetText();
@@ -60,6 +62,14 @@ namespace ShapeCrawler
         internal A.Paragraph AParagraph { get; }
 
         internal int Level { get; }
+
+        public void SetFontSize(int fontSize)
+        {
+            foreach (var portion in this.Portions)
+            {
+                portion.Font.Size = fontSize;
+            }
+        }
 
         #region Private Methods
 
@@ -93,8 +103,10 @@ namespace ShapeCrawler
 
             // To set a paragraph text we use a single portion which is the first paragraph portion.
             // Rest of the portions are deleted from the paragraph.
-            this.Portions.Remove(this.Portions.Skip(1).ToList());
-            SCPortion basePortion = (SCPortion)this.portions.Value.Single();
+            var removingPortions = this.Portions.Skip(1).ToList();
+            this.Portions.Remove(removingPortions);
+            var basePortion = (SCPortion)this.portions.Value.Single();
+
             if (newText == string.Empty)
             {
                 basePortion.Text = string.Empty;
@@ -121,7 +133,5 @@ namespace ShapeCrawler
         }
 
         #endregion Private Methods
-
-        public bool IsRemoved { get; set; }
     }
 }

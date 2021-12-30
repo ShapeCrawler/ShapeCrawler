@@ -11,13 +11,13 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a row in a table.
     /// </summary>
-    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrwaler")]
     public class SCTableRow // TODO: extract interface
     {
         private readonly Lazy<List<SCTableCell>> cells;
-        internal readonly A.TableRow SdkATableRow;
-        internal readonly int Index;
+        private readonly int index;
         private readonly bool isRemoved;
+
+        internal readonly A.TableRow ATableRow;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SCTableRow"/> class.
@@ -25,8 +25,8 @@ namespace ShapeCrawler
         internal SCTableRow(SlideTable table, A.TableRow aTableRow, int index)
         {
             this.ParentTable = table;
-            this.SdkATableRow = aTableRow;
-            this.Index = index;
+            this.ATableRow = aTableRow;
+            this.index = index;
 
 #if NETSTANDARD2_0
             cells = new Lazy<List<SCTableCell>>(() => GetCells());
@@ -42,8 +42,8 @@ namespace ShapeCrawler
 
         public long Height
         {
-            get => this.SdkATableRow.Height.Value;
-            set => this.SdkATableRow.Height.Value = value;
+            get => this.ATableRow.Height.Value;
+            set => this.ATableRow.Height.Value = value;
         }
 
         internal SlideTable ParentTable { get; }
@@ -53,7 +53,7 @@ namespace ShapeCrawler
         private List<SCTableCell> GetCells()
         {
             var cellList = new List<SCTableCell>();
-            IEnumerable<A.TableCell> aTableCells = this.SdkATableRow.Elements<A.TableCell>();
+            IEnumerable<A.TableCell> aTableCells = this.ATableRow.Elements<A.TableCell>();
             SCTableCell addedScCell = null;
 
             int columnIdx = 0;
@@ -65,14 +65,14 @@ namespace ShapeCrawler
                 }
                 else if (aTableCell.VerticalMerge != null)
                 {
-                    int upRowIdx = Index - 1;
+                    int upRowIdx = index - 1;
                     SCTableCell upNeighborScCell = (SCTableCell) ParentTable[upRowIdx, columnIdx];
                     cellList.Add(upNeighborScCell);
                     addedScCell = upNeighborScCell;
                 }
                 else
                 {
-                    addedScCell = new SCTableCell(this, aTableCell, Index, columnIdx);
+                    addedScCell = new SCTableCell(this, aTableCell, index, columnIdx);
                     cellList.Add(addedScCell);
                 }
 
@@ -93,11 +93,5 @@ namespace ShapeCrawler
         }
 
         #endregion
-
-        #region Public Properties
-
-
-
-        #endregion Public Properties
     }
 }

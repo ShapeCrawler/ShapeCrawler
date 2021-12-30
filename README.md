@@ -1,3 +1,4 @@
+
 <h3 align="center">
 
 ![ShapeCrawler](./resources/readme.png)
@@ -16,8 +17,12 @@ ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoin
 
 This library provides a simplified object model on top of the [Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK) for manipulating PowerPoint documents.
 
+## Compatibility
+- .NET 5
+- .NET Core 3.1
+- .NET Framework 4.7.2+
+
 ## Getting Started
-Support targets: .NET Framework 4.6.1+, .NET Core 2.0+ and .NET 5+
 
 To get started, install ShapeCrawler from [NuGet](https://nuget.org/packages/ShapeCrawler):
 ```console
@@ -259,10 +264,6 @@ The project is in development, and I’m pretty sure there are still lots of thi
 Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issues) if you find bugs. Your valuable feedback is much appreciated to improve this project better. If you find this useful, please give it a star to show your support. 
 
 # Contributing and Support
-1. Fork it (https://github.com/ShapeCrawler/ShapeCrawler/fork)
-2. Create your feature branch (`git checkout -b my-new-feature`) from *master*.
-3. Commit your changes (`git commit -am 'Add some feature'`).
-4. Push to the branch (`git push origin my-new-feature`).
-5. Create a new Pull Request.
 
-Don't hesitate to contact me (theadamo86@gmail.com) if you have a questions or wanna be involved!
+- Do you have a question? Please [join our Discussions Forum](https://github.com/ShapeCrawler/ShapeCrawler/discussions) or don't hesitate to contact me (theadamo86@gmail.com).
+- Please read our [Contribution Guide](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CONTRIBUTING.md) before opening issues or pull requests.

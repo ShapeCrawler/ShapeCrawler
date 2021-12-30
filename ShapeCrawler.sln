@@ -6,8 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{55CACD1A-3162-4EE3-B4B8-37E170B321E0}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		CHANGELOG.md = CHANGELOG.md
-		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapeCrawler", "ShapeCrawler\ShapeCrawler.csproj", "{4A633D84-856C-49A3-A76E-59291CF76A6F}"

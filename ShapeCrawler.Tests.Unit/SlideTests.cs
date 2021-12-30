@@ -274,39 +274,26 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Shapes_AddNewVideo_AddsVideo()
+        public void Shapes_AddNewVideo_adds_video()
         {
             // Arrange
-            Stream preStream = TestFiles.Presentations.pre001_stream;
-            IPresentation presentation = SCPresentation.Open(preStream, true);
-            IShapeCollection shapes = presentation.Slides[1].Shapes;
-            Stream video = TestFiles.Video.TestVideo;
+            var preStream = TestFiles.Presentations.pre001_stream;
+            var presentation = SCPresentation.Open(preStream, true);
+            var shapesCollection = presentation.Slides[1].Shapes;
+            var videoStream = TestFiles.Video.TestVideo;
             int xPxCoordinate = 300;
             int yPxCoordinate = 100;
 
             // Act
-            shapes.AddNewVideo(xPxCoordinate, yPxCoordinate, video);
+            shapesCollection.AddNewVideo(xPxCoordinate, yPxCoordinate, videoStream);
 
+            // Assert
             presentation.Save();
             presentation.Close();
             presentation = SCPresentation.Open(preStream, false);
-            IVideoShape addedVideo = presentation.Slides[1].Shapes.OfType<IVideoShape>().Last();
-
-            // Assert
+            var addedVideo = presentation.Slides[1].Shapes.OfType<IVideoShape>().Last();
             addedVideo.X.Should().Be(xPxCoordinate);
             addedVideo.Y.Should().Be(yPxCoordinate);
         }
-
-#if DEBUG
-        [Fact(Skip = "The feature is in progress")]
-        public void SaveImage_GenerateAndSavesSlideImageInSpecifiedFilePath()
-        {
-            // Arrange
-            ISlide slide = _fixture.Pre001.Slides[0];
-
-            // Act
-            slide.SaveImage(@"c:\1\SlideScSaveImage.png");
-        }
-#endif
     }
 }

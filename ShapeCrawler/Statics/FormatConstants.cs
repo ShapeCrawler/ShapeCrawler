@@ -13,6 +13,6 @@
         /// <summary>
         ///     Returns default font according to following link https://bit.ly/37Tjjlo
         /// </summary>
-        internal static int DefaultFontSize = 1800;
+        internal static int DefaultFontSize = 18;
     }
 }

@@ -1,6 +1,8 @@
+using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace ShapeCrawler.Tests.Unit.Helpers
 {
@@ -52,5 +54,30 @@ namespace ShapeCrawler.Tests.Unit.Helpers
         public static readonly float HorizontalResolution;
         
         public static readonly float VerticalResolution;
+
+        public static IAutoShape GetAutoShape(string presentation, int slideNumber, int shapeId)
+        {
+            var scPresentation = GetPresentation(presentation);
+            var slide = scPresentation.Slides.First(s => s.Number == slideNumber);
+            var shape = slide.Shapes.First(sp => sp.Id == shapeId);
+
+            return (IAutoShape) shape;
+        }
+
+        public static IShapeCollection GetShapesCollection(string presentation, int slideNumber)
+        {
+            return GetPresentation(presentation).Slides[--slideNumber].Shapes;
+        }
+
+        private static SCPresentation GetPresentation(string fileName)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var path = assembly.GetManifestResourceNames().First(r => r.EndsWith(fileName, StringComparison.Ordinal));
+            var stream = assembly.GetManifestResourceStream(path);
+            var mStream = new MemoryStream();
+            stream.CopyTo(mStream);
+            
+            return SCPresentation.Open(mStream, true);
+        }
     }
 }

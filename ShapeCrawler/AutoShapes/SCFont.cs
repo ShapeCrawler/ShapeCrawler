@@ -31,8 +31,6 @@ namespace ShapeCrawler.AutoShapes
             this.aFontScheme = portion.ParentParagraph.ParentTextBox.ParentTextBoxContainer.ParentSlideMaster.ThemePart.Theme.ThemeElements.FontScheme;
         }
 
-        internal SCPortion ParentPortion { get; }
-
         #region Public Properties
 
         public string Name
@@ -66,6 +64,8 @@ namespace ShapeCrawler.AutoShapes
             A.RunProperties runPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
             return runPr != null;
         }
+
+        internal SCPortion ParentPortion { get; }
 
         #endregion Public Properties
 
@@ -105,14 +105,14 @@ namespace ShapeCrawler.AutoShapes
 
         private int GetSize()
         {
-            Int32Value aRunPrFontSize = this.ParentPortion.AText.Parent.GetFirstChild<A.RunProperties>()?.FontSize;
-            if (aRunPrFontSize != null)
+            var fontSize = this.ParentPortion.AText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize?.Value;
+            if (fontSize != null)
             {
-                return aRunPrFontSize.Value;
+                return fontSize.Value / 100;
             }
 
-            SCParagraph parentParagraph = this.ParentPortion.ParentParagraph;
-            ITextBoxContainer parentTextBoxContainer = parentParagraph.ParentTextBox.ParentTextBoxContainer;
+            var parentParagraph = this.ParentPortion.ParentParagraph;
+            var parentTextBoxContainer = parentParagraph.ParentTextBox.ParentTextBoxContainer;
             int paragraphLvl = parentParagraph.Level;
 
             if (parentTextBoxContainer is Shape parentShape)
@@ -127,7 +127,7 @@ namespace ShapeCrawler.AutoShapes
                         phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
                         if (fontDataPlaceholder.FontSize != null)
                         {
-                            return fontDataPlaceholder.FontSize;
+                            return fontDataPlaceholder.FontSize / 100;
                         }
                     }
 
@@ -136,13 +136,13 @@ namespace ShapeCrawler.AutoShapes
                     // From Slide Master body
                     if (slideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
                     {
-                        return fontSizeBody;
+                        return fontSizeBody / 100;
                     }
 
                     // From Slide Master other
                     if (slideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
                     {
-                        return fontSizeOther;
+                        return fontSizeOther / 100;
                     }
                 }
             }
@@ -152,7 +152,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 if (fontData.FontSize != null)
                 {
-                    return fontData.FontSize;
+                    return fontData.FontSize / 100;
                 }
             }
 
@@ -273,7 +273,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetFontSize(int newFontSize)
         {
-            A.RunProperties aRunPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
+            var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
             if (aRunPr == null)
             {
                 const string errorMsg =
@@ -283,35 +283,7 @@ namespace ShapeCrawler.AutoShapes
                 throw new SlideMasterPropertyCannotBeChanged(errorMsg);
             }
 
-            aRunPr.FontSize = newFontSize;
-        }
-
-        private void SetSolidColorHex(string value)
-        {
-            A.RunProperties aRunPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
-            if (aRunPr != null)
-            {
-                var aSolidFill = new A.SolidFill
-                {
-                    RgbColorModelHex = new A.RgbColorModelHex {Val = value}
-                };
-
-                aRunPr.SolidFill()?.Remove(); // remove old color
-                aRunPr.InsertAt(aSolidFill, 0);
-            }
-            else
-            {
-                var aSolidFill = new A.SolidFill
-                {
-                    RgbColorModelHex = new A.RgbColorModelHex
-                    {
-                        Val = value
-                    }
-                };
-
-                aRunPr = new A.RunProperties(aSolidFill);
-                this.aText.Parent.InsertAt(aRunPr, 0);
-            }
+            aRunPr.FontSize = newFontSize * 100;
         }
     }
 }
