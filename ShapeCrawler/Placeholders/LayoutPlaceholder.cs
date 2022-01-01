@@ -36,7 +36,7 @@ namespace ShapeCrawler.Placeholders
         {
             ShapeCollection shapeCollection = (ShapeCollection)this.parentLayoutShape.ParentSlideLayout.ParentSlideMaster.Shapes;
 
-            return shapeCollection.GetShapeByPPlaceholderShape(this.PPlaceholderShape);
+            return shapeCollection.GetReferencedShapeOrDefault(this.PPlaceholderShape);
         }
     }
 }

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
@@ -29,28 +27,24 @@ namespace ShapeCrawler.Collections
     /// <summary>
     ///     Represents a collection of a slide shapes.
     /// </summary>
-    public class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
+    internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
     {
         private readonly P.ShapeTree shapeTree;
         private readonly SCSlide slide;
 
-        #region Constructors
-
-        internal ShapeCollection(List<IShape> shapes)
+        private ShapeCollection(List<IShape> shapes)
         {
             this.CollectionItems = shapes;
         }
 
-        internal ShapeCollection(List<IShape> shapes, P.ShapeTree shapeTree, SCSlide slide)
+        private ShapeCollection(List<IShape> shapes, P.ShapeTree shapeTree, SCSlide slide)
         {
             this.slide = slide;
             this.CollectionItems = shapes;
             this.shapeTree = shapeTree;
         }
 
-        #endregion Constructors
-
-        internal static ShapeCollection CreateForSlide(SlidePart slidePart, SCSlide slide)
+        public static ShapeCollection ForSlide(SlidePart slidePart, SCSlide slide)
         {
             var shapeContextBuilder = new ShapeContext.Builder(slidePart);
 
@@ -88,7 +82,7 @@ namespace ShapeCrawler.Collections
             return new ShapeCollection(shapes, shapeTree, slide);
         }
 
-        internal static ShapeCollection CreateForSlideLayout(P.ShapeTree pShapeTree, SCSlideLayout slideLayout)
+        public static ShapeCollection ForSlideLayout(P.ShapeTree pShapeTree, SCSlideLayout slideLayout)
         {
             var shapeList = new List<IShape>();
             foreach (OpenXmlCompositeElement compositeElement in pShapeTree.OfType<OpenXmlCompositeElement>())
@@ -149,7 +143,7 @@ namespace ShapeCrawler.Collections
             return new ShapeCollection(shapeList);
         }
 
-        internal static ShapeCollection CreateForSlideMaster(SCSlideMaster slideMaster)
+        public static ShapeCollection ForSlideMaster(SCSlideMaster slideMaster)
         {
             P.ShapeTree pShapeTree = slideMaster.PSlideMaster.CommonSlideData.ShapeTree;
             var shapeList = new List<IShape>();
@@ -278,10 +272,10 @@ namespace ShapeCrawler.Collections
             nonVisualPictureProperties1.Append(applicationNonVisualDrawingProperties2);
 
             P.BlipFill blipFill1 = new ();
-            A.Blip blip1 = new() { Embed = imgPartRId };
+            A.Blip blip1 = new () { Embed = imgPartRId };
 
-            A.Stretch stretch1 = new();
-            A.FillRectangle fillRectangle1 = new();
+            A.Stretch stretch1 = new ();
+            A.FillRectangle fillRectangle1 = new ();
 
             stretch1.Append(fillRectangle1);
 
@@ -315,51 +309,6 @@ namespace ShapeCrawler.Collections
             creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
             return new AudioShape(this.shapeTree, this.slide);
-        }
-
-        internal Shape GetShapeByPPlaceholderShape(P.PlaceholderShape inpPPlaceholderShape)
-        {
-            IEnumerable<Shape> placeholderShapes = CollectionItems.Where(sp => sp.Placeholder != null).OfType<Shape>();
-            Shape mappedShape = placeholderShapes.FirstOrDefault(IsEqual);
-
-            bool IsEqual(Shape collectionShape)
-            {
-                Placeholder placeholder = (Placeholder) collectionShape.Placeholder;
-                P.PlaceholderShape colPPlaceholderShape = placeholder.PPlaceholderShape;
-
-                if (inpPPlaceholderShape.Index != null && colPPlaceholderShape.Index != null &&
-                    inpPPlaceholderShape.Index == colPPlaceholderShape.Index)
-                {
-                    return true;
-                }
-
-                if (inpPPlaceholderShape.Type != null && colPPlaceholderShape.Type != null)
-                {
-                    if (inpPPlaceholderShape.Type == P.PlaceholderValues.Body &&
-                        inpPPlaceholderShape.Index != null && colPPlaceholderShape.Index != null)
-                    {
-                        return inpPPlaceholderShape.Index == colPPlaceholderShape.Index;
-                    }
-
-                    var left = inpPPlaceholderShape.Type;
-                    if (inpPPlaceholderShape.Type == PlaceholderValues.CenteredTitle)
-                    {
-                        left = PlaceholderValues.Title;
-                    }
-
-                    var right = colPPlaceholderShape.Type;
-                    if (colPPlaceholderShape.Type == PlaceholderValues.CenteredTitle)
-                    {
-                        right = PlaceholderValues.Title;
-                    }
-
-                    return left.Equals(right);
-                }
-
-                return false;
-            }
-
-            return mappedShape;
         }
 
         public IVideoShape AddNewVideo(int xPixels, int yPixels, Stream videoStream)
@@ -466,6 +415,51 @@ namespace ShapeCrawler.Collections
             creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
             return new VideoShape(this.slide, this.shapeTree);
+        }
+
+        public Shape? GetReferencedShapeOrDefault(P.PlaceholderShape inpPPlaceholderShape)
+        {
+            var collectionShapes = this.CollectionItems.Where(sp => sp.Placeholder != null).OfType<Shape>();
+            Shape mappedShape = collectionShapes.FirstOrDefault(IsEqual);
+
+            bool IsEqual(Shape collectionShape)
+            {
+                Placeholder placeholder = (Placeholder) collectionShape.Placeholder;
+                P.PlaceholderShape colPPlaceholderShape = placeholder.PPlaceholderShape;
+
+                if (inpPPlaceholderShape.Index != null && colPPlaceholderShape.Index != null &&
+                    inpPPlaceholderShape.Index == colPPlaceholderShape.Index)
+                {
+                    return true;
+                }
+
+                if (inpPPlaceholderShape.Type != null && colPPlaceholderShape.Type != null)
+                {
+                    if (inpPPlaceholderShape.Type == P.PlaceholderValues.Body &&
+                        inpPPlaceholderShape.Index != null && colPPlaceholderShape.Index != null)
+                    {
+                        return inpPPlaceholderShape.Index == colPPlaceholderShape.Index;
+                    }
+
+                    var left = inpPPlaceholderShape.Type;
+                    if (inpPPlaceholderShape.Type == PlaceholderValues.CenteredTitle)
+                    {
+                        left = PlaceholderValues.Title;
+                    }
+
+                    var right = colPPlaceholderShape.Type;
+                    if (colPPlaceholderShape.Type == PlaceholderValues.CenteredTitle)
+                    {
+                        right = PlaceholderValues.Title;
+                    }
+
+                    return left.Equals(right);
+                }
+
+                return false;
+            }
+
+            return mappedShape;
         }
     }
 }

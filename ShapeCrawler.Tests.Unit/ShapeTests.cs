@@ -264,17 +264,19 @@ namespace ShapeCrawler.Tests.Unit
             (width3 * 914400 / TestHelper.HorizontalResolution).Should().Be(485775);
         }
         
-        [Fact]
-        public void Width_returns_width_of_Title_placeholder()
+        [Theory]
+        [InlineData("050_title-placeholder.pptx", 1, 2, 777)]
+        [InlineData("051_title-placeholder.pptx", 1, 3074, 864)]
+        public void Width_returns_width_of_Title_placeholder(string filename, int slideNumber, int shapeId, int expectedWidth)
         {
             // Arrange
-            var autoShape = TestHelper.GetAutoShape("050_title-placeholder.pptx", slideNumber: 1, shapeId: 2);
+            var autoShape = TestHelper.GetAutoShape(filename, slideNumber, shapeId);
 
             // Act
             var shapeWidth = autoShape.Width;
 
             // Assert
-            shapeWidth.Should().Be(777);
+            shapeWidth.Should().Be(expectedWidth);
         }
 
         [Fact]

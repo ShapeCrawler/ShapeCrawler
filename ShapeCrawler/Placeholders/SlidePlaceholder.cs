@@ -17,7 +17,7 @@ namespace ShapeCrawler.Placeholders
             : base(pPlaceholderShape)
         {
             this.parentSlideShape = parentSlideShape;
-            this.layoutReferencedShape = new ResettableLazy<Shape>(this.GetReferencedLayoutShape);
+            this.layoutReferencedShape = new ResettableLazy<Shape>(this.GetReferencedShape);
         }
 
         /// <summary>
@@ -35,11 +35,19 @@ namespace ShapeCrawler.Placeholders
             return new SlidePlaceholder(pPlaceholderShape, slideShape);
         }
 
-        private Shape GetReferencedLayoutShape()
+        private Shape GetReferencedShape()
         {
             var layoutShapes = (ShapeCollection)this.parentSlideShape.ParentSlide.ParentSlideLayout.Shapes;
+            var referencedShape = layoutShapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
 
-            return layoutShapes.GetShapeByPPlaceholderShape(this.PPlaceholderShape);
+            if (referencedShape != null)
+            {
+                return referencedShape;
+            }
+
+            var masterShapes = (ShapeCollection)this.parentSlideShape.ParentSlide.ParentSlideLayout.ParentSlideMaster.Shapes;
+
+            return masterShapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
         }
     }
 }

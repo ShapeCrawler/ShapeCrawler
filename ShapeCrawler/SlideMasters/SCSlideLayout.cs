@@ -19,7 +19,7 @@ namespace ShapeCrawler.SlideMasters
             this.slideMaster = parentSlideMaster;
             this.SlideLayoutPart = slideLayoutPart;
             this.shapes = new ResettableLazy<ShapeCollection>(() =>
-                ShapeCollection.CreateForSlideLayout(slideLayoutPart.SlideLayout.CommonSlideData.ShapeTree, this));
+                ShapeCollection.ForSlideLayout(slideLayoutPart.SlideLayout.CommonSlideData.ShapeTree, this));
         }
 
         public IShapeCollection Shapes => this.shapes.Value;
