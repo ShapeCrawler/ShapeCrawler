@@ -13,26 +13,19 @@ namespace ShapeCrawler.Placeholders
     {
         private readonly SlideShape parentSlideShape;
 
-        public SlidePlaceholder(P.PlaceholderShape sdkPPlaceholderShape, SlideShape parentSlideShape)
-            : base(sdkPPlaceholderShape)
+        private SlidePlaceholder(P.PlaceholderShape pPlaceholderShape, SlideShape parentSlideShape)
+            : base(pPlaceholderShape)
         {
             this.parentSlideShape = parentSlideShape;
-            this.layoutReferencedShape = new ResettableLazy<Shape>(() => this.GetReferencedLayoutShape());
-        }
-
-        private Shape GetReferencedLayoutShape()
-        {
-            ShapeCollection shapes = (ShapeCollection)this.parentSlideShape.ParentSlide.ParentSlideLayout.Shapes;
-
-            return shapes.GetShapeByPPlaceholderShape(this.SdkPPlaceholderShape);
+            this.layoutReferencedShape = new ResettableLazy<Shape>(this.GetReferencedLayoutShape);
         }
 
         /// <summary>
         ///     Creates placeholder. Returns <c>NULL</c> if the specified shape is not placeholder.
         /// </summary>
-        internal static SlidePlaceholder Create(OpenXmlCompositeElement pShapeTreeChild, SlideShape slideShape)
+        public static SlidePlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, SlideShape slideShape)
         {
-            P.PlaceholderShape pPlaceholderShape =
+            var pPlaceholderShape =
                 pShapeTreeChild.ApplicationNonVisualDrawingProperties().GetFirstChild<P.PlaceholderShape>();
             if (pPlaceholderShape == null)
             {
@@ -40,6 +33,13 @@ namespace ShapeCrawler.Placeholders
             }
 
             return new SlidePlaceholder(pPlaceholderShape, slideShape);
+        }
+
+        private Shape GetReferencedLayoutShape()
+        {
+            var layoutShapes = (ShapeCollection)this.parentSlideShape.ParentSlide.ParentSlideLayout.Shapes;
+
+            return layoutShapes.GetShapeByPPlaceholderShape(this.PPlaceholderShape);
         }
     }
 }

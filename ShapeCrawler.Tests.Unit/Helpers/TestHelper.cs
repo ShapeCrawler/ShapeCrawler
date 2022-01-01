@@ -64,11 +64,6 @@ namespace ShapeCrawler.Tests.Unit.Helpers
             return (IAutoShape) shape;
         }
 
-        public static IShapeCollection GetShapesCollection(string presentation, int slideNumber)
-        {
-            return GetPresentation(presentation).Slides[--slideNumber].Shapes;
-        }
-
         private static SCPresentation GetPresentation(string fileName)
         {
             var assembly = Assembly.GetExecutingAssembly();

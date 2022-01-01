@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿#if DEBUG
+
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
@@ -244,7 +245,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Width_ReturnsWidthInPixels()
+        public void Width_returns_shape_width_in_pixels()
         {
             // Arrange
             IShape shapeCase1 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
@@ -261,6 +262,19 @@ namespace ShapeCrawler.Tests.Unit
             (width1 * 914400 / TestHelper.HorizontalResolution).Should().Be(9144000);
             (width2 * 914400 / TestHelper.HorizontalResolution).Should().Be(1181100);
             (width3 * 914400 / TestHelper.HorizontalResolution).Should().Be(485775);
+        }
+        
+        [Fact]
+        public void Width_returns_width_of_Title_placeholder()
+        {
+            // Arrange
+            var autoShape = TestHelper.GetAutoShape("050_title-placeholder.pptx", slideNumber: 1, shapeId: 2);
+
+            // Act
+            var shapeWidth = autoShape.Width;
+
+            // Assert
+            shapeWidth.Should().Be(777);
         }
 
         [Fact]
@@ -393,3 +407,5 @@ namespace ShapeCrawler.Tests.Unit
         }
     }
 }
+
+#endif

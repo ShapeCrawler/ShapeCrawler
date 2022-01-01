@@ -225,10 +225,11 @@ namespace ShapeCrawler
             var aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
             {
-                return ((Placeholder)this.Placeholder).ReferencedShape.Width;
+                var placeholder = (Placeholder)this.Placeholder;
+                return placeholder.ReferencedShape.Width;
             }
 
-            return PixelConverter.HorizontalEmuToPixel(aExtents!.Cx!);
+            return PixelConverter.HorizontalEmuToPixel(aExtents.Cx!);
         }
 
         private void SetWidth(int pixels)

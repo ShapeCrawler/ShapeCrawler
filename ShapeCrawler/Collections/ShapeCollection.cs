@@ -325,7 +325,7 @@ namespace ShapeCrawler.Collections
             bool IsEqual(Shape collectionShape)
             {
                 Placeholder placeholder = (Placeholder) collectionShape.Placeholder;
-                P.PlaceholderShape colPPlaceholderShape = placeholder.SdkPPlaceholderShape;
+                P.PlaceholderShape colPPlaceholderShape = placeholder.PPlaceholderShape;
 
                 if (inpPPlaceholderShape.Index != null && colPPlaceholderShape.Index != null &&
                     inpPPlaceholderShape.Index == colPPlaceholderShape.Index)
@@ -341,7 +341,19 @@ namespace ShapeCrawler.Collections
                         return inpPPlaceholderShape.Index == colPPlaceholderShape.Index;
                     }
 
-                    return inpPPlaceholderShape.Type.Equals(colPPlaceholderShape.Type);
+                    var left = inpPPlaceholderShape.Type;
+                    if (inpPPlaceholderShape.Type == PlaceholderValues.CenteredTitle)
+                    {
+                        left = PlaceholderValues.Title;
+                    }
+
+                    var right = colPPlaceholderShape.Type;
+                    if (colPPlaceholderShape.Type == PlaceholderValues.CenteredTitle)
+                    {
+                        right = PlaceholderValues.Title;
+                    }
+
+                    return left.Equals(right);
                 }
 
                 return false;
