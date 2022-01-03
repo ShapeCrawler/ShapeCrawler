@@ -20,7 +20,7 @@ using Xunit;
 
 namespace ShapeCrawler.Tests.Unit
 {
-    public class TextBoxTests : IClassFixture<PresentationFixture>
+    public class TextBoxTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     {
         private readonly PresentationFixture _fixture;
 
@@ -95,7 +95,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Text_Setter_updates_text_box_content_and_Reduces_font_size_When_text_is_Overflow()
         {
             // Arrange
-            var autoShape = TestHelper.GetAutoShape("001.pptx", 1, 9);
+            var autoShape = GetAutoShape("001.pptx", 1, 9);
             var textBox = autoShape.TextBox;
             var fontSizeBefore = textBox.Paragraphs[0].Portions[0].Font.Size;
             var newText = "Shrink text on overflow";
@@ -137,7 +137,7 @@ namespace ShapeCrawler.Tests.Unit
         public void AutofitType_Getter_returns_text_autofit_type()
         {
             // Arrange
-            IAutoShape autoShape = TestHelper.GetAutoShape(presentation: "001.pptx", slideNumber: 1, shapeId: 9);
+            IAutoShape autoShape = GetAutoShape(presentation: "001.pptx", slideNumber: 1, shapeId: 9);
             var textBox = autoShape.TextBox;
 
             // Act
@@ -209,7 +209,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Paragraph_Bullet_Type_Getter_returns_None_value_When_paragraph_doesnt_have_bullet()
         {
             // Arrange
-            IAutoShape autoShape = TestHelper.GetAutoShape(presentation: "001.pptx", slideNumber: 1, shapeId: 2);
+            IAutoShape autoShape = GetAutoShape(presentation: "001.pptx", slideNumber: 1, shapeId: 2);
             var bullet = autoShape.TextBox.Paragraphs[0].Bullet;
 
             // Act

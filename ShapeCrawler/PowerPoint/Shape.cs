@@ -198,7 +198,7 @@ namespace ShapeCrawler
                 throw new PlaceholderCannotBeChangedException();
             }
 
-            aOffset.Y = PixelConverter.VerticalEmuToPixel(value);
+            aOffset.Y = PixelConverter.VerticalPixelToEmu(value);
         }
 
         private int GetYCoordinate()

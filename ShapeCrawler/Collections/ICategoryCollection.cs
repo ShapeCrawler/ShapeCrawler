@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
@@ -12,16 +11,29 @@ using X = DocumentFormat.OpenXml.Spreadsheet;
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    ///     Represents a collection of chart categories.
+    ///     Represents a chart category collection.
     /// </summary>
-    public class CategoryCollection : LibraryCollection<Category> // TODO: convert to internal
+    public interface ICategoryCollection : IEnumerable<ICategory>
     {
-        internal CategoryCollection(List<Category> categoryList)
+        /// <summary>
+        ///     Gets number of categories.
+        /// </summary>
+        int Count { get; }
+
+        /// <summary>
+        ///     Gets category by specified index.
+        /// </summary>
+        ICategory this[int index] { get; }
+    }
+
+    internal class CategoryCollection : LibraryCollection<ICategory>, ICategoryCollection
+    {
+        private CategoryCollection(List<Category> categoryList)
         {
-            this.CollectionItems = categoryList;
+            this.CollectionItems = categoryList.Cast<ICategory>().ToList();
         }
 
-        internal static CategoryCollection? Create(SCChart chart, OpenXmlElement firstChartSeries, ChartType chartType)
+        public static CategoryCollection? Create(SCChart chart, OpenXmlElement firstChartSeries, ChartType chartType)
         {
             if (chartType is ChartType.BubbleChart or ChartType.ScatterChart)
             {
@@ -87,32 +99,30 @@ namespace ShapeCrawler.Collections
             return new CategoryCollection(categoryList);
         }
 
-        #region Private Methods
-
         private static List<Category> GetMultiCategories(C.MultiLevelStringReference multiLevelStrRef)
         {
             var indexToCategory = new List<KeyValuePair<uint, Category>>();
-            IEnumerable<C.Level> topDownLevels = multiLevelStrRef.MultiLevelStringCache.Elements<C.Level>().Reverse();
+            IEnumerable<C.Level> topDownLevels = multiLevelStrRef.MultiLevelStringCache!.Elements<C.Level>().Reverse();
             foreach (C.Level cLevel in topDownLevels)
             {
-                IEnumerable<C.StringPoint> cStrPoints = cLevel.Elements<C.StringPoint>();
+                var cStringPoints = cLevel.Elements<C.StringPoint>();
                 var nextIndexToCategory = new List<KeyValuePair<uint, Category>>();
                 if (indexToCategory.Any())
                 {
                     List<KeyValuePair<uint, Category>> descOrderedMains =
                         indexToCategory.OrderByDescending(kvp => kvp.Key).ToList();
-                    foreach (C.StringPoint cStrPoint in cStrPoints)
+                    foreach (C.StringPoint cStrPoint in cStringPoints)
                     {
-                        uint index = cStrPoint.Index.Value;
-                        C.NumericValue cachedCatName = cStrPoint.NumericValue;
+                        uint index = cStrPoint.Index!.Value;
+                        C.NumericValue cachedCatName = cStrPoint.NumericValue!;
                         KeyValuePair<uint, Category> parent = descOrderedMains.First(kvp => kvp.Key <= index);
-                        Category category = new(null, -1, cachedCatName, parent.Value);
+                        Category category = new (null, -1, cachedCatName, parent.Value);
                         nextIndexToCategory.Add(new KeyValuePair<uint, Category>(index, category));
                     }
                 }
                 else
                 {
-                    foreach (C.StringPoint cStrPoint in cStrPoints)
+                    foreach (C.StringPoint cStrPoint in cStringPoints)
                     {
                         uint index = cStrPoint.Index.Value;
                         C.NumericValue cachedCatName = cStrPoint.NumericValue;
@@ -126,7 +136,5 @@ namespace ShapeCrawler.Collections
 
             return indexToCategory.Select(kvp => kvp.Value).ToList(indexToCategory.Count);
         }
-
-        #endregion Private Methods
     }
 }

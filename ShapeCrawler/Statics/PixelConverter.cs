@@ -45,7 +45,7 @@ namespace ShapeCrawler.Statics
             return (long)(horizontalPixels * 914400 / horizontalResolution);
         }
 
-        internal static long VerticalPixelToEmu(int verticalPixels)
+        internal static long VerticalPixelToEmu(long verticalPixels)
         {
             return (long)(verticalPixels * 914400 / verticalResolution);
         }

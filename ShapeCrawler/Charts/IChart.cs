@@ -1,7 +1,7 @@
 ﻿using ShapeCrawler.Collections;
 using ShapeCrawler.Shapes;
 
-// ReSharper disable CheckNamespace
+// ReSharper disable once CheckNamespace
 namespace ShapeCrawler
 {
     /// <summary>
@@ -38,7 +38,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets collection of chart categories.
         /// </summary>
-        CategoryCollection Categories { get; }
+        ICategoryCollection Categories { get; }
 
         /// <summary>
         ///     Gets a value indicating whether the chart has x-axis values.

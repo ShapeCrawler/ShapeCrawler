@@ -9,7 +9,20 @@ namespace ShapeCrawler.Charts
     /// <summary>
     ///     Represents a chart category.
     /// </summary>
-    public class Category // TODO: should be internal?
+    public interface ICategory
+    {
+        /// <summary>
+        ///     Gets main category. Returns <c>NULL</c> if the chart is not Multi-Category.
+        /// </summary>
+        public ICategory? MainCategory { get; }
+
+        /// <summary>
+        ///     Gets or sets category name.
+        /// </summary>
+        string Name { get; set; }
+    }
+
+    internal class Category : ICategory
     {
         private readonly int index;
         private readonly NumericValue cachedName;
@@ -37,16 +50,8 @@ namespace ShapeCrawler.Charts
 
         #endregion Constructors
 
-        #region Properties
+        public ICategory? MainCategory { get; }
 
-        /// <summary>
-        ///     Gets main category. Returns <c>NULL</c> if the chart is not Multi-Category.
-        /// </summary>
-        public Category? MainCategory { get; }
-
-        /// <summary>
-        ///     Gets or sets category name.
-        /// </summary>
         public string Name
         {
             get => this.cachedName.InnerText;
@@ -54,8 +59,8 @@ namespace ShapeCrawler.Charts
             {
                 if (this.MainCategory != null)
                 {
-                    const string msg = 
-                        "Sorry, but updating the category name of Multi-Category charts have not yet been supported by ShapeCrawler." + 
+                    const string msg =
+                        "Sorry, but updating the category name of Multi-Category charts have not yet been supported by ShapeCrawler." +
                         "If it is critical for you, you are always welcome for this implementation. " +
                         "We will wait for your Pull Request on https://github.com/ShapeCrawler/ShapeCrawler.";
                     throw new NotSupportedException(msg);
@@ -63,14 +68,12 @@ namespace ShapeCrawler.Charts
 
                 this.cachedName.Text = value;
 
-                X.Cell cell = this.xCells.Value[this.index];
-                cell.DataType = new DocumentFormat.OpenXml.EnumValue<X.CellValues>(X.CellValues.String);
-                cell.CellValue = new X.CellValue(value);
+                var xCell = this.xCells.Value[this.index];
+                xCell.DataType = new DocumentFormat.OpenXml.EnumValue<X.CellValues>(X.CellValues.String);
+                xCell.CellValue = new X.CellValue(value);
 
                 this.xCells.Reset();
             }
         }
-
-        #endregion Properties
     }
 }
