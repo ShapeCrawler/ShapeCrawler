@@ -7,13 +7,13 @@ namespace ShapeCrawler.Placeholders
 {
     internal abstract class Placeholder : IPlaceholder
     {
-        internal readonly P.PlaceholderShape SdkPPlaceholderShape;
+        internal readonly P.PlaceholderShape PPlaceholderShape;
 
         protected ResettableLazy<Shape> layoutReferencedShape;
 
         protected Placeholder(P.PlaceholderShape pPlaceholderShape)
         {
-            this.SdkPPlaceholderShape = pPlaceholderShape;
+            this.PPlaceholderShape = pPlaceholderShape;
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace ShapeCrawler.Placeholders
         private PlaceholderType GetPlaceholderType()
         {
             // Map SDK placeholder type into library placeholder type
-            EnumValue<P.PlaceholderValues> pPlaceholderValue = this.SdkPPlaceholderShape.Type;
+            EnumValue<P.PlaceholderValues> pPlaceholderValue = this.PPlaceholderShape.Type;
             if (pPlaceholderValue == null)
             {
                 return PlaceholderType.Custom;

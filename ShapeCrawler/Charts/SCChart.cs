@@ -14,7 +14,7 @@ namespace ShapeCrawler.Charts
 {
     internal class SCChart : SlideShape, IChart
     {
-        private readonly Lazy<CategoryCollection> categories;
+        private readonly Lazy<ICategoryCollection> categories;
         private readonly Lazy<ChartType> chartType;
         private readonly Lazy<OpenXmlElement> firstSeries;
         private readonly P.GraphicFrame pGraphicFrame;
@@ -33,7 +33,7 @@ namespace ShapeCrawler.Charts
             this.firstSeries = new Lazy<OpenXmlElement>(this.GetFirstSeries);
             this.xValues = new Lazy<LibraryCollection<double>>(this.GetXValues);
             this.seriesCollection = new Lazy<SeriesCollection>(() => Collections.SeriesCollection.Create(this, this.cXCharts));
-            this.categories = new Lazy<CategoryCollection>(() => CategoryCollection.Create(this, this.firstSeries.Value, this.Type));
+            this.categories = new Lazy<ICategoryCollection>(() => CategoryCollection.Create(this, this.firstSeries.Value, this.Type));
             this.chartType = new Lazy<ChartType>(this.GetChartType);
             this.ChartWorkbook = new ChartWorkbook(this);
 
@@ -74,7 +74,7 @@ namespace ShapeCrawler.Charts
 
         public ISeriesCollection SeriesCollection => this.seriesCollection.Value;
 
-        public CategoryCollection Categories => this.categories.Value;
+        public ICategoryCollection Categories => this.categories.Value;
 
         public bool HasXValues => this.xValues.Value != null;
 

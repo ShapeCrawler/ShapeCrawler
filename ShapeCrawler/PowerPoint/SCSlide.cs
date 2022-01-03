@@ -33,7 +33,7 @@ namespace ShapeCrawler
         {
             this.ParentPresentation = parentPresentation;
             this.SlidePart = slidePart;
-            this._shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.CreateForSlide(this.SlidePart, this));
+            this._shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.ForSlide(this.SlidePart, this));
             this.backgroundImage = new Lazy<SCImage>(() => SCImage.GetSlideBackgroundImageOrDefault(this));
             this.customXmlPart = new Lazy<CustomXmlPart>(this.GetSldCustomXmlPart);
         }

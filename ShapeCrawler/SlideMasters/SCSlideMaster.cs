@@ -95,7 +95,7 @@ namespace ShapeCrawler.SlideMasters
 
         public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
-        IShapeCollection IBaseSlide.Shapes => ShapeCollection.CreateForSlideMaster(this);
+        IShapeCollection IBaseSlide.Shapes => ShapeCollection.ForSlideMaster(this);
 
         #endregion Public Properties
     }

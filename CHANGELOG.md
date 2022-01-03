@@ -1,4 +1,8 @@
 # Changelog
+
+## Version 0.26.0 - 2022-01-03
+- Added "Shring text on overflow" support for `ITextBox.Text`.
+
 ## Version 0.25.0 - 2021-12-16
 - Added `IShapeCollection.AddNewVideo()` to add a new video shape on a slide.
 
