@@ -1,13 +1,9 @@
-using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using DocumentFormat.OpenXml.Packaging;
 using FluentAssertions;
-using ShapeCrawler.Audio;
-using ShapeCrawler.Collections;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Video;
@@ -20,7 +16,7 @@ using Xunit;
 namespace ShapeCrawler.Tests.Unit
 {
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-    public class SlideTests : IClassFixture<PresentationFixture>
+    public class SlideTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     {
         private readonly PresentationFixture _fixture;
 
@@ -295,5 +291,21 @@ namespace ShapeCrawler.Tests.Unit
             addedVideo.X.Should().Be(xPxCoordinate);
             addedVideo.Y.Should().Be(yPxCoordinate);
         }
+
+#if TEST
+        [Fact]
+        public void ToHtml_converts_slide_to_HTML()
+        {
+            // Arrange
+            var slide = this.GetSlide("052_slide-to-html.pptx", 1);
+
+            // Act
+            var html = slide.ToHtml().Result;
+            File.WriteAllText(@"C:\Documents\ShapeCrawler\Issues\SC-189_convert-slide-to-html\to-html\output.html", html);
+
+            // Arrange
+            
+        }
+#endif
     }
 }

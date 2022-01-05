@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.SlideMasters;
 
@@ -48,5 +49,12 @@ namespace ShapeCrawler
         ///     Saves slide scheme to file.
         /// </summary>
         void SaveScheme(string filePath);
+
+#if DEBUG
+        /// <summary>
+        ///     Converts slide to HTML.
+        /// </summary>
+        Task<string> ToHtml();
+#endif
     }
 }

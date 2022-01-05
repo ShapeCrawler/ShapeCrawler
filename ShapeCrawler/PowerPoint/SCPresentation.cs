@@ -24,7 +24,7 @@ namespace ShapeCrawler
     {
         private bool closed;
         private Lazy<Dictionary<int, FontData>> paraLvlToFontData;
-        private Lazy<SlideSizeSc> slideSize;
+        private Lazy<SCSlideSize> slideSize;
         internal ResettableLazy<SlideMasterCollection> slideMasters;
 
         internal PresentationDocument PresentationDocument { get; private set; }
@@ -133,6 +133,14 @@ namespace ShapeCrawler
 
         #endregion Public Methods
 
+        internal void ThrowIfClosed()
+        {
+            if (this.closed)
+            {
+                throw new ShapeCrawlerException("The presentation is closed.");
+            }
+        }
+
         private SCPresentation(string pptxPath, in bool isEditable)
         {
             this.Editable = isEditable;
@@ -231,24 +239,19 @@ namespace ShapeCrawler
         private void Init()
         {
             this.ThrowIfSlidesNumberLarge();
-            this.slideSize = new Lazy<SlideSizeSc>(this.GetSlideSize);
+            this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
             this.slideMasters = new ResettableLazy<SlideMasterCollection>(() => SlideMasterCollection.Create(this));
             this.paraLvlToFontData =
                 new Lazy<Dictionary<int, FontData>>(() => ParseFontHeights(this.PresentationDocument.PresentationPart.Presentation));
         }
 
-        private SlideSizeSc GetSlideSize()
+        private SCSlideSize GetSlideSize()
         {
-            P.SlideSize pSlideSize = this.PresentationDocument.PresentationPart.Presentation.SlideSize;
-            return new SlideSizeSc(pSlideSize.Cx.Value, pSlideSize.Cy.Value);
-        }
+            var pSlideSize = this.PresentationDocument.PresentationPart!.Presentation.SlideSize;
+            var withPx = PixelConverter.HorizontalEmuToPixel(pSlideSize.Cx.Value);
+            var heightPx = PixelConverter.VerticalEmuToPixel(pSlideSize.Cy.Value);
 
-        internal void ThrowIfClosed()
-        {
-            if (this.closed)
-            {
-                throw new ShapeCrawlerException("The presentation is closed.");
-            }
+            return new SCSlideSize(withPx, heightPx);
         }
     }
 }
