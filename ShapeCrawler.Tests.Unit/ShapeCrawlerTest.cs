@@ -15,6 +15,13 @@ namespace ShapeCrawler.Tests.Unit
 
             return (IAutoShape) shape;
         }
+
+        protected ISlide GetSlide(string presentation, int slideNumber)
+        {
+            var scPresentation = this.GetPresentation(presentation);
+
+            return scPresentation.Slides[slideNumber - 1];
+        }
         
         private SCPresentation GetPresentation(string fileName)
         {

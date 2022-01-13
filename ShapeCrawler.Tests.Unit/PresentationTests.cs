@@ -73,18 +73,29 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void SlideWidthAndSlideHeight_ReturnWidthAndHeightSizesOfThePresentationSlides()
+        public void Slide_Width_returns_presentation_slides_width_in_pixels()
         {
             // Arrange
-            SCPresentation presentation = _fixture.Pre009;
+            var presentation = _fixture.Pre009;
 
             // Act
-            int slideWidth = presentation.SlideWidth;
-            int slideHeight = presentation.SlideHeight;
+            var slideWidth = presentation.SlideWidth;
 
             // Assert
-            slideWidth.Should().Be(9144000);
-            slideHeight.Should().Be(5143500);
+            slideWidth.Should().Be(960);
+        }
+        
+        [Fact]
+        public void Slide_Height_returns_presentation_slides_height_in_pixels()
+        {
+            // Arrange
+            var presentation = _fixture.Pre009;
+
+            // Act
+            var slideHeight = presentation.SlideHeight;
+
+            // Assert
+            slideHeight.Should().Be(540);
         }
 
         [Fact]
