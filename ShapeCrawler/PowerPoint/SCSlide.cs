@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using AngleSharp;
+using AngleSharp.Css.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
@@ -133,6 +137,31 @@ namespace ShapeCrawler
         public void SaveScheme(string filePath)
         {
             SlideSchemeService.SaveScheme(this._shapes.Value, this.ParentPresentation.SlideWidth, this.ParentPresentation.SlideHeight, filePath);
+        }
+
+        public async Task<string> ToHtml()
+        {
+            var slideWidthPx = this.ParentPresentation.SlideWidth;
+            var slideHeightPx = this.ParentPresentation.SlideHeight;
+
+            var config = Configuration.Default.WithCss();
+            var context = BrowsingContext.New(config);
+            var document = await context.OpenNewAsync().ConfigureAwait(false);
+
+            var styleBuilder = new StringBuilder();
+            styleBuilder.Append("display: flex; ");
+            styleBuilder.Append("justify-content: center; ");
+            styleBuilder.Append("background: cadetblue; ");
+
+            styleBuilder.Append($"width: {slideWidthPx}px; ");
+            styleBuilder.Append($"height: {slideHeightPx}px; ");
+
+            var main = document.CreateElement("main");
+            main.SetStyle(styleBuilder.ToString());
+
+            document.Body!.AppendChild(main);
+
+            return document.DocumentElement.OuterHtml;
         }
 
         /// <summary>
