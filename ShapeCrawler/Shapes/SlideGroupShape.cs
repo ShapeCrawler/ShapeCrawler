@@ -18,20 +18,20 @@ namespace ShapeCrawler
     internal class SlideGroupShape : SlideShape, IGroupShape
     {
         private readonly GroupShape pGroupShape;
-        private readonly SCSlide slide;
+        private readonly SCSlide slideInternal;
 
-        public SlideGroupShape(P.GroupShape pGroupShape, SCSlide parentSlide, Shape parentGroupShape)
-            : base(pGroupShape, parentSlide, parentGroupShape)
+        public SlideGroupShape(P.GroupShape pGroupShape, SCSlide parentSlideInternal, Shape parentGroupShape)
+            : base(pGroupShape, parentSlideInternal, parentGroupShape)
         {
             this.pGroupShape = pGroupShape;
-            this.slide = parentSlide;
+            this.slideInternal = parentSlideInternal;
         }
 
         public IReadOnlyCollection<IShape> Shapes => this.CreateGroupedShapeCollection(); // TODO: make itlazy
 
         private IReadOnlyCollection<IShape> CreateGroupedShapeCollection()
         {
-            SlidePart slidePart = this.slide.SlidePart;
+            SlidePart slidePart = this.slideInternal.SlidePart;
             var shapeContextBuilder = new ShapeContext.Builder(slidePart);
 
             var autoShapeCreator = new AutoShapeCreator();
@@ -51,11 +51,11 @@ namespace ShapeCrawler
                 IShape shape;
                 if (child is P.GroupShape pGroupShape)
                 {
-                    shape = new SlideGroupShape(pGroupShape, this.slide, this);
+                    shape = new SlideGroupShape(pGroupShape, this.slideInternal, this);
                 }
                 else
                 {
-                    shape = autoShapeCreator.Create(child, this.slide, this);
+                    shape = autoShapeCreator.Create(child, this.slideInternal, this);
                 }
 
                 if (shape != null)

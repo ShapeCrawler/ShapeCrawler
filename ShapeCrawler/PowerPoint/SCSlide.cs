@@ -27,15 +27,15 @@ namespace ShapeCrawler
     {
         private readonly Lazy<SCImage> backgroundImage;
         private Lazy<CustomXmlPart> customXmlPart;
+        public readonly SCPresentation parentPresentationInternal;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SCSlide" /> class.
         /// </summary>
-        internal SCSlide(
-            SCPresentation parentPresentation,
-            SlidePart slidePart)
+        public SCSlide(SCPresentation parentPresentation, SlidePart slidePart)
         {
             this.ParentPresentation = parentPresentation;
+            this.parentPresentationInternal = parentPresentation;
             this.SlidePart = slidePart;
             this._shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.ForSlide(this.SlidePart, this));
             this.backgroundImage = new Lazy<SCImage>(() => SCImage.GetSlideBackgroundImageOrDefault(this));
@@ -54,10 +54,9 @@ namespace ShapeCrawler
 
         private int GetNumber()
         {
-            string currentSlidePartId =
-                this.ParentPresentation.PresentationDocument.PresentationPart.GetIdOfPart(this.SlidePart);
-            List<SlideId> slideIdList = this.ParentPresentation.PresentationDocument.PresentationPart.Presentation
-                .SlideIdList.ChildElements.OfType<SlideId>().ToList();
+            var presentationPart = this.parentPresentationInternal.PresentationDocument.PresentationPart; 
+            string currentSlidePartId = presentationPart.GetIdOfPart(this.SlidePart);
+            List<SlideId> slideIdList = presentationPart.Presentation.SlideIdList.ChildElements.OfType<SlideId>().ToList();
             for (int i = 0; i < slideIdList.Count; i++)
             {
                 if (slideIdList[i].RelationshipId == currentSlidePartId)
@@ -79,7 +78,7 @@ namespace ShapeCrawler
                 throw new ArgumentOutOfRangeException(nameof(to));
             }
 
-            PresentationPart presentationPart = this.ParentPresentation.PresentationDocument.PresentationPart;
+            PresentationPart presentationPart = this.parentPresentationInternal.PresentationDocument.PresentationPart;
 
             Presentation presentation = presentationPart.Presentation;
             SlideIdList slideIdList = presentation.SlideIdList;
@@ -125,7 +124,7 @@ namespace ShapeCrawler
 
         public bool IsRemoved { get; set; }
 
-        public SCPresentation ParentPresentation { get; }
+        public IPresentation ParentPresentation { get; }
 
         internal SlidePart SlidePart { get; }
 
@@ -248,10 +247,8 @@ namespace ShapeCrawler
             {
                 throw new ElementIsRemovedException("Slide was removed");
             }
-            else
-            {
-                this.ParentPresentation.ThrowIfClosed();
-            }
+
+            this.parentPresentationInternal.ThrowIfClosed();
         }
 
         #endregion Private Methods

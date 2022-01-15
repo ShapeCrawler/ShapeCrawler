@@ -10,16 +10,18 @@ namespace ShapeCrawler
     /// </summary>
     internal abstract class LayoutShape : Shape, IPresentationComponent
     {
-        protected LayoutShape(SCSlideLayout parentSlideLayout, OpenXmlCompositeElement sdkPShapeTreeChild)
-            : base(sdkPShapeTreeChild, parentSlideLayout, null)
+        protected LayoutShape(SCSlideLayout parentSlideInternalLayout, OpenXmlCompositeElement sdkPShapeTreeChild)
+            : base(sdkPShapeTreeChild, parentSlideInternalLayout, null)
         {
-            this.ParentSlideLayout = parentSlideLayout;
+            this.ParentSlideInternalLayout = parentSlideInternalLayout;
         }
 
         public override IPlaceholder Placeholder => LayoutPlaceholder.Create(this.PShapeTreesChild, this);
 
-        public SCPresentation ParentPresentation => ((SCSlideMaster)this.ParentSlideLayout.ParentSlideMaster).ParentPresentation;
+        public override SCSlideMaster ParentSlideMaster { get; set; }
 
-        internal SCSlideLayout ParentSlideLayout { get; }
+        public SCPresentation ParentPresentationInternal => ((SCSlideMaster)this.ParentSlideInternalLayout.ParentSlideMaster).ParentPresentation;
+
+        public SCSlideLayout ParentSlideInternalLayout { get; }
     }
 }

@@ -1,8 +1,14 @@
 ﻿namespace ShapeCrawler.Charts
 {
+    /// <summary>
+    ///     Represents a chart point.
+    /// </summary>
     public interface IChartPoint
     {
-        public double Value { get; }
+        /// <summary>
+        ///     Gets or sets chart point value.
+        /// </summary>
+        public double Value { get; set; }
     }
 
     internal class ChartPoint : IChartPoint
@@ -12,6 +18,6 @@
             this.Value = value;
         }
 
-        public double Value { get; }
+        public double Value { get; set; }
     }
 }

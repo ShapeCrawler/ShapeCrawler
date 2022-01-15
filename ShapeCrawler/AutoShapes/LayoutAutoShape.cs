@@ -24,8 +24,8 @@ namespace ShapeCrawler
         private readonly Lazy<SCTextBox?> textBox;
         private readonly P.Shape sdkPShape;
 
-        internal LayoutAutoShape(SCSlideLayout parentSlideLayout, P.Shape sdkPShape)
-            : base(parentSlideLayout, sdkPShape)
+        internal LayoutAutoShape(SCSlideLayout parentSlideInternalLayout, P.Shape sdkPShape)
+            : base(parentSlideInternalLayout, sdkPShape)
         {
             this.textBox = new Lazy<SCTextBox?>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
@@ -41,7 +41,7 @@ namespace ShapeCrawler
 
         #endregion Public Properties
 
-        public override SCSlideMaster ParentSlideMaster => (SCSlideMaster)this.ParentSlideLayout.ParentSlideMaster;
+        public override SCSlideMaster ParentSlideMaster => (SCSlideMaster)this.ParentSlideInternalLayout.ParentSlideMaster;
 
         public IShape Shape { get; }
 

@@ -56,6 +56,8 @@
     <EmbeddedResource Include="Resource\051_title-placeholder.pptx" />
     <None Remove="Resource\052_slide-to-html.pptx" />
     <EmbeddedResource Include="Resource\052_slide-to-html.pptx" />
+    <None Remove="Resource\024_chart.pptx" />
+    <EmbeddedResource Include="Resource\024_chart.pptx" />
   </ItemGroup>
 
 </Project>

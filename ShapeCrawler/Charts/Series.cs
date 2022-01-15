@@ -8,15 +8,29 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Charts
 {
+    public interface ISeries
+    {
+        string Name { get; }
+
+        /// <summary>
+        ///     Gets chart type.
+        /// </summary>
+        ChartType Type { get; }
+
+        IChartPointCollection Points { get; }
+        
+        bool HasName { get; }
+    }
+
     /// <summary>
     ///     Represents a chart series.
     /// </summary>
-    public class Series // TODO: convert to internal
+    internal class Series : ISeries
     {
         private readonly Lazy<string> name;
         private readonly OpenXmlElement seriesXmlElement;
 
-        internal Series(SCChart parentChart, OpenXmlElement seriesXmlElement, ChartType seriesChartType)
+        public Series(SCChart parentChart, OpenXmlElement seriesXmlElement, ChartType seriesChartType)
         {
             this.ParentChart = parentChart;
             this.seriesXmlElement = seriesXmlElement;
@@ -24,7 +38,7 @@ namespace ShapeCrawler.Charts
             this.Type = seriesChartType;
         }
 
-        internal SCChart ParentChart { get; }
+        public SCChart ParentChart { get; }
 
         /// <summary>
         ///     Gets chart type.

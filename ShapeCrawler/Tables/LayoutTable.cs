@@ -9,11 +9,9 @@ namespace ShapeCrawler.Tables
     /// </summary>
     internal class LayoutTable : LayoutShape, IShape
     {
-        internal LayoutTable(SCSlideLayout slideLayout, P.GraphicFrame pGraphicFrame)
-            : base(slideLayout, pGraphicFrame)
+        internal LayoutTable(SCSlideLayout slideInternalLayout, P.GraphicFrame pGraphicFrame)
+            : base(slideInternalLayout, pGraphicFrame)
         {
         }
-
-        public override SCSlideMaster ParentSlideMaster => throw new System.NotImplementedException();
     }
 }

@@ -9,11 +9,11 @@ namespace ShapeCrawler.OLEObjects
     /// </summary>
     internal class LayoutOLEObject : LayoutShape, IShape
     {
-        internal LayoutOLEObject(SCSlideLayout slideLayout, P.GraphicFrame pGraphicFrame)
-            : base(slideLayout, pGraphicFrame)
+        internal LayoutOLEObject(SCSlideLayout slideInternalLayout, P.GraphicFrame pGraphicFrame)
+            : base(slideInternalLayout, pGraphicFrame)
         {
         }
 
-        public override SCSlideMaster ParentSlideMaster { get; }
+        public override SCSlideMaster ParentSlideMaster { get; set; }
     }
 }
