@@ -8,8 +8,14 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Charts
 {
+    /// <summary>
+    ///     Represents a chart series.
+    /// </summary>
     public interface ISeries
     {
+        /// <summary>
+        ///     Gets series name.
+        /// </summary>
         string Name { get; }
 
         /// <summary>
@@ -17,36 +23,31 @@ namespace ShapeCrawler.Charts
         /// </summary>
         ChartType Type { get; }
 
+        /// <summary>
+        ///     Gets collection of chart points.
+        /// </summary>
         IChartPointCollection Points { get; }
-        
+
         bool HasName { get; }
     }
 
-    /// <summary>
-    ///     Represents a chart series.
-    /// </summary>
     internal class Series : ISeries
     {
         private readonly Lazy<string> name;
         private readonly OpenXmlElement seriesXmlElement;
+        private readonly SCChart parentChart;
 
-        public Series(SCChart parentChart, OpenXmlElement seriesXmlElement, ChartType seriesChartType)
+        internal Series(SCChart parentChart, OpenXmlElement seriesXmlElement, ChartType seriesChartType)
         {
-            this.ParentChart = parentChart;
+            this.parentChart = parentChart;
             this.seriesXmlElement = seriesXmlElement;
             this.name = new Lazy<string>(this.GetNameOrDefault);
             this.Type = seriesChartType;
         }
 
-        public SCChart ParentChart { get; }
-
-        /// <summary>
-        ///     Gets chart type.
-        /// </summary>
         public ChartType Type { get; }
 
-        public IChartPointCollection Points =>
-            ChartPointCollection.Create(this.ParentChart, this.seriesXmlElement);
+        public IChartPointCollection Points => ChartPointCollection.Create(this.parentChart, this.seriesXmlElement);
 
         public bool HasName => this.name.Value != null;
 
@@ -71,7 +72,7 @@ namespace ShapeCrawler.Charts
                 return null;
             }
 
-            return ChartReferencesParser.GetSingleString(cStringReference, ParentChart);
+            return ChartReferencesParser.GetSingleString(cStringReference, this.parentChart);
         }
     }
 }

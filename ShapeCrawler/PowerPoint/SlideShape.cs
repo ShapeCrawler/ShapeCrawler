@@ -5,7 +5,7 @@ using ShapeCrawler.SlideMasters;
 namespace ShapeCrawler
 {
     /// <summary>
-    ///     Represents a shape on a slide.
+    ///     Represents shape located on slide.
     /// </summary>
     internal abstract class SlideShape : Shape, IPresentationComponent
     {

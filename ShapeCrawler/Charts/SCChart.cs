@@ -5,7 +5,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Spreadsheet;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -26,7 +25,7 @@ namespace ShapeCrawler.Charts
         // then collection contains only single item.
         private IEnumerable<OpenXmlElement> cXCharts;
 
-        public SCChart(P.GraphicFrame pGraphicFrame, SCSlide parentSlideInternal)
+        internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide parentSlideInternal)
             : base(pGraphicFrame, parentSlideInternal, null)
         {
             this.pGraphicFrame = pGraphicFrame;
@@ -99,7 +98,7 @@ namespace ShapeCrawler.Charts
             C.ChartReference cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>()
                 .GetFirstChild<C.ChartReference>();
 
-            var slide = (SCSlide)this.ParentSlideInternal;
+            var slide = this.ParentSlideInternal;
             this.SdkChartPart = (ChartPart)slide.SlidePart.GetPartById(cChartReference.Id);
 
             C.PlotArea cPlotArea = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea;
@@ -178,7 +177,7 @@ namespace ShapeCrawler.Charts
                 return null;
             }
 
-            IReadOnlyList<double> points =
+            IEnumerable<double> points =
                 ChartReferencesParser.GetNumbersFromCacheOrWorkbook(sdkXValues.NumberReference, this);
 
             return new LibraryCollection<double>(points);

@@ -59,6 +59,9 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Compile Remove="Experiment\**" />
     <EmbeddedResource Remove="Experiment\**" />
     <None Remove="Experiment\**" />
+    <Compile Remove="StrykerOutput\**" />
+    <EmbeddedResource Remove="StrykerOutput\**" />
+    <None Remove="StrykerOutput\**" />
   </ItemGroup>
 
   <ItemGroup>

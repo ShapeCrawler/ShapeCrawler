@@ -63,12 +63,12 @@ namespace ShapeCrawler.Tests.Unit
             seriesPointValueCase5.Should().Be(3.2);
         }
 
-        [Fact]
+        [Fact(Skip = "In Progress")]
         public void Value_Setter_updates_chart_point()
         {
             // Arrange
             var chart = this.GetShape<IChart>("024_chart.pptx", 3, 5);
-            IChartPoint point = chart.SeriesCollection[0].Points[0];
+            var point = chart.SeriesCollection[0].Points[0];
             const int newValue = 6;
 
             // Act
