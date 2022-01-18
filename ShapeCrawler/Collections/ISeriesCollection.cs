@@ -9,7 +9,7 @@ namespace ShapeCrawler.Collections
     /// <summary>
     ///     Represents a collection of series.
     /// </summary>
-    public interface ISeriesCollection : IEnumerable<Series>
+    public interface ISeriesCollection : IEnumerable<ISeries>
     {
         /// <summary>
         ///     Gets the number of series items in the collection.
@@ -19,19 +19,19 @@ namespace ShapeCrawler.Collections
         /// <summary>
         ///     Gets the element at the specified index.
         /// </summary>
-        Series this[int index] { get; }
+        ISeries this[int index] { get; }
     }
 
-    internal class SeriesCollection : LibraryCollection<Series>, ISeriesCollection
+    internal class SeriesCollection : LibraryCollection<ISeries>, ISeriesCollection
     {
-        internal SeriesCollection(List<Series> seriesList)
+        public SeriesCollection(List<ISeries> seriesList)
         {
             this.CollectionItems = seriesList;
         }
 
-        internal static SeriesCollection Create(SCChart slideChart, IEnumerable<OpenXmlElement> cXCharts)
+        public static SeriesCollection Create(SCChart slideChart, IEnumerable<OpenXmlElement> cXCharts)
         {
-            var seriesList = new List<Series>();
+            var seriesList = new List<ISeries>();
             foreach (OpenXmlElement cXChart in cXCharts)
             {
                 Enum.TryParse(cXChart.LocalName, true, out ChartType seriesChartType); // TODO: use Parse instead of TryParse

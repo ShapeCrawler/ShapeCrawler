@@ -9,11 +9,11 @@ namespace ShapeCrawler.Drawing
     /// </summary>
     internal class LayoutPicture : LayoutShape, IShape
     {
-        internal LayoutPicture(SCSlideLayout slideLayout, P.Picture pPicture)
-            : base(slideLayout, pPicture)
+        internal LayoutPicture(SCSlideLayout slideInternalLayout, P.Picture pPicture)
+            : base(slideInternalLayout, pPicture)
         {
         }
 
-        public override SCSlideMaster ParentSlideMaster { get; }
+        public override SCSlideMaster ParentSlideMaster { get; set; }
     }
 }

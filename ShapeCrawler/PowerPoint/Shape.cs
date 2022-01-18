@@ -17,10 +17,10 @@ namespace ShapeCrawler
     /// </summary>
     internal abstract class Shape : IRemovable
     {
-        protected Shape(OpenXmlCompositeElement pShapeTreesChild, IBaseSlide parentBaseSlide, Shape parentGroupShape)
+        protected Shape(OpenXmlCompositeElement pShapeTreesChild, IBaseSlide parentBaseSlideInternal, Shape parentGroupShape)
         {
             this.PShapeTreesChild = pShapeTreesChild;
-            this.ParentBaseSlide = parentBaseSlide;
+            this.ParentBaseSlideInternal = parentBaseSlideInternal;
             this.ParentGroupShape = parentGroupShape;
         }
 
@@ -56,9 +56,9 @@ namespace ShapeCrawler
         public abstract IPlaceholder Placeholder { get; }
 
         /// <summary>
-        ///     Gets parent Slide Master.
+        ///     Gets or sets parent Slide Master.
         /// </summary>
-        public abstract SCSlideMaster ParentSlideMaster { get; }
+        public abstract SCSlideMaster ParentSlideMaster { get; set; }
 
         /// <summary>
         ///     Gets geometry form type.
@@ -105,7 +105,7 @@ namespace ShapeCrawler
 
         internal OpenXmlCompositeElement PShapeTreesChild { get; }
 
-        private IBaseSlide ParentBaseSlide { get; }
+        private IBaseSlide ParentBaseSlideInternal { get; }
 
         private Shape? ParentGroupShape { get; }
 
@@ -118,7 +118,7 @@ namespace ShapeCrawler
                 throw new ElementIsRemovedException("Shape was removed.");
             }
 
-            this.ParentBaseSlide.ThrowIfRemoved();
+            this.ParentBaseSlideInternal.ThrowIfRemoved();
         }
 
         private void SetCustomData(string value)

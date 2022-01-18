@@ -145,7 +145,7 @@ namespace ShapeCrawler
                 return null;
             }
 
-            SCPresentation parentPresentation = parentSlide.ParentPresentation;
+            SCPresentation parentPresentation = parentSlide.parentPresentationInternal;
             ImagePart imagePart = (ImagePart)parentSlide.SlidePart.GetPartById(picReference.Value);
             SCImage backgroundImage = new SCImage(parentPresentation, imagePart, parentSlide, picReference, parentSlide.SlidePart);
 

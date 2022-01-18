@@ -7,11 +7,11 @@ namespace ShapeCrawler.Spreadsheet
     /// <summary>
     ///     Represents the cell formula parser.
     /// </summary>
-    public class CellFormulaParser
+    internal class CellFormulaParser
     {
         #region Constructors
 
-        public CellFormulaParser(string formula)
+        internal CellFormulaParser(string formula)
         {
             this.formula = formula;
         }
@@ -21,8 +21,8 @@ namespace ShapeCrawler.Spreadsheet
         /// <summary>
         ///     Gets collection of the cell's addresses like ['B10','B11','B12'].
         /// </summary>
-        /// <remarks>input="B10:B12", output=['B10','B11','B12']</remarks>
-        public List<string> GetCellAddresses()
+        /// <remarks>input="B10:B12", output=['B10','B11','B12'].</remarks>
+        internal List<string> GetCellAddresses()
         {
             this.ParseLetter();
 

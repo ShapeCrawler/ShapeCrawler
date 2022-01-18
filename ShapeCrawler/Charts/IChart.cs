@@ -10,7 +10,7 @@ namespace ShapeCrawler
     public interface IChart : IShape
     {
         /// <summary>
-        ///     Gets chart type.
+        ///     Gets chart title. Return <c>NULL</c> if chart does not have title.
         /// </summary>
         ChartType Type { get; }
 
@@ -54,5 +54,7 @@ namespace ShapeCrawler
         ///     Gets workbook byte array containing chart data.
         /// </summary>
         byte[] WorkbookByteArray { get; }
+
+        ISlide ParentSlide { get; }
     }
 }

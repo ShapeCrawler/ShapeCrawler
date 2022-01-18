@@ -5,7 +5,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Spreadsheet;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -26,8 +25,8 @@ namespace ShapeCrawler.Charts
         // then collection contains only single item.
         private IEnumerable<OpenXmlElement> cXCharts;
 
-        internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide parentSlide)
-            : base(pGraphicFrame, parentSlide, null)
+        internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide parentSlideInternal)
+            : base(pGraphicFrame, parentSlideInternal, null)
         {
             this.pGraphicFrame = pGraphicFrame;
             this.firstSeries = new Lazy<OpenXmlElement>(this.GetFirstSeries);
@@ -42,20 +41,13 @@ namespace ShapeCrawler.Charts
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets the chart title. Returns null if chart has not a title.
-        /// </summary>
         public ChartType Type => this.chartType.Value;
 
-        /// <summary>
-        ///     Gets chart title. Return <c>NULL</c> if chart does not have title.
-        /// </summary>
         public string Title
         {
             get
             {
                 this.chartTitle = this.GetTitleOrDefault();
-
                 return this.chartTitle;
             }
         }
@@ -65,7 +57,6 @@ namespace ShapeCrawler.Charts
             get
             {
                 this.chartTitle ??= this.GetTitleOrDefault();
-
                 return this.chartTitle != null;
             }
         }
@@ -106,7 +97,9 @@ namespace ShapeCrawler.Charts
             // Get chart part
             C.ChartReference cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>()
                 .GetFirstChild<C.ChartReference>();
-            this.SdkChartPart = (ChartPart)this.ParentSlide.SlidePart.GetPartById(cChartReference.Id);
+
+            var slide = this.ParentSlideInternal;
+            this.SdkChartPart = (ChartPart)slide.SlidePart.GetPartById(cChartReference.Id);
 
             C.PlotArea cPlotArea = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea;
             this.cXCharts = cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
@@ -184,7 +177,7 @@ namespace ShapeCrawler.Charts
                 return null;
             }
 
-            IReadOnlyList<double> points =
+            IEnumerable<double> points =
                 ChartReferencesParser.GetNumbersFromCacheOrWorkbook(sdkXValues.NumberReference, this);
 
             return new LibraryCollection<double>(points);

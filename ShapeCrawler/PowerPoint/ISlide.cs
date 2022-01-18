@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.SlideMasters;
 
 namespace ShapeCrawler
@@ -35,6 +34,8 @@ namespace ShapeCrawler
         /// </summary>
         ISlideLayout ParentSlideLayout { get; }
 
+        IPresentation ParentPresentation { get; }
+
         /// <summary>
         ///     Hides slide.
         /// </summary>
@@ -49,7 +50,7 @@ namespace ShapeCrawler
         ///     Saves slide scheme to file.
         /// </summary>
         void SaveScheme(string filePath);
-
+        
 #if DEBUG
         /// <summary>
         ///     Converts slide to HTML.

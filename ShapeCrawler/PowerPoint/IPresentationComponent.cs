@@ -2,6 +2,6 @@
 {
     internal interface IPresentationComponent
     {
-        SCPresentation ParentPresentation { get; }
+        SCPresentation ParentPresentationInternal { get; }
     }
 }

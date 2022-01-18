@@ -105,7 +105,8 @@ namespace ShapeCrawler.Collections
 
             this.parentPresentation.ThrowIfClosed();
 
-            PresentationDocument addingSlideDoc = outerInnerSlide.ParentPresentation.PresentationDocument;
+            var presentation = (SCPresentation)outerInnerSlide.ParentPresentation;
+            PresentationDocument addingSlideDoc = presentation.PresentationDocument;
             PresentationDocument destDoc = this.parentPresentation.PresentationDocument;
             PresentationPart addingPresentationPart = addingSlideDoc.PresentationPart;
             PresentationPart destPresentationPart = destDoc.PresentationPart;

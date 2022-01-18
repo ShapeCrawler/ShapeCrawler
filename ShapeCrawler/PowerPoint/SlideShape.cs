@@ -5,22 +5,31 @@ using ShapeCrawler.SlideMasters;
 namespace ShapeCrawler
 {
     /// <summary>
-    ///     Represents a shape on a slide.
+    ///     Represents shape located on slide.
     /// </summary>
     internal abstract class SlideShape : Shape, IPresentationComponent
     {
-        protected SlideShape(OpenXmlCompositeElement pShapeTreesChild, SCSlide parentSlide, Shape parentGroupShape)
-            : base(pShapeTreesChild, parentSlide, parentGroupShape)
+        protected SlideShape(OpenXmlCompositeElement pShapeTreesChild, SCSlide parentSlideInternal, Shape parentGroupShape)
+            : base(pShapeTreesChild, parentSlideInternal, parentGroupShape)
         {
-            this.ParentSlide = parentSlide;
+            this.ParentSlideInternal = parentSlideInternal;
         }
 
         public override IPlaceholder Placeholder => SlidePlaceholder.Create(this.PShapeTreesChild, this);
 
-        public override SCSlideMaster ParentSlideMaster => (SCSlideMaster)this.ParentSlide.ParentSlideLayout.ParentSlideMaster;
+        public override SCSlideMaster ParentSlideMaster
+        {
+            get => (SCSlideMaster)this.ParentSlideInternal.ParentSlideLayout.ParentSlideMaster;
 
-        public SCPresentation ParentPresentation => this.ParentSlide.ParentPresentation;
+            set
+            {
+            }
+        }
 
-        internal SCSlide ParentSlide { get; }
+        public SCPresentation ParentPresentationInternal => this.ParentSlideInternal.parentPresentationInternal;
+
+        public ISlide ParentSlide => this.ParentSlideInternal;
+
+        internal SCSlide ParentSlideInternal { get; }
     }
 }
