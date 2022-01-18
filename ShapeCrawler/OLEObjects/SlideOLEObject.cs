@@ -16,10 +16,10 @@ namespace ShapeCrawler
 
         internal SlideOLEObject(
             OpenXmlCompositeElement pShapeTreesChild,
-            SCSlide parentSlideInternal,
+            SCSlide parentSlideLayoutInternal,
             ShapeContext spContext,
             SlideGroupShape parentGroupShape)
-            : base(pShapeTreesChild, parentSlideInternal, parentGroupShape)
+            : base(pShapeTreesChild, parentSlideLayoutInternal, parentGroupShape)
         {
             this.Context = spContext;
         }

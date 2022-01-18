@@ -7,7 +7,7 @@ using ShapeCrawler.Charts;
 namespace ShapeCrawler.Collections
 {
     /// <summary>
-    ///     Represents a collection of series.
+    ///     Represents a collection of chart series.
     /// </summary>
     public interface ISeriesCollection : IEnumerable<ISeries>
     {
@@ -24,12 +24,12 @@ namespace ShapeCrawler.Collections
 
     internal class SeriesCollection : LibraryCollection<ISeries>, ISeriesCollection
     {
-        public SeriesCollection(List<ISeries> seriesList)
+        internal SeriesCollection(List<ISeries> seriesList)
         {
             this.CollectionItems = seriesList;
         }
 
-        public static SeriesCollection Create(SCChart slideChart, IEnumerable<OpenXmlElement> cXCharts)
+        internal static SeriesCollection Create(SCChart slideChart, IEnumerable<OpenXmlElement> cXCharts)
         {
             var seriesList = new List<ISeries>();
             foreach (OpenXmlElement cXChart in cXCharts)

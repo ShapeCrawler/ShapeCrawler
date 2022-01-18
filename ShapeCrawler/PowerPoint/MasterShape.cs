@@ -6,10 +6,10 @@ namespace ShapeCrawler
 {
     internal abstract class MasterShape : Shape, IPresentationComponent
     {
-        protected MasterShape(OpenXmlCompositeElement pShapeTreesChild, SCSlideMaster parentSlideMaster)
-            : base(pShapeTreesChild, parentSlideMaster, null)
+        protected MasterShape(OpenXmlCompositeElement pShapeTreesChild, SCSlideMaster parentSlideLayoutMaster)
+            : base(pShapeTreesChild, parentSlideLayoutMaster, null)
         {
-            this.ParentSlideMaster = parentSlideMaster;
+            this.ParentSlideMaster = parentSlideLayoutMaster;
         }
 
         public override IPlaceholder Placeholder => MasterPlaceholder.Create(this.PShapeTreesChild);

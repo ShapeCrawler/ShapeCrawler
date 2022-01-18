@@ -25,9 +25,9 @@ namespace ShapeCrawler
     /// </summary>
     internal class SCSlide : ISlide
     {
+        internal readonly SCPresentation parentPresentationInternal;
         private readonly Lazy<SCImage> backgroundImage;
         private Lazy<CustomXmlPart> customXmlPart;
-        public readonly SCPresentation parentPresentationInternal;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SCSlide" /> class.

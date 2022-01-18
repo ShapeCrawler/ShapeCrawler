@@ -6,8 +6,8 @@ namespace ShapeCrawler.Charts
 {
     internal class LayoutChart : LayoutShape, IShape
     {
-        public LayoutChart(SCSlideLayout slideInternalLayout, P.GraphicFrame pGraphicFrame)
-            : base(slideInternalLayout, pGraphicFrame)
+        public LayoutChart(SCSlideLayout slideLayoutInternal, P.GraphicFrame pGraphicFrame)
+            : base(slideLayoutInternal, pGraphicFrame)
         {
             // TODO: add test for reading chart placeholder on Layout
         }
