@@ -25,8 +25,8 @@ namespace ShapeCrawler.Charts
         // then collection contains only single item.
         private IEnumerable<OpenXmlElement> cXCharts;
 
-        internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide parentSlideInternal)
-            : base(pGraphicFrame, parentSlideInternal, null)
+        internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide parentSlideLayoutInternal)
+            : base(pGraphicFrame, parentSlideLayoutInternal, null)
         {
             this.pGraphicFrame = pGraphicFrame;
             this.firstSeries = new Lazy<OpenXmlElement>(this.GetFirstSeries);
@@ -98,7 +98,7 @@ namespace ShapeCrawler.Charts
             C.ChartReference cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>()
                 .GetFirstChild<C.ChartReference>();
 
-            var slide = this.ParentSlideInternal;
+            var slide = this.ParentSlideLayoutInternal;
             this.SdkChartPart = (ChartPart)slide.SlidePart.GetPartById(cChartReference.Id);
 
             C.PlotArea cPlotArea = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea;

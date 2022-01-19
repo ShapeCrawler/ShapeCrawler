@@ -16,8 +16,8 @@ namespace ShapeCrawler
         private readonly Lazy<SCTextBox?> textBox;
         private readonly P.Shape pShape;
 
-        public SlideAutoShape(P.Shape pShape, SCSlide parentSlideInternal, SlideGroupShape parentGroupShape)
-            : base(pShape, parentSlideInternal, parentGroupShape)
+        public SlideAutoShape(P.Shape pShape, SCSlide parentSlideLayoutInternal, SlideGroupShape parentGroupShape)
+            : base(pShape, parentSlideLayoutInternal, parentGroupShape)
         {
             this.textBox = new Lazy<SCTextBox?>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
@@ -53,7 +53,7 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()
         {
-            var slide = (SCSlide)this.ParentSlideInternal;
+            var slide = (SCSlide)this.ParentSlideLayoutInternal;
             SCImage image = SCImage.GetFillImageOrDefault(this, slide.SlidePart, this.PShapeTreesChild);
 
             if (image != null)

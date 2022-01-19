@@ -37,7 +37,7 @@ namespace ShapeCrawler.Placeholders
 
         private Shape GetReferencedShape()
         {
-            var layoutShapes = (ShapeCollection)this.parentSlideShape.ParentSlideInternal.ParentSlideLayout.Shapes;
+            var layoutShapes = (ShapeCollection)this.parentSlideShape.ParentSlideLayoutInternal.ParentSlideLayout.Shapes;
             var referencedShape = layoutShapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
 
             if (referencedShape != null)
@@ -45,7 +45,7 @@ namespace ShapeCrawler.Placeholders
                 return referencedShape;
             }
 
-            var masterShapes = (ShapeCollection)this.parentSlideShape.ParentSlideInternal.ParentSlideLayout.ParentSlideMaster.Shapes;
+            var masterShapes = (ShapeCollection)this.parentSlideShape.ParentSlideLayoutInternal.ParentSlideLayout.ParentSlideMaster.Shapes;
 
             return masterShapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
         }

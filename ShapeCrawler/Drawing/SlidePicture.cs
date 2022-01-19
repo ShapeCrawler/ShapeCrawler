@@ -10,12 +10,12 @@ namespace ShapeCrawler
     {
         private readonly StringValue picReference;
 
-        internal SlidePicture(P.Picture pPicture, SCSlide parentSlideInternal, StringValue picReference)
-            : base(pPicture, parentSlideInternal, null)
+        internal SlidePicture(P.Picture pPicture, SCSlide parentSlideLayoutInternal, StringValue picReference)
+            : base(pPicture, parentSlideLayoutInternal, null)
         {
             this.picReference = picReference;
         }
 
-        public SCImage Image => SCImage.CreatePictureImage(this, this.ParentSlideInternal.SlidePart, this.picReference);
+        public SCImage Image => SCImage.CreatePictureImage(this, this.ParentSlideLayoutInternal.SlidePart, this.picReference);
     }
 }
