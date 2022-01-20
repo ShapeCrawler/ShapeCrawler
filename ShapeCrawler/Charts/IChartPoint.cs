@@ -15,17 +15,37 @@ namespace ShapeCrawler.Charts
 
     internal class ChartPoint : IChartPoint
     {
-        private readonly double value;
+        private readonly double? cachedValue;
+        private readonly string address;
+        private readonly SCChart parentChart;
 
-        internal ChartPoint(double value)
+        internal ChartPoint(SCChart parentChart, string address)
         {
-            this.value = value;
+            this.parentChart = parentChart;
+            this.address = address;
+        }
+
+        internal ChartPoint(SCChart parentChart, string address, double cachedValue)
+            : this(parentChart, address)
+        {
+            this.cachedValue = cachedValue;
         }
 
         public double Value
         {
-            get => this.value;
+            get => GetValue();
             set => this.UpdateValue(value);
+        }
+
+        private double GetValue()
+        {
+            if (this.cachedValue != null)
+            {
+                return this.cachedValue.Value;
+            }
+
+            
+            return -1;
         }
 
         private void UpdateValue(double value)

@@ -63,7 +63,7 @@ namespace ShapeCrawler.Tests.Unit
             seriesPointValueCase5.Should().Be(3.2);
         }
 
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void Value_Setter_updates_chart_point()
         {
             // Arrange
