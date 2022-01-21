@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts
 {
@@ -22,7 +25,7 @@ namespace ShapeCrawler.Charts
 
         internal byte[] ByteArray => this.GetByteArray();
 
-        public void Close()
+        internal void Close()
         {
             if (this.closed)
             {
@@ -32,6 +35,15 @@ namespace ShapeCrawler.Charts
             this.spreadsheetDocument?.Close();
             this.embeddedPackagePartStream?.Close();
             this.closed = true;
+        }
+
+        internal X.Cell GetXCell(string sheetName, string cellAddress)
+        {
+            var chartSheet = this.WorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
+            var worksheetPart = (WorksheetPart)this.WorkbookPart.GetPartById(chartSheet.Id!);
+            var sheetXCells = worksheetPart.Worksheet.Descendants<X.Cell>();
+
+            return sheetXCells.First(xCell => xCell.CellReference == cellAddress);
         }
 
         private WorkbookPart GetWorkbookPart()

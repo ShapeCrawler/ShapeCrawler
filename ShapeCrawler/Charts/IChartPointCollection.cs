@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Charts;
-using ShapeCrawler.Spreadsheet;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using X = DocumentFormat.OpenXml.Spreadsheet;
@@ -49,10 +48,11 @@ namespace ShapeCrawler.Charts
             var cNumberReference = cVal != null ? cVal.NumberReference! : cSerXmlElement.GetFirstChild<YValues>() !.NumberReference!;
 
             // Get addresses
-            var cFormula = cNumberReference.Formula;
+            var cFormula = cNumberReference.Formula!;
             var normalizedFormula = cFormula.Text.Replace("'", string.Empty).Replace("$", string.Empty);
+            var dataSheetName = Regex.Match(normalizedFormula, @".+(?=\!)").Value; // eg: Sheet1!A2:A5 -> Sheet1
             var cellsRange = Regex.Match(normalizedFormula, @"(?<=\!).+").Value; // eg: Sheet1!A2:A5 -> A2:A5
-            var pointAddresses = new CellFormulaParser(cellsRange).GetCellAddresses();
+            var pointAddresses = new CellsRangeParser(cellsRange).GetCellAddresses();
 
             // Get cached values
             List<double>? pointCachedValues = null;
@@ -70,8 +70,8 @@ namespace ShapeCrawler.Charts
 
             // Generate points
             var chartPoints = pointAddresses.Select((address, index) => pointCachedValues == null
-                    ? new ChartPoint(chart, address)
-                    : new ChartPoint(chart, address, pointCachedValues[index]))
+                    ? new ChartPoint(chart, dataSheetName, address)
+                    : new ChartPoint(chart, dataSheetName, address, pointCachedValues[index]))
                 .ToList();
 
             return new ChartPointCollection(chartPoints);

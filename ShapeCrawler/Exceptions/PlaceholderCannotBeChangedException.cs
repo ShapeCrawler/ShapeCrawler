@@ -2,7 +2,7 @@
 {
     public class PlaceholderCannotBeChangedException : ShapeCrawlerException
     {
-        internal PlaceholderCannotBeChangedException() 
+        internal PlaceholderCannotBeChangedException()
             : base("The shape is a placeholder and cannot be changed on the slide level")
         {
         }

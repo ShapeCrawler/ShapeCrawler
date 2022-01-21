@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Spreadsheet;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 // ReSharper disable PossibleMultipleEnumeration
