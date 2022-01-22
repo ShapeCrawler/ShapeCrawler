@@ -35,10 +35,10 @@ namespace ShapeCrawler
             var shapeContextBuilder = new ShapeContext.Builder(slidePart);
 
             var autoShapeCreator = new AutoShapeCreator();
-            var oleGrFrameHandler = new OleGraphicFrameHandler(shapeContextBuilder);
+            var oleGrFrameHandler = new OleGraphicFrameHandler();
             var pictureHandler = new PictureHandler();
             var chartGrFrameHandler = new ChartGraphicFrameHandler();
-            var tableGrFrameHandler = new TableGraphicFrameHandler(shapeContextBuilder);
+            var tableGrFrameHandler = new TableGraphicFrameHandler();
 
             autoShapeCreator.Successor = oleGrFrameHandler;
             oleGrFrameHandler.Successor = pictureHandler;
