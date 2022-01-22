@@ -128,7 +128,7 @@ namespace ShapeCrawler
 
         internal SlidePart SlidePart { get; }
 
-        protected ResettableLazy<ShapeCollection> _shapes { get; }
+        private ResettableLazy<ShapeCollection> _shapes { get; }
 
         /// <summary>
         ///     Saves slide scheme in PNG file.

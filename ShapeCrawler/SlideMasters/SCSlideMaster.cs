@@ -91,7 +91,12 @@ namespace ShapeCrawler.SlideMasters
 
         #region Public Properties
 
-        public SCImage Background => throw new NotImplementedException();
+        public SCImage Background => GetBackground();
+
+        private SCImage GetBackground()
+        {
+            return null;
+        }
 
         public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 

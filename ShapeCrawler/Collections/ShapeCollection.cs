@@ -44,13 +44,11 @@ namespace ShapeCrawler.Collections
             this.shapeTree = shapeTree;
         }
 
-        public static ShapeCollection ForSlide(SlidePart slidePart, SCSlide slide)
+        internal static ShapeCollection ForSlide(SlidePart slidePart, SCSlide slide)
         {
-            var shapeContextBuilder = new ShapeContext.Builder(slidePart);
-
             var chartGrFrameHandler = new ChartGraphicFrameHandler();
-            var tableGrFrameHandler = new TableGraphicFrameHandler(shapeContextBuilder);
-            var oleGrFrameHandler = new OleGraphicFrameHandler(shapeContextBuilder);
+            var tableGrFrameHandler = new TableGraphicFrameHandler();
+            var oleGrFrameHandler = new OleGraphicFrameHandler();
             var autoShapeCreator = new AutoShapeCreator();
             var pictureHandler = new PictureHandler();
 
@@ -82,7 +80,7 @@ namespace ShapeCrawler.Collections
             return new ShapeCollection(shapes, shapeTree, slide);
         }
 
-        public static ShapeCollection ForSlideLayout(P.ShapeTree pShapeTree, SCSlideLayout slideLayout)
+        internal static ShapeCollection ForSlideLayout(P.ShapeTree pShapeTree, SCSlideLayout slideLayout)
         {
             var shapeList = new List<IShape>();
             foreach (OpenXmlCompositeElement compositeElement in pShapeTree.OfType<OpenXmlCompositeElement>())
@@ -143,7 +141,7 @@ namespace ShapeCrawler.Collections
             return new ShapeCollection(shapeList);
         }
 
-        public static ShapeCollection ForSlideMaster(SCSlideMaster slideMaster)
+        internal static ShapeCollection ForSlideMaster(SCSlideMaster slideMaster)
         {
             P.ShapeTree pShapeTree = slideMaster.PSlideMaster.CommonSlideData.ShapeTree;
             var shapeList = new List<IShape>();

@@ -45,15 +45,22 @@ namespace ShapeCrawler.Tests.Unit
             return (T)cellValue;
         }
 
-        private static SCPresentation GetPresentationFromAssembly(string fileName)
+        protected static Stream GetPptxStream(string fileName)
         {
             var assembly = Assembly.GetExecutingAssembly();
             var path = assembly.GetManifestResourceNames().First(r => r.EndsWith(fileName, StringComparison.Ordinal));
             var stream = assembly.GetManifestResourceStream(path);
             var mStream = new MemoryStream();
-            stream.CopyTo(mStream);
+            stream!.CopyTo(mStream);
+
+            return mStream;
+        }
+
+        private SCPresentation GetPresentationFromAssembly(string fileName)
+        {
+            var stream = GetPptxStream(fileName);
             
-            return SCPresentation.Open(mStream, true);
+            return SCPresentation.Open(stream, true);
         }
     }
 }
