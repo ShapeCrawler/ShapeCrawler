@@ -315,7 +315,7 @@ namespace ShapeCrawler.Tests.Unit
 
         [Theory]
         [MemberData(nameof(GeometryTypeTestCases))]
-        public void GeometryType_ReturnsShapeGeometryType(IShape shape, GeometryType expectedGeometryType)
+        public void GeometryType_returns_shape_geometry_type(IShape shape, GeometryType expectedGeometryType)
         {
             // Assert
             shape.GeometryType.Should().BeEquivalentTo(expectedGeometryType);
@@ -323,10 +323,10 @@ namespace ShapeCrawler.Tests.Unit
 
         public static IEnumerable<object[]> GeometryTypeTestCases()
         {
-            var pre021 = SCPresentation.Open(Resources._021, false);
-            var shapes = pre021.Slides[3].Shapes;
-            var shapeCase1 = shapes.First(sp => sp.Id == 2);
-            var shapeCase2 = shapes.First(sp => sp.Id == 3);
+            var pptxStream = GetPptxStream("021.pptx");
+            var presentation = SCPresentation.Open(pptxStream, false);
+            var shapeCase1 = presentation.Slides[3].Shapes.First(sp => sp.Id == 2);
+            var shapeCase2 = presentation.Slides[3].Shapes.First(sp => sp.Id == 3);
 
             yield return new object[] { shapeCase1, GeometryType.Rectangle };
             yield return new object[] { shapeCase2, GeometryType.Ellipse };

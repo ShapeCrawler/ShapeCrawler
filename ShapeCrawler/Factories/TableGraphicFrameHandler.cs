@@ -12,11 +12,6 @@ namespace ShapeCrawler.Factories
         private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/table";
         private readonly ShapeContext.Builder shapeContextBuilder;
 
-        internal TableGraphicFrameHandler(ShapeContext.Builder shapeContextBuilder)
-        {
-            this.shapeContextBuilder = shapeContextBuilder ?? throw new ArgumentNullException(nameof(shapeContextBuilder));
-        }
-
         public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, SlideGroupShape groupShape)
         {
             if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
@@ -27,8 +22,7 @@ namespace ShapeCrawler.Factories
                     return this.Successor?.Create(pShapeTreeChild, slide, groupShape);
                 }
 
-                ShapeContext spContext = this.shapeContextBuilder.Build(pShapeTreeChild);
-                var table = new SlideTable(pGraphicFrame, slide, groupShape, spContext);
+                var table = new SlideTable(pGraphicFrame, slide, groupShape);
 
                 return table;
             }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -18,11 +17,11 @@ namespace ShapeCrawler.Tests.Unit
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     public class SlideTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     {
-        private readonly PresentationFixture _fixture;
+        private readonly PresentationFixture fixture;
 
         public SlideTests(PresentationFixture fixture)
         {
-            _fixture = fixture;
+            this.fixture = fixture;
         }
 
         [Fact]
@@ -43,7 +42,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Hidden_GetterReturnsTrue_WhenTheSlideIsHidden()
         { 
             // Arrange
-            ISlide slideEx = _fixture.Pre002.Slides[2];
+            ISlide slideEx = this.fixture.Pre002.Slides[2];
 
             // Act
             bool hidden = slideEx.Hidden;
@@ -57,7 +56,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SaveScheme_CreatesAndSavesSlideSchemeImageInSpecifiedStream()
         {
             // Arrange
-            ISlide slide = _fixture.Pre025.Slides[2];
+            ISlide slide = this.fixture.Pre025.Slides[2];
             var stream = new MemoryStream();
 
             // Act
@@ -89,7 +88,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Background_ImageIsNull_WhenTheSlideHasNotBackground()
         {
             // Arrange
-            ISlide slide = _fixture.Pre009.Slides[1];
+            ISlide slide = this.fixture.Pre009.Slides[1];
 
             // Act
             SCImage backgroundImage = slide.Background;
@@ -119,10 +118,10 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Shapes_ContainsParticularShapeTypes()
+        public void Shapes_collection_contains_particular_shape_Types()
         {
             // Arrange
-            IPresentation pre = _fixture.Pre003;
+            IPresentation pre = this.fixture.Pre003;
 
             // Act
             IShapeCollection shapes = pre.Slides.First().Shapes;
@@ -136,10 +135,10 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Shapes_contains_picture()
+        public void Shapes_collection_contains_Picture_shape()
         {
             // Arrange
-            IShape shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
+            IShape shape = this.fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
 
             // Act-Assert
             IPicture picture = shape as IPicture;
@@ -147,21 +146,32 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Shapes_contains_audio()
+        public void Shapes_collection_contains_Audio_shape()
         {
             // Arrange
-            IShape shape = _fixture.Pre039.Slides[0].Shapes.First(sp => sp.Id == 8);
+            IShape shape = this.fixture.Pre039.Slides[0].Shapes.First(sp => sp.Id == 8);
 
             // Act
             bool isAudio = shape is IAudioShape;
 
-            // Act-Assert
+            // Assert
             isAudio.Should().BeTrue();
+        }
+        
+        [Fact(Skip = "In Progress")]
+        public void Shapes_collection_contains_Connection_shape()
+        {
+            var pptxStream = GetPptxStream("001.pptx");
+            var presentation = SCPresentation.Open(pptxStream, false);
+            var shapesCollection = presentation.Slides[0].Shapes;
+
+            // Act-Assert
+            Assert.Contains(shapesCollection, shape => shape.Id == 10 && shape is IConnectionShape && shape.GeometryType == GeometryType.Line);
         }
 
         [Theory]
         [MemberData(nameof(TestCasesShapesCount))]
-        public void ShapesCount_ReturnsNumberOfShapesOnTheSlide(ISlide slide, int expectedShapesCount)
+        public void Shapes_Count_returns_number_of_shapes(ISlide slide, int expectedShapesCount)
         {
             // Act
             int shapesCount = slide.Shapes.Count;
@@ -171,7 +181,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Shapes_AddNewAudio_AddsAudio()
+        public void Shapes_AddNewAudio_adds_Audio_shape()
         {
             // Arrange
             Stream preStream = TestFiles.Presentations.pre001_stream;
@@ -224,7 +234,7 @@ namespace ShapeCrawler.Tests.Unit
         public void CustomData_PropertyIsNull_WhenTheSlideHasNotCustomData()
         {
             // Arrange
-            var slide = _fixture.Pre001.Slides.First();
+            var slide = this.fixture.Pre001.Slides.First();
 
             // Act
             var sldCustomData = slide.CustomData;
@@ -257,10 +267,10 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Shapes_Contains_Video()
+        public void Shapes_collection_contains_Video_shape()
         {
             // Arrange
-            IShape shape = _fixture.Pre040.Slides[0].Shapes.First(sp => sp.Id == 8);
+            IShape shape = this.fixture.Pre040.Slides[0].Shapes.First(sp => sp.Id == 8);
             
             // Act
             bool isVideo = shape is IVideoShape;
@@ -270,7 +280,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void Shapes_AddNewVideo_adds_video()
+        public void Shapes_AddNewVideo_adds_Video_shape()
         {
             // Arrange
             var preStream = TestFiles.Presentations.pre001_stream;
