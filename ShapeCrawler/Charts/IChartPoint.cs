@@ -2,8 +2,10 @@
 using System.Globalization;
 using System.IO;
 using System.Text;
-using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
+using C = DocumentFormat.OpenXml.Drawing.Charts;
+using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts
 {
@@ -20,10 +22,10 @@ namespace ShapeCrawler.Charts
 
     internal class ChartPoint : IChartPoint
     {
-        private double? cachedValue;
         private readonly string address;
         private readonly SCChart parentChart;
         private readonly string sheetName;
+        private readonly C.NumericValue? cNumericValue;
 
         internal ChartPoint(SCChart parentChart, string sheetName, string address)
         {
@@ -32,10 +34,10 @@ namespace ShapeCrawler.Charts
             this.address = address;
         }
 
-        internal ChartPoint(SCChart parentChart, string sheetName, string address, double cachedValue)
+        internal ChartPoint(SCChart parentChart, string sheetName, string address, C.NumericValue? cNumericValue)
             : this(parentChart, sheetName, address)
         {
-            this.cachedValue = cachedValue;
+            this.cNumericValue = cNumericValue;
         }
 
         public double Value
@@ -61,20 +63,32 @@ namespace ShapeCrawler.Charts
 
         private double GetValue()
         {
-            if (this.cachedValue != null)
+            // From cache
+            if (this.cNumericValue != null)
             {
-                return this.cachedValue.Value;
+                var cachedValue = double.Parse(this.cNumericValue.InnerText, CultureInfo.InvariantCulture.NumberFormat);
+                return Math.Round(cachedValue, 2);
             }
 
+            // From spreadsheet
             var xCell = this.parentChart.ChartWorkbook.GetXCell(this.sheetName, this.address);
-            this.cachedValue = xCell.InnerText.Length == 0 ? 0 : double.Parse(xCell.InnerText, CultureInfo.InvariantCulture.NumberFormat);
+            var sheetValue = xCell.InnerText.Length == 0 ? 0 : double.Parse(xCell.InnerText, CultureInfo.InvariantCulture.NumberFormat);
 
-            return this.cachedValue.Value;
+            return sheetValue;
         }
 
         private void UpdateValue(double value)
         {
-            throw new System.NotImplementedException("Inner Exception");
+            // Try update cache
+            if (this.cNumericValue != null)
+            {
+                this.cNumericValue.Text = value.ToString(CultureInfo.InvariantCulture);
+            }
+
+            // Update spreadsheet
+            var xCell = this.parentChart.ChartWorkbook.GetXCell(this.sheetName, this.address);
+            xCell.DataType = new EnumValue<X.CellValues>(X.CellValues.Number);
+            xCell.CellValue = new X.CellValue(value);
         }
     }
 }

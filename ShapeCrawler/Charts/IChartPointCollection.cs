@@ -55,24 +55,27 @@ namespace ShapeCrawler.Charts
             var pointAddresses = new CellsRangeParser(cellsRange).GetCellAddresses();
 
             // Get cached values
-            List<double>? pointCachedValues = null;
+            List<C.NumericValue>? cNumericValues = null;
             if (cNumberReference.NumberingCache != null)
             {
-                var cNumericValues = cNumberReference.NumberingCache.Descendants<C.NumericValue>();
-                pointCachedValues = new List<double>(cNumericValues.Count());
-                foreach (var numericValue in cNumericValues)
-                {
-                    var number = double.Parse(numericValue.InnerText, CultureInfo.InvariantCulture.NumberFormat);
-                    var roundNumber = Math.Round(number, 1);
-                    pointCachedValues.Add(roundNumber);
-                }
+                cNumericValues = cNumberReference.NumberingCache.Descendants<C.NumericValue>().ToList();
             }
 
             // Generate points
-            var chartPoints = pointAddresses.Select((address, index) => pointCachedValues == null
-                    ? new ChartPoint(chart, dataSheetName, address)
-                    : new ChartPoint(chart, dataSheetName, address, pointCachedValues[index]))
-                .ToList();
+            var chartPoints = new List<ChartPoint>(pointAddresses.Count);
+            for (int i = 0; i < pointAddresses.Count; i++)
+            {
+                var address = pointAddresses[i];
+                NumericValue? cNumericValue = null;
+
+                // Empty cells of range don't have the corresponding C.NumericValue.
+                if (i < cNumericValues?.Count)
+                {
+                    cNumericValue = cNumericValues[i];
+                }
+
+                chartPoints.Add(new ChartPoint(chart,  dataSheetName, address, cNumericValue));
+            }
 
             return new ChartPointCollection(chartPoints);
         }

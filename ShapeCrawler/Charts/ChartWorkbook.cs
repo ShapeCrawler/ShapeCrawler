@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
@@ -10,18 +9,17 @@ namespace ShapeCrawler.Charts
     internal class ChartWorkbook // TODO: implement IDispose to correctly dispose _packagePartStream
     {
         private readonly SCChart chart;
-        private readonly Lazy<WorkbookPart> workbookPart;
+        private readonly Lazy<SpreadsheetDocument> spreadsheetDocument;
         private Stream embeddedPackagePartStream;
-        private SpreadsheetDocument spreadsheetDocument;
         private bool closed;
 
         internal ChartWorkbook(SCChart chart)
         {
             this.chart = chart;
-            this.workbookPart = new Lazy<WorkbookPart>(this.GetWorkbookPart);
+            this.spreadsheetDocument = new Lazy<SpreadsheetDocument>(this.GetSpreadsheetDocument);
         }
 
-        internal WorkbookPart WorkbookPart => this.workbookPart.Value;
+        internal WorkbookPart WorkbookPart => this.spreadsheetDocument.Value.WorkbookPart;
 
         internal byte[] ByteArray => this.GetByteArray();
 
@@ -32,7 +30,7 @@ namespace ShapeCrawler.Charts
                 return;
             }
 
-            this.spreadsheetDocument?.Close();
+            this.spreadsheetDocument.Value?.Close();
             this.embeddedPackagePartStream?.Close();
             this.closed = true;
         }
@@ -46,19 +44,19 @@ namespace ShapeCrawler.Charts
             return sheetXCells.First(xCell => xCell.CellReference == cellAddress);
         }
 
-        private WorkbookPart GetWorkbookPart()
+        private SpreadsheetDocument GetSpreadsheetDocument()
         {
             this.embeddedPackagePartStream = this.chart.SdkChartPart.EmbeddedPackagePart.GetStream();
-            this.spreadsheetDocument = SpreadsheetDocument.Open(this.embeddedPackagePartStream, this.chart.ParentPresentationInternal.Editable);
+            var spreadsheetDocument = SpreadsheetDocument.Open(this.embeddedPackagePartStream, this.chart.ParentPresentationInternal.Editable);
             this.chart.ParentPresentationInternal.ChartWorkbooks.Add(this);
 
-            return this.spreadsheetDocument.WorkbookPart;
+            return spreadsheetDocument;
         }
 
         private byte[] GetByteArray()
         {
             var mStream = new MemoryStream();
-            this.spreadsheetDocument.Clone(mStream);
+            this.spreadsheetDocument.Value.Clone(mStream);
 
             return mStream.ToArray();
         }

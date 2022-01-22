@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using ClosedXML.Excel;
 
 namespace ShapeCrawler.Tests.Unit
 {
@@ -35,13 +36,15 @@ namespace ShapeCrawler.Tests.Unit
             return (IAutoShape) shape;
         }
 
-        protected ISlide GetSlide(string presentation, int slideNumber)
+        protected T GetCellValue<T>(byte[] workbookByteArray, string cellAddress)
         {
-            var scPresentation = GetPresentationFromAssembly(presentation);
+            var stream = new MemoryStream(workbookByteArray);
+            var xlWorkbook = new XLWorkbook(stream);
+            var cellValue = xlWorkbook.Worksheets.First().Cell(cellAddress).Value;
 
-            return scPresentation.Slides[slideNumber - 1];
+            return (T)cellValue;
         }
-        
+
         private static SCPresentation GetPresentationFromAssembly(string fileName)
         {
             var assembly = Assembly.GetExecutingAssembly();
