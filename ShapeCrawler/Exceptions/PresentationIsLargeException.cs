@@ -8,20 +8,8 @@ namespace ShapeCrawler.Exceptions
     /// </summary>
     public class PresentationIsLargeException : ShapeCrawlerException
     {
-        #region Constructors
-
-        private PresentationIsLargeException(string message) : base(message,
-            (int) ExceptionCode.PresentationIsLargeException)
-        {
-        }
-
-        #endregion Constructors
-
-        public PresentationIsLargeException()
-        {
-        }
-
-        public PresentationIsLargeException(string message, Exception innerException) : base(message, innerException)
+        private PresentationIsLargeException(string message)
+            : base(message, (int)ExceptionCode.PresentationIsLargeException)
         {
         }
 
@@ -30,7 +18,7 @@ namespace ShapeCrawler.Exceptions
         ///     size.
         /// </summary>
         /// <param name="maxSize"></param>
-        public static PresentationIsLargeException FromMax(int maxSize)
+        internal static PresentationIsLargeException FromMax(int maxSize)
         {
 #if NETSTANDARD2_1 || NET5_0 || NETCOREAPP2_1
             var message = ExceptionMessages.PresentationIsLarge.Replace("{0}",

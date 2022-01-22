@@ -1,52 +1,62 @@
 using System;
 using System.IO;
+using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts
 {
     internal class ChartWorkbook // TODO: implement IDispose to correctly dispose _packagePartStream
     {
         private readonly SCChart chart;
-        private readonly Lazy<WorkbookPart> workbookPart;
+        private readonly Lazy<SpreadsheetDocument> spreadsheetDocument;
         private Stream embeddedPackagePartStream;
-        private SpreadsheetDocument spreadsheetDocument;
         private bool closed;
 
         internal ChartWorkbook(SCChart chart)
         {
             this.chart = chart;
-            this.workbookPart = new Lazy<WorkbookPart>(this.GetWorkbookPart);
+            this.spreadsheetDocument = new Lazy<SpreadsheetDocument>(this.GetSpreadsheetDocument);
         }
 
-        internal WorkbookPart WorkbookPart => this.workbookPart.Value;
+        internal WorkbookPart WorkbookPart => this.spreadsheetDocument.Value.WorkbookPart;
 
         internal byte[] ByteArray => this.GetByteArray();
 
-        public void Close()
+        internal void Close()
         {
             if (this.closed)
             {
                 return;
             }
 
-            this.spreadsheetDocument?.Close();
+            this.spreadsheetDocument.Value?.Close();
             this.embeddedPackagePartStream?.Close();
             this.closed = true;
         }
 
-        private WorkbookPart GetWorkbookPart()
+        internal X.Cell GetXCell(string sheetName, string cellAddress)
+        {
+            var chartSheet = this.WorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
+            var worksheetPart = (WorksheetPart)this.WorkbookPart.GetPartById(chartSheet.Id!);
+            var sheetXCells = worksheetPart.Worksheet.Descendants<X.Cell>();
+
+            return sheetXCells.First(xCell => xCell.CellReference == cellAddress);
+        }
+
+        private SpreadsheetDocument GetSpreadsheetDocument()
         {
             this.embeddedPackagePartStream = this.chart.SdkChartPart.EmbeddedPackagePart.GetStream();
-            this.spreadsheetDocument = SpreadsheetDocument.Open(this.embeddedPackagePartStream, this.chart.ParentPresentationInternal.Editable);
+            var spreadsheetDocument = SpreadsheetDocument.Open(this.embeddedPackagePartStream, this.chart.ParentPresentationInternal.Editable);
             this.chart.ParentPresentationInternal.ChartWorkbooks.Add(this);
 
-            return this.spreadsheetDocument.WorkbookPart;
+            return spreadsheetDocument;
         }
 
         private byte[] GetByteArray()
         {
             var mStream = new MemoryStream();
-            this.spreadsheetDocument.Clone(mStream);
+            this.spreadsheetDocument.Value.Clone(mStream);
 
             return mStream.ToArray();
         }

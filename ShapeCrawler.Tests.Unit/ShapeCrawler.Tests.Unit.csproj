@@ -21,6 +21,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="FluentAssertions.Analyzers" Version="0.15.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
     <PackageReference Include="SharpCompress" Version="0.28.3" />
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
@@ -58,6 +59,8 @@
     <EmbeddedResource Include="Resource\052_slide-to-html.pptx" />
     <None Remove="Resource\024_chart.pptx" />
     <EmbeddedResource Include="Resource\024_chart.pptx" />
+    <None Remove="Resource\021.pptx" />
+    <EmbeddedResource Include="Resource\021.pptx" />
   </ItemGroup>
 
 </Project>

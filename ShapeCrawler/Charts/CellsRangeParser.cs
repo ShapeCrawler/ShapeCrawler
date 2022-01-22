@@ -2,18 +2,19 @@
 using System.Globalization;
 using System.Linq;
 
-namespace ShapeCrawler.Spreadsheet
+namespace ShapeCrawler.Charts
 {
-    /// <summary>
-    ///     Represents the cell formula parser.
-    /// </summary>
-    internal class CellFormulaParser
+    internal class CellsRangeParser
     {
         #region Constructors
 
-        internal CellFormulaParser(string formula)
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="CellsRangeParser"/> class.
+        /// </summary>
+        /// <param name="cellRange">Cells range (i.e. "A2:A5").</param>
+        internal CellsRangeParser(string cellRange)
         {
-            this.formula = formula;
+            this.cellRange = cellRange;
         }
 
         #endregion Constructors
@@ -31,7 +32,7 @@ namespace ShapeCrawler.Spreadsheet
 
         #region Fields
 
-        private readonly string formula;
+        private readonly string cellRange;
         private readonly LinkedList<string> tempList = new LinkedList<string>();
 
         #endregion Fields
@@ -40,56 +41,56 @@ namespace ShapeCrawler.Spreadsheet
 
         private void ParseLetter(int startIndex = 0)
         {
-            var letterCharacters = this.formula.Substring(startIndex).TakeWhile(char.IsLetter);
+            var letterCharacters = this.cellRange.Substring(startIndex).TakeWhile(char.IsLetter);
             var letterStr = string.Concat(letterCharacters);
             var nextStart = startIndex + letterCharacters.Count();
 
-            ParseDigit(letterStr, nextStart);
+            this.ParseDigit(letterStr, nextStart);
         }
 
         private void ParseDigit(string letterPart, int startIndex)
         {
             int digitInt = this.GetDigit(startIndex);
-            tempList.AddLast(letterPart + digitInt); // e.g. 'B'+'10' -> B10
+            this.tempList.AddLast(letterPart + digitInt); // e.g. 'B'+'10' -> B10
 
             int endIndex = startIndex + digitInt.ToString(CultureInfo.CurrentCulture).Length;
-            if (endIndex >= formula.Length)
+            if (endIndex >= this.cellRange.Length)
             {
                 return;
             }
 
             var nextStart = endIndex + letterPart.Length + 1; // skip separator and letter lengths
-            if (formula[endIndex] == ':')
+            if (this.cellRange[endIndex] == ':')
             {
-                ParseLetterAfterColon(letterPart, digitInt, nextStart);
+                this.ParseLetterAfterColon(letterPart, digitInt, nextStart);
             }
 
-            if (formula[endIndex] == ',')
+            if (this.cellRange[endIndex] == ',')
             {
-                ParseLetter(nextStart);
+                this.ParseLetter(nextStart);
             }
         }
 
         private void ParseLetterAfterColon(string letterPart, int digitPart, int startIndex)
         {
-            var digitInt = GetDigit(startIndex);
+            var digitInt = this.GetDigit(startIndex);
             for (var nextDigitInt = digitPart + 1; nextDigitInt <= digitInt; nextDigitInt++)
             {
-                tempList.AddLast(letterPart + nextDigitInt);
+                this.tempList.AddLast(letterPart + nextDigitInt);
             }
 
             var nextStart =
                 startIndex + digitInt.ToString(CultureInfo.CurrentCulture).Length +
                 1; // skip last digit and separator characters
-            if (nextStart < formula.Length)
+            if (nextStart < this.cellRange.Length)
             {
-                ParseLetter(nextStart);
+                this.ParseLetter(nextStart);
             }
         }
 
         private int GetDigit(int startIndex)
         {
-            IEnumerable<char> digitChars = formula.Substring(startIndex).TakeWhile(char.IsDigit);
+            IEnumerable<char> digitChars = this.cellRange.Substring(startIndex).TakeWhile(char.IsDigit);
             return int.Parse(string.Concat(digitChars), CultureInfo.CurrentCulture);
         }
 

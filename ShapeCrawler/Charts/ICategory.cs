@@ -12,7 +12,7 @@ namespace ShapeCrawler.Charts
     public interface ICategory
     {
         /// <summary>
-        ///     Gets main category. Returns <c>NULL</c> if the chart is not Multi-Category.
+        ///     Gets main category. Returns <c>NULL</c> if chart is not Multi-Category.
         /// </summary>
         public ICategory? MainCategory { get; }
 
@@ -25,36 +25,32 @@ namespace ShapeCrawler.Charts
     internal class Category : ICategory
     {
         private readonly int index;
-        private readonly NumericValue cachedName;
+        private readonly NumericValue cachedValue;
         private readonly ResettableLazy<List<X.Cell>> xCells;
-
-        #region Constructors
 
         internal Category(
             ResettableLazy<List<X.Cell>> xCells,
             int index,
-            NumericValue cachedName,
+            NumericValue cachedValue,
             Category mainCategory)
-            : this(xCells, index, cachedName)
+            : this(xCells, index, cachedValue)
         {
             // TODO: what about creating a new separate class like MultiCategory:Category
             this.MainCategory = mainCategory;
         }
 
-        internal Category(ResettableLazy<List<X.Cell>> xCells, int index, NumericValue cachedName)
+        internal Category(ResettableLazy<List<X.Cell>> xCells, int index, NumericValue cachedValue)
         {
             this.xCells = xCells;
             this.index = index;
-            this.cachedName = cachedName;
+            this.cachedValue = cachedValue;
         }
-
-        #endregion Constructors
 
         public ICategory? MainCategory { get; }
 
         public string Name
         {
-            get => this.cachedName.InnerText;
+            get => this.cachedValue.InnerText;
             set
             {
                 if (this.MainCategory != null)
@@ -66,7 +62,7 @@ namespace ShapeCrawler.Charts
                     throw new NotSupportedException(msg);
                 }
 
-                this.cachedName.Text = value;
+                this.cachedValue.Text = value;
 
                 var xCell = this.xCells.Value[this.index];
                 xCell.DataType = new DocumentFormat.OpenXml.EnumValue<X.CellValues>(X.CellValues.String);

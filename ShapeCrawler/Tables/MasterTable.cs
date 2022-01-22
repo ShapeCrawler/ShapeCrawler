@@ -9,8 +9,8 @@ namespace ShapeCrawler.Tables
     /// </summary>
     internal class MasterTable : MasterShape, IShape
     {
-        internal MasterTable(P.GraphicFrame pGraphicFrame, SCSlideMaster parentSlideLayoutInternalMaster)
-            : base(pGraphicFrame, parentSlideLayoutInternalMaster)
+        internal MasterTable(P.GraphicFrame pGraphicFrame, SCSlideMaster slideMasterInternal)
+            : base(pGraphicFrame, slideMasterInternal)
         {
         }
 

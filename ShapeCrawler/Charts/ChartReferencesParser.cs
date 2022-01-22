@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Spreadsheet;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
@@ -71,22 +70,16 @@ namespace ShapeCrawler.Charts
         /// <param name="chart">Internal chart instance.</param>
         internal static List<X.Cell> GetXCellsByFormula(C.Formula cFormula, SCChart chart)
         {
-#if NET5_0
-            var normalizedFormula = cFormula.Text
-                .Replace("'", string.Empty, StringComparison.OrdinalIgnoreCase)
-                .Replace("$", string.Empty, StringComparison.OrdinalIgnoreCase); // eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5
-#else
-            var normalizedFormula = cFormula.Text.Replace("'", string.Empty).Replace("$", string.Empty);
-#endif
-
-            var workbookPart = chart.ChartWorkbook.WorkbookPart;
+            var normalizedFormula = cFormula.Text.Replace("'", string.Empty).Replace("$", string.Empty); // eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5
             var chartSheetName = Regex.Match(normalizedFormula, @".+(?=\!)").Value; // eg: Sheet1!A2:A5 -> Sheet1
             var cellsRange = Regex.Match(normalizedFormula, @"(?<=\!).+").Value; // eg: Sheet1!A2:A5 -> A2:A5
+
+            var workbookPart = chart.ChartWorkbook.WorkbookPart;
             var chartSheet = workbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == chartSheetName);
-            var worksheetPart = (WorksheetPart)workbookPart.GetPartById(chartSheet.Id);
+            var worksheetPart = (WorksheetPart)workbookPart.GetPartById(chartSheet.Id!);
             var sheetXCells = worksheetPart.Worksheet.Descendants<X.Cell>();
 
-            var rangeCellAddresses = new CellFormulaParser(cellsRange).GetCellAddresses();
+            var rangeCellAddresses = new CellsRangeParser(cellsRange).GetCellAddresses();
             var rangeXCells = new List<X.Cell>(rangeCellAddresses.Count);
             foreach (var address in rangeCellAddresses)
             {

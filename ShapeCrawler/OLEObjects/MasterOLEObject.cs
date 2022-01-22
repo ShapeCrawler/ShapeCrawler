@@ -7,12 +7,13 @@ namespace ShapeCrawler.OLEObjects
 {
     internal class MasterOLEObject : MasterShape, IShape
     {
-        public MasterOLEObject(P.GraphicFrame pGraphicFrame, SCSlideMaster parentSlideLayoutInternalMaster) 
-            : base(pGraphicFrame, parentSlideLayoutInternalMaster)
+        public MasterOLEObject(P.GraphicFrame pGraphicFrame, SCSlideMaster slideMasterInternal)
+            : base(pGraphicFrame, slideMasterInternal)
         {
         }
 
         public override IPlaceholder Placeholder => MasterPlaceholder.Create(PShapeTreesChild);
+
         public override SCSlideMaster ParentSlideMaster { get; set; }
     }
 }
