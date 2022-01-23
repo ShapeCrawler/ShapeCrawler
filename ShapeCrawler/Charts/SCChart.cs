@@ -112,15 +112,16 @@ namespace ShapeCrawler.Charts
                 return ChartType.Combination;
             }
 
-            string chartName = this.cXCharts.Single().LocalName;
-            Enum.TryParse(chartName, true, out ChartType chartType);
-            return chartType;
+            var chartName = this.cXCharts.Single().LocalName;
+            Enum.TryParse(chartName, true, out ChartType enumChartType);
+
+            return enumChartType;
         }
 
         private string GetTitleOrDefault()
         {
             C.Title cTitle = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>().Title;
-            if (cTitle == null) 
+            if (cTitle == null)
             {
                 // chart has not title
                 return null;

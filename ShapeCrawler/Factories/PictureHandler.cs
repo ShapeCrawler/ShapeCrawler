@@ -15,29 +15,36 @@ namespace ShapeCrawler.Factories
     /// </summary>
     internal class PictureHandler : OpenXmlElementHandler
     {
-        public override IShape? Create(OpenXmlCompositeElement pShapeTreesChild, SCSlide slide, SlideGroupShape groupShape)
+        internal override IShape? Create(OpenXmlCompositeElement pShapeTreesChild, SCSlide slide, SlideGroupShape groupShape)
         {
             P.Picture? pPicture;
             if (pShapeTreesChild is P.Picture treePic)
             {
                 OpenXmlElement element = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties.ChildElements.FirstOrDefault();
 
-                if (element is A.AudioFromFile)
+                switch (element)
                 {
-                    A.AudioFromFile? aAudioFile = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
-                    .GetFirstChild<A.AudioFromFile>();
-                    if (aAudioFile is not null)
+                    case AudioFromFile:
                     {
-                        return new AudioShape(pShapeTreesChild, slide);
-                    }
-                }
-                else if(element is A.VideoFromFile)
-                {
-                    A.VideoFromFile aVideoFile = (A.VideoFromFile)element;
+                        A.AudioFromFile? aAudioFile = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
+                            .GetFirstChild<A.AudioFromFile>();
+                        if (aAudioFile is not null)
+                        {
+                            return new AudioShape(pShapeTreesChild, slide);
+                        }
 
-                    if (aVideoFile != null)
+                        break;
+                    }
+                    case VideoFromFile file:
                     {
-                        return new VideoShape(slide, pShapeTreesChild);
+                        A.VideoFromFile aVideoFile = file;
+
+                        if (aVideoFile != null)
+                        {
+                            return new VideoShape(slide, pShapeTreesChild);
+                        }
+
+                        break;
                     }
                 }
 
