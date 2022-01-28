@@ -5,8 +5,8 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Factories
 {
@@ -21,26 +21,47 @@ namespace ShapeCrawler.Factories
                 return this.Successor?.Create(pShapeTreeChild, slide, groupShape);
             }
 
-            var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>();
-            if (aGraphicData!.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
+            var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
+            if (!aGraphicData.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
             {
-                // Get chart part
-                var cChartReference = pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>()
-                    .GetFirstChild<C.ChartReference>();
-
-                // var slide = this.ParentSlideLayoutInternal;
-                var sdkChartPart = (ChartPart)slide.SlidePart.GetPartById(cChartReference.Id);
-
-                C.PlotArea cPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea;
-                var cCharts = cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-                
-                
-                var chart = new SCChart(pGraphicFrame, slide);
-
-                return chart;
+                return this.Successor?.Create(pShapeTreeChild, slide, groupShape);
             }
 
-            return Successor?.Create(pShapeTreeChild, slide, groupShape);
+            var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>();
+            var chartPart = (ChartPart)slide.SlidePart.GetPartById(cChartRef.Id);
+            var cPlotArea = chartPart!.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea;
+            var cCharts = cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
+
+            if (cCharts.Count() > 1)
+            {
+                return new SCComboChart(pGraphicFrame, slide);
+            }
+                
+            var chartTypeName = cCharts.Single().LocalName;
+                
+            if (chartTypeName == "LineChart")
+            {
+                return new SCLineChart(pGraphicFrame, slide);
+            }
+                
+            if (chartTypeName == "BarChart")
+            {
+                return new SCBarChart(pGraphicFrame, slide);
+            }
+    
+            if (chartTypeName == "PieChart")
+            {
+                return new SCPieChart(pGraphicFrame, slide);
+            }
+                
+            if (chartTypeName == "ScatterChart")
+            {
+                return new SCScatterChart(pGraphicFrame, slide);
+            }
+
+            return null; // rest of chart types are not supported yet
+
         }
     }
+
 }

@@ -23,7 +23,8 @@ namespace ShapeCrawler.Drawing
         {
             this.parentFont = parentFont;
             this.parentTextBoxContainer = parentFont.ParentPortion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
-            this.parentSlideMaster = this.parentTextBoxContainer.ParentSlideMaster;
+            var parentShape = (Shape)this.parentTextBoxContainer;
+            this.parentSlideMaster = parentShape.SlideMasterInternal;
         }
 
         public SCColorType ColorType => this.GetColorType();

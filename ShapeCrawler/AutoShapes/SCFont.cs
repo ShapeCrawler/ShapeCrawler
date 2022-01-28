@@ -8,6 +8,7 @@ using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
+using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -28,7 +29,8 @@ namespace ShapeCrawler.AutoShapes
             this.latinFont = new ResettableLazy<A.LatinFont>(this.GetALatinFont);
             this.colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
             this.ParentPortion = portion;
-            this.aFontScheme = portion.ParentParagraph.ParentTextBox.ParentTextBoxContainer.ParentSlideMaster.ThemePart.Theme.ThemeElements.FontScheme;
+            var parentShape = (Shape) portion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
+            this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements.FontScheme;
         }
 
         #region Public Properties
@@ -112,43 +114,50 @@ namespace ShapeCrawler.AutoShapes
             }
 
             var parentParagraph = this.ParentPortion.ParentParagraph;
-            var parentTextBoxContainer = parentParagraph.ParentTextBox.ParentTextBoxContainer;
+            var textBoxContainer = parentParagraph.ParentTextBox.ParentTextBoxContainer;
             int paragraphLvl = parentParagraph.Level;
 
-            if (parentTextBoxContainer is Shape parentShape)
+            if (textBoxContainer is Shape { Placeholder: { } } parentShape)
             {
-                if (parentShape.Placeholder is not null)
+                Placeholder placeholder = (Placeholder)parentShape.Placeholder;
+                IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
+                FontData fontDataPlaceholder = new ();
+                if (phReferencedShape != null)
                 {
-                    Placeholder placeholder = (Placeholder)parentShape.Placeholder;
-                    IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
-                    FontData fontDataPlaceholder = new ();
-                    if (phReferencedShape != null)
+                    phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
+                    if (fontDataPlaceholder.FontSize != null)
                     {
-                        phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
-                        if (fontDataPlaceholder.FontSize != null)
-                        {
-                            return fontDataPlaceholder.FontSize / 100;
-                        }
+                        return fontDataPlaceholder.FontSize / 100;
                     }
+                }
 
-                    SCSlideMaster slideMaster = parentShape.ParentSlideMaster;
+                var shapeSlideMaster = parentShape.SlideMasterInternal;
 
-                    // From Slide Master body
-                    if (slideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
-                    {
-                        return fontSizeBody / 100;
-                    }
+                // From Slide Master body
+                if (shapeSlideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
+                {
+                    return fontSizeBody / 100;
+                }
 
-                    // From Slide Master other
-                    if (slideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
-                    {
-                        return fontSizeOther / 100;
-                    }
+                // From Slide Master other
+                if (shapeSlideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
+                {
+                    return fontSizeOther / 100;
                 }
             }
 
             // From presentation level
-            if (parentTextBoxContainer.ParentSlideMaster.ParentPresentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
+            SCSlideMaster slideMaster = null;
+            if (textBoxContainer is Shape shape)
+            {
+                slideMaster = shape.SlideMasterInternal;
+            }
+            else
+            {
+                slideMaster = ((SCTableCell) textBoxContainer).SlideMasterInternal;
+            }
+
+            if (slideMaster.ParentPresentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
             {
                 if (fontData.FontSize != null)
                 {

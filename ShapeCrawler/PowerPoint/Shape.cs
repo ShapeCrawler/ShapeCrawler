@@ -13,9 +13,9 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler
 {
     /// <summary>
-    ///     Represents a shape located on slide, slide layout or slide master.
+    ///     Represents a shape located on Slide, Layout or Slide Master.
     /// </summary>
-    internal abstract class Shape : IRemovable
+    public abstract class Shape : IRemovable // TODO: internal?
     {
         protected Shape(OpenXmlCompositeElement pShapeTreesChild, IBaseSlide parentBaseSlide, Shape parentGroupShape)
         {
@@ -58,7 +58,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets or sets parent Slide Master.
         /// </summary>
-        public abstract SCSlideMaster ParentSlideMaster { get; set; }
+        internal abstract SCSlideMaster SlideMasterInternal { get; set; }
 
         /// <summary>
         ///     Gets geometry form type.

@@ -41,8 +41,6 @@ namespace ShapeCrawler
 
         #endregion Public Properties
 
-        public override SCSlideMaster ParentSlideMaster => (SCSlideMaster)this.ParentSlideLayoutInternal.ParentSlideMaster;
-
         public IShape Shape { get; }
 
         internal Dictionary<int, FontData> LvlToFontData => this.lvlToFontData.Value;

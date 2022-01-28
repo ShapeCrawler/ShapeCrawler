@@ -56,7 +56,7 @@ namespace ShapeCrawler
                 return;
             }
 
-            P.TextStyles pTextStyles = ((SCSlideMaster)this.ParentSlideMaster).PSlideMaster.TextStyles;
+            P.TextStyles pTextStyles = this.SlideMasterInternal.PSlideMaster.TextStyles;
             if (this.Placeholder.Type == PlaceholderType.Title)
             {
                 int titleFontSize = pTextStyles.TitleStyle.Level1ParagraphProperties
@@ -130,6 +130,5 @@ namespace ShapeCrawler
         }
 
         public IShape Shape { get; }
-        public override SCSlideMaster ParentSlideMaster { get; set; }
     }
 }

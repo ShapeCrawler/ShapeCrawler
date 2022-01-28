@@ -124,7 +124,7 @@ namespace ShapeCrawler
 
         internal static SCImage CreatePictureImage(Shape picture, SlidePart slidePart, StringValue picReference)
         {
-            SCPresentation parentPresentation = picture.ParentSlideMaster.ParentPresentation;
+            SCPresentation parentPresentation = picture.SlideMasterInternal.ParentPresentation;
             ImagePart imagePart = (ImagePart)slidePart.GetPartById(picReference.Value);
 
             return new SCImage(parentPresentation, imagePart, picture, picReference, slidePart);
@@ -163,7 +163,7 @@ namespace ShapeCrawler
                 return null;
             }
 
-            SCPresentation parentPresentation = parentShape.ParentSlideMaster.ParentPresentation;
+            SCPresentation parentPresentation = parentShape.SlideMasterInternal.ParentPresentation;
             ImagePart imagePart = (ImagePart)slidePart.GetPartById(picReference.Value);
             return new SCImage(parentPresentation, imagePart, parentShape, picReference, slidePart);
 

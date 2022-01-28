@@ -13,7 +13,5 @@ namespace ShapeCrawler.Tables
             : base(pGraphicFrame, slideMasterInternal)
         {
         }
-
-        public override SCSlideMaster ParentSlideMaster { get; set; }
     }
 }

@@ -11,7 +11,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts
 {
-    internal class SCChart : SlideShape, IChart
+    internal abstract class SCChart : SlideShape, IChart // TODO: make internal?
     {
         private readonly Lazy<ICategoryCollection> categories;
         private readonly Lazy<ChartType> chartType;
@@ -25,9 +25,9 @@ namespace ShapeCrawler.Charts
         // then collection contains only single item.
         private IEnumerable<OpenXmlElement> cXCharts;
 
-        internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide parentSlideLayoutInternal)
-            : base(pGraphicFrame, parentSlideLayoutInternal, null)
-        {
+        internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide parentSlideInternal)
+            : base(pGraphicFrame, parentSlideInternal, null)
+        { 
             this.pGraphicFrame = pGraphicFrame;
             this.firstSeries = new Lazy<OpenXmlElement>(this.GetFirstSeries);
             this.xValues = new Lazy<LibraryCollection<double>>(this.GetXValues);

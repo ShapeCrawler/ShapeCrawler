@@ -7,7 +7,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents shape located on slide.
     /// </summary>
-    internal abstract class SlideShape : Shape, IPresentationComponent
+    internal abstract class SlideShape : Shape, IPresentationComponent // Make internal
     {
         protected SlideShape(OpenXmlCompositeElement pShapeTreesChild, SCSlide parentSlideLayoutInternal, Shape parentGroupShape)
             : base(pShapeTreesChild, parentSlideLayoutInternal, parentGroupShape)
@@ -17,7 +17,7 @@ namespace ShapeCrawler
 
         public override IPlaceholder Placeholder => SlidePlaceholder.Create(this.PShapeTreesChild, this);
 
-        public override SCSlideMaster ParentSlideMaster
+        internal override SCSlideMaster SlideMasterInternal
         {
             get => (SCSlideMaster)this.ParentSlideLayoutInternal.ParentSlideLayout.ParentSlideMaster;
 
