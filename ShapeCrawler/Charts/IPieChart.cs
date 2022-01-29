@@ -15,7 +15,6 @@ namespace ShapeCrawler.Factories
         internal SCPieChart(DocumentFormat.OpenXml.Presentation.GraphicFrame pGraphicFrame, SCSlide slide)
             : base(pGraphicFrame, slide)
         {
-            throw new NotImplementedException();
         }
     }
 }

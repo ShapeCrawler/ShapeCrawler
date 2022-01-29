@@ -1,9 +1,8 @@
 ﻿using System;
-using ShapeCrawler.Charts;
 using ShapeCrawler.Collections;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Factories
+namespace ShapeCrawler.Charts
 {
     /// <summary>
     ///     Represents a Bar or Column chart.
@@ -18,7 +17,6 @@ namespace ShapeCrawler.Factories
         internal SCBarChart(P.GraphicFrame pGraphicFrame, SCSlide slide)
             : base(pGraphicFrame, slide)
         {
-            throw new NotImplementedException();
         }
     }
 }

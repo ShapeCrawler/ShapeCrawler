@@ -26,7 +26,7 @@ namespace ShapeCrawler
             }
         }
 
-        public SCPresentation ParentPresentationInternal => this.ParentSlideLayoutInternal.parentPresentationInternal;
+        public SCPresentation PresentationInternal => this.ParentSlideLayoutInternal.parentPresentationInternal;
 
         public ISlide ParentSlide => this.ParentSlideLayoutInternal;
 

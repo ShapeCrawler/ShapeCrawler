@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ShapeCrawler.Collections;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -18,7 +17,6 @@ namespace ShapeCrawler.Charts
         internal SCComboChart(P.GraphicFrame pGraphicFrame, SCSlide slide)
             : base(pGraphicFrame, slide)
         {
-            throw new NotImplementedException();
         }
 
         public IReadOnlyList<IChart> Charts { get; }

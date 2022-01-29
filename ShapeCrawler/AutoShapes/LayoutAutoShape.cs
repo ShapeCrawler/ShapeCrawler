@@ -6,7 +6,6 @@ using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
@@ -24,11 +23,11 @@ namespace ShapeCrawler
         private readonly Lazy<SCTextBox?> textBox;
         private readonly P.Shape sdkPShape;
 
-        internal LayoutAutoShape(SCSlideLayout parentSlideLayoutInternal, P.Shape sdkPShape)
-            : base(parentSlideLayoutInternal, sdkPShape)
+        internal LayoutAutoShape(SCSlideLayout slideLayout, P.Shape sdkPShape)
+            : base(slideLayout, sdkPShape)
         {
             this.textBox = new Lazy<SCTextBox?>(this.GetTextBox);
-            this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
+            this.shapeFill = new Lazy<ShapeFill>(TryGetFill);
             this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
             this.sdkPShape = sdkPShape;
         }
@@ -41,11 +40,9 @@ namespace ShapeCrawler
 
         #endregion Public Properties
 
-        public IShape Shape { get; }
+        public IShape Shape => this;
 
-        internal Dictionary<int, FontData> LvlToFontData => this.lvlToFontData.Value;
-
-        internal ShapeContext Context { get; }
+        private Dictionary<int, FontData> LvlToFontData => this.lvlToFontData.Value;
 
         public void FillFontData(int paragraphLvl, ref FontData fontData)
         {
@@ -112,28 +109,9 @@ namespace ShapeCrawler
             return null;
         }
 
-        private ShapeFill TryGetFill() // TODO: duplicate of SlideAutoShape.TryGetFill()
+        private static ShapeFill TryGetFill() // TODO: duplicate of SlideAutoShape.TryGetFill()
         {
-            SCImage image = SCImage.GetFillImageOrDefault(this, this.Context.SlidePart, this.PShapeTreesChild);
-            if (image != null)
-            {
-                return new ShapeFill(image);
-            }
-
-            // TODO: create some AutoShape abstract class and move "(P.Shape)this.PShapeTreeChild)" in there
-            A.SolidFill aSolidFill = ((P.Shape)this.PShapeTreesChild).ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
-            if (aSolidFill == null)
-            {
-                return null;
-            }
-
-            A.RgbColorModelHex aRgbColorModelHex = aSolidFill.RgbColorModelHex;
-            if (aRgbColorModelHex != null)
-            {
-                return ShapeFill.FromXmlSolidFill(aRgbColorModelHex);
-            }
-
-            return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
+            throw new NotImplementedException();
         }
     }
 }

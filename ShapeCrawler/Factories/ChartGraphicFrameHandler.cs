@@ -39,28 +39,29 @@ namespace ShapeCrawler.Factories
                 
             var chartTypeName = cCharts.Single().LocalName;
                 
-            if (chartTypeName == "LineChart")
+            if (chartTypeName == "lineChart")
             {
                 return new SCLineChart(pGraphicFrame, slide);
             }
                 
-            if (chartTypeName == "BarChart")
+            if (chartTypeName == "barChart")
             {
                 return new SCBarChart(pGraphicFrame, slide);
             }
     
-            if (chartTypeName == "PieChart")
+            if (chartTypeName == "pieChart")
             {
                 return new SCPieChart(pGraphicFrame, slide);
             }
                 
-            if (chartTypeName == "ScatterChart")
+            if (chartTypeName == "scatterChart")
             {
                 return new SCScatterChart(pGraphicFrame, slide);
             }
-
-            return null; // rest of chart types are not supported yet
-
+            else
+            {
+                return new SCChart(pGraphicFrame, slide);
+            }
         }
     }
 

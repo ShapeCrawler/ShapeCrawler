@@ -13,7 +13,7 @@ namespace ShapeCrawler.Drawing
     internal class ColorFormat : IColorFormat
     {
         private readonly SCFont parentFont;
-        private readonly ITextBoxContainer parentTextBoxContainer;
+        private readonly ITextBoxContainer textBoxContainer;
         private readonly SCSlideMaster parentSlideMaster;
         private Color color;
         private SCColorType colorType;
@@ -22,9 +22,9 @@ namespace ShapeCrawler.Drawing
         internal ColorFormat(SCFont parentFont)
         {
             this.parentFont = parentFont;
-            this.parentTextBoxContainer = parentFont.ParentPortion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
-            var parentShape = (Shape)this.parentTextBoxContainer;
-            this.parentSlideMaster = parentShape.SlideMasterInternal;
+            this.textBoxContainer = parentFont.ParentPortion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
+            var shape = (Shape)this.textBoxContainer.Shape;
+            this.parentSlideMaster = shape.SlideMasterInternal;
         }
 
         public SCColorType ColorType => this.GetColorType();
@@ -121,7 +121,7 @@ namespace ShapeCrawler.Drawing
 
         private bool TryFromShapeFontReference()
         {
-            if (this.parentTextBoxContainer is Shape parentShape)
+            if (this.textBoxContainer is Shape parentShape)
             {
                 P.Shape parentPShape = (P.Shape) parentShape.PShapeTreesChild;
                 if (parentPShape.ShapeStyle == null)
@@ -146,7 +146,7 @@ namespace ShapeCrawler.Drawing
 
         private bool TryFromPlaceholder(int paragraphLevel)
         {
-            if (this.parentTextBoxContainer.Placeholder is not Placeholder placeholder)
+            if (this.textBoxContainer.Placeholder is not Placeholder placeholder)
             {
                 return false;
             }

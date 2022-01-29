@@ -2,7 +2,6 @@
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
@@ -29,7 +28,16 @@ namespace ShapeCrawler.AutoShapes
             this.latinFont = new ResettableLazy<A.LatinFont>(this.GetALatinFont);
             this.colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
             this.ParentPortion = portion;
-            var parentShape = (Shape) portion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
+            var parentTextBoxContainer = portion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
+            Shape parentShape;
+            if (parentTextBoxContainer is SCTableCell cell)
+            {
+                parentShape = (Shape)cell.Shape;
+            }
+            else
+            {
+                parentShape = (Shape)portion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
+            }
             this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements.FontScheme;
         }
 

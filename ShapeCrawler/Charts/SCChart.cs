@@ -11,7 +11,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts
 {
-    internal abstract class SCChart : SlideShape, IChart // TODO: make internal?
+    internal class SCChart : SlideShape, IChart
     {
         private readonly Lazy<ICategoryCollection> categories;
         private readonly Lazy<ChartType> chartType;
