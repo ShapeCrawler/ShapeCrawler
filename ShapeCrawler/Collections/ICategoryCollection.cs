@@ -84,7 +84,7 @@ namespace ShapeCrawler.Collections
 
                 int catIndex = 0;
                 ResettableLazy<List<X.Cell>> xCells = null;
-                if (chart.ParentPresentationInternal.Editable)
+                if (chart.PresentationInternal.Editable)
                 {
                     xCells = new ResettableLazy<List<X.Cell>>(() =>
                         ChartReferencesParser.GetXCellsByFormula(cFormula, chart));

@@ -57,9 +57,9 @@ namespace ShapeCrawler.Collections
             pictureHandler.Successor = chartGrFrameHandler;
             chartGrFrameHandler.Successor = tableGrFrameHandler;
 
-            P.ShapeTree shapeTree = slidePart.Slide.CommonSlideData.ShapeTree;
-            var shapes = new List<IShape>(shapeTree.Count());
-            foreach (OpenXmlCompositeElement shapeTreesChildElement in shapeTree.OfType<OpenXmlCompositeElement>())
+            var pShapeTree = slidePart.Slide.CommonSlideData.ShapeTree;
+            var shapes = new List<IShape>(pShapeTree.Count());
+            foreach (OpenXmlCompositeElement shapeTreesChildElement in pShapeTree.OfType<OpenXmlCompositeElement>())
             {
                 IShape shape;
                 if (shapeTreesChildElement is P.GroupShape pGroupShape)
@@ -77,7 +77,7 @@ namespace ShapeCrawler.Collections
                 }
             }
 
-            return new ShapeCollection(shapes, shapeTree, slide);
+            return new ShapeCollection(shapes, pShapeTree, slide);
         }
 
         internal static ShapeCollection ForSlideLayout(P.ShapeTree pShapeTree, SCSlideLayout slideLayout)

@@ -6,7 +6,7 @@ namespace ShapeCrawler.Factories
 {
     internal class AutoShapeCreator : OpenXmlElementHandler
     {
-        public override IShape Create(OpenXmlCompositeElement pShapeTreesChild, SCSlide slide, SlideGroupShape groupShape)
+        internal override IShape Create(OpenXmlCompositeElement pShapeTreesChild, SCSlide slide, SlideGroupShape groupShape)
         {
             if (pShapeTreesChild is P.Shape pShape)
             {

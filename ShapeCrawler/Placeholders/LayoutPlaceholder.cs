@@ -34,7 +34,7 @@ namespace ShapeCrawler.Placeholders
 
         private Shape GetReferencedShape()
         {
-            ShapeCollection shapeCollection = (ShapeCollection)this.parentLayoutShape.ParentSlideLayoutInternal.ParentSlideMaster.Shapes;
+            ShapeCollection shapeCollection = (ShapeCollection)this.parentLayoutShape.SlideLayoutInternal.ParentSlideMaster.Shapes;
 
             return shapeCollection.GetReferencedShapeOrDefault(this.PPlaceholderShape);
         }

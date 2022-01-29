@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
+using ShapeCrawler.SlideMasters;
 
 namespace ShapeCrawler.Audio
 {

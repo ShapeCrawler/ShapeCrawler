@@ -27,7 +27,7 @@ namespace ShapeCrawler.Tables
 
         public bool IsMergedCell => this.DefineWhetherCellIsMerged();
 
-        public SCSlideMaster ParentSlideMaster => this.ParentTableRow.ParentTable.ParentSlideMaster;
+        public SCSlideMaster SlideMasterInternal => this.ParentTableRow.ParentTable.SlideMasterInternal;
 
         public IPlaceholder Placeholder => throw new System.NotImplementedException();
 

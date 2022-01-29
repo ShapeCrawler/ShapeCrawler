@@ -13,7 +13,5 @@ namespace ShapeCrawler.Drawing
             : base(slideLayoutInternal, pPicture)
         {
         }
-
-        public override SCSlideMaster ParentSlideMaster { get; set; }
     }
 }

@@ -13,7 +13,5 @@ namespace ShapeCrawler.OLEObjects
             : base(slideLayoutInternal, pGraphicFrame)
         {
         }
-
-        public override SCSlideMaster ParentSlideMaster { get; set; }
     }
 }

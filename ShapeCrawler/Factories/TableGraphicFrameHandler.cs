@@ -10,9 +10,8 @@ namespace ShapeCrawler.Factories
     internal class TableGraphicFrameHandler : OpenXmlElementHandler
     {
         private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/table";
-        private readonly ShapeContext.Builder shapeContextBuilder;
 
-        public override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, SlideGroupShape groupShape)
+        internal override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, SlideGroupShape groupShape)
         {
             if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
             {
