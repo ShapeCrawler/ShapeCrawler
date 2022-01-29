@@ -10,12 +10,12 @@ namespace ShapeCrawler
     public interface IChart : IShape
     {
         /// <summary>
-        ///     Gets chart title. Return <c>NULL</c> if chart does not have title.
+        ///     Gets chart type.
         /// </summary>
         ChartType Type { get; }
 
         /// <summary>
-        ///     Gets the chart title. Returns null if the chart has not a title.
+        ///     Gets title. Returns null if chart doesn't have title.
         /// </summary>
         string Title { get; }
 
@@ -25,20 +25,14 @@ namespace ShapeCrawler
         public bool HasTitle { get; }
 
         /// <summary>
-        ///     Gets a value indicating whether the chart has categories.
+        ///     Gets a value indicating whether the chart type has categories.
         /// </summary>
-        /// <remarks>Some chart types like ScatterChart and BubbleChart does not have categories.</remarks>
         bool HasCategories { get; }
 
         /// <summary>
-        ///     Gets collection of the chart series.
+        ///     Gets collection of data series.
         /// </summary>
         ISeriesCollection SeriesCollection { get; }
-
-        /// <summary>
-        ///     Gets collection of chart categories.
-        /// </summary>
-        ICategoryCollection Categories { get; }
 
         /// <summary>
         ///     Gets a value indicating whether the chart has x-axis values.
@@ -48,13 +42,16 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets collection of x-axis values.
         /// </summary>
-        LibraryCollection<double> XValues { get; }
+        LibraryCollection<double> XValues { get; } // TODO: should be excluded
 
         /// <summary>
-        ///     Gets workbook byte array containing chart data.
+        ///     Gets byte array of workbook containing chart data source.
         /// </summary>
         byte[] WorkbookByteArray { get; }
 
+        /// <summary>
+        ///     Gets parent slide.
+        /// </summary>
         ISlide ParentSlide { get; }
     }
 }

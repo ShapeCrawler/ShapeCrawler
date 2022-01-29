@@ -4,6 +4,7 @@ using System.Linq;
 using ClosedXML.Excel;
 using FluentAssertions;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Factories;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
 using Xunit;
@@ -133,24 +134,32 @@ namespace ShapeCrawler.Tests.Unit
         public void CategoryName_GetterReturnsChartCategoryName()
         {
             // Arrange
-            IChart chartCase1 = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4);
-            IChart chartCase2 = (IChart)_fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 4);
-            IChart chartCase3 = (IChart)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7);
+            IBarChart chartCase1 = (IBarChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4);
+            IPieChart chartCase3 = (IPieChart)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7);
 
             // Act-Assert
             chartCase1.Categories[0].Name.Should().BeEquivalentTo("Dresses");
-            chartCase2.Categories[0].Name.Should().BeEquivalentTo("2015");
             chartCase3.Categories[0].Name.Should().BeEquivalentTo("Q1");
             chartCase3.Categories[1].Name.Should().BeEquivalentTo("Q2");
             chartCase3.Categories[2].Name.Should().BeEquivalentTo("Q3");
             chartCase3.Categories[3].Name.Should().BeEquivalentTo("Q4");
+        }
+        
+        [Fact]
+        public void Category_Name_Getter_returns_category_name_for_chart_from_collection_of_Combination_chart()
+        {
+            // Arrange
+            IComboChart comboChart = (IComboChart)_fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 4);
+
+            // Act-Assert
+            comboChart.Categories[0].Name.Should().BeEquivalentTo("2015");
         }
 
         [Fact]
         public void CategoryName_GetterReturnsChartCategoryName_OfMultiCategoryChart()
         {
             // Arrange
-            IChart chartCase1 = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4);
+            IBarChart chartCase1 = (IBarChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 4);
 
             // Act-Assert
             chartCase1.Categories[0].MainCategory.Name.Should().BeEquivalentTo("Clothing");
@@ -162,7 +171,7 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             IPresentation presentation = SCPresentation.Open(Resources._025, true);
             MemoryStream mStream = new();
-            IChart pieChart4 = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
+            IPieChart pieChart4 = (IPieChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
             const string newCategoryName = "Category 1_new";
 
             // Act
@@ -172,7 +181,7 @@ namespace ShapeCrawler.Tests.Unit
             pieChart4.Categories[0].Name.Should().Be(newCategoryName);
             presentation.SaveAs(mStream);
             presentation = SCPresentation.Open(mStream, false);
-            pieChart4 = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
+            pieChart4 = (IPieChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
             pieChart4.Categories[0].Name.Should().Be(newCategoryName);
         }
 
@@ -181,7 +190,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             IPresentation presentation = SCPresentation.Open(Resources._025, true);
-            IChart lineChart = (IChart)presentation.Slides[3].Shapes.First(sp => sp.Id == 13);
+            ILineChart lineChart = (ILineChart)presentation.Slides[3].Shapes.First(sp => sp.Id == 13);
             const string newCategoryName = "Category 1_new";
 
             // Act
@@ -200,7 +209,7 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             Stream preStream = TestFiles.Presentations.pre025_byteArray.ToResizeableStream();
             IPresentation presentation = SCPresentation.Open(preStream, true);
-            IChart barChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
+            IBarChart barChart = (IBarChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
             const string newCategoryName = "Clothing_new";
 
             // Act
@@ -211,7 +220,7 @@ namespace ShapeCrawler.Tests.Unit
 
             presentation.Save();
             presentation = SCPresentation.Open(preStream, false);
-            barChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
+            barChart = (IBarChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
             barChart.Categories[0].Name.Should().Be(newCategoryName);
         }
 

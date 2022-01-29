@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Factories;
 using ShapeCrawler.Statics;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
@@ -48,7 +49,7 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             IPresentation presentation = SCPresentation.Open(TestFiles.Presentations.pre025_byteArray, true);
             MemoryStream mStream = new();
-            IChart chart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
+            IPieChart chart = (IPieChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
             chart.Categories[0].Name = "new name";
             presentation.SaveAs(mStream);
 

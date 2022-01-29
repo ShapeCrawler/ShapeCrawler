@@ -3,6 +3,7 @@ using System.Linq;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -30,6 +31,7 @@ namespace ShapeCrawler
 
         public ShapeFill Fill => this.shapeFill.Value;
 
+        public SCSlideMaster SlideMasterInternal { get; }
         public IShape Shape => this;
 
         #endregion Public Properties

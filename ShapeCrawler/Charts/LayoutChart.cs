@@ -11,7 +11,5 @@ namespace ShapeCrawler.Charts
         {
             // TODO: add test for reading chart placeholder on Layout
         }
-
-        public override SCSlideMaster ParentSlideMaster { get; set; }
     }
 }

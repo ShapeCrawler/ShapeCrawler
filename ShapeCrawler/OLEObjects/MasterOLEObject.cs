@@ -13,7 +13,5 @@ namespace ShapeCrawler.OLEObjects
         }
 
         public override IPlaceholder Placeholder => MasterPlaceholder.Create(PShapeTreesChild);
-
-        public override SCSlideMaster ParentSlideMaster { get; set; }
     }
 }

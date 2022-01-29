@@ -25,9 +25,9 @@ namespace ShapeCrawler.Charts
         // then collection contains only single item.
         private IEnumerable<OpenXmlElement> cXCharts;
 
-        internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide parentSlideLayoutInternal)
-            : base(pGraphicFrame, parentSlideLayoutInternal, null)
-        {
+        internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide parentSlideInternal)
+            : base(pGraphicFrame, parentSlideInternal, null)
+        { 
             this.pGraphicFrame = pGraphicFrame;
             this.firstSeries = new Lazy<OpenXmlElement>(this.GetFirstSeries);
             this.xValues = new Lazy<LibraryCollection<double>>(this.GetXValues);
@@ -112,15 +112,16 @@ namespace ShapeCrawler.Charts
                 return ChartType.Combination;
             }
 
-            string chartName = this.cXCharts.Single().LocalName;
-            Enum.TryParse(chartName, true, out ChartType chartType);
-            return chartType;
+            var chartName = this.cXCharts.Single().LocalName;
+            Enum.TryParse(chartName, true, out ChartType enumChartType);
+
+            return enumChartType;
         }
 
         private string GetTitleOrDefault()
         {
             C.Title cTitle = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>().Title;
-            if (cTitle == null) 
+            if (cTitle == null)
             {
                 // chart has not title
                 return null;

@@ -6,7 +6,6 @@ using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
@@ -38,15 +37,15 @@ namespace ShapeCrawler
 
         #region Public Properties
 
+        public IShape Shape => this;
+
         public ITextBox? TextBox => this.textBox.Value;
 
         public ShapeFill Fill => this.shapeFill.Value;
 
         #endregion Public Properties
 
-        internal ShapeContext Context { get; }
-
-        internal Dictionary<int, FontData> LvlToFontData => this.lvlToFontData.Value;
+        private Dictionary<int, FontData> LvlToFontData => this.lvlToFontData.Value;
 
         public void FillFontData(int paragraphLvl, ref FontData fontData)
         {
@@ -56,19 +55,21 @@ namespace ShapeCrawler
                 return;
             }
 
-            P.TextStyles pTextStyles = ((SCSlideMaster)this.ParentSlideMaster).PSlideMaster.TextStyles;
-            if (this.Placeholder.Type == PlaceholderType.Title)
+            P.TextStyles pTextStyles = this.SlideMasterInternal.PSlideMaster.TextStyles;
+            if (this.Placeholder.Type != PlaceholderType.Title)
             {
-                int titleFontSize = pTextStyles.TitleStyle.Level1ParagraphProperties
-                    .GetFirstChild<A.DefaultRunProperties>().FontSize.Value;
-                if (fontData.FontSize == null)
-                {
-                    fontData.FontSize = new Int32Value(titleFontSize);
-                }
+                return;
+            }
+
+            int titleFontSize = pTextStyles.TitleStyle.Level1ParagraphProperties
+                .GetFirstChild<A.DefaultRunProperties>().FontSize.Value;
+            if (fontData.FontSize == null)
+            {
+                fontData.FontSize = new Int32Value(titleFontSize);
             }
         }
 
-        internal Dictionary<int, FontData> GetLvlToFontData() // TODO: duplicate code in LayoutAutoShape
+        private Dictionary<int, FontData> GetLvlToFontData() // TODO: duplicate code in LayoutAutoShape
         {
             Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(this.pShape.TextBody.ListStyle);
 
@@ -108,28 +109,7 @@ namespace ShapeCrawler
 
         private ShapeFill TryGetFill() // TODO: duplicate code in LayoutAutoShape
         {
-            SCImage image = SCImage.GetFillImageOrDefault(this, this.Context.SlidePart, this.Context.CompositeElement);
-            if (image != null)
-            {
-                return new ShapeFill(image);
-            }
-
-            A.SolidFill aSolidFill = this.pShape.ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
-            if (aSolidFill != null)
-            {
-                A.RgbColorModelHex aRgbColorModelHex = aSolidFill.RgbColorModelHex;
-                if (aRgbColorModelHex != null)
-                {
-                    return ShapeFill.FromXmlSolidFill(aRgbColorModelHex);
-                }
-
-                return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
-            }
-
-            return null;
+            throw new NotImplementedException();
         }
-
-        public IShape Shape { get; }
-        public override SCSlideMaster ParentSlideMaster { get; set; }
     }
 }

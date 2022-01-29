@@ -24,7 +24,7 @@ namespace ShapeCrawler.Exceptions
         {
         }
 
-        protected ShapeCrawlerException(string message, Exception innerException)
+        internal ShapeCrawlerException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
