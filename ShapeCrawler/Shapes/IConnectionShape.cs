@@ -14,7 +14,6 @@ namespace ShapeCrawler.Shapes
         public SCConnectionShape(OpenXmlCompositeElement childOfpShapeTree, SCSlide slide)
             : base(childOfpShapeTree, slide)
         {
-            throw new System.NotImplementedException();
         }
     }
 }

@@ -7,7 +7,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a shape located on Slide.
     /// </summary>
-    internal abstract class SlideShape : Shape, IPresentationComponent // Make internal
+    internal abstract class SlideShape : Shape, IPresentationComponent
     {
         protected SlideShape(OpenXmlCompositeElement childOfpShapeTree, SCSlide slide, Shape groupShape)
             : base(childOfpShapeTree, slide, groupShape)
