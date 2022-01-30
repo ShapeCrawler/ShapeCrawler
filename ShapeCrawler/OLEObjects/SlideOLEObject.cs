@@ -15,8 +15,8 @@ namespace ShapeCrawler
         internal SlideOLEObject(
             OpenXmlCompositeElement pShapeTreesChild,
             SCSlide parentSlideLayoutInternal,
-            SlideGroupShape parentGroupShape)
-            : base(pShapeTreesChild, parentSlideLayoutInternal, parentGroupShape)
+            SlideGroupShape groupShape)
+            : base(pShapeTreesChild, parentSlideLayoutInternal, groupShape)
         {
         }
 

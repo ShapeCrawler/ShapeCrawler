@@ -20,8 +20,8 @@ namespace ShapeCrawler
         private readonly GroupShape pGroupShape;
         private readonly SCSlide slideLayoutInternal;
 
-        public SlideGroupShape(P.GroupShape pGroupShape, SCSlide parentSlideLayoutInternal, Shape parentGroupShape)
-            : base(pGroupShape, parentSlideLayoutInternal, parentGroupShape)
+        public SlideGroupShape(P.GroupShape pGroupShape, SCSlide parentSlideLayoutInternal, Shape groupShape)
+            : base(pGroupShape, parentSlideLayoutInternal, groupShape)
         {
             this.pGroupShape = pGroupShape;
             this.slideLayoutInternal = parentSlideLayoutInternal;

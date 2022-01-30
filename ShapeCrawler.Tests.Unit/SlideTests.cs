@@ -158,7 +158,7 @@ namespace ShapeCrawler.Tests.Unit
             isAudio.Should().BeTrue();
         }
         
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void Shapes_collection_contains_Connection_shape()
         {
             var pptxStream = GetPptxStream("001.pptx");

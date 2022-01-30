@@ -5,31 +5,37 @@ using ShapeCrawler.SlideMasters;
 namespace ShapeCrawler
 {
     /// <summary>
-    ///     Represents shape located on slide.
+    ///     Represents a shape located on Slide.
     /// </summary>
     internal abstract class SlideShape : Shape, IPresentationComponent // Make internal
     {
-        protected SlideShape(OpenXmlCompositeElement pShapeTreesChild, SCSlide parentSlideLayoutInternal, Shape parentGroupShape)
-            : base(pShapeTreesChild, parentSlideLayoutInternal, parentGroupShape)
+        protected SlideShape(OpenXmlCompositeElement childOfpShapeTree, SCSlide slide, Shape groupShape)
+            : base(childOfpShapeTree, slide, groupShape)
         {
-            this.ParentSlideLayoutInternal = parentSlideLayoutInternal;
+            this.Slide = slide;
+        }
+
+        protected SlideShape(OpenXmlCompositeElement childOfpShapeTree, SCSlide slide)
+            : base(childOfpShapeTree, slide)
+        {
+            this.Slide = slide;
         }
 
         public override IPlaceholder Placeholder => SlidePlaceholder.Create(this.PShapeTreesChild, this);
 
         internal override SCSlideMaster SlideMasterInternal
         {
-            get => (SCSlideMaster)this.ParentSlideLayoutInternal.ParentSlideLayout.ParentSlideMaster;
+            get => (SCSlideMaster)this.Slide.ParentSlideLayout.ParentSlideMaster;
 
             set
             {
             }
         }
 
-        public SCPresentation PresentationInternal => this.ParentSlideLayoutInternal.parentPresentationInternal;
+        public SCPresentation PresentationInternal => this.Slide.parentPresentationInternal;
 
-        public ISlide ParentSlide => this.ParentSlideLayoutInternal;
+        public ISlide ParentSlide => this.Slide;
 
-        internal SCSlide ParentSlideLayoutInternal { get; }
+        internal SCSlide Slide { get; }
     }
 }
