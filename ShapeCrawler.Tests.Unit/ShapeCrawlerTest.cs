@@ -56,7 +56,7 @@ namespace ShapeCrawler.Tests.Unit
             return mStream;
         }
 
-        private SCPresentation GetPresentationFromAssembly(string fileName)
+        private IPresentation GetPresentationFromAssembly(string fileName)
         {
             var stream = GetPptxStream(fileName);
             

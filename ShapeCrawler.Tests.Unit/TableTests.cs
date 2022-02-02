@@ -231,7 +231,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_Merges0x0And0x1And0x2CellsOf3x2Table()
         {
             // Arrange
-            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
+            IPresentation presentation = SCPresentation.Open(Resources._001, true);
             ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
             var mStream = new MemoryStream();
 
@@ -444,7 +444,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_Converts2X2TableInto1X1_WhenAllCellsAreMerged()
         {
             // Arrange
-            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
+            IPresentation presentation = SCPresentation.Open(Resources._001, true);
             ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 5) ;
             var mStream = new MemoryStream();
             long mergedColumnWidth = table.Columns[0].Width + table.Columns[1].Width;
@@ -475,7 +475,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_Merges0x0and0x1CellsIn3x1Table()
         {
             // Arrange
-            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
+            IPresentation presentation = SCPresentation.Open(Resources._001, true);
             ITable table = (ITable)presentation.Slides[3].Shapes.First(sp => sp.Id == 6) ;
             var mStream = new MemoryStream();
             long mergedColumnWidth = table.Columns[0].Width + table.Columns[1].Width;
@@ -504,7 +504,7 @@ namespace ShapeCrawler.Tests.Unit
         public void MergeCells_Merges0x1and0x2CellsIn3x1Table()
         {
             // Arrange
-            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
+            IPresentation presentation = SCPresentation.Open(Resources._001, true);
             ITable table = (ITable)presentation.Slides[3].Shapes.First(sp => sp.Id == 6) ;
             var mStream = new MemoryStream();
             long mergedColumnWidth = table.Columns[1].Width + table.Columns[2].Width;

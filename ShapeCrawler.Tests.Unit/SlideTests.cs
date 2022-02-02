@@ -206,7 +206,7 @@ namespace ShapeCrawler.Tests.Unit
 
         public static IEnumerable<object[]> TestCasesShapesCount()
         {
-            SCPresentation presentation = SCPresentation.Open(Properties.Resources._009, false);
+            IPresentation presentation = SCPresentation.Open(Properties.Resources._009, false);
             
             ISlide slide = presentation.Slides[0];
             yield return new object[] { slide, 6 };

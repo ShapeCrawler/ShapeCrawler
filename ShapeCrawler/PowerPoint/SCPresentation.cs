@@ -72,7 +72,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Opens presentation from specified byte array.
         /// </summary>
-        public static SCPresentation Open(byte[] pptxBytes, in bool isEditable)
+        public static IPresentation Open(byte[] pptxBytes, in bool isEditable)
         {
             ThrowIfSourceInvalid(pptxBytes);
 
@@ -85,7 +85,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Opens presentation from stream.
         /// </summary>
-        public static SCPresentation Open(Stream stream, in bool isEditable)
+        public static IPresentation Open(Stream stream, in bool isEditable)
         {
             return new SCPresentation(stream, isEditable);
         }

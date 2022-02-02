@@ -170,7 +170,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SlidesRemove_RemovesFirstSlideFromPresentation_WhenFirstSlideObjectWasPassed(byte[] pptxBytes, int expectedSlidesCount)
         {
             // Arrange
-            SCPresentation presentation = SCPresentation.Open(pptxBytes, true);
+            IPresentation presentation = SCPresentation.Open(pptxBytes, true);
             ISlide removingSlide = presentation.Slides[0];
             var mStream = new MemoryStream();
 
@@ -195,8 +195,8 @@ namespace ShapeCrawler.Tests.Unit
         public void SlideMastersCount_ReturnsNumberOfMasterSlidesInThePresentation()
         {
             // Arrange
-            SCPresentation presentationCase1 = _fixture.Pre001;
-            SCPresentation presentationCase2 = _fixture.Pre002;
+            IPresentation presentationCase1 = _fixture.Pre001;
+            IPresentation presentationCase2 = _fixture.Pre002;
 
             // Act
             int slideMastersCountCase1 = presentationCase1.SlideMasters.Count;
@@ -211,7 +211,7 @@ namespace ShapeCrawler.Tests.Unit
         public void SlideMasterShapesCount_ReturnsNumberOfShapesOnTheMasterSlide()
         {
             // Arrange
-            SCPresentation presentation = _fixture.Pre001;
+            IPresentation presentation = _fixture.Pre001;
 
             // Act
             int slideMasterShapesCount = presentation.SlideMasters[0].Shapes.Count;

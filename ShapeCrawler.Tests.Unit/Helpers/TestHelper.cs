@@ -30,13 +30,13 @@ namespace ShapeCrawler.Tests.Unit.Helpers
 
         public static IParagraph GetParagraph(MemoryStream presentationStream, SlideElementQuery paragraphRequest)
         {
-            SCPresentation presentation = SCPresentation.Open(presentationStream, false);
+            IPresentation presentation = SCPresentation.Open(presentationStream, false);
             IAutoShape autoShape = presentation.Slides[paragraphRequest.SlideIndex]
                 .Shapes.First(sp => sp.Id == paragraphRequest.ShapeId) as IAutoShape;
             return autoShape.TextBox.Paragraphs[paragraphRequest.ParagraphIndex];
         }
 
-        public static IPortion GetParagraphPortion(SCPresentation presentation, SlideElementQuery elementRequest)
+        public static IPortion GetParagraphPortion(IPresentation presentation, SlideElementQuery elementRequest)
         {
             IAutoShape autoShape = (IAutoShape)presentation.Slides[elementRequest.SlideIndex].Shapes.First(sp => sp.Id == elementRequest.ShapeId);
             
