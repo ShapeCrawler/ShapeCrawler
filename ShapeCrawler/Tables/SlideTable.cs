@@ -12,7 +12,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
-
 namespace ShapeCrawler
 {
     internal class SlideTable : SlideShape, ITable
@@ -20,32 +19,28 @@ namespace ShapeCrawler
         private readonly P.GraphicFrame pGraphicFrame;
         private readonly ResettableLazy<RowCollection> rowCollection;
 
-        #region Constructors
+        private A.Table ATable => this.pGraphicFrame.GetATable();
 
-        internal SlideTable(OpenXmlCompositeElement pShapeTreesChild, SCSlide parentSlideLayoutInternal, SlideGroupShape groupShape)
-            : base(pShapeTreesChild, parentSlideLayoutInternal, groupShape)
+        internal SlideTable(OpenXmlCompositeElement childOfPShapeTrees, SCSlide slideLayout, SlideGroupShape groupShape)
+            : base(childOfPShapeTrees, slideLayout, groupShape)
         {
             this.rowCollection =
                 new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) this.PShapeTreesChild));
-            this.pGraphicFrame = pShapeTreesChild as P.GraphicFrame;
+            this.pGraphicFrame = childOfPShapeTrees as P.GraphicFrame;
         }
-
-        #endregion Constructors
-
-        internal A.Table ATable => this.pGraphicFrame.GetATable();
 
         public IReadOnlyList<Column> Columns => this.GetColumnList(); // TODO: make lazy
 
         public RowCollection Rows => this.rowCollection.Value;
 
-        public ITableCell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
+        public override GeometryType GeometryType => GeometryType.Rectangle;
 
-        public GeometryType GeometryType => GeometryType.Rectangle;
+        public ITableCell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
 
         public void MergeCells(ITableCell inputCell1, ITableCell inputCell2) // TODO: Optimize method
         {
-            SCTableCell cell1 = (SCTableCell) inputCell1;
-            SCTableCell cell2 = (SCTableCell) inputCell2;
+            SCTableCell cell1 = (SCTableCell)inputCell1;
+            SCTableCell cell2 = (SCTableCell)inputCell2;
             if (CannotBeMerged(cell1, cell2))
             {
                 return;
@@ -97,7 +92,7 @@ namespace ShapeCrawler
                     {
                         aTblCell.VerticalMerge = new BooleanValue(true);
 
-                        MergeParagraphs(minRowIndex, minColIndex, aTblCell);
+                        this.MergeParagraphs(minRowIndex, minColIndex, aTblCell);
                     }
                 }
             }
@@ -107,7 +102,7 @@ namespace ShapeCrawler
             {
                 int? gridSpan = ((SCTableCell) Rows[0].Cells[colIdx]).ATableCell.GridSpan?.Value;
                 if (gridSpan > 1 && Rows.All(row =>
-                    ((SCTableCell) row.Cells[colIdx]).ATableCell.GridSpan?.Value == gridSpan))
+                    ((SCTableCell)row.Cells[colIdx]).ATableCell.GridSpan?.Value == gridSpan))
                 {
                     int deleteColumnCount = gridSpan.Value - 1;
 
