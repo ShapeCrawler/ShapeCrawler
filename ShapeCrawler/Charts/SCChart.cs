@@ -98,7 +98,7 @@ namespace ShapeCrawler.Charts
             C.ChartReference cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>()
                 .GetFirstChild<C.ChartReference>();
 
-            var slide = this.ParentSlideLayoutInternal;
+            var slide = this.Slide;
             this.SdkChartPart = (ChartPart)slide.SlidePart.GetPartById(cChartReference.Id);
 
             C.PlotArea cPlotArea = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea;

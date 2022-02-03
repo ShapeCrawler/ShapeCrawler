@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using ClosedXML.Excel;
@@ -17,7 +18,7 @@ namespace ShapeCrawler.Tests.Unit
 {
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
-    public class ChartTests : IClassFixture<PresentationFixture>
+    public class ChartTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     {
         private readonly PresentationFixture _fixture;
 
@@ -114,22 +115,46 @@ namespace ShapeCrawler.Tests.Unit
             hasTitleCase6.Should().BeFalse();
         }
         
-        [Fact]
-        public void SeriesCollection_Count_returns_number_of_series()
+        [Theory]
+        [MemberData(nameof(TestCasesSeriesCollectionCount))]
+        public void SeriesCollection_Count_returns_number_of_series(IChart chart, int expectedSeriesCount)
         {
-            // Arrange
-            IChart chartCase1 = (IChart)_fixture.Pre013.Slides[0].Shapes.First(sp => sp.Id == 5);
-            IChart chartCase2 = (IChart)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7);
-            
             // Act
-            int seriesCountCase1 = chartCase1.SeriesCollection.Count;
-            int seriesCountCase2 = chartCase2.SeriesCollection.Count;
+            int seriesCount = chart.SeriesCollection.Count;
 
             // Assert
-            seriesCountCase1.Should().Be(3);
-            seriesCountCase2.Should().Be(1);
+            Assert.Equal(expectedSeriesCount, seriesCount);
         }
-        
+
+        public static IEnumerable<object[]> TestCasesSeriesCollectionCount()
+        {
+            var pptxStream = GetPptxStream("013.pptx");
+            var presentation = SCPresentation.Open(pptxStream, false);
+            IChart chart = (IChart) presentation.Slides[0].Shapes.First(sp => sp.Id == 5);
+            yield return new object[] {chart, 3};
+
+            pptxStream = GetPptxStream("009_table.pptx");
+            presentation = SCPresentation.Open(pptxStream, false);
+            chart = (IChart) presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
+            yield return new object[] {chart, 1};
+        }
+
+        [Fact]
+        public void SeriesCollection_Series_Points_returns_chart_point_collection()
+        {
+            // Arrange
+            var pptxStream = GetPptxStream("charts-case001.pptx");
+            var presentation = SCPresentation.Open(pptxStream, false);
+            var chart = (IChart) presentation.Slides[0].Shapes.First(shape => shape.Name == "chart");
+            var series = chart.SeriesCollection[0]; 
+            
+            // Act
+            var chartPoints = series.Points;
+            
+            // Assert
+            chartPoints.Should().NotBeEmpty();
+        }
+            
         [Fact]
         public void CategoryName_GetterReturnsChartCategoryName()
         {

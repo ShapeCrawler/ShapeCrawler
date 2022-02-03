@@ -17,7 +17,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Copyright>MIT</Copyright>
     <LangVersion>9</LangVersion>
     <ApplicationIcon>logo.ico</ApplicationIcon>
-    <PackageReleaseNotes>- Added "Shring text on overflow" support for ITextBox.Text</PackageReleaseNotes>
+    <PackageReleaseNotes>- Added support for Connection shape which presents Lines.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
@@ -26,10 +26,10 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <nullable>enable</nullable>
-    <AssemblyVersion>0.26.0.0</AssemblyVersion>
-    <FileVersion>0.26.0.0</FileVersion>
+    <AssemblyVersion>0.27.0.0</AssemblyVersion>
+    <FileVersion>0.27.0.0</FileVersion>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-    <PackageVersion>0.26.0</PackageVersion>
+    <PackageVersion>0.27.0</PackageVersion>
     <Title>ShapeCrawler</Title>
     <Configurations>Debug;Release;Test</Configurations>
     <Platforms>AnyCPU</Platforms>

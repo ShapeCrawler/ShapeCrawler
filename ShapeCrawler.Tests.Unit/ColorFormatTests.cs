@@ -22,7 +22,7 @@ namespace ShapeCrawler.Tests.Unit
 #if DEBUG
         [Theory(Skip = "In Progress")]
         [MemberData(nameof(TestCasesColorSetter))]
-        public void Color_SetterSetsGreenColorForFont_WhenGreenIsSpecified(SCPresentation presentation, SlideElementQuery portionQuery)
+        public void Color_SetterSetsGreenColorForFont_WhenGreenIsSpecified(IPresentation presentation, SlideElementQuery portionQuery)
         {
             // Arrange
             Color greenColor = ColorTranslator.FromHtml("#008000");
@@ -44,28 +44,28 @@ namespace ShapeCrawler.Tests.Unit
 
         public static IEnumerable<object[]> TestCasesColorSetter()
         {
-            SCPresentation presentationCase1 = SCPresentation.Open(Resources._020, true);
+            IPresentation presentationCase1 = SCPresentation.Open(Resources._020, true);
             SlideElementQuery portionRequestCase1 = new();
             portionRequestCase1.SlideIndex = 0;
             portionRequestCase1.ShapeId = 2;
             portionRequestCase1.ParagraphIndex = 0;
             portionRequestCase1.PortionIndex = 0;
 
-            SCPresentation presentationCase2 = SCPresentation.Open(Resources._020, true);
+            IPresentation presentationCase2 = SCPresentation.Open(Resources._020, true);
             SlideElementQuery portionRequestCase2 = new();
             portionRequestCase2.SlideIndex = 0;
             portionRequestCase2.ShapeId = 3;
             portionRequestCase2.ParagraphIndex = 0;
             portionRequestCase2.PortionIndex = 0;
 
-            SCPresentation presentationCase3 = SCPresentation.Open(Resources._001, true);
+            IPresentation presentationCase3 = SCPresentation.Open(Resources._001, true);
             SlideElementQuery portionRequestCase3 = new();
             portionRequestCase3.SlideIndex = 2;
             portionRequestCase3.ShapeId = 4;
             portionRequestCase3.ParagraphIndex = 0;
             portionRequestCase3.PortionIndex = 0;
 
-            SCPresentation presentationCase4 = SCPresentation.Open(Resources._001, true);
+            IPresentation presentationCase4 = SCPresentation.Open(Resources._001, true);
             SlideElementQuery portionRequestCase4 = new();
             portionRequestCase4.SlideIndex = 4;
             portionRequestCase4.ShapeId = 5;

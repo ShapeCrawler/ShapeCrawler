@@ -49,5 +49,25 @@ namespace ShapeCrawler.Exceptions
                 throw new ShapeCrawlerException(userMessage, ex);
             }
         }
+
+        internal static void Execute<T>(Func<T> func, out T result)
+        {
+            try
+            {
+                result = func.Invoke();
+            }
+            catch (Exception ex)
+            {
+                var messageBuilder = new StringBuilder();
+                messageBuilder.AppendLine(ex.ToString());
+                File.WriteAllText(LogFilePath, messageBuilder.ToString());
+
+                var userMessage = $@"An error occurred. The full error message has been written to ""{LogFilePath}"" log file. This should not happen, " +
+                                  "please report this log content as an issue on GitHub https://github.com/ShapeCrawler/ShapeCrawler/issues). " +
+                                  "We will fix it.";
+
+                throw new ShapeCrawlerException(userMessage, ex);
+            }
+        }
     }
 }

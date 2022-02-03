@@ -1,7 +1,19 @@
-﻿namespace ShapeCrawler.Shapes
+﻿using DocumentFormat.OpenXml;
+
+namespace ShapeCrawler.Shapes
 {
-    public interface IConnectionShape
+    /// <summary>
+    ///     Represents a connection shape.
+    /// </summary>
+    public interface IConnectionShape : IShape
     {
-        
+    }
+
+    internal class SCConnectionShape : SlideShape, IConnectionShape
+    {
+        public SCConnectionShape(OpenXmlCompositeElement childOfpShapeTree, SCSlide slide)
+            : base(childOfpShapeTree, slide)
+        {
+        }
     }
 }

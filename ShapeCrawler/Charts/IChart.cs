@@ -30,6 +30,11 @@ namespace ShapeCrawler
         bool HasCategories { get; }
 
         /// <summary>
+        ///     Gets category collection. Returns null if the chart type doesn't have categories.
+        /// </summary>
+        public ICategoryCollection Categories { get; }
+
+        /// <summary>
         ///     Gets collection of data series.
         /// </summary>
         ISeriesCollection SeriesCollection { get; }

@@ -5,7 +5,6 @@ namespace ShapeCrawler.Charts
 {
     public interface ILineChart : IChart
     {
-        public ICategoryCollection Categories { get; }
     }
 
     internal class SCLineChart : SCChart, ILineChart

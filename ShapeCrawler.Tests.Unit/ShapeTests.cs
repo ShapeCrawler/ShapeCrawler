@@ -318,7 +318,7 @@ namespace ShapeCrawler.Tests.Unit
         public void GeometryType_returns_shape_geometry_type(IShape shape, GeometryType expectedGeometryType)
         {
             // Assert
-            shape.GeometryType.Should().BeEquivalentTo(expectedGeometryType);
+            shape.GeometryType.Should().Be(expectedGeometryType);
         }
 
         public static IEnumerable<object[]> GeometryTypeTestCases()

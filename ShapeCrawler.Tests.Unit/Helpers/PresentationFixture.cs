@@ -2,41 +2,41 @@ namespace ShapeCrawler.Tests.Unit.Helpers
 {
     public class PresentationFixture
     {
-        public SCPresentation Pre001 { get; }
-        public SCPresentation Pre002 { get; }
-        public SCPresentation Pre003 { get; }
-        public SCPresentation Pre004 { get; }
-        public SCPresentation Pre006 { get; }
-        public SCPresentation Pre008 { get; }
-        public SCPresentation Pre009 { get; }
-        public SCPresentation Pre010 { get; }
-        public SCPresentation Pre011 { get; }
-        public SCPresentation Pre012 { get; }
-        public SCPresentation Pre013 { get; }
-        public SCPresentation Pre014 { get; }
-        public SCPresentation Pre015 { get; }
-        public SCPresentation Pre016 { get; }
-        public SCPresentation Pre017 { get; }
-        public SCPresentation Pre018 { get; }
-        public SCPresentation Pre019 { get; }
-        public SCPresentation Pre020 { get; }
-        public SCPresentation Pre021 { get; }
-        public SCPresentation Pre024 { get; }
-        public SCPresentation Pre025 { get; }
-        public SCPresentation Pre026 { get; }
-        public SCPresentation Pre028 { get; }
-        public SCPresentation Pre029 { get; }
-        public SCPresentation Pre030 { get; }
-        public SCPresentation Pre031 { get; }
-        public SCPresentation Pre032 { get; }
-        public SCPresentation Pre033 { get; }
-        public SCPresentation Pre034 { get; }
-        public SCPresentation Pre035 { get; }
-        public SCPresentation Pre036 { get; }
-        public SCPresentation Pre037 { get; }
-        public SCPresentation Pre038 { get; }
-        public SCPresentation Pre039 { get; }
-        public SCPresentation Pre040 { get; }
+        public IPresentation Pre001 { get; }
+        public IPresentation Pre002 { get; }
+        public IPresentation Pre003 { get; }
+        public IPresentation Pre004 { get; }
+        public IPresentation Pre006 { get; }
+        public IPresentation Pre008 { get; }
+        public IPresentation Pre009 { get; }
+        public IPresentation Pre010 { get; }
+        public IPresentation Pre011 { get; }
+        public IPresentation Pre012 { get; }
+        public IPresentation Pre013 { get; }
+        public IPresentation Pre014 { get; }
+        public IPresentation Pre015 { get; }
+        public IPresentation Pre016 { get; }
+        public IPresentation Pre017 { get; }
+        public IPresentation Pre018 { get; }
+        public IPresentation Pre019 { get; }
+        public IPresentation Pre020 { get; }
+        public IPresentation Pre021 { get; }
+        public IPresentation Pre024 { get; }
+        public IPresentation Pre025 { get; }
+        public IPresentation Pre026 { get; }
+        public IPresentation Pre028 { get; }
+        public IPresentation Pre029 { get; }
+        public IPresentation Pre030 { get; }
+        public IPresentation Pre031 { get; }
+        public IPresentation Pre032 { get; }
+        public IPresentation Pre033 { get; }
+        public IPresentation Pre034 { get; }
+        public IPresentation Pre035 { get; }
+        public IPresentation Pre036 { get; }
+        public IPresentation Pre037 { get; }
+        public IPresentation Pre038 { get; }
+        public IPresentation Pre039 { get; }
+        public IPresentation Pre040 { get; }
 
         public PresentationFixture()
         {
