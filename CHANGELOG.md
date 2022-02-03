@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.27.0 - 2022-02-03
+- Added support for Connection shape which presents Lines.
+
 ## Version 0.26.0 - 2022-01-03
 - Added "Shring text on overflow" support for `ITextBox.Text`.
 

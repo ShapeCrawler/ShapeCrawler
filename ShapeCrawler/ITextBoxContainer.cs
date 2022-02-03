@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMasters;
 
 namespace ShapeCrawler
 {
