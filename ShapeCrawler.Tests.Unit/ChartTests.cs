@@ -140,7 +140,7 @@ namespace ShapeCrawler.Tests.Unit
         }
 
         [Fact]
-        public void SeriesCollection_Series_Points_return_chart_point_collection()
+        public void SeriesCollection_Series_Points_returns_chart_point_collection()
         {
             // Arrange
             var pptxStream = GetPptxStream("charts-case001.pptx");

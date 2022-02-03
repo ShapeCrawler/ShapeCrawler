@@ -50,9 +50,21 @@ namespace ShapeCrawler.Charts
             // Get addresses
             var cFormula = cNumberReference.Formula!;
             var normalizedFormula = cFormula.Text.Replace("'", string.Empty).Replace("$", string.Empty);
-            var dataSheetName = Regex.Match(normalizedFormula, @".+(?=\!)").Value; // eg: Sheet1!A2:A5 -> Sheet1
-            var cellsRange = Regex.Match(normalizedFormula, @"(?<=\!).+").Value; // eg: Sheet1!A2:A5 -> A2:A5
-            var pointAddresses = new CellsRangeParser(cellsRange).GetCellAddresses();
+            var dataSheetName = Regex.Match(normalizedFormula, @"[^\(]+(?=\!)").Value; // eg: Sheet1!A2:A5 -> Sheet1
+            var addressMatches = Regex.Matches(normalizedFormula, @"[A-Z]\d+(:[A-Z]\d+)*"); // eg: Sheet1!A2:A5 -> A2:A5
+            var pointAddresses = new List<string>();
+            foreach (Match match in addressMatches)
+            {
+                if (match.Value.Contains(':'))
+                {
+                    var rangePointAddresses = new CellsRangeParser(match.Value).GetCellAddresses();
+                    pointAddresses.AddRange(rangePointAddresses);
+                }
+                else
+                {
+                    pointAddresses.Add(match.Value);
+                }
+            }
 
             // Get cached values
             List<C.NumericValue>? cNumericValues = null;

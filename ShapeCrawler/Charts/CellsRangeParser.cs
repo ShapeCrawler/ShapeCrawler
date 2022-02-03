@@ -6,6 +6,9 @@ namespace ShapeCrawler.Charts
 {
     internal class CellsRangeParser
     {
+        private readonly string cellRange;
+        private readonly LinkedList<string> tempList = new ();
+
         #region Constructors
 
         /// <summary>
@@ -29,13 +32,6 @@ namespace ShapeCrawler.Charts
 
             return this.tempList.ToList();
         }
-
-        #region Fields
-
-        private readonly string cellRange;
-        private readonly LinkedList<string> tempList = new LinkedList<string>();
-
-        #endregion Fields
 
         #region Private Methods
 
@@ -90,7 +86,7 @@ namespace ShapeCrawler.Charts
 
         private int GetDigit(int startIndex)
         {
-            IEnumerable<char> digitChars = this.cellRange.Substring(startIndex).TakeWhile(char.IsDigit);
+            var digitChars = this.cellRange.Substring(startIndex).TakeWhile(char.IsDigit);
             return int.Parse(string.Concat(digitChars), CultureInfo.CurrentCulture);
         }
 
