@@ -6,13 +6,11 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using ShapeCrawler.Audio;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Factories;
 using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
@@ -59,16 +57,20 @@ namespace ShapeCrawler.Collections
 
             var pShapeTree = slidePart.Slide.CommonSlideData.ShapeTree;
             var shapes = new List<IShape>(pShapeTree.Count());
-            foreach (OpenXmlCompositeElement shapeTreesChildElement in pShapeTree.OfType<OpenXmlCompositeElement>())
+            foreach (var childElementOfShapeTree in pShapeTree.OfType<OpenXmlCompositeElement>())
             {
                 IShape shape;
-                if (shapeTreesChildElement is P.GroupShape pGroupShape)
+                if (childElementOfShapeTree is P.GroupShape pGroupShape)
                 {
                     shape = new SlideGroupShape(pGroupShape, slide, null);
                 }
+                else if (childElementOfShapeTree is P.ConnectionShape)
+                {
+                    shape = new SCConnectionShape(childElementOfShapeTree, slide);
+                }
                 else
                 {
-                    shape = autoShapeCreator.Create(shapeTreesChildElement, slide, null);
+                    shape = autoShapeCreator.Create(childElementOfShapeTree, slide, null);
                 }
 
                 if (shape != null)

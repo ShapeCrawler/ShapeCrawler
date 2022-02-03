@@ -153,7 +153,7 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             int newFontSize = 28;
             var savedPreStream = new MemoryStream();
-            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
+            IPresentation presentation = SCPresentation.Open(Resources._001, true);
             IPortion portion = GetPortion(presentation);
             int oldFontSize = portion.Font.Size;
 
@@ -245,7 +245,7 @@ namespace ShapeCrawler.Tests.Unit
 
         [Theory]
         [MemberData(nameof(TestCasesIsBold))]
-        public void IsBold_Setter_AddsBoldForPlaceholderTextFont(SCPresentation presentation, SlideElementQuery portionRequest)
+        public void IsBold_Setter_AddsBoldForPlaceholderTextFont(IPresentation presentation, SlideElementQuery portionRequest)
         {
             // Arrange
             MemoryStream mStream = new ();
@@ -265,14 +265,14 @@ namespace ShapeCrawler.Tests.Unit
 
         public static IEnumerable<object[]> TestCasesIsBold()
         {
-            SCPresentation presentationCase1 = SCPresentation.Open(Resources._020, true);
+            IPresentation presentationCase1 = SCPresentation.Open(Resources._020, true);
             SlideElementQuery portionRequestCase1 = new();
             portionRequestCase1.SlideIndex = 2;
             portionRequestCase1.ShapeId = 7;
             portionRequestCase1.ParagraphIndex = 0;
             portionRequestCase1.PortionIndex = 0;
 
-            SCPresentation presentationCase2 = SCPresentation.Open(Resources._026, true);
+            IPresentation presentationCase2 = SCPresentation.Open(Resources._026, true);
             SlideElementQuery portionRequestCase2 = new();
             portionRequestCase2.SlideIndex = 0;
             portionRequestCase2.ShapeId = 128;
@@ -356,7 +356,7 @@ namespace ShapeCrawler.Tests.Unit
             portion.Font.IsItalic.Should().BeFalse();
         }
 
-        private static IPortion GetPortion(SCPresentation presentation)
+        private static IPortion GetPortion(IPresentation presentation)
         {
             IAutoShape autoShape = presentation.Slides[0].Shapes.First(sp => sp.Id == 4) as IAutoShape;
             IPortion portion = autoShape.TextBox.Paragraphs[0].Portions[0];

@@ -9,7 +9,6 @@ namespace ShapeCrawler.Charts
     /// </summary>
     public interface IBarChart : IChart
     {
-        public ICategoryCollection Categories { get; }
     }
     
     internal sealed class SCBarChart : SCChart, IBarChart

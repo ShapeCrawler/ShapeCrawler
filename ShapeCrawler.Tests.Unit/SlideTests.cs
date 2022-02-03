@@ -158,7 +158,7 @@ namespace ShapeCrawler.Tests.Unit
             isAudio.Should().BeTrue();
         }
         
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void Shapes_collection_contains_Connection_shape()
         {
             var pptxStream = GetPptxStream("001.pptx");
@@ -206,7 +206,7 @@ namespace ShapeCrawler.Tests.Unit
 
         public static IEnumerable<object[]> TestCasesShapesCount()
         {
-            SCPresentation presentation = SCPresentation.Open(Properties.Resources._009, false);
+            IPresentation presentation = SCPresentation.Open(Properties.Resources._009, false);
             
             ISlide slide = presentation.Slides[0];
             yield return new object[] { slide, 6 };

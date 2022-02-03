@@ -17,11 +17,19 @@ namespace ShapeCrawler
     /// </summary>
     public abstract class Shape : IRemovable // TODO: internal?
     {
-        protected Shape(OpenXmlCompositeElement pShapeTreesChild, IBaseSlide parentBaseSlide, Shape parentGroupShape)
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Shape"/> class for grouped shape.
+        /// </summary>
+        protected Shape(OpenXmlCompositeElement childOfpShapeTree, IBaseSlide baseSlide, Shape groupShape)
+            : this(childOfpShapeTree, baseSlide)
         {
-            this.PShapeTreesChild = pShapeTreesChild;
-            this.ParentBaseSlide = parentBaseSlide;
-            this.ParentGroupShape = parentGroupShape;
+            this.GroupShape = groupShape;
+        }
+
+        protected Shape(OpenXmlCompositeElement childOfpShapeTree, IBaseSlide baseSlide)
+        {
+            this.PShapeTreesChild = childOfpShapeTree;
+            this.ParentBaseSlide = baseSlide;
         }
 
         #region Public Properties
@@ -107,7 +115,7 @@ namespace ShapeCrawler
 
         private IBaseSlide ParentBaseSlide { get; }
 
-        private Shape? ParentGroupShape { get; }
+        private Shape? GroupShape { get; }
 
         #endregion Public Properties
 
@@ -149,7 +157,7 @@ namespace ShapeCrawler
 
         private void SetXCoordinate(int value)
         {
-            if (this.ParentGroupShape is not null)
+            if (this.GroupShape is not null)
             {
                 throw new RuntimeDefinedPropertyException("X coordinate of grouped shape cannot be changed.");
             }
@@ -176,9 +184,9 @@ namespace ShapeCrawler
 
             long xEmu = aOffset.X!;
 
-            if (this.ParentGroupShape is not null)
+            if (this.GroupShape is not null)
             {
-                var aTransformGroup = ((P.GroupShape)this.ParentGroupShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup;
+                var aTransformGroup = ((P.GroupShape)this.GroupShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup;
                 xEmu = xEmu - aTransformGroup!.ChildOffset!.X! + aTransformGroup!.Offset!.X!;
             }
 
@@ -187,7 +195,7 @@ namespace ShapeCrawler
 
         private void SetYCoordinate(long value)
         {
-            if (this.ParentGroupShape is not null)
+            if (this.GroupShape is not null)
             {
                 throw new RuntimeDefinedPropertyException("Y coordinate of grouped shape cannot be changed.");
             }
@@ -211,9 +219,9 @@ namespace ShapeCrawler
 
             var yEmu = aOffset.Y!;
 
-            if (this.ParentGroupShape is not null)
+            if (this.GroupShape is not null)
             {
-                var aTransformGroup = ((P.GroupShape)this.ParentGroupShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup!;
+                var aTransformGroup = ((P.GroupShape)this.GroupShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup!;
                 yEmu = yEmu - aTransformGroup.ChildOffset!.Y! + aTransformGroup!.Offset!.Y!;
             }
 

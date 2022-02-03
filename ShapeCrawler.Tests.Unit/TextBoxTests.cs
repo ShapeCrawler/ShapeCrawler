@@ -200,9 +200,9 @@ namespace ShapeCrawler.Tests.Unit
             var shape4Pr2BulletType = shape4Pr2Bullet.Type;
 
             // Assert
-            shape5Pr1BulletType.Should().BeEquivalentTo(BulletType.Numbered);
-            shape5Pr2BulletType.Should().BeEquivalentTo(BulletType.Picture);
-            shape4Pr2BulletType.Should().BeEquivalentTo(BulletType.Character);
+            shape5Pr1BulletType.Should().Be(BulletType.Numbered);
+            shape5Pr2BulletType.Should().Be(BulletType.Picture);
+            shape4Pr2BulletType.Should().Be(BulletType.Character);
         }
         
         [Fact]
@@ -286,7 +286,7 @@ namespace ShapeCrawler.Tests.Unit
                 ShapeId = 4,
                 ParagraphIndex = 1
             };
-            SCPresentation presentation;
+            IPresentation presentation;
             paragraphRequest.ParagraphIndex = 2;
 
             presentation = SCPresentation.Open(Resources._002, true);
@@ -367,7 +367,7 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             const string TEST_TEXT = "ParagraphsAdd";
             var mStream = new MemoryStream();
-            SCPresentation presentation = SCPresentation.Open(Resources._001, true);
+            IPresentation presentation = SCPresentation.Open(Resources._001, true);
             ITextBox textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 4)).TextBox;
             int originParagraphsCount = textBox.Paragraphs.Count;
 

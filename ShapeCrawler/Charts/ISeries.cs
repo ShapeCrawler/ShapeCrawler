@@ -46,7 +46,14 @@ namespace ShapeCrawler.Charts
 
         public ChartType Type { get; }
 
-        public IChartPointCollection Points => ChartPointCollection.Create(this.parentChart, this.seriesXmlElement);
+        public IChartPointCollection Points
+        {
+            get
+            {
+                ErrorHandler.Execute(() => ChartPointCollection.Create(this.parentChart, this.seriesXmlElement), out var result);
+                return result;
+            }
+        }
 
         public bool HasName => this.name.Value != null;
 
