@@ -27,14 +27,13 @@ namespace ShapeCrawler.Charts
 
         internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide parentSlideInternal)
             : base(pGraphicFrame, parentSlideInternal, null)
-        { 
+        {
             this.pGraphicFrame = pGraphicFrame;
             this.firstSeries = new Lazy<OpenXmlElement>(this.GetFirstSeries);
             this.xValues = new Lazy<LibraryCollection<double>>(this.GetXValues);
             this.seriesCollection = new Lazy<SeriesCollection>(() => Collections.SeriesCollection.Create(this, this.cXCharts));
             this.categories = new Lazy<ICategoryCollection>(() => CategoryCollection.Create(this, this.firstSeries.Value, this.Type));
             this.chartType = new Lazy<ChartType>(this.GetChartType);
-            this.ChartWorkbook = new ChartWorkbook(this);
 
             this.Init(); // TODO: convert to lazy loading
         }
@@ -61,7 +60,7 @@ namespace ShapeCrawler.Charts
             }
         }
 
-        public bool HasCategories => categories.Value != null;
+        public bool HasCategories => this.categories.Value != null;
 
         public ISeriesCollection SeriesCollection => this.seriesCollection.Value;
 
@@ -88,9 +87,9 @@ namespace ShapeCrawler.Charts
 
         #endregion Public Properties
 
-        internal ChartWorkbook ChartWorkbook { get; }
+        internal ChartWorkbook? ChartWorkbook { get; set; }
 
-        internal ChartPart SdkChartPart { get; private set; }
+        internal ChartPart ChartPart { get; private set; }
 
         private void Init()
         {
@@ -99,10 +98,12 @@ namespace ShapeCrawler.Charts
                 .GetFirstChild<C.ChartReference>();
 
             var slide = this.Slide;
-            this.SdkChartPart = (ChartPart)slide.SlidePart.GetPartById(cChartReference.Id);
+            this.ChartPart = (ChartPart)slide.SlidePart.GetPartById(cChartReference.Id);
 
-            C.PlotArea cPlotArea = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea;
+            C.PlotArea cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea;
             this.cXCharts = cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
+
+            this.ChartWorkbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartWorkbook(this, this.ChartPart.EmbeddedPackagePart) : null;
         }
 
         private ChartType GetChartType()
@@ -120,7 +121,7 @@ namespace ShapeCrawler.Charts
 
         private string GetTitleOrDefault()
         {
-            C.Title cTitle = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>().Title;
+            C.Title cTitle = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>().Title;
             if (cTitle == null)
             {
                 // chart has not title

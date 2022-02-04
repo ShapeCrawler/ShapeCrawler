@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Charts;
@@ -86,28 +87,52 @@ namespace ShapeCrawler.Tests.Unit
             seriesPointValueCase5.Should().Be(3.2);
         }
 
-        [Fact]
-        public void Value_Setter_updates_chart_point()
+        [Theory]
+        [MemberData(nameof(TestCasesValueSetter))]
+        public void Value_Setter_updates_chart_point(string filename, int slideNumber, string shapeName)
         {
             // Arrange
-            var chart = this.GetShape<IChart>("024_chart.pptx", 3, 5);
+            var pptxStream = GetPptxStream(filename);
+            var presentation = SCPresentation.Open(pptxStream, true);
+            var chart = presentation.Slides[--slideNumber].Shapes.GetByName<IChart>(shapeName);
             var point = chart.SeriesCollection[0].Points[0];
-            const int newValue = 6;
+            const int newChartPointValue = 6;
 
             // Act
-            point.Value = newValue;
+            point.Value = newChartPointValue;
 
             // Assert
-            point.Value.Should().Be(newValue);
+            point.Value.Should().Be(newChartPointValue);
             
             var stream = new MemoryStream();
-            chart.ParentSlide.ParentPresentation.SaveAs(stream);
-            chart = this.GetShape<IChart>(stream, 3, 5);
-            var savedChartPoint = chart.SeriesCollection[0].Points[0];
-            savedChartPoint.Value.Should().Be(newValue);
+            presentation.SaveAs(stream);
+            chart = presentation.Slides[slideNumber].Shapes.GetByName<IChart>(shapeName);
+            point = chart.SeriesCollection[0].Points[0];
+            point.Value.Should().Be(newChartPointValue);
+        }
 
-            var pointCellValue = this.GetCellValue<double>(chart.WorkbookByteArray, "B2");
-            pointCellValue.Should().Be(newValue);
+        public static IEnumerable<object[]> TestCasesValueSetter()
+        {
+            yield return new object[] {"024_chart.pptx", 3, "Chart 4"};
+            yield return new object[] {"009_table.pptx", 3, "Chart 5"};
+        }
+
+        [Fact]
+        public void Value_Setter_updates_chart_point_in_Embedded_excel_workbook()
+        {
+            // Arrange
+            var pptxStream = GetPptxStream("024_chart.pptx");
+            var presentation = SCPresentation.Open(pptxStream, true);
+            var chart = presentation.Slides[2].Shapes.GetById<IChart>(5);
+            var point = chart.SeriesCollection[0].Points[0];
+            const int newChartPointValue = 6;
+
+            // Act
+            point.Value = newChartPointValue;
+
+            // Assert
+            var pointCellValue = this.GetWorksheetCellValue<double>(chart.WorkbookByteArray, "B2");
+            pointCellValue.Should().Be(newChartPointValue);
         }
     }
 }

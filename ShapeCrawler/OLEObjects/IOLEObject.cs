@@ -1,6 +1,7 @@
 ﻿using ShapeCrawler.Shapes;
+// ReSharper disable CheckNamespace
 
-namespace ShapeCrawler.OLEObjects
+namespace ShapeCrawler
 {
     public interface IOLEObject : IShape
     {

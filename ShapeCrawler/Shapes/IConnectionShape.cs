@@ -1,6 +1,8 @@
 ﻿using DocumentFormat.OpenXml;
+using ShapeCrawler.Shapes;
+// ReSharper disable CheckNamespace
 
-namespace ShapeCrawler.Shapes
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a connection shape.
