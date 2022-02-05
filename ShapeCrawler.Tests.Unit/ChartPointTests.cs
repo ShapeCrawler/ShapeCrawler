@@ -115,6 +115,9 @@ namespace ShapeCrawler.Tests.Unit
         {
             yield return new object[] {"024_chart.pptx", 3, "Chart 4"};
             yield return new object[] {"009_table.pptx", 3, "Chart 5"};
+            yield return new object[] {"charts-case001.pptx", 1, "chart"};
+            yield return new object[] {"002.pptx", 1, "Chart 8"};
+            yield return new object[] {"021.pptx", 2, "Chart 3"};
         }
 
         [Fact]
