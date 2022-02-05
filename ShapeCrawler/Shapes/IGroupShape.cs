@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using ShapeCrawler.Shapes;
+// ReSharper disable CheckNamespace
 
-namespace ShapeCrawler.Shapes
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a group shape on a slide.

@@ -2,6 +2,9 @@
 
 namespace ShapeCrawler.Video
 {
+    /// <summary>
+    ///     Represents a shape containing video content.
+    /// </summary>
     public interface IVideoShape : IShape
     {
         /// <summary>

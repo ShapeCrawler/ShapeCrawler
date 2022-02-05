@@ -11,11 +11,15 @@ namespace ShapeCrawler.Charts
         private readonly SCChart chart;
         private readonly Lazy<SpreadsheetDocument> spreadsheetDocument;
         private Stream embeddedPackagePartStream;
+
+        private EmbeddedPackagePart embeddedPackagePart;
+
         private bool closed;
 
-        internal ChartWorkbook(SCChart chart)
+        internal ChartWorkbook(SCChart chart, EmbeddedPackagePart embeddedPackagePart)
         {
             this.chart = chart;
+            this.embeddedPackagePart = embeddedPackagePart;
             this.spreadsheetDocument = new Lazy<SpreadsheetDocument>(this.GetSpreadsheetDocument);
         }
 
@@ -46,7 +50,7 @@ namespace ShapeCrawler.Charts
 
         private SpreadsheetDocument GetSpreadsheetDocument()
         {
-            this.embeddedPackagePartStream = this.chart.SdkChartPart.EmbeddedPackagePart.GetStream();
+            this.embeddedPackagePartStream = this.embeddedPackagePart.GetStream();
             var spreadsheetDocument = SpreadsheetDocument.Open(this.embeddedPackagePartStream, this.chart.PresentationInternal.Editable);
             this.chart.PresentationInternal.ChartWorkbooks.Add(this);
 

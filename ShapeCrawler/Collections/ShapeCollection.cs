@@ -417,6 +417,19 @@ namespace ShapeCrawler.Collections
             return new VideoShape(this.slide, this.shapeTree);
         }
 
+        public T GetById<T>(int shapeId)
+            where T : IShape
+        {
+            var shape = this.CollectionItems.First(shape => shape.Id == shapeId);
+            return (T)shape;
+        }
+
+        public T GetByName<T>(string shapeName)
+        {
+            var shape = this.CollectionItems.First(shape => shape.Name == shapeName);
+            return (T)shape;
+        }
+
         public Shape? GetReferencedShapeOrDefault(P.PlaceholderShape inpPPlaceholderShape)
         {
             var collectionShapes = this.CollectionItems.Where(sp => sp.Placeholder != null).OfType<Shape>();

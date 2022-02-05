@@ -35,5 +35,10 @@ namespace ShapeCrawler
         /// <param name="yPixels">The Y coordinate for the left side of the shape.</param>
         /// <param name="videoStream">Video stream data.</param>
         IVideoShape AddNewVideo(int xPixel, int yPixels, Stream videoStream);
+
+        T GetById<T>(int shapeId)
+            where T : IShape;
+
+        T GetByName<T>(string shapeName);
     }
 }

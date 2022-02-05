@@ -36,7 +36,7 @@ namespace ShapeCrawler.Tests.Unit
             return (IAutoShape) shape;
         }
 
-        protected T GetCellValue<T>(byte[] workbookByteArray, string cellAddress)
+        protected T GetWorksheetCellValue<T>(byte[] workbookByteArray, string cellAddress)
         {
             var stream = new MemoryStream(workbookByteArray);
             var xlWorkbook = new XLWorkbook(stream);
