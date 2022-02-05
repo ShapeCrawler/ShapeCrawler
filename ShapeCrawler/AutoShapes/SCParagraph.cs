@@ -29,8 +29,6 @@ namespace ShapeCrawler
             this.portions = new ResettableLazy<PortionCollection>(() => new PortionCollection(this.AParagraph, this));
         }
 
-        #region Public Properties
-
         public bool IsRemoved { get; set; }
 
         public string Text
@@ -43,18 +41,10 @@ namespace ShapeCrawler
 
         public Bullet Bullet => this.bullet.Value;
 
-        #endregion Public Properties
-
-        internal void ThrowIfRemoved()
+        public TextAlignment Alignment
         {
-            if (this.IsRemoved)
-            {
-                throw new ElementIsRemovedException("Paragraph was removed.");
-            }
-            else
-            {
-                this.ParentTextBox.ThrowIfRemoved();
-            }
+            get => this.GetAlignment();
+            set => this.UpdateAlignment(value);
         }
 
         internal SCTextBox ParentTextBox { get; }
@@ -68,6 +58,18 @@ namespace ShapeCrawler
             foreach (var portion in this.Portions)
             {
                 portion.Font.Size = fontSize;
+            }
+        }
+
+        internal void ThrowIfRemoved()
+        {
+            if (this.IsRemoved)
+            {
+                throw new ElementIsRemovedException("Paragraph was removed.");
+            }
+            else
+            {
+                this.ParentTextBox.ThrowIfRemoved();
             }
         }
 
@@ -130,6 +132,23 @@ namespace ShapeCrawler
             }
 
             this.portions.Reset();
+        }
+
+        private void UpdateAlignment(TextAlignment value)
+        {
+            throw new NotImplementedException();
+        }
+
+        private TextAlignment GetAlignment()
+        {
+            var algnAttribute = this.AParagraph.ParagraphProperties?.Alignment!;
+            return algnAttribute.Value switch
+            {
+                A.TextAlignmentTypeValues.Center => TextAlignment.Center,
+                A.TextAlignmentTypeValues.Right => TextAlignment.Right,
+                A.TextAlignmentTypeValues.Justified => TextAlignment.Justify,
+                _ => TextAlignment.Left
+            };
         }
 
         #endregion Private Methods

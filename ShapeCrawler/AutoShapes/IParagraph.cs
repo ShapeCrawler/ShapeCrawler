@@ -23,5 +23,10 @@ namespace ShapeCrawler
         ///     Gets paragraph bullet. Returns <c>NULL</c> if bullet does not exist.
         /// </summary>
         Bullet Bullet { get; }
+
+        /// <summary>
+        ///     Gets or sets the text alignment.
+        /// </summary>
+        TextAlignment Alignment { get; set; }
     }
 }

@@ -204,6 +204,30 @@ namespace ShapeCrawler.Tests.Unit
             shape5Pr2BulletType.Should().Be(BulletType.Picture);
             shape4Pr2BulletType.Should().Be(BulletType.Character);
         }
+
+        [Fact]
+        public void Paragraph_Aligment_Getter_returns_text_aligment()
+        {
+            // Arrange
+            var originalPptxStream = GetPptxStream("001.pptx");
+            var presentation = SCPresentation.Open(originalPptxStream, false);
+            var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
+            var paragraph = autoShape.TextBox.Paragraphs[0];
+
+            // Act
+            var textAligment = paragraph.Alignment;
+            
+            // Assert
+            textAligment.Should().Be(TextAlignment.Center);
+
+            var modifiedPptxStream = new MemoryStream();
+            presentation.SaveAs(modifiedPptxStream);
+            presentation = SCPresentation.Open(modifiedPptxStream, false);
+            autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
+            paragraph = autoShape.TextBox.Paragraphs[0];
+            textAligment = paragraph.Alignment;
+            textAligment.Should().Be(TextAlignment.Center);
+        }
         
         [Fact]
         public void Paragraph_Bullet_Type_Getter_returns_None_value_When_paragraph_doesnt_have_bullet()
