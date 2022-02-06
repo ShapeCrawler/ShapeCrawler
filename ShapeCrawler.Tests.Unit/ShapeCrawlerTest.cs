@@ -55,6 +55,14 @@ namespace ShapeCrawler.Tests.Unit
 
             return mStream;
         }
+        
+        protected static IPresentation SaveAndOpenPresentation(IPresentation presentation)
+        {
+            var stream = new MemoryStream();
+            presentation.SaveAs(stream);
+            
+            return SCPresentation.Open(stream, false);
+        }
 
         private IPresentation GetPresentationFromAssembly(string fileName)
         {
