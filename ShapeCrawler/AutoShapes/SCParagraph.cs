@@ -137,6 +137,11 @@ namespace ShapeCrawler
 
         private void UpdateAlignment(TextAlignment alignmentValue)
         {
+            if (this.ParentTextBox.ParentTextBoxContainer.Placeholder != null)
+            {
+                throw new PlaceholderCannotBeChangedException();
+            }
+
             A.TextAlignmentTypeValues sdkAlignmentValue = alignmentValue switch
             {
                 TextAlignment.Left => A.TextAlignmentTypeValues.Left,
