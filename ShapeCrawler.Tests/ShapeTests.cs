@@ -7,15 +7,15 @@ using FluentAssertions;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Tests.Unit.Helpers;
-using ShapeCrawler.Tests.Unit.Properties;
+using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.Tests.Properties;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations
 // ReSharper disable InconsistentNaming
 // ReSharper disable TooManyChainedReferences
 
-namespace ShapeCrawler.Tests.Unit
+namespace ShapeCrawler.Tests
 {
     public class ShapeTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     {

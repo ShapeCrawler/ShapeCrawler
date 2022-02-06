@@ -6,10 +6,10 @@ using FluentAssertions;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Statics;
-using ShapeCrawler.Tests.Unit.Helpers;
+using ShapeCrawler.Tests.Helpers;
 using Xunit;
 
-namespace ShapeCrawler.Tests.Unit
+namespace ShapeCrawler.Tests
 {
     public class PresentationTests : IClassFixture<PresentationFixture>
     {

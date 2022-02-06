@@ -6,7 +6,7 @@ using System.Xml;
 using System.Xml.Linq;
 using SharpCompress.Common;
 
-namespace ShapeCrawler.Tests.Unit.Helpers
+namespace ShapeCrawler.Tests.Helpers
 {
     public class PptxValidator
     {

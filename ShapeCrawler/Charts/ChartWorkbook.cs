@@ -47,6 +47,15 @@ namespace ShapeCrawler.Charts
 
             return sheetXCells.First(xCell => xCell.CellReference == cellAddress);
         }
+        
+        internal X.Cell? GetXCellOrDefault(string sheetName, string cellAddress)
+        {
+            var chartSheet = this.WorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
+            var worksheetPart = (WorksheetPart)this.WorkbookPart.GetPartById(chartSheet.Id!);
+            var sheetXCells = worksheetPart.Worksheet.Descendants<X.Cell>();
+
+            return sheetXCells.FirstOrDefault(xCell => xCell.CellReference == cellAddress);
+        }
 
         private SpreadsheetDocument GetSpreadsheetDocument()
         {

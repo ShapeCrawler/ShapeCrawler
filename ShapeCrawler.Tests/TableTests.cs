@@ -6,11 +6,11 @@ using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Tables;
-using ShapeCrawler.Tests.Unit.Helpers;
-using ShapeCrawler.Tests.Unit.Properties;
+using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.Tests.Properties;
 using Xunit;
 
-namespace ShapeCrawler.Tests.Unit
+namespace ShapeCrawler.Tests
 {
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]

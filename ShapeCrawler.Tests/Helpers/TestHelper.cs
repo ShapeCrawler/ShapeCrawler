@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace ShapeCrawler.Tests.Unit.Helpers
+namespace ShapeCrawler.Tests.Helpers
 {
     public static class TestHelper
     {

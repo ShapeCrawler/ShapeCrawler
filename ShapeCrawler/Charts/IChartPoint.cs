@@ -84,7 +84,7 @@ namespace ShapeCrawler.Charts
                 return;
             }
             
-            var xCell = this.parentChart.ChartWorkbook.GetXCell(this.sheetName, this.address);
+            var xCell = this.parentChart.ChartWorkbook.GetXCellOrDefault(this.sheetName, this.address);
             xCell.DataType = new EnumValue<X.CellValues>(X.CellValues.Number);
             xCell.CellValue = new X.CellValue(value);
         }
