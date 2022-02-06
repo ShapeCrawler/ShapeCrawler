@@ -55,7 +55,7 @@ namespace ShapeCrawler.Collections
             pictureHandler.Successor = chartGrFrameHandler;
             chartGrFrameHandler.Successor = tableGrFrameHandler;
 
-            var pShapeTree = slidePart.Slide.CommonSlideData.ShapeTree;
+            var pShapeTree = slidePart.Slide.CommonSlideData!.ShapeTree!;
             var shapes = new List<IShape>(pShapeTree.Count());
             foreach (var childElementOfShapeTree in pShapeTree.OfType<OpenXmlCompositeElement>())
             {
@@ -437,8 +437,8 @@ namespace ShapeCrawler.Collections
 
             bool IsEqual(Shape collectionShape)
             {
-                Placeholder placeholder = (Placeholder) collectionShape.Placeholder;
-                P.PlaceholderShape colPPlaceholderShape = placeholder.PPlaceholderShape;
+                var placeholder = (Placeholder)collectionShape.Placeholder;
+                var colPPlaceholderShape = placeholder.PPlaceholderShape;
 
                 if (inpPPlaceholderShape.Index != null && colPPlaceholderShape.Index != null &&
                     inpPPlaceholderShape.Index == colPPlaceholderShape.Index)

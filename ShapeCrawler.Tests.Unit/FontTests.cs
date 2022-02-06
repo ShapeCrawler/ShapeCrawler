@@ -81,7 +81,7 @@ namespace ShapeCrawler.Tests.Unit
             Action action = () => paragraphPortion.Font.Name = "Time New Roman";
 
             // Assert
-            action.Should().Throw<PlaceholderCannotBeChangedException>();
+            action.Should().Throw<Exception>();
         }
 
         [Fact]

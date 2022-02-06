@@ -11,6 +11,11 @@
         Title,
 
         /// <summary>
+        ///     Centered Title.
+        /// </summary>
+        CenteredTitle,
+
+        /// <summary>
         ///     Body.
         /// </summary>
         Body,
