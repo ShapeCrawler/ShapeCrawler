@@ -19,6 +19,7 @@ namespace ShapeCrawler
     {
         private readonly Lazy<Bullet> bullet;
         private readonly ResettableLazy<PortionCollection> portions;
+        private TextAlignment? alignment;
 
         internal SCParagraph(A.Paragraph aParagraph, SCTextBox textBox)
         {
@@ -134,21 +135,67 @@ namespace ShapeCrawler
             this.portions.Reset();
         }
 
-        private void UpdateAlignment(TextAlignment value)
+        private void UpdateAlignment(TextAlignment alignmentValue)
         {
-            throw new NotImplementedException();
+            A.TextAlignmentTypeValues sdkAlignmentValue = alignmentValue switch
+            {
+                TextAlignment.Left => A.TextAlignmentTypeValues.Left,
+                TextAlignment.Center => A.TextAlignmentTypeValues.Center,
+                TextAlignment.Right => A.TextAlignmentTypeValues.Right,
+                TextAlignment.Justify => A.TextAlignmentTypeValues.Justified,
+                _ => throw new ArgumentOutOfRangeException(nameof(alignmentValue))
+            };
+
+            if (this.AParagraph.ParagraphProperties == null)
+            {
+                this.AParagraph.ParagraphProperties = new A.ParagraphProperties
+                {
+                    Alignment = new EnumValue<A.TextAlignmentTypeValues>(sdkAlignmentValue)
+                };
+            }
+            else
+            {
+                this.AParagraph.ParagraphProperties.Alignment = new EnumValue<A.TextAlignmentTypeValues>(sdkAlignmentValue);
+            }
+
+            this.alignment = alignmentValue;
         }
 
         private TextAlignment GetAlignment()
         {
+            if (this.alignment.HasValue)
+            {
+                return this.alignment.Value;
+            }
+
+            var placeholder = this.ParentTextBox.ParentTextBoxContainer.Placeholder;
+            if (placeholder is { Type: PlaceholderType.Title })
+            {
+                this.alignment = TextAlignment.Left;
+                return this.alignment.Value;
+            }
+
+            if (placeholder is { Type: PlaceholderType.CenteredTitle })
+            {
+                this.alignment = TextAlignment.Center;
+                return this.alignment.Value;
+            }
+
             var algnAttribute = this.AParagraph.ParagraphProperties?.Alignment!;
-            return algnAttribute.Value switch
+            if (algnAttribute == null)
+            {
+                return TextAlignment.Left;
+            }
+
+            this.alignment = algnAttribute.Value switch
             {
                 A.TextAlignmentTypeValues.Center => TextAlignment.Center,
                 A.TextAlignmentTypeValues.Right => TextAlignment.Right,
                 A.TextAlignmentTypeValues.Justified => TextAlignment.Justify,
                 _ => TextAlignment.Left
             };
+
+            return this.alignment.Value;
         }
 
         #endregion Private Methods

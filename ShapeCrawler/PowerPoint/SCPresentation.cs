@@ -90,11 +90,13 @@ namespace ShapeCrawler
             return new SCPresentation(stream, isEditable);
         }
 
+        /// <inheritdoc/>
         public void Save()
         {
             this.PresentationDocument.Save();
         }
 
+        /// <inheritdoc/>
         public void SaveAs(string filePath)
         {
             this.ChartWorkbooks.ForEach(cw => cw.Close()); // closes cached Excel documents
@@ -104,6 +106,7 @@ namespace ShapeCrawler
             this.PresentationDocument = savedDoc;
         }
 
+        /// <inheritdoc/>
         public void SaveAs(Stream stream)
         {
             this.ChartWorkbooks.ForEach(cw => cw.Close());
@@ -113,6 +116,7 @@ namespace ShapeCrawler
             this.PresentationDocument = savedDoc;
         }
 
+        /// <inheritdoc/>
         public void Close()
         {
             if (this.closed)

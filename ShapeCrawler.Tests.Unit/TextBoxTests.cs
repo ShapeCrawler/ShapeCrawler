@@ -205,30 +205,54 @@ namespace ShapeCrawler.Tests.Unit
             shape4Pr2BulletType.Should().Be(BulletType.Character);
         }
 
-        [Fact]
-        public void Paragraph_Aligment_Getter_returns_text_aligment()
+        [Theory]
+        [MemberData(nameof(TestCasesAlignmentGetter))]
+        public void Paragraph_Alignment_Getter_returns_text_aligment(IAutoShape autoShape, TextAlignment expectedAlignment)
         {
             // Arrange
-            var originalPptxStream = GetPptxStream("001.pptx");
-            var presentation = SCPresentation.Open(originalPptxStream, false);
-            var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
             var paragraph = autoShape.TextBox.Paragraphs[0];
 
             // Act
             var textAligment = paragraph.Alignment;
             
             // Assert
-            textAligment.Should().Be(TextAlignment.Center);
-
-            var modifiedPptxStream = new MemoryStream();
-            presentation.SaveAs(modifiedPptxStream);
-            presentation = SCPresentation.Open(modifiedPptxStream, false);
-            autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
-            paragraph = autoShape.TextBox.Paragraphs[0];
-            textAligment = paragraph.Alignment;
-            textAligment.Should().Be(TextAlignment.Center);
+            textAligment.Should().Be(expectedAlignment);
         }
-        
+
+        public static IEnumerable<object[]> TestCasesAlignmentGetter()
+        {
+            var pptxStream = GetPptxStream("001.pptx");
+            var presentation = SCPresentation.Open(pptxStream, false);
+            var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
+            yield return new object[] {autoShape, TextAlignment.Center};
+            
+            pptxStream = GetPptxStream("001.pptx");
+            presentation = SCPresentation.Open(pptxStream, false);
+            autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("Head 1");
+            yield return new object[] {autoShape, TextAlignment.Center};
+        }
+
+        [Fact]
+        public void Paragraph_Alignment_Setter_updates_text_aligment()
+        {
+            // Arrange
+            var pptxStream = GetPptxStream("001.pptx");
+            var originPresentation = SCPresentation.Open(pptxStream, true);
+            var autoShape = originPresentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
+            var paragraph = autoShape.TextBox.Paragraphs[0];
+
+            // Act
+            paragraph.Alignment = TextAlignment.Right;
+            
+            // Assert
+            paragraph.Alignment.Should().Be(TextAlignment.Right);
+
+            var modifiedPresentation = SaveAndOpenPresentation(originPresentation);
+            autoShape = originPresentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
+            paragraph = autoShape.TextBox.Paragraphs[0];
+            paragraph.Alignment.Should().Be(TextAlignment.Right);
+        }
+
         [Fact]
         public void Paragraph_Bullet_Type_Getter_returns_None_value_When_paragraph_doesnt_have_bullet()
         {
