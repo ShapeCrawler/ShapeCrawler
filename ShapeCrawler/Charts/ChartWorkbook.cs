@@ -1,6 +1,9 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
@@ -48,6 +51,15 @@ namespace ShapeCrawler.Charts
             return sheetXCells.First(xCell => xCell.CellReference == cellAddress);
         }
 
+        internal X.Cell? GetXCellOrDefault(string sheetName, string cellAddress)
+        {
+            var chartSheet = this.WorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
+            var worksheetPart = (WorksheetPart)this.WorkbookPart.GetPartById(chartSheet.Id!);
+            var sheetXCells = worksheetPart.Worksheet.Descendants<X.Cell>();
+
+            return sheetXCells.FirstOrDefault(xCell => xCell.CellReference == cellAddress);
+        }
+
         private SpreadsheetDocument GetSpreadsheetDocument()
         {
             this.embeddedPackagePartStream = this.embeddedPackagePart.GetStream();
@@ -63,6 +75,35 @@ namespace ShapeCrawler.Charts
             this.spreadsheetDocument.Value.Clone(mStream);
 
             return mStream.ToArray();
+        }
+
+        public void UpdateCell(string sheetName, string cellReference, double value)
+        {
+            var xCell = this.GetXCellOrDefault(sheetName, cellReference);
+            if (xCell != null)
+            {
+                xCell.DataType = new EnumValue<X.CellValues>(X.CellValues.Number);
+                xCell.CellValue = new X.CellValue(value);
+            }
+            else
+            {
+                var chartSheet = this.WorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
+                var worksheetPart = (WorksheetPart)this.WorkbookPart.GetPartById(chartSheet.Id!);
+                var worksheet = worksheetPart.Worksheet;
+                var sheetData = worksheet.Elements<X.SheetData>().First();
+                var rowIndexStr = Regex.Match(cellReference, @"\d+").Value;
+                var rowIndex = int.Parse(rowIndexStr, NumberStyles.Number, NumberFormatInfo.InvariantInfo);
+
+                var row = sheetData.Elements<X.Row>().First(r => r.RowIndex == rowIndex);
+                var newCell = new X.Cell
+                {
+                    CellReference = cellReference
+                };
+                newCell.DataType = new EnumValue<X.CellValues>(X.CellValues.Number);
+                newCell.CellValue = new X.CellValue(value);
+                X.Cell refCell = null;
+                row.InsertAt(newCell, 1);
+            }
         }
     }
 }

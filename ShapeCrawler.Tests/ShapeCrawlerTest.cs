@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using ClosedXML.Excel;
 
-namespace ShapeCrawler.Tests.Unit
+namespace ShapeCrawler.Tests
 {
     public abstract class ShapeCrawlerTest
     {

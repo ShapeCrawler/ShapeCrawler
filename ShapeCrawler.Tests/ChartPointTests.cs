@@ -3,12 +3,12 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Tests.Unit.Helpers;
+using ShapeCrawler.Tests.Helpers;
 using Xunit;
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable SuggestVarOrType_SimpleTypes
 
-namespace ShapeCrawler.Tests.Unit
+namespace ShapeCrawler.Tests
 {
     public class ChartPointTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     {
@@ -103,9 +103,8 @@ namespace ShapeCrawler.Tests.Unit
 
             // Assert
             point.Value.Should().Be(newChartPointValue);
-            
-            var stream = new MemoryStream();
-            presentation.SaveAs(stream);
+
+            presentation = SaveAndOpenPresentation(presentation);
             chart = presentation.Slides[slideNumber].Shapes.GetByName<IChart>(shapeName);
             point = chart.SeriesCollection[0].Points[0];
             point.Value.Should().Be(newChartPointValue);
@@ -116,6 +115,7 @@ namespace ShapeCrawler.Tests.Unit
             yield return new object[] {"024_chart.pptx", 3, "Chart 4"};
             yield return new object[] {"009_table.pptx", 3, "Chart 5"};
             yield return new object[] {"charts-case001.pptx", 1, "chart"};
+            yield return new object[] {"charts-case002.pptx", 1, "Chart 1"};
             yield return new object[] {"002.pptx", 1, "Chart 8"};
             yield return new object[] {"021.pptx", 2, "Chart 3"};
         }

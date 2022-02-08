@@ -3,7 +3,7 @@ using Xunit;
 
 // ReSharper disable TooManyDeclarations
 
-namespace ShapeCrawler.Tests.Unit
+namespace ShapeCrawler.Tests
 {
     /// <summary>
     /// Represents test for <see cref="PlaceholderLocationData"/> class APIs.

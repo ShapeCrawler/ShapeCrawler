@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Tests.Unit.Helpers;
+using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Video;
 using Xunit;
 
@@ -12,7 +12,7 @@ using Xunit;
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
 
-namespace ShapeCrawler.Tests.Unit
+namespace ShapeCrawler.Tests
 {
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     public class SlideTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>

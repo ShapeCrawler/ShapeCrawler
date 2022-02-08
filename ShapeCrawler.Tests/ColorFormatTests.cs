@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Tests.Unit.Helpers;
-using ShapeCrawler.Tests.Unit.Properties;
+using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.Tests.Properties;
 using Xunit;
 
-namespace ShapeCrawler.Tests.Unit
+namespace ShapeCrawler.Tests
 {
     public class ColorFormatTests : IClassFixture<PresentationFixture>
     {

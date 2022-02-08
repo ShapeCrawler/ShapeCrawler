@@ -1,4 +1,4 @@
-namespace ShapeCrawler.Tests.Unit.Helpers
+namespace ShapeCrawler.Tests.Helpers
 {
     public class SlideElementQuery
     {
