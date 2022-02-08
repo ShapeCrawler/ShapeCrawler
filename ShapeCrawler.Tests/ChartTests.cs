@@ -6,15 +6,15 @@ using ClosedXML.Excel;
 using FluentAssertions;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Tests.Unit.Helpers;
-using ShapeCrawler.Tests.Unit.Properties;
+using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.Tests.Properties;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations
 // ReSharper disable InconsistentNaming
 // ReSharper disable TooManyChainedReferences
 
-namespace ShapeCrawler.Tests.Unit
+namespace ShapeCrawler.Tests
 {
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
     [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]

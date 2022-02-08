@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapeCrawler", "ShapeCrawler\ShapeCrawler.csproj", "{4A633D84-856C-49A3-A76E-59291CF76A6F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapeCrawler.Tests.Unit", "ShapeCrawler.Tests.Unit\ShapeCrawler.Tests.Unit.csproj", "{72CE74E1-91AF-4F35-AA2A-C925B84B0CB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapeCrawler.Tests", "ShapeCrawler.Tests\ShapeCrawler.Tests.csproj", "{72CE74E1-91AF-4F35-AA2A-C925B84B0CB9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

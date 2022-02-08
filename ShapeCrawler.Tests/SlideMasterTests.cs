@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Tests.Unit.Helpers;
+using ShapeCrawler.Tests.Helpers;
 using Xunit;
 
-namespace ShapeCrawler.Tests.Unit
+namespace ShapeCrawler.Tests
 {
     public class SlideMasterTests : IClassFixture<PresentationFixture>
     {

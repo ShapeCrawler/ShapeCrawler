@@ -8,15 +8,15 @@ using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tables;
-using ShapeCrawler.Tests.Unit.Helpers;
-using ShapeCrawler.Tests.Unit.Properties;
+using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.Tests.Properties;
 using Xunit;
 
 // ReSharper disable All
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
 
-namespace ShapeCrawler.Tests.Unit
+namespace ShapeCrawler.Tests
 {
     public class ParagraphPortionTests : IClassFixture<PresentationFixture>
     {

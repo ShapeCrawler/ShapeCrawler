@@ -5,12 +5,12 @@ using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Tests.Unit.Helpers;
-using ShapeCrawler.Tests.Unit.Properties;
+using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.Tests.Properties;
 using Xunit;
 // ReSharper disable SuggestVarOrType_SimpleTypes
 
-namespace ShapeCrawler.Tests.Unit
+namespace ShapeCrawler.Tests
 {
     public class FontTests : IClassFixture<PresentationFixture>
     {

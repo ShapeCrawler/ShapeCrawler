@@ -83,10 +83,8 @@ namespace ShapeCrawler.Charts
                 // Chart can have Linked file instead of Embedded. This Linked file can be removed
                 return;
             }
-            
-            var xCell = this.parentChart.ChartWorkbook.GetXCell(this.sheetName, this.address);
-            xCell.DataType = new EnumValue<X.CellValues>(X.CellValues.Number);
-            xCell.CellValue = new X.CellValue(value);
+
+            this.parentChart.ChartWorkbook.UpdateCell(this.sheetName, this.address, value);
         }
     }
 }

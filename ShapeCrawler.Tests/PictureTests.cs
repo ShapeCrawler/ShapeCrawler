@@ -2,13 +2,13 @@ using System;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.Tests.Unit.Helpers;
+using ShapeCrawler.Tests.Helpers;
 using Xunit;
 
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
 
-namespace ShapeCrawler.Tests.Unit
+namespace ShapeCrawler.Tests
 {
     public class PictureTests : IClassFixture<PresentationFixture>
     {
