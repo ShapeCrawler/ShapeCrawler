@@ -9,6 +9,8 @@ namespace ShapeCrawler.Drawing
     /// </summary>
     internal class LayoutPicture : LayoutShape, IShape
     {
+        public ShapeType ShapeType => ShapeType.Picture;
+
         internal LayoutPicture(SCSlideLayout slideLayoutInternal, P.Picture pPicture)
             : base(slideLayoutInternal, pPicture)
         {

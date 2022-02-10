@@ -56,5 +56,7 @@ namespace ShapeCrawler.Shapes
         ///     Gets or sets custom data for the shape.
         /// </summary>
         string CustomData { get; set; }
+        
+        ShapeType ShapeType { get; }
     }
 }

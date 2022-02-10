@@ -13,5 +13,7 @@ namespace ShapeCrawler.Charts
             : base(pGraphicFrame, slideMasterInternal)
         {
         }
+
+        public ShapeType ShapeType => ShapeType.Chart;
     }
 }

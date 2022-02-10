@@ -25,5 +25,7 @@ namespace ShapeCrawler
         }
 
         public byte[] BinaryData { get; }
+
+        public ShapeType ShapeType => ShapeType.Chart;
     }
 }

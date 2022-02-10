@@ -77,5 +77,7 @@ namespace ShapeCrawler
 
             return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
         }
+
+        public ShapeType ShapeType => ShapeType.AutoShape;
     }
 }

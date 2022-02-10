@@ -2,6 +2,7 @@
 using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
+// ReSharper disable InconsistentNaming
 namespace ShapeCrawler.OLEObjects
 {
     /// <summary>
@@ -13,5 +14,7 @@ namespace ShapeCrawler.OLEObjects
             : base(slideLayoutInternal, pGraphicFrame)
         {
         }
+
+        public ShapeType ShapeType => ShapeType.OLEObject;
     }
 }

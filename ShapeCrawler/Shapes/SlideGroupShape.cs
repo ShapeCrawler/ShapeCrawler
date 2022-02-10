@@ -27,7 +27,9 @@ namespace ShapeCrawler
             this.slideLayoutInternal = parentSlideLayoutInternal;
         }
 
-        public IReadOnlyCollection<IShape> Shapes => this.CreateGroupedShapeCollection(); // TODO: make itlazy
+        public IReadOnlyCollection<IShape> Shapes => this.CreateGroupedShapeCollection(); // TODO: make it lazy
+
+        public ShapeType ShapeType => ShapeType.GroupShape;
 
         private IReadOnlyCollection<IShape> CreateGroupedShapeCollection()
         {

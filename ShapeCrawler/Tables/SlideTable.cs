@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Settings;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -28,6 +29,8 @@ namespace ShapeCrawler
                 new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) this.PShapeTreesChild));
             this.pGraphicFrame = childOfPShapeTrees as P.GraphicFrame;
         }
+
+        public ShapeType ShapeType => ShapeType.Table;
 
         public IReadOnlyList<Column> Columns => this.GetColumnList(); // TODO: make lazy
 

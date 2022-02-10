@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -41,6 +42,8 @@ namespace ShapeCrawler.Charts
         #region Public Properties
 
         public ChartType Type => this.chartType.Value;
+
+        public ShapeType ShapeType => ShapeType.Chart;
 
         public string Title
         {

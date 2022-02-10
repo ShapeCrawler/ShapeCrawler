@@ -13,5 +13,7 @@ namespace ShapeCrawler.Tables
             : base(pGraphicFrame, slideMasterInternal)
         {
         }
+
+        public ShapeType ShapeType => ShapeType.Table;
     }
 }
