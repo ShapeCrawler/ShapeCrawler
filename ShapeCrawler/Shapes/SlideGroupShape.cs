@@ -33,9 +33,6 @@ namespace ShapeCrawler
 
         private IReadOnlyCollection<IShape> CreateGroupedShapeCollection()
         {
-            SlidePart slidePart = this.slideLayoutInternal.SlidePart;
-            var shapeContextBuilder = new ShapeContext.Builder(slidePart);
-
             var autoShapeCreator = new AutoShapeCreator();
             var oleGrFrameHandler = new OleGraphicFrameHandler();
             var pictureHandler = new PictureHandler();

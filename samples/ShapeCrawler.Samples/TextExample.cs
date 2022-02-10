@@ -1,4 +1,6 @@
-﻿namespace ShapeCrawler.Samples;
+﻿using ShapeCrawler;
+
+namespace TextExample;
 
 internal class TextExample
 {

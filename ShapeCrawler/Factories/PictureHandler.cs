@@ -33,6 +33,7 @@ namespace ShapeCrawler.Factories
 
                         break;
                     }
+
                     case VideoFromFile file:
                     {
                         A.VideoFromFile aVideoFile = file;

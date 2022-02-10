@@ -26,6 +26,6 @@ namespace ShapeCrawler
 
         public byte[] BinaryData { get; }
 
-        public ShapeType ShapeType => ShapeType.Chart;
+        public ShapeType ShapeType => ShapeType.AudioShape;
     }
 }
