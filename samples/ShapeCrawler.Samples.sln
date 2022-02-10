@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Samples", "ShapeCrawler.Samples\ShapeCrawler.Samples.csproj", "{7104AF19-BBB0-4E4D-B0DF-BB2503290031}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler", "..\..\ShapeCrawler\ShapeCrawler.csproj", "{D3951044-EF09-46B5-821C-96A22C529E9B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler", "..\ShapeCrawler\ShapeCrawler.csproj", "{A1DA946A-F3D2-48E1-8088-228671761562}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,9 +14,9 @@ Global
 		{7104AF19-BBB0-4E4D-B0DF-BB2503290031}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7104AF19-BBB0-4E4D-B0DF-BB2503290031}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7104AF19-BBB0-4E4D-B0DF-BB2503290031}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D3951044-EF09-46B5-821C-96A22C529E9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D3951044-EF09-46B5-821C-96A22C529E9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D3951044-EF09-46B5-821C-96A22C529E9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D3951044-EF09-46B5-821C-96A22C529E9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1DA946A-F3D2-48E1-8088-228671761562}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1DA946A-F3D2-48E1-8088-228671761562}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1DA946A-F3D2-48E1-8088-228671761562}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1DA946A-F3D2-48E1-8088-228671761562}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

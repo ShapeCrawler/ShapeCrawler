@@ -10,7 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\ShapeCrawler\ShapeCrawler.csproj" />
+      <ProjectReference Include="..\..\ShapeCrawler\ShapeCrawler.csproj" />
     </ItemGroup>
 
 </Project>

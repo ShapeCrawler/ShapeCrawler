@@ -27,13 +27,12 @@ namespace ShapeCrawler
             this.slideLayoutInternal = parentSlideLayoutInternal;
         }
 
-        public IReadOnlyCollection<IShape> Shapes => this.CreateGroupedShapeCollection(); // TODO: make itlazy
+        public IReadOnlyCollection<IShape> Shapes => this.CreateGroupedShapeCollection(); // TODO: make it lazy
+
+        public ShapeType ShapeType => ShapeType.GroupShape;
 
         private IReadOnlyCollection<IShape> CreateGroupedShapeCollection()
         {
-            SlidePart slidePart = this.slideLayoutInternal.SlidePart;
-            var shapeContextBuilder = new ShapeContext.Builder(slidePart);
-
             var autoShapeCreator = new AutoShapeCreator();
             var oleGrFrameHandler = new OleGraphicFrameHandler();
             var pictureHandler = new PictureHandler();

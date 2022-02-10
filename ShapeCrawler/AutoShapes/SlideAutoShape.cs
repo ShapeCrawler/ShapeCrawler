@@ -31,7 +31,6 @@ namespace ShapeCrawler
 
         public ShapeFill Fill => this.shapeFill.Value;
 
-        public SCSlideMaster SlideMasterInternal { get; }
         public IShape Shape => this;
 
         #endregion Public Properties
@@ -77,5 +76,7 @@ namespace ShapeCrawler
 
             return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
         }
+
+        public ShapeType ShapeType => ShapeType.AutoShape;
     }
 }
