@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.28.0 - 2022-02-10
+- Added `IParagraph.Alignment` property for paragraph content alignment.
+
 ## Version 0.27.0 - 2022-02-03
 - Added support for Connection shape which presents Lines.
 

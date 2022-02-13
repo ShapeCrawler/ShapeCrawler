@@ -38,6 +38,7 @@ namespace ShapeCrawler
 
         public ShapeFill Fill => this.shapeFill.Value;
 
+        public ShapeType ShapeType => ShapeType.AutoShape;
         #endregion Public Properties
 
         public IShape Shape => this;

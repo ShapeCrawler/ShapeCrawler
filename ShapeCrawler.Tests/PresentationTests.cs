@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.Charts;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Statics;

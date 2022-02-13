@@ -31,14 +31,14 @@ namespace ShapeCrawler.Placeholders
                 return false;
             }
 
-            if (PlaceholderType != PlaceholderType.Custom && other.PlaceholderType != PlaceholderType.Custom)
+            if (this.PlaceholderType != PlaceholderType.Custom && other.PlaceholderType != PlaceholderType.Custom)
             {
-                return PlaceholderType == other.PlaceholderType;
+                return this.PlaceholderType == other.PlaceholderType;
             }
 
-            if (PlaceholderType == PlaceholderType.Custom && other.PlaceholderType == PlaceholderType.Custom)
+            if (this.PlaceholderType == PlaceholderType.Custom && other.PlaceholderType == PlaceholderType.Custom)
             {
-                return Index == other.Index;
+                return this.Index == other.Index;
             }
 
             return false;

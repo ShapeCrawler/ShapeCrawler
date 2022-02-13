@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
+using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
@@ -17,5 +18,7 @@ namespace ShapeCrawler
         }
 
         public SCImage Image => SCImage.CreatePictureImage(this, this.Slide.SlidePart, this.picReference);
+
+        public ShapeType ShapeType => ShapeType.Picture;
     }
 }

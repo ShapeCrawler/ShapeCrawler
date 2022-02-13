@@ -1,15 +1,14 @@
-﻿using System;
-using ShapeCrawler.Charts;
-using ShapeCrawler.Collections;
-using P = DocumentFormat.OpenXml.Presentation;
+﻿using ShapeCrawler.Collections;
 
-namespace ShapeCrawler.Factories
+namespace ShapeCrawler.Charts
 {
+    /// <summary>
+    ///     Represents Pie chart interface.
+    /// </summary>
     public interface IPieChart : IChart
     {
-        public ICategoryCollection Categories { get; }
     }
-    
+
     internal sealed class SCPieChart : SCChart, IPieChart
     {
         internal SCPieChart(DocumentFormat.OpenXml.Presentation.GraphicFrame pGraphicFrame, SCSlide slide)

@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
+using ShapeCrawler.Shapes;
 
 namespace ShapeCrawler.Video
 {
@@ -10,5 +11,7 @@ namespace ShapeCrawler.Video
         }
 
         public byte[] BinaryData { get; }
+
+        public ShapeType ShapeType => ShapeType.VideoShape;
     }
 }

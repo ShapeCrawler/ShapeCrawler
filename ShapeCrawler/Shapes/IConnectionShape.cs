@@ -17,5 +17,7 @@ namespace ShapeCrawler
             : base(childOfpShapeTree, slide)
         {
         }
+
+        public ShapeType ShapeType => ShapeType.ConnectionShape;
     }
 }
