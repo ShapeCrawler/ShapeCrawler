@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -15,7 +13,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents an image model.
     /// </summary>
-    public class SCImage // TODO: internal?
+    public class SCImage
     {
         private readonly SCPresentation parentPresentation;
         private readonly IRemovable imageContainer;
@@ -161,8 +159,8 @@ namespace ShapeCrawler
             }
 
             var imagePart = (ImagePart)slidePart.GetPartById(picReference.Value);
-            return new SCImage(imagePart, parentShape, picReference, slidePart);
 
+            return new SCImage(imagePart, parentShape, picReference, slidePart);
         }
     }
 }

@@ -98,7 +98,7 @@ namespace ShapeCrawler.Collections
                         }
                         else
                         {
-                            shapeList.Add(new MasterAutoShape((SCSlideMaster)baseSlide, pShape));
+                            shapeList.Add(new MasterAutoShape(master!, pShape));
                         }
 
                         continue;

@@ -15,7 +15,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a shape located on Slide, Layout or Slide Master.
     /// </summary>
-    public abstract class Shape : IRemovable, IPresentationComponent // TODO: internal?
+    internal abstract class Shape : IRemovable, IPresentationComponent
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="Shape"/> class for grouped shape.
