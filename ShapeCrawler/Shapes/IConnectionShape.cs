@@ -13,8 +13,8 @@ namespace ShapeCrawler
 
     internal class SCConnectionShape : SlideShape, IConnectionShape
     {
-        public SCConnectionShape(OpenXmlCompositeElement childOfpShapeTree, SCSlide slide)
-            : base(childOfpShapeTree, slide)
+        public SCConnectionShape(OpenXmlCompositeElement childOfPShapeTree, SCSlide slide)
+            : base(childOfPShapeTree, slide)
         {
         }
 

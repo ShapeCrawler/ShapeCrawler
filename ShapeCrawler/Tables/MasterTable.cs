@@ -9,11 +9,13 @@ namespace ShapeCrawler.Tables
     /// </summary>
     internal class MasterTable : MasterShape, IShape
     {
-        internal MasterTable(P.GraphicFrame pGraphicFrame, SCSlideMaster slideMasterInternal)
+        internal MasterTable(SCSlideMaster slideMasterInternal, P.GraphicFrame pGraphicFrame)
             : base(pGraphicFrame, slideMasterInternal)
         {
         }
 
         public ShapeType ShapeType => ShapeType.Table;
+
+        public override SCPresentation PresentationInternal { get; }
     }
 }

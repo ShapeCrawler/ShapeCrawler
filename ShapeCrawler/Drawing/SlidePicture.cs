@@ -11,8 +11,8 @@ namespace ShapeCrawler
     {
         private readonly StringValue picReference;
 
-        internal SlidePicture(P.Picture pPicture, SCSlide parentSlideLayoutInternal, StringValue picReference)
-            : base(pPicture, parentSlideLayoutInternal, null)
+        internal SlidePicture(P.Picture pPicture, SCSlide slide, StringValue picReference)
+            : base(pPicture, slide, null)
         {
             this.picReference = picReference;
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
@@ -10,7 +11,8 @@ using Xunit;
 
 namespace ShapeCrawler.Tests
 {
-    public class PictureTests : IClassFixture<PresentationFixture>
+    [SuppressMessage("Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task")]
+    public class PictureTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     {
         private readonly PresentationFixture _fixture;
 
@@ -20,7 +22,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public async void ImageGetBytes_ReturnsImageByteArray()
+        public async void Image_GetBytes_returns_image_byte_array()
         {
             // Arrange
             IPicture shapePicture1 = (IPicture)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
@@ -34,9 +36,39 @@ namespace ShapeCrawler.Tests
             shapePictureContentCase1.Should().NotBeEmpty();
             shapePictureContentCase2.Should().NotBeEmpty();
         }
+        
+        [Fact]
+        public async void Image_GetBytes_returns_image_byte_array_of_Layout_picture()
+        {
+            // Arrange
+            var pptxStream = GetPptxStream("pictures-case001.pptx");
+            var presentation = SCPresentation.Open(pptxStream, false);
+            var pictureShape = presentation.Slides[0].ParentSlideLayout.Shapes.GetByName<IPicture>("Picture 7");
+            
+            // Act
+            var picByteArray = await pictureShape.Image.GetBytes();
+            
+            // Assert
+            picByteArray.Should().NotBeEmpty();
+        }
+        
+        [Fact]
+        public void Image_GetBytes_returns_image_byte_array_of_Master_slide_picture()
+        {
+            // Arrange
+            var pptxStream = GetPptxStream("pictures-case001.pptx");
+            var presentation = SCPresentation.Open(pptxStream, false);
+            var pictureShape = presentation.SlideMasters[0].Shapes.GetByName<IPicture>("Picture 9");
+            
+            // Act
+            var picByteArray = pictureShape.Image.GetBytes().Result;
+            
+            // Assert
+            picByteArray.Should().NotBeEmpty();
+        }
 
         [Fact]
-        public void ImageSetImage_UpdatesPictureImage()
+        public void Image_SetImage_updates_picture_image()
         {
             // Arrange
             IPresentation presentation = SCPresentation.Open(Properties.Resources._009, true);

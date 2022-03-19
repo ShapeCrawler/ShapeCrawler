@@ -13,10 +13,10 @@ namespace ShapeCrawler.Factories
     /// </summary>
     internal class PictureHandler : OpenXmlElementHandler
     {
-        internal override IShape? Create(OpenXmlCompositeElement pShapeTreesChild, SCSlide slide, SlideGroupShape groupShape)
+        internal override IShape? Create(OpenXmlCompositeElement compositeElementOfPShapeTree, SCSlide slide, SlideGroupShape groupShape)
         {
             P.Picture? pPicture;
-            if (pShapeTreesChild is P.Picture treePic)
+            if (compositeElementOfPShapeTree is P.Picture treePic)
             {
                 OpenXmlElement element = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties.ChildElements.FirstOrDefault();
 
@@ -28,7 +28,7 @@ namespace ShapeCrawler.Factories
                             .GetFirstChild<A.AudioFromFile>();
                         if (aAudioFile is not null)
                         {
-                            return new AudioShape(pShapeTreesChild, slide);
+                            return new AudioShape(compositeElementOfPShapeTree, slide);
                         }
 
                         break;
@@ -40,7 +40,7 @@ namespace ShapeCrawler.Factories
 
                         if (aVideoFile != null)
                         {
-                            return new VideoShape(slide, pShapeTreesChild);
+                            return new VideoShape(slide, compositeElementOfPShapeTree);
                         }
 
                         break;
@@ -51,12 +51,12 @@ namespace ShapeCrawler.Factories
             }
             else
             {
-                pPicture = pShapeTreesChild.Descendants<P.Picture>().FirstOrDefault();
+                pPicture = compositeElementOfPShapeTree.Descendants<P.Picture>().FirstOrDefault();
             }
 
             if (pPicture == null)
             {
-                return this.Successor?.Create(pShapeTreesChild, slide, groupShape);
+                return this.Successor?.Create(compositeElementOfPShapeTree, slide, groupShape);
             }
 
             StringValue? picReference = pPicture.GetFirstChild<P.BlipFill>()?.Blip?.Embed;

@@ -7,16 +7,16 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a shape located on Slide.
     /// </summary>
-    internal abstract class SlideShape : Shape, IPresentationComponent
+    internal abstract class SlideShape : Shape
     {
-        protected SlideShape(OpenXmlCompositeElement childOfpShapeTree, SCSlide slide, Shape groupShape)
-            : base(childOfpShapeTree, slide, groupShape)
+        protected SlideShape(OpenXmlCompositeElement childOfPShapeTree, SCSlide slide, Shape groupShape)
+            : base(childOfPShapeTree, slide, groupShape)
         {
             this.Slide = slide;
         }
 
-        protected SlideShape(OpenXmlCompositeElement childOfpShapeTree, SCSlide slide)
-            : base(childOfpShapeTree, slide)
+        protected SlideShape(OpenXmlCompositeElement childOfPShapeTree, SCSlide slide)
+            : base(childOfPShapeTree, slide)
         {
             this.Slide = slide;
         }
@@ -32,7 +32,7 @@ namespace ShapeCrawler
             }
         }
 
-        public SCPresentation PresentationInternal => this.Slide.parentPresentationInternal;
+        public override SCPresentation PresentationInternal => this.Slide.PresentationInternal;
 
         public ISlide ParentSlide => this.Slide;
 

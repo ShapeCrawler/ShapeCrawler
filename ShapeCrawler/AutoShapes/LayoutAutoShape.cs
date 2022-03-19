@@ -21,15 +21,15 @@ namespace ShapeCrawler
         private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
         private readonly Lazy<ShapeFill> shapeFill;
         private readonly Lazy<SCTextBox?> textBox;
-        private readonly P.Shape sdkPShape;
+        private readonly P.Shape _childOfPShape;
 
-        internal LayoutAutoShape(SCSlideLayout slideLayout, P.Shape sdkPShape)
-            : base(slideLayout, sdkPShape)
+        internal LayoutAutoShape(SCSlideLayout slideLayout, P.Shape childOfPShape)
+            : base(slideLayout, childOfPShape)
         {
             this.textBox = new Lazy<SCTextBox?>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(TryGetFill);
             this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
-            this.sdkPShape = sdkPShape;
+            this._childOfPShape = childOfPShape;
         }
 
         #region Public Properties
@@ -74,11 +74,11 @@ namespace ShapeCrawler
 
         private Dictionary<int, FontData> GetLvlToFontData()
         {
-            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(this.sdkPShape.TextBody.ListStyle);
+            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(this._childOfPShape.TextBody.ListStyle);
 
             if (!lvlToFontData.Any())
             {
-                Int32Value endParaRunPrFs = this.sdkPShape.TextBody.GetFirstChild<A.Paragraph>()
+                Int32Value endParaRunPrFs = this._childOfPShape.TextBody.GetFirstChild<A.Paragraph>()
                     .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
                 if (endParaRunPrFs != null)
                 {

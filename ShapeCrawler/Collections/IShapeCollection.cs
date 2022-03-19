@@ -3,6 +3,7 @@ using System.IO;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Video;
 
+// ReSharper disable once CheckNamespace
 namespace ShapeCrawler
 {
     /// <summary>
@@ -36,9 +37,15 @@ namespace ShapeCrawler
         /// <param name="videoStream">Video stream data.</param>
         IVideoShape AddNewVideo(int xPixel, int yPixels, Stream videoStream);
 
+        /// <summary>
+        ///     Get shape by identifier.
+        /// </summary>
         T GetById<T>(int shapeId)
             where T : IShape;
 
+        /// <summary>
+        ///     Get shape by name.
+        /// </summary>
         T GetByName<T>(string shapeName);
     }
 }
