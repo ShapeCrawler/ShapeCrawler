@@ -35,7 +35,7 @@ namespace ShapeCrawler
             this.imageContainer = imageContainer;
             this.picReference = picReference;
             this.openXmlPart = openXmlPart;
-            this.parentPresentation = ((IPresentationComponent) imageContainer).PresentationInternal;
+            this.parentPresentation = ((IPresentationComponent)imageContainer).PresentationInternal;
         }
 
         #region Public Members

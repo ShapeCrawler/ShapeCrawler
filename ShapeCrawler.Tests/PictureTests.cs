@@ -51,6 +51,21 @@ namespace ShapeCrawler.Tests
             // Assert
             picByteArray.Should().NotBeEmpty();
         }
+        
+        [Fact]
+        public void Image_GetBytes_returns_image_byte_array_of_Master_slide_picture()
+        {
+            // Arrange
+            var pptxStream = GetPptxStream("pictures-case001.pptx");
+            var presentation = SCPresentation.Open(pptxStream, false);
+            var pictureShape = presentation.SlideMasters[0].Shapes.GetByName<IPicture>("Picture 9");
+            
+            // Act
+            var picByteArray = pictureShape.Image.GetBytes().Result;
+            
+            // Assert
+            picByteArray.Should().NotBeEmpty();
+        }
 
         [Fact]
         public void Image_SetImage_updates_picture_image()

@@ -32,7 +32,7 @@ namespace ShapeCrawler
             }
         }
 
-        public override SCPresentation PresentationInternal => this.Slide.parentPresentationInternal;
+        public override SCPresentation PresentationInternal => this.Slide.PresentationInternal;
 
         public ISlide ParentSlide => this.Slide;
 

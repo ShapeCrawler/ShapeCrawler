@@ -4,7 +4,7 @@ using ShapeCrawler.SlideMasters;
 
 namespace ShapeCrawler
 {
-    internal abstract class MasterShape : Shape, IPresentationComponent
+    internal abstract class MasterShape : Shape
     {
         protected MasterShape(OpenXmlCompositeElement pShapeTreesChild, SCSlideMaster slideMaster)
             : base(pShapeTreesChild, slideMaster, null)
@@ -14,8 +14,6 @@ namespace ShapeCrawler
 
         public override IPlaceholder Placeholder => MasterPlaceholder.Create(this.PShapeTreesChild);
 
-        public SCPresentation PresentationInternal => this.PresentationInternal;
-        
         internal override SCSlideMaster SlideMasterInternal { get; set; }
     }
 }
