@@ -20,9 +20,6 @@ using ShapeCrawler.Statics;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler
 {
-    /// <summary>
-    ///     Represents a slide.
-    /// </summary>
     internal class SCSlide : ISlide
     {
         internal readonly SCPresentation parentPresentationInternal;

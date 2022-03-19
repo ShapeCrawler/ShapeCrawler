@@ -14,17 +14,17 @@ namespace ShapeCrawler.Factories
     {
         private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart";
 
-        internal override IShape? Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, SlideGroupShape groupShape)
+        internal override IShape? Create(OpenXmlCompositeElement compositeElementOfPShapeTree, SCSlide slide, SlideGroupShape groupShape)
         {
-            if (pShapeTreeChild is not P.GraphicFrame pGraphicFrame)
+            if (compositeElementOfPShapeTree is not P.GraphicFrame pGraphicFrame)
             {
-                return this.Successor?.Create(pShapeTreeChild, slide, groupShape);
+                return this.Successor?.Create(compositeElementOfPShapeTree, slide, groupShape);
             }
 
-            var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
+            var aGraphicData = compositeElementOfPShapeTree.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
             if (!aGraphicData.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
             {
-                return this.Successor?.Create(pShapeTreeChild, slide, groupShape);
+                return this.Successor?.Create(compositeElementOfPShapeTree, slide, groupShape);
             }
 
             var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>();

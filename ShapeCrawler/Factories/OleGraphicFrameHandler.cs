@@ -11,11 +11,11 @@ namespace ShapeCrawler.Factories
     {
         private const string Uri = "http://schemas.openxmlformats.org/presentationml/2006/ole";
 
-        internal override IShape Create(OpenXmlCompositeElement pShapeTreesChild, SCSlide slide, SlideGroupShape groupShape)
+        internal override IShape Create(OpenXmlCompositeElement compositeElementOfPShapeTree, SCSlide slide, SlideGroupShape groupShape)
         {
-            if (pShapeTreesChild is P.GraphicFrame pGraphicFrame)
+            if (compositeElementOfPShapeTree is P.GraphicFrame pGraphicFrame)
             {
-                A.GraphicData aGraphicData = pShapeTreesChild.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
+                A.GraphicData aGraphicData = compositeElementOfPShapeTree.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
                 if (aGraphicData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
                 {
                     SlideOLEObject oleObject = new (pGraphicFrame, slide, groupShape);
@@ -24,7 +24,7 @@ namespace ShapeCrawler.Factories
                 }
             }
 
-            return this.Successor?.Create(pShapeTreesChild, slide, groupShape);
+            return this.Successor?.Create(compositeElementOfPShapeTree, slide, groupShape);
         }
     }
 }

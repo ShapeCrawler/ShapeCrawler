@@ -5,12 +5,12 @@ using ShapeCrawler.SlideMasters;
 namespace ShapeCrawler
 {
     /// <summary>
-    ///     Represents a slide.
+    ///     Represents a user slide.
     /// </summary>
     public interface ISlide : IBaseSlide
     {
         /// <summary>
-        ///     Gets slide number.
+        ///     Gets or sets slide number.
         /// </summary>
         int Number { get; set; }
 
@@ -50,7 +50,7 @@ namespace ShapeCrawler
         ///     Saves slide scheme to file.
         /// </summary>
         void SaveScheme(string filePath);
-        
+
 #if DEBUG
         /// <summary>
         ///     Converts slide to HTML.

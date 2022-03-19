@@ -85,9 +85,9 @@ namespace ShapeCrawler.Collections
         internal static ShapeCollection ForSlideLayout(P.ShapeTree pShapeTree, SCSlideLayout slideLayout)
         {
             var shapeList = new List<IShape>();
-            foreach (OpenXmlCompositeElement compositeElement in pShapeTree.OfType<OpenXmlCompositeElement>())
+            foreach (var childOfPShapeTree in pShapeTree.OfType<OpenXmlCompositeElement>())
             {
-                switch (compositeElement)
+                switch (childOfPShapeTree)
                 {
                     case P.Shape pShape:
                         shapeList.Add(new LayoutAutoShape(slideLayout, pShape));
@@ -121,22 +121,24 @@ namespace ShapeCrawler.Collections
                     }
                 }
 
-                // OLE Objects should be parsed before pictures, since OLE containers can contain p:pic elements,
-                // thus OLE objects can be parsed as a picture by mistake.
-                P.Picture pPicture;
-                if (compositeElement is P.Picture treePicture)
+                P.Picture? pPicture;
+                if (childOfPShapeTree is P.Picture treePic)
                 {
-                    pPicture = treePicture;
+                    pPicture = treePic;
                 }
                 else
                 {
-                    P.Picture framePicture = compositeElement.Descendants<P.Picture>().FirstOrDefault();
-                    pPicture = framePicture;
+                    pPicture = childOfPShapeTree.Descendants<P.Picture>().FirstOrDefault();
                 }
 
                 if (pPicture != null)
                 {
-                    shapeList.Add(new LayoutPicture(slideLayout, pPicture));
+                    var embeddedPicReference = pPicture.GetFirstChild<P.BlipFill>()?.Blip?.Embed;
+                    if (embeddedPicReference != null)
+                    {
+                        var picture = new LayoutPicture(pPicture, slideLayout, embeddedPicReference);
+                        shapeList.Add(picture);
+                    }
                 }
             }
 

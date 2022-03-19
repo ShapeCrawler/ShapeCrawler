@@ -113,5 +113,7 @@ namespace ShapeCrawler
         {
             throw new NotImplementedException();
         }
+
+        public override SCPresentation PresentationInternal { get; }
     }
 }

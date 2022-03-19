@@ -15,5 +15,7 @@ namespace ShapeCrawler.Drawing
             : base(pPicture, slideMasterInternal)
         {
         }
+
+        public override SCPresentation PresentationInternal { get; }
     }
 }
