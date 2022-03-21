@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.28.1 - 2022-03-21
+- Fixed reading picture of Layout and Master slides.
+
 ## Version 0.28.0 - 2022-02-10
 - Added `IParagraph.Alignment` property for paragraph content alignment.
 
