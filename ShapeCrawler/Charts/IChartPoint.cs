@@ -24,6 +24,7 @@ namespace ShapeCrawler.Charts
         private readonly SCChart parentChart;
         private readonly string sheetName;
         private readonly C.NumericValue? cNumericValue;
+        private readonly ChartWorkbook workbook;
 
         internal ChartPoint(SCChart parentChart, string sheetName, string address, C.NumericValue? cNumericValue)
             : this(parentChart, sheetName, address)
@@ -36,6 +37,7 @@ namespace ShapeCrawler.Charts
             this.parentChart = parentChart;
             this.sheetName = sheetName;
             this.address = address;
+            this.workbook = parentChart.ChartWorkbook;
         }
 
         public double Value
@@ -65,7 +67,7 @@ namespace ShapeCrawler.Charts
             }
 
             // From spreadsheet
-            var xCell = this.parentChart.ChartWorkbook.GetXCell(this.sheetName, this.address);
+            var xCell = this.workbook.GetXCell(this.sheetName, this.address);
             var sheetValue = xCell.InnerText.Length == 0 ? 0 : double.Parse(xCell.InnerText, CultureInfo.InvariantCulture.NumberFormat);
 
             return sheetValue;
@@ -78,13 +80,13 @@ namespace ShapeCrawler.Charts
                 this.cNumericValue.Text = value.ToString(CultureInfo.InvariantCulture);
             }
 
-            if (this.parentChart.ChartWorkbook == null)
+            if (this.workbook == null)
             {
                 // Chart can have Linked file instead of Embedded. This Linked file can be removed
                 return;
             }
 
-            this.parentChart.ChartWorkbook.UpdateCell(this.sheetName, this.address, value);
+            this.workbook.UpdateCell(this.sheetName, this.address, value);
         }
     }
 }
