@@ -82,15 +82,25 @@ namespace ShapeCrawler.Collections
             return new ShapeCollection(shapes, pShapeTree, slide);
         }
 
-        internal static ShapeCollection ForSlideLayout(P.ShapeTree pShapeTree, SCSlideLayout slideLayout)
+        internal static ShapeCollection ForSlideLayout(P.ShapeTree pShapeTree, IBaseSlide baseSlide)
         {
             var shapeList = new List<IShape>();
-            foreach (OpenXmlCompositeElement compositeElement in pShapeTree.OfType<OpenXmlCompositeElement>())
+            var layout = baseSlide as SCSlideLayout;
+            var master = baseSlide as SCSlideMaster;
+            foreach (var childOfPShapeTree in pShapeTree.OfType<OpenXmlCompositeElement>())
             {
-                switch (compositeElement)
+                switch (childOfPShapeTree)
                 {
                     case P.Shape pShape:
-                        shapeList.Add(new LayoutAutoShape(slideLayout, pShape));
+                        if (layout != null)
+                        {
+                            shapeList.Add(new LayoutAutoShape(layout, pShape));
+                        }
+                        else
+                        {
+                            shapeList.Add(new MasterAutoShape(master!, pShape));
+                        }
+
                         continue;
                     case P.GraphicFrame pGraphicFrame:
                     {
@@ -99,21 +109,45 @@ namespace ShapeCrawler.Collections
                         if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
                             StringComparison.Ordinal))
                         {
-                            shapeList.Add(new LayoutOLEObject(slideLayout, pGraphicFrame));
+                            if (layout != null)
+                            {
+                                shapeList.Add(new LayoutOLEObject(layout, pGraphicFrame));
+                            }
+                            else
+                            {
+                                shapeList.Add(new MasterOLEObject(master!, pGraphicFrame));
+                            }
+
                             continue;
                         }
 
                         if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart",
                             StringComparison.Ordinal))
                         {
-                            shapeList.Add(new LayoutChart(slideLayout, pGraphicFrame));
+                            if (layout != null)
+                            {
+                                shapeList.Add(new LayoutChart(layout, pGraphicFrame));
+                            }
+                            else
+                            {
+                                shapeList.Add(new MasterChart(master!, pGraphicFrame));
+                            }
+
                             continue;
                         }
 
                         if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/table",
                             StringComparison.Ordinal))
                         {
-                            shapeList.Add(new LayoutTable(slideLayout, pGraphicFrame));
+                            if (layout != null)
+                            {
+                                shapeList.Add(new LayoutTable(layout, pGraphicFrame));
+                            }
+                            else
+                            {
+                                shapeList.Add(new MasterTable(master!, pGraphicFrame));
+                            }
+
                             continue;
                         }
 
@@ -121,84 +155,30 @@ namespace ShapeCrawler.Collections
                     }
                 }
 
-                // OLE Objects should be parsed before pictures, since OLE containers can contain p:pic elements,
-                // thus OLE objects can be parsed as a picture by mistake.
-                P.Picture pPicture;
-                if (compositeElement is P.Picture treePicture)
+                P.Picture? pPicture;
+                if (childOfPShapeTree is P.Picture treePic)
                 {
-                    pPicture = treePicture;
+                    pPicture = treePic;
                 }
                 else
                 {
-                    P.Picture framePicture = compositeElement.Descendants<P.Picture>().FirstOrDefault();
-                    pPicture = framePicture;
+                    pPicture = childOfPShapeTree.Descendants<P.Picture>().FirstOrDefault();
                 }
 
                 if (pPicture != null)
                 {
-                    shapeList.Add(new LayoutPicture(slideLayout, pPicture));
-                }
-            }
-
-            return new ShapeCollection(shapeList);
-        }
-
-        internal static ShapeCollection ForSlideMaster(SCSlideMaster slideMaster)
-        {
-            P.ShapeTree pShapeTree = slideMaster.PSlideMaster.CommonSlideData.ShapeTree;
-            var shapeList = new List<IShape>();
-            foreach (OpenXmlCompositeElement compositeElement in pShapeTree.OfType<OpenXmlCompositeElement>())
-            {
-                switch (compositeElement)
-                {
-                    case P.Shape pShape:
-                        shapeList.Add(new MasterAutoShape(pShape, slideMaster));
-                        continue;
-                    case P.GraphicFrame pGraphicFrame:
+                    var embeddedPicReference = pPicture.GetFirstChild<P.BlipFill>()?.Blip?.Embed;
+                    if (embeddedPicReference != null)
                     {
-                        A.GraphicData aGraphicData =
-                            pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
-                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
-                            StringComparison.Ordinal))
+                        if (layout != null)
                         {
-                            shapeList.Add(new MasterOLEObject(pGraphicFrame, slideMaster));
-                            continue;
+                            shapeList.Add(new LayoutPicture(pPicture, layout, embeddedPicReference));
                         }
-
-                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart",
-                            StringComparison.Ordinal))
+                        else
                         {
-                            shapeList.Add(new MasterChart(slideMaster, pGraphicFrame));
-                            continue;
+                            shapeList.Add(new MasterPicture(pPicture, master, embeddedPicReference));
                         }
-
-                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/table",
-                            StringComparison.Ordinal))
-                        {
-                            shapeList.Add(new MasterTable(pGraphicFrame, slideMaster));
-                            continue;
-                        }
-
-                        break;
                     }
-                }
-
-                // OLE Objects should be parsed before pictures, since OLE containers can contain p:pic elements,
-                // thus OLE objects can be parsed as a picture by mistake.
-                P.Picture pPicture;
-                if (compositeElement is P.Picture treePicture)
-                {
-                    pPicture = treePicture;
-                }
-                else
-                {
-                    P.Picture framePicture = compositeElement.Descendants<P.Picture>().FirstOrDefault();
-                    pPicture = framePicture;
-                }
-
-                if (pPicture != null)
-                {
-                    shapeList.Add(new MasterPicture(pPicture, slideMaster));
                 }
             }
 
@@ -210,7 +190,7 @@ namespace ShapeCrawler.Collections
             long xEmu = PixelConverter.HorizontalPixelToEmu(xPixels);
             long yEmu = PixelConverter.VerticalPixelToEmu(yPixels);
 
-            MediaDataPart mediaDataPart = this.slide.parentPresentationInternal.PresentationDocument.CreateMediaDataPart("audio/mpeg", ".mp3");
+            MediaDataPart mediaDataPart = this.slide.PresentationInternal.PresentationDocument.CreateMediaDataPart("audio/mpeg", ".mp3");
 
             mp3Stream.Position = 0;
             mediaDataPart.FeedData(mp3Stream);
@@ -316,7 +296,7 @@ namespace ShapeCrawler.Collections
             long xEmu = PixelConverter.HorizontalPixelToEmu(xPixels);
             long yEmu = PixelConverter.VerticalPixelToEmu(yPixels);
 
-            MediaDataPart mediaDataPart = this.slide.parentPresentationInternal.PresentationDocument.CreateMediaDataPart("video/mp4", ".mp4");
+            MediaDataPart mediaDataPart = this.slide.PresentationInternal.PresentationDocument.CreateMediaDataPart("video/mp4", ".mp4");
 
             videoStream.Position = 0;
             mediaDataPart.FeedData(videoStream);

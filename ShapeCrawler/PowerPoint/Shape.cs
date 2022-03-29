@@ -15,20 +15,20 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a shape located on Slide, Layout or Slide Master.
     /// </summary>
-    public abstract class Shape : IRemovable // TODO: internal?
+    internal abstract class Shape : IRemovable, IPresentationComponent
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="Shape"/> class for grouped shape.
         /// </summary>
-        protected Shape(OpenXmlCompositeElement childOfpShapeTree, IBaseSlide baseSlide, Shape groupShape)
-            : this(childOfpShapeTree, baseSlide)
+        protected Shape(OpenXmlCompositeElement childOfPShapeTree, IBaseSlide baseSlide, Shape groupShape)
+            : this(childOfPShapeTree, baseSlide)
         {
             this.GroupShape = groupShape;
         }
 
-        protected Shape(OpenXmlCompositeElement childOfpShapeTree, IBaseSlide baseSlide)
+        protected Shape(OpenXmlCompositeElement childOfPShapeTree, IBaseSlide baseSlide)
         {
-            this.PShapeTreesChild = childOfpShapeTree;
+            this.PShapeTreesChild = childOfPShapeTree;
             this.ParentBaseSlide = baseSlide;
         }
 
@@ -67,6 +67,8 @@ namespace ShapeCrawler
         ///     Gets or sets parent Slide Master.
         /// </summary>
         internal abstract SCSlideMaster SlideMasterInternal { get; set; }
+        
+        public abstract SCPresentation PresentationInternal { get; }
 
         /// <summary>
         ///     Gets geometry form type.

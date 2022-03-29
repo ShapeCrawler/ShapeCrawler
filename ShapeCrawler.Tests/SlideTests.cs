@@ -67,7 +67,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public async void BackgroundSetImage_ChangesBackground_WhenImageStreamIsPassed()
+        public async void Background_SetImage_updates_background()
         {
             // Arrange
             var pre = SCPresentation.Open(Properties.Resources._009, true);
@@ -76,7 +76,6 @@ namespace ShapeCrawler.Tests
             var bytesBefore = await backgroundImage.GetBytes().ConfigureAwait(false);
 
             // Act
-            backgroundImage.SetImage(imgStream);
             backgroundImage.SetImage(imgStream);
 
             // Assert

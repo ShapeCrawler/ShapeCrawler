@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -15,31 +13,31 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents an image model.
     /// </summary>
-    public class SCImage
+    public class SCImage // TODO: make internal?
     {
         private readonly SCPresentation parentPresentation;
-        private readonly IRemovable parentRemovableImageContainer;
+        private readonly IRemovable imageContainer;
         private readonly StringValue picReference;
-        private readonly SlidePart slidePart;
-        private byte[] bytes;
+        private readonly OpenXmlPart openXmlPart;
+        private byte[]? bytes;
 
-        internal ImagePart ImagePart { get; set; }
-
-        private SCImage(
-            SCPresentation parentPresentation,
+        internal SCImage(
             ImagePart imagePart,
-            IRemovable parentRemovableImageContainer,
+            IRemovable imageContainer,
             StringValue picReference,
-            SlidePart slidePart)
+            OpenXmlPart openXmlPart)
         {
-            this.parentPresentation = parentPresentation;
             this.ImagePart = imagePart;
-            this.parentRemovableImageContainer = parentRemovableImageContainer;
+            this.imageContainer = imageContainer;
             this.picReference = picReference;
-            this.slidePart = slidePart;
+            this.openXmlPart = openXmlPart;
+            this.parentPresentation = ((IPresentationComponent)imageContainer).PresentationInternal;
+            this.MIME = this.ImagePart.ContentType;
         }
 
-        #region Public Members
+        public string MIME { get; }
+
+        internal ImagePart ImagePart { get; private set; }
 
 #if NET5_0
 
@@ -51,7 +49,7 @@ namespace ShapeCrawler
             var stream = this.ImagePart.GetStream();
             this.bytes = new byte[stream.Length];
             await stream.ReadAsync(this.bytes.AsMemory(0, (int)stream.Length)).ConfigureAwait(false);
-            
+
             stream.Close();
             return this.bytes;
         }
@@ -77,13 +75,13 @@ namespace ShapeCrawler
         /// </summary>
         public void SetImage(Stream sourceStream)
         {
-            this.parentRemovableImageContainer.ThrowIfRemoved();
+            this.imageContainer.ThrowIfRemoved();
 
             bool isSharedImagePart = this.parentPresentation.ImageParts.Count(ip => ip == this.ImagePart) > 1;
             if (isSharedImagePart)
             {
                 string rId = $"rId{Guid.NewGuid().ToString().Substring(0,5)}";
-                this.ImagePart = this.slidePart.AddNewPart<ImagePart>("image/png", rId);
+                this.ImagePart = this.openXmlPart.AddNewPart<ImagePart>("image/png", rId);
                 this.picReference.Value = rId;
             }
 
@@ -120,14 +118,11 @@ namespace ShapeCrawler
         }
 #endif
 
-        #endregion Public Members
-
-        internal static SCImage CreatePictureImage(Shape picture, SlidePart slidePart, StringValue picReference)
+        internal static SCImage CreatePictureImage(Shape picture, OpenXmlPart openXmlPart, StringValue picReference)
         {
-            SCPresentation parentPresentation = picture.SlideMasterInternal.ParentPresentation;
-            ImagePart imagePart = (ImagePart)slidePart.GetPartById(picReference.Value);
+            var imagePart = (ImagePart)openXmlPart.GetPartById(picReference.Value);
 
-            return new SCImage(parentPresentation, imagePart, picture, picReference, slidePart);
+            return new SCImage(imagePart, picture, picReference, openXmlPart);
         }
 
         internal static SCImage GetSlideBackgroundImageOrDefault(SCSlide parentSlide)
@@ -145,9 +140,8 @@ namespace ShapeCrawler
                 return null;
             }
 
-            SCPresentation parentPresentation = parentSlide.parentPresentationInternal;
-            ImagePart imagePart = (ImagePart)parentSlide.SlidePart.GetPartById(picReference.Value);
-            SCImage backgroundImage = new SCImage(parentPresentation, imagePart, parentSlide, picReference, parentSlide.SlidePart);
+            var imagePart = (ImagePart)parentSlide.SlidePart.GetPartById(picReference.Value);
+            var backgroundImage = new SCImage(imagePart, parentSlide, picReference, parentSlide.SlidePart);
 
             return backgroundImage;
         }
@@ -163,10 +157,9 @@ namespace ShapeCrawler
                 return null;
             }
 
-            SCPresentation parentPresentation = parentShape.SlideMasterInternal.ParentPresentation;
-            ImagePart imagePart = (ImagePart)slidePart.GetPartById(picReference.Value);
-            return new SCImage(parentPresentation, imagePart, parentShape, picReference, slidePart);
+            var imagePart = (ImagePart)slidePart.GetPartById(picReference.Value);
 
+            return new SCImage(imagePart, parentShape, picReference, slidePart);
         }
     }
 }

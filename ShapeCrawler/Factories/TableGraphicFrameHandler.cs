@@ -11,14 +11,14 @@ namespace ShapeCrawler.Factories
     {
         private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/table";
 
-        internal override IShape Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, SlideGroupShape groupShape)
+        internal override IShape Create(OpenXmlCompositeElement compositeElementOfPShapeTree, SCSlide slide, SlideGroupShape groupShape)
         {
-            if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
+            if (compositeElementOfPShapeTree is P.GraphicFrame pGraphicFrame)
             {
                 A.GraphicData graphicData = pGraphicFrame.Graphic.GraphicData;
                 if (!graphicData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
                 {
-                    return this.Successor?.Create(pShapeTreeChild, slide, groupShape);
+                    return this.Successor?.Create(compositeElementOfPShapeTree, slide, groupShape);
                 }
 
                 var table = new SlideTable(pGraphicFrame, slide, groupShape);
@@ -26,7 +26,7 @@ namespace ShapeCrawler.Factories
                 return table;
             }
 
-            return this.Successor?.Create(pShapeTreeChild, slide, groupShape);
+            return this.Successor?.Create(compositeElementOfPShapeTree, slide, groupShape);
         }
     }
 }

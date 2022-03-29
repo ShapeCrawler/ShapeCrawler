@@ -11,7 +11,7 @@ using ShapeCrawler.Shared;
 namespace ShapeCrawler.SlideMasters
 {
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrawler")]
-    internal class SCSlideMaster : ISlideMaster // TODO: make internal
+    internal class SCSlideMaster : ISlideMaster
     {
         private readonly ResettableLazy<List<SCSlideLayout>> slideLayouts;
         internal readonly DocumentFormat.OpenXml.Presentation.SlideMaster PSlideMaster;
@@ -100,7 +100,7 @@ namespace ShapeCrawler.SlideMasters
 
         public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
-        IShapeCollection IBaseSlide.Shapes => ShapeCollection.ForSlideMaster(this);
+        IShapeCollection IBaseSlide.Shapes => ShapeCollection.ForSlideLayout(this.PSlideMaster.CommonSlideData.ShapeTree, this);
 
         #endregion Public Properties
     }

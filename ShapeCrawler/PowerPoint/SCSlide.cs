@@ -20,31 +20,24 @@ using ShapeCrawler.Statics;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler
 {
-    /// <summary>
-    ///     Represents a slide.
-    /// </summary>
-    internal class SCSlide : ISlide
+    internal class SCSlide : ISlide, IPresentationComponent
     {
-        internal readonly SCPresentation parentPresentationInternal;
         private readonly Lazy<SCImage> backgroundImage;
         private Lazy<CustomXmlPart> customXmlPart;
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="SCSlide" /> class.
-        /// </summary>
-        public SCSlide(SCPresentation parentPresentation, SlidePart slidePart)
+        internal SCSlide(SCPresentation parentPresentation, SlidePart slidePart)
         {
+            this.PresentationInternal = parentPresentation;
             this.ParentPresentation = parentPresentation;
-            this.parentPresentationInternal = parentPresentation;
             this.SlidePart = slidePart;
-            this._shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.ForSlide(this.SlidePart, this));
+            this.shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.ForSlide(this.SlidePart, this));
             this.backgroundImage = new Lazy<SCImage>(() => SCImage.GetSlideBackgroundImageOrDefault(this));
             this.customXmlPart = new Lazy<CustomXmlPart>(this.GetSldCustomXmlPart);
         }
 
-        public ISlideLayout ParentSlideLayout => ((SlideMasterCollection)this.ParentPresentation.SlideMasters).GetSlideLayoutBySlide(this);
+        public ISlideLayout ParentSlideLayout => ((SlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
 
-        public IShapeCollection Shapes => this._shapes.Value;
+        public IShapeCollection Shapes => this.shapes.Value;
 
         public int Number
         {
@@ -52,9 +45,84 @@ namespace ShapeCrawler
             set => this.SetNumber(value);
         }
 
+
+        public SCImage Background => this.backgroundImage.Value;
+
+        public string CustomData
+        {
+            get => this.GetCustomData();
+            set => this.SetCustomData(value);
+        }
+
+        public bool Hidden => this.SlidePart.Slide.Show != null && this.SlidePart.Slide.Show.Value == false;
+
+        public bool IsRemoved { get; set; }
+
+        public IPresentation ParentPresentation { get; }
+
+        internal SlidePart SlidePart { get; }
+
+        private ResettableLazy<ShapeCollection> shapes { get; }
+
+        /// <summary>
+        ///     Saves slide scheme in PNG file.
+        /// </summary>
+        public void SaveScheme(string filePath)
+        {
+            SlideSchemeService.SaveScheme(this.shapes.Value, this.PresentationInternal.SlideWidth, this.PresentationInternal.SlideHeight, filePath);
+        }
+
+        public async Task<string> ToHtml()
+        {
+            var slideWidthPx = this.PresentationInternal.SlideWidth;
+            var slideHeightPx = this.PresentationInternal.SlideHeight;
+
+            var config = Configuration.Default.WithCss();
+            var context = BrowsingContext.New(config);
+            var document = await context.OpenNewAsync().ConfigureAwait(false);
+
+            var styleBuilder = new StringBuilder();
+            styleBuilder.Append("display: flex; ");
+            styleBuilder.Append("justify-content: center; ");
+            styleBuilder.Append("background: cadetblue; ");
+
+            styleBuilder.Append($"width: {slideWidthPx}px; ");
+            styleBuilder.Append($"height: {slideHeightPx}px; ");
+
+            var main = document.CreateElement("main");
+            main.SetStyle(styleBuilder.ToString());
+
+            document.Body!.AppendChild(main);
+
+            return document.DocumentElement.OuterHtml;
+        }
+
+        /// <summary>
+        ///     Saves slide scheme in stream.
+        /// </summary>
+        public void SaveScheme(Stream stream)
+        {
+            SlideSchemeService.SaveScheme(this.shapes.Value, this.PresentationInternal.SlideWidth, this.PresentationInternal.SlideHeight, stream);
+        }
+
+        public void Hide()
+        {
+            if (this.SlidePart.Slide.Show == null)
+            {
+                var showAttribute = new OpenXmlAttribute("show", string.Empty, "0");
+                this.SlidePart.Slide.SetAttribute(showAttribute);
+            }
+            else
+            {
+                this.SlidePart.Slide.Show = false;
+            }
+        }
+
+        #region Private Methods
+
         private int GetNumber()
         {
-            var presentationPart = this.parentPresentationInternal.PresentationDocument.PresentationPart; 
+            var presentationPart = this.PresentationInternal.PresentationDocument.PresentationPart;
             string currentSlidePartId = presentationPart.GetIdOfPart(this.SlidePart);
             List<SlideId> slideIdList = presentationPart.Presentation.SlideIdList.ChildElements.OfType<SlideId>().ToList();
             for (int i = 0; i < slideIdList.Count; i++)
@@ -73,12 +141,12 @@ namespace ShapeCrawler
             int from = this.Number - 1;
             int to = newSlideNumber - 1;
 
-            if (to < 0 || from >= this.ParentPresentation.Slides.Count || to == from)
+            if (to < 0 || from >= this.PresentationInternal.Slides.Count || to == from)
             {
                 throw new ArgumentOutOfRangeException(nameof(to));
             }
 
-            PresentationPart presentationPart = this.parentPresentationInternal.PresentationDocument.PresentationPart;
+            PresentationPart presentationPart = this.PresentationInternal.PresentationDocument.PresentationPart;
 
             Presentation presentation = presentationPart.Presentation;
             SlideIdList slideIdList = presentation.SlideIdList;
@@ -111,81 +179,7 @@ namespace ShapeCrawler
             // Save the modified presentation.
             presentation.Save();
         }
-
-        public SCImage Background => this.backgroundImage.Value;
-
-        public string CustomData
-        {
-            get => this.GetCustomData();
-            set => this.SetCustomData(value);
-        }
-
-        public bool Hidden => this.SlidePart.Slide.Show != null && this.SlidePart.Slide.Show.Value == false;
-
-        public bool IsRemoved { get; set; }
-
-        public IPresentation ParentPresentation { get; }
-
-        internal SlidePart SlidePart { get; }
-
-        private ResettableLazy<ShapeCollection> _shapes { get; }
-
-        /// <summary>
-        ///     Saves slide scheme in PNG file.
-        /// </summary>
-        public void SaveScheme(string filePath)
-        {
-            SlideSchemeService.SaveScheme(this._shapes.Value, this.ParentPresentation.SlideWidth, this.ParentPresentation.SlideHeight, filePath);
-        }
-
-        public async Task<string> ToHtml()
-        {
-            var slideWidthPx = this.ParentPresentation.SlideWidth;
-            var slideHeightPx = this.ParentPresentation.SlideHeight;
-
-            var config = Configuration.Default.WithCss();
-            var context = BrowsingContext.New(config);
-            var document = await context.OpenNewAsync().ConfigureAwait(false);
-
-            var styleBuilder = new StringBuilder();
-            styleBuilder.Append("display: flex; ");
-            styleBuilder.Append("justify-content: center; ");
-            styleBuilder.Append("background: cadetblue; ");
-
-            styleBuilder.Append($"width: {slideWidthPx}px; ");
-            styleBuilder.Append($"height: {slideHeightPx}px; ");
-
-            var main = document.CreateElement("main");
-            main.SetStyle(styleBuilder.ToString());
-
-            document.Body!.AppendChild(main);
-
-            return document.DocumentElement.OuterHtml;
-        }
-
-        /// <summary>
-        ///     Saves slide scheme in stream.
-        /// </summary>
-        public void SaveScheme(Stream stream)
-        {
-            SlideSchemeService.SaveScheme(this._shapes.Value, this.ParentPresentation.SlideWidth, this.ParentPresentation.SlideHeight, stream);
-        }
-
-        public void Hide()
-        {
-            if (this.SlidePart.Slide.Show == null)
-            {
-                var showAttribute = new OpenXmlAttribute("show", string.Empty, "0");
-                this.SlidePart.Slide.SetAttribute(showAttribute);
-            }
-            else
-            {
-                this.SlidePart.Slide.Show = false;
-            }
-        }
-
-        #region Private Methods
-
+        
         private string GetCustomData()
         {
             if (this.customXmlPart.Value == null)
@@ -248,9 +242,11 @@ namespace ShapeCrawler
                 throw new ElementIsRemovedException("Slide was removed");
             }
 
-            this.parentPresentationInternal.ThrowIfClosed();
+            this.PresentationInternal.ThrowIfClosed();
         }
 
         #endregion Private Methods
+
+        public SCPresentation PresentationInternal { get; }
     }
 }
