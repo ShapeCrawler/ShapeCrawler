@@ -258,6 +258,9 @@ public class UpdateSlideCollection
 }
 ```
 
+### More samples
+Check [/samples/ShapeCrawler.Samples](https://github.com/ShapeCrawler/ShapeCrawler/tree/master/samples/ShapeCrawler.Samples) folder to see more usage samples.
+
 # Feedback and Give a Star! :star:
 The project is in development, and I’m pretty sure there are still lots of things to add in this library. Try it out and let me know your thoughts.
 
