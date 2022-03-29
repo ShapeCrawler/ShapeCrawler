@@ -53,6 +53,21 @@ namespace ShapeCrawler.Tests
         }
         
         [Fact]
+        public void Image_MIME_returns_MIME_type_of_image()
+        {
+            // Arrange
+            var pptxStream = GetPptxStream("pictures-case001.pptx");
+            var presentation = SCPresentation.Open(pptxStream, false);
+            var image = presentation.Slides[0].ParentSlideLayout.Shapes.GetByName<IPicture>("Picture 7").Image;
+            
+            // Act
+            var mimeType = image.MIME;
+            
+            // Assert
+            mimeType.Should().Be("image/png");
+        }
+        
+        [Fact]
         public void Image_GetBytes_returns_image_byte_array_of_Master_slide_picture()
         {
             // Arrange

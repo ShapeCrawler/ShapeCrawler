@@ -13,15 +13,13 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents an image model.
     /// </summary>
-    public class SCImage
+    public class SCImage // TODO: make internal?
     {
         private readonly SCPresentation parentPresentation;
         private readonly IRemovable imageContainer;
         private readonly StringValue picReference;
         private readonly OpenXmlPart openXmlPart;
-        private byte[] bytes;
-
-        internal ImagePart ImagePart { get; set; }
+        private byte[]? bytes;
 
         internal SCImage(
             ImagePart imagePart,
@@ -34,9 +32,12 @@ namespace ShapeCrawler
             this.picReference = picReference;
             this.openXmlPart = openXmlPart;
             this.parentPresentation = ((IPresentationComponent)imageContainer).PresentationInternal;
+            this.MIME = this.ImagePart.ContentType;
         }
 
-        #region Public Members
+        public string MIME { get; }
+
+        internal ImagePart ImagePart { get; private set; }
 
 #if NET5_0
 
@@ -116,8 +117,6 @@ namespace ShapeCrawler
             this.SetImage(sourceBytes);
         }
 #endif
-
-        #endregion Public Members
 
         internal static SCImage CreatePictureImage(Shape picture, OpenXmlPart openXmlPart, StringValue picReference)
         {
