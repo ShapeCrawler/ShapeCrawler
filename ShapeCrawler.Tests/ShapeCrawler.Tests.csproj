@@ -73,6 +73,8 @@
     <EmbeddedResource Include="Resource\Charts\charts-case002.pptx" />
     <None Remove="Resource\Pictures\pictures-case001.pptx" />
     <EmbeddedResource Include="Resource\Pictures\pictures-case001.pptx" />
+    <None Remove="Resource\Charts\charts-case003.pptx" />
+    <EmbeddedResource Include="Resource\Charts\charts-case003.pptx" />
   </ItemGroup>
 
 </Project>

@@ -51,7 +51,47 @@ namespace ShapeCrawler.Charts
             return sheetXCells.First(xCell => xCell.CellReference == cellAddress);
         }
 
-        internal X.Cell? GetXCellOrDefault(string sheetName, string cellAddress)
+        internal void UpdateCell(string sheetName, string cellReference, double value)
+        {
+            var xCell = this.GetXCellOrDefault(sheetName, cellReference);
+            if (xCell != null)
+            {
+                xCell.DataType = new EnumValue<X.CellValues>(X.CellValues.Number);
+                xCell.CellValue = new X.CellValue(value);
+            }
+            else
+            {
+                var chartSheet = this.WorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
+                var worksheetPart = (WorksheetPart)this.WorkbookPart.GetPartById(chartSheet.Id!);
+                var worksheet = worksheetPart.Worksheet;
+                var sheetData = worksheet.Elements<X.SheetData>().First();
+                var rowNumberStr = Regex.Match(cellReference, @"\d+").Value;
+                var rowNumber = int.Parse(rowNumberStr, NumberStyles.Number, NumberFormatInfo.InvariantInfo);
+
+                var row = sheetData.Elements<X.Row>().First(r => r.RowIndex == rowNumber);
+                var newXCell = new X.Cell
+                {
+                    CellReference = cellReference
+                };
+                newXCell.DataType = new EnumValue<X.CellValues>(X.CellValues.Number);
+                newXCell.CellValue = new X.CellValue(value);
+                
+                // Cells must be in sequential order according to CellReference. Determine where to insert the new cell.
+                X.Cell refCell = null;
+                foreach (X.Cell cell in row.Elements<X.Cell>())
+                {
+                    if (string.Compare(cell.CellReference.Value, cellReference, true, CultureInfo.InvariantCulture) > 0)
+                    {
+                        refCell = cell;
+                        break;
+                    }
+                }
+
+                row.InsertBefore(newXCell, refCell);
+            }
+        }
+
+        private X.Cell? GetXCellOrDefault(string sheetName, string cellAddress)
         {
             var chartSheet = this.WorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
             var worksheetPart = (WorksheetPart)this.WorkbookPart.GetPartById(chartSheet.Id!);
@@ -75,35 +115,6 @@ namespace ShapeCrawler.Charts
             this.spreadsheetDocument.Value.Clone(mStream);
 
             return mStream.ToArray();
-        }
-
-        public void UpdateCell(string sheetName, string cellReference, double value)
-        {
-            var xCell = this.GetXCellOrDefault(sheetName, cellReference);
-            if (xCell != null)
-            {
-                xCell.DataType = new EnumValue<X.CellValues>(X.CellValues.Number);
-                xCell.CellValue = new X.CellValue(value);
-            }
-            else
-            {
-                var chartSheet = this.WorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
-                var worksheetPart = (WorksheetPart)this.WorkbookPart.GetPartById(chartSheet.Id!);
-                var worksheet = worksheetPart.Worksheet;
-                var sheetData = worksheet.Elements<X.SheetData>().First();
-                var rowIndexStr = Regex.Match(cellReference, @"\d+").Value;
-                var rowIndex = int.Parse(rowIndexStr, NumberStyles.Number, NumberFormatInfo.InvariantInfo);
-
-                var row = sheetData.Elements<X.Row>().First(r => r.RowIndex == rowIndex);
-                var newCell = new X.Cell
-                {
-                    CellReference = cellReference
-                };
-                newCell.DataType = new EnumValue<X.CellValues>(X.CellValues.Number);
-                newCell.CellValue = new X.CellValue(value);
-                X.Cell refCell = null;
-                row.InsertAt(newCell, 1);
-            }
         }
     }
 }
