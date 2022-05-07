@@ -40,6 +40,8 @@ namespace ShapeCrawler
         /// <inheritdoc/>
         public IFont Font => this.font.Value;
 
+        public A.Run SDKRun => (A.Run)this.AText.Parent;
+
         #endregion Public Properties
 
         internal bool IsRemoved { get; set; }
@@ -54,10 +56,8 @@ namespace ShapeCrawler
             {
                 throw new ElementIsRemovedException("Paragraph portion was removed.");
             }
-            else
-            {
-                this.ParentParagraph.ThrowIfRemoved();
-            }
+
+            this.ParentParagraph.ThrowIfRemoved();
         }
 
         private string GetText()

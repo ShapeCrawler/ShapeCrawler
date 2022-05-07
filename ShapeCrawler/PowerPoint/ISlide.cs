@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.SlideMasters;
 
 namespace ShapeCrawler
@@ -35,6 +36,8 @@ namespace ShapeCrawler
         ISlideLayout ParentSlideLayout { get; }
 
         IPresentation ParentPresentation { get; }
+
+        SlidePart SDKSlidePart { get; }
 
         /// <summary>
         ///     Hides slide.

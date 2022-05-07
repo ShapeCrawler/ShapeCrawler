@@ -55,7 +55,7 @@ namespace ShapeCrawler
         private ShapeFill TryGetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()
         {
             var slide = (SCSlide)this.Slide;
-            SCImage image = SCImage.GetFillImageOrDefault(this, slide.SlidePart, this.PShapeTreesChild);
+            SCImage image = SCImage.GetFillImageOrDefault(this, slide.SDKSlidePart, this.PShapeTreesChild);
 
             if (image != null)
             {

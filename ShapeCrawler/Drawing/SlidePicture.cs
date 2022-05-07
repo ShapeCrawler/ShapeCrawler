@@ -17,7 +17,7 @@ namespace ShapeCrawler
             this.picReference = picReference;
         }
 
-        public SCImage Image => SCImage.CreatePictureImage(this, this.Slide.SlidePart, this.picReference);
+        public SCImage Image => SCImage.CreatePictureImage(this, this.Slide.SDKSlidePart, this.picReference);
 
         public ShapeType ShapeType => ShapeType.Picture;
     }

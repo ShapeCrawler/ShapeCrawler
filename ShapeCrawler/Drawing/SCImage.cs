@@ -127,7 +127,7 @@ namespace ShapeCrawler
 
         internal static SCImage GetSlideBackgroundImageOrDefault(SCSlide parentSlide)
         {
-            P.Background pBackground = parentSlide.SlidePart.Slide.CommonSlideData.Background;
+            P.Background pBackground = parentSlide.SDKSlidePart.Slide.CommonSlideData.Background;
             if (pBackground == null)
             {
                 return null;
@@ -140,8 +140,8 @@ namespace ShapeCrawler
                 return null;
             }
 
-            var imagePart = (ImagePart)parentSlide.SlidePart.GetPartById(picReference.Value);
-            var backgroundImage = new SCImage(imagePart, parentSlide, picReference, parentSlide.SlidePart);
+            var imagePart = (ImagePart)parentSlide.SDKSlidePart.GetPartById(picReference.Value);
+            var backgroundImage = new SCImage(imagePart, parentSlide, picReference, parentSlide.SDKSlidePart);
 
             return backgroundImage;
         }

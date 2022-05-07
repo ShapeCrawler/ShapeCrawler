@@ -29,8 +29,8 @@ namespace ShapeCrawler
         {
             this.PresentationInternal = parentPresentation;
             this.ParentPresentation = parentPresentation;
-            this.SlidePart = slidePart;
-            this.shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.ForSlide(this.SlidePart, this));
+            this.SDKSlidePart = slidePart;
+            this.shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.ForSlide(this.SDKSlidePart, this));
             this.backgroundImage = new Lazy<SCImage>(() => SCImage.GetSlideBackgroundImageOrDefault(this));
             this.customXmlPart = new Lazy<CustomXmlPart>(this.GetSldCustomXmlPart);
         }
@@ -54,13 +54,13 @@ namespace ShapeCrawler
             set => this.SetCustomData(value);
         }
 
-        public bool Hidden => this.SlidePart.Slide.Show != null && this.SlidePart.Slide.Show.Value == false;
+        public bool Hidden => this.SDKSlidePart.Slide.Show != null && this.SDKSlidePart.Slide.Show.Value == false;
 
         public bool IsRemoved { get; set; }
 
         public IPresentation ParentPresentation { get; }
 
-        internal SlidePart SlidePart { get; }
+        public SlidePart SDKSlidePart { get; }
 
         private ResettableLazy<ShapeCollection> shapes { get; }
 
@@ -107,14 +107,14 @@ namespace ShapeCrawler
 
         public void Hide()
         {
-            if (this.SlidePart.Slide.Show == null)
+            if (this.SDKSlidePart.Slide.Show == null)
             {
                 var showAttribute = new OpenXmlAttribute("show", string.Empty, "0");
-                this.SlidePart.Slide.SetAttribute(showAttribute);
+                this.SDKSlidePart.Slide.SetAttribute(showAttribute);
             }
             else
             {
-                this.SlidePart.Slide.Show = false;
+                this.SDKSlidePart.Slide.Show = false;
             }
         }
 
@@ -123,7 +123,7 @@ namespace ShapeCrawler
         private int GetNumber()
         {
             var presentationPart = this.PresentationInternal.PresentationDocument.PresentationPart;
-            string currentSlidePartId = presentationPart.GetIdOfPart(this.SlidePart);
+            string currentSlidePartId = presentationPart.GetIdOfPart(this.SDKSlidePart);
             List<SlideId> slideIdList = presentationPart.Presentation.SlideIdList.ChildElements.OfType<SlideId>().ToList();
             for (int i = 0; i < slideIdList.Count; i++)
             {
@@ -202,7 +202,7 @@ namespace ShapeCrawler
             Stream customXmlPartStream;
             if (this.customXmlPart.Value == null)
             {
-                CustomXmlPart newSlideCustomXmlPart = this.SlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
+                CustomXmlPart newSlideCustomXmlPart = this.SDKSlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
                 customXmlPartStream = newSlideCustomXmlPart.GetStream();
 #if NETSTANDARD2_0
                 this.customXmlPart = new Lazy<CustomXmlPart>(() => newSlideCustomXmlPart);
@@ -221,7 +221,7 @@ namespace ShapeCrawler
 
         private CustomXmlPart GetSldCustomXmlPart()
         {
-            foreach (CustomXmlPart customXmlPart in this.SlidePart.CustomXmlParts)
+            foreach (CustomXmlPart customXmlPart in this.SDKSlidePart.CustomXmlParts)
             {
                 using var customXmlPartStream = new StreamReader(customXmlPart.GetStream());
                 string customXmlPartText = customXmlPartStream.ReadToEnd();
