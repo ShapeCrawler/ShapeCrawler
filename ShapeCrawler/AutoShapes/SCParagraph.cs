@@ -137,7 +137,7 @@ namespace ShapeCrawler
 
         private void UpdateAlignment(TextAlignment alignmentValue)
         {
-            if (this.ParentTextBox.ParentTextBoxContainer.Placeholder != null)
+            if (this.ParentTextBox.TextBoxContainer.Placeholder != null)
             {
                 throw new PlaceholderCannotBeChangedException();
             }
@@ -173,7 +173,7 @@ namespace ShapeCrawler
                 return this.alignment.Value;
             }
 
-            var placeholder = this.ParentTextBox.ParentTextBoxContainer.Placeholder;
+            var placeholder = this.ParentTextBox.TextBoxContainer.Placeholder;
             if (placeholder is { Type: PlaceholderType.Title })
             {
                 this.alignment = TextAlignment.Left;

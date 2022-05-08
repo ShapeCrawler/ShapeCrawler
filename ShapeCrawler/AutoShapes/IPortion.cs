@@ -21,6 +21,12 @@ namespace ShapeCrawler
         /// </summary>
         IFont Font { get; }
 
+        /// <summary>
+        ///     Gets underlying SDK run.
+        /// </summary>
+        // ReSharper disable once InconsistentNaming
         A.Run SDKRun { get; }
+
+        string Hyperlink { get; set; }
     }
 }

@@ -17,8 +17,8 @@ namespace ShapeCrawler
         private readonly Lazy<SCTextBox?> textBox;
         private readonly P.Shape pShape;
 
-        public SlideAutoShape(P.Shape pShape, SCSlide parentSlideLayoutInternal, SlideGroupShape groupShape)
-            : base(pShape, parentSlideLayoutInternal, groupShape)
+        public SlideAutoShape(P.Shape pShape, SCSlide parentSlideInternal, SlideGroupShape groupShape)
+            : base(pShape, parentSlideInternal, groupShape)
         {
             this.textBox = new Lazy<SCTextBox?>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
@@ -31,7 +31,7 @@ namespace ShapeCrawler
 
         public ShapeFill Fill => this.shapeFill.Value;
 
-        public IShape Shape => this;
+        public IShape Shape => this; // TODO: should be internal?
 
         #endregion Public Properties
 

@@ -28,7 +28,7 @@ namespace ShapeCrawler.AutoShapes
             this.latinFont = new ResettableLazy<A.LatinFont>(this.GetALatinFont);
             this.colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
             this.ParentPortion = portion;
-            var parentTextBoxContainer = portion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
+            var parentTextBoxContainer = portion.ParentParagraph.ParentTextBox.TextBoxContainer;
             Shape parentShape;
             if (parentTextBoxContainer is SCTableCell cell)
             {
@@ -36,7 +36,7 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                parentShape = (Shape)portion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
+                parentShape = (Shape)portion.ParentParagraph.ParentTextBox.TextBoxContainer;
             }
             this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements.FontScheme;
         }
@@ -122,7 +122,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             var parentParagraph = this.ParentPortion.ParentParagraph;
-            var textBoxContainer = parentParagraph.ParentTextBox.ParentTextBoxContainer;
+            var textBoxContainer = parentParagraph.ParentTextBox.TextBoxContainer;
             int paragraphLvl = parentParagraph.Level;
 
             if (textBoxContainer is Shape { Placeholder: { } } parentShape)
@@ -277,7 +277,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetName(string fontName)
         {
-            Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextBox.ParentTextBoxContainer;
+            Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextBox.TextBoxContainer;
             if (parentShape.Placeholder != null)
             {
                 throw new PlaceholderCannotBeChangedException();
