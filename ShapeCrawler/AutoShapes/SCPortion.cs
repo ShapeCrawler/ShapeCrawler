@@ -1,4 +1,5 @@
 ﻿using System;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shared;
@@ -12,15 +13,16 @@ namespace ShapeCrawler
     internal class SCPortion : IPortion
     {
         private readonly ResettableLazy<SCFont> font;
+        private string _hyperlink;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SCPortion"/> class.
         /// </summary>
-        internal SCPortion(A.Text aText, SCParagraph paragraph)
+        internal SCPortion(A.Text sdkaText, SCParagraph paragraph)
         {
-            this.AText = aText;
+            this.SDKAText = sdkaText;
             this.ParentParagraph = paragraph;
-            this.font = new ResettableLazy<SCFont>(() => new SCFont(this.AText, this));
+            this.font = new ResettableLazy<SCFont>(() => new SCFont(this.SDKAText, this));
         }
 
         #region Public Properties
@@ -40,13 +42,19 @@ namespace ShapeCrawler
         /// <inheritdoc/>
         public IFont Font => this.font.Value;
 
+        public string Hyperlink
+        {
+            get => this.GetHyperlink();
+            set => this.SetHyperlink(value);
+        }
+
         #endregion Public Properties
 
         internal bool IsRemoved { get; set; }
 
         internal SCParagraph ParentParagraph { get; }
 
-        internal A.Text AText { get; }
+        public A.Text SDKAText { get; }
 
         private void ThrowIfRemoved()
         {
@@ -54,16 +62,14 @@ namespace ShapeCrawler
             {
                 throw new ElementIsRemovedException("Paragraph portion was removed.");
             }
-            else
-            {
-                this.ParentParagraph.ThrowIfRemoved();
-            }
+
+            this.ParentParagraph.ThrowIfRemoved();
         }
 
         private string GetText()
         {
-            string portionText = this.AText.Text;
-            if (this.AText.Parent.NextSibling<A.Break>() != null)
+            string portionText = this.SDKAText.Text;
+            if (this.SDKAText.Parent.NextSibling<A.Break>() != null)
             {
                 portionText += Environment.NewLine;
             }
@@ -73,7 +79,56 @@ namespace ShapeCrawler
 
         private void SetText(string text)
         {
-            this.AText.Text = text;
+            this.SDKAText.Text = text;
+        }
+
+        private string? GetHyperlink()
+        {
+            var runProperties = this.SDKAText.PreviousSibling<A.RunProperties>();
+            if (runProperties == null)
+            {
+                return null;
+            }
+
+            var hyperlink = runProperties.GetFirstChild<A.HyperlinkOnClick>();
+            if (hyperlink == null)
+            {
+                return null;
+            }
+
+            var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextBox.TextBoxContainer;
+            var slidePart = slideAutoShape.Slide.SDKSlidePart;
+            var hyperlinkRelationship = (HyperlinkRelationship) slidePart.GetReferenceRelationship(hyperlink.Id);
+
+            return hyperlinkRelationship.Uri.AbsoluteUri;
+        }
+
+        private void SetHyperlink(string url)
+        {
+            if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
+            {
+                throw new ShapeCrawlerException("Hyperlink is invalid.");
+            }
+
+            var runProperties = this.SDKAText.PreviousSibling<A.RunProperties>();
+            if (runProperties == null)
+            {
+                runProperties = new A.RunProperties();
+            }
+
+            var hyperlink = runProperties.GetFirstChild<A.HyperlinkOnClick>();
+            if (hyperlink == null)
+            {
+                hyperlink = new A.HyperlinkOnClick();
+                runProperties.Append(hyperlink);
+            }
+
+            var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
+            var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextBox.TextBoxContainer;
+            var slidePart = slideAutoShape.Slide.SDKSlidePart;
+
+            slidePart.AddHyperlinkRelationship(new Uri(url, UriKind.Absolute), true, rId);
+            hyperlink.Id = rId;
         }
     }
 }

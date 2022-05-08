@@ -4,7 +4,7 @@ namespace TextExample;
 
 internal class TextExample
 {
-    internal void ReadAutoShape()
+    internal void AutoShape()
     {
         using var presentation = SCPresentation.Open(@"test.pptx", true);
         var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 1");
@@ -14,6 +14,9 @@ internal class TextExample
         var alignment = paragraph.Alignment;
 
         // Update alignment
-        alignment = TextAlignment.Center;
+        paragraph.Alignment = TextAlignment.Center;
+        
+        // Add/Update Hyperlink
+        paragraph.Portions[0].Hyperlink = "https://github.com/ShapeCrawler/ShapeCrawler";
     }
 }

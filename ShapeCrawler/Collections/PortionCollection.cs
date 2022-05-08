@@ -33,7 +33,7 @@ namespace ShapeCrawler.Collections
         {
             SCPortion removingInnerPortion = (SCPortion)removingPortion;
 
-            removingInnerPortion.AText.Parent.Remove(); // remove parent <a:r>
+            removingInnerPortion.SDKAText.Parent.Remove(); // remove parent <a:r>
             removingInnerPortion.IsRemoved = true;
 
             this.portions.Reset();

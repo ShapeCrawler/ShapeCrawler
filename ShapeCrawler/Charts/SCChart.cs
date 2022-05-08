@@ -101,7 +101,7 @@ namespace ShapeCrawler.Charts
                 .GetFirstChild<C.ChartReference>();
 
             var slide = this.Slide;
-            this.ChartPart = (ChartPart)slide.SlidePart.GetPartById(cChartReference.Id);
+            this.ChartPart = (ChartPart)slide.SDKSlidePart.GetPartById(cChartReference.Id);
 
             C.PlotArea cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea;
             this.cXCharts = cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));

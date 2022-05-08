@@ -113,13 +113,13 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void SlidesAdd_AddsSpecifiedSlideAtTheEndOfTheSlideCollection()
+        public void Slides_Add_adds_specified_slide_at_the_end_of_the_slide_collection()
         {
             // Arrange
-            ISlide sourceSlide = _fixture.Pre001.Slides[0];
-            IPresentation destPre = SCPresentation.Open(Properties.Resources._002, true);
-            int originSlidesCount = destPre.Slides.Count;
-            int expectedSlidesCount = originSlidesCount + 1;
+            var sourceSlide = _fixture.Pre001.Slides[0];
+            var destPre = SCPresentation.Open(Properties.Resources._002, true);
+            var originSlidesCount = destPre.Slides.Count;
+            var expectedSlidesCount = ++originSlidesCount;
             MemoryStream savedPre = new ();
 
             // Act

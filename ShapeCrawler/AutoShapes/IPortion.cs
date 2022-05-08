@@ -1,4 +1,6 @@
-﻿// ReSharper disable CheckNamespace
+﻿using A = DocumentFormat.OpenXml.Drawing;
+
+// ReSharper disable CheckNamespace
 
 using ShapeCrawler.AutoShapes;
 
@@ -18,5 +20,9 @@ namespace ShapeCrawler
         ///     Gets font.
         /// </summary>
         IFont Font { get; }
+
+        A.Text SDKAText { get; }
+
+        string Hyperlink { get; set; }
     }
 }

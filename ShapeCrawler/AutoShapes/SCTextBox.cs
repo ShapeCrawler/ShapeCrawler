@@ -17,12 +17,12 @@ namespace ShapeCrawler.AutoShapes
     {
         private readonly Lazy<string> text;
 
-        public SCTextBox(OpenXmlCompositeElement txBodyCompositeElement, ITextBoxContainer parentTextBoxContainer)
+        public SCTextBox(OpenXmlCompositeElement txBodyCompositeElement, ITextBoxContainer textBoxContainer)
         {
             this.text = new Lazy<string>(this.GetText);
             this.APTextBody = txBodyCompositeElement;
             this.Paragraphs = new ParagraphCollection(this.APTextBody, this);
-            this.ParentTextBoxContainer = parentTextBoxContainer;
+            this.TextBoxContainer = textBoxContainer;
         }
 
         public IParagraphCollection Paragraphs { get; }
@@ -35,13 +35,16 @@ namespace ShapeCrawler.AutoShapes
 
         public AutofitType AutofitType => this.ParseAutofitType();
 
-        internal ITextBoxContainer ParentTextBoxContainer { get; }
+        /// <summary>
+        ///     Gets parent text box container.
+        /// </summary>
+        internal ITextBoxContainer TextBoxContainer { get; }
 
         internal OpenXmlCompositeElement APTextBody { get; }
 
         internal void ThrowIfRemoved()
         {
-            this.ParentTextBoxContainer.ThrowIfRemoved();
+            this.TextBoxContainer.ThrowIfRemoved();
         }
 
         private AutofitType ParseAutofitType()
@@ -72,7 +75,7 @@ namespace ShapeCrawler.AutoShapes
                 var fontFamilyName = popularPortion.Font.Name;
                 var fontSize = popularPortion.Font.Size;
                 var stringFormat = new StringFormat { Trimming = StringTrimming.Word };
-                var shape = this.ParentTextBoxContainer.Shape;
+                var shape = this.TextBoxContainer.Shape;
                 var bm = new Bitmap(shape.Width, shape.Height);
                 using var graphic = Graphics.FromImage(bm);
                 var margin = 7;

@@ -118,11 +118,11 @@ namespace ShapeCrawler
 
             string[] textLines = newText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             basePortion.Text = textLines[0];
-            OpenXmlElement lastInsertedARunOrLineBreak = basePortion.AText.Parent;
+            OpenXmlElement lastInsertedARunOrLineBreak = basePortion.SDKAText.Parent;
             for (int i = 1; i < textLines.Length; i++)
             {
                 lastInsertedARunOrLineBreak = lastInsertedARunOrLineBreak.InsertAfterSelf(new A.Break());
-                A.Run newARun = (A.Run)basePortion.AText.Parent.CloneNode(true);
+                A.Run newARun = (A.Run)basePortion.SDKAText.Parent.CloneNode(true);
                 newARun.Text.Text = textLines[i];
                 lastInsertedARunOrLineBreak = lastInsertedARunOrLineBreak.InsertAfterSelf(newARun);
             }
@@ -137,7 +137,7 @@ namespace ShapeCrawler
 
         private void UpdateAlignment(TextAlignment alignmentValue)
         {
-            if (this.ParentTextBox.ParentTextBoxContainer.Placeholder != null)
+            if (this.ParentTextBox.TextBoxContainer.Placeholder != null)
             {
                 throw new PlaceholderCannotBeChangedException();
             }
@@ -173,7 +173,7 @@ namespace ShapeCrawler
                 return this.alignment.Value;
             }
 
-            var placeholder = this.ParentTextBox.ParentTextBoxContainer.Placeholder;
+            var placeholder = this.ParentTextBox.TextBoxContainer.Placeholder;
             if (placeholder is { Type: PlaceholderType.Title })
             {
                 this.alignment = TextAlignment.Left;

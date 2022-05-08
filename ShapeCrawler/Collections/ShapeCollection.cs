@@ -195,14 +195,15 @@ namespace ShapeCrawler.Collections
             mp3Stream.Position = 0;
             mediaDataPart.FeedData(mp3Stream);
             string imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
-            ImagePart imagePart = this.slide.SlidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
+            var slidePart = this.slide.SDKSlidePart;
+            ImagePart imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
             MemoryStream ms = new ();
             Properties.Resources.audio_image.Save(ms, ImageFormat.Png);
             ms.Position = 0;
             imagePart.FeedData(ms);
 
-            AudioReferenceRelationship audioRr = this.slide.SlidePart.AddAudioReferenceRelationship(mediaDataPart);
-            MediaReferenceRelationship mediaRr = this.slide.SlidePart.AddMediaReferenceRelationship(mediaDataPart);
+            AudioReferenceRelationship audioRr = slidePart.AddAudioReferenceRelationship(mediaDataPart);
+            MediaReferenceRelationship mediaRr = slidePart.AddMediaReferenceRelationship(mediaDataPart);
 
             P.Picture picture1 = new ();
 
@@ -301,14 +302,15 @@ namespace ShapeCrawler.Collections
             videoStream.Position = 0;
             mediaDataPart.FeedData(videoStream);
             string imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
-            ImagePart imagePart = this.slide.SlidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
+            var slidePart = this.slide.SDKSlidePart;
+            var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
             MemoryStream ms = new();
             Properties.Resources.video_image.Save(ms, ImageFormat.Png);
             ms.Position = 0;
             imagePart.FeedData(ms);
 
-            VideoReferenceRelationship videoRr = this.slide.SlidePart.AddVideoReferenceRelationship(mediaDataPart);
-            MediaReferenceRelationship mediaRr = this.slide.SlidePart.AddMediaReferenceRelationship(mediaDataPart);
+            var videoRr = slidePart.AddVideoReferenceRelationship(mediaDataPart);
+            var mediaRr = slidePart.AddMediaReferenceRelationship(mediaDataPart);
 
             P.Picture picture1 = new();
 

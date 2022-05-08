@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Tests.Properties;
