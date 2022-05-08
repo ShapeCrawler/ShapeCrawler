@@ -18,11 +18,11 @@ namespace ShapeCrawler
         /// <summary>
         ///     Initializes a new instance of the <see cref="SCPortion"/> class.
         /// </summary>
-        internal SCPortion(A.Text aText, SCParagraph paragraph)
+        internal SCPortion(A.Text sdkaText, SCParagraph paragraph)
         {
-            this.AText = aText;
+            this.SDKAText = sdkaText;
             this.ParentParagraph = paragraph;
-            this.font = new ResettableLazy<SCFont>(() => new SCFont(this.AText, this));
+            this.font = new ResettableLazy<SCFont>(() => new SCFont(this.SDKAText, this));
         }
 
         #region Public Properties
@@ -42,8 +42,6 @@ namespace ShapeCrawler
         /// <inheritdoc/>
         public IFont Font => this.font.Value;
 
-        public A.Run SDKRun => (A.Run)this.AText.Parent;
-
         public string Hyperlink
         {
             get => this.GetHyperlink();
@@ -56,7 +54,7 @@ namespace ShapeCrawler
 
         internal SCParagraph ParentParagraph { get; }
 
-        internal A.Text AText { get; }
+        public A.Text SDKAText { get; }
 
         private void ThrowIfRemoved()
         {
@@ -70,8 +68,8 @@ namespace ShapeCrawler
 
         private string GetText()
         {
-            string portionText = this.AText.Text;
-            if (this.AText.Parent.NextSibling<A.Break>() != null)
+            string portionText = this.SDKAText.Text;
+            if (this.SDKAText.Parent.NextSibling<A.Break>() != null)
             {
                 portionText += Environment.NewLine;
             }
@@ -81,12 +79,12 @@ namespace ShapeCrawler
 
         private void SetText(string text)
         {
-            this.AText.Text = text;
+            this.SDKAText.Text = text;
         }
 
         private string? GetHyperlink()
         {
-            var runProperties = this.SDKRun.RunProperties;
+            var runProperties = this.SDKAText.PreviousSibling<A.RunProperties>();
             if (runProperties == null)
             {
                 return null;
@@ -112,7 +110,7 @@ namespace ShapeCrawler
                 throw new ShapeCrawlerException("Hyperlink is invalid.");
             }
 
-            var runProperties = this.SDKRun.RunProperties;
+            var runProperties = this.SDKAText.PreviousSibling<A.RunProperties>();
             if (runProperties == null)
             {
                 runProperties = new A.RunProperties();

@@ -2,6 +2,7 @@
 
 ## Version 0.29.0 - Unreleased
 - Added `Image.MIME` property to get image format [#233](https://github.com/ShapeCrawler/ShapeCrawler/issues/233).
+- Added `IPortion.Hyperlink` property to add hyperlink [#242](https://github.com/ShapeCrawler/ShapeCrawler/issues/242).
 
 ## Version 0.28.1 - 2022-03-21
 - Fixed reading picture of Layout and Master slides.

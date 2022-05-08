@@ -62,7 +62,7 @@ namespace ShapeCrawler.Drawing
             SCParagraph parentParagraph = parentPortion.ParentParagraph;
             int paragraphLevel = parentParagraph.Level;
 
-            A.SolidFill aSolidFill = parentPortion.AText.Parent.GetFirstChild<A.RunProperties>()?.SolidFill();
+            A.SolidFill aSolidFill = parentPortion.SDKAText.Parent.GetFirstChild<A.RunProperties>()?.SolidFill();
             if (aSolidFill != null)
             {
                 this.FromRunSolidFill(aSolidFill);

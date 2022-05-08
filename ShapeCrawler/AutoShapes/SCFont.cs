@@ -115,7 +115,7 @@ namespace ShapeCrawler.AutoShapes
 
         private int GetSize()
         {
-            var fontSize = this.ParentPortion.AText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize?.Value;
+            var fontSize = this.ParentPortion.SDKAText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize?.Value;
             if (fontSize != null)
             {
                 return fontSize.Value / 100;

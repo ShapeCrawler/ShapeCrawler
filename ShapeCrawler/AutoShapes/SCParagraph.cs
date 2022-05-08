@@ -118,11 +118,11 @@ namespace ShapeCrawler
 
             string[] textLines = newText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             basePortion.Text = textLines[0];
-            OpenXmlElement lastInsertedARunOrLineBreak = basePortion.AText.Parent;
+            OpenXmlElement lastInsertedARunOrLineBreak = basePortion.SDKAText.Parent;
             for (int i = 1; i < textLines.Length; i++)
             {
                 lastInsertedARunOrLineBreak = lastInsertedARunOrLineBreak.InsertAfterSelf(new A.Break());
-                A.Run newARun = (A.Run)basePortion.AText.Parent.CloneNode(true);
+                A.Run newARun = (A.Run)basePortion.SDKAText.Parent.CloneNode(true);
                 newARun.Text.Text = textLines[i];
                 lastInsertedARunOrLineBreak = lastInsertedARunOrLineBreak.InsertAfterSelf(newARun);
             }
