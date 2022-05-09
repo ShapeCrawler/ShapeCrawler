@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 0.29.0 - Unreleased
+## Version 0.29.0 - 2022-05-09
 - Added `Image.MIME` property to get image format [#233](https://github.com/ShapeCrawler/ShapeCrawler/issues/233).
 - Added `IPortion.Hyperlink` property to add hyperlink [#242](https://github.com/ShapeCrawler/ShapeCrawler/issues/242).
 

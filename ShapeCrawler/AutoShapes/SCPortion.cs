@@ -13,7 +13,6 @@ namespace ShapeCrawler
     internal class SCPortion : IPortion
     {
         private readonly ResettableLazy<SCFont> font;
-        private string _hyperlink;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SCPortion"/> class.
