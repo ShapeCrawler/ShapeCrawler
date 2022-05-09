@@ -3,26 +3,25 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Placeholders
 {
-    internal class FontData // TODO: can be structure?
+    internal class FontData
     {
-        // TODO: remove unnecessary public setter for property below
-        public Int32Value FontSize { get; set; }
+        internal Int32Value? FontSize { get; set; }
 
-        public A.LatinFont ALatinFont { get; set; }
+        internal A.LatinFont? ALatinFont { get; set; }
 
-        public BooleanValue IsBold { get; set; }
+        internal BooleanValue? IsBold { get; set; }
 
-        public BooleanValue IsItalic { get; set; }
+        internal BooleanValue? IsItalic { get; set; }
 
-        public A.RgbColorModelHex ARgbColorModelHex { get; set; }
+        internal A.RgbColorModelHex? ARgbColorModelHex { get; set; }
 
-        public A.SchemeColor ASchemeColor { get; set; }
+        internal A.SchemeColor? ASchemeColor { get; set; }
 
-        public A.SystemColor ASystemColor { get; set; }
+        public A.SystemColor? ASystemColor { get; set; }
 
-        public A.PresetColor APresetColor { get; set; }
+        internal A.PresetColor? APresetColor { get; set; }
 
-        public bool IsFilled()
+        internal bool IsFilled()
         {
             return this.FontSize != null
                    && this.ALatinFont != null
@@ -31,7 +30,7 @@ namespace ShapeCrawler.Placeholders
                    && this.ASchemeColor != null;
         }
 
-        public void Fill(FontData fontData)
+        internal void Fill(FontData fontData)
         {
             if (fontData.FontSize == null && this.FontSize != null)
             {

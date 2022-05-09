@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
@@ -33,7 +32,7 @@ namespace ShapeCrawler.Factories
         /// <param name="compositeElement">Instance of <see cref="P.DefaultTextStyle" /> or <see cref="A.ListStyle" /> class.</param>
         public static Dictionary<int, FontData>
             FromCompositeElement(
-                OpenXmlCompositeElement compositeElement) // TODO: set annotation that about it cannot be NULL
+                OpenXmlCompositeElement compositeElement)
         {
             // Get <a:lvlXpPr> elements, eg. <a:lvl1pPr>, <a:lvl2pPr>
             IEnumerable<OpenXmlElement> lvlParagraphPropertyList = compositeElement.Elements()
