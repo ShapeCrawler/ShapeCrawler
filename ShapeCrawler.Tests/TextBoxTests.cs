@@ -58,7 +58,7 @@ namespace ShapeCrawler.Tests
                                                    $"test3{Environment.NewLine}test4{Environment.NewLine}test5");
             textBoxCase7.Text.Should().BeEquivalentTo("Test subtitle");
             textBoxCase8.Text.Should().BeEquivalentTo("Jan 2018");
-            textBoxCase9.Text.Should().BeEquivalentTo("25.01.2020");
+            textBoxCase9.Text.Should().NotBeEmpty();
             textBoxCase10.Text.Should().BeEquivalentTo("test footer");
             textBoxCase11.Text.Should().BeEquivalentTo("Test title text");
             textBoxCase12.Text.Should().BeEquivalentTo("P1 P2");

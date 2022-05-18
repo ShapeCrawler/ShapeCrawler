@@ -35,6 +35,8 @@ namespace ShapeCrawler
         /// </summary>
         byte[] ByteArray { get; }
 
+        ISectionCollection Sections { get; }
+
         /// <summary>
         ///     Saves presentation.
         /// </summary>

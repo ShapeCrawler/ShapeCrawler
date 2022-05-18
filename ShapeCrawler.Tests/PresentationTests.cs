@@ -12,7 +12,7 @@ using Xunit;
 
 namespace ShapeCrawler.Tests
 {
-    public class PresentationTests : IClassFixture<PresentationFixture>
+    public class PresentationTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     {
         private readonly PresentationFixture _fixture;
 
@@ -219,6 +219,36 @@ namespace ShapeCrawler.Tests
 
             // Assert
             slideMasterShapesCount.Should().Be(7);
+        }
+
+        [Fact]
+        public void Sections_Remove_removes_section()
+        {
+            // Arrange
+            var pptxStream = GetPptxStream("030.pptx");
+            var pres = SCPresentation.Open(pptxStream, true);
+            var removingSection = pres.Sections[0];
+
+            // Act
+            pres.Sections.Remove(removingSection);
+
+            // Assert
+            pres.Sections.Count.Should().Be(0);
+        }
+
+        [Fact]
+        public void Sections_Section_Slides_Count_returns_zero_When_section_is_Empty()
+        {
+            // Arrange
+            var pptxStream = GetPptxStream("008.pptx");
+            var pres = SCPresentation.Open(pptxStream, false);
+            var section = pres.Sections.GetByName("Section 2");
+
+            // Act
+            var slidesCount = section.Slides.Count;
+
+            // Assert
+            slidesCount.Should().Be(0);
         }
     }
 }
