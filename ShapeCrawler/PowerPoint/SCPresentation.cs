@@ -25,7 +25,7 @@ namespace ShapeCrawler
         private bool closed;
         private Lazy<Dictionary<int, FontData>> paraLvlToFontData;
         private Lazy<SCSlideSize> slideSize;
-        internal ResettableLazy<SlideMasterCollection> slideMasters;
+        internal ResettableLazy<SlideMasterCollection> SlideMastersValue;
 
         internal PresentationDocument PresentationDocument { get; private set; }
 
@@ -37,17 +37,21 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public ISlideCollection Slides => new SlideCollection(this);
+        public ISlideCollection Slides => new SCSlideCollection(this);
 
         public int SlideWidth => this.slideSize.Value.Width;
 
         public int SlideHeight => this.slideSize.Value.Height;
 
-        public ISlideMasterCollection SlideMasters => this.slideMasters.Value;
+        public ISlideMasterCollection SlideMasters => this.SlideMastersValue.Value;
 
         public byte[] ByteArray => this.GetByteArray();
 
+        public ISectionCollection Sections => SCSectionCollection.Create(this);
+
         internal List<ImagePart> ImageParts => this.GetImageParts();
+
+        internal SCSlideCollection SlidesInternal => (SCSlideCollection)this.Slides;
 
         private byte[] GetByteArray()
         {
@@ -244,7 +248,7 @@ namespace ShapeCrawler
         {
             this.ThrowIfSlidesNumberLarge();
             this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
-            this.slideMasters = new ResettableLazy<SlideMasterCollection>(() => SlideMasterCollection.Create(this));
+            this.SlideMastersValue = new ResettableLazy<SlideMasterCollection>(() => SlideMasterCollection.Create(this));
             this.paraLvlToFontData =
                 new Lazy<Dictionary<int, FontData>>(() => ParseFontHeights(this.PresentationDocument.PresentationPart.Presentation));
         }

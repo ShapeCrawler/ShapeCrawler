@@ -5,19 +5,18 @@ using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Collections
 {
-    internal class SlideCollection : ISlideCollection
+    internal class SCSlideCollection : ISlideCollection
     {
         private readonly SCPresentation parentPresentation;
         private readonly ResettableLazy<List<SCSlide>> slides;
         private PresentationPart presentationPart;
 
-        internal SlideCollection(SCPresentation presentation)
+        internal SCSlideCollection(SCPresentation presentation)
         {
             this.presentationPart = presentation.PresentationDocument.PresentationPart ?? throw new ArgumentNullException("PresentationPart");
             this.parentPresentation = presentation;
@@ -155,7 +154,7 @@ namespace ShapeCrawler.Collections
             }
 
             this.slides.Reset();
-            this.parentPresentation.slideMasters.Reset();
+            this.parentPresentation.SlideMastersValue.Reset();
         }
 
         public void Insert(int position, ISlide outerSlide)
@@ -170,7 +169,7 @@ namespace ShapeCrawler.Collections
             this.slides.Value[addedSlideIndex].Number = position;
 
             this.slides.Reset();
-            this.parentPresentation.slideMasters.Reset();
+            this.parentPresentation.SlideMastersValue.Reset();
         }
 
         private static uint CreateId(SlideIdList slideIdList)
@@ -203,17 +202,24 @@ namespace ShapeCrawler.Collections
 
         private List<SCSlide> GetSlides()
         {
-            this.presentationPart = this.parentPresentation.PresentationDocument.PresentationPart;
+            this.presentationPart = this.parentPresentation.PresentationDocument.PresentationPart!;
             int slidesCount = this.presentationPart.SlideParts.Count();
             var slides = new List<SCSlide>(slidesCount);
+            var slideIds = this.presentationPart.Presentation.SlideIdList.ChildElements.OfType<SlideId>().ToList();
             for (var slideIndex = 0; slideIndex < slidesCount; slideIndex++)
             {
-                SlidePart slidePart = this.presentationPart.GetSlidePartByIndex(slideIndex);
-                var newSlide = new SCSlide(this.parentPresentation, slidePart);
+                var slideId = slideIds[slideIndex];
+                var slidePart = (SlidePart)this.presentationPart.GetPartById(slideId.RelationshipId);
+                var newSlide = new SCSlide(this.parentPresentation, slidePart, slideId);
                 slides.Add(newSlide);
             }
 
             return slides;
+        }
+
+        internal SCSlide GetBySlideId(SlideId slideId)
+        {
+            return this.slides.Value.First(scSlide => scSlide.SlideId == slideId);
         }
     }
 }
