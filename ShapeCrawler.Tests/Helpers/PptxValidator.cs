@@ -12,6 +12,7 @@ namespace ShapeCrawler.Tests.Helpers
     {
         public static ValidateResponse Validate(MemoryStream pptxStream)
         {
+            pptxStream.Position = 0;
             using IReader reader = ReaderFactory.Open(pptxStream);
             while (reader.MoveToNextEntry())
             {

@@ -7,6 +7,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
@@ -15,17 +16,62 @@ using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
-
 namespace ShapeCrawler
 {
-    /// <inheritdoc cref="IPresentation" />
+    /// <summary>
+    ///     <inheritdoc cref="IPresentation"/>
+    /// </summary>
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrawler")]
     public sealed class SCPresentation : IPresentation
     {
+        internal ResettableLazy<SlideMasterCollection> SlideMastersValue;
         private bool closed;
         private Lazy<Dictionary<int, FontData>> paraLvlToFontData;
         private Lazy<SCSlideSize> slideSize;
-        internal ResettableLazy<SlideMasterCollection> SlideMastersValue;
+        private string cacheFile;
+        private Stream sourcePptxStream;
+
+        private SCPresentation(string pptxPath, in bool isEditable, string cacheFile)
+        {
+            this.Editable = isEditable;
+            this.cacheFile = cacheFile;
+            var option = new OpenSettings { AutoSave = false };
+
+            ThrowIfSourceInvalid(pptxPath);
+
+            this.PresentationDocument = PresentationDocument.Open(pptxPath, isEditable, option);
+            this.Init();
+        }
+
+        private SCPresentation(Stream sourcePptxStream, in bool isEditable)
+        {
+            this.Editable = isEditable;
+            var option = new OpenSettings { AutoSave = false };
+
+            ThrowIfSourceInvalid(sourcePptxStream);
+
+            this.PresentationDocument = PresentationDocument.Open(sourcePptxStream, isEditable, option);
+            this.OpenInternal(this.PresentationDocument, sourcePptxStream);
+            this.Init();
+        }
+
+        /// <inheritdoc/>
+        public ISlideCollection Slides => new SCSlideCollection(this);
+
+        /// <inheritdoc/>
+        public int SlideWidth => this.slideSize.Value.Width;
+
+        /// <inheritdoc/>
+        public int SlideHeight => this.slideSize.Value.Height;
+
+        /// <inheritdoc/>
+        public ISlideMasterCollection SlideMasters => this.SlideMastersValue.Value;
+
+        /// <inheritdoc/>
+        public byte[] ByteArray => this.GetByteArray();
+
+        /// <inheritdoc/>
+        public ISectionCollection Sections => SCSectionCollection.Create(this);
 
         internal PresentationDocument PresentationDocument { get; private set; }
 
@@ -35,33 +81,9 @@ namespace ShapeCrawler
 
         internal Dictionary<int, FontData> ParaLvlToFontData => this.paraLvlToFontData.Value;
 
-        #region Public Properties
-
-        public ISlideCollection Slides => new SCSlideCollection(this);
-
-        public int SlideWidth => this.slideSize.Value.Width;
-
-        public int SlideHeight => this.slideSize.Value.Height;
-
-        public ISlideMasterCollection SlideMasters => this.SlideMastersValue.Value;
-
-        public byte[] ByteArray => this.GetByteArray();
-
-        public ISectionCollection Sections => SCSectionCollection.Create(this);
-
         internal List<ImagePart> ImageParts => this.GetImageParts();
 
         internal SCSlideCollection SlidesInternal => (SCSlideCollection)this.Slides;
-
-        private byte[] GetByteArray()
-        {
-            var stream = new MemoryStream();
-            this.PresentationDocument.Clone(stream);
-
-            return stream.ToArray();
-        }
-
-        #endregion Public Properties
 
         #region Public Methods
 
@@ -70,7 +92,10 @@ namespace ShapeCrawler
         /// </summary>
         public static IPresentation Open(string pptxPath, in bool isEditable)
         {
-            return new SCPresentation(pptxPath, isEditable);
+            var original = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            File.Copy(pptxPath, original);
+
+            return new SCPresentation(pptxPath, isEditable, original);
         }
 
         /// <summary>
@@ -87,11 +112,13 @@ namespace ShapeCrawler
         }
 
         /// <summary>
-        ///     Opens presentation from stream.
+        ///     Opens presentation from specified stream.
         /// </summary>
-        public static IPresentation Open(Stream stream, in bool isEditable)
+        public static IPresentation Open(Stream pptxStream, in bool isEditable)
         {
-            return new SCPresentation(stream, isEditable);
+            pptxStream.Position = 0;
+
+            return new SCPresentation(pptxStream, isEditable);
         }
 
         /// <inheritdoc/>
@@ -105,7 +132,7 @@ namespace ShapeCrawler
         {
             this.ChartWorkbooks.ForEach(cw => cw.Close()); // closes cached Excel documents
 
-            PresentationDocument savedDoc = (PresentationDocument)this.PresentationDocument.Clone(filePath);
+            var savedDoc = (PresentationDocument)this.PresentationDocument.Clone(filePath);
             this.PresentationDocument.Close();
             this.PresentationDocument = savedDoc;
         }
@@ -113,11 +140,17 @@ namespace ShapeCrawler
         /// <inheritdoc/>
         public void SaveAs(Stream stream)
         {
-            this.ChartWorkbooks.ForEach(cw => cw.Close());
-
-            PresentationDocument savedDoc = (PresentationDocument)this.PresentationDocument.Clone(stream);
+            this.ChartWorkbooks.ForEach(chartWorkbook => chartWorkbook.Close());
+            var newDocument = this.PresentationDocument.Clone(stream);
             this.PresentationDocument.Close();
-            this.PresentationDocument = savedDoc;
+
+            if (this.sourcePptxStream != null)
+            {
+                this.sourcePptxStream.SetLength(0);
+                this.sourcePptxStream.WriteFile(this.cacheFile);
+                File.Delete(this.cacheFile);
+                this.OpenInternal(newDocument, stream);
+            }
         }
 
         /// <inheritdoc/>
@@ -134,6 +167,9 @@ namespace ShapeCrawler
             this.closed = true;
         }
 
+        /// <summary>
+        ///     Closes presentation and releases resources.
+        /// </summary>
         public void Dispose()
         {
             this.Close();
@@ -149,26 +185,22 @@ namespace ShapeCrawler
             }
         }
 
-        private SCPresentation(string pptxPath, in bool isEditable)
+        private void OpenInternal(OpenXmlPackage document, Stream documentStream)
         {
-            this.Editable = isEditable;
-            var option = new OpenSettings { AutoSave = false };
+            this.PresentationDocument = (PresentationDocument)document;
+            this.sourcePptxStream = documentStream;
 
-            ThrowIfSourceInvalid(pptxPath);
-
-            this.PresentationDocument = PresentationDocument.Open(pptxPath, isEditable, option);
-            this.Init();
+            this.cacheFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            this.sourcePptxStream.Position = 0;
+            this.sourcePptxStream.SaveToFile(this.cacheFile);
         }
 
-        private SCPresentation(Stream pptxStream, in bool isEditable)
+        private byte[] GetByteArray()
         {
-            this.Editable = isEditable;
-            var option = new OpenSettings { AutoSave = false };
+            var stream = new MemoryStream();
+            this.PresentationDocument.Clone(stream);
 
-            ThrowIfSourceInvalid(pptxStream);
-
-            this.PresentationDocument = PresentationDocument.Open(pptxStream, isEditable, option);
-            this.Init();
+            return stream.ToArray();
         }
 
         private List<ImagePart> GetImageParts()

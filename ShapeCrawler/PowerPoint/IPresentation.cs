@@ -35,6 +35,9 @@ namespace ShapeCrawler
         /// </summary>
         byte[] ByteArray { get; }
 
+        /// <summary>
+        ///     Gets section collection.
+        /// </summary>
         ISectionCollection Sections { get; }
 
         /// <summary>

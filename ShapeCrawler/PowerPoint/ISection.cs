@@ -3,7 +3,7 @@
 namespace ShapeCrawler
 {
     /// <summary>
-    ///     Represent a presentation section.
+    ///     Represents a presentation section.
     /// </summary>
     public interface ISection
     {

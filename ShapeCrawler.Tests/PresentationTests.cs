@@ -5,6 +5,7 @@ using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Statics;
 using ShapeCrawler.Tests.Helpers;
@@ -134,20 +135,20 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void SlidesAdd_ShouldNotBreakPresentation()
+        public void Slides_Add_should_not_Break_presentation()
         {
             // Arrange
-            ISlide sourceSlide = _fixture.Pre001.Slides[0];
-            IPresentation destPre = SCPresentation.Open(Properties.Resources._002, true);
-            MemoryStream modified = new();
+            var sourceSlide = _fixture.Pre001.Slides[0];
+            var destPres = SCPresentation.Open(Properties.Resources._002, true);
+            var newStream = new MemoryStream();
 
             // Act
-            destPre.Slides.Add(sourceSlide);
+            destPres.Slides.Add(sourceSlide);
 
             // Assert
-            destPre.SaveAs(modified);
-            ValidateResponse response = PptxValidator.Validate(modified);
-            response.IsValid.Should().BeTrue();
+            destPres.SaveAs(newStream);
+            var validateResponse = PptxValidator.Validate(newStream);
+            validateResponse.IsValid.Should().BeTrue();
         }
 
         [Fact]
@@ -249,6 +250,29 @@ namespace ShapeCrawler.Tests
 
             // Assert
             slidesCount.Should().Be(0);
+        }
+        
+        [Fact]
+        public void SaveAs_should_not_change_the_Original_Stream_when_is_saved_to_New_Stream()
+        {
+            // Arrange
+            var originalStream = GetPptxStream("001.pptx");
+            var pres = SCPresentation.Open(originalStream, true);
+            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            var originalText = textBox!.Text;
+            var newStream = new MemoryStream();
+
+            // Act
+            textBox.Text = originalText + "modified";
+            pres.SaveAs(newStream);
+            
+            pres.Close();
+            pres = SCPresentation.Open(originalStream, false);
+            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            var autoShapeText = textBox!.Text; 
+
+            // Assert
+            autoShapeText.Should().BeEquivalentTo(originalText);
         }
     }
 }
