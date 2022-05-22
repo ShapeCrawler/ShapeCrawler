@@ -1,6 +1,9 @@
 ﻿namespace ShapeCrawler.Placeholders
 {
-    public interface IPlaceholder // TODO: do we need public interface for placeholder?
+    /// <summary>
+    ///     Represents placeholder.
+    /// </summary>
+    public interface IPlaceholder
     {
         PlaceholderType Type { get; }
     }

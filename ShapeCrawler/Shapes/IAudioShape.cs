@@ -12,9 +12,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets audio's data in bytes.
         /// </summary>
-        byte[] BinaryData { get; } // TODO: add setter
-
-        // TODO: add ContentType property containing MIME type of audio
+        byte[] BinaryData { get; }
     }
 
     internal class AudioShape : SlideShape, IAudioShape

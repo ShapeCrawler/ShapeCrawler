@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 0.30.0 - Unreleased
+## Version 0.30.0 - 2022-05-23
 - Added `IPresentation.Sections` to access presentation sections [#240](https://github.com/ShapeCrawler/ShapeCrawler/issues/240).
 - Fixed issue when `IPresentation.SaveAs()` modifies original presentation [#237](https://github.com/ShapeCrawler/ShapeCrawler/issues/237).
 

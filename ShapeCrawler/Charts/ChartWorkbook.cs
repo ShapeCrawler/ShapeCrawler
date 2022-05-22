@@ -13,10 +13,8 @@ namespace ShapeCrawler.Charts
     {
         private readonly SCChart chart;
         private readonly Lazy<SpreadsheetDocument> spreadsheetDocument;
-        private Stream embeddedPackagePartStream;
-
-        private EmbeddedPackagePart embeddedPackagePart;
-
+        private readonly EmbeddedPackagePart embeddedPackagePart;
+        private Stream? embeddedPackagePartStream;
         private bool closed;
 
         internal ChartWorkbook(SCChart chart, EmbeddedPackagePart embeddedPackagePart)
@@ -75,10 +73,10 @@ namespace ShapeCrawler.Charts
                 };
                 newXCell.DataType = new EnumValue<X.CellValues>(X.CellValues.Number);
                 newXCell.CellValue = new X.CellValue(value);
-                
+
                 // Cells must be in sequential order according to CellReference. Determine where to insert the new cell.
-                X.Cell refCell = null;
-                foreach (X.Cell cell in row.Elements<X.Cell>())
+                X.Cell? refCell = null;
+                foreach (var cell in row.Elements<X.Cell>())
                 {
                     if (string.Compare(cell.CellReference.Value, cellReference, true, CultureInfo.InvariantCulture) > 0)
                     {
