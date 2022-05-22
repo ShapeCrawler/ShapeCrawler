@@ -5,7 +5,7 @@ using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Factories;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Statics;
 using ShapeCrawler.Tests.Helpers;
 using Xunit;
@@ -134,20 +134,20 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void SlidesAdd_ShouldNotBreakPresentation()
+        public void Slides_Add_should_not_Break_presentation()
         {
             // Arrange
-            ISlide sourceSlide = _fixture.Pre001.Slides[0];
-            IPresentation destPre = SCPresentation.Open(Properties.Resources._002, true);
-            MemoryStream modified = new();
+            var sourceSlide = _fixture.Pre001.Slides[0];
+            var destPres = SCPresentation.Open(Properties.Resources._002, true);
+            var newStream = new MemoryStream();
 
             // Act
-            destPre.Slides.Add(sourceSlide);
+            destPres.Slides.Add(sourceSlide);
 
             // Assert
-            destPre.SaveAs(modified);
-            ValidateResponse response = PptxValidator.Validate(modified);
-            response.IsValid.Should().BeTrue();
+            destPres.SaveAs(newStream);
+            var validateResponse = PptxValidator.Validate(newStream);
+            validateResponse.IsValid.Should().BeTrue();
         }
 
         [Fact]
@@ -225,7 +225,7 @@ namespace ShapeCrawler.Tests
         public void Sections_Remove_removes_section()
         {
             // Arrange
-            var pptxStream = GetPptxStream("030.pptx");
+            var pptxStream = GetTestPptxStream("030.pptx");
             var pres = SCPresentation.Open(pptxStream, true);
             var removingSection = pres.Sections[0];
 
@@ -240,7 +240,7 @@ namespace ShapeCrawler.Tests
         public void Sections_Section_Slides_Count_returns_zero_When_section_is_Empty()
         {
             // Arrange
-            var pptxStream = GetPptxStream("008.pptx");
+            var pptxStream = GetTestPptxStream("008.pptx");
             var pres = SCPresentation.Open(pptxStream, false);
             var section = pres.Sections.GetByName("Section 2");
 
@@ -249,6 +249,113 @@ namespace ShapeCrawler.Tests
 
             // Assert
             slidesCount.Should().Be(0);
+        }
+        
+        [Fact]
+        public void SaveAs_should_not_change_the_Original_Stream_when_it_is_saved_to_New_Stream()
+        {
+            // Arrange
+            var originalStream = GetTestPptxStream("001.pptx");
+            var pres = SCPresentation.Open(originalStream, true);
+            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            var originalText = textBox!.Text;
+            var newStream = new MemoryStream();
+
+            // Act
+            textBox.Text = originalText + "modified";
+            pres.SaveAs(newStream);
+            
+            pres.Close();
+            pres = SCPresentation.Open(originalStream, false);
+            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            var autoShapeText = textBox!.Text; 
+
+            // Assert
+            autoShapeText.Should().BeEquivalentTo(originalText);
+        }
+        
+        [Fact]
+        public void SaveAs_should_not_change_the_Original_Stream_when_it_is_saved_to_New_Path()
+        {
+            // Arrange
+            var originalStream = GetTestPptxStream("001.pptx");
+            var originalFile = Path.GetTempFileName();
+            originalStream.SaveToFile(originalFile);
+            var pres = SCPresentation.Open(originalFile, true);
+            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            var originalText = textBox!.Text;
+            var newPath = Path.GetTempFileName();
+
+            // Act
+            textBox.Text = originalText + "modified";
+            pres.SaveAs(newPath);
+            
+            pres.Close();
+            pres = SCPresentation.Open(originalFile, false);
+            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            var autoShapeText = textBox!.Text; 
+
+            // Assert
+            autoShapeText.Should().BeEquivalentTo(originalText);
+            
+            // Clean
+            pres.Close();
+            File.Delete(newPath);
+        }
+        
+        [Fact]
+        public void SaveAs_should_not_change_the_Original_Path_when_it_is_saved_to_New_Stream()
+        {
+            // Arrange
+            var originalPath = GetTestPptxPath("001.pptx");
+            var pres = SCPresentation.Open(originalPath, true);
+            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            var originalText = textBox!.Text;
+            var newStream = new MemoryStream();
+
+            // Act
+            textBox.Text = originalText + "modified";
+            pres.SaveAs(newStream);
+            
+            pres.Close();
+            pres = SCPresentation.Open(originalPath, false);
+            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            var autoShapeText = textBox!.Text; 
+
+            // Assert
+            autoShapeText.Should().BeEquivalentTo(originalText);
+            
+            // Clean
+            pres.Close();
+            File.Delete(originalPath);
+        }
+        
+        [Fact]
+        public void SaveAs_should_not_change_the_Original_Path_when_it_is_saved_to_New_Path()
+        {
+            // Arrange
+            var originalPath = GetTestPptxPath("001.pptx");
+            var pres = SCPresentation.Open(originalPath, true);
+            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            var originalText = textBox!.Text;
+            var newPath = Path.GetTempFileName();
+
+            // Act
+            textBox.Text = originalText + "modified";
+            pres.SaveAs(newPath);
+            
+            pres.Close();
+            pres = SCPresentation.Open(originalPath, false);
+            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            var autoShapeText = textBox!.Text; 
+
+            // Assert
+            autoShapeText.Should().BeEquivalentTo(originalText);
+            
+            // Clean
+            pres.Close();
+            File.Delete(originalPath);
+            File.Delete(newPath);
         }
     }
 }

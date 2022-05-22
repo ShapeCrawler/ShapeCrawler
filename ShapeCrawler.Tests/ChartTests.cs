@@ -128,12 +128,12 @@ namespace ShapeCrawler.Tests
 
         public static IEnumerable<object[]> TestCasesSeriesCollectionCount()
         {
-            var pptxStream = GetPptxStream("013.pptx");
+            var pptxStream = GetTestPptxStream("013.pptx");
             var presentation = SCPresentation.Open(pptxStream, false);
             IChart chart = (IChart) presentation.Slides[0].Shapes.First(sp => sp.Id == 5);
             yield return new object[] {chart, 3};
 
-            pptxStream = GetPptxStream("009_table.pptx");
+            pptxStream = GetTestPptxStream("009_table.pptx");
             presentation = SCPresentation.Open(pptxStream, false);
             chart = (IChart) presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
             yield return new object[] {chart, 1};
@@ -143,7 +143,7 @@ namespace ShapeCrawler.Tests
         public void SeriesCollection_Series_Points_returns_chart_point_collection()
         {
             // Arrange
-            var pptxStream = GetPptxStream("charts-case001.pptx");
+            var pptxStream = GetTestPptxStream("charts-case001.pptx");
             var presentation = SCPresentation.Open(pptxStream, false);
             var chart = (IChart) presentation.Slides[0].Shapes.First(shape => shape.Name == "chart");
             var series = chart.SeriesCollection[0]; 

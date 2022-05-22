@@ -17,7 +17,6 @@ namespace ShapeCrawler.Exceptions
         ///     Creates a new instance of the <see cref="PresentationIsLargeException" /> class with specifying max presentation
         ///     size.
         /// </summary>
-        /// <param name="maxSize"></param>
         internal static PresentationIsLargeException FromMax(int maxSize)
         {
 #if NETSTANDARD2_1 || NET5_0 || NETCOREAPP2_1

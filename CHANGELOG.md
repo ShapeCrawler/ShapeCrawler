@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.30.0 - Unreleased
+- Added `IPresentation.Sections` to access presentation sections [#240](https://github.com/ShapeCrawler/ShapeCrawler/issues/240).
+- Fixed issue when `IPresentation.SaveAs()` modifies original presentation [#237](https://github.com/ShapeCrawler/ShapeCrawler/issues/237).
+
 ## Version 0.29.0 - 2022-05-09
 - Added `Image.MIME` property to get image format [#233](https://github.com/ShapeCrawler/ShapeCrawler/issues/233).
 - Added `IPortion.Hyperlink` property to add hyperlink [#242](https://github.com/ShapeCrawler/ShapeCrawler/issues/242).

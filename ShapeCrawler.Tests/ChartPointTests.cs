@@ -92,7 +92,7 @@ namespace ShapeCrawler.Tests
         public void Value_Setter_updates_chart_point(string filename, int slideNumber, string shapeName)
         {
             // Arrange
-            var pptxStream = GetPptxStream(filename);
+            var pptxStream = GetTestPptxStream(filename);
             var presentation = SCPresentation.Open(pptxStream, true);
             var chart = presentation.Slides[--slideNumber].Shapes.GetByName<IChart>(shapeName);
             var point = chart.SeriesCollection[0].Points[0];
@@ -125,7 +125,7 @@ namespace ShapeCrawler.Tests
         public void Value_Setter_updates_chart_point_in_Embedded_excel_workbook()
         {
             // Arrange
-            var pptxStream = GetPptxStream("024_chart.pptx");
+            var pptxStream = GetTestPptxStream("024_chart.pptx");
             var presentation = SCPresentation.Open(pptxStream, true);
             var chart = presentation.Slides[2].Shapes.GetById<IChart>(5);
             var point = chart.SeriesCollection[0].Points[0];

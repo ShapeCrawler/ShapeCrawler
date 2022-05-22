@@ -160,7 +160,7 @@ namespace ShapeCrawler.Tests
         [Fact]
         public void Shapes_collection_contains_Connection_shape()
         {
-            var pptxStream = GetPptxStream("001.pptx");
+            var pptxStream = GetTestPptxStream("001.pptx");
             var presentation = SCPresentation.Open(pptxStream, false);
             var shapesCollection = presentation.Slides[0].Shapes;
 
