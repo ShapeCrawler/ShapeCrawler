@@ -252,7 +252,7 @@ namespace ShapeCrawler.Tests
         }
         
         [Fact]
-        public void SaveAs_should_not_change_the_Original_Stream_when_is_saved_to_New_Stream()
+        public void SaveAs_should_not_change_the_Original_Stream_when_it_is_saved_to_New_Stream()
         {
             // Arrange
             var originalStream = GetTestPptxStream("001.pptx");
@@ -275,7 +275,7 @@ namespace ShapeCrawler.Tests
         }
         
         [Fact]
-        public void SaveAs_should_not_change_the_Original_Stream_when_is_saved_to_New_Path()
+        public void SaveAs_should_not_change_the_Original_Stream_when_it_is_saved_to_New_Path()
         {
             // Arrange
             var originalStream = GetTestPptxStream("001.pptx");
@@ -304,7 +304,7 @@ namespace ShapeCrawler.Tests
         }
         
         [Fact]
-        public void SaveAs_should_not_change_the_Original_Path_when_is_saved_to_New_Stream()
+        public void SaveAs_should_not_change_the_Original_Path_when_it_is_saved_to_New_Stream()
         {
             // Arrange
             var originalPath = GetTestPptxPath("001.pptx");
@@ -331,7 +331,7 @@ namespace ShapeCrawler.Tests
         }
         
         [Fact]
-        public void SaveAs_should_not_change_the_Original_Path_when_is_saved_to_New_Path()
+        public void SaveAs_should_not_change_the_Original_Path_when_it_is_saved_to_New_Path()
         {
             // Arrange
             var originalPath = GetTestPptxPath("001.pptx");

@@ -28,7 +28,7 @@ namespace ShapeCrawler
         private bool closed;
         private Lazy<Dictionary<int, FontData>> paraLvlToFontData;
         private Lazy<SCSlideSize> slideSize;
-        private string cacheFile;
+        private string cachedPptxPath;
         private Stream? sourcePptxStream;
         private string? sourcePptxPath;
 
@@ -133,17 +133,17 @@ namespace ShapeCrawler
 
             if (this.sourcePptxStream != null)
             {
-                this.sourcePptxStream.WriteFile(this.cacheFile);
+                this.sourcePptxStream.WriteFile(this.cachedPptxPath);
 
-                File.Delete(this.cacheFile);
+                File.Delete(this.cachedPptxPath);
 
                 this.OpenInternal(path);
             }
             else if (this.sourcePptxPath != null)
             {
-                File.Copy(this.cacheFile, this.sourcePptxPath, true);
+                File.Copy(this.cachedPptxPath, this.sourcePptxPath, true);
 
-                File.Delete(this.cacheFile);
+                File.Delete(this.cachedPptxPath);
 
                 this.OpenInternal(path);
             }
@@ -160,17 +160,17 @@ namespace ShapeCrawler
             if (this.sourcePptxStream != null)
             {
                 this.sourcePptxStream.SetLength(0);
-                this.sourcePptxStream.WriteFile(this.cacheFile);
+                this.sourcePptxStream.WriteFile(this.cachedPptxPath);
 
-                File.Delete(this.cacheFile);
+                File.Delete(this.cachedPptxPath);
 
                 this.OpenInternal(stream);
             }
             else if (this.sourcePptxPath != null)
             {
-                File.Copy(this.cacheFile, this.sourcePptxPath, true);
+                File.Copy(this.cachedPptxPath, this.sourcePptxPath, true);
 
-                File.Delete(this.cacheFile);
+                File.Delete(this.cachedPptxPath);
 
                 this.OpenInternal(stream);
             }
@@ -186,6 +186,7 @@ namespace ShapeCrawler
 
             this.ChartWorkbooks.ForEach(cw => cw.Close());
             this.PresentationDocument.Close();
+            File.Delete(this.cachedPptxPath);
 
             this.closed = true;
         }
@@ -211,17 +212,17 @@ namespace ShapeCrawler
         private void OpenInternal(Stream documentStream)
         {
             this.sourcePptxStream = documentStream;
-            this.cacheFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            this.cachedPptxPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
 
-            this.sourcePptxStream.SaveToFile(this.cacheFile);
+            this.sourcePptxStream.SaveToFile(this.cachedPptxPath);
         }
 
         private void OpenInternal(string documentPath)
         {
             this.sourcePptxPath = documentPath;
-            this.cacheFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            this.cachedPptxPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
 
-            File.WriteAllBytes(this.cacheFile, this.ByteArray);
+            File.WriteAllBytes(this.cachedPptxPath, this.ByteArray);
         }
 
         private byte[] GetByteArray()
