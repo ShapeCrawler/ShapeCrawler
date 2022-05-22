@@ -41,7 +41,7 @@ namespace ShapeCrawler.Tests
         public async void Image_GetBytes_returns_image_byte_array_of_Layout_picture()
         {
             // Arrange
-            var pptxStream = GetPptxStream("pictures-case001.pptx");
+            var pptxStream = GetTestPptxStream("pictures-case001.pptx");
             var presentation = SCPresentation.Open(pptxStream, false);
             var pictureShape = presentation.Slides[0].ParentSlideLayout.Shapes.GetByName<IPicture>("Picture 7");
             
@@ -56,7 +56,7 @@ namespace ShapeCrawler.Tests
         public void Image_MIME_returns_MIME_type_of_image()
         {
             // Arrange
-            var pptxStream = GetPptxStream("pictures-case001.pptx");
+            var pptxStream = GetTestPptxStream("pictures-case001.pptx");
             var presentation = SCPresentation.Open(pptxStream, false);
             var image = presentation.Slides[0].ParentSlideLayout.Shapes.GetByName<IPicture>("Picture 7").Image;
             
@@ -71,7 +71,7 @@ namespace ShapeCrawler.Tests
         public void Image_GetBytes_returns_image_byte_array_of_Master_slide_picture()
         {
             // Arrange
-            var pptxStream = GetPptxStream("pictures-case001.pptx");
+            var pptxStream = GetTestPptxStream("pictures-case001.pptx");
             var presentation = SCPresentation.Open(pptxStream, false);
             var pictureShape = presentation.SlideMasters[0].Shapes.GetByName<IPicture>("Picture 9");
             

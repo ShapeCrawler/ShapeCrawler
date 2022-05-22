@@ -48,7 +48,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Saves presentation in specified file path.
         /// </summary>
-        void SaveAs(string filePath);
+        void SaveAs(string path);
 
         /// <summary>
         ///     Saves presentation in specified stream.

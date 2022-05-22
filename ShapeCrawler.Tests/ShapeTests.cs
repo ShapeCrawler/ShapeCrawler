@@ -322,7 +322,7 @@ namespace ShapeCrawler.Tests
 
         public static IEnumerable<object[]> GeometryTypeTestCases()
         {
-            var pptxStream = GetPptxStream("021.pptx");
+            var pptxStream = GetTestPptxStream("021.pptx");
             var presentation = SCPresentation.Open(pptxStream, false);
             var shapeCase1 = presentation.Slides[3].Shapes.First(sp => sp.Id == 2);
             var shapeCase2 = presentation.Slides[3].Shapes.First(sp => sp.Id == 3);

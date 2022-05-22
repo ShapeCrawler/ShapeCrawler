@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using ClosedXML.Excel;
+using ShapeCrawler.Extensions;
 
 namespace ShapeCrawler.Tests
 {
@@ -45,7 +46,7 @@ namespace ShapeCrawler.Tests
             return (T)cellValue;
         }
 
-        protected static Stream GetPptxStream(string fileName)
+        protected static Stream GetTestPptxStream(string fileName)
         {
             var assembly = Assembly.GetExecutingAssembly();
             var path = assembly.GetManifestResourceNames().First(r => r.EndsWith(fileName, StringComparison.Ordinal));
@@ -54,6 +55,18 @@ namespace ShapeCrawler.Tests
             stream!.CopyTo(mStream);
 
             return mStream;
+        }
+        
+        
+        protected static string GetTestPptxPath(string fileName)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var path = assembly.GetManifestResourceNames().First(r => r.EndsWith(fileName, StringComparison.Ordinal));
+            var stream = assembly.GetManifestResourceStream(path);
+            var testPptxPath = Path.GetTempFileName();
+            stream.SaveToFile(testPptxPath);
+
+            return testPptxPath;
         }
         
         protected static IPresentation SaveAndOpenPresentation(IPresentation presentation)
@@ -66,7 +79,7 @@ namespace ShapeCrawler.Tests
 
         private IPresentation GetPresentationFromAssembly(string fileName)
         {
-            var stream = GetPptxStream(fileName);
+            var stream = GetTestPptxStream(fileName);
             
             return SCPresentation.Open(stream, true);
         }

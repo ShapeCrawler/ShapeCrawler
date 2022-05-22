@@ -5,9 +5,6 @@ namespace ShapeCrawler.Exceptions
     /// </summary>
     public class ElementIsRemovedException : ShapeCrawlerException
     {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ElementIsRemovedException"/> class.
-        /// </summary>
         internal ElementIsRemovedException(string message)
             : base(message)
         {
