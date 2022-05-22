@@ -1,9 +1,18 @@
 ﻿namespace ShapeCrawler
 {
-    public interface IRemovable // TODO: make internal
+    /// <summary>
+    ///     Represents interface of removable presentation's element.
+    /// </summary>
+    public interface IRemovable
     {
-        bool IsRemoved { get; set; }
+        /// <summary>
+        ///     Gets or sets a value indicating whether element was removed.
+        /// </summary>
+        bool IsRemoved { get; set; } // TODO: make internal setter
 
+        /// <summary>
+        ///     Throws exception if element was removed.
+        /// </summary>
         void ThrowIfRemoved();
     }
 }

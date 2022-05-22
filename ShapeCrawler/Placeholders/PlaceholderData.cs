@@ -5,7 +5,7 @@ namespace ShapeCrawler.Placeholders
     /// <summary>
     ///     Represents placeholder data.
     /// </summary>
-    public class PlaceholderData : IEquatable<PlaceholderData>
+    internal class PlaceholderData : IEquatable<PlaceholderData>
     {
         #region Properties
 
@@ -44,7 +44,7 @@ namespace ShapeCrawler.Placeholders
             return false;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj == null)
             {

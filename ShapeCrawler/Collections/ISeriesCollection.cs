@@ -34,7 +34,7 @@ namespace ShapeCrawler.Collections
             var seriesList = new List<ISeries>();
             foreach (OpenXmlElement cXChart in cXCharts)
             {
-                Enum.TryParse(cXChart.LocalName, true, out ChartType seriesChartType); // TODO: use Parse instead of TryParse
+                Enum.TryParse(cXChart.LocalName, true, out ChartType seriesChartType);
                 IEnumerable<OpenXmlElement> nextSdkChartSeriesCollection = cXChart.ChildElements
                     .Where(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
                 seriesList.AddRange(nextSdkChartSeriesCollection.Select(seriesXmlElement =>
