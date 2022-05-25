@@ -250,6 +250,20 @@ namespace ShapeCrawler.Tests
             // Assert
             slidesCount.Should().Be(0);
         }
+                
+        [Fact]
+        public void Sections_Section_Slides_Count_returns_number_of_slides_in_section()
+        {
+            var pptxStream = GetTestPptxStream("030.pptx");
+            var pres = SCPresentation.Open(pptxStream, false);
+            var section = pres.Sections.GetByName("Section 1");
+
+            // Act
+            var slidesCount = section.Slides.Count;
+
+            // Assert
+            slidesCount.Should().Be(1);
+        }
         
         [Fact]
         public void SaveAs_should_not_change_the_Original_Stream_when_it_is_saved_to_New_Stream()
