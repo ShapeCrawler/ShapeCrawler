@@ -217,9 +217,9 @@ namespace ShapeCrawler.Collections
             return slides;
         }
 
-        internal SCSlide GetBySlideId(SlideId slideId)
+        internal SCSlide GetBySlideId(string slideId)
         {
-            return this.slides.Value.First(scSlide => scSlide.SlideId == slideId);
+            return this.slides.Value.First(scSlide => scSlide.SlideId.Id == slideId);
         }
     }
 }

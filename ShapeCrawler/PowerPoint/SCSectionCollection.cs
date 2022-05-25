@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Office2010.PowerPoint;
 using DocumentFormat.OpenXml.Presentation;
+using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
+
 
 namespace ShapeCrawler
 {
@@ -43,9 +45,9 @@ namespace ShapeCrawler
             {
                 var sdkSection = (Section)sectionXml;
                 var sectionSlides = new List<SCSlide>();
-                foreach (var slideId in sdkSection.Descendants<SlideId>())
+                foreach (var slideId in sdkSection.Descendants<P14.SectionSlideIdListEntry>())
                 {
-                    var slide = presentation.SlidesInternal.GetBySlideId(slideId);
+                    var slide = presentation.SlidesInternal.GetBySlideId(slideId.Id);
                     sectionSlides.Add(slide);
                 }
 
