@@ -39,8 +39,6 @@ namespace ShapeCrawler.Charts
             this.Init(); // TODO: convert to lazy loading
         }
 
-        #region Public Properties
-
         public ChartType Type => this.chartType.Value;
 
         public ShapeType ShapeType => ShapeType.Chart;
@@ -88,7 +86,7 @@ namespace ShapeCrawler.Charts
 
         public byte[] WorkbookByteArray => this.ChartWorkbook.ByteArray;
 
-        #endregion Public Properties
+        public SpreadsheetDocument SDKSpreadsheetDocument => this.ChartWorkbook.spreadsheetDocument.Value;
 
         internal ChartWorkbook? ChartWorkbook { get; set; }
 
@@ -193,6 +191,5 @@ namespace ShapeCrawler.Charts
             return cXCharts.First().ChildElements
                 .FirstOrDefault(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
         }
-
     }
 }
