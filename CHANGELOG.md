@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.31.0 - Unreleased
+- Added opportunity to update series value eg. `chart.SeriesCollection[0].Points[0].Value = 10`
+
 ## Version 0.30.0 - 2022-05-23
 - Added `IPresentation.Sections` to access presentation sections [#240](https://github.com/ShapeCrawler/ShapeCrawler/issues/240).
 - Fixed issue when `IPresentation.SaveAs()` modifies original presentation [#237](https://github.com/ShapeCrawler/ShapeCrawler/issues/237).
