@@ -1,4 +1,5 @@
-﻿using ShapeCrawler.Collections;
+﻿using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Collections;
 using ShapeCrawler.Shapes;
 
 // ReSharper disable once CheckNamespace
@@ -58,5 +59,7 @@ namespace ShapeCrawler
         ///     Gets parent slide.
         /// </summary>
         ISlide ParentSlide { get; }
+
+        SpreadsheetDocument SDKSpreadsheetDocument { get; }
     }
 }

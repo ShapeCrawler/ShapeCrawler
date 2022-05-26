@@ -1,6 +1,6 @@
 ﻿using ShapeCrawler;
 
-internal class SlideExample
+internal class SlideSample
 {
     internal static void ReadSlide()
     {

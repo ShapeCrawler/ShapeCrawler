@@ -1,8 +1,8 @@
 ﻿using ShapeCrawler;
 
-internal class CopySlide
+internal class CopySlideSample
 {
-    internal void CopySlideSample()
+    internal void CopySlide()
     {
         using var sourcePre = SCPresentation.Open(@"source.pptx", false);
         using var destPre = SCPresentation.Open(@"dest.pptx", true);

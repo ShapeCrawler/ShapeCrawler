@@ -1,6 +1,6 @@
 ﻿using ShapeCrawler;
 
-internal class PictureExample
+internal class PictureSample
 {
     internal static void ReadPicture()
     {
