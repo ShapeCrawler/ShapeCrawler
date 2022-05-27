@@ -267,7 +267,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void SeriesName_ReturnsChartSeriesName()
+        public void Series_Name_returns_chart_series_name()
         {
             // Arrange
             IChart chart = (IChart)_fixture.Pre025.Slides[0].Shapes.First(sp => sp.Id == 5);
@@ -304,13 +304,29 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void GeometryType_GetterReturnsRectangle()
+        public void GeometryType_Getter_returns_rectangle()
         {
             // Arrange
             IChart chart = (IChart)_fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 6);
 
             // Act-Assert
             chart.GeometryType.Should().Be(GeometryType.Rectangle);
+        }
+        
+                
+        [Fact]
+        public void SDKSpreadsheetDocument_return_underlying_SpreadsheetDocument()
+        {
+            // Arrange
+            var pptxStream = GetTestPptxStream("charts-case003.pptx");
+            var pres = SCPresentation.Open(pptxStream, false);
+            var chart = pres.Slides[0].Shapes.GetByName<IChart>("Chart 1");
+            
+            // Act
+            var spreadSheetDocument = chart.SDKSpreadsheetDocument;
+            
+            // Assert
+            spreadSheetDocument.Should().NotBeNull();
         }
     }
 }

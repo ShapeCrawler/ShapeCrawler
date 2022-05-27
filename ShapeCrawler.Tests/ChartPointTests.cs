@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Charts;
@@ -126,8 +125,8 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             var pptxStream = GetTestPptxStream("024_chart.pptx");
-            var presentation = SCPresentation.Open(pptxStream, true);
-            var chart = presentation.Slides[2].Shapes.GetById<IChart>(5);
+            var pres = SCPresentation.Open(pptxStream, true);
+            var chart = pres.Slides[2].Shapes.GetById<IChart>(5);
             var point = chart.SeriesCollection[0].Points[0];
             const int newChartPointValue = 6;
 

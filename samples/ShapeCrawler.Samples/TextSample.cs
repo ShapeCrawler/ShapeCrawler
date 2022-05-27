@@ -2,9 +2,9 @@
 
 namespace TextExample;
 
-internal class TextExample
+internal class TextSample
 {
-    internal void AutoShape()
+    internal void ReadAndUpdateAutoShape()
     {
         using var presentation = SCPresentation.Open(@"test.pptx", true);
         var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 1");
