@@ -168,22 +168,22 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(TestCasesSlidesRemove))]
-        public void SlidesRemove_RemovesFirstSlideFromPresentation_WhenFirstSlideObjectWasPassed(byte[] pptxBytes, int expectedSlidesCount)
+        public void Slides_Remove_removes_slide(byte[] pptxBytes, int expectedSlidesCount)
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(pptxBytes, true);
-            ISlide removingSlide = presentation.Slides[0];
+            var pres = SCPresentation.Open(pptxBytes, true);
+            var removingSlide = pres.Slides[0];
             var mStream = new MemoryStream();
 
             // Act
-            presentation.Slides.Remove(removingSlide);
+            pres.Slides.Remove(removingSlide);
 
             // Assert
-            presentation.Slides.Should().HaveCount(expectedSlidesCount);
+            pres.Slides.Should().HaveCount(expectedSlidesCount);
 
-            presentation.SaveAs(mStream);
-            presentation = SCPresentation.Open(mStream, false);
-            presentation.Slides.Should().HaveCount(expectedSlidesCount);
+            pres.SaveAs(mStream);
+            pres = SCPresentation.Open(mStream, false);
+            pres.Slides.Should().HaveCount(expectedSlidesCount);
         }
 
         public static IEnumerable<object[]> TestCasesSlidesRemove()
@@ -230,6 +230,22 @@ namespace ShapeCrawler.Tests
             var removingSection = pres.Sections[0];
 
             // Act
+            pres.Sections.Remove(removingSection);
+
+            // Assert
+            pres.Sections.Count.Should().Be(0);
+        }
+        
+        [Fact]
+        public void Sections_Remove_should_remove_section_after_Removing_Slide_from_section()
+        {
+            // Arrange
+            var pptxStream = GetTestPptxStream("030.pptx");
+            var pres = SCPresentation.Open(pptxStream, true);
+            var removingSection = pres.Sections[0];
+
+            // Act
+            pres.Slides.Remove(pres.Slides[0]);
             pres.Sections.Remove(removingSection);
 
             // Assert

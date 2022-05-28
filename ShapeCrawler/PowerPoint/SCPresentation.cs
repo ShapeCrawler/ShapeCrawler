@@ -76,6 +76,8 @@ namespace ShapeCrawler
 
         internal PresentationDocument PresentationDocument { get; private set; }
 
+        internal SCSectionCollection SectionsInternal => (SCSectionCollection)this.Sections;
+
         internal bool Editable { get; }
 
         internal List<ChartWorkbook> ChartWorkbooks { get; } = new();

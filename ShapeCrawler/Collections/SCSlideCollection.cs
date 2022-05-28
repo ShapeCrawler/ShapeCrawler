@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Exceptions;
@@ -18,7 +19,8 @@ namespace ShapeCrawler.Collections
 
         internal SCSlideCollection(SCPresentation presentation)
         {
-            this.presentationPart = presentation.PresentationDocument.PresentationPart ?? throw new ArgumentNullException("PresentationPart");
+            this.presentationPart = presentation.PresentationDocument.PresentationPart ??
+                                    throw new ArgumentNullException("PresentationPart");
             this.parentPresentation = presentation;
             this.slides = new ResettableLazy<List<SCSlide>>(this.GetSlides);
         }
@@ -40,58 +42,58 @@ namespace ShapeCrawler.Collections
         public void Remove(ISlide removingSlide)
         {
             // TODO: slide layout and master of removed slide also should be deleted if they are unused
-            P.Presentation presentation = this.presentationPart.Presentation;
+            var sdkPresentation = this.presentationPart.Presentation;
+            var slideIdList = sdkPresentation.SlideIdList!;
+            var removingSlideIndex = removingSlide.Number - 1;
+            var removingSlideId = (P.SlideId)slideIdList.ChildElements[removingSlideIndex];
+            var removingSlideRelId = removingSlideId.RelationshipId!;
 
-            // Get the list of slide identifiers in the presentation
-            P.SlideIdList slideIdList = presentation.SlideIdList;
+            this.parentPresentation.SectionsInternal.RemoveSldId(removingSlideId.Id);
 
-            // Get the slide identifier of the specified slide
-            P.SlideId slideId = (P.SlideId) slideIdList.ChildElements[removingSlide.Number - 1];
+            slideIdList.RemoveChild(removingSlideId);
+            RemoveFromCustomShow(sdkPresentation, removingSlideRelId);
 
-            // Gets the relationship identifier of the slide
-            string slideRelId = slideId.RelationshipId;
+            var removingSlidePart = (SlidePart)this.presentationPart.GetPartById(removingSlideRelId!);
+            this.presentationPart.DeletePart(removingSlidePart);
 
-            // Remove the slide from the slide list
-            slideIdList.RemoveChild(slideId);
-
-            // Remove references to the slide from all custom shows
-            if (presentation.CustomShowList != null)
-            {
-                // Iterate through the list of custom shows
-                foreach (var customShow in presentation.CustomShowList.Elements<P.CustomShow>())
-                {
-                    if (customShow.SlideList == null)
-                    {
-                        continue;
-                    }
-
-                    // declares a link list of slide list entries
-                    var slideListEntries = new LinkedList<P.SlideListEntry>();
-                    foreach (P.SlideListEntry slideListEntry in customShow.SlideList.Elements())
-                    {
-                        // finds the slide reference to remove from the custom show
-                        if (slideListEntry.Id != null && slideListEntry.Id == slideRelId)
-                        {
-                            slideListEntries.AddLast(slideListEntry);
-                        }
-                    }
-
-                    // Removes all references to the slide from the custom show
-                    foreach (P.SlideListEntry slideListEntry in slideListEntries)
-                    {
-                        customShow.SlideList.RemoveChild(slideListEntry);
-                    }
-                }
-            }
-
-            // Gets the slide part for the specified slide
-            SlidePart slidePart = this.presentationPart.GetPartById(slideRelId) as SlidePart;
-
-            this.presentationPart.DeletePart(slidePart);
             this.presentationPart.Presentation.Save();
             removingSlide.IsRemoved = true;
 
             this.slides.Reset();
+        }
+
+        private static void RemoveFromCustomShow(Presentation sdkPresentation, StringValue? removingSlideRelId)
+        {
+            if (sdkPresentation.CustomShowList == null)
+            {
+                return;
+            }
+
+            // Iterate through the list of custom shows
+            foreach (var customShow in sdkPresentation.CustomShowList.Elements<P.CustomShow>())
+            {
+                if (customShow.SlideList == null)
+                {
+                    continue;
+                }
+
+                // declares a link list of slide list entries
+                var slideListEntries = new LinkedList<P.SlideListEntry>();
+                foreach (P.SlideListEntry slideListEntry in customShow.SlideList.Elements())
+                {
+                    // finds the slide reference to remove from the custom show
+                    if (slideListEntry.Id != null && slideListEntry.Id == removingSlideRelId)
+                    {
+                        slideListEntries.AddLast(slideListEntry);
+                    }
+                }
+
+                // Removes all references to the slide from the custom show
+                foreach (P.SlideListEntry slideListEntry in slideListEntries)
+                {
+                    customShow.SlideList.RemoveChild(slideListEntry);
+                }
+            }
         }
 
         public void Add(ISlide outerSlide)
@@ -111,7 +113,8 @@ namespace ShapeCrawler.Collections
             PresentationPart destPresentationPart = destDoc.PresentationPart;
             Presentation destPresentation = destPresentationPart.Presentation;
             int addingSlideIndex = outerSlide.Number - 1;
-            SlideId addingSlideId = (SlideId)addingPresentationPart.Presentation.SlideIdList.ChildElements[addingSlideIndex];
+            SlideId addingSlideId =
+                (SlideId)addingPresentationPart.Presentation.SlideIdList.ChildElements[addingSlideIndex];
             SlidePart addingSlidePart = (SlidePart)addingPresentationPart.GetPartById(addingSlideId.RelationshipId);
 
             SlidePart addedSlidePart = destPresentationPart.AddPart(addingSlidePart);
@@ -120,10 +123,12 @@ namespace ShapeCrawler.Collections
             {
                 addedSlidePart.DeletePart(noticePart);
             }
-            SlideMasterPart addedSlideMasterPart = destPresentationPart.AddPart(addedSlidePart.SlideLayoutPart.SlideMasterPart);
+
+            SlideMasterPart addedSlideMasterPart =
+                destPresentationPart.AddPart(addedSlidePart.SlideLayoutPart.SlideMasterPart);
 
             // Create new slide ID
-            SlideId slideId = new ()
+            SlideId slideId = new()
             {
                 Id = CreateId(destPresentation.SlideIdList),
                 RelationshipId = destDoc.PresentationPart.GetIdOfPart(addedSlidePart)
@@ -132,7 +137,7 @@ namespace ShapeCrawler.Collections
 
             // Create new master slide ID
             uint masterId = CreateId(destPresentation.SlideMasterIdList);
-            SlideMasterId slideMaterId = new ()
+            SlideMasterId slideMaterId = new()
             {
                 Id = masterId,
                 RelationshipId = destDoc.PresentationPart.GetIdOfPart(addedSlideMasterPart)
@@ -170,6 +175,11 @@ namespace ShapeCrawler.Collections
 
             this.slides.Reset();
             this.parentPresentation.SlideMastersValue.Reset();
+        }
+
+        internal SCSlide GetBySlideId(string slideId)
+        {
+            return this.slides.Value.First(scSlide => scSlide.SlideId.Id == slideId);
         }
 
         private static uint CreateId(SlideIdList slideIdList)
@@ -215,11 +225,6 @@ namespace ShapeCrawler.Collections
             }
 
             return slides;
-        }
-
-        internal SCSlide GetBySlideId(string slideId)
-        {
-            return this.slides.Value.First(scSlide => scSlide.SlideId.Id == slideId);
         }
     }
 }
