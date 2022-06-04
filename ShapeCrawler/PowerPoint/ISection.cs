@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ShapeCrawler
+﻿namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a presentation section.
@@ -10,8 +8,11 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets section slides.
         /// </summary>
-        List<ISlide> Slides { get; }
+        ISectionSlideCollection Slides { get; }
 
+        /// <summary>
+        ///     Gets section name;
+        /// </summary>
         string Name { get; }
     }
 }

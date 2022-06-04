@@ -251,9 +251,31 @@ namespace ShapeCrawler.Tests
             // Assert
             pres.Sections.Count.Should().Be(0);
         }
+        
+        [Fact]
+        public void Sections_Section_Slides_Remove_removes_slide_from_section()
+        {
+            // Arrange
+            var originalPptxStream = GetTestPptxStream("030.pptx");
+            var pres = SCPresentation.Open(originalPptxStream, true);
+            var sectionSlides = pres.Sections[0].Slides; 
+            var removingSlide = sectionSlides[0];
+            var modifiedPptxStream = new MemoryStream();
+
+            // Act
+            sectionSlides.Remove(removingSlide);
+
+            // Assert
+            sectionSlides.Count.Should().Be(0);
+            
+            pres.SaveAs(modifiedPptxStream);
+            pres = SCPresentation.Open(modifiedPptxStream, true);
+            sectionSlides = pres.Sections[0].Slides;
+            sectionSlides.Count.Should().Be(0);
+        }
 
         [Fact]
-        public void Sections_Section_Slides_Count_returns_zero_When_section_is_Empty()
+        public void Sections_Section_Slides_Count_returns_Zero_number_of_slides_in_section_When_section_is_Empty()
         {
             // Arrange
             var pptxStream = GetTestPptxStream("008.pptx");

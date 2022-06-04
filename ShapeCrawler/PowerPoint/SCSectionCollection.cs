@@ -32,30 +32,22 @@ namespace ShapeCrawler
 
         public ISection this[int i] => this.sections[i];
 
-        public static ISectionCollection Create(SCPresentation presentation)
+        internal static SCSectionCollection Create(SCPresentation presentation)
         {
             var sections = new List<SCSection>();
-            var sectionList = presentation.PresentationDocument.PresentationPart!.Presentation.PresentationExtensionList?.Descendants<SectionList>().FirstOrDefault();
+            var sdkSectionList = presentation.PresentationDocument.PresentationPart!.Presentation.PresentationExtensionList?.Descendants<SectionList>().FirstOrDefault();
 
-            if (sectionList == null)
+            if (sdkSectionList == null)
             {
                 return new SCSectionCollection(presentation, sections);
             }
 
-            foreach (var sectionXml in sectionList)
+            foreach (P14.Section p14Section in sdkSectionList)
             {
-                var sdkSection = (Section)sectionXml;
-                var sectionSlides = new List<SCSlide>();
-                foreach (var slideId in sdkSection.Descendants<P14.SectionSlideIdListEntry>())
-                {
-                    var slide = presentation.SlidesInternal.GetBySlideId(slideId.Id);
-                    sectionSlides.Add(slide);
-                }
-
-                sections.Add(new SCSection(sectionSlides, sdkSection));
+                sections.Add(new SCSection(presentation, p14Section));
             }
 
-            return new SCSectionCollection(presentation, sections, sectionList);
+            return new SCSectionCollection(presentation, sections, sdkSectionList);
         }
 
         public IEnumerator<ISection> GetEnumerator()
