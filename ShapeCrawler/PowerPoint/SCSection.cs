@@ -1,24 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using DocumentFormat.OpenXml.Office2010.PowerPoint;
+using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler
 {
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Exception")]
     internal class SCSection : ISection
     {
-        internal readonly Section SDKSection;
+        internal readonly SCSectionCollection Sections;
 
-        private readonly List<SCSlide> _sectionSlides;
-
-        public SCSection(List<SCSlide> sectionSlides, Section sdkSection)
+        internal SCSection(SCSectionCollection sections, P14.Section p14Section)
         {
-            this._sectionSlides = sectionSlides;
-            this.SDKSection = sdkSection;
+            this.Sections = sections;
+            this.SDKSection = p14Section;
         }
 
-        public List<ISlide> Slides => this._sectionSlides.OfType<ISlide>().ToList();
+        public ISectionSlideCollection Slides => new SCSectionSlideCollection(this);
+
+        public Section SDKSection { get; }
 
         public string Name => GetName();
 

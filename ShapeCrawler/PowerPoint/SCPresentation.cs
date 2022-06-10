@@ -28,6 +28,8 @@ namespace ShapeCrawler
         private bool closed;
         private Lazy<Dictionary<int, FontData>> paraLvlToFontData;
         private Lazy<SCSlideSize> slideSize;
+        private ResettableLazy<SCSectionCollection> sectionCollectionLazy;
+        private ResettableLazy<SCSlideCollection> slideCollectionLazy;
         private string cachedPptxPath;
         private Stream? sourcePptxStream;
         private string? sourcePptxPath;
@@ -57,7 +59,7 @@ namespace ShapeCrawler
         }
 
         /// <inheritdoc/>
-        public ISlideCollection Slides => new SCSlideCollection(this);
+        public ISlideCollection Slides => this.slideCollectionLazy.Value;
 
         /// <inheritdoc/>
         public int SlideWidth => this.slideSize.Value.Width;
@@ -72,7 +74,7 @@ namespace ShapeCrawler
         public byte[] ByteArray => this.GetByteArray();
 
         /// <inheritdoc/>
-        public ISectionCollection Sections => SCSectionCollection.Create(this);
+        public ISectionCollection Sections => this.sectionCollectionLazy.Value;
 
         internal PresentationDocument PresentationDocument { get; private set; }
 
@@ -318,6 +320,8 @@ namespace ShapeCrawler
             this.paraLvlToFontData =
                 new Lazy<Dictionary<int, FontData>>(() =>
                     ParseFontHeights(this.PresentationDocument.PresentationPart.Presentation));
+            this.sectionCollectionLazy = new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
+            this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
         }
 
         private SCSlideSize GetSlideSize()

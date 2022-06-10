@@ -6,24 +6,31 @@ using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler
 {
-    /// <summary>
+    public interface ISectionSlideCollection : IEnumerable<ISlide>
+    {
+        int Count { get; }
+
+        ISlide this[int index] { get; }
+    }
+
+     /// <summary>
     /// <inheritdoc cref="ISectionCollection"/>
     /// </summary>
     internal class SCSectionCollection : ISectionCollection
     {
         private readonly List<SCSection> sections;
         private readonly SectionList? sdkSectionList;
-        private readonly SCPresentation presentation;
+        internal readonly SCPresentation Presentation;
 
         private SCSectionCollection(SCPresentation presentation, List<SCSection> sections)
         {
-            this.presentation = presentation;
+            this.Presentation = presentation;
             this.sections = sections;
         }
 
         private SCSectionCollection(SCPresentation presentation, List<SCSection> sections, SectionList sdkSectionList)
         {
-            this.presentation = presentation;
+            this.Presentation = presentation;
             this.sections = sections;
             this.sdkSectionList = sdkSectionList;
         }
@@ -32,30 +39,24 @@ namespace ShapeCrawler
 
         public ISection this[int i] => this.sections[i];
 
-        public static ISectionCollection Create(SCPresentation presentation)
+        internal static SCSectionCollection Create(SCPresentation presentation)
         {
             var sections = new List<SCSection>();
-            var sectionList = presentation.PresentationDocument.PresentationPart!.Presentation.PresentationExtensionList?.Descendants<SectionList>().FirstOrDefault();
+            var sdkSectionList = presentation.PresentationDocument.PresentationPart!.Presentation.PresentationExtensionList?.Descendants<SectionList>().FirstOrDefault();
 
-            if (sectionList == null)
+            if (sdkSectionList == null)
             {
                 return new SCSectionCollection(presentation, sections);
             }
 
-            foreach (var sectionXml in sectionList)
+            var sectionCollection = new SCSectionCollection(presentation, sections, sdkSectionList);
+            
+            foreach (P14.Section sdkSection in sdkSectionList)
             {
-                var sdkSection = (Section)sectionXml;
-                var sectionSlides = new List<SCSlide>();
-                foreach (var slideId in sdkSection.Descendants<P14.SectionSlideIdListEntry>())
-                {
-                    var slide = presentation.SlidesInternal.GetBySlideId(slideId.Id);
-                    sectionSlides.Add(slide);
-                }
-
-                sections.Add(new SCSection(sectionSlides, sdkSection));
+                sections.Add(new SCSection(sectionCollection, sdkSection));
             }
 
-            return new SCSectionCollection(presentation, sections, sectionList);
+            return new SCSectionCollection(presentation, sections, sdkSectionList);
         }
 
         public IEnumerator<ISection> GetEnumerator()
@@ -75,12 +76,15 @@ namespace ShapeCrawler
                 return;
             }
 
-            ((SCSection)removingSection).SDKSection.Remove();
+            var sectionInternal = (SCSection)removingSection;
+            sectionInternal.SDKSection.Remove();
 
             if (this.sections.Count == 1)
             {
                 this.sdkSectionList.Remove();
             }
+
+            this.sections.Remove(sectionInternal);
         }
 
         public ISection GetByName(string sectionName)
@@ -97,7 +101,7 @@ namespace ShapeCrawler
             }
 
             removing.Remove();
-            this.presentation.PresentationDocument.PresentationPart.Presentation.Save();
+            this.Presentation.PresentationDocument.PresentationPart.Presentation.Save();
         }
     }
 }
