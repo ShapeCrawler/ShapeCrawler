@@ -6,24 +6,31 @@ using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler
 {
-    /// <summary>
+    public interface ISectionSlideCollection : IEnumerable<ISlide>
+    {
+        int Count { get; }
+
+        ISlide this[int index] { get; }
+    }
+
+     /// <summary>
     /// <inheritdoc cref="ISectionCollection"/>
     /// </summary>
     internal class SCSectionCollection : ISectionCollection
     {
         private readonly List<SCSection> sections;
         private readonly SectionList? sdkSectionList;
-        private readonly SCPresentation presentation;
+        internal readonly SCPresentation Presentation;
 
         private SCSectionCollection(SCPresentation presentation, List<SCSection> sections)
         {
-            this.presentation = presentation;
+            this.Presentation = presentation;
             this.sections = sections;
         }
 
         private SCSectionCollection(SCPresentation presentation, List<SCSection> sections, SectionList sdkSectionList)
         {
-            this.presentation = presentation;
+            this.Presentation = presentation;
             this.sections = sections;
             this.sdkSectionList = sdkSectionList;
         }
@@ -42,9 +49,11 @@ namespace ShapeCrawler
                 return new SCSectionCollection(presentation, sections);
             }
 
-            foreach (P14.Section p14Section in sdkSectionList)
+            var sectionCollection = new SCSectionCollection(presentation, sections, sdkSectionList);
+            
+            foreach (P14.Section sdkSection in sdkSectionList)
             {
-                sections.Add(new SCSection(presentation, p14Section));
+                sections.Add(new SCSection(sectionCollection, sdkSection));
             }
 
             return new SCSectionCollection(presentation, sections, sdkSectionList);
@@ -67,12 +76,15 @@ namespace ShapeCrawler
                 return;
             }
 
-            ((SCSection)removingSection).SDKSection.Remove();
+            var sectionInternal = (SCSection)removingSection;
+            sectionInternal.SDKSection.Remove();
 
             if (this.sections.Count == 1)
             {
                 this.sdkSectionList.Remove();
             }
+
+            this.sections.Remove(sectionInternal);
         }
 
         public ISection GetByName(string sectionName)
@@ -89,7 +101,7 @@ namespace ShapeCrawler
             }
 
             removing.Remove();
-            this.presentation.PresentationDocument.PresentationPart.Presentation.Save();
+            this.Presentation.PresentationDocument.PresentationPart.Presentation.Save();
         }
     }
 }

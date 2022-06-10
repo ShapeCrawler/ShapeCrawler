@@ -17,6 +17,8 @@ namespace ShapeCrawler.Collections
         private readonly ResettableLazy<List<SCSlide>> slides;
         private PresentationPart presentationPart;
 
+        internal EventHandler CollectionChanged;
+        
         internal SCSlideCollection(SCPresentation presentation)
         {
             this.presentationPart = presentation.PresentationDocument.PresentationPart ??
@@ -60,40 +62,8 @@ namespace ShapeCrawler.Collections
             removingSlide.IsRemoved = true;
 
             this.slides.Reset();
-        }
-
-        private static void RemoveFromCustomShow(Presentation sdkPresentation, StringValue? removingSlideRelId)
-        {
-            if (sdkPresentation.CustomShowList == null)
-            {
-                return;
-            }
-
-            // Iterate through the list of custom shows
-            foreach (var customShow in sdkPresentation.CustomShowList.Elements<P.CustomShow>())
-            {
-                if (customShow.SlideList == null)
-                {
-                    continue;
-                }
-
-                // declares a link list of slide list entries
-                var slideListEntries = new LinkedList<P.SlideListEntry>();
-                foreach (P.SlideListEntry slideListEntry in customShow.SlideList.Elements())
-                {
-                    // finds the slide reference to remove from the custom show
-                    if (slideListEntry.Id != null && slideListEntry.Id == removingSlideRelId)
-                    {
-                        slideListEntries.AddLast(slideListEntry);
-                    }
-                }
-
-                // Removes all references to the slide from the custom show
-                foreach (P.SlideListEntry slideListEntry in slideListEntries)
-                {
-                    customShow.SlideList.RemoveChild(slideListEntry);
-                }
-            }
+            
+            this.OnCollectionChanged();
         }
 
         public void Add(ISlide outerSlide)
@@ -160,6 +130,7 @@ namespace ShapeCrawler.Collections
 
             this.slides.Reset();
             this.parentPresentation.SlideMastersValue.Reset();
+            this.OnCollectionChanged();
         }
 
         public void Insert(int position, ISlide outerSlide)
@@ -175,6 +146,7 @@ namespace ShapeCrawler.Collections
 
             this.slides.Reset();
             this.parentPresentation.SlideMastersValue.Reset();
+            this.OnCollectionChanged();
         }
 
         internal SCSlide GetBySlideId(string slideId)
@@ -225,6 +197,45 @@ namespace ShapeCrawler.Collections
             }
 
             return slides;
+        }
+
+        private void OnCollectionChanged()
+        {
+            this.CollectionChanged?.Invoke(this, null);
+        }
+        
+        private static void RemoveFromCustomShow(Presentation sdkPresentation, StringValue? removingSlideRelId)
+        {
+            if (sdkPresentation.CustomShowList == null)
+            {
+                return;
+            }
+
+            // Iterate through the list of custom shows
+            foreach (var customShow in sdkPresentation.CustomShowList.Elements<P.CustomShow>())
+            {
+                if (customShow.SlideList == null)
+                {
+                    continue;
+                }
+
+                // declares a link list of slide list entries
+                var slideListEntries = new LinkedList<P.SlideListEntry>();
+                foreach (P.SlideListEntry slideListEntry in customShow.SlideList.Elements())
+                {
+                    // finds the slide reference to remove from the custom show
+                    if (slideListEntry.Id != null && slideListEntry.Id == removingSlideRelId)
+                    {
+                        slideListEntries.AddLast(slideListEntry);
+                    }
+                }
+
+                // Removes all references to the slide from the custom show
+                foreach (P.SlideListEntry slideListEntry in slideListEntries)
+                {
+                    customShow.SlideList.RemoveChild(slideListEntry);
+                }
+            }
         }
     }
 }

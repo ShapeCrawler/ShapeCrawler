@@ -185,6 +185,28 @@ namespace ShapeCrawler.Tests
             pres = SCPresentation.Open(mStream, false);
             pres.Slides.Should().HaveCount(expectedSlidesCount);
         }
+        
+        [Fact]
+        public void Slides_Remove_removes_slide_from_section()
+        {
+            // Arrange
+            var pptxStream = GetTestPptxStream("030.pptx");
+            var pres = SCPresentation.Open(pptxStream, true);
+            var sectionSlides = pres.Sections[0].Slides;
+            var removingSlide = sectionSlides[0];
+            var mStream = new MemoryStream();
+
+            // Act
+            pres.Slides.Remove(removingSlide);
+
+            // Assert
+            sectionSlides.Count.Should().Be(0);
+
+            pres.SaveAs(mStream);
+            pres = SCPresentation.Open(mStream, false);
+            sectionSlides = pres.Sections[0].Slides;
+            sectionSlides.Count.Should().Be(0);
+        }
 
         public static IEnumerable<object[]> TestCasesSlidesRemove()
         {
@@ -222,7 +244,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Sections_Remove_removes_section()
+        public void Sections_Remove_removes_specified_section()
         {
             // Arrange
             var pptxStream = GetTestPptxStream("030.pptx");
@@ -253,29 +275,7 @@ namespace ShapeCrawler.Tests
         }
         
         [Fact]
-        public void Sections_Section_Slides_Remove_removes_slide_from_section()
-        {
-            // Arrange
-            var originalPptxStream = GetTestPptxStream("030.pptx");
-            var pres = SCPresentation.Open(originalPptxStream, true);
-            var sectionSlides = pres.Sections[0].Slides; 
-            var removingSlide = sectionSlides[0];
-            var modifiedPptxStream = new MemoryStream();
-
-            // Act
-            sectionSlides.Remove(removingSlide);
-
-            // Assert
-            sectionSlides.Count.Should().Be(0);
-            
-            pres.SaveAs(modifiedPptxStream);
-            pres = SCPresentation.Open(modifiedPptxStream, true);
-            sectionSlides = pres.Sections[0].Slides;
-            sectionSlides.Count.Should().Be(0);
-        }
-
-        [Fact]
-        public void Sections_Section_Slides_Count_returns_Zero_number_of_slides_in_section_When_section_is_Empty()
+        public void Sections_Section_Slides_Count_returns_Zero_When_section_is_Empty()
         {
             // Arrange
             var pptxStream = GetTestPptxStream("008.pptx");

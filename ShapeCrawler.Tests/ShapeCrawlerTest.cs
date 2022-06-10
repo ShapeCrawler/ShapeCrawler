@@ -57,7 +57,6 @@ namespace ShapeCrawler.Tests
             return mStream;
         }
         
-        
         protected static string GetTestPptxPath(string fileName)
         {
             var assembly = Assembly.GetExecutingAssembly();
