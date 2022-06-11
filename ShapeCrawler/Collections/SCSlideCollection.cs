@@ -18,7 +18,7 @@ namespace ShapeCrawler.Collections
         private PresentationPart presentationPart;
 
         internal EventHandler CollectionChanged;
-        
+
         internal SCSlideCollection(SCPresentation presentation)
         {
             this.presentationPart = presentation.PresentationDocument.PresentationPart ??
@@ -62,18 +62,44 @@ namespace ShapeCrawler.Collections
             removingSlide.IsRemoved = true;
 
             this.slides.Reset();
-            
+
             this.OnCollectionChanged();
         }
 
-        public void Add(ISlide outerSlide)
+        public void Add(ISlide addingSlide)
         {
-            SCSlide outerInnerSlide = (SCSlide)outerSlide;
-            if (outerInnerSlide.ParentPresentation == this.parentPresentation)
+            var addingSlideInner = (SCSlide)addingSlide;
+            if (addingSlideInner.ParentPresentation != this.parentPresentation)
             {
-                throw new ShapeCrawlerException("Adding slide cannot be belong to the same presentation.");
+                this.AddExternal(addingSlide, addingSlideInner);
+            }
+            else
+            {
+                var slidePart = addingSlideInner.SDKSlidePart;
+
+                // CLONE SLIDE
+                var clonedSlide = (Slide)slidePart.Slide.CloneNode(true);
+                var newSlidePart = this.presentationPart.AddNewPart<SlidePart>();
+                clonedSlide.Save(newSlidePart);
+                newSlidePart.AddPart(slidePart.SlideLayoutPart);
+
+                // APPEND SLIDE
+                var slideIdList = this.presentationPart.Presentation.SlideIdList;
+                var maxSlideId = slideIdList.ChildElements
+                    .Cast<SlideId>()
+                    .Max(x => x.Id.Value);
+                var id = maxSlideId + 1;
+                var newSlideId = new SlideId();
+                slideIdList.Append(newSlideId);
+                newSlideId.Id = id;
+                newSlideId.RelationshipId = this.presentationPart.GetIdOfPart(newSlidePart);
             }
 
+            this.OnCollectionChanged();
+        }
+
+        private void AddExternal(ISlide outerSlide, SCSlide outerInnerSlide)
+        {
             this.parentPresentation.ThrowIfClosed();
 
             var presentation = (SCPresentation)outerInnerSlide.ParentPresentation;
@@ -127,10 +153,6 @@ namespace ShapeCrawler.Collections
 
                 slideMasterPart.SlideMaster.Save();
             }
-
-            this.slides.Reset();
-            this.parentPresentation.SlideMastersValue.Reset();
-            this.OnCollectionChanged();
         }
 
         public void Insert(int position, ISlide outerSlide)
@@ -201,9 +223,11 @@ namespace ShapeCrawler.Collections
 
         private void OnCollectionChanged()
         {
+            this.slides.Reset();
+            this.parentPresentation.SlideMastersValue.Reset();
             this.CollectionChanged?.Invoke(this, null);
         }
-        
+
         private static void RemoveFromCustomShow(Presentation sdkPresentation, StringValue? removingSlideRelId)
         {
             if (sdkPresentation.CustomShowList == null)

@@ -16,7 +16,7 @@ namespace ShapeCrawler.Collections
         /// <summary>
         ///     Adds a slide into the collection at the specified position.
         /// </summary>
-        void Add(ISlide outerSlide);
+        void Add(ISlide addingSlide);
 
         /// <summary>
         ///     Inserts slide.
