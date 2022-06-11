@@ -17,7 +17,7 @@ namespace ShapeCrawler.Charts
         private readonly Lazy<ICategoryCollection> categories;
         private readonly Lazy<ChartType> chartType;
         private readonly Lazy<OpenXmlElement> firstSeries;
-        private readonly P.GraphicFrame pGraphicFrame;
+        internal readonly P.GraphicFrame pGraphicFrame;
         private readonly Lazy<SeriesCollection> seriesCollection;
         private readonly Lazy<LibraryCollection<double>> xValues;
         private string? chartTitle;
