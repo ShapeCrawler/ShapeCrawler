@@ -137,5 +137,33 @@ namespace ShapeCrawler.Tests
             var pointCellValue = this.GetWorksheetCellValue<double>(chart.WorkbookByteArray, "B2");
             pointCellValue.Should().Be(newChartPointValue);
         }
+
+        [Fact]
+        public void Value_Getter_returns_chart_point2()
+        {
+            // Arrange
+            var pptxStream = GetTestPptxStream("bars.pptx");
+            var pres = SCPresentation.Open(pptxStream, true);
+            {
+                var chart = pres.Slides[0].Shapes.First() as IChart;
+                var points = chart.SeriesCollection.SelectMany(p => p.Points);
+                Assert.Equal(4, chart.SeriesCollection.First().Points.Count());
+                Assert.Equal(20, points.Count());
+            }
+            {
+                var chart = pres.Slides[1].Shapes.First() as IChart;
+                var points = chart.SeriesCollection.SelectMany(p => p.Points);
+                Assert.Equal(4, chart.SeriesCollection.First().Points.Count());
+                Assert.Equal(20, points.Count());
+            }
+            {
+                var chart = pres.Slides[2].Shapes.First() as IChart;
+                var points = chart.SeriesCollection.SelectMany(p => p.Points);
+                Assert.Equal(14, chart.SeriesCollection.Count());
+                Assert.Equal(11, chart.SeriesCollection.First().Points.Count());
+                Assert.Equal(132, points.Count());
+            }
+        }
+
     }
 }
