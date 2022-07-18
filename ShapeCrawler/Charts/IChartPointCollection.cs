@@ -73,18 +73,22 @@ namespace ShapeCrawler.Charts
 
             // Generate points
             var chartPoints = new List<ChartPoint>(pointAddresses.Count);
-            for (int i = 0; i < pointAddresses.Count; i++)
+
+            if (pointAddresses.Count == 1 && cNumericValues?.Count > 1)
             {
-                var address = pointAddresses[i];
-                NumericValue? cNumericValue = null;
-
-                // Empty cells of range don't have the corresponding C.NumericValue.
-                if (i < cNumericValues?.Count)
+                foreach (var cNumericValue in cNumericValues)
                 {
-                    cNumericValue = cNumericValues[i];
+                    chartPoints.Add(new ChartPoint(chart, dataSheetName, pointAddresses[0], cNumericValue));
                 }
-
-                chartPoints.Add(new ChartPoint(chart,  dataSheetName, address, cNumericValue));
+            }
+            else
+            {
+                // Empty cells of range don't have the corresponding C.NumericValue.
+                var quPoints = System.Math.Min(pointAddresses.Count, cNumericValues?.Count ?? 0);
+                for (int i = 0; i < quPoints; i++)
+                {
+                    chartPoints.Add(new ChartPoint(chart, dataSheetName, pointAddresses[i], cNumericValues?[i]));
+                }
             }
 
             return new ChartPointCollection(chartPoints);

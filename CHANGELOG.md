@@ -1,4 +1,6 @@
 # Changelog
+## Version 0.31.1 - 2022-07-15
+- Fixed bug in Chart [#259](https://github.com/ShapeCrawler/ShapeCrawler/issues/259)
 
 ## Version 0.31.0 - 2022-06-10
 - Added opportunity to update series value eg. `chart.SeriesCollection[0].Points[0].Value = 10` [#66](https://github.com/ShapeCrawler/ShapeCrawler/issues/66)
