@@ -36,7 +36,7 @@ namespace ShapeCrawler
 
         public ITextBox? TextBox => this.textBox.Value;
 
-        public ShapeFill Fill => this.shapeFill.Value;
+        public IShapeFill Fill => this.shapeFill.Value;
 
         public ShapeType ShapeType => ShapeType.AutoShape;
         #endregion Public Properties

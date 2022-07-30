@@ -1,31 +1,39 @@
 ﻿using System.Drawing;
 using System.Globalization;
+using System.IO;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Drawing
 {
-    /// <summary>
-    ///     Represents a shape fill.
-    /// </summary>
-    public class ShapeFill : IShapeFill
+    internal class ShapeFill : IShapeFill
     {
-        /// <summary>
-        ///     Gets fill type.
-        /// </summary>
+        public ShapeFill()
+        {
+            this.Type = FillType.NoFill;
+        }
+        
+        public ShapeFill(SCImage image)
+        {
+            this.Picture = image;
+            this.Type = FillType.Picture;
+        }
+        
+        private ShapeFill(Color clr)
+        {
+            this.SolidColor = clr;
+            this.Type = FillType.Solid;
+        }
+
+        private ShapeFill(A.SchemeColor schemeColor)
+        {
+        }
+        
         public FillType Type { get; }
 
-        /// <summary>
-        ///     Gets picture image. Returns <c>null</c> if fill type is not picture.
-        /// </summary>
-        public SCImage Picture { get; }
+        public SCImage? Picture { get; }
 
-        /// <summary>
-        ///     Gets instance of the <see cref="System.Drawing.Color" />. Returns <c>null</c> if fill type is not solid color.
-        /// </summary>
         public Color SolidColor { get; }
-
-        #region Public Methods
 
         public static ShapeFill FromXmlSolidFill(A.RgbColorModelHex rgbColorModelHex)
         {
@@ -36,33 +44,17 @@ namespace ShapeCrawler.Drawing
             return new ShapeFill(clr);
         }
 
-        #endregion Public Methods
-
         internal static ShapeFill FromASchemeClr(A.SchemeColor schemeColor)
         {
             return new ShapeFill(schemeColor);
         }
 
-        #region Constructors
-
-        public ShapeFill(SCImage image)
+        public void SetPicture(MemoryStream inputPngStream)
         {
-            Picture = image;
-            Type = FillType.Picture;
+            if (this.Type == FillType.NoFill)
+            {
+                
+            }
         }
-
-        private ShapeFill(Color clr)
-        {
-            Check.NotNull(clr, nameof(clr));
-
-            SolidColor = clr;
-            Type = FillType.Solid;
-        }
-
-        private ShapeFill(A.SchemeColor schemeColor)
-        {
-        }
-
-        #endregion Constructors
     }
 }

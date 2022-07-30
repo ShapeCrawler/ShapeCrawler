@@ -58,7 +58,7 @@ namespace ShapeCrawler.Tests
             IAutoShape autoShape = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 6);
 
             // Act
-            ShapeFill shapeFill = autoShape.Fill;
+            var shapeFill = autoShape.Fill;
 
             // Assert
             shapeFill.Should().BeNull();
@@ -72,6 +72,25 @@ namespace ShapeCrawler.Tests
 
             // Act-Assert
             autoShape.Fill.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void AutoShape_Fill_SetPicture_fills_shape_with_picture_When_shape_Is_Not_filled()
+        {
+            // Arrange
+            var pptxStream = GetTestFileStream("008.pptx");
+            var inputPngStream = GetTestFileStream("test-image-1.png");
+            var pres = SCPresentation.Open(pptxStream, true);
+            var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
+            
+            // Act
+            shape.Fill.SetPicture(inputPngStream);
+            
+            // Assert
+            var shapePictureBytes = shape.Fill.Picture.GetBytes().Result;
+            inputPngStream.Position = 0;
+            var inputPngBytes = inputPngStream.ToArray(); 
+            shapePictureBytes.SequenceEqual(inputPngBytes).Should().BeTrue();
         }
 
         [Fact]
@@ -322,7 +341,7 @@ namespace ShapeCrawler.Tests
 
         public static IEnumerable<object[]> GeometryTypeTestCases()
         {
-            var pptxStream = GetTestPptxStream("021.pptx");
+            var pptxStream = GetTestFileStream("021.pptx");
             var presentation = SCPresentation.Open(pptxStream, false);
             var shapeCase1 = presentation.Slides[3].Shapes.First(sp => sp.Id == 2);
             var shapeCase2 = presentation.Slides[3].Shapes.First(sp => sp.Id == 3);

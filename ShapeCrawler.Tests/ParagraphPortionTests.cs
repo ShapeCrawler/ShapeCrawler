@@ -52,7 +52,7 @@ namespace ShapeCrawler.Tests
         public void Hyperlink_Setter_sets_hyperlink()
         {
             // Arrange
-            var pptxStream = GetTestPptxStream("001.pptx");
+            var pptxStream = GetTestFileStream("001.pptx");
             var presentation = SCPresentation.Open(pptxStream, true);
             var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
             var portion = autoShape.TextBox.Paragraphs[0].Portions[0];
