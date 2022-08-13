@@ -87,7 +87,7 @@ namespace ShapeCrawler.Tests
             shape.Fill.SetPicture(inputPngStream);
             
             // Assert
-            var shapePictureBytes = shape.Fill.Picture.GetBytes().Result;
+            var shapePictureBytes = shape.Fill.Picture!.GetBytes().Result;
             inputPngStream.Position = 0;
             var inputPngBytes = inputPngStream.ToArray(); 
             shapePictureBytes.SequenceEqual(inputPngBytes).Should().BeTrue();

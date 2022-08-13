@@ -1,27 +1,26 @@
 ﻿using System.Drawing;
 using System.Globalization;
 using System.IO;
-using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Drawing
 {
     internal class ShapeFill : IShapeFill
     {
-        public ShapeFill()
+        private ShapeFill()
         {
             this.Type = FillType.NoFill;
         }
         
-        public ShapeFill(SCImage image)
+        private ShapeFill(SCImage image)
         {
             this.Picture = image;
             this.Type = FillType.Picture;
         }
         
-        private ShapeFill(Color clr)
+        private ShapeFill(Color color)
         {
-            this.SolidColor = clr;
+            this.SolidColor = color;
             this.Type = FillType.Solid;
         }
 
@@ -34,8 +33,16 @@ namespace ShapeCrawler.Drawing
         public SCImage? Picture { get; }
 
         public Color SolidColor { get; }
+        
+        public void SetPicture(Stream image)
+        {
+            if (this.Type == FillType.NoFill)
+            {
+                // this.
+            }
+        }
 
-        public static ShapeFill FromXmlSolidFill(A.RgbColorModelHex rgbColorModelHex)
+        internal static ShapeFill FromXmlSolidFill(A.RgbColorModelHex rgbColorModelHex)
         {
             var hexColor = rgbColorModelHex.Val.ToString();
             var hexColorInt = int.Parse(hexColor, NumberStyles.HexNumber, CultureInfo.CurrentCulture);
@@ -48,13 +55,15 @@ namespace ShapeCrawler.Drawing
         {
             return new ShapeFill(schemeColor);
         }
-
-        public void SetPicture(MemoryStream inputPngStream)
+        
+        internal static ShapeFill FromImage(SCImage image)
         {
-            if (this.Type == FillType.NoFill)
-            {
-                
-            }
+            return new ShapeFill(image);
+        }
+        
+        internal static ShapeFill CreateNoFill()
+        {
+            return new ShapeFill();
         }
     }
 }

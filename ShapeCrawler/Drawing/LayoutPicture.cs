@@ -24,7 +24,7 @@ namespace ShapeCrawler.Drawing
         {
             var imagePart = (ImagePart)this.SlideLayoutInternal.SlideLayoutPart.GetPartById(picReference.Value);
 
-            return new SCImage(imagePart, this, picReference, this.SlideLayoutInternal.SlideLayoutPart);
+            return SCImage.Create(imagePart, this, picReference, this.SlideLayoutInternal.SlideLayoutPart);
         }
     }
 }

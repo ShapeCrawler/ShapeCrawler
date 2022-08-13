@@ -23,6 +23,6 @@ namespace ShapeCrawler.Drawing
         /// </summary>
         public Color SolidColor { get; }
 
-        void SetPicture(MemoryStream inputPngStream);
+        void SetPicture(Stream image);
     }
 }
