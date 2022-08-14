@@ -1,12 +1,16 @@
 ﻿using System.Drawing;
 using System.Globalization;
 using System.IO;
+using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Drawing
 {
     internal class ShapeFill : IShapeFill
     {
+        internal Shape shape;
+        
         private ShapeFill()
         {
             this.Type = FillType.NoFill;

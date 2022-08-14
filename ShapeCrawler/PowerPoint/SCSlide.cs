@@ -20,7 +20,10 @@ using ShapeCrawler.Statics;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler
 {
-    internal class SCSlide : ISlide, IPresentationComponent
+    /// <summary>
+    ///     Represents Slide.
+    /// </summary>
+    internal class SCSlide : SlideBase, ISlide, IPresentationComponent
     {
         private readonly Lazy<SCImage> backgroundImage;
         private Lazy<CustomXmlPart> customXmlPart;
@@ -31,16 +34,23 @@ namespace ShapeCrawler
             this.ParentPresentation = parentPresentation;
             this.SDKSlidePart = slidePart;
             this.shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.ForSlide(this.SDKSlidePart, this));
-            this.backgroundImage = new Lazy<SCImage>(() => SCImage.CreateBackgroundImageOrDefault(this));
+            this.backgroundImage = new Lazy<SCImage>(() => SCImage.ForBackground(this));
             this.customXmlPart = new Lazy<CustomXmlPart>(this.GetSldCustomXmlPart);
             this.SlideId = slideId;
         }
 
         internal readonly SlideId SlideId;
 
-        public ISlideLayout ParentSlideLayout => ((SlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
+        internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
+
+        public ISlideLayout SlideLayout => ((SlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
 
         public IShapeCollection Shapes => this.shapes.Value;
+        public override bool IsRemoved { get; set; }
+        public override void ThrowIfRemoved()
+        {
+            throw new NotImplementedException();
+        }
 
         public int Number
         {
@@ -58,8 +68,6 @@ namespace ShapeCrawler
         }
 
         public bool Hidden => this.SDKSlidePart.Slide.Show != null && this.SDKSlidePart.Slide.Show.Value == false;
-
-        public bool IsRemoved { get; set; }
 
         public IPresentation ParentPresentation { get; }
 
@@ -120,8 +128,6 @@ namespace ShapeCrawler
                 this.SDKSlidePart.Slide.Show = false;
             }
         }
-
-        #region Private Methods
 
         private int GetNumber()
         {
@@ -237,18 +243,6 @@ namespace ShapeCrawler
 
             return null;
         }
-
-        public void ThrowIfRemoved()
-        {
-            if (this.IsRemoved)
-            {
-                throw new ElementIsRemovedException("Slide was removed");
-            }
-
-            this.PresentationInternal.ThrowIfClosed();
-        }
-
-        #endregion Private Methods
 
         public SCPresentation PresentationInternal { get; }
     }

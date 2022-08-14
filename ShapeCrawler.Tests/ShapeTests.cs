@@ -94,11 +94,11 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void AutoShapeFillType_GetterReturnsFillTypeByWhichTheAutoShapeIsFilled()
+        public void AutoShape_Fill_Type_Getter_returns_fill_type()
         {
             // Arrange
-            IAutoShape autoShape1 = (IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
-            IAutoShape autoShape2 = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
+            var autoShape1 = (IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
+            var autoShape2 = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
 
             // Act
             FillType shapeFillTypeCase1 = autoShape1.Fill.Type;

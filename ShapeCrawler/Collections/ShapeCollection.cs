@@ -82,11 +82,11 @@ namespace ShapeCrawler.Collections
             return new ShapeCollection(shapes, pShapeTree, slide);
         }
 
-        internal static ShapeCollection ForSlideLayout(P.ShapeTree pShapeTree, IBaseSlide baseSlide)
+        internal static ShapeCollection ForSlideLayout(P.ShapeTree pShapeTree, SlideBase slideBase)
         {
             var shapeList = new List<IShape>();
-            var layout = baseSlide as SCSlideLayout;
-            var master = baseSlide as SCSlideMaster;
+            var layout = slideBase as SCSlideLayout;
+            var master = slideBase as SCSlideMaster;
             foreach (var childOfPShapeTree in pShapeTree.OfType<OpenXmlCompositeElement>())
             {
                 switch (childOfPShapeTree)

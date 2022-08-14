@@ -9,7 +9,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a Slide Master.
     /// </summary>
-    public interface ISlideMaster : IBaseSlide
+    public interface ISlideMaster
     {
         /// <summary>
         ///     Gets background image.

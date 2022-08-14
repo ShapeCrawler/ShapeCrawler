@@ -121,14 +121,14 @@ namespace ShapeCrawler
         }
 #endif
 
-        internal static SCImage CreatePictureImage(Shape pictureShape, OpenXmlPart openXmlPart, StringValue picReference)
+        internal static SCImage ForPicture(Shape pictureShape, OpenXmlPart openXmlPart, StringValue picReference)
         {
             var imagePart = (ImagePart)openXmlPart.GetPartById(picReference.Value);
 
             return new SCImage(imagePart, pictureShape, picReference, openXmlPart);
         }
 
-        internal static SCImage CreateBackgroundImageOrDefault(SCSlide slide)
+        internal static SCImage? ForBackground(SCSlide slide)
         {
             var pBackground = slide.SDKSlidePart.Slide.CommonSlideData.Background;
             if (pBackground == null)
@@ -149,10 +149,10 @@ namespace ShapeCrawler
             return backgroundImage;
         }
 
-        internal static SCImage? CreateFillImageOrDefault(Shape autoShape, SlidePart slidePart)
+        internal static SCImage? ForAutoShapeFill(Shape autoShape, SlidePart slidePart)
         {
             var pShape = (P.Shape)autoShape.PShapeTreesChild;
-            var aBlipFill = pShape.ShapeProperties.GetFirstChild<A.BlipFill>();
+            var aBlipFill = pShape.ShapeProperties!.GetFirstChild<A.BlipFill>();
 
             var picReference = aBlipFill?.Blip?.Embed;
             if (picReference == null)
@@ -160,7 +160,7 @@ namespace ShapeCrawler
                 return null;
             }
 
-            var imagePart = (ImagePart)slidePart.GetPartById(picReference.Value);
+            var imagePart = (ImagePart)slidePart.GetPartById(picReference.Value!);
 
             return new SCImage(imagePart, autoShape, picReference, slidePart);
         }

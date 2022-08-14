@@ -20,16 +20,16 @@ namespace ShapeCrawler
         /// <summary>
         ///     Initializes a new instance of the <see cref="Shape"/> class for grouped shape.
         /// </summary>
-        protected Shape(OpenXmlCompositeElement childOfPShapeTree, IBaseSlide baseSlide, Shape groupShape)
-            : this(childOfPShapeTree, baseSlide)
+        protected Shape(OpenXmlCompositeElement pShapeTreeChild, SlideBase slideBase, Shape groupShape)
+            : this(pShapeTreeChild, slideBase)
         {
             this.GroupShape = groupShape;
         }
 
-        protected Shape(OpenXmlCompositeElement childOfPShapeTree, IBaseSlide baseSlide)
+        protected Shape(OpenXmlCompositeElement pShapeTreeChild, SlideBase slideBase)
         {
-            this.PShapeTreesChild = childOfPShapeTree;
-            this.ParentBaseSlide = baseSlide;
+            this.PShapeTreesChild = pShapeTreeChild;
+            this.SlideBase = slideBase;
         }
 
         #region Public Properties
@@ -63,11 +63,6 @@ namespace ShapeCrawler
         /// </summary>
         public abstract IPlaceholder Placeholder { get; }
 
-        /// <summary>
-        ///     Gets or sets parent Slide Master.
-        /// </summary>
-        internal abstract SCSlideMaster SlideMasterInternal { get; set; }
-        
         public abstract SCPresentation PresentationInternal { get; }
 
         /// <summary>
@@ -110,16 +105,21 @@ namespace ShapeCrawler
             get => this.GetWidthPixels();
             set => this.SetWidth(value);
         }
+        
+        #endregion Public Properties
 
         bool IRemovable.IsRemoved { get; set; }
 
+        /// <summary>
+        ///     Gets or sets parent Slide Master.
+        /// </summary>
+        internal abstract SCSlideMaster SlideMasterInternal { get; set; }
+        
         internal OpenXmlCompositeElement PShapeTreesChild { get; }
 
-        private IBaseSlide ParentBaseSlide { get; }
+        internal SlideBase SlideBase { get; }
 
         private Shape? GroupShape { get; }
-
-        #endregion Public Properties
 
         public void ThrowIfRemoved()
         {
@@ -128,7 +128,7 @@ namespace ShapeCrawler
                 throw new ElementIsRemovedException("Shape was removed.");
             }
 
-            this.ParentBaseSlide.ThrowIfRemoved();
+            this.SlideBase.ThrowIfRemoved();
         }
 
         private void SetCustomData(string value)

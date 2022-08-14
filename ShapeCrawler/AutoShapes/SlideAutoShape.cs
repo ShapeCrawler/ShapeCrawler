@@ -11,14 +11,17 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler
 {
+    /// <summary>
+    ///     Represents AutoShape located on Slide.
+    /// </summary>
     internal class SlideAutoShape : SlideShape, IAutoShape, ITextBoxContainer
     {
         private readonly Lazy<ShapeFill> shapeFill;
         private readonly Lazy<SCTextBox?> textBox;
         private readonly P.Shape pShape;
 
-        public SlideAutoShape(P.Shape pShape, SCSlide parentSlideInternal, SlideGroupShape groupShape)
-            : base(pShape, parentSlideInternal, groupShape)
+        internal SlideAutoShape(P.Shape pShape, SCSlide slideInternal, SlideGroupShape groupShape)
+            : base(pShape, slideInternal, groupShape)
         {
             this.textBox = new Lazy<SCTextBox?>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.GetFill);
@@ -32,6 +35,8 @@ namespace ShapeCrawler
         public IShapeFill Fill => this.shapeFill.Value;
 
         public IShape Shape => this; // TODO: should be internal?
+        
+        public ShapeType ShapeType => ShapeType.AutoShape;
 
         #endregion Public Properties
 
@@ -55,7 +60,7 @@ namespace ShapeCrawler
         private ShapeFill GetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()
         {
             var slide = this.Slide;
-            var image = SCImage.CreateFillImageOrDefault(this, slide.SDKSlidePart, this.PShapeTreesChild);
+            var image = SCImage.ForAutoShapeFill(this, slide.SDKSlidePart);
 
             if (image != null)
             {
@@ -76,7 +81,5 @@ namespace ShapeCrawler
 
             return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
         }
-
-        public ShapeType ShapeType => ShapeType.AutoShape;
     }
 }
