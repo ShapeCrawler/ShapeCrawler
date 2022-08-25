@@ -73,7 +73,6 @@ namespace ShapeCrawler.Tests.Helpers
             Pre036 = SCPresentation.Open(Properties.Resources._036, false);
             Pre037 = SCPresentation.Open(Properties.Resources._037, false);
             Pre038 = SCPresentation.Open(Properties.Resources._038, false);
-            Pre039 = SCPresentation.Open(Properties.Resources._039_audio, false);
             Pre040 = SCPresentation.Open(Properties.Resources._040_video, false);
         }
     }
