@@ -42,149 +42,6 @@ namespace ShapeCrawler.Collections
             this.shapeTree = shapeTree;
         }
 
-        internal static ShapeCollection ForSlide(SlidePart slidePart, SCSlide slide)
-        {
-            var chartGrFrameHandler = new ChartGraphicFrameHandler();
-            var tableGrFrameHandler = new TableGraphicFrameHandler();
-            var oleGrFrameHandler = new OleGraphicFrameHandler();
-            var autoShapeCreator = new AutoShapeCreator();
-            var pictureHandler = new PictureHandler();
-
-            autoShapeCreator.Successor = oleGrFrameHandler;
-            oleGrFrameHandler.Successor = pictureHandler;
-            pictureHandler.Successor = chartGrFrameHandler;
-            chartGrFrameHandler.Successor = tableGrFrameHandler;
-
-            var pShapeTree = slidePart.Slide.CommonSlideData!.ShapeTree!;
-            var shapes = new List<IShape>(pShapeTree.Count());
-            foreach (var childElementOfShapeTree in pShapeTree.OfType<OpenXmlCompositeElement>())
-            {
-                IShape shape;
-                if (childElementOfShapeTree is P.GroupShape pGroupShape)
-                {
-                    shape = new SlideGroupShape(pGroupShape, slide, null);
-                }
-                else if (childElementOfShapeTree is P.ConnectionShape)
-                {
-                    shape = new SCConnectionShape(childElementOfShapeTree, slide);
-                }
-                else
-                {
-                    shape = autoShapeCreator.Create(childElementOfShapeTree, slide, null);
-                }
-
-                if (shape != null)
-                {
-                    shapes.Add(shape);
-                }
-            }
-
-            return new ShapeCollection(shapes, pShapeTree, slide);
-        }
-
-        internal static ShapeCollection ForSlideLayout(P.ShapeTree pShapeTree, IBaseSlide baseSlide)
-        {
-            var shapeList = new List<IShape>();
-            var layout = baseSlide as SCSlideLayout;
-            var master = baseSlide as SCSlideMaster;
-            foreach (var childOfPShapeTree in pShapeTree.OfType<OpenXmlCompositeElement>())
-            {
-                switch (childOfPShapeTree)
-                {
-                    case P.Shape pShape:
-                        if (layout != null)
-                        {
-                            shapeList.Add(new LayoutAutoShape(layout, pShape));
-                        }
-                        else
-                        {
-                            shapeList.Add(new MasterAutoShape(master!, pShape));
-                        }
-
-                        continue;
-                    case P.GraphicFrame pGraphicFrame:
-                    {
-                        A.GraphicData aGraphicData =
-                            pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
-                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
-                            StringComparison.Ordinal))
-                        {
-                            if (layout != null)
-                            {
-                                shapeList.Add(new LayoutOLEObject(layout, pGraphicFrame));
-                            }
-                            else
-                            {
-                                shapeList.Add(new MasterOLEObject(master!, pGraphicFrame));
-                            }
-
-                            continue;
-                        }
-
-                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart",
-                            StringComparison.Ordinal))
-                        {
-                            if (layout != null)
-                            {
-                                shapeList.Add(new LayoutChart(layout, pGraphicFrame));
-                            }
-                            else
-                            {
-                                shapeList.Add(new MasterChart(master!, pGraphicFrame));
-                            }
-
-                            continue;
-                        }
-
-                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/table",
-                            StringComparison.Ordinal))
-                        {
-                            if (layout != null)
-                            {
-                                shapeList.Add(new LayoutTable(layout, pGraphicFrame));
-                            }
-                            else
-                            {
-                                shapeList.Add(new MasterTable(master!, pGraphicFrame));
-                            }
-
-                            continue;
-                        }
-
-                        break;
-                    }
-                }
-
-                P.Picture? pPicture;
-                if (childOfPShapeTree is P.Picture treePic)
-                {
-                    pPicture = treePic;
-                }
-                else
-                {
-                    pPicture = childOfPShapeTree.Descendants<P.Picture>().FirstOrDefault();
-                }
-
-                if (pPicture != null)
-                {
-                    var embeddedPicReference = pPicture.GetFirstChild<P.BlipFill>()?.Blip?.Embed;
-                    if (embeddedPicReference != null)
-                    {
-                        if (layout != null)
-                        {
-                            shapeList.Add(new LayoutPicture(pPicture, layout, embeddedPicReference));
-                        }
-                        else
-                        {
-                            shapeList.Add(new MasterPicture(pPicture, master, embeddedPicReference));
-                        }
-                    }
-                }
-            }
-
-            return new ShapeCollection(shapeList);
-        }
-
         public IAudioShape AddNewAudio(int xPixels, int yPixels, Stream mp3Stream)
         {
             long xEmu = PixelConverter.HorizontalPixelToEmu(xPixels);
@@ -455,6 +312,149 @@ namespace ShapeCrawler.Collections
             }
 
             return mappedShape;
+        }
+        
+        internal static ShapeCollection ForSlideLayout(P.ShapeTree pShapeTree, IBaseSlide baseSlide)
+        {
+            var shapeList = new List<IShape>();
+            var layout = baseSlide as SCSlideLayout;
+            var master = baseSlide as SCSlideMaster;
+            foreach (var childOfPShapeTree in pShapeTree.OfType<OpenXmlCompositeElement>())
+            {
+                switch (childOfPShapeTree)
+                {
+                    case P.Shape pShape:
+                        if (layout != null)
+                        {
+                            shapeList.Add(new LayoutAutoShape(layout, pShape));
+                        }
+                        else
+                        {
+                            shapeList.Add(new MasterAutoShape(master!, pShape));
+                        }
+
+                        continue;
+                    case P.GraphicFrame pGraphicFrame:
+                    {
+                        A.GraphicData aGraphicData =
+                            pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
+                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
+                            StringComparison.Ordinal))
+                        {
+                            if (layout != null)
+                            {
+                                shapeList.Add(new LayoutOLEObject(layout, pGraphicFrame));
+                            }
+                            else
+                            {
+                                shapeList.Add(new MasterOLEObject(master!, pGraphicFrame));
+                            }
+
+                            continue;
+                        }
+
+                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart",
+                            StringComparison.Ordinal))
+                        {
+                            if (layout != null)
+                            {
+                                shapeList.Add(new LayoutChart(layout, pGraphicFrame));
+                            }
+                            else
+                            {
+                                shapeList.Add(new MasterChart(master!, pGraphicFrame));
+                            }
+
+                            continue;
+                        }
+
+                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/table",
+                            StringComparison.Ordinal))
+                        {
+                            if (layout != null)
+                            {
+                                shapeList.Add(new LayoutTable(layout, pGraphicFrame));
+                            }
+                            else
+                            {
+                                shapeList.Add(new MasterTable(master!, pGraphicFrame));
+                            }
+
+                            continue;
+                        }
+
+                        break;
+                    }
+                }
+
+                P.Picture? pPicture;
+                if (childOfPShapeTree is P.Picture treePic)
+                {
+                    pPicture = treePic;
+                }
+                else
+                {
+                    pPicture = childOfPShapeTree.Descendants<P.Picture>().FirstOrDefault();
+                }
+
+                if (pPicture != null)
+                {
+                    var embeddedPicReference = pPicture.GetFirstChild<P.BlipFill>()?.Blip?.Embed;
+                    if (embeddedPicReference != null)
+                    {
+                        if (layout != null)
+                        {
+                            shapeList.Add(new LayoutPicture(pPicture, layout, embeddedPicReference));
+                        }
+                        else
+                        {
+                            shapeList.Add(new MasterPicture(pPicture, master, embeddedPicReference));
+                        }
+                    }
+                }
+            }
+
+            return new ShapeCollection(shapeList);
+        }
+        
+        internal static ShapeCollection ForSlide(SlidePart slidePart, SCSlide slide)
+        {
+            var chartGrFrameHandler = new ChartGraphicFrameHandler();
+            var tableGrFrameHandler = new TableGraphicFrameHandler();
+            var oleGrFrameHandler = new OleGraphicFrameHandler();
+            var autoShapeCreator = new AutoShapeCreator();
+            var pictureHandler = new PictureHandler();
+
+            autoShapeCreator.Successor = oleGrFrameHandler;
+            oleGrFrameHandler.Successor = pictureHandler;
+            pictureHandler.Successor = chartGrFrameHandler;
+            chartGrFrameHandler.Successor = tableGrFrameHandler;
+
+            var pShapeTree = slidePart.Slide.CommonSlideData!.ShapeTree!;
+            var shapes = new List<IShape>(pShapeTree.Count());
+            foreach (var childElementOfShapeTree in pShapeTree.OfType<OpenXmlCompositeElement>())
+            {
+                IShape shape;
+                if (childElementOfShapeTree is P.GroupShape pGroupShape)
+                {
+                    shape = new SlideGroupShape(pGroupShape, slide, null);
+                }
+                else if (childElementOfShapeTree is P.ConnectionShape)
+                {
+                    shape = new SCConnectionShape(childElementOfShapeTree, slide);
+                }
+                else
+                {
+                    shape = autoShapeCreator.Create(childElementOfShapeTree, slide, null);
+                }
+
+                if (shape != null)
+                {
+                    shapes.Add(shape);
+                }
+            }
+
+            return new ShapeCollection(shapes, pShapeTree, slide);
         }
     }
 }
