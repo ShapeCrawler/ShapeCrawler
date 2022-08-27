@@ -17,5 +17,18 @@ namespace ShapeCrawler.Extensions
             using var destStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
             sourceStream.CopyTo(destStream);
         }
+
+        public static byte[] ToArray(this Stream stream)
+        {
+            if (stream is MemoryStream inputMs)
+            {
+                return inputMs.ToArray();
+            }
+            
+            var ms = new MemoryStream();
+            stream.CopyTo(ms);
+
+            return ms.ToArray();
+        }
     }
 }

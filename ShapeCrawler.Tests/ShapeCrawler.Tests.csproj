@@ -81,6 +81,8 @@
     <EmbeddedResource Include="Resource\030.pptx" />
     <None Remove="Resource\008.pptx" />
     <EmbeddedResource Include="Resource\008.pptx" />
+    <None Remove="Resource\Audio\audio-case001.pptx" />
+    <EmbeddedResource Include="Resource\Audio\audio-case001.pptx" />
   </ItemGroup>
 
 </Project>

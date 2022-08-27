@@ -148,7 +148,9 @@ namespace ShapeCrawler.Tests
         public void Shapes_collection_contains_Audio_shape()
         {
             // Arrange
-            IShape shape = this.fixture.Pre039.Slides[0].Shapes.First(sp => sp.Id == 8);
+            var pptxStream = GetTestFileStream("audio-case001.pptx");
+            var pres = SCPresentation.Open(pptxStream, false);
+            IShape shape = pres.Slides[0].Shapes.First(sp => sp.Id == 8);
 
             // Act
             bool isAudio = shape is IAudioShape;
@@ -160,7 +162,7 @@ namespace ShapeCrawler.Tests
         [Fact]
         public void Shapes_collection_contains_Connection_shape()
         {
-            var pptxStream = GetTestPptxStream("001.pptx");
+            var pptxStream = GetTestFileStream("001.pptx");
             var presentation = SCPresentation.Open(pptxStream, false);
             var shapesCollection = presentation.Slides[0].Shapes;
 

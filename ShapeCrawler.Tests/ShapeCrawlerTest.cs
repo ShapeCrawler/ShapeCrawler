@@ -46,7 +46,7 @@ namespace ShapeCrawler.Tests
             return (T)cellValue;
         }
 
-        protected static Stream GetTestPptxStream(string fileName)
+        protected static Stream GetTestFileStream(string fileName)
         {
             var assembly = Assembly.GetExecutingAssembly();
             var path = assembly.GetManifestResourceNames().First(r => r.EndsWith(fileName, StringComparison.Ordinal));
@@ -78,7 +78,7 @@ namespace ShapeCrawler.Tests
 
         private IPresentation GetPresentationFromAssembly(string fileName)
         {
-            var stream = GetTestPptxStream(fileName);
+            var stream = GetTestFileStream(fileName);
             
             return SCPresentation.Open(stream, true);
         }

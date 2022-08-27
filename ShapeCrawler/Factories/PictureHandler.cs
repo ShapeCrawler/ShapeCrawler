@@ -24,7 +24,7 @@ namespace ShapeCrawler.Factories
                 {
                     case AudioFromFile:
                     {
-                        A.AudioFromFile? aAudioFile = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
+                        var aAudioFile = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
                             .GetFirstChild<A.AudioFromFile>();
                         if (aAudioFile is not null)
                         {

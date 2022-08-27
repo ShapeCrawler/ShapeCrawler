@@ -65,6 +65,21 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
+        public void AudioShape_BinaryData_returns_audio_bytes()
+        {
+            // Arrange
+            var pptxStream = GetTestFileStream("audio-case001.pptx");
+            var pres = SCPresentation.Open(pptxStream, false);
+            var audioShape = pres.Slides[0].Shapes.GetByName<IAudioShape>("Audio 1");
+
+            // Act
+            var bytes = audioShape.BinaryData;
+
+            // Assert
+            bytes.Should().NotBeEmpty();
+        }
+
+        [Fact]
         public void AutoShapeFill_IsNotNull_WhenAutoShapeIsFilled()
         {
             // Arrange
@@ -322,7 +337,7 @@ namespace ShapeCrawler.Tests
 
         public static IEnumerable<object[]> GeometryTypeTestCases()
         {
-            var pptxStream = GetTestPptxStream("021.pptx");
+            var pptxStream = GetTestFileStream("021.pptx");
             var presentation = SCPresentation.Open(pptxStream, false);
             var shapeCase1 = presentation.Slides[3].Shapes.First(sp => sp.Id == 2);
             var shapeCase2 = presentation.Slides[3].Shapes.First(sp => sp.Id == 3);

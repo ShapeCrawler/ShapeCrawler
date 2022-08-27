@@ -221,12 +221,12 @@ namespace ShapeCrawler.Tests
 
         public static IEnumerable<object[]> TestCasesAlignmentGetter()
         {
-            var pptxStream = GetTestPptxStream("001.pptx");
+            var pptxStream = GetTestFileStream("001.pptx");
             var presentation = SCPresentation.Open(pptxStream, false);
             var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
             yield return new object[] {autoShape, TextAlignment.Center};
             
-            pptxStream = GetTestPptxStream("001.pptx");
+            pptxStream = GetTestFileStream("001.pptx");
             presentation = SCPresentation.Open(pptxStream, false);
             autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("Head 1");
             yield return new object[] {autoShape, TextAlignment.Center};
@@ -236,7 +236,7 @@ namespace ShapeCrawler.Tests
         public void Paragraph_Alignment_Setter_updates_text_aligment()
         {
             // Arrange
-            var pptxStream = GetTestPptxStream("001.pptx");
+            var pptxStream = GetTestFileStream("001.pptx");
             var originPresentation = SCPresentation.Open(pptxStream, true);
             var autoShape = originPresentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
             var paragraph = autoShape.TextBox.Paragraphs[0];
