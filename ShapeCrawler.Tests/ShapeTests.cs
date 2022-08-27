@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Tests.Properties;
@@ -118,7 +119,6 @@ namespace ShapeCrawler.Tests
             shapeSolidColorName.Should().BeEquivalentTo("ff0000");
         }
 
-
         [Fact]
         public async void AutoShapeFillPictureGetImageBytes_ReturnsImageByWhichTheAutoShapeIsFilled()
         {
@@ -149,6 +149,21 @@ namespace ShapeCrawler.Tests
             imageSizeAfter.Should().NotBe(imageSizeBefore, "because image has been changed");
         }
 
+        [Fact]
+        public void VideoShape_BinaryData_returns_video_bytes()
+        {
+            // Arrange
+            var pptxStream = GetTestFileStream("video-case001.pptx");
+            var pres = SCPresentation.Open(pptxStream, false);
+            var videoShape = pres.Slides[0].Shapes.GetByName<IVideoShape>("Video 1");
+
+            // Act
+            var bytes = videoShape.BinaryData;
+
+            // Assert
+            bytes.Should().NotBeEmpty();
+        }
+        
         [Fact]
         public void PictureSetImage_ShouldNotImpactOtherPictureImage_WhenItsOriginImageIsShared()
         {

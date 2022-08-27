@@ -26,10 +26,5 @@ namespace ShapeCrawler.Tests.Helpers
         {
             public static Stream TestMp3 => Resources.test_mp3.ToResizeableStream();
         }
-
-        public class Video
-        {
-            public static Stream TestVideo => Resources.test_video.ToResizeableStream();
-        }
     }
 }
