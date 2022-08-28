@@ -4,7 +4,7 @@ using ShapeCrawler.Extensions;
 
 namespace ShapeCrawler.Media
 {
-    internal class MediaShape : SlideShape
+    internal abstract class MediaShape : SlideShape
     {
         protected MediaShape(OpenXmlCompositeElement childOfPShapeTree, SCSlide slide, Shape groupShape) 
             : base(childOfPShapeTree, slide, groupShape)

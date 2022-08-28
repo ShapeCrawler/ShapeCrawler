@@ -3,6 +3,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -122,10 +123,10 @@ namespace ShapeCrawler
                 runProperties.Append(hyperlink);
             }
 
-            var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
             var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextBox.TextBoxContainer;
             var slidePart = slideAutoShape.Slide.SDKSlidePart;
-
+            var rId = RelationshipIdGenerator.ForSlidePart(slidePart);
+            
             slidePart.AddHyperlinkRelationship(new Uri(url, UriKind.Absolute), true, rId);
             hyperlink.Id = rId;
         }
