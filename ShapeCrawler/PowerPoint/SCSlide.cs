@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AngleSharp;
 using AngleSharp.Css.Dom;
@@ -24,6 +25,7 @@ namespace ShapeCrawler
     {
         private readonly Lazy<SCImage> backgroundImage;
         private Lazy<CustomXmlPart> customXmlPart;
+        private int? lastRid;
 
         internal SCSlide(SCPresentation parentPresentation, SlidePart slidePart, SlideId slideId)
         {
@@ -38,7 +40,8 @@ namespace ShapeCrawler
 
         internal readonly SlideId SlideId;
 
-        public ISlideLayout ParentSlideLayout => ((SlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
+        public ISlideLayout ParentSlideLayout =>
+            ((SlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
 
         public IShapeCollection Shapes => this.shapes.Value;
 
@@ -72,7 +75,8 @@ namespace ShapeCrawler
         /// </summary>
         public void SaveScheme(string filePath)
         {
-            SlideSchemeService.SaveScheme(this.shapes.Value, this.PresentationInternal.SlideWidth, this.PresentationInternal.SlideHeight, filePath);
+            SlideSchemeService.SaveScheme(this.shapes.Value, this.PresentationInternal.SlideWidth,
+                this.PresentationInternal.SlideHeight, filePath);
         }
 
         public async Task<string> ToHtml()
@@ -105,7 +109,8 @@ namespace ShapeCrawler
         /// </summary>
         public void SaveScheme(Stream stream)
         {
-            SlideSchemeService.SaveScheme(this.shapes.Value, this.PresentationInternal.SlideWidth, this.PresentationInternal.SlideHeight, stream);
+            SlideSchemeService.SaveScheme(this.shapes.Value, this.PresentationInternal.SlideWidth,
+                this.PresentationInternal.SlideHeight, stream);
         }
 
         public void Hide()
@@ -127,7 +132,8 @@ namespace ShapeCrawler
         {
             var presentationPart = this.PresentationInternal.PresentationDocument.PresentationPart;
             string currentSlidePartId = presentationPart.GetIdOfPart(this.SDKSlidePart);
-            List<SlideId> slideIdList = presentationPart.Presentation.SlideIdList.ChildElements.OfType<SlideId>().ToList();
+            List<SlideId> slideIdList =
+                presentationPart.Presentation.SlideIdList.ChildElements.OfType<SlideId>().ToList();
             for (int i = 0; i < slideIdList.Count; i++)
             {
                 if (slideIdList[i].RelationshipId == currentSlidePartId)
@@ -182,7 +188,7 @@ namespace ShapeCrawler
             // Save the modified presentation.
             presentation.Save();
         }
-        
+
         private string GetCustomData()
         {
             if (this.customXmlPart.Value == null)
@@ -229,7 +235,7 @@ namespace ShapeCrawler
                 using var customXmlPartStream = new StreamReader(customXmlPart.GetStream());
                 string customXmlPartText = customXmlPartStream.ReadToEnd();
                 if (customXmlPartText.StartsWith(ConstantStrings.CustomDataElementName,
-                    StringComparison.CurrentCulture))
+                        StringComparison.CurrentCulture))
                 {
                     return customXmlPart;
                 }
@@ -251,5 +257,45 @@ namespace ShapeCrawler
         #endregion Private Methods
 
         public SCPresentation PresentationInternal { get; }
+
+        internal string GenerateNextRelationshipId()
+        {
+            if (this.lastRid != null)
+            {
+                return $"rId{++this.lastRid}";
+            }
+
+            var idList = this.GetIdList();
+
+            this.lastRid = idList.Max();
+            return $"rId{++this.lastRid}";
+        }
+
+        private List<int> GetIdList()
+        {
+            var idList = new List<int>();
+
+            foreach (var idPartPair in this.SDKSlidePart.Parts)
+            {
+                var matched = Regex.Match(idPartPair.RelationshipId, @"(?<=rId)\d+");
+                var hasInt = int.TryParse(matched.Value, out var rIdInt);
+                if (hasInt)
+                {
+                    idList.Add(rIdInt);
+                }
+            }
+
+            foreach (var relationship in this.SDKSlidePart.HyperlinkRelationships)
+            {
+                var matched = Regex.Match(relationship.Id, @"(?<=rId)\d+");
+                var hasInt = int.TryParse(matched.Value, out var rIdInt);
+                if (hasInt)
+                {
+                    idList.Add(rIdInt);
+                }
+            }
+
+            return idList;
+        }
     }
 }

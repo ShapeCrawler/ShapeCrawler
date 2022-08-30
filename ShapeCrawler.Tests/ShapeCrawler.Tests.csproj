@@ -89,6 +89,8 @@
     <EmbeddedResource Include="Resource\Video\test-video.mp4" />
     <None Remove="Resource\Video\video-case001.pptx" />
     <EmbeddedResource Include="Resource\Video\video-case001.pptx" />
+    <None Remove="Resource\autoshape\autoshape-case001.pptx" />
+    <EmbeddedResource Include="Resource\autoshape\autoshape-case001.pptx" />
   </ItemGroup>
 
 </Project>

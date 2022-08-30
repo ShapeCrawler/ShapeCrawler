@@ -125,9 +125,10 @@ namespace ShapeCrawler
 
             var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextBox.TextBoxContainer;
             var slidePart = slideAutoShape.Slide.SDKSlidePart;
-            var rId = RelationshipIdGenerator.ForSlidePart(slidePart);
+            var rId = slideAutoShape.Slide.GenerateNextRelationshipId();
             
             slidePart.AddHyperlinkRelationship(new Uri(url, UriKind.Absolute), true, rId);
+            
             hyperlink.Id = rId;
         }
     }

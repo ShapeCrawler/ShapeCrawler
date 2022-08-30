@@ -12,7 +12,7 @@ namespace ShapeCrawler.Statics
             var idList = new List<int>();
             foreach (var idPartPair in slidePart.Parts)
             {
-                var matched = Regex.Match(idPartPair.RelationshipId, @"\d+");
+                var matched = Regex.Match(idPartPair.RelationshipId, @"(?<=rId)\d+");
                 var hasInt = int.TryParse(matched.Value, out var rIdInt);
                 if (hasInt)
                 {
