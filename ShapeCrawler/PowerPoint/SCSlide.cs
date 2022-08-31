@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AngleSharp;
 using AngleSharp.Css.Dom;
@@ -25,7 +24,6 @@ namespace ShapeCrawler
     {
         private readonly Lazy<SCImage> backgroundImage;
         private Lazy<CustomXmlPart> customXmlPart;
-        private int? lastRid;
 
         internal SCSlide(SCPresentation parentPresentation, SlidePart slidePart, SlideId slideId)
         {
@@ -50,7 +48,6 @@ namespace ShapeCrawler
             get => this.GetNumber();
             set => this.SetNumber(value);
         }
-
 
         public SCImage Background => this.backgroundImage.Value;
 
