@@ -1,7 +1,7 @@
 ﻿namespace ShapeCrawler.Statics
 {
-    public static class ConstantStrings
+    internal static class ConstantStrings
     {
-        public const string CustomDataElementName = "ctd";
+        internal const string CustomDataElementName = "ctd";
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Video;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler

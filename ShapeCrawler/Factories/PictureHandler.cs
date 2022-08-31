@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
+using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Video;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
