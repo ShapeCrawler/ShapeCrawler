@@ -77,6 +77,7 @@ namespace ShapeCrawler.Tests
         {
             yield return new[] { "001.pptx", "TextBox 3" };
             yield return new[] { "autoshape-case001.pptx", "AutoShape 1" };
+            yield return new[] { "autoshape-case002.pptx", "AutoShape 1" };
         }
 
         [Fact]

@@ -257,45 +257,5 @@ namespace ShapeCrawler
         #endregion Private Methods
 
         public SCPresentation PresentationInternal { get; }
-
-        internal string GenerateNextRelationshipId()
-        {
-            if (this.lastRid != null)
-            {
-                return $"rId{++this.lastRid}";
-            }
-
-            var idList = this.GetIdList();
-
-            this.lastRid = idList.Max();
-            return $"rId{++this.lastRid}";
-        }
-
-        private List<int> GetIdList()
-        {
-            var idList = new List<int>();
-
-            foreach (var idPartPair in this.SDKSlidePart.Parts)
-            {
-                var matched = Regex.Match(idPartPair.RelationshipId, @"(?<=rId)\d+");
-                var hasInt = int.TryParse(matched.Value, out var rIdInt);
-                if (hasInt)
-                {
-                    idList.Add(rIdInt);
-                }
-            }
-
-            foreach (var relationship in this.SDKSlidePart.HyperlinkRelationships)
-            {
-                var matched = Regex.Match(relationship.Id, @"(?<=rId)\d+");
-                var hasInt = int.TryParse(matched.Value, out var rIdInt);
-                if (hasInt)
-                {
-                    idList.Add(rIdInt);
-                }
-            }
-
-            return idList;
-        }
     }
 }
