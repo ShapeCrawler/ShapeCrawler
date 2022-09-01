@@ -4,12 +4,21 @@ using System.Linq;
 using System.Reflection;
 using ClosedXML.Excel;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Tests.Properties;
 
 namespace ShapeCrawler.Tests
 {
     public abstract class ShapeCrawlerTest
     {
+        protected T GetShape<T>(Stream presentation, int slideNumber, int shapeId)
+        {
+            var scPresentation = SCPresentation.Open(presentation, false);
+            
+            var slide = scPresentation.Slides[slideNumber - 1];
+            var shape = slide.Shapes.First(sp => sp.Id == shapeId);
+
+            return (T) shape;
+        }
+        
         protected T GetShape<T>(string presentation, int slideNumber, int shapeId)
         {
             var scPresentation = GetPresentationFromAssembly(presentation);
@@ -37,7 +46,7 @@ namespace ShapeCrawler.Tests
             return (T)cellValue;
         }
 
-        protected static MemoryStream GetTestFileStream(string fileName)
+        protected static Stream GetTestFileStream(string fileName)
         {
             var assembly = Assembly.GetExecutingAssembly();
             var path = assembly.GetManifestResourceNames().First(r => r.EndsWith(fileName, StringComparison.Ordinal));
@@ -47,7 +56,6 @@ namespace ShapeCrawler.Tests
 
             return mStream;
         }
-        
         
         protected static string GetTestPptxPath(string fileName)
         {

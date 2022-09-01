@@ -1,4 +1,8 @@
 # Changelog
+
+## Version 0.31.2 - 2022-09-01
+- Fixed getting binary content of audio and video shapes [#268](https://github.com/ShapeCrawler/ShapeCrawler/issues/268)
+
 ## Version 0.31.1 - 2022-07-15
 - Fixed bug in Chart [#259](https://github.com/ShapeCrawler/ShapeCrawler/issues/259)
 

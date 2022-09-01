@@ -3,9 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
-using ShapeCrawler.Video;
 using Xunit;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
@@ -148,7 +148,9 @@ namespace ShapeCrawler.Tests
         public void Shapes_collection_contains_Audio_shape()
         {
             // Arrange
-            IShape shape = this.fixture.Pre039.Slides[0].Shapes.First(sp => sp.Id == 8);
+            var pptxStream = GetTestFileStream("audio-case001.pptx");
+            var pres = SCPresentation.Open(pptxStream, false);
+            IShape shape = pres.Slides[0].Shapes.First(sp => sp.Id == 8);
 
             // Act
             bool isAudio = shape is IAudioShape;
@@ -285,7 +287,7 @@ namespace ShapeCrawler.Tests
             var preStream = TestFiles.Presentations.pre001_stream;
             var presentation = SCPresentation.Open(preStream, true);
             var shapesCollection = presentation.Slides[1].Shapes;
-            var videoStream = TestFiles.Video.TestVideo;
+            var videoStream = GetTestFileStream("test-video.mp4");
             int xPxCoordinate = 300;
             int yPxCoordinate = 100;
 

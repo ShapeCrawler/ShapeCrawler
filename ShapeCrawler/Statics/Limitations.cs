@@ -3,7 +3,7 @@
     /// <summary>
     ///     Contains library limitation..
     /// </summary>
-    public static class Limitations
+    public static class Limitations // TODO: make internal
     {
         /// <summary>
         ///     Gets the maximal allowed size of presentation in bytes.
@@ -13,6 +13,6 @@
         /// <summary>
         ///     Gets the maximal allowed number of slides in a presentation.
         /// </summary>
-        public static int MaxSlidesNumber => 300;
+        internal static int MaxSlidesNumber => 300;
     }
 }
