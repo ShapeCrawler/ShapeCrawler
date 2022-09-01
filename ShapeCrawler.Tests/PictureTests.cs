@@ -73,7 +73,8 @@ namespace ShapeCrawler.Tests
             // Arrange
             var pptxStream = GetTestFileStream("pictures-case001.pptx");
             var presentation = SCPresentation.Open(pptxStream, false);
-            var pictureShape = presentation.SlideMasters[0].Shapes.GetByName<IPicture>("Picture 9");
+            var slideMaster = presentation.SlideMasters[0];
+            var pictureShape = slideMaster.Shapes.GetByName<IPicture>("Picture 9");
             
             // Act
             var picByteArray = pictureShape.Image.GetBytes().Result;

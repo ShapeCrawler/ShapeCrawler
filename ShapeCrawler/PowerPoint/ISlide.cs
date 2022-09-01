@@ -48,6 +48,8 @@ namespace ShapeCrawler
         ///     Saves slide scheme to stream.
         /// </summary>
         void SaveScheme(Stream stream);
+        
+        IShapeCollection Shapes { get; }
 
         /// <summary>
         ///     Saves slide scheme to file.

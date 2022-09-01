@@ -314,7 +314,7 @@ namespace ShapeCrawler.Collections
             return mappedShape;
         }
         
-        internal static ShapeCollection ForSlideLayout(P.ShapeTree pShapeTree, IBaseSlide baseSlide)
+        internal static ShapeCollection ForSlideLayout(P.ShapeTree pShapeTree, SlideBase baseSlide)
         {
             var shapeList = new List<IShape>();
             var layout = baseSlide as SCSlideLayout;

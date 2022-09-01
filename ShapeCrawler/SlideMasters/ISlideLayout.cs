@@ -9,5 +9,7 @@
         ///     Gets parent Slide Master.
         /// </summary>
         ISlideMaster SlideMaster { get; }
+        
+        IShapeCollection Shapes { get; }
     }
 }

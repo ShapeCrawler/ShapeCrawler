@@ -20,5 +20,7 @@ namespace ShapeCrawler
         ///     Gets collection of Slide Layouts.
         /// </summary>
         IReadOnlyList<ISlideLayout> SlideLayouts { get; }
+        
+        IShapeCollection Shapes { get; }
     }
 }

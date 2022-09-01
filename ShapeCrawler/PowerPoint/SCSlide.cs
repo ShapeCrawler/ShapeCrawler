@@ -46,10 +46,17 @@ namespace ShapeCrawler
         public ISlideLayout SlideLayout => ((SlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
 
         public IShapeCollection Shapes => this.shapes.Value;
+        
         public override bool IsRemoved { get; set; }
+        
         public override void ThrowIfRemoved()
         {
-            throw new NotImplementedException();
+            if (this.IsRemoved)
+            {
+                throw new ElementIsRemovedException("Slide was removed");
+            }
+            
+            this.PresentationInternal.ThrowIfClosed();
         }
 
         public int Number
