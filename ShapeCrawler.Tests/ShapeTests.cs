@@ -77,8 +77,8 @@ namespace ShapeCrawler.Tests
             autoShape.Fill.Should().NotBeNull();
         }
 
-        [Fact]
-        public void AutoShape_Fill_SetPicture_fills_shape_with_picture_When_shape_Is_Not_filled()
+        [Fact(Skip = "https://github.com/ShapeCrawler/ShapeCrawler/issues/279")]
+        public void AutoShape_Fill_SetPicture_sets_specified_picture_as_a_shape_fill_When_shape_is_Not_filled()
         {
             // Arrange
             var pptxStream = GetTestFileStream("008.pptx");
