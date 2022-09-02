@@ -172,7 +172,7 @@ namespace ShapeCrawler.Tests
         public void Color_GetterReturnsColor_OfSlideLayoutPlaceholder()
         {
             // Arrange
-            IAutoShape titlePh = (IAutoShape)_fixture.Pre001.Slides[0].ParentSlideLayout.Shapes.First(sp => sp.Id == 2);
+            IAutoShape titlePh = (IAutoShape)_fixture.Pre001.Slides[0].SlideLayout.Shapes.First(sp => sp.Id == 2);
             IColorFormat colorFormat = titlePh.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
             
             // Act-Assert

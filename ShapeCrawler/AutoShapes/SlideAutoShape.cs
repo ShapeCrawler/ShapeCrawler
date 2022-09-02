@@ -11,17 +11,20 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler
 {
+    /// <summary>
+    ///     Represents AutoShape located on Slide.
+    /// </summary>
     internal class SlideAutoShape : SlideShape, IAutoShape, ITextBoxContainer
     {
         private readonly Lazy<ShapeFill> shapeFill;
         private readonly Lazy<SCTextBox?> textBox;
         private readonly P.Shape pShape;
 
-        public SlideAutoShape(P.Shape pShape, SCSlide parentSlideInternal, SlideGroupShape groupShape)
-            : base(pShape, parentSlideInternal, groupShape)
+        internal SlideAutoShape(P.Shape pShape, SCSlide slideInternal, SlideGroupShape groupShape)
+            : base(pShape, slideInternal, groupShape)
         {
             this.textBox = new Lazy<SCTextBox?>(this.GetTextBox);
-            this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
+            this.shapeFill = new Lazy<ShapeFill>(this.GetFill);
             this.pShape = pShape;
         }
 
@@ -29,9 +32,11 @@ namespace ShapeCrawler
 
         public ITextBox? TextBox => this.textBox.Value;
 
-        public ShapeFill Fill => this.shapeFill.Value;
+        public IShapeFill Fill => this.shapeFill.Value;
 
         public IShape Shape => this; // TODO: should be internal?
+        
+        public ShapeType ShapeType => ShapeType.AutoShape;
 
         #endregion Public Properties
 
@@ -52,23 +57,23 @@ namespace ShapeCrawler
             return null;
         }
 
-        private ShapeFill TryGetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()
+        private ShapeFill GetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()
         {
-            var slide = (SCSlide)this.Slide;
-            SCImage image = SCImage.GetFillImageOrDefault(this, slide.SDKSlidePart, this.PShapeTreesChild);
+            var slide = this.Slide;
+            var image = SCImage.ForAutoShapeFill(this, slide.SDKSlidePart);
 
             if (image != null)
             {
-                return new ShapeFill(image);
+                return ShapeFill.FromImage(image);
             }
 
-            A.SolidFill aSolidFill = this.pShape.ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
+            var aSolidFill = this.pShape.ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
             if (aSolidFill == null)
             {
-                return null;
+                return ShapeFill.CreateNoFill();
             }
 
-            A.RgbColorModelHex aRgbColorModelHex = aSolidFill.RgbColorModelHex;
+            var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
             if (aRgbColorModelHex != null)
             {
                 return ShapeFill.FromXmlSolidFill(aRgbColorModelHex);
@@ -76,7 +81,5 @@ namespace ShapeCrawler
 
             return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
         }
-
-        public ShapeType ShapeType => ShapeType.AutoShape;
     }
 }

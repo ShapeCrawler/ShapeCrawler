@@ -28,7 +28,7 @@ namespace ShapeCrawler.Drawing
             var sldMasterPart = this.SlideMasterInternal.PSlideMaster.SlideMasterPart;
             var imagePart = (ImagePart)sldMasterPart.GetPartById(picReference.Value);
 
-            return new SCImage(imagePart, this, picReference, sldMasterPart);
+            return SCImage.Create(imagePart, this, picReference, sldMasterPart);
         }
     }
 }

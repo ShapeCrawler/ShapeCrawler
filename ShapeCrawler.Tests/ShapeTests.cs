@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.Drawing;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
@@ -53,19 +53,6 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void AutoShapeFill_ReturnsNull_WhenAutoShapeIsNotFilled()
-        {
-            // Arrange
-            IAutoShape autoShape = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 6);
-
-            // Act
-            ShapeFill shapeFill = autoShape.Fill;
-
-            // Assert
-            shapeFill.Should().BeNull();
-        }
-
-        [Fact]
         public void AudioShape_BinaryData_returns_audio_bytes()
         {
             // Arrange
@@ -90,20 +77,61 @@ namespace ShapeCrawler.Tests
             autoShape.Fill.Should().NotBeNull();
         }
 
-        [Fact]
-        public void AutoShapeFillType_GetterReturnsFillTypeByWhichTheAutoShapeIsFilled()
+        [Fact(Skip = "https://github.com/ShapeCrawler/ShapeCrawler/issues/279")]
+        public void AutoShape_Fill_SetPicture_sets_specified_picture_as_a_shape_fill_When_shape_is_Not_filled()
         {
             // Arrange
-            IAutoShape autoShape1 = (IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
-            IAutoShape autoShape2 = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
+            var pptxStream = GetTestFileStream("008.pptx");
+            var imageStream = GetTestFileStream("test-image-1.png");
+            var pres = SCPresentation.Open(pptxStream, true);
+            var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
 
             // Act
-            FillType shapeFillTypeCase1 = autoShape1.Fill.Type;
-            FillType shapeFillTypeCase2 = autoShape2.Fill.Type;
+            shape.Fill.SetPicture(imageStream);
 
             // Assert
-            shapeFillTypeCase1.Should().Be(FillType.Picture);
-            shapeFillTypeCase2.Should().Be(FillType.Solid);
+            var pictureBytes = shape.Fill.Picture!.GetBytes().Result;
+            imageStream.Position = 0;
+            var imageBytes = imageStream.ToArray();
+            pictureBytes.SequenceEqual(imageBytes).Should().BeTrue();
+        }
+
+        [Theory]
+        [MemberData(nameof(TestCasesFillType))]
+        public void AutoShape_Fill_Type_returns_fill_type(IAutoShape shape, FillType expectedFill)
+        {
+            // Act
+            var fillType = shape.Fill.Type;
+
+            // Assert
+            fillType.Should().Be(expectedFill);
+        }
+
+        public static IEnumerable<object[]> TestCasesFillType()
+        {
+            var pptxStream = GetTestFileStream("009_table.pptx");
+            var pres = SCPresentation.Open(pptxStream, false);
+            var autoShape = pres.Slides[2].Shapes.GetById<IAutoShape>(4);
+            yield return new object[] { autoShape, FillType.Picture };
+
+            autoShape = pres.Slides[1].Shapes.GetById<IAutoShape>(2);
+            yield return new object[] { autoShape, FillType.Solid };
+
+            autoShape = pres.Slides[1].Shapes.GetById<IAutoShape>(6);
+            yield return new object[] { autoShape, FillType.NoFill };
+        }
+
+        [Fact]
+        public void AutoShape_Fill_Type_returns_NoFill_When_shape_is_Not_filled()
+        {
+            // Arrange
+            var autoShape = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 6);
+
+            // Act
+            var fillType = autoShape.Fill.Type;
+
+            // Assert
+            fillType.Should().Be(FillType.NoFill);
         }
 
         [Fact]
@@ -163,7 +191,7 @@ namespace ShapeCrawler.Tests
             // Assert
             bytes.Should().NotBeEmpty();
         }
-        
+
         [Fact]
         public void PictureSetImage_ShouldNotImpactOtherPictureImage_WhenItsOriginImageIsShared()
         {
@@ -212,7 +240,7 @@ namespace ShapeCrawler.Tests
             xCoordinateCase2.Should().Be((int)(628650 * horizontalResolution / 914400));
             xCoordinateCase3.Should().Be((int)(1524000 * horizontalResolution / 914400));
             xCoordinateCase6.Should().Be((int)(699323 * horizontalResolution / 914400));
-            xCoordinateCase7.Should().Be((int)(757383 * horizontalResolution / 914400));          
+            xCoordinateCase7.Should().Be((int)(757383 * horizontalResolution / 914400));
         }
 
         [Fact]
@@ -249,7 +277,7 @@ namespace ShapeCrawler.Tests
             yCoordinate2.Should().Be((int)(4 * verticalResoulution / 914400));
             yCoordinate3.Should().Be((int)(3463288 * verticalResoulution / 914400));
         }
-        
+
         [Fact]
         public void Y_Setter_updates_y_coordinate()
         {
@@ -291,7 +319,7 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             IShape shapeCase1 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
-            IGroupShape groupShape = (IGroupShape) _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
+            IGroupShape groupShape = (IGroupShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
             IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
             IShape shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
 
@@ -305,11 +333,12 @@ namespace ShapeCrawler.Tests
             (width2 * 914400 / TestHelper.HorizontalResolution).Should().Be(1181100);
             (width3 * 914400 / TestHelper.HorizontalResolution).Should().Be(485775);
         }
-        
+
         [Theory]
         [InlineData("050_title-placeholder.pptx", 1, 2, 777)]
         [InlineData("051_title-placeholder.pptx", 1, 3074, 864)]
-        public void Width_returns_width_of_Title_placeholder(string filename, int slideNumber, int shapeId, int expectedWidth)
+        public void Width_returns_width_of_Title_placeholder(string filename, int slideNumber, int shapeId,
+            int expectedWidth)
         {
             // Arrange
             var autoShape = GetAutoShape(filename, slideNumber, shapeId);

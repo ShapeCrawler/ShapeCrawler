@@ -44,6 +44,7 @@ namespace ShapeCrawler.Collections
         public void Remove(ISlide removingSlide)
         {
             // TODO: slide layout and master of removed slide also should be deleted if they are unused
+            var removingSlideInternal = (SCSlide)removingSlide;
             var sdkPresentation = this.presentationPart.Presentation;
             var slideIdList = sdkPresentation.SlideIdList!;
             var removingSlideIndex = removingSlide.Number - 1;
@@ -59,7 +60,7 @@ namespace ShapeCrawler.Collections
             this.presentationPart.DeletePart(removingSlidePart);
 
             this.presentationPart.Presentation.Save();
-            removingSlide.IsRemoved = true;
+            removingSlideInternal.IsRemoved = true;
 
             this.slides.Reset();
             

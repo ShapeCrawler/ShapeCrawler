@@ -2,6 +2,7 @@
 using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Placeholders
@@ -11,12 +12,12 @@ namespace ShapeCrawler.Placeholders
     /// </summary>
     internal class SlidePlaceholder : Placeholder
     {
-        private readonly SlideShape parentSlideShape;
+        private readonly SlideShape slideShape;
 
-        private SlidePlaceholder(P.PlaceholderShape pPlaceholderShape, SlideShape parentSlideShape)
+        private SlidePlaceholder(P.PlaceholderShape pPlaceholderShape, SlideShape slideShape)
             : base(pPlaceholderShape)
         {
-            this.parentSlideShape = parentSlideShape;
+            this.slideShape = slideShape;
             this.layoutReferencedShape = new ResettableLazy<Shape>(this.GetReferencedShape);
         }
 
@@ -37,7 +38,8 @@ namespace ShapeCrawler.Placeholders
 
         private Shape GetReferencedShape()
         {
-            var layoutShapes = (ShapeCollection)this.parentSlideShape.Slide.ParentSlideLayout.Shapes;
+            var layout = this.slideShape.Slide.SlideLayoutInternal;
+            var layoutShapes = layout.ShapesInternal;
             var referencedShape = layoutShapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
 
             if (referencedShape != null)
@@ -45,7 +47,7 @@ namespace ShapeCrawler.Placeholders
                 return referencedShape;
             }
 
-            var masterShapes = (ShapeCollection)this.parentSlideShape.Slide.ParentSlideLayout.ParentSlideMaster.Shapes;
+            var masterShapes = (ShapeCollection)layout.SlideMasterInternal.Shapes;
 
             return masterShapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
         }

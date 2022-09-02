@@ -2,13 +2,17 @@
 namespace ShapeCrawler
 {
     /// <summary>
-    ///     Represents a base class for user slide, layout or master slide.
+    ///     Represents base class for Slide, Slide Layout and Slide Master.
     /// </summary>
-    public interface IBaseSlide : IRemovable
+    internal abstract class SlideBase : IRemovable
     {
         /// <summary>
         ///     Gets slide collection.
         /// </summary>
         IShapeCollection Shapes { get; }
+
+        public abstract bool IsRemoved { get; set; }
+
+        public abstract void ThrowIfRemoved();
     }
 }

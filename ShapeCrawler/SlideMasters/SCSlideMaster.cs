@@ -11,7 +11,7 @@ using ShapeCrawler.Shared;
 namespace ShapeCrawler.SlideMasters
 {
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrawler")]
-    internal class SCSlideMaster : ISlideMaster
+    internal class SCSlideMaster : SlideBase, ISlideMaster
     {
         private readonly ResettableLazy<List<SCSlideLayout>> slideLayouts;
         internal readonly DocumentFormat.OpenXml.Presentation.SlideMaster PSlideMaster;
@@ -32,6 +32,8 @@ namespace ShapeCrawler.SlideMasters
             FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles.TitleStyle);
 
         internal ThemePart ThemePart => this.PSlideMaster.SlideMasterPart.ThemePart;
+
+        internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
 
         private List<SCSlideLayout> GetSlideLayouts()
         {
@@ -82,15 +84,6 @@ namespace ShapeCrawler.SlideMasters
             return false;
         }
 
-        public bool IsRemoved { get; set; }
-
-        public void ThrowIfRemoved()
-        {
-            throw new NotImplementedException();
-        }
-
-        #region Public Properties
-
         public SCImage Background => GetBackground();
 
         private SCImage GetBackground()
@@ -100,8 +93,13 @@ namespace ShapeCrawler.SlideMasters
 
         public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
-        IShapeCollection IBaseSlide.Shapes => ShapeCollection.ForSlideLayout(this.PSlideMaster.CommonSlideData.ShapeTree, this);
+        public IShapeCollection Shapes => ShapeCollection.ForSlideLayout(this.PSlideMaster.CommonSlideData.ShapeTree, this);
 
-        #endregion Public Properties
+        public override bool IsRemoved { get; set; }
+
+        public override void ThrowIfRemoved()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

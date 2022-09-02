@@ -1,33 +1,49 @@
 ﻿using System.Drawing;
 using System.Globalization;
-using ShapeCrawler.Shared;
+using System.IO;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Drawing
 {
-    /// <summary>
-    ///     Represents a shape fill.
-    /// </summary>
-    public class ShapeFill : IShapeFill
+    internal class ShapeFill : IShapeFill
     {
-        /// <summary>
-        ///     Gets fill type.
-        /// </summary>
+        internal Shape shape;
+        
+        private ShapeFill()
+        {
+            this.Type = FillType.NoFill;
+        }
+        
+        private ShapeFill(SCImage image)
+        {
+            this.Picture = image;
+            this.Type = FillType.Picture;
+        }
+        
+        private ShapeFill(Color color)
+        {
+            this.SolidColor = color;
+            this.Type = FillType.Solid;
+        }
+
+        private ShapeFill(A.SchemeColor schemeColor)
+        {
+        }
+        
         public FillType Type { get; }
 
-        /// <summary>
-        ///     Gets picture image. Returns <c>null</c> if fill type is not picture.
-        /// </summary>
-        public SCImage Picture { get; }
+        public SCImage? Picture { get; }
 
-        /// <summary>
-        ///     Gets instance of the <see cref="System.Drawing.Color" />. Returns <c>null</c> if fill type is not solid color.
-        /// </summary>
         public Color SolidColor { get; }
+        
+        public void SetPicture(Stream image)
+        {
+            if (this.Type == FillType.NoFill)
+            {
+            }
+        }
 
-        #region Public Methods
-
-        public static ShapeFill FromXmlSolidFill(A.RgbColorModelHex rgbColorModelHex)
+        internal static ShapeFill FromXmlSolidFill(A.RgbColorModelHex rgbColorModelHex)
         {
             var hexColor = rgbColorModelHex.Val.ToString();
             var hexColorInt = int.Parse(hexColor, NumberStyles.HexNumber, CultureInfo.CurrentCulture);
@@ -36,33 +52,19 @@ namespace ShapeCrawler.Drawing
             return new ShapeFill(clr);
         }
 
-        #endregion Public Methods
-
         internal static ShapeFill FromASchemeClr(A.SchemeColor schemeColor)
         {
             return new ShapeFill(schemeColor);
         }
-
-        #region Constructors
-
-        public ShapeFill(SCImage image)
+        
+        internal static ShapeFill FromImage(SCImage image)
         {
-            Picture = image;
-            Type = FillType.Picture;
+            return new ShapeFill(image);
         }
-
-        private ShapeFill(Color clr)
+        
+        internal static ShapeFill CreateNoFill()
         {
-            Check.NotNull(clr, nameof(clr));
-
-            SolidColor = clr;
-            Type = FillType.Solid;
+            return new ShapeFill();
         }
-
-        private ShapeFill(A.SchemeColor schemeColor)
-        {
-        }
-
-        #endregion Constructors
     }
 }

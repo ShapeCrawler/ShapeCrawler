@@ -9,14 +9,14 @@ namespace ShapeCrawler
     /// </summary>
     internal abstract class SlideShape : Shape
     {
-        protected SlideShape(OpenXmlCompositeElement childOfPShapeTree, SCSlide slide, Shape groupShape)
-            : base(childOfPShapeTree, slide, groupShape)
+        protected SlideShape(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, Shape groupShape)
+            : base(pShapeTreeChild, slide, groupShape)
         {
             this.Slide = slide;
         }
 
-        protected SlideShape(OpenXmlCompositeElement childOfPShapeTree, SCSlide slide)
-            : base(childOfPShapeTree, slide)
+        protected SlideShape(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide)
+            : base(pShapeTreeChild, slide)
         {
             this.Slide = slide;
         }
@@ -25,7 +25,7 @@ namespace ShapeCrawler
 
         internal override SCSlideMaster SlideMasterInternal
         {
-            get => (SCSlideMaster)this.Slide.ParentSlideLayout.ParentSlideMaster;
+            get => (SCSlideMaster)this.Slide.SlideLayout.SlideMaster;
 
             set
             {

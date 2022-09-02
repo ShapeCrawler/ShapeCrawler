@@ -3,11 +3,13 @@
     /// <summary>
     ///     Represents a Slide Layout.
     /// </summary>
-    public interface ISlideLayout : IBaseSlide
+    public interface ISlideLayout
     {
         /// <summary>
         ///     Gets parent Slide Master.
         /// </summary>
-        ISlideMaster ParentSlideMaster { get; }
+        ISlideMaster SlideMaster { get; }
+        
+        IShapeCollection Shapes { get; }
     }
 }
