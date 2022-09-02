@@ -1,8 +1,6 @@
 ﻿using System.Drawing;
 using System.Globalization;
 using System.IO;
-using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Drawing
@@ -42,7 +40,6 @@ namespace ShapeCrawler.Drawing
         {
             if (this.Type == FillType.NoFill)
             {
-                // this.
             }
         }
 

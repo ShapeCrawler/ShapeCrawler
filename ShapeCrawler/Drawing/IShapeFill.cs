@@ -23,6 +23,9 @@ namespace ShapeCrawler.Drawing
         /// </summary>
         public Color SolidColor { get; }
 
+        /// <summary>
+        ///     Sets picture as a fill.
+        /// </summary>
         void SetPicture(Stream image);
     }
 }
