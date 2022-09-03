@@ -302,52 +302,49 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(TestCasesParagraphText))]
-        public void ParagraphText_SetterChangesParagraphText(
-            SCPresentation presentation, 
-            SlideElementQuery prRequest, 
-            string newPrText,
-            int expectedNumPortions)
+        public void ParagraphText_SetterChangesParagraphText(TestSlideElementQuery paragraphQuery, string newText, int expectedPortionsCount)
         {
             // Arrange
-            IParagraph paragraph = TestHelper.GetParagraph(presentation, prRequest);
-            var presentationStream = new MemoryStream();
+            var paragraph = paragraphQuery.GetParagraph();
+            var mStream = new MemoryStream();
+            var pres = paragraphQuery.Presentation;
 
             // Act
-            paragraph.Text = newPrText;
+            paragraph.Text = newText;
 
             // Assert
-            paragraph.Text.Should().BeEquivalentTo(newPrText);
-            paragraph.Portions.Should().HaveCount(expectedNumPortions);
+            paragraph.Text.Should().BeEquivalentTo(newText);
+            paragraph.Portions.Should().HaveCount(expectedPortionsCount);
 
-            presentation.SaveAs(presentationStream);
-            presentation.Close();
-            paragraph = TestHelper.GetParagraph(presentationStream, prRequest);
-            paragraph.Text.Should().BeEquivalentTo(newPrText);
-            paragraph.Portions.Should().HaveCount(expectedNumPortions);
+            pres.SaveAs(mStream);
+            pres.Close();
+            paragraphQuery.Presentation = SCPresentation.Open(mStream, false);
+            paragraph = paragraphQuery.GetParagraph();
+            paragraph.Text.Should().BeEquivalentTo(newText);
+            paragraph.Portions.Should().HaveCount(expectedPortionsCount);
         }
 
         public static IEnumerable<object[]> TestCasesParagraphText()
         {
-            var paragraphRequest = new SlideElementQuery
+            var paragraphRequest = new TestSlideElementQuery
             {
                 SlideIndex = 1,
                 ShapeId = 4,
                 ParagraphIndex = 1
             };
-            IPresentation presentation;
             paragraphRequest.ParagraphIndex = 2;
 
-            presentation = SCPresentation.Open(Resources._002, true);
-            yield return new object[] { presentation, paragraphRequest, "Text", 1};
+            paragraphRequest.Presentation = SCPresentation.Open(Resources._002, true);
+            yield return new object[] { paragraphRequest, "Text", 1};
 
-            presentation = SCPresentation.Open(Resources._002, true);
-            yield return new object[] { presentation, paragraphRequest, $"Text{Environment.NewLine}", 1};
+            paragraphRequest.Presentation = SCPresentation.Open(Resources._002, true);
+            yield return new object[] { paragraphRequest, $"Text{Environment.NewLine}", 1};
 
-            presentation = SCPresentation.Open(Resources._002, true);
-            yield return new object[] { presentation, paragraphRequest, $"Text{Environment.NewLine}Text2", 2};
+            paragraphRequest.Presentation = SCPresentation.Open(Resources._002, true);
+            yield return new object[] { paragraphRequest, $"Text{Environment.NewLine}Text2", 2};
 
-            presentation = SCPresentation.Open(Resources._002, true);
-            yield return new object[] { presentation, paragraphRequest, $"Text{Environment.NewLine}Text2{Environment.NewLine}", 2 };
+            paragraphRequest.Presentation = SCPresentation.Open(Resources._002, true);
+            yield return new object[] { paragraphRequest, $"Text{Environment.NewLine}Text2{Environment.NewLine}", 2 };
         }
 
         [Fact]

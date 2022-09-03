@@ -12,16 +12,9 @@ namespace ShapeCrawler.Drawing
         /// </summary>
         SCColorType ColorType { get; }
 
-#if DEBUG
         /// <summary>
         ///     Gets or sets ARGB color.
         /// </summary>
         Color Color { get; set; }
-#else
-        /// <summary>
-        ///     Gets ARGB color.
-        /// </summary>
-        Color Color { get; }
-#endif
     }
 }
