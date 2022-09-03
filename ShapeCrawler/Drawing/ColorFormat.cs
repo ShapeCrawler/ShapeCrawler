@@ -92,7 +92,7 @@ namespace ShapeCrawler.Drawing
 
                 // Presentation level
                 string colorHexVariant;
-                if (this.parentSlideMaster.ParentPresentation.ParaLvlToFontData.TryGetValue(paragraphLevel, out FontData preFontData))
+                if (this.parentSlideMaster.Presentation.ParaLvlToFontData.TryGetValue(paragraphLevel, out FontData preFontData))
                 {
                     colorHexVariant = this.GetHexVariantByScheme(preFontData.ASchemeColor.Val);
                     this.colorType = SCColorType.Scheme;
