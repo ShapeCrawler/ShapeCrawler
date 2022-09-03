@@ -21,7 +21,7 @@ namespace ShapeCrawler
 
         public override IPlaceholder Placeholder => LayoutPlaceholder.Create(this.PShapeTreesChild, this);
 
-        public override SCPresentation PresentationInternal => ((SCSlideMaster)this.SlideLayoutInternal.SlideMaster).ParentPresentation;
+        public override SCPresentation PresentationInternal => ((SCSlideMaster)this.SlideLayoutInternal.SlideMaster).Presentation;
 
         public SCSlideLayout SlideLayoutInternal { get; }
     }

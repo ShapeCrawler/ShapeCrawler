@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.SlideMasters
 {
@@ -14,22 +15,23 @@ namespace ShapeCrawler.SlideMasters
     internal class SCSlideMaster : SlideBase, ISlideMaster
     {
         private readonly ResettableLazy<List<SCSlideLayout>> slideLayouts;
-        internal readonly DocumentFormat.OpenXml.Presentation.SlideMaster PSlideMaster;
 
-        internal SCSlideMaster(SCPresentation parentPresentation, DocumentFormat.OpenXml.Presentation.SlideMaster pSlideMaster)
+        internal SCSlideMaster(SCPresentation presentation, P.SlideMaster pSlideMaster)
         {
-            this.ParentPresentation = parentPresentation;
+            this.Presentation = presentation;
             this.PSlideMaster = pSlideMaster;
             this.slideLayouts = new ResettableLazy<List<SCSlideLayout>>(this.GetSlideLayouts);
         }
+        
+        internal P.SlideMaster PSlideMaster { get; }
 
-        internal SCPresentation ParentPresentation { get; }
+        internal SCPresentation Presentation { get; }
 
         internal Dictionary<int, FontData> BodyParaLvlToFontData =>
-            FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles.BodyStyle);
+            FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.BodyStyle!);
 
         internal Dictionary<int, FontData> TitleParaLvlToFontData =>
-            FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles.TitleStyle);
+            FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.TitleStyle!);
 
         internal ThemePart ThemePart => this.PSlideMaster.SlideMasterPart.ThemePart;
 
@@ -99,7 +101,12 @@ namespace ShapeCrawler.SlideMasters
 
         public override void ThrowIfRemoved()
         {
-            throw new NotImplementedException();
+            if (IsRemoved)
+            {
+                throw new ElementIsRemovedException("Slide MAster is removed");
+            }
+            
+            this.Presentation.ThrowIfClosed();
         }
     }
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Collections;
@@ -49,6 +48,22 @@ namespace ShapeCrawler.Tests
 
             // Act-Assert
             portion.Invoking(p => p.Text = "new text").Should().Throw<ElementIsRemovedException>();
+        }
+        
+        [Fact]
+        public void Text_Setter_updates_text()
+        {
+            // Arrange
+            var pptxStream = GetTestFileStream("autoshape-case001.pptx");
+            var pres = SCPresentation.Open(pptxStream, true);
+            var autoShape = pres.SlideMasters[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
+            var portion = autoShape.TextBox.Paragraphs[0].Portions[0];
+
+            // Act
+            portion.Text = "test";
+            
+            // Assert
+            portion.Text.Should().Be("test");
         }
 
         [Theory]
