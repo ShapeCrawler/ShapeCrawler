@@ -14,7 +14,7 @@ namespace ShapeCrawler.Drawing
             : base(pPicture, slideMaster)
         {
             this.picReference = picReference;
-            this.PresentationInternal = slideMaster.ParentPresentation;
+            this.PresentationInternal = slideMaster.Presentation;
         }
 
         public SCImage Image => this.GetImage();
