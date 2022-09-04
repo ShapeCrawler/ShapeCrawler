@@ -4,7 +4,6 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Tables;
