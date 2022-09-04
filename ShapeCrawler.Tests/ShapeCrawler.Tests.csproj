@@ -96,6 +96,8 @@
     <EmbeddedResource Include="Resource\autoshape\autoshape-case001.pptx" />
     <None Remove="Resource\autoshape\autoshape-case002.pptx" />
     <EmbeddedResource Include="Resource\autoshape\autoshape-case002.pptx" />
+    <None Remove="Resource\020.pptx" />
+    <EmbeddedResource Include="Resource\020.pptx" />
   </ItemGroup>
 
 </Project>
