@@ -19,8 +19,8 @@ namespace ShapeCrawler.Tests
         }
 
         [Theory]
-        [MemberData(nameof(TestCasesColorSetter))]
-        public void Color_Setter_sets_Green_color_for_font(TestElementQuery colorFormatQuery)
+        [MemberData(nameof(TestCasesSetColorHex))]
+        public void SetColorHex_updates_font_color(TestElementQuery colorFormatQuery)
         {
             // Arrange
             Color expectedColor = ColorTranslator.FromHtml("#008000");
@@ -34,6 +34,7 @@ namespace ShapeCrawler.Tests
             // Assert
             colorFormat.Color.Should().Be(expectedColor);
 
+            pres.SaveAs(@"c:\temp\result.pptx");
             pres.SaveAs(mStream);
             pres = SCPresentation.Open(mStream, false);
             colorFormatQuery.Presentation = pres;
@@ -41,46 +42,60 @@ namespace ShapeCrawler.Tests
             colorFormat.Color.Should().Be(expectedColor);
         }
 
-        public static TheoryData<TestElementQuery> TestCasesColorSetter
+        public static TheoryData<TestElementQuery> TestCasesSetColorHex
         {
             get
             {
                 var testCases = new TheoryData<TestElementQuery>();
-
+                
+                testCases.Add(new TestElementQuery
+                {
+                    Presentation = SCPresentation.Open(GetTestFileStream("autoshape-case001.pptx"), true),
+                    Location = Location.SlideMaster,
+                    SlideMasterNumber = 1,
+                    ShapeName = "AutoShape 1",
+                    ParagraphNumber = 1,
+                    PortionNumber = 1
+                });
+                
                 var pptxStream = GetTestFileStream("020.pptx");
                 var portionQuery = new TestElementQuery
                 {
                     Presentation = SCPresentation.Open(pptxStream, true),
+                    Location = Location.Slide,
                     SlideIndex = 0,
                     ShapeName = "TextBox 1",
                     ParagraphIndex = 0,
                     PortionIndex = 0
                 };
                 testCases.Add(portionQuery);
-
+                
                 portionQuery = new TestElementQuery
                 {
                     Presentation = SCPresentation.Open(Resources._020, true),
+                    Location = Location.Slide,
                     SlideIndex = 0,
                     ShapeId = 3,
                     ParagraphIndex = 0,
                     PortionIndex = 0
                 };
                 testCases.Add(portionQuery);
-
+                
                 portionQuery = new TestElementQuery
                 {
                     Presentation = SCPresentation.Open(Resources._001, true),
+                    Location = Location.Slide,
                     SlideIndex = 2,
                     ShapeId = 4,
                     ParagraphIndex = 0,
                     PortionIndex = 0
                 };
                 testCases.Add(portionQuery);
-
+                
                 portionQuery = new TestElementQuery
                 {
                     Presentation = SCPresentation.Open(Resources._001, true),
+                    Location = Location.Slide,
                     SlideIndex = 4,
                     ShapeId = 5,
                     ParagraphIndex = 0,
