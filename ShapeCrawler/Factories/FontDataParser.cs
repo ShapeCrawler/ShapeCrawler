@@ -69,7 +69,7 @@ namespace ShapeCrawler.Factories
                 A.PresetColor aPresetColor;
 
                 // Try get color from <a:solidFill>
-                A.SolidFill aSolidFill = aDefRPr?.SolidFill();
+                A.SolidFill aSolidFill = aDefRPr?.GetASolidFill();
                 if (aSolidFill != null)
                 {
                     aRgbColorModelHex = aSolidFill.RgbColorModelHex;

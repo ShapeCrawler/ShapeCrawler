@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
@@ -253,24 +254,23 @@ namespace ShapeCrawler.AutoShapes
             }
         }
 
-        private void SetItalicFlag(bool value)
+        private void SetItalicFlag(bool isItalic)
         {
             A.RunProperties aRunPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
             if (aRunPr != null)
             {
-                aRunPr.Italic = new BooleanValue(value);
+                aRunPr.Italic = new BooleanValue(isItalic);
             }
             else
             {
                 A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
                 if (aEndParaRPr != null)
                 {
-                    aEndParaRPr.Italic = new BooleanValue(value);
+                    aEndParaRPr.Italic = new BooleanValue(isItalic);
                 }
                 else
                 {
-                    aRunPr = new A.RunProperties { Italic = new BooleanValue(value) };
-                    this.aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
+                    this.aText.Parent.AddRunProperties(isItalic);
                 }
             }
         }
