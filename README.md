@@ -11,19 +11,19 @@
 
 </h3>
 
-ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoint presentations. It provides fluent APIs to process slides without having Microsoft Office installed.
-
-This library provides a simplified object model on top of the [Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK) for manipulating PowerPoint documents.
-
-The project is in development, and I’m pretty sure there are still lots of things to add in this library. Try it out and let me know your thoughts. Feel free to submit a ticket if you find bugs. Your valuable feedback is much appreciated to improve this project better.
-
+ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoint presentations. It provides a simplified object model on top of the [Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK) to process presentations without having Microsoft Office installed.
 
 ## Getting Started
+
 ### Install
 
-To get started, install ShapeCrawler from [NuGet](https://nuget.org/packages/ShapeCrawler).
+To get started, install ShapeCrawler from [NuGet](https://nuget.org/packages/ShapeCrawler):
 
-The library currently support the following frameworks: 
+```console
+dotnet add package ShapeCrawler
+```
+
+The library currently supports the following frameworks: 
 - .NET 5+ 
 - .NET Core 2.0+
 - .NET Framework 4.6.1+
@@ -31,29 +31,23 @@ The library currently support the following frameworks:
 ### Usage
 
 ```c#
+using var pres = SCPresentation.Open("helloWorld.pptx", isEditable: false);
+var slidesCount = pres.Slides.Count;
+var autoShape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 1");
+Console.WriteLine(autoShape.TextBox.Text);
 ```
 
 Visit [**Wiki**](https://github.com/ShapeCrawler/ShapeCrawler/wiki#examples) page to find more usage samples.
 
-# Feedback and Give a Star! :star:
-The project is in development, and I’m pretty sure there are still lots of things to add in this library. Try it out and let me know your thoughts.
-
-Feel free to submit a [ticket](https://github.com/ShapeCrawler/ShapeCrawler/issues) if you find bugs. Your valuable feedback is much appreciated to improve this project better. If you find this useful, please give it a star to show your support. 
-
 # Have questions?
-If you have question "How to..."
-- Please [join our Discussions Forum](https://github.com/ShapeCrawler/ShapeCrawler/discussions) and open discussion.
-- orcan always email author on theadamo86@gmail.com
+
+If you have a question:
+- [join](https://github.com/ShapeCrawler/ShapeCrawler/discussions/categories/q-a) our Discussions Forum  and open discussion;
+- you can always email the author to theadamo86@gmail.com
 
 # Contributing
 How you can contribute?
-- **Give a Star**😊 If you find this useful, please give it a star to show your support.
-- **Metrics collection**. Please, let ShapwCrawler collect metrics with following code statement `ShapeCrawler.CollectMetrics = true`. It really help us improve the project Roadmap.
-- **Bug report**. Report bug report on issue page.
-- **Impliment feature**. Please read our [Contribution Guide](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CONTRIBUTING.md) before opening issues or pull requests. There are many issue tagged with help-wanted label. Develop feature or fix bug that have tag help-wanted.
-- **Polls**. If your already use ShapeCrawler, please visit polls page and vote.
-
-# References
-- Examples
-- Changelog
-- Documentation
+- **Give a Star**⭐ If you find this useful, please give it a star to show your support.
+- **Polls**. Participate in the voting on [Polls](https://github.com/ShapeCrawler/ShapeCrawler/discussions/categories/polls) discussion.
+- **Bug report**. If you get some issue, please don't ignore and report the bug on [issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) page.
+- **Implement feature**. Some features/bugs are tagged with *help-wanted* label and waiting for your Pull Request🙂 Please visit [Contribution Guide](https://github.com/ShapeCrawler/ShapeCrawler/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) to get some development recommendations.
