@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;

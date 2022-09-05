@@ -1,8 +1,9 @@
 using System.Linq;
+using ShapeCrawler.Drawing;
 
 namespace ShapeCrawler.Tests.Helpers
 {
-    public class TestSlideElementQuery
+    public class TestElementQuery
     {
         public int SlideIndex { get; set; }
         public int? ShapeId { get; set; }
@@ -26,6 +27,16 @@ namespace ShapeCrawler.Tests.Helpers
                 : shapes.GetByName<IAutoShape>(this.ShapeName);
 
             return autoShape.TextBox!.Paragraphs[this.ParagraphIndex].Portions[this.PortionIndex];
+        }
+
+        public IColorFormat GetTestColorFormat()
+        {
+            var shapes = this.Presentation.Slides[this.SlideIndex].Shapes;
+            var autoShape = this.ShapeId != null 
+                ? shapes.GetById<IAutoShape>(this.ShapeId.Value) 
+                : shapes.GetByName<IAutoShape>(this.ShapeName);
+
+            return autoShape.TextBox!.Paragraphs[this.ParagraphIndex].Portions[this.PortionIndex].Font.ColorFormat;
         }
     }
 }

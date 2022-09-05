@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 

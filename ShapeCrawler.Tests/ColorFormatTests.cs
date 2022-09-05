@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -21,14 +20,13 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(TestCasesColorSetter))]
-        public void Color_Setter_sets_Green_color_for_font(TestSlideElementQuery portionQuery)
+        public void Color_Setter_sets_Green_color_for_font(TestElementQuery colorFormatQuery)
         {
             // Arrange
             Color expectedColor = ColorTranslator.FromHtml("#008000");
             var mStream = new MemoryStream();
-            var pres = portionQuery.Presentation;
-            var portion = portionQuery.GetParagraphPortion();
-            var colorFormat = portion.Font.ColorFormat;
+            var pres = colorFormatQuery.Presentation;
+            var colorFormat = colorFormatQuery.GetTestColorFormat();
 
             // Act
             colorFormat.SetColorHex("#008000");
@@ -38,44 +36,60 @@ namespace ShapeCrawler.Tests
 
             pres.SaveAs(mStream);
             pres = SCPresentation.Open(mStream, false);
-            portionQuery.Presentation = pres;
-            portion = portionQuery.GetParagraphPortion();
-            colorFormat = portion.Font.ColorFormat;
+            colorFormatQuery.Presentation = pres;
+            colorFormat = colorFormatQuery.GetTestColorFormat();
             colorFormat.Color.Should().Be(expectedColor);
         }
 
-        public static IEnumerable<object[]> TestCasesColorSetter()
+        public static TheoryData<TestElementQuery> TestCasesColorSetter
         {
-            var portionQuery = new TestSlideElementQuery();
+            get
+            {
+                var testCases = new TheoryData<TestElementQuery>();
 
-            var pptxStream = GetTestFileStream("020.pptx");
-            portionQuery.Presentation = SCPresentation.Open(pptxStream, true);
-            portionQuery.SlideIndex = 0;
-            portionQuery.ShapeName = "TextBox 1";
-            portionQuery.ParagraphIndex = 0;
-            portionQuery.PortionIndex = 0;
-            yield return new object[] { portionQuery };
-            
-            portionQuery.Presentation = SCPresentation.Open(Resources._020, true);
-            portionQuery.SlideIndex = 0;
-            portionQuery.ShapeId = 3;
-            portionQuery.ParagraphIndex = 0;
-            portionQuery.PortionIndex = 0;
-            yield return new object[] { portionQuery };
-            
-            portionQuery.Presentation = SCPresentation.Open(Resources._001, true); 
-            portionQuery.SlideIndex = 2;
-            portionQuery.ShapeId = 4;
-            portionQuery.ParagraphIndex = 0;
-            portionQuery.PortionIndex = 0;
-            yield return new object[] { portionQuery };
-            
-            portionQuery.Presentation = SCPresentation.Open(Resources._001, true);
-            portionQuery.SlideIndex = 4;
-            portionQuery.ShapeId = 5;
-            portionQuery.ParagraphIndex = 0;
-            portionQuery.PortionIndex = 0;
-            yield return new object[] { portionQuery };
+                var pptxStream = GetTestFileStream("020.pptx");
+                var portionQuery = new TestElementQuery
+                {
+                    Presentation = SCPresentation.Open(pptxStream, true),
+                    SlideIndex = 0,
+                    ShapeName = "TextBox 1",
+                    ParagraphIndex = 0,
+                    PortionIndex = 0
+                };
+                testCases.Add(portionQuery);
+
+                portionQuery = new TestElementQuery
+                {
+                    Presentation = SCPresentation.Open(Resources._020, true),
+                    SlideIndex = 0,
+                    ShapeId = 3,
+                    ParagraphIndex = 0,
+                    PortionIndex = 0
+                };
+                testCases.Add(portionQuery);
+
+                portionQuery = new TestElementQuery
+                {
+                    Presentation = SCPresentation.Open(Resources._001, true),
+                    SlideIndex = 2,
+                    ShapeId = 4,
+                    ParagraphIndex = 0,
+                    PortionIndex = 0
+                };
+                testCases.Add(portionQuery);
+
+                portionQuery = new TestElementQuery
+                {
+                    Presentation = SCPresentation.Open(Resources._001, true),
+                    SlideIndex = 4,
+                    ShapeId = 5,
+                    ParagraphIndex = 0,
+                    PortionIndex = 0
+                };
+                testCases.Add(portionQuery);
+
+                return testCases;
+            }
         }
 
 #if DEBUG
@@ -169,7 +183,7 @@ namespace ShapeCrawler.Tests
             // Arrange
             IAutoShape titlePh = (IAutoShape)_fixture.Pre001.Slides[0].SlideLayout.Shapes.First(sp => sp.Id == 2);
             IColorFormat colorFormat = titlePh.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            
+
             // Act-Assert
             colorFormat.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
         }

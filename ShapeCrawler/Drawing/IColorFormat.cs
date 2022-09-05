@@ -25,6 +25,9 @@ namespace ShapeCrawler.Drawing
         /// </summary>
         Color Color { get; }
 
+        /// <summary>
+        ///     Sets solid color in HEX format.
+        /// </summary>
         void SetColorHex(string hex);
     }
     

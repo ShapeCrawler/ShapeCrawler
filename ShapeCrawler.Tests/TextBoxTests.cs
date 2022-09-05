@@ -302,7 +302,7 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(TestCasesParagraphText))]
-        public void Paragraph_Text_Setter_updates_paragraph_text(TestSlideElementQuery paragraphQuery, string newText, int expectedPortionsCount)
+        public void Paragraph_Text_Setter_updates_paragraph_text(TestElementQuery paragraphQuery, string newText, int expectedPortionsCount)
         {
             // Arrange
             var paragraph = paragraphQuery.GetParagraph();
@@ -326,7 +326,7 @@ namespace ShapeCrawler.Tests
 
         public static IEnumerable<object[]> TestCasesParagraphText()
         {
-            var paragraphQuery = new TestSlideElementQuery
+            var paragraphQuery = new TestElementQuery
             {
                 SlideIndex = 1,
                 ShapeId = 4,
@@ -335,7 +335,7 @@ namespace ShapeCrawler.Tests
             paragraphQuery.Presentation = SCPresentation.Open(Resources._002, true);
             yield return new object[] { paragraphQuery, "Text", 1};
 
-            paragraphQuery = new TestSlideElementQuery
+            paragraphQuery = new TestElementQuery
             {
                 SlideIndex = 1,
                 ShapeId = 4,
@@ -344,7 +344,7 @@ namespace ShapeCrawler.Tests
             paragraphQuery.Presentation = SCPresentation.Open(Resources._002, true);
             yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}", 1};
             
-            paragraphQuery = new TestSlideElementQuery
+            paragraphQuery = new TestElementQuery
             {
                 SlideIndex = 1,
                 ShapeId = 4,
@@ -353,7 +353,7 @@ namespace ShapeCrawler.Tests
             paragraphQuery.Presentation = SCPresentation.Open(Resources._002, true);
             yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}Text2", 2};
             
-            paragraphQuery = new TestSlideElementQuery
+            paragraphQuery = new TestElementQuery
             {
                 SlideIndex = 1,
                 ShapeId = 4,
