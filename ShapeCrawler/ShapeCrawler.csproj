@@ -113,6 +113,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
 
   <ItemGroup>
     <Folder Include="Resources\" />
+    <Folder Include="Settings" />
   </ItemGroup>
 
 </Project>

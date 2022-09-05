@@ -1,8 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
-
+// ReSharper disable InconsistentNaming
 namespace ShapeCrawler
 {
-    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC - ShapeCrawler")]
+    /// <summary>
+    ///     Color source.
+    /// </summary>
     public enum SCColorType
     {
         /// <summary>
@@ -11,10 +12,18 @@ namespace ShapeCrawler
         NotDefined = 0,
 
         /// <summary>
-        ///     RGB color.
+        ///     RGB value is absolute.
         /// </summary>
         RGB = 1,
+        
+        /// <summary>
+        ///     RGB value is based on percentage.
+        /// </summary>
         RGBPercentage = 2,
+        
+        /// <summary>
+        ///     Color is defined in "Hue Saturation and Lightness" (HSL) way 
+        /// </summary>
         HSL = 3,
 
         /// <summary>
@@ -23,7 +32,7 @@ namespace ShapeCrawler
         Scheme = 4,
 
         /// <summary>
-        ///     System color.
+        ///     Operating system predefined color.
         /// </summary>
         System = 5,
 

@@ -26,7 +26,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
     <PackageReference Include="SharpCompress" Version="0.29.0" />
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
-    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -96,6 +96,8 @@
     <EmbeddedResource Include="Resource\autoshape\autoshape-case001.pptx" />
     <None Remove="Resource\autoshape\autoshape-case002.pptx" />
     <EmbeddedResource Include="Resource\autoshape\autoshape-case002.pptx" />
+    <None Remove="Resource\020.pptx" />
+    <EmbeddedResource Include="Resource\020.pptx" />
   </ItemGroup>
 
 </Project>
