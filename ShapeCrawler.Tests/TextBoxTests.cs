@@ -332,16 +332,33 @@ namespace ShapeCrawler.Tests
                 ShapeId = 4,
                 ParagraphIndex = 2
             };
-
             paragraphQuery.Presentation = SCPresentation.Open(Resources._002, true);
             yield return new object[] { paragraphQuery, "Text", 1};
 
+            paragraphQuery = new TestSlideElementQuery
+            {
+                SlideIndex = 1,
+                ShapeId = 4,
+                ParagraphIndex = 2
+            };
             paragraphQuery.Presentation = SCPresentation.Open(Resources._002, true);
             yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}", 1};
-
+            
+            paragraphQuery = new TestSlideElementQuery
+            {
+                SlideIndex = 1,
+                ShapeId = 4,
+                ParagraphIndex = 2
+            };
             paragraphQuery.Presentation = SCPresentation.Open(Resources._002, true);
             yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}Text2", 2};
-
+            
+            paragraphQuery = new TestSlideElementQuery
+            {
+                SlideIndex = 1,
+                ShapeId = 4,
+                ParagraphIndex = 2
+            };
             paragraphQuery.Presentation = SCPresentation.Open(Resources._002, true);
             yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}Text2{Environment.NewLine}", 2 };
         }

@@ -25,7 +25,7 @@ namespace ShapeCrawler.Drawing
         /// </summary>
         Color Color { get; }
 
-        void SetHex(string hex);
+        void SetColorHex(string hex);
     }
     
     internal class ColorFormat : IColorFormat
@@ -49,7 +49,7 @@ namespace ShapeCrawler.Drawing
 
         public Color Color => this.GetColor();
 
-        public void SetHex(string hex)
+        public void SetColorHex(string hex)
         {
             var portion = this.parentFont.ParentPortion;
             var aTextContainer = portion.SDKAText.Parent!;

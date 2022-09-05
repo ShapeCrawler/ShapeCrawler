@@ -31,7 +31,7 @@ namespace ShapeCrawler.Tests
             var colorFormat = portion.Font.ColorFormat;
 
             // Act
-            colorFormat.SetHex("#008000");
+            colorFormat.SetColorHex("#008000");
 
             // Assert
             colorFormat.Color.Should().Be(expectedColor);
