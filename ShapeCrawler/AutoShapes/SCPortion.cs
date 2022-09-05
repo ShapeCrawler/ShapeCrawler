@@ -46,14 +46,14 @@ namespace ShapeCrawler
             get => this.GetHyperlink();
             set => this.SetHyperlink(value);
         }
+        
+        public A.Text SDKAText { get; }
 
         #endregion Public Properties
 
         internal bool IsRemoved { get; set; }
 
         internal SCParagraph ParentParagraph { get; }
-
-        public A.Text SDKAText { get; }
 
         private void ThrowIfRemoved()
         {

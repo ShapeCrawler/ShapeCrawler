@@ -47,20 +47,22 @@ namespace ShapeCrawler.Drawing
 
         public SCColorType ColorType => this.GetColorType();
 
-        public Color Color
-        {
-            get => this.GetColor();
-            set => this.SetColor(value);
-        }
+        public Color Color => this.GetColor();
 
         public void SetHex(string hex)
         {
-            throw new System.NotImplementedException();
-        }
+            var portion = this.parentFont.ParentPortion;
+            var aTextContainer = portion.SDKAText.Parent!;
+            var aRunProperties = aTextContainer.GetFirstChild<A.RunProperties>() ?? aTextContainer.AddRunProperties();
 
-        private void SetColor(Color value)
-        {
-            throw new System.NotImplementedException();
+            var aSolidFill = aRunProperties.GetASolidFill();
+            aSolidFill?.Remove();
+
+            hex = hex.Substring(1); // to skip '#'
+            var rgbColorModelHex = new A.RgbColorModelHex { Val = hex };
+            aSolidFill = new A.SolidFill();
+            aSolidFill.Append(rgbColorModelHex);
+            aRunProperties.Append(aSolidFill);
         }
 
         private SCColorType GetColorType()
@@ -87,7 +89,7 @@ namespace ShapeCrawler.Drawing
         {
             this.initialized = true;
             var portion = this.parentFont.ParentPortion;
-            var aSolidFill = portion.SDKAText.Parent.GetFirstChild<A.RunProperties>()?.SolidFill();
+            var aSolidFill = portion.SDKAText.Parent!.GetFirstChild<A.RunProperties>()?.GetASolidFill();
             if (aSolidFill != null)
             {
                 this.FromRunSolidFill(aSolidFill);
