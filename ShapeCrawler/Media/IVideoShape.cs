@@ -12,6 +12,8 @@ namespace ShapeCrawler.Media
         ///     Gets bytes of video content.
         /// </summary>
         public byte[] BinaryData { get; }
+        
+        string MIME { get; }
     }
 
     internal class VideoShape : MediaShape, IVideoShape
