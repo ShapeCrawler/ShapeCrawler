@@ -66,6 +66,21 @@ namespace ShapeCrawler.Tests
             // Assert
             bytes.Should().NotBeEmpty();
         }
+        
+        [Fact]
+        public void AudioShape_MIME_returns_MIME_type_of_audio_content()
+        {
+            // Arrange
+            var pptxStream = GetTestFileStream("audio-case001.pptx");
+            var pres = SCPresentation.Open(pptxStream, false);
+            var audioShape = pres.Slides[0].Shapes.GetByName<IAudioShape>("Audio 1");
+
+            // Act
+            var mime = audioShape.MIME;
+
+            // Assert
+            mime.Should().Be("audio/mpeg");
+        }
 
         [Fact]
         public void AutoShapeFill_IsNotNull_WhenAutoShapeIsFilled()
@@ -190,6 +205,21 @@ namespace ShapeCrawler.Tests
 
             // Assert
             bytes.Should().NotBeEmpty();
+        }
+        
+        [Fact]
+        public void AudioShape_MIME_returns_MIME_type_of_video_content()
+        {
+            // Arrange
+            var pptxStream = GetTestFileStream("video-case001.pptx");
+            var pres = SCPresentation.Open(pptxStream, false);
+            var videoShape = pres.Slides[0].Shapes.GetByName<IVideoShape>("Video 1");
+
+            // Act
+            var mime = videoShape.MIME;
+
+            // Assert
+            mime.Should().Be("video/mp4");
         }
 
         [Fact]

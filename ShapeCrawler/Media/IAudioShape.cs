@@ -16,6 +16,8 @@ namespace ShapeCrawler
         ///     Gets bytes of audio content.
         /// </summary>
         public byte[] BinaryData { get; }
+
+        string MIME { get; }
     }
 
     internal class AudioShape : MediaShape, IAudioShape

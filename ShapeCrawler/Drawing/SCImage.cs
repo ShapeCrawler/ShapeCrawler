@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents an image model.
     /// </summary>
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class SCImage // TODO: make internal?
     {
         private readonly SCPresentation parentPresentation;
