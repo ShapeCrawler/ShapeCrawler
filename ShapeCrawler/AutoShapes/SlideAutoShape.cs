@@ -64,22 +64,22 @@ namespace ShapeCrawler
 
             if (image != null)
             {
-                return ShapeFill.FromImage(image);
+                return ShapeFill.WithPicture(this, image);
             }
 
             var aSolidFill = this.pShape.ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
             if (aSolidFill == null)
             {
-                return ShapeFill.CreateNoFill();
+                return ShapeFill.WithNoFill(this);
             }
 
             var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
             if (aRgbColorModelHex != null)
             {
-                return ShapeFill.FromXmlSolidFill(aRgbColorModelHex);
+                return ShapeFill.WithHexColor(this, aRgbColorModelHex);
             }
 
-            return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
+            return ShapeFill.WithSchemeColor(this, aSolidFill.SchemeColor);
         }
     }
 }

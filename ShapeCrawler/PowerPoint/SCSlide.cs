@@ -59,6 +59,8 @@ namespace ShapeCrawler
             this.PresentationInternal.ThrowIfClosed();
         }
 
+        internal override OpenXmlPart OpenXmlPart => this.SDKSlidePart;
+
         public int Number
         {
             get => this.GetNumber();
