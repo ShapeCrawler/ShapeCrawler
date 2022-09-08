@@ -1,6 +1,5 @@
-﻿// ReSharper disable CheckNamespace
-
-using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Services;
 
 namespace ShapeCrawler
 {
@@ -11,8 +10,8 @@ namespace ShapeCrawler
     {
         public abstract bool IsRemoved { get; set; }
 
-        public abstract void ThrowIfRemoved();
-        
         internal abstract OpenXmlPart OpenXmlPart { get; }
+
+        public abstract void ThrowIfRemoved();
     }
 }

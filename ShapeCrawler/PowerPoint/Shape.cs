@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
+using ShapeCrawler.Services;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
