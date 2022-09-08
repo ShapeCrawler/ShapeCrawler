@@ -51,11 +51,6 @@ namespace ShapeCrawler
         
         IShapeCollection Shapes { get; }
 
-        /// <summary>
-        ///     Saves slide scheme to file.
-        /// </summary>
-        void SaveScheme(string filePath);
-
 #if DEBUG
         /// <summary>
         ///     Converts slide to HTML.

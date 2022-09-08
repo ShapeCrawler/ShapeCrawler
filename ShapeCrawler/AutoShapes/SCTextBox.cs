@@ -8,7 +8,6 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
-using Font = System.Drawing.Font;
 
 namespace ShapeCrawler.AutoShapes
 {

@@ -82,14 +82,6 @@ namespace ShapeCrawler
 
         private ResettableLazy<ShapeCollection> shapes { get; }
 
-        /// <summary>
-        ///     Saves slide scheme in PNG file.
-        /// </summary>
-        public void SaveScheme(string filePath)
-        {
-            SlideSchemeService.SaveScheme(this.shapes.Value, this.PresentationInternal.SlideWidth, this.PresentationInternal.SlideHeight, filePath);
-        }
-
         public async Task<string> ToHtml()
         {
             var slideWidthPx = this.PresentationInternal.SlideWidth;
