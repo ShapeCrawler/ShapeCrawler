@@ -104,7 +104,7 @@ namespace ShapeCrawler
             IEnumerable<A.Text> aTexts = pTextBody.Descendants<A.Text>();
             if (aTexts.Sum(t => t.Text.Length) > 0)
             {
-                return new SCTextBox(pTextBody, this);
+                return new SCTextBox(this, pTextBody);
             }
 
             return null;

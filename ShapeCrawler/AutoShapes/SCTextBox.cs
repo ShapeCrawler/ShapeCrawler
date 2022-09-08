@@ -4,8 +4,8 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Spreadsheet;
 using ShapeCrawler.Collections;
+using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using Font = System.Drawing.Font;
@@ -15,17 +15,28 @@ namespace ShapeCrawler.AutoShapes
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrawler")]
     internal class SCTextBox : ITextBox
     {
-        private readonly Lazy<string> text;
+        private readonly ResettableLazy<string> text;
+        private readonly ResettableLazy<ParagraphCollection> paragraphs;
 
-        public SCTextBox(OpenXmlCompositeElement txBodyCompositeElement, ITextBoxContainer textBoxContainer)
+        internal SCTextBox(ITextBoxContainer textBoxContainer, OpenXmlCompositeElement txBodyElement)
+            : this(textBoxContainer)
         {
-            this.text = new Lazy<string>(this.GetText);
-            this.APTextBody = txBodyCompositeElement;
-            this.Paragraphs = new ParagraphCollection(this.APTextBody, this);
+            this.APTextBody = txBodyElement;
+        }
+        
+        internal SCTextBox(ITextBoxContainer textBoxContainer)
+        {
             this.TextBoxContainer = textBoxContainer;
+            this.text = new ResettableLazy<string>(this.GetText);
+            this.paragraphs = new ResettableLazy<ParagraphCollection>(this.GetParagraphs);
         }
 
-        public IParagraphCollection Paragraphs { get; }
+        private ParagraphCollection GetParagraphs()
+        {
+            return new ParagraphCollection(this);
+        }
+
+        public IParagraphCollection Paragraphs => this.paragraphs.Value;
 
         public string Text
         {
@@ -40,7 +51,7 @@ namespace ShapeCrawler.AutoShapes
         /// </summary>
         internal ITextBoxContainer TextBoxContainer { get; }
 
-        internal OpenXmlCompositeElement APTextBody { get; }
+        internal OpenXmlCompositeElement? APTextBody { get; }
 
         internal void ThrowIfRemoved()
         {
@@ -71,14 +82,15 @@ namespace ShapeCrawler.AutoShapes
 
             if (this.AutofitType == AutofitType.Shrink)
             {
-                var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count()).First().First();
+                var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
+                    .First().First();
                 var fontFamilyName = popularPortion.Font.Name;
                 var fontSize = popularPortion.Font.Size;
                 var stringFormat = new StringFormat { Trimming = StringTrimming.Word };
                 var shape = this.TextBoxContainer.Shape;
                 var bm = new Bitmap(shape.Width, shape.Height);
                 using var graphic = Graphics.FromImage(bm);
-                var margin = 7;
+                const int margin = 7;
                 var rectangle = new Rectangle(margin, margin, shape.Width - 2 * margin, shape.Height - 2 * margin);
                 var availSize = new SizeF(rectangle.Width, rectangle.Height);
 
@@ -100,6 +112,11 @@ namespace ShapeCrawler.AutoShapes
 
         private string GetText()
         {
+            if (this.APTextBody == null)
+            {
+                return string.Empty;
+            }
+            
             var sb = new StringBuilder();
             sb.Append(this.Paragraphs[0].Text);
 
@@ -116,6 +133,5 @@ namespace ShapeCrawler.AutoShapes
 
             return sb.ToString();
         }
-
     }
 }
