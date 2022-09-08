@@ -1,4 +1,7 @@
 ﻿// ReSharper disable CheckNamespace
+
+using DocumentFormat.OpenXml.Packaging;
+
 namespace ShapeCrawler
 {
     /// <summary>
@@ -6,13 +9,10 @@ namespace ShapeCrawler
     /// </summary>
     internal abstract class SlideBase : IRemovable
     {
-        /// <summary>
-        ///     Gets slide collection.
-        /// </summary>
-        IShapeCollection Shapes { get; }
-
         public abstract bool IsRemoved { get; set; }
 
         public abstract void ThrowIfRemoved();
+        
+        internal abstract OpenXmlPart OpenXmlPart { get; }
     }
 }
