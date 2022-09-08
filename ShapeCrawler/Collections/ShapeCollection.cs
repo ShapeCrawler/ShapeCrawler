@@ -387,6 +387,7 @@ namespace ShapeCrawler.Collections
                 }
 
                 P.Picture? pPicture;
+                
                 if (childOfPShapeTree is P.Picture treePic)
                 {
                     pPicture = treePic;

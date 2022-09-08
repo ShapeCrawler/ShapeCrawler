@@ -59,7 +59,7 @@ namespace ShapeCrawler.Tables
             IEnumerable<A.Text> aTexts = aTextBody.Descendants<A.Text>();
             if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0)
             {
-                return new SCTextBox(aTextBody, this);
+                return new SCTextBox( this, aTextBody);
             }
 
             return null;

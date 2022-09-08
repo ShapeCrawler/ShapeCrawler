@@ -12,6 +12,7 @@ using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Factories;
+using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
@@ -58,6 +59,8 @@ namespace ShapeCrawler
             
             this.PresentationInternal.ThrowIfClosed();
         }
+
+        internal override OpenXmlPart OpenXmlPart => this.SDKSlidePart;
 
         public int Number
         {

@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Placeholders
+namespace ShapeCrawler.Services
 {
     internal class FontData
     {

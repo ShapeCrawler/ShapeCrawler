@@ -1,4 +1,6 @@
-﻿namespace ShapeCrawler.Drawing
+﻿using ShapeCrawler.Services;
+
+namespace ShapeCrawler.Drawing
 {
     internal interface IImageContainer : IRemovable
     {

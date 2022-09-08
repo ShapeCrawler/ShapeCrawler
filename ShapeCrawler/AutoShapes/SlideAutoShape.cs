@@ -3,7 +3,6 @@ using System.Linq;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -30,7 +29,7 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public ITextBox? TextBox => this.textBox.Value;
+        public ITextBox TextBox => this.textBox.Value;
 
         public IShapeFill Fill => this.shapeFill.Value;
 
@@ -40,18 +39,18 @@ namespace ShapeCrawler
 
         #endregion Public Properties
 
-        private SCTextBox? GetTextBox()
+        private SCTextBox GetTextBox()
         {
             var pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
             if (pTextBody == null)
             {
-                return null;
+                return new SCTextBox(this);
             }
 
             var aTexts = pTextBody.Descendants<A.Text>();
             if (aTexts.Sum(t => t.Text.Length) > 0)
             {
-                return new SCTextBox(pTextBody, this);
+                return new SCTextBox( this, pTextBody);
             }
 
             return null;
@@ -64,22 +63,22 @@ namespace ShapeCrawler
 
             if (image != null)
             {
-                return ShapeFill.FromImage(image);
+                return ShapeFill.WithPicture(this, image);
             }
 
             var aSolidFill = this.pShape.ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
             if (aSolidFill == null)
             {
-                return ShapeFill.CreateNoFill();
+                return ShapeFill.WithNoFill(this);
             }
 
             var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
             if (aRgbColorModelHex != null)
             {
-                return ShapeFill.FromXmlSolidFill(aRgbColorModelHex);
+                return ShapeFill.WithHexColor(this, aRgbColorModelHex);
             }
 
-            return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
+            return ShapeFill.WithSchemeColor(this, aSolidFill.SchemeColor);
         }
     }
 }

@@ -18,6 +18,6 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets text box.
         /// </summary>
-        ITextBox? TextBox { get; } // TODO: always return TextBox
+        ITextBox TextBox { get; }
     }
 }

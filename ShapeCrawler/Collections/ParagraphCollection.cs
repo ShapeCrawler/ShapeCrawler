@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Shared;
@@ -16,12 +14,10 @@ namespace ShapeCrawler.Texts
     internal class ParagraphCollection : IParagraphCollection
     {
         private readonly ResettableLazy<List<SCParagraph>> paragraphs;
-        private readonly OpenXmlCompositeElement textBodyCompositeElement;
         private readonly SCTextBox textBox;
 
-        internal ParagraphCollection(OpenXmlCompositeElement textBodyCompositeElement, SCTextBox textBox)
+        internal ParagraphCollection(SCTextBox textBox)
         {
-            this.textBodyCompositeElement = textBodyCompositeElement;
             this.textBox = textBox;
             this.paragraphs = new ResettableLazy<List<SCParagraph>>(this.GetParagraphs);
         }
@@ -43,16 +39,11 @@ namespace ShapeCrawler.Texts
         }
 
         #endregion Public Properties
-
-        /// <summary>
-        ///     Adds a new paragraph in collection.
-        /// </summary>
-        /// <returns>Added <see cref="SCParagraph" /> instance.</returns>
+        
         public IParagraph Add()
         {
-            // Create a new paragraph from the last paragraph and insert at the end
-            A.Paragraph lastAParagraph = this.paragraphs.Value.Last().AParagraph;
-            A.Paragraph newAParagraph = (A.Paragraph) lastAParagraph.CloneNode(true);
+            var lastAParagraph = this.paragraphs.Value.Last().AParagraph;
+            var newAParagraph = (A.Paragraph)lastAParagraph.CloneNode(true);
             lastAParagraph.InsertAfterSelf(newAParagraph);
 
             var newParagraph = new SCParagraph(newAParagraph, this.textBox)
@@ -67,7 +58,7 @@ namespace ShapeCrawler.Texts
 
         public void Remove(IEnumerable<IParagraph> removeParagraphs)
         {
-            foreach (SCParagraph paragraph in removeParagraphs.Cast<SCParagraph>())
+            foreach (var paragraph in removeParagraphs.Cast<SCParagraph>())
             {
                 paragraph.AParagraph.Remove();
                 paragraph.IsRemoved = true;
@@ -76,9 +67,14 @@ namespace ShapeCrawler.Texts
             this.paragraphs.Reset();
         }
 
-        private List<SCParagraph> GetParagraphs() // TODO: return null if text box is empty?
+        private List<SCParagraph> GetParagraphs()
         {
-            IEnumerable<A.Paragraph> aParagraphs = this.textBodyCompositeElement.Elements<A.Paragraph>();
+            if (this.textBox.APTextBody == null)
+            {
+                return new List<SCParagraph>(0);
+            }
+
+            var aParagraphs = this.textBox.APTextBody.Elements<A.Paragraph>();
             return aParagraphs.Select(aParagraph => new SCParagraph(aParagraph, this.textBox)).ToList();
         }
     }

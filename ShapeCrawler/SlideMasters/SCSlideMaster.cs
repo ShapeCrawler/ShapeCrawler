@@ -6,6 +6,7 @@ using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
+using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -16,9 +17,9 @@ namespace ShapeCrawler.SlideMasters
     {
         private readonly ResettableLazy<List<SCSlideLayout>> slideLayouts;
 
-        internal SCSlideMaster(SCPresentation presentation, P.SlideMaster pSlideMaster)
+        internal SCSlideMaster(SCPresentation pres, P.SlideMaster pSlideMaster)
         {
-            this.Presentation = presentation;
+            this.Presentation = pres;
             this.PSlideMaster = pSlideMaster;
             this.slideLayouts = new ResettableLazy<List<SCSlideLayout>>(this.GetSlideLayouts);
         }
@@ -108,5 +109,7 @@ namespace ShapeCrawler.SlideMasters
             
             this.Presentation.ThrowIfClosed();
         }
+
+        internal override OpenXmlPart OpenXmlPart => this.PSlideMaster.SlideMasterPart!;
     }
 }
