@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml;
+﻿using System.Diagnostics.CodeAnalysis;
+using DocumentFormat.OpenXml;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -7,6 +8,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler
 {
     /// <inheritdoc cref="IPicture" />
+    [SuppressMessage("ReSharper", "SuggestBaseTypeForParameterInConstructor", Justification = "Internal member")]
     internal class SlidePicture : SlideShape, IPicture
     {
         private readonly StringValue picReference;

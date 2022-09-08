@@ -9,7 +9,7 @@ namespace ShapeCrawler
     /// </summary>
     internal abstract class SlideShape : Shape
     {
-        protected SlideShape(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, Shape groupShape)
+        protected SlideShape(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, Shape? groupShape)
             : base(pShapeTreeChild, slide, groupShape)
         {
             this.Slide = slide;
