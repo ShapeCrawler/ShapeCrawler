@@ -448,17 +448,17 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void ParagraphsAdd_AddsANewTextParagraphAtTheEndOfTheTextBoxAndReturnsAddedParagraph_WhenParagraphIsAddedAfterTextBoxContentChanged()
+        public void Paragraphs_Add_returns_a_new_added_paragraph_When_paragraph_has_been_added_after_text_box_content_changed()
         {
-            IPresentation presentation = SCPresentation.Open(Properties.Resources._001, true);
-            IAutoShape autoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3);
-            ITextBox textBox = autoShape.TextBox;
-            IParagraphCollection paragraphs = textBox.Paragraphs;
-            IParagraph paragraph = textBox.Paragraphs.First();
-            textBox.Text = "A new text";
+            var pres = SCPresentation.Open(Properties.Resources._001, true);
+            var autoShape = (IAutoShape)pres.Slides[0].Shapes.First(sp => sp.Id == 3);
+            var textBox = autoShape.TextBox;
+            var paragraphs = textBox.Paragraphs;
+            var paragraph = textBox.Paragraphs.First();
 
             // Act
-            IParagraph newParagraph = paragraphs.Add();
+            textBox.Text = "A new text";
+            var newParagraph = paragraphs.Add();
 
             // Assert
             newParagraph.Should().NotBeNull();

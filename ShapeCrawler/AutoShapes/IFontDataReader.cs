@@ -1,4 +1,5 @@
 ﻿using ShapeCrawler.Placeholders;
+using ShapeCrawler.Services;
 
 namespace ShapeCrawler.AutoShapes
 {

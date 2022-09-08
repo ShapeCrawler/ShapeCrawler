@@ -1,4 +1,4 @@
-﻿namespace ShapeCrawler
+﻿namespace ShapeCrawler.Services
 {
     internal interface IPresentationComponent
     {

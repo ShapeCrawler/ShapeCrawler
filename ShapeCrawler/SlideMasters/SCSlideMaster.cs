@@ -6,6 +6,7 @@ using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
+using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 

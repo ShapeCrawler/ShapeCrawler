@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
+using ShapeCrawler.Services;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -20,7 +21,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Initializes a new instance of the <see cref="Shape"/> class for grouped shape.
         /// </summary>
-        protected Shape(OpenXmlCompositeElement pShapeTreeChild, SlideBase slideBase, Shape groupShape)
+        protected Shape(OpenXmlCompositeElement pShapeTreeChild, SlideBase slideBase, Shape? groupShape)
             : this(pShapeTreeChild, slideBase)
         {
             this.GroupShape = groupShape;
