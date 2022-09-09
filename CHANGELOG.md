@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 0.32.0 - Unreleased
+## Version 0.32.0 - 2022-09-09
 - Added opportunity to update text of master shape [#37](https://github.com/ShapeCrawler/ShapeCrawler/issues/37).
 - Added `IColorFormat.SetColorHex()` to update color [#37](https://github.com/ShapeCrawler/ShapeCrawler/issues/37).
 - Added `IAudioShape.MIME` and `IVideoShape.MIME` to get MIME type of audio and video content [#284](https://github.com/ShapeCrawler/ShapeCrawler/issues/284).
