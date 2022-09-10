@@ -33,7 +33,7 @@ namespace ShapeCrawler.Tests
             autoShape.Fill.Should().NotBeNull();
         }
 
-        [Fact(Skip = "https://github.com/ShapeCrawler/ShapeCrawler/issues/279")]
+        [Fact]
         public void AutoShape_Fill_SetPicture_updates_fill_with_specified_picture_When_shape_is_Not_filled()
         {
             // Arrange

@@ -58,27 +58,7 @@ namespace ShapeCrawler
 
         private ShapeFill GetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()
         {
-            var slide = this.Slide;
-            var image = SCImage.ForAutoShapeFill(this, slide.SDKSlidePart);
-
-            if (image != null)
-            {
-                return ShapeFill.WithPicture(this, image);
-            }
-
-            var aSolidFill = this.pShape.ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
-            if (aSolidFill == null)
-            {
-                return ShapeFill.WithNoFill(this);
-            }
-
-            var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
-            if (aRgbColorModelHex != null)
-            {
-                return ShapeFill.WithHexColor(this, aRgbColorModelHex);
-            }
-
-            return ShapeFill.WithSchemeColor(this, aSolidFill.SchemeColor);
+            return new ShapeFill(this);
         }
     }
 }

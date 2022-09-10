@@ -10,39 +10,62 @@ namespace ShapeCrawler.Drawing
     internal class ShapeFill : IShapeFill
     {
         private readonly Shape shape;
+        private bool isInitialized = false;
+        private FillType fillType;
 
-        #region Contructors
-
-        private ShapeFill(Shape shape)
-        {
-            this.shape = shape;
-            this.Type = FillType.NoFill;
-        }
-
-        private ShapeFill(Shape shape, SCImage image)
-        {
-            this.shape = shape;
-            this.Picture = image;
-            this.Type = FillType.Picture;
-        }
-
-        private ShapeFill(Shape shape, Color color)
-        {
-            this.shape = shape;
-            this.SolidColor = color;
-            this.Type = FillType.Solid;
-        }
-
-        private ShapeFill(Shape shape, A.SchemeColor schemeColor)
+        internal ShapeFill(Shape shape)
         {
             this.shape = shape;
         }
 
-        #endregion
+        public FillType Type => this.GetFillType();
 
-        public FillType Type { get; private set; }
+        private FillType GetFillType()
+        {
+            if (!this.isInitialized)
+            {
+                this.Initialize();
+            }
 
-        public SCImage? Picture { get; }
+            return this.fillType;
+        }
+
+        private void Initialize()
+        {
+            var xmlPart = this.shape.SlideBase.TypedOpenXmlPart;
+            var image = SCImage.ForAutoShapeFill(shape, xmlPart);
+
+            if (image != null)
+            {
+                this.Picture = image;
+                this.fillType = FillType.Picture;
+                return;
+            }
+
+            var pShape = (P.Shape)this.shape.PShapeTreesChild;
+            var aSolidFill = pShape.ShapeProperties!.GetFirstChild<A.SolidFill>(); 
+            if (aSolidFill == null)
+            {
+                this.fillType = FillType.NoFill;
+                return;
+            }
+
+            var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
+            if (aRgbColorModelHex != null)
+            {
+                var hexColor = aRgbColorModelHex.Val!.ToString();
+                this.HexSolidColor = hexColor;
+                
+                this.fillType = FillType.Solid;
+                return;
+            }
+
+            var schemeColor = aSolidFill.SchemeColor;
+            this.fillType = FillType.Picture;
+        }
+
+        public SCImage? Picture { get; private set; }
+        public string HexSolidColor { get; private set; }
 
         public Color SolidColor { get; }
 
@@ -50,7 +73,7 @@ namespace ShapeCrawler.Drawing
         {
             if (this.Type == FillType.NoFill)
             {
-                var rId = this.shape.SlideBase.OpenXmlPart.AddImagePart(imageStream);
+                var rId = this.shape.SlideBase.TypedOpenXmlPart.AddImagePart(imageStream);
 
                 var aBlipFill = new A.BlipFill();
                 var aBlip = new A.Blip { Embed = rId };
@@ -63,31 +86,7 @@ namespace ShapeCrawler.Drawing
                 this.shape.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !.Append(aBlipFill);
             }
 
-            this.Type = FillType.Picture;
-        }
-
-        internal static ShapeFill WithHexColor(Shape shape, A.RgbColorModelHex rgbColorModelHex)
-        {
-            var hexColor = rgbColorModelHex.Val!.ToString();
-            var hexColorInt = int.Parse(hexColor, NumberStyles.HexNumber, CultureInfo.CurrentCulture);
-            Color clr = Color.FromArgb(hexColorInt);
-
-            return new ShapeFill(shape, clr);
-        }
-
-        internal static ShapeFill WithSchemeColor(Shape shape, A.SchemeColor schemeColor)
-        {
-            return new ShapeFill(shape, schemeColor);
-        }
-
-        internal static ShapeFill WithPicture(Shape shape, SCImage image)
-        {
-            return new ShapeFill(shape, image);
-        }
-
-        internal static ShapeFill WithNoFill(Shape shape)
-        {
-            return new ShapeFill(shape);
+            this.isInitialized = false;
         }
     }
 }

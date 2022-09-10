@@ -17,17 +17,12 @@ namespace ShapeCrawler.Drawing
         ///     Gets picture image. Returns <c>null</c> if fill type is not picture.
         /// </summary>
         public SCImage? Picture { get; }
+        
+        public string HexSolidColor { get; }
 
-        /// <summary>
-        ///     Gets instance of the <see cref="System.Drawing.Color" />. Returns <c>null</c> if fill type is not solid color.
-        /// </summary>
-        public Color SolidColor { get; }
-
-#if DEBUG
         /// <summary>
         ///     Sets picture as a fill.
         /// </summary>
         void SetPicture(Stream image);
-#endif
     }
 }
