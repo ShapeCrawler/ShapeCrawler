@@ -21,7 +21,7 @@ namespace ShapeCrawler.Drawing
         public string HexSolidColor { get; }
 
         /// <summary>
-        ///     Sets picture as a fill.
+        ///     Sets picture fill.
         /// </summary>
         void SetPicture(Stream image);
     }

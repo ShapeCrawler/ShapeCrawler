@@ -17,14 +17,12 @@ namespace ShapeCrawler
     {
         private readonly Lazy<ShapeFill> shapeFill;
         private readonly Lazy<SCTextBox?> textBox;
-        private readonly P.Shape pShape;
 
         internal SlideAutoShape(P.Shape pShape, SCSlide slideInternal, SlideGroupShape groupShape)
             : base(pShape, slideInternal, groupShape)
         {
             this.textBox = new Lazy<SCTextBox?>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.GetFill);
-            this.pShape = pShape;
         }
 
         #region Public Properties

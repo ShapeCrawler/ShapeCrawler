@@ -10,6 +10,7 @@ namespace ShapeCrawler.Extensions
         {
             var rId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
             var imagePart = openXmlPart.AddNewPart<ImagePart>("image/png", rId);
+            stream.Position = 0;
             imagePart.FeedData(stream);
 
             return rId;

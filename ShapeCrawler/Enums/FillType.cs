@@ -11,13 +11,28 @@
         NoFill,
         
         /// <summary>
-        ///     Filled with solid color.
+        ///     Solid fill.
         /// </summary>
         Solid,
         
         /// <summary>
-        ///     Filled with picture.
+        ///     Gradient fill.
         /// </summary>
-        Picture
+        Gradient,
+        
+        /// <summary>
+        ///     Pattern fill.
+        /// </summary>
+        Pattern,
+        
+        /// <summary>
+        ///     Picture fill.
+        /// </summary>
+        Picture,
+        
+        /// <summary>
+        ///     Slide background fill.
+        /// </summary>
+        SlideBackground
     }
 }

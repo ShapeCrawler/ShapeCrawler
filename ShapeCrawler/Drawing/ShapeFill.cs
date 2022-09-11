@@ -12,11 +12,42 @@ namespace ShapeCrawler.Drawing
         private readonly Shape shape;
         private bool isInitialized = false;
         private FillType fillType;
+        private string? hexSolidColor;
+        private SCImage? pictureImage;
+        private A.SolidFill? aSolidFill;
+        private A.GradientFill? aGradFill;
+        private A.PatternFill? aPattFill;
 
         internal ShapeFill(Shape shape)
         {
             this.shape = shape;
         }
+
+        public string HexSolidColor => this.GetHexSolidColor();
+
+        private string GetHexSolidColor()
+        {
+            if (!this.isInitialized)
+            {
+                this.Initialize();
+            }
+
+            return this.hexSolidColor;
+        }
+
+        public SCImage? Picture => GetPicture();
+
+        private SCImage GetPicture()
+        {
+            if (!this.isInitialized)
+            {
+                this.Initialize();
+            }
+
+            return this.pictureImage;
+        }
+
+        public Color SolidColor { get; }
 
         public FillType Type => this.GetFillType();
 
@@ -32,46 +63,65 @@ namespace ShapeCrawler.Drawing
 
         private void Initialize()
         {
-            var xmlPart = this.shape.SlideBase.TypedOpenXmlPart;
-            var image = SCImage.ForAutoShapeFill(shape, xmlPart);
-
-            if (image != null)
-            {
-                this.Picture = image;
-                this.fillType = FillType.Picture;
-                return;
-            }
-
             var pShape = (P.Shape)this.shape.PShapeTreesChild;
-            var aSolidFill = pShape.ShapeProperties!.GetFirstChild<A.SolidFill>(); 
-            if (aSolidFill == null)
+            this.aSolidFill = pShape.ShapeProperties!.GetFirstChild<A.SolidFill>();
+            if (this.aSolidFill != null)
             {
-                this.fillType = FillType.NoFill;
-                return;
-            }
+                var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
+                if (aRgbColorModelHex != null)
+                {
+                    var hexColor = aRgbColorModelHex.Val!.ToString();
+                    this.hexSolidColor = hexColor;
+                }
+                else
+                {
+                    // TODO: get hex color from scheme
+                    var schemeColor = aSolidFill.SchemeColor;    
+                }
 
-            var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
-            if (aRgbColorModelHex != null)
-            {
-                var hexColor = aRgbColorModelHex.Val!.ToString();
-                this.HexSolidColor = hexColor;
-                
                 this.fillType = FillType.Solid;
                 return;
             }
 
-            var schemeColor = aSolidFill.SchemeColor;
-            this.fillType = FillType.Picture;
+            this.aGradFill = pShape.ShapeProperties.GetFirstChild<A.GradientFill>();
+            if (this.aGradFill != null)
+            {
+                this.fillType = FillType.Gradient;
+                return;
+            }
+            
+            this.aPattFill = pShape.ShapeProperties.GetFirstChild<A.PatternFill>();
+            if (this.aPattFill != null)
+            {
+                this.fillType = FillType.Pattern;
+                return;
+            }
+            
+            var xmlPart = this.shape.SlideBase.TypedOpenXmlPart;
+            var image = SCImage.ForAutoShapeFill(shape, xmlPart);
+            if (image != null)
+            {
+                this.pictureImage = image;
+                this.fillType = FillType.Picture;
+                return;
+            }
+
+            if (pShape.UseBackgroundFill != null)
+            {
+                this.fillType = FillType.SlideBackground;
+                return;
+            }
+            
+            this.fillType = FillType.NoFill;
         }
-
-        public SCImage? Picture { get; private set; }
-        public string HexSolidColor { get; private set; }
-
-        public Color SolidColor { get; }
 
         public void SetPicture(Stream imageStream)
         {
-            if (this.Type == FillType.NoFill)
+            if (this.Type == FillType.Picture)
+            {
+                this.pictureImage.SetImage(imageStream);
+            }
+            else
             {
                 var rId = this.shape.SlideBase.TypedOpenXmlPart.AddImagePart(imageStream);
 
@@ -85,8 +135,6 @@ namespace ShapeCrawler.Drawing
 
                 this.shape.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !.Append(aBlipFill);
             }
-
-            this.isInitialized = false;
         }
     }
 }
