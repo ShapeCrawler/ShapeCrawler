@@ -33,8 +33,6 @@ namespace ShapeCrawler
             this.SlideBase = slideBase;
         }
 
-        #region Public Properties
-
         /// <summary>
         ///     Gets shape identifier.
         /// </summary>
@@ -107,8 +105,6 @@ namespace ShapeCrawler
             set => this.SetWidth(value);
         }
         
-        #endregion Public Properties
-
         bool IRemovable.IsRemoved { get; set; }
 
         /// <summary>
@@ -119,6 +115,8 @@ namespace ShapeCrawler
         internal OpenXmlCompositeElement PShapeTreesChild { get; }
 
         internal SlideBase SlideBase { get; }
+
+        internal P.ShapeProperties PShapeProperties => this.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !;
 
         private Shape? GroupShape { get; }
 

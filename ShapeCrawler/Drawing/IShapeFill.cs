@@ -18,7 +18,10 @@ namespace ShapeCrawler.Drawing
         /// </summary>
         public SCImage? Picture { get; }
         
-        public string HexSolidColor { get; }
+        /// <summary>
+        ///     Gets solid color. Returns <c>null</c> if fill type is not solid.
+        /// </summary>
+        public string? HexSolidColor { get; }
 
         /// <summary>
         ///     Sets picture fill.
