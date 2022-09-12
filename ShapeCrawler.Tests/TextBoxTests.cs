@@ -66,12 +66,13 @@ namespace ShapeCrawler.Tests
             textBoxCase14.Text.Should().BeEquivalentTo("id3");
         }
 
-        [Fact]
-        public void Text_SetterChangesTextBoxContent()
+        [Theory]
+        [MemberData(nameof(TestCasesTextSetter))]
+        public void Text_Setter_updates_content(TestElementQuery testTextBoxQuery)
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources._001, true);
-            ITextBox textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
+            var pres = testTextBoxQuery.Presentation;
+            var textBox = testTextBoxQuery.GetAutoShape().TextBox;
             const string newText = "Test";
             var mStream = new MemoryStream();
 
@@ -82,13 +83,31 @@ namespace ShapeCrawler.Tests
             textBox.Text.Should().BeEquivalentTo(newText);
             textBox.Paragraphs.Should().HaveCount(1);
             
-            presentation.SaveAs(mStream);
-            presentation.Close();
+            pres.SaveAs(mStream);
+            pres.Close();
 
-            presentation = SCPresentation.Open(mStream, false);
-            textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
+            testTextBoxQuery.Presentation = SCPresentation.Open(mStream, false);
+            textBox = testTextBoxQuery.GetAutoShape().TextBox;
             textBox.Text.Should().BeEquivalentTo(newText);
             textBox.Paragraphs.Should().HaveCount(1);
+        }
+
+        public static TheoryData<TestElementQuery> TestCasesTextSetter
+        {
+            get
+            {
+                var testCases = new TheoryData<TestElementQuery>();
+
+                var case1 = new TestElementQuery
+                {
+                    Presentation = SCPresentation.Open(GetTestFileStream("001.pptx"), true),
+                    SlideIndex = 0,
+                    ShapeId = 3
+                };
+                testCases.Add(case1);
+
+                return testCases;
+            }
         }
         
         [Fact]
@@ -382,21 +401,7 @@ namespace ShapeCrawler.Tests
             paragraphTextCase3.Should().BeEquivalentTo("0:0_p1_lvl1");
         }
 
-        [Fact]
-        public void Paragraphs_CollectionCounterReturnsNumberOfParagraphsInTheTextFrame()
-        {
-            // Arrange
-            ITextBox textBoxCase1 = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextBox;
-            ITextBox textBoxCase2 = ((IAutoShape)_fixture.Pre020.Slides[2].Shapes.First(sp => sp.Id == 8)).TextBox;
 
-            // Act
-            IEnumerable<IParagraph> paragraphsC1 = textBoxCase1.Paragraphs;
-            IEnumerable<IParagraph> paragraphsC2 = textBoxCase2.Paragraphs;
-
-            // Assert
-            paragraphsC1.Should().HaveCount(1);
-            paragraphsC2.Should().HaveCount(2);
-        }
 
         [Fact]
         public void ParagraphPortions_CollectionCounterReturnsNumberOfTextPortionsInTheParagraph()
@@ -411,15 +416,52 @@ namespace ShapeCrawler.Tests
             paragraphPortions.Should().HaveCount(2);
         }
 
-        [Fact]
-        public void ParagraphsCount_ReturnsTwo_WhenNumberOfParagraphsInCellTextBoxIsTwo()
+        [Theory]
+        [MemberData(nameof(TestCasesParagraphsCount))]
+        public void Paragraphs_Count_returns_number_of_paragraphs_in_the_text_box(ITextBox textBox, int expectedParaCount)
         {
             // Arrange
-            ITable table = _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3) as ITable;
-            ITextBox textBox = table.Rows[0].Cells[0].TextBox;
+            var paragraphs = textBox.Paragraphs;
+            
+            // Act
+            var actualParaCount = paragraphs.Count;
+            
+            // Assert
+            actualParaCount.Should().Be(expectedParaCount);
+        }
 
-            // Act-Assert
-            textBox.Paragraphs.Should().HaveCount(2);
+        public static TheoryData<ITextBox, int> TestCasesParagraphsCount
+        {
+            get
+            {
+                var testCases = new TheoryData<ITextBox, int>();
+                
+                var pptxStream1 = GetTestFileStream("009_table.pptx");
+                var pres1 = SCPresentation.Open(pptxStream1, false);
+                var autoShape1 = pres1.Slides[2].Shapes.GetById<IAutoShape>(2);
+                var textBox1 = autoShape1.TextBox;
+                testCases.Add(textBox1, 1);
+                
+                var pptxStream2 = GetTestFileStream("020.pptx");
+                var pres2 = SCPresentation.Open(pptxStream2, false);
+                var autoShape2 = pres2.Slides[2].Shapes.GetById<IAutoShape>(8);
+                var textBox2 = autoShape2.TextBox; 
+                testCases.Add(textBox2, 2);
+                
+                var pptxStream3 = GetTestFileStream("009_table.pptx");
+                var pres3 = SCPresentation.Open(pptxStream3, false);
+                var table3 = pres3.Slides[2].Shapes.GetById<ITable>(3);
+                var textBox3 = table3.Rows[0].Cells[0].TextBox;
+                testCases.Add(textBox3, 2);
+                
+                var pptxStream4 = GetTestFileStream("001.pptx");
+                var pres4 = SCPresentation.Open(pptxStream4, false);
+                var autoShape4 = pres4.Slides[1].Shapes.GetById<IAutoShape>(2);
+                var textBox4 = autoShape4.TextBox;
+                testCases.Add(textBox4, 1);
+
+                return testCases;
+            }
         }
 
         [Fact]

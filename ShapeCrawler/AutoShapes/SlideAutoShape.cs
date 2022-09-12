@@ -32,26 +32,15 @@ namespace ShapeCrawler
         public IShapeFill Fill => this.shapeFill.Value;
 
         public IShape Shape => this; // TODO: should be internal?
-        
+
         public ShapeType ShapeType => ShapeType.AutoShape;
 
         #endregion Public Properties
 
         private SCTextBox GetTextBox()
         {
-            var pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
-            if (pTextBody == null)
-            {
-                return new SCTextBox(this);
-            }
-
-            var aTexts = pTextBody.Descendants<A.Text>();
-            if (aTexts.Sum(t => t.Text.Length) > 0)
-            {
-                return new SCTextBox( this, pTextBody);
-            }
-
-            return null;
+            var pTxBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
+            return pTxBody == null ? new SCTextBox(this) : new SCTextBox(this, pTxBody);
         }
 
         private ShapeFill GetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()
