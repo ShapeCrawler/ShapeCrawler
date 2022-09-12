@@ -105,7 +105,23 @@ namespace ShapeCrawler.Tests
                     ShapeId = 3
                 };
                 testCases.Add(case1);
-
+                
+                var case2 = new TestElementQuery
+                {
+                    Presentation = SCPresentation.Open(GetTestFileStream("020.pptx"), true),
+                    SlideIndex = 2,
+                    ShapeId = 8
+                };
+                testCases.Add(case2);
+                           
+                var case3 = new TestElementQuery
+                {
+                    Presentation = SCPresentation.Open(GetTestFileStream("001.pptx"), true),
+                    SlideIndex = 1,
+                    ShapeId = 2
+                };
+                testCases.Add(case3);
+                
                 return testCases;
             }
         }
@@ -126,30 +142,6 @@ namespace ShapeCrawler.Tests
             // Assert
             textBox.Text.Should().BeEquivalentTo(newText);
             textBox.Paragraphs[0].Portions[0].Font.Size.Should().Be(8);
-        }
-
-        [Fact]
-        public void Text_Setter_updates_text_box_content()
-        {
-            // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources._020, true);
-            ITextBox textBox = ((IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 8)).TextBox;
-            const string newText = "Test";
-            var mStream = new MemoryStream();
-
-            // Act
-            textBox.Text = newText;
-
-            // Assert
-            textBox.Text.Should().BeEquivalentTo(newText);
-            textBox.Paragraphs.Should().HaveCount(1);
-
-            presentation.SaveAs(mStream);
-            presentation.Close();
-            presentation = SCPresentation.Open(mStream, false);
-            textBox = ((IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 8)).TextBox;
-            textBox.Text.Should().BeEquivalentTo(newText);
-            textBox.Paragraphs.Should().HaveCount(1);
         }
 
         [Fact]
