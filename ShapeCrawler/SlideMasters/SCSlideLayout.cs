@@ -39,6 +39,6 @@ namespace ShapeCrawler.SlideMasters
             throw new System.NotImplementedException();
         }
 
-        internal override OpenXmlPart OpenXmlPart => this.SlideLayoutPart;
+        internal override TypedOpenXmlPart TypedOpenXmlPart => this.SlideLayoutPart;
     }
 }

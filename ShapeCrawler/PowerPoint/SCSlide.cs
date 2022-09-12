@@ -49,7 +49,9 @@ namespace ShapeCrawler
         public IShapeCollection Shapes => this.shapes.Value;
         
         public override bool IsRemoved { get; set; }
-        
+
+        internal override TypedOpenXmlPart TypedOpenXmlPart => this.SDKSlidePart;
+
         public override void ThrowIfRemoved()
         {
             if (this.IsRemoved)
@@ -59,9 +61,7 @@ namespace ShapeCrawler
             
             this.PresentationInternal.ThrowIfClosed();
         }
-
-        internal override OpenXmlPart OpenXmlPart => this.SDKSlidePart;
-
+        
         public int Number
         {
             get => this.GetNumber();

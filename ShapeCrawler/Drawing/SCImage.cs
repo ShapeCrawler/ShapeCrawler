@@ -152,7 +152,7 @@ namespace ShapeCrawler
             return backgroundImage;
         }
 
-        internal static SCImage? ForAutoShapeFill(Shape autoShape, SlidePart slidePart)
+        internal static SCImage? ForAutoShapeFill(Shape autoShape, TypedOpenXmlPart slidePart)
         {
             var pShape = (P.Shape)autoShape.PShapeTreesChild;
             var aBlipFill = pShape.ShapeProperties!.GetFirstChild<A.BlipFill>();

@@ -1,7 +1,6 @@
 ﻿#if DEBUG
 
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Extensions;
@@ -24,17 +23,17 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void AutoShape_Fill_is_Not_Null_When_autoShape_is_filled()
+        public void Fill_is_not_null()
         {
             // Arrange
-            IAutoShape autoShape = (IAutoShape)_fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 108);
+            var autoShape = (IAutoShape)_fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 108);
 
             // Act-Assert
             autoShape.Fill.Should().NotBeNull();
         }
 
-        [Fact(Skip = "https://github.com/ShapeCrawler/ShapeCrawler/issues/279")]
-        public void AutoShape_Fill_SetPicture_updates_fill_with_specified_picture_When_shape_is_Not_filled()
+        [Fact]
+        public void SetPicture_updates_fill_with_specified_picture_image_When_shape_is_Not_filled()
         {
             // Arrange
             var pptxStream = GetTestFileStream("008.pptx");
@@ -52,9 +51,27 @@ namespace ShapeCrawler.Tests
             pictureBytes.SequenceEqual(imageBytes).Should().BeTrue();
         }
 
+        [Fact]
+        public void Picture_SetImage_updates_picture_fill()
+        {
+            // Arrange
+            var pres = SCPresentation.Open(TestFiles.Presentations.pre009, true);
+            var shape = (IAutoShape)pres.Slides[2].Shapes.First(sp => sp.Id == 4);
+            var fill = shape.Fill;
+            var newImage = TestFiles.Images.img02_stream;
+            var imageSizeBefore = fill.Picture!.GetBytes().GetAwaiter().GetResult().Length;
+
+            // Act
+            fill.Picture.SetImage(newImage);
+
+            // Assert
+            var imageSizeAfter = shape.Fill.Picture.GetBytes().GetAwaiter().GetResult().Length;
+            imageSizeAfter.Should().NotBe(imageSizeBefore, "because image has been changed");
+        }
+
         [Theory]
         [MemberData(nameof(TestCasesFillType))]
-        public void AutoShape_Fill_Type_returns_fill_type(IAutoShape shape, FillType expectedFill)
+        public void Type_returns_fill_type(IAutoShape shape, FillType expectedFill)
         {
             // Act
             var fillType = shape.Fill.Type;
@@ -67,14 +84,27 @@ namespace ShapeCrawler.Tests
         {
             var pptxStream = GetTestFileStream("009_table.pptx");
             var pres = SCPresentation.Open(pptxStream, false);
-            var autoShape = pres.Slides[2].Shapes.GetById<IAutoShape>(4);
-            yield return new object[] { autoShape, FillType.Picture };
+            
+            var withNoFill = pres.Slides[1].Shapes.GetById<IAutoShape>(6);
+            yield return new object[] { withNoFill, FillType.NoFill };
+            
+            var withSolid = pres.Slides[1].Shapes.GetById<IAutoShape>(2);
+            yield return new object[] { withSolid, FillType.Solid };
+            
+            var withGradient = pres.Slides[1].Shapes.GetByName<IAutoShape>("AutoShape 1");
+            yield return new object[] { withGradient, FillType.Gradient };
+            
+            var withPicture = pres.Slides[2].Shapes.GetById<IAutoShape>(4);
+            yield return new object[] { withPicture, FillType.Picture };
+            
+            var withPattern = pres.Slides[1].Shapes.GetByName<IAutoShape>("AutoShape 2");
+            yield return new object[] { withPattern, FillType.Pattern };
 
-            autoShape = pres.Slides[1].Shapes.GetById<IAutoShape>(2);
-            yield return new object[] { autoShape, FillType.Solid };
+            pptxStream = GetTestFileStream("autoshape-case003.pptx");
+            pres = SCPresentation.Open(pptxStream, false);
+            var withSlideBg = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
+            yield return new object[] { withSlideBg, FillType.SlideBackground };
 
-            autoShape = pres.Slides[1].Shapes.GetById<IAutoShape>(6);
-            yield return new object[] { autoShape, FillType.NoFill };
         }
 
         [Fact]
@@ -91,46 +121,29 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void AutoShape_Fill_SolidColor_Name_getter_returns_color_name()
+        public void HexSolidColor_getter_returns_color_name()
         {
             // Arrange
-            IAutoShape autoShape = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
+            var autoShape = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
 
             // Act
-            var shapeSolidColorName = autoShape.Fill.SolidColor.Name;
+            var shapeSolidColorName = autoShape.Fill.HexSolidColor;
 
             // Assert
             shapeSolidColorName.Should().BeEquivalentTo("ff0000");
         }
 
         [Fact]
-        public async void AutoShape_Fill_Picture_GetImageBytes_ReturnsImageByWhichTheAutoShapeIsFilled()
+        public async void Picture_GetImageBytes_returns_image()
         {
             // Arrange
-            IAutoShape shape = (IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
+            var shape = (IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
 
             // Act
-            byte[] imageBytes = await shape.Fill.Picture.GetBytes().ConfigureAwait(false);
+            var imageBytes = await shape.Fill.Picture.GetBytes().ConfigureAwait(false);
 
             // Assert
             imageBytes.Length.Should().BePositive();
-        }
-
-        [Fact]
-        public void AutoShape_Fill_Picture_SetImage_updates_picture()
-        {
-            // Arrange
-            IPresentation presentation = SCPresentation.Open(TestFiles.Presentations.pre009, true);
-            IAutoShape autoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 4);
-            MemoryStream newImage = TestFiles.Images.img02_stream;
-            int imageSizeBefore = autoShape.Fill.Picture.GetBytes().GetAwaiter().GetResult().Length;
-
-            // Act
-            autoShape.Fill.Picture.SetImage(newImage);
-
-            // Assert
-            int imageSizeAfter = autoShape.Fill.Picture.GetBytes().GetAwaiter().GetResult().Length;
-            imageSizeAfter.Should().NotBe(imageSizeBefore, "because image has been changed");
         }
     }
 }

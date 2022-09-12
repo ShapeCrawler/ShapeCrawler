@@ -180,6 +180,32 @@ namespace ShapeCrawler.Tests
             // Assert
             shapesCount.Should().Be(expectedShapesCount);
         }
+        
+        public static IEnumerable<object[]> TestCasesShapesCount()
+        {
+            var pres = SCPresentation.Open(Properties.Resources._009, false);
+            
+            var slide = pres.Slides[0];
+            yield return new object[] { slide, 6 };
+            
+            slide = pres.Slides[1];
+            yield return new object[] { slide, 8 };
+            
+            slide = SCPresentation.Open(Properties.Resources._002, false).Slides[0];
+            yield return new object[] { slide, 4 };
+            
+            slide = SCPresentation.Open(Properties.Resources._003, false).Slides[0];
+            yield return new object[] { slide, 5 };
+            
+            slide = SCPresentation.Open(Properties.Resources._013, false).Slides[0];
+            yield return new object[] { slide, 4 };
+            
+            slide = SCPresentation.Open(Properties.Resources._023, false).Slides[0];
+            yield return new object[] { slide, 1 };
+
+            slide = SCPresentation.Open(Properties.Resources._014, false).Slides[2];
+            yield return new object[] { slide, 5 };
+        }
 
         [Fact]
         public void Shapes_AddNewAudio_adds_Audio_shape()
@@ -203,32 +229,6 @@ namespace ShapeCrawler.Tests
             // Assert
             addedAudio.X.Should().Be(xPxCoordinate);
             addedAudio.Y.Should().Be(yPxCoordinate);
-        }
-
-        public static IEnumerable<object[]> TestCasesShapesCount()
-        {
-            IPresentation presentation = SCPresentation.Open(Properties.Resources._009, false);
-            
-            ISlide slide = presentation.Slides[0];
-            yield return new object[] { slide, 6 };
-            
-            slide = presentation.Slides[1];
-            yield return new object[] { slide, 6 };
-            
-            slide = SCPresentation.Open(Properties.Resources._002, false).Slides[0];
-            yield return new object[] { slide, 4 };
-            
-            slide = SCPresentation.Open(Properties.Resources._003, false).Slides[0];
-            yield return new object[] { slide, 5 };
-            
-            slide = SCPresentation.Open(Properties.Resources._013, false).Slides[0];
-            yield return new object[] { slide, 4 };
-            
-            slide = SCPresentation.Open(Properties.Resources._023, false).Slides[0];
-            yield return new object[] { slide, 1 };
-
-            slide = SCPresentation.Open(Properties.Resources._014, false).Slides[2];
-            yield return new object[] { slide, 5 };
         }
 
         [Fact]

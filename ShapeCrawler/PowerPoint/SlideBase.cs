@@ -10,7 +10,7 @@ namespace ShapeCrawler
     {
         public abstract bool IsRemoved { get; set; }
 
-        internal abstract OpenXmlPart OpenXmlPart { get; }
+        internal abstract TypedOpenXmlPart TypedOpenXmlPart { get; }
 
         public abstract void ThrowIfRemoved();
     }

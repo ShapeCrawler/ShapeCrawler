@@ -110,6 +110,6 @@ namespace ShapeCrawler.SlideMasters
             this.Presentation.ThrowIfClosed();
         }
 
-        internal override OpenXmlPart OpenXmlPart => this.PSlideMaster.SlideMasterPart!;
+        internal override TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
     }
 }
