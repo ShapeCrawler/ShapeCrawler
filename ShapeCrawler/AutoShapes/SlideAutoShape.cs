@@ -17,14 +17,12 @@ namespace ShapeCrawler
     {
         private readonly Lazy<ShapeFill> shapeFill;
         private readonly Lazy<SCTextBox?> textBox;
-        private readonly P.Shape pShape;
 
         internal SlideAutoShape(P.Shape pShape, SCSlide slideInternal, SlideGroupShape groupShape)
             : base(pShape, slideInternal, groupShape)
         {
             this.textBox = new Lazy<SCTextBox?>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.GetFill);
-            this.pShape = pShape;
         }
 
         #region Public Properties
@@ -58,27 +56,7 @@ namespace ShapeCrawler
 
         private ShapeFill GetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()
         {
-            var slide = this.Slide;
-            var image = SCImage.ForAutoShapeFill(this, slide.SDKSlidePart);
-
-            if (image != null)
-            {
-                return ShapeFill.WithPicture(this, image);
-            }
-
-            var aSolidFill = this.pShape.ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
-            if (aSolidFill == null)
-            {
-                return ShapeFill.WithNoFill(this);
-            }
-
-            var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
-            if (aRgbColorModelHex != null)
-            {
-                return ShapeFill.WithHexColor(this, aRgbColorModelHex);
-            }
-
-            return ShapeFill.WithSchemeColor(this, aSolidFill.SchemeColor);
+            return new ShapeFill(this);
         }
     }
 }
