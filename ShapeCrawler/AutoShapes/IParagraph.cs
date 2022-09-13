@@ -12,7 +12,7 @@ namespace ShapeCrawler
         /// <summary>
         /// Add text to paragraph.
         /// </summary>
-        void AddText(string text);
+        void AddPortion(string text);
 
         /// <summary>
         ///     Gets or sets paragraph text.

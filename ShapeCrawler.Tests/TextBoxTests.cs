@@ -146,7 +146,7 @@ namespace ShapeCrawler.Tests
             // Act
             textBox.Text = newText;
             var paragraph = textBox.Paragraphs.First();
-            paragraph.AddText(addedText);
+            paragraph.AddPortion(addedText);
 
             var firstPortions = paragraph.Portions.First();
             firstPortions.Font.IsBold = false;

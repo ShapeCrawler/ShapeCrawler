@@ -111,10 +111,10 @@ namespace ShapeCrawler
             var basePortion = (SCPortion)this.portions.Value.Single();
 
             basePortion.Text = String.Empty;
-            AddText(newText);
+            AddPortion(newText);
         }
 
-        public void AddText(string sourceText)
+        public void AddPortion(string sourceText)
         {
             void addBreak(ref OpenXmlElement lastElement)
             {
