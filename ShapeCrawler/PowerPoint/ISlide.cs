@@ -8,7 +8,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a user slide.
     /// </summary>
-    public interface ISlide : IBaseSlide
+    public interface ISlide
     {
         /// <summary>
         ///     Gets or sets slide number.
@@ -33,7 +33,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets parent (referenced) Slide Layout.
         /// </summary>
-        ISlideLayout ParentSlideLayout { get; }
+        ISlideLayout SlideLayout { get; }
 
         IPresentation ParentPresentation { get; }
 
@@ -48,6 +48,8 @@ namespace ShapeCrawler
         ///     Saves slide scheme to stream.
         /// </summary>
         void SaveScheme(Stream stream);
+        
+        IShapeCollection Shapes { get; }
 
         /// <summary>
         ///     Saves slide scheme to file.

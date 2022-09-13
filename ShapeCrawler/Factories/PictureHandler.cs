@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
+using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Video;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -24,7 +24,7 @@ namespace ShapeCrawler.Factories
                 {
                     case AudioFromFile:
                     {
-                        A.AudioFromFile? aAudioFile = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
+                        var aAudioFile = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
                             .GetFirstChild<A.AudioFromFile>();
                         if (aAudioFile is not null)
                         {

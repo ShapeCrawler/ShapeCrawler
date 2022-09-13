@@ -10,6 +10,7 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
+using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -239,8 +240,8 @@ namespace ShapeCrawler
 
         private List<ImagePart> GetImageParts()
         {
-            IEnumerable<SlidePicture> slidePictures = this.Slides.SelectMany(sp => sp.Shapes)
-                .Where(x => x is SlidePicture).OfType<SlidePicture>();
+            var slidePictures = this.SlidesInternal.SelectMany(sp => ((SCSlide)sp).Shapes)
+                .Where(sp => sp is SlidePicture).OfType<SlidePicture>();
 
             return slidePictures.Select(x => x.Image.ImagePart).ToList();
         }

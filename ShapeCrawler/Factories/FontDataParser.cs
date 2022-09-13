@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
+using ShapeCrawler.Services;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -69,7 +70,7 @@ namespace ShapeCrawler.Factories
                 A.PresetColor aPresetColor;
 
                 // Try get color from <a:solidFill>
-                A.SolidFill aSolidFill = aDefRPr?.SolidFill();
+                A.SolidFill aSolidFill = aDefRPr?.GetASolidFill();
                 if (aSolidFill != null)
                 {
                     aRgbColorModelHex = aSolidFill.RgbColorModelHex;

@@ -3,9 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
-using ShapeCrawler.Video;
 using Xunit;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
@@ -148,7 +148,9 @@ namespace ShapeCrawler.Tests
         public void Shapes_collection_contains_Audio_shape()
         {
             // Arrange
-            IShape shape = this.fixture.Pre039.Slides[0].Shapes.First(sp => sp.Id == 8);
+            var pptxStream = GetTestFileStream("audio-case001.pptx");
+            var pres = SCPresentation.Open(pptxStream, false);
+            IShape shape = pres.Slides[0].Shapes.First(sp => sp.Id == 8);
 
             // Act
             bool isAudio = shape is IAudioShape;
@@ -160,7 +162,7 @@ namespace ShapeCrawler.Tests
         [Fact]
         public void Shapes_collection_contains_Connection_shape()
         {
-            var pptxStream = GetTestPptxStream("001.pptx");
+            var pptxStream = GetTestFileStream("001.pptx");
             var presentation = SCPresentation.Open(pptxStream, false);
             var shapesCollection = presentation.Slides[0].Shapes;
 
@@ -177,6 +179,32 @@ namespace ShapeCrawler.Tests
 
             // Assert
             shapesCount.Should().Be(expectedShapesCount);
+        }
+        
+        public static IEnumerable<object[]> TestCasesShapesCount()
+        {
+            var pres = SCPresentation.Open(Properties.Resources._009, false);
+            
+            var slide = pres.Slides[0];
+            yield return new object[] { slide, 6 };
+            
+            slide = pres.Slides[1];
+            yield return new object[] { slide, 8 };
+            
+            slide = SCPresentation.Open(Properties.Resources._002, false).Slides[0];
+            yield return new object[] { slide, 4 };
+            
+            slide = SCPresentation.Open(Properties.Resources._003, false).Slides[0];
+            yield return new object[] { slide, 5 };
+            
+            slide = SCPresentation.Open(Properties.Resources._013, false).Slides[0];
+            yield return new object[] { slide, 4 };
+            
+            slide = SCPresentation.Open(Properties.Resources._023, false).Slides[0];
+            yield return new object[] { slide, 1 };
+
+            slide = SCPresentation.Open(Properties.Resources._014, false).Slides[2];
+            yield return new object[] { slide, 5 };
         }
 
         [Fact]
@@ -201,32 +229,6 @@ namespace ShapeCrawler.Tests
             // Assert
             addedAudio.X.Should().Be(xPxCoordinate);
             addedAudio.Y.Should().Be(yPxCoordinate);
-        }
-
-        public static IEnumerable<object[]> TestCasesShapesCount()
-        {
-            IPresentation presentation = SCPresentation.Open(Properties.Resources._009, false);
-            
-            ISlide slide = presentation.Slides[0];
-            yield return new object[] { slide, 6 };
-            
-            slide = presentation.Slides[1];
-            yield return new object[] { slide, 6 };
-            
-            slide = SCPresentation.Open(Properties.Resources._002, false).Slides[0];
-            yield return new object[] { slide, 4 };
-            
-            slide = SCPresentation.Open(Properties.Resources._003, false).Slides[0];
-            yield return new object[] { slide, 5 };
-            
-            slide = SCPresentation.Open(Properties.Resources._013, false).Slides[0];
-            yield return new object[] { slide, 4 };
-            
-            slide = SCPresentation.Open(Properties.Resources._023, false).Slides[0];
-            yield return new object[] { slide, 1 };
-
-            slide = SCPresentation.Open(Properties.Resources._014, false).Slides[2];
-            yield return new object[] { slide, 5 };
         }
 
         [Fact]
@@ -285,7 +287,7 @@ namespace ShapeCrawler.Tests
             var preStream = TestFiles.Presentations.pre001_stream;
             var presentation = SCPresentation.Open(preStream, true);
             var shapesCollection = presentation.Slides[1].Shapes;
-            var videoStream = TestFiles.Video.TestVideo;
+            var videoStream = GetTestFileStream("test-video.mp4");
             int xPxCoordinate = 300;
             int yPxCoordinate = 100;
 

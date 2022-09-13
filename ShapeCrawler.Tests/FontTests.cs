@@ -245,11 +245,12 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(TestCasesIsBold))]
-        public void IsBold_Setter_AddsBoldForPlaceholderTextFont(IPresentation presentation, SlideElementQuery portionRequest)
+        public void IsBold_Setter_AddsBoldForPlaceholderTextFont(TestElementQuery portionQuery)
         {
             // Arrange
             MemoryStream mStream = new ();
-            IPortion portion = TestHelper.GetParagraphPortion(presentation, portionRequest);
+            var portion = portionQuery.GetParagraphPortion();
+            var pres = portionQuery.Presentation;
 
             // Act
             portion.Font.IsBold = true;
@@ -257,23 +258,24 @@ namespace ShapeCrawler.Tests
             // Assert
             portion.Font.IsBold.Should().BeTrue();
 
-            presentation.SaveAs(mStream);
-            presentation = SCPresentation.Open(mStream, false);
-            portion = TestHelper.GetParagraphPortion(presentation, portionRequest);
+            pres.SaveAs(mStream);
+            pres = SCPresentation.Open(mStream, false);
+            portionQuery.Presentation = pres;
+            portion = portionQuery.GetParagraphPortion();
             portion.Font.IsBold.Should().BeTrue();
         }
 
         public static IEnumerable<object[]> TestCasesIsBold()
         {
-            IPresentation presentationCase1 = SCPresentation.Open(Resources._020, true);
-            SlideElementQuery portionRequestCase1 = new();
+            TestElementQuery portionRequestCase1 = new();
+            portionRequestCase1.Presentation = SCPresentation.Open(Resources._020, true);
             portionRequestCase1.SlideIndex = 2;
             portionRequestCase1.ShapeId = 7;
             portionRequestCase1.ParagraphIndex = 0;
             portionRequestCase1.PortionIndex = 0;
 
-            IPresentation presentationCase2 = SCPresentation.Open(Resources._026, true);
-            SlideElementQuery portionRequestCase2 = new();
+            TestElementQuery portionRequestCase2 = new();
+            portionRequestCase2.Presentation = SCPresentation.Open(Resources._026, true); 
             portionRequestCase2.SlideIndex = 0;
             portionRequestCase2.ShapeId = 128;
             portionRequestCase2.ParagraphIndex = 0;
@@ -281,8 +283,8 @@ namespace ShapeCrawler.Tests
 
             var testCases = new List<object[]>
             {
-                new object[] {presentationCase1, portionRequestCase1},
-                new object[] {presentationCase2, portionRequestCase2}
+                new object[] {portionRequestCase1},
+                new object[] {portionRequestCase2}
             };
 
             return testCases;

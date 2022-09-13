@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -9,7 +8,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a Slide Master.
     /// </summary>
-    public interface ISlideMaster : IBaseSlide
+    public interface ISlideMaster
     {
         /// <summary>
         ///     Gets background image.
@@ -20,5 +19,7 @@ namespace ShapeCrawler
         ///     Gets collection of Slide Layouts.
         /// </summary>
         IReadOnlyList<ISlideLayout> SlideLayouts { get; }
+        
+        IShapeCollection Shapes { get; }
     }
 }

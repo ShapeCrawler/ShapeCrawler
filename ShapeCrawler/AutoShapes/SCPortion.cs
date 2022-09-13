@@ -46,14 +46,14 @@ namespace ShapeCrawler
             get => this.GetHyperlink();
             set => this.SetHyperlink(value);
         }
+        
+        public A.Text SDKAText { get; }
 
         #endregion Public Properties
 
         internal bool IsRemoved { get; set; }
 
         internal SCParagraph ParentParagraph { get; }
-
-        public A.Text SDKAText { get; }
 
         private void ThrowIfRemoved()
         {
@@ -122,12 +122,13 @@ namespace ShapeCrawler
                 runProperties.Append(hyperlink);
             }
 
-            var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
             var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextBox.TextBoxContainer;
             var slidePart = slideAutoShape.Slide.SDKSlidePart;
-
-            slidePart.AddHyperlinkRelationship(new Uri(url, UriKind.Absolute), true, rId);
-            hyperlink.Id = rId;
+            
+            var uri = new Uri(url, UriKind.Absolute);
+            var addedHyperlinkRelationship = slidePart.AddHyperlinkRelationship(uri, true);
+            
+            hyperlink.Id = addedHyperlinkRelationship.Id;
         }
     }
 }

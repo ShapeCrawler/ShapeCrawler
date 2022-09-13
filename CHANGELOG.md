@@ -1,18 +1,27 @@
 # Changelog
+
+## Version 0.32.0 - 2022-09-09
+- Added opportunity to update text of master shape [#37](https://github.com/ShapeCrawler/ShapeCrawler/issues/37).
+- Added `IColorFormat.SetColorHex()` to update color [#37](https://github.com/ShapeCrawler/ShapeCrawler/issues/37).
+- Added `IAudioShape.MIME` and `IVideoShape.MIME` to get MIME type of audio and video content [#284](https://github.com/ShapeCrawler/ShapeCrawler/issues/284).
+
+## Version 0.31.2 - 2022-09-01
+- Fixed getting binary content of audio and video shapes [#268](https://github.com/ShapeCrawler/ShapeCrawler/issues/268).
+
 ## Version 0.31.1 - 2022-07-15
-- Fixed bug in Chart [#259](https://github.com/ShapeCrawler/ShapeCrawler/issues/259)
+- Fixed bug in Chart [#259](https://github.com/ShapeCrawler/ShapeCrawler/issues/259).
 
 ## Version 0.31.0 - 2022-06-10
-- Added opportunity to update series value eg. `chart.SeriesCollection[0].Points[0].Value = 10` [#66](https://github.com/ShapeCrawler/ShapeCrawler/issues/66)
-- Fixed section slide removing [#240](https://github.com/ShapeCrawler/ShapeCrawler/issues/240)
+- Added opportunity to update series value eg. `chart.SeriesCollection[0].Points[0].Value = 10` [#66](https://github.com/ShapeCrawler/ShapeCrawler/issues/66).
+- Fixed section slide removing [#240](https://github.com/ShapeCrawler/ShapeCrawler/issues/240).
 
 ## Version 0.30.0 - 2022-05-23
 - Added `IPresentation.Sections` to access presentation sections [#240](https://github.com/ShapeCrawler/ShapeCrawler/issues/240).
 - Fixed issue when `IPresentation.SaveAs()` modifies original presentation [#237](https://github.com/ShapeCrawler/ShapeCrawler/issues/237).
 
 ## Version 0.29.0 - 2022-05-09
-- Added `Image.MIME` property to get image format [#233](https://github.com/ShapeCrawler/ShapeCrawler/issues/233).
-- Added `IPortion.Hyperlink` property to add hyperlink [#242](https://github.com/ShapeCrawler/ShapeCrawler/issues/242).
+- Added `Image.MIME` property to get image format [#233](https://github.com/ShapeCrawler/ShapeCrawler/issues/233)
+- Added `IPortion.Hyperlink` property to add hyperlink [#242](https://github.com/ShapeCrawler/ShapeCrawler/issues/242)
 
 ## Version 0.28.1 - 2022-03-21
 - Fixed reading picture of Layout and Master slides.

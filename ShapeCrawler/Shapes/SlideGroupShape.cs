@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Settings;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 

@@ -6,19 +6,18 @@ using ShapeCrawler.Shapes;
 namespace ShapeCrawler
 {
     /// <summary>
-    ///     Represents an AutoShape.
+    ///     Represents interface of AutoShape.
     /// </summary>
     public interface IAutoShape : IShape
     {
         /// <summary>
         ///     Gets shape fill object that contains fill formatting properties for the shape.
-        ///     Returns <c>NULL</c> if the shape is not filled.
         /// </summary>
-        ShapeFill Fill { get; }
+        IShapeFill Fill { get; }
 
         /// <summary>
-        ///     Gets text box. Returns <c>NULL</c> if shape doesn't have text content.
+        ///     Gets text box.
         /// </summary>
-        ITextBox? TextBox { get; }
+        ITextBox TextBox { get; }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using DocumentFormat.OpenXml;
-using ShapeCrawler.OLEObjects;
-using ShapeCrawler.Settings;
+﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Shapes;
 
 // ReSharper disable CheckNamespace

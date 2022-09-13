@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Drawing;
+using ShapeCrawler.Services;
+using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -13,6 +17,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents an image model.
     /// </summary>
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class SCImage // TODO: make internal?
     {
         private readonly SCPresentation parentPresentation;
@@ -21,7 +26,7 @@ namespace ShapeCrawler
         private readonly OpenXmlPart openXmlPart;
         private byte[]? bytes;
 
-        internal SCImage(
+        private SCImage(
             ImagePart imagePart,
             IRemovable imageContainer,
             StringValue picReference,
@@ -31,6 +36,7 @@ namespace ShapeCrawler
             this.imageContainer = imageContainer;
             this.picReference = picReference;
             this.openXmlPart = openXmlPart;
+            
             this.parentPresentation = ((IPresentationComponent)imageContainer).PresentationInternal;
             this.MIME = this.ImagePart.ContentType;
         }
@@ -77,10 +83,10 @@ namespace ShapeCrawler
         {
             this.imageContainer.ThrowIfRemoved();
 
-            bool isSharedImagePart = this.parentPresentation.ImageParts.Count(ip => ip == this.ImagePart) > 1;
+            var isSharedImagePart = this.parentPresentation.ImageParts.Count(ip => ip == this.ImagePart) > 1;
             if (isSharedImagePart)
             {
-                string rId = $"rId{Guid.NewGuid().ToString().Substring(0,5)}";
+                var rId = RelatedIdGenerator.Generate();
                 this.ImagePart = this.openXmlPart.AddNewPart<ImagePart>("image/png", rId);
                 this.picReference.Value = rId;
             }
@@ -118,48 +124,58 @@ namespace ShapeCrawler
         }
 #endif
 
-        internal static SCImage CreatePictureImage(Shape picture, OpenXmlPart openXmlPart, StringValue picReference)
+        internal static SCImage ForPicture(Shape pictureShape, OpenXmlPart openXmlPart, StringValue picReference)
         {
             var imagePart = (ImagePart)openXmlPart.GetPartById(picReference.Value);
 
-            return new SCImage(imagePart, picture, picReference, openXmlPart);
+            return new SCImage(imagePart, pictureShape, picReference, openXmlPart);
         }
 
-        internal static SCImage GetSlideBackgroundImageOrDefault(SCSlide parentSlide)
+        internal static SCImage? ForBackground(SCSlide slide)
         {
-            P.Background pBackground = parentSlide.SDKSlidePart.Slide.CommonSlideData.Background;
+            var pBackground = slide.SDKSlidePart.Slide.CommonSlideData.Background;
             if (pBackground == null)
             {
                 return null;
             }
 
-            A.BlipFill aBlipFill = pBackground.Descendants<A.BlipFill>().SingleOrDefault();
-            StringValue picReference = aBlipFill?.Blip?.Embed;
+            var aBlipFill = pBackground.Descendants<A.BlipFill>().SingleOrDefault();
+            var picReference = aBlipFill?.Blip?.Embed;
             if (picReference == null)
             {
                 return null;
             }
 
-            var imagePart = (ImagePart)parentSlide.SDKSlidePart.GetPartById(picReference.Value);
-            var backgroundImage = new SCImage(imagePart, parentSlide, picReference, parentSlide.SDKSlidePart);
+            var imagePart = (ImagePart)slide.SDKSlidePart.GetPartById(picReference.Value);
+            var backgroundImage = new SCImage(imagePart, slide, picReference, slide.SDKSlidePart);
 
             return backgroundImage;
         }
 
-        internal static SCImage GetFillImageOrDefault(Shape parentShape, SlidePart slidePart, OpenXmlCompositeElement compositeElement)
+        internal static SCImage? ForAutoShapeFill(Shape autoShape, TypedOpenXmlPart slidePart)
         {
-            P.Shape pShape = (P.Shape)compositeElement;
-            A.BlipFill aBlipFill = pShape.ShapeProperties.GetFirstChild<A.BlipFill>();
+            var pShape = (P.Shape)autoShape.PShapeTreesChild;
+            var aBlipFill = pShape.ShapeProperties!.GetFirstChild<A.BlipFill>();
 
-            StringValue picReference = aBlipFill?.Blip?.Embed;
+            var picReference = aBlipFill?.Blip?.Embed;
             if (picReference == null)
             {
                 return null;
             }
 
-            var imagePart = (ImagePart)slidePart.GetPartById(picReference.Value);
+            var imagePart = (ImagePart)slidePart.GetPartById(picReference.Value!);
 
-            return new SCImage(imagePart, parentShape, picReference, slidePart);
+            return new SCImage(imagePart, autoShape, picReference, slidePart);
+        }
+
+        internal static SCImage Create(ImagePart imagePart, MasterPicture masterPic, StringValue stringValue, SlideMasterPart sldMasterPart)
+        {
+            return new SCImage(imagePart, masterPic, stringValue, sldMasterPart);
+        }
+
+        internal static SCImage Create(ImagePart imagePart, LayoutPicture layoutPic, StringValue stringValue, SlideLayoutPart slideLayoutPart)
+        {
+            return new SCImage(imagePart, layoutPic, stringValue, slideLayoutPart);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using DocumentFormat.OpenXml;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -11,12 +10,12 @@ namespace ShapeCrawler.Placeholders
     /// </summary>
     internal class LayoutPlaceholder : Placeholder
     {
-        private readonly LayoutShape parentLayoutShape;
+        private readonly LayoutShape layoutShape;
 
-        private LayoutPlaceholder(P.PlaceholderShape pPlaceholderShape, LayoutShape parentLayoutShape)
+        private LayoutPlaceholder(P.PlaceholderShape pPlaceholderShape, LayoutShape layoutShape)
             : base(pPlaceholderShape)
         {
-            this.parentLayoutShape = parentLayoutShape;
+            this.layoutShape = layoutShape;
             this.layoutReferencedShape = new ResettableLazy<Shape>(this.GetReferencedShape);
         }
 
@@ -34,9 +33,9 @@ namespace ShapeCrawler.Placeholders
 
         private Shape GetReferencedShape()
         {
-            ShapeCollection shapeCollection = (ShapeCollection)this.parentLayoutShape.SlideLayoutInternal.ParentSlideMaster.Shapes;
+            var shapes = this.layoutShape.SlideLayoutInternal.SlideMasterInternal.ShapesInternal;
 
-            return shapeCollection.GetReferencedShapeOrDefault(this.PPlaceholderShape);
+            return shapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
         }
     }
 }

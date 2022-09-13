@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -14,11 +15,11 @@ namespace ShapeCrawler.Charts
 {
     internal class SCChart : SlideShape, IChart
     {
-        private readonly Lazy<ICategoryCollection> categories;
+        private readonly ResettableLazy<ICategoryCollection?> categories;
         private readonly Lazy<ChartType> chartType;
         private readonly Lazy<OpenXmlElement> firstSeries;
         private readonly P.GraphicFrame pGraphicFrame;
-        private readonly Lazy<SeriesCollection> seriesCollection;
+        private readonly Lazy<SCSeriesCollection> series;
         private readonly Lazy<LibraryCollection<double>> xValues;
         private string? chartTitle;
 
@@ -26,17 +27,35 @@ namespace ShapeCrawler.Charts
         // then collection contains only single item.
         private IEnumerable<OpenXmlElement> cXCharts;
 
-        internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide parentSlideInternal)
-            : base(pGraphicFrame, parentSlideInternal, null)
+        internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide slideInternal)
+            : base(pGraphicFrame, slideInternal, null)
         {
             this.pGraphicFrame = pGraphicFrame;
             this.firstSeries = new Lazy<OpenXmlElement>(this.GetFirstSeries);
             this.xValues = new Lazy<LibraryCollection<double>>(this.GetXValues);
-            this.seriesCollection = new Lazy<SeriesCollection>(() => Collections.SeriesCollection.Create(this, this.cXCharts));
-            this.categories = new Lazy<ICategoryCollection>(() => CategoryCollection.Create(this, this.firstSeries.Value, this.Type));
+            this.series = new Lazy<SCSeriesCollection>(this.GetSeries);
+            this.categories = new ResettableLazy<ICategoryCollection?>(this.GetCategories);
             this.chartType = new Lazy<ChartType>(this.GetChartType);
 
-            this.Init(); // TODO: convert to lazy loading
+            var cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
+                .GetFirstChild<C.ChartReference>();
+
+            this.ChartPart = (ChartPart)this.Slide.SDKSlidePart.GetPartById(cChartReference.Id);
+            
+            var cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea;
+            this.cXCharts = cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
+
+            this.ChartWorkbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartWorkbook(this, this.ChartPart.EmbeddedPackagePart) : null;
+        }
+
+        private ICategoryCollection? GetCategories()
+        {
+            return CategoryCollection.Create(this, this.firstSeries.Value, this.Type);
+        }
+
+        private SCSeriesCollection GetSeries()
+        {
+            return SCSeriesCollection.Create(this, this.cXCharts);
         }
 
         public ChartType Type => this.chartType.Value;
@@ -63,7 +82,7 @@ namespace ShapeCrawler.Charts
 
         public bool HasCategories => this.categories.Value != null;
 
-        public ISeriesCollection SeriesCollection => this.seriesCollection.Value;
+        public ISeriesCollection SeriesCollection => this.series.Value;
 
         public ICategoryCollection Categories => this.categories.Value;
 
@@ -91,21 +110,6 @@ namespace ShapeCrawler.Charts
         internal ChartWorkbook? ChartWorkbook { get; set; }
 
         internal ChartPart ChartPart { get; private set; }
-
-        private void Init()
-        {
-            // Get chart part
-            C.ChartReference cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>()
-                .GetFirstChild<C.ChartReference>();
-
-            var slide = this.Slide;
-            this.ChartPart = (ChartPart)slide.SDKSlidePart.GetPartById(cChartReference.Id);
-
-            C.PlotArea cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea;
-            this.cXCharts = cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-
-            this.ChartWorkbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartWorkbook(this, this.ChartPart.EmbeddedPackagePart) : null;
-        }
 
         private ChartType GetChartType()
         {
@@ -146,7 +150,7 @@ namespace ShapeCrawler.Charts
             // However, it can have store multiple series data in the spreadsheet.
             if (Type == ChartType.PieChart)
             {
-                return ((SeriesCollection) this.SeriesCollection).First().Name;
+                return ((SCSeriesCollection) this.SeriesCollection).First().Name;
             }
 
             return null;

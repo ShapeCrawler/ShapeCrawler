@@ -262,12 +262,12 @@ namespace ShapeCrawler.Tests
 
         public static IEnumerable<object[]> TestCasesAlignmentGetter()
         {
-            var pptxStream = GetTestPptxStream("001.pptx");
+            var pptxStream = GetTestFileStream("001.pptx");
             var presentation = SCPresentation.Open(pptxStream, false);
             var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
             yield return new object[] {autoShape, TextAlignment.Center};
             
-            pptxStream = GetTestPptxStream("001.pptx");
+            pptxStream = GetTestFileStream("001.pptx");
             presentation = SCPresentation.Open(pptxStream, false);
             autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("Head 1");
             yield return new object[] {autoShape, TextAlignment.Center};
@@ -277,7 +277,7 @@ namespace ShapeCrawler.Tests
         public void Paragraph_Alignment_Setter_updates_text_aligment()
         {
             // Arrange
-            var pptxStream = GetTestPptxStream("001.pptx");
+            var pptxStream = GetTestFileStream("001.pptx");
             var originPresentation = SCPresentation.Open(pptxStream, true);
             var autoShape = originPresentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
             var paragraph = autoShape.TextBox.Paragraphs[0];
@@ -343,52 +343,65 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(TestCasesParagraphText))]
-        public void ParagraphText_SetterChangesParagraphText(
-            SCPresentation presentation, 
-            SlideElementQuery prRequest, 
-            string newPrText,
-            int expectedNumPortions)
+        public void Paragraph_Text_Setter_updates_paragraph_text(TestElementQuery paragraphQuery, string newText, int expectedPortionsCount)
         {
             // Arrange
-            IParagraph paragraph = TestHelper.GetParagraph(presentation, prRequest);
-            var presentationStream = new MemoryStream();
+            var paragraph = paragraphQuery.GetParagraph();
+            var mStream = new MemoryStream();
+            var pres = paragraphQuery.Presentation;
 
             // Act
-            paragraph.Text = newPrText;
+            paragraph.Text = newText;
 
             // Assert
-            paragraph.Text.Should().BeEquivalentTo(newPrText);
-            paragraph.Portions.Should().HaveCount(expectedNumPortions);
+            paragraph.Text.Should().BeEquivalentTo(newText);
+            paragraph.Portions.Should().HaveCount(expectedPortionsCount);
 
-            presentation.SaveAs(presentationStream);
-            presentation.Close();
-            paragraph = TestHelper.GetParagraph(presentationStream, prRequest);
-            paragraph.Text.Should().BeEquivalentTo(newPrText);
-            paragraph.Portions.Should().HaveCount(expectedNumPortions);
+            pres.SaveAs(mStream);
+            pres.Close();
+            paragraphQuery.Presentation = SCPresentation.Open(mStream, false);
+            paragraph = paragraphQuery.GetParagraph();
+            paragraph.Text.Should().BeEquivalentTo(newText);
+            paragraph.Portions.Should().HaveCount(expectedPortionsCount);
         }
 
         public static IEnumerable<object[]> TestCasesParagraphText()
         {
-            var paragraphRequest = new SlideElementQuery
+            var paragraphQuery = new TestElementQuery
             {
                 SlideIndex = 1,
                 ShapeId = 4,
-                ParagraphIndex = 1
+                ParagraphIndex = 2
             };
-            IPresentation presentation;
-            paragraphRequest.ParagraphIndex = 2;
+            paragraphQuery.Presentation = SCPresentation.Open(Resources._002, true);
+            yield return new object[] { paragraphQuery, "Text", 1};
 
-            presentation = SCPresentation.Open(Resources._002, true);
-            yield return new object[] { presentation, paragraphRequest, "Text", 1};
-
-            presentation = SCPresentation.Open(Resources._002, true);
-            yield return new object[] { presentation, paragraphRequest, $"Text{Environment.NewLine}", 1};
-
-            presentation = SCPresentation.Open(Resources._002, true);
-            yield return new object[] { presentation, paragraphRequest, $"Text{Environment.NewLine}Text2", 2};
-
-            presentation = SCPresentation.Open(Resources._002, true);
-            yield return new object[] { presentation, paragraphRequest, $"Text{Environment.NewLine}Text2{Environment.NewLine}", 2 };
+            paragraphQuery = new TestElementQuery
+            {
+                SlideIndex = 1,
+                ShapeId = 4,
+                ParagraphIndex = 2
+            };
+            paragraphQuery.Presentation = SCPresentation.Open(Resources._002, true);
+            yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}", 1};
+            
+            paragraphQuery = new TestElementQuery
+            {
+                SlideIndex = 1,
+                ShapeId = 4,
+                ParagraphIndex = 2
+            };
+            paragraphQuery.Presentation = SCPresentation.Open(Resources._002, true);
+            yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}Text2", 2};
+            
+            paragraphQuery = new TestElementQuery
+            {
+                SlideIndex = 1,
+                ShapeId = 4,
+                ParagraphIndex = 2
+            };
+            paragraphQuery.Presentation = SCPresentation.Open(Resources._002, true);
+            yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}Text2{Environment.NewLine}", 2 };
         }
 
         [Fact]
@@ -476,17 +489,17 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void ParagraphsAdd_AddsANewTextParagraphAtTheEndOfTheTextBoxAndReturnsAddedParagraph_WhenParagraphIsAddedAfterTextBoxContentChanged()
+        public void Paragraphs_Add_returns_a_new_added_paragraph_When_paragraph_has_been_added_after_text_box_content_changed()
         {
-            IPresentation presentation = SCPresentation.Open(Properties.Resources._001, true);
-            IAutoShape autoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3);
-            ITextBox textBox = autoShape.TextBox;
-            IParagraphCollection paragraphs = textBox.Paragraphs;
-            IParagraph paragraph = textBox.Paragraphs.First();
-            textBox.Text = "A new text";
+            var pres = SCPresentation.Open(Properties.Resources._001, true);
+            var autoShape = (IAutoShape)pres.Slides[0].Shapes.First(sp => sp.Id == 3);
+            var textBox = autoShape.TextBox;
+            var paragraphs = textBox.Paragraphs;
+            var paragraph = textBox.Paragraphs.First();
 
             // Act
-            IParagraph newParagraph = paragraphs.Add();
+            textBox.Text = "A new text";
+            var newParagraph = paragraphs.Add();
 
             // Assert
             newParagraph.Should().NotBeNull();

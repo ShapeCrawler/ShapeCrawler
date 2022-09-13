@@ -2,7 +2,7 @@
 
 namespace ShapeCrawler.Statics
 {
-    public static class PixelConverter
+    public static class PixelConverter // TODO: make internal
     {
         private static float horizontalResolution;
         private static float verticalResolution;
