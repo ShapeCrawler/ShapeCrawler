@@ -10,6 +10,11 @@ namespace ShapeCrawler
     public interface IParagraph
     {
         /// <summary>
+        /// Add text to paragraph.
+        /// </summary>
+        void AddText(string text);
+
+        /// <summary>
         ///     Gets or sets paragraph text.
         /// </summary>
         string Text { get; set; }

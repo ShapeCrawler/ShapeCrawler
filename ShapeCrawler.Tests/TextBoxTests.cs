@@ -134,6 +134,47 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
+        public void Text_Setter_updates_and_added_text_box_content()
+        {
+            // Arrange
+            IPresentation presentation = SCPresentation.Open(Resources._020, true);
+            ITextBox textBox = ((IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 8)).TextBox;
+            const string newText = "NewTest";
+            const string addedText = "AddedTest";
+            var mStream = new MemoryStream();
+
+            // Act
+            textBox.Text = newText;
+            var paragraph = textBox.Paragraphs.First();
+            paragraph.AddText(addedText);
+
+            var firstPortions = paragraph.Portions.First();
+            firstPortions.Font.IsBold = false;
+
+            var lastPortions = paragraph.Portions.Last();
+            lastPortions.Font.IsBold = true;
+
+            // Assert
+            paragraph.Portions.Should().HaveCount(2);
+            paragraph.Portions.First().Text.Should().BeEquivalentTo(newText);
+            paragraph.Portions.Last().Text.Should().BeEquivalentTo(addedText);
+
+            textBox.Text.Should().BeEquivalentTo(newText + addedText);
+            textBox.Paragraphs.Should().HaveCount(1);
+
+            presentation.SaveAs(mStream);
+            presentation.Close();
+            presentation = SCPresentation.Open(mStream, false);
+            textBox = ((IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 8)).TextBox;
+            textBox.Text.Should().BeEquivalentTo(newText + addedText);
+            textBox.Paragraphs.Should().HaveCount(1);
+            textBox.Paragraphs[0].Portions.Should().HaveCount(2);
+            textBox.Paragraphs[0].Portions[0].Font.IsBold.Should().BeFalse();
+            textBox.Paragraphs[0].Portions[1].Font.IsBold.Should().BeTrue();
+
+        }
+
+        [Fact]
         public void AutofitType_Getter_returns_text_autofit_type()
         {
             // Arrange

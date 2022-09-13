@@ -1,11 +1,11 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using DocumentFormat.OpenXml;
+﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shared;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -110,26 +110,52 @@ namespace ShapeCrawler
             this.Portions.Remove(removingPortions);
             var basePortion = (SCPortion)this.portions.Value.Single();
 
-            if (newText == string.Empty)
+            basePortion.Text = String.Empty;
+            AddText(newText);
+        }
+
+        public void AddText(string sourceText)
+        {
+            void addBreak(ref OpenXmlElement lastElement)
             {
-                basePortion.Text = string.Empty;
+                lastElement = lastElement.InsertAfterSelf(new A.Break());
+            }
+
+            void addText(ref OpenXmlElement lastElement, OpenXmlElement basePortionElement, string text)
+            {
+                var newARun = (A.Run)basePortionElement.CloneNode(true);
+                newARun.Text.Text = text;
+                lastElement = lastElement.InsertAfterSelf(newARun);
+            }
+
+            this.ThrowIfRemoved();
+            if (sourceText == String.Empty)
+            {
+                this.portions.Reset();
                 return;
             }
 
-            string[] textLines = newText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            basePortion.Text = textLines[0];
-            OpenXmlElement lastInsertedARunOrLineBreak = basePortion.SDKAText.Parent;
+            var basePortion = (SCPortion)this.portions.Value.Last();
+            var basePortionElement = basePortion.SDKAText.Parent;
+            var lastElement = this.AParagraph.Where(p => p is A.Run || p is A.Break).Last();
+
+            //add break if last element is not A.Break && text ends with newLine
+            if (lastElement is not A.Break && this.Text.EndsWith(Environment.NewLine, StringComparison.Ordinal))
+                addBreak(ref lastElement);
+
+            string[] textLines = sourceText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+            if (basePortion.Text == String.Empty)
+                basePortion.Text = textLines[0];
+            else
+                addText(ref lastElement, basePortionElement, textLines[0]);
+
             for (int i = 1; i < textLines.Length; i++)
             {
-                lastInsertedARunOrLineBreak = lastInsertedARunOrLineBreak.InsertAfterSelf(new A.Break());
-                A.Run newARun = (A.Run)basePortion.SDKAText.Parent.CloneNode(true);
-                newARun.Text.Text = textLines[i];
-                lastInsertedARunOrLineBreak = lastInsertedARunOrLineBreak.InsertAfterSelf(newARun);
-            }
+                addBreak(ref lastElement);
 
-            if (newText.EndsWith(Environment.NewLine, StringComparison.Ordinal))
-            {
-                lastInsertedARunOrLineBreak.InsertAfterSelf(new A.Break());
+                if (textLines[i] != string.Empty)
+                    addText(ref lastElement, basePortionElement, textLines[i]);
             }
 
             this.portions.Reset();
