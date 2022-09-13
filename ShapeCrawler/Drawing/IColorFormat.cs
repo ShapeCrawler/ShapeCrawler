@@ -6,6 +6,7 @@ using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
 using ShapeCrawler.SlideMasters;
+using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -38,7 +39,7 @@ namespace ShapeCrawler.Drawing
         private readonly ITextBoxContainer textBoxContainer;
         private readonly SCSlideMaster parentSlideMaster;
         private bool initialized;
-        private Color color;
+        private string hexColor;
         private SCColorType colorType;
 
         internal ColorFormat(SCFont parentFont)
@@ -86,7 +87,7 @@ namespace ShapeCrawler.Drawing
                 this.InitializeColor();
             }
 
-            return this.color;
+            return this.hexColor;
         }
 
         private void InitializeColor()
@@ -129,14 +130,14 @@ namespace ShapeCrawler.Drawing
                 {
                     colorHexVariant = this.GetHexVariantByScheme(preFontData.ASchemeColor.Val);
                     this.colorType = SCColorType.Scheme;
-                    this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                    this.hexColor = colorHexVariant;
                     return;
                 }
 
                 // Get default
                 colorHexVariant = this.GetThemeMappedColor(A.SchemeColorValues.Text1);
                 this.colorType = SCColorType.Scheme;
-                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                this.hexColor = colorHexVariant;
             }
         }
 
@@ -230,7 +231,7 @@ namespace ShapeCrawler.Drawing
             {
                 colorHexVariant = fontData.ARgbColorModelHex.Val;
                 this.colorType = SCColorType.RGB;
-                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                this.hexColor = colorHexVariant;
                 return true;
             }
 
@@ -238,7 +239,7 @@ namespace ShapeCrawler.Drawing
             {
                 colorHexVariant = this.GetHexVariantByScheme(fontData.ASchemeColor.Val);
                 this.colorType = SCColorType.Scheme;
-                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                this.hexColor = colorHexVariant;
                 return true;
             }
 
@@ -246,14 +247,14 @@ namespace ShapeCrawler.Drawing
             {
                 colorHexVariant = fontData.ASystemColor.LastColor;
                 this.colorType = SCColorType.System;
-                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                this.hexColor = colorHexVariant;
                 return true;
             }
 
             if (fontData.APresetColor != null)
             {
                 this.colorType = SCColorType.Preset;
-                this.color = Color.FromName(fontData.APresetColor.Val.Value.ToString());
+                this.hexColor = Color.FromName(fontData.APresetColor.Val.Value.ToString());
                 return true;
             }
 
@@ -268,7 +269,7 @@ namespace ShapeCrawler.Drawing
             {
                 colorHexVariant = aSrgbClr.Val!;
                 this.colorType = SCColorType.RGB;
-                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                this.hexColor = ColorTranslator.FromHtml($"#{colorHexVariant}");
                 return;
             }
 
@@ -277,7 +278,7 @@ namespace ShapeCrawler.Drawing
             {
                 colorHexVariant = this.GetHexVariantByScheme(aSchemeColor.Val!);
                 this.colorType = SCColorType.Scheme;
-                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                this.hexColor = ColorTranslator.FromHtml($"#{colorHexVariant}");
                 return;
             }
 
@@ -286,13 +287,13 @@ namespace ShapeCrawler.Drawing
             {
                 colorHexVariant = aSysClr.LastColor!;
                 this.colorType = SCColorType.System;
-                this.color = ColorTranslator.FromHtml($"#{colorHexVariant}");
+                this.hexColor = ColorTranslator.FromHtml($"#{colorHexVariant}");
                 return;
             }
 
             var aPresetColor = aSolidFill.PresetColor!;
             this.colorType = SCColorType.Preset;
-            this.color = Color.FromName(aPresetColor.Val!.Value.ToString());
+            this.hexColor = Color.FromName(aPresetColor.Val!.Value.ToString());
         }
 
         private string GetHexVariantByScheme(A.SchemeColorValues fontSchemeColor)

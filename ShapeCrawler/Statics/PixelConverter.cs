@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace ShapeCrawler.Statics
+﻿namespace ShapeCrawler.Statics
 {
     public static class PixelConverter // TODO: make internal
     {
@@ -9,26 +7,9 @@ namespace ShapeCrawler.Statics
 
         static PixelConverter()
         {
-            var bm = new Bitmap(1, 1);
-            if (bm.HorizontalResolution == 0)
-            {
-                // Set default resolution
-                bm.SetResolution(96, 96);
-            }
-
-            horizontalResolution = bm.HorizontalResolution;
-            verticalResolution = bm.VerticalResolution;
+            horizontalResolution = 96;
+            verticalResolution = 96;
         }
-
-#if TEST
-
-        public static void SetDpi(int dpi)
-        {
-            horizontalResolution = dpi;
-            verticalResolution = dpi;
-        }
-
-#endif
 
         internal static int HorizontalEmuToPixel(long horizontalEmus)
         {
