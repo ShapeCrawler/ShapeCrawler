@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
@@ -11,6 +12,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 namespace ShapeCrawler.Texts
 {
+    [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
     internal class ParagraphCollection : IParagraphCollection
     {
         private readonly ResettableLazy<List<SCParagraph>> paragraphs;
@@ -75,7 +77,8 @@ namespace ShapeCrawler.Texts
             }
 
             var aParagraphs = this.textBox.APTextBody.Elements<A.Paragraph>();
-            return aParagraphs.Select(aParagraph => new SCParagraph(aParagraph, this.textBox)).ToList();
+            var nonEmptyAPara = aParagraphs.Where(p => p.Elements<A.Run>().Any() || p.Elements<A.Field>().Any());
+            return nonEmptyAPara.Select(aParagraph => new SCParagraph(aParagraph, this.textBox)).ToList();
         }
     }
 }

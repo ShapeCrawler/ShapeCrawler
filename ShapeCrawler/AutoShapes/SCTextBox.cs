@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -31,11 +30,6 @@ namespace ShapeCrawler.AutoShapes
             this.paragraphs = new ResettableLazy<ParagraphCollection>(this.GetParagraphs);
         }
 
-        private ParagraphCollection GetParagraphs()
-        {
-            return new ParagraphCollection(this);
-        }
-
         public IParagraphCollection Paragraphs => this.paragraphs.Value;
 
         public string Text
@@ -58,6 +52,11 @@ namespace ShapeCrawler.AutoShapes
             this.TextBoxContainer.ThrowIfRemoved();
         }
 
+        private ParagraphCollection GetParagraphs()
+        {
+            return new ParagraphCollection(this);
+        }
+        
         private AutofitType ParseAutofitType()
         {
             var aBodyPr = this.APTextBody.GetFirstChild<A.BodyProperties>();

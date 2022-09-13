@@ -27,7 +27,7 @@ namespace ShapeCrawler
             this.Level = GetInnerLevel(aParagraph);
             this.bullet = new Lazy<Bullet>(this.GetBullet);
             this.ParentTextBox = textBox;
-            this.portions = new ResettableLazy<PortionCollection>(() => new PortionCollection(this.AParagraph, this));
+            this.portions = new ResettableLazy<PortionCollection>(this.GetPortions);
         }
 
         public bool IsRemoved { get; set; }
@@ -135,6 +135,11 @@ namespace ShapeCrawler
             this.portions.Reset();
         }
 
+        private PortionCollection GetPortions()
+        {
+            return new PortionCollection(this.AParagraph, this);
+        }
+        
         private void UpdateAlignment(TextAlignment alignmentValue)
         {
             if (this.ParentTextBox.TextBoxContainer.Placeholder != null)
