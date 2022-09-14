@@ -48,16 +48,6 @@ namespace ShapeCrawler.Charts
             this.ChartWorkbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartWorkbook(this, this.ChartPart.EmbeddedPackagePart) : null;
         }
 
-        private ICategoryCollection? GetCategories()
-        {
-            return CategoryCollection.Create(this, this.firstSeries.Value, this.Type);
-        }
-
-        private SCSeriesCollection GetSeries()
-        {
-            return SCSeriesCollection.Create(this, this.cXCharts);
-        }
-
         public ChartType Type => this.chartType.Value;
 
         public ShapeType ShapeType => ShapeType.Chart;
@@ -122,6 +112,16 @@ namespace ShapeCrawler.Charts
             Enum.TryParse(chartName, true, out ChartType enumChartType);
 
             return enumChartType;
+        }
+        
+        private ICategoryCollection? GetCategories()
+        {
+            return CategoryCollection.Create(this, this.firstSeries.Value, this.Type);
+        }
+
+        private SCSeriesCollection GetSeries()
+        {
+            return SCSeriesCollection.Create(this, this.cXCharts);
         }
 
         private string GetTitleOrDefault()

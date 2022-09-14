@@ -10,11 +10,6 @@ namespace ShapeCrawler
     public interface IParagraph
     {
         /// <summary>
-        /// Add text to paragraph.
-        /// </summary>
-        void AddPortion(string text);
-
-        /// <summary>
         ///     Gets or sets paragraph text.
         /// </summary>
         string Text { get; set; }
@@ -33,5 +28,10 @@ namespace ShapeCrawler
         ///     Gets or sets the text alignment.
         /// </summary>
         TextAlignment Alignment { get; set; }
+        
+        /// <summary>
+        ///     Add text to paragraph.
+        /// </summary>
+        void AddPortion(string text);
     }
 }

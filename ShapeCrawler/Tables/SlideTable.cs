@@ -19,8 +19,6 @@ namespace ShapeCrawler
         private readonly P.GraphicFrame pGraphicFrame;
         private readonly ResettableLazy<RowCollection> rowCollection;
 
-        private A.Table ATable => this.pGraphicFrame.GetATable();
-
         internal SlideTable(OpenXmlCompositeElement childOfPShapeTrees, SCSlide slideLayout, SlideGroupShape groupShape)
             : base(childOfPShapeTrees, slideLayout, groupShape)
         {
@@ -28,6 +26,8 @@ namespace ShapeCrawler
                 new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) this.PShapeTreesChild));
             this.pGraphicFrame = childOfPShapeTrees as P.GraphicFrame;
         }
+        
+        private A.Table ATable => this.pGraphicFrame.GetATable();
 
         public ShapeType ShapeType => ShapeType.Table;
 

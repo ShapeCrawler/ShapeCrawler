@@ -34,11 +34,11 @@ namespace ShapeCrawler.SlideMasters
 
         internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
 
+        internal override TypedOpenXmlPart TypedOpenXmlPart => this.SlideLayoutPart;
+        
         public override void ThrowIfRemoved()
         {
             throw new System.NotImplementedException();
         }
-
-        internal override TypedOpenXmlPart TypedOpenXmlPart => this.SlideLayoutPart;
     }
 }

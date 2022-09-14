@@ -22,7 +22,7 @@ namespace ShapeCrawler.AutoShapes
         private readonly Lazy<ColorFormat> colorFormat;
         private readonly ResettableLazy<A.LatinFont> latinFont;
         private readonly ResettableLazy<int> size;
-
+        
         internal SCFont(A.Text aText, SCPortion portion)
         {
             this.aText = aText;
@@ -43,6 +43,8 @@ namespace ShapeCrawler.AutoShapes
             this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements.FontScheme;
         }
 
+        internal SCPortion ParentPortion { get; }
+        
         #region Public Properties
 
         public string Name
@@ -76,8 +78,6 @@ namespace ShapeCrawler.AutoShapes
             A.RunProperties runPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
             return runPr != null;
         }
-
-        internal SCPortion ParentPortion { get; }
 
         #endregion Public Properties
 
