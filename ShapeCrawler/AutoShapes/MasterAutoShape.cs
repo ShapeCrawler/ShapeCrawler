@@ -38,6 +38,8 @@ namespace ShapeCrawler
 
         #region Public Properties
 
+        public override SCPresentation PresentationInternal { get; }
+        
         public IShape Shape => this;
 
         public ITextBox? TextBox => this.textBox.Value;
@@ -114,7 +116,5 @@ namespace ShapeCrawler
         {
             throw new NotImplementedException();
         }
-
-        public override SCPresentation PresentationInternal { get; }
     }
 }

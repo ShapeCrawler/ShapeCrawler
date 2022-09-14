@@ -106,6 +106,13 @@ namespace ShapeCrawler.Tests
             lengthAfter.Should().NotBe(lengthBefore);
         }
 
+        public void Image_SetImage_should_not_update_image_of_other_grouped_picture()
+        {
+            var pptxStream = GetTestFileStream("picture-case001.pptx");
+            var pres = SCPresentation.Open(pptxStream, true);
+
+        }
+
         [Fact]
         public void Picture_DoNotParseStrangePicture_Test()
         {

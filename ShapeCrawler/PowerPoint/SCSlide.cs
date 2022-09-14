@@ -28,7 +28,8 @@ namespace ShapeCrawler
     {
         private readonly Lazy<SCImage> backgroundImage;
         private Lazy<CustomXmlPart> customXmlPart;
-
+        internal readonly SlideId SlideId;
+        
         internal SCSlide(SCPresentation parentPresentation, SlidePart slidePart, SlideId slideId)
         {
             this.PresentationInternal = parentPresentation;
@@ -40,8 +41,6 @@ namespace ShapeCrawler
             this.SlideId = slideId;
         }
 
-        internal readonly SlideId SlideId;
-
         internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
 
         public ISlideLayout SlideLayout => ((SlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
@@ -51,16 +50,6 @@ namespace ShapeCrawler
         public override bool IsRemoved { get; set; }
 
         internal override TypedOpenXmlPart TypedOpenXmlPart => this.SDKSlidePart;
-
-        public override void ThrowIfRemoved()
-        {
-            if (this.IsRemoved)
-            {
-                throw new ElementIsRemovedException("Slide was removed");
-            }
-            
-            this.PresentationInternal.ThrowIfClosed();
-        }
         
         public int Number
         {
@@ -82,6 +71,8 @@ namespace ShapeCrawler
         public IPresentation ParentPresentation { get; }
 
         public SlidePart SDKSlidePart { get; }
+        
+        public SCPresentation PresentationInternal { get; }
 
         private ResettableLazy<ShapeCollection> shapes { get; }
 
@@ -93,6 +84,16 @@ namespace ShapeCrawler
             SlideSchemeService.SaveScheme(this.shapes.Value, this.PresentationInternal.SlideWidth, this.PresentationInternal.SlideHeight, filePath);
         }
 
+        public override void ThrowIfRemoved()
+        {
+            if (this.IsRemoved)
+            {
+                throw new ElementIsRemovedException("Slide was removed");
+            }
+            
+            this.PresentationInternal.ThrowIfClosed();
+        }
+        
         public async Task<string> ToHtml()
         {
             var slideWidthPx = this.PresentationInternal.SlideWidth;
@@ -253,7 +254,5 @@ namespace ShapeCrawler
 
             return null;
         }
-
-        public SCPresentation PresentationInternal { get; }
     }
 }

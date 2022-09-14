@@ -138,24 +138,32 @@ namespace ShapeCrawler
             var basePortion = (SCPortion)this.portions.Value.Last();
             var basePortionElement = basePortion.SDKAText.Parent;
             var lastElement = this.AParagraph.Where(p => p is A.Run || p is A.Break).Last();
-
-            //add break if last element is not A.Break && text ends with newLine
+            
+            // add break if last element is not A.Break && text ends with newLine
             if (lastElement is not A.Break && this.Text.EndsWith(Environment.NewLine, StringComparison.Ordinal))
+            {
                 addBreak(ref lastElement);
+            }
 
             string[] textLines = sourceText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
             if (basePortion.Text == String.Empty)
+            {
                 basePortion.Text = textLines[0];
+            }
             else
+            {
                 addText(ref lastElement, basePortionElement, textLines[0]);
-
+            }
+            
             for (int i = 1; i < textLines.Length; i++)
             {
                 addBreak(ref lastElement);
 
                 if (textLines[i] != string.Empty)
+                {
                     addText(ref lastElement, basePortionElement, textLines[i]);
+                }
             }
 
             this.portions.Reset();
