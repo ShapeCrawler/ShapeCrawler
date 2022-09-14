@@ -92,7 +92,7 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             var pptxStream = GetTestFileStream(filename);
-            var presentation = SCPresentation.Open(pptxStream, true);
+            var presentation = SCPresentation.Open(pptxStream);
             var chart = presentation.Slides[--slideNumber].Shapes.GetByName<IChart>(shapeName);
             var point = chart.SeriesCollection[0].Points[0];
             const int newChartPointValue = 6;
@@ -125,7 +125,7 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             var pptxStream = GetTestFileStream("024_chart.pptx");
-            var pres = SCPresentation.Open(pptxStream, true);
+            var pres = SCPresentation.Open(pptxStream);
             var chart = pres.Slides[2].Shapes.GetById<IChart>(5);
             var point = chart.SeriesCollection[0].Points[0];
             const int newChartPointValue = 6;
@@ -143,7 +143,7 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             var pptxStream = GetTestFileStream("bars.pptx");
-            var pres = SCPresentation.Open(pptxStream, true);
+            var pres = SCPresentation.Open(pptxStream);
             {
                 var chart = pres.Slides[0].Shapes.First() as IChart;
                 var points = chart.SeriesCollection.SelectMany(p => p.Points);

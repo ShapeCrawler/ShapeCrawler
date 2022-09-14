@@ -70,7 +70,7 @@ namespace ShapeCrawler.Tests
         public void Text_SetterChangesTextBoxContent()
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources._001, true);
+            IPresentation presentation = SCPresentation.Open(Resources._001);
             ITextBox textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
             const string newText = "Test";
             var mStream = new MemoryStream();
@@ -85,7 +85,7 @@ namespace ShapeCrawler.Tests
             presentation.SaveAs(mStream);
             presentation.Close();
 
-            presentation = SCPresentation.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream);
             textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
             textBox.Text.Should().BeEquivalentTo(newText);
             textBox.Paragraphs.Should().HaveCount(1);
@@ -113,7 +113,7 @@ namespace ShapeCrawler.Tests
         public void Text_Setter_updates_text_box_content()
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources._020, true);
+            IPresentation presentation = SCPresentation.Open(Resources._020);
             ITextBox textBox = ((IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 8)).TextBox;
             const string newText = "Test";
             var mStream = new MemoryStream();
@@ -127,7 +127,7 @@ namespace ShapeCrawler.Tests
 
             presentation.SaveAs(mStream);
             presentation.Close();
-            presentation = SCPresentation.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream);
             textBox = ((IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 8)).TextBox;
             textBox.Text.Should().BeEquivalentTo(newText);
             textBox.Paragraphs.Should().HaveCount(1);
@@ -137,7 +137,7 @@ namespace ShapeCrawler.Tests
         public void Text_Setter_updates_and_added_text_box_content()
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources._020, true);
+            IPresentation presentation = SCPresentation.Open(Resources._020);
             ITextBox textBox = ((IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 8)).TextBox;
             const string newText = "NewTest";
             const string addedText = "AddedTest";
@@ -164,7 +164,7 @@ namespace ShapeCrawler.Tests
 
             presentation.SaveAs(mStream);
             presentation.Close();
-            presentation = SCPresentation.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream);
             textBox = ((IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 8)).TextBox;
             textBox.Text.Should().BeEquivalentTo(newText + addedText);
             textBox.Paragraphs.Should().HaveCount(1);
@@ -263,12 +263,12 @@ namespace ShapeCrawler.Tests
         public static IEnumerable<object[]> TestCasesAlignmentGetter()
         {
             var pptxStream = GetTestFileStream("001.pptx");
-            var presentation = SCPresentation.Open(pptxStream, false);
+            var presentation = SCPresentation.Open(pptxStream);
             var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
             yield return new object[] {autoShape, TextAlignment.Center};
             
             pptxStream = GetTestFileStream("001.pptx");
-            presentation = SCPresentation.Open(pptxStream, false);
+            presentation = SCPresentation.Open(pptxStream);
             autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("Head 1");
             yield return new object[] {autoShape, TextAlignment.Center};
         }
@@ -278,7 +278,7 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             var pptxStream = GetTestFileStream("001.pptx");
-            var originPresentation = SCPresentation.Open(pptxStream, true);
+            var originPresentation = SCPresentation.Open(pptxStream);
             var autoShape = originPresentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
             var paragraph = autoShape.TextBox.Paragraphs[0];
 
@@ -330,7 +330,7 @@ namespace ShapeCrawler.Tests
         [Fact]
         public void ParagraphTextSetter_ThrowsException_WhenParagraphWasRemoved()
         {
-            IPresentation presentation = SCPresentation.Open(Properties.Resources._020, true);
+            IPresentation presentation = SCPresentation.Open(Properties.Resources._020);
             IAutoShape autoShape = (IAutoShape) presentation.Slides[2].Shapes.First(sp => sp.Id == 8);
             ITextBox textBox = autoShape.TextBox;
             IParagraph paragraph = textBox.Paragraphs.First();
@@ -359,7 +359,7 @@ namespace ShapeCrawler.Tests
 
             pres.SaveAs(mStream);
             pres.Close();
-            paragraphQuery.Presentation = SCPresentation.Open(mStream, false);
+            paragraphQuery.Presentation = SCPresentation.Open(mStream);
             paragraph = paragraphQuery.GetParagraph();
             paragraph.Text.Should().BeEquivalentTo(newText);
             paragraph.Portions.Should().HaveCount(expectedPortionsCount);
@@ -373,7 +373,7 @@ namespace ShapeCrawler.Tests
                 ShapeId = 4,
                 ParagraphIndex = 2
             };
-            paragraphQuery.Presentation = SCPresentation.Open(Resources._002, true);
+            paragraphQuery.Presentation = SCPresentation.Open(Resources._002);
             yield return new object[] { paragraphQuery, "Text", 1};
 
             paragraphQuery = new TestElementQuery
@@ -382,7 +382,7 @@ namespace ShapeCrawler.Tests
                 ShapeId = 4,
                 ParagraphIndex = 2
             };
-            paragraphQuery.Presentation = SCPresentation.Open(Resources._002, true);
+            paragraphQuery.Presentation = SCPresentation.Open(Resources._002);
             yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}", 1};
             
             paragraphQuery = new TestElementQuery
@@ -391,7 +391,7 @@ namespace ShapeCrawler.Tests
                 ShapeId = 4,
                 ParagraphIndex = 2
             };
-            paragraphQuery.Presentation = SCPresentation.Open(Resources._002, true);
+            paragraphQuery.Presentation = SCPresentation.Open(Resources._002);
             yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}Text2", 2};
             
             paragraphQuery = new TestElementQuery
@@ -400,7 +400,7 @@ namespace ShapeCrawler.Tests
                 ShapeId = 4,
                 ParagraphIndex = 2
             };
-            paragraphQuery.Presentation = SCPresentation.Open(Resources._002, true);
+            paragraphQuery.Presentation = SCPresentation.Open(Resources._002);
             yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}Text2{Environment.NewLine}", 2 };
         }
 
@@ -469,7 +469,7 @@ namespace ShapeCrawler.Tests
             // Arrange
             const string TEST_TEXT = "ParagraphsAdd";
             var mStream = new MemoryStream();
-            IPresentation presentation = SCPresentation.Open(Resources._001, true);
+            IPresentation presentation = SCPresentation.Open(Resources._001);
             ITextBox textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 4)).TextBox;
             int originParagraphsCount = textBox.Paragraphs.Count;
 
@@ -482,7 +482,7 @@ namespace ShapeCrawler.Tests
             textBox.Paragraphs.Should().HaveCountGreaterThan(originParagraphsCount);
 
             presentation.SaveAs(mStream);
-            presentation = SCPresentation.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream);
             textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 4)).TextBox;
             textBox.Paragraphs.Last().Text.Should().BeEquivalentTo(TEST_TEXT);
             textBox.Paragraphs.Should().HaveCountGreaterThan(originParagraphsCount);
@@ -491,7 +491,7 @@ namespace ShapeCrawler.Tests
         [Fact]
         public void Paragraphs_Add_returns_a_new_added_paragraph_When_paragraph_has_been_added_after_text_box_content_changed()
         {
-            var pres = SCPresentation.Open(Properties.Resources._001, true);
+            var pres = SCPresentation.Open(Properties.Resources._001);
             var autoShape = (IAutoShape)pres.Slides[0].Shapes.First(sp => sp.Id == 3);
             var textBox = autoShape.TextBox;
             var paragraphs = textBox.Paragraphs;

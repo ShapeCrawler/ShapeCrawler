@@ -129,12 +129,12 @@ namespace ShapeCrawler.Tests
         public static IEnumerable<object[]> TestCasesSeriesCollectionCount()
         {
             var pptxStream = GetTestFileStream("013.pptx");
-            var presentation = SCPresentation.Open(pptxStream, false);
+            var presentation = SCPresentation.Open(pptxStream);
             IChart chart = (IChart) presentation.Slides[0].Shapes.First(sp => sp.Id == 5);
             yield return new object[] {chart, 3};
 
             pptxStream = GetTestFileStream("009_table.pptx");
-            presentation = SCPresentation.Open(pptxStream, false);
+            presentation = SCPresentation.Open(pptxStream);
             chart = (IChart) presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
             yield return new object[] {chart, 1};
         }
@@ -144,7 +144,7 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             var pptxStream = GetTestFileStream("charts-case001.pptx");
-            var presentation = SCPresentation.Open(pptxStream, false);
+            var presentation = SCPresentation.Open(pptxStream);
             var chart = (IChart) presentation.Slides[0].Shapes.First(shape => shape.Name == "chart");
             var series = chart.SeriesCollection[0]; 
             
@@ -194,7 +194,7 @@ namespace ShapeCrawler.Tests
         public void CategoryName_SetterChangesName_OfCategoryInNonMultiCategoryPieChart()
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources._025, true);
+            IPresentation presentation = SCPresentation.Open(Resources._025);
             MemoryStream mStream = new();
             IPieChart pieChart4 = (IPieChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
             const string newCategoryName = "Category 1_new";
@@ -205,7 +205,7 @@ namespace ShapeCrawler.Tests
             // Assert
             pieChart4.Categories[0].Name.Should().Be(newCategoryName);
             presentation.SaveAs(mStream);
-            presentation = SCPresentation.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream);
             pieChart4 = (IPieChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
             pieChart4.Categories[0].Name.Should().Be(newCategoryName);
         }
@@ -214,7 +214,7 @@ namespace ShapeCrawler.Tests
         public void CategoryName_SetterShouldChangeValueOfCorrespondingExcelCell()
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources._025, true);
+            IPresentation presentation = SCPresentation.Open(Resources._025);
             ILineChart lineChart = (ILineChart)presentation.Slides[3].Shapes.First(sp => sp.Id == 13);
             const string newCategoryName = "Category 1_new";
 
@@ -233,7 +233,7 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             Stream preStream = TestFiles.Presentations.pre025_byteArray.ToResizeableStream();
-            IPresentation presentation = SCPresentation.Open(preStream, true);
+            IPresentation presentation = SCPresentation.Open(preStream);
             IBarChart barChart = (IBarChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
             const string newCategoryName = "Clothing_new";
 
@@ -244,7 +244,7 @@ namespace ShapeCrawler.Tests
             barChart.Categories[0].Name.Should().Be(newCategoryName);
 
             presentation.Save();
-            presentation = SCPresentation.Open(preStream, false);
+            presentation = SCPresentation.Open(preStream);
             barChart = (IBarChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
             barChart.Categories[0].Name.Should().Be(newCategoryName);
         }
@@ -319,7 +319,7 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             var pptxStream = GetTestFileStream("charts-case003.pptx");
-            var pres = SCPresentation.Open(pptxStream, false);
+            var pres = SCPresentation.Open(pptxStream);
             var chart = pres.Slides[0].Shapes.GetByName<IChart>("Chart 1");
             
             // Act

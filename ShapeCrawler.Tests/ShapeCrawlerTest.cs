@@ -11,7 +11,7 @@ namespace ShapeCrawler.Tests
     {
         protected T GetShape<T>(Stream presentation, int slideNumber, int shapeId)
         {
-            var scPresentation = SCPresentation.Open(presentation, false);
+            var scPresentation = SCPresentation.Open(presentation);
             
             var slide = scPresentation.Slides[slideNumber - 1];
             var shape = slide.Shapes.First(sp => sp.Id == shapeId);
@@ -46,7 +46,7 @@ namespace ShapeCrawler.Tests
             return (T)cellValue;
         }
 
-        protected static Stream GetTestFileStream(string fileName)
+        protected static MemoryStream GetTestFileStream(string fileName)
         {
             var assembly = Assembly.GetExecutingAssembly();
             var path = assembly.GetManifestResourceNames().First(r => r.EndsWith(fileName, StringComparison.Ordinal));
@@ -73,14 +73,14 @@ namespace ShapeCrawler.Tests
             var stream = new MemoryStream();
             presentation.SaveAs(stream);
             
-            return SCPresentation.Open(stream, false);
+            return SCPresentation.Open(stream);
         }
 
         private IPresentation GetPresentationFromAssembly(string fileName)
         {
             var stream = GetTestFileStream(fileName);
             
-            return SCPresentation.Open(stream, true);
+            return SCPresentation.Open(stream);
         }
     }
 }

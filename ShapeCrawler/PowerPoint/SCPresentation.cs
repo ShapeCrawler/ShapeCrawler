@@ -96,30 +96,30 @@ namespace ShapeCrawler
         /// <summary>
         ///     Opens existing presentation from specified file path.
         /// </summary>
-        public static IPresentation Open(string pptxPath, in bool isEditable)
+        public static IPresentation Open(string pptxPath)
         {
-            return new SCPresentation(pptxPath, isEditable);
+            return new SCPresentation(pptxPath, true);
         }
 
         /// <summary>
         ///     Opens presentation from specified byte array.
         /// </summary>
-        public static IPresentation Open(byte[] pptxBytes, in bool isEditable)
+        public static IPresentation Open(byte[] pptxBytes)
         {
             ThrowIfSourceInvalid(pptxBytes);
 
             var pptxMemoryStream = new MemoryStream();
             pptxMemoryStream.Write(pptxBytes, 0, pptxBytes.Length);
 
-            return Open(pptxMemoryStream, isEditable);
+            return Open(pptxMemoryStream);
         }
 
         /// <summary>
         ///     Opens presentation from specified stream.
         /// </summary>
-        public static IPresentation Open(Stream pptxStream, in bool isEditable)
+        public static IPresentation Open(Stream pptxStream)
         {
-            return new SCPresentation(pptxStream, isEditable);
+            return new SCPresentation(pptxStream, true);
         }
 
         /// <inheritdoc/>
