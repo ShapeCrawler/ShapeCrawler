@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.33.0 - Unreleased
+- Added `IParagraph.AddPortion(string text)` to add a new text portion in paragraph [#297](https://github.com/ShapeCrawler/ShapeCrawler/issues/297)
+
 ## Version 0.32.0 - 2022-09-09
 - Added opportunity to update text of master shape [#37](https://github.com/ShapeCrawler/ShapeCrawler/issues/37).
 - Added `IColorFormat.SetColorHex()` to update color [#37](https://github.com/ShapeCrawler/ShapeCrawler/issues/37).
