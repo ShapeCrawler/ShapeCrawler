@@ -45,17 +45,17 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Close_ShouldNotThrowObjectDisposedException()
+        public void Close_should_not_throw_ObjectDisposedException()
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(TestFiles.Presentations.pre025_byteArray);
-            MemoryStream mStream = new();
-            IPieChart chart = (IPieChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
+            var pres = SCPresentation.Open(TestFiles.Presentations.pre025_byteArray);
+            var chart = pres.Slides[0].Shapes.GetById<IPieChart>(7);
             chart.Categories[0].Name = "new name";
-            presentation.SaveAs(mStream);
+            var mStream = new MemoryStream();
+            pres.SaveAs(mStream);
 
             // Act
-            Action act = () => presentation.Close();
+            Action act = () => pres.Close();
 
             // Assert
             act.Should().NotThrow<ObjectDisposedException>();

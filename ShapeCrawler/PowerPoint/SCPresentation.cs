@@ -32,30 +32,38 @@ namespace ShapeCrawler
         private ResettableLazy<SCSectionCollection> sectionCollectionLazy;
         private ResettableLazy<SCSlideCollection> slideCollectionLazy;
         private string cachedPptxPath;
-        private Stream? sourcePptxStream;
-        private string? sourcePptxPath;
+        private Stream? outerStream;
+        private string? outerPath;
+        private MemoryStream internalStream;
 
-        private SCPresentation(string sourcePptxPath, in bool isEditable)
+        private SCPresentation(string outerPath)
         {
-            this.Editable = isEditable;
-            var option = new OpenSettings { AutoSave = false };
+            this.outerPath = outerPath;
 
-            ThrowIfSourceInvalid(sourcePptxPath);
-
-            this.PresentationDocument = PresentationDocument.Open(sourcePptxPath, isEditable, option);
-            this.OpenInternal(sourcePptxPath);
+            ThrowIfSourceInvalid(outerPath);
+            var pptxBytes = File.ReadAllBytes(outerPath);
+            
+            this.internalStream = pptxBytes.ToExpandableStream();
+            this.sdkPresentation = PresentationDocument.Open(this.internalStream, true);
             this.Init();
         }
 
-        private SCPresentation(Stream sourcePptxStream, in bool isEditable)
+        private SCPresentation(Stream sourceStream)
         {
-            this.Editable = isEditable;
-            var option = new OpenSettings { AutoSave = false };
+            this.outerStream = sourceStream;
+            ThrowIfSourceInvalid(sourceStream);
 
-            ThrowIfSourceInvalid(sourcePptxStream);
+            this.internalStream = new MemoryStream();
+            sourceStream.CopyTo(this.internalStream);
+            this.sdkPresentation = PresentationDocument.Open(this.internalStream, true);
+            // this.OpenInternal(sourcePptxStream);
+            this.Init();
+        }
 
-            this.PresentationDocument = PresentationDocument.Open(sourcePptxStream, isEditable, option);
-            this.OpenInternal(sourcePptxStream);
+        private SCPresentation(byte[] sourceBytes)
+        {
+            this.internalStream = sourceBytes.ToExpandableStream();
+            this.sdkPresentation = PresentationDocument.Open(this.internalStream, true);
             this.Init();
         }
 
@@ -77,11 +85,9 @@ namespace ShapeCrawler
         /// <inheritdoc/>
         public ISectionCollection Sections => this.sectionCollectionLazy.Value;
 
-        internal PresentationDocument PresentationDocument { get; private set; }
+        internal PresentationDocument sdkPresentation { get; private set; }
 
         internal SCSectionCollection SectionsInternal => (SCSectionCollection)this.Sections;
-
-        internal bool Editable { get; }
 
         internal List<ChartWorkbook> ChartWorkbooks { get; } = new();
 
@@ -98,7 +104,7 @@ namespace ShapeCrawler
         /// </summary>
         public static IPresentation Open(string pptxPath)
         {
-            return new SCPresentation(pptxPath, true);
+            return new SCPresentation(pptxPath);
         }
 
         /// <summary>
@@ -108,10 +114,7 @@ namespace ShapeCrawler
         {
             ThrowIfSourceInvalid(pptxBytes);
 
-            var pptxMemoryStream = new MemoryStream();
-            pptxMemoryStream.Write(pptxBytes, 0, pptxBytes.Length);
-
-            return Open(pptxMemoryStream);
+            return new SCPresentation(pptxBytes);
         }
 
         /// <summary>
@@ -119,66 +122,41 @@ namespace ShapeCrawler
         /// </summary>
         public static IPresentation Open(Stream pptxStream)
         {
-            return new SCPresentation(pptxStream, true);
+            pptxStream.Position = 0;
+            return new SCPresentation(pptxStream);
         }
 
         /// <inheritdoc/>
         public void Save()
         {
-            this.PresentationDocument.Save();
+            this.ChartWorkbooks.ForEach(chartWorkbook => chartWorkbook.Close());
+            this.sdkPresentation.Save();
+
+            if (this.outerStream != null)
+            {
+                this.sdkPresentation.Clone(this.outerStream);
+            }
+            else if (this.outerPath != null)
+            {
+                this.internalStream.Position = 0;
+                this.internalStream.SaveToFile(this.outerPath);
+            }
         }
 
         /// <inheritdoc/>
         public void SaveAs(string path)
         {
-            this.ChartWorkbooks.ForEach(chartWorkbook => chartWorkbook.Close());
-            var newDocument = (PresentationDocument)this.PresentationDocument.Clone(path);
-            this.PresentationDocument.Close();
-            this.PresentationDocument = newDocument;
-
-            if (this.sourcePptxStream != null)
-            {
-                this.sourcePptxStream.WriteFile(this.cachedPptxPath);
-
-                File.Delete(this.cachedPptxPath);
-
-                this.OpenInternal(path);
-            }
-            else if (this.sourcePptxPath != null)
-            {
-                File.Copy(this.cachedPptxPath, this.sourcePptxPath, true);
-
-                File.Delete(this.cachedPptxPath);
-
-                this.OpenInternal(path);
-            }
+            this.outerStream = null;
+            this.outerPath = path;
+            this.Save();
         }
 
         /// <inheritdoc/>
         public void SaveAs(Stream stream)
         {
-            this.ChartWorkbooks.ForEach(chartWorkbook => chartWorkbook.Close());
-            var newDocument = (PresentationDocument)this.PresentationDocument.Clone(stream);
-            this.PresentationDocument.Close();
-            this.PresentationDocument = newDocument;
-
-            if (this.sourcePptxStream != null)
-            {
-                this.sourcePptxStream.SetLength(0);
-                this.sourcePptxStream.WriteFile(this.cachedPptxPath);
-
-                File.Delete(this.cachedPptxPath);
-
-                this.OpenInternal(stream);
-            }
-            else if (this.sourcePptxPath != null)
-            {
-                File.Copy(this.cachedPptxPath, this.sourcePptxPath, true);
-
-                File.Delete(this.cachedPptxPath);
-
-                this.OpenInternal(stream);
-            }
+            this.outerPath = null;
+            this.outerStream = stream;
+            this.Save();
         }
 
         /// <inheritdoc/>
@@ -190,8 +168,7 @@ namespace ShapeCrawler
             }
 
             this.ChartWorkbooks.ForEach(cw => cw.Close());
-            this.PresentationDocument.Close();
-            File.Delete(this.cachedPptxPath);
+            this.sdkPresentation.Close();
 
             this.closed = true;
         }
@@ -214,26 +191,10 @@ namespace ShapeCrawler
             }
         }
 
-        private void OpenInternal(Stream documentStream)
-        {
-            this.sourcePptxStream = documentStream;
-            this.cachedPptxPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
-
-            this.sourcePptxStream.SaveToFile(this.cachedPptxPath);
-        }
-
-        private void OpenInternal(string documentPath)
-        {
-            this.sourcePptxPath = documentPath;
-            this.cachedPptxPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
-
-            File.WriteAllBytes(this.cachedPptxPath, this.ByteArray);
-        }
-
         private byte[] GetByteArray()
         {
             var stream = new MemoryStream();
-            this.PresentationDocument.Clone(stream);
+            this.sdkPresentation.Clone(stream);
 
             return stream.ToArray();
         }
@@ -304,7 +265,7 @@ namespace ShapeCrawler
 
         private void ThrowIfSlidesNumberLarge()
         {
-            var nbSlides = PresentationDocument.PresentationPart.SlideParts.Count();
+            var nbSlides = this.sdkPresentation.PresentationPart.SlideParts.Count();
             if (nbSlides > Limitations.MaxSlidesNumber)
             {
                 Close();
@@ -320,14 +281,15 @@ namespace ShapeCrawler
                 new ResettableLazy<SlideMasterCollection>(() => SlideMasterCollection.Create(this));
             this.paraLvlToFontData =
                 new Lazy<Dictionary<int, FontData>>(() =>
-                    ParseFontHeights(this.PresentationDocument.PresentationPart.Presentation));
-            this.sectionCollectionLazy = new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
+                    ParseFontHeights(this.sdkPresentation.PresentationPart.Presentation));
+            this.sectionCollectionLazy =
+                new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
             this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
         }
 
         private SCSlideSize GetSlideSize()
         {
-            var pSlideSize = this.PresentationDocument.PresentationPart!.Presentation.SlideSize;
+            var pSlideSize = this.sdkPresentation.PresentationPart!.Presentation.SlideSize;
             var withPx = PixelConverter.HorizontalEmuToPixel(pSlideSize.Cx.Value);
             var heightPx = PixelConverter.VerticalEmuToPixel(pSlideSize.Cy.Value);
 

@@ -106,7 +106,7 @@ namespace ShapeCrawler.Charts
         private SpreadsheetDocument GetSpreadsheetDocument()
         {
             this.embeddedPackagePartStream = this.embeddedPackagePart.GetStream();
-            var spreadsheetDocument = SpreadsheetDocument.Open(this.embeddedPackagePartStream, this.chart.PresentationInternal.Editable);
+            var spreadsheetDocument = SpreadsheetDocument.Open(this.embeddedPackagePartStream, true);
             this.chart.PresentationInternal.ChartWorkbooks.Add(this);
 
             return spreadsheetDocument;

@@ -245,14 +245,14 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void NumberSetter_MovesSlide()
+        public void Number_Setter_moves_slide_to_specified_number_position()
         {
             // Arrange
-            Stream preStream = TestFiles.Presentations.pre001_stream;
-            IPresentation presentation = SCPresentation.Open(preStream);
-            ISlide slide1 = presentation.Slides[0];
+            var pptxStream = TestFiles.Presentations.pre001_stream;
+            var pres = SCPresentation.Open(pptxStream);
+            var slide1 = pres.Slides[0];
+            var slide2 = pres.Slides[1];
             slide1.CustomData = "old-number-1";
-            ISlide slide2 = presentation.Slides[1];
 
             // Act
             slide1.Number = 2;
@@ -261,9 +261,10 @@ namespace ShapeCrawler.Tests
             slide1.Number.Should().Be(2);
             slide2.Number.Should().Be(1, "because the first slide was inserted to its position.");
             
-            presentation.Close();
-            presentation = SCPresentation.Open(preStream);
-            slide2 = presentation.Slides.First(s => s.CustomData == "old-number-1");
+            pres.Save();
+            pres.Close();
+            pres = SCPresentation.Open(pptxStream);
+            slide2 = pres.Slides.First(s => s.CustomData == "old-number-1");
             slide2.Number.Should().Be(2);
         }
 

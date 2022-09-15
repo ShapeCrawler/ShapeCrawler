@@ -211,21 +211,22 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void CategoryName_SetterShouldChangeValueOfCorrespondingExcelCell()
+        public void Category_Name_Setter_updates_value_of_Excel_cell()
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources._025);
-            ILineChart lineChart = (ILineChart)presentation.Slides[3].Shapes.First(sp => sp.Id == 13);
-            const string newCategoryName = "Category 1_new";
+            var pres = SCPresentation.Open(Resources._025);
+            var lineChart = pres.Slides[3].Shapes.GetById<ILineChart>(13);
+            const string newName = "Category 1_new";
+            var category = lineChart.Categories[0]; 
 
             // Act
-            lineChart.Categories[0].Name = newCategoryName;
+            category.Name = newName;
 
             // Assert
-            MemoryStream mStream = new (lineChart.WorkbookByteArray);
-            XLWorkbook workbook = new (mStream);
-            string cellValue = workbook.Worksheets.First().Cell("A2").Value.ToString();
-            cellValue.Should().BeEquivalentTo(newCategoryName);
+            var mStream = new MemoryStream(lineChart.WorkbookByteArray);
+            var workbook = new XLWorkbook(mStream);
+            var cellValue = workbook.Worksheets.First().Cell("A2").Value.ToString();
+            cellValue.Should().BeEquivalentTo(newName);
         }
 
         [Fact(Skip = "On Hold")]

@@ -92,8 +92,8 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             var pptxStream = GetTestFileStream(filename);
-            var presentation = SCPresentation.Open(pptxStream);
-            var chart = presentation.Slides[--slideNumber].Shapes.GetByName<IChart>(shapeName);
+            var pres = SCPresentation.Open(pptxStream);
+            var chart = pres.Slides[--slideNumber].Shapes.GetByName<IChart>(shapeName);
             var point = chart.SeriesCollection[0].Points[0];
             const int newChartPointValue = 6;
 
@@ -103,8 +103,8 @@ namespace ShapeCrawler.Tests
             // Assert
             point.Value.Should().Be(newChartPointValue);
 
-            presentation = SaveAndOpenPresentation(presentation);
-            chart = presentation.Slides[slideNumber].Shapes.GetByName<IChart>(shapeName);
+            pres = SaveAndOpenPresentation(pres);
+            chart = pres.Slides[slideNumber].Shapes.GetByName<IChart>(shapeName);
             point = chart.SeriesCollection[0].Points[0];
             point.Value.Should().Be(newChartPointValue);
         }
