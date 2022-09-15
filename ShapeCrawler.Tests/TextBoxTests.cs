@@ -67,31 +67,6 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Text_SetterChangesTextBoxContent()
-        {
-            // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources._001);
-            ITextBox textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
-            const string newText = "Test";
-            var mStream = new MemoryStream();
-
-            // Act
-            textBox.Text = newText;
-
-            // Assert
-            textBox.Text.Should().BeEquivalentTo(newText);
-            textBox.Paragraphs.Should().HaveCount(1);
-            
-            presentation.SaveAs(mStream);
-            presentation.Close();
-
-            presentation = SCPresentation.Open(mStream);
-            textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 3)).TextBox;
-            textBox.Text.Should().BeEquivalentTo(newText);
-            textBox.Paragraphs.Should().HaveCount(1);
-        }
-        
-        [Fact]
         public void Text_Setter_updates_text_box_content_and_Reduces_font_size_When_text_is_Overflow()
         {
             // Arrange
@@ -132,9 +107,34 @@ namespace ShapeCrawler.Tests
             textBox.Text.Should().BeEquivalentTo(newText);
             textBox.Paragraphs.Should().HaveCount(1);
         }
+        
+        [Fact]
+        public void Text_Setter_updates_text_box_content_NEW() // TODO combain this with Text_Setter_updates_text_box_content
+        {
+            // Arrange
+            var pres = SCPresentation.Open(Resources._001);
+            var textBox = pres.Slides[0].Shapes.GetById<IAutoShape>(3).TextBox;
+            const string newText = "Test";
+            var mStream = new MemoryStream();
+
+            // Act
+            textBox.Text = newText;
+
+            // Assert
+            textBox.Text.Should().BeEquivalentTo(newText);
+            textBox.Paragraphs.Should().HaveCount(1);
+            
+            pres.SaveAs(mStream);
+            pres.Close();
+            pres = SCPresentation.Open(mStream);
+            textBox = pres.Slides[0].Shapes.GetById<IAutoShape>(3).TextBox;
+            
+            textBox.Text.Should().BeEquivalentTo(newText);
+            textBox.Paragraphs.Should().HaveCount(1);
+        }
 
         [Fact]
-        public void Text_Setter_updates_and_added_text_box_content()
+        public void Paragraph_AddPortion_adds_text_portion()
         {
             // Arrange
             IPresentation presentation = SCPresentation.Open(Resources._020);
@@ -262,12 +262,12 @@ namespace ShapeCrawler.Tests
 
         public static IEnumerable<object[]> TestCasesAlignmentGetter()
         {
-            var pptxStream = GetTestFileStream("001.pptx");
+            var pptxStream = GetTestStream("001.pptx");
             var presentation = SCPresentation.Open(pptxStream);
             var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
             yield return new object[] {autoShape, TextAlignment.Center};
             
-            pptxStream = GetTestFileStream("001.pptx");
+            pptxStream = GetTestStream("001.pptx");
             presentation = SCPresentation.Open(pptxStream);
             autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("Head 1");
             yield return new object[] {autoShape, TextAlignment.Center};
@@ -277,7 +277,7 @@ namespace ShapeCrawler.Tests
         public void Paragraph_Alignment_Setter_updates_text_aligment()
         {
             // Arrange
-            var pptxStream = GetTestFileStream("001.pptx");
+            var pptxStream = GetTestStream("001.pptx");
             var originPresentation = SCPresentation.Open(pptxStream);
             var autoShape = originPresentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
             var paragraph = autoShape.TextBox.Paragraphs[0];

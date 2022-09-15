@@ -36,8 +36,8 @@ namespace ShapeCrawler.Tests
         public void SetPicture_updates_fill_with_specified_picture_image_When_shape_is_Not_filled()
         {
             // Arrange
-            var pptxStream = GetTestFileStream("008.pptx");
-            var imageStream = GetTestFileStream("test-image-1.png");
+            var pptxStream = GetTestStream("008.pptx");
+            var imageStream = GetTestStream("test-image-1.png");
             var pres = SCPresentation.Open(pptxStream);
             var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
 
@@ -82,7 +82,7 @@ namespace ShapeCrawler.Tests
 
         public static IEnumerable<object[]> TestCasesFillType()
         {
-            var pptxStream = GetTestFileStream("009_table.pptx");
+            var pptxStream = GetTestStream("009_table.pptx");
             var pres = SCPresentation.Open(pptxStream);
             
             var withNoFill = pres.Slides[1].Shapes.GetById<IAutoShape>(6);
@@ -100,7 +100,7 @@ namespace ShapeCrawler.Tests
             var withPattern = pres.Slides[1].Shapes.GetByName<IAutoShape>("AutoShape 2");
             yield return new object[] { withPattern, FillType.Pattern };
 
-            pptxStream = GetTestFileStream("autoshape-case003.pptx");
+            pptxStream = GetTestStream("autoshape-case003.pptx");
             pres = SCPresentation.Open(pptxStream);
             var withSlideBg = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
             yield return new object[] { withSlideBg, FillType.SlideBackground };

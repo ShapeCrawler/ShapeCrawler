@@ -50,7 +50,7 @@ namespace ShapeCrawler.Tests
                 
                 testCases.Add(new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(GetTestFileStream("autoshape-case001.pptx")),
+                    Presentation = SCPresentation.Open(GetTestStream("autoshape-case001.pptx")),
                     Location = Location.SlideMaster,
                     SlideMasterNumber = 1,
                     ShapeName = "AutoShape 1",
@@ -58,7 +58,7 @@ namespace ShapeCrawler.Tests
                     PortionNumber = 1
                 });
                 
-                var pptxStream = GetTestFileStream("020.pptx");
+                var pptxStream = GetTestStream("020.pptx");
                 var portionQuery = new TestElementQuery
                 {
                     Presentation = SCPresentation.Open(pptxStream),

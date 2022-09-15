@@ -42,7 +42,7 @@ namespace ShapeCrawler.Tests
         public async void Image_GetBytes_returns_image_byte_array_of_Layout_picture()
         {
             // Arrange
-            var pptxStream = GetTestFileStream("pictures-case001.pptx");
+            var pptxStream = GetTestStream("pictures-case001.pptx");
             var presentation = SCPresentation.Open(pptxStream);
             var pictureShape = presentation.Slides[0].SlideLayout.Shapes.GetByName<IPicture>("Picture 7");
             
@@ -57,7 +57,7 @@ namespace ShapeCrawler.Tests
         public void Image_MIME_returns_MIME_type_of_image()
         {
             // Arrange
-            var pptxStream = GetTestFileStream("pictures-case001.pptx");
+            var pptxStream = GetTestStream("pictures-case001.pptx");
             var presentation = SCPresentation.Open(pptxStream);
             var image = presentation.Slides[0].SlideLayout.Shapes.GetByName<IPicture>("Picture 7").Image;
             
@@ -72,7 +72,7 @@ namespace ShapeCrawler.Tests
         public void Image_GetBytes_returns_image_byte_array_of_Master_slide_picture()
         {
             // Arrange
-            var pptxStream = GetTestFileStream("pictures-case001.pptx");
+            var pptxStream = GetTestStream("pictures-case001.pptx");
             var presentation = SCPresentation.Open(pptxStream);
             var slideMaster = presentation.SlideMasters[0];
             var pictureShape = slideMaster.Shapes.GetByName<IPicture>("Picture 9");
@@ -107,12 +107,12 @@ namespace ShapeCrawler.Tests
             lengthAfter.Should().NotBe(lengthBefore);
         }
 
-        [Fact(Skip = "In Progress")]
-        public void Image_SetImage_should_not_update_image_of_other_grouped_picture()
+        [Fact]
+        public async void Image_SetImage_should_not_update_image_of_other_grouped_picture()
         {
             // Arrange
-            var pptxStream = GetTestFileStream("pictures-case001.pptx");
-            var imgBytes = GetTestFileStream("test-image-2.png").ToArray();
+            var pptxStream = GetTestStream("pictures-case001.pptx");
+            var imgBytes = GetTestBytes("test-image-2.png");
             var pres = SCPresentation.Open(pptxStream);
             var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1");
             var picture1 = groupShape.Shapes.OfType<IPicture>().First(s => s.Name == "Picture 1");
@@ -124,8 +124,8 @@ namespace ShapeCrawler.Tests
 
             // Assert
             pres.SaveAs(mStream);
-            var bytes1 = picture1.Image.GetBytes().Result; 
-            var bytes2 = picture2.Image.GetBytes().Result;
+            var bytes1 = await picture1.Image.GetBytes(); 
+            var bytes2 = await picture2.Image.GetBytes();
             bytes1.SequenceEqual(bytes2).Should().BeFalse();
         }
 

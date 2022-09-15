@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using ClosedXML.Excel;
 using ShapeCrawler.Extensions;
 
@@ -46,7 +47,12 @@ namespace ShapeCrawler.Tests
             return (T)cellValue;
         }
 
-        protected static MemoryStream GetTestFileStream(string fileName)
+        protected static byte[] GetTestBytes(string fileName)
+        {
+            return GetTestStream(fileName).ToArray();
+        }
+        
+        protected static MemoryStream GetTestStream(string fileName)
         {
             var assembly = Assembly.GetExecutingAssembly();
             var path = assembly.GetManifestResourceNames().First(r => r.EndsWith(fileName, StringComparison.Ordinal));
@@ -78,7 +84,7 @@ namespace ShapeCrawler.Tests
 
         private IPresentation GetPresentationFromAssembly(string fileName)
         {
-            var stream = GetTestFileStream(fileName);
+            var stream = GetTestStream(fileName);
             
             return SCPresentation.Open(stream);
         }

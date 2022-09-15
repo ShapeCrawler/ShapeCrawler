@@ -190,7 +190,7 @@ namespace ShapeCrawler.Tests
         public void Slides_Remove_removes_slide_from_section()
         {
             // Arrange
-            var pptxStream = GetTestFileStream("030.pptx");
+            var pptxStream = GetTestStream("030.pptx");
             var pres = SCPresentation.Open(pptxStream);
             var sectionSlides = pres.Sections[0].Slides;
             var removingSlide = sectionSlides[0];
@@ -247,7 +247,7 @@ namespace ShapeCrawler.Tests
         public void Sections_Remove_removes_specified_section()
         {
             // Arrange
-            var pptxStream = GetTestFileStream("030.pptx");
+            var pptxStream = GetTestStream("030.pptx");
             var pres = SCPresentation.Open(pptxStream);
             var removingSection = pres.Sections[0];
 
@@ -262,7 +262,7 @@ namespace ShapeCrawler.Tests
         public void Sections_Remove_should_remove_section_after_Removing_Slide_from_section()
         {
             // Arrange
-            var pptxStream = GetTestFileStream("030.pptx");
+            var pptxStream = GetTestStream("030.pptx");
             var pres = SCPresentation.Open(pptxStream);
             var removingSection = pres.Sections[0];
 
@@ -278,7 +278,7 @@ namespace ShapeCrawler.Tests
         public void Sections_Section_Slides_Count_returns_Zero_When_section_is_Empty()
         {
             // Arrange
-            var pptxStream = GetTestFileStream("008.pptx");
+            var pptxStream = GetTestStream("008.pptx");
             var pres = SCPresentation.Open(pptxStream);
             var section = pres.Sections.GetByName("Section 2");
 
@@ -292,7 +292,7 @@ namespace ShapeCrawler.Tests
         [Fact]
         public void Sections_Section_Slides_Count_returns_number_of_slides_in_section()
         {
-            var pptxStream = GetTestFileStream("030.pptx");
+            var pptxStream = GetTestStream("030.pptx");
             var pres = SCPresentation.Open(pptxStream);
             var section = pres.Sections.GetByName("Section 1");
 
@@ -307,7 +307,7 @@ namespace ShapeCrawler.Tests
         public void Save_saves_presentation_opened_from_Stream_when_it_was_Saved()
         {
             // Arrange
-            var pptxStream = GetTestFileStream("autoshape-case003.pptx");
+            var pptxStream = GetTestStream("autoshape-case003.pptx");
             var pres = SCPresentation.Open(pptxStream);
             var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 2").TextBox;
             textBox.Text = "Test";
@@ -327,7 +327,7 @@ namespace ShapeCrawler.Tests
         public void Close_doesnt_change_presentation_when_it_was_Not_Saved()
         {
             // Arrange
-            var pptxStream = GetTestFileStream("autoshape-case003.pptx");
+            var pptxStream = GetTestStream("autoshape-case003.pptx");
             var pres = SCPresentation.Open(pptxStream);
             var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 2").TextBox;
             textBox.Text = "Test";
@@ -346,7 +346,7 @@ namespace ShapeCrawler.Tests
         public void SaveAs_should_not_change_the_Original_Stream_when_it_is_saved_to_New_Stream()
         {
             // Arrange
-            var originalStream = GetTestFileStream("001.pptx");
+            var originalStream = GetTestStream("001.pptx");
             var pres = SCPresentation.Open(originalStream);
             var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
             var originalText = textBox!.Text;
@@ -369,7 +369,7 @@ namespace ShapeCrawler.Tests
         public void SaveAs_should_not_change_the_Original_Stream_when_it_is_saved_to_New_Path()
         {
             // Arrange
-            var originalStream = GetTestFileStream("001.pptx");
+            var originalStream = GetTestStream("001.pptx");
             var originalFile = Path.GetTempFileName();
             originalStream.SaveToFile(originalFile);
             var pres = SCPresentation.Open(originalFile);
