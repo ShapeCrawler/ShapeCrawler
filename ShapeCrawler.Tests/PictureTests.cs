@@ -107,7 +107,7 @@ namespace ShapeCrawler.Tests
             lengthAfter.Should().NotBe(lengthBefore);
         }
 
-        [Fact]
+        [Fact(Skip = "In Progress")]
         public void Image_SetImage_should_not_update_image_of_other_grouped_picture()
         {
             // Arrange

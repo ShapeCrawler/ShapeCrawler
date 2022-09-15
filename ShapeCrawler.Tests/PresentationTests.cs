@@ -302,6 +302,45 @@ namespace ShapeCrawler.Tests
             // Assert
             slidesCount.Should().Be(1);
         }
+
+        [Fact]
+        public void Save_saves_presentation_opened_from_Stream_when_it_was_Saved()
+        {
+            // Arrange
+            var pptxStream = GetTestFileStream("autoshape-case003.pptx");
+            var pres = SCPresentation.Open(pptxStream);
+            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 2").TextBox;
+            textBox.Text = "Test";
+            
+            // Act
+            pres.Save();
+            pres.Close();
+            
+            // Assert
+            pres = SCPresentation.Open(pptxStream);
+            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 2").TextBox;
+
+            textBox.Text.Should().Be("Test");
+        }
+        
+        [Fact]
+        public void Close_doesnt_change_presentation_when_it_was_Not_Saved()
+        {
+            // Arrange
+            var pptxStream = GetTestFileStream("autoshape-case003.pptx");
+            var pres = SCPresentation.Open(pptxStream);
+            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 2").TextBox;
+            textBox.Text = "Test";
+            
+            // Act
+            pres.Close();
+            
+            // Assert
+            pres = SCPresentation.Open(pptxStream);
+            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 2").TextBox;
+
+            textBox.Text.Should().NotBe("Test");
+        }
         
         [Fact]
         public void SaveAs_should_not_change_the_Original_Stream_when_it_is_saved_to_New_Stream()

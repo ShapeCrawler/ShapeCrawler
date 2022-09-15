@@ -28,6 +28,11 @@ namespace ShapeCrawler.Charts
 
         internal byte[] ByteArray => this.GetByteArray();
 
+        internal void Save()
+        {
+            this.spreadsheetDocument.Value.Save();
+        }
+        
         internal void Close()
         {
             if (this.closed)

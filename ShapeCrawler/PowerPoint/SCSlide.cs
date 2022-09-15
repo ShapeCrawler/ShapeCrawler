@@ -142,7 +142,7 @@ namespace ShapeCrawler
 
         private int GetNumber()
         {
-            var presentationPart = this.PresentationInternal.PresentationDocument.PresentationPart;
+            var presentationPart = this.PresentationInternal.sdkPresentation.PresentationPart;
             string currentSlidePartId = presentationPart.GetIdOfPart(this.SDKSlidePart);
             List<SlideId> slideIdList = presentationPart.Presentation.SlideIdList.ChildElements.OfType<SlideId>().ToList();
             for (int i = 0; i < slideIdList.Count; i++)
@@ -166,7 +166,7 @@ namespace ShapeCrawler
                 throw new ArgumentOutOfRangeException(nameof(to));
             }
 
-            PresentationPart presentationPart = this.PresentationInternal.PresentationDocument.PresentationPart;
+            PresentationPart presentationPart = this.PresentationInternal.sdkPresentation.PresentationPart;
 
             Presentation presentation = presentationPart.Presentation;
             SlideIdList slideIdList = presentation.SlideIdList;
