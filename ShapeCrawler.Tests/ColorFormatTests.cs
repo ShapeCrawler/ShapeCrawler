@@ -128,22 +128,22 @@ namespace ShapeCrawler.Tests
         {
             get
             {
-                var stream1 = GetTestFileStream("020.pptx");
-                var pres1 = SCPresentation.Open(stream1, false);
+                var stream1 = GetTestStream("020.pptx");
+                var pres1 = SCPresentation.Open(stream1);
                 var autoShape1 = pres1.Slides[0].Shapes.GetById<IAutoShape>(2);
                 var paragraph1 = autoShape1.TextBox.Paragraphs[0];
                 var testCase1 = new TestCase<IParagraph, string>(1, paragraph1, "#000000");
                 yield return new object[] { testCase1 };
                 
-                var stream2 = GetTestFileStream("020.pptx");
-                var pres2 = SCPresentation.Open(stream2, false);
+                var stream2 = GetTestStream("020.pptx");
+                var pres2 = SCPresentation.Open(stream2);
                 var autoShape2 = pres2.Slides[0].Shapes.GetById<IAutoShape>(3);
                 var paragraph2 = autoShape2.TextBox.Paragraphs[0];
                 var testCase2 = new TestCase<IParagraph, string>(2, paragraph2, "#000000");
                 yield return new object[] { testCase2 };
                 
-                var stream3 = GetTestFileStream("020.pptx");
-                var pres3 = SCPresentation.Open(stream3, false);
+                var stream3 = GetTestStream("020.pptx");
+                var pres3 = SCPresentation.Open(stream3);
                 var autoShape3 = pres3.Slides[2].Shapes.GetById<IAutoShape>(8);
                 var paragraph3 = autoShape3.TextBox.Paragraphs[1];
                 var testCase3 = new TestCase<IParagraph, string>(3, paragraph3, "#FFFF00");

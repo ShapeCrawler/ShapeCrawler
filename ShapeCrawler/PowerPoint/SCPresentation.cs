@@ -79,7 +79,7 @@ namespace ShapeCrawler
         public ISlideMasterCollection SlideMasters => this.SlideMastersValue.Value;
 
         /// <inheritdoc/>
-        public byte[] ByteArray => this.GetByteArray();
+        public byte[] BinaryData => this.GetByteArray();
 
         /// <inheritdoc/>
         public ISectionCollection Sections => this.sectionCollectionLazy.Value;
