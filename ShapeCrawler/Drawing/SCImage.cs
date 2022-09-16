@@ -79,11 +79,11 @@ namespace ShapeCrawler
         /// <summary>
         ///     Sets image with stream.
         /// </summary>
-        public void SetImage(Stream sourceStream)
+        public void SetImage(Stream stream)
         {
             this.imageContainer.ThrowIfRemoved();
 
-            var isSharedImagePart = this.parentPresentation.ImageParts.Count(ip => ip == this.ImagePart) > 1;
+            var isSharedImagePart = this.parentPresentation.ImageParts.Count(imgPart => imgPart == this.ImagePart) > 1;
             if (isSharedImagePart)
             {
                 var rId = RelatedIdGenerator.Generate();
@@ -91,18 +91,18 @@ namespace ShapeCrawler
                 this.picReference.Value = rId;
             }
 
-            sourceStream.Position = 0;
-            this.ImagePart.FeedData(sourceStream);
+            stream.Position = 0;
+            this.ImagePart.FeedData(stream);
             this.bytes = null; // resets cache
         }
 
         /// <summary>
         ///     Sets image with byte array.
         /// </summary>
-        public void SetImage(byte[] sourceBytes)
+        public void SetImage(byte[] bytes)
         {
-            var stream = new MemoryStream();
-            stream.Write(sourceBytes, 0, sourceBytes.Length);
+            var stream = new MemoryStream(bytes);
+
             this.SetImage(stream);
         }
 

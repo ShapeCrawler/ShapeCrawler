@@ -38,6 +38,33 @@ namespace ShapeCrawler.SlideMasters
 
         internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
 
+        public SCImage Background => GetBackground();
+
+        public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
+
+        public IShapeCollection Shapes => ShapeCollection.ForSlideLayout(this.PSlideMaster.CommonSlideData.ShapeTree, this);
+
+        public override bool IsRemoved { get; set; }
+        
+        internal override TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
+
+        public override void ThrowIfRemoved()
+        {
+            if (IsRemoved)
+            {
+                throw new ElementIsRemovedException("Slide MAster is removed");
+            }
+            
+            this.Presentation.ThrowIfClosed();
+        }
+        
+        
+        private SCImage GetBackground()
+        {
+            return null;
+        }
+        
+        
         private List<SCSlideLayout> GetSlideLayouts()
         {
             IEnumerable<SlideLayoutPart> sldLayoutParts = this.PSlideMaster.SlideMasterPart.SlideLayoutParts;
@@ -86,30 +113,5 @@ namespace ShapeCrawler.SlideMasters
             fontSize = -1;
             return false;
         }
-
-        public SCImage Background => GetBackground();
-
-        private SCImage GetBackground()
-        {
-            return null;
-        }
-
-        public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
-
-        public IShapeCollection Shapes => ShapeCollection.ForSlideLayout(this.PSlideMaster.CommonSlideData.ShapeTree, this);
-
-        public override bool IsRemoved { get; set; }
-
-        public override void ThrowIfRemoved()
-        {
-            if (IsRemoved)
-            {
-                throw new ElementIsRemovedException("Slide MAster is removed");
-            }
-            
-            this.Presentation.ThrowIfClosed();
-        }
-
-        internal override TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
     }
 }

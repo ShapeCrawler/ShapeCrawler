@@ -28,5 +28,10 @@ namespace ShapeCrawler
         ///     Gets or sets the text alignment.
         /// </summary>
         TextAlignment Alignment { get; set; }
+        
+        /// <summary>
+        ///     Adds new text portion in paragraph.
+        /// </summary>
+        void AddPortion(string text);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -29,6 +30,8 @@ namespace ShapeCrawler.AutoShapes
             this.text = new ResettableLazy<string>(this.GetText);
             this.paragraphs = new ResettableLazy<ParagraphCollection>(this.GetParagraphs);
         }
+
+
 
         public IParagraphCollection Paragraphs => this.paragraphs.Value;
 

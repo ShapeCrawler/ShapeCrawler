@@ -21,7 +21,7 @@ namespace ShapeCrawler.Collections
         
         internal SCSlideCollection(SCPresentation presentation)
         {
-            this.presentationPart = presentation.PresentationDocument.PresentationPart ??
+            this.presentationPart = presentation.sdkPresentation.PresentationPart ??
                                     throw new ArgumentNullException("PresentationPart");
             this.parentPresentation = presentation;
             this.slides = new ResettableLazy<List<SCSlide>>(this.GetSlides);
@@ -78,8 +78,8 @@ namespace ShapeCrawler.Collections
             this.parentPresentation.ThrowIfClosed();
 
             var presentation = (SCPresentation)outerInnerSlide.ParentPresentation;
-            PresentationDocument addingSlideDoc = presentation.PresentationDocument;
-            PresentationDocument destDoc = this.parentPresentation.PresentationDocument;
+            PresentationDocument addingSlideDoc = presentation.sdkPresentation;
+            PresentationDocument destDoc = this.parentPresentation.sdkPresentation;
             PresentationPart addingPresentationPart = addingSlideDoc.PresentationPart;
             PresentationPart destPresentationPart = destDoc.PresentationPart;
             Presentation destPresentation = destPresentationPart.Presentation;
@@ -185,7 +185,7 @@ namespace ShapeCrawler.Collections
 
         private List<SCSlide> GetSlides()
         {
-            this.presentationPart = this.parentPresentation.PresentationDocument.PresentationPart!;
+            this.presentationPart = this.parentPresentation.sdkPresentation.PresentationPart!;
             int slidesCount = this.presentationPart.SlideParts.Count();
             var slides = new List<SCSlide>(slidesCount);
             var slideIds = this.presentationPart.Presentation.SlideIdList.ChildElements.OfType<SlideId>().ToList();

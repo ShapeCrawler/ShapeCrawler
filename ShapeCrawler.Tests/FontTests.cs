@@ -59,7 +59,7 @@ namespace ShapeCrawler.Tests
             // Arrange
             const string newFont = "Time New Roman";
             IAutoShape autoShape =
-                SCPresentation.Open(TestFiles.Presentations.pre001, true).Slides[0].Shapes.First(sp => sp.Id == 4) as IAutoShape;
+                SCPresentation.Open(TestFiles.Presentations.pre001).Slides[0].Shapes.First(sp => sp.Id == 4) as IAutoShape;
             IPortion paragraphPortion = autoShape.TextBox.Paragraphs[0].Portions[0];
 
             // Act
@@ -73,7 +73,7 @@ namespace ShapeCrawler.Tests
         public void Name_SetterThrowsException_WhenAnUserTryChangeFontNameForPortionOfAPlaceholderShape()
         {
             // Arrange
-            IAutoShape autoShape = (IAutoShape)SCPresentation.Open(Resources._001, true).Slides[2].Shapes
+            IAutoShape autoShape = (IAutoShape)SCPresentation.Open(Resources._001).Slides[2].Shapes
                 .First(sp => sp.Id == 4);
             IPortion paragraphPortion = autoShape.TextBox.Paragraphs[0].Portions[0];
 
@@ -153,7 +153,7 @@ namespace ShapeCrawler.Tests
             // Arrange
             int newFontSize = 28;
             var savedPreStream = new MemoryStream();
-            IPresentation presentation = SCPresentation.Open(Resources._001, true);
+            IPresentation presentation = SCPresentation.Open(Resources._001);
             IPortion portion = GetPortion(presentation);
             int oldFontSize = portion.Font.Size;
 
@@ -162,7 +162,7 @@ namespace ShapeCrawler.Tests
 
             // Assert
             presentation.SaveAs(savedPreStream);
-            presentation = SCPresentation.Open(savedPreStream, false);
+            presentation = SCPresentation.Open(savedPreStream);
             portion = GetPortion(presentation);
             portion.Font.Size.Should().NotBe(oldFontSize);
             portion.Font.Size.Should().Be(newFontSize);
@@ -227,7 +227,7 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             var mStream = new MemoryStream();
-            IPresentation presentation = SCPresentation.Open(Resources._020, true);
+            IPresentation presentation = SCPresentation.Open(Resources._020);
             IAutoShape nonPlaceholderAutoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 2);
             IPortion portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
@@ -237,7 +237,7 @@ namespace ShapeCrawler.Tests
             // Assert
             portion.Font.IsBold.Should().BeTrue();
             presentation.SaveAs(mStream);
-            presentation = SCPresentation.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream);
             nonPlaceholderAutoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 2);
             portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
             portion.Font.IsBold.Should().BeTrue();
@@ -259,7 +259,7 @@ namespace ShapeCrawler.Tests
             portion.Font.IsBold.Should().BeTrue();
 
             pres.SaveAs(mStream);
-            pres = SCPresentation.Open(mStream, false);
+            pres = SCPresentation.Open(mStream);
             portionQuery.Presentation = pres;
             portion = portionQuery.GetParagraphPortion();
             portion.Font.IsBold.Should().BeTrue();
@@ -268,14 +268,14 @@ namespace ShapeCrawler.Tests
         public static IEnumerable<object[]> TestCasesIsBold()
         {
             TestElementQuery portionRequestCase1 = new();
-            portionRequestCase1.Presentation = SCPresentation.Open(Resources._020, true);
+            portionRequestCase1.Presentation = SCPresentation.Open(Resources._020);
             portionRequestCase1.SlideIndex = 2;
             portionRequestCase1.ShapeId = 7;
             portionRequestCase1.ParagraphIndex = 0;
             portionRequestCase1.PortionIndex = 0;
 
             TestElementQuery portionRequestCase2 = new();
-            portionRequestCase2.Presentation = SCPresentation.Open(Resources._026, true); 
+            portionRequestCase2.Presentation = SCPresentation.Open(Resources._026); 
             portionRequestCase2.SlideIndex = 0;
             portionRequestCase2.ShapeId = 128;
             portionRequestCase2.ParagraphIndex = 0;
@@ -320,7 +320,7 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             var mStream = new MemoryStream();
-            IPresentation presentation = SCPresentation.Open(Resources._020, true);
+            IPresentation presentation = SCPresentation.Open(Resources._020);
             IAutoShape nonPlaceholderAutoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 2);
             IPortion portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
@@ -330,7 +330,7 @@ namespace ShapeCrawler.Tests
             // Assert
             portion.Font.IsItalic.Should().BeTrue();
             presentation.SaveAs(mStream);
-            presentation = SCPresentation.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream);
             nonPlaceholderAutoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 2);
             portion = nonPlaceholderAutoShape.TextBox.Paragraphs[0].Portions[0];
             portion.Font.IsItalic.Should().BeTrue();
@@ -341,7 +341,7 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             var mStream = new MemoryStream();
-            IPresentation presentation = SCPresentation.Open(Resources._020, true);
+            IPresentation presentation = SCPresentation.Open(Resources._020);
             IAutoShape placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
             IPortion portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
 
@@ -352,7 +352,7 @@ namespace ShapeCrawler.Tests
             portion.Font.IsItalic.Should().BeFalse();
             presentation.SaveAs(mStream);
 
-            presentation = SCPresentation.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream);
             placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
             portion = placeholderAutoShape.TextBox.Paragraphs[0].Portions[0];
             portion.Font.IsItalic.Should().BeFalse();

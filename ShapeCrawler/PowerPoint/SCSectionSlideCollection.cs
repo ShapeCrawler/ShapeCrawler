@@ -20,6 +20,10 @@ namespace ShapeCrawler
             
             this.Initialize();
         }
+        
+        public int Count => this.sectionSlides.Count;
+        
+        public ISlide this[int index] => this.sectionSlides[index];
 
         private void OnPresSlideCollectionChanged(object sender, EventArgs e)
         {
@@ -45,9 +49,5 @@ namespace ShapeCrawler
         {
             return this.GetEnumerator();
         }
-
-        public int Count => this.sectionSlides.Count;
-
-        public ISlide this[int index] => this.sectionSlides[index];
     }
 }
