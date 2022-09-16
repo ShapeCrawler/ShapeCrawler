@@ -9,8 +9,8 @@ using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -25,13 +25,11 @@ namespace ShapeCrawler
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrawler")]
     public sealed class SCPresentation : IPresentation
     {
-        internal ResettableLazy<SlideMasterCollection> SlideMastersValue;
         private bool closed;
         private Lazy<Dictionary<int, FontData>> paraLvlToFontData;
         private Lazy<SCSlideSize> slideSize;
         private ResettableLazy<SCSectionCollection> sectionCollectionLazy;
         private ResettableLazy<SCSlideCollection> slideCollectionLazy;
-        private string cachedPptxPath;
         private Stream? outerStream;
         private string? outerPath;
         private MemoryStream internalStream;
@@ -56,7 +54,6 @@ namespace ShapeCrawler
             this.internalStream = new MemoryStream();
             sourceStream.CopyTo(this.internalStream);
             this.sdkPresentation = PresentationDocument.Open(this.internalStream, true);
-            // this.OpenInternal(sourcePptxStream);
             this.Init();
         }
 
@@ -67,6 +64,8 @@ namespace ShapeCrawler
             this.Init();
         }
 
+        internal ResettableLazy<SlideMasterCollection> SlideMastersValue { get; private set; }
+        
         /// <inheritdoc/>
         public ISlideCollection Slides => this.slideCollectionLazy.Value;
 
@@ -138,8 +137,8 @@ namespace ShapeCrawler
             }
             else if (this.outerPath != null)
             {
-                this.internalStream.Position = 0;
-                this.internalStream.SaveToFile(this.outerPath);
+                var pres = this.sdkPresentation.Clone(this.outerPath);
+                pres.Close();
             }
         }
 
@@ -201,10 +200,28 @@ namespace ShapeCrawler
 
         private List<ImagePart> GetImageParts()
         {
-            var slidePictures = this.SlidesInternal.SelectMany(sp => ((SCSlide)sp).Shapes)
-                .Where(sp => sp is SlidePicture).OfType<SlidePicture>();
+            var allShapes = this.SlidesInternal.SelectMany(slide => slide.Shapes);
+            var imgParts = new List<ImagePart>();
+            
+            FromShapes(allShapes);
 
-            return slidePictures.Select(x => x.Image.ImagePart).ToList();
+            return imgParts;
+         
+            void FromShapes(IEnumerable<IShape> shapes)
+            {
+                foreach (var shape in shapes)
+                {
+                    switch (shape)
+                    {
+                        case SlidePicture slidePicture:
+                            imgParts.Add(slidePicture.Image.ImagePart);
+                            break;
+                        case IGroupShape groupShape:
+                            FromShapes(groupShape.Shapes.Select(x => x));
+                            break;
+                    }
+                }
+            }
         }
 
         private static Dictionary<int, FontData> ParseFontHeights(P.Presentation pPresentation)
