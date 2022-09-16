@@ -41,6 +41,9 @@ namespace ShapeCrawler
             this.MIME = this.ImagePart.ContentType;
         }
 
+        /// <summary>
+        ///     Gets MIME type.
+        /// </summary>
         public string MIME { get; }
 
         internal ImagePart ImagePart { get; private set; }

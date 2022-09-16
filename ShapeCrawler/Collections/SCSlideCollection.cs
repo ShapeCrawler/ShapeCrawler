@@ -70,14 +70,14 @@ namespace ShapeCrawler.Collections
         public void Add(ISlide outerSlide)
         {
             SCSlide outerInnerSlide = (SCSlide)outerSlide;
-            if (outerInnerSlide.ParentPresentation == this.parentPresentation)
+            if (outerInnerSlide.Presentation == this.parentPresentation)
             {
                 throw new ShapeCrawlerException("Adding slide cannot be belong to the same presentation.");
             }
 
             this.parentPresentation.ThrowIfClosed();
 
-            var presentation = (SCPresentation)outerInnerSlide.ParentPresentation;
+            var presentation = (SCPresentation)outerInnerSlide.Presentation;
             PresentationDocument addingSlideDoc = presentation.sdkPresentation;
             PresentationDocument destDoc = this.parentPresentation.sdkPresentation;
             PresentationPart addingPresentationPart = addingSlideDoc.PresentationPart;

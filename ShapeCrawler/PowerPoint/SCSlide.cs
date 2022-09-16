@@ -33,7 +33,7 @@ namespace ShapeCrawler
         internal SCSlide(SCPresentation parentPresentation, SlidePart slidePart, SlideId slideId)
         {
             this.PresentationInternal = parentPresentation;
-            this.ParentPresentation = parentPresentation;
+            this.Presentation = parentPresentation;
             this.SDKSlidePart = slidePart;
             this.shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.ForSlide(this.SDKSlidePart, this));
             this.backgroundImage = new Lazy<SCImage>(() => SCImage.ForBackground(this));
@@ -68,7 +68,7 @@ namespace ShapeCrawler
 
         public bool Hidden => this.SDKSlidePart.Slide.Show != null && this.SDKSlidePart.Slide.Show.Value == false;
 
-        public IPresentation ParentPresentation { get; }
+        public IPresentation Presentation { get; }
 
         public SlidePart SDKSlidePart { get; }
         

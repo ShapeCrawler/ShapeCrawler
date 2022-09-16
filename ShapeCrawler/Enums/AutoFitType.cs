@@ -1,5 +1,8 @@
 ﻿namespace ShapeCrawler
 {
+    /// <summary>
+    ///     Autofit type.
+    /// </summary>
     public enum AutofitType
     {
         /// <summary>

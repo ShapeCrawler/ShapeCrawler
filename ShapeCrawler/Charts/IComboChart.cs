@@ -9,6 +9,9 @@ namespace ShapeCrawler.Charts
     /// </summary>
     public interface IComboChart : IChart
     {
+        /// <summary>
+        ///     Gets collection of chart category.
+        /// </summary>
         public ICategoryCollection Categories { get; }
     }
 

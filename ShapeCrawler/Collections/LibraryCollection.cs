@@ -6,20 +6,26 @@ namespace ShapeCrawler.Collections
     /// <summary>
     ///     Represents a base class for all library collections.
     /// </summary>
-    public class LibraryCollection<T> : IReadOnlyCollection<T>
+    public class LibraryCollection<T> : IReadOnlyCollection<T> // TODO: make internal
     {
         #region Fields
 
         internal List<T> CollectionItems;
 
         #endregion Fields
-        
+
         #region Constructors
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="LibraryCollection{T}"/> class.
+        /// </summary>
         public LibraryCollection()
         {
         }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="LibraryCollection{T}"/> class from paragpaths.
+        /// </summary>
         public LibraryCollection(IEnumerable<T> paragraphItems)
         {
             CollectionItems = new List<T>(paragraphItems);

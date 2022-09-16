@@ -212,9 +212,9 @@ namespace ShapeCrawler.Tests
             var shape4Pr2BulletType = shape4Pr2Bullet.Type;
 
             // Assert
-            shape5Pr1BulletType.Should().Be(BulletType.Numbered);
-            shape5Pr2BulletType.Should().Be(BulletType.Picture);
-            shape4Pr2BulletType.Should().Be(BulletType.Character);
+            shape5Pr1BulletType.Should().Be(SCBulletType.Numbered);
+            shape5Pr2BulletType.Should().Be(SCBulletType.Picture);
+            shape4Pr2BulletType.Should().Be(SCBulletType.Character);
         }
 
         [Theory]
@@ -277,7 +277,7 @@ namespace ShapeCrawler.Tests
             var bulletType = bullet.Type;
 
             // Assert
-            bulletType.Should().Be(BulletType.None);
+            bulletType.Should().Be(SCBulletType.None);
         }
 
         [Fact]
