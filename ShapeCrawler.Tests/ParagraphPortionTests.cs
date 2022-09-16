@@ -40,7 +40,7 @@ namespace ShapeCrawler.Tests
         public void Text_SetterThrowsElementIsRemovedException_WhenPortionIsRemoved()
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(TestFiles.Presentations.pre001, true);
+            IPresentation presentation = SCPresentation.Open(TestFiles.Presentations.pre001);
             IAutoShape autoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 5);
             IPortionCollection portions = autoShape.TextBox.Paragraphs[0].Portions;
             IPortion portion = portions[0];
@@ -54,8 +54,8 @@ namespace ShapeCrawler.Tests
         public void Text_Setter_updates_text()
         {
             // Arrange
-            var pptxStream = GetTestFileStream("autoshape-case001.pptx");
-            var pres = SCPresentation.Open(pptxStream, true);
+            var pptxStream = GetTestStream("autoshape-case001.pptx");
+            var pres = SCPresentation.Open(pptxStream);
             var autoShape = pres.SlideMasters[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
             var portion = autoShape.TextBox.Paragraphs[0].Portions[0];
 
@@ -71,8 +71,8 @@ namespace ShapeCrawler.Tests
         public void Hyperlink_Setter_sets_hyperlink(string pptxFile, string shapeName)
         {
             // Arrange
-            var pptxStream = GetTestFileStream(pptxFile);
-            var presentation = SCPresentation.Open(pptxStream, true);
+            var pptxStream = GetTestStream(pptxFile);
+            var presentation = SCPresentation.Open(pptxStream);
             var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>(shapeName);
             var portion = autoShape.TextBox.Paragraphs[0].Portions[0];
 
@@ -82,7 +82,7 @@ namespace ShapeCrawler.Tests
             // Assert
             presentation.Save();
             presentation.Close();
-            presentation = SCPresentation.Open(pptxStream, false);
+            presentation = SCPresentation.Open(pptxStream);
             autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>(shapeName);
             portion = autoShape.TextBox.Paragraphs[0].Portions[0];
             portion.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
@@ -99,8 +99,8 @@ namespace ShapeCrawler.Tests
         public void Hyperlink_Setter_sets_hyperlink_for_two_shape_on_the_Same_slide()
         {
             // Arrange
-            var pptxStream = GetTestFileStream("001.pptx");
-            var presentation = SCPresentation.Open(pptxStream, true);
+            var pptxStream = GetTestStream("001.pptx");
+            var presentation = SCPresentation.Open(pptxStream);
             var textBox3 = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
             var textBox4 = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
             var portion3 = textBox3.TextBox.Paragraphs[0].Portions[0];

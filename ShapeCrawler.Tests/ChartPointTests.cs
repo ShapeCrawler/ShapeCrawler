@@ -91,9 +91,9 @@ namespace ShapeCrawler.Tests
         public void Value_Setter_updates_chart_point(string filename, int slideNumber, string shapeName)
         {
             // Arrange
-            var pptxStream = GetTestFileStream(filename);
-            var presentation = SCPresentation.Open(pptxStream, true);
-            var chart = presentation.Slides[--slideNumber].Shapes.GetByName<IChart>(shapeName);
+            var pptxStream = GetTestStream(filename);
+            var pres = SCPresentation.Open(pptxStream);
+            var chart = pres.Slides[--slideNumber].Shapes.GetByName<IChart>(shapeName);
             var point = chart.SeriesCollection[0].Points[0];
             const int newChartPointValue = 6;
 
@@ -103,8 +103,8 @@ namespace ShapeCrawler.Tests
             // Assert
             point.Value.Should().Be(newChartPointValue);
 
-            presentation = SaveAndOpenPresentation(presentation);
-            chart = presentation.Slides[slideNumber].Shapes.GetByName<IChart>(shapeName);
+            pres = SaveAndOpenPresentation(pres);
+            chart = pres.Slides[slideNumber].Shapes.GetByName<IChart>(shapeName);
             point = chart.SeriesCollection[0].Points[0];
             point.Value.Should().Be(newChartPointValue);
         }
@@ -124,8 +124,8 @@ namespace ShapeCrawler.Tests
         public void Value_Setter_updates_chart_point_in_Embedded_excel_workbook()
         {
             // Arrange
-            var pptxStream = GetTestFileStream("024_chart.pptx");
-            var pres = SCPresentation.Open(pptxStream, true);
+            var pptxStream = GetTestStream("024_chart.pptx");
+            var pres = SCPresentation.Open(pptxStream);
             var chart = pres.Slides[2].Shapes.GetById<IChart>(5);
             var point = chart.SeriesCollection[0].Points[0];
             const int newChartPointValue = 6;
@@ -142,8 +142,8 @@ namespace ShapeCrawler.Tests
         public void Value_Getter_returns_chart_point2()
         {
             // Arrange
-            var pptxStream = GetTestFileStream("bars.pptx");
-            var pres = SCPresentation.Open(pptxStream, true);
+            var pptxStream = GetTestStream("bars.pptx");
+            var pres = SCPresentation.Open(pptxStream);
             {
                 var chart = pres.Slides[0].Shapes.First() as IChart;
                 var points = chart.SeriesCollection.SelectMany(p => p.Points);

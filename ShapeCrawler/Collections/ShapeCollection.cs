@@ -47,7 +47,7 @@ namespace ShapeCrawler.Collections
             long xEmu = PixelConverter.HorizontalPixelToEmu(xPixels);
             long yEmu = PixelConverter.VerticalPixelToEmu(yPixels);
 
-            MediaDataPart mediaDataPart = this.slide.PresentationInternal.PresentationDocument.CreateMediaDataPart("audio/mpeg", ".mp3");
+            MediaDataPart mediaDataPart = this.slide.PresentationInternal.sdkPresentation.CreateMediaDataPart("audio/mpeg", ".mp3");
 
             mp3Stream.Position = 0;
             mediaDataPart.FeedData(mp3Stream);
@@ -154,7 +154,7 @@ namespace ShapeCrawler.Collections
             long xEmu = PixelConverter.HorizontalPixelToEmu(xPixels);
             long yEmu = PixelConverter.VerticalPixelToEmu(yPixels);
 
-            MediaDataPart mediaDataPart = this.slide.PresentationInternal.PresentationDocument.CreateMediaDataPart("video/mp4", ".mp4");
+            MediaDataPart mediaDataPart = this.slide.PresentationInternal.sdkPresentation.CreateMediaDataPart("video/mp4", ".mp4");
 
             videoStream.Position = 0;
             mediaDataPart.FeedData(videoStream);

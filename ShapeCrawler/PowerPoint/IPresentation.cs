@@ -56,7 +56,7 @@ namespace ShapeCrawler
         void SaveAs(Stream stream);
 
         /// <summary>
-        ///     Saves and closes the presentation.
+        ///     Closes the presentation.
         /// </summary>
         void Close();
 

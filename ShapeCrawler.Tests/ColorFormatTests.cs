@@ -36,7 +36,7 @@ namespace ShapeCrawler.Tests
 
             pres.SaveAs(@"c:\temp\result.pptx");
             pres.SaveAs(mStream);
-            pres = SCPresentation.Open(mStream, false);
+            pres = SCPresentation.Open(mStream);
             colorFormatQuery.Presentation = pres;
             colorFormat = colorFormatQuery.GetTestColorFormat();
             colorFormat.Color.Should().Be(expectedColor);
@@ -50,7 +50,7 @@ namespace ShapeCrawler.Tests
                 
                 testCases.Add(new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(GetTestFileStream("autoshape-case001.pptx"), true),
+                    Presentation = SCPresentation.Open(GetTestStream("autoshape-case001.pptx")),
                     Location = Location.SlideMaster,
                     SlideMasterNumber = 1,
                     ShapeName = "AutoShape 1",
@@ -58,10 +58,10 @@ namespace ShapeCrawler.Tests
                     PortionNumber = 1
                 });
                 
-                var pptxStream = GetTestFileStream("020.pptx");
+                var pptxStream = GetTestStream("020.pptx");
                 var portionQuery = new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(pptxStream, true),
+                    Presentation = SCPresentation.Open(pptxStream),
                     Location = Location.Slide,
                     SlideIndex = 0,
                     ShapeName = "TextBox 1",
@@ -72,7 +72,7 @@ namespace ShapeCrawler.Tests
                 
                 portionQuery = new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(Resources._020, true),
+                    Presentation = SCPresentation.Open(Resources._020),
                     Location = Location.Slide,
                     SlideIndex = 0,
                     ShapeId = 3,
@@ -83,7 +83,7 @@ namespace ShapeCrawler.Tests
                 
                 portionQuery = new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(Resources._001, true),
+                    Presentation = SCPresentation.Open(Resources._001),
                     Location = Location.Slide,
                     SlideIndex = 2,
                     ShapeId = 4,
@@ -94,7 +94,7 @@ namespace ShapeCrawler.Tests
                 
                 portionQuery = new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(Resources._001, true),
+                    Presentation = SCPresentation.Open(Resources._001),
                     Location = Location.Slide,
                     SlideIndex = 4,
                     ShapeId = 5,
