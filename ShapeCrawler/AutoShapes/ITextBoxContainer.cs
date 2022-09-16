@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 
@@ -9,6 +10,8 @@ namespace ShapeCrawler
     internal interface ITextBoxContainer
     {
         IPlaceholder Placeholder { get; }
+
+        ITextBox? TextBox { get; }
 
         IShape Shape { get; }
 
