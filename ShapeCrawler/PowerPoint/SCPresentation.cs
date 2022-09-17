@@ -42,7 +42,7 @@ namespace ShapeCrawler
             var pptxBytes = File.ReadAllBytes(outerPath);
             
             this.internalStream = pptxBytes.ToExpandableStream();
-            this.sdkPresentation = PresentationDocument.Open(this.internalStream, true);
+            this.SdkPresentation = PresentationDocument.Open(this.internalStream, true);
             this.Init();
         }
 
@@ -53,14 +53,14 @@ namespace ShapeCrawler
 
             this.internalStream = new MemoryStream();
             sourceStream.CopyTo(this.internalStream);
-            this.sdkPresentation = PresentationDocument.Open(this.internalStream, true);
+            this.SdkPresentation = PresentationDocument.Open(this.internalStream, true);
             this.Init();
         }
 
         private SCPresentation(byte[] sourceBytes)
         {
             this.internalStream = sourceBytes.ToExpandableStream();
-            this.sdkPresentation = PresentationDocument.Open(this.internalStream, true);
+            this.SdkPresentation = PresentationDocument.Open(this.internalStream, true);
             this.Init();
         }
 
@@ -84,7 +84,7 @@ namespace ShapeCrawler
 
         internal ResettableLazy<SlideMasterCollection> SlideMastersValue { get; private set; }
         
-        internal PresentationDocument sdkPresentation { get; private set; }
+        internal PresentationDocument SdkPresentation { get; private set; }
 
         internal SCSectionCollection SectionsInternal => (SCSectionCollection)this.Sections;
 
@@ -129,15 +129,15 @@ namespace ShapeCrawler
         public void Save()
         {
             this.ChartWorkbooks.ForEach(chartWorkbook => chartWorkbook.Close());
-            this.sdkPresentation.Save();
+            this.SdkPresentation.Save();
 
             if (this.outerStream != null)
             {
-                this.sdkPresentation.Clone(this.outerStream);
+                this.SdkPresentation.Clone(this.outerStream);
             }
             else if (this.outerPath != null)
             {
-                var pres = this.sdkPresentation.Clone(this.outerPath);
+                var pres = this.SdkPresentation.Clone(this.outerPath);
                 pres.Close();
             }
         }
@@ -167,7 +167,7 @@ namespace ShapeCrawler
             }
 
             this.ChartWorkbooks.ForEach(cw => cw.Close());
-            this.sdkPresentation.Close();
+            this.SdkPresentation.Close();
 
             this.closed = true;
         }
@@ -193,7 +193,7 @@ namespace ShapeCrawler
         private byte[] GetByteArray()
         {
             var stream = new MemoryStream();
-            this.sdkPresentation.Clone(stream);
+            this.SdkPresentation.Clone(stream);
 
             return stream.ToArray();
         }
@@ -282,7 +282,7 @@ namespace ShapeCrawler
 
         private void ThrowIfSlidesNumberLarge()
         {
-            var nbSlides = this.sdkPresentation.PresentationPart.SlideParts.Count();
+            var nbSlides = this.SdkPresentation.PresentationPart.SlideParts.Count();
             if (nbSlides > Limitations.MaxSlidesNumber)
             {
                 Close();
@@ -298,7 +298,7 @@ namespace ShapeCrawler
                 new ResettableLazy<SlideMasterCollection>(() => SlideMasterCollection.Create(this));
             this.paraLvlToFontData =
                 new Lazy<Dictionary<int, FontData>>(() =>
-                    ParseFontHeights(this.sdkPresentation.PresentationPart.Presentation));
+                    ParseFontHeights(this.SdkPresentation.PresentationPart.Presentation));
             this.sectionCollectionLazy =
                 new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
             this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
@@ -306,7 +306,7 @@ namespace ShapeCrawler
 
         private SCSlideSize GetSlideSize()
         {
-            var pSlideSize = this.sdkPresentation.PresentationPart!.Presentation.SlideSize;
+            var pSlideSize = this.SdkPresentation.PresentationPart!.Presentation.SlideSize;
             var withPx = PixelConverter.HorizontalEmuToPixel(pSlideSize.Cx.Value);
             var heightPx = PixelConverter.VerticalEmuToPixel(pSlideSize.Cy.Value);
 

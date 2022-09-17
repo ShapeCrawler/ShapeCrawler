@@ -26,9 +26,10 @@ namespace ShapeCrawler
     /// </summary>
     internal class SCSlide : SlideBase, ISlide, IPresentationComponent
     {
-        internal readonly SlideId SlideId;
+        internal readonly SlideId slideId;
         private readonly Lazy<SCImage> backgroundImage;
         private Lazy<CustomXmlPart> customXmlPart;
+        private ResettableLazy<ShapeCollection> shapes;
 
         internal SCSlide(SCPresentation parentPresentation, SlidePart slidePart, SlideId slideId)
         {
@@ -38,7 +39,7 @@ namespace ShapeCrawler
             this.shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.ForSlide(this.SDKSlidePart, this));
             this.backgroundImage = new Lazy<SCImage>(() => SCImage.ForBackground(this));
             this.customXmlPart = new Lazy<CustomXmlPart>(this.GetSldCustomXmlPart);
-            this.SlideId = slideId;
+            this.slideId = slideId;
         }
 
         public ISlideLayout SlideLayout => ((SlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
@@ -72,8 +73,6 @@ namespace ShapeCrawler
         internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
 
         internal override TypedOpenXmlPart TypedOpenXmlPart => this.SDKSlidePart;
-        
-        private ResettableLazy<ShapeCollection> shapes { get; }
 
         /// <summary>
         ///     Saves slide scheme in PNG file.
@@ -141,7 +140,7 @@ namespace ShapeCrawler
 
         private int GetNumber()
         {
-            var presentationPart = this.PresentationInternal.sdkPresentation.PresentationPart;
+            var presentationPart = this.PresentationInternal.SdkPresentation.PresentationPart;
             string currentSlidePartId = presentationPart.GetIdOfPart(this.SDKSlidePart);
             List<SlideId> slideIdList = presentationPart.Presentation.SlideIdList.ChildElements.OfType<SlideId>().ToList();
             for (int i = 0; i < slideIdList.Count; i++)
@@ -165,7 +164,7 @@ namespace ShapeCrawler
                 throw new ArgumentOutOfRangeException(nameof(to));
             }
 
-            PresentationPart presentationPart = this.PresentationInternal.sdkPresentation.PresentationPart;
+            PresentationPart presentationPart = this.PresentationInternal.SdkPresentation.PresentationPart;
 
             Presentation presentation = presentationPart.Presentation;
             SlideIdList slideIdList = presentation.SlideIdList;

@@ -39,7 +39,7 @@ namespace ShapeCrawler.AutoShapes
             set => this.SetText(value);
         }
 
-        public AutofitType AutofitType => this.ParseAutofitType();
+        public SCAutoFitType SCAutoFitType => this.ParseAutofitType();
 
         /// <summary>
         ///     Gets parent text box container.
@@ -58,20 +58,20 @@ namespace ShapeCrawler.AutoShapes
             return new ParagraphCollection(this);
         }
 
-        private AutofitType ParseAutofitType()
+        private SCAutoFitType ParseAutofitType()
         {
             var aBodyPr = this.APTextBody.GetFirstChild<A.BodyProperties>();
             if (aBodyPr!.GetFirstChild<A.NormalAutoFit>() != null)
             {
-                return AutofitType.Shrink;
+                return SCAutoFitType.Shrink;
             }
 
             if (aBodyPr.GetFirstChild<A.ShapeAutoFit>() != null)
             {
-                return AutofitType.Resize;
+                return SCAutoFitType.Resize;
             }
 
-            return AutofitType.None;
+            return SCAutoFitType.None;
         }
 
         private void SetText(string newText)
@@ -86,7 +86,7 @@ namespace ShapeCrawler.AutoShapes
             var removingParagraphs = this.Paragraphs.Where(p => p != baseParagraph);
             this.Paragraphs.Remove(removingParagraphs);
 
-            if (this.AutofitType == AutofitType.Shrink)
+            if (this.SCAutoFitType == SCAutoFitType.Shrink)
             {
                 var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
                     .First().First();

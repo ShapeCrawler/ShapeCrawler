@@ -17,7 +17,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents an image model.
     /// </summary>
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC - ShapeCrawler")]
     public class SCImage // TODO: make internal?
     {
         private readonly SCPresentation parentPresentation;
@@ -64,7 +64,10 @@ namespace ShapeCrawler
         }
 
 #else
-        public async Task<byte[]> GetBytes()
+        /// <summary>
+        ///     Gets binary content.
+        /// </summary>
+        public async Task<byte[]> GetBytes() // TODO: convert to BinaryData property?
         {
             if (bytes != null)
             {
@@ -110,6 +113,10 @@ namespace ShapeCrawler
         }
 
 #if NETSTANDARD2_0
+        
+        /// <summary>
+        ///     Sets image by specified file path.
+        /// </summary>
         public void SetImage(string filePath)
         {
             byte[] sourceBytes = File.ReadAllBytes(filePath);

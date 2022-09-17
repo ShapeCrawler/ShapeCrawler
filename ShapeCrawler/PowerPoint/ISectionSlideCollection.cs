@@ -86,7 +86,7 @@ namespace ShapeCrawler
         internal static SCSectionCollection Create(SCPresentation presentation)
         {
             var sections = new List<SCSection>();
-            var sdkSectionList = presentation.sdkPresentation.PresentationPart!.Presentation.PresentationExtensionList?.Descendants<SectionList>().FirstOrDefault();
+            var sdkSectionList = presentation.SdkPresentation.PresentationPart!.Presentation.PresentationExtensionList?.Descendants<SectionList>().FirstOrDefault();
 
             if (sdkSectionList == null)
             {
@@ -112,7 +112,7 @@ namespace ShapeCrawler
             }
 
             removing.Remove();
-            this.Presentation.sdkPresentation.PresentationPart.Presentation.Save();
+            this.Presentation.SdkPresentation.PresentationPart.Presentation.Save();
         }
     }
 }

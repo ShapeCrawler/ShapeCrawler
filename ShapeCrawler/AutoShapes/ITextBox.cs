@@ -5,7 +5,7 @@ namespace ShapeCrawler.AutoShapes
     /// <summary>
     ///     Represents a text box.
     /// </summary>
-    public interface ITextBox
+    public interface ITextBox // TODO: rename to TextFrame?
     {
         /// <summary>
         ///     Gets text paragraph collection.
@@ -21,6 +21,6 @@ namespace ShapeCrawler.AutoShapes
         /// <summary>
         ///     Gets text fit type.
         /// </summary>
-        AutofitType AutofitType { get; }
+        SCAutoFitType SCAutoFitType { get; }
     }
 }

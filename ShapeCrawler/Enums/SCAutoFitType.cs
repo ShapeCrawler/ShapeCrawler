@@ -1,12 +1,12 @@
 ﻿namespace ShapeCrawler
 {
     /// <summary>
-    ///     Autofit type.
+    ///     AutoFit type.
     /// </summary>
-    public enum AutofitType
+    public enum SCAutoFitType
     {
         /// <summary>
-        ///     Do not Autofit.
+        ///     Do not AutoFit.
         /// </summary>
         None = 0,
 

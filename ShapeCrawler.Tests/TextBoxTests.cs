@@ -153,10 +153,10 @@ namespace ShapeCrawler.Tests
             var textBox = autoShape.TextBox;
 
             // Act
-            var autofitType = textBox.AutofitType;
+            var autofitType = textBox.SCAutoFitType;
 
             // Assert
-            autofitType.Should().Be(AutofitType.Shrink);
+            autofitType.Should().Be(SCAutoFitType.Shrink);
         }
 
         [Fact]

@@ -1,5 +1,8 @@
 namespace ShapeCrawler.Shapes
 {
+    /// <summary>
+    ///     Shape type.
+    /// </summary>
     public enum ShapeType
     {
         AudioShape,
