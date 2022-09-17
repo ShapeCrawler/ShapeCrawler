@@ -5,6 +5,9 @@
     /// </summary>
     public interface IPlaceholder
     {
+        /// <summary>
+        ///     Gets placeholder type.
+        /// </summary>
         PlaceholderType Type { get; }
     }
 }

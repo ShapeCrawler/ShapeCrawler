@@ -121,7 +121,7 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             ITable table = (ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4);
-            Column column = table.Columns[0];
+            SCColumn column = table.Columns[0];
 
             // Act
             long columnWidth = column.Width;

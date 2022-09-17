@@ -10,6 +10,9 @@
         /// </summary>
         ISlideMaster SlideMaster { get; }
         
+        /// <summary>
+        ///     Gets collection of shape.
+        /// </summary>
         IShapeCollection Shapes { get; }
     }
 }

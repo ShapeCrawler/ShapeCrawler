@@ -21,8 +21,14 @@ namespace ShapeCrawler
         /// </summary>
         IFont Font { get; }
 
-        A.Text SDKAText { get; }
-
+        /// <summary>
+        ///     Gets or sets hypelink.
+        /// </summary>
         string Hyperlink { get; set; }
+        
+        /// <summary>
+        ///     Gets instance of <see cref="DocumentFormat.OpenXml.Drawing.Text"/>.
+        /// </summary>
+        A.Text SDKAText { get; }
     }
 }

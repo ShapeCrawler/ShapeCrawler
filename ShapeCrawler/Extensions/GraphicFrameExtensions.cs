@@ -3,7 +3,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Extensions
 {
-    public static class GraphicFrameExtensions
+    internal static class GraphicFrameExtensions
     {
         public static A.Table GetATable(this P.GraphicFrame pGraphicFrame)
         {

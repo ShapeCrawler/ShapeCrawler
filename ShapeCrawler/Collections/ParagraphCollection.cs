@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
@@ -74,8 +75,7 @@ namespace ShapeCrawler.Texts
                 return new List<SCParagraph>(0);
             }
 
-            var aParagraphs = this.textBox.APTextBody.Elements<A.Paragraph>();
-            return aParagraphs.Select(aParagraph => new SCParagraph(aParagraph, this.textBox)).ToList();
+            return this.textBox.APTextBody.Elements<A.Paragraph>().Select(aParagraph => new SCParagraph(aParagraph, this.textBox)).ToList();
         }
     }
 }

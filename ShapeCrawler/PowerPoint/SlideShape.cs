@@ -4,9 +4,6 @@ using ShapeCrawler.SlideMasters;
 
 namespace ShapeCrawler
 {
-    /// <summary>
-    ///     Represents a shape located on Slide.
-    /// </summary>
     internal abstract class SlideShape : Shape
     {
         protected SlideShape(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, Shape? groupShape)
@@ -22,7 +19,11 @@ namespace ShapeCrawler
         }
 
         public override IPlaceholder Placeholder => SlidePlaceholder.Create(this.PShapeTreesChild, this);
+        
+        public override SCPresentation PresentationInternal => this.Slide.PresentationInternal;
 
+        public ISlide ParentSlide => this.Slide;
+        
         internal override SCSlideMaster SlideMasterInternal
         {
             get => (SCSlideMaster)this.Slide.SlideLayout.SlideMaster;
@@ -31,10 +32,6 @@ namespace ShapeCrawler
             {
             }
         }
-
-        public override SCPresentation PresentationInternal => this.Slide.PresentationInternal;
-
-        public ISlide ParentSlide => this.Slide;
 
         internal SCSlide Slide { get; }
     }

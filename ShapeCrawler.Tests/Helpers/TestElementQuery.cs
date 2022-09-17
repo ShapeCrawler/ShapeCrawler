@@ -1,4 +1,5 @@
 using System.Linq;
+using FluentAssertions;
 using ShapeCrawler.Drawing;
 
 namespace ShapeCrawler.Tests.Helpers
@@ -23,6 +24,14 @@ namespace ShapeCrawler.Tests.Helpers
         public Location Location { get; set; }
         public int SlideMasterNumber { get; set; }
         public int SlideLayoutNumber { get; set; }
+        
+        
+        public IAutoShape GetAutoShape()
+        {
+            return this.Presentation
+                .Slides[this.SlideIndex]
+                .Shapes.GetById<IAutoShape>(this.ShapeId!.Value);
+        }
         
         public IParagraph GetParagraph()
         {
