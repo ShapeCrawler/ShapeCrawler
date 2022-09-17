@@ -64,8 +64,6 @@ namespace ShapeCrawler
             this.Init();
         }
 
-        internal ResettableLazy<SlideMasterCollection> SlideMastersValue { get; private set; }
-        
         /// <inheritdoc/>
         public ISlideCollection Slides => this.slideCollectionLazy.Value;
 
@@ -84,6 +82,8 @@ namespace ShapeCrawler
         /// <inheritdoc/>
         public ISectionCollection Sections => this.sectionCollectionLazy.Value;
 
+        internal ResettableLazy<SlideMasterCollection> SlideMastersValue { get; private set; }
+        
         internal PresentationDocument sdkPresentation { get; private set; }
 
         internal SCSectionCollection SectionsInternal => (SCSectionCollection)this.Sections;

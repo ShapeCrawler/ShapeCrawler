@@ -12,7 +12,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 namespace ShapeCrawler.Texts
 {
-    [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
     internal class ParagraphCollection : IParagraphCollection
     {
         private readonly ResettableLazy<List<SCParagraph>> paragraphs;
@@ -76,9 +75,7 @@ namespace ShapeCrawler.Texts
                 return new List<SCParagraph>(0);
             }
 
-            var aParagraphs = this.textBox.APTextBody.Elements<A.Paragraph>();
-            var nonEmptyAPara = aParagraphs.Where(p => p.Elements<A.Run>().Any() || p.Elements<A.Field>().Any());
-            return nonEmptyAPara.Select(aParagraph => new SCParagraph(aParagraph, this.textBox)).ToList();
+            return this.textBox.APTextBody.Elements<A.Paragraph>().Select(aParagraph => new SCParagraph(aParagraph, this.textBox)).ToList();
         }
     }
 }

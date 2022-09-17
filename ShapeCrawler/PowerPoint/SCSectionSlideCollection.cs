@@ -25,6 +25,16 @@ namespace ShapeCrawler
         
         public ISlide this[int index] => this.sectionSlides[index];
 
+        public IEnumerator<ISlide> GetEnumerator()
+        {
+            return this.sectionSlides.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+        
         private void OnPresSlideCollectionChanged(object sender, EventArgs e)
         {
             this.Initialize();
@@ -38,16 +48,6 @@ namespace ShapeCrawler
                 var slide = this.parentSection.Sections.Presentation.SlidesInternal.GetBySlideId(sectionSlideIdListEntry.Id);
                 this.sectionSlides.Add(slide);
             }
-        }
-
-        public IEnumerator<ISlide> GetEnumerator()
-        {
-            return this.sectionSlides.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
         }
     }
 }

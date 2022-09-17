@@ -26,10 +26,10 @@ namespace ShapeCrawler
     /// </summary>
     internal class SCSlide : SlideBase, ISlide, IPresentationComponent
     {
+        internal readonly SlideId SlideId;
         private readonly Lazy<SCImage> backgroundImage;
         private Lazy<CustomXmlPart> customXmlPart;
-        internal readonly SlideId SlideId;
-        
+
         internal SCSlide(SCPresentation parentPresentation, SlidePart slidePart, SlideId slideId)
         {
             this.PresentationInternal = parentPresentation;
@@ -41,22 +41,17 @@ namespace ShapeCrawler
             this.SlideId = slideId;
         }
 
-        internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
-
         public ISlideLayout SlideLayout => ((SlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
 
         public IShapeCollection Shapes => this.shapes.Value;
         
         public override bool IsRemoved { get; set; }
-
-        internal override TypedOpenXmlPart TypedOpenXmlPart => this.SDKSlidePart;
         
         public int Number
         {
             get => this.GetNumber();
             set => this.SetNumber(value);
         }
-
 
         public SCImage Background => this.backgroundImage.Value;
 
@@ -73,7 +68,11 @@ namespace ShapeCrawler
         public SlidePart SDKSlidePart { get; }
         
         public SCPresentation PresentationInternal { get; }
+        
+        internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
 
+        internal override TypedOpenXmlPart TypedOpenXmlPart => this.SDKSlidePart;
+        
         private ResettableLazy<ShapeCollection> shapes { get; }
 
         /// <summary>

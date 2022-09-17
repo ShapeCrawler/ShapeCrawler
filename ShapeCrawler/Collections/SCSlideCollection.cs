@@ -13,11 +13,10 @@ namespace ShapeCrawler.Collections
 {
     internal class SCSlideCollection : ISlideCollection
     {
+        internal EventHandler CollectionChanged;
         private readonly SCPresentation parentPresentation;
         private readonly ResettableLazy<List<SCSlide>> slides;
         private PresentationPart presentationPart;
-
-        internal EventHandler CollectionChanged;
         
         internal SCSlideCollection(SCPresentation presentation)
         {

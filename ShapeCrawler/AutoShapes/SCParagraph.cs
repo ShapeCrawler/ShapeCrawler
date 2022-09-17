@@ -61,59 +61,8 @@ namespace ShapeCrawler
                 portion.Font.Size = fontSize;
             }
         }
-
-        internal void ThrowIfRemoved()
-        {
-            if (this.IsRemoved)
-            {
-                throw new ElementIsRemovedException("Paragraph was removed.");
-            }
-            else
-            {
-                this.ParentTextBox.ThrowIfRemoved();
-            }
-        }
-
-        #region Private Methods
-
-        private static int GetInnerLevel(A.Paragraph aParagraph)
-        {
-            // XML-paragraph enumeration started from zero. Null is also zero
-            Int32Value xmlParagraphLvl = aParagraph.ParagraphProperties?.Level ?? 0;
-            int paragraphLvl = ++xmlParagraphLvl;
-
-            return paragraphLvl;
-        }
-
-        private Bullet GetBullet()
-        {
-            return new Bullet(this.AParagraph.ParagraphProperties);
-        }
-
-        private string GetText()
-        {
-            if (this.Portions.Count == 0)
-            {
-                return string.Empty;
-            }
-
-            return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next);
-        }
-
-        private void SetText(string newText)
-        {
-            this.ThrowIfRemoved();
-
-            // To set a paragraph text we use a single portion which is the first paragraph portion.
-            // Rest of the portions are deleted from the paragraph.
-            var removingPortions = this.Portions.Skip(1).ToList();
-            this.Portions.Remove(removingPortions);
-            var basePortion = (SCPortion)this.portions.Value.Single();
-
-            basePortion.Text = String.Empty;
-            AddPortion(newText);
-        }
-
+        
+        
         public void AddPortion(string sourceText)
         {
             void addBreak(ref OpenXmlElement lastElement)
@@ -167,6 +116,58 @@ namespace ShapeCrawler
             }
 
             this.portions.Reset();
+        }
+
+        internal void ThrowIfRemoved()
+        {
+            if (this.IsRemoved)
+            {
+                throw new ElementIsRemovedException("Paragraph was removed.");
+            }
+            else
+            {
+                this.ParentTextBox.ThrowIfRemoved();
+            }
+        }
+
+        #region Private Methods
+
+        private static int GetInnerLevel(A.Paragraph aParagraph)
+        {
+            // XML-paragraph enumeration started from zero. Null is also zero
+            Int32Value xmlParagraphLvl = aParagraph.ParagraphProperties?.Level ?? 0;
+            int paragraphLvl = ++xmlParagraphLvl;
+
+            return paragraphLvl;
+        }
+
+        private Bullet GetBullet()
+        {
+            return new Bullet(this.AParagraph.ParagraphProperties);
+        }
+
+        private string GetText()
+        {
+            if (this.Portions.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next);
+        }
+
+        private void SetText(string newText)
+        {
+            this.ThrowIfRemoved();
+
+            // To set a paragraph text we use a single portion which is the first paragraph portion.
+            // Rest of the portions are deleted from the paragraph.
+            var removingPortions = this.Portions.Skip(1).ToList();
+            this.Portions.Remove(removingPortions);
+            var basePortion = (SCPortion)this.portions.Value.Single();
+
+            basePortion.Text = String.Empty;
+            this.AddPortion(newText);
         }
 
         private PortionCollection GetPortions()

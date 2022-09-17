@@ -23,15 +23,13 @@ namespace ShapeCrawler.AutoShapes
         {
             this.APTextBody = txBodyElement;
         }
-        
+
         internal SCTextBox(ITextBoxContainer textBoxContainer)
         {
             this.TextBoxContainer = textBoxContainer;
             this.text = new ResettableLazy<string>(this.GetText);
             this.paragraphs = new ResettableLazy<ParagraphCollection>(this.GetParagraphs);
         }
-
-
 
         public IParagraphCollection Paragraphs => this.paragraphs.Value;
 
@@ -59,7 +57,7 @@ namespace ShapeCrawler.AutoShapes
         {
             return new ParagraphCollection(this);
         }
-        
+
         private AutofitType ParseAutofitType()
         {
             var aBodyPr = this.APTextBody.GetFirstChild<A.BodyProperties>();
@@ -78,7 +76,13 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetText(string newText)
         {
-            var baseParagraph = this.Paragraphs.First(p => p.Portions.Any());
+            var baseParagraph = this.Paragraphs.FirstOrDefault(p => p.Portions.Any());
+            if (baseParagraph == null)
+            {
+                baseParagraph = this.Paragraphs.First();
+                baseParagraph.AddPortion(newText);
+            }
+
             var removingParagraphs = this.Paragraphs.Where(p => p != baseParagraph);
             this.Paragraphs.Remove(removingParagraphs);
 
@@ -102,8 +106,7 @@ namespace ShapeCrawler.AutoShapes
                     var font = new Font(fontFamilyName, fontSize);
                     graphic.MeasureString(newText, font, availSize, stringFormat, out charsFitted, out _);
                     fontSize--;
-                }
-                while (newText.Length != charsFitted);
+                } while (newText.Length != charsFitted);
 
                 var paragraphInternal = (SCParagraph)baseParagraph;
                 paragraphInternal.SetFontSize(fontSize);
@@ -118,7 +121,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 return string.Empty;
             }
-            
+
             var sb = new StringBuilder();
             sb.Append(this.Paragraphs[0].Text);
 

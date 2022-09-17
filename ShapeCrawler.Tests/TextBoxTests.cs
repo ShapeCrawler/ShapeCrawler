@@ -444,7 +444,7 @@ namespace ShapeCrawler.Tests
                 var pres2 = SCPresentation.Open(pptxStream2);
                 var autoShape2 = pres2.Slides[2].Shapes.GetById<IAutoShape>(8);
                 var textBox2 = autoShape2.TextBox;
-                var testCase2 = new TestCase<ITextBox, int>(2, textBox2, 1);
+                var testCase2 = new TestCase<ITextBox, int>(2, textBox2, 2);
                 yield return new object[] { testCase2 };
 
                 var pptxStream3 = GetTestStream("009_table.pptx");
@@ -458,7 +458,7 @@ namespace ShapeCrawler.Tests
                 var pres4 = SCPresentation.Open(pptxStream4);
                 var autoShape4 = pres4.Slides[1].Shapes.GetById<IAutoShape>(2);
                 var textBox4 = autoShape4.TextBox;
-                var testCase4 = new TestCase<ITextBox, int>(4, textBox4, 0);
+                var testCase4 = new TestCase<ITextBox, int>(4, textBox4, 1);
                 yield return new object[] { testCase4 };
             }
         }
