@@ -28,15 +28,15 @@ namespace ShapeCrawler.Drawing
         Color Color { get; }
 
         /// <summary>
-        ///     Sets solid color in HEX format.
+        ///     Sets solid color by its hexadecimal representation.
         /// </summary>
-        void SetColorHex(string hex);
+        void SetColorByHex(string hex);
     }
     
     internal class ColorFormat : IColorFormat
     {
         private readonly SCFont parentFont;
-        private readonly ITextBoxContainer textBoxContainer;
+        private readonly ITextFrameContainer textBoxContainer;
         private readonly SCSlideMaster parentSlideMaster;
         private bool initialized;
         private string hexColor;
@@ -54,7 +54,7 @@ namespace ShapeCrawler.Drawing
 
         public Color Color => this.GetColor();
 
-        public void SetColorHex(string hex)
+        public void SetColorByHex(string hex)
         {
             var portion = this.parentFont.ParentPortion;
             var aTextContainer = portion.SDKAText.Parent!;
@@ -168,7 +168,6 @@ namespace ShapeCrawler.Drawing
                 {
                     ARgbColorModelHex = aFontReference.RgbColorModelHex,
                     ASchemeColor = aFontReference.SchemeColor,
-                    ASystemColor = aFontReference.SystemColor,
                     APresetColor = aFontReference.PresetColor
                 };
 

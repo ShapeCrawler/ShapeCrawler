@@ -1,4 +1,5 @@
 using System.Linq;
+using FluentAssertions;
 using ShapeCrawler.Drawing;
 
 namespace ShapeCrawler.Tests.Helpers
@@ -24,12 +25,20 @@ namespace ShapeCrawler.Tests.Helpers
         public int SlideMasterNumber { get; set; }
         public int SlideLayoutNumber { get; set; }
         
+        
+        public IAutoShape GetAutoShape()
+        {
+            return this.Presentation
+                .Slides[this.SlideIndex]
+                .Shapes.GetById<IAutoShape>(this.ShapeId!.Value);
+        }
+        
         public IParagraph GetParagraph()
         {
             var paragraphIndex = this.ParagraphIndex ?? this.ParagraphNumber - 1;
             var autoShape = Presentation.Slides[SlideIndex]
                 .Shapes.First(sp => sp.Id == ShapeId) as IAutoShape;
-            return autoShape.TextBox.Paragraphs[paragraphIndex];
+            return autoShape.TextFrame.Paragraphs[paragraphIndex];
         }
 
         public IPortion GetParagraphPortion()
@@ -42,7 +51,7 @@ namespace ShapeCrawler.Tests.Helpers
             var paragraphIndex = this.ParagraphIndex ?? this.ParagraphNumber - 1;
             var portionIndex = this.PortionIndex ?? this.PortionNumber - 1;
             
-            return autoShape.TextBox!.Paragraphs[paragraphIndex].Portions[portionIndex];
+            return autoShape.TextFrame!.Paragraphs[paragraphIndex].Portions[portionIndex];
         }
 
         public IColorFormat GetTestColorFormat()
@@ -63,7 +72,7 @@ namespace ShapeCrawler.Tests.Helpers
             var paragraphIndex = this.ParagraphIndex ?? this.ParagraphNumber - 1;
             var portionIndex = this.PortionIndex ?? this.PortionNumber - 1;
 
-            return autoShape.TextBox!.Paragraphs[paragraphIndex].Portions[portionIndex].Font.ColorFormat;
+            return autoShape.TextFrame!.Paragraphs[paragraphIndex].Portions[portionIndex].Font.ColorFormat;
         }
     }
 }

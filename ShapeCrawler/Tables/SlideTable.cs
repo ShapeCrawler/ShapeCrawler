@@ -19,8 +19,6 @@ namespace ShapeCrawler
         private readonly P.GraphicFrame pGraphicFrame;
         private readonly ResettableLazy<RowCollection> rowCollection;
 
-        private A.Table ATable => this.pGraphicFrame.GetATable();
-
         internal SlideTable(OpenXmlCompositeElement childOfPShapeTrees, SCSlide slideLayout, SlideGroupShape groupShape)
             : base(childOfPShapeTrees, slideLayout, groupShape)
         {
@@ -28,14 +26,16 @@ namespace ShapeCrawler
                 new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) this.PShapeTreesChild));
             this.pGraphicFrame = childOfPShapeTrees as P.GraphicFrame;
         }
-
+        
         public ShapeType ShapeType => ShapeType.Table;
 
-        public IReadOnlyList<Column> Columns => this.GetColumnList(); // TODO: make lazy
+        public IReadOnlyList<SCColumn> Columns => this.GetColumnList(); // TODO: make lazy
 
         public RowCollection Rows => this.rowCollection.Value;
 
         public override GeometryType GeometryType => GeometryType.Rectangle;
+
+        private A.Table ATable => this.pGraphicFrame.GetATable();
 
         public ITableCell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
 
@@ -109,7 +109,7 @@ namespace ShapeCrawler
                     int deleteColumnCount = gridSpan.Value - 1;
 
                     // Delete a:gridCol elements
-                    foreach (Column column in Columns.Skip(colIdx + 1).Take(deleteColumnCount))
+                    foreach (SCColumn column in Columns.Skip(colIdx + 1).Take(deleteColumnCount))
                     {
                         column.AGridColumn.Remove();
                         Columns[colIdx].Width += column.Width; // append width of deleting column to merged column
@@ -179,13 +179,11 @@ namespace ShapeCrawler
             }
         }
 
-        #region Private Methods
-
-        private IReadOnlyList<Column> GetColumnList()
+        private IReadOnlyList<SCColumn> GetColumnList()
         {
             IEnumerable<A.GridColumn> aGridColumns = ATable.TableGrid.Elements<A.GridColumn>();
-            var columnList = new List<Column>(aGridColumns.Count());
-            columnList.AddRange(aGridColumns.Select(aGridColumn => new Column(aGridColumn)));
+            var columnList = new List<SCColumn>(aGridColumns.Count());
+            columnList.AddRange(aGridColumns.Select(aGridColumn => new SCColumn(aGridColumn)));
 
             return columnList;
         }
@@ -200,7 +198,5 @@ namespace ShapeCrawler
 
             return false;
         }
-
-        #endregion Private Methods
     }
 }

@@ -9,19 +9,19 @@ namespace ShapeCrawler.AutoShapes
     /// <summary>
     ///     Represents a paragraph bullet.
     /// </summary>
-    public class Bullet
+    public class SCBullet // TODO: extract interface
     {
         private readonly A.ParagraphProperties aParagraphProperties;
         private readonly Lazy<string> character;
         private readonly Lazy<string> colorHex;
         private readonly Lazy<string> fontName;
         private readonly Lazy<int> size;
-        private readonly Lazy<BulletType> type;
+        private readonly Lazy<SCBulletType> type;
 
-        internal Bullet(A.ParagraphProperties aParagraphProperties)
+        internal SCBullet(A.ParagraphProperties aParagraphProperties)
         {
             this.aParagraphProperties = aParagraphProperties;
-            this.type = new Lazy<BulletType>(this.ParseType);
+            this.type = new Lazy<SCBulletType>(this.ParseType);
             this.colorHex = new Lazy<string>(this.ParseColorHex);
             this.character = new Lazy<string>(this.ParseChar);
             this.fontName = new Lazy<string>(this.ParseFontName);
@@ -53,41 +53,41 @@ namespace ShapeCrawler.AutoShapes
         /// <summary>
         ///     Gets bullet type.
         /// </summary>
-        public BulletType Type => this.type.Value;
+        public SCBulletType Type => this.type.Value;
 
         #endregion Public Properties
 
-        private BulletType ParseType()
+        private SCBulletType ParseType()
         {
             if (this.aParagraphProperties == null)
             {
-                return BulletType.None;
+                return SCBulletType.None;
             }
 
             A.AutoNumberedBullet? aAutoNumeredBullet = this.aParagraphProperties.GetFirstChild<A.AutoNumberedBullet>();
             if (aAutoNumeredBullet != null)
             {
-                return BulletType.Numbered;
+                return SCBulletType.Numbered;
             }
 
             A.PictureBullet? aPictureBullet = this.aParagraphProperties.GetFirstChild<A.PictureBullet>();
             if (aPictureBullet != null)
             {
-                return BulletType.Picture;
+                return SCBulletType.Picture;
             }
 
             A.CharacterBullet? aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>();
             if (aCharBullet != null)
             {
-                return BulletType.Character;
+                return SCBulletType.Character;
             }
 
-            return BulletType.None;
+            return SCBulletType.None;
         }
 
         private string? ParseColorHex()
         {
-            if (this.Type == BulletType.None)
+            if (this.Type == SCBulletType.None)
             {
                 return null;
             }
@@ -103,7 +103,7 @@ namespace ShapeCrawler.AutoShapes
 
         private string? ParseChar()
         {
-            if (this.Type == BulletType.None)
+            if (this.Type == SCBulletType.None)
             {
                 return null;
             }
@@ -111,7 +111,7 @@ namespace ShapeCrawler.AutoShapes
             A.CharacterBullet? aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>();
             if (aCharBullet == null)
             {
-                throw new RuntimeDefinedPropertyException($"This is not {nameof(BulletType.Character)} type bullet.");
+                throw new RuntimeDefinedPropertyException($"This is not {nameof(SCBulletType.Character)} type bullet.");
             }
 
             return aCharBullet.Char?.Value;
@@ -119,7 +119,7 @@ namespace ShapeCrawler.AutoShapes
 
         private string? ParseFontName()
         {
-            if (this.Type == BulletType.None)
+            if (this.Type == SCBulletType.None)
             {
                 return null;
             }
@@ -130,7 +130,7 @@ namespace ShapeCrawler.AutoShapes
 
         private int ParseSize()
         {
-            if (this.Type == BulletType.None)
+            if (this.Type == SCBulletType.None)
             {
                 return 0;
             }

@@ -31,13 +31,13 @@ The library currently supports the following frameworks:
 ### Usage
 
 ```c#
-using var pres = SCPresentation.Open("helloWorld.pptx", isEditable: false);
+using var pres = SCPresentation.Open("helloWorld.pptx");
 var slidesCount = pres.Slides.Count;
 var autoShape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 1");
 Console.WriteLine(autoShape.TextBox.Text);
 ```
 
-Visit [**Wiki**](https://github.com/ShapeCrawler/ShapeCrawler/wiki#examples) page to find more usage samples.
+Visit [**Wiki**](https://github.com/ShapeCrawler/ShapeCrawler/wiki/Examples) page to find more usage samples.
 
 # Have questions?
 

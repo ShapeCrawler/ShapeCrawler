@@ -2,7 +2,7 @@
 
 namespace ShapeCrawler.Statics
 {
-    public static class RelatedIdGenerator
+    internal static class RelatedIdGenerator
     {
         public static string Generate()
         {

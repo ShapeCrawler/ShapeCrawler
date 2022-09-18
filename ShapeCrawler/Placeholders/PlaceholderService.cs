@@ -108,7 +108,7 @@ namespace ShapeCrawler.Placeholders
 #endif
         }
 
-        private static HashSet<T> ToCustomHashSet<T>(IEnumerable<T> items) //TODO: move to some shared class
+        private static HashSet<T> ToCustomHashSet<T>(IEnumerable<T> items) // TODO: move to some shared class
         {
             var set = new HashSet<T>();
             foreach (var item in items)

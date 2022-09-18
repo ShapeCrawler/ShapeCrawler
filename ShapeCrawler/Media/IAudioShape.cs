@@ -17,6 +17,9 @@ namespace ShapeCrawler
         /// </summary>
         public byte[] BinaryData { get; }
 
+        /// <summary>
+        ///     Gets MIME type.
+        /// </summary>
         string MIME { get; }
     }
 

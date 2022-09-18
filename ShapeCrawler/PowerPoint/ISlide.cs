@@ -35,9 +35,20 @@ namespace ShapeCrawler
         /// </summary>
         ISlideLayout SlideLayout { get; }
 
-        IPresentation ParentPresentation { get; }
+        /// <summary>
+        ///     Gets presentation.
+        /// </summary>
+        IPresentation Presentation { get; }
 
+        /// <summary>
+        ///     Gets instance of <see cref="SlidePart"/> of Open XML SDK.
+        /// </summary>
         SlidePart SDKSlidePart { get; }
+        
+        /// <summary>
+        ///     Gets shapes collection.
+        /// </summary>
+        IShapeCollection Shapes { get; }
 
         /// <summary>
         ///     Hides slide.
@@ -48,8 +59,6 @@ namespace ShapeCrawler
         ///     Saves slide scheme to stream.
         /// </summary>
         void SaveScheme(Stream stream);
-        
-        IShapeCollection Shapes { get; }
 
 #if DEBUG
         /// <summary>

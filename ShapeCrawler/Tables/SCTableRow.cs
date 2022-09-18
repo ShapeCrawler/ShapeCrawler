@@ -12,11 +12,10 @@ namespace ShapeCrawler
     /// </summary>
     public class SCTableRow // TODO: extract interface
     {
+        internal readonly A.TableRow ATableRow;
         private readonly Lazy<List<SCTableCell>> cells;
         private readonly int index;
         private readonly bool isRemoved;
-
-        internal readonly A.TableRow ATableRow;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SCTableRow"/> class.
@@ -39,6 +38,9 @@ namespace ShapeCrawler
         /// </summary>
         public IReadOnlyList<ITableCell> Cells => this.cells.Value;
 
+        /// <summary>
+        ///     Gets height.
+        /// </summary>
         public long Height
         {
             get => this.ATableRow.Height.Value;
@@ -47,6 +49,16 @@ namespace ShapeCrawler
 
         internal SlideTable ParentTable { get; }
 
+        internal void ThrowIfRemoved()
+        {
+            if (this.isRemoved)
+            {
+                throw new ElementIsRemovedException("Table Row was removed.");
+            }
+
+            this.ParentTable.ThrowIfRemoved();
+        }
+        
         #region Private Methods
 
         private List<SCTableCell> GetCells()
@@ -79,16 +91,6 @@ namespace ShapeCrawler
             }
 
             return cellList;
-        }
-
-        internal void ThrowIfRemoved()
-        {
-            if (this.isRemoved)
-            {
-                throw new ElementIsRemovedException("Table Row was removed.");
-            }
-
-            this.ParentTable.ThrowIfRemoved();
         }
 
         #endregion

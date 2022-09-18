@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
@@ -13,45 +14,34 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents AutoShape located on Slide.
     /// </summary>
-    internal class SlideAutoShape : SlideShape, IAutoShape, ITextBoxContainer
+    internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
     {
         private readonly Lazy<ShapeFill> shapeFill;
-        private readonly Lazy<SCTextBox?> textBox;
+        private readonly Lazy<TextFrame?> textBox;
 
         internal SlideAutoShape(P.Shape pShape, SCSlide slideInternal, SlideGroupShape groupShape)
             : base(pShape, slideInternal, groupShape)
         {
-            this.textBox = new Lazy<SCTextBox?>(this.GetTextBox);
+            this.textBox = new Lazy<TextFrame?>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.GetFill);
         }
 
         #region Public Properties
 
-        public ITextBox TextBox => this.textBox.Value;
+        public ITextFrame TextFrame => this.textBox.Value;
 
         public IShapeFill Fill => this.shapeFill.Value;
 
         public IShape Shape => this; // TODO: should be internal?
-        
+
         public ShapeType ShapeType => ShapeType.AutoShape;
 
         #endregion Public Properties
 
-        private SCTextBox GetTextBox()
+        private TextFrame? GetTextBox()
         {
-            var pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
-            if (pTextBody == null)
-            {
-                return new SCTextBox(this);
-            }
-
-            var aTexts = pTextBody.Descendants<A.Text>();
-            if (aTexts.Sum(t => t.Text.Length) > 0)
-            {
-                return new SCTextBox( this, pTextBody);
-            }
-
-            return null;
+            var pTxBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
+            return pTxBody == null ? null : new TextFrame(this, pTxBody);
         }
 
         private ShapeFill GetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()

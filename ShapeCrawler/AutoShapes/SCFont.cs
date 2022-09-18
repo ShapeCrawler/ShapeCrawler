@@ -71,16 +71,16 @@ namespace ShapeCrawler.AutoShapes
 
         public IColorFormat ColorFormat => this.colorFormat.Value;
 
-        public bool SizeCanBeChanged()
+        #endregion Public Properties
+
+        internal SCPortion ParentPortion { get; }
+
+        public bool CanChangeSize()
         {
             A.RunProperties runPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
             return runPr != null;
         }
-
-        internal SCPortion ParentPortion { get; }
-
-        #endregion Public Properties
-
+        
         private string GetName()
         {
             const string majorLatinFont = "+mj-lt";

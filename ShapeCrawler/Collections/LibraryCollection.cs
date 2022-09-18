@@ -6,7 +6,7 @@ namespace ShapeCrawler.Collections
     /// <summary>
     ///     Represents a base class for all library collections.
     /// </summary>
-    public class LibraryCollection<T> : IReadOnlyCollection<T>
+    public class LibraryCollection<T> : IReadOnlyCollection<T> // TODO: make internal
     {
         #region Fields
 
@@ -14,6 +14,30 @@ namespace ShapeCrawler.Collections
 
         #endregion Fields
 
+        #region Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="LibraryCollection{T}"/> class.
+        /// </summary>
+        public LibraryCollection()
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="LibraryCollection{T}"/> class from paragpaths.
+        /// </summary>
+        public LibraryCollection(IEnumerable<T> paragraphItems)
+        {
+            CollectionItems = new List<T>(paragraphItems);
+        }
+
+        #endregion Constructors
+
+        /// <summary>
+        ///     Gets the number of series items in the collection.
+        /// </summary>
+        public int Count => CollectionItems.Count;
+        
         /// <summary>
         ///     Gets the element at the specified index.
         /// </summary>
@@ -35,23 +59,5 @@ namespace ShapeCrawler.Collections
         {
             return CollectionItems.GetEnumerator();
         }
-
-        /// <summary>
-        ///     Gets the number of series items in the collection.
-        /// </summary>
-        public int Count => CollectionItems.Count;
-
-        #region Constructors
-
-        public LibraryCollection()
-        {
-        }
-
-        public LibraryCollection(IEnumerable<T> paragraphItems)
-        {
-            CollectionItems = new List<T>(paragraphItems);
-        }
-
-        #endregion Constructors
     }
 }

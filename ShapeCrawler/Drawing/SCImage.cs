@@ -17,7 +17,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents an image model.
     /// </summary>
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC - ShapeCrawler")]
     public class SCImage // TODO: make internal?
     {
         private readonly SCPresentation parentPresentation;
@@ -41,6 +41,9 @@ namespace ShapeCrawler
             this.MIME = this.ImagePart.ContentType;
         }
 
+        /// <summary>
+        ///     Gets MIME type.
+        /// </summary>
         public string MIME { get; }
 
         internal ImagePart ImagePart { get; private set; }
@@ -61,7 +64,10 @@ namespace ShapeCrawler
         }
 
 #else
-        public async Task<byte[]> GetBytes()
+        /// <summary>
+        ///     Gets binary content.
+        /// </summary>
+        public async Task<byte[]> GetBytes() // TODO: convert to BinaryData property?
         {
             if (bytes != null)
             {
@@ -79,11 +85,11 @@ namespace ShapeCrawler
         /// <summary>
         ///     Sets image with stream.
         /// </summary>
-        public void SetImage(Stream sourceStream)
+        public void SetImage(Stream stream)
         {
             this.imageContainer.ThrowIfRemoved();
 
-            var isSharedImagePart = this.parentPresentation.ImageParts.Count(ip => ip == this.ImagePart) > 1;
+            var isSharedImagePart = this.parentPresentation.ImageParts.Count(imgPart => imgPart == this.ImagePart) > 1;
             if (isSharedImagePart)
             {
                 var rId = RelatedIdGenerator.Generate();
@@ -91,22 +97,26 @@ namespace ShapeCrawler
                 this.picReference.Value = rId;
             }
 
-            sourceStream.Position = 0;
-            this.ImagePart.FeedData(sourceStream);
+            stream.Position = 0;
+            this.ImagePart.FeedData(stream);
             this.bytes = null; // resets cache
         }
 
         /// <summary>
         ///     Sets image with byte array.
         /// </summary>
-        public void SetImage(byte[] sourceBytes)
+        public void SetImage(byte[] bytes)
         {
-            var stream = new MemoryStream();
-            stream.Write(sourceBytes, 0, sourceBytes.Length);
+            var stream = new MemoryStream(bytes);
+
             this.SetImage(stream);
         }
 
 #if NETSTANDARD2_0
+        
+        /// <summary>
+        ///     Sets image by specified file path.
+        /// </summary>
         public void SetImage(string filePath)
         {
             byte[] sourceBytes = File.ReadAllBytes(filePath);

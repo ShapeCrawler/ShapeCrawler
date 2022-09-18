@@ -33,7 +33,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets presentation byte array.
         /// </summary>
-        byte[] ByteArray { get; }
+        byte[] BinaryData { get; }
 
         /// <summary>
         ///     Gets section collection.
@@ -56,10 +56,8 @@ namespace ShapeCrawler
         void SaveAs(Stream stream);
 
         /// <summary>
-        ///     Saves and closes the presentation.
+        ///     Closes the presentation.
         /// </summary>
         void Close();
-
-        void Dispose();
     }
 }
