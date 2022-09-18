@@ -22,7 +22,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets paragraph bullet. Returns <c>NULL</c> if bullet does not exist.
         /// </summary>
-        Bullet Bullet { get; }
+        SCBullet Bullet { get; }
 
         /// <summary>
         ///     Gets or sets the text alignment.

@@ -9,7 +9,7 @@ namespace ShapeCrawler.AutoShapes
     /// <summary>
     ///     Represents a paragraph bullet.
     /// </summary>
-    public class Bullet
+    public class SCBullet // TODO: extract interface
     {
         private readonly A.ParagraphProperties aParagraphProperties;
         private readonly Lazy<string> character;
@@ -18,7 +18,7 @@ namespace ShapeCrawler.AutoShapes
         private readonly Lazy<int> size;
         private readonly Lazy<SCBulletType> type;
 
-        internal Bullet(A.ParagraphProperties aParagraphProperties)
+        internal SCBullet(A.ParagraphProperties aParagraphProperties)
         {
             this.aParagraphProperties = aParagraphProperties;
             this.type = new Lazy<SCBulletType>(this.ParseType);

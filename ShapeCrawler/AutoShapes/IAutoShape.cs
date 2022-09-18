@@ -1,5 +1,4 @@
-﻿using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Drawing;
+﻿using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 
 // ReSharper disable once CheckNamespace
@@ -11,13 +10,13 @@ namespace ShapeCrawler
     public interface IAutoShape : IShape
     {
         /// <summary>
-        ///     Gets shape fill object that contains fill formatting properties for the shape.
+        ///     Gets shape fill.
         /// </summary>
         IShapeFill Fill { get; }
 
         /// <summary>
-        ///     Gets text box.
+        ///     Gets text frame. Returns <c>NULL</c> if the AutoShape type doesn't have text frame.
         /// </summary>
-        ITextBox TextBox { get; }
+        ITextFrame? TextFrame { get; }
     }
 }

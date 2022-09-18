@@ -20,17 +20,17 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents an AutoShape on a Slide Master.
     /// </summary>
-    internal class MasterAutoShape : MasterShape, IAutoShape, ITextBoxContainer, IFontDataReader
+    internal class MasterAutoShape : MasterShape, IAutoShape, ITextFrameContainer, IFontDataReader
     {
         private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
         private readonly Lazy<ShapeFill> shapeFill;
-        private readonly Lazy<SCTextBox?> textBox;
+        private readonly Lazy<TextFrame?> textBox;
         private readonly P.Shape pShape;
 
         internal MasterAutoShape(SCSlideMaster slideMasterInternal, P.Shape pShape)
             : base(pShape, slideMasterInternal)
         {
-            this.textBox = new Lazy<SCTextBox?>(this.GetTextBox);
+            this.textBox = new Lazy<TextFrame?>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
             this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
             this.pShape = pShape;
@@ -42,7 +42,7 @@ namespace ShapeCrawler
         
         public IShape Shape => this;
 
-        public ITextBox? TextBox => this.textBox.Value;
+        public ITextFrame? TextFrame => this.textBox.Value;
 
         public IShapeFill Fill => this.shapeFill.Value;
 
@@ -95,7 +95,7 @@ namespace ShapeCrawler
             return lvlToFontData;
         }
 
-        private SCTextBox GetTextBox() // TODO: duplicate code in LayoutAutoShape
+        private TextFrame GetTextBox() // TODO: duplicate code in LayoutAutoShape
         {
             P.TextBody pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
             if (pTextBody == null)
@@ -106,7 +106,7 @@ namespace ShapeCrawler
             IEnumerable<A.Text> aTexts = pTextBody.Descendants<A.Text>();
             if (aTexts.Sum(t => t.Text.Length) > 0) 
             {
-                return new SCTextBox( this, pTextBody);
+                return new TextFrame( this, pTextBody);
             }
 
             return null;

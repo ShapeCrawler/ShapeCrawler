@@ -75,7 +75,7 @@ namespace ShapeCrawler.AutoShapes
 
         internal SCPortion ParentPortion { get; }
 
-        public bool SizeCanBeChanged()
+        public bool CanChangeSize()
         {
             A.RunProperties runPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
             return runPr != null;

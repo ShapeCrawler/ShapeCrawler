@@ -35,7 +35,7 @@ namespace ShapeCrawler.Drawing
     internal class ColorFormat : IColorFormat
     {
         private readonly SCFont parentFont;
-        private readonly ITextBoxContainer textBoxContainer;
+        private readonly ITextFrameContainer textBoxContainer;
         private readonly SCSlideMaster parentSlideMaster;
         private bool initialized;
         private Color color;

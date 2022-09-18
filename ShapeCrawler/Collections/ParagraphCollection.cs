@@ -15,9 +15,9 @@ namespace ShapeCrawler.Texts
     internal class ParagraphCollection : IParagraphCollection
     {
         private readonly ResettableLazy<List<SCParagraph>> paragraphs;
-        private readonly SCTextBox textBox;
+        private readonly TextFrame textBox;
 
-        internal ParagraphCollection(SCTextBox textBox)
+        internal ParagraphCollection(TextFrame textBox)
         {
             this.textBox = textBox;
             this.paragraphs = new ResettableLazy<List<SCParagraph>>(this.GetParagraphs);

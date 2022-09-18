@@ -94,7 +94,7 @@ namespace ShapeCrawler.Tests
             IAutoShape autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
             // Act-Assert
-            autoShape.TextBox.Text.Should().BeEquivalentTo("id8");
+            autoShape.TextFrame.Text.Should().BeEquivalentTo("id8");
         }
 
         [Fact]
@@ -105,7 +105,7 @@ namespace ShapeCrawler.Tests
             var autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
             // Act
-            int portionFontSize = autoShape.TextBox.Paragraphs[0].Portions[0].Font.Size;
+            int portionFontSize = autoShape.TextFrame.Paragraphs[0].Portions[0].Font.Size;
 
             // Assert
             portionFontSize.Should().Be(18);
