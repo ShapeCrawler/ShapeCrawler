@@ -309,7 +309,7 @@ namespace ShapeCrawler.Tests
             // Arrange
             var pptxStream = GetTestStream("autoshape-case003.pptx");
             var pres = SCPresentation.Open(pptxStream);
-            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 2").TextBox;
+            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 2").TextFrame;
             textBox.Text = "Test";
             
             // Act
@@ -318,7 +318,7 @@ namespace ShapeCrawler.Tests
             
             // Assert
             pres = SCPresentation.Open(pptxStream);
-            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 2").TextBox;
+            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 2").TextFrame;
 
             textBox.Text.Should().Be("Test");
         }
@@ -329,7 +329,7 @@ namespace ShapeCrawler.Tests
             // Arrange
             var pptxStream = GetTestStream("autoshape-case003.pptx");
             var pres = SCPresentation.Open(pptxStream);
-            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 2").TextBox;
+            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 2").TextFrame;
             textBox.Text = "Test";
             
             // Act
@@ -337,7 +337,7 @@ namespace ShapeCrawler.Tests
             
             // Assert
             pres = SCPresentation.Open(pptxStream);
-            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 2").TextBox;
+            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 2").TextFrame;
 
             textBox.Text.Should().NotBe("Test");
         }
@@ -348,7 +348,7 @@ namespace ShapeCrawler.Tests
             // Arrange
             var originalStream = GetTestStream("001.pptx");
             var pres = SCPresentation.Open(originalStream);
-            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
             var originalText = textBox!.Text;
             var newStream = new MemoryStream();
 
@@ -358,7 +358,7 @@ namespace ShapeCrawler.Tests
             
             pres.Close();
             pres = SCPresentation.Open(originalStream);
-            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
             var autoShapeText = textBox!.Text; 
 
             // Assert
@@ -373,7 +373,7 @@ namespace ShapeCrawler.Tests
             var originalFile = Path.GetTempFileName();
             originalStream.SaveToFile(originalFile);
             var pres = SCPresentation.Open(originalFile);
-            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
             var originalText = textBox!.Text;
             var newPath = Path.GetTempFileName();
 
@@ -383,7 +383,7 @@ namespace ShapeCrawler.Tests
             
             pres.Close();
             pres = SCPresentation.Open(originalFile);
-            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
             var autoShapeText = textBox!.Text; 
 
             // Assert
@@ -400,7 +400,7 @@ namespace ShapeCrawler.Tests
             // Arrange
             var originalPath = GetTestPptxPath("001.pptx");
             var pres = SCPresentation.Open(originalPath);
-            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
             var originalText = textBox!.Text;
             var newStream = new MemoryStream();
 
@@ -410,7 +410,7 @@ namespace ShapeCrawler.Tests
             
             pres.Close();
             pres = SCPresentation.Open(originalPath);
-            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
             var autoShapeText = textBox!.Text; 
 
             // Assert
@@ -427,7 +427,7 @@ namespace ShapeCrawler.Tests
             // Arrange
             var originalPath = GetTestPptxPath("001.pptx");
             var pres = SCPresentation.Open(originalPath);
-            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
             var originalText = textBox!.Text;
             var newPath = Path.GetTempFileName();
 
@@ -437,7 +437,7 @@ namespace ShapeCrawler.Tests
             
             pres.Close();
             pres = SCPresentation.Open(originalPath);
-            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextBox;
+            textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
             var autoShapeText = textBox!.Text; 
 
             // Assert

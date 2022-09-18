@@ -191,14 +191,14 @@ namespace ShapeCrawler.Tests
             // Assert
             table[0, 0].IsMergedCell.Should().BeTrue();
             table[0, 1].IsMergedCell.Should().BeTrue();
-            table[0, 0].TextBox.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
+            table[0, 0].TextFrame.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
 
             presentation.SaveAs(mStream);
             presentation = SCPresentation.Open(mStream);
             table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 5);
             table[0, 0].IsMergedCell.Should().BeTrue();
             table[0, 1].IsMergedCell.Should().BeTrue();
-            table[0, 0].TextBox.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
+            table[0, 0].TextFrame.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
         }
 
         [Fact(DisplayName = "MergeCells #2")]
@@ -222,8 +222,8 @@ namespace ShapeCrawler.Tests
             {
                 tableSc[0, 1].IsMergedCell.Should().BeTrue();
                 tableSc[0, 2].IsMergedCell.Should().BeTrue();
-                tableSc[0, 1].TextBox.Text.Should().Be("Text0_2");
-                tableSc[0, 2].TextBox.Text.Should().Be("Text0_2");
+                tableSc[0, 1].TextFrame.Text.Should().Be("Text0_2");
+                tableSc[0, 2].TextFrame.Text.Should().Be("Text0_2");
             }
         }
 
@@ -300,8 +300,8 @@ namespace ShapeCrawler.Tests
                 table[0, 0].IsMergedCell.Should().BeTrue();
                 table[1, 0].IsMergedCell.Should().BeTrue();
                 table[0, 1].IsMergedCell.Should().BeFalse();
-                table[0, 0].TextBox.Text.Should().Be(expectedText);
-                table[1, 0].TextBox.Text.Should().Be(expectedText);
+                table[0, 0].TextFrame.Text.Should().Be(expectedText);
+                table[1, 0].TextFrame.Text.Should().Be(expectedText);
             }
         }
 

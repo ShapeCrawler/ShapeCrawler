@@ -14,15 +14,15 @@ namespace ShapeCrawler.AutoShapes
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC - ShapeCrawler")]
     internal class SCParagraph : IParagraph
     {
-        private readonly Lazy<Bullet> bullet;
+        private readonly Lazy<SCBullet> bullet;
         private readonly ResettableLazy<PortionCollection> portions;
         private TextAlignment? alignment;
 
-        internal SCParagraph(A.Paragraph aParagraph, SCTextBox textBox)
+        internal SCParagraph(A.Paragraph aParagraph, TextFrame textBox)
         {
             this.AParagraph = aParagraph;
             this.Level = GetInnerLevel(aParagraph);
-            this.bullet = new Lazy<Bullet>(this.GetBullet);
+            this.bullet = new Lazy<SCBullet>(this.GetBullet);
             this.ParentTextBox = textBox;
             this.portions = new ResettableLazy<PortionCollection>(this.GetPortions);
         }
@@ -37,7 +37,7 @@ namespace ShapeCrawler.AutoShapes
 
         public IPortionCollection Portions => this.portions.Value;
 
-        public Bullet Bullet => this.bullet.Value;
+        public SCBullet Bullet => this.bullet.Value;
 
         public TextAlignment Alignment
         {
@@ -45,7 +45,7 @@ namespace ShapeCrawler.AutoShapes
             set => this.UpdateAlignment(value);
         }
 
-        internal SCTextBox ParentTextBox { get; }
+        internal TextFrame ParentTextBox { get; }
 
         internal A.Paragraph AParagraph { get; }
 
@@ -151,9 +151,9 @@ namespace ShapeCrawler.AutoShapes
             return paragraphLvl;
         }
 
-        private Bullet GetBullet()
+        private SCBullet GetBullet()
         {
-            return new Bullet(this.AParagraph.ParagraphProperties);
+            return new SCBullet(this.AParagraph.ParagraphProperties);
         }
 
         private string GetText()
