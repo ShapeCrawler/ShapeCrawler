@@ -1,12 +1,11 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.SlideMasters;
 
 namespace ShapeCrawler
 {
     /// <summary>
-    ///     Represents a user slide.
+    ///     Represents a slide.
     /// </summary>
     public interface ISlide
     {
@@ -16,9 +15,9 @@ namespace ShapeCrawler
         int Number { get; set; }
 
         /// <summary>
-        ///     Gets background image of the slide. Returns <c>NULL</c> if the slide does not have background.
+        ///     Gets background image of the slide. Returns <c>NULL</c> if slide does not have background.
         /// </summary>
-        SCImage Background { get; }
+        SCImage? Background { get; }
 
         /// <summary>
         ///     Gets or sets custom data.
@@ -26,12 +25,12 @@ namespace ShapeCrawler
         string CustomData { get; set; }
 
         /// <summary>
-        ///     Gets a value indicating whether slide hidden.
+        ///     Gets a value indicating whether the slide is hidden.
         /// </summary>
         bool Hidden { get; }
 
         /// <summary>
-        ///     Gets parent (referenced) Slide Layout.
+        ///     Gets referenced Slide Layout.
         /// </summary>
         ISlideLayout SlideLayout { get; }
 
@@ -41,12 +40,12 @@ namespace ShapeCrawler
         IPresentation Presentation { get; }
 
         /// <summary>
-        ///     Gets instance of <see cref="SlidePart"/> of Open XML SDK.
+        ///     Gets instance of <see cref=" DocumentFormat.OpenXml.Packaging.SlidePart"/> class of the underlying Open XML SDK.
         /// </summary>
         SlidePart SDKSlidePart { get; }
         
         /// <summary>
-        ///     Gets shapes collection.
+        ///     Gets collection of shapes.
         /// </summary>
         IShapeCollection Shapes { get; }
 
@@ -54,11 +53,6 @@ namespace ShapeCrawler
         ///     Hides slide.
         /// </summary>
         void Hide();
-
-        /// <summary>
-        ///     Saves slide scheme to stream.
-        /// </summary>
-        void SaveScheme(Stream stream);
 
 #if DEBUG
         /// <summary>

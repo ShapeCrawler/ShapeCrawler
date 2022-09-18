@@ -74,14 +74,6 @@ namespace ShapeCrawler
 
         internal override TypedOpenXmlPart TypedOpenXmlPart => this.SDKSlidePart;
 
-        /// <summary>
-        ///     Saves slide scheme in PNG file.
-        /// </summary>
-        public void SaveScheme(string filePath)
-        {
-            SlideSchemeService.SaveScheme(this.shapes.Value, this.PresentationInternal.SlideWidth, this.PresentationInternal.SlideHeight, filePath);
-        }
-
         public override void ThrowIfRemoved()
         {
             if (this.IsRemoved)
@@ -91,7 +83,12 @@ namespace ShapeCrawler
             
             this.PresentationInternal.ThrowIfClosed();
         }
-        
+
+        public void SaveScheme(Stream stream)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<string> ToHtml()
         {
             var slideWidthPx = this.PresentationInternal.SlideWidth;
@@ -115,14 +112,6 @@ namespace ShapeCrawler
             document.Body!.AppendChild(main);
 
             return document.DocumentElement.OuterHtml;
-        }
-
-        /// <summary>
-        ///     Saves slide scheme in stream.
-        /// </summary>
-        public void SaveScheme(Stream stream)
-        {
-            SlideSchemeService.SaveScheme(this.shapes.Value, this.PresentationInternal.SlideWidth, this.PresentationInternal.SlideHeight, stream);
         }
 
         public void Hide()

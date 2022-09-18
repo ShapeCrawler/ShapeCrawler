@@ -54,11 +54,10 @@ namespace ShapeCrawler.Collections
             mediaDataPart.FeedData(mp3Stream);
             string imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
             var slidePart = this.slide.SDKSlidePart;
-            ImagePart imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
-            MemoryStream ms = new ();
-            Properties.Resources.audio_image.Save(ms, ImageFormat.Png);
-            ms.Position = 0;
-            imagePart.FeedData(ms);
+            var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
+            var imgStream = Assembly.GetExecutingAssembly().GetStream("audio-image.png");
+            imgStream.Position = 0;
+            imagePart.FeedData(imgStream);
 
             AudioReferenceRelationship audioRr = slidePart.AddAudioReferenceRelationship(mediaDataPart);
             MediaReferenceRelationship mediaRr = slidePart.AddMediaReferenceRelationship(mediaDataPart);

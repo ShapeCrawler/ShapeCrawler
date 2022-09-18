@@ -135,7 +135,6 @@ namespace ShapeCrawler.Tests
             var textBox = autoShape.TextFrame;
             var fontSizeBefore = textBox.Paragraphs[0].Portions[0].Font.Size;
             var newText = "Shrink text on overflow";
-            PixelConverter.SetDpi(96);
 
             // Act
             textBox.Text = newText;

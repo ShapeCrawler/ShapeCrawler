@@ -65,6 +65,8 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <None Remove="StrykerOutput\**" />
     <None Remove="Resources\video-image.bmp" />
     <EmbeddedResource Include="Resources\video-image.bmp" />
+    <None Remove="Resources\audio-image.png" />
+    <EmbeddedResource Include="Resources\audio-image.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -85,6 +87,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
   </ItemGroup>
 
