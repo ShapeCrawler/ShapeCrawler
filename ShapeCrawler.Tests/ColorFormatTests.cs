@@ -116,7 +116,6 @@ namespace ShapeCrawler.Tests
             var colorHex = testCase.Param2;
             var colorFormat = paragraph.Portions[0].Font.ColorFormat;
             var expectedColor = ColorTranslator.FromHtml(colorHex);
-            
             // Act
             var actualColor = colorFormat.Color;
             
@@ -148,6 +147,55 @@ namespace ShapeCrawler.Tests
                 var paragraph3 = autoShape3.TextBox.Paragraphs[1];
                 var testCase3 = new TestCase<IParagraph, string>(3, paragraph3, "#FFFF00");
                 yield return new object[] { testCase3 };
+                
+                var stream4 = GetTestStream("001.pptx");
+                var pres4 = SCPresentation.Open(stream4);
+                var autoShape4 = pres4.Slides[0].Shapes.GetById<IAutoShape>(4);
+                var paragraph4 = autoShape4.TextBox.Paragraphs[0];
+                var testCase4 = new TestCase<IParagraph, string>(4, paragraph4, "#000000");
+                yield return new object[] { testCase4 };
+                
+                var stream5 = GetTestStream("002.pptx");
+                var pres5 = SCPresentation.Open(stream5);
+                var autoShape5 = pres5.Slides[1].Shapes.GetById<IAutoShape>(3);
+                var paragraph5 = autoShape5.TextBox.Paragraphs[0];
+                var testCase5 = new TestCase<IParagraph, string>(5, paragraph5, "#000000");
+                yield return new object[] { testCase5 };
+                
+                var stream6 = GetTestStream("026.pptx");
+                var pres6 = SCPresentation.Open(stream6);
+                var autoShape6 = pres6.Slides[0].Shapes.GetById<IAutoShape>(128);
+                var paragraph6 = autoShape6.TextBox.Paragraphs[0];
+                var testCase6 = new TestCase<IParagraph, string>(6, paragraph6, "#000000");
+                yield return new object[] { testCase6 };
+                
+                var stream7 = GetTestStream("030.pptx");
+                var pres7 = SCPresentation.Open(stream7);
+                var autoShape7 = pres7.Slides[0].Shapes.GetById<IAutoShape>(5);
+                var paragraph7 = autoShape7.TextBox.Paragraphs[0];
+                var testCase7 = new TestCase<IParagraph, string>(7, paragraph7, "#000000");
+                yield return new object[] { testCase7 };
+                
+                var stream8 = GetTestStream("031.pptx");
+                var pres8 = SCPresentation.Open(stream8);
+                var autoShape8 = pres8.Slides[0].Shapes.GetById<IAutoShape>(44);
+                var paragraph8 = autoShape8.TextBox.Paragraphs[0];
+                var testCase8 = new TestCase<IParagraph, string>(8, paragraph8, "#000000");
+                yield return new object[] { testCase8 };
+                
+                var stream9 = GetTestStream("033.pptx");
+                var pres9 = SCPresentation.Open(stream9);
+                var autoShape9 = pres9.Slides[0].Shapes.GetById<IAutoShape>(3);
+                var paragraph9 = autoShape9.TextBox.Paragraphs[0];
+                var testCase9 = new TestCase<IParagraph, string>(9, paragraph9, "#000000");
+                yield return new object[] { testCase9 };
+                
+                var stream10 = GetTestStream("038.pptx");
+                var pres10 = SCPresentation.Open(stream10);
+                var autoShape10 = pres10.Slides[0].Shapes.GetById<IAutoShape>(102);
+                var paragraph10 = autoShape10.TextBox.Paragraphs[0];
+                var testCase10 = new TestCase<IParagraph, string>(10, paragraph10, "#000000");
+                yield return new object[] { testCase10 };
             }
         }
 
@@ -198,7 +246,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Color_GetterReturnsColor_OfSlideLayoutPlaceholder()
+        public void Color_Getter_returns_color_of_SlideLayout_Placeholder()
         {
             // Arrange
             IAutoShape titlePh = (IAutoShape)_fixture.Pre001.Slides[0].SlideLayout.Shapes.First(sp => sp.Id == 2);
@@ -209,7 +257,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Color_GetterReturnsColor_OfSlideMasterNonPlaceholder()
+        public void Color_Getter_returns_color_of_SlideMaster_Non_Placeholder()
         {
             // Arrange
             Color whiteColor = ColorTranslator.FromHtml("#FFFFFF");
@@ -221,7 +269,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Color_GetterReturnsColor_OfTitlePlaceholderOnSlideMaster()
+        public void Color_Getter_returns_color_of_Title_SlideMaster_Placeholder()
         {
             // Arrange
             Color blackColor = ColorTranslator.FromHtml("#000000");
@@ -233,7 +281,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Color_GetterReturnsColor_OfTableCellOnSlide()
+        public void Color_Getter_returns_color_of_Table_Cell_on_Slide()
         {
             // Arrange
             Color redColor = ColorTranslator.FromHtml("#FF0000");

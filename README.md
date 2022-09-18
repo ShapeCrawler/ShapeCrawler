@@ -37,7 +37,7 @@ var autoShape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 1");
 Console.WriteLine(autoShape.TextBox.Text);
 ```
 
-Visit [**Wiki**](https://github.com/ShapeCrawler/ShapeCrawler/wiki#examples) page to find more usage samples.
+Visit [**Wiki**](https://github.com/ShapeCrawler/ShapeCrawler/wiki/Examples) page to find more usage samples.
 
 # Have questions?
 
