@@ -69,7 +69,7 @@ namespace ShapeCrawler
                     {
                         aTblCell.HorizontalMerge = new BooleanValue(true);
 
-                        MergeParagraphs(minRowIndex, minColIndex, aTblCell);
+                        this.MergeParagraphs(minRowIndex, minColIndex, aTblCell);
                     }
                 }
             }
@@ -100,19 +100,19 @@ namespace ShapeCrawler
             }
 
             // Delete a:gridCol and a:tc elements if all columns are merged
-            for (int colIdx = 0; colIdx < Columns.Count;)
+            for (int colIdx = 0; colIdx < this.Columns.Count;)
             {
-                int? gridSpan = ((SCTableCell) Rows[0].Cells[colIdx]).ATableCell.GridSpan?.Value;
-                if (gridSpan > 1 && Rows.All(row =>
+                int? gridSpan = ((SCTableCell)this.Rows[0].Cells[colIdx]).ATableCell.GridSpan?.Value;
+                if (gridSpan > 1 && this.Rows.All(row =>
                     ((SCTableCell)row.Cells[colIdx]).ATableCell.GridSpan?.Value == gridSpan))
                 {
                     int deleteColumnCount = gridSpan.Value - 1;
 
                     // Delete a:gridCol elements
-                    foreach (SCColumn column in Columns.Skip(colIdx + 1).Take(deleteColumnCount))
+                    foreach (SCColumn column in this.Columns.Skip(colIdx + 1).Take(deleteColumnCount))
                     {
                         column.AGridColumn.Remove();
-                        Columns[colIdx].Width += column.Width; // append width of deleting column to merged column
+                        this.Columns[colIdx].Width += column.Width; // append width of deleting column to merged column
                     }
 
                     // Delete a:tc elements
@@ -134,18 +134,18 @@ namespace ShapeCrawler
             }
 
             // Delete a:tr
-            for (int rowIdx = 0; rowIdx < Rows.Count;)
+            for (int rowIdx = 0; rowIdx < this.Rows.Count;)
             {
-                int? rowSpan = ((SCTableCell) Rows[rowIdx].Cells[0]).ATableCell.RowSpan?.Value;
-                if (rowSpan > 1 && Rows[rowIdx].Cells.All(c => ((SCTableCell) c).ATableCell.RowSpan?.Value == rowSpan))
+                int? rowSpan = ((SCTableCell)this.Rows[rowIdx].Cells[0]).ATableCell.RowSpan?.Value;
+                if (rowSpan > 1 && this.Rows[rowIdx].Cells.All(c => ((SCTableCell) c).ATableCell.RowSpan?.Value == rowSpan))
                 {
                     int deleteRowsCount = rowSpan.Value - 1;
 
                     // Delete a:gridCol elements
-                    foreach (SCTableRow row in Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
+                    foreach (var row in this.Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
                     {
                         row.ATableRow.Remove();
-                        Rows[rowIdx].Height += row.Height;
+                        this.Rows[rowIdx].Height += row.Height;
                     }
 
                     rowIdx += rowSpan.Value;
@@ -155,7 +155,7 @@ namespace ShapeCrawler
                 rowIdx++;
             }
 
-            rowCollection.Reset();
+            this.rowCollection.Reset();
         }
 
         private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
@@ -181,7 +181,7 @@ namespace ShapeCrawler
 
         private IReadOnlyList<SCColumn> GetColumnList()
         {
-            IEnumerable<A.GridColumn> aGridColumns = ATable.TableGrid.Elements<A.GridColumn>();
+            IEnumerable<A.GridColumn> aGridColumns = this.ATable.TableGrid.Elements<A.GridColumn>();
             var columnList = new List<SCColumn>(aGridColumns.Count());
             columnList.AddRange(aGridColumns.Select(aGridColumn => new SCColumn(aGridColumn)));
 

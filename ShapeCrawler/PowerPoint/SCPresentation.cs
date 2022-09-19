@@ -285,7 +285,7 @@ namespace ShapeCrawler
             var nbSlides = this.SdkPresentation.PresentationPart.SlideParts.Count();
             if (nbSlides > Limitations.MaxSlidesNumber)
             {
-                Close();
+                this.Close();
                 throw SlidesMuchMoreException.FromMax(Limitations.MaxSlidesNumber);
             }
         }

@@ -75,7 +75,7 @@ namespace ShapeCrawler.Charts
 
         private string GetNameOrDefault()
         {
-            C.StringReference cStringReference = seriesXmlElement.GetFirstChild<C.SeriesText>()?.StringReference;
+            var cStringReference = this.seriesXmlElement.GetFirstChild<C.SeriesText>()?.StringReference;
             if (cStringReference == null)
             {
                 return null;
