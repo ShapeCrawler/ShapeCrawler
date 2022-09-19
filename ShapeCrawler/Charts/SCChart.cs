@@ -93,7 +93,7 @@ namespace ShapeCrawler.Charts
 
         public override GeometryType GeometryType => GeometryType.Rectangle;
 
-        public byte[] WorkbookByteArray => this.ChartWorkbook.ByteArray;
+        public byte[] WorkbookByteArray => this.ChartWorkbook.BinaryData;
 
         public SpreadsheetDocument SDKSpreadsheetDocument => this.ChartWorkbook.spreadsheetDocument.Value;
 
