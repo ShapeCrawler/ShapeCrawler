@@ -15,16 +15,13 @@ namespace ShapeCrawler.AutoShapes
     {
         private readonly ResettableLazy<string> text;
         private readonly ResettableLazy<ParagraphCollection> paragraphs;
+        private readonly bool canChange;
 
-        internal TextFrame(ITextFrameContainer textBoxContainer, OpenXmlCompositeElement txBodyElement)
-            : this(textBoxContainer)
+        internal TextFrame(ITextFrameContainer frameContainer, TypedOpenXmlCompositeElement textBodyElement, bool canChange)
         {
-            this.APTextBody = txBodyElement;
-        }
-
-        private TextFrame(ITextFrameContainer textBoxContainer)
-        {
-            this.TextBoxContainer = textBoxContainer;
+            this.TextFrameContainer = frameContainer;
+            this.TextBodyElement = textBodyElement;
+            this.canChange = canChange;
             this.text = new ResettableLazy<string>(this.GetText);
             this.paragraphs = new ResettableLazy<ParagraphCollection>(this.GetParagraphs);
         }
@@ -38,20 +35,16 @@ namespace ShapeCrawler.AutoShapes
         }
 
         public SCAutoFitType AutoFitType => this.GetAutoFitType();
-        
-        internal ITextFrameContainer TextBoxContainer { get; }
 
-        // ReSharper disable once InconsistentNaming
-        internal OpenXmlCompositeElement? APTextBody { get; }
+        public bool CanChange => this.canChange;
 
-        public bool CanChange()
-        {
-            throw new NotImplementedException();
-        }
+        internal ITextFrameContainer TextFrameContainer { get; }
+
+        internal OpenXmlCompositeElement? TextBodyElement { get; }
 
         internal void ThrowIfRemoved()
         {
-            this.TextBoxContainer.ThrowIfRemoved();
+            this.TextFrameContainer.ThrowIfRemoved();
         }
 
         private ParagraphCollection GetParagraphs()
@@ -61,12 +54,12 @@ namespace ShapeCrawler.AutoShapes
 
         private SCAutoFitType GetAutoFitType()
         {
-            if (this.APTextBody == null)
+            if (this.TextBodyElement == null)
             {
                 return SCAutoFitType.None; 
             }
             
-            var aBodyPr = this.APTextBody.GetFirstChild<A.BodyProperties>();
+            var aBodyPr = this.TextBodyElement.GetFirstChild<A.BodyProperties>();
             if (aBodyPr!.GetFirstChild<A.NormalAutoFit>() != null)
             {
                 return SCAutoFitType.Shrink;
@@ -99,7 +92,7 @@ namespace ShapeCrawler.AutoShapes
                 var fontFamilyName = popularPortion.Font.Name;
                 var fontSize = popularPortion.Font.Size;
                 var stringFormat = new StringFormat { Trimming = StringTrimming.Word };
-                var shape = this.TextBoxContainer.Shape;
+                var shape = this.TextFrameContainer.Shape;
                 var bm = new Bitmap(shape.Width, shape.Height);
                 using var graphic = Graphics.FromImage(bm);
                 const int margin = 7;
@@ -123,7 +116,7 @@ namespace ShapeCrawler.AutoShapes
 
         private string GetText()
         {
-            if (this.APTextBody == null)
+            if (this.TextBodyElement == null)
             {
                 return string.Empty;
             }

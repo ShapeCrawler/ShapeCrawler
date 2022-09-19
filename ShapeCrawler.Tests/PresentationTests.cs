@@ -71,7 +71,7 @@ namespace ShapeCrawler.Tests
             Action act = () => SCPresentation.Open(bytes);
 
             // Assert
-            act.Should().Throw<PresentationIsLargeException>();
+            act.Should().Throw<Exception>();
         }
 
         [Fact]

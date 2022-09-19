@@ -70,12 +70,12 @@ namespace ShapeCrawler.Texts
 
         private List<SCParagraph> GetParagraphs()
         {
-            if (this.textBox.APTextBody == null)
+            if (this.textBox.TextBodyElement == null)
             {
                 return new List<SCParagraph>(0);
             }
 
-            return this.textBox.APTextBody.Elements<A.Paragraph>().Select(aParagraph => new SCParagraph(aParagraph, this.textBox)).ToList();
+            return this.textBox.TextBodyElement.Elements<A.Paragraph>().Select(aParagraph => new SCParagraph(aParagraph, this.textBox)).ToList();
         }
     }
 }

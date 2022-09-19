@@ -310,7 +310,7 @@ namespace ShapeCrawler.Tests
 
             // Act-Assert
             paragraph.Invoking(p => p.Text = "new paragraph text")
-                .Should().Throw<ElementIsRemovedException>(
+                .Should().Throw<Exception>(
                     "because paragraph was being removed while changing box content.");
         }
 

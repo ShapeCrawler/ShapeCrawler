@@ -24,8 +24,8 @@ namespace ShapeCrawler
         SCAutoFitType AutoFitType { get; }
         
         /// <summary>
-        ///     Gets value indicating whether text frame can be changed.
+        ///     Gets a value indicating whether text frame can be changed.
         /// </summary>
-        bool CanChange();
+        bool CanChange { get; }
     }
 }
