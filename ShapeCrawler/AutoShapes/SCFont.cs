@@ -1,5 +1,5 @@
-﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Wordprocessing;
+﻿using System;
+using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
@@ -10,7 +10,6 @@ using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
 using ShapeCrawler.Tables;
-using System;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -35,11 +34,11 @@ namespace ShapeCrawler.AutoShapes
             Shape parentShape;
             if (parentTextBoxContainer is SCTableCell cell)
             {
-                parentShape = (Shape) cell.Shape;
+                parentShape = (Shape)cell.Shape;
             }
             else
             {
-                parentShape = (Shape) portion.ParentParagraph.ParentTextBox.TextBoxContainer;
+                parentShape = (Shape)portion.ParentParagraph.ParentTextBox.TextBoxContainer;
             }
             this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements.FontScheme;
         }
@@ -111,7 +110,7 @@ namespace ShapeCrawler.AutoShapes
             A.RunProperties runPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
             return runPr != null;
         }
-        
+
         private string GetName()
         {
             const string majorLatinFont = "+mj-lt";
@@ -160,8 +159,8 @@ namespace ShapeCrawler.AutoShapes
 
             if (textBoxContainer is Shape { Placeholder: { } } parentShape)
             {
-                Placeholder placeholder = (Placeholder) parentShape.Placeholder;
-                IFontDataReader phReferencedShape = (IFontDataReader) placeholder.ReferencedShape;
+                Placeholder placeholder = (Placeholder)parentShape.Placeholder;
+                IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
                 FontData fontDataPlaceholder = new();
                 if (phReferencedShape != null)
                 {
@@ -195,7 +194,7 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                slideMaster = ((SCTableCell) textBoxContainer).SlideMasterInternal;
+                slideMaster = ((SCTableCell)textBoxContainer).SlideMasterInternal;
             }
 
             if (slideMaster.Presentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
@@ -309,7 +308,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetName(string fontName)
         {
-            Shape parentShape = (Shape) this.ParentPortion.ParentParagraph.ParentTextBox.TextBoxContainer;
+            Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextBox.TextBoxContainer;
             if (parentShape.Placeholder != null)
             {
                 throw new PlaceholderCannotBeChangedException();

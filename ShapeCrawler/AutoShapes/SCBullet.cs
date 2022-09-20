@@ -44,11 +44,10 @@ namespace ShapeCrawler.AutoShapes
             get { return this.character.Value; }
             set
             {
-                if (this.aParagraphProperties == null)
+                if (this.aParagraphProperties == null || this.Type != SCBulletType.Character)
+                {
                     return;
-
-                if (Type != BulletType.Character)
-                    return;
+                }
 
                 A.CharacterBullet? aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>();
                 if (aCharBullet == null)
@@ -70,11 +69,10 @@ namespace ShapeCrawler.AutoShapes
             get { return this.fontName.Value; }
             set
             {
-                if (this.aParagraphProperties == null)
+                if (this.aParagraphProperties == null || this.Type == SCBulletType.None)
+                {
                     return;
-
-                if (Type == BulletType.None)
-                    return;
+                }
 
                 A.BulletFont? aBulletFont = this.aParagraphProperties.GetFirstChild<A.BulletFont>();
                 if (aBulletFont == null)
@@ -95,7 +93,9 @@ namespace ShapeCrawler.AutoShapes
             set
             {
                 if (this.aParagraphProperties == null)
+                {
                     return;
+                }
 
                 A.BulletSizePercentage? aBulletSizePercent = this.aParagraphProperties.GetFirstChild<A.BulletSizePercentage>();
                 if (aBulletSizePercent == null)
@@ -111,7 +111,7 @@ namespace ShapeCrawler.AutoShapes
         /// <summary>
         ///     Gets bullet type.
         /// </summary>
-        public BulletType Type
+        public SCBulletType Type
         {
             get
             {
@@ -120,7 +120,9 @@ namespace ShapeCrawler.AutoShapes
             set
             {
                 if (this.aParagraphProperties == null)
+                {
                     return;
+                }
 
                 A.AutoNumberedBullet? aAutoNumeredBullet = this.aParagraphProperties.GetFirstChild<A.AutoNumberedBullet>();
                 this.aParagraphProperties.RemoveChild(aAutoNumeredBullet);
@@ -132,7 +134,7 @@ namespace ShapeCrawler.AutoShapes
                 this.aParagraphProperties.RemoveChild(aCharBullet);
 
 
-                if (value == BulletType.Numbered)
+                if (value == SCBulletType.Numbered)
                 {
                     var child = new AutoNumberedBullet();
                     // replace at property
@@ -140,13 +142,13 @@ namespace ShapeCrawler.AutoShapes
                     this.aParagraphProperties.AddChild(child);
                 }
 
-                if (value == BulletType.Picture)
+                if (value == SCBulletType.Picture)
                 {
                     var child = new PictureBullet();
                     this.aParagraphProperties.AddChild(child);
                 }
 
-                if (value == BulletType.Character)
+                if (value == SCBulletType.Character)
                 {
                     var child = new CharacterBullet();
                     this.aParagraphProperties.AddChild(child);
