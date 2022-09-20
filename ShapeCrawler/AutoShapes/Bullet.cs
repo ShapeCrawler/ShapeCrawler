@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -38,22 +39,121 @@ namespace ShapeCrawler.AutoShapes
         /// <summary>
         ///     Gets bullet character.
         /// </summary>
-        public string Character => this.character.Value;
+        public string Character
+        {
+            get { return this.character.Value; }
+            set
+            {
+                if (this.aParagraphProperties == null)
+                    return;
+
+                if (Type != BulletType.Character)
+                    return;
+
+                A.CharacterBullet? aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>();
+                if (aCharBullet == null)
+                {
+                    aCharBullet = new CharacterBullet();
+                    this.aParagraphProperties.AddChild(aCharBullet);
+                }
+
+                aCharBullet.Char = value;
+
+            }
+        }
 
         /// <summary>
         ///     Gets bullet font name.
         /// </summary>
-        public string FontName => this.fontName.Value;
+        public string FontName
+        {
+            get { return this.fontName.Value; }
+            set
+            {
+                if (this.aParagraphProperties == null)
+                    return;
+
+                if (Type == BulletType.None)
+                    return;
+
+                A.BulletFont? aBulletFont = this.aParagraphProperties.GetFirstChild<A.BulletFont>();
+                if (aBulletFont == null)
+                {
+                    aBulletFont = new BulletFont();
+                    this.aParagraphProperties.AddChild(aBulletFont);
+                }
+                aBulletFont.Typeface = value;
+            }
+        }
 
         /// <summary>
         ///     Gets bullet size.
         /// </summary>
-        public int Size => this.size.Value;
+        public int Size
+        {
+            get { return this.size.Value; }
+            set
+            {
+                if (this.aParagraphProperties == null)
+                    return;
+
+                A.BulletSizePercentage? aBulletSizePercent = this.aParagraphProperties.GetFirstChild<A.BulletSizePercentage>();
+                if (aBulletSizePercent == null)
+                {
+                    aBulletSizePercent = new A.BulletSizePercentage();
+                    this.aParagraphProperties.AddChild(aBulletSizePercent);
+                }
+
+                aBulletSizePercent.Val = value * 1000;
+            }
+        }
 
         /// <summary>
         ///     Gets bullet type.
         /// </summary>
-        public BulletType Type => this.type.Value;
+        public BulletType Type
+        {
+            get
+            {
+                return this.type.Value;
+            }
+            set
+            {
+                if (this.aParagraphProperties == null)
+                    return;
+
+                A.AutoNumberedBullet? aAutoNumeredBullet = this.aParagraphProperties.GetFirstChild<A.AutoNumberedBullet>();
+                this.aParagraphProperties.RemoveChild(aAutoNumeredBullet);
+
+                A.PictureBullet? aPictureBullet = this.aParagraphProperties.GetFirstChild<A.PictureBullet>();
+                this.aParagraphProperties.RemoveChild(aPictureBullet);
+
+                A.CharacterBullet? aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>();
+                this.aParagraphProperties.RemoveChild(aCharBullet);
+
+
+                if (value == BulletType.Numbered)
+                {
+                    var child = new AutoNumberedBullet();
+                    // replace at property
+                    child.Type = DocumentFormat.OpenXml.Drawing.TextAutoNumberSchemeValues.ArabicPeriod;
+                    this.aParagraphProperties.AddChild(child);
+                }
+
+                if (value == BulletType.Picture)
+                {
+                    var child = new PictureBullet();
+                    this.aParagraphProperties.AddChild(child);
+                }
+
+                if (value == BulletType.Character)
+                {
+                    var child = new CharacterBullet();
+                    this.aParagraphProperties.AddChild(child);
+                }
+            }
+
+        }
 
         #endregion Public Properties
 

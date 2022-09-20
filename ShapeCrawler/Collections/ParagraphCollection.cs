@@ -39,11 +39,12 @@ namespace ShapeCrawler.Texts
         }
 
         #endregion Public Properties
-        
+
         public IParagraph Add()
         {
             var lastAParagraph = this.paragraphs.Value.Last().AParagraph;
             var newAParagraph = (A.Paragraph)lastAParagraph.CloneNode(true);
+            newAParagraph.ParagraphProperties ??= new A.ParagraphProperties();
             lastAParagraph.InsertAfterSelf(newAParagraph);
 
             var newParagraph = new SCParagraph(newAParagraph, this.textBox)

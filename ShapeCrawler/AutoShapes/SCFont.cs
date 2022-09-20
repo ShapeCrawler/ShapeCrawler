@@ -1,5 +1,5 @@
-﻿using System;
-using DocumentFormat.OpenXml;
+﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Wordprocessing;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
@@ -10,6 +10,7 @@ using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
 using ShapeCrawler.Tables;
+using System;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -34,11 +35,11 @@ namespace ShapeCrawler.AutoShapes
             Shape parentShape;
             if (parentTextBoxContainer is SCTableCell cell)
             {
-                parentShape = (Shape)cell.Shape;
+                parentShape = (Shape) cell.Shape;
             }
             else
             {
-                parentShape = (Shape)portion.ParentParagraph.ParentTextBox.TextBoxContainer;
+                parentShape = (Shape) portion.ParentParagraph.ParentTextBox.TextBoxContainer;
             }
             this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements.FontScheme;
         }
@@ -67,6 +68,36 @@ namespace ShapeCrawler.AutoShapes
         {
             get => this.GetItalicFlag();
             set => this.SetItalicFlag(value);
+        }
+
+        public DocumentFormat.OpenXml.Drawing.TextUnderlineValues Underline
+        {
+            get
+            {
+                A.RunProperties aRunProperties = this.aText.Parent.GetFirstChild<A.RunProperties>();
+                return aRunProperties?.Underline?.Value ?? A.TextUnderlineValues.None;
+            }
+            set
+            {
+                A.RunProperties aRunPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
+                if (aRunPr != null)
+                {
+                    aRunPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
+                }
+                else
+                {
+                    A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                    if (aEndParaRPr != null)
+                    {
+                        aEndParaRPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
+                    }
+                    else
+                    {
+                        var runProp = this.aText.Parent.AddRunProperties();
+                        runProp.Underline = new EnumValue<A.TextUnderlineValues>(value);
+                    }
+                }
+            }
         }
 
         public IColorFormat ColorFormat => this.colorFormat.Value;
@@ -102,7 +133,7 @@ namespace ShapeCrawler.AutoShapes
                 return aLatinFont;
             }
 
-            FontData phFontData = new ();
+            FontData phFontData = new();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
             {
                 if (phFontData.ALatinFont != null)
@@ -129,9 +160,9 @@ namespace ShapeCrawler.AutoShapes
 
             if (textBoxContainer is Shape { Placeholder: { } } parentShape)
             {
-                Placeholder placeholder = (Placeholder)parentShape.Placeholder;
-                IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
-                FontData fontDataPlaceholder = new ();
+                Placeholder placeholder = (Placeholder) parentShape.Placeholder;
+                IFontDataReader phReferencedShape = (IFontDataReader) placeholder.ReferencedShape;
+                FontData fontDataPlaceholder = new();
                 if (phReferencedShape != null)
                 {
                     phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
@@ -191,7 +222,7 @@ namespace ShapeCrawler.AutoShapes
                 return true;
             }
 
-            FontData phFontData = new ();
+            FontData phFontData = new();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
             if (phFontData.IsBold != null)
             {
@@ -214,7 +245,7 @@ namespace ShapeCrawler.AutoShapes
                 return true;
             }
 
-            FontData phFontData = new ();
+            FontData phFontData = new();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
             if (phFontData.IsItalic != null)
             {
@@ -233,7 +264,7 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                FontData phFontData = new ();
+                FontData phFontData = new();
                 FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
                 if (phFontData.IsBold != null)
                 {
@@ -278,7 +309,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetName(string fontName)
         {
-            Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextBox.TextBoxContainer;
+            Shape parentShape = (Shape) this.ParentPortion.ParentParagraph.ParentTextBox.TextBoxContainer;
             if (parentShape.Placeholder != null)
             {
                 throw new PlaceholderCannotBeChangedException();
