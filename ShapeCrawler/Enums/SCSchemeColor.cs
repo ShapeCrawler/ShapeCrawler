@@ -1,5 +1,8 @@
 ﻿namespace ShapeCrawler
 {
+    /// <summary>
+    ///     Scheme color name.
+    /// </summary>
     public enum SCSchemeColor
     {
         NotDefined = 0,

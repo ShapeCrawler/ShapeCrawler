@@ -24,6 +24,14 @@ namespace ShapeCrawler.SlideMasters
             this.slideLayouts = new ResettableLazy<List<SCSlideLayout>>(this.GetSlideLayouts);
         }
         
+        public SCImage Background => this.GetBackground();
+
+        public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
+
+        public IShapeCollection Shapes => ShapeCollection.ForSlideLayout(this.PSlideMaster.CommonSlideData.ShapeTree, this);
+
+        public override bool IsRemoved { get; set; }
+        
         internal P.SlideMaster PSlideMaster { get; }
 
         internal SCPresentation Presentation { get; }
@@ -38,18 +46,18 @@ namespace ShapeCrawler.SlideMasters
 
         internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
 
-        private List<SCSlideLayout> GetSlideLayouts()
+        internal override TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
+
+        public override void ThrowIfRemoved()
         {
-            IEnumerable<SlideLayoutPart> sldLayoutParts = this.PSlideMaster.SlideMasterPart.SlideLayoutParts;
-            var slideLayouts = new List<SCSlideLayout>(sldLayoutParts.Count());
-            foreach (SlideLayoutPart sldLayoutPart in sldLayoutParts)
+            if (IsRemoved)
             {
-                slideLayouts.Add(new SCSlideLayout(this, sldLayoutPart));
+                throw new ElementIsRemovedException("Slide MAster is removed");
             }
-
-            return slideLayouts;
+            
+            this.Presentation.ThrowIfClosed();
         }
-
+        
         internal bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
         {
             Dictionary<int, FontData> bodyParaLvlToFontData =
@@ -86,30 +94,22 @@ namespace ShapeCrawler.SlideMasters
             fontSize = -1;
             return false;
         }
-
-        public SCImage Background => GetBackground();
-
+        
         private SCImage GetBackground()
         {
             return null;
         }
-
-        public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
-
-        public IShapeCollection Shapes => ShapeCollection.ForSlideLayout(this.PSlideMaster.CommonSlideData.ShapeTree, this);
-
-        public override bool IsRemoved { get; set; }
-
-        public override void ThrowIfRemoved()
+        
+        private List<SCSlideLayout> GetSlideLayouts()
         {
-            if (IsRemoved)
+            IEnumerable<SlideLayoutPart> sldLayoutParts = this.PSlideMaster.SlideMasterPart.SlideLayoutParts;
+            var slideLayouts = new List<SCSlideLayout>(sldLayoutParts.Count());
+            foreach (SlideLayoutPart sldLayoutPart in sldLayoutParts)
             {
-                throw new ElementIsRemovedException("Slide MAster is removed");
+                slideLayouts.Add(new SCSlideLayout(this, sldLayoutPart));
             }
-            
-            this.Presentation.ThrowIfClosed();
-        }
 
-        internal override TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
+            return slideLayouts;
+        }
     }
 }

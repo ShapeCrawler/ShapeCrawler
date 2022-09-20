@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -12,28 +11,22 @@ using Font = System.Drawing.Font;
 
 namespace ShapeCrawler.AutoShapes
 {
-    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrawler")]
-    internal class SCTextBox : ITextBox
+    internal class TextFrame : ITextFrame
     {
         private readonly ResettableLazy<string> text;
         private readonly ResettableLazy<ParagraphCollection> paragraphs;
 
-        internal SCTextBox(ITextBoxContainer textBoxContainer, OpenXmlCompositeElement txBodyElement)
+        internal TextFrame(ITextFrameContainer textBoxContainer, OpenXmlCompositeElement txBodyElement)
             : this(textBoxContainer)
         {
             this.APTextBody = txBodyElement;
         }
-        
-        internal SCTextBox(ITextBoxContainer textBoxContainer)
+
+        private TextFrame(ITextFrameContainer textBoxContainer)
         {
             this.TextBoxContainer = textBoxContainer;
             this.text = new ResettableLazy<string>(this.GetText);
             this.paragraphs = new ResettableLazy<ParagraphCollection>(this.GetParagraphs);
-        }
-
-        private ParagraphCollection GetParagraphs()
-        {
-            return new ParagraphCollection(this);
         }
 
         public IParagraphCollection Paragraphs => this.paragraphs.Value;
@@ -44,43 +37,62 @@ namespace ShapeCrawler.AutoShapes
             set => this.SetText(value);
         }
 
-        public AutofitType AutofitType => this.ParseAutofitType();
+        public SCAutoFitType AutoFitType => this.GetAutoFitType();
+        
+        internal ITextFrameContainer TextBoxContainer { get; }
 
-        /// <summary>
-        ///     Gets parent text box container.
-        /// </summary>
-        internal ITextBoxContainer TextBoxContainer { get; }
-
+        // ReSharper disable once InconsistentNaming
         internal OpenXmlCompositeElement? APTextBody { get; }
+
+        public bool CanChange()
+        {
+            throw new NotImplementedException();
+        }
 
         internal void ThrowIfRemoved()
         {
             this.TextBoxContainer.ThrowIfRemoved();
         }
 
-        private AutofitType ParseAutofitType()
+        private ParagraphCollection GetParagraphs()
         {
+            return new ParagraphCollection(this);
+        }
+
+        private SCAutoFitType GetAutoFitType()
+        {
+            if (this.APTextBody == null)
+            {
+                return SCAutoFitType.None; 
+            }
+            
             var aBodyPr = this.APTextBody.GetFirstChild<A.BodyProperties>();
             if (aBodyPr!.GetFirstChild<A.NormalAutoFit>() != null)
             {
-                return AutofitType.Shrink;
+                return SCAutoFitType.Shrink;
             }
 
             if (aBodyPr.GetFirstChild<A.ShapeAutoFit>() != null)
             {
-                return AutofitType.Resize;
+                return SCAutoFitType.Resize;
             }
 
-            return AutofitType.None;
+            return SCAutoFitType.None;
         }
 
         private void SetText(string newText)
         {
-            var baseParagraph = this.Paragraphs.First(p => p.Portions.Any());
+            var baseParagraph = this.Paragraphs.FirstOrDefault(p => p.Portions.Any());
+            if (baseParagraph == null)
+            {
+                baseParagraph = this.Paragraphs.First();
+                baseParagraph.AddPortion(newText);
+            }
+
             var removingParagraphs = this.Paragraphs.Where(p => p != baseParagraph);
             this.Paragraphs.Remove(removingParagraphs);
 
-            if (this.AutofitType == AutofitType.Shrink)
+            if (this.AutoFitType == SCAutoFitType.Shrink)
             {
                 var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
                     .First().First();
@@ -100,8 +112,7 @@ namespace ShapeCrawler.AutoShapes
                     var font = new Font(fontFamilyName, fontSize);
                     graphic.MeasureString(newText, font, availSize, stringFormat, out charsFitted, out _);
                     fontSize--;
-                }
-                while (newText.Length != charsFitted);
+                } while (newText.Length != charsFitted);
 
                 var paragraphInternal = (SCParagraph)baseParagraph;
                 paragraphInternal.SetFontSize(fontSize);
@@ -116,7 +127,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 return string.Empty;
             }
-            
+
             var sb = new StringBuilder();
             sb.Append(this.Paragraphs[0].Text);
 

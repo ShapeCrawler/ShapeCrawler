@@ -2,6 +2,9 @@
 
 namespace ShapeCrawler.Charts
 {
+    /// <summary>
+    ///     Represents a Scatter Chart.
+    /// </summary>
     public interface IScatterChart : IChart
     {
     }

@@ -10,11 +10,6 @@ namespace ShapeCrawler
     public interface IParagraph
     {
         /// <summary>
-        /// Add text to paragraph.
-        /// </summary>
-        void AddPortion(string text);
-
-        /// <summary>
         ///     Gets or sets paragraph text.
         /// </summary>
         string Text { get; set; }
@@ -27,11 +22,16 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets paragraph bullet. Returns <c>NULL</c> if bullet does not exist.
         /// </summary>
-        Bullet Bullet { get; }
+        SCBullet Bullet { get; }
 
         /// <summary>
         ///     Gets or sets the text alignment.
         /// </summary>
         TextAlignment Alignment { get; set; }
+        
+        /// <summary>
+        ///     Adds new text portion in paragraph.
+        /// </summary>
+        void AddPortion(string text);
     }
 }

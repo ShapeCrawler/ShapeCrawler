@@ -34,3 +34,16 @@ dotnet_diagnostic.SA1413.severity = none
 # SA1633FileMustHaveHeader
 dotnet_diagnostic.SA1633.severity = none
 
+# A property should not follow a method
+dotnet_diagnostic.SA1201.severity = error
+
+# CurlyBracketsMustNotBeOmitted
+dotnet_diagnostic.SA1503.severity = error
+
+dotnet_diagnostic.SA1005.severity = error
+dotnet_diagnostic.SA1600.severity = error
+dotnet_diagnostic.SA1202.severity = error
+dotnet_diagnostic.SA1300.severity = error
+
+
+

@@ -12,13 +12,13 @@ namespace ShapeCrawler.Placeholders
         /// <summary>
         ///     Gets or sets placeholder type.
         /// </summary>
-        public PlaceholderType PlaceholderType { get; set; }
+        internal PlaceholderType PlaceholderType { get; set; }
 
         /// <summary>
         ///     Gets or sets index (p:ph idx="12345").
         /// </summary>
         /// <returns>Index value or null if such index not exist.</returns>
-        public int? Index { get; set; }
+        internal int? Index { get; set; }
 
         #endregion Properties
 
@@ -53,13 +53,12 @@ namespace ShapeCrawler.Placeholders
 
             var ph = (PlaceholderData) obj;
 
-            return Equals(ph);
+            return this.Equals(ph);
         }
 
         /// <summary>
         ///     Returns the hash calculating upon the formula suggested here: https://stackoverflow.com/a/263416/2948684
         /// </summary>
-        /// <remarks></remarks>
         public override int GetHashCode()
         {
             var hash = 17;

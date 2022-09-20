@@ -2,9 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
+// ReSharper disable SuggestBaseTypeForParameter
 
+// ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Collections
 {
     /// <summary>
@@ -19,7 +22,7 @@ namespace ShapeCrawler.Collections
         /// </summary>
         public PortionCollection(A.Paragraph aParagraph, SCParagraph paragraph)
         {
-            this.portions = new ResettableLazy<List<SCPortion>>(() => this.GetPortions(aParagraph, paragraph));
+            this.portions = new ResettableLazy<List<SCPortion>>(() => GetPortions(aParagraph, paragraph));
         }
 
         /// <inheritdoc/>
@@ -53,14 +56,19 @@ namespace ShapeCrawler.Collections
         {
             return this.portions.Value.GetEnumerator();
         }
-
-        private List<SCPortion> GetPortions (A.Paragraph aParagraph, SCParagraph paragraph)
+        
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            IEnumerable<A.Run> aRuns = aParagraph.Elements<A.Run>();
+            return this.GetEnumerator();
+        }
+
+        private static List<SCPortion> GetPortions(A.Paragraph aParagraph, SCParagraph paragraph)
+        {
+            var aRuns = aParagraph.Elements<A.Run>();
             if (aRuns.Any())
             {
                 var runPortions = new List<SCPortion>(aRuns.Count());
-                foreach (A.Run aRun in aRuns)
+                foreach (var aRun in aRuns)
                 {
                     runPortions.Add(new SCPortion(aRun.Text, paragraph));
                 }
@@ -68,20 +76,15 @@ namespace ShapeCrawler.Collections
                 return runPortions;
             }
 
-            A.Field aField = aParagraph.GetFirstChild<A.Field>();
+            var aField = aParagraph.GetFirstChild<A.Field>();
             if (aField != null)
             {
-                A.Text aText = aParagraph.GetFirstChild<A.Field>().GetFirstChild<A.Text>();
-                var aFieldPortions = new List<SCPortion>(new[] {new SCPortion(aText, paragraph)});
+                var aText = aField.GetFirstChild<A.Text>();
+                var aFieldPortions = new List<SCPortion>(new[] { new SCPortion(aText, paragraph) });
                 return aFieldPortions;
             }
 
             return new List<SCPortion>();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
         }
     }
 }

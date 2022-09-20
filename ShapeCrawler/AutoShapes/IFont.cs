@@ -1,9 +1,10 @@
 ﻿using ShapeCrawler.Drawing;
 
-namespace ShapeCrawler.AutoShapes
+// ReSharper disable once CheckNamespace
+namespace ShapeCrawler
 {
     /// <summary>
-    ///     Represents a font.
+    ///     Represents font.
     /// </summary>
     public interface IFont
     {
@@ -40,6 +41,6 @@ namespace ShapeCrawler.AutoShapes
         /// <summary>
         ///     Gets value indicating whether font size can be changed.
         /// </summary>
-        bool SizeCanBeChanged();
+        bool CanChangeSize();
     }
 }

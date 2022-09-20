@@ -1,6 +1,9 @@
 ﻿namespace ShapeCrawler
 {
-    public enum BulletType
+    /// <summary>
+    ///     Paragraph bullet type.
+    /// </summary>
+    public enum SCBulletType
     {
         Numbered,
         Picture,
