@@ -69,6 +69,36 @@ namespace ShapeCrawler.AutoShapes
             set => this.SetItalicFlag(value);
         }
 
+        public DocumentFormat.OpenXml.Drawing.TextUnderlineValues Underline
+        {
+            get
+            {
+                A.RunProperties aRunProperties = this.aText.Parent.GetFirstChild<A.RunProperties>();
+                return aRunProperties?.Underline?.Value ?? A.TextUnderlineValues.None;
+            }
+            set
+            {
+                A.RunProperties aRunPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
+                if (aRunPr != null)
+                {
+                    aRunPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
+                }
+                else
+                {
+                    A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                    if (aEndParaRPr != null)
+                    {
+                        aEndParaRPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
+                    }
+                    else
+                    {
+                        var runProp = this.aText.Parent.AddRunProperties();
+                        runProp.Underline = new EnumValue<A.TextUnderlineValues>(value);
+                    }
+                }
+            }
+        }
+
         public IColorFormat ColorFormat => this.colorFormat.Value;
 
         #endregion Public Properties
@@ -80,7 +110,7 @@ namespace ShapeCrawler.AutoShapes
             A.RunProperties runPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
             return runPr != null;
         }
-        
+
         private string GetName()
         {
             const string majorLatinFont = "+mj-lt";
@@ -102,7 +132,7 @@ namespace ShapeCrawler.AutoShapes
                 return aLatinFont;
             }
 
-            FontData phFontData = new ();
+            FontData phFontData = new();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
             {
                 if (phFontData.ALatinFont != null)
@@ -131,7 +161,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 Placeholder placeholder = (Placeholder)parentShape.Placeholder;
                 IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
-                FontData fontDataPlaceholder = new ();
+                FontData fontDataPlaceholder = new();
                 if (phReferencedShape != null)
                 {
                     phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
@@ -191,7 +221,7 @@ namespace ShapeCrawler.AutoShapes
                 return true;
             }
 
-            FontData phFontData = new ();
+            FontData phFontData = new();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
             if (phFontData.IsBold != null)
             {
@@ -214,7 +244,7 @@ namespace ShapeCrawler.AutoShapes
                 return true;
             }
 
-            FontData phFontData = new ();
+            FontData phFontData = new();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
             if (phFontData.IsItalic != null)
             {
@@ -233,7 +263,7 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                FontData phFontData = new ();
+                FontData phFontData = new();
                 FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
                 if (phFontData.IsBold != null)
                 {

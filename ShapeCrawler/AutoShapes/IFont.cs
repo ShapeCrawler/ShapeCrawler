@@ -29,6 +29,11 @@ namespace ShapeCrawler
         bool IsItalic { get; set; }
 
         /// <summary>
+        ///     Gets or sets a value underline 
+        /// </summary>
+        DocumentFormat.OpenXml.Drawing.TextUnderlineValues Underline { get; set; }
+
+        /// <summary>
         ///     Gets font color.
         /// </summary>
         IColorFormat ColorFormat { get; }
