@@ -47,12 +47,18 @@ namespace ShapeCrawler
             return this.paragraphs.Value.GetEnumerator();
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
         #endregion Public Properties
-        
+
         public IParagraph Add()
         {
             var lastAParagraph = this.paragraphs.Value.Last().AParagraph;
             var newAParagraph = (A.Paragraph)lastAParagraph.CloneNode(true);
+            newAParagraph.ParagraphProperties ??= new A.ParagraphProperties();
             lastAParagraph.InsertAfterSelf(newAParagraph);
 
             var newParagraph = new SCParagraph(newAParagraph, this.textBox)
@@ -64,12 +70,7 @@ namespace ShapeCrawler
 
             return newParagraph;
         }
-        
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-        
+
         public void Remove(IEnumerable<IParagraph> removeParagraphs)
         {
             foreach (var paragraph in removeParagraphs.Cast<SCParagraph>())

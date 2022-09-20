@@ -132,7 +132,7 @@ namespace ShapeCrawler.AutoShapes
                 return aLatinFont;
             }
 
-            FontData phFontData = new();
+            FontData phFontData = new ();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
             {
                 if (phFontData.ALatinFont != null)
@@ -161,7 +161,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 Placeholder placeholder = (Placeholder)parentShape.Placeholder;
                 IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
-                FontData fontDataPlaceholder = new();
+                FontData fontDataPlaceholder = new ();
                 if (phReferencedShape != null)
                 {
                     phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
@@ -221,7 +221,7 @@ namespace ShapeCrawler.AutoShapes
                 return true;
             }
 
-            FontData phFontData = new();
+            FontData phFontData = new ();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
             if (phFontData.IsBold != null)
             {
@@ -244,7 +244,7 @@ namespace ShapeCrawler.AutoShapes
                 return true;
             }
 
-            FontData phFontData = new();
+            FontData phFontData = new ();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
             if (phFontData.IsItalic != null)
             {
@@ -263,7 +263,7 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                FontData phFontData = new();
+                FontData phFontData = new ();
                 FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
                 if (phFontData.IsBold != null)
                 {
