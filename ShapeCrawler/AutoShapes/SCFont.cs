@@ -30,7 +30,7 @@ namespace ShapeCrawler.AutoShapes
             this.latinFont = new ResettableLazy<A.LatinFont>(this.GetALatinFont);
             this.colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
             this.ParentPortion = portion;
-            var parentTextBoxContainer = portion.ParentParagraph.ParentTextBox.TextBoxContainer;
+            var parentTextBoxContainer = portion.ParentParagraph.ParentTextBox.TextFrameContainer;
             Shape parentShape;
             if (parentTextBoxContainer is SCTableCell cell)
             {
@@ -38,7 +38,7 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                parentShape = (Shape)portion.ParentParagraph.ParentTextBox.TextBoxContainer;
+                parentShape = (Shape)portion.ParentParagraph.ParentTextBox.TextFrameContainer;
             }
             this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements.FontScheme;
         }
@@ -132,7 +132,7 @@ namespace ShapeCrawler.AutoShapes
                 return aLatinFont;
             }
 
-            FontData phFontData = new();
+            FontData phFontData = new ();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
             {
                 if (phFontData.ALatinFont != null)
@@ -154,14 +154,14 @@ namespace ShapeCrawler.AutoShapes
             }
 
             var parentParagraph = this.ParentPortion.ParentParagraph;
-            var textBoxContainer = parentParagraph.ParentTextBox.TextBoxContainer;
+            var textBoxContainer = parentParagraph.ParentTextBox.TextFrameContainer;
             int paragraphLvl = parentParagraph.Level;
 
             if (textBoxContainer is Shape { Placeholder: { } } parentShape)
             {
                 Placeholder placeholder = (Placeholder)parentShape.Placeholder;
                 IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
-                FontData fontDataPlaceholder = new();
+                FontData fontDataPlaceholder = new ();
                 if (phReferencedShape != null)
                 {
                     phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
@@ -221,7 +221,7 @@ namespace ShapeCrawler.AutoShapes
                 return true;
             }
 
-            FontData phFontData = new();
+            FontData phFontData = new ();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
             if (phFontData.IsBold != null)
             {
@@ -244,7 +244,7 @@ namespace ShapeCrawler.AutoShapes
                 return true;
             }
 
-            FontData phFontData = new();
+            FontData phFontData = new ();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
             if (phFontData.IsItalic != null)
             {
@@ -263,7 +263,7 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                FontData phFontData = new();
+                FontData phFontData = new ();
                 FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
                 if (phFontData.IsBold != null)
                 {
@@ -308,7 +308,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetName(string fontName)
         {
-            Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextBox.TextBoxContainer;
+            Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextBox.TextFrameContainer;
             if (parentShape.Placeholder != null)
             {
                 throw new PlaceholderCannotBeChangedException();

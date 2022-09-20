@@ -62,10 +62,10 @@ namespace ShapeCrawler.Placeholders
         public override int GetHashCode()
         {
             var hash = 17;
-            hash = hash * 23 + PlaceholderType.GetHashCode();
-            if (PlaceholderType == PlaceholderType.Custom)
+            hash = hash * 23 + this.PlaceholderType.GetHashCode();
+            if (this.PlaceholderType == PlaceholderType.Custom)
             {
-                hash = hash * 23 + Index.GetHashCode();
+                hash = hash * 23 + this.Index.GetHashCode();
             }
 
             return hash;

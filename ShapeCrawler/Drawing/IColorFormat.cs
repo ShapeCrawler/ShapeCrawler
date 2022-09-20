@@ -44,7 +44,7 @@ namespace ShapeCrawler.Drawing
         internal ColorFormat(SCFont parentFont)
         {
             this.parentFont = parentFont;
-            this.textBoxContainer = parentFont.ParentPortion.ParentParagraph.ParentTextBox.TextBoxContainer;
+            this.textBoxContainer = parentFont.ParentPortion.ParentParagraph.ParentTextBox.TextFrameContainer;
             var shape = (Shape)this.textBoxContainer.Shape;
             this.parentSlideMaster = shape.SlideMasterInternal;
         }
@@ -142,7 +142,7 @@ namespace ShapeCrawler.Drawing
 
         private bool TryFromTextBody(SCParagraph paragraph)
         {
-            A.ListStyle txBodyListStyle = paragraph.ParentTextBox.APTextBody.GetFirstChild<A.ListStyle>();
+            A.ListStyle txBodyListStyle = paragraph.ParentTextBox.TextBodyElement.GetFirstChild<A.ListStyle>();
             Dictionary<int, FontData> paraLvlToFontData = FontDataParser.FromCompositeElement(txBodyListStyle);
             if (!paraLvlToFontData.TryGetValue(paragraph.Level, out FontData txBodyFontData))
             {

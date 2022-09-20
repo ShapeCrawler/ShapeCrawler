@@ -11,8 +11,8 @@ namespace ShapeCrawler.Placeholders
         {
             Check.NotNull(phData, nameof(phData));
 
-            PlaceholderType = phData.PlaceholderType;
-            Index = phData.Index;
+            this.PlaceholderType = phData.PlaceholderType;
+            this.Index = phData.Index;
         }
 
         /// <summary>

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ShapeCrawler.Collections
+// ReSharper disable once CheckNamespace
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a collections of Slide Masters.

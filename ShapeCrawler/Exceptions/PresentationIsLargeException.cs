@@ -6,7 +6,7 @@ namespace ShapeCrawler.Exceptions
     /// <summary>
     ///     Thrown when presentation size is more than allowable.
     /// </summary>
-    public class PresentationIsLargeException : ShapeCrawlerException
+    internal class PresentationIsLargeException : ShapeCrawlerException
     {
         private PresentationIsLargeException(string message)
             : base(message, (int)ExceptionCode.PresentationIsLargeException)

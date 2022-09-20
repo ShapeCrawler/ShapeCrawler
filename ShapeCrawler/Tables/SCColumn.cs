@@ -6,7 +6,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a table's column.
     /// </summary>
-    public class SCColumn
+    public class SCColumn // TODO: extract interface
     {
         internal SCColumn(A.GridColumn aGridColumn)
         {

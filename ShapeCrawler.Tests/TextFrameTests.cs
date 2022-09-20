@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Statics;
 using ShapeCrawler.Tests.Helpers;
@@ -19,11 +17,11 @@ using Xunit;
 
 namespace ShapeCrawler.Tests
 {
-    public class TextBoxTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
+    public class TextFrameTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     {
         private readonly PresentationFixture _fixture;
 
-        public TextBoxTests(PresentationFixture fixture)
+        public TextFrameTests(PresentationFixture fixture)
         {
             _fixture = fixture;
         }
@@ -32,22 +30,20 @@ namespace ShapeCrawler.Tests
         public void Text_GetterReturnsShapeTextWhichIsParagraphTextsAggregate()
         {
             // Arrange
-            ITextFrame textBoxCase1 = ((IAutoShape)_fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2)).TextFrame;
-            ITextFrame textBoxCase2 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 5)).TextFrame;
-            ITextFrame textBoxCase3 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 6)).TextFrame;
-            ITextFrame textBoxCase5 = ((IAutoShape)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2)).TextFrame;
-            ITextFrame textBoxCase6 = ((IAutoShape)_fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61)).TextFrame;
-            ITextFrame textBoxCase7 = ((IAutoShape)_fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5)).TextFrame;
-            ITextFrame textBoxCase8 = ((IAutoShape)_fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 54275)).TextFrame;
-            ITextFrame textBoxCase9 = ((IAutoShape)_fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3)).TextFrame;
-            ITextFrame textBoxCase10 = ((IAutoShape)_fixture.Pre021.Slides[3].Shapes.First(sp => sp.Id == 2)).TextFrame;
-            ITextFrame textBoxCase11 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 2)).TextFrame;
-            ITextFrame textBoxCase12 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 3)).TextFrame;
-            ITextFrame textBoxCase13 = ((IAutoShape)_fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 2)).TextFrame;
-            ITextFrame textBoxCase14 = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
-                .TextFrame;
-            ITextFrame textBoxCase4 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
-                .TextFrame;
+            var textBoxCase1 = ((IAutoShape)_fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2)).TextFrame;
+            var textBoxCase2 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 5)).TextFrame;
+            var textBoxCase3 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 6)).TextFrame;
+            var textBoxCase5 = ((IAutoShape)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2)).TextFrame;
+            var textBoxCase6 = ((IAutoShape)_fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61)).TextFrame;
+            var textBoxCase7 = ((IAutoShape)_fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5)).TextFrame;
+            var textBoxCase8 = ((IAutoShape)_fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 54275)).TextFrame;
+            var textBoxCase9 = ((IAutoShape)_fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3)).TextFrame;
+            var textBoxCase10 = ((IAutoShape)_fixture.Pre021.Slides[3].Shapes.First(sp => sp.Id == 2)).TextFrame;
+            var textBoxCase11 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 2)).TextFrame;
+            var textBoxCase12 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 3)).TextFrame;
+            var textBoxCase13 = ((IAutoShape)_fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 2)).TextFrame;
+            var textBoxCase14 = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextFrame;
+            var textBoxCase4 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextFrame;
 
             // Act-Assert
             textBoxCase1.Text.Should().BeEquivalentTo("Title text");
@@ -106,7 +102,7 @@ namespace ShapeCrawler.Tests
                     ShapeId = 3
                 };
                 testCases.Add(case1);
-
+                
                 var case2 = new TestElementQuery
                 {
                     Presentation = SCPresentation.Open(GetTestStream("020.pptx")),
@@ -114,14 +110,6 @@ namespace ShapeCrawler.Tests
                     ShapeId = 8
                 };
                 testCases.Add(case2);
-
-                var case3 = new TestElementQuery
-                {
-                    Presentation = SCPresentation.Open(GetTestStream("001.pptx")),
-                    SlideIndex = 1,
-                    ShapeId = 2
-                };
-                testCases.Add(case3);
 
                 return testCases;
             }
@@ -310,7 +298,7 @@ namespace ShapeCrawler.Tests
 
             // Act-Assert
             paragraph.Invoking(p => p.Text = "new paragraph text")
-                .Should().Throw<ElementIsRemovedException>(
+                .Should().Throw<Exception>(
                     "because paragraph was being removed while changing box content.");
         }
 
