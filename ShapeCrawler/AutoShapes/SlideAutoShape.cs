@@ -40,9 +40,9 @@ namespace ShapeCrawler
 
         private TextFrame? GetTextBox()
         {
-            var pTxBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
-            var canChangeTextFrame = this.Placeholder == null;
-            return pTxBody == null ? null : new TextFrame(this, pTxBody,canChangeTextFrame);
+            var pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
+            var canChangeTextFrame = this.Placeholder is { Type: PlaceholderType.Title } or null;
+            return pTextBody == null ? null : new TextFrame(this, pTextBody, canChangeTextFrame);
         }
 
         private ShapeFill GetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()

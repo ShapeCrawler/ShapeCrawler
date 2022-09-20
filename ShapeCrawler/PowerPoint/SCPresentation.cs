@@ -88,7 +88,7 @@ namespace ShapeCrawler
 
         internal SCSectionCollection SectionsInternal => (SCSectionCollection)this.Sections;
 
-        internal List<ChartWorkbook> ChartWorkbooks { get; } = new();
+        internal List<ChartWorkbook> ChartWorkbooks { get; } = new ();
 
         internal Dictionary<int, FontData> ParaLvlToFontData => this.paraLvlToFontData.Value;
 

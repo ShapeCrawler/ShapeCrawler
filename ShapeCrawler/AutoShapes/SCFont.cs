@@ -164,7 +164,7 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                slideMaster = ((SCTableCell) textBoxContainer).SlideMasterInternal;
+                slideMaster = ((SCTableCell)textBoxContainer).SlideMasterInternal;
             }
 
             if (slideMaster.Presentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
