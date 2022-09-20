@@ -126,8 +126,8 @@ namespace ShapeCrawler.Tests
         public void Size_Getter_returns_font_size_of_Placeholder()
         {
             // Arrange
-            IAutoShape autoShapeCase1 = (IAutoShape) _fixture.Pre028.Slides[0].Shapes.First(sp => sp.Id == 4098);
-            IAutoShape autoShapeCase2 = (IAutoShape) _fixture.Pre029.Slides[0].Shapes.First(sp => sp.Id == 3);
+            IAutoShape autoShapeCase1 = (IAutoShape)_fixture.Pre028.Slides[0].Shapes.First(sp => sp.Id == 4098);
+            IAutoShape autoShapeCase2 = (IAutoShape)_fixture.Pre029.Slides[0].Shapes.First(sp => sp.Id == 3);
             IPortion portionC1 = autoShapeCase1.TextFrame.Paragraphs[0].Portions[0];
             IPortion portionC2 = autoShapeCase2.TextFrame.Paragraphs[0].Portions[0];
 
@@ -140,7 +140,7 @@ namespace ShapeCrawler.Tests
         public void Size_Getter_returns_Font_Size_of_Non_Placeholder_Table()
         {
             // Arrange
-            var table = (ITable) this._fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3);
+            var table = (ITable)this._fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3);
             var cellPortion = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0];
 
             // Act-Assert
@@ -248,7 +248,7 @@ namespace ShapeCrawler.Tests
         public void IsBold_Setter_AddsBoldForPlaceholderTextFont(TestElementQuery portionQuery)
         {
             // Arrange
-            MemoryStream mStream = new ();
+            MemoryStream mStream = new();
             var portion = portionQuery.GetParagraphPortion();
             var pres = portionQuery.Presentation;
 
@@ -275,7 +275,7 @@ namespace ShapeCrawler.Tests
             portionRequestCase1.PortionIndex = 0;
 
             TestElementQuery portionRequestCase2 = new();
-            portionRequestCase2.Presentation = SCPresentation.Open(Resources._026); 
+            portionRequestCase2.Presentation = SCPresentation.Open(Resources._026);
             portionRequestCase2.SlideIndex = 0;
             portionRequestCase2.ShapeId = 128;
             portionRequestCase2.ParagraphIndex = 0;
@@ -356,6 +356,28 @@ namespace ShapeCrawler.Tests
             placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
             portion = placeholderAutoShape.TextFrame.Paragraphs[0].Portions[0];
             portion.Font.IsItalic.Should().BeFalse();
+        }
+
+        [Fact]
+        public void Underline_SetUnderlineFont_WhenValueEqualsSetPassed()
+        {
+            // Arrange
+            var mStream = new MemoryStream();
+            IPresentation presentation = SCPresentation.Open(Resources._020);
+            IAutoShape placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
+            IPortion portion = placeholderAutoShape.TextFrame.Paragraphs[0].Portions[0];
+
+            // Act
+            portion.Font.Underline = DocumentFormat.OpenXml.Drawing.TextUnderlineValues.Single;
+
+            // Assert
+            portion.Font.Underline.Should().Be(DocumentFormat.OpenXml.Drawing.TextUnderlineValues.Single);
+            presentation.SaveAs(mStream);
+
+            presentation = SCPresentation.Open(mStream);
+            placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
+            portion = placeholderAutoShape.TextFrame.Paragraphs[0].Portions[0];
+            portion.Font.Underline.Should().Be(DocumentFormat.OpenXml.Drawing.TextUnderlineValues.Single);
         }
 
         private static IPortion GetPortion(IPresentation presentation)
