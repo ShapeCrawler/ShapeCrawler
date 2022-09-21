@@ -98,7 +98,7 @@ namespace ShapeCrawler.Collections
                 destPresentationPart.AddPart(addedSlidePart.SlideLayoutPart.SlideMasterPart);
 
             // Create new slide ID
-            SlideId slideId = new()
+            SlideId slideId = new ()
             {
                 Id = CreateId(destPresentation.SlideIdList),
                 RelationshipId = destDoc.PresentationPart.GetIdOfPart(addedSlidePart)
@@ -107,7 +107,7 @@ namespace ShapeCrawler.Collections
 
             // Create new master slide ID
             uint masterId = CreateId(destPresentation.SlideMasterIdList);
-            SlideMasterId slideMaterId = new()
+            SlideMasterId slideMaterId = new ()
             {
                 Id = masterId,
                 RelationshipId = destDoc.PresentationPart.GetIdOfPart(addedSlideMasterPart)

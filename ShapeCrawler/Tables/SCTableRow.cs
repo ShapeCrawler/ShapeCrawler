@@ -27,7 +27,7 @@ namespace ShapeCrawler
             this.index = index;
 
 #if NETSTANDARD2_0
-            cells = new Lazy<List<SCTableCell>>(() => GetCells());
+            this.cells = new Lazy<List<SCTableCell>>(() => this.GetCells());
 #else
             this.cells = new Lazy<List<SCTableCell>>(this.GetCells);
 #endif
@@ -76,14 +76,14 @@ namespace ShapeCrawler
                 }
                 else if (aTableCell.VerticalMerge != null)
                 {
-                    int upRowIdx = index - 1;
-                    SCTableCell upNeighborScCell = (SCTableCell) ParentTable[upRowIdx, columnIdx];
+                    int upRowIdx = this.index - 1;
+                    SCTableCell upNeighborScCell = (SCTableCell) this.ParentTable[upRowIdx, columnIdx];
                     cellList.Add(upNeighborScCell);
                     addedScCell = upNeighborScCell;
                 }
                 else
                 {
-                    addedScCell = new SCTableCell(this, aTableCell, index, columnIdx);
+                    addedScCell = new SCTableCell(this, aTableCell, this.index, columnIdx);
                     cellList.Add(addedScCell);
                 }
 

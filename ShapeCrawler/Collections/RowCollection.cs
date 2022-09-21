@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -23,10 +24,10 @@ namespace ShapeCrawler.Collections
         #endregion Constructors
         
         /// <inheritdoc/>
-        public override void Remove(SCTableRow scTableRow)
+        public override void Remove(SCTableRow tableRow)
         {
-            scTableRow.ATableRow.Remove();
-            this.CollectionItems.Remove(scTableRow);
+            tableRow.ATableRow.Remove();
+            this.CollectionItems.Remove(tableRow);
         }
 
         /// <summary>

@@ -11,7 +11,7 @@ namespace ShapeCrawler.Tables
 {
     internal class SCTableCell : ITableCell, ITextFrameContainer
     {
-        private readonly ResettableLazy<TextFrame> textBox;
+        private readonly ResettableLazy<TextFrame> textFrame;
         private readonly bool isRemoved;
 
         internal SCTableCell(SCTableRow tableRow, A.TableCell aTableCell, int rowIndex, int columnIndex)
@@ -20,7 +20,7 @@ namespace ShapeCrawler.Tables
             this.ATableCell = aTableCell;
             this.RowIndex = rowIndex;
             this.ColumnIndex = columnIndex;
-            this.textBox = new ResettableLazy<TextFrame>(this.GetTextBox);
+            this.textFrame = new ResettableLazy<TextFrame>(this.GetTextFrame);
         }
 
         public bool IsMergedCell => this.DefineWhetherCellIsMerged();
@@ -31,7 +31,7 @@ namespace ShapeCrawler.Tables
 
         public IShape Shape => this.ParentTableRow.ParentTable;
 
-        public ITextFrame TextFrame => this.textBox.Value;
+        public ITextFrame TextFrame => this.textFrame.Value;
 
         internal A.TableCell ATableCell { get; init; }
 
@@ -51,9 +51,9 @@ namespace ShapeCrawler.Tables
             this.ParentTableRow.ThrowIfRemoved();
         }
 
-        private TextFrame GetTextBox()
+        private TextFrame GetTextFrame()
         {
-            return new TextFrame(this, this.ATableCell.TextBody!);
+            return new TextFrame(this, this.ATableCell.TextBody!, true);
         }
 
         private bool DefineWhetherCellIsMerged()

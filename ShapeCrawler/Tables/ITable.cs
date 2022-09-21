@@ -3,7 +3,6 @@ using ShapeCrawler.Collections;
 using ShapeCrawler.Shapes;
 
 // ReSharper disable CheckNamespace
-
 namespace ShapeCrawler
 {
     /// <summary>

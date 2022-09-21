@@ -113,7 +113,7 @@ namespace ShapeCrawler.Collections
                         uint index = cStrPoint.Index!.Value;
                         C.NumericValue cachedCatName = cStrPoint.NumericValue!;
                         KeyValuePair<uint, Category> parent = descOrderedMains.First(kvp => kvp.Key <= index);
-                        Category category = new(null, -1, cachedCatName, parent.Value);
+                        Category category = new (null, -1, cachedCatName, parent.Value);
                         nextIndexToCategory.Add(new KeyValuePair<uint, Category>(index, category));
                     }
                 }

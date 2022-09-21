@@ -69,16 +69,16 @@ namespace ShapeCrawler
         /// </summary>
         public async Task<byte[]> GetBytes() // TODO: convert to BinaryData property?
         {
-            if (bytes != null)
+            if (this.bytes != null)
             {
-                return bytes; // return from cache
+                return this.bytes; // return from cache
             }
 
             Stream stream = this.ImagePart.GetStream();
-            bytes = new byte[stream.Length];
-            await stream.ReadAsync(bytes, 0, (int) stream.Length).ConfigureAwait(false);
+            this.bytes = new byte[stream.Length];
+            await stream.ReadAsync(this.bytes, 0, (int) stream.Length).ConfigureAwait(false);
             stream.Close();
-            return bytes;
+            return this.bytes;
         }
 #endif
 
