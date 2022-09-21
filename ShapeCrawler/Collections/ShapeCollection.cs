@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Media;
 using ShapeCrawler.OLEObjects;
@@ -166,15 +168,15 @@ namespace ShapeCrawler.Collections
             var videoRr = slidePart.AddVideoReferenceRelationship(mediaDataPart);
             var mediaRr = slidePart.AddMediaReferenceRelationship(mediaDataPart);
 
-            P.Picture picture1 = new();
+            P.Picture picture1 = new ();
 
-            P.NonVisualPictureProperties nonVisualPictureProperties1 = new();
+            P.NonVisualPictureProperties nonVisualPictureProperties1 = new ();
 
             uint shapeId = (uint)this.CollectionItems.Max(sp => sp.Id) + 1;
-            P.NonVisualDrawingProperties nonVisualDrawingProperties2 = new() { Id = shapeId, Name = $"Video{shapeId}" };
+            P.NonVisualDrawingProperties nonVisualDrawingProperties2 = new () { Id = shapeId, Name = $"Video{shapeId}" };
             A.HyperlinkOnClick hyperlinkOnClick1 = new A.HyperlinkOnClick() { Id = "", Action = "ppaction://media" };
 
-            A.NonVisualDrawingPropertiesExtensionList nonVisualDrawingPropertiesExtensionList1 = new();
+            A.NonVisualDrawingPropertiesExtensionList nonVisualDrawingPropertiesExtensionList1 = new ();
 
             A.NonVisualDrawingPropertiesExtension nonVisualDrawingPropertiesExtension1 = new () { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
 
