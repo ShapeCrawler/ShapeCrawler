@@ -11,7 +11,6 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Factories;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
@@ -82,11 +81,6 @@ namespace ShapeCrawler
             }
             
             this.PresentationInternal.ThrowIfClosed();
-        }
-
-        public void SaveScheme(Stream stream)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<string> ToHtml()
