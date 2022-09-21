@@ -51,21 +51,6 @@ namespace ShapeCrawler.Tests
             hidden.Should().BeTrue();
         }
 
-
-        [Fact]
-        public void SaveScheme_CreatesAndSavesSlideSchemeImageInSpecifiedStream()
-        {
-            // Arrange
-            ISlide slide = this.fixture.Pre025.Slides[2];
-            var stream = new MemoryStream();
-
-            // Act
-            slide.SaveScheme(stream);
-
-            // Assert
-            stream.Length.Should().BeGreaterThan(0);
-        }
-
         [Fact]
         public async void Background_SetImage_updates_background()
         {
