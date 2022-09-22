@@ -60,7 +60,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets placeholder. Returns <c>NULL</c> if the shape is not a placeholder.
         /// </summary>
-        public abstract IPlaceholder Placeholder { get; }
+        public abstract IPlaceholder? Placeholder { get; }
 
         public abstract SCPresentation PresentationInternal { get; }
 

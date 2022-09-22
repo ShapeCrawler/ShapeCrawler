@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Media;
 using ShapeCrawler.OLEObjects;
@@ -53,11 +55,10 @@ namespace ShapeCrawler.Collections
             mediaDataPart.FeedData(mp3Stream);
             string imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
             var slidePart = this.slide.SDKSlidePart;
-            ImagePart imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
-            MemoryStream ms = new ();
-            Properties.Resources.audio_image.Save(ms, ImageFormat.Png);
-            ms.Position = 0;
-            imagePart.FeedData(ms);
+            var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
+            var imgStream = Assembly.GetExecutingAssembly().GetStream("audio-image.png");
+            imgStream.Position = 0;
+            imagePart.FeedData(imgStream);
 
             AudioReferenceRelationship audioRr = slidePart.AddAudioReferenceRelationship(mediaDataPart);
             MediaReferenceRelationship mediaRr = slidePart.AddMediaReferenceRelationship(mediaDataPart);
@@ -122,15 +123,15 @@ namespace ShapeCrawler.Collections
 
             P.ShapeProperties shapeProperties1 = new ();
 
-            A.Transform2D transform2D1 = new();
-            A.Offset offset2 = new() { X = xEmu, Y = yEmu };
-            A.Extents extents2 = new() { Cx = 609600L, Cy = 609600L };
+            A.Transform2D transform2D1 = new ();
+            A.Offset offset2 = new () { X = xEmu, Y = yEmu };
+            A.Extents extents2 = new () { Cx = 609600L, Cy = 609600L };
 
             transform2D1.Append(offset2);
             transform2D1.Append(extents2);
 
-            A.PresetGeometry presetGeometry1 = new() { Preset = A.ShapeTypeValues.Rectangle };
-            A.AdjustValueList adjustValueList1 = new();
+            A.PresetGeometry presetGeometry1 = new () { Preset = A.ShapeTypeValues.Rectangle };
+            A.AdjustValueList adjustValueList1 = new ();
 
             presetGeometry1.Append(adjustValueList1);
 
@@ -143,7 +144,7 @@ namespace ShapeCrawler.Collections
 
             this.shapeTree.Append(picture1);
 
-            P14.CreationId creationId1 = new() { Val = (UInt32Value)3972997422U };
+            P14.CreationId creationId1 = new () { Val = (UInt32Value)3972997422U };
             creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
             return new AudioShape(this.shapeTree, this.slide);
@@ -161,25 +162,23 @@ namespace ShapeCrawler.Collections
             string imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
             var slidePart = this.slide.SDKSlidePart;
             var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
-            MemoryStream ms = new();
-            Properties.Resources.video_image.Save(ms, ImageFormat.Png);
-            ms.Position = 0;
-            imagePart.FeedData(ms);
+            var imageStream = Assembly.GetExecutingAssembly().GetStream("video-image.bmp");
+            imagePart.FeedData(imageStream);
 
             var videoRr = slidePart.AddVideoReferenceRelationship(mediaDataPart);
             var mediaRr = slidePart.AddMediaReferenceRelationship(mediaDataPart);
 
-            P.Picture picture1 = new();
+            P.Picture picture1 = new ();
 
-            P.NonVisualPictureProperties nonVisualPictureProperties1 = new();
+            P.NonVisualPictureProperties nonVisualPictureProperties1 = new ();
 
             uint shapeId = (uint)this.CollectionItems.Max(sp => sp.Id) + 1;
-            P.NonVisualDrawingProperties nonVisualDrawingProperties2 = new() { Id = shapeId, Name = $"Video{shapeId}" };
+            P.NonVisualDrawingProperties nonVisualDrawingProperties2 = new () { Id = shapeId, Name = $"Video{shapeId}" };
             A.HyperlinkOnClick hyperlinkOnClick1 = new A.HyperlinkOnClick() { Id = "", Action = "ppaction://media" };
 
-            A.NonVisualDrawingPropertiesExtensionList nonVisualDrawingPropertiesExtensionList1 = new();
+            A.NonVisualDrawingPropertiesExtensionList nonVisualDrawingPropertiesExtensionList1 = new ();
 
-            A.NonVisualDrawingPropertiesExtension nonVisualDrawingPropertiesExtension1 = new() { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
+            A.NonVisualDrawingPropertiesExtension nonVisualDrawingPropertiesExtension1 = new () { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
 
             OpenXmlUnknownElement openXmlUnknownElement1 = OpenXmlUnknownElement.CreateOpenXmlUnknownElement("<a16:creationId xmlns:a16=\"http://schemas.microsoft.com/office/drawing/2014/main\" id=\"{2FF36D28-5328-4DA3-BF85-A2B65D7EE127}\" />");
 
@@ -190,17 +189,17 @@ namespace ShapeCrawler.Collections
             nonVisualDrawingProperties2.Append(hyperlinkOnClick1);
             nonVisualDrawingProperties2.Append(nonVisualDrawingPropertiesExtensionList1);
 
-            P.NonVisualPictureDrawingProperties nonVisualPictureDrawingProperties1 = new();
+            P.NonVisualPictureDrawingProperties nonVisualPictureDrawingProperties1 = new ();
             A.PictureLocks pictureLocks1 = new A.PictureLocks() { NoChangeAspect = true };
 
             nonVisualPictureDrawingProperties1.Append(pictureLocks1);
 
-            P.ApplicationNonVisualDrawingProperties applicationNonVisualDrawingProperties2 = new();
+            P.ApplicationNonVisualDrawingProperties applicationNonVisualDrawingProperties2 = new ();
             A.VideoFromFile videoFromFile1 = new A.VideoFromFile() { Link = videoRr.Id };
 
-            P.ApplicationNonVisualDrawingPropertiesExtensionList applicationNonVisualDrawingPropertiesExtensionList1 = new();
+            P.ApplicationNonVisualDrawingPropertiesExtensionList applicationNonVisualDrawingPropertiesExtensionList1 = new ();
 
-            P.ApplicationNonVisualDrawingPropertiesExtension applicationNonVisualDrawingPropertiesExtension1 = new() { Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" };
+            P.ApplicationNonVisualDrawingPropertiesExtension applicationNonVisualDrawingPropertiesExtension1 = new () { Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" };
 
             P14.Media media1 = new P14.Media() { Embed = mediaRr.Id };
             media1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
@@ -216,28 +215,28 @@ namespace ShapeCrawler.Collections
             nonVisualPictureProperties1.Append(nonVisualPictureDrawingProperties1);
             nonVisualPictureProperties1.Append(applicationNonVisualDrawingProperties2);
 
-            P.BlipFill blipFill1 = new();
-            A.Blip blip1 = new() { Embed = imgPartRId };
+            P.BlipFill blipFill1 = new ();
+            A.Blip blip1 = new () { Embed = imgPartRId };
 
-            A.Stretch stretch1 = new();
-            A.FillRectangle fillRectangle1 = new();
+            A.Stretch stretch1 = new ();
+            A.FillRectangle fillRectangle1 = new ();
 
             stretch1.Append(fillRectangle1);
 
             blipFill1.Append(blip1);
             blipFill1.Append(stretch1);
 
-            P.ShapeProperties shapeProperties1 = new();
+            P.ShapeProperties shapeProperties1 = new ();
 
-            A.Transform2D transform2D1 = new();
-            A.Offset offset2 = new() { X = xEmu, Y = yEmu };
-            A.Extents extents2 = new() { Cx = 609600L, Cy = 609600L };
+            A.Transform2D transform2D1 = new ();
+            A.Offset offset2 = new () { X = xEmu, Y = yEmu };
+            A.Extents extents2 = new () { Cx = 609600L, Cy = 609600L };
 
             transform2D1.Append(offset2);
             transform2D1.Append(extents2);
 
-            A.PresetGeometry presetGeometry1 = new() { Preset = A.ShapeTypeValues.Rectangle };
-            A.AdjustValueList adjustValueList1 = new();
+            A.PresetGeometry presetGeometry1 = new () { Preset = A.ShapeTypeValues.Rectangle };
+            A.AdjustValueList adjustValueList1 = new ();
 
             presetGeometry1.Append(adjustValueList1);
 
@@ -250,7 +249,7 @@ namespace ShapeCrawler.Collections
 
             this.shapeTree.Append(picture1);
 
-            P14.CreationId creationId1 = new() { Val = (UInt32Value)3972997422U };
+            P14.CreationId creationId1 = new () { Val = (UInt32Value)3972997422U };
             creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
             return new VideoShape(this.slide, this.shapeTree);

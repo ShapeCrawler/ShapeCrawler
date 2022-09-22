@@ -11,7 +11,6 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Factories;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
@@ -74,14 +73,6 @@ namespace ShapeCrawler
 
         internal override TypedOpenXmlPart TypedOpenXmlPart => this.SDKSlidePart;
 
-        /// <summary>
-        ///     Saves slide scheme in PNG file.
-        /// </summary>
-        public void SaveScheme(string filePath)
-        {
-            SlideSchemeService.SaveScheme(this.shapes.Value, this.PresentationInternal.SlideWidth, this.PresentationInternal.SlideHeight, filePath);
-        }
-
         public override void ThrowIfRemoved()
         {
             if (this.IsRemoved)
@@ -91,7 +82,7 @@ namespace ShapeCrawler
             
             this.PresentationInternal.ThrowIfClosed();
         }
-        
+
         public async Task<string> ToHtml()
         {
             var slideWidthPx = this.PresentationInternal.SlideWidth;
@@ -115,14 +106,6 @@ namespace ShapeCrawler
             document.Body!.AppendChild(main);
 
             return document.DocumentElement.OuterHtml;
-        }
-
-        /// <summary>
-        ///     Saves slide scheme in stream.
-        /// </summary>
-        public void SaveScheme(Stream stream)
-        {
-            SlideSchemeService.SaveScheme(this.shapes.Value, this.PresentationInternal.SlideWidth, this.PresentationInternal.SlideHeight, stream);
         }
 
         public void Hide()

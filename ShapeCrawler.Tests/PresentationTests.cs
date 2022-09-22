@@ -25,19 +25,19 @@ namespace ShapeCrawler.Tests
         public void Close_ClosesPresentationAndReleasesResources()
         {
             // Arrange
-            string originFilePath = Path.GetTempFileName();
-            string savedAsFilePath = Path.GetTempFileName();
+            var originFilePath = Path.GetTempFileName();
+            var savedAsFilePath = Path.GetTempFileName();
             File.WriteAllBytes(originFilePath, TestFiles.Presentations.pre001);
-            IPresentation presentation = SCPresentation.Open(originFilePath);
-            presentation.SaveAs(savedAsFilePath);
+            var pres = SCPresentation.Open(originFilePath);
+            pres.SaveAs(savedAsFilePath);
 
             // Act
-            presentation.Close();
+            pres.Close();
 
             // Assert
-            Action act = () => presentation = SCPresentation.Open(originFilePath);
+            Action act = () => pres = SCPresentation.Open(originFilePath);
             act.Should().NotThrow<IOException>();
-            presentation.Close();
+            pres.Close();
 
             // Clean up
             File.Delete(originFilePath);
@@ -62,16 +62,16 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Open_ThrowsPresentationIsLargeException_WhenThePresentationContentSizeIsBeyondThePermitted()
+        public void Open_throws_exception_When_presentation_size_is_large()
         {
             // Arrange
-            var bytes = new byte[Limitations.MaxPresentationSize + 1];
+            var bytes = new byte[(250 * 1024 * 1024) + 1];
 
             // Act
             Action act = () => SCPresentation.Open(bytes);
 
             // Assert
-            act.Should().Throw<PresentationIsLargeException>();
+            act.Should().Throw<Exception>();
         }
 
         [Fact]
@@ -101,7 +101,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void SlidesCount_ReturnsOne_WhenPresentationContainsOneSlide()
+        public void Slides_Count_returns_One_When_presentation_contains_one_slide()
         {
             // Act
             var numberSlidesCase1 = _fixture.Pre017.Slides.Count;
@@ -113,7 +113,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Slides_Add_adds_specified_slide_at_the_end_of_the_slide_collection()
+        public void Slides_Add_adds_specified_slide_at_the_end_of_slide_collection()
         {
             // Arrange
             var sourceSlide = _fixture.Pre001.Slides[0];

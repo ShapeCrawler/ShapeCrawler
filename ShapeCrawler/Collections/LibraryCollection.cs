@@ -28,7 +28,7 @@ namespace ShapeCrawler.Collections
         /// </summary>
         public LibraryCollection(IEnumerable<T> paragraphItems)
         {
-            CollectionItems = new List<T>(paragraphItems);
+            this.CollectionItems = new List<T>(paragraphItems);
         }
 
         #endregion Constructors
@@ -36,28 +36,27 @@ namespace ShapeCrawler.Collections
         /// <summary>
         ///     Gets the number of series items in the collection.
         /// </summary>
-        public int Count => CollectionItems.Count;
+        public int Count => this.CollectionItems.Count;
         
         /// <summary>
         ///     Gets the element at the specified index.
         /// </summary>
-        public T this[int index] => CollectionItems[index];
+        public T this[int index] => this.CollectionItems[index];
 
         /// <summary>
         ///     Gets the generic enumerator that iterates through the collection.
         /// </summary>
         public IEnumerator<T> GetEnumerator()
         {
-            return CollectionItems.GetEnumerator();
+            return this.CollectionItems.GetEnumerator();
         }
 
         /// <summary>
         ///     Gets an enumerator that iterates through the collection.
         /// </summary>
-        /// <returns></returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return CollectionItems.GetEnumerator();
+            return this.CollectionItems.GetEnumerator();
         }
     }
 }

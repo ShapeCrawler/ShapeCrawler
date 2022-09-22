@@ -3,7 +3,7 @@
     /// <summary>
     ///     Contains library limitation..
     /// </summary>
-    public static class Limitations // TODO: make internal
+    internal static class Limitations // TODO: make internal
     {
         /// <summary>
         ///     Gets the maximal allowed size of presentation in bytes.
