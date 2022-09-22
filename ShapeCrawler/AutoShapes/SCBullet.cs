@@ -109,7 +109,7 @@ namespace ShapeCrawler.AutoShapes
         }
 
         /// <summary>
-        ///     Gets bullet type.
+        ///     Gets or sets bullet type.
         /// </summary>
         public SCBulletType Type
         {

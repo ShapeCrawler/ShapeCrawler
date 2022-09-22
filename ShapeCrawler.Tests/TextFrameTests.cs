@@ -114,9 +114,8 @@ namespace ShapeCrawler.Tests
                 var case3 = new TestElementQuery
                 {
                     Presentation = SCPresentation.Open(GetTestStream("001.pptx")),
-                    SlideIndex = 2,
+                    SlideNumber = 2,
                     ShapeName = "Header 1",
-                    ShapeId = 2
                 };
                 testCases.Add(case3);
 
