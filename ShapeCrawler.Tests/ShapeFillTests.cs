@@ -1,10 +1,12 @@
 ﻿#if DEBUG
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.Tests.Properties;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations
@@ -84,19 +86,19 @@ namespace ShapeCrawler.Tests
         {
             var pptxStream = GetTestStream("009_table.pptx");
             var pres = SCPresentation.Open(pptxStream);
-            
+
             var withNoFill = pres.Slides[1].Shapes.GetById<IAutoShape>(6);
             yield return new object[] { withNoFill, FillType.NoFill };
-            
+
             var withSolid = pres.Slides[1].Shapes.GetById<IAutoShape>(2);
             yield return new object[] { withSolid, FillType.Solid };
-            
+
             var withGradient = pres.Slides[1].Shapes.GetByName<IAutoShape>("AutoShape 1");
             yield return new object[] { withGradient, FillType.Gradient };
-            
+
             var withPicture = pres.Slides[2].Shapes.GetById<IAutoShape>(4);
             yield return new object[] { withPicture, FillType.Picture };
-            
+
             var withPattern = pres.Slides[1].Shapes.GetByName<IAutoShape>("AutoShape 2");
             yield return new object[] { withPattern, FillType.Pattern };
 
