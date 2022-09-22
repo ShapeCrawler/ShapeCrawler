@@ -12,6 +12,6 @@ namespace ShapeCrawler.Charts
             // TODO: add test for reading chart placeholder on Layout
         }
 
-        public ShapeType ShapeType => ShapeType.Chart;
+        public SCShapeType ShapeType => SCShapeType.Chart;
     }
 }

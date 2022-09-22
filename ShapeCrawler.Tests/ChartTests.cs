@@ -311,7 +311,7 @@ namespace ShapeCrawler.Tests
             IChart chart = (IChart)_fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 6);
 
             // Act-Assert
-            chart.GeometryType.Should().Be(GeometryType.Rectangle);
+            chart.GeometryType.Should().Be(SCGeometry.Rectangle);
         }
         
                 

@@ -26,6 +26,6 @@ namespace ShapeCrawler.Media
         {
         }
 
-        public ShapeType ShapeType => ShapeType.VideoShape;
+        public SCShapeType ShapeType => SCShapeType.VideoShape;
     }
 }

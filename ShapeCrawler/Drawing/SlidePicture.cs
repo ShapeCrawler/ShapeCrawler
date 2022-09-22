@@ -21,6 +21,6 @@ namespace ShapeCrawler
 
         public SCImage Image => SCImage.ForPicture(this, this.Slide.SDKSlidePart, this.picReference);
 
-        public ShapeType ShapeType => ShapeType.Picture;
+        public SCShapeType ShapeType => SCShapeType.Picture;
     }
 }

@@ -14,6 +14,6 @@ namespace ShapeCrawler.Tables
         {
         }
 
-        public ShapeType ShapeType => ShapeType.Table;
+        public SCShapeType ShapeType => SCShapeType.Table;
     }
 }

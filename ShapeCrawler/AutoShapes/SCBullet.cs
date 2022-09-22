@@ -5,7 +5,7 @@ using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.AutoShapes
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a paragraph bullet.
@@ -37,11 +37,12 @@ namespace ShapeCrawler.AutoShapes
         public string ColorHex => this.colorHex.Value;
 
         /// <summary>
-        ///     Gets bullet character.
+        ///     Gets or sets bullet character.
         /// </summary>
         public string Character
         {
-            get { return this.character.Value; }
+            get => this.character.Value;
+
             set
             {
                 if (this.aParagraphProperties == null || this.Type != SCBulletType.Character)
@@ -57,16 +58,16 @@ namespace ShapeCrawler.AutoShapes
                 }
 
                 aCharBullet.Char = value;
-
             }
         }
 
         /// <summary>
-        ///     Gets bullet font name.
+        ///     Gets or sets bullet font name.
         /// </summary>
         public string FontName
         {
-            get { return this.fontName.Value; }
+            get => this.fontName.Value;
+
             set
             {
                 if (this.aParagraphProperties == null || this.Type == SCBulletType.None)
@@ -80,16 +81,17 @@ namespace ShapeCrawler.AutoShapes
                     aBulletFont = new BulletFont();
                     this.aParagraphProperties.AddChild(aBulletFont);
                 }
+
                 aBulletFont.Typeface = value;
             }
         }
 
         /// <summary>
-        ///     Gets bullet size.
+        ///     Gets or sets bullet size in percentages of text.
         /// </summary>
         public int Size
         {
-            get { return this.size.Value; }
+            get => this.size.Value;
             set
             {
                 if (this.aParagraphProperties == null)
@@ -113,10 +115,7 @@ namespace ShapeCrawler.AutoShapes
         /// </summary>
         public SCBulletType Type
         {
-            get
-            {
-                return this.type.Value;
-            }
+            get => this.type.Value;
             set
             {
                 if (this.aParagraphProperties == null)
@@ -136,9 +135,12 @@ namespace ShapeCrawler.AutoShapes
 
                 if (value == SCBulletType.Numbered)
                 {
-                    var child = new AutoNumberedBullet();
-                    // replace at property
-                    child.Type = DocumentFormat.OpenXml.Drawing.TextAutoNumberSchemeValues.ArabicPeriod;
+                    var child = new AutoNumberedBullet
+                    {
+                        // replace at property
+                        Type = A.TextAutoNumberSchemeValues.ArabicPeriod
+                    };
+
                     this.aParagraphProperties.AddChild(child);
                 }
 

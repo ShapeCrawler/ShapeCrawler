@@ -39,7 +39,7 @@ namespace ShapeCrawler
 
         public IShapeFill Fill => this.shapeFill.Value;
 
-        public ShapeType ShapeType => ShapeType.AutoShape;
+        public SCShapeType ShapeType => SCShapeType.AutoShape;
         
         #endregion Public Properties
 

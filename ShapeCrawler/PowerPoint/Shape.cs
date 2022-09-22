@@ -67,7 +67,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets geometry form type.
         /// </summary>
-        public virtual GeometryType GeometryType => this.GetGeometryType();
+        public virtual SCGeometry GeometryType => this.GetGeometryType();
 
         /// <summary>
         ///     Gets or sets x-coordinate of the upper-left corner of the shape.
@@ -274,7 +274,7 @@ namespace ShapeCrawler
             aExtents.Cy = PixelConverter.VerticalPixelToEmu(pixels);
         }
 
-        private GeometryType GetGeometryType()
+        private SCGeometry GetGeometryType()
         {
             var spPr = this.PShapeTreesChild.Descendants<P.ShapeProperties>().First(); // TODO: optimize
             var aTransform2D = spPr.Transform2D;
@@ -287,13 +287,13 @@ namespace ShapeCrawler
                 {
                     if (spPr.OfType<A.CustomGeometry>().Any())
                     {
-                        return GeometryType.Custom;
+                        return SCGeometry.Custom;
                     }
                 }
                 else
                 {
                     var name = aPresetGeometry.Preset!.Value.ToString();
-                    Enum.TryParse(name, true, out GeometryType geometryType);
+                    Enum.TryParse(name, true, out SCGeometry geometryType);
                     return geometryType;
                 }
             }
@@ -304,7 +304,7 @@ namespace ShapeCrawler
                 return placeholder.ReferencedShape.GeometryType;
             }
 
-            return GeometryType.Rectangle; // return default
+            return SCGeometry.Rectangle; // return default
         }
     }
 }
