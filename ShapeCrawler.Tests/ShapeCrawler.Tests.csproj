@@ -51,6 +51,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Remove="Resource\001.pptx" />
+    <None Remove="Resource\bullet.pptx" />
     <None Remove="Resource\Charts\bars.pptx" />
     <EmbeddedResource Include="Resource\001.pptx" />
     <None Remove="Resource\050_title-placeholder.pptx" />
@@ -68,6 +69,7 @@
     <None Remove="Resource\009_table.pptx" />
     <EmbeddedResource Include="Resource\009_table.pptx" />
     <None Remove="Resource\Charts\charts-case001.pptx" />
+    <EmbeddedResource Include="Resource\bullet.pptx" />
     <EmbeddedResource Include="Resource\Charts\bars.pptx" />
     <EmbeddedResource Include="Resource\Charts\charts-case001.pptx" />
     <None Remove="Resource\002.pptx" />
