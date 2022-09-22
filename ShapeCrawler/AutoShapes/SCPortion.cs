@@ -95,7 +95,7 @@ namespace ShapeCrawler
                 return null;
             }
 
-            var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextBox.TextBoxContainer;
+            var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextBox.TextFrameContainer;
             var slidePart = slideAutoShape.Slide.SDKSlidePart;
             var hyperlinkRelationship = (HyperlinkRelationship) slidePart.GetReferenceRelationship(hyperlink.Id);
 
@@ -122,7 +122,7 @@ namespace ShapeCrawler
                 runProperties.Append(hyperlink);
             }
 
-            var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextBox.TextBoxContainer;
+            var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextBox.TextFrameContainer;
             var slidePart = slideAutoShape.Slide.SDKSlidePart;
             
             var uri = new Uri(url, UriKind.Absolute);

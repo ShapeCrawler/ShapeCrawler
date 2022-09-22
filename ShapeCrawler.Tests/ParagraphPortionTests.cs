@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -49,7 +50,7 @@ namespace ShapeCrawler.Tests
             portions.Remove(portion);
 
             // Act-Assert
-            portion.Invoking(p => p.Text = "new text").Should().Throw<ElementIsRemovedException>();
+            portion.Invoking(p => p.Text = "new text").Should().Throw<Exception>();
         }
 
         [Fact]

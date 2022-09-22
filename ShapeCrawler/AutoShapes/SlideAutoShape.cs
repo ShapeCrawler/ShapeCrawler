@@ -17,31 +17,32 @@ namespace ShapeCrawler
     internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
     {
         private readonly Lazy<ShapeFill> shapeFill;
-        private readonly Lazy<TextFrame?> textBox;
+        private readonly Lazy<TextFrame?> textFrame;
 
         internal SlideAutoShape(P.Shape pShape, SCSlide slideInternal, SlideGroupShape groupShape)
             : base(pShape, slideInternal, groupShape)
         {
-            this.textBox = new Lazy<TextFrame?>(this.GetTextBox);
+            this.textFrame = new Lazy<TextFrame?>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.GetFill);
         }
 
         #region Public Properties
-
-        public ITextFrame TextFrame => this.textBox.Value;
 
         public IShapeFill Fill => this.shapeFill.Value;
 
         public IShape Shape => this; // TODO: should be internal?
 
         public ShapeType ShapeType => ShapeType.AutoShape;
+        
+        public ITextFrame? TextFrame => this.textFrame.Value;
 
         #endregion Public Properties
 
         private TextFrame? GetTextBox()
         {
-            var pTxBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
-            return pTxBody == null ? null : new TextFrame(this, pTxBody);
+            var pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
+            var canChangeTextFrame = this.Placeholder is { Type: PlaceholderType.Title } or null;
+            return pTextBody == null ? null : new TextFrame(this, pTextBody, canChangeTextFrame);
         }
 
         private ShapeFill GetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()

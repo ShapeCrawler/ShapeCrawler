@@ -88,7 +88,7 @@ namespace ShapeCrawler
 
         internal SCSectionCollection SectionsInternal => (SCSectionCollection)this.Sections;
 
-        internal List<ChartWorkbook> ChartWorkbooks { get; } = new();
+        internal List<ChartWorkbook> ChartWorkbooks { get; } = new ();
 
         internal Dictionary<int, FontData> ParaLvlToFontData => this.paraLvlToFontData.Value;
 
@@ -285,7 +285,7 @@ namespace ShapeCrawler
             var nbSlides = this.SdkPresentation.PresentationPart.SlideParts.Count();
             if (nbSlides > Limitations.MaxSlidesNumber)
             {
-                Close();
+                this.Close();
                 throw SlidesMuchMoreException.FromMax(Limitations.MaxSlidesNumber);
             }
         }

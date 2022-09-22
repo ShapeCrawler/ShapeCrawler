@@ -50,7 +50,7 @@ namespace ShapeCrawler.SlideMasters
 
         public override void ThrowIfRemoved()
         {
-            if (IsRemoved)
+            if (this.IsRemoved)
             {
                 throw new ElementIsRemovedException("Slide MAster is removed");
             }

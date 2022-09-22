@@ -188,7 +188,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void UpdateAlignment(TextAlignment alignmentValue)
         {
-            if (this.ParentTextBox.TextBoxContainer.Placeholder != null)
+            if (this.ParentTextBox.TextFrameContainer.Placeholder != null)
             {
                 throw new PlaceholderCannotBeChangedException();
             }
@@ -224,7 +224,7 @@ namespace ShapeCrawler.AutoShapes
                 return this.alignment.Value;
             }
 
-            var placeholder = this.ParentTextBox.TextBoxContainer.Placeholder;
+            var placeholder = this.ParentTextBox.TextFrameContainer.Placeholder;
             if (placeholder is { Type: PlaceholderType.Title })
             {
                 this.alignment = TextAlignment.Left;

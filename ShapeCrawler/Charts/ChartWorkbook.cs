@@ -26,7 +26,7 @@ namespace ShapeCrawler.Charts
 
         internal WorkbookPart WorkbookPart => this.spreadsheetDocument.Value.WorkbookPart;
 
-        internal byte[] ByteArray => this.GetByteArray();
+        internal byte[] BinaryData => this.GetByteArray();
 
         internal void Save()
         {
