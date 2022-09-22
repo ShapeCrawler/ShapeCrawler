@@ -3,6 +3,7 @@
 using System.IO;
 using FluentAssertions;
 using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.Tests.Properties;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations
@@ -24,9 +25,9 @@ namespace ShapeCrawler.Tests
         public void ChangeType()
         {
             // Arrange
-            var presentationStream = GetTestStream("bullet.pptx");
+            var presentationStream = GetTestStream("autoshape-case003.pptx");
             using var presentation = SCPresentation.Open(presentationStream);
-            var shape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 1");
+            var shape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
             var bullet = shape.TextFrame!.Paragraphs[0].Bullet;
 
             // Act
@@ -40,7 +41,7 @@ namespace ShapeCrawler.Tests
             var savedPreStream = new MemoryStream();
             presentation.SaveAs(savedPreStream);
             var newPresentation = SCPresentation.Open(savedPreStream);
-            shape = newPresentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 1");
+            shape = newPresentation.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
             bullet = shape.TextFrame!.Paragraphs[0].Bullet;
             bullet.Type.Should().Be(SCBulletType.Character);
             bullet.Character.Should().Be("*");
