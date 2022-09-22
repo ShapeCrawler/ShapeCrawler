@@ -39,7 +39,7 @@ namespace ShapeCrawler
         public IReadOnlyList<ITableCell> Cells => this.cells.Value;
 
         /// <summary>
-        ///     Gets height.
+        ///     Gets or sets height.
         /// </summary>
         public long Height
         {
