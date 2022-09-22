@@ -40,6 +40,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 parentShape = (Shape)portion.ParentParagraph.ParentTextBox.TextFrameContainer;
             }
+
             this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements.FontScheme;
         }
 

@@ -16,6 +16,6 @@ namespace ShapeCrawler.OLEObjects
 
         public override SCPresentation PresentationInternal { get; }
 
-        public ShapeType ShapeType => ShapeType.OLEObject;
+        public SCShapeType ShapeType => SCShapeType.OLEObject;
     }
 }

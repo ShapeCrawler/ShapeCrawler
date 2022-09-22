@@ -50,7 +50,7 @@ namespace ShapeCrawler.Charts
 
         public ChartType Type => this.chartType.Value;
 
-        public ShapeType ShapeType => ShapeType.Chart;
+        public SCShapeType ShapeType => SCShapeType.Chart;
 
         public string Title
         {
@@ -91,7 +91,7 @@ namespace ShapeCrawler.Charts
             }
         }
 
-        public override GeometryType GeometryType => GeometryType.Rectangle;
+        public override SCGeometry GeometryType => SCGeometry.Rectangle;
 
         public byte[] WorkbookByteArray => this.ChartWorkbook.BinaryData;
 

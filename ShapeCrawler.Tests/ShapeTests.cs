@@ -292,7 +292,7 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(GeometryTypeTestCases))]
-        public void GeometryType_returns_shape_geometry_type(IShape shape, GeometryType expectedGeometryType)
+        public void GeometryType_returns_shape_geometry_type(IShape shape, SCGeometry expectedGeometryType)
         {
             // Assert
             shape.GeometryType.Should().Be(expectedGeometryType);
@@ -305,8 +305,8 @@ namespace ShapeCrawler.Tests
             var shapeCase1 = presentation.Slides[3].Shapes.First(sp => sp.Id == 2);
             var shapeCase2 = presentation.Slides[3].Shapes.First(sp => sp.Id == 3);
 
-            yield return new object[] { shapeCase1, GeometryType.Rectangle };
-            yield return new object[] { shapeCase2, GeometryType.Ellipse };
+            yield return new object[] { shapeCase1, SCGeometry.Rectangle };
+            yield return new object[] { shapeCase2, SCGeometry.Ellipse };
         }
 
         [Fact]

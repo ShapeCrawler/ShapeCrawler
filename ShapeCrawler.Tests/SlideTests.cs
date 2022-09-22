@@ -152,7 +152,7 @@ namespace ShapeCrawler.Tests
             var shapesCollection = presentation.Slides[0].Shapes;
 
             // Act-Assert
-            Assert.Contains(shapesCollection, shape => shape.Id == 10 && shape is IConnectionShape && shape.GeometryType == GeometryType.Line);
+            Assert.Contains(shapesCollection, shape => shape.Id == 10 && shape is IConnectionShape && shape.GeometryType == SCGeometry.Line);
         }
 
         [Theory]

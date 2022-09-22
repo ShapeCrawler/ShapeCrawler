@@ -78,12 +78,12 @@ namespace ShapeCrawler.Tests
             IShape shapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
 
             // Act
-            GeometryType geometryTypeCase1 = shapeCase1.GeometryType;
-            GeometryType geometryTypeCase2 = shapeCase2.GeometryType;
+            SCGeometry geometryTypeCase1 = shapeCase1.GeometryType;
+            SCGeometry geometryTypeCase2 = shapeCase2.GeometryType;
 
             // Assert
-            geometryTypeCase1.Should().Be(GeometryType.Rectangle);
-            geometryTypeCase2.Should().Be(GeometryType.Custom);
+            geometryTypeCase1.Should().Be(SCGeometry.Rectangle);
+            geometryTypeCase2.Should().Be(SCGeometry.Custom);
         }
 
         [Fact]

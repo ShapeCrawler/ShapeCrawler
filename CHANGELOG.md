@@ -1,8 +1,9 @@
 # Changelog
 
 ## Version 0.33.0 - Unreleased
-- Added `IParagraph.AddPortion(string text)` to add a new text portion in paragraph [#297](https://github.com/ShapeCrawler/ShapeCrawler/issues/297)
-- Fixed incorrect updating grouped Picture [#295](https://github.com/ShapeCrawler/ShapeCrawler/issues/295)
+- Added `IParagraph.AddPortion(string text)` to add a new text portion in paragraph [#297](https://github.com/ShapeCrawler/ShapeCrawler/issues/297).
+- Added APIs to update Underline, Type, Character, Size and Font of paragraph bullet [#311](https://github.com/ShapeCrawler/ShapeCrawler/issues/311).
+- Fixed incorrect updating grouped Picture [#295](https://github.com/ShapeCrawler/ShapeCrawler/issues/295).
 
 ## Version 0.32.0 - 2022-09-09
 - Added opportunity to update text of master shape [#37](https://github.com/ShapeCrawler/ShapeCrawler/issues/37).

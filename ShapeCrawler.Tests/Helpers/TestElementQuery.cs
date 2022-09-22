@@ -24,13 +24,23 @@ namespace ShapeCrawler.Tests.Helpers
         public Location Location { get; set; }
         public int SlideMasterNumber { get; set; }
         public int SlideLayoutNumber { get; set; }
-        
-        
+        public int? SlideNumber { get; set; }
+
+
         public IAutoShape GetAutoShape()
         {
-            return this.Presentation
-                .Slides[this.SlideIndex]
-                .Shapes.GetById<IAutoShape>(this.ShapeId!.Value);
+            var slideIndex = 0;
+            if (this.SlideNumber != null)
+            {
+                slideIndex = this.SlideNumber.Value - 1;
+            }
+            else
+            {
+                slideIndex = this.SlideIndex;
+            }
+            
+            var shapes = this.Presentation.Slides[slideIndex].Shapes;
+            return this.ShapeName != null ? shapes.GetByName<IAutoShape>(this.ShapeName) : shapes.GetById<IAutoShape>(this.ShapeId!.Value);
         }
         
         public IParagraph GetParagraph()

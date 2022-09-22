@@ -14,7 +14,7 @@ namespace ShapeCrawler.Charts
         {
         }
 
-        public ShapeType ShapeType => ShapeType.Chart;
+        public SCShapeType ShapeType => SCShapeType.Chart;
         public override SCPresentation PresentationInternal { get; }
     }
 }

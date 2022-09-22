@@ -35,6 +35,6 @@ namespace ShapeCrawler.Placeholders
         /// </summary>
         public int Height { get; set; }
 
-        public GeometryType Geometry { get; set; } = GeometryType.Rectangle;
+        public SCGeometry Geometry { get; set; } = SCGeometry.Rectangle;
     }
 }

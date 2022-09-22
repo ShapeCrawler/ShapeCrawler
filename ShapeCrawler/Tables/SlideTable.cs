@@ -25,13 +25,13 @@ namespace ShapeCrawler.Tables
             this.pGraphicFrame = childOfPShapeTrees as P.GraphicFrame;
         }
         
-        public ShapeType ShapeType => ShapeType.Table;
+        public SCShapeType ShapeType => SCShapeType.Table;
 
         public IReadOnlyList<SCColumn> Columns => this.GetColumnList(); // TODO: make lazy
 
         public RowCollection Rows => this.rowCollection.Value;
 
-        public override GeometryType GeometryType => GeometryType.Rectangle;
+        public override SCGeometry GeometryType => SCGeometry.Rectangle;
 
         private A.Table ATable => this.pGraphicFrame.GetATable();
 

@@ -15,6 +15,6 @@ namespace ShapeCrawler.OLEObjects
         {
         }
 
-        public ShapeType ShapeType => ShapeType.OLEObject;
+        public SCShapeType ShapeType => SCShapeType.OLEObject;
     }
 }

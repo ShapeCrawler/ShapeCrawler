@@ -111,6 +111,14 @@ namespace ShapeCrawler.Tests
                 };
                 testCases.Add(case2);
 
+                var case3 = new TestElementQuery
+                {
+                    Presentation = SCPresentation.Open(GetTestStream("001.pptx")),
+                    SlideNumber = 2,
+                    ShapeName = "Header 1",
+                };
+                testCases.Add(case3);
+
                 return testCases;
             }
         }

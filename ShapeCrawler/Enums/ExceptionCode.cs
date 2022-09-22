@@ -1,11 +1,7 @@
 ﻿namespace ShapeCrawler
 {
-    /// <summary>
-    ///     Library exception codes
-    /// </summary>
-    public enum ExceptionCode
+    internal enum ExceptionCode
     {
-        ShapeCrawlerException = 100,
         NextVersionFeatureException = 101,
         PresentationIsLargeException = 102,
         SlidesMuchMoreException = 103,

@@ -30,6 +30,6 @@ namespace ShapeCrawler
         {
         }
 
-        public ShapeType ShapeType => ShapeType.AudioShape;
+        public SCShapeType ShapeType => SCShapeType.AudioShape;
     }
 }

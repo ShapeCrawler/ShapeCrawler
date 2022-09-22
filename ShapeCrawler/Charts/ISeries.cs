@@ -28,7 +28,7 @@ namespace ShapeCrawler.Charts
         IChartPointCollection Points { get; }
 
         /// <summary>
-        ///     Gets value indicating whether chart has name. 
+        ///     Gets a value indicating whether chart has name. 
         /// </summary>
         bool HasName { get; }
     }
