@@ -21,6 +21,7 @@ namespace ShapeCrawler.AutoShapes
         internal SCParagraph(A.Paragraph aParagraph, TextFrame textBox)
         {
             this.AParagraph = aParagraph;
+            this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
             this.Level = GetInnerLevel(aParagraph);
             this.bullet = new Lazy<SCBullet>(this.GetBullet);
             this.ParentTextBox = textBox;
@@ -58,7 +59,7 @@ namespace ShapeCrawler.AutoShapes
                 portion.Font.Size = fontSize;
             }
         }
-        
+
         public void AddPortion(string text)
         {
             this.ThrowIfRemoved();
@@ -79,7 +80,7 @@ namespace ShapeCrawler.AutoShapes
                 baseATextParent = basePortion.SDKAText.Parent!;
                 lastARunOrABreak = this.AParagraph.Last(p => p is A.Run or A.Break);
             }
-            
+
             // add break if last element is not A.Break && text ends with newLine
             if (lastARunOrABreak is not A.Break && this.Text.EndsWith(Environment.NewLine, StringComparison.Ordinal))
             {
@@ -96,7 +97,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 AddText(ref lastARunOrABreak, baseATextParent, textLines[0], this.AParagraph);
             }
-            
+
             for (int i = 1; i < textLines.Length; i++)
             {
                 AddBreak(ref lastARunOrABreak);
@@ -138,10 +139,10 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                lastElement = lastElement.InsertAfterSelf(newARun);    
+                lastElement = lastElement.InsertAfterSelf(newARun);
             }
         }
-        
+
         private static int GetInnerLevel(A.Paragraph aParagraph)
         {
             // XML-paragraph enumeration started from zero. Null is also zero
@@ -184,7 +185,7 @@ namespace ShapeCrawler.AutoShapes
         {
             return new PortionCollection(this.AParagraph, this);
         }
-        
+
         private void UpdateAlignment(TextAlignment alignmentValue)
         {
             if (this.ParentTextBox.TextFrameContainer.Placeholder != null)
