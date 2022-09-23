@@ -18,10 +18,10 @@ namespace ShapeCrawler
 
         public ISectionSlideCollection Slides => new SCSectionSlideCollection(this);
 
-        public Section SDKSection { get; }
-
         public string Name => this.GetName();
 
+        internal Section SDKSection { get; }
+        
         private string GetName()
         {
             return this.SDKSection.Name;

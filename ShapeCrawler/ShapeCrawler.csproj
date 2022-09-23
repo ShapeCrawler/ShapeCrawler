@@ -18,6 +18,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <LangVersion>9</LangVersion>
     <ApplicationIcon>logo.ico</ApplicationIcon>
     <PackageReleaseNotes>- Added `IParagraph.AddPortion(string text)` to add a new text portion in paragraph
+- Added APIs to update Underline, Type, Character, Size and Font of paragraph bullet
 - Fixed incorrect updating grouped Picture</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
