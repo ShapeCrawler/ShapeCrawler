@@ -34,7 +34,7 @@ The library currently supports the following frameworks:
 using var pres = SCPresentation.Open("helloWorld.pptx");
 var slidesCount = pres.Slides.Count;
 var autoShape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 1");
-Console.WriteLine(autoShape.TextBox.Text);
+Console.WriteLine(autoShape.TextFrame.Text);
 ```
 
 Visit [**Wiki**](https://github.com/ShapeCrawler/ShapeCrawler/wiki/Examples) page to find more usage samples.
