@@ -46,7 +46,7 @@ namespace ShapeCrawler
         /// <summary>
         /// Gets a list of all textboxes on that slide, including those in tables.
         /// </summary>
-        public IList<ITextBox> GetTextBoxes();
+        public IList<ITextBox> GetAllTextboxes();
 
         /// <summary>
         ///     Hides slide.

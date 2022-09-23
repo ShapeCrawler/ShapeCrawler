@@ -30,7 +30,7 @@ namespace ShapeCrawler
         private readonly Lazy<SCImage> backgroundImage;
         private Lazy<CustomXmlPart> customXmlPart;
         internal readonly SlideId SlideId;
-        
+
         internal SCSlide(SCPresentation parentPresentation, SlidePart slidePart, SlideId slideId)
         {
             this.PresentationInternal = parentPresentation;
@@ -47,11 +47,11 @@ namespace ShapeCrawler
         public ISlideLayout SlideLayout => ((SlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
 
         public IShapeCollection Shapes => this.shapes.Value;
-        
+
         public override bool IsRemoved { get; set; }
 
         internal override TypedOpenXmlPart TypedOpenXmlPart => this.SDKSlidePart;
-        
+
         public int Number
         {
             get => this.GetNumber();
@@ -71,7 +71,7 @@ namespace ShapeCrawler
         public IPresentation ParentPresentation { get; }
 
         public SlidePart SDKSlidePart { get; }
-        
+
         public SCPresentation PresentationInternal { get; }
 
         private ResettableLazy<ShapeCollection> shapes { get; }
@@ -90,10 +90,10 @@ namespace ShapeCrawler
             {
                 throw new ElementIsRemovedException("Slide was removed");
             }
-            
+
             this.PresentationInternal.ThrowIfClosed();
         }
-        
+
         public async Task<string> ToHtml()
         {
             var slideWidthPx = this.PresentationInternal.SlideWidth;
@@ -140,7 +140,7 @@ namespace ShapeCrawler
             }
         }
 
-        public IList<ITextBox> GetTextBoxes()
+        public IList<ITextBox> GetAllTextboxes()
         {
             List<ITextBox> returnList = new List<ITextBox>();
 
@@ -157,7 +157,43 @@ namespace ShapeCrawler
                 returnList.AddRange(tablesOnSlide.SelectMany(table => table.Rows.SelectMany(row => row.Cells).Select(cell => cell.TextBox)));
             }
 
+            // if there are groups on that slide, they need to be added as well since those are not direct descendants of the slide either
+            var groupsOnSlide = this.Shapes.OfType<IGroupShape>().ToList();
+            if (groupsOnSlide.Any())
+            {
+                foreach (var group in groupsOnSlide)
+                {
+                    this.AddAllTextboxesInGroupToList(group, returnList);
+                }
+            }
+
             return returnList;
+        }
+
+        /// <summary>
+        /// recursively iterate through a group and add all textboxes in that group to a list.
+        /// </summary>
+        /// <param name="group"></param>
+        /// <param name="textBoxes"></param>
+        private void AddAllTextboxesInGroupToList(IGroupShape group, List<ITextBox> textBoxes)
+        {
+            foreach (var shape in group.Shapes)
+            {
+                switch (shape.ShapeType)
+                {
+                    case ShapeCrawler.Shapes.ShapeType.GroupShape:
+                        this.AddAllTextboxesInGroupToList((IGroupShape)shape, textBoxes);
+                        break;
+                    case ShapeCrawler.Shapes.ShapeType.AutoShape:
+                        if (shape is ITextBoxContainer)
+                        {
+                            textBoxes.Add(((ITextBoxContainer)shape).TextBox);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
 
         private int GetNumber()
@@ -219,7 +255,7 @@ namespace ShapeCrawler
             // Save the modified presentation.
             presentation.Save();
         }
-        
+
         private string GetCustomData()
         {
             if (this.customXmlPart.Value == null)
