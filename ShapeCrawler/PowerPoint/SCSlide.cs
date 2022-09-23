@@ -28,7 +28,6 @@ namespace ShapeCrawler
     internal class SCSlide : SlideBase, ISlide, IPresentationComponent
     {
         private readonly Lazy<SCImage> backgroundImage;
-        private readonly Lazy<IList<ITextBox>> textboxes;
         private Lazy<CustomXmlPart> customXmlPart;
         internal readonly SlideId SlideId;
         
@@ -40,7 +39,6 @@ namespace ShapeCrawler
             this.shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.ForSlide(this.SDKSlidePart, this));
             this.backgroundImage = new Lazy<SCImage>(() => SCImage.ForBackground(this));
             this.customXmlPart = new Lazy<CustomXmlPart>(this.GetSldCustomXmlPart);
-            this.textboxes = new Lazy<IList<ITextBox>>(this.GetTextBoxes);
             this.SlideId = slideId;
         }
 
@@ -77,8 +75,6 @@ namespace ShapeCrawler
         public SCPresentation PresentationInternal { get; }
 
         private ResettableLazy<ShapeCollection> shapes { get; }
-
-        public IList<ITextBox> Textboxes => this.textboxes.Value;
 
         /// <summary>
         ///     Saves slide scheme in PNG file.
@@ -142,6 +138,26 @@ namespace ShapeCrawler
             {
                 this.SDKSlidePart.Slide.Show = false;
             }
+        }
+
+        public IList<ITextBox> GetTextBoxes()
+        {
+            List<ITextBox> returnList = new List<ITextBox>();
+
+            // this will add all textboxes from shapes on that slide that directly inherit ITextBoxContainer
+            returnList.AddRange(this.Shapes.OfType<ITextBoxContainer>()
+                .Where(t => t.TextBox != null)
+                .Select(t => t.TextBox)
+                .ToList());
+
+            // if this slide contains a table, the cells from that table will have to be added as well, since they inherit from ITextBoxContainer but are not direct descendants of the slide
+            var tablesOnSlide = this.Shapes.OfType<ITable>().ToList();
+            if (tablesOnSlide.Any())
+            {
+                returnList.AddRange(tablesOnSlide.SelectMany(table => table.Rows.SelectMany(row => row.Cells).Select(cell => cell.TextBox)));
+            }
+
+            return returnList;
         }
 
         private int GetNumber()
@@ -257,23 +273,6 @@ namespace ShapeCrawler
             }
 
             return null;
-        }
-
-        private IList<ITextBox> GetTextBoxes()
-        {
-            List<ITextBox> returnList = new List<ITextBox>();
-
-            // this will add all textboxes from shapes on that slide that directly inherit ITextBoxContainer
-            returnList.AddRange(this.Shapes.OfType<ITextBoxContainer>().Where(t => t.TextBox != null).Select(t => t.TextBox).ToList());
-
-            // if this slide contains a table, the cells from that table will have to be added as well, since they inherit from ITextBoxContainer but are not direct descendants of the slide
-            var tablesOnSlide = this.Shapes.OfType<ITable>().ToList();
-            if (tablesOnSlide.Any())
-            {
-                returnList.AddRange(tablesOnSlide.SelectMany(table => table.Rows.SelectMany(row => row.Cells).Select(cell => cell.TextBox)));
-            }
-
-            return returnList;
         }
     }
 }
