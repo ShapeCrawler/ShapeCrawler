@@ -25,7 +25,7 @@ namespace ShapeCrawler.Drawing
 
         public string? HexSolidColor => this.GetHexSolidColor();
 
-        public SCImage? Picture => this.GetPicture();
+        public IImage? Picture => this.GetPicture();
 
 
         public FillType Type => this.GetFillType();

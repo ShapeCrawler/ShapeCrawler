@@ -24,7 +24,7 @@ namespace ShapeCrawler.SlideMasters
             this.slideLayouts = new ResettableLazy<List<SCSlideLayout>>(this.GetSlideLayouts);
         }
         
-        public SCImage Background => this.GetBackground();
+        public IImage Background => this.GetBackground();
 
         public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 

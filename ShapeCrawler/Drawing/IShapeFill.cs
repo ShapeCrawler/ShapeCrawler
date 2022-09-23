@@ -16,7 +16,7 @@ namespace ShapeCrawler.Drawing
         /// <summary>
         ///     Gets picture image. Returns <c>null</c> if fill type is not picture.
         /// </summary>
-        public SCImage? Picture { get; }
+        public IImage? Picture { get; }
         
         /// <summary>
         ///     Gets solid color. Returns <c>null</c> if fill type is not solid.

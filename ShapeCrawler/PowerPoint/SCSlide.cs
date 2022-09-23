@@ -53,7 +53,7 @@ namespace ShapeCrawler
             set => this.SetNumber(value);
         }
 
-        public SCImage Background => this.backgroundImage.Value;
+        public IImage Background => this.backgroundImage.Value;
 
         public string CustomData
         {

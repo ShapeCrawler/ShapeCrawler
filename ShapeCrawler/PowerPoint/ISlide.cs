@@ -17,7 +17,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets background image of the slide. Returns <c>NULL</c> if slide does not have background.
         /// </summary>
-        SCImage? Background { get; }
+        IImage? Background { get; }
 
         /// <summary>
         ///     Gets or sets custom data.

@@ -214,7 +214,7 @@ namespace ShapeCrawler
                     switch (shape)
                     {
                         case SlidePicture slidePicture:
-                            imgParts.Add(slidePicture.Image.ImagePart);
+                            imgParts.Add(((SCImage)slidePicture.Image).SDKImagePart);
                             break;
                         case IGroupShape groupShape:
                             FromShapes(groupShape.Shapes.Select(x => x));

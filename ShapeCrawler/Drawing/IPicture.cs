@@ -1,6 +1,6 @@
 ﻿using ShapeCrawler.Shapes;
-// ReSharper disable CheckNamespace
 
+// ReSharper disable CheckNamespace
 namespace ShapeCrawler
 {
     /// <summary>
@@ -11,6 +11,6 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets image.
         /// </summary>
-        SCImage Image { get; }
+        IImage Image { get; }
     }
 }
