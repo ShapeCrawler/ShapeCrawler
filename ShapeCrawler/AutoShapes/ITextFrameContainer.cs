@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 
@@ -8,6 +9,8 @@ namespace ShapeCrawler.AutoShapes
     internal interface ITextFrameContainer // TODO: remove it?
     {
         IPlaceholder Placeholder { get; }
+
+        ITextFrame? TextFrame { get; }
 
         IShape Shape { get; }
 

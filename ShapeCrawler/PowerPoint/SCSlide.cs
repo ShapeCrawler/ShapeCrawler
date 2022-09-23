@@ -9,9 +9,11 @@ using AngleSharp.Css.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Services;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
@@ -44,9 +46,10 @@ namespace ShapeCrawler
         public ISlideLayout SlideLayout => ((SlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
 
         public IShapeCollection Shapes => this.shapes.Value;
-        
+
         public override bool IsRemoved { get; set; }
         
+
         public int Number
         {
             get => this.GetNumber();
@@ -66,7 +69,7 @@ namespace ShapeCrawler
         public IPresentation Presentation { get; }
 
         public SlidePart SDKSlidePart { get; }
-        
+
         public SCPresentation PresentationInternal { get; }
         
         internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
@@ -79,7 +82,7 @@ namespace ShapeCrawler
             {
                 throw new ElementIsRemovedException("Slide was removed");
             }
-            
+
             this.PresentationInternal.ThrowIfClosed();
         }
 
@@ -118,6 +121,63 @@ namespace ShapeCrawler
             else
             {
                 this.SDKSlidePart.Slide.Show = false;
+            }
+        }
+
+        public IList<ITextFrame> GetAllTextFrames()
+        {
+            List<ITextFrame> returnList = new List<ITextFrame>();
+
+            // this will add all textboxes from shapes on that slide that directly inherit ITextBoxContainer
+            returnList.AddRange(this.Shapes.OfType<ITextFrameContainer>()
+                .Where(t => t.TextFrame != null)
+                .Select(t => t.TextFrame)
+                .ToList());
+
+            // if this slide contains a table, the cells from that table will have to be added as well, since they inherit from ITextBoxContainer but are not direct descendants of the slide
+            var tablesOnSlide = this.Shapes.OfType<ITable>().ToList();
+            if (tablesOnSlide.Any())
+            {
+                returnList.AddRange(tablesOnSlide.SelectMany(table => table.Rows.SelectMany(row => row.Cells).Select(cell => cell.TextFrame)));
+            }
+
+            // if there are groups on that slide, they need to be added as well since those are not direct descendants of the slide either
+            var groupsOnSlide = this.Shapes.OfType<IGroupShape>().ToList();
+            if (groupsOnSlide.Any())
+            {
+                foreach (var group in groupsOnSlide)
+                {
+                    this.AddAllTextboxesInGroupToList(group, returnList);
+                }
+            }
+
+            return returnList;
+        }
+
+        /// <summary>
+        /// recursively iterate through a group and add all textboxes in that group to a list.
+        /// </summary>
+        /// <param name="group"></param>
+        /// <param name="textBoxes"></param>
+        private void AddAllTextboxesInGroupToList(IGroupShape group, List<ITextFrame> textBoxes)
+        {
+            foreach (var shape in group.Shapes)
+            {
+                switch (shape.ShapeType)
+                {
+                    case SCShapeType.GroupShape:
+                        this.AddAllTextboxesInGroupToList((IGroupShape)shape, textBoxes);
+                        break;
+                    case SCShapeType.AutoShape:
+                        if (shape is ITextFrameContainer)
+                        {
+                            textBoxes.Add(((ITextFrameContainer)shape).TextFrame);
+                        }
+
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -180,7 +240,7 @@ namespace ShapeCrawler
             // Save the modified presentation.
             presentation.Save();
         }
-        
+
         private string GetCustomData()
         {
             if (this.customXmlPart.Value == null)
