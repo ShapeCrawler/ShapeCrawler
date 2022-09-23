@@ -47,7 +47,7 @@ namespace ShapeCrawler.Tests
             shape.Fill.SetPicture(imageStream);
 
             // Assert
-            var pictureBytes = shape.Fill.Picture!.GetBytes().Result;
+            var pictureBytes = shape.Fill.Picture!.BinaryData.Result;
             imageStream.Position = 0;
             var imageBytes = imageStream.ToArray();
             pictureBytes.SequenceEqual(imageBytes).Should().BeTrue();
@@ -61,13 +61,13 @@ namespace ShapeCrawler.Tests
             var shape = (IAutoShape)pres.Slides[2].Shapes.First(sp => sp.Id == 4);
             var fill = shape.Fill;
             var newImage = TestFiles.Images.img02_stream;
-            var imageSizeBefore = fill.Picture!.GetBytes().GetAwaiter().GetResult().Length;
+            var imageSizeBefore = fill.Picture!.BinaryData.GetAwaiter().GetResult().Length;
 
             // Act
             fill.Picture.SetImage(newImage);
 
             // Assert
-            var imageSizeAfter = shape.Fill.Picture.GetBytes().GetAwaiter().GetResult().Length;
+            var imageSizeAfter = shape.Fill.Picture.BinaryData.GetAwaiter().GetResult().Length;
             imageSizeAfter.Should().NotBe(imageSizeBefore, "because image has been changed");
         }
 
@@ -142,7 +142,7 @@ namespace ShapeCrawler.Tests
             var shape = (IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
 
             // Act
-            var imageBytes = await shape.Fill.Picture.GetBytes().ConfigureAwait(false);
+            var imageBytes = await shape.Fill.Picture.BinaryData.ConfigureAwait(false);
 
             // Assert
             imageBytes.Length.Should().BePositive();

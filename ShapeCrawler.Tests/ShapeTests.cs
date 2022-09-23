@@ -118,20 +118,20 @@ namespace ShapeCrawler.Tests
             IPresentation presentation = SCPresentation.Open(TestFiles.Presentations.pre009);
             IPicture picture5 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 5);
             IPicture picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
-            int pic6LengthBefore = picture6.Image.GetBytes().GetAwaiter().GetResult().Length;
+            int pic6LengthBefore = picture6.Image.BinaryData.GetAwaiter().GetResult().Length;
             MemoryStream modifiedPresentation = new();
 
             // Act
             picture5.Image.SetImage(TestFiles.Images.imageByteArray02);
 
             // Assert
-            int pic6LengthAfter = picture6.Image.GetBytes().GetAwaiter().GetResult().Length;
+            int pic6LengthAfter = picture6.Image.BinaryData.GetAwaiter().GetResult().Length;
             pic6LengthAfter.Should().Be(pic6LengthBefore);
 
             presentation.SaveAs(modifiedPresentation);
             presentation = SCPresentation.Open(modifiedPresentation);
             picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
-            pic6LengthBefore = picture6.Image.GetBytes().GetAwaiter().GetResult().Length;
+            pic6LengthBefore = picture6.Image.BinaryData.GetAwaiter().GetResult().Length;
             pic6LengthAfter.Should().Be(pic6LengthBefore);
         }
 

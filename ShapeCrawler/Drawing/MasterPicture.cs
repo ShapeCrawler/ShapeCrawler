@@ -17,7 +17,7 @@ namespace ShapeCrawler.Drawing
             this.PresentationInternal = slideMaster.Presentation;
         }
 
-        public SCImage Image => this.GetImage();
+        public IImage Image => this.GetImage();
 
         public SCShapeType ShapeType => SCShapeType.Picture;
 

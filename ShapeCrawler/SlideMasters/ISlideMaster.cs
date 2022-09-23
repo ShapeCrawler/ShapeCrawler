@@ -13,7 +13,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets background image.
         /// </summary>
-        SCImage Background { get; }
+        IImage Background { get; }
 
         /// <summary>
         ///     Gets collection of Slide Layouts.

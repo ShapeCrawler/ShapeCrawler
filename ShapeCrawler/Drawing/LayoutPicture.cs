@@ -16,7 +16,7 @@ namespace ShapeCrawler.Drawing
             this.picReference = picReference;
         }
 
-        public SCImage Image => this.GetImage();
+        public IImage Image => this.GetImage();
 
         public SCShapeType ShapeType => SCShapeType.Picture;
 

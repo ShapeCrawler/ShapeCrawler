@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml;
@@ -15,10 +13,42 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler
 {
     /// <summary>
-    ///     Represents an image model.
+    ///     Represents an image.
     /// </summary>
-    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC - ShapeCrawler")]
-    public class SCImage // TODO: make internal?
+    public interface IImage
+    {
+        /// <summary>
+        ///     Gets MIME type.
+        /// </summary>
+        string MIME { get; }
+
+        /// <summary>
+        ///     Gets binary content.
+        /// </summary>
+        Task<byte[]> BinaryData { get; } // TODO: make non Task
+
+        /// <summary>
+        ///     Gets instance of <see cref="DocumentFormat.OpenXml.Packaging.ImagePart"/> class of Open XML SDK.
+        /// </summary>
+        ImagePart SDKImagePart { get; } 
+
+        /// <summary>
+        ///     Sets image with stream.
+        /// </summary>
+        void SetImage(Stream stream);
+
+        /// <summary>
+        ///     Sets image with byte array.
+        /// </summary>
+        void SetImage(byte[] bytes);
+
+        /// <summary>
+        ///     Sets image by specified file path.
+        /// </summary>
+        void SetImage(string filePath);
+    }
+    
+    internal class SCImage : IImage
     {
         private readonly SCPresentation parentPresentation;
         private readonly IRemovable imageContainer;
@@ -32,13 +62,13 @@ namespace ShapeCrawler
             StringValue picReference,
             OpenXmlPart openXmlPart)
         {
-            this.ImagePart = imagePart;
+            this.SDKImagePart = imagePart;
             this.imageContainer = imageContainer;
             this.picReference = picReference;
             this.openXmlPart = openXmlPart;
             
             this.parentPresentation = ((IPresentationComponent)imageContainer).PresentationInternal;
-            this.MIME = this.ImagePart.ContentType;
+            this.MIME = this.SDKImagePart.ContentType;
         }
 
         /// <summary>
@@ -46,41 +76,9 @@ namespace ShapeCrawler
         /// </summary>
         public string MIME { get; }
 
-        internal ImagePart ImagePart { get; private set; }
-
-#if NET5_0
-
-        /// <summary>
-        ///     Gets bytes content.
-        /// </summary>
-        public async ValueTask<byte[]> GetBytes()
-        {
-            var stream = this.ImagePart.GetStream();
-            this.bytes = new byte[stream.Length];
-            await stream.ReadAsync(this.bytes.AsMemory(0, (int)stream.Length)).ConfigureAwait(false);
-
-            stream.Close();
-            return this.bytes;
-        }
-
-#else
-        /// <summary>
-        ///     Gets binary content.
-        /// </summary>
-        public async Task<byte[]> GetBytes() // TODO: convert to BinaryData property?
-        {
-            if (this.bytes != null)
-            {
-                return this.bytes; // return from cache
-            }
-
-            Stream stream = this.ImagePart.GetStream();
-            this.bytes = new byte[stream.Length];
-            await stream.ReadAsync(this.bytes, 0, (int) stream.Length).ConfigureAwait(false);
-            stream.Close();
-            return this.bytes;
-        }
-#endif
+        public Task<byte[]> BinaryData => this.GetBinaryData();
+        
+        public ImagePart SDKImagePart { get; private set; }
 
         /// <summary>
         ///     Sets image with stream.
@@ -89,16 +87,16 @@ namespace ShapeCrawler
         {
             this.imageContainer.ThrowIfRemoved();
 
-            var isSharedImagePart = this.parentPresentation.ImageParts.Count(imgPart => imgPart == this.ImagePart) > 1;
+            var isSharedImagePart = this.parentPresentation.ImageParts.Count(imgPart => imgPart == this.SDKImagePart) > 1;
             if (isSharedImagePart)
             {
                 var rId = RelatedIdGenerator.Generate();
-                this.ImagePart = this.openXmlPart.AddNewPart<ImagePart>("image/png", rId);
+                this.SDKImagePart = this.openXmlPart.AddNewPart<ImagePart>("image/png", rId);
                 this.picReference.Value = rId;
             }
 
             stream.Position = 0;
-            this.ImagePart.FeedData(stream);
+            this.SDKImagePart.FeedData(stream);
             this.bytes = null; // resets cache
         }
 
@@ -111,28 +109,12 @@ namespace ShapeCrawler
 
             this.SetImage(stream);
         }
-
-#if NETSTANDARD2_0
         
-        /// <summary>
-        ///     Sets image by specified file path.
-        /// </summary>
         public void SetImage(string filePath)
         {
             byte[] sourceBytes = File.ReadAllBytes(filePath);
             this.SetImage(sourceBytes);
         }
-#else
-
-        /// <summary>
-        ///     Sets image from file contents.
-        /// </summary>
-        public async Task SetImage(string filePath)
-        {
-            byte[] sourceBytes = await File.ReadAllBytesAsync(filePath).ConfigureAwait(false);
-            this.SetImage(sourceBytes);
-        }
-#endif
 
         internal static SCImage ForPicture(Shape pictureShape, OpenXmlPart openXmlPart, StringValue picReference)
         {
@@ -186,6 +168,20 @@ namespace ShapeCrawler
         internal static SCImage Create(ImagePart imagePart, LayoutPicture layoutPic, StringValue stringValue, SlideLayoutPart slideLayoutPart)
         {
             return new SCImage(imagePart, layoutPic, stringValue, slideLayoutPart);
+        }
+
+        private async Task<byte[]> GetBinaryData()
+        {
+            if (this.bytes != null)
+            {
+                return this.bytes; // return from cache
+            }
+
+            Stream stream = this.SDKImagePart.GetStream();
+            this.bytes = new byte[stream.Length];
+            await stream.ReadAsync(this.bytes, 0, (int) stream.Length).ConfigureAwait(false);
+            stream.Close();
+            return this.bytes;
         }
     }
 }

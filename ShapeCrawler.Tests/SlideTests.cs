@@ -58,13 +58,13 @@ namespace ShapeCrawler.Tests
             var pre = SCPresentation.Open(Properties.Resources._009);
             var backgroundImage = pre.Slides[0].Background;
             var imgStream = new MemoryStream(Properties.Resources.test_image_2);
-            var bytesBefore = await backgroundImage.GetBytes().ConfigureAwait(false);
+            var bytesBefore = await backgroundImage.BinaryData.ConfigureAwait(false);
 
             // Act
             backgroundImage.SetImage(imgStream);
 
             // Assert
-            var bytesAfter = await backgroundImage.GetBytes().ConfigureAwait(false);
+            var bytesAfter = await backgroundImage.BinaryData.ConfigureAwait(false);
             bytesAfter.Length.Should().NotBe(bytesBefore.Length);
         }
 
@@ -72,10 +72,10 @@ namespace ShapeCrawler.Tests
         public void Background_ImageIsNull_WhenTheSlideHasNotBackground()
         {
             // Arrange
-            ISlide slide = this.fixture.Pre009.Slides[1];
+            var slide = this.fixture.Pre009.Slides[1];
 
             // Act
-            SCImage backgroundImage = slide.Background;
+            var backgroundImage = slide.Background;
 
             // Assert
             backgroundImage.Should().BeNull();
