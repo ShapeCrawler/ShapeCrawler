@@ -17,6 +17,14 @@ namespace ShapeCrawler.Tests.Helpers
 
             public static Stream pre001_stream => Resources._001.ToResizeableStream();
 
+            public static byte[] pre039 => Resources._039;
+
+            public static Stream pre039_stream => Resources._039.ToResizeableStream();
+
+            public static byte[] pre011_dt => Resources._011_dt;
+
+            public static Stream pre011_dt_stream => Resources._011_dt.ToResizeableStream();
+
             public static byte[] pre025_byteArray => Resources._025;
 
             public static byte[] pre009 => Resources._009;

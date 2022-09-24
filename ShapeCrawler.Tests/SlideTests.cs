@@ -289,6 +289,38 @@ namespace ShapeCrawler.Tests
             addedVideo.Y.Should().Be(yPxCoordinate);
         }
 
+        [Fact]
+        public void Slide_GetAllTextboxes_contains_all_textboxes_withTable()
+        {
+            // Arrange
+            var preStream = TestFiles.Presentations.pre039_stream;
+            var presentation = SCPresentation.Open(preStream);
+            var targetSlide = presentation.Slides.First();
+
+            // Act
+            var textboxes = targetSlide.GetAllTextFrames();
+
+            // Assert
+            textboxes.Count.Should().Be(11);
+        }
+
+
+        [Fact]
+        public void Slide_GetAllTextboxes_contains_all_textboxes_withoutTable()
+        {
+            // Arrange
+            var preStream = TestFiles.Presentations.pre011_dt_stream;
+            var presentation = SCPresentation.Open(preStream);
+            var targetSlide = presentation.Slides.First();
+
+            // Act
+            var textboxes = targetSlide.GetAllTextFrames();
+
+            // Assert
+            textboxes.Count.Should().Be(4);
+        }
+
+
 #if TEST
         [Fact]
         public void ToHtml_converts_slide_to_HTML()

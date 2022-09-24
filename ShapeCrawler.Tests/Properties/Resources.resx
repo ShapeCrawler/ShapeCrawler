@@ -232,6 +232,9 @@
   <data name="_038" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\038.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="_039" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resource\039.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="_040_video" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\040_video.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
