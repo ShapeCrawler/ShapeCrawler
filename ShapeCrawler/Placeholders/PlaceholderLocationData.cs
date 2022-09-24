@@ -9,8 +9,6 @@ namespace ShapeCrawler.Placeholders
     {
         public PlaceholderLocationData(PlaceholderData phData)
         {
-            Check.NotNull(phData, nameof(phData));
-
             this.PlaceholderType = phData.PlaceholderType;
             this.Index = phData.Index;
         }

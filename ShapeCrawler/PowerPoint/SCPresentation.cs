@@ -262,13 +262,11 @@ namespace ShapeCrawler
 
         private static void ThrowIfSourceInvalid(Stream stream)
         {
-            Check.NotNull(stream, nameof(stream));
             ThrowIfPptxSizeLarge(stream.Length);
         }
 
         private static void ThrowIfSourceInvalid(byte[] bytes)
         {
-            Check.NotNull(bytes, nameof(bytes));
             ThrowIfPptxSizeLarge(bytes.Length);
         }
 

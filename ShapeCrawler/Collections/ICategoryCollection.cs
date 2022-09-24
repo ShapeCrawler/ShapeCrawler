@@ -2,6 +2,7 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using X = DocumentFormat.OpenXml.Spreadsheet;

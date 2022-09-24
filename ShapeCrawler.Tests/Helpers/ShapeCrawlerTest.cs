@@ -2,25 +2,14 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using ClosedXML.Excel;
 using ShapeCrawler.Extensions;
 
-namespace ShapeCrawler.Tests
+namespace ShapeCrawler.Tests.Helpers
 {
     public abstract class ShapeCrawlerTest
     {
-        protected T GetShape<T>(Stream presentation, int slideNumber, int shapeId)
-        {
-            var scPresentation = SCPresentation.Open(presentation);
-            
-            var slide = scPresentation.Slides[slideNumber - 1];
-            var shape = slide.Shapes.First(sp => sp.Id == shapeId);
-
-            return (T) shape;
-        }
-        
-        protected T GetShape<T>(string presentation, int slideNumber, int shapeId)
+        protected static T GetShape<T>(string presentation, int slideNumber, int shapeId)
         {
             var scPresentation = GetPresentationFromAssembly(presentation);
             var slide = scPresentation.Slides[slideNumber - 1];
@@ -29,7 +18,7 @@ namespace ShapeCrawler.Tests
             return (T) shape;
         }
         
-        protected IAutoShape GetAutoShape(string presentation, int slideNumber, int shapeId)
+        protected static IAutoShape GetAutoShape(string presentation, int slideNumber, int shapeId)
         {
             var scPresentation = GetPresentationFromAssembly(presentation);
             var slide = scPresentation.Slides.First(s => s.Number == slideNumber);
@@ -38,7 +27,7 @@ namespace ShapeCrawler.Tests
             return (IAutoShape) shape;
         }
 
-        protected T GetWorksheetCellValue<T>(byte[] workbookByteArray, string cellAddress)
+        protected static T GetWorksheetCellValue<T>(byte[] workbookByteArray, string cellAddress)
         {
             var stream = new MemoryStream(workbookByteArray);
             var xlWorkbook = new XLWorkbook(stream);
@@ -82,7 +71,7 @@ namespace ShapeCrawler.Tests
             return SCPresentation.Open(stream);
         }
 
-        private IPresentation GetPresentationFromAssembly(string fileName)
+        private static IPresentation GetPresentationFromAssembly(string fileName)
         {
             var stream = GetTestStream(fileName);
             

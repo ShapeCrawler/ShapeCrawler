@@ -1,8 +1,5 @@
-using System;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 
 namespace ShapeCrawler.Tests.Helpers
 {
@@ -32,7 +29,5 @@ namespace ShapeCrawler.Tests.Helpers
         public static readonly float HorizontalResolution;
         
         public static readonly float VerticalResolution;
-
-
     }
 }

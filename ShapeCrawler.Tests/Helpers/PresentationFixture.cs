@@ -1,6 +1,6 @@
 namespace ShapeCrawler.Tests.Helpers
 {
-    public class PresentationFixture
+    public abstract class PresentationFixture
     {
         public IPresentation Pre001 { get; }
         public IPresentation Pre002 { get; }
