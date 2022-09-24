@@ -7,9 +7,9 @@ namespace ShapeCrawler.Placeholders
 {
     internal abstract class Placeholder : IPlaceholder
     {
-        internal readonly P.PlaceholderShape PPlaceholderShape;
-        
         protected ResettableLazy<Shape> layoutReferencedShape;
+
+        internal readonly P.PlaceholderShape PPlaceholderShape;
 
         protected Placeholder(P.PlaceholderShape pPlaceholderShape)
         {

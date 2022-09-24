@@ -3,9 +3,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts
 {
-    /// <summary>
-    ///     Represents a Line Chart.
-    /// </summary>
     public interface ILineChart : IChart
     {
     }

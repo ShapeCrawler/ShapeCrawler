@@ -1,4 +1,6 @@
-﻿using ShapeCrawler.AutoShapes;
+﻿using System.Collections.Generic;
+using System.Linq;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
@@ -9,18 +11,18 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tables
 {
-    internal class SCTableCell : ITableCell, ITextFrameContainer
+    internal class SCTableCell : ITableCell, ITextBoxContainer
     {
-        private readonly ResettableLazy<TextFrame> textFrame;
+        private readonly ResettableLazy<SCTextBox> textBox;
         private readonly bool isRemoved;
 
-        internal SCTableCell(SCTableRow tableRow, A.TableCell aTableCell, int rowIndex, int columnIndex)
+        internal SCTableCell(SCTableRow parentTableRow, A.TableCell aTableCell, int rowIndex, int columnIndex)
         {
-            this.ParentTableRow = tableRow;
+            this.ParentTableRow = parentTableRow;
             this.ATableCell = aTableCell;
             this.RowIndex = rowIndex;
             this.ColumnIndex = columnIndex;
-            this.textFrame = new ResettableLazy<TextFrame>(this.GetTextFrame);
+            this.textBox = new ResettableLazy<SCTextBox>(this.GetTextBox);
         }
 
         public bool IsMergedCell => this.DefineWhetherCellIsMerged();
@@ -31,7 +33,7 @@ namespace ShapeCrawler.Tables
 
         public IShape Shape => this.ParentTableRow.ParentTable;
 
-        public ITextFrame TextFrame => this.textFrame.Value;
+        public ITextBox TextBox => this.textBox.Value;
 
         internal A.TableCell ATableCell { get; init; }
 
@@ -51,9 +53,16 @@ namespace ShapeCrawler.Tables
             this.ParentTableRow.ThrowIfRemoved();
         }
 
-        private TextFrame GetTextFrame()
+        private SCTextBox GetTextBox()
         {
-            return new TextFrame(this, this.ATableCell.TextBody!, true);
+            A.TextBody aTextBody = this.ATableCell.TextBody;
+            IEnumerable<A.Text> aTexts = aTextBody.Descendants<A.Text>();
+            if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0)
+            {
+                return new SCTextBox( this, aTextBody);
+            }
+
+            return null;
         }
 
         private bool DefineWhetherCellIsMerged()
@@ -63,5 +72,6 @@ namespace ShapeCrawler.Tables
                    this.ATableCell.HorizontalMerge != null ||
                    this.ATableCell.VerticalMerge != null;
         }
+
     }
 }

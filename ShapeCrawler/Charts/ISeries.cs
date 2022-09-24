@@ -27,9 +27,6 @@ namespace ShapeCrawler.Charts
         /// </summary>
         IChartPointCollection Points { get; }
 
-        /// <summary>
-        ///     Gets a value indicating whether chart has name. 
-        /// </summary>
         bool HasName { get; }
     }
 
@@ -75,7 +72,7 @@ namespace ShapeCrawler.Charts
 
         private string GetNameOrDefault()
         {
-            var cStringReference = this.seriesXmlElement.GetFirstChild<C.SeriesText>()?.StringReference;
+            C.StringReference cStringReference = seriesXmlElement.GetFirstChild<C.SeriesText>()?.StringReference;
             if (cStringReference == null)
             {
                 return null;

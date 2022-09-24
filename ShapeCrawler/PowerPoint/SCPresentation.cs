@@ -42,7 +42,7 @@ namespace ShapeCrawler
             var pptxBytes = File.ReadAllBytes(outerPath);
             
             this.internalStream = pptxBytes.ToExpandableStream();
-            this.SdkPresentation = PresentationDocument.Open(this.internalStream, true);
+            this.sdkPresentation = PresentationDocument.Open(this.internalStream, true);
             this.Init();
         }
 
@@ -53,17 +53,19 @@ namespace ShapeCrawler
 
             this.internalStream = new MemoryStream();
             sourceStream.CopyTo(this.internalStream);
-            this.SdkPresentation = PresentationDocument.Open(this.internalStream, true);
+            this.sdkPresentation = PresentationDocument.Open(this.internalStream, true);
             this.Init();
         }
 
         private SCPresentation(byte[] sourceBytes)
         {
             this.internalStream = sourceBytes.ToExpandableStream();
-            this.SdkPresentation = PresentationDocument.Open(this.internalStream, true);
+            this.sdkPresentation = PresentationDocument.Open(this.internalStream, true);
             this.Init();
         }
 
+        internal ResettableLazy<SlideMasterCollection> SlideMastersValue { get; private set; }
+        
         /// <inheritdoc/>
         public ISlideCollection Slides => this.slideCollectionLazy.Value;
 
@@ -77,18 +79,16 @@ namespace ShapeCrawler
         public ISlideMasterCollection SlideMasters => this.SlideMastersValue.Value;
 
         /// <inheritdoc/>
-        public byte[] BinaryData => this.GetByteArray();
+        public byte[] ByteArray => this.GetByteArray();
 
         /// <inheritdoc/>
         public ISectionCollection Sections => this.sectionCollectionLazy.Value;
 
-        internal ResettableLazy<SlideMasterCollection> SlideMastersValue { get; private set; }
-        
-        internal PresentationDocument SdkPresentation { get; private set; }
+        internal PresentationDocument sdkPresentation { get; private set; }
 
         internal SCSectionCollection SectionsInternal => (SCSectionCollection)this.Sections;
 
-        internal List<ChartWorkbook> ChartWorkbooks { get; } = new ();
+        internal List<ChartWorkbook> ChartWorkbooks { get; } = new();
 
         internal Dictionary<int, FontData> ParaLvlToFontData => this.paraLvlToFontData.Value;
 
@@ -129,15 +129,15 @@ namespace ShapeCrawler
         public void Save()
         {
             this.ChartWorkbooks.ForEach(chartWorkbook => chartWorkbook.Close());
-            this.SdkPresentation.Save();
+            this.sdkPresentation.Save();
 
             if (this.outerStream != null)
             {
-                this.SdkPresentation.Clone(this.outerStream);
+                this.sdkPresentation.Clone(this.outerStream);
             }
             else if (this.outerPath != null)
             {
-                var pres = this.SdkPresentation.Clone(this.outerPath);
+                var pres = this.sdkPresentation.Clone(this.outerPath);
                 pres.Close();
             }
         }
@@ -167,7 +167,7 @@ namespace ShapeCrawler
             }
 
             this.ChartWorkbooks.ForEach(cw => cw.Close());
-            this.SdkPresentation.Close();
+            this.sdkPresentation.Close();
 
             this.closed = true;
         }
@@ -193,7 +193,7 @@ namespace ShapeCrawler
         private byte[] GetByteArray()
         {
             var stream = new MemoryStream();
-            this.SdkPresentation.Clone(stream);
+            this.sdkPresentation.Clone(stream);
 
             return stream.ToArray();
         }
@@ -282,10 +282,10 @@ namespace ShapeCrawler
 
         private void ThrowIfSlidesNumberLarge()
         {
-            var nbSlides = this.SdkPresentation.PresentationPart.SlideParts.Count();
+            var nbSlides = this.sdkPresentation.PresentationPart.SlideParts.Count();
             if (nbSlides > Limitations.MaxSlidesNumber)
             {
-                this.Close();
+                Close();
                 throw SlidesMuchMoreException.FromMax(Limitations.MaxSlidesNumber);
             }
         }
@@ -298,7 +298,7 @@ namespace ShapeCrawler
                 new ResettableLazy<SlideMasterCollection>(() => SlideMasterCollection.Create(this));
             this.paraLvlToFontData =
                 new Lazy<Dictionary<int, FontData>>(() =>
-                    ParseFontHeights(this.SdkPresentation.PresentationPart.Presentation));
+                    ParseFontHeights(this.sdkPresentation.PresentationPart.Presentation));
             this.sectionCollectionLazy =
                 new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
             this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
@@ -306,7 +306,7 @@ namespace ShapeCrawler
 
         private SCSlideSize GetSlideSize()
         {
-            var pSlideSize = this.SdkPresentation.PresentationPart!.Presentation.SlideSize;
+            var pSlideSize = this.sdkPresentation.PresentationPart!.Presentation.SlideSize;
             var withPx = PixelConverter.HorizontalEmuToPixel(pSlideSize.Cx.Value);
             var heightPx = PixelConverter.VerticalEmuToPixel(pSlideSize.Cy.Value);
 

@@ -22,7 +22,7 @@ namespace ShapeCrawler.AutoShapes
         private readonly Lazy<ColorFormat> colorFormat;
         private readonly ResettableLazy<A.LatinFont> latinFont;
         private readonly ResettableLazy<int> size;
-
+        
         internal SCFont(A.Text aText, SCPortion portion)
         {
             this.aText = aText;
@@ -30,7 +30,7 @@ namespace ShapeCrawler.AutoShapes
             this.latinFont = new ResettableLazy<A.LatinFont>(this.GetALatinFont);
             this.colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
             this.ParentPortion = portion;
-            var parentTextBoxContainer = portion.ParentParagraph.ParentTextBox.TextFrameContainer;
+            var parentTextBoxContainer = portion.ParentParagraph.ParentTextBox.TextBoxContainer;
             Shape parentShape;
             if (parentTextBoxContainer is SCTableCell cell)
             {
@@ -38,12 +38,13 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                parentShape = (Shape)portion.ParentParagraph.ParentTextBox.TextFrameContainer;
+                parentShape = (Shape)portion.ParentParagraph.ParentTextBox.TextBoxContainer;
             }
-
             this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements.FontScheme;
         }
 
+        internal SCPortion ParentPortion { get; }
+        
         #region Public Properties
 
         public string Name
@@ -70,47 +71,15 @@ namespace ShapeCrawler.AutoShapes
             set => this.SetItalicFlag(value);
         }
 
-        public DocumentFormat.OpenXml.Drawing.TextUnderlineValues Underline
-        {
-            get
-            {
-                A.RunProperties aRunProperties = this.aText.Parent.GetFirstChild<A.RunProperties>();
-                return aRunProperties?.Underline?.Value ?? A.TextUnderlineValues.None;
-            }
-            set
-            {
-                A.RunProperties aRunPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
-                if (aRunPr != null)
-                {
-                    aRunPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
-                }
-                else
-                {
-                    A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
-                    if (aEndParaRPr != null)
-                    {
-                        aEndParaRPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
-                    }
-                    else
-                    {
-                        var runProp = this.aText.Parent.AddRunProperties();
-                        runProp.Underline = new EnumValue<A.TextUnderlineValues>(value);
-                    }
-                }
-            }
-        }
-
         public IColorFormat ColorFormat => this.colorFormat.Value;
 
-        #endregion Public Properties
-
-        internal SCPortion ParentPortion { get; }
-
-        public bool CanChangeSize()
+        public bool SizeCanBeChanged()
         {
             A.RunProperties runPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
             return runPr != null;
         }
+
+        #endregion Public Properties
 
         private string GetName()
         {
@@ -155,7 +124,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             var parentParagraph = this.ParentPortion.ParentParagraph;
-            var textBoxContainer = parentParagraph.ParentTextBox.TextFrameContainer;
+            var textBoxContainer = parentParagraph.ParentTextBox.TextBoxContainer;
             int paragraphLvl = parentParagraph.Level;
 
             if (textBoxContainer is Shape { Placeholder: { } } parentShape)
@@ -195,7 +164,7 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                slideMaster = ((SCTableCell)textBoxContainer).SlideMasterInternal;
+                slideMaster = ((SCTableCell) textBoxContainer).SlideMasterInternal;
             }
 
             if (slideMaster.Presentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
@@ -309,7 +278,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetName(string fontName)
         {
-            Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextBox.TextFrameContainer;
+            Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextBox.TextBoxContainer;
             if (parentShape.Placeholder != null)
             {
                 throw new PlaceholderCannotBeChangedException();

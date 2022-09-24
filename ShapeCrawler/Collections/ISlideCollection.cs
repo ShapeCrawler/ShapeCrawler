@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml.Presentation;
 
-// ReSharper disable once CheckNamespace
-namespace ShapeCrawler
+namespace ShapeCrawler.Collections
 {
     /// <summary>
     ///     Represents a collection of slides.

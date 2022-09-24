@@ -13,9 +13,6 @@ namespace ShapeCrawler.Media
         /// </summary>
         public byte[] BinaryData { get; }
         
-        /// <summary>
-        ///     Gets MIME type.
-        /// </summary>
         string MIME { get; }
     }
 
@@ -26,6 +23,6 @@ namespace ShapeCrawler.Media
         {
         }
 
-        public SCShapeType ShapeType => SCShapeType.VideoShape;
+        public ShapeType ShapeType => ShapeType.VideoShape;
     }
 }

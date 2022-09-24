@@ -27,7 +27,7 @@ namespace ShapeCrawler
 
         public IReadOnlyCollection<IShape> Shapes => this.CreateGroupedShapeCollection(); // TODO: make it lazy
 
-        public SCShapeType ShapeType => SCShapeType.GroupShape;
+        public ShapeType ShapeType => ShapeType.GroupShape;
 
         private IReadOnlyCollection<IShape> CreateGroupedShapeCollection()
         {

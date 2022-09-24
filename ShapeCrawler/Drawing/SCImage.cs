@@ -17,7 +17,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents an image model.
     /// </summary>
-    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC - ShapeCrawler")]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class SCImage // TODO: make internal?
     {
         private readonly SCPresentation parentPresentation;
@@ -41,9 +41,6 @@ namespace ShapeCrawler
             this.MIME = this.ImagePart.ContentType;
         }
 
-        /// <summary>
-        ///     Gets MIME type.
-        /// </summary>
         public string MIME { get; }
 
         internal ImagePart ImagePart { get; private set; }
@@ -64,21 +61,18 @@ namespace ShapeCrawler
         }
 
 #else
-        /// <summary>
-        ///     Gets binary content.
-        /// </summary>
-        public async Task<byte[]> GetBytes() // TODO: convert to BinaryData property?
+        public async Task<byte[]> GetBytes()
         {
-            if (this.bytes != null)
+            if (bytes != null)
             {
-                return this.bytes; // return from cache
+                return bytes; // return from cache
             }
 
             Stream stream = this.ImagePart.GetStream();
-            this.bytes = new byte[stream.Length];
-            await stream.ReadAsync(this.bytes, 0, (int) stream.Length).ConfigureAwait(false);
+            bytes = new byte[stream.Length];
+            await stream.ReadAsync(bytes, 0, (int) stream.Length).ConfigureAwait(false);
             stream.Close();
-            return this.bytes;
+            return bytes;
         }
 #endif
 
@@ -113,10 +107,6 @@ namespace ShapeCrawler
         }
 
 #if NETSTANDARD2_0
-        
-        /// <summary>
-        ///     Sets image by specified file path.
-        /// </summary>
         public void SetImage(string filePath)
         {
             byte[] sourceBytes = File.ReadAllBytes(filePath);

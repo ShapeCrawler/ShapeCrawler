@@ -1,10 +1,9 @@
 ﻿using ShapeCrawler.Drawing;
 
-// ReSharper disable once CheckNamespace
-namespace ShapeCrawler
+namespace ShapeCrawler.AutoShapes
 {
     /// <summary>
-    ///     Represents font.
+    ///     Represents a font.
     /// </summary>
     public interface IFont
     {
@@ -29,11 +28,6 @@ namespace ShapeCrawler
         bool IsItalic { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value underline 
-        /// </summary>
-        DocumentFormat.OpenXml.Drawing.TextUnderlineValues Underline { get; set; }
-
-        /// <summary>
         ///     Gets font color.
         /// </summary>
         IColorFormat ColorFormat { get; }
@@ -41,6 +35,6 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets value indicating whether font size can be changed.
         /// </summary>
-        bool CanChangeSize();
+        bool SizeCanBeChanged();
     }
 }

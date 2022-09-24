@@ -1,9 +1,7 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace ShapeCrawler.Statics
 {
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "Will be converted to internal")]
     public static class PixelConverter // TODO: make internal
     {
         private static float horizontalResolution;
@@ -11,9 +9,26 @@ namespace ShapeCrawler.Statics
 
         static PixelConverter()
         {
-            horizontalResolution = 96;
-            verticalResolution = 96;
+            var bm = new Bitmap(1, 1);
+            if (bm.HorizontalResolution == 0)
+            {
+                // Set default resolution
+                bm.SetResolution(96, 96);
+            }
+
+            horizontalResolution = bm.HorizontalResolution;
+            verticalResolution = bm.VerticalResolution;
         }
+
+#if TEST
+
+        public static void SetDpi(int dpi)
+        {
+            horizontalResolution = dpi;
+            verticalResolution = dpi;
+        }
+
+#endif
 
         internal static int HorizontalEmuToPixel(long horizontalEmus)
         {

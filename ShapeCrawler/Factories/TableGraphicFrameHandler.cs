@@ -1,7 +1,6 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 

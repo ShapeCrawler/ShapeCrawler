@@ -1,5 +1,4 @@
 using System.Linq;
-using FluentAssertions;
 using ShapeCrawler.Drawing;
 
 namespace ShapeCrawler.Tests.Helpers
@@ -24,31 +23,13 @@ namespace ShapeCrawler.Tests.Helpers
         public Location Location { get; set; }
         public int SlideMasterNumber { get; set; }
         public int SlideLayoutNumber { get; set; }
-        public int? SlideNumber { get; set; }
-
-
-        public IAutoShape GetAutoShape()
-        {
-            var slideIndex = 0;
-            if (this.SlideNumber != null)
-            {
-                slideIndex = this.SlideNumber.Value - 1;
-            }
-            else
-            {
-                slideIndex = this.SlideIndex;
-            }
-            
-            var shapes = this.Presentation.Slides[slideIndex].Shapes;
-            return this.ShapeName != null ? shapes.GetByName<IAutoShape>(this.ShapeName) : shapes.GetById<IAutoShape>(this.ShapeId!.Value);
-        }
         
         public IParagraph GetParagraph()
         {
             var paragraphIndex = this.ParagraphIndex ?? this.ParagraphNumber - 1;
             var autoShape = Presentation.Slides[SlideIndex]
                 .Shapes.First(sp => sp.Id == ShapeId) as IAutoShape;
-            return autoShape.TextFrame.Paragraphs[paragraphIndex];
+            return autoShape.TextBox.Paragraphs[paragraphIndex];
         }
 
         public IPortion GetParagraphPortion()
@@ -61,7 +42,7 @@ namespace ShapeCrawler.Tests.Helpers
             var paragraphIndex = this.ParagraphIndex ?? this.ParagraphNumber - 1;
             var portionIndex = this.PortionIndex ?? this.PortionNumber - 1;
             
-            return autoShape.TextFrame!.Paragraphs[paragraphIndex].Portions[portionIndex];
+            return autoShape.TextBox!.Paragraphs[paragraphIndex].Portions[portionIndex];
         }
 
         public IColorFormat GetTestColorFormat()
@@ -82,7 +63,7 @@ namespace ShapeCrawler.Tests.Helpers
             var paragraphIndex = this.ParagraphIndex ?? this.ParagraphNumber - 1;
             var portionIndex = this.PortionIndex ?? this.PortionNumber - 1;
 
-            return autoShape.TextFrame!.Paragraphs[paragraphIndex].Portions[portionIndex].Font.ColorFormat;
+            return autoShape.TextBox!.Paragraphs[paragraphIndex].Portions[portionIndex].Font.ColorFormat;
         }
     }
 }

@@ -78,12 +78,12 @@ namespace ShapeCrawler.Tests
             IShape shapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
 
             // Act
-            SCGeometry geometryTypeCase1 = shapeCase1.GeometryType;
-            SCGeometry geometryTypeCase2 = shapeCase2.GeometryType;
+            GeometryType geometryTypeCase1 = shapeCase1.GeometryType;
+            GeometryType geometryTypeCase2 = shapeCase2.GeometryType;
 
             // Assert
-            geometryTypeCase1.Should().Be(SCGeometry.Rectangle);
-            geometryTypeCase2.Should().Be(SCGeometry.Custom);
+            geometryTypeCase1.Should().Be(GeometryType.Rectangle);
+            geometryTypeCase2.Should().Be(GeometryType.Custom);
         }
 
         [Fact]
@@ -94,7 +94,7 @@ namespace ShapeCrawler.Tests
             IAutoShape autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
             // Act-Assert
-            autoShape.TextFrame.Text.Should().BeEquivalentTo("id8");
+            autoShape.TextBox.Text.Should().BeEquivalentTo("id8");
         }
 
         [Fact]
@@ -105,7 +105,7 @@ namespace ShapeCrawler.Tests
             var autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
             // Act
-            int portionFontSize = autoShape.TextFrame.Paragraphs[0].Portions[0].Font.Size;
+            int portionFontSize = autoShape.TextBox.Paragraphs[0].Portions[0].Font.Size;
 
             // Assert
             portionFontSize.Should().Be(18);

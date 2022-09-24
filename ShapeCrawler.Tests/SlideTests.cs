@@ -51,6 +51,21 @@ namespace ShapeCrawler.Tests
             hidden.Should().BeTrue();
         }
 
+
+        [Fact]
+        public void SaveScheme_CreatesAndSavesSlideSchemeImageInSpecifiedStream()
+        {
+            // Arrange
+            ISlide slide = this.fixture.Pre025.Slides[2];
+            var stream = new MemoryStream();
+
+            // Act
+            slide.SaveScheme(stream);
+
+            // Assert
+            stream.Length.Should().BeGreaterThan(0);
+        }
+
         [Fact]
         public async void Background_SetImage_updates_background()
         {
@@ -152,7 +167,7 @@ namespace ShapeCrawler.Tests
             var shapesCollection = presentation.Slides[0].Shapes;
 
             // Act-Assert
-            Assert.Contains(shapesCollection, shape => shape.Id == 10 && shape is IConnectionShape && shape.GeometryType == SCGeometry.Line);
+            Assert.Contains(shapesCollection, shape => shape.Id == 10 && shape is IConnectionShape && shape.GeometryType == GeometryType.Line);
         }
 
         [Theory]
@@ -298,7 +313,7 @@ namespace ShapeCrawler.Tests
             var targetSlide = presentation.Slides.First();
 
             // Act
-            var textboxes = targetSlide.GetAllTextFrames();
+            var textboxes = targetSlide.GetAllTextboxes();
 
             // Assert
             textboxes.Count.Should().Be(11);
@@ -314,7 +329,7 @@ namespace ShapeCrawler.Tests
             var targetSlide = presentation.Slides.First();
 
             // Act
-            var textboxes = targetSlide.GetAllTextFrames();
+            var textboxes = targetSlide.GetAllTextboxes();
 
             // Assert
             textboxes.Count.Should().Be(4);

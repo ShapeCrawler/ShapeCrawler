@@ -60,9 +60,6 @@ namespace ShapeCrawler
         /// </summary>
         ISlide ParentSlide { get; }
 
-        /// <summary>
-        ///     Gets instance of <see cref="SpreadsheetDocument"/> of Open XML SDK.
-        /// </summary>
         SpreadsheetDocument SDKSpreadsheetDocument { get; }
     }
 }

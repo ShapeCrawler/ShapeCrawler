@@ -18,6 +18,6 @@ namespace ShapeCrawler
         {
         }
 
-        public SCShapeType ShapeType => SCShapeType.ConnectionShape;
+        public ShapeType ShapeType => ShapeType.ConnectionShape;
     }
 }

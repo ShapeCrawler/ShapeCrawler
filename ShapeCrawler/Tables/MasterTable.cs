@@ -14,7 +14,7 @@ namespace ShapeCrawler.Tables
         {
         }
 
-        public SCShapeType ShapeType => SCShapeType.Table;
+        public ShapeType ShapeType => ShapeType.Table;
 
         public override SCPresentation PresentationInternal { get; }
     }

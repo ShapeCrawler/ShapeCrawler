@@ -50,16 +50,13 @@ namespace ShapeCrawler.Shapes
         /// <summary>
         ///     Gets geometry form type of the shape.
         /// </summary>
-        SCGeometry GeometryType { get; }
+        GeometryType GeometryType { get; }
 
         /// <summary>
         ///     Gets or sets custom data for the shape.
         /// </summary>
         string CustomData { get; set; }
         
-        /// <summary>
-        ///     Gets shape type.
-        /// </summary>
-        SCShapeType ShapeType { get; }
+        ShapeType ShapeType { get; }
     }
 }

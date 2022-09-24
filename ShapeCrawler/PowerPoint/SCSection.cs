@@ -20,7 +20,7 @@ namespace ShapeCrawler
 
         public Section SDKSection { get; }
 
-        public string Name => this.GetName();
+        public string Name => GetName();
 
         private string GetName()
         {

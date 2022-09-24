@@ -19,16 +19,16 @@ namespace ShapeCrawler.Drawing
 
         public SCImage Image => this.GetImage();
 
-        public SCShapeType ShapeType => SCShapeType.Picture;
+        public ShapeType ShapeType => ShapeType.Picture;
 
         public override SCPresentation PresentationInternal { get; }
 
         private SCImage GetImage()
         {
             var sldMasterPart = this.SlideMasterInternal.PSlideMaster.SlideMasterPart;
-            var imagePart = (ImagePart)sldMasterPart.GetPartById(this.picReference.Value);
+            var imagePart = (ImagePart)sldMasterPart.GetPartById(picReference.Value);
 
-            return SCImage.Create(imagePart, this, this.picReference, sldMasterPart);
+            return SCImage.Create(imagePart, this, picReference, sldMasterPart);
         }
     }
 }

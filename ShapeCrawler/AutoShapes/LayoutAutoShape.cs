@@ -17,30 +17,29 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler
 {
-    internal class LayoutAutoShape : LayoutShape, IAutoShape, IFontDataReader, ITextFrameContainer
+    internal class LayoutAutoShape : LayoutShape, IAutoShape, IFontDataReader, ITextBoxContainer
     {
         private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
         private readonly Lazy<ShapeFill> shapeFill;
-        private readonly Lazy<TextFrame?> textBox;
-        private readonly P.Shape pShape;
+        private readonly Lazy<SCTextBox?> textBox;
+        private readonly P.Shape _childOfPShape;
 
-        internal LayoutAutoShape(SCSlideLayout slideLayout, P.Shape pShape)
-            : base(slideLayout, pShape)
+        internal LayoutAutoShape(SCSlideLayout slideLayout, P.Shape childOfPShape)
+            : base(slideLayout, childOfPShape)
         {
-            this.textBox = new Lazy<TextFrame?>(this.GetTextFrame);
+            this.textBox = new Lazy<SCTextBox?>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(TryGetFill);
             this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
-            this.pShape = pShape;
+            this._childOfPShape = childOfPShape;
         }
 
         #region Public Properties
 
-        public ITextFrame? TextFrame => this.textBox.Value;
+        public ITextBox? TextBox => this.textBox.Value;
 
         public IShapeFill Fill => this.shapeFill.Value;
 
-        public SCShapeType ShapeType => SCShapeType.AutoShape;
-        
+        public ShapeType ShapeType => ShapeType.AutoShape;
         #endregion Public Properties
 
         public IShape Shape => this;
@@ -76,11 +75,11 @@ namespace ShapeCrawler
 
         private Dictionary<int, FontData> GetLvlToFontData()
         {
-            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(this.pShape.TextBody.ListStyle);
+            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(this._childOfPShape.TextBody.ListStyle);
 
             if (!lvlToFontData.Any())
             {
-                Int32Value endParaRunPrFs = this.pShape.TextBody.GetFirstChild<A.Paragraph>()
+                Int32Value endParaRunPrFs = this._childOfPShape.TextBody.GetFirstChild<A.Paragraph>()
                     .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
                 if (endParaRunPrFs != null)
                 {
@@ -95,7 +94,7 @@ namespace ShapeCrawler
             return lvlToFontData;
         }
 
-        private TextFrame GetTextFrame()
+        private SCTextBox GetTextBox()
         {
             P.TextBody pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
             if (pTextBody == null)
@@ -106,7 +105,7 @@ namespace ShapeCrawler
             IEnumerable<A.Text> aTexts = pTextBody.Descendants<A.Text>();
             if (aTexts.Sum(t => t.Text.Length) > 0)
             {
-                return new TextFrame(this, pTextBody, false);
+                return new SCTextBox(this, pTextBody);
             }
 
             return null;

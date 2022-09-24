@@ -6,11 +6,13 @@ using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
+// ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
-namespace ShapeCrawler.Tables
+namespace ShapeCrawler
 {
     internal class SlideTable : SlideShape, ITable
     {
@@ -25,15 +27,15 @@ namespace ShapeCrawler.Tables
             this.pGraphicFrame = childOfPShapeTrees as P.GraphicFrame;
         }
         
-        public SCShapeType ShapeType => SCShapeType.Table;
+        private A.Table ATable => this.pGraphicFrame.GetATable();
 
-        public IReadOnlyList<SCColumn> Columns => this.GetColumnList(); // TODO: make lazy
+        public ShapeType ShapeType => ShapeType.Table;
+
+        public IReadOnlyList<Column> Columns => this.GetColumnList(); // TODO: make lazy
 
         public RowCollection Rows => this.rowCollection.Value;
 
-        public override SCGeometry GeometryType => SCGeometry.Rectangle;
-
-        private A.Table ATable => this.pGraphicFrame.GetATable();
+        public override GeometryType GeometryType => GeometryType.Rectangle;
 
         public ITableCell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
 
@@ -67,7 +69,7 @@ namespace ShapeCrawler.Tables
                     {
                         aTblCell.HorizontalMerge = new BooleanValue(true);
 
-                        this.MergeParagraphs(minRowIndex, minColIndex, aTblCell);
+                        MergeParagraphs(minRowIndex, minColIndex, aTblCell);
                     }
                 }
             }
@@ -98,19 +100,19 @@ namespace ShapeCrawler.Tables
             }
 
             // Delete a:gridCol and a:tc elements if all columns are merged
-            for (int colIdx = 0; colIdx < this.Columns.Count;)
+            for (int colIdx = 0; colIdx < Columns.Count;)
             {
-                int? gridSpan = ((SCTableCell)this.Rows[0].Cells[colIdx]).ATableCell.GridSpan?.Value;
-                if (gridSpan > 1 && this.Rows.All(row =>
+                int? gridSpan = ((SCTableCell) Rows[0].Cells[colIdx]).ATableCell.GridSpan?.Value;
+                if (gridSpan > 1 && Rows.All(row =>
                     ((SCTableCell)row.Cells[colIdx]).ATableCell.GridSpan?.Value == gridSpan))
                 {
                     int deleteColumnCount = gridSpan.Value - 1;
 
                     // Delete a:gridCol elements
-                    foreach (SCColumn column in this.Columns.Skip(colIdx + 1).Take(deleteColumnCount))
+                    foreach (Column column in Columns.Skip(colIdx + 1).Take(deleteColumnCount))
                     {
                         column.AGridColumn.Remove();
-                        this.Columns[colIdx].Width += column.Width; // append width of deleting column to merged column
+                        Columns[colIdx].Width += column.Width; // append width of deleting column to merged column
                     }
 
                     // Delete a:tc elements
@@ -132,18 +134,18 @@ namespace ShapeCrawler.Tables
             }
 
             // Delete a:tr
-            for (int rowIdx = 0; rowIdx < this.Rows.Count;)
+            for (int rowIdx = 0; rowIdx < Rows.Count;)
             {
-                int? rowSpan = ((SCTableCell)this.Rows[rowIdx].Cells[0]).ATableCell.RowSpan?.Value;
-                if (rowSpan > 1 && this.Rows[rowIdx].Cells.All(c => ((SCTableCell) c).ATableCell.RowSpan?.Value == rowSpan))
+                int? rowSpan = ((SCTableCell) Rows[rowIdx].Cells[0]).ATableCell.RowSpan?.Value;
+                if (rowSpan > 1 && Rows[rowIdx].Cells.All(c => ((SCTableCell) c).ATableCell.RowSpan?.Value == rowSpan))
                 {
                     int deleteRowsCount = rowSpan.Value - 1;
 
                     // Delete a:gridCol elements
-                    foreach (var row in this.Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
+                    foreach (SCTableRow row in Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
                     {
                         row.ATableRow.Remove();
-                        this.Rows[rowIdx].Height += row.Height;
+                        Rows[rowIdx].Height += row.Height;
                     }
 
                     rowIdx += rowSpan.Value;
@@ -153,7 +155,7 @@ namespace ShapeCrawler.Tables
                 rowIdx++;
             }
 
-            this.rowCollection.Reset();
+            rowCollection.Reset();
         }
 
         private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
@@ -177,11 +179,13 @@ namespace ShapeCrawler.Tables
             }
         }
 
-        private IReadOnlyList<SCColumn> GetColumnList()
+        #region Private Methods
+
+        private IReadOnlyList<Column> GetColumnList()
         {
-            IEnumerable<A.GridColumn> aGridColumns = this.ATable.TableGrid.Elements<A.GridColumn>();
-            var columnList = new List<SCColumn>(aGridColumns.Count());
-            columnList.AddRange(aGridColumns.Select(aGridColumn => new SCColumn(aGridColumn)));
+            IEnumerable<A.GridColumn> aGridColumns = ATable.TableGrid.Elements<A.GridColumn>();
+            var columnList = new List<Column>(aGridColumns.Count());
+            columnList.AddRange(aGridColumns.Select(aGridColumn => new Column(aGridColumn)));
 
             return columnList;
         }
@@ -196,5 +200,7 @@ namespace ShapeCrawler.Tables
 
             return false;
         }
+
+        #endregion Private Methods
     }
 }

@@ -17,8 +17,9 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Copyright>MIT</Copyright>
     <LangVersion>9</LangVersion>
     <ApplicationIcon>logo.ico</ApplicationIcon>
-    <PackageReleaseNotes>- Added `IParagraph.AddPortion(string text)` to add a new text portion in paragraph
-- Fixed incorrect updating grouped Picture</PackageReleaseNotes>
+    <PackageReleaseNotes>- Added opportunity to update text of master shape.
+- Added IColorFormat.SetColorHex() to update color.
+- Added IAudioShape.MIME and IVideoShape.MIME to get MIME type of audio and video content.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
@@ -27,10 +28,10 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <nullable>enable</nullable>
-    <AssemblyVersion>0.33.0.0</AssemblyVersion>
-    <FileVersion>0.33.0.0</FileVersion>
+    <AssemblyVersion>0.32.0.0</AssemblyVersion>
+    <FileVersion>0.32.0.0</FileVersion>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-    <PackageVersion>0.33.0</PackageVersion>
+    <PackageVersion>0.32.0</PackageVersion>
     <Title>ShapeCrawler</Title>
     <Configurations>Debug;Release;Test</Configurations>
     <Platforms>AnyCPU</Platforms>
@@ -63,10 +64,6 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Compile Remove="StrykerOutput\**" />
     <EmbeddedResource Remove="StrykerOutput\**" />
     <None Remove="StrykerOutput\**" />
-    <None Remove="Resources\video-image.bmp" />
-    <EmbeddedResource Include="Resources\video-image.bmp" />
-    <None Remove="Resources\audio-image.png" />
-    <EmbeddedResource Include="Resources\audio-image.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -82,7 +79,6 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageReference Include="AngleSharp" Version="0.16.1" />
     <PackageReference Include="AngleSharp.Css" Version="0.16.2" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.18.0" />
-    <PackageReference Include="SkiaSharp" Version="2.88.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

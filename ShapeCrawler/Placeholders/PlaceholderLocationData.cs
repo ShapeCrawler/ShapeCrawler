@@ -11,8 +11,8 @@ namespace ShapeCrawler.Placeholders
         {
             Check.NotNull(phData, nameof(phData));
 
-            this.PlaceholderType = phData.PlaceholderType;
-            this.Index = phData.Index;
+            PlaceholderType = phData.PlaceholderType;
+            Index = phData.Index;
         }
 
         /// <summary>
@@ -35,6 +35,6 @@ namespace ShapeCrawler.Placeholders
         /// </summary>
         public int Height { get; set; }
 
-        public SCGeometry Geometry { get; set; } = SCGeometry.Rectangle;
+        public GeometryType Geometry { get; set; } = GeometryType.Rectangle;
     }
 }

@@ -1,10 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.IO;
+﻿using System.IO;
 
 namespace ShapeCrawler.Extensions
 {
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", MessageId = "Elements should be documented", Justification = "Will be converted to internal")]
-    public static class StreamExtensions
+    public static class StreamExtensions // TODO: make internal for Release
     {
         public static void WriteFile(this Stream destStream, string filePath)
         {

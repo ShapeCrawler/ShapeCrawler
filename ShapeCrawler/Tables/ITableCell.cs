@@ -1,4 +1,6 @@
-﻿// ReSharper disable CheckNamespace
+﻿using ShapeCrawler.AutoShapes;
+
+// ReSharper disable CheckNamespace
 namespace ShapeCrawler
 {
     /// <summary>
@@ -9,7 +11,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets text box.
         /// </summary>
-        ITextFrame TextFrame { get; }
+        ITextBox TextBox { get; }
 
         /// <summary>
         ///     Gets a value indicating whether cell belongs to merged cell.

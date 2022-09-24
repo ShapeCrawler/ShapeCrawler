@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 
-// ReSharper disable once CheckNamespace
-namespace ShapeCrawler
+namespace ShapeCrawler.Collections
 {
     /// <summary>
     ///     Represents collection of paragraph text portions.

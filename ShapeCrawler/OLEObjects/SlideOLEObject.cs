@@ -20,9 +20,9 @@ namespace ShapeCrawler
 
         #region Public Properties
 
-        public override SCGeometry GeometryType => SCGeometry.Rectangle;
+        public override GeometryType GeometryType => GeometryType.Rectangle;
 
-        public SCShapeType ShapeType => SCShapeType.OLEObject;
+        public ShapeType ShapeType => ShapeType.OLEObject;
 
         #endregion Public Properties
     }

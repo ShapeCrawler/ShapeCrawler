@@ -18,13 +18,13 @@ namespace ShapeCrawler.Drawing
 
         public SCImage Image => this.GetImage();
 
-        public SCShapeType ShapeType => SCShapeType.Picture;
+        public ShapeType ShapeType => ShapeType.Picture;
 
         private SCImage GetImage()
         {
-            var imagePart = (ImagePart)this.SlideLayoutInternal.SlideLayoutPart.GetPartById(this.picReference.Value);
+            var imagePart = (ImagePart)this.SlideLayoutInternal.SlideLayoutPart.GetPartById(picReference.Value);
 
-            return SCImage.Create(imagePart, this, this.picReference, this.SlideLayoutInternal.SlideLayoutPart);
+            return SCImage.Create(imagePart, this, picReference, this.SlideLayoutInternal.SlideLayoutPart);
         }
     }
 }

@@ -1,27 +1,25 @@
 ﻿using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
+
 namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a table's column.
     /// </summary>
-    public class SCColumn // TODO: extract interface
+    public class Column
     {
-        internal SCColumn(A.GridColumn aGridColumn)
+        internal Column(A.GridColumn aGridColumn)
         {
             this.AGridColumn = aGridColumn;
         }
-        
-        /// <summary>
-        ///     Gets or sets cell width.
-        /// </summary>
+
+        internal A.GridColumn AGridColumn { get; init; }
+
         public long Width
         {
             get => this.AGridColumn.Width.Value;
             set => this.AGridColumn.Width.Value = value;
         }
-
-        internal A.GridColumn AGridColumn { get; init; }
     }
 }

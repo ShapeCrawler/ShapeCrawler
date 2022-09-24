@@ -8,7 +8,7 @@ using SharpCompress.Common;
 
 namespace ShapeCrawler.Tests.Helpers
 {
-    public static class PptxValidator
+    public class PptxValidator
     {
         public static ValidateResponse Validate(MemoryStream pptxStream)
         {

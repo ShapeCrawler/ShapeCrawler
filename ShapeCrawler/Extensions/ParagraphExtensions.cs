@@ -3,7 +3,10 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Extensions
 {
-    internal static class ParagraphExtensions
+    /// <summary>
+    ///     Contains extension methods for <see cref="A.Paragraph" /> class object.
+    /// </summary>
+    public static class ParagraphExtensions
     {
         public static bool IsEmpty(this A.Paragraph aParagraph)
         {

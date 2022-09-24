@@ -5,7 +5,7 @@ namespace ShapeCrawler.Exceptions
     /// <summary>
     ///     Represents a library exception.
     /// </summary>
-    internal class ShapeCrawlerException : Exception
+    public class ShapeCrawlerException : Exception
     {
         internal ShapeCrawlerException()
         {

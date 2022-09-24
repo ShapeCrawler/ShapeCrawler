@@ -15,7 +15,7 @@ namespace ShapeCrawler.Factories
     {
         public static void GetFontDataFromPlaceholder(ref FontData phFontData, SCParagraph paragraph)
         {
-            Shape fontParentShape = (Shape)paragraph.ParentTextBox.TextFrameContainer;
+            Shape fontParentShape = (Shape)paragraph.ParentTextBox.TextBoxContainer;
             int paragraphLvl = paragraph.Level;
             if (fontParentShape.Placeholder == null)
             {

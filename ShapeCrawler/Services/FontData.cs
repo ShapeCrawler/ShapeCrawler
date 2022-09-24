@@ -5,8 +5,6 @@ namespace ShapeCrawler.Services
 {
     internal class FontData
     {
-        internal A.SystemColor? ASystemColor { get; set; }
-        
         internal Int32Value? FontSize { get; set; }
 
         internal A.LatinFont? ALatinFont { get; set; }
@@ -18,6 +16,8 @@ namespace ShapeCrawler.Services
         internal A.RgbColorModelHex? ARgbColorModelHex { get; set; }
 
         internal A.SchemeColor? ASchemeColor { get; set; }
+
+        public A.SystemColor? ASystemColor { get; set; }
 
         internal A.PresetColor? APresetColor { get; set; }
 

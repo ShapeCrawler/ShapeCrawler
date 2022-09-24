@@ -12,10 +12,11 @@ namespace ShapeCrawler
     /// </summary>
     public class SCTableRow // TODO: extract interface
     {
-        internal readonly A.TableRow ATableRow;
         private readonly Lazy<List<SCTableCell>> cells;
         private readonly int index;
         private readonly bool isRemoved;
+
+        internal readonly A.TableRow ATableRow;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SCTableRow"/> class.
@@ -27,7 +28,7 @@ namespace ShapeCrawler
             this.index = index;
 
 #if NETSTANDARD2_0
-            this.cells = new Lazy<List<SCTableCell>>(() => this.GetCells());
+            cells = new Lazy<List<SCTableCell>>(() => GetCells());
 #else
             this.cells = new Lazy<List<SCTableCell>>(this.GetCells);
 #endif
@@ -38,9 +39,6 @@ namespace ShapeCrawler
         /// </summary>
         public IReadOnlyList<ITableCell> Cells => this.cells.Value;
 
-        /// <summary>
-        ///     Gets or sets height.
-        /// </summary>
         public long Height
         {
             get => this.ATableRow.Height.Value;
@@ -49,16 +47,6 @@ namespace ShapeCrawler
 
         internal SlideTable ParentTable { get; }
 
-        internal void ThrowIfRemoved()
-        {
-            if (this.isRemoved)
-            {
-                throw new ElementIsRemovedException("Table Row was removed.");
-            }
-
-            this.ParentTable.ThrowIfRemoved();
-        }
-        
         #region Private Methods
 
         private List<SCTableCell> GetCells()
@@ -76,14 +64,14 @@ namespace ShapeCrawler
                 }
                 else if (aTableCell.VerticalMerge != null)
                 {
-                    int upRowIdx = this.index - 1;
-                    SCTableCell upNeighborScCell = (SCTableCell) this.ParentTable[upRowIdx, columnIdx];
+                    int upRowIdx = index - 1;
+                    SCTableCell upNeighborScCell = (SCTableCell) ParentTable[upRowIdx, columnIdx];
                     cellList.Add(upNeighborScCell);
                     addedScCell = upNeighborScCell;
                 }
                 else
                 {
-                    addedScCell = new SCTableCell(this, aTableCell, this.index, columnIdx);
+                    addedScCell = new SCTableCell(this, aTableCell, index, columnIdx);
                     cellList.Add(addedScCell);
                 }
 
@@ -91,6 +79,16 @@ namespace ShapeCrawler
             }
 
             return cellList;
+        }
+
+        internal void ThrowIfRemoved()
+        {
+            if (this.isRemoved)
+            {
+                throw new ElementIsRemovedException("Table Row was removed.");
+            }
+
+            this.ParentTable.ThrowIfRemoved();
         }
 
         #endregion
