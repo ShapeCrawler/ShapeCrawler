@@ -10,7 +10,7 @@ namespace ShapeCrawler
     {
         private readonly SCSection parentSection;
         private List<SCSlide> sectionSlides;
-        private SCSlideCollection presentationSlides;
+        private readonly SCSlideCollection presentationSlides;
         
         public SCSectionSlideCollection(SCSection parentSection)
         {

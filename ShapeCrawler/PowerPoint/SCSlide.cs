@@ -28,7 +28,7 @@ namespace ShapeCrawler
         internal readonly SlideId slideId;
         private readonly Lazy<SCImage> backgroundImage;
         private Lazy<CustomXmlPart> customXmlPart;
-        private ResettableLazy<ShapeCollection> shapes;
+        private readonly ResettableLazy<ShapeCollection> shapes;
 
         internal SCSlide(SCPresentation parentPresentation, SlidePart slidePart, SlideId slideId)
         {

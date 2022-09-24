@@ -1,6 +1,4 @@
-﻿using ShapeCrawler.Collections;
-
-namespace ShapeCrawler.Charts
+﻿namespace ShapeCrawler.Charts
 {
     /// <summary>
     ///     Represents Pie chart interface.

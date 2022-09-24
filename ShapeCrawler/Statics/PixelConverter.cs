@@ -1,13 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 
 namespace ShapeCrawler.Statics
 {
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "Will be converted to internal")]
     public static class PixelConverter // TODO: make internal
     {
-        private static float horizontalResolution;
-        private static float verticalResolution;
+        private static readonly float horizontalResolution;
+        private static readonly float verticalResolution;
 
         static PixelConverter()
         {

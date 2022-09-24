@@ -32,7 +32,7 @@ namespace ShapeCrawler
         private ResettableLazy<SCSlideCollection> slideCollectionLazy;
         private Stream? outerStream;
         private string? outerPath;
-        private MemoryStream internalStream;
+        private readonly MemoryStream internalStream;
 
         private SCPresentation(string outerPath)
         {

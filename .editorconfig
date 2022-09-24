@@ -11,6 +11,7 @@ dotnet_diagnostic.CA1720.severity = suggestion
 
 # IDE0044: Add readonly modifier
 dotnet_diagnostic.IDE0044.severity = error
+dotnet_diagnostic.IDE0005.severity = error
 
 # CA1062: In externally visible method 'SeriesCollection.SeriesCollection(IEnumerable<OpenXmlElement> sdkCharts, ChartPart sdkChartPart)', validate parameter 'sdkCharts' is non-null before using it. If appropriate, throw an ArgumentNullException when the argument is null or add a Code Contract precondition asserting non-null argument.
 dotnet_diagnostic.CA1062.severity = none

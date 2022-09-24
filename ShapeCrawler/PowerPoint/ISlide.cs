@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.SlideMasters;
 
 namespace ShapeCrawler

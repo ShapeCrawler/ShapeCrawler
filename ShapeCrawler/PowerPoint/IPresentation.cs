@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using ShapeCrawler.Collections;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler
