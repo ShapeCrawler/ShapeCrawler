@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.Shapes;
 
 namespace ShapeCrawler.AutoShapes
 {
