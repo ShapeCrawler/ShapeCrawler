@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml.Office2010.PowerPoint;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 

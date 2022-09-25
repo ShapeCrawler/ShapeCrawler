@@ -25,7 +25,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Text_GetterReturnsParagraphPortionText()
+        public void Text_Getter_returns_text_of_paragraph_portion()
         {
             // Arrange
             IPortion portion = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
@@ -40,7 +40,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Text_SetterThrowsElementIsRemovedException_WhenPortionIsRemoved()
+        public void Text_Setter_throws_exception_When_portion_is_removed()
         {
             // Arrange
             IPresentation presentation = SCPresentation.Open(TestFiles.Presentations.pre001);
@@ -117,67 +117,5 @@ namespace ShapeCrawler.Tests
             portion3.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
             portion4.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
         }
-
-        [Fact]
-        public void Bullet_PropertyChangedToCharacter_WhenValueEqualsSetPassed()
-        {
-            // Arrange
-            var mStream = new MemoryStream();
-            IPresentation presentation = SCPresentation.Open(Resources._020);
-            IAutoShape placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
-            IParagraph paragraph = placeholderAutoShape.TextFrame.Paragraphs.Add();
-
-            // Act
-            paragraph.Bullet.Type = SCBulletType.Character;
-            paragraph.Bullet.Character = "*";
-            paragraph.Bullet.Size = 100;
-            paragraph.Bullet.FontName = "Tahoma";
-
-            // Assert
-            paragraph.Bullet.Type.Should().Be(SCBulletType.Character);
-            paragraph.Bullet.Character.Should().Be("*");
-            paragraph.Bullet.Size.Should().Be(100);
-            paragraph.Bullet.FontName.Should().Be("Tahoma");
-
-            presentation.SaveAs(mStream);
-
-            presentation = SCPresentation.Open(mStream);
-            placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
-            paragraph = placeholderAutoShape.TextFrame.Paragraphs.Last();
-            paragraph.Bullet.Type.Should().Be(SCBulletType.Character);
-            paragraph.Bullet.Character.Should().Be("*");
-            paragraph.Bullet.Size.Should().Be(100);
-            paragraph.Bullet.FontName.Should().Be("Tahoma");
-        }
-
-        [Fact]
-        public void Bullet_PropertyChangedToNumbered_WhenValueEqualsSetPassed()
-        {
-            // Arrange
-            var mStream = new MemoryStream();
-            IPresentation presentation = SCPresentation.Open(Resources._020);
-            IAutoShape placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
-            IParagraph paragraph = placeholderAutoShape.TextFrame.Paragraphs.Add();
-
-            // Act
-            paragraph.Bullet.Type = SCBulletType.Numbered;
-            paragraph.Bullet.Size = 100;
-            paragraph.Bullet.FontName = "Tahoma";
-
-            // Assert
-            paragraph.Bullet.Type.Should().Be(SCBulletType.Numbered);
-            paragraph.Bullet.Size.Should().Be(100);
-            paragraph.Bullet.FontName.Should().Be("Tahoma");
-
-            presentation.SaveAs(mStream);
-
-            presentation = SCPresentation.Open(mStream);
-            placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
-            paragraph = placeholderAutoShape.TextFrame.Paragraphs.Last();
-            paragraph.Bullet.Type.Should().Be(SCBulletType.Numbered);
-            paragraph.Bullet.Size.Should().Be(100);
-            paragraph.Bullet.FontName.Should().Be("Tahoma");
-        }
-
     }
 }

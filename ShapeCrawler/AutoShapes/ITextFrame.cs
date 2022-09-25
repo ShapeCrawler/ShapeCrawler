@@ -1,13 +1,13 @@
-﻿using System.Drawing;
+﻿// ReSharper disable CheckNamespace
+
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
-using A = DocumentFormat.OpenXml.Drawing;
 
-// ReSharper disable CheckNamespace
 namespace ShapeCrawler
 {
     /// <summary>
@@ -84,13 +84,13 @@ namespace ShapeCrawler
                 return SCAutoFitType.None;
             }
 
-            var aBodyPr = this.TextBodyElement.GetFirstChild<A.BodyProperties>();
-            if (aBodyPr!.GetFirstChild<A.NormalAutoFit>() != null)
+            var aBodyPr = this.TextBodyElement.GetFirstChild<DocumentFormat.OpenXml.Drawing.BodyProperties>();
+            if (aBodyPr!.GetFirstChild<DocumentFormat.OpenXml.Drawing.NormalAutoFit>() != null)
             {
                 return SCAutoFitType.Shrink;
             }
 
-            if (aBodyPr.GetFirstChild<A.ShapeAutoFit>() != null)
+            if (aBodyPr.GetFirstChild<DocumentFormat.OpenXml.Drawing.ShapeAutoFit>() != null)
             {
                 return SCAutoFitType.Resize;
             }
@@ -119,23 +119,12 @@ namespace ShapeCrawler
             {
                 var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
                     .First().First();
-                var fontFamilyName = popularPortion.Font.Name;
+                var font = popularPortion.Font;
+                var fontName = popularPortion.Font.Name;
                 var fontSize = popularPortion.Font.Size;
-                var stringFormat = new StringFormat { Trimming = StringTrimming.Word };
                 var shape = this.TextFrameContainer.Shape;
-                var bm = new Bitmap(shape.Width, shape.Height);
-                using var graphic = Graphics.FromImage(bm);
-                const int margin = 7;
-                var rectangle = new Rectangle(margin, margin, shape.Width - 2 * margin, shape.Height - 2 * margin);
-                var availSize = new SizeF(rectangle.Width, rectangle.Height);
 
-                int charsFitted;
-                do
-                {
-                    var font = new Font(fontFamilyName, fontSize);
-                    graphic.MeasureString(newText, font, availSize, stringFormat, out charsFitted, out _);
-                    fontSize--;
-                } while (newText.Length != charsFitted);
+                fontSize = FontService.GetAdjustedFontSize(newText, font, shape);
 
                 var paragraphInternal = (SCParagraph)baseParagraph;
                 paragraphInternal.SetFontSize(fontSize);

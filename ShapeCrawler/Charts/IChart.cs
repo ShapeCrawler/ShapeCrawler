@@ -16,7 +16,7 @@ namespace ShapeCrawler
         ChartType Type { get; }
 
         /// <summary>
-        ///     Gets title. Returns null if chart doesn't have title.
+        ///     Gets title if it otherwise, otherwise <see langword="null"/>.
         /// </summary>
         string Title { get; }
 

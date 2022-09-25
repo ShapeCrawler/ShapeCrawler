@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
 using C = DocumentFormat.OpenXml.Drawing.Charts;

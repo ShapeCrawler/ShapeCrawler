@@ -5,7 +5,6 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -52,7 +51,7 @@ namespace ShapeCrawler.SlideMasters
         {
             if (this.IsRemoved)
             {
-                throw new ElementIsRemovedException("Slide MAster is removed");
+                throw new ElementIsRemovedException("Slide Master is removed");
             }
             
             this.Presentation.ThrowIfClosed();

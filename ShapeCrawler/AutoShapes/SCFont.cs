@@ -1,6 +1,5 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
@@ -11,7 +10,6 @@ using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes
 {

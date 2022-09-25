@@ -1,8 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
-using P = DocumentFormat.OpenXml.Presentation;
-using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler

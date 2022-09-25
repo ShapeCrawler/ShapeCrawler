@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.IO;
+﻿using System.IO;
 
 namespace ShapeCrawler.Drawing
 {

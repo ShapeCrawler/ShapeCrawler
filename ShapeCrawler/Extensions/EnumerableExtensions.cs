@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ShapeCrawler.Shared
+namespace ShapeCrawler.Extensions
 {
     internal static class EnumerableExtensions
     {

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Globalization;
-using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
-using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts
 {

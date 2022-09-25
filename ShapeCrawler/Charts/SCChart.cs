@@ -25,7 +25,7 @@ namespace ShapeCrawler.Charts
 
         // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
         // then collection contains only single item.
-        private IEnumerable<OpenXmlElement> cXCharts;
+        private readonly IEnumerable<OpenXmlElement> cXCharts;
 
         internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide slideInternal)
             : base(pGraphicFrame, slideInternal, null)

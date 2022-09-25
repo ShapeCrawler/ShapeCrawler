@@ -5,7 +5,6 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
@@ -40,7 +39,7 @@ namespace ShapeCrawler
 
         public override SCPresentation PresentationInternal { get; }
         
-        public IShape Shape => this;
+        public Shape Shape => this;
 
         public ITextFrame? TextFrame => this.textBox.Value;
 

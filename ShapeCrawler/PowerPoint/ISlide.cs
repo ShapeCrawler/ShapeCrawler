@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.SlideMasters;
+
+#if DEBUG
+using System.Threading.Tasks;
+#endif
 
 namespace ShapeCrawler
 {
@@ -45,7 +47,7 @@ namespace ShapeCrawler
         ///     Gets instance of <see cref=" DocumentFormat.OpenXml.Packaging.SlidePart"/> class of the underlying Open XML SDK.
         /// </summary>
         SlidePart SDKSlidePart { get; }
-        
+
         /// <summary>
         ///     Gets collection of shapes.
         /// </summary>

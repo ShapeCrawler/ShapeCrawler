@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ShapeCrawler.SlideMasters;
-using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler

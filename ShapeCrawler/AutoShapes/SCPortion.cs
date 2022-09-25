@@ -4,7 +4,6 @@ using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
-using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
@@ -30,7 +27,7 @@ namespace ShapeCrawler
 
         public IShapeFill Fill => this.shapeFill.Value;
 
-        public IShape Shape => this; // TODO: should be internal?
+        public Shape Shape => this; // TODO: should be internal?
 
         public SCShapeType ShapeType => SCShapeType.AutoShape;
         

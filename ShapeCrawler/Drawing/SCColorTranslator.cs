@@ -7,7 +7,7 @@ namespace ShapeCrawler.Drawing
 {
     internal class SCColorTranslator
     {
-        private static FieldInfo[] fieldInfoList;
+        private static readonly FieldInfo[] fieldInfoList;
 
         static SCColorTranslator()
         {

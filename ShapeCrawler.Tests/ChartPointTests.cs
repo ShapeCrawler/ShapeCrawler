@@ -55,7 +55,7 @@ namespace ShapeCrawler.Tests
         public void Value_Getter_returns_point_value_of_Line_chart()
         {
             // Arrange
-            var chart2 = this.GetShape<IChart>("021.pptx", 2, 4);
+            var chart2 = GetShape<IChart>("021.pptx", 2, 4);
             var point = chart2.SeriesCollection[1].Points[0];
 
             // Act
@@ -134,7 +134,7 @@ namespace ShapeCrawler.Tests
             point.Value = newChartPointValue;
 
             // Assert
-            var pointCellValue = this.GetWorksheetCellValue<double>(chart.WorkbookByteArray, "B2");
+            var pointCellValue = GetWorksheetCellValue<double>(chart.WorkbookByteArray, "B2");
             pointCellValue.Should().Be(newChartPointValue);
         }
 

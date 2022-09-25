@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using ShapeCrawler.Collections;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler
@@ -31,7 +30,7 @@ namespace ShapeCrawler
         ISlideMasterCollection SlideMasters { get; }
 
         /// <summary>
-        ///     Gets presentation byte array.
+        ///     Gets a presentation byte array.
         /// </summary>
         byte[] BinaryData { get; }
 
