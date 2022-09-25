@@ -1,4 +1,7 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.SlideMasters;
 
 namespace ShapeCrawler
@@ -47,6 +50,11 @@ namespace ShapeCrawler
         ///     Gets collection of shapes.
         /// </summary>
         IShapeCollection Shapes { get; }
+
+        /// <summary>
+        /// Gets a list of all textboxes on that slide, including those in tables.
+        /// </summary>
+        public IList<ITextFrame> GetAllTextFrames();
 
         /// <summary>
         ///     Hides slide.

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ShapeCrawler.Placeholders;
+using ShapeCrawler.Shapes;
 
 namespace ShapeCrawler.AutoShapes
 {
@@ -9,6 +10,8 @@ namespace ShapeCrawler.AutoShapes
         IPlaceholder Placeholder { get; }
 
         Shape Shape { get; }
+        
+        ITextFrame? TextFrame { get; }
 
         void ThrowIfRemoved();
     }
