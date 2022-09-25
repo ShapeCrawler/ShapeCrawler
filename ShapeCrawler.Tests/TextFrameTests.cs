@@ -127,17 +127,19 @@ namespace ShapeCrawler.Tests
         public void Text_Setter_updates_text_box_content_and_Reduces_font_size_When_text_is_Overflow()
         {
             // Arrange
-            var autoShape = GetAutoShape("001.pptx", 1, 9);
-            var textBox = autoShape.TextFrame;
-            var fontSizeBefore = textBox.Paragraphs[0].Portions[0].Font.Size;
+            var pptxStream = GetTestStream("001.pptx");
+            var pres = SCPresentation.Open(pptxStream);
+            var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 8");
+            var textFrame = textBox.TextFrame;
+            var fontSizeBefore = textFrame.Paragraphs[0].Portions[0].Font.Size;
             var newText = "Shrink text on overflow";
 
             // Act
-            textBox.Text = newText;
+            textFrame.Text = newText;
 
             // Assert
-            textBox.Text.Should().BeEquivalentTo(newText);
-            textBox.Paragraphs[0].Portions[0].Font.Size.Should().Be(8);
+            textFrame.Text.Should().BeEquivalentTo(newText);
+            textFrame.Paragraphs[0].Portions[0].Font.Size.Should().Be(8);
         }
 
         [Fact]

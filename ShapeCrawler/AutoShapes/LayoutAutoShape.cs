@@ -43,7 +43,7 @@ namespace ShapeCrawler
         
         #endregion Public Properties
 
-        public IShape Shape => this;
+        public Shape Shape => this;
 
         private Dictionary<int, FontData> LvlToFontData => this.lvlToFontData.Value;
 

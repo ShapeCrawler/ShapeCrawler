@@ -27,7 +27,7 @@ namespace ShapeCrawler
 
         public IShapeFill Fill => this.shapeFill.Value;
 
-        public IShape Shape => this; // TODO: should be internal?
+        public Shape Shape => this; // TODO: should be internal?
 
         public SCShapeType ShapeType => SCShapeType.AutoShape;
         

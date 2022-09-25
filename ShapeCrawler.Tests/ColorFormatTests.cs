@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Tests.Properties;
 using Xunit;

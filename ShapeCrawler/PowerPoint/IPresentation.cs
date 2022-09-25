@@ -30,7 +30,7 @@ namespace ShapeCrawler
         ISlideMasterCollection SlideMasters { get; }
 
         /// <summary>
-        ///     Gets presentation byte array.
+        ///     Gets a presentation byte array.
         /// </summary>
         byte[] BinaryData { get; }
 

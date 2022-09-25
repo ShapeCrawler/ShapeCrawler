@@ -39,7 +39,7 @@ namespace ShapeCrawler
 
         public override SCPresentation PresentationInternal { get; }
         
-        public IShape Shape => this;
+        public Shape Shape => this;
 
         public ITextFrame? TextFrame => this.textBox.Value;
 

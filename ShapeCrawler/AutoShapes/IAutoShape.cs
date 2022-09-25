@@ -15,7 +15,7 @@ namespace ShapeCrawler
         IShapeFill Fill { get; }
 
         /// <summary>
-        ///     Gets text frame. Returns <c>NULL</c> if the AutoShape type doesn't have text frame.
+        ///     Gets text frame if the type of AutoShape is text holder, otherwise <see langword="null"/>.
         /// </summary>
         ITextFrame? TextFrame { get; }
     }
