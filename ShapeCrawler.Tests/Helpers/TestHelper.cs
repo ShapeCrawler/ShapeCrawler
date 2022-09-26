@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.IO;
 
 namespace ShapeCrawler.Tests.Helpers
@@ -7,15 +6,8 @@ namespace ShapeCrawler.Tests.Helpers
     {
         static TestHelper()
         {
-            var bm = new Bitmap(100, 100);
-            if (bm.HorizontalResolution == 0)
-            {
-                // Set default resolution
-                bm.SetResolution(96, 96);
-            }
-
-            HorizontalResolution = bm.HorizontalResolution;
-            VerticalResolution = bm.VerticalResolution;
+            HorizontalResolution = 96;
+            VerticalResolution = 96;
         }
 
         public static MemoryStream ToResizeableStream(this byte[] byteArray)
