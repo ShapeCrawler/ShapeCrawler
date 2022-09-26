@@ -11,19 +11,15 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
-      - name: Setup .NET 5 and .NET Core 3.1 
+      - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: |
-            5.0.210
-            3.1.416
+          dotnet-version: 6.0.401
       - name: Install dependencies
         run: dotnet restore
       - name: Build Release
         run: dotnet build --configuration Release --no-restore
       - name: Build Debug
         run: dotnet build --configuration Debug --no-restore
-      - name: Run tests for .NET 5 target
-        run: dotnet test --configuration Debug --no-restore --verbosity normal -f net5.0
-      - name: Run tests for .NET 3.1 Core target
-        run: dotnet test --configuration Debug --no-restore --verbosity normal -f netcoreapp3.1
+      - name: Run tests
+        run: dotnet test --configuration Debug --no-restore --verbosity normal -f net6.0
