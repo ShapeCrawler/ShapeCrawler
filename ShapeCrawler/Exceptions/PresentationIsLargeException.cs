@@ -19,7 +19,7 @@ namespace ShapeCrawler.Exceptions
         /// </summary>
         internal static PresentationIsLargeException FromMax(int maxSize)
         {
-#if NETSTANDARD2_1 || NET5_0 || NETCOREAPP2_1
+#if NET6_0
             var message = ExceptionMessages.PresentationIsLarge.Replace("{0}",
                 maxSize.ToString(CultureInfo.CurrentCulture), StringComparison.OrdinalIgnoreCase);
 #else

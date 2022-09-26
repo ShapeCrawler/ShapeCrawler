@@ -92,7 +92,7 @@ namespace ShapeCrawler.Factories
                 var paragraphLvl = int.Parse(textPr.LocalName[3].ToString(System.Globalization.CultureInfo.CurrentCulture), System.Globalization.CultureInfo.CurrentCulture);
 #else
                 // fourth character of LocalName contains level number, example: "lvl1pPr -> 1, lvl2pPr -> 2, etc."
-                ReadOnlySpan<char> localNameAsSpan = textPr.LocalName.AsSpan();
+                var localNameAsSpan = textPr.LocalName.AsSpan();
                 int paragraphLvl = int.Parse(localNameAsSpan.Slice(3, 1));
 #endif
                 var fontData = new FontData
