@@ -49,6 +49,18 @@ namespace ShapeCrawler
 
         internal SlideTable ParentTable { get; }
 
+        /// <summary>
+        /// Clones a row in a table
+        /// </summary>
+        public SCTableRow CloneRow()
+        {
+            var clonedRow = this.ATableRow.Clone() as A.TableRow;
+
+            var addedRow = this.ParentTable.AppendRow(clonedRow);
+
+            return addedRow;
+        }
+
         internal void ThrowIfRemoved()
         {
             if (this.isRemoved)
@@ -58,7 +70,7 @@ namespace ShapeCrawler
 
             this.ParentTable.ThrowIfRemoved();
         }
-        
+
         #region Private Methods
 
         private List<SCTableCell> GetCells()

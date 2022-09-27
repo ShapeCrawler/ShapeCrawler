@@ -43,7 +43,7 @@ namespace ShapeCrawler.Collections
             var innerRow = this.CollectionItems[index];
             this.Remove(innerRow);
         }
-        
+
         internal static RowCollection Create(SlideTable table, P.GraphicFrame pGraphicFrame)
         {
             IEnumerable<A.TableRow> aTableRows = pGraphicFrame.GetATable().Elements<A.TableRow>();
