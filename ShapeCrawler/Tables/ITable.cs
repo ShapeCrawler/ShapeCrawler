@@ -38,12 +38,10 @@ namespace ShapeCrawler
         /// <returns>A reference to the recently added row.</returns>
         SCTableRow AppendRow(TableRow row);
 
+        /// <summary>
+        /// Removes a row in the table at a specific index.
+        /// </summary>
+        /// <param name="index">The index of the row that should be removed.</param>
         void RemoveRowAt(int index);
-
-
-#if DEBUG
-        public object GetInternalObject();
-
-#endif
     }
 }

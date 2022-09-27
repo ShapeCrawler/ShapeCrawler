@@ -152,9 +152,35 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void CloneRow_CheckThatRowCountMatches()
+        public void CloneRow_CloningRowIncreasesRowCountByOne()
         {
-            throw new NotImplementedException();
+            // Arrange
+            IPresentation presentation = SCPresentation.Open(Resources._041_tableOnly);
+            var targetTable = presentation.Slides.First().Shapes.OfType<ITable>().FirstOrDefault();
+
+            // Act
+            var rowCountBefore = targetTable.Rows.Count;
+            targetTable.Rows.Last().CloneRow();
+            var rowCountAfter = targetTable.Rows.Count;
+
+            // Assert
+            rowCountAfter.Should().Be(rowCountBefore + 1);
+        }
+
+        [Fact]
+        public void RemoveRow_DeletingRowDecreasesRowCountByOne()
+        {
+            // Arrange
+            IPresentation presentation = SCPresentation.Open(Resources._041_tableOnly);
+            var targetTable = presentation.Slides.First().Shapes.OfType<ITable>().FirstOrDefault();
+
+            // Act
+            var rowCountBefore = targetTable.Rows.Count;
+            targetTable.RemoveRowAt(targetTable.Rows.Count - 1); // index is 0 based
+            var rowCountAfter = targetTable.Rows.Count;
+
+            // Assert
+            rowCountAfter.Should().Be(rowCountBefore - 1);
         }
 
 

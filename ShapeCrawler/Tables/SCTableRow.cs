@@ -61,27 +61,6 @@ namespace ShapeCrawler
             return addedRow;
         }
 
-#if DEBUG
-
-        /// <summary>
-        /// Gets the index for testing.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:Elements should appear in the correct order", Justification = "<Pending>")]
-        public int Index => this.index;
-
-        /// <summary>
-        /// used for testing only
-        /// </summary>
-        /// <returns></returns>
-        public object GetInternalRow()
-        {
-            return this.ATableRow;
-        }
-
-
-#endif
-
-
         internal void ThrowIfRemoved()
         {
             if (this.isRemoved)
@@ -91,7 +70,7 @@ namespace ShapeCrawler
 
             this.ParentTable.ThrowIfRemoved();
         }
-        
+
         #region Private Methods
 
         private List<SCTableCell> GetCells()

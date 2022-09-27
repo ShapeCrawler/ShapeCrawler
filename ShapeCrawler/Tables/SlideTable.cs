@@ -172,16 +172,6 @@ namespace ShapeCrawler.Tables
             this.Rows.RemoveAt(index);
         }
 
-#if DEBUG
-
-        // debug methods that help with accessing the underlying xml elements
-        public object GetInternalObject()
-        {
-            return this.ATable;
-        }
-
-#endif
-
         private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
         {
             A.TextBody mergedCellTextBody = ((SCTableCell) this[minRowIndex, minColIndex]).ATableCell.TextBody;
