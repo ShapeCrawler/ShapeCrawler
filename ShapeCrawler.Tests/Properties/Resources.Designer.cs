@@ -443,9 +443,9 @@ namespace ShapeCrawler.Tests.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] _041_tableOnly {
+        internal static byte[] tables_case001 {
             get {
-                object obj = ResourceManager.GetObject("_041_tableOnly", resourceCulture);
+                object obj = ResourceManager.GetObject("tables_case001", resourceCulture);
                 return ((byte[])(obj));
             }
         }

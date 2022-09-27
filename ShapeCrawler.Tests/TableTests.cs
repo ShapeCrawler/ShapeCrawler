@@ -155,7 +155,7 @@ namespace ShapeCrawler.Tests
         public void CloneRow_CloningRowIncreasesRowCountByOne()
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources._041_tableOnly);
+            IPresentation presentation = SCPresentation.Open(Resources.tables_case001);
             var targetTable = presentation.Slides.First().Shapes.OfType<ITable>().FirstOrDefault();
 
             // Act
@@ -171,7 +171,7 @@ namespace ShapeCrawler.Tests
         public void RemoveRow_DeletingRowDecreasesRowCountByOne()
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources._041_tableOnly);
+            IPresentation presentation = SCPresentation.Open(Resources.tables_case001);
             var targetTable = presentation.Slides.First().Shapes.OfType<ITable>().FirstOrDefault();
 
             // Act

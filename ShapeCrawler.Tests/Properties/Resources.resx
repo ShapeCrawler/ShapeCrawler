@@ -118,6 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="tables_case001" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resource\tables-case001.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="test_image_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\test-image-2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -237,8 +240,5 @@
   </data>
   <data name="_040_video" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\040_video.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="_041_tableOnly" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resource\041_tableOnly.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>
