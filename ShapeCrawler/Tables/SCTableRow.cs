@@ -49,6 +49,39 @@ namespace ShapeCrawler
 
         internal SlideTable ParentTable { get; }
 
+        /// <summary>
+        /// Clones a row in a table
+        /// </summary>
+        public SCTableRow CloneRow()
+        {
+            var clonedRow = this.ATableRow.Clone() as A.TableRow;
+
+            var addedRow = this.ParentTable.AppendRow(clonedRow);
+
+            return addedRow;
+        }
+
+#if DEBUG
+
+        /// <summary>
+        /// Gets the index for testing.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:Elements should appear in the correct order", Justification = "<Pending>")]
+        public int Index => this.index;
+
+        /// <summary>
+        /// used for testing only
+        /// </summary>
+        /// <returns></returns>
+        public object GetInternalRow()
+        {
+            return this.ATableRow;
+        }
+
+
+#endif
+
+
         internal void ThrowIfRemoved()
         {
             if (this.isRemoved)

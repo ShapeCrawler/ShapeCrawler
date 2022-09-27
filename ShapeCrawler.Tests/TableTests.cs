@@ -151,6 +151,13 @@ namespace ShapeCrawler.Tests
             table.Columns[0].Width.Should().Be(newColumnWidth);
         }
 
+        [Fact]
+        public void CloneRow_CheckThatRowCountMatches()
+        {
+            throw new NotImplementedException();
+        }
+
+
 #if DEBUG
 
         [Theory]

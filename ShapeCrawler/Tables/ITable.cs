@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Shapes;
 
@@ -29,5 +30,20 @@ namespace ShapeCrawler
         ///     Merge neighbor cells.
         /// </summary>
         void MergeCells(ITableCell inputCell1, ITableCell inputCell2);
+
+        /// <summary>
+        /// Adds a row to the bottom of the table.
+        /// </summary>
+        /// <param name="row">Row that will be added to the table.</param>
+        /// <returns>A reference to the recently added row.</returns>
+        SCTableRow AppendRow(TableRow row);
+
+        void RemoveRowAt(int index);
+
+
+#if DEBUG
+        public object GetInternalObject();
+
+#endif
     }
 }
