@@ -33,9 +33,9 @@ namespace ShapeCrawler.Collections
             this.CollectionItems = categoryList.Cast<ICategory>().ToList();
         }
 
-        public static CategoryCollection? Create(SCChart chart, OpenXmlElement firstChartSeries, ChartType chartType)
+        public static CategoryCollection? Create(SCChart chart, OpenXmlElement firstChartSeries, SCChartType chartType)
         {
-            if (chartType is ChartType.BubbleChart or ChartType.ScatterChart)
+            if (chartType is SCChartType.BubbleChart or SCChartType.ScatterChart)
             {
                 // Bubble and Scatter charts do not have categories
                 return null;

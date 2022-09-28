@@ -10,7 +10,7 @@ namespace ShapeCrawler.Drawing
     {
         private readonly Shape shape;
         private bool isInitialized;
-        private FillType fillType;
+        private SCFillType fillType;
         private string? hexSolidColor;
         private SCImage? pictureImage;
         private A.SolidFill? aSolidFill;
@@ -28,11 +28,11 @@ namespace ShapeCrawler.Drawing
         public IImage? Picture => this.GetPicture();
 
 
-        public FillType Type => this.GetFillType();
+        public SCFillType Type => this.GetFillType();
         
         public void SetPicture(Stream imageStream)
         {
-            if (this.Type == FillType.Picture)
+            if (this.Type == SCFillType.Picture)
             {
                 this.pictureImage!.SetImage(imageStream);
             }
@@ -59,7 +59,7 @@ namespace ShapeCrawler.Drawing
             this.isInitialized = false;
         }
 
-        private FillType GetFillType()
+        private SCFillType GetFillType()
         {
             if (!this.isInitialized)
             {
@@ -93,7 +93,7 @@ namespace ShapeCrawler.Drawing
                     var schemeColor = this.aSolidFill.SchemeColor;
                 }
 
-                this.fillType = FillType.Solid;
+                this.fillType = SCFillType.Solid;
             }
             else
             {
@@ -106,7 +106,7 @@ namespace ShapeCrawler.Drawing
             this.aGradFill = pShape.ShapeProperties!.GetFirstChild<A.GradientFill>();
             if (this.aGradFill != null)
             {
-                this.fillType = FillType.Gradient;
+                this.fillType = SCFillType.Gradient;
             }
             else
             {
@@ -121,7 +121,7 @@ namespace ShapeCrawler.Drawing
             if (image != null)
             {
                 this.pictureImage = image;
-                this.fillType = FillType.Picture;
+                this.fillType = SCFillType.Picture;
             }
             else
             {
@@ -134,7 +134,7 @@ namespace ShapeCrawler.Drawing
             this.aPattFill = this.shape.PShapeProperties.GetFirstChild<A.PatternFill>();
             if (this.aPattFill != null)
             {
-                this.fillType = FillType.Pattern;
+                this.fillType = SCFillType.Pattern;
             }
             else
             {
@@ -148,11 +148,11 @@ namespace ShapeCrawler.Drawing
             if (this.useBgFill != null && this.useBgFill)
             {
                 this.useBgFill = pShape.UseBackgroundFill;
-                this.fillType = FillType.SlideBackground;
+                this.fillType = SCFillType.SlideBackground;
             }
             else
             {
-                this.fillType = FillType.NoFill;
+                this.fillType = SCFillType.NoFill;
             }
         }
         

@@ -1,19 +1,19 @@
-﻿using P = DocumentFormat.OpenXml.Presentation;
+﻿using ShapeCrawler.Charts;
+using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Charts
+namespace ShapeCrawler;
+
+/// <summary>
+///     Represents a Line Chart.
+/// </summary>
+public interface ILineChart : IChart
 {
-    /// <summary>
-    ///     Represents a Line Chart.
-    /// </summary>
-    public interface ILineChart : IChart
-    {
-    }
+}
 
-    internal class SCLineChart : SCChart, ILineChart
+internal class SCLineChart : SCChart, ILineChart
+{
+    internal SCLineChart(P.GraphicFrame pGraphicFrame, SCSlide slide)
+        : base(pGraphicFrame, slide)
     {
-        internal SCLineChart(P.GraphicFrame pGraphicFrame, SCSlide slide)
-            : base(pGraphicFrame, slide)
-        {
-        }
     }
 }

@@ -16,7 +16,7 @@ namespace ShapeCrawler.Charts
     internal class SCChart : SlideShape, IChart
     {
         private readonly ResettableLazy<ICategoryCollection?> categories;
-        private readonly Lazy<ChartType> chartType;
+        private readonly Lazy<SCChartType> chartType;
         private readonly Lazy<OpenXmlElement> firstSeries;
         private readonly P.GraphicFrame pGraphicFrame;
         private readonly Lazy<SCSeriesCollection> series;
@@ -35,7 +35,7 @@ namespace ShapeCrawler.Charts
             this.xValues = new Lazy<LibraryCollection<double>>(this.GetXValues);
             this.series = new Lazy<SCSeriesCollection>(this.GetSeries);
             this.categories = new ResettableLazy<ICategoryCollection?>(this.GetCategories);
-            this.chartType = new Lazy<ChartType>(this.GetChartType);
+            this.chartType = new Lazy<SCChartType>(this.GetChartType);
 
             var cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
                 .GetFirstChild<C.ChartReference>();
@@ -48,7 +48,7 @@ namespace ShapeCrawler.Charts
             this.ChartWorkbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartWorkbook(this, this.ChartPart.EmbeddedPackagePart) : null;
         }
 
-        public ChartType Type => this.chartType.Value;
+        public SCChartType Type => this.chartType.Value;
 
         public SCShapeType ShapeType => SCShapeType.Chart;
 
@@ -101,15 +101,15 @@ namespace ShapeCrawler.Charts
 
         internal ChartPart ChartPart { get; private set; }
 
-        private ChartType GetChartType()
+        private SCChartType GetChartType()
         {
             if (this.cXCharts.Count() > 1)
             {
-                return ChartType.Combination;
+                return SCChartType.Combination;
             }
 
             var chartName = this.cXCharts.Single().LocalName;
-            Enum.TryParse(chartName, true, out ChartType enumChartType);
+            Enum.TryParse(chartName, true, out SCChartType enumChartType);
 
             return enumChartType;
         }
@@ -148,7 +148,7 @@ namespace ShapeCrawler.Charts
 
             // PieChart uses only one series for view.
             // However, it can have store multiple series data in the spreadsheet.
-            if (this.Type == ChartType.PieChart)
+            if (this.Type == SCChartType.PieChart)
             {
                 return ((SCSeriesCollection) this.SeriesCollection).First().Name;
             }
@@ -159,7 +159,7 @@ namespace ShapeCrawler.Charts
         private bool TryGetStaticTitle(C.ChartText chartText, out string staticTitle)
         {
             staticTitle = null;
-            if (this.Type == ChartType.Combination)
+            if (this.Type == SCChartType.Combination)
             {
                 staticTitle = chartText.RichText.Descendants<A.Text>().Select(t => t.Text)
                     .Aggregate((t1, t2) => t1 + t2);

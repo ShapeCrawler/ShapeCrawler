@@ -3,7 +3,7 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10</LangVersion>
     <TargetFrameworks>net6.0;netcoreapp3.1;net48</TargetFrameworks>
     <Configurations>Debug;Release;Test</Configurations>
     <Platforms>AnyCPU</Platforms>
@@ -110,6 +110,12 @@
     <EmbeddedResource Include="Resource\033.pptx" />
     <None Remove="Resource\038.pptx" />
     <EmbeddedResource Include="Resource\038.pptx" />
+    <None Remove="Resource\006_1 slides.pptx" />
+    <EmbeddedResource Include="Resource\006_1 slides.pptx" />
+    <None Remove="Resource\025_chart.pptx" />
+    <EmbeddedResource Include="Resource\025_chart.pptx" />
+    <None Remove="Resource\autoshape\autoshape-case004_subtitle.pptx" />
+    <EmbeddedResource Include="Resource\autoshape\autoshape-case004_subtitle.pptx" />
   </ItemGroup>
 
 </Project>

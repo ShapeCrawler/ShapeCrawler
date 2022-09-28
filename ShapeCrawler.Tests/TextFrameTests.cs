@@ -65,7 +65,7 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(TestCasesTextSetter))]
-        public void Text_Setter_updates_content(TestElementQuery testTextBoxQuery)
+        public void Text_Setter_updates_text_box_content(TestElementQuery testTextBoxQuery)
         {
             // Arrange
             var pres = testTextBoxQuery.Presentation;
@@ -110,7 +110,7 @@ namespace ShapeCrawler.Tests
                     ShapeId = 8
                 };
                 testCases.Add(case2);
-
+                
                 var case3 = new TestElementQuery
                 {
                     Presentation = SCPresentation.Open(GetTestStream("001.pptx")),
@@ -118,6 +118,15 @@ namespace ShapeCrawler.Tests
                     ShapeName = "Header 1",
                 };
                 testCases.Add(case3);
+                
+                var case4 = new TestElementQuery
+                {
+                    Presentation = SCPresentation.Open(GetTestStream("autoshape-case004_subtitle.pptx")),
+                    SlideNumber = 1,
+                    ShapeName = "Subtitle 1",
+                };
+                testCases.Add(case4);
+                
 
                 return testCases;
             }
@@ -216,8 +225,7 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(TestCasesAlignmentGetter))]
-        public void Paragraph_Alignment_Getter_returns_text_aligment(IAutoShape autoShape,
-            TextAlignment expectedAlignment)
+        public void Paragraph_Alignment_Getter_returns_text_aligment(IAutoShape autoShape, SCTextAlignment expectedAlignment)
         {
             // Arrange
             var paragraph = autoShape.TextFrame.Paragraphs[0];
@@ -231,36 +239,55 @@ namespace ShapeCrawler.Tests
 
         public static IEnumerable<object[]> TestCasesAlignmentGetter()
         {
-            var pptxStream = GetTestStream("001.pptx");
-            var presentation = SCPresentation.Open(pptxStream);
-            var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
-            yield return new object[] { autoShape, TextAlignment.Center };
+            var pptxStream1 = GetTestStream("001.pptx");
+            var pres1 = SCPresentation.Open(pptxStream1);
+            var autoShape1 = pres1.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
+            yield return new object[] { autoShape1, SCTextAlignment.Center };
 
-            pptxStream = GetTestStream("001.pptx");
-            presentation = SCPresentation.Open(pptxStream);
-            autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("Head 1");
-            yield return new object[] { autoShape, TextAlignment.Center };
+            var pptxStream2 = GetTestStream("001.pptx");
+            var pres2 = SCPresentation.Open(pptxStream2);
+            var autoShape2 = pres2.Slides[0].Shapes.GetByName<IAutoShape>("Head 1");
+            yield return new object[] { autoShape2, SCTextAlignment.Center };
         }
 
-        [Fact]
-        public void Paragraph_Alignment_Setter_updates_text_aligment()
+        [Theory]
+        [MemberData(nameof(TestCasesParagraphsAlignmentSetter))]
+        public void Paragraph_Alignment_Setter_updates_text_aligment(TestCase testCase)
         {
             // Arrange
-            var pptxStream = GetTestStream("001.pptx");
-            var originPresentation = SCPresentation.Open(pptxStream);
-            var autoShape = originPresentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
-            var paragraph = autoShape.TextFrame.Paragraphs[0];
+            var pres = testCase.Presentation;
+            var paragraph = testCase.AutoShape.TextFrame.Paragraphs[0];
+            var mStream = new MemoryStream();
 
             // Act
-            paragraph.Alignment = TextAlignment.Right;
+            paragraph.Alignment = SCTextAlignment.Right;
+            // pres.SaveAs(@"c:\temp\result.pptx");
 
             // Assert
-            paragraph.Alignment.Should().Be(TextAlignment.Right);
+            paragraph.Alignment.Should().Be(SCTextAlignment.Right);
+            
+            pres.SaveAs(mStream);
+            testCase.SetPresentation(mStream);
+            paragraph = testCase.AutoShape.TextFrame.Paragraphs[0];
+            paragraph.Alignment.Should().Be(SCTextAlignment.Right);
+        }
 
-            var modifiedPresentation = SaveAndOpenPresentation(originPresentation);
-            autoShape = originPresentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
-            paragraph = autoShape.TextFrame.Paragraphs[0];
-            paragraph.Alignment.Should().Be(TextAlignment.Right);
+        public static IEnumerable<object[]> TestCasesParagraphsAlignmentSetter
+        {
+            get
+            {
+                var testCase1 = new TestCase("#1");
+                testCase1.PresentationName = "001.pptx";
+                testCase1.SlideNumber = 1;
+                testCase1.ShapeName = "TextBox 4";
+                yield return new[] { testCase1 };
+                
+                var testCase2 = new TestCase("#2");
+                testCase2.PresentationName = "001.pptx";
+                testCase2.SlideNumber = 1;
+                testCase2.ShapeName = "Head 1";
+                yield return new[] { testCase2 };
+            }
         }
 
         [Fact]

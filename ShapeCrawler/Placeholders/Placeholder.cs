@@ -15,7 +15,7 @@ namespace ShapeCrawler.Placeholders
             this.PPlaceholderShape = pPlaceholderShape;
         }
 
-        public PlaceholderType Type => this.GetPlaceholderType();
+        public SCPlaceholderType Type => this.GetPlaceholderType();
 
         /// <summary>
         ///     Gets referenced shape from lower level slide.
@@ -24,26 +24,26 @@ namespace ShapeCrawler.Placeholders
 
         #region Private Methods
 
-        private PlaceholderType GetPlaceholderType()
+        private SCPlaceholderType GetPlaceholderType()
         {
             var pPlaceholderValue = this.PPlaceholderShape.Type;
             if (pPlaceholderValue == null)
             {
-                return PlaceholderType.Custom;
+                return SCPlaceholderType.Custom;
             }
 
             if (pPlaceholderValue == P.PlaceholderValues.Title)
             {
-                return PlaceholderType.Title;
+                return SCPlaceholderType.Title;
             }
 
             if (pPlaceholderValue == P.PlaceholderValues.CenteredTitle)
             {
-                return PlaceholderType.CenteredTitle;
+                return SCPlaceholderType.CenteredTitle;
             }
 
             // TODO: consider refactor the statement since it looks horrible
-            return (PlaceholderType)Enum.Parse(typeof(PlaceholderType), pPlaceholderValue.Value.ToString());
+            return (SCPlaceholderType)Enum.Parse(typeof(SCPlaceholderType), pPlaceholderValue.Value.ToString());
         }
 
         #endregion Private Methods

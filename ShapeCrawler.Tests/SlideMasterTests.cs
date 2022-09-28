@@ -59,12 +59,12 @@ namespace ShapeCrawler.Tests
             IShape masterAutoShapeCase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
 
             // Act
-            PlaceholderType? shapePlaceholderTypeCase1 = masterAutoShapeCase1.Placeholder?.Type;
-            PlaceholderType? shapePlaceholderTypeCase2 = masterAutoShapeCase2.Placeholder?.Type;
-            PlaceholderType? shapePlaceholderTypeCase3 = masterAutoShapeCase3.Placeholder?.Type;
+            SCPlaceholderType? shapePlaceholderTypeCase1 = masterAutoShapeCase1.Placeholder?.Type;
+            SCPlaceholderType? shapePlaceholderTypeCase2 = masterAutoShapeCase2.Placeholder?.Type;
+            SCPlaceholderType? shapePlaceholderTypeCase3 = masterAutoShapeCase3.Placeholder?.Type;
 
             // Assert
-            shapePlaceholderTypeCase1.Should().Be(PlaceholderType.Title);
+            shapePlaceholderTypeCase1.Should().Be(SCPlaceholderType.Title);
             shapePlaceholderTypeCase2.Should().BeNull();
             shapePlaceholderTypeCase3.Should().BeNull();
         }

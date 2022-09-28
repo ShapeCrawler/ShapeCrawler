@@ -104,10 +104,9 @@ namespace ShapeCrawler.AutoShapes
 
         internal SCPortion ParentPortion { get; }
 
-        public bool CanChangeSize()
+        public bool CanChange()
         {
-            A.RunProperties runPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
-            return runPr != null;
+            return this.ParentPortion.ParentParagraph.ParentTextBox.TextFrameContainer.Shape.Placeholder == null;
         }
 
         private string GetName()

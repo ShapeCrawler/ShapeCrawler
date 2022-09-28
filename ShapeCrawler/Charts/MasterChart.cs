@@ -2,19 +2,19 @@
 using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Charts
-{
-    /// <summary>
-    ///     Represents a chart on a Slide Master.
-    /// </summary>
-    internal class MasterChart : MasterShape, IShape
-    {
-        internal MasterChart(SCSlideMaster slideMasterInternal, P.GraphicFrame pGraphicFrame)
-            : base(pGraphicFrame, slideMasterInternal)
-        {
-        }
+namespace ShapeCrawler.Charts;  
 
-        public SCShapeType ShapeType => SCShapeType.Chart;
-        public override SCPresentation PresentationInternal { get; }
+/// <summary>
+///     Represents a chart on a Slide Master.
+/// </summary>
+internal class MasterChart : MasterShape, IShape
+{
+    internal MasterChart(SCSlideMaster slideMasterInternal, P.GraphicFrame pGraphicFrame)
+        : base(pGraphicFrame, slideMasterInternal)
+    {
     }
+
+    public SCShapeType ShapeType => SCShapeType.Chart;
+
+    public override SCPresentation PresentationInternal { get; }
 }

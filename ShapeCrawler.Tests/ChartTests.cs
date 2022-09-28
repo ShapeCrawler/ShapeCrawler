@@ -259,12 +259,12 @@ namespace ShapeCrawler.Tests
             ISeries series3 = chart.SeriesCollection[2];
 
             // Act
-            ChartType seriesChartType2 = series2.Type;
-            ChartType seriesChartType3 = series3.Type;
+            SCChartType seriesChartType2 = series2.Type;
+            SCChartType seriesChartType3 = series3.Type;
 
             // Assert
-            seriesChartType2.Should().Be(ChartType.BarChart);
-            seriesChartType3.Should().Be(ChartType.ScatterChart);
+            seriesChartType2.Should().Be(SCChartType.BarChart);
+            seriesChartType3.Should().Be(SCChartType.ScatterChart);
         }
 
         [Fact]
@@ -292,16 +292,16 @@ namespace ShapeCrawler.Tests
             IChart chartCase4 = (IChart)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7);
 
             // Act
-            ChartType chartTypeCase1 = chartCase1.Type;
-            ChartType chartTypeCase2 = chartCase2.Type;
-            ChartType chartTypeCase3 = chartCase3.Type;
-            ChartType chartTypeCase4 = chartCase4.Type;
+            SCChartType chartTypeCase1 = chartCase1.Type;
+            SCChartType chartTypeCase2 = chartCase2.Type;
+            SCChartType chartTypeCase3 = chartCase3.Type;
+            SCChartType chartTypeCase4 = chartCase4.Type;
 
             // Assert
-            chartTypeCase1.Should().Be(ChartType.BubbleChart);
-            chartTypeCase2.Should().Be(ChartType.ScatterChart);
-            chartTypeCase3.Should().Be(ChartType.Combination);
-            chartTypeCase4.Should().Be(ChartType.PieChart);
+            chartTypeCase1.Should().Be(SCChartType.BubbleChart);
+            chartTypeCase2.Should().Be(SCChartType.ScatterChart);
+            chartTypeCase3.Should().Be(SCChartType.Combination);
+            chartTypeCase4.Should().Be(SCChartType.PieChart);
         }
 
         [Fact]

@@ -12,7 +12,7 @@ namespace ShapeCrawler.Placeholders
         /// <summary>
         ///     Gets or sets placeholder type.
         /// </summary>
-        internal PlaceholderType PlaceholderType { get; set; }
+        internal SCPlaceholderType PlaceholderType { get; set; }
 
         /// <summary>
         ///     Gets or sets index (p:ph idx="12345").
@@ -31,12 +31,12 @@ namespace ShapeCrawler.Placeholders
                 return false;
             }
 
-            if (this.PlaceholderType != PlaceholderType.Custom && other.PlaceholderType != PlaceholderType.Custom)
+            if (this.PlaceholderType != SCPlaceholderType.Custom && other.PlaceholderType != SCPlaceholderType.Custom)
             {
                 return this.PlaceholderType == other.PlaceholderType;
             }
 
-            if (this.PlaceholderType == PlaceholderType.Custom && other.PlaceholderType == PlaceholderType.Custom)
+            if (this.PlaceholderType == SCPlaceholderType.Custom && other.PlaceholderType == SCPlaceholderType.Custom)
             {
                 return this.Index == other.Index;
             }
@@ -63,7 +63,7 @@ namespace ShapeCrawler.Placeholders
         {
             var hash = 17;
             hash = hash * 23 + this.PlaceholderType.GetHashCode();
-            if (this.PlaceholderType == PlaceholderType.Custom)
+            if (this.PlaceholderType == SCPlaceholderType.Custom)
             {
                 hash = hash * 23 + this.Index.GetHashCode();
             }
