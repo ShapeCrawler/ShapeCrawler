@@ -443,6 +443,16 @@ namespace ShapeCrawler.Tests.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] tables_case001 {
+            get {
+                object obj = ResourceManager.GetObject("tables_case001", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] test_image_2 {
             get {
                 object obj = ResourceManager.GetObject("test_image_2", resourceCulture);

@@ -156,6 +156,22 @@ namespace ShapeCrawler.Tables
             this.rowCollection.Reset();
         }
 
+        public SCTableRow AppendRow(A.TableRow row)
+        {
+            this.ATable.AppendChild(row);
+
+            // reset row collection so this.Rows will include the recently added row
+            this.rowCollection.Reset();
+
+            // the new row is the last one in the row collection
+            return this.Rows.Last();
+        }
+
+        public void RemoveRowAt(int index)
+        {
+            this.Rows.RemoveAt(index);
+        }
+
         private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
         {
             A.TextBody mergedCellTextBody = ((SCTableCell) this[minRowIndex, minColIndex]).ATableCell.TextBody;
@@ -196,5 +212,6 @@ namespace ShapeCrawler.Tables
 
             return false;
         }
+
     }
 }
