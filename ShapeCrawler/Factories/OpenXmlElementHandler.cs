@@ -12,11 +12,11 @@ namespace ShapeCrawler.Factories
         /// <summary>
         ///     Gets or sets the next handler in the chain.
         /// </summary>
-        internal OpenXmlElementHandler Successor { get; set; }
+        internal OpenXmlElementHandler? Successor { get; set; }
 
         /// <summary>
         ///     Creates shape from child element of the <see cref="P.ShapeTree" /> element.
         /// </summary>
-        internal abstract IShape Create(OpenXmlCompositeElement compositeElementOfPShapeTree, SCSlide slide, SlideGroupShape groupShape);
+        internal abstract IShape? Create(OpenXmlCompositeElement compositeElementOfPShapeTree, SCSlide slide, SlideGroupShape groupShape);
     }
 }

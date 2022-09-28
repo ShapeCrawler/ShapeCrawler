@@ -120,7 +120,6 @@ namespace ShapeCrawler
                 var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
                     .First().First();
                 var font = popularPortion.Font;
-                var fontName = popularPortion.Font.Name;
                 var fontSize = popularPortion.Font.Size;
                 var shape = this.TextFrameContainer.Shape;
 

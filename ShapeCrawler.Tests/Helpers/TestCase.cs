@@ -2,6 +2,23 @@
 
 namespace ShapeCrawler.Tests.Helpers
 {
+    public class TestCase<T1>
+    {
+        private readonly int testCaseNumber;
+        public T1 Param1 { get; }
+
+        public TestCase(int testCaseNumber, T1 param1)
+        {
+            this.testCaseNumber = testCaseNumber;
+            this.Param1 = param1;
+        }
+
+        public override string ToString()
+        {
+            return this.testCaseNumber.ToString(NumberFormatInfo.CurrentInfo);
+        }
+    }
+    
     public class TestCase<T1, T2>
     {
         private readonly int testCaseNumber;
