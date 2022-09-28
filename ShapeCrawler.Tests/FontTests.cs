@@ -166,7 +166,7 @@ namespace ShapeCrawler.Tests
             portion = GetPortion(presentation);
             portion.Font.Size.Should().NotBe(oldFontSize);
             portion.Font.Size.Should().Be(newFontSize);
-            portion.Font.CanChangeSize().Should().BeTrue();
+            portion.Font.CanChange().Should().BeTrue();
         }
 
         [Fact]

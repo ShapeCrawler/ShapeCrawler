@@ -65,7 +65,7 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(TestCasesTextSetter))]
-        public void Text_Setter_updates_content(TestElementQuery testTextBoxQuery)
+        public void Text_Setter_updates_text_box_content(TestElementQuery testTextBoxQuery)
         {
             // Arrange
             var pres = testTextBoxQuery.Presentation;
@@ -110,7 +110,7 @@ namespace ShapeCrawler.Tests
                     ShapeId = 8
                 };
                 testCases.Add(case2);
-
+                
                 var case3 = new TestElementQuery
                 {
                     Presentation = SCPresentation.Open(GetTestStream("001.pptx")),
@@ -118,6 +118,15 @@ namespace ShapeCrawler.Tests
                     ShapeName = "Header 1",
                 };
                 testCases.Add(case3);
+                
+                var case4 = new TestElementQuery
+                {
+                    Presentation = SCPresentation.Open(GetTestStream("autoshape-case004_subtitle.pptx")),
+                    SlideNumber = 1,
+                    ShapeName = "Subtitle 1",
+                };
+                testCases.Add(case4);
+                
 
                 return testCases;
             }

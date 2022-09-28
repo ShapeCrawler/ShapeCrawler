@@ -12,7 +12,7 @@ namespace ShapeCrawler.Exceptions
         }
 
         internal ShapeCrawlerException(string message)
-            : base(message + "\nIf you have a question, feel free to report the issue https://github.com/ShapeCrawler/ShapeCrawler/issues")
+            : base(message + "\nIf you have a question, feel free to report an issue https://github.com/ShapeCrawler/ShapeCrawler/issues")
         {
         }
 

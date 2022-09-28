@@ -114,6 +114,8 @@
     <EmbeddedResource Include="Resource\006_1 slides.pptx" />
     <None Remove="Resource\025_chart.pptx" />
     <EmbeddedResource Include="Resource\025_chart.pptx" />
+    <None Remove="Resource\autoshape\autoshape-case004_subtitle.pptx" />
+    <EmbeddedResource Include="Resource\autoshape\autoshape-case004_subtitle.pptx" />
   </ItemGroup>
 
 </Project>

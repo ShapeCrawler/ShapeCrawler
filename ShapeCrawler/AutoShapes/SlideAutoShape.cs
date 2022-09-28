@@ -38,7 +38,7 @@ namespace ShapeCrawler
         private TextFrame? GetTextBox()
         {
             var pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
-            var canChangeTextFrame = this.Placeholder is { Type: PlaceholderType.Title } or null;
+            var canChangeTextFrame = this.Placeholder is not { Type: PlaceholderType.DateAndTime } or null;
             return pTextBody == null ? null : new TextFrame(this, pTextBody, canChangeTextFrame);
         }
 
