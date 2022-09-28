@@ -31,6 +31,7 @@ namespace ShapeCrawler
         /// </summary>
         void MergeCells(ITableCell inputCell1, ITableCell inputCell2);
 
+#if DEBUG
         /// <summary>
         /// Adds a row to the bottom of the table.
         /// </summary>
@@ -43,5 +44,6 @@ namespace ShapeCrawler
         /// </summary>
         /// <param name="index">The index of the row that should be removed.</param>
         void RemoveRowAt(int index);
+#endif
     }
 }

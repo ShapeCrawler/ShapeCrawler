@@ -49,6 +49,7 @@ namespace ShapeCrawler
 
         internal SlideTable ParentTable { get; }
 
+#if DEBUG
         /// <summary>
         /// Clones a row in a table
         /// </summary>
@@ -60,6 +61,7 @@ namespace ShapeCrawler
 
             return addedRow;
         }
+#endif
 
         internal void ThrowIfRemoved()
         {
@@ -89,7 +91,7 @@ namespace ShapeCrawler
                 else if (aTableCell.VerticalMerge != null)
                 {
                     int upRowIdx = this.index - 1;
-                    SCTableCell upNeighborScCell = (SCTableCell) this.ParentTable[upRowIdx, columnIdx];
+                    SCTableCell upNeighborScCell = (SCTableCell)this.ParentTable[upRowIdx, columnIdx];
                     cellList.Add(upNeighborScCell);
                     addedScCell = upNeighborScCell;
                 }
