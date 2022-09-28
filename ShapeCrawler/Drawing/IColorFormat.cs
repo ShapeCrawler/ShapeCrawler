@@ -193,7 +193,7 @@ namespace ShapeCrawler
 
             switch (placeholder.Type)
             {
-                case PlaceholderType.Title:
+                case SCPlaceholderType.Title:
                 {
                     Dictionary<int, FontData> titleParaLvlToFontData = this.parentSlideMaster.TitleParaLvlToFontData;
                     FontData masterTitleFontData = titleParaLvlToFontData.ContainsKey(paragraphLevel)
@@ -207,7 +207,7 @@ namespace ShapeCrawler
                     break;
                 }
 
-                case PlaceholderType.Body:
+                case SCPlaceholderType.Body:
                 {
                     Dictionary<int, FontData> bodyParaLvlToFontData = this.parentSlideMaster.BodyParaLvlToFontData;
                     FontData masterBodyFontData = bodyParaLvlToFontData[paragraphLevel];

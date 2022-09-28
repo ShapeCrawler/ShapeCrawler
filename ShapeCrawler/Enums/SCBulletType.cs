@@ -1,28 +1,27 @@
-﻿namespace ShapeCrawler
+﻿namespace ShapeCrawler;
+
+/// <summary>
+///     Paragraph bullet type.
+/// </summary>
+public enum SCBulletType
 {
     /// <summary>
-    ///     Paragraph bullet type.
+    ///     Numbered bullet.
     /// </summary>
-    public enum SCBulletType
-    {
-        /// <summary>
-        ///     Numbered bullet.
-        /// </summary>
-        Numbered,
+    Numbered,
         
-        /// <summary>
-        ///     Picture bullet.
-        /// </summary>
-        Picture,
+    /// <summary>
+    ///     Picture bullet.
+    /// </summary>
+    Picture,
         
-        /// <summary>
-        ///     Character bullet.
-        /// </summary>
-        Character,
+    /// <summary>
+    ///     Character bullet.
+    /// </summary>
+    Character,
         
-        /// <summary>
-        ///     None bullet.
-        /// </summary>
-        None
-    }
+    /// <summary>
+    ///     None bullet.
+    /// </summary>
+    None
 }

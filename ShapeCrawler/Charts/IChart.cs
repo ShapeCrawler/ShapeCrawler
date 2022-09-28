@@ -13,7 +13,7 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets chart type.
         /// </summary>
-        ChartType Type { get; }
+        SCChartType Type { get; }
 
         /// <summary>
         ///     Gets title if it otherwise, otherwise <see langword="null"/>.

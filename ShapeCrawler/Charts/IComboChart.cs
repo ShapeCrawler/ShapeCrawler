@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using ShapeCrawler.Charts;
 using ShapeCrawler.Collections;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Charts
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a Combination chart.

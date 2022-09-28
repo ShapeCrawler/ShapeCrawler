@@ -27,10 +27,10 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(TestCasesPlaceholderType))]
-        public void PlaceholderType_GetterReturnsPlaceholderTypeOfTheShape(IShape shape, PlaceholderType expectedType)
+        public void PlaceholderType_GetterReturnsPlaceholderTypeOfTheShape(IShape shape, SCPlaceholderType expectedType)
         {
             // Act
-            PlaceholderType actualType = shape.Placeholder.Type;
+            SCPlaceholderType actualType = shape.Placeholder.Type;
 
             // Assert
             actualType.Should().Be(expectedType);
@@ -39,16 +39,16 @@ namespace ShapeCrawler.Tests
         public static IEnumerable<object[]> TestCasesPlaceholderType()
         {
             IShape shape = SCPresentation.Open(Resources._021).Slides[3].Shapes.First(sp => sp.Id == 2);
-            yield return new object[] { shape, PlaceholderType.Footer };
+            yield return new object[] { shape, SCPlaceholderType.Footer };
 
             shape = SCPresentation.Open(Resources._008).Slides[0].Shapes.First(sp => sp.Id == 3);
-            yield return new object[] { shape, PlaceholderType.DateAndTime };
+            yield return new object[] { shape, SCPlaceholderType.DateAndTime };
 
             shape = SCPresentation.Open(Resources._019).Slides[0].Shapes.First(sp => sp.Id == 2);
-            yield return new object[] { shape, PlaceholderType.SlideNumber };
+            yield return new object[] { shape, SCPlaceholderType.SlideNumber };
 
             shape = SCPresentation.Open(Resources._013).Slides[0].Shapes.First(sp => sp.Id == 281);
-            yield return new object[] { shape, PlaceholderType.Custom };
+            yield return new object[] { shape, SCPlaceholderType.Custom };
         }
 
         [Fact]

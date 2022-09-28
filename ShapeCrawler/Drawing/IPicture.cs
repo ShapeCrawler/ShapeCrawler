@@ -1,16 +1,15 @@
 ﻿using ShapeCrawler.Shapes;
 
 // ReSharper disable CheckNamespace
-namespace ShapeCrawler
+namespace ShapeCrawler;
+
+/// <summary>
+///     Represents a picture shape on a slide.
+/// </summary>
+public interface IPicture : IShape
 {
     /// <summary>
-    ///     Represents a picture shape on a slide.
+    ///     Gets image.
     /// </summary>
-    public interface IPicture : IShape
-    {
-        /// <summary>
-        ///     Gets image.
-        /// </summary>
-        IImage Image { get; }
-    }
+    IImage Image { get; }
 }

@@ -73,7 +73,7 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(TestCasesFillType))]
-        public void Type_returns_fill_type(IAutoShape shape, FillType expectedFill)
+        public void Type_returns_fill_type(IAutoShape shape, SCFillType expectedFill)
         {
             // Act
             var fillType = shape.Fill.Type;
@@ -88,24 +88,24 @@ namespace ShapeCrawler.Tests
             var pres = SCPresentation.Open(pptxStream);
 
             var withNoFill = pres.Slides[1].Shapes.GetById<IAutoShape>(6);
-            yield return new object[] { withNoFill, FillType.NoFill };
+            yield return new object[] { withNoFill, SCFillType.NoFill };
 
             var withSolid = pres.Slides[1].Shapes.GetById<IAutoShape>(2);
-            yield return new object[] { withSolid, FillType.Solid };
+            yield return new object[] { withSolid, SCFillType.Solid };
 
             var withGradient = pres.Slides[1].Shapes.GetByName<IAutoShape>("AutoShape 1");
-            yield return new object[] { withGradient, FillType.Gradient };
+            yield return new object[] { withGradient, SCFillType.Gradient };
 
             var withPicture = pres.Slides[2].Shapes.GetById<IAutoShape>(4);
-            yield return new object[] { withPicture, FillType.Picture };
+            yield return new object[] { withPicture, SCFillType.Picture };
 
             var withPattern = pres.Slides[1].Shapes.GetByName<IAutoShape>("AutoShape 2");
-            yield return new object[] { withPattern, FillType.Pattern };
+            yield return new object[] { withPattern, SCFillType.Pattern };
 
             pptxStream = GetTestStream("autoshape-case003.pptx");
             pres = SCPresentation.Open(pptxStream);
             var withSlideBg = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
-            yield return new object[] { withSlideBg, FillType.SlideBackground };
+            yield return new object[] { withSlideBg, SCFillType.SlideBackground };
 
         }
 
@@ -119,7 +119,7 @@ namespace ShapeCrawler.Tests
             var fillType = autoShape.Fill.Type;
 
             // Assert
-            fillType.Should().Be(FillType.NoFill);
+            fillType.Should().Be(SCFillType.NoFill);
         }
 
         [Fact]
