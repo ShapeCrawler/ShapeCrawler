@@ -16,7 +16,7 @@ namespace ShapeCrawler.AutoShapes
     {
         private readonly Lazy<SCBullet> bullet;
         private readonly ResettableLazy<PortionCollection> portions;
-        private TextAlignment? alignment;
+        private SCTextAlignment? alignment;
 
         internal SCParagraph(A.Paragraph aParagraph, TextFrame textBox)
         {
@@ -40,10 +40,10 @@ namespace ShapeCrawler.AutoShapes
 
         public SCBullet Bullet => this.bullet.Value;
 
-        public TextAlignment Alignment
+        public SCTextAlignment Alignment
         {
             get => this.GetAlignment();
-            set => this.UpdateAlignment(value);
+            set => this.SetAlignment(value);
         }
 
         internal TextFrame ParentTextBox { get; }
@@ -186,19 +186,14 @@ namespace ShapeCrawler.AutoShapes
             return new PortionCollection(this.AParagraph, this);
         }
 
-        private void UpdateAlignment(TextAlignment alignmentValue)
+        private void SetAlignment(SCTextAlignment alignmentValue)
         {
-            if (this.ParentTextBox.TextFrameContainer.Placeholder != null)
+            var aTextAlignmentTypeValue = alignmentValue switch
             {
-                throw new PlaceholderCannotBeChangedException();
-            }
-
-            A.TextAlignmentTypeValues sdkAlignmentValue = alignmentValue switch
-            {
-                TextAlignment.Left => A.TextAlignmentTypeValues.Left,
-                TextAlignment.Center => A.TextAlignmentTypeValues.Center,
-                TextAlignment.Right => A.TextAlignmentTypeValues.Right,
-                TextAlignment.Justify => A.TextAlignmentTypeValues.Justified,
+                SCTextAlignment.Left => A.TextAlignmentTypeValues.Left,
+                SCTextAlignment.Center => A.TextAlignmentTypeValues.Center,
+                SCTextAlignment.Right => A.TextAlignmentTypeValues.Right,
+                SCTextAlignment.Justify => A.TextAlignmentTypeValues.Justified,
                 _ => throw new ArgumentOutOfRangeException(nameof(alignmentValue))
             };
 
@@ -206,49 +201,51 @@ namespace ShapeCrawler.AutoShapes
             {
                 this.AParagraph.ParagraphProperties = new A.ParagraphProperties
                 {
-                    Alignment = new EnumValue<A.TextAlignmentTypeValues>(sdkAlignmentValue)
+                    Alignment = new EnumValue<A.TextAlignmentTypeValues>(aTextAlignmentTypeValue)
                 };
             }
             else
             {
-                this.AParagraph.ParagraphProperties.Alignment = new EnumValue<A.TextAlignmentTypeValues>(sdkAlignmentValue);
+                this.AParagraph.ParagraphProperties.Alignment = new EnumValue<A.TextAlignmentTypeValues>(aTextAlignmentTypeValue);
             }
 
             this.alignment = alignmentValue;
         }
 
-        private TextAlignment GetAlignment()
+        private SCTextAlignment GetAlignment()
         {
             if (this.alignment.HasValue)
             {
                 return this.alignment.Value;
             }
 
-            var placeholder = this.ParentTextBox.TextFrameContainer.Placeholder;
-            if (placeholder is { Type: PlaceholderType.Title })
+            var shape = this.ParentTextBox.TextFrameContainer.Shape;
+            var placeholder = shape.Placeholder;
+            
+            var aTextAlignmentType = this.AParagraph.ParagraphProperties?.Alignment!;
+            if (aTextAlignmentType == null)
             {
-                this.alignment = TextAlignment.Left;
-                return this.alignment.Value;
+                if (placeholder is { Type: SCPlaceholderType.Title })
+                {
+                    this.alignment = SCTextAlignment.Left;
+                    return this.alignment.Value;
+                }
+
+                if (placeholder is { Type: SCPlaceholderType.CenteredTitle })
+                {
+                    this.alignment = SCTextAlignment.Center;
+                    return this.alignment.Value;
+                }
+                
+                return SCTextAlignment.Left;
             }
 
-            if (placeholder is { Type: PlaceholderType.CenteredTitle })
+            this.alignment = aTextAlignmentType.Value switch
             {
-                this.alignment = TextAlignment.Center;
-                return this.alignment.Value;
-            }
-
-            var algnAttribute = this.AParagraph.ParagraphProperties?.Alignment!;
-            if (algnAttribute == null)
-            {
-                return TextAlignment.Left;
-            }
-
-            this.alignment = algnAttribute.Value switch
-            {
-                A.TextAlignmentTypeValues.Center => TextAlignment.Center,
-                A.TextAlignmentTypeValues.Right => TextAlignment.Right,
-                A.TextAlignmentTypeValues.Justified => TextAlignment.Justify,
-                _ => TextAlignment.Left
+                A.TextAlignmentTypeValues.Center => SCTextAlignment.Center,
+                A.TextAlignmentTypeValues.Right => SCTextAlignment.Right,
+                A.TextAlignmentTypeValues.Justified => SCTextAlignment.Justify,
+                _ => SCTextAlignment.Left
             };
 
             return this.alignment.Value;

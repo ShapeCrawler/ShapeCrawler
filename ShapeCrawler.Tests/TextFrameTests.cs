@@ -225,8 +225,7 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(TestCasesAlignmentGetter))]
-        public void Paragraph_Alignment_Getter_returns_text_aligment(IAutoShape autoShape,
-            SCTextAlignment expectedAlignment)
+        public void Paragraph_Alignment_Getter_returns_text_aligment(IAutoShape autoShape, SCTextAlignment expectedAlignment)
         {
             // Arrange
             var paragraph = autoShape.TextFrame.Paragraphs[0];
@@ -240,15 +239,15 @@ namespace ShapeCrawler.Tests
 
         public static IEnumerable<object[]> TestCasesAlignmentGetter()
         {
-            var pptxStream = GetTestStream("001.pptx");
-            var presentation = SCPresentation.Open(pptxStream);
-            var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
-            yield return new object[] { autoShape, SCTextAlignment.Center };
+            var pptxStream1 = GetTestStream("001.pptx");
+            var pres1 = SCPresentation.Open(pptxStream1);
+            var autoShape1 = pres1.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
+            yield return new object[] { autoShape1, SCTextAlignment.Center };
 
-            pptxStream = GetTestStream("001.pptx");
-            presentation = SCPresentation.Open(pptxStream);
-            autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>("Head 1");
-            yield return new object[] { autoShape, SCTextAlignment.Center };
+            var pptxStream2 = GetTestStream("001.pptx");
+            var pres2 = SCPresentation.Open(pptxStream2);
+            var autoShape2 = pres2.Slides[0].Shapes.GetByName<IAutoShape>("Head 1");
+            yield return new object[] { autoShape2, SCTextAlignment.Center };
         }
 
         [Theory]

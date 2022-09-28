@@ -179,7 +179,7 @@ namespace ShapeCrawler
 
         private bool TryFromPlaceholder(int paragraphLevel)
         {
-            if (this.textBoxContainer.Placeholder is not Placeholder placeholder)
+            if (this.textBoxContainer.Shape.Placeholder is not Placeholder placeholder)
             {
                 return false;
             }
