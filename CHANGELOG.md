@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.33.1 - Unreleased
+- Fixed updating text of Subtitle [#325](https://github.com/ShapeCrawler/ShapeCrawler/issues/325)
+
 ## Version 0.33.0 - 2022-09-23
 - Added `IParagraph.AddPortion(string text)` to add a new text portion in paragraph [#297](https://github.com/ShapeCrawler/ShapeCrawler/issues/297).
 - Added APIs to update Underline, Type, Character, Size and Font of paragraph bullet [#311](https://github.com/ShapeCrawler/ShapeCrawler/issues/311).

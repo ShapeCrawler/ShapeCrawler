@@ -1,4 +1,4 @@
-name: ShapeCrawler - CI
+name: Build and Test
 
 on:
   pull_request:
@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
       - name: Build Release
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build ShapeCrawler/ShapeCrawler.csproj --configuration Release --no-restore
       - name: Build Debug
         run: dotnet build --configuration Debug --no-restore
       - name: Run tests
