@@ -10,7 +10,6 @@ namespace ShapeCrawler.Tables
     internal class SCTableCell : ITableCell, ITextFrameContainer
     {
         private readonly ResettableLazy<TextFrame> textFrame;
-        private readonly bool isRemoved;
 
         internal SCTableCell(SCTableRow tableRow, A.TableCell aTableCell, int rowIndex, int columnIndex)
         {
@@ -41,11 +40,6 @@ namespace ShapeCrawler.Tables
 
         public void ThrowIfRemoved()
         {
-            if (this.isRemoved)
-            {
-                throw new ElementIsRemovedException("Table Cell was removed.");
-            }
-
             this.ParentTableRow.ThrowIfRemoved();
         }
 
