@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -23,7 +22,7 @@ public interface ITableRow
     long Height { get; set; }
 
     /// <summary>
-    ///     Creates a duplicate of the current row.
+    ///     Creates a duplicate of the current row and adds this at the table end.
     /// </summary>
     ITableRow Clone();
 }
@@ -58,7 +57,6 @@ internal class SCTableRow : ITableRow
 
     internal A.TableRow ATableRow { get; }
 
-#if DEBUG
     public ITableRow Clone()
     {
         var clonedRow = (A.TableRow)this.ATableRow.Clone();
@@ -66,7 +64,6 @@ internal class SCTableRow : ITableRow
 
         return addedRow;
     }
-#endif
 
     internal void ThrowIfRemoved()
     {

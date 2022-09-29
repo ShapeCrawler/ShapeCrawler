@@ -1,5 +1,4 @@
 ﻿using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
