@@ -30,7 +30,7 @@ namespace ShapeCrawler.Tests
             ITable table = (ITable) _fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3);
 
             // Act
-            var tableRows = table.Rows;
+            RowCollection tableRows = table.Rows;
             IEnumerable<ITableCell> rowCells = tableRows.First().Cells;
 
             // Assert
@@ -72,7 +72,7 @@ namespace ShapeCrawler.Tests
         public void CellIsMergedCell_ReturnsTrue_WhenCellMergedWithOtherHorizontally()
         {
             // Arrange
-            var scTableRow = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4)).Rows[1];
+            SCTableRow scTableRow = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4)).Rows[1];
             ITableCell cell1x0 = scTableRow.Cells[0];
             ITableCell cell1x1 = scTableRow.Cells[1];
 
@@ -152,19 +152,18 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void TableRow_Clone_cloning_row_increases_row_count_by_one()
+        public void CloneRow_CloningRowIncreasesRowCountByOne()
         {
             // Arrange
-            var pres = SCPresentation.Open(Resources.tables_case001);
-            var targetTable = pres.Slides.First().Shapes.OfType<ITable>().FirstOrDefault();
-            var rowCountBefore = targetTable.Rows.Count;
-            var row = targetTable.Rows.Last(); 
+            IPresentation presentation = SCPresentation.Open(Resources.tables_case001);
+            var targetTable = presentation.Slides.First().Shapes.OfType<ITable>().FirstOrDefault();
 
             // Act
-            row.Clone();
+            var rowCountBefore = targetTable.Rows.Count;
+            targetTable.Rows.Last().CloneRow();
+            var rowCountAfter = targetTable.Rows.Count;
 
             // Assert
-            var rowCountAfter = targetTable.Rows.Count;
             rowCountAfter.Should().Be(rowCountBefore + 1);
         }
 

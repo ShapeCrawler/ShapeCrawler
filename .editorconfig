@@ -36,10 +36,8 @@ dotnet_diagnostic.SA1623.severity = error
 dotnet_diagnostic.SA1602.severity = error
 dotnet_diagnostic.SA1513.severity = error
 
-# CSXXXX
+# Other
 dotnet_diagnostic.CS8764.severity = error
-dotnet_diagnostic.CS0649.severity = error
-
 
 
 

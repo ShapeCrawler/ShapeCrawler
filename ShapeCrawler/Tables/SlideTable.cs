@@ -29,7 +29,7 @@ namespace ShapeCrawler.Tables
 
         public IReadOnlyList<SCColumn> Columns => this.GetColumnList(); // TODO: make lazy
 
-        public IRowCollection Rows => this.rowCollection.Value;
+        public RowCollection Rows => this.rowCollection.Value;
 
         public override SCGeometry GeometryType => SCGeometry.Rectangle;
 
@@ -142,7 +142,7 @@ namespace ShapeCrawler.Tables
                     // Delete a:gridCol elements
                     foreach (var row in this.Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
                     {
-                        ((SCTableRow)row).ATableRow.Remove();
+                        row.ATableRow.Remove();
                         this.Rows[rowIdx].Height += row.Height;
                     }
 
@@ -156,7 +156,7 @@ namespace ShapeCrawler.Tables
             this.rowCollection.Reset();
         }
 
-        public ITableRow AppendRow(A.TableRow row)
+        public SCTableRow AppendRow(A.TableRow row)
         {
             this.ATable.AppendChild(row);
 
