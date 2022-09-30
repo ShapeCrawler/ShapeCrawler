@@ -1,5 +1,4 @@
-﻿using ShapeCrawler.Drawing;
-using ShapeCrawler.Shapes;
+﻿using ShapeCrawler.Shapes;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler

@@ -155,11 +155,6 @@ namespace ShapeCrawler.Tables
 
             this.rowCollection.Reset();
         }
-
-        public void RemoveRowAt(int index)
-        {
-            this.Rows.RemoveAt(index);
-        }
         
         internal ITableRow AppendRow(A.TableRow row)
         {

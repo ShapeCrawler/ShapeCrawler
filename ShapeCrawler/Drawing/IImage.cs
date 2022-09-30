@@ -25,7 +25,7 @@ public interface IImage
     /// <summary>
     ///     Gets binary content.
     /// </summary>
-    Task<byte[]> BinaryData { get; } // TODO: make non Task
+    Task<byte[]> BinaryData { get; }
 
     /// <summary>
     ///     Gets file name of internal resource.

@@ -168,23 +168,6 @@ namespace ShapeCrawler.Tests
             rowCountAfter.Should().Be(rowCountBefore + 1);
         }
 
-        [Fact]
-        public void RemoveRow_DeletingRowDecreasesRowCountByOne()
-        {
-            // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources.tables_case001);
-            var targetTable = presentation.Slides.First().Shapes.OfType<ITable>().FirstOrDefault();
-
-            // Act
-            var rowCountBefore = targetTable.Rows.Count;
-            targetTable.RemoveRowAt(targetTable.Rows.Count - 1); // index is 0 based
-            var rowCountAfter = targetTable.Rows.Count;
-
-            // Assert
-            rowCountAfter.Should().Be(rowCountBefore - 1);
-        }
-
-
 #if DEBUG
 
         [Theory]

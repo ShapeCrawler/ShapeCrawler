@@ -34,11 +34,6 @@ public interface IRowCollection : IEnumerable<ITableRow>
     ///     Removes table row by index.
     /// </summary>
     void RemoveAt(int index);
-
-    /// <summary>
-    ///     Gets enumerator that iterates through row collection.
-    /// </summary>
-    IEnumerator<ITableRow> GetEnumerator();
 }
 
 internal class RowCollection : IRowCollection
@@ -74,11 +69,6 @@ internal class RowCollection : IRowCollection
 
         var innerRow = this.collectionItems[index];
         this.Remove(innerRow);
-    }
-
-    IEnumerator<ITableRow> IRowCollection.GetEnumerator()
-    {
-        throw new NotImplementedException();
     }
 
     IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator()

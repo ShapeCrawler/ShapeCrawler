@@ -29,10 +29,4 @@ public interface ITable : IShape
     ///     Merge neighbor cells.
     /// </summary>
     void MergeCells(ITableCell cell1, ITableCell cell2);
-
-    /// <summary>
-    ///     Removes row at the specified index.
-    /// </summary>
-    /// <param name="index">The index of the row that should be removed.</param>
-    void RemoveRowAt(int index); // TODO: move to row collection
 }
