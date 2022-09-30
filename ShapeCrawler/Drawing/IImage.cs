@@ -28,9 +28,9 @@ public interface IImage
     Task<byte[]> BinaryData { get; } // TODO: make non Task
 
     /// <summary>
-    ///     Gets instance of <see cref="DocumentFormat.OpenXml.Packaging.ImagePart"/> class of Open XML SDK.
+    ///     Gets file name of internal resource.
     /// </summary>
-    ImagePart SDKImagePart { get; } 
+    string Name { get; }
 
     /// <summary>
     ///     Sets image with stream.
@@ -74,8 +74,10 @@ internal class SCImage : IImage
     public string MIME { get; }
 
     public Task<byte[]> BinaryData => this.GetBinaryData();
-        
-    public ImagePart SDKImagePart { get; private set; }
+
+    public string Name => this.GetName();
+
+    internal ImagePart SDKImagePart { get; private set; }
 
     public void SetImage(Stream stream)
     {
@@ -161,6 +163,11 @@ internal class SCImage : IImage
         return new SCImage(imagePart, layoutPic, stringValue, slideLayoutPart);
     }
 
+    private string GetName()
+    {
+        return Path.GetFileName(this.SDKImagePart.Uri.ToString());
+    }
+    
     private async Task<byte[]> GetBinaryData()
     {
         if (this.bytes != null)

@@ -23,15 +23,15 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public async void Image_GetBytes_returns_image_byte_array()
+        public async void Image_BinaryData_returns_image_byte_array()
         {
             // Arrange
-            IPicture shapePicture1 = (IPicture)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
-            IPicture shapePicture2 = (IPicture)_fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7);
+            var shapePicture1 = (IPicture)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
+            var shapePicture2 = (IPicture)_fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7);
 
             // Act
-            byte[] shapePictureContentCase1 = await shapePicture1.Image.BinaryData.ConfigureAwait(false);
-            byte[] shapePictureContentCase2 = await shapePicture2.Image.BinaryData.ConfigureAwait(false);
+            var shapePictureContentCase1 = await shapePicture1.Image.BinaryData.ConfigureAwait(false);
+            var shapePictureContentCase2 = await shapePicture2.Image.BinaryData.ConfigureAwait(false);
 
             // Assert
             shapePictureContentCase1.Should().NotBeEmpty();
@@ -130,18 +130,18 @@ namespace ShapeCrawler.Tests
         }
         
         [Fact]
-        public void Image_SDKImagePart_Getter_returns_ImagePart()
+        public void Image_Name_Getter_returns_internal_image_file_name()
         {
             // Arrange
             var pptxStream = GetTestStream("pictures-case001.pptx");
             var pres = SCPresentation.Open(pptxStream);
             var pictureImage = pres.Slides[0].Shapes.GetByName<IPicture>("Picture 3").Image;
-
+            
             // Act
-            var imagePart = pictureImage.SDKImagePart;
-
+            var fileName = pictureImage.Name;
+            
             // Assert
-            imagePart.Should().NotBeNull();
+            fileName.Should().Be("image2.png");
         }
 
         [Fact]

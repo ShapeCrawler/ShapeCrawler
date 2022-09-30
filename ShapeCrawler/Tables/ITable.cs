@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Shapes;
-using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler;
@@ -36,15 +35,4 @@ public interface ITable : IShape
     /// </summary>
     /// <param name="index">The index of the row that should be removed.</param>
     void RemoveRowAt(int index); // TODO: move to row collection
-
-#if DEBUG
-    
-    /// <summary>
-    ///     Adds specified row at the bottom of the current table.
-    /// </summary>
-    /// <param name="aTableRow">Row that will be added to the table.</param>
-    /// <returns>A reference to the recently added row.</returns>
-    ITableRow AppendRow(A.TableRow aTableRow); // TODO: move to row collection
-    
-#endif
 }

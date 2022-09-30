@@ -156,7 +156,12 @@ namespace ShapeCrawler.Tables
             this.rowCollection.Reset();
         }
 
-        public ITableRow AppendRow(A.TableRow row)
+        public void RemoveRowAt(int index)
+        {
+            this.Rows.RemoveAt(index);
+        }
+        
+        internal ITableRow AppendRow(A.TableRow row)
         {
             this.ATable.AppendChild(row);
 
@@ -165,11 +170,6 @@ namespace ShapeCrawler.Tables
 
             // the new row is the last one in the row collection
             return this.Rows.Last();
-        }
-
-        public void RemoveRowAt(int index)
-        {
-            this.Rows.RemoveAt(index);
         }
 
         private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
