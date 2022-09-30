@@ -24,7 +24,7 @@ namespace ShapeCrawler.Placeholders
 
         #region Public Methods
 
-        public bool Equals(PlaceholderData other)
+        public bool Equals(PlaceholderData? other)
         {
             if (other == null)
             {

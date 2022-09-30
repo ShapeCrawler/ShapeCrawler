@@ -43,9 +43,9 @@ namespace ShapeCrawler.Shapes
         bool Hidden { get; }
 
         /// <summary>
-        ///     Gets placeholder. Returns null if the shape is not placeholder.
+        ///     Gets placeholder if shape is a placeholder, otherwise <see langword="null"/>.
         /// </summary>
-        IPlaceholder Placeholder { get; }
+        IPlaceholder? Placeholder { get; }
 
         /// <summary>
         ///     Gets geometry form type of the shape.

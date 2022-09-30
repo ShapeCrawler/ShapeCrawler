@@ -21,11 +21,12 @@ namespace ShapeCrawler.Charts
         private readonly P.GraphicFrame pGraphicFrame;
         private readonly Lazy<SCSeriesCollection> series;
         private readonly Lazy<LibraryCollection<double>> xValues;
-        private string? chartTitle;
 
         // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
         // then collection contains only single item.
         private readonly IEnumerable<OpenXmlElement> cXCharts;
+        
+        private string? chartTitle;
 
         internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide slideInternal)
             : base(pGraphicFrame, slideInternal, null)

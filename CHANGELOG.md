@@ -1,8 +1,7 @@
 # Changelog
 
-## Version 0.34.1 - Unreleased
+## Version 0.34.0 - 2022-09-30
 - Fixed updating text of Subtitle [#325](https://github.com/ShapeCrawler/ShapeCrawler/issues/325)
-- Added `ITable.RemoveRowAt(int index)` to remove table row by index [#326](https://github.com/ShapeCrawler/ShapeCrawler/issues/326)
 - Added `ITableRow.Clone()` to create a row duplication [#326](https://github.com/ShapeCrawler/ShapeCrawler/issues/326)
 
 ## Version 0.33.0 - 2022-09-23

@@ -42,7 +42,6 @@ namespace ShapeCrawler.Placeholders
                 return SCPlaceholderType.CenteredTitle;
             }
 
-            // TODO: consider refactor the statement since it looks horrible
             return (SCPlaceholderType)Enum.Parse(typeof(SCPlaceholderType), pPlaceholderValue.Value.ToString());
         }
 

@@ -7,7 +7,7 @@ namespace ShapeCrawler.Media
 {
     internal abstract class MediaShape : SlideShape
     {
-        protected MediaShape(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, Shape groupShape) 
+        protected MediaShape(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, Shape? groupShape) 
             : base(pShapeTreeChild, slide, groupShape)
         {
         }
