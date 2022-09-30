@@ -469,5 +469,15 @@ namespace ShapeCrawler.Tests.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] textframe_case001 {
+            get {
+                object obj = ResourceManager.GetObject("textframe_case001", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

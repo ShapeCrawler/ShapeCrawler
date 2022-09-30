@@ -529,6 +529,28 @@ namespace ShapeCrawler.Tests
             // Assert
             newParagraph.Should().NotBeNull();
         }
+
+        [Fact]
+        public void TextFrame_Can_Replace_Multiple_Placeholders_In_Single_TextFrame()
+        {
+            // Arrange
+            IPresentation presentation = SCPresentation.Open(Properties.Resources.textframe_case001);
+            var textFrame = presentation.Slides.First().Shapes.OfType<IAutoShape>().First().TextFrame;
+
+            // Act
+            textFrame.Text = textFrame.Text.Replace("{{replace_this}}", "confirm this");
+            textFrame.Text = textFrame.Text.Replace("{{replace_that}}", "confirm that");
+
+            MemoryStream modifiedPresentation = new();
+            presentation.SaveAs(modifiedPresentation);
+            presentation.Close();
+            presentation = SCPresentation.Open(modifiedPresentation);
+
+            // Assert
+            var changedTextFrame = presentation.Slides.First().Shapes.OfType<IAutoShape>().First().TextFrame;
+
+            changedTextFrame.Text.Should().ContainAll("confirm this", "confirm that");
+        }
     }
 }
 
