@@ -130,6 +130,9 @@ namespace ShapeCrawler
             }
 
             baseParagraph.Text = newText;
+
+            // force the lazy property to refresh
+            this.text.Reset();
         }
 
         private string GetText()
