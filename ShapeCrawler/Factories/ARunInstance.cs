@@ -1,19 +1,21 @@
-﻿namespace ShapeCrawler.Factories
-{
-    internal static class ARunInstance
-    {
-        internal static DocumentFormat.OpenXml.Drawing.Run CreateEmpty()
-        {
-            var aRun = new DocumentFormat.OpenXml.Drawing.Run();
-            var aRunProperties = new DocumentFormat.OpenXml.Drawing.RunProperties { Language = "en-US", FontSize = 1400, Dirty = false };
-            var aText = new DocumentFormat.OpenXml.Drawing.Text
-            {
-                Text = string.Empty
-            };
-            aRun.Append(aRunProperties);
-            aRun.Append(aText);
+﻿using A = DocumentFormat.OpenXml.Drawing;
 
-            return aRun;
-        }
+namespace ShapeCrawler.Factories;
+
+internal static class ARunInstance
+{
+    internal static A.Run CreateEmpty()
+    {
+        var aRun = new A.Run();
+        var aRunPropertiesBuilder = new ARunPropertiesBuilder();
+        var aRunProperties = aRunPropertiesBuilder.Build();
+        var aText = new A.Text
+        {
+            Text = string.Empty
+        };
+        aRun.Append(aRunProperties);
+        aRun.Append(aText);
+
+        return aRun;
     }
 }

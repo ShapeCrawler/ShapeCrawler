@@ -179,6 +179,12 @@ namespace ShapeCrawler.Tests
                 testCase1.SlideNumber = 1;
                 testCase1.ShapeId = 4;
                 yield return new object[] { testCase1 };
+                
+                var testCase2 = new TestCase("#2");
+                testCase2.PresentationName = "026.pptx";
+                testCase2.SlideNumber = 1;
+                testCase2.ShapeName = "AutoShape 1";
+                yield return new object[] { testCase2 };
             }
         }
 
