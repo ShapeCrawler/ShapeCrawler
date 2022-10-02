@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Statics;
 using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Tests.Properties;
 using Xunit;
@@ -42,8 +41,10 @@ namespace ShapeCrawler.Tests
             var textBoxCase11 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 2)).TextFrame;
             var textBoxCase12 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 3)).TextFrame;
             var textBoxCase13 = ((IAutoShape)_fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 2)).TextFrame;
-            var textBoxCase14 = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextFrame;
-            var textBoxCase4 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0].TextFrame;
+            var textBoxCase14 = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+                .TextFrame;
+            var textBoxCase4 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+                .TextFrame;
 
             // Act-Assert
             textBoxCase1.Text.Should().BeEquivalentTo("Title text");
@@ -65,7 +66,7 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(TestCasesTextSetter))]
-        public void Text_Setter_updates_text_box_content(TestElementQuery testTextBoxQuery)
+        public void Text_Setter_updates_content(TestElementQuery testTextBoxQuery)
         {
             // Arrange
             var pres = testTextBoxQuery.Presentation;
@@ -88,6 +89,28 @@ namespace ShapeCrawler.Tests
             textBox.Text.Should().BeEquivalentTo(newText);
             textBox.Paragraphs.Should().HaveCount(1);
         }
+        
+        [Fact]
+        public void Text_Setter_can_update_content_multiple_times()
+        {
+            // Arrange
+            var pres = SCPresentation.Open(Properties.Resources.autoshape_case005_text_frame);
+            var textFrame = pres.Slides.First().Shapes.OfType<IAutoShape>().First().TextFrame;
+
+            // Act
+            textFrame.Text = textFrame.Text.Replace("{{replace_this}}", "confirm this");
+            textFrame.Text = textFrame.Text.Replace("{{replace_that}}", "confirm that");
+
+            var modifiedPres = new MemoryStream();
+            pres.SaveAs(modifiedPres);
+            pres.Close();
+            pres = SCPresentation.Open(modifiedPres);
+
+            // Assert
+            var changedTextFrame = pres.Slides.First().Shapes.OfType<IAutoShape>().First().TextFrame;
+
+            changedTextFrame.Text.Should().ContainAll("confirm this", "confirm that");
+        }
 
         public static TheoryData<TestElementQuery> TestCasesTextSetter
         {
@@ -102,7 +125,7 @@ namespace ShapeCrawler.Tests
                     ShapeId = 3
                 };
                 testCases.Add(case1);
-                
+
                 var case2 = new TestElementQuery
                 {
                     Presentation = SCPresentation.Open(GetTestStream("020.pptx")),
@@ -110,7 +133,7 @@ namespace ShapeCrawler.Tests
                     ShapeId = 8
                 };
                 testCases.Add(case2);
-                
+
                 var case3 = new TestElementQuery
                 {
                     Presentation = SCPresentation.Open(GetTestStream("001.pptx")),
@@ -118,7 +141,7 @@ namespace ShapeCrawler.Tests
                     ShapeName = "Header 1",
                 };
                 testCases.Add(case3);
-                
+
                 var case4 = new TestElementQuery
                 {
                     Presentation = SCPresentation.Open(GetTestStream("autoshape-case004_subtitle.pptx")),
@@ -126,7 +149,7 @@ namespace ShapeCrawler.Tests
                     ShapeName = "Subtitle 1",
                 };
                 testCases.Add(case4);
-                
+
 
                 return testCases;
             }
@@ -225,7 +248,8 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(TestCasesAlignmentGetter))]
-        public void Paragraph_Alignment_Getter_returns_text_aligment(IAutoShape autoShape, SCTextAlignment expectedAlignment)
+        public void Paragraph_Alignment_Getter_returns_text_aligment(IAutoShape autoShape,
+            SCTextAlignment expectedAlignment)
         {
             // Arrange
             var paragraph = autoShape.TextFrame.Paragraphs[0];
@@ -265,7 +289,7 @@ namespace ShapeCrawler.Tests
 
             // Assert
             paragraph.Alignment.Should().Be(SCTextAlignment.Right);
-            
+
             pres.SaveAs(mStream);
             testCase.SetPresentation(mStream);
             paragraph = testCase.AutoShape.TextFrame.Paragraphs[0];
@@ -281,7 +305,7 @@ namespace ShapeCrawler.Tests
                 testCase1.SlideNumber = 1;
                 testCase1.ShapeName = "TextBox 4";
                 yield return new[] { testCase1 };
-                
+
                 var testCase2 = new TestCase("#2");
                 testCase2.PresentationName = "001.pptx";
                 testCase2.SlideNumber = 1;
@@ -528,28 +552,6 @@ namespace ShapeCrawler.Tests
 
             // Assert
             newParagraph.Should().NotBeNull();
-        }
-
-        [Fact]
-        public void TextFrame_Can_Replace_Multiple_Placeholders_In_Single_TextFrame()
-        {
-            // Arrange
-            IPresentation presentation = SCPresentation.Open(Properties.Resources.autoshape_case005_text_frame);
-            var textFrame = presentation.Slides.First().Shapes.OfType<IAutoShape>().First().TextFrame;
-
-            // Act
-            textFrame.Text = textFrame.Text.Replace("{{replace_this}}", "confirm this");
-            textFrame.Text = textFrame.Text.Replace("{{replace_that}}", "confirm that");
-
-            MemoryStream modifiedPresentation = new();
-            presentation.SaveAs(modifiedPresentation);
-            presentation.Close();
-            presentation = SCPresentation.Open(modifiedPresentation);
-
-            // Assert
-            var changedTextFrame = presentation.Slides.First().Shapes.OfType<IAutoShape>().First().TextFrame;
-
-            changedTextFrame.Text.Should().ContainAll("confirm this", "confirm that");
         }
     }
 }
