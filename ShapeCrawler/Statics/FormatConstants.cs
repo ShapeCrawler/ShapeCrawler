@@ -1,18 +1,9 @@
-﻿namespace ShapeCrawler.Statics
-{
-    /// <summary>
-    ///     Represents PowerPoint presentation format constants.
-    /// </summary>
-    internal static class FormatConstants
-    {
-        /// <summary>
-        ///     Returns max paragraph level value.
-        /// </summary>
-        internal static int MaxPrLevel = 9;
+﻿namespace ShapeCrawler.Statics;
 
-        /// <summary>
-        ///     Returns default font according to following link https://bit.ly/37Tjjlo
-        /// </summary>
-        internal static int DefaultFontSize = 18;
-    }
+/// <summary>
+///     Represents PowerPoint presentation format constants.
+/// </summary>
+internal static class FormatConstants
+{
+    internal static int DefaultFontSize => 18; // https://bit.ly/37Tjjlo
 }
