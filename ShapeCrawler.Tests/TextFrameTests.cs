@@ -534,7 +534,7 @@ namespace ShapeCrawler.Tests
         public void TextFrame_Can_Replace_Multiple_Placeholders_In_Single_TextFrame()
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(Properties.Resources.textframe_case001);
+            IPresentation presentation = SCPresentation.Open(Properties.Resources.autoshape_case005_text_frame);
             var textFrame = presentation.Slides.First().Shapes.OfType<IAutoShape>().First().TextFrame;
 
             // Act

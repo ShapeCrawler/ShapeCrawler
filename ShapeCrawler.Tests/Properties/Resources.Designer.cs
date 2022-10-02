@@ -443,6 +443,16 @@ namespace ShapeCrawler.Tests.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] autoshape_case005_text_frame {
+            get {
+                object obj = ResourceManager.GetObject("autoshape_case005_text_frame", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] tables_case001 {
             get {
                 object obj = ResourceManager.GetObject("tables_case001", resourceCulture);
@@ -466,16 +476,6 @@ namespace ShapeCrawler.Tests.Properties {
         internal static byte[] test_mp3 {
             get {
                 object obj = ResourceManager.GetObject("test_mp3", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] textframe_case001 {
-            get {
-                object obj = ResourceManager.GetObject("textframe_case001", resourceCulture);
                 return ((byte[])(obj));
             }
         }
