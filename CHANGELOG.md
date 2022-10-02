@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.34.1 - 2022-10-02
+- Fixed updating text of text frame [#332](https://github.com/ShapeCrawler/ShapeCrawler/issues/332)
+
 ## Version 0.34.0 - 2022-09-30
 - Fixed updating text of Subtitle [#325](https://github.com/ShapeCrawler/ShapeCrawler/issues/325)
 - Added `ITableRow.Clone()` to create a row duplication [#326](https://github.com/ShapeCrawler/ShapeCrawler/issues/326)
