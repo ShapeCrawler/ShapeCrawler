@@ -319,14 +319,13 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetFontSize(int newFontSize)
         {
-            var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+            var parent = this.aText.Parent!;
+            var aRunPr = parent.GetFirstChild<A.RunProperties>();
             if (aRunPr == null)
             {
-                const string errorMsg =
-                    "The property value cannot be changed on the Slide level since it belongs to Slide Master. " +
-                    "Hence, you should change it on Slide Master level. " +
-                    "Note: you can check whether the property can be changed via {property_name}CanBeChanged method.";
-                throw new SlideMasterPropertyCannotBeChanged(errorMsg);
+                var builder = new ARunPropertiesBuilder();
+                aRunPr = builder.Build();
+                parent.InsertAt(aRunPr, 0);
             }
 
             aRunPr.FontSize = newFontSize * 100;

@@ -12,7 +12,7 @@ using Xunit;
 
 namespace ShapeCrawler.Tests
 {
-    public class FontTests : IClassFixture<PresentationFixture>
+    public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     {
         private readonly PresentationFixture _fixture;
 
@@ -147,26 +147,45 @@ namespace ShapeCrawler.Tests
             cellPortion.Font.Size.Should().Be(18);
         }
 
-        [Fact]
-        public void Size_Setter_changes_Font_Size_of_paragraph_portion()
+        [Theory]
+        [MemberData(nameof(TestCasesSizeSetter))]
+        public void Size_Setter_changes_Font_Size_of_paragraph_portion(TestCase testCase)
         {
             // Arrange
-            int newFontSize = 28;
-            var savedPreStream = new MemoryStream();
-            IPresentation presentation = SCPresentation.Open(Resources._001);
-            IPortion portion = GetPortion(presentation);
-            int oldFontSize = portion.Font.Size;
+            var pres = testCase.Presentation;
+            var font = testCase.AutoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
+            const int newFontSize = 28;
+            var mStream = new MemoryStream();
+            var oldFontSize = font.Size;
 
             // Act
-            portion.Font.Size = newFontSize;
+            font.Size = newFontSize;
+            pres.SaveAs(mStream);
 
             // Assert
-            presentation.SaveAs(savedPreStream);
-            presentation = SCPresentation.Open(savedPreStream);
-            portion = GetPortion(presentation);
-            portion.Font.Size.Should().NotBe(oldFontSize);
-            portion.Font.Size.Should().Be(newFontSize);
-            portion.Font.CanChange().Should().BeTrue();
+            testCase.SetPresentation(mStream);
+            font = testCase.AutoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
+            font.Size.Should().NotBe(oldFontSize);
+            font.Size.Should().Be(newFontSize);
+            font.CanChange().Should().BeTrue();
+        }
+
+        public static IEnumerable<object[]> TestCasesSizeSetter
+        {
+            get
+            {
+                var testCase1 = new TestCase("#1");
+                testCase1.PresentationName = "001.pptx";
+                testCase1.SlideNumber = 1;
+                testCase1.ShapeId = 4;
+                yield return new object[] { testCase1 };
+                
+                var testCase2 = new TestCase("#2");
+                testCase2.PresentationName = "026.pptx";
+                testCase2.SlideNumber = 1;
+                testCase2.ShapeName = "AutoShape 1";
+                yield return new object[] { testCase2 };
+            }
         }
 
         [Fact]

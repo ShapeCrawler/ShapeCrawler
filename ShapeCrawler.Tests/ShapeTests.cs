@@ -183,24 +183,19 @@ namespace ShapeCrawler.Tests
                 var shape5 = pres5.Slides[2].Shapes.GetById<IShape>(7);
                 var testCase5 = new TestCase<IShape, int>(5, shape5, 79);
                 yield return new object[] { testCase5 };
+                
+                var pptxStream6 = GetTestStream("018.pptx");
+                var pres6 = SCPresentation.Open(pptxStream6);
+                var shape6 = pres6.Slides[0].Shapes.GetByName<IShape>("Picture Placeholder 1");
+                var testCase6 = new TestCase<IShape, int>(6, shape6, 9);
+                yield return new object[] { testCase6 };
+                
+                var pptxStream7 = GetTestStream("009_table.pptx");
+                var pres7 = SCPresentation.Open(pptxStream7);
+                var shape7 = pres7.Slides[1].Shapes.GetById<IGroupShape>(7).Shapes.First(groupedShape => groupedShape.Id == 5);
+                var testCase7 = new TestCase<IShape, int>(7, shape7, 166);
+                yield return new object[] { testCase7 };
             }
-        }
-
-        [Fact]
-        public void X_Getter_returns_x_coordinate_in_pixels_of_Grouped_shape()
-        {
-            // Arrange
-            var pptxStream = GetTestStream("009_table.pptx");
-            var pres = SCPresentation.Open(pptxStream);
-            var groupShape = (IGroupShape)pres.Slides[1].Shapes.First(sp => sp.Id == 7);
-            var groupedShape = groupShape.Shapes.First(sp => sp.Id == 5);
-            var horizontalResolution = TestHelper.HorizontalResolution;
-
-            // Act
-            int xCoordinate = groupedShape.X;
-
-            // Assert
-            xCoordinate.Should().Be((int)(1581846 * horizontalResolution / 914400));
         }
 
         [Fact]

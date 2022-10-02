@@ -6,7 +6,6 @@ namespace ShapeCrawler.Tests.Helpers;
 public class TestCase
 {
     private IPresentation pres;
-    private int? shapeId;
     private readonly string caseName;
 
     public TestCase(string caseName)
@@ -22,6 +21,8 @@ public class TestCase
     public int SlideNumber { get; set; }
     public string PresentationName { get; set; }
     public string ShapeName { get; set; }
+    
+    public int ShapeId { get; set; }
 
     public IPresentation Presentation
     {
@@ -46,7 +47,7 @@ public class TestCase
             var slide = this.Presentation.Slides[this.SlideNumber - 1];
 
             var autoShape = this.ShapeName == null
-                ? slide.Shapes.GetById<IAutoShape>(this.shapeId.Value)
+                ? slide.Shapes.GetById<IAutoShape>(this.ShapeId)
                 : slide.Shapes.GetByName<IAutoShape>(this.ShapeName);
 
             return autoShape;          
@@ -63,7 +64,25 @@ public class TestCase
 public class TestCase<T1>
 {
     private readonly int testCaseNumber;
+    private IPresentation pres;
     public T1 Param1 { get; }
+    public IPresentation Presentation
+    {
+        get
+        {
+            if (this.pres != null)
+            {
+                return this.pres;
+            }
+            
+            var stream = TestHelper.GetStream(this.PresentationName);
+            this.pres = SCPresentation.Open(stream);
+
+            return this.pres;
+        }
+    }
+
+    public string PresentationName { get; set; }
 
     public TestCase(int testCaseNumber, T1 param1)
     {
@@ -74,6 +93,11 @@ public class TestCase<T1>
     public override string ToString()
     {
         return this.testCaseNumber.ToString(NumberFormatInfo.CurrentInfo);
+    }
+
+    public void SetPresentation(MemoryStream mStream)
+    {
+        throw new System.NotImplementedException();
     }
 }
 
