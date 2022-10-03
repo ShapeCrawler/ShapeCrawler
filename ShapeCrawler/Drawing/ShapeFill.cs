@@ -145,7 +145,7 @@ namespace ShapeCrawler.Drawing
         private void GetSlideBackgroundFillOr(P.Shape pShape)
         {
             this.useBgFill = pShape.UseBackgroundFill; 
-            if (this.useBgFill != null && this.useBgFill)
+            if (this.useBgFill is not null && this.useBgFill)
             {
                 this.useBgFill = pShape.UseBackgroundFill;
                 this.fillType = SCFillType.SlideBackground;

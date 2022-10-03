@@ -67,7 +67,7 @@ internal class MasterAutoShape : MasterShape, IAutoShape, ITextFrameContainer, I
 
         int titleFontSize = pTextStyles.TitleStyle.Level1ParagraphProperties
             .GetFirstChild<A.DefaultRunProperties>().FontSize.Value;
-        if (fontData.FontSize == null)
+        if (fontData.FontSize is null)
         {
             fontData.FontSize = new Int32Value(titleFontSize);
         }
@@ -75,13 +75,13 @@ internal class MasterAutoShape : MasterShape, IAutoShape, ITextFrameContainer, I
 
     private Dictionary<int, FontData> GetLvlToFontData() // TODO: duplicate code in LayoutAutoShape
     {
-        Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(this.pShape.TextBody.ListStyle);
+        Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(this.pShape.TextBody!.ListStyle!);
 
         if (!lvlToFontData.Any())
         {
             Int32Value endParaRunPrFs = this.pShape.TextBody.GetFirstChild<A.Paragraph>()
                 .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
-            if (endParaRunPrFs != null)
+            if (endParaRunPrFs is not null)
             {
                 var fontData = new FontData
                 {

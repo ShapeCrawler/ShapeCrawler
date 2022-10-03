@@ -235,13 +235,13 @@ namespace ShapeCrawler
             }
 
             // from theme default text settings
-            if (lvlToFontData.Any(kvp => kvp.Value.FontSize == null))
+            if (lvlToFontData.Any(kvp => kvp.Value.FontSize is null))
             {
                 A.TextDefault themeTextDefault =
                     pPresentation.PresentationPart.ThemePart.Theme.ObjectDefaults.TextDefault;
                 if (themeTextDefault != null)
                 {
-                    lvlToFontData = FontDataParser.FromCompositeElement(themeTextDefault.ListStyle);
+                    lvlToFontData = FontDataParser.FromCompositeElement(themeTextDefault.ListStyle!);
                 }
             }
 

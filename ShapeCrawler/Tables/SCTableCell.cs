@@ -49,10 +49,10 @@ namespace ShapeCrawler.Tables
 
         private bool DefineWhetherCellIsMerged()
         {
-            return this.ATableCell.GridSpan != null ||
-                   this.ATableCell.RowSpan != null ||
-                   this.ATableCell.HorizontalMerge != null ||
-                   this.ATableCell.VerticalMerge != null;
+            return this.ATableCell.GridSpan is not null ||
+                   this.ATableCell.RowSpan is not null ||
+                   this.ATableCell.HorizontalMerge is not null ||
+                   this.ATableCell.VerticalMerge is not null;
         }
     }
 }

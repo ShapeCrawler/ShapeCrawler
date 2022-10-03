@@ -27,7 +27,7 @@ namespace ShapeCrawler.SlideMasters
 
         public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
-        public IShapeCollection Shapes => ShapeCollection.ForSlideLayout(this.PSlideMaster.CommonSlideData.ShapeTree, this);
+        public IShapeCollection Shapes => ShapeCollection.ForSlideLayout(this.PSlideMaster.CommonSlideData.ShapeTree!, this);
 
         public override bool IsRemoved { get; set; }
         
@@ -60,10 +60,10 @@ namespace ShapeCrawler.SlideMasters
         internal bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
         {
             Dictionary<int, FontData> bodyParaLvlToFontData =
-                FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles.BodyStyle);
+                FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.BodyStyle!);
             if (bodyParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
             {
-                if (fontData.FontSize != null)
+                if (fontData.FontSize is not null)
                 {
                     fontSize = fontData.FontSize;
                     return true;
@@ -80,12 +80,12 @@ namespace ShapeCrawler.SlideMasters
 
             // Other
             Dictionary<int, FontData> otherStyleLvlToFontData =
-                FontDataParser.FromCompositeElement(pTextStyles.OtherStyle);
+                FontDataParser.FromCompositeElement(pTextStyles.OtherStyle!);
             if (otherStyleLvlToFontData.ContainsKey(paragraphLvl))
             {
-                if (otherStyleLvlToFontData[paragraphLvl].FontSize != null)
+                if (otherStyleLvlToFontData[paragraphLvl].FontSize is not null)
                 {
-                    fontSize = otherStyleLvlToFontData[paragraphLvl].FontSize;
+                    fontSize = otherStyleLvlToFontData[paragraphLvl].FontSize!;
                     return true;
                 }
             }

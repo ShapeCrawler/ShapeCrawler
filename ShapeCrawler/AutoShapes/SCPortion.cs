@@ -8,19 +8,22 @@ using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler
 {
-    /// <inheritdoc cref="IPortion"/>
     internal class SCPortion : IPortion
     {
         private readonly ResettableLazy<SCFont> font;
+        private readonly A.Field? aField;
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="SCPortion"/> class.
-        /// </summary>
-        internal SCPortion(A.Text sdkaText, SCParagraph paragraph)
+        internal SCPortion(A.Text aText, SCParagraph paragraph, A.Field aField)
+            : this(aText, paragraph)
         {
-            this.SDKAText = sdkaText;
+            this.aField = aField;
+        }
+
+        internal SCPortion(A.Text aText, SCParagraph paragraph)
+        {
+            this.AText = aText;
             this.ParentParagraph = paragraph;
-            this.font = new ResettableLazy<SCFont>(() => new SCFont(this.SDKAText, this));
+            this.font = new ResettableLazy<SCFont>(() => new SCFont(this.AText, this));
         }
 
         #region Public Properties
@@ -45,10 +48,12 @@ namespace ShapeCrawler
             get => this.GetHyperlink();
             set => this.SetHyperlink(value);
         }
-        
+
+        public A.Text AText { get; }
+
         public A.Text SDKAText { get; }
-        
-        public IField? Field { get; }
+
+        public IField? Field => this.GetFiled();
 
         #endregion Public Properties
 
@@ -56,6 +61,18 @@ namespace ShapeCrawler
 
         internal SCParagraph ParentParagraph { get; }
 
+        private IField? GetFiled()
+        {
+            if (this.aField is null)
+            {
+                return null;
+            }
+            else
+            {
+                return new SCField(this.aField);
+            }
+        }
+        
         private void ThrowIfRemoved()
         {
             if (this.IsRemoved)
@@ -68,8 +85,8 @@ namespace ShapeCrawler
 
         private string GetText()
         {
-            string portionText = this.SDKAText.Text;
-            if (this.SDKAText.Parent.NextSibling<A.Break>() != null)
+            string portionText = this.AText.Text;
+            if (this.AText.Parent.NextSibling<A.Break>() != null)
             {
                 portionText += Environment.NewLine;
             }
@@ -79,12 +96,12 @@ namespace ShapeCrawler
 
         private void SetText(string text)
         {
-            this.SDKAText.Text = text;
+            this.AText.Text = text;
         }
 
         private string? GetHyperlink()
         {
-            var runProperties = this.SDKAText.PreviousSibling<A.RunProperties>();
+            var runProperties = this.AText.PreviousSibling<A.RunProperties>();
             if (runProperties == null)
             {
                 return null;
@@ -98,7 +115,7 @@ namespace ShapeCrawler
 
             var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextBox.TextFrameContainer;
             var slidePart = slideAutoShape.Slide.SDKSlidePart;
-            var hyperlinkRelationship = (HyperlinkRelationship) slidePart.GetReferenceRelationship(hyperlink.Id);
+            var hyperlinkRelationship = (HyperlinkRelationship)slidePart.GetReferenceRelationship(hyperlink.Id!);
 
             return hyperlinkRelationship.Uri.AbsoluteUri;
         }
@@ -110,7 +127,7 @@ namespace ShapeCrawler
                 throw new ShapeCrawlerException("Hyperlink is invalid.");
             }
 
-            var runProperties = this.SDKAText.PreviousSibling<A.RunProperties>();
+            var runProperties = this.AText.PreviousSibling<A.RunProperties>();
             if (runProperties == null)
             {
                 runProperties = new A.RunProperties();
@@ -125,11 +142,18 @@ namespace ShapeCrawler
 
             var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextBox.TextFrameContainer;
             var slidePart = slideAutoShape.Slide.SDKSlidePart;
-            
+
             var uri = new Uri(url, UriKind.Absolute);
             var addedHyperlinkRelationship = slidePart.AddHyperlinkRelationship(uri, true);
-            
+
             hyperlink.Id = addedHyperlinkRelationship.Id;
+        }
+    }
+
+    internal class SCField : IField
+    {
+        public SCField(A.Field aField)
+        {
         }
     }
 }

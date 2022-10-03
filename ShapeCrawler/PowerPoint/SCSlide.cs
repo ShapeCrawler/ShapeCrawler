@@ -61,7 +61,7 @@ internal class SCSlide : SlideBase, ISlide, IPresentationComponent
         set => this.SetCustomData(value);
     }
 
-    public bool Hidden => this.SDKSlidePart.Slide.Show != null && this.SDKSlidePart.Slide.Show.Value == false;
+    public bool Hidden => this.SDKSlidePart.Slide.Show is not null && this.SDKSlidePart.Slide.Show.Value == false;
 
     public IPresentation Presentation { get; }
 
@@ -85,7 +85,7 @@ internal class SCSlide : SlideBase, ISlide, IPresentationComponent
 
     public void Hide()
     {
-        if (this.SDKSlidePart.Slide.Show == null)
+        if (this.SDKSlidePart.Slide.Show is null)
         {
             var showAttribute = new OpenXmlAttribute("show", string.Empty, "0");
             this.SDKSlidePart.Slide.SetAttribute(showAttribute);
@@ -144,7 +144,7 @@ internal class SCSlide : SlideBase, ISlide, IPresentationComponent
                 case SCShapeType.AutoShape:
                     if (shape is ITextFrameContainer)
                     {
-                        textBoxes.Add(((ITextFrameContainer)shape).TextFrame);
+                        textBoxes.Add(((ITextFrameContainer)shape).TextFrame!);
                     }
 
                     break;

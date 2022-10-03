@@ -30,7 +30,7 @@ namespace ShapeCrawler.Charts
             }
 
             // From Spreadsheet
-            var rangeXCells = GetXCellsByFormula(numberReference.Formula, slideChart);
+            var rangeXCells = GetXCellsByFormula(numberReference.Formula!, slideChart);
             var pointValues = new List<double>(rangeXCells.Count);
             foreach (var xCell in rangeXCells)
             {
@@ -43,13 +43,13 @@ namespace ShapeCrawler.Charts
 
         internal static string GetSingleString(C.StringReference stringReference, SCChart slideChart)
         {
-            string fromCache = stringReference.StringCache?.GetFirstChild<C.StringPoint>().Single().InnerText;
+            string fromCache = stringReference.StringCache?.GetFirstChild<C.StringPoint>()!.Single().InnerText!;
             if (fromCache != null)
             {
                 return fromCache;
             }
 
-            List<X.Cell> xCell = GetXCellsByFormula(stringReference.Formula, slideChart);
+            List<X.Cell> xCell = GetXCellsByFormula(stringReference.Formula!, slideChart);
 
             return xCell.Single().InnerText;
         }

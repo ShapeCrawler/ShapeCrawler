@@ -28,9 +28,9 @@ internal class ChartGraphicFrameHandler : OpenXmlElementHandler
         }
 
         var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>();
-        var chartPart = (ChartPart)slide.SDKSlidePart.GetPartById(cChartRef.Id);
+        var chartPart = (ChartPart)slide.SDKSlidePart.GetPartById(cChartRef.Id!);
         var cPlotArea = chartPart!.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea;
-        var cCharts = cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
+        var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
         if (cCharts.Count() > 1)
         {

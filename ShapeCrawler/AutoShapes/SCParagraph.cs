@@ -68,43 +68,40 @@ namespace ShapeCrawler.AutoShapes
                 return;
             }
 
-            var basePortion = this.portions.Value.LastOrDefault();
-            OpenXmlElement? baseATextParent;
+            var lastPortion = this.portions.Value.LastOrDefault();
+            OpenXmlElement? aTextParent;
             OpenXmlElement? lastARunOrABreak = null;
-            if (basePortion == null)
+            if (lastPortion == null)
             {
-                baseATextParent = ARunInstance.CreateEmpty();
+                aTextParent = ARunInstance.CreateEmpty();
             }
             else
             {
-                baseATextParent = basePortion.SDKAText.Parent!;
+                aTextParent = lastPortion.SDKAText?.Parent;
                 lastARunOrABreak = this.AParagraph.Last(p => p is A.Run or A.Break);
             }
 
-            // add break if last element is not A.Break && text ends with newLine
             if (lastARunOrABreak is not A.Break && this.Text.EndsWith(Environment.NewLine, StringComparison.Ordinal))
             {
                 AddBreak(ref lastARunOrABreak);
             }
 
-            string[] textLines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-
-            if (basePortion?.Text == string.Empty)
+            var textLines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            if (lastPortion?.Text == string.Empty)
             {
-                basePortion.Text = textLines[0];
+                lastPortion.Text = textLines[0];
             }
             else
             {
-                AddText(ref lastARunOrABreak, baseATextParent, textLines[0], this.AParagraph);
+                AddText(ref lastARunOrABreak, aTextParent, textLines[0], this.AParagraph);
             }
 
-            for (int i = 1; i < textLines.Length; i++)
+            for (var i = 1; i < textLines.Length; i++)
             {
                 AddBreak(ref lastARunOrABreak);
-
                 if (textLines[i] != string.Empty)
                 {
-                    AddText(ref lastARunOrABreak, baseATextParent, textLines[i], this.AParagraph);
+                    AddText(ref lastARunOrABreak, aTextParent, textLines[i], this.AParagraph);
                 }
             }
 
@@ -128,10 +125,9 @@ namespace ShapeCrawler.AutoShapes
             lastElement = lastElement.InsertAfterSelf(new A.Break());
         }
 
-        private static void AddText(ref OpenXmlElement? lastElement, OpenXmlElement? basePortionElement, string text,
-            A.Paragraph aParagraph)
+        private static void AddText(ref OpenXmlElement? lastElement, OpenXmlElement? aTextParent, string text, A.Paragraph aParagraph)
         {
-            var newARun = (A.Run)basePortionElement.CloneNode(true);
+            var newARun = (A.Run)aTextParent.CloneNode(true);
             newARun.Text.Text = text;
             if (lastElement == null)
             {
@@ -154,7 +150,7 @@ namespace ShapeCrawler.AutoShapes
 
         private SCBullet GetBullet()
         {
-            return new SCBullet(this.AParagraph.ParagraphProperties);
+            return new SCBullet(this.AParagraph.ParagraphProperties!);
         }
 
         private string GetText()
@@ -178,7 +174,15 @@ namespace ShapeCrawler.AutoShapes
             var basePortion = (SCPortion)this.portions.Value.Single();
 
             basePortion.Text = string.Empty;
-            this.AddPortion(newText);
+            if (newText.Contains(Environment.NewLine))
+            {
+                basePortion.Text = string.Empty;
+                this.AddPortion(newText);    
+            }
+            else
+            {
+                basePortion.Text = newText;
+            }
         }
 
         private PortionCollection GetPortions()

@@ -57,7 +57,7 @@ namespace ShapeCrawler
         public void SetColorByHex(string hex)
         {
             var portion = this.parentFont.ParentPortion;
-            var aTextContainer = portion.SDKAText.Parent!;
+            var aTextContainer = portion.AText.Parent!;
             var aRunProperties = aTextContainer.GetFirstChild<A.RunProperties>() ?? aTextContainer.AddRunProperties();
 
             var aSolidFill = aRunProperties.GetASolidFill();
@@ -94,7 +94,7 @@ namespace ShapeCrawler
         {
             this.initialized = true;
             var portion = this.parentFont.ParentPortion;
-            var aSolidFill = portion.SDKAText.Parent!.GetFirstChild<A.RunProperties>()?.GetASolidFill();
+            var aSolidFill = portion.AText.Parent!.GetFirstChild<A.RunProperties>()?.GetASolidFill();
             if (aSolidFill != null)
             {
                 this.FromRunSolidFill(aSolidFill);
@@ -128,7 +128,7 @@ namespace ShapeCrawler
                 string colorHexVariant;
                 if (this.parentSlideMaster.Presentation.ParaLvlToFontData.TryGetValue(paragraphLevel, out FontData preFontData))
                 {
-                    colorHexVariant = this.GetHexVariantByScheme(preFontData.ASchemeColor.Val);
+                    colorHexVariant = this.GetHexVariantByScheme(preFontData.ASchemeColor!.Val!);
                     this.colorType = SCColorType.Scheme;
                     this.hexColor = colorHexVariant;
                     return;
@@ -144,7 +144,7 @@ namespace ShapeCrawler
         private bool TryFromTextBody(SCParagraph paragraph)
         {
             A.ListStyle txBodyListStyle = paragraph.ParentTextBox.TextBodyElement.GetFirstChild<A.ListStyle>();
-            Dictionary<int, FontData> paraLvlToFontData = FontDataParser.FromCompositeElement(txBodyListStyle);
+            Dictionary<int, FontData> paraLvlToFontData = FontDataParser.FromCompositeElement(txBodyListStyle!);
             if (!paraLvlToFontData.TryGetValue(paragraph.Level, out FontData txBodyFontData))
             {
                 return false;
@@ -236,7 +236,7 @@ namespace ShapeCrawler
 
             if (fontData.ASchemeColor != null)
             {
-                colorHexVariant = this.GetHexVariantByScheme(fontData.ASchemeColor.Val);
+                colorHexVariant = this.GetHexVariantByScheme(fontData.ASchemeColor.Val!);
                 this.colorType = SCColorType.Scheme;
                 this.hexColor = colorHexVariant;
                 return true;
@@ -344,20 +344,20 @@ namespace ShapeCrawler
             P.ColorMap slideMasterPColorMap = this.parentSlideMaster.PSlideMaster.ColorMap;
             if (fontSchemeColor == A.SchemeColorValues.Text1)
             {
-                return this.GetThemeColorByString(slideMasterPColorMap.Text1.ToString());
+                return this.GetThemeColorByString(slideMasterPColorMap!.Text1!.ToString()!);
             }
 
             if (fontSchemeColor == A.SchemeColorValues.Text2)
             {
-                return this.GetThemeColorByString(slideMasterPColorMap.Text2.ToString());
+                return this.GetThemeColorByString(slideMasterPColorMap!.Text2!.ToString()!);
             }
 
             if (fontSchemeColor == A.SchemeColorValues.Background1)
             {
-                return this.GetThemeColorByString(slideMasterPColorMap.Background1.ToString());
+                return this.GetThemeColorByString(slideMasterPColorMap!.Background1!.ToString()!);
             }
 
-            return this.GetThemeColorByString(slideMasterPColorMap.Background2.ToString());
+            return this.GetThemeColorByString(slideMasterPColorMap!.Background2!.ToString()!);
         }
 
         private string GetThemeColorByString(string fontSchemeColor)

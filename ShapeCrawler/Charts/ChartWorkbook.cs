@@ -71,7 +71,7 @@ namespace ShapeCrawler.Charts
                 var rowNumberStr = Regex.Match(cellReference, @"\d+").Value;
                 var rowNumber = int.Parse(rowNumberStr, NumberStyles.Number, NumberFormatInfo.InvariantInfo);
 
-                var row = sheetData.Elements<X.Row>().First(r => r.RowIndex == rowNumber);
+                var row = sheetData.Elements<X.Row>().First(r => r.RowIndex! == rowNumber);
                 var newXCell = new X.Cell
                 {
                     CellReference = cellReference
