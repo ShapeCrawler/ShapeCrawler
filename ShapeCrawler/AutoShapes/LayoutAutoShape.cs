@@ -106,7 +106,7 @@ namespace ShapeCrawler
             IEnumerable<A.Text> aTexts = pTextBody.Descendants<A.Text>();
             if (aTexts.Sum(t => t.Text.Length) > 0)
             {
-                return new TextFrame(this, pTextBody, false);
+                return new TextFrame(this, pTextBody);
             }
 
             return null;

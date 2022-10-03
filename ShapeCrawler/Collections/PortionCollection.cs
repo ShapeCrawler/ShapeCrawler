@@ -79,8 +79,8 @@ namespace ShapeCrawler.Collections
             if (aField != null)
             {
                 var aText = aField.GetFirstChild<A.Text>();
-                var aFieldPortions = new List<SCPortion>(new[] { new SCPortion(aText, paragraph) });
-                return aFieldPortions;
+                var fieldPortions = new List<SCPortion>(new[] { new SCPortion(aText, paragraph) });
+                return fieldPortions;
             }
 
             return new List<SCPortion>();

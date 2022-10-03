@@ -69,8 +69,8 @@ namespace ShapeCrawler.AutoShapes
             }
 
             var basePortion = this.portions.Value.LastOrDefault();
-            OpenXmlElement baseATextParent = null;
-            OpenXmlElement lastARunOrABreak = null;
+            OpenXmlElement? baseATextParent;
+            OpenXmlElement? lastARunOrABreak = null;
             if (basePortion == null)
             {
                 baseATextParent = ARunInstance.CreateEmpty();
@@ -123,12 +123,12 @@ namespace ShapeCrawler.AutoShapes
 
         #region Private Methods
 
-        private static void AddBreak(ref OpenXmlElement lastElement)
+        private static void AddBreak(ref OpenXmlElement? lastElement)
         {
             lastElement = lastElement.InsertAfterSelf(new A.Break());
         }
 
-        private static void AddText(ref OpenXmlElement lastElement, OpenXmlElement basePortionElement, string text,
+        private static void AddText(ref OpenXmlElement? lastElement, OpenXmlElement? basePortionElement, string text,
             A.Paragraph aParagraph)
         {
             var newARun = (A.Run)basePortionElement.CloneNode(true);
@@ -172,12 +172,12 @@ namespace ShapeCrawler.AutoShapes
             this.ThrowIfRemoved();
 
             // To set a paragraph text we use a single portion which is the first paragraph portion.
-            // Rest of the portions are deleted from the paragraph.
             var removingPortions = this.Portions.Skip(1).ToList();
+            
             this.Portions.Remove(removingPortions);
             var basePortion = (SCPortion)this.portions.Value.Single();
 
-            basePortion.Text = String.Empty;
+            basePortion.Text = string.Empty;
             this.AddPortion(newText);
         }
 

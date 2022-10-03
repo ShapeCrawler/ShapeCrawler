@@ -4,7 +4,7 @@ namespace ShapeCrawler.Factories;
 
 internal static class ARunInstance
 {
-    internal static A.Run CreateEmpty()
+    internal static A.Run? CreateEmpty()
     {
         var aRun = new A.Run();
         var aRunPropertiesBuilder = new ARunPropertiesBuilder();

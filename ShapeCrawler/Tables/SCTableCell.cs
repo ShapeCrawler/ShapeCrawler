@@ -44,7 +44,7 @@ namespace ShapeCrawler.Tables
 
         private TextFrame GetTextFrame()
         {
-            return new TextFrame(this, this.ATableCell.TextBody!, true);
+            return new TextFrame(this, this.ATableCell.TextBody!);
         }
 
         private bool DefineWhetherCellIsMerged()

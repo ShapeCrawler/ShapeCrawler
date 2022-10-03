@@ -47,6 +47,8 @@ namespace ShapeCrawler
         }
         
         public A.Text SDKAText { get; }
+        
+        public IField? Field { get; }
 
         #endregion Public Properties
 

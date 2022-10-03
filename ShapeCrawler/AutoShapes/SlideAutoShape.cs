@@ -39,7 +39,7 @@ namespace ShapeCrawler
         {
             var pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
             var canChangeText = this.Placeholder is null or not { Type: SCPlaceholderType.DateAndTime } and not { Type: SCPlaceholderType.SlideNumber };
-            return pTextBody == null ? null : new TextFrame(this, pTextBody, canChangeText);
+            return pTextBody == null ? null : new TextFrame(this, pTextBody);
         }
 
         private ShapeFill GetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()
