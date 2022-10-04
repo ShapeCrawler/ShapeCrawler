@@ -1,7 +1,7 @@
-﻿namespace ShapeCrawler.Statics
+﻿namespace ShapeCrawler.Constants
 {
     /// <summary>
-    ///     Contains library limitation..
+    ///     Contains library limitation.
     /// </summary>
     internal static class Limitations
     {

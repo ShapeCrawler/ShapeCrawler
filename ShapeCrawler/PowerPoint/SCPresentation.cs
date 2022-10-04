@@ -6,6 +6,7 @@ using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Collections;
+using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;

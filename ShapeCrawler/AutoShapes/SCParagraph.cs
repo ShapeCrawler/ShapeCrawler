@@ -69,22 +69,21 @@ namespace ShapeCrawler.AutoShapes
             }
 
             var lastPortion = this.portions.Value.LastOrDefault() as SCPortion;
-            OpenXmlElement aTextParent;
+            OpenXmlElement aRun;
             OpenXmlElement? lastARunOrABreak = null;
             if (lastPortion == null)
             {
                 var aRunBuilder = new ARunBuilder(); 
-                aTextParent = aRunBuilder.Build();
+                aRun = aRunBuilder.Build();
             }
             else
             {
-                aTextParent = lastPortion.AText.Parent!;
+                aRun = lastPortion.AText.Parent!;
                 lastARunOrABreak = this.AParagraph.Last(p => p is A.Run or A.Break);
-            }
-
-            if (lastARunOrABreak is not A.Break && this.Text.EndsWith(Environment.NewLine, StringComparison.Ordinal))
-            {
-                AddBreak(ref lastARunOrABreak);
+                if (lastARunOrABreak is not A.Break && this.Text.EndsWith(Environment.NewLine, StringComparison.Ordinal))
+                {
+                    AddBreak(ref lastARunOrABreak);
+                }
             }
 
             var textLines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
@@ -94,7 +93,7 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                AddText(ref lastARunOrABreak, aTextParent, textLines[0], this.AParagraph);
+                AddText(ref lastARunOrABreak, aRun, textLines[0], this.AParagraph);
             }
 
             for (var i = 1; i < textLines.Length; i++)
@@ -102,7 +101,7 @@ namespace ShapeCrawler.AutoShapes
                 AddBreak(ref lastARunOrABreak);
                 if (textLines[i] != string.Empty)
                 {
-                    AddText(ref lastARunOrABreak, aTextParent, textLines[i], this.AParagraph);
+                    AddText(ref lastARunOrABreak, aRun, textLines[i], this.AParagraph);
                 }
             }
 
@@ -164,25 +163,28 @@ namespace ShapeCrawler.AutoShapes
             return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next);
         }
 
-        private void SetText(string newText)
+        private void SetText(string text)
         {
             this.ThrowIfRemoved();
 
-            // To set a paragraph text we use a single portion which is the first paragraph portion.
-            var removingPortions = this.Portions.Skip(1).ToList();
-            
-            this.Portions.Remove(removingPortions);
-            var basePortion = (SCPortion)this.portions.Value.Single();
+            if (this.portions.Value.Count == 0)
+            {
+                this.AddPortion(" ");
+            }
 
-            basePortion.Text = string.Empty;
-            if (newText.Contains(Environment.NewLine))
+            // to set a paragraph text we use a single portion which is the first paragraph portion.
+            var removingPortions = this.Portions.Skip(1).ToList();
+            this.Portions.Remove(removingPortions);
+            
+            var basePortion = (SCPortion)this.portions.Value.Single();
+            if (text.Contains(Environment.NewLine))
             {
                 basePortion.Text = string.Empty;
-                this.AddPortion(newText);    
+                this.AddPortion(text);    
             }
             else
             {
-                basePortion.Text = newText;
+                basePortion.Text = text;
             }
         }
 

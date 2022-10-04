@@ -117,7 +117,7 @@ namespace ShapeCrawler.Tests
             get
             {
                 var testCases = new TheoryData<TestElementQuery>();
-
+                
                 var case1 = new TestElementQuery
                 {
                     Presentation = SCPresentation.Open(GetTestStream("001.pptx")),
@@ -149,6 +149,14 @@ namespace ShapeCrawler.Tests
                     ShapeName = "Subtitle 1",
                 };
                 testCases.Add(case4);
+                
+                var case5 = new TestElementQuery
+                {
+                    Presentation = SCPresentation.Open(GetTestStream("autoshape-case008_text-frame.pptx")),
+                    SlideNumber = 1,
+                    ShapeName = "AutoShape 1",
+                };
+                testCases.Add(case5);
 
                 return testCases;
             }
@@ -510,33 +518,48 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void ParagraphsAdd_AddsANewTextParagraphAtTheEndOfTheTextBoxAndReturnsAddedParagraph()
+        public void Paragraphs_Add_adds_new_text_paragraph_at_the_end_And_returns_added_paragraph()
         {
             // Arrange
             const string TEST_TEXT = "ParagraphsAdd";
             var mStream = new MemoryStream();
-            IPresentation presentation = SCPresentation.Open(Resources._001);
-            ITextFrame textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 4)).TextFrame;
-            int originParagraphsCount = textBox.Paragraphs.Count;
+            var pres = SCPresentation.Open(Resources._001);
+            var textFrame = ((IAutoShape)pres.Slides[0].Shapes.First(sp => sp.Id == 4)).TextFrame;
+            int originParagraphsCount = textFrame.Paragraphs.Count;
 
             // Act
-            IParagraph newParagraph = textBox.Paragraphs.Add();
-            newParagraph.Text = TEST_TEXT;
+            var addedPara = textFrame.Paragraphs.Add();
+            addedPara.Text = TEST_TEXT;
 
             // Assert
-            textBox.Paragraphs.Last().Text.Should().BeEquivalentTo(TEST_TEXT);
-            textBox.Paragraphs.Should().HaveCountGreaterThan(originParagraphsCount);
+            var lastPara = textFrame.Paragraphs.Last(); 
+            lastPara.Text.Should().BeEquivalentTo(TEST_TEXT);
+            textFrame.Paragraphs.Should().HaveCountGreaterThan(originParagraphsCount);
 
-            presentation.SaveAs(mStream);
-            presentation = SCPresentation.Open(mStream);
-            textBox = ((IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 4)).TextFrame;
-            textBox.Paragraphs.Last().Text.Should().BeEquivalentTo(TEST_TEXT);
-            textBox.Paragraphs.Should().HaveCountGreaterThan(originParagraphsCount);
+            pres.SaveAs(mStream);
+            pres = SCPresentation.Open(mStream);
+            textFrame = ((IAutoShape)pres.Slides[0].Shapes.First(sp => sp.Id == 4)).TextFrame;
+            textFrame.Paragraphs.Last().Text.Should().BeEquivalentTo(TEST_TEXT);
+            textFrame.Paragraphs.Should().HaveCountGreaterThan(originParagraphsCount);
         }
 
         [Fact]
-        public void
-            Paragraphs_Add_returns_a_new_added_paragraph_When_paragraph_has_been_added_after_text_box_content_changed()
+        public void Paragraphs_Add_adds_paragraph()
+        {
+            // Arrange
+            var pptxStream = GetTestStream("autoshape-case007.pptx");
+            var pres = SCPresentation.Open(pptxStream);
+            var paragraphs = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1").TextFrame.Paragraphs;
+            
+            // Act
+            paragraphs.Add();
+            
+            // Assert
+            paragraphs.Should().HaveCount(6);
+        }
+
+        [Fact]
+        public void Paragraphs_Add_adds_new_text_paragraph_at_the_end_And_returns_added_paragraph_When_it_has_been_added_after_text_frame_changed()
         {
             var pres = SCPresentation.Open(Properties.Resources._001);
             var autoShape = (IAutoShape)pres.Slides[0].Shapes.First(sp => sp.Id == 3);
