@@ -12,6 +12,7 @@ namespace ShapeCrawler
     {
         private readonly ResettableLazy<SCFont> font;
         private readonly A.Field? aField;
+        
 
         internal SCPortion(A.Text aText, SCParagraph paragraph, A.Field aField)
             : this(aText, paragraph)
@@ -48,15 +49,13 @@ namespace ShapeCrawler
             get => this.GetHyperlink();
             set => this.SetHyperlink(value);
         }
-
-        public A.Text AText { get; }
-
-        public A.Text SDKAText { get; }
-
+        
         public IField? Field => this.GetFiled();
 
         #endregion Public Properties
 
+        internal A.Text AText { get; }
+        
         internal bool IsRemoved { get; set; }
 
         internal SCParagraph ParentParagraph { get; }

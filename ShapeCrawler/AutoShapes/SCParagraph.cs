@@ -68,16 +68,17 @@ namespace ShapeCrawler.AutoShapes
                 return;
             }
 
-            var lastPortion = this.portions.Value.LastOrDefault();
-            OpenXmlElement? aTextParent;
+            var lastPortion = this.portions.Value.LastOrDefault() as SCPortion;
+            OpenXmlElement aTextParent;
             OpenXmlElement? lastARunOrABreak = null;
             if (lastPortion == null)
             {
-                aTextParent = ARunInstance.CreateEmpty();
+                var aRunBuilder = new ARunBuilder(); 
+                aTextParent = aRunBuilder.Build();
             }
             else
             {
-                aTextParent = lastPortion.SDKAText?.Parent;
+                aTextParent = lastPortion.AText.Parent!;
                 lastARunOrABreak = this.AParagraph.Last(p => p is A.Run or A.Break);
             }
 
@@ -125,10 +126,10 @@ namespace ShapeCrawler.AutoShapes
             lastElement = lastElement.InsertAfterSelf(new A.Break());
         }
 
-        private static void AddText(ref OpenXmlElement? lastElement, OpenXmlElement? aTextParent, string text, A.Paragraph aParagraph)
+        private static void AddText(ref OpenXmlElement? lastElement, OpenXmlElement aTextParent, string text, A.Paragraph aParagraph)
         {
             var newARun = (A.Run)aTextParent.CloneNode(true);
-            newARun.Text.Text = text;
+            newARun.Text!.Text = text;
             if (lastElement == null)
             {
                 aParagraph.InsertAt(newARun, 0);
