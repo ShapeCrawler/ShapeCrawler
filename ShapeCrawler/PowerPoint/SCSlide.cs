@@ -7,6 +7,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
+using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
@@ -226,9 +227,9 @@ internal class SCSlide : SlideBase, ISlide, IPresentationComponent
         using var customXmlStreamReader = new StreamReader(customXmlPartStream);
         var raw = customXmlStreamReader.ReadToEnd();
 #if NET6_0
-        return raw[ConstantStrings.CustomDataElementName.Length..];
+        return raw[SCConstants.CustomDataElementName.Length..];
 #else
-            return raw.Substring(ConstantStrings.CustomDataElementName.Length);
+            return raw.Substring(SCConstants.CustomDataElementName.Length);
 #endif
     }
 
@@ -247,7 +248,7 @@ internal class SCSlide : SlideBase, ISlide, IPresentationComponent
         }
 
         using var customXmlStreamReader = new StreamWriter(customXmlPartStream);
-        customXmlStreamReader.Write($"{ConstantStrings.CustomDataElementName}{value}");
+        customXmlStreamReader.Write($"{SCConstants.CustomDataElementName}{value}");
     }
 
     private CustomXmlPart GetSldCustomXmlPart()
@@ -256,7 +257,7 @@ internal class SCSlide : SlideBase, ISlide, IPresentationComponent
         {
             using var customXmlPartStream = new StreamReader(customXmlPart.GetStream());
             string customXmlPartText = customXmlPartStream.ReadToEnd();
-            if (customXmlPartText.StartsWith(ConstantStrings.CustomDataElementName,
+            if (customXmlPartText.StartsWith(SCConstants.CustomDataElementName,
                     StringComparison.CurrentCulture))
             {
                 return customXmlPart;

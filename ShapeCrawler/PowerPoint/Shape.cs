@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
@@ -133,13 +134,13 @@ namespace ShapeCrawler
         private void SetCustomData(string value)
         {
             string customDataElement =
-                $@"<{ConstantStrings.CustomDataElementName}>{value}</{ConstantStrings.CustomDataElementName}>";
+                $@"<{SCConstants.CustomDataElementName}>{value}</{SCConstants.CustomDataElementName}>";
             this.PShapeTreesChild.InnerXml += customDataElement;
         }
 
         private string? GetCustomData()
         {
-            var pattern = @$"<{ConstantStrings.CustomDataElementName}>(.*)<\/{ConstantStrings.CustomDataElementName}>";
+            var pattern = @$"<{SCConstants.CustomDataElementName}>(.*)<\/{SCConstants.CustomDataElementName}>";
             var regex = new Regex(pattern);
             var elementText = regex.Match(this.PShapeTreesChild.InnerXml).Groups[1];
             if (elementText.Value.Length == 0)

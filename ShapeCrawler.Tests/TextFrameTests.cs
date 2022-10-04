@@ -117,7 +117,7 @@ namespace ShapeCrawler.Tests
             get
             {
                 var testCases = new TheoryData<TestElementQuery>();
-
+                
                 var case1 = new TestElementQuery
                 {
                     Presentation = SCPresentation.Open(GetTestStream("001.pptx")),
@@ -149,6 +149,14 @@ namespace ShapeCrawler.Tests
                     ShapeName = "Subtitle 1",
                 };
                 testCases.Add(case4);
+                
+                var case5 = new TestElementQuery
+                {
+                    Presentation = SCPresentation.Open(GetTestStream("autoshape-case008_text-frame.pptx")),
+                    SlideNumber = 1,
+                    ShapeName = "AutoShape 1",
+                };
+                testCases.Add(case5);
 
                 return testCases;
             }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.VisualBasic;
+using ShapeCrawler.Constants;
 using SkiaSharp;
 
 namespace ShapeCrawler.Services
@@ -44,6 +46,11 @@ namespace ShapeCrawler.Services
 
                     if (wordY > wordMaxY)
                     {
+                        if (paint.TextSize == SCConstants.MinReduceFontSize)
+                        {
+                            break;
+                        }
+
                         paint.TextSize = --paint.TextSize;
                         wordX = rect.Left;
                         wordY = rect.Top + paint.TextSize;
