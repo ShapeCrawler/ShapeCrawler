@@ -23,16 +23,16 @@ namespace ShapeCrawler.Services
 
         internal bool IsFilled()
         {
-            return this.FontSize != null
-                   && this.ALatinFont != null
-                   && this.IsBold != null
-                   && this.IsItalic != null
-                   && this.ASchemeColor != null;
+            return this.FontSize is not null
+                   && this.ALatinFont is not null
+                   && this.IsBold is not null
+                   && this.IsItalic is not null
+                   && this.ASchemeColor is not null;
         }
 
         internal void Fill(FontData fontData)
         {
-            if (fontData.FontSize == null && this.FontSize != null)
+            if (fontData.FontSize is null && this.FontSize is not null )
             {
                 fontData.FontSize = this.FontSize;
             }
@@ -42,12 +42,12 @@ namespace ShapeCrawler.Services
                 fontData.ALatinFont = this.ALatinFont;
             }
 
-            if (fontData.IsBold == null && this.IsBold != null)
+            if (fontData.IsBold is null && this.IsBold is not null )
             {
                 fontData.IsBold = this.IsBold;
             }
 
-            if (fontData.IsItalic == null && this.IsItalic != null)
+            if (fontData.IsItalic is null && this.IsItalic is not null )
             {
                 fontData.IsItalic = this.IsItalic;
             }

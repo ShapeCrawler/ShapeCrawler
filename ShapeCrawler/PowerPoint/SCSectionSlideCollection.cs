@@ -45,7 +45,7 @@ namespace ShapeCrawler
             this.sectionSlides = new List<SCSlide>();
             foreach (var sectionSlideIdListEntry in this.parentSection.SDKSection.Descendants<SectionSlideIdListEntry>())
             {
-                var slide = this.parentSection.Sections.Presentation.SlidesInternal.GetBySlideId(sectionSlideIdListEntry.Id);
+                var slide = this.parentSection.Sections.Presentation.SlidesInternal.GetBySlideId(sectionSlideIdListEntry.Id!);
                 this.sectionSlides.Add(slide);
             }
         }

@@ -1,6 +1,4 @@
-﻿using A = DocumentFormat.OpenXml.Drawing;
-
-// ReSharper disable CheckNamespace
+﻿// ReSharper disable CheckNamespace
 namespace ShapeCrawler;
 
 /// <summary>
@@ -24,7 +22,7 @@ public interface IPortion
     string Hyperlink { get; set; }
         
     /// <summary>
-    ///     Gets instance of <see cref="DocumentFormat.OpenXml.Drawing.Text"/>.
+    ///     Gets field.
     /// </summary>
-    A.Text SDKAText { get; }
+    IField? Field { get; }
 }

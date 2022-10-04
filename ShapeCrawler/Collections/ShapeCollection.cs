@@ -277,7 +277,7 @@ namespace ShapeCrawler.Collections
                 var placeholder = (Placeholder)collectionShape.Placeholder;
                 var colPPlaceholderShape = placeholder.PPlaceholderShape;
 
-                if (inpPPlaceholderShape.Index != null && colPPlaceholderShape.Index != null &&
+                if (inpPPlaceholderShape.Index is not null && colPPlaceholderShape.Index is not null  &&
                     inpPPlaceholderShape.Index == colPPlaceholderShape.Index)
                 {
                     return true;
@@ -286,7 +286,7 @@ namespace ShapeCrawler.Collections
                 if (inpPPlaceholderShape.Type != null && colPPlaceholderShape.Type != null)
                 {
                     if (inpPPlaceholderShape.Type == P.PlaceholderValues.Body &&
-                        inpPPlaceholderShape.Index != null && colPPlaceholderShape.Index != null)
+                        inpPPlaceholderShape.Index is not null && colPPlaceholderShape.Index is not null )
                     {
                         return inpPPlaceholderShape.Index == colPPlaceholderShape.Index;
                     }
@@ -407,7 +407,7 @@ namespace ShapeCrawler.Collections
                         }
                         else
                         {
-                            shapeList.Add(new MasterPicture(pPicture, master, embeddedPicReference));
+                            shapeList.Add(new MasterPicture(pPicture, master!, embeddedPicReference));
                         }
                     }
                 }

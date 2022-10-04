@@ -44,15 +44,15 @@ namespace ShapeCrawler.Tables
 
         private TextFrame GetTextFrame()
         {
-            return new TextFrame(this, this.ATableCell.TextBody!, true);
+            return new TextFrame(this, this.ATableCell.TextBody!);
         }
 
         private bool DefineWhetherCellIsMerged()
         {
-            return this.ATableCell.GridSpan != null ||
-                   this.ATableCell.RowSpan != null ||
-                   this.ATableCell.HorizontalMerge != null ||
-                   this.ATableCell.VerticalMerge != null;
+            return this.ATableCell.GridSpan is not null ||
+                   this.ATableCell.RowSpan is not null ||
+                   this.ATableCell.HorizontalMerge is not null ||
+                   this.ATableCell.VerticalMerge is not null;
         }
     }
 }

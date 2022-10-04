@@ -74,28 +74,28 @@ internal class SCTableRow : ITableRow
 
     private List<SCTableCell> GetCells()
     {
-        var cellList = new List<SCTableCell>();
-        IEnumerable<A.TableCell> aTableCells = this.ATableRow.Elements<A.TableCell>();
-        SCTableCell addedScCell = null;
+        var cellList = new List<SCTableCell?>();
+        var aCells = this.ATableRow.Elements<A.TableCell>();
+        SCTableCell addedCell = null;
 
-        int columnIdx = 0;
-        foreach (A.TableCell aTableCell in aTableCells)
+        var columnIdx = 0;
+        foreach (var aTableCell in aCells)
         {
-            if (aTableCell.HorizontalMerge != null)
+            if (aTableCell.HorizontalMerge is not null)
             {
-                cellList.Add(addedScCell);
+                cellList.Add(addedCell);
             }
-            else if (aTableCell.VerticalMerge != null)
+            else if (aTableCell.VerticalMerge is not null)
             {
                 int upRowIdx = this.index - 1;
                 SCTableCell upNeighborScCell = (SCTableCell)this.ParentTable[upRowIdx, columnIdx];
                 cellList.Add(upNeighborScCell);
-                addedScCell = upNeighborScCell;
+                addedCell = upNeighborScCell;
             }
             else
             {
-                addedScCell = new SCTableCell(this, aTableCell, this.index, columnIdx);
-                cellList.Add(addedScCell);
+                addedCell = new SCTableCell(this, aTableCell, this.index, columnIdx);
+                cellList.Add(addedCell);
             }
 
             columnIdx++;

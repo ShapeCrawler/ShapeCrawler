@@ -45,19 +45,19 @@ namespace ShapeCrawler.Factories
                 A.DefaultRunProperties aDefRPr = textPr.GetFirstChild<A.DefaultRunProperties>();
 
                 int? fontSize = null;
-                if (aDefRPr?.FontSize != null)
+                if (aDefRPr?.FontSize is not null)
                 {
                     fontSize = aDefRPr.FontSize.Value;
                 }
 
                 bool? isBold = null;
-                if (aDefRPr?.Bold != null)
+                if (aDefRPr?.Bold is not null )
                 {
                     isBold = aDefRPr.Bold.Value;
                 }
 
                 bool? isItalic = null;
-                if (aDefRPr?.Italic != null)
+                if (aDefRPr?.Italic is not null)
                 {
                     isItalic = aDefRPr.Italic;
                 }

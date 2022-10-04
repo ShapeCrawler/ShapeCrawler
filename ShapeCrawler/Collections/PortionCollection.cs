@@ -35,7 +35,7 @@ namespace ShapeCrawler.Collections
         {
             SCPortion removingInnerPortion = (SCPortion)removingPortion;
 
-            removingInnerPortion.SDKAText.Parent.Remove(); // remove parent <a:r>
+            removingInnerPortion.AText.Parent.Remove(); // remove parent <a:r>
             removingInnerPortion.IsRemoved = true;
 
             this.portions.Reset();
@@ -69,7 +69,7 @@ namespace ShapeCrawler.Collections
                 var runPortions = new List<SCPortion>(aRuns.Count());
                 foreach (var aRun in aRuns)
                 {
-                    runPortions.Add(new SCPortion(aRun.Text, paragraph));
+                    runPortions.Add(new SCPortion(aRun.Text!, paragraph));
                 }
 
                 return runPortions;
@@ -79,8 +79,9 @@ namespace ShapeCrawler.Collections
             if (aField != null)
             {
                 var aText = aField.GetFirstChild<A.Text>();
-                var aFieldPortions = new List<SCPortion>(new[] { new SCPortion(aText, paragraph) });
-                return aFieldPortions;
+                var newPortion = new SCPortion(aText!, paragraph, aField);
+                var fieldPortions = new List<SCPortion>(new[] { newPortion});
+                return fieldPortions;
             }
 
             return new List<SCPortion>();

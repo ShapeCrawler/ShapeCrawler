@@ -19,7 +19,6 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <ApplicationIcon>logo.ico</ApplicationIcon>
     <PackageReleaseNotes>Fixed updating text of text frame.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>

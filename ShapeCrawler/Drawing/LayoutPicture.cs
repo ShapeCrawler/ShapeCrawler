@@ -22,7 +22,7 @@ namespace ShapeCrawler.Drawing
 
         private SCImage GetImage()
         {
-            var imagePart = (ImagePart)this.SlideLayoutInternal.SlideLayoutPart.GetPartById(this.picReference.Value);
+            var imagePart = (ImagePart)this.SlideLayoutInternal.SlideLayoutPart.GetPartById(this.picReference.Value!);
 
             return SCImage.Create(imagePart, this, this.picReference, this.SlideLayoutInternal.SlideLayoutPart);
         }

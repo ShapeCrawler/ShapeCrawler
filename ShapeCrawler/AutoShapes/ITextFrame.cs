@@ -33,20 +33,18 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets a value indicating whether text frame can be changed.
         /// </summary>
-        bool CanChange { get; }
+        bool CanChangeText();
     }
 
     internal class TextFrame : ITextFrame
     {
         private readonly ResettableLazy<string> text;
         private readonly ResettableLazy<ParagraphCollection> paragraphs;
-        private readonly bool canChange;
 
-        internal TextFrame(ITextFrameContainer frameContainer, TypedOpenXmlCompositeElement textBodyElement, bool canChange)
+        internal TextFrame(ITextFrameContainer frameContainer, TypedOpenXmlCompositeElement textBodyElement)
         {
             this.TextFrameContainer = frameContainer;
             this.TextBodyElement = textBodyElement;
-            this.canChange = canChange;
             this.text = new ResettableLazy<string>(this.GetText);
             this.paragraphs = new ResettableLazy<ParagraphCollection>(this.GetParagraphs);
         }
@@ -60,13 +58,16 @@ namespace ShapeCrawler
         }
 
         public SCAutoFitType AutoFitType => this.GetAutoFitType();
-
-        public bool CanChange => this.canChange;
-
+        
         internal ITextFrameContainer TextFrameContainer { get; }
 
         internal OpenXmlCompositeElement? TextBodyElement { get; }
 
+        public bool CanChangeText()
+        {
+            return this.Paragraphs.Any(paragraph => paragraph.Portions.All(portion => portion.Field == null));
+        }
+        
         internal void ThrowIfRemoved()
         {
             this.TextFrameContainer.ThrowIfRemoved();
@@ -100,9 +101,9 @@ namespace ShapeCrawler
 
         private void SetText(string newText)
         {
-            if (!this.CanChange)
+            if (!this.CanChangeText())
             {
-                throw new PlaceholderCannotBeChangedException();
+                throw new ShapeCrawlerException("Text can not be changed.");
             }
 
             var baseParagraph = this.Paragraphs.FirstOrDefault(p => p.Portions.Any());

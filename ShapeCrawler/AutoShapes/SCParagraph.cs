@@ -68,43 +68,41 @@ namespace ShapeCrawler.AutoShapes
                 return;
             }
 
-            var basePortion = this.portions.Value.LastOrDefault();
-            OpenXmlElement baseATextParent = null;
-            OpenXmlElement lastARunOrABreak = null;
-            if (basePortion == null)
+            var lastPortion = this.portions.Value.LastOrDefault() as SCPortion;
+            OpenXmlElement aTextParent;
+            OpenXmlElement? lastARunOrABreak = null;
+            if (lastPortion == null)
             {
-                baseATextParent = ARunInstance.CreateEmpty();
+                var aRunBuilder = new ARunBuilder(); 
+                aTextParent = aRunBuilder.Build();
             }
             else
             {
-                baseATextParent = basePortion.SDKAText.Parent!;
+                aTextParent = lastPortion.AText.Parent!;
                 lastARunOrABreak = this.AParagraph.Last(p => p is A.Run or A.Break);
             }
 
-            // add break if last element is not A.Break && text ends with newLine
             if (lastARunOrABreak is not A.Break && this.Text.EndsWith(Environment.NewLine, StringComparison.Ordinal))
             {
                 AddBreak(ref lastARunOrABreak);
             }
 
-            string[] textLines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-
-            if (basePortion?.Text == string.Empty)
+            var textLines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            if (lastPortion?.Text == string.Empty)
             {
-                basePortion.Text = textLines[0];
+                lastPortion.Text = textLines[0];
             }
             else
             {
-                AddText(ref lastARunOrABreak, baseATextParent, textLines[0], this.AParagraph);
+                AddText(ref lastARunOrABreak, aTextParent, textLines[0], this.AParagraph);
             }
 
-            for (int i = 1; i < textLines.Length; i++)
+            for (var i = 1; i < textLines.Length; i++)
             {
                 AddBreak(ref lastARunOrABreak);
-
                 if (textLines[i] != string.Empty)
                 {
-                    AddText(ref lastARunOrABreak, baseATextParent, textLines[i], this.AParagraph);
+                    AddText(ref lastARunOrABreak, aTextParent, textLines[i], this.AParagraph);
                 }
             }
 
@@ -123,16 +121,15 @@ namespace ShapeCrawler.AutoShapes
 
         #region Private Methods
 
-        private static void AddBreak(ref OpenXmlElement lastElement)
+        private static void AddBreak(ref OpenXmlElement? lastElement)
         {
             lastElement = lastElement.InsertAfterSelf(new A.Break());
         }
 
-        private static void AddText(ref OpenXmlElement lastElement, OpenXmlElement basePortionElement, string text,
-            A.Paragraph aParagraph)
+        private static void AddText(ref OpenXmlElement? lastElement, OpenXmlElement aTextParent, string text, A.Paragraph aParagraph)
         {
-            var newARun = (A.Run)basePortionElement.CloneNode(true);
-            newARun.Text.Text = text;
+            var newARun = (A.Run)aTextParent.CloneNode(true);
+            newARun.Text!.Text = text;
             if (lastElement == null)
             {
                 aParagraph.InsertAt(newARun, 0);
@@ -154,7 +151,7 @@ namespace ShapeCrawler.AutoShapes
 
         private SCBullet GetBullet()
         {
-            return new SCBullet(this.AParagraph.ParagraphProperties);
+            return new SCBullet(this.AParagraph.ParagraphProperties!);
         }
 
         private string GetText()
@@ -172,13 +169,21 @@ namespace ShapeCrawler.AutoShapes
             this.ThrowIfRemoved();
 
             // To set a paragraph text we use a single portion which is the first paragraph portion.
-            // Rest of the portions are deleted from the paragraph.
             var removingPortions = this.Portions.Skip(1).ToList();
+            
             this.Portions.Remove(removingPortions);
             var basePortion = (SCPortion)this.portions.Value.Single();
 
-            basePortion.Text = String.Empty;
-            this.AddPortion(newText);
+            basePortion.Text = string.Empty;
+            if (newText.Contains(Environment.NewLine))
+            {
+                basePortion.Text = string.Empty;
+                this.AddPortion(newText);    
+            }
+            else
+            {
+                basePortion.Text = newText;
+            }
         }
 
         private PortionCollection GetPortions()

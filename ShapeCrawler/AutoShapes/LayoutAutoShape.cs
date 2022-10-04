@@ -76,13 +76,13 @@ namespace ShapeCrawler
 
         private Dictionary<int, FontData> GetLvlToFontData()
         {
-            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(this.pShape.TextBody.ListStyle);
+            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(this.pShape.TextBody!.ListStyle!);
 
             if (!lvlToFontData.Any())
             {
                 Int32Value endParaRunPrFs = this.pShape.TextBody.GetFirstChild<A.Paragraph>()
                     .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
-                if (endParaRunPrFs != null)
+                if (endParaRunPrFs is not null)
                 {
                     var fontData = new FontData
                     {
@@ -106,7 +106,7 @@ namespace ShapeCrawler
             IEnumerable<A.Text> aTexts = pTextBody.Descendants<A.Text>();
             if (aTexts.Sum(t => t.Text.Length) > 0)
             {
-                return new TextFrame(this, pTextBody, false);
+                return new TextFrame(this, pTextBody);
             }
 
             return null;

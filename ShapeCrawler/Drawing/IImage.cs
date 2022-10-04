@@ -111,7 +111,7 @@ internal class SCImage : IImage
 
     internal static SCImage ForPicture(Shape pictureShape, OpenXmlPart openXmlPart, StringValue picReference)
     {
-        var imagePart = (ImagePart)openXmlPart.GetPartById(picReference.Value);
+        var imagePart = (ImagePart)openXmlPart.GetPartById(picReference.Value!);
 
         return new SCImage(imagePart, pictureShape, picReference, openXmlPart);
     }
@@ -131,7 +131,7 @@ internal class SCImage : IImage
             return null;
         }
 
-        var imagePart = (ImagePart)slide.SDKSlidePart.GetPartById(picReference.Value);
+        var imagePart = (ImagePart)slide.SDKSlidePart.GetPartById(picReference.Value!);
         var backgroundImage = new SCImage(imagePart, slide, picReference, slide.SDKSlidePart);
 
         return backgroundImage;

@@ -145,7 +145,7 @@ namespace ShapeCrawler.AutoShapes
 
         private int GetSize()
         {
-            var fontSize = this.ParentPortion.SDKAText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize?.Value;
+            var fontSize = this.ParentPortion.AText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize?.Value;
             if (fontSize != null)
             {
                 return fontSize.Value / 100;
@@ -163,7 +163,7 @@ namespace ShapeCrawler.AutoShapes
                 if (phReferencedShape != null)
                 {
                     phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
-                    if (fontDataPlaceholder.FontSize != null)
+                    if (fontDataPlaceholder.FontSize is not null)
                     {
                         return fontDataPlaceholder.FontSize / 100;
                     }
@@ -197,7 +197,7 @@ namespace ShapeCrawler.AutoShapes
 
             if (slideMaster.Presentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
             {
-                if (fontData.FontSize != null)
+                if (fontData.FontSize is not null )
                 {
                     return fontData.FontSize / 100;
                 }
@@ -214,14 +214,14 @@ namespace ShapeCrawler.AutoShapes
                 return false;
             }
 
-            if (aRunProperties.Bold != null && aRunProperties.Bold == true)
+            if (aRunProperties.Bold is not null  && aRunProperties.Bold == true)
             {
                 return true;
             }
 
             FontData phFontData = new ();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
-            if (phFontData.IsBold != null)
+            if (phFontData.IsBold is not null)
             {
                 return phFontData.IsBold.Value;
             }
@@ -237,14 +237,14 @@ namespace ShapeCrawler.AutoShapes
                 return false;
             }
 
-            if (aRunProperties.Italic != null && aRunProperties.Italic == true)
+            if (aRunProperties.Italic is not null  && aRunProperties.Italic == true)
             {
                 return true;
             }
 
             FontData phFontData = new ();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
-            if (phFontData.IsItalic != null)
+            if (phFontData.IsItalic is not null )
             {
                 return phFontData.IsItalic.Value;
             }
@@ -263,7 +263,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 FontData phFontData = new ();
                 FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
-                if (phFontData.IsBold != null)
+                if (phFontData.IsBold is not null )
                 {
                     phFontData.IsBold = new BooleanValue(value);
                 }

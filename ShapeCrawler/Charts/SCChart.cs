@@ -41,10 +41,10 @@ namespace ShapeCrawler.Charts
             var cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
                 .GetFirstChild<C.ChartReference>();
 
-            this.ChartPart = (ChartPart)this.Slide.SDKSlidePart.GetPartById(cChartReference.Id);
+            this.ChartPart = (ChartPart)this.Slide.SDKSlidePart.GetPartById(cChartReference.Id!);
             
             var cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>().PlotArea;
-            this.cXCharts = cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
+            this.cXCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
             this.ChartWorkbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartWorkbook(this, this.ChartPart.EmbeddedPackagePart) : null;
         }
@@ -135,7 +135,7 @@ namespace ShapeCrawler.Charts
             }
 
             C.ChartText cChartText = cTitle.ChartText;
-            bool staticAvailable = this.TryGetStaticTitle(cChartText, out var staticTitle);
+            bool staticAvailable = this.TryGetStaticTitle(cChartText!, out var staticTitle);
             if (staticAvailable)
             {
                 return staticTitle;

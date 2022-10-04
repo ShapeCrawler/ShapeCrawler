@@ -2,20 +2,25 @@
 
 namespace ShapeCrawler.Factories;
 
-internal static class ARunInstance
+internal class ARunBuilder
 {
-    internal static A.Run CreateEmpty()
+    private readonly A.Run aRun;
+
+    internal ARunBuilder()
     {
-        var aRun = new A.Run();
+        this.aRun = new A.Run();
         var aRunPropertiesBuilder = new ARunPropertiesBuilder();
         var aRunProperties = aRunPropertiesBuilder.Build();
         var aText = new A.Text
         {
             Text = string.Empty
         };
-        aRun.Append(aRunProperties);
-        aRun.Append(aText);
-
-        return aRun;
+        this.aRun.Append(aRunProperties);
+        this.aRun.Append(aText);
+    }
+    
+    internal A.Run Build()
+    {
+        return this.aRun;
     }
 }
