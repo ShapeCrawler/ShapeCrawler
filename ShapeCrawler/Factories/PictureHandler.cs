@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -13,7 +14,7 @@ namespace ShapeCrawler.Factories
     /// </summary>
     internal class PictureHandler : OpenXmlElementHandler
     {
-        internal override IShape? Create(OpenXmlCompositeElement compositeElementOfPShapeTree, SCSlide slide, SlideGroupShape groupShape)
+        internal override Shape? Create(OpenXmlCompositeElement compositeElementOfPShapeTree, SCSlide slide, SlideGroupShape groupShape)
         {
             P.Picture? pPicture;
             if (compositeElementOfPShapeTree is P.Picture treePic)

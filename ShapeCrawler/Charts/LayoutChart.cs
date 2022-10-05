@@ -11,5 +11,5 @@ internal class LayoutChart : LayoutShape, IShape
     {
     }
 
-    public SCShapeType ShapeType => SCShapeType.Chart;
+    public override SCShapeType ShapeType => SCShapeType.Chart;
 }

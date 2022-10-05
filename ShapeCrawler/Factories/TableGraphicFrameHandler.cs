@@ -11,7 +11,7 @@ namespace ShapeCrawler.Factories
     {
         private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/table";
 
-        internal override IShape Create(OpenXmlCompositeElement compositeElementOfPShapeTree, SCSlide slide, SlideGroupShape groupShape)
+        internal override Shape Create(OpenXmlCompositeElement compositeElementOfPShapeTree, SCSlide slide, SlideGroupShape groupShape)
         {
             if (compositeElementOfPShapeTree is P.GraphicFrame pGraphicFrame)
             {

@@ -115,7 +115,7 @@ namespace ShapeCrawler.Tests
             var imgBytes = GetTestBytes("test-image-2.png");
             var pres = SCPresentation.Open(pptxStream);
             var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1");
-            var picture1 = groupShape.Shapes.OfType<IPicture>().First(s => s.Name == "Picture 1");
+            var picture1 = groupShape.Shapes.GetByName<IPicture>("Picture 1");
             var picture2 = groupShape.Shapes.OfType<IPicture>().First(s => s.Name == "Picture 2");
             var mStream = new MemoryStream();
 

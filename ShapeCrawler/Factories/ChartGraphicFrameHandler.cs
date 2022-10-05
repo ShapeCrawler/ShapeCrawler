@@ -14,7 +14,7 @@ internal class ChartGraphicFrameHandler : OpenXmlElementHandler
 {
     private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart";
     
-    internal override IShape? Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, SlideGroupShape groupShape)
+    internal override Shape? Create(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, SlideGroupShape groupShape)
     {
         if (pShapeTreeChild is not P.GraphicFrame pGraphicFrame)
         {

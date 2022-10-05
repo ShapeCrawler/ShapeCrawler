@@ -18,7 +18,7 @@ namespace ShapeCrawler.Drawing
 
         public IImage Image => this.GetImage();
 
-        public SCShapeType ShapeType => SCShapeType.Picture;
+        public override SCShapeType ShapeType => SCShapeType.Picture;
 
         private SCImage GetImage()
         {

@@ -18,9 +18,10 @@ dotnet_diagnostic.CA2211.severity = error
 dotnet_diagnostic.CA1720.severity = suggestion
 
 # Stylecop
-dotnet_diagnostic.SA1611.severity = none
 dotnet_diagnostic.SA1124.severity = none
 dotnet_diagnostic.SA1200.severity = none
+dotnet_diagnostic.SA1611.severity = none
+dotnet_diagnostic.SA1618.severity = error
 dotnet_diagnostic.SA1615.severity = none
 dotnet_diagnostic.SA1413.severity = none
 dotnet_diagnostic.SA1633.severity = none

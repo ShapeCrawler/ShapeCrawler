@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Services;
@@ -12,9 +11,8 @@ using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-// ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
-namespace ShapeCrawler;
+namespace ShapeCrawler.AutoShapes;
 
 /// <summary>
 ///     Represents an AutoShape on a Slide Master.
@@ -45,7 +43,7 @@ internal class MasterAutoShape : MasterShape, IAutoShape, ITextFrameContainer, I
 
     public IShapeFill Fill => this.shapeFill.Value;
 
-    public SCShapeType ShapeType => SCShapeType.AutoShape;
+    public override SCShapeType ShapeType => SCShapeType.AutoShape;
 
     #endregion Public Properties
 

@@ -192,7 +192,7 @@ namespace ShapeCrawler.Tests
                 
                 var pptxStream7 = GetTestStream("009_table.pptx");
                 var pres7 = SCPresentation.Open(pptxStream7);
-                var shape7 = pres7.Slides[1].Shapes.GetById<IGroupShape>(7).Shapes.First(groupedShape => groupedShape.Id == 5);
+                var shape7 = pres7.Slides[1].Shapes.GetById<IGroupShape>(7).Shapes.GetById<IShape>(5);
                 var testCase7 = new TestCase<IShape, int>(7, shape7, 166);
                 yield return new object[] { testCase7 };
             }
