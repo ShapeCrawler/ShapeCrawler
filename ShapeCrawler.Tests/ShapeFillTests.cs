@@ -34,23 +34,43 @@ namespace ShapeCrawler.Tests
             autoShape.Fill.Should().NotBeNull();
         }
 
-        [Fact]
-        public void SetPicture_updates_fill_with_specified_picture_image_When_shape_is_Not_filled()
+        [Theory]
+        [MemberData(nameof(TestCasesSetPicture))]
+        public void SetPicture_updates_fill_with_specified_picture_image_When_shape_is_Not_filled(TestCase testCase)
         {
             // Arrange
-            var pptxStream = GetTestStream("008.pptx");
+            var fill = testCase.AutoShape.Fill;
             var imageStream = GetTestStream("test-image-1.png");
-            var pres = SCPresentation.Open(pptxStream);
-            var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
 
             // Act
-            shape.Fill.SetPicture(imageStream);
+            fill.SetPicture(imageStream);
 
             // Assert
-            var pictureBytes = shape.Fill.Picture!.BinaryData.Result;
-            imageStream.Position = 0;
+            var pictureBytes = fill.Picture!.BinaryData.Result;
             var imageBytes = imageStream.ToArray();
             pictureBytes.SequenceEqual(imageBytes).Should().BeTrue();
+        }
+
+        public static IEnumerable<object[]> TestCasesSetPicture
+        {
+            get
+            {
+                var testCase1 = new TestCase("#1")
+                {
+                    PresentationName = "008.pptx",
+                    SlideNumber = 1,
+                    ShapeName = "AutoShape 1"
+                };
+                yield return new object[] { testCase1 };
+                
+                var testCase2 = new TestCase("#2")
+                {
+                    PresentationName = "autoshape-case009.pptx",
+                    SlideNumber = 1,
+                    ShapeName = "AutoShape 1"
+                };
+                yield return new object[] { testCase2 };
+            }
         }
 
         [Fact]
@@ -106,7 +126,6 @@ namespace ShapeCrawler.Tests
             pres = SCPresentation.Open(pptxStream);
             var withSlideBg = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
             yield return new object[] { withSlideBg, SCFillType.SlideBackground };
-
         }
 
         [Fact]

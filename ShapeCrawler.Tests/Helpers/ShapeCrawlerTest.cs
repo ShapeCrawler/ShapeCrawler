@@ -48,6 +48,7 @@ namespace ShapeCrawler.Tests.Helpers
             var stream = assembly.GetManifestResourceStream(path);
             var mStream = new MemoryStream();
             stream!.CopyTo(mStream);
+            mStream.Position = 0;
 
             return mStream;
         }
