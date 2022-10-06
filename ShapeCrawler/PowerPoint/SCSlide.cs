@@ -155,10 +155,10 @@ internal class SCSlide : SlideBase, ISlide, IPresentationComponent
 
     private int GetNumber()
     {
-        var presentationPart = this.PresentationInternal.SdkPresentation.PresentationPart;
-        string currentSlidePartId = presentationPart.GetIdOfPart(this.SDKSlidePart);
-        List<SlideId> slideIdList =
-            presentationPart.Presentation.SlideIdList.ChildElements.OfType<SlideId>().ToList();
+        var presentationPart = this.PresentationInternal.SdkPresentation.PresentationPart!;
+        var currentSlidePartId = presentationPart.GetIdOfPart(this.SDKSlidePart);
+        var slideIdList =
+            presentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
         for (int i = 0; i < slideIdList.Count; i++)
         {
             if (slideIdList[i].RelationshipId == currentSlidePartId)
@@ -180,13 +180,13 @@ internal class SCSlide : SlideBase, ISlide, IPresentationComponent
             throw new ArgumentOutOfRangeException(nameof(to));
         }
 
-        PresentationPart presentationPart = this.PresentationInternal.SdkPresentation.PresentationPart;
+        var presentationPart = this.PresentationInternal.SdkPresentation.PresentationPart!;
 
-        Presentation presentation = presentationPart.Presentation;
-        SlideIdList slideIdList = presentation.SlideIdList;
+        var presentation = presentationPart.Presentation;
+        var slideIdList = presentation.SlideIdList!;
 
         // Get the slide ID of the source slide.
-        SlideId sourceSlide = slideIdList.ChildElements[from] as SlideId;
+        var sourceSlide = (SlideId)slideIdList.ChildElements[from];
 
         SlideId targetSlide;
 

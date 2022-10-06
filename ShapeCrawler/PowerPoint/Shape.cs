@@ -170,7 +170,7 @@ namespace ShapeCrawler
             var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
             if (aOffset == null)
             {
-                var placeholderShape = ((Placeholder)this.Placeholder).ReferencedShape;
+                var placeholderShape = ((Placeholder)this.Placeholder!).ReferencedShape;
                 placeholderShape.X = value;
             }
             else
@@ -184,7 +184,7 @@ namespace ShapeCrawler
             var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
             if (aOffset == null)
             {
-                return ((Placeholder)this.Placeholder).ReferencedShape.X;
+                return ((Placeholder)this.Placeholder!).ReferencedShape.X;
             }
 
             long xEmu = aOffset.X!;
@@ -219,7 +219,7 @@ namespace ShapeCrawler
             var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
             if (aOffset == null)
             {
-                return ((Placeholder)this.Placeholder).ReferencedShape.Y;
+                return ((Placeholder)this.Placeholder!).ReferencedShape.Y;
             }
 
             var yEmu = aOffset.Y!;
@@ -238,7 +238,7 @@ namespace ShapeCrawler
             var aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
             {
-                var placeholder = (Placeholder)this.Placeholder;
+                var placeholder = (Placeholder)this.Placeholder!;
                 return placeholder.ReferencedShape.Width;
             }
 
@@ -261,7 +261,7 @@ namespace ShapeCrawler
             var aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
             if (aExtents == null)
             {
-                return ((Placeholder)this.Placeholder).ReferencedShape.Height;
+                return ((Placeholder)this.Placeholder!).ReferencedShape.Height;
             }
 
             return PixelConverter.VerticalEmuToPixel(aExtents!.Cy!);

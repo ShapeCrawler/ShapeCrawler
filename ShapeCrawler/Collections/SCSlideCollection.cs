@@ -77,14 +77,14 @@ namespace ShapeCrawler.Collections
             this.parentPresentation.ThrowIfClosed();
 
             var presentation = (SCPresentation)outerInnerSlide.Presentation;
-            PresentationDocument addingSlideDoc = presentation.SdkPresentation;
-            PresentationDocument destDoc = this.parentPresentation.SdkPresentation;
-            PresentationPart addingPresentationPart = addingSlideDoc.PresentationPart;
-            PresentationPart destPresentationPart = destDoc.PresentationPart;
-            Presentation destPresentation = destPresentationPart.Presentation;
+            var addingSlideDoc = presentation.SdkPresentation;
+            var destDoc = this.parentPresentation.SdkPresentation;
+            var addingPresentationPart = addingSlideDoc.PresentationPart!;
+            var destPresentationPart = destDoc.PresentationPart!;
+            var destPresentation = destPresentationPart.Presentation;
             int addingSlideIndex = outerSlide.Number - 1;
-            SlideId addingSlideId =
-                (SlideId)addingPresentationPart.Presentation.SlideIdList.ChildElements[addingSlideIndex];
+            var addingSlideId =
+                (SlideId)addingPresentationPart.Presentation.SlideIdList!.ChildElements[addingSlideIndex];
             SlidePart addingSlidePart = (SlidePart)addingPresentationPart.GetPartById(addingSlideId.RelationshipId!);
 
             SlidePart addedSlidePart = destPresentationPart.AddPart(addingSlidePart);
@@ -95,15 +95,15 @@ namespace ShapeCrawler.Collections
             }
 
             SlideMasterPart addedSlideMasterPart =
-                destPresentationPart.AddPart(addedSlidePart.SlideLayoutPart.SlideMasterPart);
+                destPresentationPart.AddPart(addedSlidePart.SlideLayoutPart!.SlideMasterPart);
 
             // Create new slide ID
             SlideId slideId = new ()
             {
                 Id = CreateId(destPresentation.SlideIdList!),
-                RelationshipId = destDoc.PresentationPart.GetIdOfPart(addedSlidePart)
+                RelationshipId = destDoc.PresentationPart!.GetIdOfPart(addedSlidePart)
             };
-            destPresentation.SlideIdList.Append(slideId);
+            destPresentation.SlideIdList!.Append(slideId);
 
             // Create new master slide ID
             uint masterId = CreateId(destPresentation.SlideMasterIdList!);
@@ -112,14 +112,14 @@ namespace ShapeCrawler.Collections
                 Id = masterId,
                 RelationshipId = destDoc.PresentationPart.GetIdOfPart(addedSlideMasterPart!)
             };
-            destDoc.PresentationPart.Presentation.SlideMasterIdList.Append(slideMaterId);
+            destDoc.PresentationPart.Presentation.SlideMasterIdList!.Append(slideMaterId);
 
             destDoc.PresentationPart.Presentation.Save();
 
             // Make sure that all slide layouts have unique ids.
             foreach (SlideMasterPart slideMasterPart in destDoc.PresentationPart.SlideMasterParts)
             {
-                foreach (SlideLayoutId slideLayoutId in slideMasterPart.SlideMaster.SlideLayoutIdList)
+                foreach (SlideLayoutId slideLayoutId in slideMasterPart.SlideMaster.SlideLayoutIdList!)
                 {
                     masterId++;
                     slideLayoutId.Id = masterId;
@@ -187,7 +187,7 @@ namespace ShapeCrawler.Collections
             this.presentationPart = this.parentPresentation.SdkPresentation.PresentationPart!;
             int slidesCount = this.presentationPart.SlideParts.Count();
             var slides = new List<SCSlide>(slidesCount);
-            var slideIds = this.presentationPart.Presentation.SlideIdList.ChildElements.OfType<SlideId>().ToList();
+            var slideIds = this.presentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
             for (var slideIndex = 0; slideIndex < slidesCount; slideIndex++)
             {
                 var slideId = slideIds[slideIndex];

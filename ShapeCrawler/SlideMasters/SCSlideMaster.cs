@@ -27,7 +27,7 @@ namespace ShapeCrawler.SlideMasters
 
         public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
-        public IShapeCollection Shapes => ShapeCollection.ForSlideLayout(this.PSlideMaster.CommonSlideData.ShapeTree!, this);
+        public IShapeCollection Shapes => ShapeCollection.ForSlideLayout(this.PSlideMaster.CommonSlideData!.ShapeTree!, this);
 
         public override bool IsRemoved { get; set; }
         
@@ -41,7 +41,7 @@ namespace ShapeCrawler.SlideMasters
         internal Dictionary<int, FontData> TitleParaLvlToFontData =>
             FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.TitleStyle!);
 
-        internal ThemePart ThemePart => this.PSlideMaster.SlideMasterPart.ThemePart;
+        internal ThemePart ThemePart => this.PSlideMaster.SlideMasterPart!.ThemePart;
 
         internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
 
@@ -76,11 +76,10 @@ namespace ShapeCrawler.SlideMasters
 
         internal bool TryGetFontSizeFromOther(int paragraphLvl, out int fontSize)
         {
-            DocumentFormat.OpenXml.Presentation.TextStyles pTextStyles = this.PSlideMaster.TextStyles;
+            var pTextStyles = this.PSlideMaster.TextStyles!;
 
             // Other
-            Dictionary<int, FontData> otherStyleLvlToFontData =
-                FontDataParser.FromCompositeElement(pTextStyles.OtherStyle!);
+            var otherStyleLvlToFontData = FontDataParser.FromCompositeElement(pTextStyles.OtherStyle!);
             if (otherStyleLvlToFontData.ContainsKey(paragraphLvl))
             {
                 if (otherStyleLvlToFontData[paragraphLvl].FontSize is not null)
@@ -101,14 +100,15 @@ namespace ShapeCrawler.SlideMasters
         
         private List<SCSlideLayout> GetSlideLayouts()
         {
-            IEnumerable<SlideLayoutPart> sldLayoutParts = this.PSlideMaster.SlideMasterPart.SlideLayoutParts;
-            var slideLayouts = new List<SCSlideLayout>(sldLayoutParts.Count());
-            foreach (SlideLayoutPart sldLayoutPart in sldLayoutParts)
+            var rIdList = this.PSlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>().Select(x => x.RelationshipId!);
+            var layouts = new List<SCSlideLayout>(rIdList.Count());
+            foreach (var rId in rIdList)
             {
-                slideLayouts.Add(new SCSlideLayout(this, sldLayoutPart));
+                var layoutPart = (SlideLayoutPart) this.PSlideMaster.SlideMasterPart!.GetPartById(rId.Value!);
+                layouts.Add(new SCSlideLayout(this, layoutPart));
             }
 
-            return slideLayouts;
+            return layouts;
         }
     }
 }

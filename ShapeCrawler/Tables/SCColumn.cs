@@ -18,8 +18,8 @@ namespace ShapeCrawler
         /// </summary>
         public long Width
         {
-            get => this.AGridColumn.Width.Value;
-            set => this.AGridColumn.Width.Value = value;
+            get => this.AGridColumn.Width!.Value;
+            set => this.AGridColumn.Width!.Value = value;
         }
 
         internal A.GridColumn AGridColumn { get; init; }

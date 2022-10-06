@@ -118,7 +118,7 @@ internal class SCImage : IImage
 
     internal static SCImage? ForBackground(SCSlide slide)
     {
-        var pBackground = slide.SDKSlidePart.Slide.CommonSlideData.Background;
+        var pBackground = slide.SDKSlidePart.Slide.CommonSlideData!.Background;
         if (pBackground == null)
         {
             return null;

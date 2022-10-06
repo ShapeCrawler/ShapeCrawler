@@ -14,9 +14,9 @@ namespace ShapeCrawler.SlideMasters
         private readonly ResettableLazy<ShapeCollection> shapes;
         private readonly SCSlideMaster slideMaster;
 
-        internal SCSlideLayout(SCSlideMaster parentSlideMaster, SlideLayoutPart slideLayoutPart)
+        internal SCSlideLayout(SCSlideMaster slideMaster, SlideLayoutPart slideLayoutPart)
         {
-            this.slideMaster = parentSlideMaster;
+            this.slideMaster = slideMaster;
             this.SlideLayoutPart = slideLayoutPart;
             this.shapes = new ResettableLazy<ShapeCollection>(() =>
                 ShapeCollection.ForSlideLayout(slideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!, this));

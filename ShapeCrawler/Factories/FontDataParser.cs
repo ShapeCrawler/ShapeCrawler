@@ -80,7 +80,7 @@ namespace ShapeCrawler.Factories
                 }
                 else
                 {
-                    A.GradientStop aGradientStop = aDefRPr?.GetFirstChild<A.GradientFill>()?.GradientStopList
+                    A.GradientStop aGradientStop = aDefRPr?.GetFirstChild<A.GradientFill>()?.GradientStopList!
                         .GetFirstChild<A.GradientStop>();
                     aRgbColorModelHex = aGradientStop?.RgbColorModelHex;
                     aSchemeColor = aGradientStop?.SchemeColor;

@@ -24,14 +24,30 @@ namespace ShapeCrawler.Tests
             this.fixture = fixture;
         }
 
-        [Fact]
-        public void Shapes_contains_particular_shape_Types()
+        [Fact(Skip = "In Progress")]
+        public void GetByName_returns_shape_by_specified_name()
         {
             // Arrange
-            IPresentation pre = this.fixture.Pre003;
+            var pptx = GetTestStream("autoshape-case004_subtitle.pptx");
+            var pres = SCPresentation.Open(pptx);
+            var groupShape = pres.SlideMasters[0].SlideLayouts[0].Shapes.GetByName<IGroupShape>("Group 1");
+            var groupedShapeCollection = groupShape.Shapes;
 
             // Act
-            IShapeCollection shapes = pre.Slides.First().Shapes;
+            var groupedShape = groupedShapeCollection.GetByName<IAutoShape>("AutoShape 1");
+
+            // Assert
+            groupedShape.Should().NotBeNull();
+        }
+        
+        [Fact]
+        public void Contains_particular_shape_Types()
+        {
+            // Arrange
+            var pres = this.fixture.Pre003;
+
+            // Act
+            var shapes = pres.Slides.First().Shapes;
 
             // Assert
             Assert.Single(shapes.Where(sp => sp is IAutoShape));
@@ -42,7 +58,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Shapes_contains_Picture_shape()
+        public void Contains_Picture_shape()
         {
             // Arrange
             IShape shape = this.fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
@@ -53,7 +69,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Shapes_contains_Audio_shape()
+        public void Contains_Audio_shape()
         {
             // Arrange
             var pptxStream = GetTestStream("audio-case001.pptx");
@@ -68,7 +84,7 @@ namespace ShapeCrawler.Tests
         }
         
         [Fact]
-        public void Shapes_contains_Connection_shape()
+        public void Contains_Connection_shape()
         {
             var pptxStream = GetTestStream("001.pptx");
             var presentation = SCPresentation.Open(pptxStream);
@@ -79,7 +95,7 @@ namespace ShapeCrawler.Tests
         }
         
         [Fact]
-        public void Shapes_contains_Video_shape()
+        public void Contains_Video_shape()
         {
             // Arrange
             IShape shape = this.fixture.Pre040.Slides[0].Shapes.First(sp => sp.Id == 8);
@@ -93,7 +109,7 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(TestCasesShapesCount))]
-        public void Shapes_Count_returns_number_of_shapes(ISlide slide, int expectedShapesCount)
+        public void Count_returns_number_of_shapes(ISlide slide, int expectedShapesCount)
         {
             // Act
             int shapesCount = slide.Shapes.Count;
@@ -129,7 +145,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Shapes_AddNewAudio_adds_Audio_shape()
+        public void AddNewAudio_adds_Audio_shape()
         {
             // Arrange
             Stream preStream = TestFiles.Presentations.pre001_stream;
@@ -153,7 +169,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Shapes_AddNewVideo_adds_Video_shape()
+        public void AddNewVideo_adds_Video_shape()
         {
             // Arrange
             var preStream = TestFiles.Presentations.pre001_stream;
@@ -174,21 +190,5 @@ namespace ShapeCrawler.Tests
             addedVideo.X.Should().Be(xPxCoordinate);
             addedVideo.Y.Should().Be(yPxCoordinate);
         }
-
-#if TEST
-        [Fact]
-        public void ToHtml_converts_slide_to_HTML()
-        {
-            // Arrange
-            var slide = this.GetSlide("052_slide-to-html.pptx", 1);
-
-            // Act
-            var html = slide.ToHtml().Result;
-            File.WriteAllText(@"C:\Documents\ShapeCrawler\Issues\SC-189_convert-slide-to-html\to-html\output.html", html);
-
-            // Arrange
-            
-        }
-#endif
     }
 }

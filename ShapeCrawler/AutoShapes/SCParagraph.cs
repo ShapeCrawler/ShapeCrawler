@@ -120,7 +120,7 @@ namespace ShapeCrawler.AutoShapes
 
         #region Private Methods
 
-        private static void AddBreak(ref OpenXmlElement? lastElement)
+        private static void AddBreak(ref OpenXmlElement lastElement)
         {
             lastElement = lastElement.InsertAfterSelf(new A.Break());
         }

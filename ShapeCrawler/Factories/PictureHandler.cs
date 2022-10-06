@@ -19,7 +19,7 @@ namespace ShapeCrawler.Factories
             P.Picture? pPicture;
             if (compositeElementOfPShapeTree is P.Picture treePic)
             {
-                OpenXmlElement element = treePic.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties.ChildElements.FirstOrDefault();
+                var element = treePic.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!.ChildElements.FirstOrDefault();
 
                 switch (element)
                 {

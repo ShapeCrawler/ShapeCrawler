@@ -22,7 +22,7 @@ namespace ShapeCrawler.Extensions
                     .NonVisualDrawingProperties,
                 P.Shape pShape => pShape.NonVisualShapeProperties!.NonVisualDrawingProperties,
                 P.Picture pPicture => pPicture.NonVisualPictureProperties!.NonVisualDrawingProperties,
-                P.GroupShape pGroupShape => pGroupShape.NonVisualGroupShapeProperties.NonVisualDrawingProperties,
+                P.GroupShape pGroupShape => pGroupShape.NonVisualGroupShapeProperties!.NonVisualDrawingProperties,
                 P.ConnectionShape pCxnSp => pCxnSp.NonVisualConnectionShapeProperties!.NonVisualDrawingProperties,
                 _ => throw new ShapeCrawlerException()
             };
@@ -39,7 +39,7 @@ namespace ShapeCrawler.Extensions
                 P.GraphicFrame pGraphicFrame => pGraphicFrame.NonVisualGraphicFrameProperties!
                     .ApplicationNonVisualDrawingProperties,
                 P.Shape pShape => pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties,
-                P.Picture pPicture => pPicture.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties,
+                P.Picture pPicture => pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties,
                 P.ConnectionShape pCxnSp => pCxnSp.NonVisualConnectionShapeProperties!.ApplicationNonVisualDrawingProperties, 
                 _ => throw new ShapeCrawlerException()
             };

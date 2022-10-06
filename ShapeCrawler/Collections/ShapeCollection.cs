@@ -18,6 +18,7 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
 using ShapeCrawler.Tables;
+using OneOf;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
@@ -276,7 +277,7 @@ namespace ShapeCrawler.Collections
 
             bool IsEqual(Shape collectionShape)
             {
-                var placeholder = (Placeholder)collectionShape.Placeholder;
+                var placeholder = (Placeholder)collectionShape.Placeholder!;
                 var colPPlaceholderShape = placeholder.PPlaceholderShape;
 
                 if (inpPPlaceholderShape.Index is not null && colPPlaceholderShape.Index is not null  &&
@@ -337,8 +338,8 @@ namespace ShapeCrawler.Collections
                     case P.GraphicFrame pGraphicFrame:
                     {
                         A.GraphicData aGraphicData =
-                            pGraphicFrame.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
-                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
+                            pGraphicFrame.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>();
+                        if (aGraphicData!.Uri!.Value!.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
                             StringComparison.Ordinal))
                         {
                             if (layout != null)
@@ -418,7 +419,7 @@ namespace ShapeCrawler.Collections
             return new ShapeCollection(shapeList);
         }
         
-        internal static ShapeCollection ForSlide(SlidePart slidePart, SCSlide slide)
+        internal static ShapeCollection ForSlide(OneOf<SlidePart, SlideLayoutPart> oneOfSlidePart, SCSlide slide)
         {
             var chartGrFrameHandler = new ChartGraphicFrameHandler();
             var tableGrFrameHandler = new TableGraphicFrameHandler();
@@ -431,7 +432,9 @@ namespace ShapeCrawler.Collections
             pictureHandler.Successor = chartGrFrameHandler;
             chartGrFrameHandler.Successor = tableGrFrameHandler;
 
-            var pShapeTree = slidePart.Slide.CommonSlideData!.ShapeTree!;
+            var pShapeTree = oneOfSlidePart.Match(
+                slidePart => slidePart.Slide.CommonSlideData!.ShapeTree!,
+                slideLayoutPart => slideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!);
             var shapes = new List<IShape>(pShapeTree.Count());
             foreach (var childElementOfShapeTree in pShapeTree.OfType<OpenXmlCompositeElement>())
             {

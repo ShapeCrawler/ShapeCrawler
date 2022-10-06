@@ -15,8 +15,8 @@ namespace ShapeCrawler.Factories
         {
             if (compositeElementOfPShapeTree is P.GraphicFrame pGraphicFrame)
             {
-                A.GraphicData graphicData = pGraphicFrame.Graphic.GraphicData;
-                if (!graphicData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
+                var graphicData = pGraphicFrame.Graphic!.GraphicData!;
+                if (!graphicData.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
                 {
                     return this.Successor?.Create(compositeElementOfPShapeTree, slide, groupShape);
                 }

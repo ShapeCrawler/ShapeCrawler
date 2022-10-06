@@ -25,7 +25,7 @@ internal class MasterPicture : MasterShape, IPicture
 
     private SCImage GetImage()
     {
-        var sldMasterPart = this.SlideMasterInternal.PSlideMaster.SlideMasterPart;
+        var sldMasterPart = this.SlideMasterInternal.PSlideMaster.SlideMasterPart!;
         var imagePart = (ImagePart)sldMasterPart.GetPartById(this.picReference.Value!);
 
         return SCImage.Create(imagePart, this, this.picReference, sldMasterPart);
