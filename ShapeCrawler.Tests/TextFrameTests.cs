@@ -25,6 +25,27 @@ namespace ShapeCrawler.Tests
             _fixture = fixture;
         }
 
+        [Fact]
+        public void Text_Getter_returns_text_of_table_Cell()
+        {
+            // Arrange
+            var textFrame1 = ((IAutoShape)_fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3)).TextFrame;
+            var textFrame2 = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+                .TextFrame;
+            var textFrame3 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+                .TextFrame;
+            
+            // Act
+            var text1 = textFrame1.Text;
+            var text2 = textFrame2.Text;
+            var text3 = textFrame3.Text;
+
+            // Act
+            text1.Should().NotBeEmpty();
+            text2.Should().BeEquivalentTo("id3");
+            text3.Should().BeEquivalentTo($"0:0_p1_lvl1{Environment.NewLine}0:0_p2_lvl2");
+        }
+        
         [Theory]
         [MemberData(nameof(TextGetterTestCases))]
         public void Text_Getter_returns_text(TestCase testCase)
