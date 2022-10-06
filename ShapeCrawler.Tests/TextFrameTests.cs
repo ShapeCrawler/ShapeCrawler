@@ -26,42 +26,123 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Text_GetterReturnsShapeTextWhichIsParagraphTextsAggregate()
+        public void Text_Getter_returns_text_of_table_Cell()
         {
             // Arrange
-            var textBoxCase1 = ((IAutoShape)_fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2)).TextFrame;
-            var textBoxCase2 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 5)).TextFrame;
-            var textBoxCase3 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 6)).TextFrame;
-            var textBoxCase5 = ((IAutoShape)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2)).TextFrame;
-            var textBoxCase6 = ((IAutoShape)_fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61)).TextFrame;
-            var textBoxCase7 = ((IAutoShape)_fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5)).TextFrame;
-            var textBoxCase8 = ((IAutoShape)_fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 54275)).TextFrame;
-            var textBoxCase9 = ((IAutoShape)_fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3)).TextFrame;
-            var textBoxCase10 = ((IAutoShape)_fixture.Pre021.Slides[3].Shapes.First(sp => sp.Id == 2)).TextFrame;
-            var textBoxCase11 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 2)).TextFrame;
-            var textBoxCase12 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 3)).TextFrame;
-            var textBoxCase13 = ((IAutoShape)_fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 2)).TextFrame;
-            var textBoxCase14 = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+            var textFrame1 = ((IAutoShape)_fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3)).TextFrame;
+            var textFrame2 = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
                 .TextFrame;
-            var textBoxCase4 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+            var textFrame3 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
                 .TextFrame;
+            
+            // Act
+            var text1 = textFrame1.Text;
+            var text2 = textFrame2.Text;
+            var text3 = textFrame3.Text;
 
-            // Act-Assert
-            textBoxCase1.Text.Should().BeEquivalentTo("Title text");
-            textBoxCase2.Text.Should().BeEquivalentTo(" id5-Text1");
-            textBoxCase3.Text.Should().BeEquivalentTo($"id6-Text1{Environment.NewLine}Text2");
-            textBoxCase4.Text.Should().BeEquivalentTo($"0:0_p1_lvl1{Environment.NewLine}0:0_p2_lvl2");
-            textBoxCase5.Text.Should().BeEquivalentTo("1");
-            textBoxCase6.Text.Should().BeEquivalentTo($"test1{Environment.NewLine}test2{Environment.NewLine}" +
-                                                      $"test3{Environment.NewLine}test4{Environment.NewLine}test5");
-            textBoxCase7.Text.Should().BeEquivalentTo("Test subtitle");
-            textBoxCase8.Text.Should().BeEquivalentTo("Jan 2018");
-            textBoxCase9.Text.Should().NotBeEmpty();
-            textBoxCase10.Text.Should().BeEquivalentTo("test footer");
-            textBoxCase11.Text.Should().BeEquivalentTo("Test title text");
-            textBoxCase12.Text.Should().BeEquivalentTo("P1 P2");
-            textBoxCase13.Text.Should().BeEquivalentTo($"P1{Environment.NewLine}");
-            textBoxCase14.Text.Should().BeEquivalentTo("id3");
+            // Act
+            text1.Should().NotBeEmpty();
+            text2.Should().BeEquivalentTo("id3");
+            text3.Should().BeEquivalentTo($"0:0_p1_lvl1{Environment.NewLine}0:0_p2_lvl2");
+        }
+        
+        [Theory]
+        [MemberData(nameof(TextGetterTestCases))]
+        public void Text_Getter_returns_text(TestCase testCase)
+        {
+            // Arrange
+            var textFrame = testCase.AutoShape.TextFrame;
+            var expectedText = testCase.ExpectedString;
+
+            // Act
+            var text = textFrame.Text;
+
+            // Assert
+            text.Should().BeEquivalentTo(expectedText);
+        }
+
+        public static IEnumerable<object[]> TextGetterTestCases
+        {
+            get
+            {
+                var testCase1 = new TestCase("#1");
+                testCase1.PresentationName = "009_table.pptx";
+                testCase1.SlideNumber = 4;
+                testCase1.ShapeId = 2;
+                testCase1.ExpectedString = "Title text";
+                yield return new object[] { testCase1 };
+                
+                var testCase2 = new TestCase("#2");
+                testCase2.PresentationName = "001.pptx";
+                testCase2.SlideNumber = 1;
+                testCase2.ShapeId = 5;
+                testCase2.ExpectedString = " id5-Text1";
+                yield return new object[] { testCase2 };
+                
+                var testCase3 = new TestCase("#3");
+                testCase3.PresentationName = "001.pptx";
+                testCase3.SlideNumber = 1;
+                testCase3.ShapeId = 6;
+                testCase3.ExpectedString = $"id6-Text1{Environment.NewLine}Text2";
+                yield return new object[] { testCase3 };
+                
+                var testCase4 = new TestCase("#4");
+                testCase4.PresentationName = "019.pptx";
+                testCase4.SlideNumber = 1;
+                testCase4.ShapeId = 2;
+                testCase4.ExpectedString = "1";
+                yield return new object[] { testCase4 };
+                
+                var testCase5 = new TestCase("#5");
+                testCase5.PresentationName = "014.pptx";
+                testCase5.SlideNumber = 1;
+                testCase5.ShapeId = 61;
+                testCase5.ExpectedString = $"test1{Environment.NewLine}test2{Environment.NewLine}" +
+                                           $"test3{Environment.NewLine}test4{Environment.NewLine}test5";
+                yield return new object[] { testCase5 };
+                
+                var testCase6 = new TestCase("#6");
+                testCase6.PresentationName = "014.pptx";
+                testCase6.SlideNumber = 2;
+                testCase6.ShapeId = 5;
+                testCase6.ExpectedString = $"Test subtitle";
+                yield return new object[] { testCase6 };
+                
+                var testCase7 = new TestCase("#7");
+                testCase7.PresentationName = "011_dt.pptx";
+                testCase7.SlideNumber = 1;
+                testCase7.ShapeId = 54275;
+                testCase7.ExpectedString = $"Jan 2018";
+                yield return new object[] { testCase7 };
+                
+                var testCase8 = new TestCase("#8");
+                testCase8.PresentationName = "021.pptx";
+                testCase8.SlideNumber = 4;
+                testCase8.ShapeId = 2;
+                testCase8.ExpectedString = "test footer";
+                yield return new object[] { testCase8 };
+                
+                var testCase9 = new TestCase("#9");
+                testCase9.PresentationName = "012_title-placeholder.pptx";
+                testCase9.SlideNumber = 1;
+                testCase9.ShapeId = 2;
+                testCase9.ExpectedString = "Test title text";
+                yield return new object[] { testCase9 };
+                
+                var testCase10 = new TestCase("#10");
+                testCase10.PresentationName = "012_title-placeholder.pptx";
+                testCase10.SlideNumber = 1;
+                testCase10.ShapeId = 3;
+                testCase10.ExpectedString = "P1 P2";
+                yield return new object[] { testCase10 };
+                
+                var testCase11 = new TestCase("#11");
+                testCase11.PresentationName = "011_dt.pptx";
+                testCase11.SlideNumber = 1;
+                testCase11.ShapeId = 2;
+                testCase11.ExpectedString = $"P1{Environment.NewLine}";
+                yield return new object[] { testCase11 };
+            }
         }
 
         [Fact]

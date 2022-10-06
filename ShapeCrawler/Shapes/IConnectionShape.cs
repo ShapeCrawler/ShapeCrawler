@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Shapes;
-// ReSharper disable CheckNamespace
 
+// ReSharper disable CheckNamespace
 namespace ShapeCrawler
 {
     /// <summary>
@@ -18,6 +18,6 @@ namespace ShapeCrawler
         {
         }
 
-        public SCShapeType ShapeType => SCShapeType.ConnectionShape;
+        public override SCShapeType ShapeType => SCShapeType.ConnectionShape;
     }
 }

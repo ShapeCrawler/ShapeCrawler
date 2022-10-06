@@ -129,10 +129,8 @@ internal class SCSlide : SlideBase, ISlide, IPresentationComponent
     }
 
     /// <summary>
-    /// recursively iterate through a group and add all textboxes in that group to a list.
+    ///     Iterates group recursively and add all text boxes in the list.
     /// </summary>
-    /// <param name="group"></param>
-    /// <param name="textBoxes"></param>
     private void AddAllTextboxesInGroupToList(IGroupShape group, List<ITextFrame> textBoxes)
     {
         foreach (var shape in group.Shapes)

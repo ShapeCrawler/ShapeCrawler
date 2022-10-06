@@ -6,6 +6,7 @@ namespace ShapeCrawler.Collections
     /// <summary>
     ///     Represents a base class for all library collections.
     /// </summary>
+    /// <typeparam name="T">The type of elements in the collection.</typeparam>
     public class LibraryCollection<T> : IReadOnlyCollection<T> // TODO: make internal
     {
         #region Fields
@@ -26,9 +27,9 @@ namespace ShapeCrawler.Collections
         /// <summary>
         ///     Initializes a new instance of the <see cref="LibraryCollection{T}"/> class from paragpaths.
         /// </summary>
-        public LibraryCollection(IEnumerable<T> paragraphItems)
+        public LibraryCollection(IEnumerable<T> items)
         {
-            this.CollectionItems = new List<T>(paragraphItems);
+            this.CollectionItems = new List<T>(items);
         }
 
         #endregion Constructors

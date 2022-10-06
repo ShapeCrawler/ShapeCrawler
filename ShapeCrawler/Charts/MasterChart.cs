@@ -14,7 +14,7 @@ internal class MasterChart : MasterShape, IShape
     {
     }
 
-    public SCShapeType ShapeType => SCShapeType.Chart;
+    public override SCShapeType ShapeType => SCShapeType.Chart;
 
     public override SCPresentation PresentationInternal { get; }
 }

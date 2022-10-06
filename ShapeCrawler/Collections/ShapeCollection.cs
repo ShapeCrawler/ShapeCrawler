@@ -6,6 +6,7 @@ using System.Reflection;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
@@ -262,6 +263,7 @@ namespace ShapeCrawler.Collections
         }
 
         public T GetByName<T>(string shapeName)
+            where T : IShape
         {
             var shape = this.CollectionItems.First(shape => shape.Name == shapeName);
             return (T)shape;

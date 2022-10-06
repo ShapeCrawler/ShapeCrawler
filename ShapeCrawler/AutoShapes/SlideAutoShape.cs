@@ -29,7 +29,7 @@ namespace ShapeCrawler
 
         public Shape Shape => this; // TODO: should be internal?
 
-        public SCShapeType ShapeType => SCShapeType.AutoShape;
+        public override SCShapeType ShapeType => SCShapeType.AutoShape;
         
         public ITextFrame? TextFrame => this.textFrame.Value;
 

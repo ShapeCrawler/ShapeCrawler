@@ -17,9 +17,23 @@ namespace ShapeCrawler
         int Count { get; }
 
         /// <summary>
-        ///     Gets the element at the specified index.
+        ///     Gets shape at the specified index.
         /// </summary>
         IShape this[int index] { get; }
+
+        /// <summary>
+        ///     Gets shape by identifier.
+        /// </summary>
+        /// <typeparam name="T">The type of shape.</typeparam>
+        T GetById<T>(int shapeId)
+            where T : IShape;
+
+        /// <summary>
+        ///     Get shape by name.
+        /// </summary>
+        /// <typeparam name="T">The type of shape.</typeparam>
+        T GetByName<T>(string shapeName)
+            where T : IShape;
 
         /// <summary>
         ///     Create a new audio shape from stream and adds it to the end of the collection.
@@ -36,16 +50,5 @@ namespace ShapeCrawler
         /// <param name="yPixels">The Y coordinate for the left side of the shape.</param>
         /// <param name="videoStream">Video stream data.</param>
         IVideoShape AddNewVideo(int xPixel, int yPixels, Stream videoStream);
-
-        /// <summary>
-        ///     Get shape by identifier.
-        /// </summary>
-        T GetById<T>(int shapeId)
-            where T : IShape;
-
-        /// <summary>
-        ///     Get shape by name.
-        /// </summary>
-        T GetByName<T>(string shapeName);
     }
 }

@@ -7,6 +7,7 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -17,7 +18,7 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a shape located on Slide, Layout or Slide Master.
     /// </summary>
-    internal abstract class Shape : IRemovable, IPresentationComponent
+    internal abstract class Shape : IShape, IRemovable, IPresentationComponent
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="Shape"/> class for grouped shape.
@@ -57,6 +58,8 @@ namespace ShapeCrawler
             get => this.GetCustomData();
             set => this.SetCustomData(value ?? throw new ArgumentNullException(nameof(value)));
         }
+
+        public abstract SCShapeType ShapeType { get; }
 
         /// <summary>
         ///     Gets placeholder. Returns <c>NULL</c> if the shape is not a placeholder.
