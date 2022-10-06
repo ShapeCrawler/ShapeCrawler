@@ -40,7 +40,7 @@ namespace ShapeCrawler.AutoShapes
                 parentShape = (Shape)portion.ParentParagraph.ParentTextBox.TextFrameContainer;
             }
 
-            this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements.FontScheme;
+            this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements!.FontScheme;
         }
 
         #region Public Properties
@@ -73,12 +73,12 @@ namespace ShapeCrawler.AutoShapes
         {
             get
             {
-                A.RunProperties aRunProperties = this.aText.Parent.GetFirstChild<A.RunProperties>();
+                A.RunProperties aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
                 return aRunProperties?.Underline?.Value ?? A.TextUnderlineValues.None;
             }
             set
             {
-                A.RunProperties aRunPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
+                A.RunProperties aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
                 if (aRunPr != null)
                 {
                     aRunPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
@@ -115,7 +115,7 @@ namespace ShapeCrawler.AutoShapes
             const string majorLatinFont = "+mj-lt";
             if (this.latinFont.Value.Typeface == majorLatinFont)
             {
-                return this.aFontScheme.MajorFont.LatinFont.Typeface;
+                return this.aFontScheme.MajorFont!.LatinFont!.Typeface;
             }
 
             return this.latinFont.Value.Typeface;
@@ -123,7 +123,7 @@ namespace ShapeCrawler.AutoShapes
 
         private A.LatinFont GetALatinFont()
         {
-            A.RunProperties aRunProperties = this.aText.Parent.GetFirstChild<A.RunProperties>();
+            A.RunProperties aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
             A.LatinFont aLatinFont = aRunProperties?.GetFirstChild<A.LatinFont>();
 
             if (aLatinFont != null)
@@ -141,7 +141,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             // Get from theme
-            return this.aFontScheme.MinorFont.LatinFont;
+            return this.aFontScheme.MinorFont!.LatinFont;
         }
 
         private int GetSize()
@@ -209,7 +209,7 @@ namespace ShapeCrawler.AutoShapes
 
         private bool GetBoldFlag()
         {
-            A.RunProperties aRunProperties = this.aText.Parent.GetFirstChild<A.RunProperties>();
+            var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
             if (aRunProperties == null)
             {
                 return false;
@@ -232,7 +232,7 @@ namespace ShapeCrawler.AutoShapes
 
         private bool GetItalicFlag()
         {
-            A.RunProperties aRunProperties = this.aText.Parent.GetFirstChild<A.RunProperties>();
+            A.RunProperties aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
             if (aRunProperties == null)
             {
                 return false;
@@ -255,7 +255,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetBoldFlag(bool value)
         {
-            A.RunProperties aRunPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
+            var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
             if (aRunPr != null)
             {
                 aRunPr.Bold = new BooleanValue(value);
@@ -286,21 +286,22 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetItalicFlag(bool isItalic)
         {
-            A.RunProperties aRunPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
+            var aTextParent = this.aText.Parent!; 
+            var aRunPr = aTextParent.GetFirstChild<A.RunProperties>();
             if (aRunPr != null)
             {
                 aRunPr.Italic = new BooleanValue(isItalic);
             }
             else
             {
-                A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                var aEndParaRPr = aTextParent.NextSibling<A.EndParagraphRunProperties>();
                 if (aEndParaRPr != null)
                 {
                     aEndParaRPr.Italic = new BooleanValue(isItalic);
                 }
                 else
                 {
-                    this.aText.Parent.AddRunProperties(isItalic);
+                    aTextParent.AddRunProperties(isItalic);
                 }
             }
         }

@@ -27,7 +27,7 @@ internal class ChartGraphicFrameHandler : OpenXmlElementHandler
             return this.Successor?.Create(pShapeTreeChild, slide, groupShape);
         }
 
-        var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>();
+        var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>()!;
         var chartPart = (ChartPart)slide.SDKSlidePart.GetPartById(cChartRef.Id!);
         var cPlotArea = chartPart!.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea;
         var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));

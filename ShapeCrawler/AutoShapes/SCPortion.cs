@@ -85,7 +85,7 @@ namespace ShapeCrawler
         private string GetText()
         {
             string portionText = this.AText.Text;
-            if (this.AText.Parent.NextSibling<A.Break>() != null)
+            if (this.AText.Parent!.NextSibling<A.Break>() != null)
             {
                 portionText += Environment.NewLine;
             }

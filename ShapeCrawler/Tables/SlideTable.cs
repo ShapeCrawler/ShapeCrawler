@@ -172,16 +172,16 @@ internal class SlideTable : SlideShape, ITable
         A.TextBody mergedCellTextBody = ((SCTableCell) this[minRowIndex, minColIndex]).ATableCell.TextBody;
         bool hasMoreOnePara = false;
         IEnumerable<A.Paragraph> aParagraphsWithARun =
-            aTblCell.TextBody.Elements<A.Paragraph>().Where(p => !p.IsEmpty());
+            aTblCell.TextBody!.Elements<A.Paragraph>().Where(p => !p.IsEmpty());
         foreach (A.Paragraph aParagraph in aParagraphsWithARun)
         {
-            mergedCellTextBody.Append(aParagraph.CloneNode(true));
+            mergedCellTextBody!.Append(aParagraph.CloneNode(true));
             hasMoreOnePara = true;
         }
 
         if (hasMoreOnePara)
         {
-            foreach (A.Paragraph aParagraph in mergedCellTextBody.Elements<A.Paragraph>().Where(p => p.IsEmpty()))
+            foreach (A.Paragraph aParagraph in mergedCellTextBody!.Elements<A.Paragraph>().Where(p => p.IsEmpty()))
             {
                 aParagraph.Remove();
             }
@@ -190,7 +190,7 @@ internal class SlideTable : SlideShape, ITable
 
     private IReadOnlyList<SCColumn> GetColumnList()
     {
-        IEnumerable<A.GridColumn> aGridColumns = this.ATable.TableGrid.Elements<A.GridColumn>();
+        IEnumerable<A.GridColumn> aGridColumns = this.ATable.TableGrid!.Elements<A.GridColumn>();
         var columnList = new List<SCColumn>(aGridColumns.Count());
         columnList.AddRange(aGridColumns.Select(aGridColumn => new SCColumn(aGridColumn)));
 

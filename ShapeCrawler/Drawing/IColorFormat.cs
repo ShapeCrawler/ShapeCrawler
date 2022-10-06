@@ -143,7 +143,7 @@ namespace ShapeCrawler
 
         private bool TryFromTextBody(SCParagraph paragraph)
         {
-            A.ListStyle txBodyListStyle = paragraph.ParentTextBox.TextBodyElement.GetFirstChild<A.ListStyle>();
+            A.ListStyle txBodyListStyle = paragraph.ParentTextBox.TextBodyElement!.GetFirstChild<A.ListStyle>();
             Dictionary<int, FontData> paraLvlToFontData = FontDataParser.FromCompositeElement(txBodyListStyle!);
             if (!paraLvlToFontData.TryGetValue(paragraph.Level, out FontData txBodyFontData))
             {
@@ -163,7 +163,7 @@ namespace ShapeCrawler
                     return false;
                 }
 
-                A.FontReference aFontReference = parentPShape.ShapeStyle.FontReference;
+                var aFontReference = parentPShape.ShapeStyle.FontReference!;
                 FontData fontReferenceFontData = new ()
                 {
                     ARgbColorModelHex = aFontReference.RgbColorModelHex,
@@ -253,7 +253,7 @@ namespace ShapeCrawler
             if (fontData.APresetColor != null)
             {
                 this.colorType = SCColorType.Preset;
-                var coloName = fontData.APresetColor.Val.Value.ToString();
+                var coloName = fontData.APresetColor.Val!.Value.ToString();
                 this.hexColor = SCColorTranslator.HexFromName(coloName);
                 return true;
             }
@@ -299,42 +299,42 @@ namespace ShapeCrawler
 
         private string GetHexVariantByScheme(A.SchemeColorValues fontSchemeColor)
         {
-            A.ColorScheme themeAColorScheme = this.parentSlideMaster.ThemePart.Theme.ThemeElements.ColorScheme;
+            var themeAColorScheme = this.parentSlideMaster.ThemePart.Theme.ThemeElements!.ColorScheme!;
             return fontSchemeColor switch
             {
-                A.SchemeColorValues.Dark1 => themeAColorScheme.Dark1Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Dark1Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Dark1Color.SystemColor.LastColor.Value,
-                A.SchemeColorValues.Light1 => themeAColorScheme.Light1Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Light1Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Light1Color.SystemColor.LastColor.Value,
-                A.SchemeColorValues.Dark2 => themeAColorScheme.Dark2Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Dark2Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Dark2Color.SystemColor.LastColor.Value,
-                A.SchemeColorValues.Light2 => themeAColorScheme.Light2Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Light2Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Light2Color.SystemColor.LastColor.Value,
-                A.SchemeColorValues.Accent1 => themeAColorScheme.Accent1Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Accent1Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Accent1Color.SystemColor.LastColor.Value,
-                A.SchemeColorValues.Accent2 => themeAColorScheme.Accent2Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Accent2Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Accent2Color.SystemColor.LastColor.Value,
-                A.SchemeColorValues.Accent3 => themeAColorScheme.Accent3Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Accent3Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Accent3Color.SystemColor.LastColor.Value,
-                A.SchemeColorValues.Accent4 => themeAColorScheme.Accent4Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Accent4Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Accent4Color.SystemColor.LastColor.Value,
-                A.SchemeColorValues.Accent5 => themeAColorScheme.Accent5Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Accent5Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Accent5Color.SystemColor.LastColor.Value,
-                A.SchemeColorValues.Accent6 => themeAColorScheme.Accent6Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Accent6Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Accent6Color.SystemColor.LastColor.Value,
-                A.SchemeColorValues.Hyperlink => themeAColorScheme.Hyperlink.RgbColorModelHex != null
-                    ? themeAColorScheme.Hyperlink.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Hyperlink.SystemColor.LastColor.Value,
+                A.SchemeColorValues.Dark1 => themeAColorScheme.Dark1Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Dark1Color.RgbColorModelHex!.Val!.Value
+                    : themeAColorScheme.Dark1Color.SystemColor!.LastColor!.Value,
+                A.SchemeColorValues.Light1 => themeAColorScheme.Light1Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Light1Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Light1Color.SystemColor!.LastColor!.Value,
+                A.SchemeColorValues.Dark2 => themeAColorScheme.Dark2Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Dark2Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Dark2Color.SystemColor!.LastColor!.Value,
+                A.SchemeColorValues.Light2 => themeAColorScheme.Light2Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Light2Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Light2Color.SystemColor!.LastColor!.Value,
+                A.SchemeColorValues.Accent1 => themeAColorScheme.Accent1Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent1Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Accent1Color.SystemColor!.LastColor!.Value,
+                A.SchemeColorValues.Accent2 => themeAColorScheme.Accent2Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent2Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Accent2Color.SystemColor!.LastColor!.Value,
+                A.SchemeColorValues.Accent3 => themeAColorScheme.Accent3Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent3Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Accent3Color.SystemColor!.LastColor!.Value,
+                A.SchemeColorValues.Accent4 => themeAColorScheme.Accent4Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent4Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Accent4Color.SystemColor!.LastColor!.Value,
+                A.SchemeColorValues.Accent5 => themeAColorScheme.Accent5Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent5Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Accent5Color.SystemColor!.LastColor!.Value,
+                A.SchemeColorValues.Accent6 => themeAColorScheme.Accent6Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent6Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Accent6Color.SystemColor!.LastColor!.Value,
+                A.SchemeColorValues.Hyperlink => themeAColorScheme.Hyperlink!.RgbColorModelHex != null
+                    ? themeAColorScheme.Hyperlink.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Hyperlink.SystemColor!.LastColor!.Value,
                 _ => this.GetThemeMappedColor(fontSchemeColor)
             };
         }
@@ -362,42 +362,42 @@ namespace ShapeCrawler
 
         private string GetThemeColorByString(string fontSchemeColor)
         {
-            A.ColorScheme themeAColorScheme = this.parentSlideMaster.ThemePart.Theme.ThemeElements.ColorScheme;
+            var themeAColorScheme = this.parentSlideMaster.ThemePart.Theme.ThemeElements!.ColorScheme!;
             return fontSchemeColor switch
             {
-                "dk1" => themeAColorScheme.Dark1Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Dark1Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Dark1Color.SystemColor.LastColor.Value,
-                "lt1" => themeAColorScheme.Light1Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Light1Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Light1Color.SystemColor.LastColor.Value,
-                "dk2" => themeAColorScheme.Dark2Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Dark2Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Dark2Color.SystemColor.LastColor.Value,
-                "lt2" => themeAColorScheme.Light2Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Light2Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Light2Color.SystemColor.LastColor.Value,
-                "accent1" => themeAColorScheme.Accent1Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Accent1Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Accent1Color.SystemColor.LastColor.Value,
-                "accent2" => themeAColorScheme.Accent2Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Accent2Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Accent2Color.SystemColor.LastColor.Value,
-                "accent3" => themeAColorScheme.Accent3Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Accent3Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Accent3Color.SystemColor.LastColor.Value,
-                "accent4" => themeAColorScheme.Accent4Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Accent4Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Accent4Color.SystemColor.LastColor.Value,
-                "accent5" => themeAColorScheme.Accent5Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Accent5Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Accent5Color.SystemColor.LastColor.Value,
-                "accent6" => themeAColorScheme.Accent6Color.RgbColorModelHex != null
-                    ? themeAColorScheme.Accent6Color.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Accent6Color.SystemColor.LastColor.Value,
-                _ => themeAColorScheme.Hyperlink.RgbColorModelHex != null // hlink
-                    ? themeAColorScheme.Hyperlink.RgbColorModelHex.Val.Value
-                    : themeAColorScheme.Hyperlink.SystemColor.LastColor.Value
+                "dk1" => themeAColorScheme.Dark1Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Dark1Color.RgbColorModelHex!.Val!.Value
+                    : themeAColorScheme.Dark1Color.SystemColor!.LastColor!.Value,
+                "lt1" => themeAColorScheme.Light1Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Light1Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Light1Color.SystemColor!.LastColor!.Value,
+                "dk2" => themeAColorScheme.Dark2Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Dark2Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Dark2Color.SystemColor!.LastColor!.Value,
+                "lt2" => themeAColorScheme.Light2Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Light2Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Light2Color.SystemColor!.LastColor!.Value,
+                "accent1" => themeAColorScheme.Accent1Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent1Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Accent1Color.SystemColor!.LastColor!.Value,
+                "accent2" => themeAColorScheme.Accent2Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent2Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Accent2Color.SystemColor!.LastColor!.Value,
+                "accent3" => themeAColorScheme.Accent3Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent3Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Accent3Color.SystemColor!.LastColor!.Value,
+                "accent4" => themeAColorScheme.Accent4Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent4Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Accent4Color.SystemColor!.LastColor!.Value,
+                "accent5" => themeAColorScheme.Accent5Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent5Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Accent5Color.SystemColor!.LastColor!.Value,
+                "accent6" => themeAColorScheme.Accent6Color!.RgbColorModelHex != null
+                    ? themeAColorScheme.Accent6Color.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Accent6Color.SystemColor!.LastColor!.Value,
+                _ => themeAColorScheme.Hyperlink!.RgbColorModelHex != null // hlink
+                    ? themeAColorScheme.Hyperlink.RgbColorModelHex.Val!.Value
+                    : themeAColorScheme.Hyperlink.SystemColor!.LastColor!.Value
             };
         }
     }

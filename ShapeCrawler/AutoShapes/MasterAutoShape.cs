@@ -57,14 +57,14 @@ internal class MasterAutoShape : MasterShape, IAutoShape, ITextFrameContainer, I
             return;
         }
 
-        P.TextStyles pTextStyles = this.SlideMasterInternal.PSlideMaster.TextStyles;
+        var pTextStyles = this.SlideMasterInternal.PSlideMaster.TextStyles!;
         if (this.Placeholder.Type != SCPlaceholderType.Title)
         {
             return;
         }
 
-        int titleFontSize = pTextStyles.TitleStyle.Level1ParagraphProperties
-            .GetFirstChild<A.DefaultRunProperties>().FontSize.Value;
+        var titleFontSize = pTextStyles.TitleStyle!.Level1ParagraphProperties!
+            .GetFirstChild<A.DefaultRunProperties>()!.FontSize!.Value;
         if (fontData.FontSize is null)
         {
             fontData.FontSize = new Int32Value(titleFontSize);
@@ -73,11 +73,12 @@ internal class MasterAutoShape : MasterShape, IAutoShape, ITextFrameContainer, I
 
     private Dictionary<int, FontData> GetLvlToFontData() // TODO: duplicate code in LayoutAutoShape
     {
-        Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(this.pShape.TextBody!.ListStyle!);
+        var texBody = this.pShape.TextBody!;
+        var lvlToFontData = FontDataParser.FromCompositeElement(texBody.ListStyle!);
 
         if (!lvlToFontData.Any())
         {
-            Int32Value endParaRunPrFs = this.pShape.TextBody.GetFirstChild<A.Paragraph>()
+            var endParaRunPrFs = texBody.GetFirstChild<A.Paragraph>()!
                 .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
             if (endParaRunPrFs is not null)
             {

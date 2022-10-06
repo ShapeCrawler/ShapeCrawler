@@ -112,7 +112,7 @@ namespace ShapeCrawler
             }
 
             removing.Remove();
-            this.Presentation.SdkPresentation.PresentationPart.Presentation.Save();
+            this.Presentation.SdkPresentation.PresentationPart!.Presentation.Save();
         }
     }
 }

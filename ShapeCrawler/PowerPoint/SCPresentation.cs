@@ -239,8 +239,8 @@ namespace ShapeCrawler
             // from theme default text settings
             if (lvlToFontData.Any(kvp => kvp.Value.FontSize is null))
             {
-                A.TextDefault themeTextDefault =
-                    pPresentation.PresentationPart.ThemePart.Theme.ObjectDefaults.TextDefault;
+                var themeTextDefault =
+                    pPresentation.PresentationPart!.ThemePart!.Theme.ObjectDefaults!.TextDefault;
                 if (themeTextDefault != null)
                 {
                     lvlToFontData = FontDataParser.FromCompositeElement(themeTextDefault.ListStyle!);
@@ -282,7 +282,7 @@ namespace ShapeCrawler
 
         private void ThrowIfSlidesNumberLarge()
         {
-            var nbSlides = this.SdkPresentation.PresentationPart.SlideParts.Count();
+            var nbSlides = this.SdkPresentation.PresentationPart!.SlideParts.Count();
             if (nbSlides > Limitations.MaxSlidesNumber)
             {
                 this.Close();
@@ -298,7 +298,7 @@ namespace ShapeCrawler
                 new ResettableLazy<SlideMasterCollection>(() => SlideMasterCollection.Create(this));
             this.paraLvlToFontData =
                 new Lazy<Dictionary<int, FontData>>(() =>
-                    ParseFontHeights(this.SdkPresentation.PresentationPart.Presentation));
+                    ParseFontHeights(this.SdkPresentation.PresentationPart!.Presentation));
             this.sectionCollectionLazy =
                 new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
             this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
@@ -306,9 +306,9 @@ namespace ShapeCrawler
 
         private SCSlideSize GetSlideSize()
         {
-            var pSlideSize = this.SdkPresentation.PresentationPart!.Presentation.SlideSize;
-            var withPx = PixelConverter.HorizontalEmuToPixel(pSlideSize.Cx.Value);
-            var heightPx = PixelConverter.VerticalEmuToPixel(pSlideSize.Cy.Value);
+            var pSlideSize = this.SdkPresentation.PresentationPart!.Presentation.SlideSize!;
+            var withPx = PixelConverter.HorizontalEmuToPixel(pSlideSize.Cx!.Value);
+            var heightPx = PixelConverter.VerticalEmuToPixel(pSlideSize.Cy!.Value);
 
             return new SCSlideSize(withPx, heightPx);
         }

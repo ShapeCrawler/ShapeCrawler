@@ -33,9 +33,9 @@ namespace ShapeCrawler.Collections
         /// <inheritdoc/>
         public void Remove(IPortion removingPortion)
         {
-            SCPortion removingInnerPortion = (SCPortion)removingPortion;
+            var removingInnerPortion = (SCPortion)removingPortion;
 
-            removingInnerPortion.AText.Parent.Remove(); // remove parent <a:r>
+            removingInnerPortion.AText.Parent!.Remove(); // remove parent <a:r>
             removingInnerPortion.IsRemoved = true;
 
             this.portions.Reset();

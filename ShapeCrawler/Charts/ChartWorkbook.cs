@@ -83,7 +83,7 @@ namespace ShapeCrawler.Charts
                 X.Cell? refCell = null;
                 foreach (var cell in row.Elements<X.Cell>())
                 {
-                    if (string.Compare(cell.CellReference.Value, cellReference, true, CultureInfo.InvariantCulture) > 0)
+                    if (string.Compare(cell.CellReference!.Value, cellReference, true, CultureInfo.InvariantCulture) > 0)
                     {
                         refCell = cell;
                         break;

@@ -15,8 +15,8 @@ namespace ShapeCrawler.Factories
         {
             if (compositeElementOfPShapeTree is P.GraphicFrame pGraphicFrame)
             {
-                A.GraphicData aGraphicData = compositeElementOfPShapeTree.GetFirstChild<A.Graphic>().GetFirstChild<A.GraphicData>();
-                if (aGraphicData.Uri.Value.Equals(Uri, StringComparison.Ordinal))
+                var aGraphicData = compositeElementOfPShapeTree!.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>();
+                if (aGraphicData!.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
                 {
                     SlideOLEObject oleObject = new (pGraphicFrame, slide, groupShape);
 

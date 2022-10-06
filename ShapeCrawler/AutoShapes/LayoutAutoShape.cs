@@ -74,11 +74,12 @@ internal class LayoutAutoShape : LayoutShape, IAutoShape, IFontDataReader, IText
 
     private Dictionary<int, FontData> GetLvlToFontData()
     {
-        Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(this.pShape.TextBody!.ListStyle!);
+        var textBody = this.pShape.TextBody!;
+        var lvlToFontData = FontDataParser.FromCompositeElement(textBody.ListStyle!);
 
         if (!lvlToFontData.Any())
         {
-            Int32Value endParaRunPrFs = this.pShape.TextBody.GetFirstChild<A.Paragraph>()
+            var endParaRunPrFs = textBody.GetFirstChild<A.Paragraph>()!
                 .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
             if (endParaRunPrFs is not null)
             {

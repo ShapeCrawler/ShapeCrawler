@@ -122,7 +122,7 @@ namespace ShapeCrawler.Collections
                 {
                     foreach (C.StringPoint cStrPoint in cStringPoints)
                     {
-                        uint index = cStrPoint.Index.Value;
+                        uint index = cStrPoint.Index!.Value;
                         C.NumericValue cachedCatName = cStrPoint.NumericValue;
                         var category = new Category(null, -1, cachedCatName!);
                         nextIndexToCategory.Add(new KeyValuePair<uint, Category>(index, category));
