@@ -263,6 +263,7 @@ namespace ShapeCrawler.Collections
         }
 
         public T GetByName<T>(string shapeName)
+            where T : IShape
         {
             var shape = this.CollectionItems.First(shape => shape.Name == shapeName);
             return (T)shape;

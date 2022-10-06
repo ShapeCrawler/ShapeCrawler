@@ -54,6 +54,8 @@ public class TestCase
         }
     }
 
+    public string ExpectedString { get; set; }
+
     public void SetPresentation(MemoryStream stream)
     {
         stream.Seek(0, SeekOrigin.Begin);

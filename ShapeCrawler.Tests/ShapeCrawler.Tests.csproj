@@ -126,6 +126,14 @@
     <EmbeddedResource Include="Resource\autoshape\autoshape-case008_text-frame.pptx" />
     <None Remove="Resource\autoshape\autoshape-case009.pptx" />
     <EmbeddedResource Include="Resource\autoshape\autoshape-case009.pptx" />
+    <None Remove="Resource\019.pptx" />
+    <EmbeddedResource Include="Resource\019.pptx" />
+    <None Remove="Resource\014.pptx" />
+    <EmbeddedResource Include="Resource\014.pptx" />
+    <None Remove="Resource\011_dt.pptx" />
+    <EmbeddedResource Include="Resource\011_dt.pptx" />
+    <None Remove="Resource\012_title-placeholder.pptx" />
+    <EmbeddedResource Include="Resource\012_title-placeholder.pptx" />
   </ItemGroup>
 
 </Project>
