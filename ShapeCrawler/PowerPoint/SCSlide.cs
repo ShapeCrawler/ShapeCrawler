@@ -13,7 +13,6 @@ using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
-using ShapeCrawler.Statics;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
@@ -22,7 +21,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents Slide.
 /// </summary>
-internal class SCSlide : SlideBase, ISlide, IPresentationComponent
+internal class SCSlide : SlideBase, ISlide
 {
     internal readonly SlideId slideId;
     private readonly Lazy<SCImage> backgroundImage;
@@ -34,7 +33,7 @@ internal class SCSlide : SlideBase, ISlide, IPresentationComponent
         this.PresentationInternal = parentPresentation;
         this.Presentation = parentPresentation;
         this.SDKSlidePart = slidePart;
-        this.shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.ForSlide(this.SDKSlidePart, this));
+        this.shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.Create(this.SDKSlidePart, this));
         this.backgroundImage = new Lazy<SCImage>(() => SCImage.ForBackground(this));
         this.customXmlPart = new Lazy<CustomXmlPart>(this.GetSldCustomXmlPart);
         this.slideId = slideId;
@@ -67,8 +66,6 @@ internal class SCSlide : SlideBase, ISlide, IPresentationComponent
     public IPresentation Presentation { get; }
 
     public SlidePart SDKSlidePart { get; }
-
-    public SCPresentation PresentationInternal { get; }
 
     internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
 

@@ -13,25 +13,21 @@ namespace ShapeCrawler.Factories
 {
     internal static class FontDataParser
     {
-        public static void GetFontDataFromPlaceholder(ref FontData phFontData, SCParagraph paragraph)
+        internal static void GetFontDataFromPlaceholder(ref FontData phFontData, SCParagraph paragraph)
         {
-            Shape fontParentShape = (Shape)paragraph.ParentTextBox.TextFrameContainer;
+            var fontParentShape = (Shape)paragraph.ParentTextBox.TextFrameContainer;
             int paragraphLvl = paragraph.Level;
             if (fontParentShape.Placeholder == null)
             {
                 return;
             }
 
-            Placeholder placeholder = (Placeholder)fontParentShape.Placeholder;
-            IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
-            phReferencedShape?.FillFontData(paragraphLvl, ref phFontData);
+            var placeholder = (Placeholder)fontParentShape.Placeholder;
+            var fontDataReader = (IFontDataReader)placeholder.ReferencedShape;
+            fontDataReader?.FillFontData(paragraphLvl, ref phFontData);
         }
 
-        /// <summary>
-        ///     Gets font data.
-        /// </summary>
-        /// <param name="compositeElement">Instance of <see cref="P.DefaultTextStyle" /> or <see cref="A.ListStyle" /> class.</param>
-        public static Dictionary<int, FontData>
+        internal static Dictionary<int, FontData>
             FromCompositeElement(
                 OpenXmlCompositeElement compositeElement)
         {

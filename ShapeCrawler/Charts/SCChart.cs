@@ -7,6 +7,8 @@ using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMasters;
+using OneOf;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -28,8 +30,8 @@ internal class SCChart : SlideShape, IChart
         
     private string? chartTitle;
 
-    internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide slideInternal)
-        : base(pGraphicFrame, slideInternal, null)
+    internal SCChart(P.GraphicFrame pGraphicFrame, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
+        : base(pGraphicFrame, oneOfSlide, null)
     {
         this.pGraphicFrame = pGraphicFrame;
         this.firstSeries = new Lazy<OpenXmlElement>(this.GetFirstSeries);
@@ -41,7 +43,7 @@ internal class SCChart : SlideShape, IChart
         var cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
             .GetFirstChild<C.ChartReference>()!;
 
-        this.ChartPart = (ChartPart)this.Slide.SDKSlidePart.GetPartById(cChartReference.Id!);
+        this.ChartPart = (ChartPart)this.Slide.TypedOpenXmlPart.GetPartById(cChartReference.Id!);
             
         var cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea;
         this.cXCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));

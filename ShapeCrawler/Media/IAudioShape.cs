@@ -1,6 +1,8 @@
 ﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
+using OneOf;
+using ShapeCrawler.SlideMasters;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler
@@ -23,8 +25,8 @@ namespace ShapeCrawler
 
     internal class AudioShape : MediaShape, IAudioShape
     {
-        internal AudioShape(OpenXmlCompositeElement pShapeTreesChild, SCSlide slide)
-            : base(pShapeTreesChild, slide, null)
+        internal AudioShape(OpenXmlCompositeElement pShapeTreesChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
+            : base(pShapeTreesChild, oneOfSlide, null)
         {
         }
 

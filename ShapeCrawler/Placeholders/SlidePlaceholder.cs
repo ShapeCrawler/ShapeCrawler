@@ -2,6 +2,7 @@
 using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Placeholders
@@ -37,7 +38,7 @@ namespace ShapeCrawler.Placeholders
 
         private Shape GetReferencedShape()
         {
-            var layout = this.slideShape.Slide.SlideLayoutInternal;
+            var layout = (SCSlideLayout)this.slideShape.ParentSlide.SlideLayout;
             var layoutShapes = layout.ShapesInternal;
             var referencedShape = layoutShapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
 

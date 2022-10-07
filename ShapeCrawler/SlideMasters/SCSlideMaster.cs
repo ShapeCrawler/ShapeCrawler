@@ -27,9 +27,11 @@ namespace ShapeCrawler.SlideMasters
 
         public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
-        public IShapeCollection Shapes => ShapeCollection.ForSlideLayout(this.PSlideMaster.CommonSlideData!.ShapeTree!, this);
+        public IShapeCollection Shapes => ShapeCollection.Create(this.PSlideMaster.SlideMasterPart!, this);
 
         public override bool IsRemoved { get; set; }
+        
+        public SCPresentation PresentationInternal { get; }
         
         internal P.SlideMaster PSlideMaster { get; }
 
@@ -46,6 +48,8 @@ namespace ShapeCrawler.SlideMasters
         internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
 
         internal override TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
+        
+        
 
         public override void ThrowIfRemoved()
         {

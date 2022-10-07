@@ -6,18 +6,13 @@ using System.Reflection;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Charts;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Media;
-using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
-using ShapeCrawler.Tables;
 using OneOf;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -31,16 +26,16 @@ namespace ShapeCrawler.Collections
     internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
     {
         private readonly P.ShapeTree shapeTree;
-        private readonly SCSlide slide;
+        private readonly OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject;
 
         private ShapeCollection(List<IShape> shapes)
         {
             this.CollectionItems = shapes;
         }
 
-        private ShapeCollection(List<IShape> shapes, P.ShapeTree shapeTree, SCSlide slide)
+        private ShapeCollection(List<IShape> shapes, P.ShapeTree shapeTree, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject)
         {
-            this.slide = slide;
+            this.slideObject = slideObject;
             this.CollectionItems = shapes;
             this.shapeTree = shapeTree;
         }
@@ -50,19 +45,20 @@ namespace ShapeCrawler.Collections
             long xEmu = PixelConverter.HorizontalPixelToEmu(xPixels);
             long yEmu = PixelConverter.VerticalPixelToEmu(yPixels);
 
-            MediaDataPart mediaDataPart = this.slide.PresentationInternal.SdkPresentation.CreateMediaDataPart("audio/mpeg", ".mp3");
+            var slideBase = this.slideObject.Match(slide => slide as SlideBase, layout => layout, master => master);
+            var mediaDataPart = slideBase.PresentationInternal.SdkPresentation.CreateMediaDataPart("audio/mpeg", ".mp3");
 
             mp3Stream.Position = 0;
             mediaDataPart.FeedData(mp3Stream);
             string imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
-            var slidePart = this.slide.SDKSlidePart;
-            var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
+            var slidePart = slideBase.TypedOpenXmlPart as SlidePart;
+            var imagePart = slidePart!.AddNewPart<ImagePart>("image/png", imgPartRId);
             var imgStream = Assembly.GetExecutingAssembly().GetStream("audio-image.png");
             imgStream.Position = 0;
             imagePart.FeedData(imgStream);
 
-            AudioReferenceRelationship audioRr = slidePart.AddAudioReferenceRelationship(mediaDataPart);
-            MediaReferenceRelationship mediaRr = slidePart.AddMediaReferenceRelationship(mediaDataPart);
+            var audioRr = slidePart.AddAudioReferenceRelationship(mediaDataPart);
+            var mediaRr = slidePart.AddMediaReferenceRelationship(mediaDataPart);
 
             P.Picture picture1 = new ();
 
@@ -148,7 +144,7 @@ namespace ShapeCrawler.Collections
             P14.CreationId creationId1 = new () { Val = (UInt32Value)3972997422U };
             creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
-            return new AudioShape(this.shapeTree, this.slide);
+            return new AudioShape(this.shapeTree, this.slideObject);
         }
 
         public IVideoShape AddNewVideo(int xPixels, int yPixels, Stream videoStream)
@@ -156,13 +152,14 @@ namespace ShapeCrawler.Collections
             long xEmu = PixelConverter.HorizontalPixelToEmu(xPixels);
             long yEmu = PixelConverter.VerticalPixelToEmu(yPixels);
 
-            MediaDataPart mediaDataPart = this.slide.PresentationInternal.SdkPresentation.CreateMediaDataPart("video/mp4", ".mp4");
+            var slideBase = this.slideObject.Match(slide => slide as SlideBase, layout => layout, master => master);
+            MediaDataPart mediaDataPart = slideBase.PresentationInternal.SdkPresentation.CreateMediaDataPart("video/mp4", ".mp4");
 
             videoStream.Position = 0;
             mediaDataPart.FeedData(videoStream);
             string imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
-            var slidePart = this.slide.SDKSlidePart;
-            var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
+            var slidePart = slideBase.TypedOpenXmlPart as SlidePart;
+            var imagePart = slidePart!.AddNewPart<ImagePart>("image/png", imgPartRId);
             var imageStream = Assembly.GetExecutingAssembly().GetStream("video-image.bmp");
             imagePart.FeedData(imageStream);
 
@@ -253,7 +250,7 @@ namespace ShapeCrawler.Collections
             P14.CreationId creationId1 = new () { Val = (UInt32Value)3972997422U };
             creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
-            return new VideoShape(this.slide, this.shapeTree);
+            return new VideoShape(this.slideObject, this.shapeTree);
         }
 
         public T GetById<T>(int shapeId)
@@ -314,112 +311,8 @@ namespace ShapeCrawler.Collections
 
             return mappedShape;
         }
-        
-        internal static ShapeCollection ForSlideLayout(P.ShapeTree pShapeTree, SlideBase baseSlide)
-        {
-            var shapeList = new List<IShape>();
-            var layout = baseSlide as SCSlideLayout;
-            var master = baseSlide as SCSlideMaster;
-            foreach (var childOfPShapeTree in pShapeTree.OfType<OpenXmlCompositeElement>())
-            {
-                switch (childOfPShapeTree)
-                {
-                    case P.Shape pShape:
-                        if (layout != null)
-                        {
-                            shapeList.Add(new LayoutAutoShape(layout, pShape));
-                        }
-                        else
-                        {
-                            shapeList.Add(new MasterAutoShape(master!, pShape));
-                        }
 
-                        continue;
-                    case P.GraphicFrame pGraphicFrame:
-                    {
-                        A.GraphicData aGraphicData =
-                            pGraphicFrame.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>();
-                        if (aGraphicData!.Uri!.Value!.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
-                            StringComparison.Ordinal))
-                        {
-                            if (layout != null)
-                            {
-                                shapeList.Add(new LayoutOLEObject(layout, pGraphicFrame));
-                            }
-                            else
-                            {
-                                shapeList.Add(new MasterOLEObject(master!, pGraphicFrame));
-                            }
-
-                            continue;
-                        }
-
-                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart",
-                            StringComparison.Ordinal))
-                        {
-                            if (layout != null)
-                            {
-                                shapeList.Add(new LayoutChart(layout, pGraphicFrame));
-                            }
-                            else
-                            {
-                                shapeList.Add(new MasterChart(master!, pGraphicFrame));
-                            }
-
-                            continue;
-                        }
-
-                        if (aGraphicData.Uri.Value.Equals("http://schemas.openxmlformats.org/drawingml/2006/table",
-                            StringComparison.Ordinal))
-                        {
-                            if (layout != null)
-                            {
-                                shapeList.Add(new LayoutTable(layout, pGraphicFrame));
-                            }
-                            else
-                            {
-                                shapeList.Add(new MasterTable(master!, pGraphicFrame));
-                            }
-
-                            continue;
-                        }
-
-                        break;
-                    }
-                }
-
-                P.Picture? pPicture;
-                
-                if (childOfPShapeTree is P.Picture treePic)
-                {
-                    pPicture = treePic;
-                }
-                else
-                {
-                    pPicture = childOfPShapeTree.Descendants<P.Picture>().FirstOrDefault();
-                }
-
-                if (pPicture != null)
-                {
-                    var embeddedPicReference = pPicture.GetFirstChild<P.BlipFill>()?.Blip?.Embed;
-                    if (embeddedPicReference != null)
-                    {
-                        if (layout != null)
-                        {
-                            shapeList.Add(new LayoutPicture(pPicture, layout, embeddedPicReference));
-                        }
-                        else
-                        {
-                            shapeList.Add(new MasterPicture(pPicture, master!, embeddedPicReference));
-                        }
-                    }
-                }
-            }
-
-            return new ShapeCollection(shapeList);
-        }
-        
-        internal static ShapeCollection ForSlide(OneOf<SlidePart, SlideLayoutPart> oneOfSlidePart, SCSlide slide)
+        internal static ShapeCollection Create(OneOf<SlidePart, SlideLayoutPart, SlideMasterPart> oneOfSlidePart, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
         {
             var chartGrFrameHandler = new ChartGraphicFrameHandler();
             var tableGrFrameHandler = new TableGraphicFrameHandler();
@@ -434,22 +327,23 @@ namespace ShapeCrawler.Collections
 
             var pShapeTree = oneOfSlidePart.Match(
                 slidePart => slidePart.Slide.CommonSlideData!.ShapeTree!,
-                slideLayoutPart => slideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!);
+                layoutPart => layoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
+                masterPart => masterPart.SlideMaster.CommonSlideData!.ShapeTree!);
             var shapes = new List<IShape>(pShapeTree.Count());
             foreach (var childElementOfShapeTree in pShapeTree.OfType<OpenXmlCompositeElement>())
             {
                 IShape shape;
                 if (childElementOfShapeTree is P.GroupShape pGroupShape)
                 {
-                    shape = new SlideGroupShape(pGroupShape, slide, null);
+                    shape = new SCGroupShape(pGroupShape, oneOfSlide, null);
                 }
                 else if (childElementOfShapeTree is P.ConnectionShape)
                 {
-                    shape = new SCConnectionShape(childElementOfShapeTree, slide);
+                    shape = new SCConnectionShape(childElementOfShapeTree, oneOfSlide);
                 }
                 else
                 {
-                    shape = autoShapeCreator.Create(childElementOfShapeTree, slide, null);
+                    shape = autoShapeCreator.Create(childElementOfShapeTree, oneOfSlide, null);
                 }
 
                 if (shape != null)
@@ -458,7 +352,7 @@ namespace ShapeCrawler.Collections
                 }
             }
 
-            return new ShapeCollection(shapes, pShapeTree, slide);
+            return new ShapeCollection(shapes, pShapeTree, oneOfSlide);
         }
     }
 }

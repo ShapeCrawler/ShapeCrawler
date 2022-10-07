@@ -16,10 +16,7 @@ namespace ShapeCrawler.Placeholders
         }
 
         public SCPlaceholderType Type => this.GetPlaceholderType();
-
-        /// <summary>
-        ///     Gets referenced shape from lower level slide.
-        /// </summary>
+        
         protected internal Shape ReferencedShape => this.layoutReferencedShape.Value;
 
         #region Private Methods

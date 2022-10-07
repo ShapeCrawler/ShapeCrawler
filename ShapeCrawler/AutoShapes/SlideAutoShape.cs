@@ -2,6 +2,9 @@
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.SlideMasters;
+using OneOf;
+using ShapeCrawler.Services;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
@@ -16,8 +19,8 @@ namespace ShapeCrawler
         private readonly Lazy<ShapeFill> shapeFill;
         private readonly Lazy<TextFrame?> textFrame;
 
-        internal SlideAutoShape(P.Shape pShape, SCSlide slideInternal, SlideGroupShape groupShape)
-            : base(pShape, slideInternal, groupShape)
+        internal SlideAutoShape(P.Shape pShape, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCGroupShape groupShape)
+            : base(pShape, oneOfSlide, groupShape)
         {
             this.textFrame = new Lazy<TextFrame?>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.GetFill);

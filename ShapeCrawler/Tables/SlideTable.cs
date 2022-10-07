@@ -6,8 +6,10 @@ using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
+using OneOf;
 
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Tables;
@@ -17,8 +19,8 @@ internal class SlideTable : SlideShape, ITable
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly ResettableLazy<RowCollection> rowCollection;
 
-    internal SlideTable(OpenXmlCompositeElement childOfPShapeTrees, SCSlide slideLayout, SlideGroupShape groupShape)
-        : base(childOfPShapeTrees, slideLayout, groupShape)
+    internal SlideTable(OpenXmlCompositeElement childOfPShapeTrees, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOrLayout, SCGroupShape groupShape)
+        : base(childOfPShapeTrees, slideOrLayout, groupShape)
     {
         this.rowCollection =
             new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) this.PShapeTreesChild));

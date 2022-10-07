@@ -1,4 +1,6 @@
 ﻿using ShapeCrawler.Charts;
+using ShapeCrawler.SlideMasters;
+using OneOf;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler;
@@ -12,8 +14,8 @@ public interface ILineChart : IChart
 
 internal class SCLineChart : SCChart, ILineChart
 {
-    internal SCLineChart(P.GraphicFrame pGraphicFrame, SCSlide slide)
-        : base(pGraphicFrame, slide)
+    internal SCLineChart(P.GraphicFrame pGraphicFrame, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject)
+        : base(pGraphicFrame, slideObject)
     {
     }
 }

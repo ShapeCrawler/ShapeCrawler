@@ -19,7 +19,7 @@ namespace ShapeCrawler.SlideMasters
             this.slideMaster = slideMaster;
             this.SlideLayoutPart = slideLayoutPart;
             this.shapes = new ResettableLazy<ShapeCollection>(() =>
-                ShapeCollection.ForSlideLayout(slideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!, this));
+                ShapeCollection.Create(slideLayoutPart, this));
         }
 
         public IShapeCollection Shapes => this.shapes.Value;
@@ -27,6 +27,8 @@ namespace ShapeCrawler.SlideMasters
         public override bool IsRemoved { get; set; }
 
         public ISlideMaster SlideMaster => this.slideMaster;
+        
+        public SCPresentation PresentationInternal { get; }
 
         internal SlideLayoutPart SlideLayoutPart { get; }
 

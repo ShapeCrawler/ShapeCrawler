@@ -1,9 +1,11 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
+using OneOf;
 
 namespace ShapeCrawler.Factories
 {
@@ -11,22 +13,22 @@ namespace ShapeCrawler.Factories
     {
         private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/table";
 
-        internal override Shape Create(OpenXmlCompositeElement compositeElementOfPShapeTree, SCSlide slide, SlideGroupShape groupShape)
+        internal override Shape Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOrLayout, SCGroupShape groupShape)
         {
-            if (compositeElementOfPShapeTree is P.GraphicFrame pGraphicFrame)
+            if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
             {
                 var graphicData = pGraphicFrame.Graphic!.GraphicData!;
                 if (!graphicData.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
                 {
-                    return this.Successor?.Create(compositeElementOfPShapeTree, slide, groupShape);
+                    return this.Successor?.Create(pShapeTreeChild, slideOrLayout, groupShape);
                 }
 
-                var table = new SlideTable(pGraphicFrame, slide, groupShape);
+                var table = new SlideTable(pGraphicFrame, slideOrLayout, groupShape);
 
                 return table;
             }
 
-            return this.Successor?.Create(compositeElementOfPShapeTree, slide, groupShape);
+            return this.Successor?.Create(pShapeTreeChild, slideOrLayout, groupShape);
         }
     }
 }

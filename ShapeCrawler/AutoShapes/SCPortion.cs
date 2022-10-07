@@ -113,8 +113,8 @@ namespace ShapeCrawler
             }
 
             var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextBox.TextFrameContainer;
-            var slidePart = slideAutoShape.Slide.SDKSlidePart;
-            var hyperlinkRelationship = (HyperlinkRelationship)slidePart.GetReferenceRelationship(hyperlink.Id!);
+            var typedOpenXmlPart = slideAutoShape.Slide.TypedOpenXmlPart;
+            var hyperlinkRelationship = (HyperlinkRelationship)typedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
 
             return hyperlinkRelationship.Uri.AbsoluteUri;
         }
@@ -140,7 +140,7 @@ namespace ShapeCrawler
             }
 
             var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextBox.TextFrameContainer;
-            var slidePart = slideAutoShape.Slide.SDKSlidePart;
+            var slidePart = slideAutoShape.Slide.TypedOpenXmlPart;
 
             var uri = new Uri(url, UriKind.Absolute);
             var addedHyperlinkRelationship = slidePart.AddHyperlinkRelationship(uri, true);
