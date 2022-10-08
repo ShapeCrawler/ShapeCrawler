@@ -50,7 +50,6 @@ namespace ShapeCrawler
 
         internal void FillFontData(int paragraphLvl, ref FontData fontData)
         {
-            // Tries get font from Auto Shape
             if (this.lvlToFontData.Value.TryGetValue(paragraphLvl, out FontData layoutFontData))
             {
                 fontData = layoutFontData;
@@ -67,14 +66,13 @@ namespace ShapeCrawler
             if (this.Placeholder != null)
             {
                 var placeholder = (Placeholder)this.Placeholder;
-                var referencedMasterShape = (IFontDataReader)placeholder.ReferencedShape;
+                var referencedMasterShape = (SlideAutoShape)placeholder.ReferencedShape;
                 if (referencedMasterShape != null)
                 {
                     referencedMasterShape.FillFontData(paragraphLvl, ref fontData);
                 }
             }
         }
-        
         
         private Dictionary<int, FontData> GetLvlToFontData()
         {

@@ -22,7 +22,7 @@ internal static class FontDataParser
 
         var placeholder = (Placeholder)shape.Placeholder;
         var autoShape = (SlideAutoShape)placeholder.ReferencedShape;
-        autoShape.FillFontData(paragraph.Level, ref phFontData);
+        autoShape?.FillFontData(paragraph.Level, ref phFontData);
     }
 
     internal static Dictionary<int, FontData>

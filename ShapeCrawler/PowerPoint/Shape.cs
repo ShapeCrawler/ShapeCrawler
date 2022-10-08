@@ -21,7 +21,8 @@ internal abstract class Shape : IShape, IRemovable, IPresentationComponent
     /// <summary>
     ///     Initializes a new instance of the <see cref="Shape"/> class for grouped shape.
     /// </summary>
-    protected Shape(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOrLayout, Shape? groupShape)
+    protected Shape(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOrLayout,
+        Shape? groupShape)
         : this(pShapeTreeChild, slideOrLayout)
     {
         this.GroupShape = groupShape;
@@ -46,7 +47,8 @@ internal abstract class Shape : IShape, IRemovable, IPresentationComponent
     /// <summary>
     ///     Gets a value indicating whether shape is hidden.
     /// </summary>
-    public bool Hidden => this.DefineHidden(); // TODO: the Shape is inherited by LayoutShape, hence do we need this property?
+    public bool Hidden =>
+        this.DefineHidden(); // TODO: the Shape is inherited by LayoutShape, hence do we need this property?
 
     /// <summary>
     ///     Gets or sets custom data.
@@ -106,14 +108,28 @@ internal abstract class Shape : IShape, IRemovable, IPresentationComponent
         get => this.GetWidthPixels();
         set => this.SetWidth(value);
     }
-        
+
     bool IRemovable.IsRemoved { get; set; }
 
-    /// <summary>
-    ///     Gets or sets parent Slide Master.
-    /// </summary>
-    internal abstract SCSlideMaster SlideMasterInternal { get; set; }
-        
+    internal SCSlideMaster SlideMasterInternal
+    {
+        get
+        {
+            if (this.SlideBase is SCSlide slide)
+            {
+                return slide.SlideLayoutInternal.SlideMasterInternal;
+            }
+
+            if (this.SlideBase is SCSlideLayout layout)
+            {
+                return layout.SlideMasterInternal;
+            }
+
+            var master = (SCSlideMaster)this.SlideBase;
+            return master;
+        }
+    }
+
     internal OpenXmlCompositeElement PShapeTreesChild { get; }
 
     internal SlideBase SlideBase { get; }
@@ -224,7 +240,8 @@ internal abstract class Shape : IShape, IRemovable, IPresentationComponent
 
         if (this.GroupShape is not null)
         {
-            var aTransformGroup = ((P.GroupShape)this.GroupShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup!;
+            var aTransformGroup =
+                ((P.GroupShape)this.GroupShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup!;
             yEmu = yEmu - aTransformGroup.ChildOffset!.Y! + aTransformGroup!.Offset!.Y!;
         }
 

@@ -158,8 +158,8 @@ namespace ShapeCrawler.AutoShapes
 
             if (textBoxContainer is Shape { Placeholder: { } } parentShape)
             {
-                Placeholder placeholder = (Placeholder)parentShape.Placeholder;
-                IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
+                var placeholder = (Placeholder)parentShape.Placeholder;
+                var phReferencedShape = (SlideAutoShape)placeholder.ReferencedShape;
                 FontData fontDataPlaceholder = new ();
                 if (phReferencedShape != null)
                 {

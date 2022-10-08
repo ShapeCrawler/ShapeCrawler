@@ -20,15 +20,6 @@ namespace ShapeCrawler
 
         public ISlide ParentSlide => (SCSlide)this.Slide;
         
-        internal override SCSlideMaster SlideMasterInternal
-        {
-            get => (SCSlideMaster)this.ParentSlide.SlideLayout.SlideMaster;
-
-            set
-            {
-            }
-        }
-
         internal SlideBase Slide { get; }
     }
 }

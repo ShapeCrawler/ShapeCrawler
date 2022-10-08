@@ -15,7 +15,7 @@ internal class SlidePlaceholder : Placeholder
         : base(pPlaceholderShape)
     {
         this.slideShape = slideShape;
-        this.layoutReferencedShape = new ResettableLazy<Shape>(this.GetReferencedShape);
+        this.referencedShape = new ResettableLazy<Shape>(this.GetReferencedShape);
     }
     
     internal static SlidePlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, SlideShape slideShape)
@@ -39,8 +39,7 @@ internal class SlidePlaceholder : Placeholder
         
         if (this.slideShape.SlideBase is SCSlideMaster slideMaster)
         {
-            var masterShapes = (ShapeCollection)slideMaster.Shapes;
-            return masterShapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
+            return null;
         }
         
         var layout = (SCSlideLayout)this.slideShape.ParentSlide.SlideLayout;
