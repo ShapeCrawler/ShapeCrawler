@@ -32,11 +32,11 @@ namespace ShapeCrawler
         /// </summary>
         void SetColorByHex(string hex);
     }
-    
+
     internal class ColorFormat : IColorFormat
     {
         private readonly SCFont parentFont;
-        private readonly ITextFrameContainer textBoxContainer;
+        private readonly ITextFrameContainer textFrameContainer;
         private readonly SCSlideMaster parentSlideMaster;
         private bool initialized;
         private string hexColor;
@@ -45,8 +45,8 @@ namespace ShapeCrawler
         internal ColorFormat(SCFont parentFont)
         {
             this.parentFont = parentFont;
-            this.textBoxContainer = parentFont.ParentPortion.ParentParagraph.ParentTextBox.TextFrameContainer;
-            var shape = (Shape)this.textBoxContainer.Shape;
+            this.textFrameContainer = parentFont.ParentPortion.ParentParagraph.TextFrame.TextFrameContainer;
+            var shape = (Shape)this.textFrameContainer.Shape;
             this.parentSlideMaster = shape.SlideMasterInternal;
         }
 
@@ -126,7 +126,8 @@ namespace ShapeCrawler
 
                 // Presentation level
                 string colorHexVariant;
-                if (this.parentSlideMaster.Presentation.ParaLvlToFontData.TryGetValue(paragraphLevel, out FontData preFontData))
+                if (this.parentSlideMaster.Presentation.ParaLvlToFontData.TryGetValue(paragraphLevel,
+                        out FontData preFontData))
                 {
                     colorHexVariant = this.GetHexVariantByScheme(preFontData.ASchemeColor!.Val!);
                     this.colorType = SCColorType.Scheme;
@@ -143,7 +144,7 @@ namespace ShapeCrawler
 
         private bool TryFromTextBody(SCParagraph paragraph)
         {
-            A.ListStyle txBodyListStyle = paragraph.ParentTextBox.TextBodyElement!.GetFirstChild<A.ListStyle>();
+            A.ListStyle txBodyListStyle = paragraph.TextFrame.TextBodyElement!.GetFirstChild<A.ListStyle>();
             Dictionary<int, FontData> paraLvlToFontData = FontDataParser.FromCompositeElement(txBodyListStyle!);
             if (!paraLvlToFontData.TryGetValue(paragraph.Level, out FontData txBodyFontData))
             {
@@ -155,16 +156,16 @@ namespace ShapeCrawler
 
         private bool TryFromShapeFontReference()
         {
-            if (this.textBoxContainer is Shape parentShape)
+            if (this.textFrameContainer is Shape parentShape)
             {
-                P.Shape parentPShape = (P.Shape) parentShape.PShapeTreesChild;
+                var parentPShape = (P.Shape)parentShape.PShapeTreesChild;
                 if (parentPShape.ShapeStyle == null)
                 {
                     return false;
                 }
 
                 var aFontReference = parentPShape.ShapeStyle.FontReference!;
-                FontData fontReferenceFontData = new ()
+                var fontReferenceFontData = new FontData()
                 {
                     ARgbColorModelHex = aFontReference.RgbColorModelHex,
                     ASchemeColor = aFontReference.SchemeColor,
@@ -179,14 +180,15 @@ namespace ShapeCrawler
 
         private bool TryFromPlaceholder(int paragraphLevel)
         {
-            if (this.textBoxContainer.Shape.Placeholder is not Placeholder placeholder)
+            if (this.textFrameContainer.Shape.Placeholder is not Placeholder placeholder)
             {
                 return false;
             }
 
-            FontData placeholderFontData = new ();
-            FontDataParser.GetFontDataFromPlaceholder(ref placeholderFontData, this.parentFont.ParentPortion.ParentParagraph);
-            if (this.TryFromFontData(placeholderFontData))
+            var phFontData = new FontData();
+            var paragraph = this.parentFont.ParentPortion.ParentParagraph;
+            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, paragraph);
+            if (this.TryFromFontData(phFontData))
             {
                 return true;
             }

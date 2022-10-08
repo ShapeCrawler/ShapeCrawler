@@ -29,7 +29,7 @@ namespace ShapeCrawler.AutoShapes
             this.latinFont = new ResettableLazy<A.LatinFont>(this.GetALatinFont);
             this.colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
             this.ParentPortion = portion;
-            var parentTextBoxContainer = portion.ParentParagraph.ParentTextBox.TextFrameContainer;
+            var parentTextBoxContainer = portion.ParentParagraph.TextFrame.TextFrameContainer;
             Shape parentShape;
             if (parentTextBoxContainer is SCTableCell cell)
             {
@@ -37,7 +37,7 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                parentShape = (Shape)portion.ParentParagraph.ParentTextBox.TextFrameContainer;
+                parentShape = (Shape)portion.ParentParagraph.TextFrame.TextFrameContainer;
             }
 
             this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements!.FontScheme;
@@ -107,7 +107,7 @@ namespace ShapeCrawler.AutoShapes
 
         public bool CanChange()
         {
-            return this.ParentPortion.ParentParagraph.ParentTextBox.TextFrameContainer.Shape.Placeholder == null;
+            return this.ParentPortion.ParentParagraph.TextFrame.TextFrameContainer.Shape.Placeholder == null;
         }
 
         private string GetName()
@@ -153,7 +153,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             var parentParagraph = this.ParentPortion.ParentParagraph;
-            var textBoxContainer = parentParagraph.ParentTextBox.TextFrameContainer;
+            var textBoxContainer = parentParagraph.TextFrame.TextFrameContainer;
             int paragraphLvl = parentParagraph.Level;
 
             if (textBoxContainer is Shape { Placeholder: { } } parentShape)
@@ -308,7 +308,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetName(string fontName)
         {
-            Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextBox.TextFrameContainer;
+            Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.TextFrame.TextFrameContainer;
             if (parentShape.Placeholder != null)
             {
                 throw new PlaceholderCannotBeChangedException();

@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using OneOf;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMasters;
-using OneOf;
+using ShapeCrawler.Factories;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
+using ShapeCrawler.Shapes;
+using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMasters;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
@@ -18,12 +24,16 @@ namespace ShapeCrawler
     {
         private readonly Lazy<ShapeFill> shapeFill;
         private readonly Lazy<TextFrame?> textFrame;
+        private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
+        private readonly P.Shape pShape;
 
         internal SlideAutoShape(P.Shape pShape, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCGroupShape groupShape)
             : base(pShape, oneOfSlide, groupShape)
         {
+            this.pShape = pShape;
             this.textFrame = new Lazy<TextFrame?>(this.GetTextBox);
             this.shapeFill = new Lazy<ShapeFill>(this.GetFill);
+            this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
         }
 
         #region Public Properties
@@ -38,6 +48,56 @@ namespace ShapeCrawler
 
         #endregion Public Properties
 
+        internal void FillFontData(int paragraphLvl, ref FontData fontData)
+        {
+            // Tries get font from Auto Shape
+            if (this.lvlToFontData.Value.TryGetValue(paragraphLvl, out FontData layoutFontData))
+            {
+                fontData = layoutFontData;
+                if (!fontData.IsFilled() && this.Placeholder != null)
+                {
+                    var placeholder = (Placeholder)this.Placeholder;
+                    var referencedMasterShape = (SlideAutoShape)placeholder.ReferencedShape;
+                    referencedMasterShape?.FillFontData(paragraphLvl, ref fontData);
+                }
+
+                return;
+            }
+
+            if (this.Placeholder != null)
+            {
+                var placeholder = (Placeholder)this.Placeholder;
+                var referencedMasterShape = (IFontDataReader)placeholder.ReferencedShape;
+                if (referencedMasterShape != null)
+                {
+                    referencedMasterShape.FillFontData(paragraphLvl, ref fontData);
+                }
+            }
+        }
+        
+        
+        private Dictionary<int, FontData> GetLvlToFontData()
+        {
+            var textBody = this.pShape.TextBody!;
+            var lvlToFontData = FontDataParser.FromCompositeElement(textBody.ListStyle!);
+
+            if (!lvlToFontData.Any())
+            {
+                var endParaRunPrFs = textBody.GetFirstChild<A.Paragraph>()!
+                    .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
+                if (endParaRunPrFs is not null)
+                {
+                    var fontData = new FontData
+                    {
+                        FontSize = endParaRunPrFs
+                    };
+                    lvlToFontData.Add(1, fontData);
+                }
+            }
+
+            return lvlToFontData;
+        }
+        
         private TextFrame? GetTextBox()
         {
             var pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
