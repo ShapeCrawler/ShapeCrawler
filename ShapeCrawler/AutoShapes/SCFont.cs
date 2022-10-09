@@ -152,59 +152,75 @@ namespace ShapeCrawler.AutoShapes
                 return fontSize.Value / 100;
             }
 
-            var parentParagraph = this.ParentPortion.ParentParagraph;
-            var textBoxContainer = parentParagraph.TextFrame.TextFrameContainer;
-            int paragraphLvl = parentParagraph.Level;
+            var paragraph = this.ParentPortion.ParentParagraph;
+            var textFrameContainer = paragraph.TextFrame.TextFrameContainer;
+            var paraLevel = paragraph.Level;
 
-            if (textBoxContainer is Shape { Placeholder: { } } parentShape)
+            if (textFrameContainer is Shape { Placeholder: { } } shape)
             {
-                var placeholder = (Placeholder)parentShape.Placeholder;
-                var phReferencedShape = (SlideAutoShape)placeholder.ReferencedShape;
-                FontData fontDataPlaceholder = new ();
-                if (phReferencedShape != null)
+                if (TryFromPlaceholder(shape, paraLevel, out var sizeFromPlaceholder))
                 {
-                    phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
-                    if (fontDataPlaceholder.FontSize is not null)
-                    {
-                        return fontDataPlaceholder.FontSize / 100;
-                    }
-                }
-
-                var shapeSlideMaster = parentShape.SlideMasterInternal;
-
-                // From Slide Master body
-                if (shapeSlideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
-                {
-                    return fontSizeBody / 100;
-                }
-
-                // From Slide Master other
-                if (shapeSlideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
-                {
-                    return fontSizeOther / 100;
+                    return sizeFromPlaceholder;
                 }
             }
-
-            // From presentation level
-            SCSlideMaster slideMaster = null;
-            if (textBoxContainer is Shape shape)
+            
+            var presentation = textFrameContainer.Shape.PresentationInternal;
+            if (presentation.ParaLvlToFontData.TryGetValue(paraLevel, out FontData fontData))
             {
-                slideMaster = shape.SlideMasterInternal;
-            }
-            else
-            {
-                slideMaster = ((SCTableCell)textBoxContainer).SlideMasterInternal;
-            }
-
-            if (slideMaster.Presentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
-            {
-                if (fontData.FontSize is not null )
+                if (fontData.FontSize is not null)
                 {
                     return fontData.FontSize / 100;
                 }
             }
 
             return SCConstants.DefaultFontSize;
+        }
+
+        private static bool TryFromPlaceholder(Shape shape, int paraLevel, out int i)
+        {
+            i = -1;
+            var placeholder = (Placeholder)shape.Placeholder;
+            var referencedShape = (SlideAutoShape)placeholder?.ReferencedShape;
+            var fontDataPlaceholder = new FontData();
+            if (referencedShape != null)
+            {
+                referencedShape.FillFontData(paraLevel, ref fontDataPlaceholder);
+                if (fontDataPlaceholder.FontSize is not null)
+                {
+                    {
+                        i = fontDataPlaceholder.FontSize / 100;
+                        return true;
+                    }
+                }
+            }
+
+            var slideMaster = shape.SlideMasterInternal;
+            if (placeholder?.Type == SCPlaceholderType.Title)
+            {
+                var pTextStyles = slideMaster.PSlideMaster.TextStyles!;
+                var titleFontSize = pTextStyles.TitleStyle!.Level1ParagraphProperties!
+                    .GetFirstChild<A.DefaultRunProperties>()!.FontSize!.Value;
+                i = titleFontSize / 100;
+                return true;
+            }
+            
+            if (slideMaster.TryGetFontSizeFromBody(paraLevel, out var fontSizeBody))
+            {
+                {
+                    i = fontSizeBody / 100;
+                    return true;
+                }
+            }
+
+            if (slideMaster.TryGetFontSizeFromOther(paraLevel, out var fontSizeOther))
+            {
+                {
+                    i = fontSizeOther / 100;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private bool GetBoldFlag()
