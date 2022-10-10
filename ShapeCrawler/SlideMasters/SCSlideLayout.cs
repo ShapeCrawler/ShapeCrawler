@@ -27,15 +27,16 @@ namespace ShapeCrawler.SlideMasters
         public override bool IsRemoved { get; set; }
 
         public ISlideMaster SlideMaster => this.slideMaster;
-        
-        public SCPresentation PresentationInternal { get; }
 
+        public override SCPresentation PresentationInternal => this.SlideMasterInternal.PresentationInternal;
+        
         internal SlideLayoutPart SlideLayoutPart { get; }
 
         internal SCSlideMaster SlideMasterInternal => (SCSlideMaster)this.SlideMaster;
 
         internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
 
+        
         internal override TypedOpenXmlPart TypedOpenXmlPart => this.SlideLayoutPart;
         
         public override void ThrowIfRemoved()

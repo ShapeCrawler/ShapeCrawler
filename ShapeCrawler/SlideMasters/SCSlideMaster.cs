@@ -30,8 +30,8 @@ namespace ShapeCrawler.SlideMasters
         public IShapeCollection Shapes => ShapeCollection.Create(this.PSlideMaster.SlideMasterPart!, this);
 
         public override bool IsRemoved { get; set; }
-        
-        public SCPresentation PresentationInternal { get; }
+
+        public override SCPresentation PresentationInternal => this.Presentation; // TODO: make internal
         
         internal P.SlideMaster PSlideMaster { get; }
 
@@ -46,11 +46,9 @@ namespace ShapeCrawler.SlideMasters
         internal ThemePart ThemePart => this.PSlideMaster.SlideMasterPart!.ThemePart!;
 
         internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
-
+        
         internal override TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
         
-        
-
         public override void ThrowIfRemoved()
         {
             if (this.IsRemoved)

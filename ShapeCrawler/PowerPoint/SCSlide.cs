@@ -66,6 +66,8 @@ internal class SCSlide : SlideBase, ISlide
     public IPresentation Presentation { get; }
 
     public SlidePart SDKSlidePart { get; }
+    
+    public override SCPresentation PresentationInternal { get; } // TODO: make internal
 
     internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
 

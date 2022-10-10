@@ -164,7 +164,7 @@ namespace ShapeCrawler.AutoShapes
                 }
             }
             
-            var presentation = textFrameContainer.Shape.PresentationInternal;
+            var presentation = textFrameContainer.Shape.SlideBase.PresentationInternal;
             if (presentation.ParaLvlToFontData.TryGetValue(paraLevel, out FontData fontData))
             {
                 if (fontData.FontSize is not null)

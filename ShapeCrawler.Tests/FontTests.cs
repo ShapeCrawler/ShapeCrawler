@@ -103,6 +103,7 @@ namespace ShapeCrawler.Tests
             var portionCase13 = ((IAutoShape)_fixture.Pre014.Slides[3].Shapes.First(sp => sp.Id == 5)).TextFrame.Paragraphs[0].Portions[0];
             var portionCase14 = ((IAutoShape)_fixture.Pre014.Slides[4].Shapes.First(sp => sp.Id == 4)).TextFrame.Paragraphs[0].Portions[0];
             var portionCase15 = ((IAutoShape)_fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52)).TextFrame.Paragraphs[0].Portions[0];
+            var portionCase16 = ((IAutoShape)_fixture.Pre001.SlideMasters[0].Shapes.First(sp => sp.Id == 8)).TextFrame.Paragraphs[0].Portions[0];
 
             // Act-Assert
             portionCase1.Font.Size.Should().Be(18);
@@ -120,6 +121,7 @@ namespace ShapeCrawler.Tests
             portionCase13.Font.Size.Should().Be(12);
             portionCase14.Font.Size.Should().Be(12);
             portionCase15.Font.Size.Should().Be(27);
+            portionCase16.Font.Size.Should().Be(18);
         }
         
         [Theory]

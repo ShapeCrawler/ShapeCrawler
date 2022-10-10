@@ -33,11 +33,11 @@ internal class SlidePlaceholder : Placeholder
     {
         if (this.slideShape.SlideBase is SCSlideLayout slideLayout)
         {
-            var shapes = slideLayout.SlideMasterInternal.ShapesInternal;
-            return shapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
+            var masterShapes = slideLayout.SlideMasterInternal.ShapesInternal;
+            return masterShapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
         }
         
-        if (this.slideShape.SlideBase is SCSlideMaster slideMaster)
+        if (this.slideShape.SlideBase is SCSlideMaster)
         {
             return null;
         }
@@ -45,6 +45,12 @@ internal class SlidePlaceholder : Placeholder
         var layout = (SCSlideLayout)this.slideShape.ParentSlide.SlideLayout;
         var layoutShapes = layout.ShapesInternal;
         var referencedShape = layoutShapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
+
+        if (referencedShape == null)
+        {
+            var masterShapes = layout.SlideMasterInternal.ShapesInternal;
+            return masterShapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
+        }
 
         return referencedShape;
     }
