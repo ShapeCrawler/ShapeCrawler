@@ -2,29 +2,30 @@
 using ShapeCrawler.Shapes;
 using System;
 using ShapeCrawler.OLEObjects;
+using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
+using OneOf;
 
-namespace ShapeCrawler.Factories
+namespace ShapeCrawler.Factories;
+
+internal class OleGraphicFrameHandler : OpenXmlElementHandler
 {
-    internal class OleGraphicFrameHandler : OpenXmlElementHandler
+    private const string Uri = "http://schemas.openxmlformats.org/presentationml/2006/ole";
+
+    internal override Shape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCGroupShape groupShape)
     {
-        private const string Uri = "http://schemas.openxmlformats.org/presentationml/2006/ole";
-
-        internal override Shape Create(OpenXmlCompositeElement compositeElementOfPShapeTree, SCSlide slide, SlideGroupShape groupShape)
+        if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
         {
-            if (compositeElementOfPShapeTree is P.GraphicFrame pGraphicFrame)
+            var aGraphicData = pShapeTreeChild!.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>();
+            if (aGraphicData!.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
             {
-                var aGraphicData = compositeElementOfPShapeTree!.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>();
-                if (aGraphicData!.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
-                {
-                    SlideOLEObject oleObject = new (pGraphicFrame, slide, groupShape);
+                 var oleObject = new SlideOLEObject (pGraphicFrame, oneOfSlide, groupShape);
 
-                    return oleObject;
-                }
+                return oleObject;
             }
-
-            return this.Successor?.Create(compositeElementOfPShapeTree, slide, groupShape);
         }
+
+        return this.Successor?.Create(pShapeTreeChild, oneOfSlide, groupShape);
     }
 }

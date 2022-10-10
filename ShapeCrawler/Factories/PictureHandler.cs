@@ -4,20 +4,19 @@ using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
+using OneOf;
 
 namespace ShapeCrawler.Factories
 {
-    /// <summary>
-    ///     Represents handler for p:pic and p:graphicFrame elements.
-    /// </summary>
     internal class PictureHandler : OpenXmlElementHandler
     {
-        internal override Shape? Create(OpenXmlCompositeElement compositeElementOfPShapeTree, SCSlide slide, SlideGroupShape groupShape)
+        internal override Shape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCGroupShape groupShape)
         {
             P.Picture? pPicture;
-            if (compositeElementOfPShapeTree is P.Picture treePic)
+            if (pShapeTreeChild is P.Picture treePic)
             {
                 var element = treePic.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!.ChildElements.FirstOrDefault();
 
@@ -29,7 +28,7 @@ namespace ShapeCrawler.Factories
                             .GetFirstChild<A.AudioFromFile>();
                         if (aAudioFile is not null)
                         {
-                            return new AudioShape(compositeElementOfPShapeTree, slide);
+                            return new AudioShape(pShapeTreeChild, oneOfSlide);
                         }
 
                         break;
@@ -41,7 +40,7 @@ namespace ShapeCrawler.Factories
 
                         if (aVideoFile != null)
                         {
-                            return new VideoShape(slide, compositeElementOfPShapeTree);
+                            return new VideoShape(oneOfSlide, pShapeTreeChild);
                         }
 
                         break;
@@ -52,12 +51,12 @@ namespace ShapeCrawler.Factories
             }
             else
             {
-                pPicture = compositeElementOfPShapeTree.Descendants<P.Picture>().FirstOrDefault();
+                pPicture = pShapeTreeChild.Descendants<P.Picture>().FirstOrDefault();
             }
 
             if (pPicture == null)
             {
-                return this.Successor?.Create(compositeElementOfPShapeTree, slide, groupShape);
+                return this.Successor?.Create(pShapeTreeChild, oneOfSlide, groupShape);
             }
 
             StringValue? picReference = pPicture.GetFirstChild<P.BlipFill>()?.Blip?.Embed;
@@ -66,7 +65,7 @@ namespace ShapeCrawler.Factories
                 return null;
             }
 
-            SlidePicture picture = new (pPicture, slide, picReference);
+             var picture = new SlidePicture (pPicture, oneOfSlide, picReference);
 
             return picture;
         }

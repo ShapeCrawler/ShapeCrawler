@@ -23,13 +23,15 @@ namespace ShapeCrawler.SlideMasters
             this.slideLayouts = new ResettableLazy<List<SCSlideLayout>>(this.GetSlideLayouts);
         }
         
-        public IImage Background => this.GetBackground();
+        public IImage? Background => this.GetBackground();
 
         public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
-        public IShapeCollection Shapes => ShapeCollection.ForSlideLayout(this.PSlideMaster.CommonSlideData!.ShapeTree!, this);
+        public IShapeCollection Shapes => ShapeCollection.Create(this.PSlideMaster.SlideMasterPart!, this);
 
         public override bool IsRemoved { get; set; }
+
+        public override SCPresentation PresentationInternal => this.Presentation; // TODO: make internal
         
         internal P.SlideMaster PSlideMaster { get; }
 
@@ -41,12 +43,12 @@ namespace ShapeCrawler.SlideMasters
         internal Dictionary<int, FontData> TitleParaLvlToFontData =>
             FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.TitleStyle!);
 
-        internal ThemePart ThemePart => this.PSlideMaster.SlideMasterPart!.ThemePart;
+        internal ThemePart ThemePart => this.PSlideMaster.SlideMasterPart!.ThemePart!;
 
         internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
-
+        
         internal override TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
-
+        
         public override void ThrowIfRemoved()
         {
             if (this.IsRemoved)
@@ -93,7 +95,7 @@ namespace ShapeCrawler.SlideMasters
             return false;
         }
         
-        private SCImage GetBackground()
+        private SCImage? GetBackground()
         {
             return null;
         }

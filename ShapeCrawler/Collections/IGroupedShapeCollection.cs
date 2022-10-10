@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using OneOf;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Collections;
@@ -33,8 +35,22 @@ internal class GroupedShapeCollection : LibraryCollection<IShape>, IGroupedShape
     {
     }
 
-    public static GroupedShapeCollection Create(P.GroupShape pGroupShapeParam, SCSlide slide,
-        SlideGroupShape groupShape)
+
+    public T GetById<T>(int shapeId)
+        where T : IShape
+    {
+        var shape = this.CollectionItems.First(shape => shape.Id == shapeId);
+        return (T)shape;
+    }
+
+    public T GetByName<T>(string shapeName)
+    {
+        var shape = this.CollectionItems.First(shape => shape.Name == shapeName);
+        return (T)shape;
+    }
+    
+    
+    internal static GroupedShapeCollection Create(P.GroupShape pGroupShapeParam, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCGroupShape groupShape)
     {
         var autoShapeCreator = new AutoShapeCreator();
         var oleGrFrameHandler = new OleGraphicFrameHandler();
@@ -53,11 +69,11 @@ internal class GroupedShapeCollection : LibraryCollection<IShape>, IGroupedShape
             Shape shape;
             if (child is P.GroupShape pGroupShape)
             {
-                shape = new SlideGroupShape(pGroupShape, slide, groupShape);
+                shape = new SCGroupShape(pGroupShape, oneOfSlide, groupShape);
             }
             else
             {
-                shape = autoShapeCreator.Create(child, slide, groupShape);
+                shape = autoShapeCreator.Create(child, oneOfSlide, groupShape);
             }
 
             if (shape != null)
@@ -67,18 +83,5 @@ internal class GroupedShapeCollection : LibraryCollection<IShape>, IGroupedShape
         }
 
         return new GroupedShapeCollection(groupedShapes);
-    }
-
-    public T GetById<T>(int shapeId)
-        where T : IShape
-    {
-        var shape = this.CollectionItems.First(shape => shape.Id == shapeId);
-        return (T)shape;
-    }
-
-    public T GetByName<T>(string shapeName)
-    {
-        var shape = this.CollectionItems.First(shape => shape.Name == shapeName);
-        return (T)shape;
     }
 }

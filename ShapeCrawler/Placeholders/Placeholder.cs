@@ -8,7 +8,7 @@ namespace ShapeCrawler.Placeholders
     {
         internal readonly P.PlaceholderShape PPlaceholderShape;
         
-        protected ResettableLazy<Shape> layoutReferencedShape;
+        protected ResettableLazy<Shape> referencedShape;
 
         protected Placeholder(P.PlaceholderShape pPlaceholderShape)
         {
@@ -16,11 +16,8 @@ namespace ShapeCrawler.Placeholders
         }
 
         public SCPlaceholderType Type => this.GetPlaceholderType();
-
-        /// <summary>
-        ///     Gets referenced shape from lower level slide.
-        /// </summary>
-        protected internal Shape ReferencedShape => this.layoutReferencedShape.Value;
+        
+        protected internal Shape ReferencedShape => this.referencedShape.Value;
 
         #region Private Methods
 

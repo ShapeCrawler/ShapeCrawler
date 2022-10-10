@@ -58,7 +58,7 @@ internal class MasterAutoShape : MasterShape, IAutoShape, ITextFrameContainer, I
         }
 
         var pTextStyles = this.SlideMasterInternal.PSlideMaster.TextStyles!;
-        if (this.Placeholder.Type != SCPlaceholderType.Title)
+        if (this.Placeholder!.Type != SCPlaceholderType.Title)
         {
             return;
         }
@@ -93,7 +93,7 @@ internal class MasterAutoShape : MasterShape, IAutoShape, ITextFrameContainer, I
         return lvlToFontData;
     }
 
-    private TextFrame GetTextBox() // TODO: duplicate code in LayoutAutoShape
+    private TextFrame? GetTextBox() // TODO: duplicate code in LayoutAutoShape
     {
         P.TextBody pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
         if (pTextBody == null)

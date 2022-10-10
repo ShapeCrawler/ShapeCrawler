@@ -29,7 +29,7 @@ namespace ShapeCrawler.AutoShapes
             this.latinFont = new ResettableLazy<A.LatinFont>(this.GetALatinFont);
             this.colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
             this.ParentPortion = portion;
-            var parentTextBoxContainer = portion.ParentParagraph.ParentTextBox.TextFrameContainer;
+            var parentTextBoxContainer = portion.ParentParagraph.TextFrame.TextFrameContainer;
             Shape parentShape;
             if (parentTextBoxContainer is SCTableCell cell)
             {
@@ -37,7 +37,7 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                parentShape = (Shape)portion.ParentParagraph.ParentTextBox.TextFrameContainer;
+                parentShape = (Shape)portion.ParentParagraph.TextFrame.TextFrameContainer;
             }
 
             this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements!.FontScheme;
@@ -107,7 +107,7 @@ namespace ShapeCrawler.AutoShapes
 
         public bool CanChange()
         {
-            return this.ParentPortion.ParentParagraph.ParentTextBox.TextFrameContainer.Shape.Placeholder == null;
+            return this.ParentPortion.ParentParagraph.TextFrame.TextFrameContainer.Shape.Placeholder == null;
         }
 
         private string GetName()
@@ -115,10 +115,10 @@ namespace ShapeCrawler.AutoShapes
             const string majorLatinFont = "+mj-lt";
             if (this.latinFont.Value.Typeface == majorLatinFont)
             {
-                return this.aFontScheme.MajorFont!.LatinFont!.Typeface;
+                return this.aFontScheme.MajorFont!.LatinFont!.Typeface!;
             }
 
-            return this.latinFont.Value.Typeface;
+            return this.latinFont.Value.Typeface!;
         }
 
         private A.LatinFont GetALatinFont()
@@ -141,7 +141,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             // Get from theme
-            return this.aFontScheme.MinorFont!.LatinFont;
+            return this.aFontScheme.MinorFont!.LatinFont!;
         }
 
         private int GetSize()
@@ -152,59 +152,75 @@ namespace ShapeCrawler.AutoShapes
                 return fontSize.Value / 100;
             }
 
-            var parentParagraph = this.ParentPortion.ParentParagraph;
-            var textBoxContainer = parentParagraph.ParentTextBox.TextFrameContainer;
-            int paragraphLvl = parentParagraph.Level;
+            var paragraph = this.ParentPortion.ParentParagraph;
+            var textFrameContainer = paragraph.TextFrame.TextFrameContainer;
+            var paraLevel = paragraph.Level;
 
-            if (textBoxContainer is Shape { Placeholder: { } } parentShape)
+            if (textFrameContainer is Shape { Placeholder: { } } shape)
             {
-                Placeholder placeholder = (Placeholder)parentShape.Placeholder;
-                IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
-                FontData fontDataPlaceholder = new ();
-                if (phReferencedShape != null)
+                if (TryFromPlaceholder(shape, paraLevel, out var sizeFromPlaceholder))
                 {
-                    phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
-                    if (fontDataPlaceholder.FontSize is not null)
-                    {
-                        return fontDataPlaceholder.FontSize / 100;
-                    }
-                }
-
-                var shapeSlideMaster = parentShape.SlideMasterInternal;
-
-                // From Slide Master body
-                if (shapeSlideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
-                {
-                    return fontSizeBody / 100;
-                }
-
-                // From Slide Master other
-                if (shapeSlideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
-                {
-                    return fontSizeOther / 100;
+                    return sizeFromPlaceholder;
                 }
             }
-
-            // From presentation level
-            SCSlideMaster slideMaster = null;
-            if (textBoxContainer is Shape shape)
+            
+            var presentation = textFrameContainer.Shape.SlideBase.PresentationInternal;
+            if (presentation.ParaLvlToFontData.TryGetValue(paraLevel, out FontData fontData))
             {
-                slideMaster = shape.SlideMasterInternal;
-            }
-            else
-            {
-                slideMaster = ((SCTableCell)textBoxContainer).SlideMasterInternal;
-            }
-
-            if (slideMaster.Presentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
-            {
-                if (fontData.FontSize is not null )
+                if (fontData.FontSize is not null)
                 {
                     return fontData.FontSize / 100;
                 }
             }
 
             return SCConstants.DefaultFontSize;
+        }
+
+        private static bool TryFromPlaceholder(Shape shape, int paraLevel, out int i)
+        {
+            i = -1;
+            var placeholder = (Placeholder)shape.Placeholder;
+            var referencedShape = (SlideAutoShape)placeholder?.ReferencedShape;
+            var fontDataPlaceholder = new FontData();
+            if (referencedShape != null)
+            {
+                referencedShape.FillFontData(paraLevel, ref fontDataPlaceholder);
+                if (fontDataPlaceholder.FontSize is not null)
+                {
+                    {
+                        i = fontDataPlaceholder.FontSize / 100;
+                        return true;
+                    }
+                }
+            }
+
+            var slideMaster = shape.SlideMasterInternal;
+            if (placeholder?.Type == SCPlaceholderType.Title)
+            {
+                var pTextStyles = slideMaster.PSlideMaster.TextStyles!;
+                var titleFontSize = pTextStyles.TitleStyle!.Level1ParagraphProperties!
+                    .GetFirstChild<A.DefaultRunProperties>()!.FontSize!.Value;
+                i = titleFontSize / 100;
+                return true;
+            }
+            
+            if (slideMaster.TryGetFontSizeFromBody(paraLevel, out var fontSizeBody))
+            {
+                {
+                    i = fontSizeBody / 100;
+                    return true;
+                }
+            }
+
+            if (slideMaster.TryGetFontSizeFromOther(paraLevel, out var fontSizeOther))
+            {
+                {
+                    i = fontSizeOther / 100;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private bool GetBoldFlag()
@@ -308,7 +324,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetName(string fontName)
         {
-            Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextBox.TextFrameContainer;
+            Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.TextFrame.TextFrameContainer;
             if (parentShape.Placeholder != null)
             {
                 throw new PlaceholderCannotBeChangedException();

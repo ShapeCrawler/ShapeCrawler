@@ -24,7 +24,7 @@ namespace ShapeCrawler.Tests
             this.fixture = fixture;
         }
 
-        [Fact(Skip = "In Progress")]
+        [Fact]
         public void GetByName_returns_shape_by_specified_name()
         {
             // Arrange

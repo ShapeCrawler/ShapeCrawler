@@ -1,5 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.SlideMasters;
+using OneOf;
 
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.OLEObjects;
@@ -7,13 +9,10 @@ namespace ShapeCrawler.OLEObjects;
 /// <summary>
 ///     Represents a shape on a slide.
 /// </summary>
-internal class SlideOLEObject : SlideShape, IOLEObject // TODO: make it internal
+internal class SlideOLEObject : SlideShape, IOLEObject
 {
-    internal SlideOLEObject(
-        OpenXmlCompositeElement pShapeTreesChild,
-        SCSlide parentSlideLayoutInternal,
-        SlideGroupShape groupShape)
-        : base(pShapeTreesChild, parentSlideLayoutInternal, groupShape)
+    internal SlideOLEObject(OpenXmlCompositeElement pShapeTreesChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCGroupShape groupShape)
+        : base(pShapeTreesChild, oneOfSlide, groupShape)
     {
     }
 

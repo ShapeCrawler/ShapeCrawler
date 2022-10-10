@@ -1,17 +1,15 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Services;
 
-namespace ShapeCrawler
+namespace ShapeCrawler;
+
+internal abstract class SlideBase : IRemovable, IPresentationComponent
 {
-    /// <summary>
-    ///     Represents base class for Slide, Slide Layout and Slide Master.
-    /// </summary>
-    internal abstract class SlideBase : IRemovable
-    {
-        public abstract bool IsRemoved { get; set; }
+    public abstract bool IsRemoved { get; set; } // TODO: make internal
 
-        internal abstract TypedOpenXmlPart TypedOpenXmlPart { get; }
+    public abstract SCPresentation PresentationInternal { get; }
+    
+    internal abstract TypedOpenXmlPart TypedOpenXmlPart { get; }
 
-        public abstract void ThrowIfRemoved();
-    }
+    public abstract void ThrowIfRemoved(); // TODO: make internal
 }

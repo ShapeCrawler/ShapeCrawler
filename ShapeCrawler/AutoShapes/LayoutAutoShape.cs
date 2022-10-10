@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DocumentFormat.OpenXml;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Factories;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
@@ -15,7 +12,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.AutoShapes;
 
-internal class LayoutAutoShape : LayoutShape, IAutoShape, IFontDataReader, ITextFrameContainer
+internal class LayoutAutoShape : LayoutShape, IAutoShape, ITextFrameContainer
 {
     private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
     private readonly Lazy<ShapeFill> shapeFill;
@@ -27,7 +24,7 @@ internal class LayoutAutoShape : LayoutShape, IAutoShape, IFontDataReader, IText
     {
         this.textBox = new Lazy<TextFrame?>(this.GetTextFrame);
         this.shapeFill = new Lazy<ShapeFill>(TryGetFill);
-        this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
+        
         this.pShape = pShape;
     }
 
@@ -42,59 +39,9 @@ internal class LayoutAutoShape : LayoutShape, IAutoShape, IFontDataReader, IText
     #endregion Public Properties
 
     public Shape Shape => this;
+    
 
-    private Dictionary<int, FontData> LvlToFontData => this.lvlToFontData.Value;
-
-    public void FillFontData(int paragraphLvl, ref FontData fontData)
-    {
-        // Tries get font from Auto Shape
-        if (this.LvlToFontData.TryGetValue(paragraphLvl, out FontData layoutFontData))
-        {
-            fontData = layoutFontData;
-            if (!fontData.IsFilled() && this.Placeholder != null)
-            {
-                Placeholder placeholder = (Placeholder)this.Placeholder;
-                IFontDataReader referencedMasterShape = (IFontDataReader)placeholder.ReferencedShape;
-                referencedMasterShape?.FillFontData(paragraphLvl, ref fontData);
-            }
-
-            return;
-        }
-
-        if (this.Placeholder != null)
-        {
-            Placeholder placeholder = (Placeholder)this.Placeholder;
-            IFontDataReader referencedMasterShape = (IFontDataReader)placeholder.ReferencedShape;
-            if (referencedMasterShape != null)
-            {
-                referencedMasterShape.FillFontData(paragraphLvl, ref fontData);
-            }
-        }
-    }
-
-    private Dictionary<int, FontData> GetLvlToFontData()
-    {
-        var textBody = this.pShape.TextBody!;
-        var lvlToFontData = FontDataParser.FromCompositeElement(textBody.ListStyle!);
-
-        if (!lvlToFontData.Any())
-        {
-            var endParaRunPrFs = textBody.GetFirstChild<A.Paragraph>()!
-                .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
-            if (endParaRunPrFs is not null)
-            {
-                var fontData = new FontData
-                {
-                    FontSize = endParaRunPrFs
-                };
-                lvlToFontData.Add(1, fontData);
-            }
-        }
-
-        return lvlToFontData;
-    }
-
-    private TextFrame GetTextFrame()
+    private TextFrame? GetTextFrame()
     {
         P.TextBody pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
         if (pTextBody == null)

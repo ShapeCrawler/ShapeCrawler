@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using OneOf;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -28,8 +30,8 @@ internal class SCChart : SlideShape, IChart
         
     private string? chartTitle;
 
-    internal SCChart(P.GraphicFrame pGraphicFrame, SCSlide slideInternal)
-        : base(pGraphicFrame, slideInternal, null)
+    internal SCChart(P.GraphicFrame pGraphicFrame, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
+        : base(pGraphicFrame, oneOfSlide, null)
     {
         this.pGraphicFrame = pGraphicFrame;
         this.firstSeries = new Lazy<OpenXmlElement>(this.GetFirstSeries);
@@ -41,7 +43,7 @@ internal class SCChart : SlideShape, IChart
         var cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
             .GetFirstChild<C.ChartReference>()!;
 
-        this.ChartPart = (ChartPart)this.Slide.SDKSlidePart.GetPartById(cChartReference.Id!);
+        this.ChartPart = (ChartPart)this.Slide.TypedOpenXmlPart.GetPartById(cChartReference.Id!);
             
         var cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea;
         this.cXCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
@@ -53,7 +55,7 @@ internal class SCChart : SlideShape, IChart
 
     public override SCShapeType ShapeType => SCShapeType.Chart;
 
-    public string Title
+    public string? Title
     {
         get
         {
@@ -75,7 +77,7 @@ internal class SCChart : SlideShape, IChart
 
     public ISeriesCollection SeriesCollection => this.series.Value;
 
-    public ICategoryCollection Categories => this.categories.Value;
+    public ICategoryCollection? Categories => this.categories.Value;
 
     public bool HasXValues => this.xValues.Value != null;
 
@@ -125,7 +127,7 @@ internal class SCChart : SlideShape, IChart
         return SCSeriesCollection.Create(this, this.cXCharts);
     }
 
-    private string GetTitleOrDefault()
+    private string? GetTitleOrDefault()
     {
         var cTitle = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>()!.Title;
         if (cTitle == null)
@@ -177,7 +179,7 @@ internal class SCChart : SlideShape, IChart
         return false;
     }
 
-    private LibraryCollection<double> GetXValues()
+    private LibraryCollection<double>? GetXValues()
     {
         var sdkXValues = this.firstSeries.Value?.GetFirstChild<C.XValues>();
         if (sdkXValues?.NumberReference == null)
@@ -191,7 +193,7 @@ internal class SCChart : SlideShape, IChart
         return new LibraryCollection<double>(points);
     }
 
-    private OpenXmlElement GetFirstSeries()
+    private OpenXmlElement? GetFirstSeries()
     {
         return this.cXCharts.First().ChildElements
             .FirstOrDefault(e => e.LocalName.Equals("ser", StringComparison.Ordinal));

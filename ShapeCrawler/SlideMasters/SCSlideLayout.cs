@@ -19,7 +19,7 @@ namespace ShapeCrawler.SlideMasters
             this.slideMaster = slideMaster;
             this.SlideLayoutPart = slideLayoutPart;
             this.shapes = new ResettableLazy<ShapeCollection>(() =>
-                ShapeCollection.ForSlideLayout(slideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!, this));
+                ShapeCollection.Create(slideLayoutPart, this));
         }
 
         public IShapeCollection Shapes => this.shapes.Value;
@@ -28,12 +28,15 @@ namespace ShapeCrawler.SlideMasters
 
         public ISlideMaster SlideMaster => this.slideMaster;
 
+        public override SCPresentation PresentationInternal => this.SlideMasterInternal.PresentationInternal;
+        
         internal SlideLayoutPart SlideLayoutPart { get; }
 
         internal SCSlideMaster SlideMasterInternal => (SCSlideMaster)this.SlideMaster;
 
         internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
 
+        
         internal override TypedOpenXmlPart TypedOpenXmlPart => this.SlideLayoutPart;
         
         public override void ThrowIfRemoved()

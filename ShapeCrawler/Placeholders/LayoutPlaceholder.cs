@@ -16,13 +16,13 @@ namespace ShapeCrawler.Placeholders
             : base(pPlaceholderShape)
         {
             this.layoutShape = layoutShape;
-            this.layoutReferencedShape = new ResettableLazy<Shape>(this.GetReferencedShape);
+            this.referencedShape = new ResettableLazy<Shape>(this.GetReferencedShape);
         }
 
-        internal static LayoutPlaceholder Create(OpenXmlCompositeElement pShapeTreeChild, LayoutShape layoutShape)
+        internal static LayoutPlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, LayoutShape layoutShape)
         {
             P.PlaceholderShape pPlaceholderShape =
-                pShapeTreeChild.ApplicationNonVisualDrawingProperties().GetFirstChild<P.PlaceholderShape>();
+                pShapeTreeChild.GetPNvPr().GetFirstChild<P.PlaceholderShape>();
             if (pPlaceholderShape == null)
             {
                 return null;
@@ -31,7 +31,7 @@ namespace ShapeCrawler.Placeholders
             return new LayoutPlaceholder(pPlaceholderShape, layoutShape);
         }
 
-        private Shape GetReferencedShape()
+        private Shape? GetReferencedShape()
         {
             var shapes = this.layoutShape.SlideLayoutInternal.SlideMasterInternal.ShapesInternal;
 

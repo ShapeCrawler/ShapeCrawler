@@ -88,21 +88,22 @@ namespace ShapeCrawler.Tests
         public void Size_Getter_returns_font_size()
         {
             // Arrange
-            IPortion portionCase1 = ((IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3)).TextFrame.Paragraphs[0].Portions[0];
-            IPortion portionCase2 = ((IAutoShape)_fixture.Pre015.Slides[0].Shapes.First(sp => sp.Id == 5)).TextFrame.Paragraphs[0].Portions[2];
-            IPortion portionCase3 = ((IAutoShape)_fixture.Pre015.Slides[1].Shapes.First(sp => sp.Id == 61)).TextFrame.Paragraphs[0].Portions[0];
-            IPortion portionCase4 = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextFrame.Paragraphs[0].Portions[0];
-            IPortion portionCase5 = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextFrame.Paragraphs[0].Portions[1];
-            IPortion portionCase6 = ((IAutoShape)_fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2)).TextFrame.Paragraphs[0].Portions[0];
-            IPortion portionCase7 = ((IAutoShape)_fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 3)).TextFrame.Paragraphs[0].Portions[0];
-            IPortion portionCase8 = ((IAutoShape)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 4103)).TextFrame.Paragraphs[0].Portions[0];
-            IPortion portionCase9 = ((IAutoShape)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2)).TextFrame.Paragraphs[0].Portions[0];
-            IPortion portionCase10 = ((IAutoShape)_fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5)).TextFrame.Paragraphs[0].Portions[0];
-            IPortion portionCase11 = ((IAutoShape)_fixture.Pre012.Slides[0].Shapes.First(sp => sp.Id == 2)).TextFrame.Paragraphs[0].Portions[0];
-            IPortion portionCase12 = ((IAutoShape)_fixture.Pre010.Slides[0].Shapes.First(sp => sp.Id == 2)).TextFrame.Paragraphs[0].Portions[0];
-            IPortion portionCase13 = ((IAutoShape)_fixture.Pre014.Slides[3].Shapes.First(sp => sp.Id == 5)).TextFrame.Paragraphs[0].Portions[0];
-            IPortion portionCase14 = ((IAutoShape)_fixture.Pre014.Slides[4].Shapes.First(sp => sp.Id == 4)).TextFrame.Paragraphs[0].Portions[0];
-            IPortion portionCase15 = ((IAutoShape)_fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52)).TextFrame.Paragraphs[0].Portions[0];
+            var portionCase1 = ((IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3)).TextFrame.Paragraphs[0].Portions[0];
+            var portionCase2 = ((IAutoShape)_fixture.Pre015.Slides[0].Shapes.First(sp => sp.Id == 5)).TextFrame.Paragraphs[0].Portions[2];
+            var portionCase3 = ((IAutoShape)_fixture.Pre015.Slides[1].Shapes.First(sp => sp.Id == 61)).TextFrame.Paragraphs[0].Portions[0];
+            var portionCase4 = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextFrame.Paragraphs[0].Portions[0];
+            var portionCase5 = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextFrame.Paragraphs[0].Portions[1];
+            var portionCase6 = ((IAutoShape)_fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 2)).TextFrame.Paragraphs[0].Portions[0];
+            var portionCase7 = ((IAutoShape)_fixture.Pre009.Slides[3].Shapes.First(sp => sp.Id == 3)).TextFrame.Paragraphs[0].Portions[0];
+            var portionCase8 = ((IAutoShape)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 4103)).TextFrame.Paragraphs[0].Portions[0];
+            var portionCase9 = ((IAutoShape)_fixture.Pre019.Slides[0].Shapes.First(sp => sp.Id == 2)).TextFrame.Paragraphs[0].Portions[0];
+            var portionCase10 = ((IAutoShape)_fixture.Pre014.Slides[1].Shapes.First(sp => sp.Id == 5)).TextFrame.Paragraphs[0].Portions[0];
+            var portionCase11 = _fixture.Pre012.Slides[0].Shapes.GetByName<IAutoShape>("Title 1").TextFrame!.Paragraphs[0].Portions[0];
+            var portionCase12 = ((IAutoShape)_fixture.Pre010.Slides[0].Shapes.First(sp => sp.Id == 2)).TextFrame.Paragraphs[0].Portions[0];
+            var portionCase13 = ((IAutoShape)_fixture.Pre014.Slides[3].Shapes.First(sp => sp.Id == 5)).TextFrame.Paragraphs[0].Portions[0];
+            var portionCase14 = ((IAutoShape)_fixture.Pre014.Slides[4].Shapes.First(sp => sp.Id == 4)).TextFrame.Paragraphs[0].Portions[0];
+            var portionCase15 = ((IAutoShape)_fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52)).TextFrame.Paragraphs[0].Portions[0];
+            var portionCase16 = ((IAutoShape)_fixture.Pre001.SlideMasters[0].Shapes.First(sp => sp.Id == 8)).TextFrame.Paragraphs[0].Portions[0];
 
             // Act-Assert
             portionCase1.Font.Size.Should().Be(18);
@@ -120,20 +121,42 @@ namespace ShapeCrawler.Tests
             portionCase13.Font.Size.Should().Be(12);
             portionCase14.Font.Size.Should().Be(12);
             portionCase15.Font.Size.Should().Be(27);
+            portionCase16.Font.Size.Should().Be(18);
         }
-
-        [Fact]
-        public void Size_Getter_returns_font_size_of_Placeholder()
+        
+        [Theory]
+        [MemberData(nameof(TestCasesSizeGetter))]
+        public void Size_Getter_returns_font_size_of_Placeholder(TestCase testCase)
         {
             // Arrange
-            IAutoShape autoShapeCase1 = (IAutoShape)_fixture.Pre028.Slides[0].Shapes.First(sp => sp.Id == 4098);
-            IAutoShape autoShapeCase2 = (IAutoShape)_fixture.Pre029.Slides[0].Shapes.First(sp => sp.Id == 3);
-            IPortion portionC1 = autoShapeCase1.TextFrame.Paragraphs[0].Portions[0];
-            IPortion portionC2 = autoShapeCase2.TextFrame.Paragraphs[0].Portions[0];
+            var font = testCase.AutoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
+            var expectedFontSize = testCase.ExpectedInt;
+            
+            // Act
+            var fontSize = font.Size;
+            
+            // Assert
+            fontSize.Should().Be(expectedFontSize);
+        }
 
-            // Act-Assert
-            portionC1.Font.Size.Should().Be(32);
-            portionC2.Font.Size.Should().Be(25);
+        public static IEnumerable<object[]> TestCasesSizeGetter
+        {
+            get
+            {
+                var testCase1 = new TestCase("#1");
+                testCase1.PresentationName = "028.pptx";
+                testCase1.SlideNumber = 1;
+                testCase1.ShapeId = 4098;
+                testCase1.ExpectedInt = 32;
+                yield return new object[] { testCase1 };
+                
+                var testCase2 = new TestCase("#2");
+                testCase2.PresentationName = "029.pptx";
+                testCase2.SlideNumber = 1;
+                testCase2.ShapeName = "Content Placeholder 2";
+                testCase2.ExpectedInt = 25;
+                yield return new object[] { testCase2 };
+            }
         }
 
         [Fact]

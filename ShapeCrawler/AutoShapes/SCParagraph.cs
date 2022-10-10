@@ -24,7 +24,7 @@ namespace ShapeCrawler.AutoShapes
             this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
             this.Level = GetInnerLevel(aParagraph);
             this.bullet = new Lazy<SCBullet>(this.GetBullet);
-            this.ParentTextBox = textBox;
+            this.TextFrame = textBox;
             this.portions = new ResettableLazy<PortionCollection>(this.GetPortions);
         }
 
@@ -46,7 +46,7 @@ namespace ShapeCrawler.AutoShapes
             set => this.SetAlignment(value);
         }
 
-        internal TextFrame ParentTextBox { get; }
+        internal TextFrame TextFrame { get; }
 
         internal A.Paragraph AParagraph { get; }
 
@@ -115,7 +115,7 @@ namespace ShapeCrawler.AutoShapes
                 throw new ElementIsRemovedException("Paragraph was removed.");
             }
 
-            this.ParentTextBox.ThrowIfRemoved();
+            this.TextFrame.ThrowIfRemoved();
         }
 
         #region Private Methods
@@ -226,7 +226,7 @@ namespace ShapeCrawler.AutoShapes
                 return this.alignment.Value;
             }
 
-            var shape = this.ParentTextBox.TextFrameContainer.Shape;
+            var shape = this.TextFrame.TextFrameContainer.Shape;
             var placeholder = shape.Placeholder;
             
             var aTextAlignmentType = this.AParagraph.ParagraphProperties?.Alignment!;

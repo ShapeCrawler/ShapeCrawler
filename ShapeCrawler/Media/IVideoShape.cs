@@ -1,5 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.SlideMasters;
+using OneOf;
 
 namespace ShapeCrawler.Media
 {
@@ -21,8 +23,8 @@ namespace ShapeCrawler.Media
 
     internal class VideoShape : MediaShape, IVideoShape
     {
-        internal VideoShape(SCSlide slide, OpenXmlCompositeElement pShapeTreeChild)
-            : base(pShapeTreeChild, slide, null)
+        internal VideoShape(OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, OpenXmlCompositeElement pShapeTreeChild)
+            : base(pShapeTreeChild, oneOfSlide, null)
         {
         }
 

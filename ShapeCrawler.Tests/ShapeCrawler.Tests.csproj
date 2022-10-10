@@ -134,6 +134,10 @@
     <EmbeddedResource Include="Resource\011_dt.pptx" />
     <None Remove="Resource\012_title-placeholder.pptx" />
     <EmbeddedResource Include="Resource\012_title-placeholder.pptx" />
+    <None Remove="Resource\028.pptx" />
+    <EmbeddedResource Include="Resource\028.pptx" />
+    <None Remove="Resource\029.pptx" />
+    <EmbeddedResource Include="Resource\029.pptx" />
   </ItemGroup>
 
 </Project>

@@ -73,7 +73,7 @@ internal class Series : ISeries
         }
     }
 
-    private string GetNameOrDefault()
+    private string? GetNameOrDefault()
     {
         var cStringReference = this.seriesXmlElement.GetFirstChild<C.SeriesText>()?.StringReference;
         if (cStringReference == null)

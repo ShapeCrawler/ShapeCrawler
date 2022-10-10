@@ -1,6 +1,6 @@
 ﻿namespace ShapeCrawler.Constants;
 
-internal class SCConstants
+internal static class SCConstants
 {
     internal const int MinReduceFontSize = 5;
     
