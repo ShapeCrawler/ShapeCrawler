@@ -121,19 +121,40 @@ namespace ShapeCrawler.Tests
             portionCase14.Font.Size.Should().Be(12);
             portionCase15.Font.Size.Should().Be(27);
         }
-
-        [Fact]
-        public void Size_Getter_returns_font_size_of_Placeholder()
+        
+        [Theory]
+        [MemberData(nameof(TestCasesSizeGetter))]
+        public void Size_Getter_returns_font_size_of_Placeholder(TestCase testCase)
         {
             // Arrange
-            IAutoShape autoShapeCase1 = (IAutoShape)_fixture.Pre028.Slides[0].Shapes.First(sp => sp.Id == 4098);
-            IAutoShape autoShapeCase2 = (IAutoShape)_fixture.Pre029.Slides[0].Shapes.First(sp => sp.Id == 3);
-            IPortion portionC1 = autoShapeCase1.TextFrame.Paragraphs[0].Portions[0];
-            IPortion portionC2 = autoShapeCase2.TextFrame.Paragraphs[0].Portions[0];
+            var font = testCase.AutoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
+            var expectedFontSize = testCase.ExpectedInt;
+            
+            // Act
+            var fontSize = font.Size;
+            
+            // Assert
+            fontSize.Should().Be(expectedFontSize);
+        }
 
-            // Act-Assert
-            portionC1.Font.Size.Should().Be(32);
-            portionC2.Font.Size.Should().Be(25);
+        public static IEnumerable<object[]> TestCasesSizeGetter
+        {
+            get
+            {
+                var testCase1 = new TestCase("#1");
+                testCase1.PresentationName = "028.pptx";
+                testCase1.SlideNumber = 1;
+                testCase1.ShapeId = 4098;
+                testCase1.ExpectedInt = 32;
+                yield return new object[] { testCase1 };
+                
+                var testCase2 = new TestCase("#2");
+                testCase2.PresentationName = "029.pptx";
+                testCase2.SlideNumber = 1;
+                testCase2.ShapeName = "Content Placeholder 2";
+                testCase2.ExpectedInt = 25;
+                yield return new object[] { testCase2 };
+            }
         }
 
         [Fact]

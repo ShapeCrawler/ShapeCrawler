@@ -115,10 +115,10 @@ namespace ShapeCrawler.AutoShapes
             const string majorLatinFont = "+mj-lt";
             if (this.latinFont.Value.Typeface == majorLatinFont)
             {
-                return this.aFontScheme.MajorFont!.LatinFont!.Typeface;
+                return this.aFontScheme.MajorFont!.LatinFont!.Typeface!;
             }
 
-            return this.latinFont.Value.Typeface;
+            return this.latinFont.Value.Typeface!;
         }
 
         private A.LatinFont GetALatinFont()
@@ -141,7 +141,7 @@ namespace ShapeCrawler.AutoShapes
             }
 
             // Get from theme
-            return this.aFontScheme.MinorFont!.LatinFont;
+            return this.aFontScheme.MinorFont!.LatinFont!;
         }
 
         private int GetSize()

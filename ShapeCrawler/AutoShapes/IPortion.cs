@@ -19,7 +19,7 @@ public interface IPortion
     /// <summary>
     ///     Gets or sets hypelink.
     /// </summary>
-    string Hyperlink { get; set; }
+    string? Hyperlink { get; set; }
         
     /// <summary>
     ///     Gets field.

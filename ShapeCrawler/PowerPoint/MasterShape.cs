@@ -11,5 +11,5 @@ internal abstract class MasterShape : Shape
     {
     }
 
-    public override IPlaceholder Placeholder => MasterPlaceholder.Create(this.PShapeTreesChild);
+    public override IPlaceholder? Placeholder => MasterPlaceholder.Create(this.PShapeTreesChild);
 }

@@ -15,14 +15,14 @@ public interface ISlide
     int Number { get; set; }
 
     /// <summary>
-    ///     Gets background image of the slide. Returns <c>NULL</c> if slide does not have background.
+    ///     Gets background image if it exist, otherwise <see langword="null"/>.
     /// </summary>
     IImage? Background { get; }
 
     /// <summary>
-    ///     Gets or sets custom data.
+    ///     Gets or sets custom data. It returns <see langword="null"/> if custom data is not presented.
     /// </summary>
-    string CustomData { get; set; }
+    string? CustomData { get; set; }
 
     /// <summary>
     ///     Gets a value indicating whether the slide is hidden.

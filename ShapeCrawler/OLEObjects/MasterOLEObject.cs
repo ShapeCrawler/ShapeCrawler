@@ -12,7 +12,7 @@ internal class MasterOLEObject : MasterShape, IShape
     {
     }
 
-    public override IPlaceholder Placeholder => MasterPlaceholder.Create(this.PShapeTreesChild);
+    public override IPlaceholder? Placeholder => MasterPlaceholder.Create(this.PShapeTreesChild);
 
     public override SCPresentation PresentationInternal { get; }
 

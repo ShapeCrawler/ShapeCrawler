@@ -10,9 +10,9 @@ namespace ShapeCrawler
     public interface ISlideMaster
     {
         /// <summary>
-        ///     Gets background image.
+        ///     Gets background image if slide master has background, otherwise <see langword="null"/>.
         /// </summary>
-        IImage Background { get; }
+        IImage? Background { get; }
 
         /// <summary>
         ///     Gets collection of Slide Layouts.

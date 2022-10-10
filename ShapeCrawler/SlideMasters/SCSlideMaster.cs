@@ -23,7 +23,7 @@ namespace ShapeCrawler.SlideMasters
             this.slideLayouts = new ResettableLazy<List<SCSlideLayout>>(this.GetSlideLayouts);
         }
         
-        public IImage Background => this.GetBackground();
+        public IImage? Background => this.GetBackground();
 
         public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
@@ -43,7 +43,7 @@ namespace ShapeCrawler.SlideMasters
         internal Dictionary<int, FontData> TitleParaLvlToFontData =>
             FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.TitleStyle!);
 
-        internal ThemePart ThemePart => this.PSlideMaster.SlideMasterPart!.ThemePart;
+        internal ThemePart ThemePart => this.PSlideMaster.SlideMasterPart!.ThemePart!;
 
         internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
 
@@ -97,7 +97,7 @@ namespace ShapeCrawler.SlideMasters
             return false;
         }
         
-        private SCImage GetBackground()
+        private SCImage? GetBackground()
         {
             return null;
         }

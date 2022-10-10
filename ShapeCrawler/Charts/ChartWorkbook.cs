@@ -24,7 +24,7 @@ namespace ShapeCrawler.Charts
             this.spreadsheetDocument = new Lazy<SpreadsheetDocument>(this.GetSpreadsheetDocument);
         }
 
-        internal WorkbookPart WorkbookPart => this.spreadsheetDocument.Value.WorkbookPart;
+        internal WorkbookPart WorkbookPart => this.spreadsheetDocument.Value.WorkbookPart!;
 
         internal byte[] BinaryData => this.GetByteArray();
 

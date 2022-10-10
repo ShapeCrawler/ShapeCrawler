@@ -55,6 +55,7 @@ public class TestCase
     }
 
     public string ExpectedString { get; set; }
+    public int ExpectedInt { get; set; }
 
     public void SetPresentation(MemoryStream stream)
     {

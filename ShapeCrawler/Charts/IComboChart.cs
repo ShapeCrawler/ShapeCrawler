@@ -12,10 +12,7 @@ namespace ShapeCrawler
     /// </summary>
     public interface IComboChart : IChart
     {
-        /// <summary>
-        ///     Gets collection of chart category.
-        /// </summary>
-        public ICategoryCollection Categories { get; }
+
     }
 
     internal class SCComboChart : SCChart, IComboChart

@@ -1,8 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Presentation;
+using OneOf;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.SlideMasters;
-using OneOf;
 
 namespace ShapeCrawler
 {

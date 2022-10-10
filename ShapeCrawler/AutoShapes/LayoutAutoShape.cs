@@ -41,7 +41,7 @@ internal class LayoutAutoShape : LayoutShape, IAutoShape, ITextFrameContainer
     public Shape Shape => this;
     
 
-    private TextFrame GetTextFrame()
+    private TextFrame? GetTextFrame()
     {
         P.TextBody pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
         if (pTextBody == null)

@@ -16,9 +16,9 @@ namespace ShapeCrawler
         SCChartType Type { get; }
 
         /// <summary>
-        ///     Gets title if it otherwise, otherwise <see langword="null"/>.
+        ///     Gets chart title if chart has it, otherwise <see langword="null"/>.
         /// </summary>
-        string Title { get; }
+        string? Title { get; }
 
         /// <summary>
         ///     Gets a value indicating whether the chart has a title.
@@ -31,9 +31,9 @@ namespace ShapeCrawler
         bool HasCategories { get; }
 
         /// <summary>
-        ///     Gets category collection. Returns null if the chart type doesn't have categories.
+        ///     Gets collection of categories if chart type has categories, otherwise <c>null</c>.
         /// </summary>
-        public ICategoryCollection Categories { get; }
+        public ICategoryCollection? Categories { get; }
 
         /// <summary>
         ///     Gets collection of data series.

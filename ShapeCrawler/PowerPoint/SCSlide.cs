@@ -34,7 +34,7 @@ internal class SCSlide : SlideBase, ISlide
         this.Presentation = parentPresentation;
         this.SDKSlidePart = slidePart;
         this.shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.Create(this.SDKSlidePart, this));
-        this.backgroundImage = new Lazy<SCImage>(() => SCImage.ForBackground(this));
+        this.backgroundImage = new Lazy<SCImage?>(() => SCImage.ForBackground(this));
         this.customXmlPart = new Lazy<CustomXmlPart>(this.GetSldCustomXmlPart);
         this.slideId = slideId;
     }
@@ -55,7 +55,7 @@ internal class SCSlide : SlideBase, ISlide
 
     public IImage Background => this.backgroundImage.Value;
 
-    public string CustomData
+    public string? CustomData
     {
         get => this.GetCustomData();
         set => this.SetCustomData(value);
@@ -211,7 +211,7 @@ internal class SCSlide : SlideBase, ISlide
         presentation.Save();
     }
 
-    private string GetCustomData()
+    private string? GetCustomData()
     {
         if (this.customXmlPart.Value == null)
         {
@@ -228,7 +228,7 @@ internal class SCSlide : SlideBase, ISlide
 #endif
     }
 
-    private void SetCustomData(string value)
+    private void SetCustomData(string? value)
     {
         Stream customXmlPartStream;
         if (this.customXmlPart.Value == null)
@@ -246,7 +246,7 @@ internal class SCSlide : SlideBase, ISlide
         customXmlStreamReader.Write($"{SCConstants.CustomDataElementName}{value}");
     }
 
-    private CustomXmlPart GetSldCustomXmlPart()
+    private CustomXmlPart? GetSldCustomXmlPart()
     {
         foreach (CustomXmlPart customXmlPart in this.SDKSlidePart.CustomXmlParts)
         {

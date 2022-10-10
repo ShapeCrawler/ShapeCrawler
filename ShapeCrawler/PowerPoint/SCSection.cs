@@ -23,7 +23,7 @@ namespace ShapeCrawler
         
         private string GetName()
         {
-            return this.SDKSection.Name;
+            return this.SDKSection.Name!;
         }
     }
 }

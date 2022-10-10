@@ -6,6 +6,7 @@ using System.Reflection;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
+using OneOf;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Media;
@@ -13,7 +14,6 @@ using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
-using OneOf;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
@@ -27,11 +27,6 @@ namespace ShapeCrawler.Collections
     {
         private readonly P.ShapeTree shapeTree;
         private readonly OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject;
-
-        private ShapeCollection(List<IShape> shapes)
-        {
-            this.CollectionItems = shapes;
-        }
 
         private ShapeCollection(List<IShape> shapes, P.ShapeTree shapeTree, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject)
         {
@@ -267,32 +262,32 @@ namespace ShapeCrawler.Collections
             return (T)shape;
         }
 
-        public Shape? GetReferencedShapeOrDefault(P.PlaceholderShape inpPPlaceholderShape)
+        public Shape? GetReferencedShapeOrDefault(P.PlaceholderShape inputPPlaceholderShape)
         {
             var collectionShapes = this.CollectionItems.Where(sp => sp.Placeholder != null).OfType<Shape>();
-            Shape mappedShape = collectionShapes.FirstOrDefault(IsEqual);
+            var mappedShape = collectionShapes.FirstOrDefault(IsEqual);
 
             bool IsEqual(Shape collectionShape)
             {
                 var placeholder = (Placeholder)collectionShape.Placeholder!;
                 var colPPlaceholderShape = placeholder.PPlaceholderShape;
 
-                if (inpPPlaceholderShape.Index is not null && colPPlaceholderShape.Index is not null  &&
-                    inpPPlaceholderShape.Index == colPPlaceholderShape.Index)
+                if (inputPPlaceholderShape.Index is not null && colPPlaceholderShape.Index is not null &&
+                    inputPPlaceholderShape.Index == colPPlaceholderShape.Index)
                 {
                     return true;
                 }
 
-                if (inpPPlaceholderShape.Type != null && colPPlaceholderShape.Type != null)
+                if (inputPPlaceholderShape.Type != null && colPPlaceholderShape.Type != null)
                 {
-                    if (inpPPlaceholderShape.Type == P.PlaceholderValues.Body &&
-                        inpPPlaceholderShape.Index is not null && colPPlaceholderShape.Index is not null )
+                    if (inputPPlaceholderShape.Type == P.PlaceholderValues.Body &&
+                        inputPPlaceholderShape.Index is not null && colPPlaceholderShape.Index is not null )
                     {
-                        return inpPPlaceholderShape.Index == colPPlaceholderShape.Index;
+                        return inputPPlaceholderShape.Index == colPPlaceholderShape.Index;
                     }
 
-                    var left = inpPPlaceholderShape.Type;
-                    if (inpPPlaceholderShape.Type == PlaceholderValues.CenteredTitle)
+                    var left = inputPPlaceholderShape.Type;
+                    if (inputPPlaceholderShape.Type == PlaceholderValues.CenteredTitle)
                     {
                         left = PlaceholderValues.Title;
                     }

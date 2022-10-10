@@ -20,7 +20,7 @@ internal class SlidePlaceholder : Placeholder
     
     internal static SlidePlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, SlideShape slideShape)
     {
-        var pPlaceholder = pShapeTreeChild.ApplicationNonVisualDrawingProperties().GetFirstChild<P.PlaceholderShape>();
+        var pPlaceholder = pShapeTreeChild.GetPNvPr().GetFirstChild<P.PlaceholderShape>();
         if (pPlaceholder == null)
         {
             return null;
@@ -29,7 +29,7 @@ internal class SlidePlaceholder : Placeholder
         return new SlidePlaceholder(pPlaceholder, slideShape);
     }
 
-    private Shape GetReferencedShape()
+    private Shape? GetReferencedShape()
     {
         if (this.slideShape.SlideBase is SCSlideLayout slideLayout)
         {
