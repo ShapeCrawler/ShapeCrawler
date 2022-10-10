@@ -138,6 +138,18 @@
     <EmbeddedResource Include="Resource\028.pptx" />
     <None Remove="Resource\029.pptx" />
     <EmbeddedResource Include="Resource\029.pptx" />
+    <None Remove="Resource\032.pptx" />
+    <EmbeddedResource Include="Resource\032.pptx" />
+    <None Remove="Resource\034.pptx" />
+    <EmbeddedResource Include="Resource\034.pptx" />
+    <None Remove="Resource\035.pptx" />
+    <EmbeddedResource Include="Resource\035.pptx" />
+    <None Remove="Resource\036.pptx" />
+    <EmbeddedResource Include="Resource\036.pptx" />
+    <None Remove="Resource\037.pptx" />
+    <EmbeddedResource Include="Resource\037.pptx" />
+    <None Remove="Resource\023.pptx" />
+    <EmbeddedResource Include="Resource\023.pptx" />
   </ItemGroup>
 
 </Project>

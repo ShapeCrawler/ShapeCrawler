@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -30,14 +30,13 @@ namespace ShapeCrawler.Tests
             // Arrange
             var pptx = GetTestStream("autoshape-case004_subtitle.pptx");
             var pres = SCPresentation.Open(pptx);
-            var groupShape = pres.SlideMasters[0].SlideLayouts[0].Shapes.GetByName<IGroupShape>("Group 1");
-            var groupedShapeCollection = groupShape.Shapes;
+            var shapeCollection = pres.SlideMasters[0].SlideLayouts[0].Shapes.GetByName<IGroupShape>("Group 1").Shapes;
 
             // Act
-            var groupedShape = groupedShapeCollection.GetByName<IAutoShape>("AutoShape 1");
+            var shape = shapeCollection.GetByName<IAutoShape>("AutoShape 1");
 
             // Assert
-            groupedShape.Should().NotBeNull();
+            shape.Should().NotBeNull();
         }
         
         [Fact]
@@ -108,40 +107,24 @@ namespace ShapeCrawler.Tests
         }
 
         [Theory]
-        [MemberData(nameof(TestCasesShapesCount))]
+        [SlideData("002.pptx", slideNumber: 1, expectedResult: 4)]
+        [SlideData("003.pptx", slideNumber: 1, expectedResult: 1)]
+        [SlideData("013.pptx", slideNumber: 1, expectedResult: 4)]
+        [SlideData("023.pptx", slideNumber: 1, expectedResult: 1)]
+        [SlideData("014.pptx", slideNumber: 3, expectedResult: 5)]
+        [SlideData("009_table.pptx", slideNumber: 1, expectedResult: 6)]
+        [SlideData("009_table.pptx", slideNumber: 2, expectedResult: 8)]
+        [SlideData("009_table.pptx", slideNumber: 2, expectedResult: 8)]
         public void Count_returns_number_of_shapes(ISlide slide, int expectedShapesCount)
         {
+            // Arrange
+            var shapeCollection = slide.Shapes;
+            
             // Act
-            int shapesCount = slide.Shapes.Count;
+            int shapesCount = shapeCollection.Count;
 
             // Assert
             shapesCount.Should().Be(expectedShapesCount);
-        }
-        
-        public static IEnumerable<object[]> TestCasesShapesCount()
-        {
-            var pres = SCPresentation.Open(Properties.Resources._009);
-            
-            var slide = pres.Slides[0];
-            yield return new object[] { slide, 6 };
-            
-            slide = pres.Slides[1];
-            yield return new object[] { slide, 8 };
-            
-            slide = SCPresentation.Open(Properties.Resources._002).Slides[0];
-            yield return new object[] { slide, 4 };
-            
-            slide = SCPresentation.Open(Properties.Resources._003).Slides[0];
-            yield return new object[] { slide, 5 };
-            
-            slide = SCPresentation.Open(Properties.Resources._013).Slides[0];
-            yield return new object[] { slide, 4 };
-            
-            slide = SCPresentation.Open(Properties.Resources._023).Slides[0];
-            yield return new object[] { slide, 1 };
-
-            slide = SCPresentation.Open(Properties.Resources._014).Slides[2];
-            yield return new object[] { slide, 5 };
         }
 
         [Fact]
