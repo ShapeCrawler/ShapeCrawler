@@ -17,8 +17,6 @@ namespace ShapeCrawler
         
         public override SCPresentation PresentationInternal => this.Slide.PresentationInternal;
 
-        public ISlide ParentSlide => (SCSlide)this.Slide;
-        
         internal SlideBase Slide { get; }
     }
 }
