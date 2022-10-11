@@ -56,11 +56,6 @@ namespace ShapeCrawler
         byte[] WorkbookByteArray { get; }
 
         /// <summary>
-        ///     Gets parent slide.
-        /// </summary>
-        ISlide ParentSlide { get; }
-
-        /// <summary>
         ///     Gets instance of <see cref="SpreadsheetDocument"/> of Open XML SDK.
         /// </summary>
         SpreadsheetDocument SDKSpreadsheetDocument { get; }

@@ -6,6 +6,7 @@ using FluentAssertions;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.Tests.Helpers.Attributes;
 using Xunit;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
@@ -24,19 +25,20 @@ namespace ShapeCrawler.Tests
             this.fixture = fixture;
         }
 
-        [Fact]
-        public void GetByName_returns_shape_by_specified_name()
+        [Theory]
+        [LayoutShapeData("autoshape-case004_subtitle.pptx", slideNumber: 1, shapeName: "Group 1")]
+        [MasterShapeData("autoshape-case004_subtitle.pptx", shapeName: "Group 1")]
+        public void GetByName_returns_shape_by_specified_name(IShape shape)
         {
             // Arrange
-            var pptx = GetTestStream("autoshape-case004_subtitle.pptx");
-            var pres = SCPresentation.Open(pptx);
-            var shapeCollection = pres.SlideMasters[0].SlideLayouts[0].Shapes.GetByName<IGroupShape>("Group 1").Shapes;
-
+            var groupShape = (IGroupShape)shape;
+            var shapeCollection = groupShape.Shapes;
+            
             // Act
-            var shape = shapeCollection.GetByName<IAutoShape>("AutoShape 1");
+            var resultShape = shapeCollection.GetByName<IAutoShape>("AutoShape 1");
 
             // Assert
-            shape.Should().NotBeNull();
+            resultShape.Should().NotBeNull();
         }
         
         [Fact]
