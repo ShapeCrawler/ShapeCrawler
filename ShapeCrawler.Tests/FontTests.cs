@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Tests.Properties;
 using Xunit;
@@ -123,7 +121,7 @@ namespace ShapeCrawler.Tests
             portionCase15.Font.Size.Should().Be(27);
             portionCase16.Font.Size.Should().Be(18);
         }
-        
+
         [Theory]
         [MemberData(nameof(TestCasesSizeGetter))]
         public void Size_Getter_returns_font_size_of_Placeholder(TestCase testCase)
@@ -131,10 +129,10 @@ namespace ShapeCrawler.Tests
             // Arrange
             var font = testCase.AutoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
             var expectedFontSize = testCase.ExpectedInt;
-            
+
             // Act
             var fontSize = font.Size;
-            
+
             // Assert
             fontSize.Should().Be(expectedFontSize);
         }
@@ -149,7 +147,7 @@ namespace ShapeCrawler.Tests
                 testCase1.ShapeId = 4098;
                 testCase1.ExpectedInt = 32;
                 yield return new object[] { testCase1 };
-                
+
                 var testCase2 = new TestCase("#2");
                 testCase2.PresentationName = "029.pptx";
                 testCase2.SlideNumber = 1;
@@ -202,7 +200,7 @@ namespace ShapeCrawler.Tests
                 testCase1.SlideNumber = 1;
                 testCase1.ShapeId = 4;
                 yield return new object[] { testCase1 };
-                
+
                 var testCase2 = new TestCase("#2");
                 testCase2.PresentationName = "026.pptx";
                 testCase2.SlideNumber = 1;
@@ -420,6 +418,83 @@ namespace ShapeCrawler.Tests
             placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
             portion = placeholderAutoShape.TextFrame.Paragraphs[0].Portions[0];
             portion.Font.Underline.Should().Be(DocumentFormat.OpenXml.Drawing.TextUnderlineValues.Single);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestCasesOffsetGetter))]
+        public void Offset_Getter_returns_offset_of_Text(TestCase testCase)
+        {
+            // Arrange
+            var font = testCase.AutoShape.TextFrame!.Paragraphs[0].Portions[1].Font;
+            var expectedOffsetSize = testCase.ExpectedInt;
+
+            // Act
+            var offsetSize = font.OffsetEffect;
+
+            // Assert
+            offsetSize.Should().Be(expectedOffsetSize);
+        }
+
+        public static IEnumerable<object[]> TestCasesOffsetGetter
+        {
+            get
+            {
+                var testCase1 = new TestCase("#1");
+                testCase1.PresentationName = "053_font-offset.pptx";
+                testCase1.SlideNumber = 1;
+                testCase1.ShapeId = 2;
+                testCase1.ExpectedInt = 50;
+                yield return new object[] { testCase1 };
+
+                var testCase2 = new TestCase("#2");
+                testCase2.PresentationName = "053_font-offset.pptx";
+                testCase2.SlideNumber = 2;
+                testCase2.ShapeName = "Title 1";
+                testCase2.ExpectedInt = -32;
+                yield return new object[] { testCase2 };
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(TestCasesOffsetSetter))]
+        public void Offset_Setter_changes_Offset_of_paragraph_portion(TestCase testCase)
+        {
+            // Arrange
+            var pres = testCase.Presentation;
+            var font = testCase.AutoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
+            int superScriptOffset = testCase.ExpectedInt;
+            var mStream = new MemoryStream();
+            var oldOffsetSize = font.OffsetEffect;
+
+            // Act
+            font.OffsetEffect = superScriptOffset;
+            pres.SaveAs(mStream);
+
+            // Assert
+            testCase.SetPresentation(mStream);
+            font = testCase.AutoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
+            font.OffsetEffect.Should().NotBe(oldOffsetSize);
+            font.OffsetEffect.Should().Be(superScriptOffset);
+        }
+
+        public static IEnumerable<object[]> TestCasesOffsetSetter
+        {
+            get
+            {
+                var testCase1 = new TestCase("#1");
+                testCase1.PresentationName = "053_font-offset.pptx";
+                testCase1.SlideNumber = 3;
+                testCase1.ShapeId = 2;
+                testCase1.ExpectedInt = 12;
+                yield return new object[] { testCase1 };
+
+                var testCase2 = new TestCase("#2");
+                testCase2.PresentationName = "053_font-offset.pptx";
+                testCase2.SlideNumber = 4;
+                testCase2.ShapeName = "Title 1";
+                testCase2.ExpectedInt = -27;
+                yield return new object[] { testCase2 };
+            }
         }
 
         private static IPortion GetPortion(IPresentation presentation)

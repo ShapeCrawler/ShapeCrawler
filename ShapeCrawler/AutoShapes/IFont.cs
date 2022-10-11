@@ -29,6 +29,11 @@ public interface IFont
     bool IsItalic { get; set; }
 
     /// <summary>
+    ///     Gets or sets the offset effect percentage to make font superscript or subscript.
+    /// </summary>
+    int OffsetEffect { get; set; }
+
+    /// <summary>
     ///     Gets or sets an underline.
     /// </summary>
     A.TextUnderlineValues Underline { get; set; }
