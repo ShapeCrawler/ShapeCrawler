@@ -5,14 +5,14 @@ namespace ShapeCrawler.Exceptions
     /// <summary>
     ///     Represents a library exception.
     /// </summary>
-    public class ShapeCrawlerException : Exception
+    internal class ShapeCrawlerException : Exception
     {
         internal ShapeCrawlerException()
         {
         }
 
         internal ShapeCrawlerException(string message)
-            : base(message + "\nIf you have a question, feel free to report the issue https://github.com/ShapeCrawler/ShapeCrawler/issues")
+            : base(message + "\nIf you have a question, feel free to report an issue https://github.com/ShapeCrawler/ShapeCrawler/issues")
         {
         }
 

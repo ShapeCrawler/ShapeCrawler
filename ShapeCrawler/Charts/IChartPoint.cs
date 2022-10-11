@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Globalization;
-using DocumentFormat.OpenXml;
+using ShapeCrawler.Charts;
 using ShapeCrawler.Exceptions;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
-using X = DocumentFormat.OpenXml.Spreadsheet;
 
-namespace ShapeCrawler.Charts
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a chart point.

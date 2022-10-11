@@ -9,28 +9,37 @@ namespace ShapeCrawler.SlideMasters
     ///     Represents a Slide Layout.
     /// </summary>
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — Shape Crawler")]
-    internal class SCSlideLayout : ISlideLayout
+    internal class SCSlideLayout : SlideBase, ISlideLayout
     {
         private readonly ResettableLazy<ShapeCollection> shapes;
         private readonly SCSlideMaster slideMaster;
 
-        internal SCSlideLayout(SCSlideMaster parentSlideMaster, SlideLayoutPart slideLayoutPart)
+        internal SCSlideLayout(SCSlideMaster slideMaster, SlideLayoutPart slideLayoutPart)
         {
-            this.slideMaster = parentSlideMaster;
+            this.slideMaster = slideMaster;
             this.SlideLayoutPart = slideLayoutPart;
             this.shapes = new ResettableLazy<ShapeCollection>(() =>
-                ShapeCollection.ForSlideLayout(slideLayoutPart.SlideLayout.CommonSlideData.ShapeTree, this));
+                ShapeCollection.Create(slideLayoutPart, this));
         }
 
         public IShapeCollection Shapes => this.shapes.Value;
 
-        public ISlideMaster ParentSlideMaster => this.slideMaster;
+        public override bool IsRemoved { get; set; }
 
+        public ISlideMaster SlideMaster => this.slideMaster;
+
+        public override SCPresentation PresentationInternal => this.SlideMasterInternal.PresentationInternal;
+        
         internal SlideLayoutPart SlideLayoutPart { get; }
 
-        public bool IsRemoved { get; set; }
+        internal SCSlideMaster SlideMasterInternal => (SCSlideMaster)this.SlideMaster;
 
-        public void ThrowIfRemoved()
+        internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
+
+        
+        internal override TypedOpenXmlPart TypedOpenXmlPart => this.SlideLayoutPart;
+        
+        public override void ThrowIfRemoved()
         {
             throw new System.NotImplementedException();
         }

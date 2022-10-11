@@ -10,7 +10,7 @@ namespace ShapeCrawler
     {
         private readonly SCSection parentSection;
         private List<SCSlide> sectionSlides;
-        private SCSlideCollection presentationSlides;
+        private readonly SCSlideCollection presentationSlides;
         
         public SCSectionSlideCollection(SCSection parentSection)
         {
@@ -20,21 +20,10 @@ namespace ShapeCrawler
             
             this.Initialize();
         }
-
-        private void OnPresSlideCollectionChanged(object sender, EventArgs e)
-        {
-            this.Initialize();
-        }
-
-        private void Initialize()
-        {
-            this.sectionSlides = new List<SCSlide>();
-            foreach (var sectionSlideIdListEntry in this.parentSection.SDKSection.Descendants<SectionSlideIdListEntry>())
-            {
-                var slide = this.parentSection.Sections.Presentation.SlidesInternal.GetBySlideId(sectionSlideIdListEntry.Id);
-                this.sectionSlides.Add(slide);
-            }
-        }
+        
+        public int Count => this.sectionSlides.Count;
+        
+        public ISlide this[int index] => this.sectionSlides[index];
 
         public IEnumerator<ISlide> GetEnumerator()
         {
@@ -45,9 +34,20 @@ namespace ShapeCrawler
         {
             return this.GetEnumerator();
         }
+        
+        private void OnPresSlideCollectionChanged(object sender, EventArgs e)
+        {
+            this.Initialize();
+        }
 
-        public int Count => this.sectionSlides.Count;
-
-        public ISlide this[int index] => this.sectionSlides[index];
+        private void Initialize()
+        {
+            this.sectionSlides = new List<SCSlide>();
+            foreach (var sectionSlideIdListEntry in this.parentSection.SDKSection.Descendants<SectionSlideIdListEntry>())
+            {
+                var slide = this.parentSection.Sections.Presentation.SlidesInternal.GetBySlideId(sectionSlideIdListEntry.Id!);
+                this.sectionSlides.Add(slide);
+            }
+        }
     }
 }

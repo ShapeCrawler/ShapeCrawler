@@ -1,28 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Exceptions;
+﻿using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tables
 {
-    internal class SCTableCell : ITableCell, ITextBoxContainer
+    internal class SCTableCell : ITableCell, ITextFrameContainer
     {
-        private readonly ResettableLazy<SCTextBox> textBox;
-        private readonly bool isRemoved;
+        private readonly ResettableLazy<TextFrame> textFrame;
 
-        internal SCTableCell(SCTableRow parentTableRow, A.TableCell aTableCell, int rowIndex, int columnIndex)
+        internal SCTableCell(SCTableRow tableRow, A.TableCell aTableCell, int rowIndex, int columnIndex)
         {
-            this.ParentTableRow = parentTableRow;
+            this.ParentTableRow = tableRow;
             this.ATableCell = aTableCell;
             this.RowIndex = rowIndex;
             this.ColumnIndex = columnIndex;
-            this.textBox = new ResettableLazy<SCTextBox>(this.GetTextBox);
+            this.textFrame = new ResettableLazy<TextFrame>(this.GetTextFrame);
         }
 
         public bool IsMergedCell => this.DefineWhetherCellIsMerged();
@@ -31,9 +25,9 @@ namespace ShapeCrawler.Tables
 
         public IPlaceholder Placeholder => throw new System.NotImplementedException();
 
-        public IShape Shape => this.ParentTableRow.ParentTable;
+        public Shape Shape => this.ParentTableRow.ParentTable;
 
-        public ITextBox TextBox => this.textBox.Value;
+        public ITextFrame TextFrame => this.textFrame.Value;
 
         internal A.TableCell ATableCell { get; init; }
 
@@ -45,33 +39,20 @@ namespace ShapeCrawler.Tables
 
         public void ThrowIfRemoved()
         {
-            if (this.isRemoved)
-            {
-                throw new ElementIsRemovedException("Table Cell was removed.");
-            }
-
             this.ParentTableRow.ThrowIfRemoved();
         }
 
-        private SCTextBox GetTextBox()
+        private TextFrame GetTextFrame()
         {
-            A.TextBody aTextBody = this.ATableCell.TextBody;
-            IEnumerable<A.Text> aTexts = aTextBody.Descendants<A.Text>();
-            if (aTexts.Any(t => t.Parent is A.Run) && aTexts.Sum(t => t.Text.Length) > 0)
-            {
-                return new SCTextBox(aTextBody, this);
-            }
-
-            return null;
+            return new TextFrame(this, this.ATableCell.TextBody!);
         }
 
         private bool DefineWhetherCellIsMerged()
         {
-            return this.ATableCell.GridSpan != null ||
-                   this.ATableCell.RowSpan != null ||
-                   this.ATableCell.HorizontalMerge != null ||
-                   this.ATableCell.VerticalMerge != null;
+            return this.ATableCell.GridSpan is not null ||
+                   this.ATableCell.RowSpan is not null ||
+                   this.ATableCell.HorizontalMerge is not null ||
+                   this.ATableCell.VerticalMerge is not null;
         }
-
     }
 }

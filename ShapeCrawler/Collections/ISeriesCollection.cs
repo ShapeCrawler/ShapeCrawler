@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Collections;
 
-namespace ShapeCrawler.Collections
+// ReSharper disable CheckNamespace
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a collection of chart series.
@@ -22,26 +24,26 @@ namespace ShapeCrawler.Collections
         ISeries this[int index] { get; }
     }
 
-    internal class SeriesCollection : LibraryCollection<ISeries>, ISeriesCollection
+    internal class SCSeriesCollection : LibraryCollection<ISeries>, ISeriesCollection
     {
-        internal SeriesCollection(List<ISeries> seriesList)
+        internal SCSeriesCollection(List<ISeries> seriesList)
         {
             this.CollectionItems = seriesList;
         }
 
-        internal static SeriesCollection Create(SCChart slideChart, IEnumerable<OpenXmlElement> cXCharts)
+        internal static SCSeriesCollection Create(SCChart slideChart, IEnumerable<OpenXmlElement> cXCharts)
         {
             var seriesList = new List<ISeries>();
             foreach (OpenXmlElement cXChart in cXCharts)
             {
-                Enum.TryParse(cXChart.LocalName, true, out ChartType seriesChartType);
+                Enum.TryParse(cXChart.LocalName, true, out SCChartType seriesChartType);
                 IEnumerable<OpenXmlElement> nextSdkChartSeriesCollection = cXChart.ChildElements
                     .Where(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
                 seriesList.AddRange(nextSdkChartSeriesCollection.Select(seriesXmlElement =>
                     new Series(slideChart, seriesXmlElement, seriesChartType)));
             }
 
-            return new SeriesCollection(seriesList);
+            return new SCSeriesCollection(seriesList);
         }
     }
 }

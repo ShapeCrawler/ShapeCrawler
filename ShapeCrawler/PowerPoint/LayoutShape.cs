@@ -1,5 +1,4 @@
 ﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.SlideMasters;
 
@@ -10,18 +9,15 @@ namespace ShapeCrawler
     /// </summary>
     internal abstract class LayoutShape : Shape
     {
-        protected LayoutShape(SCSlideLayout slideLayout, OpenXmlCompositeElement childOfPShapeTree)
-            : base(childOfPShapeTree, slideLayout, null)
+        protected LayoutShape(SCSlideLayout slideLayout, OpenXmlCompositeElement pShapeTreeChild)
+            : base(pShapeTreeChild, slideLayout, null)
         {
             this.SlideLayoutInternal = slideLayout;
-            this.SlideMasterInternal = (SCSlideMaster)this.SlideLayoutInternal.ParentSlideMaster;
         }
 
-        internal override SCSlideMaster SlideMasterInternal { get; set; }
+        public override IPlaceholder? Placeholder => LayoutPlaceholder.Create(this.PShapeTreesChild, this);
 
-        public override IPlaceholder Placeholder => LayoutPlaceholder.Create(this.PShapeTreesChild, this);
-
-        public override SCPresentation PresentationInternal => ((SCSlideMaster)this.SlideLayoutInternal.ParentSlideMaster).ParentPresentation;
+        public override SCPresentation PresentationInternal => ((SCSlideMaster)this.SlideLayoutInternal.SlideMaster).Presentation;
 
         public SCSlideLayout SlideLayoutInternal { get; }
     }

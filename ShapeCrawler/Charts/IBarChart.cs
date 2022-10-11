@@ -1,6 +1,6 @@
-﻿using System;
-using ShapeCrawler.Collections;
+﻿using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
+using OneOf;
 
 namespace ShapeCrawler.Charts
 {
@@ -13,8 +13,8 @@ namespace ShapeCrawler.Charts
     
     internal sealed class SCBarChart : SCChart, IBarChart
     {
-        internal SCBarChart(P.GraphicFrame pGraphicFrame, SCSlide slide)
-            : base(pGraphicFrame, slide)
+        internal SCBarChart(P.GraphicFrame pGraphicFrame, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
+            : base(pGraphicFrame, oneOfSlide)
         {
         }
     }

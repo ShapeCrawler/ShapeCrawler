@@ -1,247 +1,326 @@
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Tests.Properties;
 using Xunit;
 
-namespace ShapeCrawler.Tests
+namespace ShapeCrawler.Tests;
+
+public class ColorFormatTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
 {
-    public class ColorFormatTests : IClassFixture<PresentationFixture>
+    private readonly PresentationFixture _fixture;
+
+    public ColorFormatTests(PresentationFixture fixture)
     {
-        private readonly PresentationFixture _fixture;
+        _fixture = fixture;
+    }
 
-        public ColorFormatTests(PresentationFixture fixture)
+    [Theory]
+    [MemberData(nameof(TestCasesSetColorHex))]
+    public void SetColorHex_updates_font_color(TestElementQuery colorFormatQuery)
+    {
+        // Arrange
+        var mStream = new MemoryStream();
+        var pres = colorFormatQuery.Presentation;
+        var colorFormat = colorFormatQuery.GetTestColorFormat();
+
+        // Act
+        colorFormat.SetColorByHex("#008000");
+
+        // Assert
+        colorFormat.ColorHex.Should().Be("008000");
+
+        pres.SaveAs(mStream);
+        pres = SCPresentation.Open(mStream);
+        colorFormatQuery.Presentation = pres;
+        colorFormat = colorFormatQuery.GetTestColorFormat();
+        colorFormat.ColorHex.Should().Be("008000");
+    }
+
+    public static TheoryData<TestElementQuery> TestCasesSetColorHex
+    {
+        get
         {
-            _fixture = fixture;
-        }
+            var testCases = new TheoryData<TestElementQuery>();
 
-#if DEBUG
-        [Theory(Skip = "In Progress")]
-        [MemberData(nameof(TestCasesColorSetter))]
-        public void Color_SetterSetsGreenColorForFont_WhenGreenIsSpecified(IPresentation presentation, SlideElementQuery portionQuery)
-        {
-            // Arrange
-            Color greenColor = ColorTranslator.FromHtml("#008000");
-            MemoryStream mStream = new ();
-            IColorFormat colorFormat = TestHelper.GetParagraphPortion(presentation, portionQuery).Font.ColorFormat;
-
-            // Act
-            colorFormat.Color = greenColor;
-
-            // Assert
-            colorFormat.Color.Should().Be(greenColor);
-
-            presentation.SaveAs(mStream);
-            presentation = SCPresentation.Open(mStream, false);
-            colorFormat = TestHelper.GetParagraphPortion(presentation, portionQuery).Font.ColorFormat;
-            colorFormat.Color.Should().Be(greenColor);
-        }
-#endif
-
-        public static IEnumerable<object[]> TestCasesColorSetter()
-        {
-            IPresentation presentationCase1 = SCPresentation.Open(Resources._020, true);
-            SlideElementQuery portionRequestCase1 = new();
-            portionRequestCase1.SlideIndex = 0;
-            portionRequestCase1.ShapeId = 2;
-            portionRequestCase1.ParagraphIndex = 0;
-            portionRequestCase1.PortionIndex = 0;
-
-            IPresentation presentationCase2 = SCPresentation.Open(Resources._020, true);
-            SlideElementQuery portionRequestCase2 = new();
-            portionRequestCase2.SlideIndex = 0;
-            portionRequestCase2.ShapeId = 3;
-            portionRequestCase2.ParagraphIndex = 0;
-            portionRequestCase2.PortionIndex = 0;
-
-            IPresentation presentationCase3 = SCPresentation.Open(Resources._001, true);
-            SlideElementQuery portionRequestCase3 = new();
-            portionRequestCase3.SlideIndex = 2;
-            portionRequestCase3.ShapeId = 4;
-            portionRequestCase3.ParagraphIndex = 0;
-            portionRequestCase3.PortionIndex = 0;
-
-            IPresentation presentationCase4 = SCPresentation.Open(Resources._001, true);
-            SlideElementQuery portionRequestCase4 = new();
-            portionRequestCase4.SlideIndex = 4;
-            portionRequestCase4.ShapeId = 5;
-            portionRequestCase4.ParagraphIndex = 0;
-            portionRequestCase4.PortionIndex = 0;
-
-            var testCases = new List<object[]>
+            testCases.Add(new TestElementQuery
             {
-                new object[] {presentationCase1, portionRequestCase1},
-                new object[] {presentationCase2, portionRequestCase2},
-                new object[] {presentationCase3, portionRequestCase3},
-                new object[] {presentationCase4, portionRequestCase4}
+                Presentation = SCPresentation.Open(GetTestStream("autoshape-case001.pptx")),
+                Location = Location.SlideMaster,
+                SlideMasterNumber = 1,
+                ShapeName = "AutoShape 1",
+                ParagraphNumber = 1,
+                PortionNumber = 1
+            });
+
+            var pptxStream = GetTestStream("020.pptx");
+            var portionQuery = new TestElementQuery
+            {
+                Presentation = SCPresentation.Open(pptxStream),
+                Location = Location.Slide,
+                SlideIndex = 0,
+                ShapeName = "TextBox 1",
+                ParagraphIndex = 0,
+                PortionIndex = 0
             };
+            testCases.Add(portionQuery);
+
+            portionQuery = new TestElementQuery
+            {
+                Presentation = SCPresentation.Open(Resources._020),
+                Location = Location.Slide,
+                SlideIndex = 0,
+                ShapeId = 3,
+                ParagraphIndex = 0,
+                PortionIndex = 0
+            };
+            testCases.Add(portionQuery);
+
+            portionQuery = new TestElementQuery
+            {
+                Presentation = SCPresentation.Open(Resources._001),
+                Location = Location.Slide,
+                SlideIndex = 2,
+                ShapeId = 4,
+                ParagraphIndex = 0,
+                PortionIndex = 0
+            };
+            testCases.Add(portionQuery);
+
+            portionQuery = new TestElementQuery
+            {
+                Presentation = SCPresentation.Open(Resources._001),
+                Location = Location.Slide,
+                SlideIndex = 4,
+                ShapeId = 5,
+                ParagraphIndex = 0,
+                PortionIndex = 0
+            };
+            testCases.Add(portionQuery);
 
             return testCases;
         }
+    }
 
-#if DEBUG
-        [Fact]
-        public void Color_GetterReturnsColor_OfNonPlaceholder()
+    [Theory]
+    [MemberData(nameof(TestCasesColorGetter))]
+    public void ColorHex_Getter_returns_color(TestCase<IParagraph, string> testCase)
+    {
+        // Arrange
+        var paragraph = testCase.Param1;
+        var colorHex = testCase.Param2;
+        var colorFormat = paragraph.Portions[0].Font.ColorFormat;
+        var expectedColor = colorHex;
+
+        // Act
+        var actualColor = colorFormat.ColorHex;
+
+        // Assert
+        actualColor.Should().Be(expectedColor);
+    }
+
+    public static IEnumerable<object[]> TestCasesColorGetter
+    {
+        get
         {
-            // Arrange
-            IAutoShape nonPhAutoShapeCase1 = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
-            IAutoShape nonPhAutoShapeCase2 = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 3);
-            IAutoShape nonPhAutoShapeCase3 = (IAutoShape)_fixture.Pre020.Slides[2].Shapes.First(sp => sp.Id == 8);
-            IAutoShape nonPhAutoShapeCase4 = (IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 4);
-            IAutoShape nonPhAutoShapeCase5 = (IAutoShape)_fixture.Pre002.Slides[1].Shapes.First(sp => sp.Id == 3);
-            IAutoShape nonPhAutoShapeCase6 = (IAutoShape)_fixture.Pre026.Slides[0].Shapes.First(sp => sp.Id == 128);
-            IAutoShape nonPhAutoShapeCase7 = (IAutoShape)_fixture.Pre030.Slides[0].Shapes.First(sp => sp.Id == 5);
-            IAutoShape nonPhAutoShapeCase8 = (IAutoShape)_fixture.Pre031.Slides[0].Shapes.First(sp => sp.Id == 44);
-            IAutoShape nonPhAutoShapeCase9 = (IAutoShape)_fixture.Pre033.Slides[0].Shapes.First(sp => sp.Id == 3);
-            IAutoShape nonPhAutoShapeCase10 = (IAutoShape)_fixture.Pre038.Slides[0].Shapes.First(sp => sp.Id == 102);
-            IColorFormat colorFormatC1 = nonPhAutoShapeCase1.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC2 = nonPhAutoShapeCase2.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC3 = nonPhAutoShapeCase3.TextBox.Paragraphs[1].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC4 = nonPhAutoShapeCase4.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC5 = nonPhAutoShapeCase5.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC6 = nonPhAutoShapeCase6.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC7 = nonPhAutoShapeCase7.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC8 = nonPhAutoShapeCase8.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC9 = nonPhAutoShapeCase9.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC10 = nonPhAutoShapeCase10.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+            var stream1 = GetTestStream("020.pptx");
+            var pres1 = SCPresentation.Open(stream1);
+            var paragraph1 = pres1.Slides[0].Shapes.GetById<IAutoShape>(2).TextFrame!.Paragraphs[0];
+            var testCase1 = new TestCase<IParagraph, string>(1, paragraph1, "000000");
+            yield return new object[] { testCase1 };
 
-            // Act-Assert
-            colorFormatC1.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
-            colorFormatC2.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
-            colorFormatC3.Color.Should().Be(ColorTranslator.FromHtml("#FFFF00"));
-            colorFormatC4.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
-            colorFormatC5.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
-            colorFormatC6.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
-            colorFormatC7.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
-            colorFormatC8.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
-            colorFormatC9.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
-            colorFormatC10.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
-        }
+            var stream2 = GetTestStream("020.pptx");
+            var pres2 = SCPresentation.Open(stream2);
+            var paragraph2 = pres2.Slides[0].Shapes.GetById<IAutoShape>(3).TextFrame!.Paragraphs[0];
+            var testCase2 = new TestCase<IParagraph, string>(2, paragraph2, "000000");
+            yield return new object[] { testCase2 };
 
-        [Fact]
-        public void Color_GetterReturnsWhiteColor_WhenFontHasPredefinedWhiteColor()
-        {
-            // Arrange
-            IAutoShape nonPhAutoShapeCase = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 4);
-            IColorFormat colorFormat = nonPhAutoShapeCase.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+            var stream3 = GetTestStream("020.pptx");
+            var pres3 = SCPresentation.Open(stream3);
+            var paragraph3 = pres3.Slides[2].Shapes.GetById<IAutoShape>(8).TextFrame!.Paragraphs[1];
+            var testCase3 = new TestCase<IParagraph, string>(3, paragraph3, "FFFF00");
+            yield return new object[] { testCase3 };
 
-            // Act-Assert
-            colorFormat.Color.Should().Be(Color.White);
-        }
+            var stream4 = GetTestStream("001.pptx");
+            var pres4 = SCPresentation.Open(stream4);
+            var paragraph4 = pres4.Slides[0].Shapes.GetById<IAutoShape>(4).TextFrame!.Paragraphs[0];
+            var testCase4 = new TestCase<IParagraph, string>(4, paragraph4, "000000");
+            yield return new object[] { testCase4 };
 
-        [Fact]
-        public void Color_GetterReturnsColor_OfSlidePlaceholder()
-        {
-            // Arrange
-            IAutoShape placeholderCase1 = (IAutoShape)_fixture.Pre001.Slides[2].Shapes.First(sp => sp.Id == 4);
-            IAutoShape placeholderCase2 = (IAutoShape)_fixture.Pre001.Slides[4].Shapes.First(sp => sp.Id == 5);
-            IAutoShape placeholderCase3 = (IAutoShape)_fixture.Pre014.Slides[0].Shapes.First(sp => sp.Id == 61);
-            IAutoShape placeholderCase4 = (IAutoShape)_fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52);
-            IAutoShape placeholderCase5 = (IAutoShape)_fixture.Pre032.Slides[0].Shapes.First(sp => sp.Id == 10242);
-            IAutoShape titlePhCase6 = (IAutoShape)_fixture.Pre034.Slides[0].Shapes.First(sp => sp.Id == 2);
-            IAutoShape titlePhCase7 = (IAutoShape)_fixture.Pre035.Slides[0].Shapes.First(sp => sp.Id == 9);
-            IAutoShape bodyPhCase8 = (IAutoShape)_fixture.Pre036.Slides[0].Shapes.First(sp => sp.Id == 6146);
-            IAutoShape bodyPhCase9 = (IAutoShape)_fixture.Pre037.Slides[0].Shapes.First(sp => sp.Id == 7);
-            IColorFormat colorFormatC1 = placeholderCase1.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC2 = placeholderCase2.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC3 = placeholderCase3.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC4 = placeholderCase4.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC5 = placeholderCase5.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC6 = titlePhCase6.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC7 = titlePhCase7.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC8 = bodyPhCase8.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
-            IColorFormat colorFormatC9 = bodyPhCase9.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+            var stream5 = GetTestStream("002.pptx");
+            var pres5 = SCPresentation.Open(stream5);
+            var paragraph5 = pres5.Slides[1].Shapes.GetById<IAutoShape>(3).TextFrame!.Paragraphs[0];
+            var testCase5 = new TestCase<IParagraph, string>(5, paragraph5, "000000");
+            yield return new object[] { testCase5 };
 
-            // Act-Assert
-            colorFormatC1.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
-            colorFormatC2.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
-            colorFormatC3.Color.Should().Be(ColorTranslator.FromHtml("#595959"));
-            colorFormatC4.Color.Should().Be(ColorTranslator.FromHtml("#FFFFFF"));
-            colorFormatC5.Color.Should().Be(ColorTranslator.FromHtml("#0070C0"));
-            colorFormatC6.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
-            colorFormatC7.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
-            colorFormatC8.Color.Should().Be(ColorTranslator.FromHtml("#404040"));
-            colorFormatC9.Color.Should().Be(ColorTranslator.FromHtml("#1A1A1A"));
-        }
+            var stream6 = GetTestStream("026.pptx");
+            var pres6 = SCPresentation.Open(stream6);
+            var paragraph6 = pres6.Slides[0].Shapes.GetById<IAutoShape>(128).TextFrame!.Paragraphs[0];
+            var testCase6 = new TestCase<IParagraph, string>(6, paragraph6, "000000");
+            yield return new object[] { testCase6 };
 
-        [Fact]
-        public void Color_GetterReturnsColor_OfSlideLayoutPlaceholder()
-        {
-            // Arrange
-            IAutoShape titlePh = (IAutoShape)_fixture.Pre001.Slides[0].ParentSlideLayout.Shapes.First(sp => sp.Id == 2);
-            IColorFormat colorFormat = titlePh.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+            var stream7 = GetTestStream("030.pptx");
+            var pres7 = SCPresentation.Open(stream7);
+            var paragraph7 = pres7.Slides[0].Shapes.GetById<IAutoShape>(5).TextFrame!.Paragraphs[0];
+            var testCase7 = new TestCase<IParagraph, string>(7, paragraph7, "000000");
+            yield return new object[] { testCase7 };
+
+            var stream8 = GetTestStream("031.pptx");
+            var pres8 = SCPresentation.Open(stream8);
+            var paragraph8 = pres8.Slides[0].Shapes.GetById<IAutoShape>(44).TextFrame!.Paragraphs[0];
+            var testCase8 = new TestCase<IParagraph, string>(8, paragraph8, "000000");
+            yield return new object[] { testCase8 };
+
+            var stream9 = GetTestStream("033.pptx");
+            var pres9 = SCPresentation.Open(stream9);
+            var paragraph9 = pres9.Slides[0].Shapes.GetById<IAutoShape>(3).TextFrame!.Paragraphs[0];
+            var testCase9 = new TestCase<IParagraph, string>(9, paragraph9, "000000");
+            yield return new object[] { testCase9 };
+
+            var stream10 = GetTestStream("038.pptx");
+            var pres10 = SCPresentation.Open(stream10);
+            var paragraph10 = pres10.Slides[0].Shapes.GetById<IAutoShape>(102).TextFrame!.Paragraphs[0];
+            var testCase10 = new TestCase<IParagraph, string>(10, paragraph10, "000000");
+            yield return new object[] { testCase10 };
+
+            var stream11 = GetTestStream("001.pptx");
+            var pres11 = SCPresentation.Open(stream11);
+            var paragraph11 = pres11.Slides[2].Shapes.GetById<IAutoShape>(4).TextFrame!.Paragraphs[0];
+            var testCase11 = new TestCase<IParagraph, string>(11, paragraph11, "000000");
+            yield return new object[] { testCase11 };
+
+            var stream12 = GetTestStream("001.pptx");
+            var pres12 = SCPresentation.Open(stream12);
+            var paragraph12 = pres12.Slides[4].Shapes.GetById<IAutoShape>(5).TextFrame!.Paragraphs[0];
+            var testCase12 = new TestCase<IParagraph, string>(12, paragraph12, "000000");
+            yield return new object[] { testCase12 };
+
+            var stream13 = GetTestStream("014.pptx");
+            var pres13 = SCPresentation.Open(stream13);
+            var paragraph13 = pres13.Slides[0].Shapes.GetById<IAutoShape>(61).TextFrame!.Paragraphs[0];
+            var testCase13 = new TestCase<IParagraph, string>(13, paragraph13, "595959");
+            yield return new object[] { testCase13 };
+
+            var stream14 = GetTestStream("014.pptx");
+            var pres14 = SCPresentation.Open(stream14);
+            var paragraph14 = pres14.Slides[5].Shapes.GetById<IAutoShape>(52).TextFrame!.Paragraphs[0];
+            var testCase14 = new TestCase<IParagraph, string>(14, paragraph14, "FFFFFF");
+            yield return new object[] { testCase14 };
             
-            // Act-Assert
-            colorFormat.Color.Should().Be(ColorTranslator.FromHtml("#000000"));
+            var stream15 = GetTestStream("032.pptx");
+            var pres15 = SCPresentation.Open(stream15);
+            var paragraph15 = pres15.Slides[0].Shapes.GetById<IAutoShape>(10242).TextFrame!.Paragraphs[0];
+            var testCase15 = new TestCase<IParagraph, string>(15, paragraph15, "0070C0");
+            yield return new object[] { testCase15 };
+            
+            var stream16 = GetTestStream("034.pptx");
+            var pres16 = SCPresentation.Open(stream16);
+            var paragraph16 = pres16.Slides[0].Shapes.GetById<IAutoShape>(2).TextFrame!.Paragraphs[0];
+            var testCase16 = new TestCase<IParagraph, string>(16, paragraph16, "000000");
+            yield return new object[] { testCase16 };
+            
+            var stream17 = GetTestStream("035.pptx");
+            var pres17 = SCPresentation.Open(stream17);
+            var paragraph17 = pres17.Slides[0].Shapes.GetById<IAutoShape>(9).TextFrame!.Paragraphs[0];
+            var testCase17 = new TestCase<IParagraph, string>(17, paragraph17, "000000");
+            yield return new object[] { testCase17 };
+            
+            var stream18 = GetTestStream("036.pptx");
+            var pres18 = SCPresentation.Open(stream18);
+            var paragraph18 = pres18.Slides[0].Shapes.GetById<IAutoShape>(6146).TextFrame!.Paragraphs[0];
+            var testCase18 = new TestCase<IParagraph, string>(18, paragraph18, "404040");
+            yield return new object[] { testCase18 };
+            
+            var stream19 = GetTestStream("037.pptx");
+            var pres19 = SCPresentation.Open(stream19);
+            var paragraph19 = pres19.Slides[0].Shapes.GetById<IAutoShape>(7).TextFrame!.Paragraphs[0];
+            var testCase19 = new TestCase<IParagraph, string>(19, paragraph19, "1A1A1A");
+            yield return new object[] { testCase19 };
         }
+    }
 
-        [Fact]
-        public void Color_GetterReturnsColor_OfSlideMasterNonPlaceholder()
-        {
-            // Arrange
-            Color whiteColor = ColorTranslator.FromHtml("#FFFFFF");
-            IAutoShape nonPlaceholder = (IAutoShape)_fixture.Pre001.SlideMasters[0].Shapes.First(sp => sp.Id == 8);
-            IColorFormat colorFormat = nonPlaceholder.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+    [Fact]
+    public void ColorHex_Getter_returns_White_color()
+    {
+        // Arrange
+        var shape = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 4);
+        var colorFormat = shape.TextFrame!.Paragraphs[0].Portions[0].Font.ColorFormat;
 
-            // Act-Assert
-            colorFormat.Color.Should().Be(whiteColor);
-        }
+        // Act-Assert
+        colorFormat.ColorHex.Should().Be("FFFFFF");
+    }
 
-        [Fact]
-        public void Color_GetterReturnsColor_OfTitlePlaceholderOnSlideMaster()
-        {
-            // Arrange
-            Color blackColor = ColorTranslator.FromHtml("#000000");
-            IAutoShape titlePlaceholder = (IAutoShape)_fixture.Pre001.SlideMasters[0].Shapes.First(sp => sp.Id == 2);
-            IColorFormat colorFormat = titlePlaceholder.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+    [Fact]
+    public void ColorHex_Getter_returns_color_of_SlideLayout_Placeholder()
+    {
+        // Arrange
+        IAutoShape titlePh = (IAutoShape)_fixture.Pre001.Slides[0].SlideLayout.Shapes.First(sp => sp.Id == 2);
+        IColorFormat colorFormat = titlePh.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
-            // Act-Assert
-            colorFormat.Color.Should().Be(blackColor);
-        }
+        // Act-Assert
+        colorFormat.ColorHex.Should().Be("000000");
+    }
 
-        [Fact]
-        public void Color_GetterReturnsColor_OfTableCellOnSlide()
-        {
-            // Arrange
-            Color redColor = ColorTranslator.FromHtml("#FF0000");
-            ITable table = (ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4);
-            IColorFormat colorFormat = table.Rows[0].Cells[0].TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+    [Fact]
+    public void ColorHex_Getter_returns_color_of_SlideMaster_Non_Placeholder()
+    {
+        // Arrange
+        IAutoShape nonPlaceholder = (IAutoShape)_fixture.Pre001.SlideMasters[0].Shapes.First(sp => sp.Id == 8);
+        IColorFormat colorFormat = nonPlaceholder.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
-            // Act-Assert
-            colorFormat.Color.Should().Be(redColor);
-        }
+        // Act-Assert
+        colorFormat.ColorHex.Should().Be("FFFFFF");
+    }
 
-        [Fact]
-        public void ColorType_ReturnsSchemeColorType_WhenFontColorIsTakenFromThemeScheme()
-        {
-            // Arrange
-            IAutoShape nonPhAutoShape = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
-            IColorFormat colorFormat = nonPhAutoShape.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+    [Fact]
+    public void ColorHex_Getter_returns_color_of_Title_SlideMaster_Placeholder()
+    {
+        // Arrange
+        IAutoShape titlePlaceholder = (IAutoShape)_fixture.Pre001.SlideMasters[0].Shapes.First(sp => sp.Id == 2);
+        IColorFormat colorFormat = titlePlaceholder.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
-            // Act
-            SCColorType colorType = colorFormat.ColorType;
+        // Act-Assert
+        colorFormat.ColorHex.Should().Be("000000");
+    }
 
-            // Assert
-            colorType.Should().Be(SCColorType.Scheme);
-        }
+    [Fact]
+    public void ColorHex_Getter_returns_color_of_Table_Cell_on_Slide()
+    {
+        // Arrange
+        ITable table = (ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4);
+        IColorFormat colorFormat = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
-        [Fact]
-        public void ColorType_ReturnsSchemeColorType_WhenFontColorIsSetAsRGB()
-        {
-            // Arrange
-            IAutoShape placeholder = (IAutoShape)_fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52);
-            IColorFormat colorFormat = placeholder.TextBox.Paragraphs[0].Portions[0].Font.ColorFormat;
+        // Act-Assert
+        colorFormat.ColorHex.Should().Be("FF0000");
+    }
 
-            // Act
-            SCColorType colorType = colorFormat.ColorType;
+    [Fact]
+    public void ColorType_ReturnsSchemeColorType_WhenFontColorIsTakenFromThemeScheme()
+    {
+        // Arrange
+        IAutoShape nonPhAutoShape = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
+        IColorFormat colorFormat = nonPhAutoShape.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
-            // Assert
-            colorType.Should().Be(SCColorType.RGB);
-        }
-#endif
+        // Act
+        SCColorType colorType = colorFormat.ColorType;
+
+        // Assert
+        colorType.Should().Be(SCColorType.Scheme);
+    }
+
+    [Fact]
+    public void ColorType_ReturnsSchemeColorType_WhenFontColorIsSetAsRGB()
+    {
+        // Arrange
+        IAutoShape placeholder = (IAutoShape)_fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52);
+        IColorFormat colorFormat = placeholder.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
+
+        // Act
+        SCColorType colorType = colorFormat.ColorType;
+
+        // Assert
+        colorType.Should().Be(SCColorType.RGB);
     }
 }

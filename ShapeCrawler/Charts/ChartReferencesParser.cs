@@ -30,7 +30,7 @@ namespace ShapeCrawler.Charts
             }
 
             // From Spreadsheet
-            var rangeXCells = GetXCellsByFormula(numberReference.Formula, slideChart);
+            var rangeXCells = GetXCellsByFormula(numberReference.Formula!, slideChart);
             var pointValues = new List<double>(rangeXCells.Count);
             foreach (var xCell in rangeXCells)
             {
@@ -43,13 +43,13 @@ namespace ShapeCrawler.Charts
 
         internal static string GetSingleString(C.StringReference stringReference, SCChart slideChart)
         {
-            string fromCache = stringReference.StringCache?.GetFirstChild<C.StringPoint>().Single().InnerText;
+            string fromCache = stringReference.StringCache?.GetFirstChild<C.StringPoint>()!.Single().InnerText!;
             if (fromCache != null)
             {
                 return fromCache;
             }
 
-            List<X.Cell> xCell = GetXCellsByFormula(stringReference.Formula, slideChart);
+            List<X.Cell> xCell = GetXCellsByFormula(stringReference.Formula!, slideChart);
 
             return xCell.Single().InnerText;
         }
@@ -74,7 +74,7 @@ namespace ShapeCrawler.Charts
             var chartSheetName = Regex.Match(normalizedFormula, @".+(?=\!)").Value; // eg: Sheet1!A2:A5 -> Sheet1
             var cellsRange = Regex.Match(normalizedFormula, @"(?<=\!).+").Value; // eg: Sheet1!A2:A5 -> A2:A5
 
-            var workbookPart = chart.ChartWorkbook.WorkbookPart;
+            var workbookPart = chart.ChartWorkbook!.WorkbookPart;
             var chartSheet = workbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == chartSheetName);
             var worksheetPart = (WorksheetPart)workbookPart.GetPartById(chartSheet.Id!);
             var sheetXCells = worksheetPart.Worksheet.Descendants<X.Cell>();

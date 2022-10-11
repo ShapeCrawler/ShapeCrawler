@@ -1,6 +1,4 @@
-﻿using ShapeCrawler.Shared;
-
-namespace ShapeCrawler.Placeholders
+﻿namespace ShapeCrawler.Placeholders
 {
     /// <summary>
     ///     Represents placeholder data.
@@ -9,10 +7,8 @@ namespace ShapeCrawler.Placeholders
     {
         public PlaceholderLocationData(PlaceholderData phData)
         {
-            Check.NotNull(phData, nameof(phData));
-
-            PlaceholderType = phData.PlaceholderType;
-            Index = phData.Index;
+            this.PlaceholderType = phData.PlaceholderType;
+            this.Index = phData.Index;
         }
 
         /// <summary>
@@ -35,6 +31,6 @@ namespace ShapeCrawler.Placeholders
         /// </summary>
         public int Height { get; set; }
 
-        public GeometryType Geometry { get; set; } = GeometryType.Rectangle;
+        public SCGeometry Geometry { get; set; } = SCGeometry.Rectangle;
     }
 }

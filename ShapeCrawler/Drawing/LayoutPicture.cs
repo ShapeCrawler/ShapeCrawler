@@ -16,15 +16,15 @@ namespace ShapeCrawler.Drawing
             this.picReference = picReference;
         }
 
-        public SCImage Image => this.GetImage();
+        public IImage Image => this.GetImage();
 
-        public ShapeType ShapeType => ShapeType.Picture;
+        public override SCShapeType ShapeType => SCShapeType.Picture;
 
         private SCImage GetImage()
         {
-            var imagePart = (ImagePart)this.SlideLayoutInternal.SlideLayoutPart.GetPartById(picReference.Value);
+            var imagePart = (ImagePart)this.SlideLayoutInternal.SlideLayoutPart.GetPartById(this.picReference.Value!);
 
-            return new SCImage(imagePart, this, picReference, this.SlideLayoutInternal.SlideLayoutPart);
+            return SCImage.Create(imagePart, this, this.picReference, this.SlideLayoutInternal.SlideLayoutPart);
         }
     }
 }

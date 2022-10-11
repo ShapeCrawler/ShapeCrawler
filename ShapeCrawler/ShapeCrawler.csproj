@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
     <AssemblyName>ShapeCrawler</AssemblyName>
     <RootNamespace>ShapeCrawler</RootNamespace>
     <Version>0.23.0</Version>
@@ -15,21 +15,21 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageIcon>logo.jpg</PackageIcon>
     <PackageIconUrl />
     <Copyright>MIT</Copyright>
-    <LangVersion>9</LangVersion>
+    <LangVersion>10</LangVersion>
     <ApplicationIcon>logo.ico</ApplicationIcon>
-    <PackageReleaseNotes>Fixed bug in Chart.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed updating text of text frame.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/ShapeCrawler/ShapeCrawler</RepositoryUrl>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <nullable>enable</nullable>
-    <AssemblyVersion>0.31.1.0</AssemblyVersion>
-    <FileVersion>0.31.1.0</FileVersion>
+    <AssemblyVersion>0.34.1</AssemblyVersion>
+    <FileVersion>0.34.1</FileVersion>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-    <PackageVersion>0.31.1</PackageVersion>
+    <PackageVersion>0.34.1</PackageVersion>
     <Title>ShapeCrawler</Title>
     <Configurations>Debug;Release;Test</Configurations>
     <Platforms>AnyCPU</Platforms>
@@ -62,6 +62,10 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Compile Remove="StrykerOutput\**" />
     <EmbeddedResource Remove="StrykerOutput\**" />
     <None Remove="StrykerOutput\**" />
+    <None Remove="Resources\video-image.bmp" />
+    <EmbeddedResource Include="Resources\video-image.bmp" />
+    <None Remove="Resources\audio-image.png" />
+    <EmbeddedResource Include="Resources\audio-image.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -76,12 +80,14 @@ This library provides a simplified object model on top of the Open XML SDK for m
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="0.16.1" />
     <PackageReference Include="AngleSharp.Css" Version="0.16.2" />
-    <PackageReference Include="DocumentFormat.OpenXml" Version="2.16.0" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.18.0" />
+    <PackageReference Include="OneOf" Version="3.0.223" />
+    <PackageReference Include="SkiaSharp" Version="2.88.3" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.3" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
   </ItemGroup>
 

@@ -118,14 +118,17 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="autoshape_case005_text_frame" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resource\autoshape\autoshape-case005_text-frame.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="tables_case001" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resource\tables-case001.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="test_image_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\test-image-2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="test_mp3" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\test-mp3.mp3;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="test_video" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resource\test-video.mp4;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="_001" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\001.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -235,8 +238,8 @@
   <data name="_038" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\038.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="_039_audio" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resource\039_audio.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="_039" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resource\039.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="_040_video" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\040_video.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

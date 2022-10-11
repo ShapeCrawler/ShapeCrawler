@@ -1,15 +1,16 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Drawing;
+using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
+using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes
 {
@@ -28,7 +29,7 @@ namespace ShapeCrawler.AutoShapes
             this.latinFont = new ResettableLazy<A.LatinFont>(this.GetALatinFont);
             this.colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
             this.ParentPortion = portion;
-            var parentTextBoxContainer = portion.ParentParagraph.ParentTextBox.TextBoxContainer;
+            var parentTextBoxContainer = portion.ParentParagraph.TextFrame.TextFrameContainer;
             Shape parentShape;
             if (parentTextBoxContainer is SCTableCell cell)
             {
@@ -36,9 +37,10 @@ namespace ShapeCrawler.AutoShapes
             }
             else
             {
-                parentShape = (Shape)portion.ParentParagraph.ParentTextBox.TextBoxContainer;
+                parentShape = (Shape)portion.ParentParagraph.TextFrame.TextFrameContainer;
             }
-            this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements.FontScheme;
+
+            this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements!.FontScheme;
         }
 
         #region Public Properties
@@ -67,32 +69,61 @@ namespace ShapeCrawler.AutoShapes
             set => this.SetItalicFlag(value);
         }
 
+        public DocumentFormat.OpenXml.Drawing.TextUnderlineValues Underline
+        {
+            get
+            {
+                A.RunProperties aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+                return aRunProperties?.Underline?.Value ?? A.TextUnderlineValues.None;
+            }
+            set
+            {
+                A.RunProperties aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+                if (aRunPr != null)
+                {
+                    aRunPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
+                }
+                else
+                {
+                    A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                    if (aEndParaRPr != null)
+                    {
+                        aEndParaRPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
+                    }
+                    else
+                    {
+                        var runProp = this.aText.Parent.AddRunProperties();
+                        runProp.Underline = new EnumValue<A.TextUnderlineValues>(value);
+                    }
+                }
+            }
+        }
+
         public IColorFormat ColorFormat => this.colorFormat.Value;
 
-        public bool SizeCanBeChanged()
-        {
-            A.RunProperties runPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
-            return runPr != null;
-        }
+        #endregion Public Properties
 
         internal SCPortion ParentPortion { get; }
 
-        #endregion Public Properties
+        public bool CanChange()
+        {
+            return this.ParentPortion.ParentParagraph.TextFrame.TextFrameContainer.Shape.Placeholder == null;
+        }
 
         private string GetName()
         {
             const string majorLatinFont = "+mj-lt";
             if (this.latinFont.Value.Typeface == majorLatinFont)
             {
-                return this.aFontScheme.MajorFont.LatinFont.Typeface;
+                return this.aFontScheme.MajorFont!.LatinFont!.Typeface!;
             }
 
-            return this.latinFont.Value.Typeface;
+            return this.latinFont.Value.Typeface!;
         }
 
         private A.LatinFont GetALatinFont()
         {
-            A.RunProperties aRunProperties = this.aText.Parent.GetFirstChild<A.RunProperties>();
+            A.RunProperties aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
             A.LatinFont aLatinFont = aRunProperties?.GetFirstChild<A.LatinFont>();
 
             if (aLatinFont != null)
@@ -110,88 +141,104 @@ namespace ShapeCrawler.AutoShapes
             }
 
             // Get from theme
-            return this.aFontScheme.MinorFont.LatinFont;
+            return this.aFontScheme.MinorFont!.LatinFont!;
         }
 
         private int GetSize()
         {
-            var fontSize = this.ParentPortion.SDKAText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize?.Value;
+            var fontSize = this.ParentPortion.AText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize?.Value;
             if (fontSize != null)
             {
                 return fontSize.Value / 100;
             }
 
-            var parentParagraph = this.ParentPortion.ParentParagraph;
-            var textBoxContainer = parentParagraph.ParentTextBox.TextBoxContainer;
-            int paragraphLvl = parentParagraph.Level;
+            var paragraph = this.ParentPortion.ParentParagraph;
+            var textFrameContainer = paragraph.TextFrame.TextFrameContainer;
+            var paraLevel = paragraph.Level;
 
-            if (textBoxContainer is Shape { Placeholder: { } } parentShape)
+            if (textFrameContainer is Shape { Placeholder: { } } shape)
             {
-                Placeholder placeholder = (Placeholder)parentShape.Placeholder;
-                IFontDataReader phReferencedShape = (IFontDataReader)placeholder.ReferencedShape;
-                FontData fontDataPlaceholder = new ();
-                if (phReferencedShape != null)
+                if (TryFromPlaceholder(shape, paraLevel, out var sizeFromPlaceholder))
                 {
-                    phReferencedShape.FillFontData(paragraphLvl, ref fontDataPlaceholder);
-                    if (fontDataPlaceholder.FontSize != null)
-                    {
-                        return fontDataPlaceholder.FontSize / 100;
-                    }
-                }
-
-                var shapeSlideMaster = parentShape.SlideMasterInternal;
-
-                // From Slide Master body
-                if (shapeSlideMaster.TryGetFontSizeFromBody(paragraphLvl, out int fontSizeBody))
-                {
-                    return fontSizeBody / 100;
-                }
-
-                // From Slide Master other
-                if (shapeSlideMaster.TryGetFontSizeFromOther(paragraphLvl, out int fontSizeOther))
-                {
-                    return fontSizeOther / 100;
+                    return sizeFromPlaceholder;
                 }
             }
-
-            // From presentation level
-            SCSlideMaster slideMaster = null;
-            if (textBoxContainer is Shape shape)
+            
+            var presentation = textFrameContainer.Shape.SlideBase.PresentationInternal;
+            if (presentation.ParaLvlToFontData.TryGetValue(paraLevel, out FontData fontData))
             {
-                slideMaster = shape.SlideMasterInternal;
-            }
-            else
-            {
-                slideMaster = ((SCTableCell) textBoxContainer).SlideMasterInternal;
-            }
-
-            if (slideMaster.ParentPresentation.ParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
-            {
-                if (fontData.FontSize != null)
+                if (fontData.FontSize is not null)
                 {
                     return fontData.FontSize / 100;
                 }
             }
 
-            return FormatConstants.DefaultFontSize;
+            return SCConstants.DefaultFontSize;
+        }
+
+        private static bool TryFromPlaceholder(Shape shape, int paraLevel, out int i)
+        {
+            i = -1;
+            var placeholder = (Placeholder)shape.Placeholder;
+            var referencedShape = (SlideAutoShape)placeholder?.ReferencedShape;
+            var fontDataPlaceholder = new FontData();
+            if (referencedShape != null)
+            {
+                referencedShape.FillFontData(paraLevel, ref fontDataPlaceholder);
+                if (fontDataPlaceholder.FontSize is not null)
+                {
+                    {
+                        i = fontDataPlaceholder.FontSize / 100;
+                        return true;
+                    }
+                }
+            }
+
+            var slideMaster = shape.SlideMasterInternal;
+            if (placeholder?.Type == SCPlaceholderType.Title)
+            {
+                var pTextStyles = slideMaster.PSlideMaster.TextStyles!;
+                var titleFontSize = pTextStyles.TitleStyle!.Level1ParagraphProperties!
+                    .GetFirstChild<A.DefaultRunProperties>()!.FontSize!.Value;
+                i = titleFontSize / 100;
+                return true;
+            }
+            
+            if (slideMaster.TryGetFontSizeFromBody(paraLevel, out var fontSizeBody))
+            {
+                {
+                    i = fontSizeBody / 100;
+                    return true;
+                }
+            }
+
+            if (slideMaster.TryGetFontSizeFromOther(paraLevel, out var fontSizeOther))
+            {
+                {
+                    i = fontSizeOther / 100;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private bool GetBoldFlag()
         {
-            A.RunProperties aRunProperties = this.aText.Parent.GetFirstChild<A.RunProperties>();
+            var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
             if (aRunProperties == null)
             {
                 return false;
             }
 
-            if (aRunProperties.Bold != null && aRunProperties.Bold == true)
+            if (aRunProperties.Bold is not null  && aRunProperties.Bold == true)
             {
                 return true;
             }
 
             FontData phFontData = new ();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
-            if (phFontData.IsBold != null)
+            if (phFontData.IsBold is not null)
             {
                 return phFontData.IsBold.Value;
             }
@@ -201,20 +248,20 @@ namespace ShapeCrawler.AutoShapes
 
         private bool GetItalicFlag()
         {
-            A.RunProperties aRunProperties = this.aText.Parent.GetFirstChild<A.RunProperties>();
+            A.RunProperties aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
             if (aRunProperties == null)
             {
                 return false;
             }
 
-            if (aRunProperties.Italic != null && aRunProperties.Italic == true)
+            if (aRunProperties.Italic is not null  && aRunProperties.Italic == true)
             {
                 return true;
             }
 
             FontData phFontData = new ();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
-            if (phFontData.IsItalic != null)
+            if (phFontData.IsItalic is not null )
             {
                 return phFontData.IsItalic.Value;
             }
@@ -224,7 +271,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetBoldFlag(bool value)
         {
-            A.RunProperties aRunPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
+            var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
             if (aRunPr != null)
             {
                 aRunPr.Bold = new BooleanValue(value);
@@ -233,7 +280,7 @@ namespace ShapeCrawler.AutoShapes
             {
                 FontData phFontData = new ();
                 FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
-                if (phFontData.IsBold != null)
+                if (phFontData.IsBold is not null )
                 {
                     phFontData.IsBold = new BooleanValue(value);
                 }
@@ -253,31 +300,31 @@ namespace ShapeCrawler.AutoShapes
             }
         }
 
-        private void SetItalicFlag(bool value)
+        private void SetItalicFlag(bool isItalic)
         {
-            A.RunProperties aRunPr = this.aText.Parent.GetFirstChild<A.RunProperties>();
+            var aTextParent = this.aText.Parent!; 
+            var aRunPr = aTextParent.GetFirstChild<A.RunProperties>();
             if (aRunPr != null)
             {
-                aRunPr.Italic = new BooleanValue(value);
+                aRunPr.Italic = new BooleanValue(isItalic);
             }
             else
             {
-                A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                var aEndParaRPr = aTextParent.NextSibling<A.EndParagraphRunProperties>();
                 if (aEndParaRPr != null)
                 {
-                    aEndParaRPr.Italic = new BooleanValue(value);
+                    aEndParaRPr.Italic = new BooleanValue(isItalic);
                 }
                 else
                 {
-                    aRunPr = new A.RunProperties { Italic = new BooleanValue(value) };
-                    this.aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
+                    aTextParent.AddRunProperties(isItalic);
                 }
             }
         }
 
         private void SetName(string fontName)
         {
-            Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextBox.TextBoxContainer;
+            Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.TextFrame.TextFrameContainer;
             if (parentShape.Placeholder != null)
             {
                 throw new PlaceholderCannotBeChangedException();
@@ -290,14 +337,13 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetFontSize(int newFontSize)
         {
-            var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+            var parent = this.aText.Parent!;
+            var aRunPr = parent.GetFirstChild<A.RunProperties>();
             if (aRunPr == null)
             {
-                const string errorMsg =
-                    "The property value cannot be changed on the Slide level since it belongs to Slide Master. " +
-                    "Hence, you should change it on Slide Master level. " +
-                    "Note: you can check whether the property can be changed via {property_name}CanBeChanged method.";
-                throw new SlideMasterPropertyCannotBeChanged(errorMsg);
+                var builder = new ARunPropertiesBuilder();
+                aRunPr = builder.Build();
+                parent.InsertAt(aRunPr, 0);
             }
 
             aRunPr.FontSize = newFontSize * 100;

@@ -5,6 +5,9 @@
     /// </summary>
     public interface IPlaceholder
     {
-        PlaceholderType Type { get; }
+        /// <summary>
+        ///     Gets placeholder type.
+        /// </summary>
+        SCPlaceholderType Type { get; }
     }
 }

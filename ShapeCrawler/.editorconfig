@@ -1,0 +1,51 @@
+﻿[*.cs]
+
+# Roslyn
+
+# Roslyn - Code style
+dotnet_diagnostic.IDE0003.severity = none
+dotnet_diagnostic.IDE0044.severity = error
+dotnet_diagnostic.IDE0005.severity = error
+
+# Roslyn - Code quality
+dotnet_diagnostic.CA1062.severity = none
+dotnet_diagnostic.CA1051.severity = error
+dotnet_diagnostic.CA1305.severity = error
+dotnet_diagnostic.CA1310.severity = error
+dotnet_diagnostic.CA1717.severity = error
+dotnet_diagnostic.CA2007.severity = error
+dotnet_diagnostic.CA2211.severity = error
+dotnet_diagnostic.CA1720.severity = suggestion
+
+# Stylecop
+dotnet_diagnostic.SA1124.severity = none
+dotnet_diagnostic.SA1200.severity = none
+dotnet_diagnostic.SA1611.severity = none
+dotnet_diagnostic.SA1618.severity = error
+dotnet_diagnostic.SA1615.severity = none
+dotnet_diagnostic.SA1413.severity = none
+dotnet_diagnostic.SA1633.severity = none
+dotnet_diagnostic.SA1201.severity = error
+dotnet_diagnostic.SA1503.severity = error
+dotnet_diagnostic.SA1005.severity = error
+dotnet_diagnostic.SA1600.severity = error
+dotnet_diagnostic.SA1202.severity = error
+dotnet_diagnostic.SA1300.severity = error
+dotnet_diagnostic.SA1101.severity = error
+dotnet_diagnostic.SA1000.severity = error
+dotnet_diagnostic.SA1623.severity = error
+dotnet_diagnostic.SA1602.severity = error
+dotnet_diagnostic.SA1513.severity = error
+
+# CSXXXX
+dotnet_diagnostic.CS0649.severity = error
+dotnet_diagnostic.CS8602.severity = error
+dotnet_diagnostic.CS8603.severity = error
+dotnet_diagnostic.CS8604.severity = error
+dotnet_diagnostic.CS8764.severity = error
+dotnet_diagnostic.CS8766.severity = error
+dotnet_diagnostic.CS8767.severity = error
+
+
+
+

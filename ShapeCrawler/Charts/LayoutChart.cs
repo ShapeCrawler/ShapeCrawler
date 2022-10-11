@@ -2,16 +2,14 @@
 using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Charts
-{
-    internal class LayoutChart : LayoutShape, IShape
-    {
-        public LayoutChart(SCSlideLayout slideLayoutInternal, P.GraphicFrame pGraphicFrame)
-            : base(slideLayoutInternal, pGraphicFrame)
-        {
-            // TODO: add test for reading chart placeholder on Layout
-        }
+namespace ShapeCrawler.Charts;
 
-        public ShapeType ShapeType => ShapeType.Chart;
+internal class LayoutChart : LayoutShape, IShape
+{
+    public LayoutChart(SCSlideLayout slideLayoutInternal, P.GraphicFrame pGraphicFrame)
+        : base(slideLayoutInternal, pGraphicFrame)
+    {
     }
+
+    public override SCShapeType ShapeType => SCShapeType.Chart;
 }

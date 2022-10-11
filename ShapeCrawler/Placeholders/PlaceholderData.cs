@@ -12,31 +12,31 @@ namespace ShapeCrawler.Placeholders
         /// <summary>
         ///     Gets or sets placeholder type.
         /// </summary>
-        public PlaceholderType PlaceholderType { get; set; }
+        internal SCPlaceholderType PlaceholderType { get; set; }
 
         /// <summary>
         ///     Gets or sets index (p:ph idx="12345").
         /// </summary>
         /// <returns>Index value or null if such index not exist.</returns>
-        public int? Index { get; set; }
+        internal int? Index { get; set; }
 
         #endregion Properties
 
         #region Public Methods
 
-        public bool Equals(PlaceholderData other)
+        public bool Equals(PlaceholderData? other)
         {
             if (other == null)
             {
                 return false;
             }
 
-            if (this.PlaceholderType != PlaceholderType.Custom && other.PlaceholderType != PlaceholderType.Custom)
+            if (this.PlaceholderType != SCPlaceholderType.Custom && other.PlaceholderType != SCPlaceholderType.Custom)
             {
                 return this.PlaceholderType == other.PlaceholderType;
             }
 
-            if (this.PlaceholderType == PlaceholderType.Custom && other.PlaceholderType == PlaceholderType.Custom)
+            if (this.PlaceholderType == SCPlaceholderType.Custom && other.PlaceholderType == SCPlaceholderType.Custom)
             {
                 return this.Index == other.Index;
             }
@@ -53,20 +53,19 @@ namespace ShapeCrawler.Placeholders
 
             var ph = (PlaceholderData) obj;
 
-            return Equals(ph);
+            return this.Equals(ph);
         }
 
         /// <summary>
         ///     Returns the hash calculating upon the formula suggested here: https://stackoverflow.com/a/263416/2948684
         /// </summary>
-        /// <remarks></remarks>
         public override int GetHashCode()
         {
             var hash = 17;
-            hash = hash * 23 + PlaceholderType.GetHashCode();
-            if (PlaceholderType == PlaceholderType.Custom)
+            hash = hash * 23 + this.PlaceholderType.GetHashCode();
+            if (this.PlaceholderType == SCPlaceholderType.Custom)
             {
-                hash = hash * 23 + Index.GetHashCode();
+                hash = hash * 23 + this.Index.GetHashCode();
             }
 
             return hash;

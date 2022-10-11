@@ -1,21 +1,21 @@
 ﻿using DocumentFormat.OpenXml;
+using OneOf;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Factories
+namespace ShapeCrawler.Factories;
+
+internal class AutoShapeCreator : OpenXmlElementHandler
 {
-    internal class AutoShapeCreator : OpenXmlElementHandler
+    internal override Shape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCGroupShape groupShape)
     {
-        internal override IShape Create(OpenXmlCompositeElement compositeElementOfPShapeTree, SCSlide slide, SlideGroupShape groupShape)
+        if (pShapeTreeChild is P.Shape pShape)
         {
-            if (compositeElementOfPShapeTree is P.Shape pShape)
-            {
-                var autoShape = new SlideAutoShape(pShape, slide, groupShape);
-
-                return autoShape;
-            }
-
-            return this.Successor?.Create(compositeElementOfPShapeTree, slide, groupShape);
+            var slideAutoShape = new SlideAutoShape(pShape, oneOfSlide, groupShape);
+            return slideAutoShape;
         }
+
+        return this.Successor?.Create(pShapeTreeChild, oneOfSlide, groupShape);
     }
 }

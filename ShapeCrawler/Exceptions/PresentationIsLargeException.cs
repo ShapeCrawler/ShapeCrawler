@@ -6,7 +6,7 @@ namespace ShapeCrawler.Exceptions
     /// <summary>
     ///     Thrown when presentation size is more than allowable.
     /// </summary>
-    public class PresentationIsLargeException : ShapeCrawlerException
+    internal class PresentationIsLargeException : ShapeCrawlerException
     {
         private PresentationIsLargeException(string message)
             : base(message, (int)ExceptionCode.PresentationIsLargeException)
@@ -19,7 +19,7 @@ namespace ShapeCrawler.Exceptions
         /// </summary>
         internal static PresentationIsLargeException FromMax(int maxSize)
         {
-#if NETSTANDARD2_1 || NET5_0 || NETCOREAPP2_1
+#if NET6_0
             var message = ExceptionMessages.PresentationIsLarge.Replace("{0}",
                 maxSize.ToString(CultureInfo.CurrentCulture), StringComparison.OrdinalIgnoreCase);
 #else

@@ -2,6 +2,7 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using X = DocumentFormat.OpenXml.Spreadsheet;
@@ -32,9 +33,9 @@ namespace ShapeCrawler.Collections
             this.CollectionItems = categoryList.Cast<ICategory>().ToList();
         }
 
-        public static CategoryCollection? Create(SCChart chart, OpenXmlElement firstChartSeries, ChartType chartType)
+        public static CategoryCollection? Create(SCChart chart, OpenXmlElement firstChartSeries, SCChartType chartType)
         {
-            if (chartType is ChartType.BubbleChart or ChartType.ScatterChart)
+            if (chartType is SCChartType.BubbleChart or SCChartType.ScatterChart)
             {
                 // Bubble and Scatter charts do not have categories
                 return null;
@@ -84,11 +85,9 @@ namespace ShapeCrawler.Collections
 
                 int catIndex = 0;
                 ResettableLazy<List<X.Cell>> xCells = null;
-                if (chart.PresentationInternal.Editable)
-                {
-                    xCells = new ResettableLazy<List<X.Cell>>(() =>
-                        ChartReferencesParser.GetXCellsByFormula(cFormula, chart));
-                }
+
+                xCells = new ResettableLazy<List<X.Cell>>(() =>
+                    ChartReferencesParser.GetXCellsByFormula(cFormula, chart));
                 foreach (C.NumericValue cachedValue in cachedValues)
                 {
                     categoryList.Add(new Category(xCells, catIndex++, cachedValue));
@@ -123,9 +122,9 @@ namespace ShapeCrawler.Collections
                 {
                     foreach (C.StringPoint cStrPoint in cStringPoints)
                     {
-                        uint index = cStrPoint.Index.Value;
+                        uint index = cStrPoint.Index!.Value;
                         C.NumericValue cachedCatName = cStrPoint.NumericValue;
-                        var category = new Category(null, -1, cachedCatName);
+                        var category = new Category(null, -1, cachedCatName!);
                         nextIndexToCategory.Add(new KeyValuePair<uint, Category>(index, category));
                     }
                 }

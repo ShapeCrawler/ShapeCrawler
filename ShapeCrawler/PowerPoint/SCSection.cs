@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml.Office2010.PowerPoint;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
@@ -18,13 +17,13 @@ namespace ShapeCrawler
 
         public ISectionSlideCollection Slides => new SCSectionSlideCollection(this);
 
-        public Section SDKSection { get; }
+        public string Name => this.GetName();
 
-        public string Name => GetName();
-
+        internal Section SDKSection { get; }
+        
         private string GetName()
         {
-            return this.SDKSection.Name;
+            return this.SDKSection.Name!;
         }
     }
 }

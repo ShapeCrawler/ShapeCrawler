@@ -1,57 +1,71 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Placeholders;
+using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.SlideMasters
 {
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrawler")]
-    internal class SCSlideMaster : ISlideMaster
+    internal class SCSlideMaster : SlideBase, ISlideMaster
     {
         private readonly ResettableLazy<List<SCSlideLayout>> slideLayouts;
-        internal readonly DocumentFormat.OpenXml.Presentation.SlideMaster PSlideMaster;
 
-        internal SCSlideMaster(SCPresentation parentPresentation, DocumentFormat.OpenXml.Presentation.SlideMaster pSlideMaster)
+        internal SCSlideMaster(SCPresentation pres, P.SlideMaster pSlideMaster)
         {
-            this.ParentPresentation = parentPresentation;
+            this.Presentation = pres;
             this.PSlideMaster = pSlideMaster;
             this.slideLayouts = new ResettableLazy<List<SCSlideLayout>>(this.GetSlideLayouts);
         }
+        
+        public IImage? Background => this.GetBackground();
 
-        internal SCPresentation ParentPresentation { get; }
+        public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
+
+        public IShapeCollection Shapes => ShapeCollection.Create(this.PSlideMaster.SlideMasterPart!, this);
+
+        public override bool IsRemoved { get; set; }
+
+        public override SCPresentation PresentationInternal => this.Presentation; // TODO: make internal
+        
+        internal P.SlideMaster PSlideMaster { get; }
+
+        internal SCPresentation Presentation { get; }
 
         internal Dictionary<int, FontData> BodyParaLvlToFontData =>
-            FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles.BodyStyle);
+            FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.BodyStyle!);
 
         internal Dictionary<int, FontData> TitleParaLvlToFontData =>
-            FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles.TitleStyle);
+            FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.TitleStyle!);
 
-        internal ThemePart ThemePart => this.PSlideMaster.SlideMasterPart.ThemePart;
+        internal ThemePart ThemePart => this.PSlideMaster.SlideMasterPart!.ThemePart!;
 
-        private List<SCSlideLayout> GetSlideLayouts()
+        internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
+        
+        internal override TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
+        
+        public override void ThrowIfRemoved()
         {
-            IEnumerable<SlideLayoutPart> sldLayoutParts = this.PSlideMaster.SlideMasterPart.SlideLayoutParts;
-            var slideLayouts = new List<SCSlideLayout>(sldLayoutParts.Count());
-            foreach (SlideLayoutPart sldLayoutPart in sldLayoutParts)
+            if (this.IsRemoved)
             {
-                slideLayouts.Add(new SCSlideLayout(this, sldLayoutPart));
+                throw new ElementIsRemovedException("Slide Master is removed");
             }
-
-            return slideLayouts;
+            
+            this.Presentation.ThrowIfClosed();
         }
-
+        
         internal bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
         {
             Dictionary<int, FontData> bodyParaLvlToFontData =
-                FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles.BodyStyle);
+                FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.BodyStyle!);
             if (bodyParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
             {
-                if (fontData.FontSize != null)
+                if (fontData.FontSize is not null)
                 {
                     fontSize = fontData.FontSize;
                     return true;
@@ -64,16 +78,15 @@ namespace ShapeCrawler.SlideMasters
 
         internal bool TryGetFontSizeFromOther(int paragraphLvl, out int fontSize)
         {
-            DocumentFormat.OpenXml.Presentation.TextStyles pTextStyles = this.PSlideMaster.TextStyles;
+            var pTextStyles = this.PSlideMaster.TextStyles!;
 
             // Other
-            Dictionary<int, FontData> otherStyleLvlToFontData =
-                FontDataParser.FromCompositeElement(pTextStyles.OtherStyle);
+            var otherStyleLvlToFontData = FontDataParser.FromCompositeElement(pTextStyles.OtherStyle!);
             if (otherStyleLvlToFontData.ContainsKey(paragraphLvl))
             {
-                if (otherStyleLvlToFontData[paragraphLvl].FontSize != null)
+                if (otherStyleLvlToFontData[paragraphLvl].FontSize is not null)
                 {
-                    fontSize = otherStyleLvlToFontData[paragraphLvl].FontSize;
+                    fontSize = otherStyleLvlToFontData[paragraphLvl].FontSize!;
                     return true;
                 }
             }
@@ -81,27 +94,23 @@ namespace ShapeCrawler.SlideMasters
             fontSize = -1;
             return false;
         }
-
-        public bool IsRemoved { get; set; }
-
-        public void ThrowIfRemoved()
-        {
-            throw new NotImplementedException();
-        }
-
-        #region Public Properties
-
-        public SCImage Background => GetBackground();
-
-        private SCImage GetBackground()
+        
+        private SCImage? GetBackground()
         {
             return null;
         }
+        
+        private List<SCSlideLayout> GetSlideLayouts()
+        {
+            var rIdList = this.PSlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>().Select(x => x.RelationshipId!);
+            var layouts = new List<SCSlideLayout>(rIdList.Count());
+            foreach (var rId in rIdList)
+            {
+                var layoutPart = (SlideLayoutPart) this.PSlideMaster.SlideMasterPart!.GetPartById(rId.Value!);
+                layouts.Add(new SCSlideLayout(this, layoutPart));
+            }
 
-        public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
-
-        IShapeCollection IBaseSlide.Shapes => ShapeCollection.ForSlideLayout(this.PSlideMaster.CommonSlideData.ShapeTree, this);
-
-        #endregion Public Properties
+            return layouts;
+        }
     }
 }

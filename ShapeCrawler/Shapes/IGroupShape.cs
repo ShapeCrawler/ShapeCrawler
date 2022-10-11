@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using ShapeCrawler.Collections;
 using ShapeCrawler.Shapes;
-// ReSharper disable CheckNamespace
 
+// ReSharper disable CheckNamespace
 namespace ShapeCrawler
 {
     /// <summary>
@@ -12,6 +12,6 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets the collection of shapes inside the group.
         /// </summary>
-        IReadOnlyCollection<IShape> Shapes { get; }
+        IGroupedShapeCollection Shapes { get; }
     }
 }

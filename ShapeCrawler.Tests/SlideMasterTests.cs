@@ -59,12 +59,12 @@ namespace ShapeCrawler.Tests
             IShape masterAutoShapeCase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
 
             // Act
-            PlaceholderType? shapePlaceholderTypeCase1 = masterAutoShapeCase1.Placeholder?.Type;
-            PlaceholderType? shapePlaceholderTypeCase2 = masterAutoShapeCase2.Placeholder?.Type;
-            PlaceholderType? shapePlaceholderTypeCase3 = masterAutoShapeCase3.Placeholder?.Type;
+            SCPlaceholderType? shapePlaceholderTypeCase1 = masterAutoShapeCase1.Placeholder?.Type;
+            SCPlaceholderType? shapePlaceholderTypeCase2 = masterAutoShapeCase2.Placeholder?.Type;
+            SCPlaceholderType? shapePlaceholderTypeCase3 = masterAutoShapeCase3.Placeholder?.Type;
 
             // Assert
-            shapePlaceholderTypeCase1.Should().Be(PlaceholderType.Title);
+            shapePlaceholderTypeCase1.Should().Be(SCPlaceholderType.Title);
             shapePlaceholderTypeCase2.Should().BeNull();
             shapePlaceholderTypeCase3.Should().BeNull();
         }
@@ -78,12 +78,12 @@ namespace ShapeCrawler.Tests
             IShape shapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
 
             // Act
-            GeometryType geometryTypeCase1 = shapeCase1.GeometryType;
-            GeometryType geometryTypeCase2 = shapeCase2.GeometryType;
+            SCGeometry geometryTypeCase1 = shapeCase1.GeometryType;
+            SCGeometry geometryTypeCase2 = shapeCase2.GeometryType;
 
             // Assert
-            geometryTypeCase1.Should().Be(GeometryType.Rectangle);
-            geometryTypeCase2.Should().Be(GeometryType.Custom);
+            geometryTypeCase1.Should().Be(SCGeometry.Rectangle);
+            geometryTypeCase2.Should().Be(SCGeometry.Custom);
         }
 
         [Fact]
@@ -94,21 +94,7 @@ namespace ShapeCrawler.Tests
             IAutoShape autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
             // Act-Assert
-            autoShape.TextBox.Text.Should().BeEquivalentTo("id8");
-        }
-
-        [Fact]
-        public void AutoShape_TextBox_Paragraph_Portion_FontSize_returns_Font_Size()
-        {
-            // Arrange
-            var slideMaster = _fixture.Pre001.SlideMasters[0];
-            var autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
-
-            // Act
-            int portionFontSize = autoShape.TextBox.Paragraphs[0].Portions[0].Font.Size;
-
-            // Assert
-            portionFontSize.Should().Be(18);
+            autoShape.TextFrame.Text.Should().BeEquivalentTo("id8");
         }
     }
 }

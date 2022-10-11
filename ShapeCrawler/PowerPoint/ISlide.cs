@@ -1,64 +1,61 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.SlideMasters;
 
-namespace ShapeCrawler
+namespace ShapeCrawler;
+
+/// <summary>
+///     Represents a slide.
+/// </summary>
+public interface ISlide
 {
     /// <summary>
-    ///     Represents a user slide.
+    ///     Gets or sets slide number.
     /// </summary>
-    public interface ISlide : IBaseSlide
-    {
-        /// <summary>
-        ///     Gets or sets slide number.
-        /// </summary>
-        int Number { get; set; }
+    int Number { get; set; }
 
-        /// <summary>
-        ///     Gets background image of the slide. Returns <c>NULL</c> if the slide does not have background.
-        /// </summary>
-        SCImage Background { get; }
+    /// <summary>
+    ///     Gets background image if it exist, otherwise <see langword="null"/>.
+    /// </summary>
+    IImage? Background { get; }
 
-        /// <summary>
-        ///     Gets or sets custom data.
-        /// </summary>
-        string CustomData { get; set; }
+    /// <summary>
+    ///     Gets or sets custom data. It returns <see langword="null"/> if custom data is not presented.
+    /// </summary>
+    string? CustomData { get; set; }
 
-        /// <summary>
-        ///     Gets a value indicating whether slide hidden.
-        /// </summary>
-        bool Hidden { get; }
+    /// <summary>
+    ///     Gets a value indicating whether the slide is hidden.
+    /// </summary>
+    bool Hidden { get; }
 
-        /// <summary>
-        ///     Gets parent (referenced) Slide Layout.
-        /// </summary>
-        ISlideLayout ParentSlideLayout { get; }
+    /// <summary>
+    ///     Gets referenced Slide Layout.
+    /// </summary>
+    ISlideLayout SlideLayout { get; }
 
-        IPresentation ParentPresentation { get; }
+    /// <summary>
+    ///     Gets presentation.
+    /// </summary>
+    IPresentation Presentation { get; }
 
-        SlidePart SDKSlidePart { get; }
+    /// <summary>
+    ///     Gets instance of <see cref=" DocumentFormat.OpenXml.Packaging.SlidePart"/> class of the underlying Open XML SDK.
+    /// </summary>
+    SlidePart SDKSlidePart { get; }
 
-        /// <summary>
-        ///     Hides slide.
-        /// </summary>
-        void Hide();
+    /// <summary>
+    ///     Gets collection of shapes.
+    /// </summary>
+    IShapeCollection Shapes { get; }
 
-        /// <summary>
-        ///     Saves slide scheme to stream.
-        /// </summary>
-        void SaveScheme(Stream stream);
+    /// <summary>
+    /// Gets a list of all textboxes on that slide, including those in tables.
+    /// </summary>
+    public IList<ITextFrame> GetAllTextFrames();
 
-        /// <summary>
-        ///     Saves slide scheme to file.
-        /// </summary>
-        void SaveScheme(string filePath);
-
-#if DEBUG
-        /// <summary>
-        ///     Converts slide to HTML.
-        /// </summary>
-        Task<string> ToHtml();
-#endif
-    }
+    /// <summary>
+    ///     Hides slide.
+    /// </summary>
+    void Hide();
 }

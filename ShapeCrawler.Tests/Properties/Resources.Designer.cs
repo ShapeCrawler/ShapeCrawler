@@ -19,7 +19,7 @@ namespace ShapeCrawler.Tests.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -423,9 +423,9 @@ namespace ShapeCrawler.Tests.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] _039_audio {
+        internal static byte[] _039 {
             get {
-                object obj = ResourceManager.GetObject("_039_audio", resourceCulture);
+                object obj = ResourceManager.GetObject("_039", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -436,6 +436,26 @@ namespace ShapeCrawler.Tests.Properties {
         internal static byte[] _040_video {
             get {
                 object obj = ResourceManager.GetObject("_040_video", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] autoshape_case005_text_frame {
+            get {
+                object obj = ResourceManager.GetObject("autoshape_case005_text_frame", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] tables_case001 {
+            get {
+                object obj = ResourceManager.GetObject("tables_case001", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -456,16 +476,6 @@ namespace ShapeCrawler.Tests.Properties {
         internal static byte[] test_mp3 {
             get {
                 object obj = ResourceManager.GetObject("test_mp3", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] test_video {
-            get {
-                object obj = ResourceManager.GetObject("test_video", resourceCulture);
                 return ((byte[])(obj));
             }
         }

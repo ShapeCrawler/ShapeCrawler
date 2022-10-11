@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.SlideMasters;
-using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler
@@ -9,16 +7,21 @@ namespace ShapeCrawler
     /// <summary>
     ///     Represents a Slide Master.
     /// </summary>
-    public interface ISlideMaster : IBaseSlide
+    public interface ISlideMaster
     {
         /// <summary>
-        ///     Gets background image.
+        ///     Gets background image if slide master has background, otherwise <see langword="null"/>.
         /// </summary>
-        SCImage Background { get; }
+        IImage? Background { get; }
 
         /// <summary>
         ///     Gets collection of Slide Layouts.
         /// </summary>
         IReadOnlyList<ISlideLayout> SlideLayouts { get; }
+        
+        /// <summary>
+        ///     Gets collection of shape.
+        /// </summary>
+        IShapeCollection Shapes { get; }
     }
 }

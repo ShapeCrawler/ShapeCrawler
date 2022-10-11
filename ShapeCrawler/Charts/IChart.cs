@@ -13,12 +13,12 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets chart type.
         /// </summary>
-        ChartType Type { get; }
+        SCChartType Type { get; }
 
         /// <summary>
-        ///     Gets title. Returns null if chart doesn't have title.
+        ///     Gets chart title if chart has it, otherwise <see langword="null"/>.
         /// </summary>
-        string Title { get; }
+        string? Title { get; }
 
         /// <summary>
         ///     Gets a value indicating whether the chart has a title.
@@ -31,9 +31,9 @@ namespace ShapeCrawler
         bool HasCategories { get; }
 
         /// <summary>
-        ///     Gets category collection. Returns null if the chart type doesn't have categories.
+        ///     Gets collection of categories if chart type has categories, otherwise <c>null</c>.
         /// </summary>
-        public ICategoryCollection Categories { get; }
+        public ICategoryCollection? Categories { get; }
 
         /// <summary>
         ///     Gets collection of data series.
@@ -56,10 +56,8 @@ namespace ShapeCrawler
         byte[] WorkbookByteArray { get; }
 
         /// <summary>
-        ///     Gets parent slide.
+        ///     Gets instance of <see cref="SpreadsheetDocument"/> of Open XML SDK.
         /// </summary>
-        ISlide ParentSlide { get; }
-
         SpreadsheetDocument SDKSpreadsheetDocument { get; }
     }
 }

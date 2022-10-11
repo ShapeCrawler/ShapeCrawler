@@ -1,16 +1,21 @@
-﻿using P = DocumentFormat.OpenXml.Presentation;
+﻿using ShapeCrawler.Charts;
+using OneOf;
+using ShapeCrawler.SlideMasters;
+using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Charts
+namespace ShapeCrawler;
+
+/// <summary>
+///     Represents a Scatter Chart.
+/// </summary>
+public interface IScatterChart : IChart
 {
-    public interface IScatterChart : IChart
-    {
-    }
+}
 
-    internal class SCScatterChart : SCChart, IScatterChart
+internal class SCScatterChart : SCChart, IScatterChart
+{
+    internal SCScatterChart(P.GraphicFrame pGraphicFrame, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
+        : base(pGraphicFrame, oneOfSlide)
     {
-        internal SCScatterChart(P.GraphicFrame pGraphicFrame, SCSlide slide)
-            : base(pGraphicFrame, slide)
-        {
-        }
     }
 }

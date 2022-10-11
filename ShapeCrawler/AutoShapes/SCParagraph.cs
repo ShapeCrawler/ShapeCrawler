@@ -2,32 +2,30 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Factories;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
-// ReSharper disable CheckNamespace
-// ReSharper disable PossibleMultipleEnumeration
-// ReSharper disable SuggestVarOrType_SimpleTypes
-// ReSharper disable SuggestVarOrType_BuiltInTypes
-namespace ShapeCrawler
+
+namespace ShapeCrawler.AutoShapes
 {
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC - ShapeCrawler")]
     internal class SCParagraph : IParagraph
     {
-        private readonly Lazy<Bullet> bullet;
+        private readonly Lazy<SCBullet> bullet;
         private readonly ResettableLazy<PortionCollection> portions;
-        private TextAlignment? alignment;
+        private SCTextAlignment? alignment;
 
-        internal SCParagraph(A.Paragraph aParagraph, SCTextBox textBox)
+        internal SCParagraph(A.Paragraph aParagraph, TextFrame textBox)
         {
             this.AParagraph = aParagraph;
+            this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
             this.Level = GetInnerLevel(aParagraph);
-            this.bullet = new Lazy<Bullet>(this.GetBullet);
-            this.ParentTextBox = textBox;
-            this.portions = new ResettableLazy<PortionCollection>(() => new PortionCollection(this.AParagraph, this));
+            this.bullet = new Lazy<SCBullet>(this.GetBullet);
+            this.TextFrame = textBox;
+            this.portions = new ResettableLazy<PortionCollection>(this.GetPortions);
         }
 
         public bool IsRemoved { get; set; }
@@ -40,15 +38,15 @@ namespace ShapeCrawler
 
         public IPortionCollection Portions => this.portions.Value;
 
-        public Bullet Bullet => this.bullet.Value;
+        public SCBullet Bullet => this.bullet.Value;
 
-        public TextAlignment Alignment
+        public SCTextAlignment Alignment
         {
             get => this.GetAlignment();
-            set => this.UpdateAlignment(value);
+            set => this.SetAlignment(value);
         }
 
-        internal SCTextBox ParentTextBox { get; }
+        internal TextFrame TextFrame { get; }
 
         internal A.Paragraph AParagraph { get; }
 
@@ -62,19 +60,84 @@ namespace ShapeCrawler
             }
         }
 
+        public void AddPortion(string text)
+        {
+            this.ThrowIfRemoved();
+            if (text == string.Empty)
+            {
+                return;
+            }
+
+            var lastPortion = this.portions.Value.LastOrDefault() as SCPortion;
+            OpenXmlElement aRun;
+            OpenXmlElement? lastARunOrABreak = null;
+            if (lastPortion == null)
+            {
+                var aRunBuilder = new ARunBuilder(); 
+                aRun = aRunBuilder.Build();
+            }
+            else
+            {
+                aRun = lastPortion.AText.Parent!;
+                lastARunOrABreak = this.AParagraph.Last(p => p is A.Run or A.Break);
+                if (lastARunOrABreak is not A.Break && this.Text.EndsWith(Environment.NewLine, StringComparison.Ordinal))
+                {
+                    AddBreak(ref lastARunOrABreak);
+                }
+            }
+
+            var textLines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            if (lastPortion?.Text == string.Empty)
+            {
+                lastPortion.Text = textLines[0];
+            }
+            else
+            {
+                AddText(ref lastARunOrABreak, aRun, textLines[0], this.AParagraph);
+            }
+
+            for (var i = 1; i < textLines.Length; i++)
+            {
+                AddBreak(ref lastARunOrABreak);
+                if (textLines[i] != string.Empty)
+                {
+                    AddText(ref lastARunOrABreak, aRun, textLines[i], this.AParagraph);
+                }
+            }
+
+            this.portions.Reset();
+        }
+
         internal void ThrowIfRemoved()
         {
             if (this.IsRemoved)
             {
                 throw new ElementIsRemovedException("Paragraph was removed.");
             }
-            else
-            {
-                this.ParentTextBox.ThrowIfRemoved();
-            }
+
+            this.TextFrame.ThrowIfRemoved();
         }
 
         #region Private Methods
+
+        private static void AddBreak(ref OpenXmlElement lastElement)
+        {
+            lastElement = lastElement.InsertAfterSelf(new A.Break());
+        }
+
+        private static void AddText(ref OpenXmlElement? lastElement, OpenXmlElement aTextParent, string text, A.Paragraph aParagraph)
+        {
+            var newARun = (A.Run)aTextParent.CloneNode(true);
+            newARun.Text!.Text = text;
+            if (lastElement == null)
+            {
+                aParagraph.InsertAt(newARun, 0);
+            }
+            else
+            {
+                lastElement = lastElement.InsertAfterSelf(newARun);
+            }
+        }
 
         private static int GetInnerLevel(A.Paragraph aParagraph)
         {
@@ -85,9 +148,9 @@ namespace ShapeCrawler
             return paragraphLvl;
         }
 
-        private Bullet GetBullet()
+        private SCBullet GetBullet()
         {
-            return new Bullet(this.AParagraph.ParagraphProperties);
+            return new SCBullet(this.AParagraph.ParagraphProperties!);
         }
 
         private string GetText()
@@ -100,54 +163,44 @@ namespace ShapeCrawler
             return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next);
         }
 
-        private void SetText(string newText)
+        private void SetText(string text)
         {
             this.ThrowIfRemoved();
 
-            // To set a paragraph text we use a single portion which is the first paragraph portion.
-            // Rest of the portions are deleted from the paragraph.
+            if (this.portions.Value.Count == 0)
+            {
+                this.AddPortion(" ");
+            }
+
+            // to set a paragraph text we use a single portion which is the first paragraph portion.
             var removingPortions = this.Portions.Skip(1).ToList();
             this.Portions.Remove(removingPortions);
+            
             var basePortion = (SCPortion)this.portions.Value.Single();
-
-            if (newText == string.Empty)
+            if (text.Contains(Environment.NewLine))
             {
                 basePortion.Text = string.Empty;
-                return;
+                this.AddPortion(text);    
             }
-
-            string[] textLines = newText.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            basePortion.Text = textLines[0];
-            OpenXmlElement lastInsertedARunOrLineBreak = basePortion.SDKAText.Parent;
-            for (int i = 1; i < textLines.Length; i++)
+            else
             {
-                lastInsertedARunOrLineBreak = lastInsertedARunOrLineBreak.InsertAfterSelf(new A.Break());
-                A.Run newARun = (A.Run)basePortion.SDKAText.Parent.CloneNode(true);
-                newARun.Text.Text = textLines[i];
-                lastInsertedARunOrLineBreak = lastInsertedARunOrLineBreak.InsertAfterSelf(newARun);
+                basePortion.Text = text;
             }
-
-            if (newText.EndsWith(Environment.NewLine, StringComparison.Ordinal))
-            {
-                lastInsertedARunOrLineBreak.InsertAfterSelf(new A.Break());
-            }
-
-            this.portions.Reset();
         }
 
-        private void UpdateAlignment(TextAlignment alignmentValue)
+        private PortionCollection GetPortions()
         {
-            if (this.ParentTextBox.TextBoxContainer.Placeholder != null)
-            {
-                throw new PlaceholderCannotBeChangedException();
-            }
+            return new PortionCollection(this.AParagraph, this);
+        }
 
-            A.TextAlignmentTypeValues sdkAlignmentValue = alignmentValue switch
+        private void SetAlignment(SCTextAlignment alignmentValue)
+        {
+            var aTextAlignmentTypeValue = alignmentValue switch
             {
-                TextAlignment.Left => A.TextAlignmentTypeValues.Left,
-                TextAlignment.Center => A.TextAlignmentTypeValues.Center,
-                TextAlignment.Right => A.TextAlignmentTypeValues.Right,
-                TextAlignment.Justify => A.TextAlignmentTypeValues.Justified,
+                SCTextAlignment.Left => A.TextAlignmentTypeValues.Left,
+                SCTextAlignment.Center => A.TextAlignmentTypeValues.Center,
+                SCTextAlignment.Right => A.TextAlignmentTypeValues.Right,
+                SCTextAlignment.Justify => A.TextAlignmentTypeValues.Justified,
                 _ => throw new ArgumentOutOfRangeException(nameof(alignmentValue))
             };
 
@@ -155,49 +208,51 @@ namespace ShapeCrawler
             {
                 this.AParagraph.ParagraphProperties = new A.ParagraphProperties
                 {
-                    Alignment = new EnumValue<A.TextAlignmentTypeValues>(sdkAlignmentValue)
+                    Alignment = new EnumValue<A.TextAlignmentTypeValues>(aTextAlignmentTypeValue)
                 };
             }
             else
             {
-                this.AParagraph.ParagraphProperties.Alignment = new EnumValue<A.TextAlignmentTypeValues>(sdkAlignmentValue);
+                this.AParagraph.ParagraphProperties.Alignment = new EnumValue<A.TextAlignmentTypeValues>(aTextAlignmentTypeValue);
             }
 
             this.alignment = alignmentValue;
         }
 
-        private TextAlignment GetAlignment()
+        private SCTextAlignment GetAlignment()
         {
             if (this.alignment.HasValue)
             {
                 return this.alignment.Value;
             }
 
-            var placeholder = this.ParentTextBox.TextBoxContainer.Placeholder;
-            if (placeholder is { Type: PlaceholderType.Title })
+            var shape = this.TextFrame.TextFrameContainer.Shape;
+            var placeholder = shape.Placeholder;
+            
+            var aTextAlignmentType = this.AParagraph.ParagraphProperties?.Alignment!;
+            if (aTextAlignmentType == null)
             {
-                this.alignment = TextAlignment.Left;
-                return this.alignment.Value;
+                if (placeholder is { Type: SCPlaceholderType.Title })
+                {
+                    this.alignment = SCTextAlignment.Left;
+                    return this.alignment.Value;
+                }
+
+                if (placeholder is { Type: SCPlaceholderType.CenteredTitle })
+                {
+                    this.alignment = SCTextAlignment.Center;
+                    return this.alignment.Value;
+                }
+                
+                return SCTextAlignment.Left;
             }
 
-            if (placeholder is { Type: PlaceholderType.CenteredTitle })
+            this.alignment = aTextAlignmentType.Value switch
             {
-                this.alignment = TextAlignment.Center;
-                return this.alignment.Value;
-            }
-
-            var algnAttribute = this.AParagraph.ParagraphProperties?.Alignment!;
-            if (algnAttribute == null)
-            {
-                return TextAlignment.Left;
-            }
-
-            this.alignment = algnAttribute.Value switch
-            {
-                A.TextAlignmentTypeValues.Center => TextAlignment.Center,
-                A.TextAlignmentTypeValues.Right => TextAlignment.Right,
-                A.TextAlignmentTypeValues.Justified => TextAlignment.Justify,
-                _ => TextAlignment.Left
+                A.TextAlignmentTypeValues.Center => SCTextAlignment.Center,
+                A.TextAlignmentTypeValues.Right => SCTextAlignment.Right,
+                A.TextAlignmentTypeValues.Justified => SCTextAlignment.Justify,
+                _ => SCTextAlignment.Left
             };
 
             return this.alignment.Value;

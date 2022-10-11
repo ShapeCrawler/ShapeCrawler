@@ -3,19 +3,18 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.OLEObjects
+namespace ShapeCrawler.OLEObjects;
+
+internal class MasterOLEObject : MasterShape, IShape
 {
-    internal class MasterOLEObject : MasterShape, IShape
+    internal MasterOLEObject(SCSlideMaster slideMasterInternal, P.GraphicFrame pGraphicFrame)
+        : base(pGraphicFrame, slideMasterInternal)
     {
-        internal MasterOLEObject(SCSlideMaster slideMasterInternal, P.GraphicFrame pGraphicFrame)
-            : base(pGraphicFrame, slideMasterInternal)
-        {
-        }
-
-        public override IPlaceholder Placeholder => MasterPlaceholder.Create(PShapeTreesChild);
-
-        public override SCPresentation PresentationInternal { get; }
-
-        public ShapeType ShapeType => ShapeType.OLEObject;
     }
+
+    public override IPlaceholder? Placeholder => MasterPlaceholder.Create(this.PShapeTreesChild);
+
+    public override SCPresentation PresentationInternal { get; }
+
+    public override SCShapeType ShapeType => SCShapeType.OLEObject;
 }

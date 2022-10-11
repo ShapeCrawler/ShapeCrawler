@@ -2,52 +2,57 @@
 using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Placeholders
+namespace ShapeCrawler.Placeholders;
+
+internal class SlidePlaceholder : Placeholder
 {
-    /// <summary>
-    ///     Represents a placeholder located on a slide.
-    /// </summary>
-    internal class SlidePlaceholder : Placeholder
+    private readonly SlideShape slideShape;
+
+    private SlidePlaceholder(P.PlaceholderShape pPlaceholderShape, SlideShape slideShape)
+        : base(pPlaceholderShape)
     {
-        private readonly SlideShape parentSlideShape;
-
-        private SlidePlaceholder(P.PlaceholderShape pPlaceholderShape, SlideShape parentSlideShape)
-            : base(pPlaceholderShape)
+        this.slideShape = slideShape;
+        this.referencedShape = new ResettableLazy<Shape>(this.GetReferencedShape);
+    }
+    
+    internal static SlidePlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, SlideShape slideShape)
+    {
+        var pPlaceholder = pShapeTreeChild.GetPNvPr().GetFirstChild<P.PlaceholderShape>();
+        if (pPlaceholder == null)
         {
-            this.parentSlideShape = parentSlideShape;
-            this.layoutReferencedShape = new ResettableLazy<Shape>(this.GetReferencedShape);
+            return null;
         }
 
-        /// <summary>
-        ///     Creates placeholder. Returns <c>NULL</c> if the specified shape is not placeholder.
-        /// </summary>
-        public static SlidePlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, SlideShape slideShape)
+        return new SlidePlaceholder(pPlaceholder, slideShape);
+    }
+
+    private Shape? GetReferencedShape()
+    {
+        if (this.slideShape.SlideBase is SCSlideLayout slideLayout)
         {
-            var pPlaceholderShape =
-                pShapeTreeChild.ApplicationNonVisualDrawingProperties().GetFirstChild<P.PlaceholderShape>();
-            if (pPlaceholderShape == null)
-            {
-                return null;
-            }
-
-            return new SlidePlaceholder(pPlaceholderShape, slideShape);
-        }
-
-        private Shape GetReferencedShape()
-        {
-            var layoutShapes = (ShapeCollection)this.parentSlideShape.Slide.ParentSlideLayout.Shapes;
-            var referencedShape = layoutShapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
-
-            if (referencedShape != null)
-            {
-                return referencedShape;
-            }
-
-            var masterShapes = (ShapeCollection)this.parentSlideShape.Slide.ParentSlideLayout.ParentSlideMaster.Shapes;
-
+            var masterShapes = slideLayout.SlideMasterInternal.ShapesInternal;
             return masterShapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
         }
+        
+        if (this.slideShape.SlideBase is SCSlideMaster)
+        {
+            return null;
+        }
+
+        var slide = (SCSlide)this.slideShape.SlideBase;
+        var layout = (SCSlideLayout)slide.SlideLayout;
+        var layoutShapes = layout.ShapesInternal;
+        var referencedShape = layoutShapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
+
+        if (referencedShape == null)
+        {
+            var masterShapes = layout.SlideMasterInternal.ShapesInternal;
+            return masterShapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
+        }
+
+        return referencedShape;
     }
 }

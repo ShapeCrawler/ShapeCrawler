@@ -128,13 +128,13 @@ namespace ShapeCrawler.Tests
 
         public static IEnumerable<object[]> TestCasesSeriesCollectionCount()
         {
-            var pptxStream = GetTestPptxStream("013.pptx");
-            var presentation = SCPresentation.Open(pptxStream, false);
+            var pptxStream = GetTestStream("013.pptx");
+            var presentation = SCPresentation.Open(pptxStream);
             IChart chart = (IChart) presentation.Slides[0].Shapes.First(sp => sp.Id == 5);
             yield return new object[] {chart, 3};
 
-            pptxStream = GetTestPptxStream("009_table.pptx");
-            presentation = SCPresentation.Open(pptxStream, false);
+            pptxStream = GetTestStream("009_table.pptx");
+            presentation = SCPresentation.Open(pptxStream);
             chart = (IChart) presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
             yield return new object[] {chart, 1};
         }
@@ -143,8 +143,8 @@ namespace ShapeCrawler.Tests
         public void SeriesCollection_Series_Points_returns_chart_point_collection()
         {
             // Arrange
-            var pptxStream = GetTestPptxStream("charts-case001.pptx");
-            var presentation = SCPresentation.Open(pptxStream, false);
+            var pptxStream = GetTestStream("charts-case001.pptx");
+            var presentation = SCPresentation.Open(pptxStream);
             var chart = (IChart) presentation.Slides[0].Shapes.First(shape => shape.Name == "chart");
             var series = chart.SeriesCollection[0]; 
             
@@ -194,7 +194,7 @@ namespace ShapeCrawler.Tests
         public void CategoryName_SetterChangesName_OfCategoryInNonMultiCategoryPieChart()
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources._025, true);
+            IPresentation presentation = SCPresentation.Open(Resources._025);
             MemoryStream mStream = new();
             IPieChart pieChart4 = (IPieChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
             const string newCategoryName = "Category 1_new";
@@ -205,27 +205,28 @@ namespace ShapeCrawler.Tests
             // Assert
             pieChart4.Categories[0].Name.Should().Be(newCategoryName);
             presentation.SaveAs(mStream);
-            presentation = SCPresentation.Open(mStream, false);
+            presentation = SCPresentation.Open(mStream);
             pieChart4 = (IPieChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 7);
             pieChart4.Categories[0].Name.Should().Be(newCategoryName);
         }
 
         [Fact]
-        public void CategoryName_SetterShouldChangeValueOfCorrespondingExcelCell()
+        public void Category_Name_Setter_updates_value_of_Excel_cell()
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources._025, true);
-            ILineChart lineChart = (ILineChart)presentation.Slides[3].Shapes.First(sp => sp.Id == 13);
-            const string newCategoryName = "Category 1_new";
+            var pres = SCPresentation.Open(Resources._025);
+            var lineChart = pres.Slides[3].Shapes.GetById<ILineChart>(13);
+            const string newName = "Category 1_new";
+            var category = lineChart.Categories[0]; 
 
             // Act
-            lineChart.Categories[0].Name = newCategoryName;
+            category.Name = newName;
 
             // Assert
-            MemoryStream mStream = new (lineChart.WorkbookByteArray);
-            XLWorkbook workbook = new (mStream);
-            string cellValue = workbook.Worksheets.First().Cell("A2").Value.ToString();
-            cellValue.Should().BeEquivalentTo(newCategoryName);
+            var mStream = new MemoryStream(lineChart.WorkbookByteArray);
+            var workbook = new XLWorkbook(mStream);
+            var cellValue = workbook.Worksheets.First().Cell("A2").Value.ToString();
+            cellValue.Should().BeEquivalentTo(newName);
         }
 
         [Fact(Skip = "On Hold")]
@@ -233,7 +234,7 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             Stream preStream = TestFiles.Presentations.pre025_byteArray.ToResizeableStream();
-            IPresentation presentation = SCPresentation.Open(preStream, true);
+            IPresentation presentation = SCPresentation.Open(preStream);
             IBarChart barChart = (IBarChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
             const string newCategoryName = "Clothing_new";
 
@@ -244,7 +245,7 @@ namespace ShapeCrawler.Tests
             barChart.Categories[0].Name.Should().Be(newCategoryName);
 
             presentation.Save();
-            presentation = SCPresentation.Open(preStream, false);
+            presentation = SCPresentation.Open(preStream);
             barChart = (IBarChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
             barChart.Categories[0].Name.Should().Be(newCategoryName);
         }
@@ -258,12 +259,12 @@ namespace ShapeCrawler.Tests
             ISeries series3 = chart.SeriesCollection[2];
 
             // Act
-            ChartType seriesChartType2 = series2.Type;
-            ChartType seriesChartType3 = series3.Type;
+            SCChartType seriesChartType2 = series2.Type;
+            SCChartType seriesChartType3 = series3.Type;
 
             // Assert
-            seriesChartType2.Should().Be(ChartType.BarChart);
-            seriesChartType3.Should().Be(ChartType.ScatterChart);
+            seriesChartType2.Should().Be(SCChartType.BarChart);
+            seriesChartType3.Should().Be(SCChartType.ScatterChart);
         }
 
         [Fact]
@@ -291,16 +292,16 @@ namespace ShapeCrawler.Tests
             IChart chartCase4 = (IChart)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 7);
 
             // Act
-            ChartType chartTypeCase1 = chartCase1.Type;
-            ChartType chartTypeCase2 = chartCase2.Type;
-            ChartType chartTypeCase3 = chartCase3.Type;
-            ChartType chartTypeCase4 = chartCase4.Type;
+            SCChartType chartTypeCase1 = chartCase1.Type;
+            SCChartType chartTypeCase2 = chartCase2.Type;
+            SCChartType chartTypeCase3 = chartCase3.Type;
+            SCChartType chartTypeCase4 = chartCase4.Type;
 
             // Assert
-            chartTypeCase1.Should().Be(ChartType.BubbleChart);
-            chartTypeCase2.Should().Be(ChartType.ScatterChart);
-            chartTypeCase3.Should().Be(ChartType.Combination);
-            chartTypeCase4.Should().Be(ChartType.PieChart);
+            chartTypeCase1.Should().Be(SCChartType.BubbleChart);
+            chartTypeCase2.Should().Be(SCChartType.ScatterChart);
+            chartTypeCase3.Should().Be(SCChartType.Combination);
+            chartTypeCase4.Should().Be(SCChartType.PieChart);
         }
 
         [Fact]
@@ -310,7 +311,7 @@ namespace ShapeCrawler.Tests
             IChart chart = (IChart)_fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 6);
 
             // Act-Assert
-            chart.GeometryType.Should().Be(GeometryType.Rectangle);
+            chart.GeometryType.Should().Be(SCGeometry.Rectangle);
         }
         
                 
@@ -318,8 +319,8 @@ namespace ShapeCrawler.Tests
         public void SDKSpreadsheetDocument_return_underlying_SpreadsheetDocument()
         {
             // Arrange
-            var pptxStream = GetTestPptxStream("charts-case003.pptx");
-            var pres = SCPresentation.Open(pptxStream, false);
+            var pptxStream = GetTestStream("charts-case003.pptx");
+            var pres = SCPresentation.Open(pptxStream);
             var chart = pres.Slides[0].Shapes.GetByName<IChart>("Chart 1");
             
             // Act

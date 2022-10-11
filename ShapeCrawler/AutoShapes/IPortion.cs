@@ -1,28 +1,28 @@
-﻿using A = DocumentFormat.OpenXml.Drawing;
+﻿// ReSharper disable CheckNamespace
+namespace ShapeCrawler;
 
-// ReSharper disable CheckNamespace
-
-using ShapeCrawler.AutoShapes;
-
-namespace ShapeCrawler
+/// <summary>
+///     Represents a portion of a paragraph.
+/// </summary>
+public interface IPortion
 {
     /// <summary>
-    ///     Represents a portion of a paragraph.
+    ///     Gets or sets text.
     /// </summary>
-    public interface IPortion
-    {
-        /// <summary>
-        ///     Gets or sets text.
-        /// </summary>
-        string Text { get; set; }
+    string Text { get; set; }
 
-        /// <summary>
-        ///     Gets font.
-        /// </summary>
-        IFont Font { get; }
+    /// <summary>
+    ///     Gets font.
+    /// </summary>
+    IFont Font { get; }
 
-        A.Text SDKAText { get; }
-
-        string Hyperlink { get; set; }
-    }
+    /// <summary>
+    ///     Gets or sets hypelink.
+    /// </summary>
+    string? Hyperlink { get; set; }
+        
+    /// <summary>
+    ///     Gets field.
+    /// </summary>
+    IField? Field { get; }
 }

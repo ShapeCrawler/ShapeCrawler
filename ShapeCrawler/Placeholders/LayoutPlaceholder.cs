@@ -1,5 +1,4 @@
 ﻿using DocumentFormat.OpenXml;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -11,19 +10,19 @@ namespace ShapeCrawler.Placeholders
     /// </summary>
     internal class LayoutPlaceholder : Placeholder
     {
-        private readonly LayoutShape parentLayoutShape;
+        private readonly LayoutShape layoutShape;
 
-        private LayoutPlaceholder(P.PlaceholderShape pPlaceholderShape, LayoutShape parentLayoutShape)
+        private LayoutPlaceholder(P.PlaceholderShape pPlaceholderShape, LayoutShape layoutShape)
             : base(pPlaceholderShape)
         {
-            this.parentLayoutShape = parentLayoutShape;
-            this.layoutReferencedShape = new ResettableLazy<Shape>(this.GetReferencedShape);
+            this.layoutShape = layoutShape;
+            this.referencedShape = new ResettableLazy<Shape>(this.GetReferencedShape);
         }
 
-        internal static LayoutPlaceholder Create(OpenXmlCompositeElement pShapeTreeChild, LayoutShape layoutShape)
+        internal static LayoutPlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, LayoutShape layoutShape)
         {
             P.PlaceholderShape pPlaceholderShape =
-                pShapeTreeChild.ApplicationNonVisualDrawingProperties().GetFirstChild<P.PlaceholderShape>();
+                pShapeTreeChild.GetPNvPr().GetFirstChild<P.PlaceholderShape>();
             if (pPlaceholderShape == null)
             {
                 return null;
@@ -32,11 +31,11 @@ namespace ShapeCrawler.Placeholders
             return new LayoutPlaceholder(pPlaceholderShape, layoutShape);
         }
 
-        private Shape GetReferencedShape()
+        private Shape? GetReferencedShape()
         {
-            ShapeCollection shapeCollection = (ShapeCollection)this.parentLayoutShape.SlideLayoutInternal.ParentSlideMaster.Shapes;
+            var shapes = this.layoutShape.SlideLayoutInternal.SlideMasterInternal.ShapesInternal;
 
-            return shapeCollection.GetReferencedShapeOrDefault(this.PPlaceholderShape);
+            return shapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
         }
     }
 }

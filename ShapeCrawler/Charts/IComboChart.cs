@@ -1,21 +1,24 @@
 ﻿using System.Collections.Generic;
+using ShapeCrawler.Charts;
 using ShapeCrawler.Collections;
+using ShapeCrawler.SlideMasters;
+using OneOf;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Charts
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a Combination chart.
     /// </summary>
     public interface IComboChart : IChart
     {
-        public ICategoryCollection Categories { get; }
+
     }
 
     internal class SCComboChart : SCChart, IComboChart
     {
-        internal SCComboChart(P.GraphicFrame pGraphicFrame, SCSlide slide)
-            : base(pGraphicFrame, slide)
+        internal SCComboChart(P.GraphicFrame pGraphicFrame, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject)
+            : base(pGraphicFrame, slideObject)
         {
         }
 

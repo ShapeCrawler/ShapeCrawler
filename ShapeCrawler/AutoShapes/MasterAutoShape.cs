@@ -2,118 +2,116 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Placeholders;
+using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-// ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
-namespace ShapeCrawler
+namespace ShapeCrawler.AutoShapes;
+
+/// <summary>
+///     Represents an AutoShape on a Slide Master.
+/// </summary>
+internal class MasterAutoShape : MasterShape, IAutoShape, ITextFrameContainer, IFontDataReader
 {
-    /// <summary>
-    ///     Represents an AutoShape on a Slide Master.
-    /// </summary>
-    internal class MasterAutoShape : MasterShape, IAutoShape, ITextBoxContainer, IFontDataReader
+    private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
+    private readonly Lazy<ShapeFill> shapeFill;
+    private readonly Lazy<TextFrame?> textBox;
+    private readonly P.Shape pShape;
+
+    internal MasterAutoShape(SCSlideMaster slideMasterInternal, P.Shape pShape)
+        : base(pShape, slideMasterInternal)
     {
-        private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
-        private readonly Lazy<ShapeFill> shapeFill;
-        private readonly Lazy<SCTextBox?> textBox;
-        private readonly P.Shape pShape;
+        this.textBox = new Lazy<TextFrame?>(this.GetTextBox);
+        this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
+        this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
+        this.pShape = pShape;
+    }
 
-        internal MasterAutoShape(SCSlideMaster slideMasterInternal, P.Shape pShape)
-            : base(pShape, slideMasterInternal)
+    #region Public Properties
+
+    public override SCPresentation PresentationInternal { get; }
+
+    public Shape Shape => this;
+
+    public ITextFrame? TextFrame => this.textBox.Value;
+
+    public IShapeFill Fill => this.shapeFill.Value;
+
+    public override SCShapeType ShapeType => SCShapeType.AutoShape;
+
+    #endregion Public Properties
+
+    private Dictionary<int, FontData> LvlToFontData => this.lvlToFontData.Value;
+
+    public void FillFontData(int paragraphLvl, ref FontData fontData)
+    {
+        if (this.LvlToFontData.TryGetValue(paragraphLvl, out FontData masterFontData) && !fontData.IsFilled())
         {
-            this.textBox = new Lazy<SCTextBox?>(this.GetTextBox);
-            this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
-            this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
-            this.pShape = pShape;
+            masterFontData.Fill(fontData);
+            return;
         }
 
-        #region Public Properties
-
-        public IShape Shape => this;
-
-        public ITextBox? TextBox => this.textBox.Value;
-
-        public ShapeFill Fill => this.shapeFill.Value;
-
-        public ShapeType ShapeType => ShapeType.AutoShape;
-
-        #endregion Public Properties
-
-        private Dictionary<int, FontData> LvlToFontData => this.lvlToFontData.Value;
-
-        public void FillFontData(int paragraphLvl, ref FontData fontData)
+        var pTextStyles = this.SlideMasterInternal.PSlideMaster.TextStyles!;
+        if (this.Placeholder!.Type != SCPlaceholderType.Title)
         {
-            if (this.LvlToFontData.TryGetValue(paragraphLvl, out FontData masterFontData) && !fontData.IsFilled())
-            {
-                masterFontData.Fill(fontData);
-                return;
-            }
-
-            P.TextStyles pTextStyles = this.SlideMasterInternal.PSlideMaster.TextStyles;
-            if (this.Placeholder.Type != PlaceholderType.Title)
-            {
-                return;
-            }
-
-            int titleFontSize = pTextStyles.TitleStyle.Level1ParagraphProperties
-                .GetFirstChild<A.DefaultRunProperties>().FontSize.Value;
-            if (fontData.FontSize == null)
-            {
-                fontData.FontSize = new Int32Value(titleFontSize);
-            }
+            return;
         }
 
-        private Dictionary<int, FontData> GetLvlToFontData() // TODO: duplicate code in LayoutAutoShape
+        var titleFontSize = pTextStyles.TitleStyle!.Level1ParagraphProperties!
+            .GetFirstChild<A.DefaultRunProperties>()!.FontSize!.Value;
+        if (fontData.FontSize is null)
         {
-            Dictionary<int, FontData> lvlToFontData = FontDataParser.FromCompositeElement(this.pShape.TextBody.ListStyle);
+            fontData.FontSize = new Int32Value(titleFontSize);
+        }
+    }
 
-            if (!lvlToFontData.Any())
+    private Dictionary<int, FontData> GetLvlToFontData() // TODO: duplicate code in LayoutAutoShape
+    {
+        var texBody = this.pShape.TextBody!;
+        var lvlToFontData = FontDataParser.FromCompositeElement(texBody.ListStyle!);
+
+        if (!lvlToFontData.Any())
+        {
+            var endParaRunPrFs = texBody.GetFirstChild<A.Paragraph>()!
+                .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
+            if (endParaRunPrFs is not null)
             {
-                Int32Value endParaRunPrFs = this.pShape.TextBody.GetFirstChild<A.Paragraph>()
-                    .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
-                if (endParaRunPrFs != null)
+                var fontData = new FontData
                 {
-                    var fontData = new FontData
-                    {
-                        FontSize = endParaRunPrFs
-                    };
-                    lvlToFontData.Add(1, fontData);
-                }
+                    FontSize = endParaRunPrFs
+                };
+                lvlToFontData.Add(1, fontData);
             }
-
-            return lvlToFontData;
         }
 
-        private SCTextBox GetTextBox() // TODO: duplicate code in LayoutAutoShape
+        return lvlToFontData;
+    }
+
+    private TextFrame? GetTextBox() // TODO: duplicate code in LayoutAutoShape
+    {
+        P.TextBody pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
+        if (pTextBody == null)
         {
-            P.TextBody pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
-            if (pTextBody == null)
-            {
-                return null;
-            }
-
-            IEnumerable<A.Text> aTexts = pTextBody.Descendants<A.Text>();
-            if (aTexts.Sum(t => t.Text.Length) > 0) 
-            {
-                return new SCTextBox(pTextBody, this);
-            }
-
             return null;
         }
 
-        private ShapeFill TryGetFill() // TODO: duplicate code in LayoutAutoShape
+        IEnumerable<A.Text> aTexts = pTextBody.Descendants<A.Text>();
+        if (aTexts.Sum(t => t.Text.Length) > 0)
         {
-            throw new NotImplementedException();
+            return new TextFrame(this, pTextBody);
         }
 
-        public override SCPresentation PresentationInternal { get; }
+        return null;
+    }
+
+    private ShapeFill TryGetFill() // TODO: duplicate code in LayoutAutoShape
+    {
+        throw new NotImplementedException();
     }
 }

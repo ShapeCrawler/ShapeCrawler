@@ -11,8 +11,8 @@ namespace ShapeCrawler.Charts
 {
     internal class ChartWorkbook // TODO: implement IDispose to correctly dispose _packagePartStream
     {
-        private readonly SCChart chart;
         internal readonly Lazy<SpreadsheetDocument> spreadsheetDocument;
+        private readonly SCChart chart;
         private readonly EmbeddedPackagePart embeddedPackagePart;
         private Stream? embeddedPackagePartStream;
         private bool closed;
@@ -24,10 +24,15 @@ namespace ShapeCrawler.Charts
             this.spreadsheetDocument = new Lazy<SpreadsheetDocument>(this.GetSpreadsheetDocument);
         }
 
-        internal WorkbookPart WorkbookPart => this.spreadsheetDocument.Value.WorkbookPart;
+        internal WorkbookPart WorkbookPart => this.spreadsheetDocument.Value.WorkbookPart!;
 
-        internal byte[] ByteArray => this.GetByteArray();
+        internal byte[] BinaryData => this.GetByteArray();
 
+        internal void Save()
+        {
+            this.spreadsheetDocument.Value.Save();
+        }
+        
         internal void Close()
         {
             if (this.closed)
@@ -66,7 +71,7 @@ namespace ShapeCrawler.Charts
                 var rowNumberStr = Regex.Match(cellReference, @"\d+").Value;
                 var rowNumber = int.Parse(rowNumberStr, NumberStyles.Number, NumberFormatInfo.InvariantInfo);
 
-                var row = sheetData.Elements<X.Row>().First(r => r.RowIndex == rowNumber);
+                var row = sheetData.Elements<X.Row>().First(r => r.RowIndex! == rowNumber);
                 var newXCell = new X.Cell
                 {
                     CellReference = cellReference
@@ -78,7 +83,7 @@ namespace ShapeCrawler.Charts
                 X.Cell? refCell = null;
                 foreach (var cell in row.Elements<X.Cell>())
                 {
-                    if (string.Compare(cell.CellReference.Value, cellReference, true, CultureInfo.InvariantCulture) > 0)
+                    if (string.Compare(cell.CellReference!.Value, cellReference, true, CultureInfo.InvariantCulture) > 0)
                     {
                         refCell = cell;
                         break;
@@ -101,7 +106,7 @@ namespace ShapeCrawler.Charts
         private SpreadsheetDocument GetSpreadsheetDocument()
         {
             this.embeddedPackagePartStream = this.embeddedPackagePart.GetStream();
-            var spreadsheetDocument = SpreadsheetDocument.Open(this.embeddedPackagePartStream, this.chart.PresentationInternal.Editable);
+            var spreadsheetDocument = SpreadsheetDocument.Open(this.embeddedPackagePartStream, true);
             this.chart.PresentationInternal.ChartWorkbooks.Add(this);
 
             return spreadsheetDocument;

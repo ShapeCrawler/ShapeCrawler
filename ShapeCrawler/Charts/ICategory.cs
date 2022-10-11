@@ -4,7 +4,7 @@ using DocumentFormat.OpenXml.Drawing.Charts;
 using ShapeCrawler.Shared;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
-namespace ShapeCrawler.Charts
+namespace ShapeCrawler
 {
     /// <summary>
     ///     Represents a chart category.

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using ShapeCrawler.Collections;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler
@@ -31,9 +30,9 @@ namespace ShapeCrawler
         ISlideMasterCollection SlideMasters { get; }
 
         /// <summary>
-        ///     Gets presentation byte array.
+        ///     Gets a presentation byte array.
         /// </summary>
-        byte[] ByteArray { get; }
+        byte[] BinaryData { get; }
 
         /// <summary>
         ///     Gets section collection.
@@ -56,10 +55,8 @@ namespace ShapeCrawler
         void SaveAs(Stream stream);
 
         /// <summary>
-        ///     Saves and closes the presentation.
+        ///     Closes the presentation.
         /// </summary>
         void Close();
-
-        void Dispose();
     }
 }

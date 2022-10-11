@@ -1,133 +1,154 @@
 ﻿using System;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
-// ReSharper disable CheckNamespace
-namespace ShapeCrawler
+namespace ShapeCrawler.AutoShapes;
+
+internal class SCPortion : IPortion
 {
-    /// <inheritdoc cref="IPortion"/>
-    internal class SCPortion : IPortion
+    private readonly ResettableLazy<SCFont> font;
+    private readonly A.Field? aField;
+
+    internal SCPortion(A.Text aText, SCParagraph paragraph, A.Field aField)
+        : this(aText, paragraph)
     {
-        private readonly ResettableLazy<SCFont> font;
+        this.aField = aField;
+    }
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="SCPortion"/> class.
-        /// </summary>
-        internal SCPortion(A.Text sdkaText, SCParagraph paragraph)
+    internal SCPortion(A.Text aText, SCParagraph paragraph)
+    {
+        this.AText = aText;
+        this.ParentParagraph = paragraph;
+        this.font = new ResettableLazy<SCFont>(() => new SCFont(this.AText, this));
+    }
+
+    #region Public Properties
+
+    /// <inheritdoc/>
+    public string Text
+    {
+        get => this.GetText();
+
+        set
         {
-            this.SDKAText = sdkaText;
-            this.ParentParagraph = paragraph;
-            this.font = new ResettableLazy<SCFont>(() => new SCFont(this.SDKAText, this));
+            this.ThrowIfRemoved();
+            this.SetText(value);
+        }
+    }
+
+    /// <inheritdoc/>
+    public IFont Font => this.font.Value;
+
+    public string? Hyperlink
+    {
+        get => this.GetHyperlink();
+        set => this.SetHyperlink(value);
+    }
+        
+    public IField? Field => this.GetFiled();
+
+    #endregion Public Properties
+
+    internal A.Text AText { get; }
+        
+    internal bool IsRemoved { get; set; }
+
+    internal SCParagraph ParentParagraph { get; }
+
+    private IField? GetFiled()
+    {
+        if (this.aField is null)
+        {
+            return null;
+        }
+        else
+        {
+            return new SCField(this.aField);
+        }
+    }
+        
+    private void ThrowIfRemoved()
+    {
+        if (this.IsRemoved)
+        {
+            throw new ElementIsRemovedException("Paragraph portion was removed.");
         }
 
-        #region Public Properties
+        this.ParentParagraph.ThrowIfRemoved();
+    }
 
-        /// <inheritdoc/>
-        public string Text
+    private string GetText()
+    {
+        string portionText = this.AText.Text;
+        if (this.AText.Parent!.NextSibling<A.Break>() != null)
         {
-            get => this.GetText();
-
-            set
-            {
-                this.ThrowIfRemoved();
-                this.SetText(value);
-            }
+            portionText += Environment.NewLine;
         }
 
-        /// <inheritdoc/>
-        public IFont Font => this.font.Value;
+        return portionText;
+    }
 
-        public string Hyperlink
+    private void SetText(string text)
+    {
+        this.AText.Text = text;
+    }
+
+    private string? GetHyperlink()
+    {
+        var runProperties = this.AText.PreviousSibling<A.RunProperties>();
+        if (runProperties == null)
         {
-            get => this.GetHyperlink();
-            set => this.SetHyperlink(value);
+            return null;
         }
 
-        #endregion Public Properties
-
-        internal bool IsRemoved { get; set; }
-
-        internal SCParagraph ParentParagraph { get; }
-
-        public A.Text SDKAText { get; }
-
-        private void ThrowIfRemoved()
+        var hyperlink = runProperties.GetFirstChild<A.HyperlinkOnClick>();
+        if (hyperlink == null)
         {
-            if (this.IsRemoved)
-            {
-                throw new ElementIsRemovedException("Paragraph portion was removed.");
-            }
-
-            this.ParentParagraph.ThrowIfRemoved();
+            return null;
         }
 
-        private string GetText()
-        {
-            string portionText = this.SDKAText.Text;
-            if (this.SDKAText.Parent.NextSibling<A.Break>() != null)
-            {
-                portionText += Environment.NewLine;
-            }
+        var slideAutoShape = (SlideAutoShape)this.ParentParagraph.TextFrame.TextFrameContainer;
+        var typedOpenXmlPart = slideAutoShape.Slide.TypedOpenXmlPart;
+        var hyperlinkRelationship = (HyperlinkRelationship)typedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
 
-            return portionText;
+        return hyperlinkRelationship.Uri.AbsoluteUri;
+    }
+
+    private void SetHyperlink(string? url)
+    {
+        if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
+        {
+            throw new ShapeCrawlerException("Hyperlink is invalid.");
         }
 
-        private void SetText(string text)
+        var runProperties = this.AText.PreviousSibling<A.RunProperties>();
+        if (runProperties == null)
         {
-            this.SDKAText.Text = text;
+            runProperties = new A.RunProperties();
         }
 
-        private string? GetHyperlink()
+        var hyperlink = runProperties.GetFirstChild<A.HyperlinkOnClick>();
+        if (hyperlink == null)
         {
-            var runProperties = this.SDKAText.PreviousSibling<A.RunProperties>();
-            if (runProperties == null)
-            {
-                return null;
-            }
-
-            var hyperlink = runProperties.GetFirstChild<A.HyperlinkOnClick>();
-            if (hyperlink == null)
-            {
-                return null;
-            }
-
-            var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextBox.TextBoxContainer;
-            var slidePart = slideAutoShape.Slide.SDKSlidePart;
-            var hyperlinkRelationship = (HyperlinkRelationship) slidePart.GetReferenceRelationship(hyperlink.Id);
-
-            return hyperlinkRelationship.Uri.AbsoluteUri;
+            hyperlink = new A.HyperlinkOnClick();
+            runProperties.Append(hyperlink);
         }
 
-        private void SetHyperlink(string url)
-        {
-            if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
-            {
-                throw new ShapeCrawlerException("Hyperlink is invalid.");
-            }
+        var slideAutoShape = (SlideAutoShape)this.ParentParagraph.TextFrame.TextFrameContainer;
+        var slidePart = slideAutoShape.Slide.TypedOpenXmlPart;
 
-            var runProperties = this.SDKAText.PreviousSibling<A.RunProperties>();
-            if (runProperties == null)
-            {
-                runProperties = new A.RunProperties();
-            }
+        var uri = new Uri(url, UriKind.Absolute);
+        var addedHyperlinkRelationship = slidePart.AddHyperlinkRelationship(uri, true);
 
-            var hyperlink = runProperties.GetFirstChild<A.HyperlinkOnClick>();
-            if (hyperlink == null)
-            {
-                hyperlink = new A.HyperlinkOnClick();
-                runProperties.Append(hyperlink);
-            }
+        hyperlink.Id = addedHyperlinkRelationship.Id;
+    }
+}
 
-            var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
-            var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextBox.TextBoxContainer;
-            var slidePart = slideAutoShape.Slide.SDKSlidePart;
-
-            slidePart.AddHyperlinkRelationship(new Uri(url, UriKind.Absolute), true, rId);
-            hyperlink.Id = rId;
-        }
+internal class SCField : IField
+{
+    public SCField(A.Field aField)
+    {
     }
 }

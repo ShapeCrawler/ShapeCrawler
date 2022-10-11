@@ -1,7 +1,9 @@
 ﻿using DocumentFormat.OpenXml;
+using OneOf;
 using ShapeCrawler.Shapes;
-// ReSharper disable CheckNamespace
+using ShapeCrawler.SlideMasters;
 
+// ReSharper disable CheckNamespace
 namespace ShapeCrawler
 {
     /// <summary>
@@ -13,11 +15,11 @@ namespace ShapeCrawler
 
     internal class SCConnectionShape : SlideShape, IConnectionShape
     {
-        public SCConnectionShape(OpenXmlCompositeElement childOfPShapeTree, SCSlide slide)
-            : base(childOfPShapeTree, slide)
+        public SCConnectionShape(OpenXmlCompositeElement childOfPShapeTree, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
+            : base(childOfPShapeTree, oneOfSlide, null)
         {
         }
 
-        public ShapeType ShapeType => ShapeType.ConnectionShape;
+        public override SCShapeType ShapeType => SCShapeType.ConnectionShape;
     }
 }

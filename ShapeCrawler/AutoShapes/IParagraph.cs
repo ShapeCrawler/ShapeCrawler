@@ -1,5 +1,4 @@
-﻿using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Collections;
+﻿
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler
@@ -22,11 +21,16 @@ namespace ShapeCrawler
         /// <summary>
         ///     Gets paragraph bullet. Returns <c>NULL</c> if bullet does not exist.
         /// </summary>
-        Bullet Bullet { get; }
+        SCBullet Bullet { get; }
 
         /// <summary>
         ///     Gets or sets the text alignment.
         /// </summary>
-        TextAlignment Alignment { get; set; }
+        SCTextAlignment Alignment { get; set; }
+        
+        /// <summary>
+        ///     Adds new text portion in paragraph.
+        /// </summary>
+        void AddPortion(string text);
     }
 }

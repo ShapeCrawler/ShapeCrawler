@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,37 +9,8 @@ namespace ShapeCrawler.Tests.Helpers
     {
         static TestHelper()
         {
-            var bm = new Bitmap(100, 100);
-            if (bm.HorizontalResolution == 0)
-            {
-                // Set default resolution
-                bm.SetResolution(96, 96);
-            }
-
-            HorizontalResolution = bm.HorizontalResolution;
-            VerticalResolution = bm.VerticalResolution;
-        }
-
-        public static IParagraph GetParagraph(SCPresentation presentation, SlideElementQuery paragraphRequest)
-        {
-            IAutoShape autoShape = presentation.Slides[paragraphRequest.SlideIndex]
-                .Shapes.First(sp => sp.Id == paragraphRequest.ShapeId) as IAutoShape;
-            return autoShape.TextBox.Paragraphs[paragraphRequest.ParagraphIndex];
-        }
-
-        public static IParagraph GetParagraph(MemoryStream presentationStream, SlideElementQuery paragraphRequest)
-        {
-            IPresentation presentation = SCPresentation.Open(presentationStream, false);
-            IAutoShape autoShape = presentation.Slides[paragraphRequest.SlideIndex]
-                .Shapes.First(sp => sp.Id == paragraphRequest.ShapeId) as IAutoShape;
-            return autoShape.TextBox.Paragraphs[paragraphRequest.ParagraphIndex];
-        }
-
-        public static IPortion GetParagraphPortion(IPresentation presentation, SlideElementQuery elementRequest)
-        {
-            IAutoShape autoShape = (IAutoShape)presentation.Slides[elementRequest.SlideIndex].Shapes.First(sp => sp.Id == elementRequest.ShapeId);
-            
-            return autoShape.TextBox.Paragraphs[elementRequest.ParagraphIndex].Portions[elementRequest.PortionIndex];
+            HorizontalResolution = 96;
+            VerticalResolution = 96;
         }
 
         public static MemoryStream ToResizeableStream(this byte[] byteArray)
@@ -51,10 +21,19 @@ namespace ShapeCrawler.Tests.Helpers
             return stream;
         }
 
+        public static MemoryStream GetStream(string file)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var path = assembly.GetManifestResourceNames().First(r => r.EndsWith(file, StringComparison.Ordinal));
+            var stream = assembly.GetManifestResourceStream(path);
+            var mStream = new MemoryStream();
+            stream!.CopyTo(mStream);
+
+            return mStream;
+        }
+
         public static readonly float HorizontalResolution;
         
         public static readonly float VerticalResolution;
-
-
     }
 }

@@ -1,3 +1,41 @@
+# Code Style
+
+**SC-001**: Public members except interface should have "SC" prefix
+
+⛔ invalid
+```c#
+public class Bullet
+{
+    
+}
+```
+
+✅ valid
+```c#
+public class SCBullet
+{
+    
+}
+```
+
+**SC-002**: Public members that contain an instance of a type from Open XML SDK should have "SDK" prefix
+
+⛔ invalid
+```c#
+public class SCPresentation
+{
+    public DocumentFormat.OpenXml.Packaging.SlidePart SlidePart { get; }
+}
+```
+
+✅ valid
+```c#
+public class SCPresentation
+{
+    public DocumentFormat.OpenXml.Packaging.SlidePart SDKSlidePart { get; }
+}
+```
+
 # Recomended tools
 The internal structure of PowerPoint presentation is one the most difficult among other documents from the Microsoft Office suite. For example, the slide presented for a user is not a single document but only top on Slide Layout and Slide Master slides. Even just that levels frequently lead to confusion. The following is a list of tools and notes that should simplify your development while working on ShapeCrawler's issue.
 

@@ -1,8 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using OneOf;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Factories;
+using ShapeCrawler.Placeholders;
+using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -11,72 +17,94 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler
 {
-    internal class SlideAutoShape : SlideShape, IAutoShape, ITextBoxContainer
+    /// <summary>
+    ///     Represents AutoShape located on Slide.
+    /// </summary>
+    internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
     {
         private readonly Lazy<ShapeFill> shapeFill;
-        private readonly Lazy<SCTextBox?> textBox;
+        private readonly Lazy<TextFrame?> textFrame;
+        private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
         private readonly P.Shape pShape;
 
-        public SlideAutoShape(P.Shape pShape, SCSlide parentSlideInternal, SlideGroupShape groupShape)
-            : base(pShape, parentSlideInternal, groupShape)
+        internal SlideAutoShape(P.Shape pShape, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCGroupShape groupShape)
+            : base(pShape, oneOfSlide, groupShape)
         {
-            this.textBox = new Lazy<SCTextBox?>(this.GetTextBox);
-            this.shapeFill = new Lazy<ShapeFill>(this.TryGetFill);
             this.pShape = pShape;
+            this.textFrame = new Lazy<TextFrame?>(this.GetTextBox);
+            this.shapeFill = new Lazy<ShapeFill>(this.GetFill);
+            this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
         }
 
         #region Public Properties
 
-        public ITextBox? TextBox => this.textBox.Value;
+        public IShapeFill Fill => this.shapeFill.Value;
 
-        public ShapeFill Fill => this.shapeFill.Value;
+        public Shape Shape => this; // TODO: should be internal?
 
-        public IShape Shape => this; // TODO: should be internal?
+        public override SCShapeType ShapeType => SCShapeType.AutoShape;
+        
+        public ITextFrame? TextFrame => this.textFrame.Value;
 
         #endregion Public Properties
 
-        private SCTextBox? GetTextBox()
+        internal void FillFontData(int paragraphLvl, ref FontData fontData)
+        {
+            if (this.lvlToFontData.Value.TryGetValue(paragraphLvl, out FontData layoutFontData))
+            {
+                fontData = layoutFontData;
+                if (!fontData.IsFilled() && this.Placeholder != null)
+                {
+                    var placeholder = (Placeholder)this.Placeholder;
+                    var referencedMasterShape = (SlideAutoShape)placeholder.ReferencedShape;
+                    referencedMasterShape?.FillFontData(paragraphLvl, ref fontData);
+                }
+
+                return;
+            }
+
+            if (this.Placeholder != null)
+            {
+                var placeholder = (Placeholder)this.Placeholder;
+                var referencedMasterShape = (SlideAutoShape)placeholder.ReferencedShape;
+                if (referencedMasterShape != null)
+                {
+                    referencedMasterShape.FillFontData(paragraphLvl, ref fontData);
+                }
+            }
+        }
+        
+        private Dictionary<int, FontData> GetLvlToFontData()
+        {
+            var textBody = this.pShape.TextBody!;
+            var lvlToFontData = FontDataParser.FromCompositeElement(textBody.ListStyle!);
+
+            if (!lvlToFontData.Any())
+            {
+                var endParaRunPrFs = textBody.GetFirstChild<A.Paragraph>()!
+                    .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
+                if (endParaRunPrFs is not null)
+                {
+                    var fontData = new FontData
+                    {
+                        FontSize = endParaRunPrFs
+                    };
+                    lvlToFontData.Add(1, fontData);
+                }
+            }
+
+            return lvlToFontData;
+        }
+        
+        private TextFrame? GetTextBox()
         {
             var pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
-            if (pTextBody == null)
-            {
-                return null;
-            }
-
-            var aTexts = pTextBody.Descendants<A.Text>();
-            if (aTexts.Sum(t => t.Text.Length) > 0)
-            {
-                return new SCTextBox(pTextBody, this);
-            }
-
-            return null;
+            return pTextBody == null ? null : new TextFrame(this, pTextBody);
         }
 
-        private ShapeFill TryGetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()
+        private ShapeFill GetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()
         {
-            var slide = (SCSlide)this.Slide;
-            SCImage image = SCImage.GetFillImageOrDefault(this, slide.SDKSlidePart, this.PShapeTreesChild);
-
-            if (image != null)
-            {
-                return new ShapeFill(image);
-            }
-
-            A.SolidFill aSolidFill = this.pShape.ShapeProperties.GetFirstChild<A.SolidFill>(); // <a:solidFill>
-            if (aSolidFill == null)
-            {
-                return null;
-            }
-
-            A.RgbColorModelHex aRgbColorModelHex = aSolidFill.RgbColorModelHex;
-            if (aRgbColorModelHex != null)
-            {
-                return ShapeFill.FromXmlSolidFill(aRgbColorModelHex);
-            }
-
-            return ShapeFill.FromASchemeClr(aSolidFill.SchemeColor);
+            return new ShapeFill(this);
         }
-
-        public ShapeType ShapeType => ShapeType.AutoShape;
     }
 }
