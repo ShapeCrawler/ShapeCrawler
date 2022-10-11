@@ -2,14 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using FluentAssertions;
-
-using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Tests.Properties;
-
 using Xunit;
 // ReSharper disable SuggestVarOrType_SimpleTypes
 
