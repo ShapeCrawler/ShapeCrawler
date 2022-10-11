@@ -245,6 +245,6 @@
     <value>..\Resource\040_video.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="_053" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resource\053_font-offset.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resource\053_font-offset.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>
