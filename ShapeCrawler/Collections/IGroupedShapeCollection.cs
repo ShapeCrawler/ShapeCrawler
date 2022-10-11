@@ -49,7 +49,6 @@ internal class GroupedShapeCollection : LibraryCollection<IShape>, IGroupedShape
         return (T)shape;
     }
     
-    
     internal static GroupedShapeCollection Create(P.GroupShape pGroupShapeParam, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCGroupShape groupShape)
     {
         var autoShapeCreator = new AutoShapeCreator();

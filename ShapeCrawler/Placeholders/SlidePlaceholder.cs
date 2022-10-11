@@ -41,8 +41,9 @@ internal class SlidePlaceholder : Placeholder
         {
             return null;
         }
-        
-        var layout = (SCSlideLayout)this.slideShape.ParentSlide.SlideLayout;
+
+        var slide = (SCSlide)this.slideShape.SlideBase;
+        var layout = (SCSlideLayout)slide.SlideLayout;
         var layoutShapes = layout.ShapesInternal;
         var referencedShape = layoutShapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
 

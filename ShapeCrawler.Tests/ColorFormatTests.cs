@@ -208,6 +208,36 @@ public class ColorFormatTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
             var paragraph14 = pres14.Slides[5].Shapes.GetById<IAutoShape>(52).TextFrame!.Paragraphs[0];
             var testCase14 = new TestCase<IParagraph, string>(14, paragraph14, "FFFFFF");
             yield return new object[] { testCase14 };
+            
+            var stream15 = GetTestStream("032.pptx");
+            var pres15 = SCPresentation.Open(stream15);
+            var paragraph15 = pres15.Slides[0].Shapes.GetById<IAutoShape>(10242).TextFrame!.Paragraphs[0];
+            var testCase15 = new TestCase<IParagraph, string>(15, paragraph15, "0070C0");
+            yield return new object[] { testCase15 };
+            
+            var stream16 = GetTestStream("034.pptx");
+            var pres16 = SCPresentation.Open(stream16);
+            var paragraph16 = pres16.Slides[0].Shapes.GetById<IAutoShape>(2).TextFrame!.Paragraphs[0];
+            var testCase16 = new TestCase<IParagraph, string>(16, paragraph16, "000000");
+            yield return new object[] { testCase16 };
+            
+            var stream17 = GetTestStream("035.pptx");
+            var pres17 = SCPresentation.Open(stream17);
+            var paragraph17 = pres17.Slides[0].Shapes.GetById<IAutoShape>(9).TextFrame!.Paragraphs[0];
+            var testCase17 = new TestCase<IParagraph, string>(17, paragraph17, "000000");
+            yield return new object[] { testCase17 };
+            
+            var stream18 = GetTestStream("036.pptx");
+            var pres18 = SCPresentation.Open(stream18);
+            var paragraph18 = pres18.Slides[0].Shapes.GetById<IAutoShape>(6146).TextFrame!.Paragraphs[0];
+            var testCase18 = new TestCase<IParagraph, string>(18, paragraph18, "404040");
+            yield return new object[] { testCase18 };
+            
+            var stream19 = GetTestStream("037.pptx");
+            var pres19 = SCPresentation.Open(stream19);
+            var paragraph19 = pres19.Slides[0].Shapes.GetById<IAutoShape>(7).TextFrame!.Paragraphs[0];
+            var testCase19 = new TestCase<IParagraph, string>(19, paragraph19, "1A1A1A");
+            yield return new object[] { testCase19 };
         }
     }
 

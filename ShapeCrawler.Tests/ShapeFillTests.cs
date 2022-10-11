@@ -5,7 +5,9 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.Tests.Helpers.Attributes;
 using ShapeCrawler.Tests.Properties;
 using Xunit;
 
@@ -35,11 +37,15 @@ namespace ShapeCrawler.Tests
         }
 
         [Theory]
-        [MemberData(nameof(TestCasesSetPicture))]
-        public void SetPicture_updates_fill_with_specified_picture_image_When_shape_is_Not_filled(TestCase testCase)
+        [SlideShapeData("008.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
+        [SlideShapeData("autoshape-case009.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
+        [LayoutShapeData("autoshape-case003.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
+        [MasterShapeData("autoshape-case003.pptx", shapeName: "AutoShape 1")]
+        public void SetPicture_updates_fill_with_specified_picture_image_When_shape_is_Not_filled(IShape shape)
         {
             // Arrange
-            var fill = testCase.AutoShape.Fill;
+            var autoShape = (IAutoShape)shape;
+            var fill = autoShape.Fill;
             var imageStream = GetTestStream("test-image-1.png");
 
             // Act
@@ -49,28 +55,6 @@ namespace ShapeCrawler.Tests
             var pictureBytes = fill.Picture!.BinaryData.Result;
             var imageBytes = imageStream.ToArray();
             pictureBytes.SequenceEqual(imageBytes).Should().BeTrue();
-        }
-
-        public static IEnumerable<object[]> TestCasesSetPicture
-        {
-            get
-            {
-                var testCase1 = new TestCase("#1")
-                {
-                    PresentationName = "008.pptx",
-                    SlideNumber = 1,
-                    ShapeName = "AutoShape 1"
-                };
-                yield return new object[] { testCase1 };
-                
-                var testCase2 = new TestCase("#2")
-                {
-                    PresentationName = "autoshape-case009.pptx",
-                    SlideNumber = 1,
-                    ShapeName = "AutoShape 1"
-                };
-                yield return new object[] { testCase2 };
-            }
         }
 
         [Fact]
