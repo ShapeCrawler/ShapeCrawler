@@ -7,8 +7,6 @@ using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
-using ShapeCrawler.SlideMasters;
-using ShapeCrawler.Statics;
 using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -94,6 +92,51 @@ namespace ShapeCrawler.AutoShapes
                     {
                         var runProp = this.aText.Parent.AddRunProperties();
                         runProp.Underline = new EnumValue<A.TextUnderlineValues>(value);
+                    }
+                }
+            }
+        }
+
+        public int OffsetEffect
+        {
+            get
+            {
+                var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+                if (aRunProperties is not null &&
+                    aRunProperties.Baseline is not null)
+                {
+                    return aRunProperties.Baseline.Value / 1000;
+                }
+
+                A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                if (aEndParaRPr is not null)
+                {
+                    return aEndParaRPr.Baseline! / 1000;
+                }
+
+                return 0;
+            }
+
+            set
+            {
+                var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+                Int32Value int32Value = value * 1000;
+                if (aRunProperties is not null &&
+                    aRunProperties.Baseline is not null)
+                {
+                    aRunProperties.Baseline = int32Value;
+                }
+                else
+                {
+                    A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                    if (aEndParaRPr != null)
+                    {
+                        aEndParaRPr.Baseline = int32Value;
+                    }
+                    else
+                    {
+                        aRunProperties = new A.RunProperties { Baseline = int32Value };
+                        this.aText.Parent.InsertAt(aRunProperties, 0); // append to <a:r>
                     }
                 }
             }
