@@ -51,8 +51,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Remove="Resource\001.pptx" />
-    <None Remove="Resource\053_add-superscript.pptx" />
-    <None Remove="Resource\053_font-offset.pptx" />
     <None Remove="Resource\Charts\bars.pptx" />
     <EmbeddedResource Include="Resource\001.pptx" />
     <None Remove="Resource\050_title-placeholder.pptx" />
@@ -70,6 +68,7 @@
     <None Remove="Resource\009_table.pptx" />
     <EmbeddedResource Include="Resource\009_table.pptx" />
     <None Remove="Resource\Charts\charts-case001.pptx" />
+    <None Remove="Resource\053_font-offset.pptx" />
     <EmbeddedResource Include="Resource\053_font-offset.pptx" />
     <EmbeddedResource Include="Resource\Charts\bars.pptx" />
     <EmbeddedResource Include="Resource\Charts\charts-case001.pptx" />
