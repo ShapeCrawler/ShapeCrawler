@@ -115,8 +115,7 @@ namespace ShapeCrawler.AutoShapes
         {
             var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
             Int32Value int32Value = value * 1000;
-            if (aRunProperties is not null &&
-                aRunProperties.Baseline is not null)
+            if (aRunProperties is not null)
             {
                 aRunProperties.Baseline = int32Value;
             }
