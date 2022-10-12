@@ -33,7 +33,7 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             var sourceSlide = _fixture.Pre001.Slides[0];
-            var destPre = SCPresentation.Open(Properties.Resources._002, true);
+            var destPre = SCPresentation.Open(Properties.Resources._002);
             var originSlidesCount = destPre.Slides.Count;
             var expectedSlidesCount = ++originSlidesCount;
             MemoryStream savedPre = new ();
@@ -45,16 +45,16 @@ namespace ShapeCrawler.Tests
             destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
 
             destPre.SaveAs(savedPre);
-            destPre = SCPresentation.Open(savedPre, false);
+            destPre = SCPresentation.Open(savedPre);
             destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
         }
         
-        [Fact]
+        [Fact(Skip = "https://github.com/ShapeCrawler/ShapeCrawler/issues/246")]
         public void Slides_Add_copies_slide_from_the_Same_presentation_at_the_end_of_the_slide_collection()
         {
             // Arrange
-            var pptxStream = GetTestPptxStream("charts-case003.pptx");
-            var pres = SCPresentation.Open(pptxStream, true);
+            var pptxStream = GetTestStream("charts-case003.pptx");
+            var pres = SCPresentation.Open(pptxStream);
             var originalSlidesCount = pres.Slides.Count;
             var copyingSlide = pres.Slides[0];
 
@@ -63,8 +63,6 @@ namespace ShapeCrawler.Tests
 
             // Assert
             pres.Slides.Count.Should().Be(originalSlidesCount + 1);
-            
-            pres.SaveAs(@"c:\temp\result.pptx");
         }
 
         [Fact]
@@ -72,7 +70,7 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             var sourceSlide = _fixture.Pre001.Slides[0];
-            var destPres = SCPresentation.Open(Properties.Resources._002, true);
+            var destPres = SCPresentation.Open(Properties.Resources._002);
             var newStream = new MemoryStream();
 
             // Act
@@ -88,10 +86,10 @@ namespace ShapeCrawler.Tests
         public void Slides_Insert_inserts_specified_slide_at_the_specified_position()
         {
             // Arrange
-            ISlide sourceSlide = SCPresentation.Open(TestFiles.Presentations.pre001, true).Slides[0];
+            ISlide sourceSlide = SCPresentation.Open(TestFiles.Presentations.pre001).Slides[0];
             string sourceSlideId = Guid.NewGuid().ToString();
             sourceSlide.CustomData = sourceSlideId;
-            IPresentation destPre = SCPresentation.Open(Properties.Resources._002, true);
+            IPresentation destPre = SCPresentation.Open(Properties.Resources._002);
 
             // Act
             destPre.Slides.Insert(2, sourceSlide);
@@ -105,7 +103,7 @@ namespace ShapeCrawler.Tests
         public void Slides_Remove_removes_slide(byte[] pptxBytes, int expectedSlidesCount)
         {
             // Arrange
-            var pres = SCPresentation.Open(pptxBytes, true);
+            var pres = SCPresentation.Open(pptxBytes);
             var removingSlide = pres.Slides[0];
             var mStream = new MemoryStream();
 
@@ -116,7 +114,7 @@ namespace ShapeCrawler.Tests
             pres.Slides.Should().HaveCount(expectedSlidesCount);
 
             pres.SaveAs(mStream);
-            pres = SCPresentation.Open(mStream, false);
+            pres = SCPresentation.Open(mStream);
             pres.Slides.Should().HaveCount(expectedSlidesCount);
         }
         
@@ -130,8 +128,8 @@ namespace ShapeCrawler.Tests
         public void Slides_Remove_removes_slide_from_section()
         {
             // Arrange
-            var pptxStream = GetTestPptxStream("030.pptx");
-            var pres = SCPresentation.Open(pptxStream, true);
+            var pptxStream = GetTestStream("030.pptx");
+            var pres = SCPresentation.Open(pptxStream);
             var sectionSlides = pres.Sections[0].Slides;
             var removingSlide = sectionSlides[0];
             var mStream = new MemoryStream();
@@ -143,7 +141,7 @@ namespace ShapeCrawler.Tests
             sectionSlides.Count.Should().Be(0);
 
             pres.SaveAs(mStream);
-            pres = SCPresentation.Open(mStream, false);
+            pres = SCPresentation.Open(mStream);
             sectionSlides = pres.Sections[0].Slides;
             sectionSlides.Count.Should().Be(0);
         }
