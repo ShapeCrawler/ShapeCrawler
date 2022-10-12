@@ -41,8 +41,6 @@ namespace ShapeCrawler.AutoShapes
             this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements!.FontScheme;
         }
 
-        #region Public Properties
-
         public string Name
         {
             get => this.GetName();
@@ -67,6 +65,8 @@ namespace ShapeCrawler.AutoShapes
             set => this.SetItalicFlag(value);
         }
 
+        public IColorFormat ColorFormat => this.colorFormat.Value;
+        
         public DocumentFormat.OpenXml.Drawing.TextUnderlineValues Underline
         {
             get
@@ -74,6 +74,7 @@ namespace ShapeCrawler.AutoShapes
                 A.RunProperties aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
                 return aRunProperties?.Underline?.Value ?? A.TextUnderlineValues.None;
             }
+
             set
             {
                 A.RunProperties aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
@@ -99,58 +100,57 @@ namespace ShapeCrawler.AutoShapes
 
         public int OffsetEffect
         {
-            get
+            get => this.GetOffsetEffect();
+            set => this.SetOffset(value);
+        }
+        
+        internal SCPortion ParentPortion { get; }
+        
+        public bool CanChange()
+        {
+            return this.ParentPortion.ParentParagraph.TextFrame.TextFrameContainer.Shape.Placeholder == null;
+        }
+
+        private void SetOffset(int value)
+        {
+            var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+            Int32Value int32Value = value * 1000;
+            if (aRunProperties is not null &&
+                aRunProperties.Baseline is not null)
             {
-                var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
-                if (aRunProperties is not null &&
-                    aRunProperties.Baseline is not null)
-                {
-                    return aRunProperties.Baseline.Value / 1000;
-                }
-
-                A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
-                if (aEndParaRPr is not null)
-                {
-                    return aEndParaRPr.Baseline! / 1000;
-                }
-
-                return 0;
+                aRunProperties.Baseline = int32Value;
             }
-
-            set
+            else
             {
-                var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
-                Int32Value int32Value = value * 1000;
-                if (aRunProperties is not null &&
-                    aRunProperties.Baseline is not null)
+                A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                if (aEndParaRPr != null)
                 {
-                    aRunProperties.Baseline = int32Value;
+                    aEndParaRPr.Baseline = int32Value;
                 }
                 else
                 {
-                    A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
-                    if (aEndParaRPr != null)
-                    {
-                        aEndParaRPr.Baseline = int32Value;
-                    }
-                    else
-                    {
-                        aRunProperties = new A.RunProperties { Baseline = int32Value };
-                        this.aText.Parent.InsertAt(aRunProperties, 0); // append to <a:r>
-                    }
+                    aRunProperties = new A.RunProperties { Baseline = int32Value };
+                    this.aText.Parent.InsertAt(aRunProperties, 0); // append to <a:r>
                 }
             }
         }
 
-        public IColorFormat ColorFormat => this.colorFormat.Value;
-
-        #endregion Public Properties
-
-        internal SCPortion ParentPortion { get; }
-
-        public bool CanChange()
+        private int GetOffsetEffect()
         {
-            return this.ParentPortion.ParentParagraph.TextFrame.TextFrameContainer.Shape.Placeholder == null;
+            var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+            if (aRunProperties is not null &&
+                aRunProperties.Baseline is not null)
+            {
+                return aRunProperties.Baseline.Value / 1000;
+            }
+
+            A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+            if (aEndParaRPr is not null)
+            {
+                return aEndParaRPr.Baseline! / 1000;
+            }
+
+            return 0;
         }
 
         private string GetName()

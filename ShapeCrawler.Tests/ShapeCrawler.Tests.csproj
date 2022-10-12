@@ -69,7 +69,6 @@
     <EmbeddedResource Include="Resource\009_table.pptx" />
     <None Remove="Resource\Charts\charts-case001.pptx" />
     <None Remove="Resource\053_font-offset.pptx" />
-    <EmbeddedResource Include="Resource\053_font-offset.pptx" />
     <EmbeddedResource Include="Resource\Charts\bars.pptx" />
     <EmbeddedResource Include="Resource\Charts\charts-case001.pptx" />
     <None Remove="Resource\002.pptx" />
@@ -152,6 +151,8 @@
     <EmbeddedResource Include="Resource\037.pptx" />
     <None Remove="Resource\023.pptx" />
     <EmbeddedResource Include="Resource\023.pptx" />
+    <None Remove="Resource\autoshape\autoshape-case010.pptx" />
+    <EmbeddedResource Include="Resource\autoshape\autoshape-case010.pptx" />
   </ItemGroup>
 
 </Project>
