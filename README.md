@@ -49,5 +49,5 @@ If you have a question:
 How you can contribute?
 - **Give a Star**⭐ If you find this useful, please give it a star to show your support.
 - **Polls**. Participate in the voting on [Polls](https://github.com/ShapeCrawler/ShapeCrawler/discussions/categories/polls) discussion.
-- **Bug report**. If you get some issue, please don't ignore and report the bug on [issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) page.
-- **Implement feature**. [Some features/bugs](https://github.com/ShapeCrawler/ShapeCrawler/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) are tagged with *help-wanted* label and waiting for your Pull Request🙂 Please visit [Contribution Guide](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CONTRIBUTING.md) to get some development recommendations.
+- **Bug report**. If you get some issue, please don't ignore and report this bug on [issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) page.
+- **Code contributing**. There are features/bugs tagged with [help-wanted](https://github.com/ShapeCrawler/ShapeCrawler/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) label which waiting for your Pull Request🙂 Please read [Contribution Guide](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CONTRIBUTING.md) to get more details.
