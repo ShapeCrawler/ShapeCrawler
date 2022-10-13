@@ -14,7 +14,7 @@ namespace ShapeCrawler.Placeholders
             : base(pPlaceholderShape)
         {
             // Slide Master is the lowest slide level, therefore its placeholders do not have referenced shape.
-            this.referencedShape = new ResettableLazy<Shape?>(() => null);
+            this.ReferencedShapeLazy = new ResettableLazy<Shape?>(() => null);
         }
 
         internal static MasterPlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild)

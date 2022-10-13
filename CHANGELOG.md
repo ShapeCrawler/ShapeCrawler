@@ -2,6 +2,7 @@
 
 ## Version 0.35.0 - Unreleased
 - Added `IShapeFill.SetPicture(Stream image)` to set picture fill [#279](https://github.com/ShapeCrawler/ShapeCrawler/issues/279)
+- Added `IFont.OffsetEffect` property to add superscript [#258](https://github.com/ShapeCrawler/ShapeCrawler/issues/258)
 
 ## Version 0.34.1 - 2022-10-02
 - Fixed updating text of text frame [#332](https://github.com/ShapeCrawler/ShapeCrawler/issues/332)

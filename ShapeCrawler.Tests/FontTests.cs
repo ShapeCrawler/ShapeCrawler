@@ -487,7 +487,6 @@ public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
 
         // Act
         font.OffsetEffect = superScriptOffset;
-        pres.SaveAs(@"c:\temp\result.pptx");
         pres.SaveAs(mStream);
 
         // Assert

@@ -35,7 +35,6 @@ internal class GroupedShapeCollection : LibraryCollection<IShape>, IGroupedShape
     {
     }
 
-
     public T GetById<T>(int shapeId)
         where T : IShape
     {

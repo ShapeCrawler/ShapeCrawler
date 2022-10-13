@@ -98,7 +98,7 @@ internal class SCChart : SlideShape, IChart
 
     public byte[] WorkbookByteArray => this.ChartWorkbook!.BinaryData;
 
-    public SpreadsheetDocument SDKSpreadsheetDocument => this.ChartWorkbook!.spreadsheetDocument.Value;
+    public SpreadsheetDocument SDKSpreadsheetDocument => this.ChartWorkbook!.SpreadsheetDocument.Value;
 
     internal ChartWorkbook? ChartWorkbook { get; set; }
 

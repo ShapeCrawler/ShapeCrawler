@@ -15,7 +15,7 @@ internal class SlidePlaceholder : Placeholder
         : base(pPlaceholderShape)
     {
         this.slideShape = slideShape;
-        this.referencedShape = new ResettableLazy<Shape>(this.GetReferencedShape);
+        this.ReferencedShapeLazy = new ResettableLazy<Shape>(this.GetReferencedShape);
     }
     
     internal static SlidePlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, SlideShape slideShape)

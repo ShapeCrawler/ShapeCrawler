@@ -17,7 +17,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Slides_Count_returns_one_When_presentation_contains_one_slide()
+        public void Count_returns_one_When_presentation_contains_one_slide()
         {
             // Act
             var numberSlidesCase1 = _fixture.Pre017.Slides.Count;
@@ -29,7 +29,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Slides_Add_adds_slide_from_External_presentation_at_the_end_of_the_slide_collection()
+        public void Add_adds_slide_from_External_presentation()
         {
             // Arrange
             var sourceSlide = _fixture.Pre001.Slides[0];
@@ -49,20 +49,21 @@ namespace ShapeCrawler.Tests
             destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
         }
         
-        [Fact(Skip = "https://github.com/ShapeCrawler/ShapeCrawler/issues/246")]
-        public void Slides_Add_copies_slide_from_the_Same_presentation_at_the_end_of_the_slide_collection()
+        [Fact]
+        public void Add_adds_slide_from_the_Same_presentation()
         {
             // Arrange
             var pptxStream = GetTestStream("charts-case003.pptx");
             var pres = SCPresentation.Open(pptxStream);
-            var originalSlidesCount = pres.Slides.Count;
-            var copyingSlide = pres.Slides[0];
+            var expectedSlidesCount = pres.Slides.Count + 1;
+            var slideCollection = pres.Slides;
+            var addingSlide = slideCollection[0];
 
             // Act
-            pres.Slides.Add(copyingSlide);
+            pres.Slides.Add(addingSlide);
 
             // Assert
-            pres.Slides.Count.Should().Be(originalSlidesCount + 1);
+            pres.Slides.Count.Should().Be(expectedSlidesCount);
         }
 
         [Fact]
