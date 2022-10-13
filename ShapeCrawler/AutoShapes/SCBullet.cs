@@ -132,7 +132,6 @@ namespace ShapeCrawler
                 A.CharacterBullet? aCharBullet = this.aParagraphProperties.GetFirstChild<A.CharacterBullet>();
                 this.aParagraphProperties.RemoveChild(aCharBullet);
 
-
                 if (value == SCBulletType.Numbered)
                 {
                     var child = new AutoNumberedBullet

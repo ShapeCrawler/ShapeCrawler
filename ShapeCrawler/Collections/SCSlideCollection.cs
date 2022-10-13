@@ -9,232 +9,229 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Collections
+namespace ShapeCrawler.Collections;
+
+internal class SCSlideCollection : ISlideCollection
 {
-    internal class SCSlideCollection : ISlideCollection
+    private readonly SCPresentation presentation;
+    private readonly ResettableLazy<List<SCSlide>> slides;
+    private PresentationPart presentationPart;
+
+    internal SCSlideCollection(SCPresentation presentation)
     {
-        internal EventHandler CollectionChanged;
-        private readonly SCPresentation parentPresentation;
-        private readonly ResettableLazy<List<SCSlide>> slides;
-        private PresentationPart presentationPart;
-        
-        internal SCSlideCollection(SCPresentation presentation)
+        this.presentation = presentation;
+        this.presentationPart = presentation.SDKPresentation.PresentationPart!;
+        this.slides = new ResettableLazy<List<SCSlide>>(this.GetSlides);
+    }
+
+    public int Count => this.slides.Value.Count;
+
+    internal EventHandler CollectionChanged { get; set; }
+
+    public ISlide this[int index] => this.slides.Value[index];
+
+    public IEnumerator<ISlide> GetEnumerator()
+    {
+        return this.slides.Value.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return this.GetEnumerator();
+    }
+
+    public void Remove(ISlide removingSlide)
+    {
+        // TODO: slide layout and master of removed slide also should be deleted if they are unused
+        var removingSlideInternal = (SCSlide)removingSlide;
+        var sdkPresentation = this.presentationPart.Presentation;
+        var slideIdList = sdkPresentation.SlideIdList!;
+        var removingSlideIndex = removingSlide.Number - 1;
+        var removingSlideId = (P.SlideId)slideIdList.ChildElements[removingSlideIndex];
+        var removingSlideRelId = removingSlideId.RelationshipId!;
+
+        this.presentation.SectionsInternal.RemoveSldId(removingSlideId.Id!);
+
+        slideIdList.RemoveChild(removingSlideId);
+        RemoveFromCustomShow(sdkPresentation, removingSlideRelId);
+
+        var removingSlidePart = (SlidePart)this.presentationPart.GetPartById(removingSlideRelId!);
+        this.presentationPart.DeletePart(removingSlidePart);
+
+        this.presentationPart.Presentation.Save();
+        removingSlideInternal.IsRemoved = true;
+
+        this.slides.Reset();
+
+        this.OnCollectionChanged();
+    }
+
+    public void Add(ISlide addingSlide)
+    {
+        var addingSlideInner = (SCSlide)addingSlide;
+        if (addingSlideInner.Presentation == this.presentation)
         {
-            this.presentationPart = presentation.SdkPresentation.PresentationPart ??
-                                    throw new ArgumentNullException("PresentationPart");
-            this.parentPresentation = presentation;
-            this.slides = new ResettableLazy<List<SCSlide>>(this.GetSlides);
+            throw new ShapeCrawlerException("Adding slide cannot be belong to the same presentation.");
         }
 
-        public int Count => this.slides.Value.Count;
+        var pres = (SCPresentation)addingSlideInner.Presentation;
+        var addingSlideDoc = pres.SDKPresentation;
+        var destDoc = this.presentation.SDKPresentation;
+        var addingPresentationPart = addingSlideDoc.PresentationPart!;
+        var destPresentationPart = destDoc.PresentationPart!;
+        var destPresentation = destPresentationPart.Presentation;
+        int addingSlideIndex = addingSlide.Number - 1;
+        var addingSlideId =
+            (SlideId)addingPresentationPart.Presentation.SlideIdList!.ChildElements[addingSlideIndex];
+        SlidePart addingSlidePart = (SlidePart)addingPresentationPart.GetPartById(addingSlideId.RelationshipId!);
 
-        public ISlide this[int index] => this.slides.Value[index];
-
-        public IEnumerator<ISlide> GetEnumerator()
+        SlidePart addedSlidePart = destPresentationPart.AddPart(addingSlidePart);
+        NotesSlidePart noticePart = addedSlidePart.GetPartsOfType<NotesSlidePart>().FirstOrDefault();
+        if (noticePart != null)
         {
-            return this.slides.Value.GetEnumerator();
+            addedSlidePart.DeletePart(noticePart);
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        SlideMasterPart addedSlideMasterPart =
+            destPresentationPart.AddPart(addedSlidePart.SlideLayoutPart!.SlideMasterPart);
+
+        // Create new slide ID
+        SlideId slideId = new ()
         {
-            return this.GetEnumerator();
-        }
+            Id = CreateId(destPresentation.SlideIdList!),
+            RelationshipId = destDoc.PresentationPart!.GetIdOfPart(addedSlidePart)
+        };
+        destPresentation.SlideIdList!.Append(slideId);
 
-        public void Remove(ISlide removingSlide)
+        // Create new master slide ID
+        uint masterId = CreateId(destPresentation.SlideMasterIdList!);
+        SlideMasterId slideMaterId = new ()
         {
-            // TODO: slide layout and master of removed slide also should be deleted if they are unused
-            var removingSlideInternal = (SCSlide)removingSlide;
-            var sdkPresentation = this.presentationPart.Presentation;
-            var slideIdList = sdkPresentation.SlideIdList!;
-            var removingSlideIndex = removingSlide.Number - 1;
-            var removingSlideId = (P.SlideId)slideIdList.ChildElements[removingSlideIndex];
-            var removingSlideRelId = removingSlideId.RelationshipId!;
+            Id = masterId,
+            RelationshipId = destDoc.PresentationPart.GetIdOfPart(addedSlideMasterPart!)
+        };
+        destDoc.PresentationPart.Presentation.SlideMasterIdList!.Append(slideMaterId);
 
-            this.parentPresentation.SectionsInternal.RemoveSldId(removingSlideId.Id!);
+        destDoc.PresentationPart.Presentation.Save();
 
-            slideIdList.RemoveChild(removingSlideId);
-            RemoveFromCustomShow(sdkPresentation, removingSlideRelId);
-
-            var removingSlidePart = (SlidePart)this.presentationPart.GetPartById(removingSlideRelId!);
-            this.presentationPart.DeletePart(removingSlidePart);
-
-            this.presentationPart.Presentation.Save();
-            removingSlideInternal.IsRemoved = true;
-
-            this.slides.Reset();
-            
-            this.OnCollectionChanged();
-        }
-
-        public void Add(ISlide outerSlide)
+        // Make sure that all slide layouts have unique ids.
+        foreach (SlideMasterPart slideMasterPart in destDoc.PresentationPart.SlideMasterParts)
         {
-            SCSlide outerInnerSlide = (SCSlide)outerSlide;
-            if (outerInnerSlide.Presentation == this.parentPresentation)
+            foreach (SlideLayoutId slideLayoutId in slideMasterPart.SlideMaster.SlideLayoutIdList!)
             {
-                throw new ShapeCrawlerException("Adding slide cannot be belong to the same presentation.");
+                masterId++;
+                slideLayoutId.Id = masterId;
             }
 
-            this.parentPresentation.ThrowIfClosed();
+            slideMasterPart.SlideMaster.Save();
+        }
 
-            var presentation = (SCPresentation)outerInnerSlide.Presentation;
-            var addingSlideDoc = presentation.SdkPresentation;
-            var destDoc = this.parentPresentation.SdkPresentation;
-            var addingPresentationPart = addingSlideDoc.PresentationPart!;
-            var destPresentationPart = destDoc.PresentationPart!;
-            var destPresentation = destPresentationPart.Presentation;
-            int addingSlideIndex = outerSlide.Number - 1;
-            var addingSlideId =
-                (SlideId)addingPresentationPart.Presentation.SlideIdList!.ChildElements[addingSlideIndex];
-            SlidePart addingSlidePart = (SlidePart)addingPresentationPart.GetPartById(addingSlideId.RelationshipId!);
+        this.slides.Reset();
+        this.presentation.SlideMastersValue.Reset();
+        this.OnCollectionChanged();
+    }
 
-            SlidePart addedSlidePart = destPresentationPart.AddPart(addingSlidePart);
-            NotesSlidePart noticePart = addedSlidePart.GetPartsOfType<NotesSlidePart>().FirstOrDefault();
-            if (noticePart != null)
+    public void Insert(int position, ISlide outerSlide)
+    {
+        if (position < 1 || position > this.slides.Value.Count + 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(position));
+        }
+
+        this.Add(outerSlide);
+        int addedSlideIndex = this.slides.Value.Count - 1;
+        this.slides.Value[addedSlideIndex].Number = position;
+
+        this.slides.Reset();
+        this.presentation.SlideMastersValue.Reset();
+        this.OnCollectionChanged();
+    }
+
+    internal SCSlide GetBySlideId(string slideId)
+    {
+        return this.slides.Value.First(scSlide => scSlide.SlideId.Id == slideId);
+    }
+
+    private static uint CreateId(SlideIdList slideIdList)
+    {
+        uint currentId = 0;
+        foreach (SlideId slideId in slideIdList)
+        {
+            if (slideId.Id! > currentId)
             {
-                addedSlidePart.DeletePart(noticePart);
+                currentId = slideId.Id!;
+            }
+        }
+
+        return ++currentId;
+    }
+
+    private static uint CreateId(SlideMasterIdList slideMasterIdList)
+    {
+        uint currentId = 0;
+        foreach (SlideMasterId masterId in slideMasterIdList)
+        {
+            if (masterId.Id! > currentId)
+            {
+                currentId = masterId.Id!;
+            }
+        }
+
+        return ++currentId;
+    }
+
+    private List<SCSlide> GetSlides()
+    {
+        this.presentationPart = this.presentation.SDKPresentation.PresentationPart!;
+        int slidesCount = this.presentationPart.SlideParts.Count();
+        var slides = new List<SCSlide>(slidesCount);
+        var slideIds = this.presentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
+        for (var slideIndex = 0; slideIndex < slidesCount; slideIndex++)
+        {
+            var slideId = slideIds[slideIndex];
+            var slidePart = (SlidePart)this.presentationPart.GetPartById(slideId.RelationshipId!);
+            var newSlide = new SCSlide(this.presentation, slidePart, slideId);
+            slides.Add(newSlide);
+        }
+
+        return slides;
+    }
+
+    private void OnCollectionChanged()
+    {
+        this.CollectionChanged?.Invoke(this, null);
+    }
+
+    private static void RemoveFromCustomShow(Presentation sdkPresentation, StringValue? removingSlideRelId)
+    {
+        if (sdkPresentation.CustomShowList == null)
+        {
+            return;
+        }
+
+        // Iterate through the list of custom shows
+        foreach (var customShow in sdkPresentation.CustomShowList.Elements<P.CustomShow>())
+        {
+            if (customShow.SlideList == null)
+            {
+                continue;
             }
 
-            SlideMasterPart addedSlideMasterPart =
-                destPresentationPart.AddPart(addedSlidePart.SlideLayoutPart!.SlideMasterPart);
-
-            // Create new slide ID
-            SlideId slideId = new ()
+            // declares a link list of slide list entries
+            var slideListEntries = new LinkedList<P.SlideListEntry>();
+            foreach (P.SlideListEntry slideListEntry in customShow.SlideList.Elements())
             {
-                Id = CreateId(destPresentation.SlideIdList!),
-                RelationshipId = destDoc.PresentationPart!.GetIdOfPart(addedSlidePart)
-            };
-            destPresentation.SlideIdList!.Append(slideId);
-
-            // Create new master slide ID
-            uint masterId = CreateId(destPresentation.SlideMasterIdList!);
-            SlideMasterId slideMaterId = new ()
-            {
-                Id = masterId,
-                RelationshipId = destDoc.PresentationPart.GetIdOfPart(addedSlideMasterPart!)
-            };
-            destDoc.PresentationPart.Presentation.SlideMasterIdList!.Append(slideMaterId);
-
-            destDoc.PresentationPart.Presentation.Save();
-
-            // Make sure that all slide layouts have unique ids.
-            foreach (SlideMasterPart slideMasterPart in destDoc.PresentationPart.SlideMasterParts)
-            {
-                foreach (SlideLayoutId slideLayoutId in slideMasterPart.SlideMaster.SlideLayoutIdList!)
+                // finds the slide reference to remove from the custom show
+                if (slideListEntry.Id != null && slideListEntry.Id == removingSlideRelId)
                 {
-                    masterId++;
-                    slideLayoutId.Id = masterId;
-                }
-
-                slideMasterPart.SlideMaster.Save();
-            }
-
-            this.slides.Reset();
-            this.parentPresentation.SlideMastersValue.Reset();
-            this.OnCollectionChanged();
-        }
-
-        public void Insert(int position, ISlide outerSlide)
-        {
-            if (position < 1 || position > this.slides.Value.Count + 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(position));
-            }
-
-            this.Add(outerSlide);
-            int addedSlideIndex = this.slides.Value.Count - 1;
-            this.slides.Value[addedSlideIndex].Number = position;
-
-            this.slides.Reset();
-            this.parentPresentation.SlideMastersValue.Reset();
-            this.OnCollectionChanged();
-        }
-
-        internal SCSlide GetBySlideId(string slideId)
-        {
-            return this.slides.Value.First(scSlide => scSlide.slideId.Id == slideId);
-        }
-
-        private static uint CreateId(SlideIdList slideIdList)
-        {
-            uint currentId = 0;
-            foreach (SlideId slideId in slideIdList)
-            {
-                if (slideId.Id! > currentId)
-                {
-                    currentId = slideId.Id!;
+                    slideListEntries.AddLast(slideListEntry);
                 }
             }
 
-            return ++currentId;
-        }
-
-        private static uint CreateId(SlideMasterIdList slideMasterIdList)
-        {
-            uint currentId = 0;
-            foreach (SlideMasterId masterId in slideMasterIdList)
+            // Removes all references to the slide from the custom show
+            foreach (P.SlideListEntry slideListEntry in slideListEntries)
             {
-                if (masterId.Id! > currentId)
-                {
-                    currentId = masterId.Id!;
-                }
-            }
-
-            return ++currentId;
-        }
-
-        private List<SCSlide> GetSlides()
-        {
-            this.presentationPart = this.parentPresentation.SdkPresentation.PresentationPart!;
-            int slidesCount = this.presentationPart.SlideParts.Count();
-            var slides = new List<SCSlide>(slidesCount);
-            var slideIds = this.presentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
-            for (var slideIndex = 0; slideIndex < slidesCount; slideIndex++)
-            {
-                var slideId = slideIds[slideIndex];
-                var slidePart = (SlidePart)this.presentationPart.GetPartById(slideId.RelationshipId!);
-                var newSlide = new SCSlide(this.parentPresentation, slidePart, slideId);
-                slides.Add(newSlide);
-            }
-
-            return slides;
-        }
-
-        private void OnCollectionChanged()
-        {
-            this.CollectionChanged?.Invoke(this, null);
-        }
-        
-        private static void RemoveFromCustomShow(Presentation sdkPresentation, StringValue? removingSlideRelId)
-        {
-            if (sdkPresentation.CustomShowList == null)
-            {
-                return;
-            }
-
-            // Iterate through the list of custom shows
-            foreach (var customShow in sdkPresentation.CustomShowList.Elements<P.CustomShow>())
-            {
-                if (customShow.SlideList == null)
-                {
-                    continue;
-                }
-
-                // declares a link list of slide list entries
-                var slideListEntries = new LinkedList<P.SlideListEntry>();
-                foreach (P.SlideListEntry slideListEntry in customShow.SlideList.Elements())
-                {
-                    // finds the slide reference to remove from the custom show
-                    if (slideListEntry.Id != null && slideListEntry.Id == removingSlideRelId)
-                    {
-                        slideListEntries.AddLast(slideListEntry);
-                    }
-                }
-
-                // Removes all references to the slide from the custom show
-                foreach (P.SlideListEntry slideListEntry in slideListEntries)
-                {
-                    customShow.SlideList.RemoveChild(slideListEntry);
-                }
+                customShow.SlideList.RemoveChild(slideListEntry);
             }
         }
     }

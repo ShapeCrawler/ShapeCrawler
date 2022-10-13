@@ -28,14 +28,17 @@ dotnet_diagnostic.SA1633.severity = none
 dotnet_diagnostic.SA1201.severity = error
 dotnet_diagnostic.SA1503.severity = error
 dotnet_diagnostic.SA1005.severity = error
-dotnet_diagnostic.SA1600.severity = error
+dotnet_diagnostic.SA1101.severity = error
 dotnet_diagnostic.SA1202.severity = error
 dotnet_diagnostic.SA1300.severity = error
-dotnet_diagnostic.SA1101.severity = error
 dotnet_diagnostic.SA1000.severity = error
-dotnet_diagnostic.SA1623.severity = error
-dotnet_diagnostic.SA1602.severity = error
+dotnet_diagnostic.SA1401.severity = error
+dotnet_diagnostic.SA1507.severity = error
 dotnet_diagnostic.SA1513.severity = error
+dotnet_diagnostic.SA1516.severity = error
+dotnet_diagnostic.SA1600.severity = error
+dotnet_diagnostic.SA1602.severity = error
+dotnet_diagnostic.SA1623.severity = error
 
 # CSXXXX
 dotnet_diagnostic.CS0649.severity = error

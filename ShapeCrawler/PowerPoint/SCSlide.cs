@@ -23,7 +23,6 @@ namespace ShapeCrawler;
 /// </summary>
 internal class SCSlide : SlideBase, ISlide
 {
-    internal readonly SlideId slideId;
     private readonly Lazy<SCImage> backgroundImage;
     private Lazy<CustomXmlPart> customXmlPart;
     private readonly ResettableLazy<ShapeCollection> shapes;
@@ -36,7 +35,7 @@ internal class SCSlide : SlideBase, ISlide
         this.shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.Create(this.SDKSlidePart, this));
         this.backgroundImage = new Lazy<SCImage?>(() => SCImage.ForBackground(this));
         this.customXmlPart = new Lazy<CustomXmlPart>(this.GetSldCustomXmlPart);
-        this.slideId = slideId;
+        this.SlideId = slideId;
     }
 
     public ISlideLayout SlideLayout =>
@@ -45,7 +44,6 @@ internal class SCSlide : SlideBase, ISlide
     public IShapeCollection Shapes => this.shapes.Value;
 
     public override bool IsRemoved { get; set; }
-
 
     public int Number
     {
@@ -73,6 +71,8 @@ internal class SCSlide : SlideBase, ISlide
 
     internal override TypedOpenXmlPart TypedOpenXmlPart => this.SDKSlidePart;
 
+    internal SlideId SlideId { get; }
+    
     public override void ThrowIfRemoved()
     {
         if (this.IsRemoved)
@@ -154,7 +154,7 @@ internal class SCSlide : SlideBase, ISlide
 
     private int GetNumber()
     {
-        var presentationPart = this.PresentationInternal.SdkPresentation.PresentationPart!;
+        var presentationPart = this.PresentationInternal.SDKPresentation.PresentationPart!;
         var currentSlidePartId = presentationPart.GetIdOfPart(this.SDKSlidePart);
         var slideIdList =
             presentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
@@ -179,7 +179,7 @@ internal class SCSlide : SlideBase, ISlide
             throw new ArgumentOutOfRangeException(nameof(to));
         }
 
-        var presentationPart = this.PresentationInternal.SdkPresentation.PresentationPart!;
+        var presentationPart = this.PresentationInternal.SDKPresentation.PresentationPart!;
 
         var presentation = presentationPart.Presentation;
         var slideIdList = presentation.SlideIdList!;

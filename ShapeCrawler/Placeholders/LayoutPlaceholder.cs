@@ -16,7 +16,7 @@ namespace ShapeCrawler.Placeholders
             : base(pPlaceholderShape)
         {
             this.layoutShape = layoutShape;
-            this.referencedShape = new ResettableLazy<Shape>(this.GetReferencedShape);
+            this.ReferencedShapeLazy = new ResettableLazy<Shape>(this.GetReferencedShape);
         }
 
         internal static LayoutPlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, LayoutShape layoutShape)

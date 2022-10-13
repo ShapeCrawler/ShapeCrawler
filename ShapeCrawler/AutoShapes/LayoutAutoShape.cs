@@ -39,7 +39,6 @@ internal class LayoutAutoShape : LayoutShape, IAutoShape, ITextFrameContainer
     #endregion Public Properties
 
     public Shape Shape => this;
-    
 
     private TextFrame? GetTextFrame()
     {
