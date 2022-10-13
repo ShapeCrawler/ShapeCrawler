@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -66,71 +66,6 @@ internal class SCSlideCollection : ISlideCollection
         this.OnCollectionChanged();
     }
 
-    public void Add(ISlide addingSlide)
-    {
-        var addingSlideInner = (SCSlide)addingSlide;
-        if (addingSlideInner.Presentation == this.presentation)
-        {
-            throw new ShapeCrawlerException("Adding slide cannot be belong to the same presentation.");
-        }
-
-        var pres = (SCPresentation)addingSlideInner.Presentation;
-        var addingSlideDoc = pres.SDKPresentation;
-        var destDoc = this.presentation.SDKPresentation;
-        var addingPresentationPart = addingSlideDoc.PresentationPart!;
-        var destPresentationPart = destDoc.PresentationPart!;
-        var destPresentation = destPresentationPart.Presentation;
-        int addingSlideIndex = addingSlide.Number - 1;
-        var addingSlideId =
-            (SlideId)addingPresentationPart.Presentation.SlideIdList!.ChildElements[addingSlideIndex];
-        SlidePart addingSlidePart = (SlidePart)addingPresentationPart.GetPartById(addingSlideId.RelationshipId!);
-
-        SlidePart addedSlidePart = destPresentationPart.AddPart(addingSlidePart);
-        NotesSlidePart noticePart = addedSlidePart.GetPartsOfType<NotesSlidePart>().FirstOrDefault();
-        if (noticePart != null)
-        {
-            addedSlidePart.DeletePart(noticePart);
-        }
-
-        SlideMasterPart addedSlideMasterPart =
-            destPresentationPart.AddPart(addedSlidePart.SlideLayoutPart!.SlideMasterPart);
-
-        // Create new slide ID
-        SlideId slideId = new ()
-        {
-            Id = CreateId(destPresentation.SlideIdList!),
-            RelationshipId = destDoc.PresentationPart!.GetIdOfPart(addedSlidePart)
-        };
-        destPresentation.SlideIdList!.Append(slideId);
-
-        // Create new master slide ID
-        uint masterId = CreateId(destPresentation.SlideMasterIdList!);
-        SlideMasterId slideMaterId = new ()
-        {
-            Id = masterId,
-            RelationshipId = destDoc.PresentationPart.GetIdOfPart(addedSlideMasterPart!)
-        };
-        destDoc.PresentationPart.Presentation.SlideMasterIdList!.Append(slideMaterId);
-
-        destDoc.PresentationPart.Presentation.Save();
-
-        // Make sure that all slide layouts have unique ids.
-        foreach (SlideMasterPart slideMasterPart in destDoc.PresentationPart.SlideMasterParts)
-        {
-            foreach (SlideLayoutId slideLayoutId in slideMasterPart.SlideMaster.SlideLayoutIdList!)
-            {
-                masterId++;
-                slideLayoutId.Id = masterId;
-            }
-
-            slideMasterPart.SlideMaster.Save();
-        }
-
-        this.slides.Reset();
-        this.presentation.SlideMastersValue.Reset();
-        this.OnCollectionChanged();
-    }
-
     public void Insert(int position, ISlide outerSlide)
     {
         if (position < 1 || position > this.slides.Value.Count + 1)
@@ -146,12 +81,91 @@ internal class SCSlideCollection : ISlideCollection
         this.presentation.SlideMastersValue.Reset();
         this.OnCollectionChanged();
     }
+    
+    public void Add(ISlide addingSlide)
+    {
+        var sourceSlide = (SCSlide)addingSlide;
+        PresentationDocument sdkPreDocSource;
+        if (sourceSlide.Presentation == this.presentation)
+        {
+            var tempStream = new MemoryStream();
+            sdkPreDocSource = (PresentationDocument)this.presentation.SDKPresentation.Clone(tempStream);
+        }
+        else
+        {
+            sdkPreDocSource = sourceSlide.PresentationInternal.SDKPresentation;    
+        }
+        
+        var sdkPresDocDest = this.presentation.SDKPresentation;
+        var sdkPresPartSource = sdkPreDocSource.PresentationPart!;
+        var sdkPresPartDest = sdkPresDocDest.PresentationPart!;
+        var sdkPresDest = sdkPresPartDest.Presentation;
+        var sourceSlideIndex = addingSlide.Number - 1;
+        var sdkSlideIdSource = (SlideId)sdkPresPartSource.Presentation.SlideIdList!.ChildElements[sourceSlideIndex];
+        var sdkSlidePartSource = (SlidePart)sdkPresPartSource.GetPartById(sdkSlideIdSource.RelationshipId!);
+
+        var addedSdkSlidePart = sdkPresPartDest.AddPart(sdkSlidePartSource);
+        var sdkNoticePart = addedSdkSlidePart.GetPartsOfType<NotesSlidePart>().FirstOrDefault();
+        if (sdkNoticePart != null)
+        {
+            addedSdkSlidePart.DeletePart(sdkNoticePart);
+        }
+
+        var addedSlideMasterPart = sdkPresPartDest.AddPart(addedSdkSlidePart.SlideLayoutPart!.SlideMasterPart!);
+
+        AddNewSlideId(sdkPresDest, sdkPresDocDest, addedSdkSlidePart);
+        var masterId = AddNewSlideMasterId(sdkPresDest, sdkPresDocDest, addedSlideMasterPart);
+        AdjustLayoutIds(sdkPresDocDest, masterId);
+
+        this.slides.Reset();
+        this.presentation.SlideMastersValue.Reset();
+        this.OnCollectionChanged();
+    }
 
     internal SCSlide GetBySlideId(string slideId)
     {
         return this.slides.Value.First(scSlide => scSlide.SlideId.Id == slideId);
     }
+    
+    private static void AdjustLayoutIds(PresentationDocument sdkPresDocDest, uint masterId)
+    {
+        foreach (var slideMasterPart in sdkPresDocDest.PresentationPart!.SlideMasterParts)
+        {
+            foreach (SlideLayoutId slideLayoutId in slideMasterPart.SlideMaster.SlideLayoutIdList!)
+            {
+                masterId++;
+                slideLayoutId.Id = masterId;
+            }
 
+            slideMasterPart.SlideMaster.Save();
+        }
+    }
+    
+    private static uint AddNewSlideMasterId(Presentation sdkPresDest, PresentationDocument sdkPresDocDest,
+        SlideMasterPart addedSlideMasterPart)
+    {
+        var masterId = CreateId(sdkPresDest.SlideMasterIdList!);
+        SlideMasterId slideMaterId = new ()
+        {
+            Id = masterId,
+            RelationshipId = sdkPresDocDest.PresentationPart!.GetIdOfPart(addedSlideMasterPart!)
+        };
+        sdkPresDocDest.PresentationPart.Presentation.SlideMasterIdList!.Append(slideMaterId);
+        sdkPresDocDest.PresentationPart.Presentation.Save();
+        return masterId;
+    }
+
+    private static void AddNewSlideId(Presentation sdkPresDest, PresentationDocument sdkPresDocDest,
+        SlidePart addedSdkSlidePart)
+    {
+        SlideId slideId = new ()
+        {
+            Id = CreateId(sdkPresDest.SlideIdList!),
+            RelationshipId = sdkPresDocDest.PresentationPart!.GetIdOfPart(addedSdkSlidePart)
+        };
+        sdkPresDest.SlideIdList!.Append(slideId);
+    }
+    
     private static uint CreateId(SlideIdList slideIdList)
     {
         uint currentId = 0;
