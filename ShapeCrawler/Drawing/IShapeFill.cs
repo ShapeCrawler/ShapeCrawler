@@ -1,5 +1,6 @@
 ﻿using System.IO;
 
+// ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
 
 /// <summary>
@@ -13,12 +14,12 @@ public interface IShapeFill
     public SCFillType Type { get; }
 
     /// <summary>
-    ///     Gets picture image. Returns <c>null</c> if fill type is not picture.
+    ///     Gets picture image if it is picture fill, otherwise <see langword="null"/>
     /// </summary>
     public IImage? Picture { get; }
         
     /// <summary>
-    ///     Gets solid color. Returns <c>null</c> if fill type is not solid.
+    ///     Gets color hexadecimal representation if it is solid color, otherwise <see langword="null"/>.
     /// </summary>
     public string? HexSolidColor { get; }
 
@@ -26,4 +27,9 @@ public interface IShapeFill
     ///     Sets picture fill.
     /// </summary>
     void SetPicture(Stream image);
+
+    /// <summary>
+    ///     Sets solid color.
+    /// </summary>
+    void SetHexSolidColor(string hex);
 }

@@ -9,7 +9,7 @@ namespace ShapeCrawler.Drawing;
 internal class ShapeFill : IShapeFill
 {
     private readonly Shape shape;
-    private bool isInitialized;
+    private bool isDirty;
     private SCFillType fillType;
     private string? hexSolidColor;
     private SCImage? pictureImage;
@@ -40,12 +40,10 @@ internal class ShapeFill : IShapeFill
             var rId = this.shape.SlideBase.TypedOpenXmlPart.AddImagePart(imageStream);
 
             var aBlipFill = new A.BlipFill();
-            var aBlip = new A.Blip { Embed = rId };
-            var stretch = new A.Stretch();
-            var fillRectangle = new A.FillRectangle();
-            stretch.Append(fillRectangle);
-            aBlipFill.Append(aBlip);
-            aBlipFill.Append(stretch);
+            var aStretch = new A.Stretch();
+            aStretch.Append(new A.FillRectangle());
+            aBlipFill.Append(new A.Blip { Embed = rId });
+            aBlipFill.Append(aStretch);
 
             this.shape.PShapeProperties.Append(aBlipFill);
                 
@@ -55,12 +53,36 @@ internal class ShapeFill : IShapeFill
             this.useBgFill = false;
         }
 
-        this.isInitialized = false;
+        this.isDirty = true;
+    }
+
+    public void SetHexSolidColor(string hex)
+    {
+        if (this.isDirty)
+        {
+            this.Initialize();
+        }
+        
+        var pShape = (P.Shape)this.shape.PShapeTreesChild;
+        this.aSolidFill = pShape.ShapeProperties!.GetFirstChild<A.SolidFill>();
+        if (this.aSolidFill is not null)
+        {
+            foreach (var element in this.aSolidFill.Elements())
+            {
+                element.Remove();
+            }
+        }
+        else
+        {
+            var aRgbColorModelHex = new A.RgbColorModelHex();
+            this.aSolidFill = new A.SolidFill();
+            
+        }
     }
 
     private SCFillType GetFillType()
     {
-        if (!this.isInitialized)
+        if (this.isDirty)
         {
             this.Initialize();
         }
@@ -70,11 +92,11 @@ internal class ShapeFill : IShapeFill
 
     private void Initialize()
     {
-        this.GetSolidFillOr();
-        this.isInitialized = true;
+        this.InitSolidFillOr();
+        this.isDirty = false;
     }
 
-    private void GetSolidFillOr()
+    private void InitSolidFillOr()
     {
         var pShape = (P.Shape)this.shape.PShapeTreesChild;
         this.aSolidFill = pShape.ShapeProperties!.GetFirstChild<A.SolidFill>();
@@ -96,11 +118,11 @@ internal class ShapeFill : IShapeFill
         }
         else
         {
-            this.GetGradientFillOr(pShape);
+            this.InitGradientFillOr(pShape);
         }
     }
         
-    private void GetGradientFillOr(P.Shape pShape)
+    private void InitGradientFillOr(P.Shape pShape)
     {
         this.aGradFill = pShape.ShapeProperties!.GetFirstChild<A.GradientFill>();
         if (this.aGradFill != null)
@@ -109,11 +131,11 @@ internal class ShapeFill : IShapeFill
         }
         else
         {
-            this.GetPictureFillOr(pShape);
+            this.InitPictureFillOr(pShape);
         }
     }
 
-    private void GetPictureFillOr(P.Shape pShape)
+    private void InitPictureFillOr(P.Shape pShape)
     {
         var xmlPart = this.shape.SlideBase.TypedOpenXmlPart;
         var image = SCImage.ForAutoShapeFill(this.shape, xmlPart);
@@ -124,11 +146,11 @@ internal class ShapeFill : IShapeFill
         }
         else
         {
-            this.GetPatternFillOr(pShape);
+            this.InitPatternFillOr(pShape);
         }
     }
 
-    private void GetPatternFillOr(P.Shape pShape)
+    private void InitPatternFillOr(P.Shape pShape)
     {
         this.aPattFill = this.shape.PShapeProperties.GetFirstChild<A.PatternFill>();
         if (this.aPattFill != null)
@@ -137,11 +159,11 @@ internal class ShapeFill : IShapeFill
         }
         else
         {
-            this.GetSlideBackgroundFillOr(pShape);
+            this.InitSlideBackgroundFillOr(pShape);
         }
     }
 
-    private void GetSlideBackgroundFillOr(P.Shape pShape)
+    private void InitSlideBackgroundFillOr(P.Shape pShape)
     {
         this.useBgFill = pShape.UseBackgroundFill; 
         if (this.useBgFill is not null && this.useBgFill)
@@ -157,7 +179,7 @@ internal class ShapeFill : IShapeFill
         
     private string? GetHexSolidColor()
     {
-        if (!this.isInitialized)
+        if (this.isDirty)
         {
             this.Initialize();
         }
@@ -167,7 +189,7 @@ internal class ShapeFill : IShapeFill
         
     private SCImage? GetPicture()
     {
-        if (!this.isInitialized)
+        if (this.isDirty)
         {
             this.Initialize();
         }

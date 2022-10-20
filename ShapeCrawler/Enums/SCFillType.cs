@@ -19,17 +19,17 @@ public enum SCFillType
     ///     Gradient fill.
     /// </summary>
     Gradient,
-        
-    /// <summary>
-    ///     Pattern fill.
-    /// </summary>
-    Pattern,
-        
+    
     /// <summary>
     ///     Picture fill.
     /// </summary>
     Picture,
-        
+    
+    /// <summary>
+    ///     Pattern fill.
+    /// </summary>
+    Pattern,
+
     /// <summary>
     ///     Slide background fill.
     /// </summary>
