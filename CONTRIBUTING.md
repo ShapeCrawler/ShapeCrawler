@@ -15,6 +15,8 @@ The internal structure of PowerPoint presentation is one the most difficult amon
 
 ## Code style and conventions
 
+### Code style
+
 SC-001: Public members except interface should have "SC" prefix
 
 ```c#
@@ -42,3 +44,8 @@ public class SCPresentation
     public DocumentFormat.OpenXml.Packaging.SlidePart SDKSlidePart { get; } // valid
 }
 ```
+
+### Test file
+
+- test file should math the following pattern `ShapeCrawler.Tests\Resorce\{shape-type}\{shape-type}-case{N}.pptx`, eg. testing file for testing feature for Chart: `ShapeCrawler.Tests\Resorce\charts\charts-case001.pptx`.
+- if possible use single slide presentation.

@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml.Drawing.Charts;
 using ShapeCrawler.Shared;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
+// ReSharper disable once CheckNamespace
 namespace ShapeCrawler
 {
     /// <summary>

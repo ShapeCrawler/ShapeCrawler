@@ -1,36 +1,10 @@
-﻿namespace ShapeCrawler.Placeholders
+﻿namespace ShapeCrawler.Placeholders;
+
+internal class PlaceholderLocationData : PlaceholderData
 {
-    /// <summary>
-    ///     Represents placeholder data.
-    /// </summary>
-    internal class PlaceholderLocationData : PlaceholderData
+    public PlaceholderLocationData(PlaceholderData phData)
     {
-        public PlaceholderLocationData(PlaceholderData phData)
-        {
-            this.PlaceholderType = phData.PlaceholderType;
-            this.Index = phData.Index;
-        }
-
-        /// <summary>
-        ///     Gets or sets X-coordinate's value.
-        /// </summary>
-        public int X { get; set; }
-
-        /// <summary>
-        ///     Gets or sets Y-coordinate's value.
-        /// </summary>
-        public int Y { get; set; }
-
-        /// <summary>
-        ///     Gets or sets width value.
-        /// </summary>
-        public int Width { get; set; }
-
-        /// <summary>
-        ///     Gets or sets height value.
-        /// </summary>
-        public int Height { get; set; }
-
-        public SCGeometry Geometry { get; set; } = SCGeometry.Rectangle;
+        this.PlaceholderType = phData.PlaceholderType;
+        this.Index = phData.Index;
     }
 }
