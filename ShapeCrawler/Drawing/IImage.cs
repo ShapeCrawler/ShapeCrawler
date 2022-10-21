@@ -177,7 +177,7 @@ internal class SCImage : IImage
 
         Stream stream = this.SDKImagePart.GetStream();
         this.bytes = new byte[stream.Length];
-        await stream.ReadAsync(this.bytes, 0, (int) stream.Length).ConfigureAwait(false);
+        await stream.ReadAsync(this.bytes, 0, (int)stream.Length).ConfigureAwait(false);
         stream.Close();
         return this.bytes;
     }

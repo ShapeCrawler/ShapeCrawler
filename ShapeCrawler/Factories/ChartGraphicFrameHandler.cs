@@ -29,7 +29,7 @@ internal class ChartGraphicFrameHandler : OpenXmlElementHandler
             return this.Successor?.Create(pShapeTreeChild, slideObject, groupShape);
         }
 
-        var slideBase = slideObject.Match(slide => slide as SlideBase, layout=>layout, master=>master);
+        var slideBase = slideObject.Match(slide => slide as SlideBase, layout => layout, master => master);
         var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>()!;
         var chartPart = (ChartPart)slideBase.TypedOpenXmlPart.GetPartById(cChartRef.Id!);
         var cPlotArea = chartPart!.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea;

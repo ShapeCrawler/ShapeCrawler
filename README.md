@@ -15,26 +15,19 @@ ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoin
 
 ## Getting Started
 
-### Install
-
-To get started, install ShapeCrawler from [NuGet](https://nuget.org/packages/ShapeCrawler):
-
-```console
-dotnet add package ShapeCrawler
-```
-
-The library currently supports the following frameworks: 
-- .NET 5+ 
-- .NET Core 2.0+
-- .NET Framework 4.6.1+
+> `install-package ShapeCrawler`
 
 ### Usage
 
 ```c#
-using var pres = SCPresentation.Open("helloWorld.pptx");
+using var pres = SCPresentation.Open("some.pptx");
+
+// get number of slides
 var slidesCount = pres.Slides.Count;
+
+// get text of TextBox 
 var autoShape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 1");
-Console.WriteLine(autoShape.TextFrame.Text);
+var text = autoShape.TextFrame!.Text;
 ```
 
 Visit [**Wiki**](https://github.com/ShapeCrawler/ShapeCrawler/wiki/Examples) page to find more usage samples.

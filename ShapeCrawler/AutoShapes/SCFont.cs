@@ -28,17 +28,17 @@ namespace ShapeCrawler.AutoShapes
             this.colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
             this.ParentPortion = portion;
             var parentTextBoxContainer = portion.ParentParagraph.TextFrame.TextFrameContainer;
-            Shape parentShape;
+            Shape shape;
             if (parentTextBoxContainer is SCTableCell cell)
             {
-                parentShape = (Shape)cell.Shape;
+                shape = cell.Shape;
             }
             else
             {
-                parentShape = (Shape)portion.ParentParagraph.TextFrame.TextFrameContainer;
+                shape = (Shape)portion.ParentParagraph.TextFrame.TextFrameContainer;
             }
 
-            this.aFontScheme = parentShape.SlideMasterInternal.ThemePart.Theme.ThemeElements!.FontScheme;
+            this.aFontScheme = shape.SlideMasterInternal.ThemePart.Theme.ThemeElements!.FontScheme!;
         }
 
         public string Name
