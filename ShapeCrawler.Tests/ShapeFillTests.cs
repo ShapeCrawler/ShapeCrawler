@@ -52,7 +52,7 @@ public class ShapeFillTests : ShapeCrawlerTest, IClassFixture<PresentationFixtur
         pictureBytes.SequenceEqual(imageBytes).Should().BeTrue();
     }
 
-    [Theory]
+    [Theory (Skip = "In Progress")]
     [SlideShapeData("autoshape-case005_text-frame.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
     public void SetHexSolidColor_sets_solid_color(IShape shape)
     {
@@ -149,13 +149,15 @@ public class ShapeFillTests : ShapeCrawlerTest, IClassFixture<PresentationFixtur
     }
 
     [Fact]
-    public async void Picture_GetImageBytes_returns_image()
+    public async void Picture_BinaryData_returns_binary_content_of_picture_image()
     {
         // Arrange
-        var shape = (IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 4);
+        var pptxStream = GetTestStream("009_table.pptx");
+        var pres = SCPresentation.Open(pptxStream);
+        var shapeFill = pres.Slides[2].Shapes.GetByName<IAutoShape>("AutoShape 1").Fill;
 
         // Act
-        var imageBytes = await shape.Fill.Picture.BinaryData.ConfigureAwait(false);
+        var imageBytes = await shapeFill.Picture!.BinaryData;
 
         // Assert
         imageBytes.Length.Should().BePositive();

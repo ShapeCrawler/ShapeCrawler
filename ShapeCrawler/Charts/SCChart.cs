@@ -153,7 +153,7 @@ internal class SCChart : SlideShape, IChart
         // However, it can have store multiple series data in the spreadsheet.
         if (this.Type == SCChartType.PieChart)
         {
-            return ((SCSeriesCollection) this.SeriesCollection).First().Name;
+            return ((SCSeriesCollection)this.SeriesCollection).First().Name;
         }
 
         return null;

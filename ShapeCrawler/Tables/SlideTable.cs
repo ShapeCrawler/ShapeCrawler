@@ -23,8 +23,8 @@ internal class SlideTable : SlideShape, ITable
         : base(childOfPShapeTrees, slideOrLayout, groupShape)
     {
         this.rowCollection =
-            new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame) this.PShapeTreesChild));
-        this.pGraphicFrame = childOfPShapeTrees as P.GraphicFrame;
+            new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame)this.PShapeTreesChild));
+        this.pGraphicFrame = (P.GraphicFrame)childOfPShapeTrees;
     }
         
     public override SCShapeType ShapeType => SCShapeType.Table;
@@ -137,7 +137,7 @@ internal class SlideTable : SlideShape, ITable
         for (int rowIdx = 0; rowIdx < this.Rows.Count;)
         {
             int? rowSpan = ((SCTableCell)this.Rows[rowIdx].Cells[0]).ATableCell.RowSpan?.Value;
-            if (rowSpan > 1 && this.Rows[rowIdx].Cells.All(c => ((SCTableCell) c).ATableCell.RowSpan?.Value == rowSpan))
+            if (rowSpan > 1 && this.Rows[rowIdx].Cells.All(c => ((SCTableCell)c).ATableCell.RowSpan?.Value == rowSpan))
             {
                 int deleteRowsCount = rowSpan.Value - 1;
 
@@ -171,7 +171,7 @@ internal class SlideTable : SlideShape, ITable
 
     private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
     {
-        A.TextBody mergedCellTextBody = ((SCTableCell) this[minRowIndex, minColIndex]).ATableCell.TextBody;
+        A.TextBody? mergedCellTextBody = ((SCTableCell)this[minRowIndex, minColIndex]).ATableCell.TextBody;
         bool hasMoreOnePara = false;
         IEnumerable<A.Paragraph> aParagraphsWithARun =
             aTblCell.TextBody!.Elements<A.Paragraph>().Where(p => !p.IsEmpty());

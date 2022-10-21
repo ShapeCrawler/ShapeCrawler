@@ -21,6 +21,7 @@ internal class ShapeFill : IShapeFill
     internal ShapeFill(Shape shape)
     {
         this.shape = shape;
+        this.isDirty = true;
     }
 
     public string? HexSolidColor => this.GetHexSolidColor();

@@ -106,7 +106,7 @@ namespace ShapeCrawler.SlideMasters
             var layouts = new List<SCSlideLayout>(rIdList.Count());
             foreach (var rId in rIdList)
             {
-                var layoutPart = (SlideLayoutPart) this.PSlideMaster.SlideMasterPart!.GetPartById(rId.Value!);
+                var layoutPart = (SlideLayoutPart)this.PSlideMaster.SlideMasterPart!.GetPartById(rId.Value!);
                 layouts.Add(new SCSlideLayout(this, layoutPart));
             }
 

@@ -48,7 +48,7 @@ internal class PlaceholderData : IEquatable<PlaceholderData>
             return false;
         }
 
-        var ph = (PlaceholderData) obj;
+        var ph = (PlaceholderData)obj;
 
         return this.Equals(ph);
     }

@@ -230,7 +230,7 @@ namespace ShapeCrawler
             string colorHexVariant;
             if (fontData.ARgbColorModelHex != null)
             {
-                colorHexVariant = fontData.ARgbColorModelHex.Val;
+                colorHexVariant = fontData.ARgbColorModelHex.Val!;
                 this.colorType = SCColorType.RGB;
                 this.hexColor = colorHexVariant;
                 return true;
@@ -246,7 +246,7 @@ namespace ShapeCrawler
 
             if (fontData.ASystemColor != null)
             {
-                colorHexVariant = fontData.ASystemColor.LastColor;
+                colorHexVariant = fontData.ASystemColor.LastColor!;
                 this.colorType = SCColorType.System;
                 this.hexColor = colorHexVariant;
                 return true;
