@@ -52,7 +52,7 @@ public class ShapeFillTests : ShapeCrawlerTest, IClassFixture<PresentationFixtur
         pictureBytes.SequenceEqual(imageBytes).Should().BeTrue();
     }
 
-    [Theory (Skip = "In Progress")]
+    [Theory]
     [SlideShapeData("autoshape-case005_text-frame.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
     public void SetHexSolidColor_sets_solid_color(IShape shape)
     {

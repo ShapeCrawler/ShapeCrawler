@@ -61,5 +61,10 @@ namespace ShapeCrawler.Shapes
         ///     Gets shape type.
         /// </summary>
         SCShapeType ShapeType { get; }
+
+        /// <summary>
+        ///     Gets slide object.
+        /// </summary>
+        ISlideObject SlideObject { get; }
     }
 }

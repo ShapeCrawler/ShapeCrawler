@@ -9,7 +9,6 @@ using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
@@ -21,7 +20,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents Slide.
 /// </summary>
-internal class SCSlide : SlideBase, ISlide
+internal class SCSlide : SlideObject, ISlide
 {
     private readonly Lazy<SCImage> backgroundImage;
     private Lazy<CustomXmlPart> customXmlPart;
@@ -43,8 +42,6 @@ internal class SCSlide : SlideBase, ISlide
 
     public IShapeCollection Shapes => this.shapes.Value;
 
-    public override bool IsRemoved { get; set; }
-
     public int Number
     {
         get => this.GetNumber();
@@ -65,23 +62,13 @@ internal class SCSlide : SlideBase, ISlide
 
     public SlidePart SDKSlidePart { get; }
     
-    public override SCPresentation PresentationInternal { get; } // TODO: make internal
+    public SCPresentation PresentationInternal { get; } // TODO: make internal
 
     internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
 
     internal override TypedOpenXmlPart TypedOpenXmlPart => this.SDKSlidePart;
 
     internal SlideId SlideId { get; }
-    
-    public override void ThrowIfRemoved()
-    {
-        if (this.IsRemoved)
-        {
-            throw new ElementIsRemovedException("Slide was removed");
-        }
-
-        this.PresentationInternal.ThrowIfClosed();
-    }
 
     public void Hide()
     {

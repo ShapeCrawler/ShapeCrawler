@@ -59,7 +59,6 @@ internal class SCSlideCollection : ISlideCollection
         this.presentationPart.DeletePart(removingSlidePart);
 
         this.presentationPart.Presentation.Save();
-        removingSlideInternal.IsRemoved = true;
 
         this.slides.Reset();
 

@@ -68,11 +68,6 @@ namespace ShapeCrawler
             return this.Paragraphs.Any(paragraph => paragraph.Portions.All(portion => portion.Field == null));
         }
         
-        internal void ThrowIfRemoved()
-        {
-            this.TextFrameContainer.ThrowIfRemoved();
-        }
-
         private ParagraphCollection GetParagraphs()
         {
             return new ParagraphCollection(this);

@@ -35,8 +35,6 @@ internal class MasterAutoShape : MasterShape, IAutoShape, ITextFrameContainer, I
 
     #region Public Properties
 
-    public override SCPresentation PresentationInternal { get; }
-
     public Shape Shape => this;
 
     public ITextFrame? TextFrame => this.textBox.Value;

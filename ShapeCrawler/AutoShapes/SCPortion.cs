@@ -30,12 +30,7 @@ internal class SCPortion : IPortion
     public string Text
     {
         get => this.GetText();
-
-        set
-        {
-            this.ThrowIfRemoved();
-            this.SetText(value);
-        }
+        set => this.SetText(value);
     }
 
     /// <inheritdoc/>
@@ -67,16 +62,6 @@ internal class SCPortion : IPortion
         {
             return new SCField(this.aField);
         }
-    }
-        
-    private void ThrowIfRemoved()
-    {
-        if (this.IsRemoved)
-        {
-            throw new ElementIsRemovedException("Paragraph portion was removed.");
-        }
-
-        this.ParentParagraph.ThrowIfRemoved();
     }
 
     private string GetText()

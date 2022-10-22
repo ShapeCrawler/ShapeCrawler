@@ -7,7 +7,6 @@ using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
@@ -16,7 +15,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler;
 
-internal abstract class Shape : IShape, IRemovable, IPresentationComponent
+internal abstract class Shape : IShape
 {
     /// <summary>
     ///     Initializes a new instance of the <see cref="Shape"/> class for grouped shape.
@@ -31,7 +30,7 @@ internal abstract class Shape : IShape, IRemovable, IPresentationComponent
     protected Shape(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOrLayout)
     {
         this.PShapeTreesChild = pShapeTreeChild;
-        this.SlideBase = slideOrLayout.Match(slide => slide as SlideBase, layout => layout, master => master);
+        this.SlideBase = slideOrLayout.Match(slide => slide as SlideObject, layout => layout, master => master);
     }
 
     /// <summary>
@@ -60,13 +59,13 @@ internal abstract class Shape : IShape, IRemovable, IPresentationComponent
     }
 
     public abstract SCShapeType ShapeType { get; }
+    
+    public ISlideObject SlideObject { get; }
 
     /// <summary>
     ///     Gets placeholder. Returns <c>NULL</c> if the shape is not a placeholder.
     /// </summary>
     public abstract IPlaceholder? Placeholder { get; }
-
-    public abstract SCPresentation PresentationInternal { get; }
 
     /// <summary>
     ///     Gets geometry form type.
@@ -109,8 +108,6 @@ internal abstract class Shape : IShape, IRemovable, IPresentationComponent
         set => this.SetWidth(value);
     }
 
-    bool IRemovable.IsRemoved { get; set; }
-
     internal SCSlideMaster SlideMasterInternal
     {
         get
@@ -132,21 +129,11 @@ internal abstract class Shape : IShape, IRemovable, IPresentationComponent
 
     internal OpenXmlCompositeElement PShapeTreesChild { get; }
 
-    internal SlideBase SlideBase { get; }
+    internal SlideObject SlideBase { get; }
 
     internal P.ShapeProperties PShapeProperties => this.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !;
 
     private Shape? GroupShape { get; }
-
-    public void ThrowIfRemoved()
-    {
-        if (((IRemovable)this).IsRemoved)
-        {
-            throw new ElementIsRemovedException("Shape was removed.");
-        }
-
-        this.SlideBase.ThrowIfRemoved();
-    }
 
     private void SetCustomData(string value)
     {
