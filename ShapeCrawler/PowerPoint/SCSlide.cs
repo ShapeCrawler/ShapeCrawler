@@ -26,10 +26,11 @@ internal class SCSlide : SlideObject, ISlide
     private Lazy<CustomXmlPart> customXmlPart;
     private readonly ResettableLazy<ShapeCollection> shapes;
 
-    internal SCSlide(SCPresentation parentPresentation, SlidePart slidePart, SlideId slideId)
+    internal SCSlide(SCPresentation pres, SlidePart slidePart, SlideId slideId)
+    : base(pres)
     {
-        this.PresentationInternal = parentPresentation;
-        this.Presentation = parentPresentation;
+        this.PresentationInternal = pres;
+        this.Presentation = pres;
         this.SDKSlidePart = slidePart;
         this.shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.Create(this.SDKSlidePart, this));
         this.backgroundImage = new Lazy<SCImage?>(() => SCImage.ForBackground(this));

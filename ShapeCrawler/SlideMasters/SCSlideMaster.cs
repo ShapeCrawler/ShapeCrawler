@@ -17,6 +17,7 @@ namespace ShapeCrawler.SlideMasters
         private readonly ResettableLazy<List<SCSlideLayout>> slideLayouts;
 
         internal SCSlideMaster(SCPresentation pres, P.SlideMaster pSlideMaster)
+            : base(pres)
         {
             this.Presentation = pres;
             this.PSlideMaster = pSlideMaster;

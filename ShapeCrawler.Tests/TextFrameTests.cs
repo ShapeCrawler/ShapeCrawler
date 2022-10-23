@@ -434,21 +434,6 @@ namespace ShapeCrawler.Tests
             bulletSize.Should().Be(120);
         }
 
-        [Fact]
-        public void Paragraph_Text_Setter_ThrowsException_When_paragraph_was_removed()
-        {
-            IPresentation presentation = SCPresentation.Open(Properties.Resources._020);
-            IAutoShape autoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 8);
-            ITextFrame textBox = autoShape.TextFrame;
-            IParagraph paragraph = textBox.Paragraphs.First();
-            textBox.Text = "new box content";
-
-            // Act-Assert
-            paragraph.Invoking(p => p.Text = "new paragraph text")
-                .Should().Throw<Exception>(
-                    "because paragraph was being removed while changing box content.");
-        }
-
         [Theory]
         [MemberData(nameof(TestCasesParagraphText))]
         public void Paragraph_Text_Setter_updates_paragraph_text(TestElementQuery paragraphQuery, string newText,

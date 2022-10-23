@@ -15,6 +15,7 @@ internal class SCSlideLayout : SlideObject, ISlideLayout
     private readonly SCSlideMaster slideMaster;
 
     internal SCSlideLayout(SCSlideMaster slideMaster, SlideLayoutPart slideLayoutPart)
+    : base(slideMaster.Presentation)
     {
         this.slideMaster = slideMaster;
         this.SlideLayoutPart = slideLayoutPart;

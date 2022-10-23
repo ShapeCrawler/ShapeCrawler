@@ -35,20 +35,6 @@ public class ParagraphPortionTests : ShapeCrawlerTest, IClassFixture<Presentatio
     }
 
     [Fact]
-    public void Text_Setter_throws_exception_When_portion_is_removed()
-    {
-        // Arrange
-        IPresentation presentation = SCPresentation.Open(TestFiles.Presentations.pre001);
-        IAutoShape autoShape = (IAutoShape)presentation.Slides[0].Shapes.First(sp => sp.Id == 5);
-        IPortionCollection portions = autoShape.TextFrame.Paragraphs[0].Portions;
-        IPortion portion = portions[0];
-        portions.Remove(portion);
-
-        // Act-Assert
-        portion.Invoking(p => p.Text = "new text").Should().Throw<Exception>();
-    }
-
-    [Fact]
     public void Text_Setter_updates_text()
     {
         // Arrange
