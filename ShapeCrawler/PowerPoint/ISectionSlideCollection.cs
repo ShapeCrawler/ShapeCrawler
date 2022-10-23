@@ -85,7 +85,7 @@ internal class SCSectionCollection : ISectionCollection
     internal static SCSectionCollection Create(SCPresentation presentation)
     {
         var sections = new List<SCSection>();
-        var sdkSectionList = presentation.SDKPresentation.PresentationPart!.Presentation.PresentationExtensionList
+        var sdkSectionList = presentation.SDKPresentationInternal.PresentationPart!.Presentation.PresentationExtensionList
             ?.Descendants<SectionList>().FirstOrDefault();
 
         if (sdkSectionList == null)
@@ -112,6 +112,6 @@ internal class SCSectionCollection : ISectionCollection
         }
 
         removing.Remove();
-        this.Presentation.SDKPresentation.PresentationPart!.Presentation.Save();
+        this.Presentation.SDKPresentationInternal.PresentationPart!.Presentation.Save();
     }
 }

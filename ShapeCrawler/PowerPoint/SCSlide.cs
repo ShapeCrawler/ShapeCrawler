@@ -9,7 +9,6 @@ using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
-using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
@@ -21,16 +20,17 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents Slide.
 /// </summary>
-internal class SCSlide : SlideBase, ISlide
+internal class SCSlide : SlideObject, ISlide
 {
     private readonly Lazy<SCImage> backgroundImage;
     private Lazy<CustomXmlPart> customXmlPart;
     private readonly ResettableLazy<ShapeCollection> shapes;
 
-    internal SCSlide(SCPresentation parentPresentation, SlidePart slidePart, SlideId slideId)
+    internal SCSlide(SCPresentation pres, SlidePart slidePart, SlideId slideId)
+    : base(pres)
     {
-        this.PresentationInternal = parentPresentation;
-        this.Presentation = parentPresentation;
+        this.PresentationInternal = pres;
+        this.Presentation = pres;
         this.SDKSlidePart = slidePart;
         this.shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.Create(this.SDKSlidePart, this));
         this.backgroundImage = new Lazy<SCImage?>(() => SCImage.ForBackground(this));
@@ -42,8 +42,6 @@ internal class SCSlide : SlideBase, ISlide
         ((SlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
 
     public IShapeCollection Shapes => this.shapes.Value;
-
-    public override bool IsRemoved { get; set; }
 
     public int Number
     {
@@ -65,23 +63,13 @@ internal class SCSlide : SlideBase, ISlide
 
     public SlidePart SDKSlidePart { get; }
     
-    public override SCPresentation PresentationInternal { get; } // TODO: make internal
+    public SCPresentation PresentationInternal { get; } // TODO: make internal
 
     internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
 
     internal override TypedOpenXmlPart TypedOpenXmlPart => this.SDKSlidePart;
 
     internal SlideId SlideId { get; }
-    
-    public override void ThrowIfRemoved()
-    {
-        if (this.IsRemoved)
-        {
-            throw new ElementIsRemovedException("Slide was removed");
-        }
-
-        this.PresentationInternal.ThrowIfClosed();
-    }
 
     public void Hide()
     {
@@ -154,7 +142,7 @@ internal class SCSlide : SlideBase, ISlide
 
     private int GetNumber()
     {
-        var presentationPart = this.PresentationInternal.SDKPresentation.PresentationPart!;
+        var presentationPart = this.PresentationInternal.SDKPresentationInternal.PresentationPart!;
         var currentSlidePartId = presentationPart.GetIdOfPart(this.SDKSlidePart);
         var slideIdList =
             presentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
@@ -179,7 +167,7 @@ internal class SCSlide : SlideBase, ISlide
             throw new ArgumentOutOfRangeException(nameof(to));
         }
 
-        var presentationPart = this.PresentationInternal.SDKPresentation.PresentationPart!;
+        var presentationPart = this.PresentationInternal.SDKPresentationInternal.PresentationPart!;
 
         var presentation = presentationPart.Presentation;
         var slideIdList = presentation.SlideIdList!;

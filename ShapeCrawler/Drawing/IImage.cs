@@ -50,24 +50,22 @@ public interface IImage
     
 internal class SCImage : IImage
 {
-    private readonly SCPresentation parentPresentation;
-    private readonly IRemovable imageContainer;
+    private readonly SCPresentation presentation;
     private readonly StringValue picReference;
     private readonly OpenXmlPart openXmlPart;
     private byte[]? bytes;
 
     private SCImage(
         ImagePart imagePart,
-        IRemovable imageContainer,
         StringValue picReference,
-        OpenXmlPart openXmlPart)
+        OpenXmlPart openXmlPart,
+        SCPresentation presentation)
     {
         this.SDKImagePart = imagePart;
-        this.imageContainer = imageContainer;
         this.picReference = picReference;
         this.openXmlPart = openXmlPart;
             
-        this.parentPresentation = ((IPresentationComponent)imageContainer).PresentationInternal;
+        this.presentation = presentation;
         this.MIME = this.SDKImagePart.ContentType;
     }
     
@@ -81,9 +79,7 @@ internal class SCImage : IImage
 
     public void SetImage(Stream stream)
     {
-        this.imageContainer.ThrowIfRemoved();
-
-        var isSharedImagePart = this.parentPresentation.ImageParts.Count(imgPart => imgPart == this.SDKImagePart) > 1;
+        var isSharedImagePart = this.presentation.ImageParts.Count(imgPart => imgPart == this.SDKImagePart) > 1;
         if (isSharedImagePart)
         {
             var rId = RelatedIdGenerator.Generate();
@@ -113,7 +109,7 @@ internal class SCImage : IImage
     {
         var imagePart = (ImagePart)openXmlPart.GetPartById(picReference.Value!);
 
-        return new SCImage(imagePart, pictureShape, picReference, openXmlPart);
+        return new SCImage(imagePart, picReference, openXmlPart, pictureShape.SlideBase.PresentationInternal);
     }
 
     internal static SCImage? ForBackground(SCSlide slide)
@@ -132,7 +128,7 @@ internal class SCImage : IImage
         }
 
         var imagePart = (ImagePart)slide.SDKSlidePart.GetPartById(picReference.Value!);
-        var backgroundImage = new SCImage(imagePart, slide, picReference, slide.SDKSlidePart);
+        var backgroundImage = new SCImage(imagePart, picReference, slide.SDKSlidePart, slide.PresentationInternal);
 
         return backgroundImage;
     }
@@ -150,17 +146,17 @@ internal class SCImage : IImage
 
         var imagePart = (ImagePart)slidePart.GetPartById(picReference.Value!);
 
-        return new SCImage(imagePart, autoShape, picReference, slidePart);
+        return new SCImage(imagePart, picReference, slidePart, autoShape.SlideBase.PresentationInternal);
     }
 
     internal static SCImage Create(ImagePart imagePart, MasterPicture masterPic, StringValue stringValue, SlideMasterPart sldMasterPart)
     {
-        return new SCImage(imagePart, masterPic, stringValue, sldMasterPart);
+        return new SCImage(imagePart, stringValue, sldMasterPart, masterPic.SlideBase.PresentationInternal);
     }
 
     internal static SCImage Create(ImagePart imagePart, LayoutPicture layoutPic, StringValue stringValue, SlideLayoutPart slideLayoutPart)
     {
-        return new SCImage(imagePart, layoutPic, stringValue, slideLayoutPart);
+        return new SCImage(imagePart, stringValue, slideLayoutPart, layoutPic.SlideBase.PresentationInternal);
     }
 
     private string GetName()

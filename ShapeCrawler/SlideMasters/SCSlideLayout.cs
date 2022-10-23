@@ -9,12 +9,13 @@ namespace ShapeCrawler.SlideMasters;
 ///     Represents a Slide Layout.
 /// </summary>
 [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — Shape Crawler")]
-internal class SCSlideLayout : SlideBase, ISlideLayout
+internal class SCSlideLayout : SlideObject, ISlideLayout
 {
     private readonly ResettableLazy<ShapeCollection> shapes;
     private readonly SCSlideMaster slideMaster;
 
     internal SCSlideLayout(SCSlideMaster slideMaster, SlideLayoutPart slideLayoutPart)
+    : base(slideMaster.Presentation)
     {
         this.slideMaster = slideMaster;
         this.SlideLayoutPart = slideLayoutPart;
@@ -24,11 +25,9 @@ internal class SCSlideLayout : SlideBase, ISlideLayout
 
     public IShapeCollection Shapes => this.shapes.Value;
 
-    public override bool IsRemoved { get; set; }
-
     public ISlideMaster SlideMaster => this.slideMaster;
 
-    public override SCPresentation PresentationInternal => this.SlideMasterInternal.PresentationInternal;
+    public SCPresentation PresentationInternal => this.SlideMasterInternal.PresentationInternal;
 
     internal SlideLayoutPart SlideLayoutPart { get; }
 
@@ -37,9 +36,4 @@ internal class SCSlideLayout : SlideBase, ISlideLayout
     internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
 
     internal override TypedOpenXmlPart TypedOpenXmlPart => this.SlideLayoutPart;
-
-    public override void ThrowIfRemoved()
-    {
-        throw new System.NotImplementedException();
-    }
 }

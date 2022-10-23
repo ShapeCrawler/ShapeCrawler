@@ -12,11 +12,12 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.SlideMasters
 {
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrawler")]
-    internal class SCSlideMaster : SlideBase, ISlideMaster
+    internal class SCSlideMaster : SlideObject, ISlideMaster
     {
         private readonly ResettableLazy<List<SCSlideLayout>> slideLayouts;
 
         internal SCSlideMaster(SCPresentation pres, P.SlideMaster pSlideMaster)
+            : base(pres)
         {
             this.Presentation = pres;
             this.PSlideMaster = pSlideMaster;
@@ -29,9 +30,7 @@ namespace ShapeCrawler.SlideMasters
 
         public IShapeCollection Shapes => ShapeCollection.Create(this.PSlideMaster.SlideMasterPart!, this);
 
-        public override bool IsRemoved { get; set; }
-
-        public override SCPresentation PresentationInternal => this.Presentation; // TODO: make internal
+        public SCPresentation PresentationInternal => this.Presentation; // TODO: make internal
         
         internal P.SlideMaster PSlideMaster { get; }
 
@@ -48,16 +47,6 @@ namespace ShapeCrawler.SlideMasters
         internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
         
         internal override TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
-        
-        public override void ThrowIfRemoved()
-        {
-            if (this.IsRemoved)
-            {
-                throw new ElementIsRemovedException("Slide Master is removed");
-            }
-            
-            this.Presentation.ThrowIfClosed();
-        }
         
         internal bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
         {

@@ -12,6 +12,4 @@ internal class MasterTable : MasterShape, IShape
     }
 
     public override SCShapeType ShapeType => SCShapeType.Table;
-
-    public override SCPresentation PresentationInternal { get; }
 }

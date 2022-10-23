@@ -7,7 +7,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a slide.
 /// </summary>
-public interface ISlide
+public interface ISlide : ISlideObject
 {
     /// <summary>
     ///     Gets or sets slide number.
@@ -33,11 +33,6 @@ public interface ISlide
     ///     Gets referenced Slide Layout.
     /// </summary>
     ISlideLayout SlideLayout { get; }
-
-    /// <summary>
-    ///     Gets presentation.
-    /// </summary>
-    IPresentation Presentation { get; }
 
     /// <summary>
     ///     Gets instance of <see cref=" DocumentFormat.OpenXml.Packaging.SlidePart"/> class of the underlying Open XML SDK.

@@ -2,23 +2,17 @@
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.SlideMasters;
 
-namespace ShapeCrawler
+namespace ShapeCrawler;
+
+internal abstract class LayoutShape : Shape
 {
-    /// <summary>
-    ///     Represents a shape on a Slide Layout.
-    /// </summary>
-    internal abstract class LayoutShape : Shape
+    protected LayoutShape(SCSlideLayout slideLayout, OpenXmlCompositeElement pShapeTreeChild)
+        : base(pShapeTreeChild, slideLayout, null)
     {
-        protected LayoutShape(SCSlideLayout slideLayout, OpenXmlCompositeElement pShapeTreeChild)
-            : base(pShapeTreeChild, slideLayout, null)
-        {
-            this.SlideLayoutInternal = slideLayout;
-        }
-
-        public override IPlaceholder? Placeholder => LayoutPlaceholder.Create(this.PShapeTreesChild, this);
-
-        public override SCPresentation PresentationInternal => ((SCSlideMaster)this.SlideLayoutInternal.SlideMaster).Presentation;
-
-        public SCSlideLayout SlideLayoutInternal { get; }
+        this.SlideLayoutInternal = slideLayout;
     }
+
+    public override IPlaceholder? Placeholder => LayoutPlaceholder.Create(this.PShapeTreesChild, this);
+
+    public SCSlideLayout SlideLayoutInternal { get; }
 }

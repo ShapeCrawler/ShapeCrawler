@@ -14,14 +14,11 @@ internal class MasterPicture : MasterShape, IPicture
         : base(pPicture, slideMaster)
     {
         this.picReference = picReference;
-        this.PresentationInternal = slideMaster.Presentation;
     }
 
     public IImage Image => this.GetImage();
 
     public override SCShapeType ShapeType => SCShapeType.Picture;
-
-    public override SCPresentation PresentationInternal { get; }
 
     private SCImage GetImage()
     {

@@ -108,7 +108,7 @@ internal class ChartWorkbook // TODO: implement IDispose to correctly dispose _p
     {
         this.embeddedPackagePartStream = this.embeddedPackagePart.GetStream();
         var spreadsheetDocument = DocumentFormat.OpenXml.Packaging.SpreadsheetDocument.Open(this.embeddedPackagePartStream, true);
-        this.chart.PresentationInternal.ChartWorkbooks.Add(this);
+        this.chart.SlideBase.PresentationInternal.ChartWorkbooks.Add(this);
 
         return spreadsheetDocument;
     }
