@@ -8,10 +8,9 @@ internal static class ShapePropertiesExtensions
     internal static A.SolidFill AddASolidFill(this P.ShapeProperties pShapeProperties, string hex)
     {
         var aSolidFill = pShapeProperties.GetFirstChild<A.SolidFill>();
-        if (aSolidFill is not null)
-        {
-            aSolidFill.Remove();
-        }
+        var aNoFill = pShapeProperties.GetFirstChild<A.NoFill>();
+        aSolidFill?.Remove();
+        aNoFill?.Remove();
 
         var aRgbColorModelHex = new A.RgbColorModelHex
         {

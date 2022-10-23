@@ -20,7 +20,7 @@ internal class SCSlideCollection : ISlideCollection
     internal SCSlideCollection(SCPresentation presentation)
     {
         this.presentation = presentation;
-        this.presentationPart = presentation.SDKPresentation.PresentationPart!;
+        this.presentationPart = presentation.SDKPresentationInternal.PresentationPart!;
         this.slides = new ResettableLazy<List<SCSlide>>(this.GetSlides);
     }
 
@@ -88,14 +88,14 @@ internal class SCSlideCollection : ISlideCollection
         if (sourceSlide.Presentation == this.presentation)
         {
             var tempStream = new MemoryStream();
-            sdkPreDocSource = (PresentationDocument)this.presentation.SDKPresentation.Clone(tempStream);
+            sdkPreDocSource = (PresentationDocument)this.presentation.SDKPresentationInternal.Clone(tempStream);
         }
         else
         {
-            sdkPreDocSource = sourceSlide.PresentationInternal.SDKPresentation;    
+            sdkPreDocSource = sourceSlide.PresentationInternal.SDKPresentationInternal;    
         }
         
-        var sdkPresDocDest = this.presentation.SDKPresentation;
+        var sdkPresDocDest = this.presentation.SDKPresentationInternal;
         var sdkPresPartSource = sdkPreDocSource.PresentationPart!;
         var sdkPresPartDest = sdkPresDocDest.PresentationPart!;
         var sdkPresDest = sdkPresPartDest.Presentation;
@@ -195,7 +195,7 @@ internal class SCSlideCollection : ISlideCollection
 
     private List<SCSlide> GetSlides()
     {
-        this.presentationPart = this.presentation.SDKPresentation.PresentationPart!;
+        this.presentationPart = this.presentation.SDKPresentationInternal.PresentationPart!;
         int slidesCount = this.presentationPart.SlideParts.Count();
         var slides = new List<SCSlide>(slidesCount);
         var slideIds = this.presentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();

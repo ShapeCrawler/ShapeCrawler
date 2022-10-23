@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Validation;
 using FluentAssertions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
@@ -65,6 +67,7 @@ public class ShapeFillTests : ShapeCrawlerTest, IClassFixture<PresentationFixtur
 
         // Assert
         shapeFill.HexSolidColor.Should().Be("32a852");
+        shape.SlideObject.Presentation.SDKPresentation.IsValid().Should().BeTrue();
     }
 
     [Fact]
