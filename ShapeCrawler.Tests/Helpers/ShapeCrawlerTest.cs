@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Validation;
 using ShapeCrawler.Extensions;
 
 namespace ShapeCrawler.Tests.Helpers;
@@ -72,6 +76,14 @@ public abstract class ShapeCrawlerTest
         return SCPresentation.Open(stream);
     }
 
+    protected static List<ValidationErrorInfo> Validate(IPresentation pres)
+    {
+        var validator = new OpenXmlValidator(FileFormatVersions.Microsoft365);
+        var errors = validator.Validate(pres.SDKPresentation);
+
+        return errors.ToList();
+    }
+    
     private static IPresentation GetPresentationFromAssembly(string fileName)
     {
         var stream = GetTestStream(fileName);

@@ -133,12 +133,9 @@ internal class SCImage : IImage
         return backgroundImage;
     }
 
-    internal static SCImage? ForAutoShapeFill(Shape autoShape, TypedOpenXmlPart slidePart)
+    internal static SCImage? ForAutoShapeFill(Shape autoShape, TypedOpenXmlPart slidePart, A.BlipFill aBlipFill)
     {
-        var pShape = (P.Shape)autoShape.PShapeTreesChild;
-        var aBlipFill = pShape.ShapeProperties!.GetFirstChild<A.BlipFill>();
-
-        var picReference = aBlipFill?.Blip?.Embed;
+        var picReference = aBlipFill.Blip?.Embed;
         if (picReference == null)
         {
             return null;

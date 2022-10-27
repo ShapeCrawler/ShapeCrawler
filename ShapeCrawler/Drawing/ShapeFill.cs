@@ -17,6 +17,8 @@ internal class ShapeFill : IShapeFill
     private A.GradientFill? aGradFill;
     private A.PatternFill? aPattFill;
     private BooleanValue? useBgFill;
+    private A.BlipFill? aBlipFill;
+    private A.NoFill? aNoFill;
 
     internal ShapeFill(Shape shape)
     {
@@ -67,6 +69,13 @@ internal class ShapeFill : IShapeFill
         var pShape = (P.Shape)this.shape.PShapeTreesChild;
         pShape.ShapeProperties!.AddASolidFill(hex);
 
+        this.aSolidFill?.Remove();
+        this.aGradFill?.Remove();
+        this.aPattFill?.Remove();
+        this.aNoFill?.Remove();
+        this.aBlipFill?.Remove();
+        this.useBgFill = false;
+        
         this.isDirty = true;
     }
 
@@ -128,9 +137,11 @@ internal class ShapeFill : IShapeFill
     private void InitPictureFillOr(P.Shape pShape)
     {
         var xmlPart = this.shape.SlideBase.TypedOpenXmlPart;
-        var image = SCImage.ForAutoShapeFill(this.shape, xmlPart);
-        if (image != null)
+        this.aBlipFill = pShape.ShapeProperties!.GetFirstChild<A.BlipFill>();
+
+        if (this.aBlipFill is not null)
         {
+            var image = SCImage.ForAutoShapeFill(this.shape, xmlPart, this.aBlipFill);
             this.pictureImage = image;
             this.fillType = SCFillType.Picture;
         }
@@ -163,6 +174,7 @@ internal class ShapeFill : IShapeFill
         }
         else
         {
+            this.aNoFill = pShape.ShapeProperties!.GetFirstChild<A.NoFill>();
             this.fillType = SCFillType.NoFill;
         }
     }

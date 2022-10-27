@@ -67,7 +67,8 @@ public class ShapeFillTests : ShapeCrawlerTest, IClassFixture<PresentationFixtur
 
         // Assert
         shapeFill.HexSolidColor.Should().Be("32a852");
-        shape.SlideObject.Presentation.SDKPresentation.IsValid().Should().BeTrue();
+        var errors = Validate(shape.SlideObject.Presentation);
+        errors.Should().BeEmpty();
     }
 
     [Fact]
