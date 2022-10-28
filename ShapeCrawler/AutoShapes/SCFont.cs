@@ -66,7 +66,7 @@ namespace ShapeCrawler.AutoShapes
         }
 
         public IColorFormat ColorFormat => this.colorFormat.Value;
-        
+
         public DocumentFormat.OpenXml.Drawing.TextUnderlineValues Underline
         {
             get
@@ -103,9 +103,9 @@ namespace ShapeCrawler.AutoShapes
             get => this.GetOffsetEffect();
             set => this.SetOffset(value);
         }
-        
+
         internal SCPortion ParentPortion { get; }
-        
+
         public bool CanChange()
         {
             return this.ParentPortion.ParentParagraph.TextFrame.TextFrameContainer.Shape.Placeholder == null;
@@ -205,7 +205,7 @@ namespace ShapeCrawler.AutoShapes
                     return sizeFromPlaceholder;
                 }
             }
-            
+
             var presentation = textFrameContainer.Shape.SlideBase.PresentationInternal;
             if (presentation.ParaLvlToFontData.TryGetValue(paraLevel, out FontData fontData))
             {
@@ -245,7 +245,7 @@ namespace ShapeCrawler.AutoShapes
                 i = titleFontSize / 100;
                 return true;
             }
-            
+
             if (slideMaster.TryGetFontSizeFromBody(paraLevel, out var fontSizeBody))
             {
                 {
@@ -344,7 +344,7 @@ namespace ShapeCrawler.AutoShapes
 
         private void SetItalicFlag(bool isItalic)
         {
-            var aTextParent = this.aText.Parent!; 
+            var aTextParent = this.aText.Parent!;
             var aRunPr = aTextParent.GetFirstChild<A.RunProperties>();
             if (aRunPr != null)
             {

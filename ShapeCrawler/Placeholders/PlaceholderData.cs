@@ -52,7 +52,7 @@ internal class PlaceholderData : IEquatable<PlaceholderData>
 
         return this.Equals(ph);
     }
-    
+
     public override int GetHashCode()
     {
         var hash = 17;

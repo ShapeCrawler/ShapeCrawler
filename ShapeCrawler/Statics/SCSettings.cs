@@ -2,7 +2,7 @@
 
 namespace ShapeCrawler;
 #if DEBUG
-    
+
 /// <summary>
 ///     ShapeCrawlers settings.
 /// </summary>
@@ -13,5 +13,5 @@ public static class SCSettings
     /// </summary>
     public static bool CanCollectStatistic { get; set; } = true;
 }
-    
+
 #endif

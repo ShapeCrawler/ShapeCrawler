@@ -26,7 +26,7 @@ namespace ShapeCrawler.Extensions
             {
                 return inputMs.ToArray();
             }
-            
+
             var ms = new MemoryStream();
             stream.CopyTo(ms);
 

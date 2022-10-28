@@ -80,7 +80,7 @@ internal class SCSlideCollection : ISlideCollection
         this.presentation.SlideMastersValue.Reset();
         this.OnCollectionChanged();
     }
-    
+
     public void Add(ISlide addingSlide)
     {
         var sourceSlide = (SCSlide)addingSlide;
@@ -92,9 +92,9 @@ internal class SCSlideCollection : ISlideCollection
         }
         else
         {
-            sdkPreDocSource = sourceSlide.PresentationInternal.SDKPresentationInternal;    
+            sdkPreDocSource = sourceSlide.PresentationInternal.SDKPresentationInternal;
         }
-        
+
         var sdkPresDocDest = this.presentation.SDKPresentationInternal;
         var sdkPresPartSource = sdkPreDocSource.PresentationPart!;
         var sdkPresPartDest = sdkPresDocDest.PresentationPart!;
@@ -125,7 +125,7 @@ internal class SCSlideCollection : ISlideCollection
     {
         return this.slides.Value.First(scSlide => scSlide.SlideId.Id == slideId);
     }
-    
+
     private static void AdjustLayoutIds(PresentationDocument sdkPresDocDest, uint masterId)
     {
         foreach (var slideMasterPart in sdkPresDocDest.PresentationPart!.SlideMasterParts)
@@ -139,7 +139,7 @@ internal class SCSlideCollection : ISlideCollection
             slideMasterPart.SlideMaster.Save();
         }
     }
-    
+
     private static uint AddNewSlideMasterId(Presentation sdkPresDest, PresentationDocument sdkPresDocDest,
         SlideMasterPart addedSlideMasterPart)
     {
@@ -164,7 +164,7 @@ internal class SCSlideCollection : ISlideCollection
         };
         sdkPresDest.SlideIdList!.Append(slideId);
     }
-    
+
     private static uint CreateId(SlideIdList slideIdList)
     {
         uint currentId = 0;

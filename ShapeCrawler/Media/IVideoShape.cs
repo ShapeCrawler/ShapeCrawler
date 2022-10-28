@@ -14,7 +14,7 @@ namespace ShapeCrawler.Media
         ///     Gets bytes of video content.
         /// </summary>
         public byte[] BinaryData { get; }
-        
+
         /// <summary>
         ///     Gets MIME type.
         /// </summary>

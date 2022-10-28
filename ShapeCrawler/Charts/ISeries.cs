@@ -28,7 +28,7 @@ public interface ISeries
     IChartPointCollection Points { get; }
 
     /// <summary>
-    ///     Gets a value indicating whether chart has name. 
+    ///     Gets a value indicating whether chart has name.
     /// </summary>
     bool HasName { get; }
 }

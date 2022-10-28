@@ -18,7 +18,7 @@ internal class ARunBuilder
         this.aRun.Append(aRunProperties);
         this.aRun.Append(aText);
     }
-    
+
     internal A.Run Build()
     {
         return this.aRun;

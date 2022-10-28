@@ -11,7 +11,7 @@ public enum SCGeometry
     Line,
 
     /// <summary>
-    ///     Line Inverse.     
+    ///     Line Inverse.
     /// </summary>
     LineInverse,
 
@@ -21,7 +21,7 @@ public enum SCGeometry
     Triangle,
 
     /// <summary>
-    ///     Right Triangle.     
+    ///     Right Triangle.
     /// </summary>
     RightTriangle,
 
@@ -41,7 +41,7 @@ public enum SCGeometry
     Parallelogram,
 
     /// <summary>
-    ///     Trapezoid.     
+    ///     Trapezoid.
     /// </summary>
     Trapezoid,
 
@@ -51,7 +51,7 @@ public enum SCGeometry
     NonIsoscelesTrapezoid,
 
     /// <summary>
-    ///     Pentagon.     
+    ///     Pentagon.
     /// </summary>
     Pentagon,
 
@@ -131,7 +131,7 @@ public enum SCGeometry
     Star32,
 
     /// <summary>
-    ///     Round Rectangle.     
+    ///     Round Rectangle.
     /// </summary>
     /// <summary>
     ///     RoundRectangle

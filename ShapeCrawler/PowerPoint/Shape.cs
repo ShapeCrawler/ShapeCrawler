@@ -33,14 +33,14 @@ internal abstract class Shape : IShape
         this.PShapeTreesChild = pShapeTreeChild;
         this.SlideBase = slideOrLayout.Match(slide => slide as SlideObject, layout => layout, master => master);
     }
-    
+
     public int Id => (int)this.PShapeTreesChild.GetNonVisualDrawingProperties().Id!.Value;
-    
+
     public string Name => this.PShapeTreesChild.GetNonVisualDrawingProperties().Name!;
-    
+
     public bool Hidden =>
         this.DefineHidden(); // TODO: the Shape is inherited by LayoutShape, hence do we need this property?
-    
+
     public string? CustomData
     {
         get => this.GetCustomData();
@@ -48,31 +48,31 @@ internal abstract class Shape : IShape
     }
 
     public abstract SCShapeType ShapeType { get; }
-    
+
     public ISlideObject SlideObject { get; }
-    
+
     public abstract IPlaceholder? Placeholder { get; }
-    
+
     public virtual SCGeometry GeometryType => this.GetGeometryType();
-    
+
     public int X
     {
         get => this.GetXCoordinate();
         set => this.SetXCoordinate(value);
     }
-    
+
     public int Y
     {
         get => this.GetYCoordinate();
         set => this.SetYCoordinate(value);
     }
-    
+
     public int Height
     {
         get => this.GetHeightPixels();
         set => this.SetHeight(value);
     }
-    
+
     public int Width
     {
         get => this.GetWidthPixels();

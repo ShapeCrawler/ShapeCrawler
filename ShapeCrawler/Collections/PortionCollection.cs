@@ -55,7 +55,7 @@ namespace ShapeCrawler.Collections
         {
             return this.portions.Value.GetEnumerator();
         }
-        
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();

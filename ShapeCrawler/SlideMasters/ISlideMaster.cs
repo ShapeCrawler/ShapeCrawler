@@ -2,26 +2,25 @@
 using ShapeCrawler.SlideMasters;
 
 // ReSharper disable CheckNamespace
-namespace ShapeCrawler
+namespace ShapeCrawler;
+
+/// <summary>
+///     Represents a Slide Master.
+/// </summary>
+public interface ISlideMaster
 {
     /// <summary>
-    ///     Represents a Slide Master.
+    ///     Gets background image if slide master has background, otherwise <see langword="null"/>.
     /// </summary>
-    public interface ISlideMaster
-    {
-        /// <summary>
-        ///     Gets background image if slide master has background, otherwise <see langword="null"/>.
-        /// </summary>
-        IImage? Background { get; }
+    IImage? Background { get; }
 
-        /// <summary>
-        ///     Gets collection of Slide Layouts.
-        /// </summary>
-        IReadOnlyList<ISlideLayout> SlideLayouts { get; }
-        
-        /// <summary>
-        ///     Gets collection of shape.
-        /// </summary>
-        IShapeCollection Shapes { get; }
-    }
+    /// <summary>
+    ///     Gets collection of Slide Layouts.
+    /// </summary>
+    IReadOnlyList<ISlideLayout> SlideLayouts { get; }
+
+    /// <summary>
+    ///     Gets collection of shape.
+    /// </summary>
+    IShapeCollection Shapes { get; }
 }

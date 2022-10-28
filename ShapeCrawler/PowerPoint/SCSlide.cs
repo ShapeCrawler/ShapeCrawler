@@ -62,7 +62,7 @@ internal class SCSlide : SlideObject, ISlide
     public IPresentation Presentation { get; }
 
     public SlidePart SDKSlidePart { get; }
-    
+
     public SCPresentation PresentationInternal { get; } // TODO: make internal
 
     internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;

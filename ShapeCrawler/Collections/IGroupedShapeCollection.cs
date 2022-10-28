@@ -47,7 +47,7 @@ internal class GroupedShapeCollection : LibraryCollection<IShape>, IGroupedShape
         var shape = this.CollectionItems.First(shape => shape.Name == shapeName);
         return (T)shape;
     }
-    
+
     internal static GroupedShapeCollection Create(P.GroupShape pGroupShapeParam, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCGroupShape groupShape)
     {
         var autoShapeCreator = new AutoShapeCreator();

@@ -26,12 +26,12 @@ public interface ITableRow
     /// </summary>
     ITableRow Clone();
 }
-    
+
 internal class SCTableRow : ITableRow
 {
     private readonly Lazy<List<SCTableCell>> cells;
     private readonly int index;
-    
+
     internal SCTableRow(SlideTable table, A.TableRow aTableRow, int index)
     {
         this.ParentTable = table;
@@ -67,9 +67,9 @@ internal class SCTableRow : ITableRow
 
     internal void ThrowIfRemoved()
     {
-        
+
     }
-    
+
     #region Private Methods
 
     private List<SCTableCell> GetCells()

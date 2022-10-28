@@ -12,9 +12,9 @@ internal abstract class Placeholder : IPlaceholder
     }
 
     public SCPlaceholderType Type => this.GetPlaceholderType();
-        
+
     internal P.PlaceholderShape PPlaceholderShape { get; }
-        
+
     protected internal Shape ReferencedShape => this.ReferencedShapeLazy.Value;
 
     protected ResettableLazy<Shape> ReferencedShapeLazy { get; set; }

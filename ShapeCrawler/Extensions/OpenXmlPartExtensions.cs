@@ -31,7 +31,7 @@ internal static class OpenXmlPartExtensions
         {
             nextId = rIdList.Max() + 1;
         }
-        
+
         var rId = $"rId{nextId}";
         var imagePart = openXmlPart.AddNewPart<ImagePart>("image/png", rId);
         stream.Position = 0;

@@ -12,7 +12,7 @@ internal static class OpenXmlElementExtensions
 
         return aRunPr;
     }
-        
+
     internal static A.RunProperties AddRunProperties(this OpenXmlElement openXmlElement)
     {
         var aRunPr = new A.RunProperties();

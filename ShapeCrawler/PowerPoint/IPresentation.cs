@@ -41,7 +41,7 @@ public interface IPresentation : IDisposable
     ISectionCollection Sections { get; }
 
     /// <summary>
-    ///     Gets copy of instance of <see cref="DocumentFormat.OpenXml.Packaging.PresentationDocument"/> class. 
+    ///     Gets copy of instance of <see cref="DocumentFormat.OpenXml.Packaging.PresentationDocument"/> class.
     /// </summary>
     PresentationDocument SDKPresentation { get; }
 
