@@ -34,6 +34,11 @@ internal class ShapeFill : IShapeFill
 
     public void SetPicture(Stream imageStream)
     {
+        if (this.isDirty)
+        {
+            this.Initialize();
+        }
+
         if (this.Type == SCFillType.Picture)
         {
             this.pictureImage!.SetImage(imageStream);
@@ -51,8 +56,11 @@ internal class ShapeFill : IShapeFill
             this.shape.PShapeProperties.Append(aBlipFill);
 
             this.aSolidFill?.Remove();
+            this.aBlipFill = null;
             this.aGradFill?.Remove();
+            this.aGradFill = null;
             this.aPattFill?.Remove();
+            this.aPattFill = null;
             this.useBgFill = false;
         }
 

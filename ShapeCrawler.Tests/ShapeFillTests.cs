@@ -83,7 +83,7 @@ public class ShapeFillTests : ShapeCrawlerTest, IClassFixture<PresentationFixtur
         // Act
         shapeFill.SetPicture(imageStream);
         shapeFill.SetHexSolidColor("32a852");
-
+        
         // Assert
         shapeFill.HexSolidColor.Should().Be("32a852");
     }
