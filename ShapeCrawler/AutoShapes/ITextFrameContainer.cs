@@ -6,6 +6,6 @@ namespace ShapeCrawler.AutoShapes;
 internal interface ITextFrameContainer
 {
     Shape Shape { get; }
-        
+
     ITextFrame? TextFrame { get; }
 }

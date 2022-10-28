@@ -37,7 +37,7 @@ public class LibraryCollection<T> : IReadOnlyCollection<T> // TODO: make interna
     ///     Gets or sets collection items.
     /// </summary>
     protected List<T> CollectionItems { get; set; }
-    
+
     /// <summary>
     ///     Gets the element at the specified index.
     /// </summary>

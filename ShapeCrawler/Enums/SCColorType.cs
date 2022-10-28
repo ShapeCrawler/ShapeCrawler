@@ -15,14 +15,14 @@ public enum SCColorType
     ///     RGB value is absolute.
     /// </summary>
     RGB = 1,
-        
+
     /// <summary>
     ///     RGB value is based on percentage.
     /// </summary>
     RGBPercentage = 2,
-        
+
     /// <summary>
-    ///     Color is defined in "Hue Saturation and Lightness" (HSL) way 
+    ///     Color is defined in "Hue Saturation and Lightness" (HSL) way.
     /// </summary>
     HSL = 3,
 

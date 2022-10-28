@@ -2,7 +2,7 @@
 using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Charts;  
+namespace ShapeCrawler.Charts;
 
 /// <summary>
 ///     Represents a chart on a Slide Master.

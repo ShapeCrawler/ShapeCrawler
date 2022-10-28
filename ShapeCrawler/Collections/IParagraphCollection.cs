@@ -18,13 +18,13 @@ namespace ShapeCrawler
         /// </summary>
         /// <returns>Added <see cref="SCParagraph" /> instance.</returns>
         IParagraph Add();
-        
+
         /// <summary>
         ///     Removes specified paragraphs from collection.
         /// </summary>
         void Remove(IEnumerable<IParagraph> removeParagraphs);
     }
-    
+
     internal class ParagraphCollection : IParagraphCollection
     {
         private readonly ResettableLazy<List<SCParagraph>> paragraphs;

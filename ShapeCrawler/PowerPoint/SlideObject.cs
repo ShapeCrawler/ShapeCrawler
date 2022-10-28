@@ -8,7 +8,7 @@ namespace ShapeCrawler;
 /// </summary>
 public interface ISlideObject : IPresentationComponent
 {
-    
+
 }
 
 internal abstract class SlideObject : ISlideObject
@@ -17,10 +17,10 @@ internal abstract class SlideObject : ISlideObject
     {
         this.Presentation = pres;
     }
-    
+
     public IPresentation Presentation { get; }
 
     internal SCPresentation PresentationInternal => (SCPresentation)this.Presentation;
-    
+
     internal abstract TypedOpenXmlPart TypedOpenXmlPart { get; }
 }

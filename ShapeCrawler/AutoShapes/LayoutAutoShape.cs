@@ -24,19 +24,15 @@ internal class LayoutAutoShape : LayoutShape, IAutoShape, ITextFrameContainer
     {
         this.textBox = new Lazy<TextFrame?>(this.GetTextFrame);
         this.shapeFill = new Lazy<ShapeFill>(TryGetFill);
-        
+
         this.pShape = pShape;
     }
-
-    #region Public Properties
 
     public ITextFrame? TextFrame => this.textBox.Value;
 
     public IShapeFill Fill => this.shapeFill.Value;
 
     public override SCShapeType ShapeType => SCShapeType.AutoShape;
-        
-    #endregion Public Properties
 
     public Shape Shape => this;
 

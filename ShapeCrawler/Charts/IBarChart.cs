@@ -10,7 +10,7 @@ namespace ShapeCrawler.Charts
     public interface IBarChart : IChart
     {
     }
-    
+
     internal sealed class SCBarChart : SCChart, IBarChart
     {
         internal SCBarChart(P.GraphicFrame pGraphicFrame, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)

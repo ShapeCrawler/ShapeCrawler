@@ -59,7 +59,7 @@ internal class TextFrame : ITextFrame
     }
 
     public SCAutoFitType AutoFitType => this.GetAutoFitType();
-        
+
     internal ITextFrameContainer TextFrameContainer { get; }
 
     internal OpenXmlCompositeElement? TextBodyElement { get; }
@@ -68,10 +68,10 @@ internal class TextFrame : ITextFrame
     {
         var isField = this.Paragraphs.Any(paragraph => paragraph.Portions.Any(portion => portion.Field != null));
         var isFooter = this.TextFrameContainer.Shape.Placeholder?.Type == SCPlaceholderType.Footer;
-        
+
         return !isField && !isFooter;
     }
-        
+
     private ParagraphCollection GetParagraphs()
     {
         return new ParagraphCollection(this);

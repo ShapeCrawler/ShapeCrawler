@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Services;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -47,7 +46,7 @@ public interface IImage
     /// </summary>
     void SetImage(string filePath);
 }
-    
+
 internal class SCImage : IImage
 {
     private readonly SCPresentation presentation;
@@ -64,11 +63,11 @@ internal class SCImage : IImage
         this.SDKImagePart = imagePart;
         this.picReference = picReference;
         this.openXmlPart = openXmlPart;
-            
+
         this.presentation = presentation;
         this.MIME = this.SDKImagePart.ContentType;
     }
-    
+
     public string MIME { get; }
 
     public Task<byte[]> BinaryData => this.GetBinaryData();
@@ -98,7 +97,7 @@ internal class SCImage : IImage
 
         this.SetImage(stream);
     }
-        
+
     public void SetImage(string filePath)
     {
         byte[] sourceBytes = File.ReadAllBytes(filePath);
@@ -160,7 +159,7 @@ internal class SCImage : IImage
     {
         return Path.GetFileName(this.SDKImagePart.Uri.ToString());
     }
-    
+
     private async Task<byte[]> GetBinaryData()
     {
         if (this.bytes != null)

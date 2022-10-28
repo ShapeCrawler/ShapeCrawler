@@ -41,13 +41,13 @@ internal class SCPortion : IPortion
         get => this.GetHyperlink();
         set => this.SetHyperlink(value);
     }
-        
+
     public IField? Field => this.GetFiled();
 
     #endregion Public Properties
 
     internal A.Text AText { get; }
-        
+
     internal bool IsRemoved { get; set; }
 
     internal SCParagraph ParentParagraph { get; }

@@ -28,12 +28,12 @@ internal class ChartWorkbook // TODO: implement IDispose to correctly dispose _p
     internal byte[] BinaryData => this.GetByteArray();
 
     internal Lazy<SpreadsheetDocument> SpreadsheetDocument { get; }
-    
+
     internal void Save()
     {
         this.SpreadsheetDocument.Value.Save();
     }
-        
+
     internal void Close()
     {
         if (this.closed)

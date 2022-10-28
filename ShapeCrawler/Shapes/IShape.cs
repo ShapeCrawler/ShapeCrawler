@@ -56,7 +56,7 @@ public interface IShape
     ///     Gets or sets custom data for the shape.
     /// </summary>
     string? CustomData { get; set; }
-        
+
     /// <summary>
     ///     Gets shape type.
     /// </summary>

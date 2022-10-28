@@ -27,7 +27,7 @@ namespace ShapeCrawler
         ///     Gets or sets the text alignment.
         /// </summary>
         SCTextAlignment Alignment { get; set; }
-        
+
         /// <summary>
         ///     Adds new text portion in paragraph.
         /// </summary>

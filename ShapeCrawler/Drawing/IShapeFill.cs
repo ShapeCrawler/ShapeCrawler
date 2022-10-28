@@ -17,7 +17,7 @@ public interface IShapeFill
     ///     Gets picture image if it is picture fill, otherwise <see langword="null"/>
     /// </summary>
     public IImage? Picture { get; }
-        
+
     /// <summary>
     ///     Gets color hexadecimal representation if it is solid color, otherwise <see langword="null"/>.
     /// </summary>

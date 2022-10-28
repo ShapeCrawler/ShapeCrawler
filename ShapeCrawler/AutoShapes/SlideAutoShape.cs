@@ -43,7 +43,7 @@ namespace ShapeCrawler
         public Shape Shape => this; // TODO: should be internal?
 
         public override SCShapeType ShapeType => SCShapeType.AutoShape;
-        
+
         public ITextFrame? TextFrame => this.textFrame.Value;
 
         #endregion Public Properties
@@ -73,7 +73,7 @@ namespace ShapeCrawler
                 }
             }
         }
-        
+
         private Dictionary<int, FontData> GetLvlToFontData()
         {
             var textBody = this.pShape.TextBody!;
@@ -95,7 +95,7 @@ namespace ShapeCrawler
 
             return lvlToFontData;
         }
-        
+
         private TextFrame? GetTextBox()
         {
             var pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();

@@ -35,7 +35,7 @@ namespace ShapeCrawler.Extensions
                     .ApplicationNonVisualDrawingProperties!,
                 P.Shape pShape => pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!,
                 P.Picture pPicture => pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!,
-                P.ConnectionShape pCxnSp => pCxnSp.NonVisualConnectionShapeProperties!.ApplicationNonVisualDrawingProperties!, 
+                P.ConnectionShape pCxnSp => pCxnSp.NonVisualConnectionShapeProperties!.ApplicationNonVisualDrawingProperties!,
                 P.GroupShape pGroupShape => pGroupShape.NonVisualGroupShapeProperties!.ApplicationNonVisualDrawingProperties!,
                 _ => throw new ShapeCrawlerException()
             };

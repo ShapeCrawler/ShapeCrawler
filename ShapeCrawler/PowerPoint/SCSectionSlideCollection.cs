@@ -11,18 +11,18 @@ namespace ShapeCrawler
         private readonly SCSection parentSection;
         private List<SCSlide> sectionSlides;
         private readonly SCSlideCollection presentationSlides;
-        
+
         public SCSectionSlideCollection(SCSection parentSection)
         {
             this.parentSection = parentSection;
             this.presentationSlides = parentSection.Sections.Presentation.SlidesInternal;
             this.presentationSlides.CollectionChanged += this.OnPresSlideCollectionChanged;
-            
+
             this.Initialize();
         }
-        
+
         public int Count => this.sectionSlides.Count;
-        
+
         public ISlide this[int index] => this.sectionSlides[index];
 
         public IEnumerator<ISlide> GetEnumerator()
@@ -34,7 +34,7 @@ namespace ShapeCrawler
         {
             return this.GetEnumerator();
         }
-        
+
         private void OnPresSlideCollectionChanged(object sender, EventArgs e)
         {
             this.Initialize();

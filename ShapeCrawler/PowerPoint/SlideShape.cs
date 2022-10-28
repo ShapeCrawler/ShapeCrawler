@@ -14,6 +14,6 @@ internal abstract class SlideShape : Shape
     }
 
     public override IPlaceholder? Placeholder => SlidePlaceholder.Create(this.PShapeTreesChild, this);
-        
+
     internal SlideObject Slide { get; }
 }

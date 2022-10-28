@@ -19,12 +19,12 @@ public interface IRowCollection : IEnumerable<ITableRow>
     ///     Gets number of rows.
     /// </summary>
     int Count { get; }
-    
+
     /// <summary>
     ///     Gets row at the specified index.
     /// </summary>
     ITableRow this[int index] { get; }
-    
+
     /// <summary>
     ///     Removes specified row from collection.
     /// </summary>
@@ -38,8 +38,8 @@ public interface IRowCollection : IEnumerable<ITableRow>
 
 internal class RowCollection : IRowCollection
 {
-    private readonly List<SCTableRow> collectionItems; 
-    
+    private readonly List<SCTableRow> collectionItems;
+
     #region Constructors
 
     private RowCollection(List<SCTableRow> rowList)
@@ -59,7 +59,7 @@ internal class RowCollection : IRowCollection
         removingRowInternal.ATableRow.Remove();
         this.collectionItems.Remove(removingRowInternal);
     }
-    
+
     public void RemoveAt(int index)
     {
         if (index < 0 || index >= this.collectionItems.Count)
@@ -80,7 +80,7 @@ internal class RowCollection : IRowCollection
     {
         return this.collectionItems.GetEnumerator();
     }
-    
+
     internal static RowCollection Create(SlideTable table, P.GraphicFrame pGraphicFrame)
     {
         IEnumerable<A.TableRow> aTableRows = pGraphicFrame.GetATable().Elements<A.TableRow>();

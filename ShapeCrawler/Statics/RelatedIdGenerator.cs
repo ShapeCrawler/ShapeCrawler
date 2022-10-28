@@ -7,6 +7,6 @@ namespace ShapeCrawler.Statics
         public static string Generate()
         {
             return $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
-        } 
+        }
     }
 }

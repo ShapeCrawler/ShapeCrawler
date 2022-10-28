@@ -26,7 +26,7 @@ internal class SlideTable : SlideShape, ITable
             new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame)this.PShapeTreesChild));
         this.pGraphicFrame = (P.GraphicFrame)childOfPShapeTrees;
     }
-        
+
     public override SCShapeType ShapeType => SCShapeType.Table;
 
     public IReadOnlyList<SCColumn> Columns => this.GetColumnList(); // TODO: make lazy
@@ -157,7 +157,7 @@ internal class SlideTable : SlideShape, ITable
 
         this.rowCollection.Reset();
     }
-        
+
     internal ITableRow AppendRow(A.TableRow row)
     {
         this.ATable.AppendChild(row);

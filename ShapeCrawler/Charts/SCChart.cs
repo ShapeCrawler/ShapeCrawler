@@ -27,7 +27,7 @@ internal class SCChart : SlideShape, IChart
     // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
     // then collection contains only single item.
     private readonly IEnumerable<OpenXmlElement> cXCharts;
-        
+
     private string? chartTitle;
 
     internal SCChart(P.GraphicFrame pGraphicFrame, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
@@ -44,7 +44,7 @@ internal class SCChart : SlideShape, IChart
             .GetFirstChild<C.ChartReference>()!;
 
         this.ChartPart = (ChartPart)this.Slide.TypedOpenXmlPart.GetPartById(cChartReference.Id!);
-            
+
         var cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea;
         this.cXCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
@@ -116,7 +116,7 @@ internal class SCChart : SlideShape, IChart
 
         return enumChartType;
     }
-        
+
     private ICategoryCollection? GetCategories()
     {
         return CategoryCollection.Create(this, this.firstSeries.Value, this.Type);

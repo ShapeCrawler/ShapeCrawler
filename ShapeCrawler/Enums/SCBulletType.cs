@@ -9,17 +9,17 @@ public enum SCBulletType
     ///     Numbered bullet.
     /// </summary>
     Numbered,
-        
+
     /// <summary>
     ///     Picture bullet.
     /// </summary>
     Picture,
-        
+
     /// <summary>
     ///     Character bullet.
     /// </summary>
     Character,
-        
+
     /// <summary>
     ///     None bullet.
     /// </summary>

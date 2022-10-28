@@ -71,7 +71,7 @@ internal class SCParagraph : IParagraph
         OpenXmlElement? lastARunOrABreak = null;
         if (lastPortion == null)
         {
-            var aRunBuilder = new ARunBuilder(); 
+            var aRunBuilder = new ARunBuilder();
             aRun = aRunBuilder.Build();
         }
         else
@@ -161,12 +161,12 @@ internal class SCParagraph : IParagraph
         // to set a paragraph text we use a single portion which is the first paragraph portion.
         var removingPortions = this.Portions.Skip(1).ToList();
         this.Portions.Remove(removingPortions);
-            
+
         var basePortion = (SCPortion)this.portions.Value.Single();
         if (text.Contains(Environment.NewLine))
         {
             basePortion.Text = string.Empty;
-            this.AddPortion(text);    
+            this.AddPortion(text);
         }
         else
         {
@@ -214,7 +214,7 @@ internal class SCParagraph : IParagraph
 
         var shape = this.TextFrame.TextFrameContainer.Shape;
         var placeholder = shape.Placeholder;
-            
+
         var aTextAlignmentType = this.AParagraph.ParagraphProperties?.Alignment!;
         if (aTextAlignmentType == null)
         {
@@ -229,7 +229,7 @@ internal class SCParagraph : IParagraph
                 this.alignment = SCTextAlignment.Center;
                 return this.alignment.Value;
             }
-                
+
             return SCTextAlignment.Left;
         }
 

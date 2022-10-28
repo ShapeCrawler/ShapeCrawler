@@ -13,14 +13,14 @@ namespace ShapeCrawler.Drawing
         {
             fieldInfoList = typeof(SKColors).GetFields(BindingFlags.Static | BindingFlags.Public);
         }
-        
+
         public static string HexFromName(string coloName)
         {
             if (coloName.ToLower() == "white")
             {
                 return "FFFFFF";
             }
-            
+
             var fieldInfo = fieldInfoList.First(fieldInfo => string.Equals(fieldInfo.Name, coloName, StringComparison.CurrentCultureIgnoreCase));
             var color = (SKColor)fieldInfo.GetValue(null);
 
