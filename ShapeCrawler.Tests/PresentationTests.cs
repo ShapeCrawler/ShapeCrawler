@@ -134,23 +134,6 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Slides_Add_should_not_Break_presentation()
-        {
-            // Arrange
-            var sourceSlide = _fixture.Pre001.Slides[0];
-            var destPres = SCPresentation.Open(Properties.Resources._002);
-            var newStream = new MemoryStream();
-
-            // Act
-            destPres.Slides.Add(sourceSlide);
-
-            // Assert
-            destPres.SaveAs(newStream);
-            var validateResponse = PptxValidator.Validate(newStream);
-            validateResponse.IsValid.Should().BeTrue();
-        }
-
-        [Fact]
         public void SlidesInsert_InsertsSpecifiedSlideAtTheSpecifiedPosition()
         {
             // Arrange

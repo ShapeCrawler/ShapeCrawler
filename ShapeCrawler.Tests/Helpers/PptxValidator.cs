@@ -1,39 +1,48 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using SharpCompress.Readers;
 using System.IO;
 using System.Linq;
-using System.Xml;
 using System.Xml.Linq;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Validation;
 using SharpCompress.Common;
 
 namespace ShapeCrawler.Tests.Helpers;
 
 public static class PptxValidator
 {
-    public static ValidateResponse Validate(MemoryStream pptxStream)
+    private static List<ValidationError> warnings = new List<ValidationError>
     {
-        pptxStream.Position = 0;
-        using IReader reader = ReaderFactory.Open(pptxStream);
-        while (reader.MoveToNextEntry())
+        new(
+            "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/chart:showDLblsOverMax'.",
+            "/c:chartSpace[1]/c:chart[1]"),
+        new("/c:chartSpace[1]/c:chart[1]/c:extLst[1]/c:ext[1]", "/c:chartSpace[1]/c:chart[1]"),
+        new(
+            "The element has invalid child element 'http://schemas.microsoft.com/office/drawing/2017/03/chart:dataDisplayOptions16'. List of possible elements expected: <http://schemas.microsoft.com/office/drawing/2017/03/chart:dispNaAsBlank>.",
+            "/c:chartSpace[1]/c:chart[1]/c:extLst[1]/c:ext[1]"),
+        new(
+            "The 'uri' attribute is not declared.",
+            "/c:chartSpace[1]/c:chart[1]/c:extLst[1]/c:ext[1]"),
+    };
+
+    public static List<ValidationErrorInfo> Validate(IPresentation pres)
+    {
+        var validator = new OpenXmlValidator(FileFormatVersions.Microsoft365);
+        var errors = validator.Validate(pres.SDKPresentation);
+
+        var removing = new List<ValidationErrorInfo>();
+        foreach (var error in errors)
         {
-            string NotesMasterType = "application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml";
-                
-            // Validate Content_Type.xml
-            if (reader.Entry.Key == "[Content_Types].xml")
+            if (warnings.Any(x => x.Description == error.Description && x.Path == error.Path?.XPath))
             {
-                using EntryStream xmlStream = reader.OpenEntryStream();
-                XDocument xmlDoc = XDocument.Load(xmlStream);
-                IEnumerable<XElement> typesElements = xmlDoc.Elements().First().Elements();
-                IEnumerable<XElement> notesMasters = typesElements.Where(e =>
-                    e.Name.LocalName == "Override" && e.Attribute("ContentType").Value == NotesMasterType);
-                if (notesMasters.Count() > 1)
-                {
-                    return new ValidateResponse("Presentation has more than one Notes Master Part");
-                }
+                removing.Add(error);
             }
         }
 
-        return new ValidateResponse();
+        errors = errors.Except(removing).DistinctByCustom(x=> new {x.Description, x.Path?.XPath}).ToList();
+        
+        return errors.ToList();
     }
 }
 

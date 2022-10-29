@@ -78,10 +78,15 @@ internal class ShapeFill : IShapeFill
         pShape.ShapeProperties!.AddASolidFill(hex);
 
         this.aSolidFill?.Remove();
+        this.aSolidFill = null;
         this.aGradFill?.Remove();
+        this.aGradFill = null;
         this.aPattFill?.Remove();
+        this.aPattFill = null;
         this.aNoFill?.Remove();
+        this.aNoFill = null;
         this.aBlipFill?.Remove();
+        this.aBlipFill = null;
         this.useBgFill = false;
 
         this.isDirty = true;

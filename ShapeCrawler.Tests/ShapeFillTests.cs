@@ -67,7 +67,7 @@ public class ShapeFillTests : ShapeCrawlerTest, IClassFixture<PresentationFixtur
 
         // Assert
         shapeFill.HexSolidColor.Should().Be("32a852");
-        var errors = Validate(shape.SlideObject.Presentation);
+        var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
         errors.Should().BeEmpty();
     }
     
@@ -86,6 +86,8 @@ public class ShapeFillTests : ShapeCrawlerTest, IClassFixture<PresentationFixtur
         
         // Assert
         shapeFill.HexSolidColor.Should().Be("32a852");
+        var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+        errors.Should().BeEmpty();
     }
 
     [Fact]

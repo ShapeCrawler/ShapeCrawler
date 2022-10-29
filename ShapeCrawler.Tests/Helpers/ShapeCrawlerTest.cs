@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -19,16 +20,16 @@ public abstract class ShapeCrawlerTest
         var slide = scPresentation.Slides[slideNumber - 1];
         var shape = slide.Shapes.First(sp => sp.Id == shapeId);
 
-        return (T) shape;
+        return (T)shape;
     }
-        
+
     protected static IAutoShape GetAutoShape(string presentation, int slideNumber, int shapeId)
     {
         var scPresentation = GetPresentationFromAssembly(presentation);
         var slide = scPresentation.Slides.First(s => s.Number == slideNumber);
         var shape = slide.Shapes.First(sp => sp.Id == shapeId);
 
-        return (IAutoShape) shape;
+        return (IAutoShape)shape;
     }
 
     protected static T GetWorksheetCellValue<T>(byte[] workbookByteArray, string cellAddress)
@@ -44,7 +45,7 @@ public abstract class ShapeCrawlerTest
     {
         return GetTestStream(fileName).ToArray();
     }
-        
+
     protected static MemoryStream GetTestStream(string fileName)
     {
         var assembly = Assembly.GetExecutingAssembly();
@@ -56,7 +57,7 @@ public abstract class ShapeCrawlerTest
 
         return mStream;
     }
-        
+
     protected static string GetTestPptxPath(string fileName)
     {
         var assembly = Assembly.GetExecutingAssembly();
@@ -67,29 +68,32 @@ public abstract class ShapeCrawlerTest
 
         return testPptxPath;
     }
-        
+
     protected static IPresentation SaveAndOpenPresentation(IPresentation presentation)
     {
         var stream = new MemoryStream();
         presentation.SaveAs(stream);
-            
+
         return SCPresentation.Open(stream);
     }
 
-    protected static List<ValidationErrorInfo> Validate(IPresentation pres)
-    {
-        var validator = new OpenXmlValidator(FileFormatVersions.Microsoft365);
-        var errors = validator.Validate(pres.SDKPresentation);
-
-        return errors.ToList();
-    }
-    
     private static IPresentation GetPresentationFromAssembly(string fileName)
     {
         var stream = GetTestStream(fileName);
-            
+
         return SCPresentation.Open(stream);
     }
-    
-    
+}
+
+public class ValidationError
+{
+    public ValidationError(string description, string path)
+    {
+        this.Description = description;
+        this.Path = path;
+    }
+
+    public string Path { get; }
+
+    public string Description { get; }
 }
