@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Reflection;
 using ClosedXML.Excel;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Validation;
 using ShapeCrawler.Extensions;
 
 namespace ShapeCrawler.Tests.Helpers;
@@ -49,20 +43,14 @@ public abstract class ShapeCrawlerTest
     protected static MemoryStream GetTestStream(string fileName)
     {
         var assembly = Assembly.GetExecutingAssembly();
-        var path = assembly.GetManifestResourceNames().First(r => r.EndsWith(fileName, StringComparison.Ordinal));
-        var stream = assembly.GetManifestResourceStream(path);
-        var mStream = new MemoryStream();
-        stream!.CopyTo(mStream);
-        mStream.Position = 0;
-
-        return mStream;
+        return assembly.GetResourceStream(fileName);
     }
 
     protected static string GetTestPptxPath(string fileName)
     {
         var assembly = Assembly.GetExecutingAssembly();
-        var path = assembly.GetManifestResourceNames().First(r => r.EndsWith(fileName, StringComparison.Ordinal));
-        var stream = assembly.GetManifestResourceStream(path);
+        var stream = assembly.GetResourceStream(fileName);
+        
         var testPptxPath = Path.GetTempFileName();
         stream.SaveToFile(testPptxPath);
 

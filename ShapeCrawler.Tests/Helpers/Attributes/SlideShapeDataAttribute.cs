@@ -44,6 +44,13 @@ public class SlideShapeDataAttribute : DataAttribute
             ? slide.Shapes.GetByName<IShape>(this.shapeName)
             : slide.Shapes.GetById<IShape>(this.shapeId);
 
-        yield return new object[] { shape, this.expectedResult };
+        if (this.expectedResult != null)
+        {
+            yield return new object[] { shape, this.expectedResult };
+        }
+        else
+        {
+            yield return new object[] { shape };
+        }
     }
 }

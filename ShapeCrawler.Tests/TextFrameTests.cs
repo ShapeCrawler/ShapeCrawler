@@ -68,6 +68,21 @@ namespace ShapeCrawler.Tests
             text.Should().BeEquivalentTo(expectedText);
         }
 
+        [Theory]
+        [MemberData(nameof(TextGetterTestCases))]
+        public void Text_Getter_returns_text_with_New_Line(TestCase testCase)
+        {
+            // Arrange
+            var textFrame = testCase.AutoShape.TextFrame;
+            var expectedText = testCase.ExpectedString;
+
+            // Act
+            var text = textFrame.Text;
+
+            // Assert
+            text.Should().BeEquivalentTo(expectedText);
+        }
+        
         public static IEnumerable<object[]> TextGetterTestCases
         {
             get
