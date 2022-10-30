@@ -7,6 +7,7 @@ using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.Tests.Helpers.Attributes;
 using ShapeCrawler.Tests.Properties;
 using Xunit;
 
@@ -47,8 +48,29 @@ namespace ShapeCrawler.Tests
         }
         
         [Theory]
+        [SlideShapeData("009_table.pptx", 4, 2, "Title text")]
+        [SlideShapeData("001.pptx", 1, 5, " id5-Text1")]
+        [SlideShapeData("019.pptx", 1, 2, "1")]
+        [SlideShapeData("014.pptx", 2, 5, "Test subtitle")]
+        [SlideShapeData("011_dt.pptx", 1, 54275, "Jan 2018")]
+        [SlideShapeData("021.pptx", 4, 2, "test footer")]
+        [SlideShapeData("012_title-placeholder.pptx", 1, 2, "Test title text")]
+        [SlideShapeData("012_title-placeholder.pptx", 1, 3, "P1 P2")]
+        public void Text_Getter_returns_text(IShape shape, string expectedText)
+        {
+            // Arrange
+            var textFrame = ((IAutoShape)shape).TextFrame;
+
+            // Act
+            var text = textFrame.Text;
+
+            // Assert
+            text.Should().BeEquivalentTo(expectedText);
+        }
+
+        [Theory]
         [MemberData(nameof(TextGetterTestCases))]
-        public void Text_Getter_returns_text(TestCase testCase)
+        public void Text_Getter_returns_text_with_New_Line(TestCase testCase)
         {
             // Arrange
             var textFrame = testCase.AutoShape.TextFrame;
@@ -60,38 +82,17 @@ namespace ShapeCrawler.Tests
             // Assert
             text.Should().BeEquivalentTo(expectedText);
         }
-
+        
         public static IEnumerable<object[]> TextGetterTestCases
         {
             get
             {
-                var testCase1 = new TestCase("#1");
-                testCase1.PresentationName = "009_table.pptx";
-                testCase1.SlideNumber = 4;
-                testCase1.ShapeId = 2;
-                testCase1.ExpectedString = "Title text";
-                yield return new object[] { testCase1 };
-                
-                var testCase2 = new TestCase("#2");
-                testCase2.PresentationName = "001.pptx";
-                testCase2.SlideNumber = 1;
-                testCase2.ShapeId = 5;
-                testCase2.ExpectedString = " id5-Text1";
-                yield return new object[] { testCase2 };
-                
                 var testCase3 = new TestCase("#3");
                 testCase3.PresentationName = "001.pptx";
                 testCase3.SlideNumber = 1;
                 testCase3.ShapeId = 6;
                 testCase3.ExpectedString = $"id6-Text1{Environment.NewLine}Text2";
                 yield return new object[] { testCase3 };
-                
-                var testCase4 = new TestCase("#4");
-                testCase4.PresentationName = "019.pptx";
-                testCase4.SlideNumber = 1;
-                testCase4.ShapeId = 2;
-                testCase4.ExpectedString = "1";
-                yield return new object[] { testCase4 };
                 
                 var testCase5 = new TestCase("#5");
                 testCase5.PresentationName = "014.pptx";
@@ -100,41 +101,6 @@ namespace ShapeCrawler.Tests
                 testCase5.ExpectedString = $"test1{Environment.NewLine}test2{Environment.NewLine}" +
                                            $"test3{Environment.NewLine}test4{Environment.NewLine}test5";
                 yield return new object[] { testCase5 };
-                
-                var testCase6 = new TestCase("#6");
-                testCase6.PresentationName = "014.pptx";
-                testCase6.SlideNumber = 2;
-                testCase6.ShapeId = 5;
-                testCase6.ExpectedString = $"Test subtitle";
-                yield return new object[] { testCase6 };
-                
-                var testCase7 = new TestCase("#7");
-                testCase7.PresentationName = "011_dt.pptx";
-                testCase7.SlideNumber = 1;
-                testCase7.ShapeId = 54275;
-                testCase7.ExpectedString = $"Jan 2018";
-                yield return new object[] { testCase7 };
-                
-                var testCase8 = new TestCase("#8");
-                testCase8.PresentationName = "021.pptx";
-                testCase8.SlideNumber = 4;
-                testCase8.ShapeId = 2;
-                testCase8.ExpectedString = "test footer";
-                yield return new object[] { testCase8 };
-                
-                var testCase9 = new TestCase("#9");
-                testCase9.PresentationName = "012_title-placeholder.pptx";
-                testCase9.SlideNumber = 1;
-                testCase9.ShapeId = 2;
-                testCase9.ExpectedString = "Test title text";
-                yield return new object[] { testCase9 };
-                
-                var testCase10 = new TestCase("#10");
-                testCase10.PresentationName = "012_title-placeholder.pptx";
-                testCase10.SlideNumber = 1;
-                testCase10.ShapeId = 3;
-                testCase10.ExpectedString = "P1 P2";
-                yield return new object[] { testCase10 };
                 
                 var testCase11 = new TestCase("#11");
                 testCase11.PresentationName = "011_dt.pptx";

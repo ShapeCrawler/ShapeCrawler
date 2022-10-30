@@ -109,15 +109,14 @@ namespace ShapeCrawler.Tests
         }
 
         [Theory]
-        [SlideData("002.pptx", slideNumber: 1, expectedResult: 4)]
-        [SlideData("003.pptx", slideNumber: 1, expectedResult: 1)]
-        [SlideData("013.pptx", slideNumber: 1, expectedResult: 4)]
-        [SlideData("023.pptx", slideNumber: 1, expectedResult: 1)]
-        [SlideData("014.pptx", slideNumber: 3, expectedResult: 5)]
-        [SlideData("009_table.pptx", slideNumber: 1, expectedResult: 6)]
-        [SlideData("009_table.pptx", slideNumber: 2, expectedResult: 8)]
-        [SlideData("009_table.pptx", slideNumber: 2, expectedResult: 8)]
-        public void Count_returns_number_of_shapes(ISlide slide, int expectedShapesCount)
+        [SlideData("#1", "002.pptx", slideNumber: 1, expectedResult: 4)]
+        [SlideData("#2","003.pptx", slideNumber: 1, expectedResult: 5)]
+        [SlideData("#3","013.pptx", slideNumber: 1, expectedResult: 4)]
+        [SlideData("#4","023.pptx", slideNumber: 1, expectedResult: 1)]
+        [SlideData("#5","014.pptx", slideNumber: 3, expectedResult: 5)]
+        [SlideData("#6","009_table.pptx", slideNumber: 1, expectedResult: 6)]
+        [SlideData("#7","009_table.pptx", slideNumber: 2, expectedResult: 8)]
+        public void Count_returns_number_of_shapes(string label, ISlide slide, int expectedCount)
         {
             // Arrange
             var shapeCollection = slide.Shapes;
@@ -126,7 +125,7 @@ namespace ShapeCrawler.Tests
             int shapesCount = shapeCollection.Count;
 
             // Assert
-            shapesCount.Should().Be(expectedShapesCount);
+            shapesCount.Should().Be(expectedCount);
         }
 
         [Fact]

@@ -219,6 +219,21 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
+        public void Id_returns_id()
+        {
+            // Arrange
+            var pptxStream = GetTestStream("010.pptx");
+            var pres = SCPresentation.Open(pptxStream);
+            var shape = pres.SlideMasters[0].Shapes.GetByName<IShape>("Date Placeholder 3");
+            
+            // Act
+            var id = shape.Id;
+            
+            // Assert
+            id.Should().Be(9);
+        }
+
+        [Fact]
         public void Y_Setter_updates_y_coordinate()
         {
             // Arrange

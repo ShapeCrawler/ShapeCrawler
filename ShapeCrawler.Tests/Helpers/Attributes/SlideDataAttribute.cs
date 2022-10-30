@@ -2,16 +2,25 @@
 using System.Reflection;
 using Xunit.Sdk;
 
-namespace ShapeCrawler.Tests.Helpers;
+namespace ShapeCrawler.Tests.Helpers.Attributes;
 
 public class SlideDataAttribute : DataAttribute
 {
     private readonly string pptxFile;
     private readonly int slideNumber;
     private readonly object expectedResult;
+    private readonly string testCaseLabel;
 
     public SlideDataAttribute(string pptxFile, int slideNumber, object expectedResult)
     {
+        this.pptxFile = pptxFile;
+        this.slideNumber = slideNumber;
+        this.expectedResult = expectedResult;
+    }
+    
+    public SlideDataAttribute(string testCaseLabel, string pptxFile, int slideNumber, object expectedResult)
+    {
+        this.testCaseLabel = testCaseLabel;
         this.pptxFile = pptxFile;
         this.slideNumber = slideNumber;
         this.expectedResult = expectedResult;
@@ -22,7 +31,14 @@ public class SlideDataAttribute : DataAttribute
         var pptxStream = TestHelper.GetStream(this.pptxFile);
         var pres = SCPresentation.Open(pptxStream);
         var slide = pres.Slides[this.slideNumber - 1];
-     
-        yield return new[] { slide, this.expectedResult };
+
+        if (this.testCaseLabel == null)
+        {
+            yield return new[] { slide, this.expectedResult };    
+        }
+        else
+        {
+            yield return new[] { this.testCaseLabel, slide, this.expectedResult };
+        }
     }
 }

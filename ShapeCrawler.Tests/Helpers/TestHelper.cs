@@ -21,11 +21,10 @@ public static class TestHelper
         return stream;
     }
 
-    public static MemoryStream GetStream(string file)
+    public static MemoryStream GetStream(string fileName)
     {
         var assembly = Assembly.GetExecutingAssembly();
-        var path = assembly.GetManifestResourceNames().First(r => r.EndsWith(file, StringComparison.Ordinal));
-        var stream = assembly.GetManifestResourceStream(path);
+        var stream = assembly.GetResourceStream(fileName);
         var mStream = new MemoryStream();
         stream!.CopyTo(mStream);
 
