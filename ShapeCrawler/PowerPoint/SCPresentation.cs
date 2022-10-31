@@ -28,10 +28,10 @@ namespace ShapeCrawler;
 public sealed class SCPresentation : IPresentation
 {
     private bool closed;
-    private Lazy<Dictionary<int, FontData>> paraLvlToFontData;
-    private Lazy<SCSlideSize> slideSize;
-    private ResettableLazy<SCSectionCollection> sectionCollectionLazy;
-    private ResettableLazy<SCSlideCollection> slideCollectionLazy;
+    private readonly Lazy<Dictionary<int, FontData>> paraLvlToFontData;
+    private readonly Lazy<SCSlideSize> slideSize;
+    private readonly ResettableLazy<SCSectionCollection> sectionCollectionLazy;
+    private readonly ResettableLazy<SCSlideCollection> slideCollectionLazy;
     private Stream? outerStream;
     private string? outerPath;
     private readonly MemoryStream internalStream;
@@ -45,7 +45,17 @@ public sealed class SCPresentation : IPresentation
 
         this.internalStream = pptxBytes.ToExpandableStream();
         this.SDKPresentationInternal = PresentationDocument.Open(this.internalStream, true);
-        this.Init();
+
+        this.ThrowIfSlidesNumberLarge();
+        this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
+        this.SlideMastersValue =
+            new ResettableLazy<SlideMasterCollection>(() => SlideMasterCollection.Create(this));
+        this.paraLvlToFontData =
+            new Lazy<Dictionary<int, FontData>>(() =>
+                ParseFontHeights(this.SDKPresentationInternal.PresentationPart!.Presentation));
+        this.sectionCollectionLazy =
+            new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
+        this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
     }
 
     private SCPresentation(Stream sourceStream)
@@ -56,14 +66,34 @@ public sealed class SCPresentation : IPresentation
         this.internalStream = new MemoryStream();
         sourceStream.CopyTo(this.internalStream);
         this.SDKPresentationInternal = PresentationDocument.Open(this.internalStream, true);
-        this.Init();
+
+        this.ThrowIfSlidesNumberLarge();
+        this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
+        this.SlideMastersValue =
+            new ResettableLazy<SlideMasterCollection>(() => SlideMasterCollection.Create(this));
+        this.paraLvlToFontData =
+            new Lazy<Dictionary<int, FontData>>(() =>
+                ParseFontHeights(this.SDKPresentationInternal.PresentationPart!.Presentation));
+        this.sectionCollectionLazy =
+            new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
+        this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
     }
 
     private SCPresentation(byte[] sourceBytes)
     {
         this.internalStream = sourceBytes.ToExpandableStream();
         this.SDKPresentationInternal = PresentationDocument.Open(this.internalStream, true);
-        this.Init();
+
+        this.ThrowIfSlidesNumberLarge();
+        this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
+        this.SlideMastersValue =
+            new ResettableLazy<SlideMasterCollection>(() => SlideMasterCollection.Create(this));
+        this.paraLvlToFontData =
+            new Lazy<Dictionary<int, FontData>>(() =>
+                ParseFontHeights(this.SDKPresentationInternal.PresentationPart!.Presentation));
+        this.sectionCollectionLazy =
+            new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
+        this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
     }
 
     /// <inheritdoc/>
@@ -296,20 +326,6 @@ public sealed class SCPresentation : IPresentation
             this.Close();
             throw SlidesMuchMoreException.FromMax(Limitations.MaxSlidesNumber);
         }
-    }
-
-    private void Init()
-    {
-        this.ThrowIfSlidesNumberLarge();
-        this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
-        this.SlideMastersValue =
-            new ResettableLazy<SlideMasterCollection>(() => SlideMasterCollection.Create(this));
-        this.paraLvlToFontData =
-            new Lazy<Dictionary<int, FontData>>(() =>
-                ParseFontHeights(this.SDKPresentationInternal.PresentationPart!.Presentation));
-        this.sectionCollectionLazy =
-            new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
-        this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
     }
 
     private SCSlideSize GetSlideSize()

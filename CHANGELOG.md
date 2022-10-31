@@ -1,7 +1,7 @@
 # Changelog
 
 ## Version 0.36.0 - 2022-10-31
-- Added `IShapeFill.SetHexSolidColor(string hex)` to set a solid color as the shape fill.
+- Added `IShapeFill.SetHexSolidColor(string hex)` to set a solid color as the shape fill [#267](https://github.com/ShapeCrawler/ShapeCrawler/issues/267)
 
 ## Version 0.35.0 - 2022-10-17
 - Added `IShapeFill.SetPicture(Stream image)` to set picture fill [#279](https://github.com/ShapeCrawler/ShapeCrawler/issues/279)

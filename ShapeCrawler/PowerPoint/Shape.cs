@@ -17,9 +17,6 @@ namespace ShapeCrawler;
 
 internal abstract class Shape : IShape
 {
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="Shape"/> class for grouped shape.
-    /// </summary>
     protected Shape(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject,
         Shape? groupShape)
         : this(pShapeTreeChild, slideObject)
@@ -28,10 +25,11 @@ internal abstract class Shape : IShape
         this.SlideObject = slideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
     }
 
-    protected Shape(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOrLayout)
+    protected Shape(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject)
     {
         this.PShapeTreesChild = pShapeTreeChild;
-        this.SlideBase = slideOrLayout.Match(slide => slide as SlideObject, layout => layout, master => master);
+        this.SlideObject = slideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
+        this.SlideBase = slideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
     }
 
     public int Id => (int)this.PShapeTreesChild.GetNonVisualDrawingProperties().Id!.Value;

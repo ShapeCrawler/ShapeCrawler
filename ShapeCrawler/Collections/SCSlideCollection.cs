@@ -26,7 +26,7 @@ internal class SCSlideCollection : ISlideCollection
 
     public int Count => this.slides.Value.Count;
 
-    internal EventHandler CollectionChanged { get; set; }
+    internal EventHandler? CollectionChanged { get; set; }
 
     public ISlide this[int index] => this.slides.Value[index];
 
