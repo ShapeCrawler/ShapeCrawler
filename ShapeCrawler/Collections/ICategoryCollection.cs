@@ -29,8 +29,8 @@ namespace ShapeCrawler.Collections
     internal class CategoryCollection : LibraryCollection<ICategory>, ICategoryCollection
     {
         private CategoryCollection(List<Category> categoryList)
+            : base(categoryList)
         {
-            this.CollectionItems = categoryList.Cast<ICategory>().ToList();
         }
 
         public static CategoryCollection? Create(SCChart chart, OpenXmlElement firstChartSeries, SCChartType chartType)

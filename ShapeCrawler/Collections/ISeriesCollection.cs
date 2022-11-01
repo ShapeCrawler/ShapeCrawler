@@ -27,8 +27,8 @@ namespace ShapeCrawler
     internal class SCSeriesCollection : LibraryCollection<ISeries>, ISeriesCollection
     {
         internal SCSeriesCollection(List<ISeries> seriesList)
+        : base(seriesList)
         {
-            this.CollectionItems = seriesList;
         }
 
         internal static SCSeriesCollection Create(SCChart slideChart, IEnumerable<OpenXmlElement> cXCharts)

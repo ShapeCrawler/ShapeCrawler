@@ -3,39 +3,39 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Placeholders
+namespace ShapeCrawler.Placeholders;
+
+/// <summary>
+///     Represents a placeholder located on a Slide Layout.
+/// </summary>
+internal class LayoutPlaceholder : Placeholder
 {
-    /// <summary>
-    ///     Represents a placeholder located on a Slide Layout.
-    /// </summary>
-    internal class LayoutPlaceholder : Placeholder
+    private readonly LayoutShape layoutShape;
+
+    private LayoutPlaceholder(P.PlaceholderShape pPlaceholderShape, LayoutShape layoutShape)
+        : base(pPlaceholderShape)
     {
-        private readonly LayoutShape layoutShape;
+        this.layoutShape = layoutShape;
+    }
 
-        private LayoutPlaceholder(P.PlaceholderShape pPlaceholderShape, LayoutShape layoutShape)
-            : base(pPlaceholderShape)
+    protected override ResettableLazy<Shape> ReferencedShapeLazy => new ResettableLazy<Shape>(this.GetReferencedShape);
+
+    internal static LayoutPlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, LayoutShape layoutShape)
+    {
+        P.PlaceholderShape pPlaceholderShape =
+            pShapeTreeChild.GetPNvPr().GetFirstChild<P.PlaceholderShape>();
+        if (pPlaceholderShape == null)
         {
-            this.layoutShape = layoutShape;
-            this.ReferencedShapeLazy = new ResettableLazy<Shape>(this.GetReferencedShape);
+            return null;
         }
 
-        internal static LayoutPlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, LayoutShape layoutShape)
-        {
-            P.PlaceholderShape pPlaceholderShape =
-                pShapeTreeChild.GetPNvPr().GetFirstChild<P.PlaceholderShape>();
-            if (pPlaceholderShape == null)
-            {
-                return null;
-            }
+        return new LayoutPlaceholder(pPlaceholderShape, layoutShape);
+    }
 
-            return new LayoutPlaceholder(pPlaceholderShape, layoutShape);
-        }
+    private Shape? GetReferencedShape()
+    {
+        var shapes = this.layoutShape.SlideLayoutInternal.SlideMasterInternal.ShapesInternal;
 
-        private Shape? GetReferencedShape()
-        {
-            var shapes = this.layoutShape.SlideLayoutInternal.SlideMasterInternal.ShapesInternal;
-
-            return shapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
-        }
+        return shapes.GetReferencedShapeOrDefault(this.PPlaceholderShape);
     }
 }
