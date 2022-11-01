@@ -486,7 +486,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void Paragraph_ReplaceText_finds_and_replases_text()
+        public void Paragraph_ReplaceText_finds_and_replaces_text()
         {
             // Arrange
             var pptxStream = GetTestStream("autoshape-case003.pptx");
