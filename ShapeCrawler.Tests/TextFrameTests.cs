@@ -465,7 +465,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void ParagraphText_GetterReturnsParagraphText()
+        public void Paragraph_Text_Getter_returns_paragraph_text()
         {
             // Arrange
             ITextFrame textBox1 = ((IAutoShape)_fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 37)).TextFrame;
@@ -485,6 +485,22 @@ namespace ShapeCrawler.Tests
             paragraphTextCase3.Should().BeEquivalentTo("0:0_p1_lvl1");
         }
 
+        [Fact]
+        public void Paragraph_ReplaceText_finds_and_replases_text()
+        {
+            // Arrange
+            var pptxStream = GetTestStream("autoshape-case003.pptx");
+            var pres = SCPresentation.Open(pptxStream);
+            var paragraph = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 3").TextFrame!.Paragraphs[0];
+            
+            // Act
+            paragraph.ReplaceText("Some text", "Some text2");
+
+            // Assert
+            paragraph.Text.Should().BeEquivalentTo("Some text2");
+            var errors = PptxValidator.Validate(pres);
+            errors.Should().BeEmpty();
+        }
 
         [Fact]
         public void ParagraphPortions_CollectionCounterReturnsNumberOfTextPortionsInTheParagraph()
