@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using ClosedXML;
 using FluentAssertions;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Tests.Helpers;
 using Xunit;
 
@@ -88,21 +89,22 @@ public class PictureTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     public void Image_SetImage_updates_picture_image()
     {
         // Arrange
-        var pres = SCPresentation.Open(Properties.Resources._009);
-        var imageStream = new MemoryStream(TestFiles.Images.imageByteArray02);
-        var preStream = new MemoryStream();
-        var picture = (IPicture) pres.Slides[1].Shapes.First(sp => sp.Id == 3);
-        int lengthBefore = picture.Image.BinaryData.Result.Length;
-
+        var pptxStream = GetTestStream("009_table");
+        var pngStream = GetTestStream("test-image-2.png");
+        var pres = SCPresentation.Open(pptxStream);
+        var mStream = new MemoryStream();
+        var picture = pres.Slides[1].Shapes.GetByName<IPicture>("Picture 1");
+        var image = picture.Image!; 
+        var lengthBefore = image.BinaryData.Result.Length;
+        
         // Act
-        picture.Image.SetImage(imageStream);
+        image.SetImage(pngStream);
 
         // Assert
-        pres.SaveAs(preStream);
-        pres.Close();
-        pres = SCPresentation.Open(preStream);
-        picture = (IPicture)pres.Slides[1].Shapes.First(sp => sp.Id == 3);
-        int lengthAfter = picture.Image.BinaryData.Result.Length;
+        pres.SaveAs(mStream);
+        pres = SCPresentation.Open(mStream);
+        picture = pres.Slides[1].Shapes.GetByName<IPicture>("Picture 1");
+        var lengthAfter = picture.Image!.BinaryData.Result.Length;
 
         lengthAfter.Should().NotBe(lengthBefore);
     }

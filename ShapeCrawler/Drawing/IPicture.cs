@@ -13,10 +13,8 @@ public interface IPicture : IShape
     /// </summary>
     IImage? Image { get; }
 
-#if DEBUG
     /// <summary>
     ///     Gets SVG content if picture is SVG graphic, otherwise <see langword="null"/>.
     /// </summary>
     string? SvgContent { get; }
-#endif
 }

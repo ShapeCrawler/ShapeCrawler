@@ -1,5 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Office2019.Drawing.SVG;
+using DocumentFormat.OpenXml.Packaging;
 using OneOf;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
@@ -13,14 +19,14 @@ namespace ShapeCrawler.Drawing;
 [SuppressMessage("ReSharper", "SuggestBaseTypeForParameterInConstructor", Justification = "Internal member")]
 internal class SlidePicture : SlideShape, IPicture
 {
-    private readonly string blipEmbed;
+    private readonly StringValue? blipEmbed;
     private readonly A.Blip aBlip;
 
     internal SlidePicture(P.Picture pPicture, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, A.Blip aBlip)
         : base(pPicture, slideObject, null)
     {
         this.aBlip = aBlip;
-        this.blipEmbed = aBlip.Embed!.Value!;
+        this.blipEmbed = aBlip.Embed;
     }
 
     public IImage Image => SCImage.ForPicture(this, this.Slide.TypedOpenXmlPart, this.blipEmbed);
@@ -31,6 +37,19 @@ internal class SlidePicture : SlideShape, IPicture
 
     private string? GetSvgContent()
     {
-        throw new NotImplementedException();
+        var bel = this.aBlip.GetFirstChild<A.BlipExtensionList>();
+        var svgBlipList = bel?.Descendants<SVGBlip>();
+        if (svgBlipList == null)
+        {
+            return null;
+        }
+
+        var svgId = svgBlipList.First().Embed!.Value!;
+
+        var imagePart = (ImagePart)this.Slide.TypedOpenXmlPart.GetPartById(svgId);
+        using var svgStream = imagePart.GetStream(System.IO.FileMode.Open, System.IO.FileAccess.Read);
+        using var sReader = new StreamReader(svgStream);
+
+        return sReader.ReadToEnd();
     }
 }
