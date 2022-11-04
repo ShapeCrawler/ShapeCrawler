@@ -17,7 +17,6 @@ public interface IImage
     /// <summary>
     ///     Gets MIME type.
     /// </summary>
-    // ReSharper disable once InconsistentNaming
     string MIME { get; }
 
     /// <summary>

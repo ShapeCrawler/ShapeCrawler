@@ -170,7 +170,14 @@ public class SlideTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     [Fact]
     public void SaveAsPng_saves_slide_as_image()
     {
+        // Arrange
+        var pptxStream = GetTestStream("autoshape-case011_save-as-png.pptx");
+        var pres = SCPresentation.Open(pptxStream);
+        var slide = pres.Slides[0];
+        var mStream = new MemoryStream();
         
+        // Act
+        slide.SaveAsPng(mStream);
     }
 
 #endif

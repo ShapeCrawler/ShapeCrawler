@@ -2,24 +2,29 @@
 using OneOf;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
+using SkiaSharp;
 
 // ReSharper disable CheckNamespace
-namespace ShapeCrawler
+namespace ShapeCrawler;
+
+/// <summary>
+///     Represents a connection shape.
+/// </summary>
+public interface IConnectionShape : IShape
 {
-    /// <summary>
-    ///     Represents a connection shape.
-    /// </summary>
-    public interface IConnectionShape : IShape
+}
+
+internal class SCConnectionShape : SlideShape, IConnectionShape
+{
+    public SCConnectionShape(OpenXmlCompositeElement childOfPShapeTree, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
+        : base(childOfPShapeTree, oneOfSlide, null)
     {
     }
 
-    internal class SCConnectionShape : SlideShape, IConnectionShape
-    {
-        public SCConnectionShape(OpenXmlCompositeElement childOfPShapeTree, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
-            : base(childOfPShapeTree, oneOfSlide, null)
-        {
-        }
+    public override SCShapeType ShapeType => SCShapeType.ConnectionShape;
 
-        public override SCShapeType ShapeType => SCShapeType.ConnectionShape;
+    internal override void Draw(SKCanvas canvas)
+    {
+        throw new System.NotImplementedException();
     }
 }

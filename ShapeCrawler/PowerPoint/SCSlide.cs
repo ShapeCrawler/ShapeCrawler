@@ -12,6 +12,7 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
+using SkiaSharp;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
@@ -81,6 +82,20 @@ internal class SCSlide : SlideObject, ISlide
         else
         {
             this.SDKSlidePart.Slide.Show = false;
+        }
+    }
+
+    public void SaveAsPng(Stream stream)
+    {
+        var imageInfo = new SKImageInfo(this.PresentationInternal.SlideWidth, this.PresentationInternal.SlideHeight);
+        var surface = SKSurface.Create(imageInfo);
+        var canvas = surface.Canvas;
+
+        canvas.Clear(SKColors.White);
+
+        foreach (var shape in this.Shapes.OfType<Shape>())
+        {
+            shape.Draw(canvas);
         }
     }
 

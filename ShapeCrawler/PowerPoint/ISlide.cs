@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.SlideMasters;
 
@@ -53,4 +54,11 @@ public interface ISlide : ISlideObject
     ///     Hides slide.
     /// </summary>
     void Hide();
+
+#if DEBUG
+    /// <summary>
+    ///     Saves slide as PNG image.
+    /// </summary>
+    void SaveAsPng(Stream stream);
+#endif
 }

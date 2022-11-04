@@ -1,5 +1,6 @@
 ﻿using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
+using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
@@ -15,4 +16,9 @@ internal class MasterChart : MasterShape, IShape
     }
 
     public override SCShapeType ShapeType => SCShapeType.Chart;
+
+    internal override void Draw(SKCanvas canvas)
+    {
+        throw new System.NotImplementedException();
+    }
 }

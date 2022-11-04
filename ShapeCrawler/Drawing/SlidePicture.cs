@@ -9,6 +9,7 @@ using DocumentFormat.OpenXml.Packaging;
 using OneOf;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
+using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -34,6 +35,11 @@ internal class SlidePicture : SlideShape, IPicture
     public string? SvgContent => this.GetSvgContent();
 
     public override SCShapeType ShapeType => SCShapeType.Picture;
+
+    internal override void Draw(SKCanvas canvas)
+    {
+        throw new NotImplementedException();
+    }
 
     private string? GetSvgContent()
     {

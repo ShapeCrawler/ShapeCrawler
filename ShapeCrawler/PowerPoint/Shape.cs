@@ -10,6 +10,7 @@ using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
+using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -103,6 +104,8 @@ internal abstract class Shape : IShape
     internal P.ShapeProperties PShapeProperties => this.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !;
 
     private Shape? GroupShape { get; }
+
+    internal abstract void Draw(SKCanvas canvas);
 
     private void SetCustomData(string value)
     {

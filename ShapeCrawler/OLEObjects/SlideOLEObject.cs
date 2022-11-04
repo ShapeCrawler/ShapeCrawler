@@ -2,6 +2,7 @@
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using OneOf;
+using SkiaSharp;
 
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.OLEObjects;
@@ -16,11 +17,12 @@ internal class SlideOLEObject : SlideShape, IOLEObject
     {
     }
 
-    #region Public Properties
-
     public override SCGeometry GeometryType => SCGeometry.Rectangle;
 
     public override SCShapeType ShapeType => SCShapeType.OLEObject;
 
-    #endregion Public Properties
+    internal override void Draw(SKCanvas canvas)
+    {
+        throw new System.NotImplementedException();
+    }
 }
