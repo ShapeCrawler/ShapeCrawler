@@ -6,7 +6,6 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler;
@@ -19,6 +18,7 @@ public interface IImage
     /// <summary>
     ///     Gets MIME type.
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     string MIME { get; }
 
     /// <summary>
@@ -73,6 +73,8 @@ internal class SCImage : IImage
     public Task<byte[]> BinaryData => this.GetBinaryData();
 
     public string Name => this.GetName();
+
+    public string SvgContent => this.GetSvgContent();
 
     internal ImagePart SDKImagePart { get; private set; }
 
@@ -158,6 +160,11 @@ internal class SCImage : IImage
     private string GetName()
     {
         return Path.GetFileName(this.SDKImagePart.Uri.ToString());
+    }
+
+    private string GetSvgContent()
+    {
+        throw new System.NotImplementedException();
     }
 
     private async Task<byte[]> GetBinaryData()

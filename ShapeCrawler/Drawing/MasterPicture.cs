@@ -18,6 +18,8 @@ internal class MasterPicture : MasterShape, IPicture
 
     public IImage Image => this.GetImage();
 
+    public string? SvgContent { get; }
+
     public override SCShapeType ShapeType => SCShapeType.Picture;
 
     private SCImage GetImage()

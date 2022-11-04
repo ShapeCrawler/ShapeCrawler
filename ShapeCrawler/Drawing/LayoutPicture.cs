@@ -4,27 +4,28 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Drawing
+namespace ShapeCrawler.Drawing;
+
+internal class LayoutPicture : LayoutShape, IPicture
 {
-    internal class LayoutPicture : LayoutShape, IPicture
+    private readonly StringValue picReference;
+
+    internal LayoutPicture(P.Picture pPicture, SCSlideLayout layout, StringValue picReference)
+        : base(layout, pPicture)
     {
-        private readonly StringValue picReference;
+        this.picReference = picReference;
+    }
 
-        internal LayoutPicture(P.Picture pPicture, SCSlideLayout layout, StringValue picReference)
-            : base(layout, pPicture)
-        {
-            this.picReference = picReference;
-        }
+    public IImage Image => this.GetImage();
 
-        public IImage Image => this.GetImage();
+    public string? SvgContent { get; }
 
-        public override SCShapeType ShapeType => SCShapeType.Picture;
+    public override SCShapeType ShapeType => SCShapeType.Picture;
 
-        private SCImage GetImage()
-        {
-            var imagePart = (ImagePart)this.SlideLayoutInternal.SlideLayoutPart.GetPartById(this.picReference.Value!);
+    private SCImage GetImage()
+    {
+        var imagePart = (ImagePart)this.SlideLayoutInternal.SlideLayoutPart.GetPartById(this.picReference.Value!);
 
-            return SCImage.Create(imagePart, this, this.picReference, this.SlideLayoutInternal.SlideLayoutPart);
-        }
+        return SCImage.Create(imagePart, this, this.picReference, this.SlideLayoutInternal.SlideLayoutPart);
     }
 }

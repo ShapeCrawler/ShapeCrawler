@@ -159,6 +159,8 @@
     <EmbeddedResource Include="Resource\010.pptx" />
     <None Remove="Resource\003.pptx" />
     <EmbeddedResource Include="Resource\003.pptx" />
+    <None Remove="Resource\pictures\pictures-case002.pptx" />
+    <EmbeddedResource Include="Resource\pictures\pictures-case002.pptx" />
   </ItemGroup>
 
 </Project>
