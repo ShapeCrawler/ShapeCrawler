@@ -1,33 +1,38 @@
 ﻿using DocumentFormat.OpenXml;
+using OneOf;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
-using OneOf;
+using SkiaSharp;
 
-namespace ShapeCrawler.Media
+namespace ShapeCrawler.Media;
+
+/// <summary>
+///     Represents a shape containing video content.
+/// </summary>
+public interface IVideoShape : IShape
 {
     /// <summary>
-    ///     Represents a shape containing video content.
+    ///     Gets bytes of video content.
     /// </summary>
-    public interface IVideoShape : IShape
-    {
-        /// <summary>
-        ///     Gets bytes of video content.
-        /// </summary>
-        public byte[] BinaryData { get; }
+    public byte[] BinaryData { get; }
 
-        /// <summary>
-        ///     Gets MIME type.
-        /// </summary>
-        string MIME { get; }
+    /// <summary>
+    ///     Gets MIME type.
+    /// </summary>
+    string MIME { get; }
+}
+
+internal class VideoShape : MediaShape, IVideoShape
+{
+    internal VideoShape(OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, OpenXmlCompositeElement pShapeTreeChild)
+        : base(pShapeTreeChild, oneOfSlide, null)
+    {
     }
 
-    internal class VideoShape : MediaShape, IVideoShape
-    {
-        internal VideoShape(OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, OpenXmlCompositeElement pShapeTreeChild)
-            : base(pShapeTreeChild, oneOfSlide, null)
-        {
-        }
+    public override SCShapeType ShapeType => SCShapeType.VideoShape;
 
-        public override SCShapeType ShapeType => SCShapeType.VideoShape;
+    internal override void Draw(SKCanvas canvas)
+    {
+        throw new System.NotImplementedException();
     }
 }

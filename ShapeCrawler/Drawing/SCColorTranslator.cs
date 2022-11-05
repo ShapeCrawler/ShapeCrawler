@@ -3,28 +3,27 @@ using System.Linq;
 using System.Reflection;
 using SkiaSharp;
 
-namespace ShapeCrawler.Drawing
+namespace ShapeCrawler.Drawing;
+
+internal class SCColorTranslator
 {
-    internal class SCColorTranslator
+    private static readonly FieldInfo[] fieldInfoList;
+
+    static SCColorTranslator()
     {
-        private static readonly FieldInfo[] fieldInfoList;
+        fieldInfoList = typeof(SKColors).GetFields(BindingFlags.Static | BindingFlags.Public);
+    }
 
-        static SCColorTranslator()
+    public static string HexFromName(string coloName)
+    {
+        if (coloName.ToLower() == "white")
         {
-            fieldInfoList = typeof(SKColors).GetFields(BindingFlags.Static | BindingFlags.Public);
+            return "FFFFFF";
         }
 
-        public static string HexFromName(string coloName)
-        {
-            if (coloName.ToLower() == "white")
-            {
-                return "FFFFFF";
-            }
+        var fieldInfo = fieldInfoList.First(fieldInfo => string.Equals(fieldInfo.Name, coloName, StringComparison.CurrentCultureIgnoreCase));
+        var color = (SKColor)fieldInfo.GetValue(null);
 
-            var fieldInfo = fieldInfoList.First(fieldInfo => string.Equals(fieldInfo.Name, coloName, StringComparison.CurrentCultureIgnoreCase));
-            var color = (SKColor)fieldInfo.GetValue(null);
-
-            return color.ToString();
-        }
+        return color.ToString();
     }
 }

@@ -6,6 +6,7 @@ using ShapeCrawler.Collections;
 using ShapeCrawler.Factories;
 using ShapeCrawler.SlideMasters;
 using OneOf;
+using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable PossibleMultipleEnumeration
@@ -29,4 +30,9 @@ internal class SCGroupShape : SlideShape, IGroupShape
     public IGroupedShapeCollection Shapes => GroupedShapeCollection.Create(this.pGroupShape, this.oneOfSlide, this);
 
     public override SCShapeType ShapeType => SCShapeType.GroupShape;
+
+    internal override void Draw(SKCanvas canvas)
+    {
+        throw new System.NotImplementedException();
+    }
 }

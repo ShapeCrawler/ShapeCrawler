@@ -52,7 +52,7 @@ public abstract class ShapeCrawlerTest
         var stream = assembly.GetResourceStream(fileName);
         
         var testPptxPath = Path.GetTempFileName();
-        stream.SaveToFile(testPptxPath);
+        stream.ToFile(testPptxPath);
 
         return testPptxPath;
     }

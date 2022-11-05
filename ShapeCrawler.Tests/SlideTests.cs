@@ -1,10 +1,7 @@
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.Media;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
 using Xunit;
 
@@ -12,162 +9,179 @@ using Xunit;
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
 
-namespace ShapeCrawler.Tests
+namespace ShapeCrawler.Tests;
+
+[SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
+public class SlideTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
 {
-    [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-    public class SlideTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
+    private readonly PresentationFixture fixture;
+
+    public SlideTests(PresentationFixture fixture)
     {
-        private readonly PresentationFixture fixture;
+        this.fixture = fixture;
+    }
 
-        public SlideTests(PresentationFixture fixture)
-        {
-            this.fixture = fixture;
-        }
+    [Fact]
+    public void Hide_MethodHidesSlide_WhenItIsExecuted()
+    {
+        // Arrange
+        var pre = SCPresentation.Open(Properties.Resources._001);
+        var slide = pre.Slides.First();
 
-        [Fact]
-        public void Hide_MethodHidesSlide_WhenItIsExecuted()
-        {
-            // Arrange
-            var pre = SCPresentation.Open(Properties.Resources._001);
-            var slide = pre.Slides.First();
+        // Act
+        slide.Hide();
 
-            // Act
-            slide.Hide();
+        // Assert
+        slide.Hidden.Should().Be(true);
+    }
 
-            // Assert
-            slide.Hidden.Should().Be(true);
-        }
+    [Fact]
+    public void Hidden_GetterReturnsTrue_WhenTheSlideIsHidden()
+    {
+        // Arrange
+        ISlide slideEx = this.fixture.Pre002.Slides[2];
 
-        [Fact]
-        public void Hidden_GetterReturnsTrue_WhenTheSlideIsHidden()
-        { 
-            // Arrange
-            ISlide slideEx = this.fixture.Pre002.Slides[2];
+        // Act
+        bool hidden = slideEx.Hidden;
 
-            // Act
-            bool hidden = slideEx.Hidden;
+        // Assert
+        hidden.Should().BeTrue();
+    }
 
-            // Assert
-            hidden.Should().BeTrue();
-        }
+    [Fact]
+    public async void Background_SetImage_updates_background()
+    {
+        // Arrange
+        var pre = SCPresentation.Open(Properties.Resources._009);
+        var backgroundImage = pre.Slides[0].Background;
+        var imgStream = new MemoryStream(Properties.Resources.test_image_2);
+        var bytesBefore = await backgroundImage.BinaryData.ConfigureAwait(false);
 
-        [Fact]
-        public async void Background_SetImage_updates_background()
-        {
-            // Arrange
-            var pre = SCPresentation.Open(Properties.Resources._009);
-            var backgroundImage = pre.Slides[0].Background;
-            var imgStream = new MemoryStream(Properties.Resources.test_image_2);
-            var bytesBefore = await backgroundImage.BinaryData.ConfigureAwait(false);
+        // Act
+        backgroundImage.SetImage(imgStream);
 
-            // Act
-            backgroundImage.SetImage(imgStream);
+        // Assert
+        var bytesAfter = await backgroundImage.BinaryData.ConfigureAwait(false);
+        bytesAfter.Length.Should().NotBe(bytesBefore.Length);
+    }
 
-            // Assert
-            var bytesAfter = await backgroundImage.BinaryData.ConfigureAwait(false);
-            bytesAfter.Length.Should().NotBe(bytesBefore.Length);
-        }
+    [Fact]
+    public void Background_ImageIsNull_WhenTheSlideHasNotBackground()
+    {
+        // Arrange
+        var slide = this.fixture.Pre009.Slides[1];
 
-        [Fact]
-        public void Background_ImageIsNull_WhenTheSlideHasNotBackground()
-        {
-            // Arrange
-            var slide = this.fixture.Pre009.Slides[1];
+        // Act
+        var backgroundImage = slide.Background;
 
-            // Act
-            var backgroundImage = slide.Background;
+        // Assert
+        backgroundImage.Should().BeNull();
+    }
 
-            // Assert
-            backgroundImage.Should().BeNull();
-        }
+    [Fact]
+    public void CustomData_ReturnsData_WhenCustomDataWasAssigned()
+    {
+        // Arrange
+        const string customDataString = "Test custom data";
+        var originPre = SCPresentation.Open(Properties.Resources._001);
+        var slide = originPre.Slides.First();
 
-        [Fact]
-        public void CustomData_ReturnsData_WhenCustomDataWasAssigned()
-        {
-            // Arrange
-            const string customDataString = "Test custom data";
-            var originPre = SCPresentation.Open(Properties.Resources._001);
-            var slide = originPre.Slides.First();
+        // Act
+        slide.CustomData = customDataString;
 
-            // Act
-            slide.CustomData = customDataString;
+        var savedPreStream = new MemoryStream();
+        originPre.SaveAs(savedPreStream);
+        var savedPre = SCPresentation.Open(savedPreStream);
+        var customData = savedPre.Slides.First().CustomData;
 
-            var savedPreStream = new MemoryStream();
-            originPre.SaveAs(savedPreStream);
-            var savedPre = SCPresentation.Open(savedPreStream);
-            var customData = savedPre.Slides.First().CustomData;
+        // Assert
+        customData.Should().Be(customDataString);
+    }
 
-            // Assert
-            customData.Should().Be(customDataString);
-        }
+    [Fact]
+    public void CustomData_PropertyIsNull_WhenTheSlideHasNotCustomData()
+    {
+        // Arrange
+        var slide = this.fixture.Pre001.Slides.First();
 
-        [Fact]
-        public void CustomData_PropertyIsNull_WhenTheSlideHasNotCustomData()
-        {
-            // Arrange
-            var slide = this.fixture.Pre001.Slides.First();
+        // Act
+        var sldCustomData = slide.CustomData;
 
-            // Act
-            var sldCustomData = slide.CustomData;
+        // Assert
+        sldCustomData.Should().BeNull();
+    }
 
-            // Assert
-            sldCustomData.Should().BeNull();
-        }
+    [Fact]
+    public void Number_Setter_moves_slide_to_specified_number_position()
+    {
+        // Arrange
+        var pptxStream = TestFiles.Presentations.pre001_stream;
+        var pres = SCPresentation.Open(pptxStream);
+        var slide1 = pres.Slides[0];
+        var slide2 = pres.Slides[1];
+        slide1.CustomData = "old-number-1";
 
-        [Fact]
-        public void Number_Setter_moves_slide_to_specified_number_position()
-        {
-            // Arrange
-            var pptxStream = TestFiles.Presentations.pre001_stream;
-            var pres = SCPresentation.Open(pptxStream);
-            var slide1 = pres.Slides[0];
-            var slide2 = pres.Slides[1];
-            slide1.CustomData = "old-number-1";
+        // Act
+        slide1.Number = 2;
 
-            // Act
-            slide1.Number = 2;
+        // Assert
+        slide1.Number.Should().Be(2);
+        slide2.Number.Should().Be(1, "because the first slide was inserted to its position.");
 
-            // Assert
-            slide1.Number.Should().Be(2);
-            slide2.Number.Should().Be(1, "because the first slide was inserted to its position.");
-            
-            pres.Save();
-            pres.Close();
-            pres = SCPresentation.Open(pptxStream);
-            slide2 = pres.Slides.First(s => s.CustomData == "old-number-1");
-            slide2.Number.Should().Be(2);
-        }
+        pres.Save();
+        pres.Close();
+        pres = SCPresentation.Open(pptxStream);
+        slide2 = pres.Slides.First(s => s.CustomData == "old-number-1");
+        slide2.Number.Should().Be(2);
+    }
 
-        [Fact]
-        public void Slide_GetAllTextboxes_contains_all_textboxes_withTable()
-        {
-            // Arrange
-            var preStream = TestFiles.Presentations.pre039_stream;
-            var presentation = SCPresentation.Open(preStream);
-            var targetSlide = presentation.Slides.First();
+    [Fact]
+    public void GetAllTextboxes_contains_all_textboxes_withTable()
+    {
+        // Arrange
+        var preStream = TestFiles.Presentations.pre039_stream;
+        var presentation = SCPresentation.Open(preStream);
+        var slide = presentation.Slides.First();
 
-            // Act
-            var textboxes = targetSlide.GetAllTextFrames();
+        // Act
+        var textboxes = slide.GetAllTextFrames();
 
-            // Assert
-            textboxes.Count.Should().Be(11);
-        }
+        // Assert
+        textboxes.Count.Should().Be(11);
+    }
+
+    [Fact]
+    public void GetAllTextboxes_contains_all_textboxes_withoutTable()
+    {
+        // Arrange
+        var pptxStream = TestFiles.Presentations.pre011_dt_stream;
+        var pres = SCPresentation.Open(pptxStream);
+        var slide = pres.Slides.First();
+
+        // Act
+        var textFrames = slide.GetAllTextFrames();
+
+        // Assert
+        textFrames.Count.Should().Be(4);
+    }
+
+#if DEBUG
+
+    [Fact(Skip = "In progress")]
+    public void SaveAsPng_saves_slide_as_image()
+    {
+        // Arrange
+        var pptxStream = GetTestStream("autoshape-case011_save-as-png.pptx");
+        var pres = SCPresentation.Open(pptxStream);
+        var slide = pres.Slides[0];
+        var mStream = new MemoryStream();
         
-        [Fact]
-        public void Slide_GetAllTextboxes_contains_all_textboxes_withoutTable()
-        {
-            // Arrange
-            var pptxStream = TestFiles.Presentations.pre011_dt_stream;
-            var pres = SCPresentation.Open(pptxStream);
-            var slide = pres.Slides.First();
+        // Act
+        slide.SaveAsPng(mStream);
+    }
 
-            // Act
-            var textFrames = slide.GetAllTextFrames();
+#endif
 
-            // Assert
-            textFrames.Count.Should().Be(4);
-        }
-        
 #if TEST
         [Fact]
         public void ToHtml_converts_slide_to_HTML()
@@ -183,5 +197,4 @@ namespace ShapeCrawler.Tests
             
         }
 #endif
-    }
 }

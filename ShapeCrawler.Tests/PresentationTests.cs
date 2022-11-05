@@ -354,7 +354,7 @@ namespace ShapeCrawler.Tests
             // Arrange
             var originalStream = GetTestStream("001.pptx");
             var originalFile = Path.GetTempFileName();
-            originalStream.SaveToFile(originalFile);
+            originalStream.ToFile(originalFile);
             var pres = SCPresentation.Open(originalFile);
             var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
             var originalText = textBox!.Text;

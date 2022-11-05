@@ -10,6 +10,7 @@ using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using OneOf;
+using SkiaSharp;
 
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Tables;
@@ -156,6 +157,11 @@ internal class SlideTable : SlideShape, ITable
         }
 
         this.rowCollection.Reset();
+    }
+
+    internal override void Draw(SKCanvas canvas)
+    {
+        throw new NotImplementedException();
     }
 
     internal ITableRow AppendRow(A.TableRow row)

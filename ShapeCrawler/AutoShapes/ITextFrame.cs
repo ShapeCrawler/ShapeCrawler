@@ -7,6 +7,7 @@ using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
+using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler;
@@ -70,6 +71,11 @@ internal class TextFrame : ITextFrame
         var isFooter = this.TextFrameContainer.Shape.Placeholder?.Type == SCPlaceholderType.Footer;
 
         return !isField && !isFooter;
+    }
+
+    internal void Draw(SKCanvas slideCanvas, SKRect shapeRect)
+    {
+        throw new System.NotImplementedException();
     }
 
     private ParagraphCollection GetParagraphs()

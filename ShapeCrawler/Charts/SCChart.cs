@@ -9,6 +9,7 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
+using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -103,6 +104,11 @@ internal class SCChart : SlideShape, IChart
     internal ChartWorkbook? ChartWorkbook { get; set; }
 
     internal ChartPart ChartPart { get; private set; }
+
+    internal override void Draw(SKCanvas canvas)
+    {
+        throw new NotImplementedException();
+    }
 
     private SCChartType GetChartType()
     {

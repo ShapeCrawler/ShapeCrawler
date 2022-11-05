@@ -1,12 +1,11 @@
 ﻿using System;
 
-namespace ShapeCrawler.Statics
+namespace ShapeCrawler.Statics;
+
+internal static class RelatedIdGenerator
 {
-    internal static class RelatedIdGenerator
+    public static string Generate()
     {
-        public static string Generate()
-        {
-            return $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
-        }
+        return $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
     }
 }

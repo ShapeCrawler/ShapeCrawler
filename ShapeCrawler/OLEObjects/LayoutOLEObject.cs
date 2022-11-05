@@ -1,5 +1,6 @@
 ﻿using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
+using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable InconsistentNaming
@@ -13,4 +14,9 @@ internal class LayoutOLEObject : LayoutShape, IShape
     }
 
     public override SCShapeType ShapeType => SCShapeType.OLEObject;
+
+    internal override void Draw(SKCanvas canvas)
+    {
+        throw new System.NotImplementedException();
+    }
 }

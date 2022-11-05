@@ -3,10 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler;
@@ -50,18 +48,18 @@ public interface IImage
 internal class SCImage : IImage
 {
     private readonly SCPresentation presentation;
-    private readonly StringValue picReference;
+    private readonly StringValue blipEmbed;
     private readonly OpenXmlPart openXmlPart;
     private byte[]? bytes;
 
     private SCImage(
         ImagePart imagePart,
-        StringValue picReference,
+        StringValue blipEmbed,
         OpenXmlPart openXmlPart,
         SCPresentation presentation)
     {
         this.SDKImagePart = imagePart;
-        this.picReference = picReference;
+        this.blipEmbed = blipEmbed;
         this.openXmlPart = openXmlPart;
 
         this.presentation = presentation;
@@ -83,12 +81,12 @@ internal class SCImage : IImage
         {
             var rId = RelatedIdGenerator.Generate();
             this.SDKImagePart = this.openXmlPart.AddNewPart<ImagePart>("image/png", rId);
-            this.picReference.Value = rId;
+            this.blipEmbed.Value = rId;
         }
 
         stream.Position = 0;
         this.SDKImagePart.FeedData(stream);
-        this.bytes = null; // resets cache
+        this.bytes = null; // to reset cache
     }
 
     public void SetImage(byte[] bytes)
@@ -104,11 +102,11 @@ internal class SCImage : IImage
         this.SetImage(sourceBytes);
     }
 
-    internal static SCImage ForPicture(Shape pictureShape, OpenXmlPart openXmlPart, StringValue picReference)
+    internal static SCImage ForPicture(Shape pictureShape, OpenXmlPart openXmlPart, StringValue? blipEmbed)
     {
-        var imagePart = (ImagePart)openXmlPart.GetPartById(picReference.Value!);
+        var imagePart = (ImagePart)openXmlPart.GetPartById(blipEmbed!.Value!);
 
-        return new SCImage(imagePart, picReference, openXmlPart, pictureShape.SlideBase.PresentationInternal);
+        return new SCImage(imagePart, blipEmbed, openXmlPart, pictureShape.SlideBase.PresentationInternal);
     }
 
     internal static SCImage? ForBackground(SCSlide slide)
@@ -143,16 +141,6 @@ internal class SCImage : IImage
         var imagePart = (ImagePart)slidePart.GetPartById(picReference.Value!);
 
         return new SCImage(imagePart, picReference, slidePart, autoShape.SlideBase.PresentationInternal);
-    }
-
-    internal static SCImage Create(ImagePart imagePart, MasterPicture masterPic, StringValue stringValue, SlideMasterPart sldMasterPart)
-    {
-        return new SCImage(imagePart, stringValue, sldMasterPart, masterPic.SlideBase.PresentationInternal);
-    }
-
-    internal static SCImage Create(ImagePart imagePart, LayoutPicture layoutPic, StringValue stringValue, SlideLayoutPart slideLayoutPart)
-    {
-        return new SCImage(imagePart, stringValue, slideLayoutPart, layoutPic.SlideBase.PresentationInternal);
     }
 
     private string GetName()
