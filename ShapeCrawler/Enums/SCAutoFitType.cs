@@ -6,7 +6,7 @@
 public enum SCAutoFitType
 {
     /// <summary>
-    ///     Do not AutoFit.
+    ///     Do not Autofit.
     /// </summary>
     None = 0,
 

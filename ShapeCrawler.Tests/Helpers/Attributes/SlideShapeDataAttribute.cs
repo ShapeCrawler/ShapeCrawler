@@ -13,6 +13,12 @@ public class SlideShapeDataAttribute : DataAttribute
     private readonly int shapeId;
     private readonly object expectedResult;
 
+    public SlideShapeDataAttribute(string pptxFile, int slideNumber, string shapeName, object expectedResult)
+    : this(pptxFile, slideNumber, shapeName)
+    {
+        this.expectedResult = expectedResult;
+    }
+
     public SlideShapeDataAttribute(string pptxFile, int slideNumber, string shapeName)
     {
         this.pptxFile = pptxFile;
@@ -20,13 +26,6 @@ public class SlideShapeDataAttribute : DataAttribute
         this.shapeName = shapeName;
     }
 
-    public SlideShapeDataAttribute(string pptxFile, int slideNumber, int shapeId)
-    {
-        this.pptxFile = pptxFile;
-        this.slideNumber = slideNumber;
-        this.shapeId = shapeId;
-    }
-    
     public SlideShapeDataAttribute(string pptxFile, int slideNumber, int shapeId, object expectedResult)
     {
         this.pptxFile = pptxFile;

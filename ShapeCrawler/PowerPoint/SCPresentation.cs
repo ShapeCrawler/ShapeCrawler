@@ -331,8 +331,8 @@ public sealed class SCPresentation : IPresentation
     private SCSlideSize GetSlideSize()
     {
         var pSlideSize = this.SDKPresentationInternal.PresentationPart!.Presentation.SlideSize!;
-        var withPx = PixelConverter.HorizontalEmuToPixel(pSlideSize.Cx!.Value);
-        var heightPx = PixelConverter.VerticalEmuToPixel(pSlideSize.Cy!.Value);
+        var withPx = UnitConverter.HorizontalEmuToPixel(pSlideSize.Cx!.Value);
+        var heightPx = UnitConverter.VerticalEmuToPixel(pSlideSize.Cy!.Value);
 
         return new SCSlideSize(withPx, heightPx);
     }

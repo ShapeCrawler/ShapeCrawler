@@ -637,6 +637,37 @@ namespace ShapeCrawler.Tests
             // Assert
             canTextChange.Should().BeFalse();
         }
+
+        [Theory]
+        [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 2", 0.25)]
+        [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 3", 0.30)]
+        public void LeftMargin_getter_returns_left_margin_of_text_frame_in_centimeters(IShape shape, double expectedMargin)
+        {
+            // Arrange
+            var autoShape = (IAutoShape)shape;
+            var textFrame = autoShape.TextFrame;
+            
+            // Act
+            var leftMargin = textFrame.LeftMargin;
+            
+            // Assert
+            leftMargin.Should().Be(expectedMargin);
+        }
+        
+        [Theory]
+        [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 2", 0.25)]
+        public void RightMargin_getter_returns_right_margin_of_text_frame_in_centimeters(IShape shape, double expectedMargin)
+        {
+            // Arrange
+            var autoShape = (IAutoShape)shape;
+            var textFrame = autoShape.TextFrame;
+            
+            // Act
+            var rightMargin = textFrame.RightMargin;
+            
+            // Assert
+            rightMargin.Should().Be(expectedMargin);
+        }
     }
 }
 

@@ -148,7 +148,7 @@ internal abstract class Shape : IShape
         }
         else
         {
-            aOffset.X = PixelConverter.HorizontalPixelToEmu(value);
+            aOffset.X = UnitConverter.HorizontalPixelToEmu(value);
         }
     }
 
@@ -168,7 +168,7 @@ internal abstract class Shape : IShape
             xEmu = xEmu - aTransformGroup!.ChildOffset!.X! + aTransformGroup!.Offset!.X!;
         }
 
-        return PixelConverter.HorizontalEmuToPixel(xEmu);
+        return UnitConverter.HorizontalEmuToPixel(xEmu);
     }
 
     private void SetYCoordinate(long value)
@@ -184,7 +184,7 @@ internal abstract class Shape : IShape
             throw new PlaceholderCannotBeChangedException();
         }
 
-        aOffset.Y = PixelConverter.VerticalPixelToEmu(value);
+        aOffset.Y = UnitConverter.VerticalPixelToEmu(value);
     }
 
     private int GetYCoordinate()
@@ -204,7 +204,7 @@ internal abstract class Shape : IShape
             yEmu = yEmu - aTransformGroup.ChildOffset!.Y! + aTransformGroup!.Offset!.Y!;
         }
 
-        return PixelConverter.VerticalEmuToPixel(yEmu);
+        return UnitConverter.VerticalEmuToPixel(yEmu);
     }
 
     private int GetWidthPixels()
@@ -216,7 +216,7 @@ internal abstract class Shape : IShape
             return placeholder.ReferencedShape.Width;
         }
 
-        return PixelConverter.HorizontalEmuToPixel(aExtents.Cx!);
+        return UnitConverter.HorizontalEmuToPixel(aExtents.Cx!);
     }
 
     private void SetWidth(int pixels)
@@ -227,7 +227,7 @@ internal abstract class Shape : IShape
             throw new PlaceholderCannotBeChangedException();
         }
 
-        aExtents.Cx = PixelConverter.HorizontalPixelToEmu(pixels);
+        aExtents.Cx = UnitConverter.HorizontalPixelToEmu(pixels);
     }
 
     private int GetHeightPixels()
@@ -238,7 +238,7 @@ internal abstract class Shape : IShape
             return ((Placeholder)this.Placeholder!).ReferencedShape.Height;
         }
 
-        return PixelConverter.VerticalEmuToPixel(aExtents!.Cy!);
+        return UnitConverter.VerticalEmuToPixel(aExtents!.Cy!);
     }
 
     private void SetHeight(int pixels)
@@ -249,7 +249,7 @@ internal abstract class Shape : IShape
             throw new PlaceholderCannotBeChangedException();
         }
 
-        aExtents.Cy = PixelConverter.VerticalPixelToEmu(pixels);
+        aExtents.Cy = UnitConverter.VerticalPixelToEmu(pixels);
     }
 
     private SCGeometry GetGeometryType()

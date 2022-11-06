@@ -37,8 +37,8 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
 
     public IAudioShape AddNewAudio(int xPixels, int yPixels, Stream mp3Stream)
     {
-        long xEmu = PixelConverter.HorizontalPixelToEmu(xPixels);
-        long yEmu = PixelConverter.VerticalPixelToEmu(yPixels);
+        long xEmu = UnitConverter.HorizontalPixelToEmu(xPixels);
+        long yEmu = UnitConverter.VerticalPixelToEmu(yPixels);
 
         var slideBase = this.slideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
         var mediaDataPart = slideBase.PresentationInternal.SDKPresentationInternal.CreateMediaDataPart("audio/mpeg", ".mp3");
@@ -144,8 +144,8 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
 
     public IVideoShape AddNewVideo(int xPixels, int yPixels, Stream videoStream)
     {
-        long xEmu = PixelConverter.HorizontalPixelToEmu(xPixels);
-        long yEmu = PixelConverter.VerticalPixelToEmu(yPixels);
+        long xEmu = UnitConverter.HorizontalPixelToEmu(xPixels);
+        long yEmu = UnitConverter.VerticalPixelToEmu(yPixels);
 
         var slideBase = this.slideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
         MediaDataPart mediaDataPart = slideBase.PresentationInternal.SDKPresentationInternal.CreateMediaDataPart("video/mp4", ".mp4");

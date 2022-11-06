@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Statics;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler;
 
@@ -28,9 +31,19 @@ public interface ITextFrame
     string Text { get; set; }
 
     /// <summary>
-    ///     Gets AutoFit type.
+    ///     Gets Autofit type.
     /// </summary>
     SCAutoFitType AutoFitType { get; }
+
+    /// <summary>
+    ///     Gets left margin of text frame in centimeters.
+    /// </summary>
+    double LeftMargin { get; }
+
+    /// <summary>
+    ///     Gets right margin of text frame in centimeters.
+    /// </summary>
+    double RightMargin { get; }
 
     /// <summary>
     ///     Gets a value indicating whether text frame can be changed.
@@ -61,9 +74,13 @@ internal class TextFrame : ITextFrame
 
     public SCAutoFitType AutoFitType => this.GetAutoFitType();
 
+    public double LeftMargin => this.GetLeftMargin();
+
+    public double RightMargin => this.GetRightMargin();
+
     internal ITextFrameContainer TextFrameContainer { get; }
 
-    internal OpenXmlCompositeElement? TextBodyElement { get; }
+    internal OpenXmlCompositeElement TextBodyElement { get; }
 
     public bool CanChangeText()
     {
@@ -76,6 +93,52 @@ internal class TextFrame : ITextFrame
     internal void Draw(SKCanvas slideCanvas, SKRect shapeRect)
     {
         throw new System.NotImplementedException();
+    }
+
+    private double GetRightMargin()
+    {
+        if (this.TextBodyElement is A.TextBody aTextBody)
+        {
+            var ins = aTextBody.BodyProperties!.RightInset;
+            if (ins is null)
+            {
+                return SCConstants.DefaultLeftAndRightMargin;
+            }
+
+            return UnitConverter.EmuToCentimeter(ins.Value);
+        }
+
+        var pTextBody = (P.TextBody)this.TextBodyElement;
+        var pTextBodyIns = pTextBody.BodyProperties!.RightInset;
+        if (pTextBodyIns is null)
+        {
+            return SCConstants.DefaultLeftAndRightMargin;
+        }
+
+        return UnitConverter.EmuToCentimeter(pTextBodyIns.Value);
+    }
+
+    private double GetLeftMargin()
+    {
+        if (this.TextBodyElement is A.TextBody aTextBody)
+        {
+            var lIns = aTextBody.BodyProperties!.LeftInset;
+            if (lIns is null)
+            {
+                return SCConstants.DefaultLeftAndRightMargin;
+            }
+
+            return UnitConverter.EmuToCentimeter(lIns.Value);
+        }
+
+        var pTextBody = (P.TextBody)this.TextBodyElement;
+        var pTextBodyLIns = pTextBody.BodyProperties!.LeftInset;
+        if (pTextBodyLIns is null)
+        {
+            return SCConstants.DefaultLeftAndRightMargin;
+        }
+
+        return UnitConverter.EmuToCentimeter(pTextBodyLIns.Value);
     }
 
     private ParagraphCollection GetParagraphs()
