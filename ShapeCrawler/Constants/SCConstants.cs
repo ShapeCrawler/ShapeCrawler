@@ -9,4 +9,6 @@ internal static class SCConstants
     internal static int DefaultFontSize => 18; // https://bit.ly/37Tjjlo
 
     internal static double DefaultLeftAndRightMargin => 0.25;
+
+    internal static double DefaultTopAndBottomMargin => 0.13;
 }

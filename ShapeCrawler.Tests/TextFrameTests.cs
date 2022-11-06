@@ -668,6 +668,37 @@ namespace ShapeCrawler.Tests
             // Assert
             rightMargin.Should().Be(expectedMargin);
         }
+        
+        [Theory]
+        [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 2", 0.13)]
+        [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 3", 0.14)]
+        public void TopMargin_getter_returns_top_margin_of_text_frame_in_centimeters(IShape shape, double expectedMargin)
+        {
+            // Arrange
+            var autoShape = (IAutoShape)shape;
+            var textFrame = autoShape.TextFrame;
+            
+            // Act
+            var topMargin = textFrame.TopMargin;
+            
+            // Assert
+            topMargin.Should().Be(expectedMargin);
+        }
+        
+        [Theory]
+        [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 2", 0.13)]
+        public void BottomMargin_getter_returns_bottom_margin_of_text_frame_in_centimeters(IShape shape, double expectedMargin)
+        {
+            // Arrange
+            var autoShape = (IAutoShape)shape;
+            var textFrame = autoShape.TextFrame;
+            
+            // Act
+            var bottomMargin = textFrame.BottomMargin;
+            
+            // Assert
+            bottomMargin.Should().Be(expectedMargin);
+        }
     }
 }
 
