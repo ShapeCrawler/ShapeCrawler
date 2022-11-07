@@ -227,6 +227,23 @@ namespace ShapeCrawler.Tests
             textFrame.Text.Should().BeEquivalentTo(newText);
             textFrame.Paragraphs[0].Portions[0].Font.Size.Should().Be(8);
         }
+        
+        [Fact]
+        public void Text_Setter_resizes_shape_to_fit_text()
+        {
+            // Arrange
+            var pptxStream = GetTestStream("autoshape-case003.pptx");
+            var pres = SCPresentation.Open(pptxStream);
+            var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 4");
+            var textFrame = shape.TextFrame;
+
+            // Act
+            textFrame.Text = "AutoShape 4 some text";
+
+            // Assert
+            shape.Height.Should().Be(46);
+            shape.Y.Should().Be(148);
+        }
 
         [Fact]
         public void AutofitType_Getter_returns_text_autofit_type()
@@ -236,7 +253,7 @@ namespace ShapeCrawler.Tests
             var textBox = autoShape.TextFrame;
 
             // Act
-            var autofitType = textBox.AutoFitType;
+            var autofitType = textBox.AutofitType;
 
             // Assert
             autofitType.Should().Be(SCAutoFitType.Shrink);

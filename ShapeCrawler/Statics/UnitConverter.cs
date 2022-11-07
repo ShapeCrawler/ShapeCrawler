@@ -31,4 +31,9 @@ internal static class UnitConverter
     {
         return Math.Round(emu * 0.000002734, 2);
     }
+
+    internal static int CentimeterToPixel(double centimeter)
+    {
+        return (int)(centimeter * 37.795275591);
+    }
 }
