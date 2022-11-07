@@ -32,7 +32,7 @@ public interface ITextFrame
     /// <summary>
     ///     Gets Autofit type.
     /// </summary>
-    SCAutoFitType AutoFitType { get; }
+    SCAutoFitType AutofitType { get; }
 
     /// <summary>
     ///     Gets left margin of text frame in centimeters.
@@ -81,7 +81,7 @@ internal class TextFrame : ITextFrame
         set => this.SetText(value);
     }
 
-    public SCAutoFitType AutoFitType => this.GetAutoFitType();
+    public SCAutoFitType AutofitType => this.GetAutoFitType();
 
     public double LeftMargin => this.GetLeftMargin();
 
@@ -179,24 +179,78 @@ internal class TextFrame : ITextFrame
         var removingParagraphs = this.Paragraphs.Where(p => p != baseParagraph);
         this.Paragraphs.Remove(removingParagraphs);
 
-        if (this.AutoFitType == SCAutoFitType.Shrink)
+        if (this.AutofitType == SCAutoFitType.Shrink)
         {
-            var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
-                .First().First();
-            var font = popularPortion.Font;
-            var fontSize = popularPortion.Font.Size;
-            var shape = this.TextFrameContainer.Shape;
-
-            fontSize = FontService.GetAdjustedFontSize(newText, font, shape);
-
-            var paragraphInternal = (SCParagraph)baseParagraph;
-            paragraphInternal.SetFontSize(fontSize);
+            this.ShrinkText(newText, baseParagraph);
+        }
+        else if (this.AutofitType == SCAutoFitType.Resize)
+        {
+            this.ResizeShape(newText, baseParagraph);
         }
 
         baseParagraph.Text = newText;
 
-        // force the lazy property to refresh
         this.text.Reset();
+    }
+
+    private void ResizeShape(string newText, IParagraph baseParagraph)
+    {
+        var shape = this.TextFrameContainer.Shape;
+        var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
+            .First().First();
+        var font = popularPortion.Font;
+
+        var paint = new SKPaint();
+        var fontSize = font.Size;
+        paint.TextSize = fontSize;
+        paint.Typeface = SKTypeface.FromFamilyName(font.Name);
+        paint.IsAntialias = true;
+
+        var lMarginPixel = UnitConverter.CentimeterToPixel(this.LeftMargin);
+        var rMarginPixel = UnitConverter.CentimeterToPixel(this.RightMargin);
+        var tMarginPixel = UnitConverter.CentimeterToPixel(this.TopMargin);
+        var bMarginPixel = UnitConverter.CentimeterToPixel(this.BottomMargin);
+
+        var newTextRect = new SKRect();
+        paint.MeasureText(newText, ref newTextRect);
+        var newTextW = newTextRect.Width;
+        var newTextH = paint.TextSize;
+        var shapeTextBlockW = shape.Width - lMarginPixel - rMarginPixel;
+        var shapeTextBlockH = shape.Height - tMarginPixel - bMarginPixel;
+        if (newTextW > shapeTextBlockW)
+        {
+            var needRowsCount = newTextW / shapeTextBlockW;
+            var intPart = (int)needRowsCount;
+            var fractionalPart = needRowsCount - intPart;
+            if (fractionalPart > 0)
+            {
+                intPart++;
+            }
+
+            var shapeNeedH = intPart * newTextH + tMarginPixel + bMarginPixel;
+            if (shapeTextBlockH < shapeNeedH)
+            {
+                shape.Height = (int)shapeNeedH + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
+
+                // We should raise the shape up by the amount which is half of the increased offset.
+                // PowerPoint does the same thing.
+                var yOffset = (shapeNeedH - shapeTextBlockH) / 2;
+                shape.Y -= (int)yOffset;
+            }
+        }
+    }
+
+    private void ShrinkText(string newText, IParagraph baseParagraph)
+    {
+        var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
+            .First().First();
+        var font = popularPortion.Font;
+        var shape = this.TextFrameContainer.Shape;
+
+        var fontSize = FontService.GetAdjustedFontSize(newText, font, shape);
+
+        var paragraphInternal = (SCParagraph)baseParagraph;
+        paragraphInternal.SetFontSize(fontSize);
     }
 
     private string GetText()

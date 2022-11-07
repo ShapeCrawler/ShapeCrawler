@@ -13,17 +13,17 @@ public interface IShape
     int X { get; set; }
 
     /// <summary>
-    ///     Gets or sets y-coordinate of the upper-left corner of the shape.
+    ///     Gets or sets y-coordinate of the upper-left corner of the shape in pixels.
     /// </summary>
     int Y { get; set; }
 
     /// <summary>
-    ///     Gets or sets width of the shape.
+    ///     Gets or sets width of the shape in pixels.
     /// </summary>
     int Width { get; set; }
 
     /// <summary>
-    ///     Gets or sets height of the shape.
+    ///     Gets or sets height of the shape in pixels.
     /// </summary>
     int Height { get; set; }
 
