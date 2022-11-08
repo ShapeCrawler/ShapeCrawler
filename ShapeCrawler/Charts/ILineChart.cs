@@ -1,6 +1,6 @@
-﻿using ShapeCrawler.Charts;
+﻿using OneOf;
+using ShapeCrawler.Charts;
 using ShapeCrawler.SlideMasters;
-using OneOf;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler;

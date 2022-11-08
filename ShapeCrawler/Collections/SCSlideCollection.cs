@@ -43,7 +43,6 @@ internal class SCSlideCollection : ISlideCollection
     public void Remove(ISlide removingSlide)
     {
         // TODO: slide layout and master of removed slide also should be deleted if they are unused
-        var removingSlideInternal = (SCSlide)removingSlide;
         var sdkPresentation = this.presentationPart.Presentation;
         var slideIdList = sdkPresentation.SlideIdList!;
         var removingSlideIndex = removingSlide.Number - 1;

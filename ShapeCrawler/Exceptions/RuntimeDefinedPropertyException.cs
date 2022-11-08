@@ -1,13 +1,9 @@
-﻿namespace ShapeCrawler.Exceptions
+﻿namespace ShapeCrawler.Exceptions;
+
+internal class RuntimeDefinedPropertyException : ShapeCrawlerException
 {
-    /// <summary>
-    ///     Thrown while attempting to access runtime defined property, but it does not exist for the current object.
-    /// </summary>
-    internal class RuntimeDefinedPropertyException : ShapeCrawlerException
+    public RuntimeDefinedPropertyException(string message)
+        : base(message, ExceptionCode.RuntimeDefinedPropertyException)
     {
-        public RuntimeDefinedPropertyException(string message)
-            : base(message, ExceptionCode.RuntimeDefinedPropertyException)
-        {
-        }
     }
 }

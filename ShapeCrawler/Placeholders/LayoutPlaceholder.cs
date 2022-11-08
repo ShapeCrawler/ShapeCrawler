@@ -5,9 +5,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Placeholders;
 
-/// <summary>
-///     Represents a placeholder located on a Slide Layout.
-/// </summary>
 internal class LayoutPlaceholder : Placeholder
 {
     private readonly LayoutShape layoutShape;

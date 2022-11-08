@@ -1,19 +1,18 @@
 ﻿// ReSharper disable CheckNamespace
-namespace ShapeCrawler
+namespace ShapeCrawler;
+
+/// <summary>
+///     Represents a table cell.
+/// </summary>
+public interface ITableCell
 {
     /// <summary>
-    ///     Represents a table cell.
+    ///     Gets text box.
     /// </summary>
-    public interface ITableCell
-    {
-        /// <summary>
-        ///     Gets text box.
-        /// </summary>
-        ITextFrame TextFrame { get; }
+    ITextFrame TextFrame { get; }
 
-        /// <summary>
-        ///     Gets a value indicating whether cell belongs to merged cell.
-        /// </summary>
-        bool IsMergedCell { get; }
-    }
+    /// <summary>
+    ///     Gets a value indicating whether cell belongs to merged cell.
+    /// </summary>
+    bool IsMergedCell { get; }
 }

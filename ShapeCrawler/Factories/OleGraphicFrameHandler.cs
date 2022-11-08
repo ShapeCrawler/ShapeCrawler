@@ -1,11 +1,11 @@
-﻿using DocumentFormat.OpenXml;
-using ShapeCrawler.Shapes;
-using System;
+﻿using System;
+using DocumentFormat.OpenXml;
+using OneOf;
 using ShapeCrawler.OLEObjects;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
-using OneOf;
 
 namespace ShapeCrawler.Factories;
 
@@ -22,7 +22,7 @@ internal class OleGraphicFrameHandler : OpenXmlElementHandler
             {
                  var oleObject = new SlideOLEObject (pGraphicFrame, oneOfSlide, groupShape);
 
-                return oleObject;
+                 return oleObject;
             }
         }
 

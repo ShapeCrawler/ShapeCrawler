@@ -22,9 +22,6 @@ public interface ISectionSlideCollection : IEnumerable<ISlide>
     ISlide this[int index] { get; }
 }
 
-/// <summary>
-/// <inheritdoc cref="ISectionCollection"/>
-/// </summary>
 internal class SCSectionCollection : ISectionCollection
 {
     private readonly List<SCSection> sections;

@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using OneOf;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Collections;
 using ShapeCrawler.SlideMasters;
-using OneOf;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable once CheckNamespace

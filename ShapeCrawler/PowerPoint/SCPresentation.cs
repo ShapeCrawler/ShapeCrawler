@@ -15,7 +15,6 @@ using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Statics;
-using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace

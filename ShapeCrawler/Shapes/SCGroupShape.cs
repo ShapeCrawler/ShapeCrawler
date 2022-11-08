@@ -1,20 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Presentation;
+﻿using OneOf;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Factories;
 using ShapeCrawler.SlideMasters;
-using OneOf;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Shapes;
 
-/// <summary>
-///     Represents a group shape on a Slide.
-/// </summary>
 internal class SCGroupShape : SlideShape, IGroupShape
 {
     private readonly P.GroupShape pGroupShape;

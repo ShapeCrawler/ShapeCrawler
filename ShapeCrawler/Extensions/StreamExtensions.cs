@@ -13,7 +13,7 @@ public static class StreamExtensions
         stream.CopyTo(destStream);
     }
 
-    public static byte[] ToArray(this Stream stream)
+    internal static byte[] ToArray(this Stream stream)
     {
         if (stream is MemoryStream inputMs)
         {

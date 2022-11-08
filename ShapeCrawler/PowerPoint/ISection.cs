@@ -1,18 +1,17 @@
-﻿namespace ShapeCrawler
+﻿namespace ShapeCrawler;
+
+/// <summary>
+///     Represents a presentation section.
+/// </summary>
+public interface ISection
 {
     /// <summary>
-    ///     Represents a presentation section.
+    ///     Gets section slides.
     /// </summary>
-    public interface ISection
-    {
-        /// <summary>
-        ///     Gets section slides.
-        /// </summary>
-        ISectionSlideCollection Slides { get; }
+    ISectionSlideCollection Slides { get; }
 
-        /// <summary>
-        ///     Gets section name;
-        /// </summary>
-        string Name { get; }
-    }
+    /// <summary>
+    ///     Gets section name;
+    /// </summary>
+    string Name { get; }
 }

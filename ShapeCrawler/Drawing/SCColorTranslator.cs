@@ -5,7 +5,7 @@ using SkiaSharp;
 
 namespace ShapeCrawler.Drawing;
 
-internal class SCColorTranslator
+internal static class SCColorTranslator
 {
     private static readonly FieldInfo[] fieldInfoList;
 
