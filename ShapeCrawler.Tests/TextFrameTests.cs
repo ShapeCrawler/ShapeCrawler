@@ -416,6 +416,23 @@ namespace ShapeCrawler.Tests
             bulletChar.Should().Be("'");
             bulletSize.Should().Be(120);
         }
+        
+        [Fact]
+        public void Paragraph_Text_Setter_updates_paragraph_text_and_resize_shape()
+        {
+            // Arrange
+            var pptxStream = GetTestStream("autoshape-case003.pptx");
+            var pres = SCPresentation.Open(pptxStream);
+            var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 4");
+            var paragraph = shape.TextFrame.Paragraphs[0];
+            
+            // Act
+            paragraph.Text = "AutoShape 4 some text";
+
+            // Assert
+            shape.Height.Should().Be(46);
+            shape.Y.Should().Be(148);
+        }
 
         [Theory]
         [MemberData(nameof(TestCasesParagraphText))]

@@ -27,7 +27,7 @@ internal class SCFont : IFont
         this.latinFont = new ResettableLazy<A.LatinFont>(this.GetALatinFont);
         this.colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
         this.ParentPortion = portion;
-        var parentTextBoxContainer = portion.ParentParagraph.TextFrame.TextFrameContainer;
+        var parentTextBoxContainer = portion.ParentParagraph.ParentTextFrame.TextFrameContainer;
         Shape shape;
         if (parentTextBoxContainer is SCTableCell cell)
         {
@@ -35,7 +35,7 @@ internal class SCFont : IFont
         }
         else
         {
-            shape = (Shape)portion.ParentParagraph.TextFrame.TextFrameContainer;
+            shape = (Shape)portion.ParentParagraph.ParentTextFrame.TextFrameContainer;
         }
 
         this.aFontScheme = shape.SlideMasterInternal.ThemePart.Theme.ThemeElements!.FontScheme!;
@@ -108,7 +108,7 @@ internal class SCFont : IFont
 
     public bool CanChange()
     {
-        return this.ParentPortion.ParentParagraph.TextFrame.TextFrameContainer.Shape.Placeholder == null;
+        return this.ParentPortion.ParentParagraph.ParentTextFrame.TextFrameContainer.Shape.Placeholder == null;
     }
 
     private void SetOffset(int value)
@@ -195,7 +195,7 @@ internal class SCFont : IFont
         }
 
         var paragraph = this.ParentPortion.ParentParagraph;
-        var textFrameContainer = paragraph.TextFrame.TextFrameContainer;
+        var textFrameContainer = paragraph.ParentTextFrame.TextFrameContainer;
         var paraLevel = paragraph.Level;
 
         if (textFrameContainer is Shape { Placeholder: { } } shape)
@@ -366,7 +366,7 @@ internal class SCFont : IFont
 
     private void SetName(string fontName)
     {
-        Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.TextFrame.TextFrameContainer;
+        Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextFrame.TextFrameContainer;
         if (parentShape.Placeholder != null)
         {
             throw new PlaceholderCannotBeChangedException();

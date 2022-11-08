@@ -45,7 +45,7 @@ internal class ColorFormat : IColorFormat
     internal ColorFormat(SCFont font)
     {
         this._font = font;
-        this.textFrameContainer = font.ParentPortion.ParentParagraph.TextFrame.TextFrameContainer;
+        this.textFrameContainer = font.ParentPortion.ParentParagraph.ParentTextFrame.TextFrameContainer;
         var shape = this.textFrameContainer.Shape;
         this.parentSlideMaster = shape.SlideMasterInternal;
     }
@@ -144,7 +144,7 @@ internal class ColorFormat : IColorFormat
 
     private bool TryFromTextBody(SCParagraph paragraph)
     {
-        var txBodyListStyle = paragraph.TextFrame.TextBodyElement!.GetFirstChild<A.ListStyle>();
+        var txBodyListStyle = paragraph.ParentTextFrame.TextBodyElement!.GetFirstChild<A.ListStyle>();
         var paraLvlToFontData = FontDataParser.FromCompositeElement(txBodyListStyle!);
         if (!paraLvlToFontData.TryGetValue(paragraph.Level, out FontData txBodyFontData))
         {

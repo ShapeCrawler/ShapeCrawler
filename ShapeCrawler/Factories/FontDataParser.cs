@@ -13,7 +13,7 @@ internal static class FontDataParser
 {
     internal static void GetFontDataFromPlaceholder(ref FontData phFontData, SCParagraph paragraph)
     {
-        var shape = (Shape)paragraph.TextFrame.TextFrameContainer;
+        var shape = (Shape)paragraph.ParentTextFrame.TextFrameContainer;
         if (shape.Placeholder == null)
         {
             return;

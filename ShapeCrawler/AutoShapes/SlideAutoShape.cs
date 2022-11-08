@@ -10,6 +10,7 @@ using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
+using ShapeCrawler.Statics;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -124,10 +125,77 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
     private TextFrame? GetTextBox()
     {
         var pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
-        return pTextBody == null ? null : new TextFrame(this, pTextBody);
+        if (pTextBody == null)
+        {
+            return null;
+        }
+
+        var newTextFrame = new TextFrame(this, pTextBody);
+        newTextFrame.TextChanged += this.ResizeShape;
+
+        return newTextFrame;
     }
 
-    private ShapeFill GetFill() // TODO: duplicate of LayoutAutoShape.TryGetFill()
+    private void ResizeShape()
+    {
+        if (this.TextFrame!.AutofitType != SCAutoFitType.Resize)
+        {
+            return;
+        }
+
+        var baseParagraph = this.TextFrame.Paragraphs.First();
+        var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
+            .First().First();
+        var font = popularPortion.Font;
+
+        var paint = new SKPaint();
+        var fontSize = font.Size;
+        paint.TextSize = fontSize;
+        paint.Typeface = SKTypeface.FromFamilyName(font.Name);
+        paint.IsAntialias = true;
+
+        var lMarginPixel = UnitConverter.CentimeterToPixel(this.TextFrame.LeftMargin);
+        var rMarginPixel = UnitConverter.CentimeterToPixel(this.TextFrame.RightMargin);
+        var tMarginPixel = UnitConverter.CentimeterToPixel(this.TextFrame.TopMargin);
+        var bMarginPixel = UnitConverter.CentimeterToPixel(this.TextFrame.BottomMargin);
+
+        var newTextRect = new SKRect();
+        var newText = this.TextFrame.Text;
+        paint.MeasureText(newText, ref newTextRect);
+        var newTextW = newTextRect.Width;
+        var newTextH = paint.TextSize;
+        var textBlockW = this.Width - lMarginPixel - rMarginPixel;
+        var shapeTextBlockH = this.Height - tMarginPixel - bMarginPixel;
+
+        var hasEnoughTextBlockSpaces = textBlockW > newTextW;
+        if (hasEnoughTextBlockSpaces)
+        {
+            return;
+        }
+
+        var neededRowsCount = newTextW / textBlockW;
+        var integerPart = (int)neededRowsCount;
+        var fractionalPart = neededRowsCount - integerPart;
+        if (fractionalPart > 0)
+        {
+            integerPart++;
+        }
+
+        var neededShapeH = (integerPart * newTextH) + tMarginPixel + bMarginPixel;
+        if (!(shapeTextBlockH < neededShapeH))
+        {
+            return;
+        }
+
+        this.Height = (int)neededShapeH + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
+
+        // We should raise the shape up by the amount which is half of the increased offset.
+        // PowerPoint does the same thing.
+        var yOffset = (neededShapeH - shapeTextBlockH) / 2;
+        this.Y -= (int)yOffset;
+    }
+
+    private ShapeFill GetFill()
     {
         return new ShapeFill(this);
     }

@@ -1,5 +1,6 @@
 ﻿// ReSharper disable CheckNamespace
 
+using System;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
@@ -73,6 +74,8 @@ internal class TextFrame : ITextFrame
         this.paragraphs = new ResettableLazy<ParagraphCollection>(this.GetParagraphs);
     }
 
+    internal event Action? TextChanged;
+
     public IParagraphCollection Paragraphs => this.paragraphs.Value;
 
     public string Text
@@ -101,6 +104,11 @@ internal class TextFrame : ITextFrame
         var isFooter = this.TextFrameContainer.Shape.Placeholder?.Type == SCPlaceholderType.Footer;
 
         return !isField && !isFooter;
+    }
+
+    internal void OnParagraphTextChanged()
+    {
+        this.TextChanged?.Invoke();
     }
 
     internal void Draw(SKCanvas slideCanvas, SKRect shapeRect)
@@ -179,65 +187,15 @@ internal class TextFrame : ITextFrame
         var removingParagraphs = this.Paragraphs.Where(p => p != baseParagraph);
         this.Paragraphs.Remove(removingParagraphs);
 
+        baseParagraph.Text = newText;
+
         if (this.AutofitType == SCAutoFitType.Shrink)
         {
             this.ShrinkText(newText, baseParagraph);
         }
-        else if (this.AutofitType == SCAutoFitType.Resize)
-        {
-            this.ResizeShape(newText, baseParagraph);
-        }
-
-        baseParagraph.Text = newText;
 
         this.text.Reset();
-    }
-
-    private void ResizeShape(string newText, IParagraph baseParagraph)
-    {
-        var shape = this.TextFrameContainer.Shape;
-        var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
-            .First().First();
-        var font = popularPortion.Font;
-
-        var paint = new SKPaint();
-        var fontSize = font.Size;
-        paint.TextSize = fontSize;
-        paint.Typeface = SKTypeface.FromFamilyName(font.Name);
-        paint.IsAntialias = true;
-
-        var lMarginPixel = UnitConverter.CentimeterToPixel(this.LeftMargin);
-        var rMarginPixel = UnitConverter.CentimeterToPixel(this.RightMargin);
-        var tMarginPixel = UnitConverter.CentimeterToPixel(this.TopMargin);
-        var bMarginPixel = UnitConverter.CentimeterToPixel(this.BottomMargin);
-
-        var newTextRect = new SKRect();
-        paint.MeasureText(newText, ref newTextRect);
-        var newTextW = newTextRect.Width;
-        var newTextH = paint.TextSize;
-        var shapeTextBlockW = shape.Width - lMarginPixel - rMarginPixel;
-        var shapeTextBlockH = shape.Height - tMarginPixel - bMarginPixel;
-        if (newTextW > shapeTextBlockW)
-        {
-            var needRowsCount = newTextW / shapeTextBlockW;
-            var intPart = (int)needRowsCount;
-            var fractionalPart = needRowsCount - intPart;
-            if (fractionalPart > 0)
-            {
-                intPart++;
-            }
-
-            var shapeNeedH = intPart * newTextH + tMarginPixel + bMarginPixel;
-            if (shapeTextBlockH < shapeNeedH)
-            {
-                shape.Height = (int)shapeNeedH + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
-
-                // We should raise the shape up by the amount which is half of the increased offset.
-                // PowerPoint does the same thing.
-                var yOffset = (shapeNeedH - shapeTextBlockH) / 2;
-                shape.Y -= (int)yOffset;
-            }
-        }
+        this.TextChanged?.Invoke();
     }
 
     private void ShrinkText(string newText, IParagraph baseParagraph)
