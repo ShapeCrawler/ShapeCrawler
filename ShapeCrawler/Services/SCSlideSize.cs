@@ -1,15 +1,14 @@
-﻿namespace ShapeCrawler.Services
+﻿namespace ShapeCrawler.Services;
+
+internal class SCSlideSize
 {
-    internal class SCSlideSize
+    internal SCSlideSize(int slideWidth, int slideHeight)
     {
-        public SCSlideSize(int slideWidth, int slideHeight)
-        {
-            this.Width = slideWidth;
-            this.Height = slideHeight;
-        }
-
-        public int Width { get; }
-
-        public int Height { get; }
+        this.Width = slideWidth;
+        this.Height = slideHeight;
     }
+
+    internal int Width { get; }
+
+    internal int Height { get; }
 }

@@ -5,12 +5,9 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Placeholders;
 
-/// <summary>
-///     Represents a placeholder located on a Slide Master.
-/// </summary>
 internal class MasterPlaceholder : Placeholder
 {
-    public MasterPlaceholder(P.PlaceholderShape pPlaceholderShape)
+    private MasterPlaceholder(P.PlaceholderShape pPlaceholderShape)
         : base(pPlaceholderShape)
     {
     }

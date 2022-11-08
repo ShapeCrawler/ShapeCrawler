@@ -1,10 +1,9 @@
-﻿namespace ShapeCrawler
+﻿namespace ShapeCrawler;
+
+internal enum ExceptionCode
 {
-    internal enum ExceptionCode
-    {
-        NextVersionFeatureException = 101,
-        PresentationIsLargeException = 102,
-        SlidesMuchMoreException = 103,
-        RuntimeDefinedPropertyException = 104
-    }
+    NextVersionFeatureException = 101,
+    PresentationIsLargeException = 102,
+    SlidesMuchMoreException = 103,
+    RuntimeDefinedPropertyException = 104
 }

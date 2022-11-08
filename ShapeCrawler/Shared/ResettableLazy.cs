@@ -1,23 +1,22 @@
 ﻿using System;
 
-namespace ShapeCrawler.Shared
+namespace ShapeCrawler.Shared;
+
+internal class ResettableLazy<T>
 {
-    internal class ResettableLazy<T>
+    private readonly Func<T> valueFactory;
+    private Lazy<T> lazy;
+
+    public ResettableLazy(Func<T> valueFactory)
     {
-        private readonly Func<T> valueFactory;
-        private Lazy<T> lazy;
+        this.valueFactory = valueFactory;
+        this.lazy = new Lazy<T>(this.valueFactory);
+    }
 
-        public ResettableLazy(Func<T> valueFactory)
-        {
-            this.valueFactory = valueFactory;
-            this.lazy = new Lazy<T>(this.valueFactory);
-        }
+    public T Value => this.lazy.Value;
 
-        public T Value => this.lazy.Value;
-
-        public void Reset()
-        {
-            this.lazy = new Lazy<T>(this.valueFactory);
-        }
+    public void Reset()
+    {
+        this.lazy = new Lazy<T>(this.valueFactory);
     }
 }

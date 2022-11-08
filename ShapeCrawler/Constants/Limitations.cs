@@ -1,18 +1,8 @@
-﻿namespace ShapeCrawler.Constants
-{
-    /// <summary>
-    ///     Contains library limitation.
-    /// </summary>
-    internal static class Limitations
-    {
-        /// <summary>
-        ///     Gets the maximal allowed size of presentation in bytes.
-        /// </summary>
-        public static int MaxPresentationSize => 250 * 1024 * 1024;
+﻿namespace ShapeCrawler.Constants;
 
-        /// <summary>
-        ///     Gets the maximal allowed number of slides in a presentation.
-        /// </summary>
-        internal static int MaxSlidesNumber => 300;
-    }
+internal static class Limitations
+{
+    internal static int MaxPresentationSize => 250 * 1024 * 1024;
+
+    internal static int MaxSlidesNumber => 300;
 }

@@ -1,5 +1,5 @@
-﻿using ShapeCrawler.Charts;
-using OneOf;
+﻿using OneOf;
+using ShapeCrawler.Charts;
 using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 

@@ -18,9 +18,6 @@ using SkiaSharp;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler;
 
-/// <summary>
-///     Represents Slide.
-/// </summary>
 internal class SCSlide : SlideObject, ISlide
 {
     private readonly Lazy<SCImage> backgroundImage;

@@ -20,9 +20,6 @@ using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler.Collections;
 
-/// <summary>
-///     Represents a collection of a slide shapes.
-/// </summary>
 internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
 {
     private readonly P.ShapeTree shapeTree;

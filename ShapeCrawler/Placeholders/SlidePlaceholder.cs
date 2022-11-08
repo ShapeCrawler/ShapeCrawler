@@ -1,5 +1,4 @@
 ﻿using DocumentFormat.OpenXml;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;

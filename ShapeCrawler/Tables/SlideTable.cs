@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using OneOf;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
+using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
-using OneOf;
-using SkiaSharp;
 
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Tables;
