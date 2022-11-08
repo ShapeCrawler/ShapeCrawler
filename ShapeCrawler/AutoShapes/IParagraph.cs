@@ -58,9 +58,11 @@ internal class SCParagraph : IParagraph
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.Level = GetInnerLevel(aParagraph);
         this.bullet = new Lazy<SCBullet>(this.GetBullet);
-        this.TextFrame = textBox;
+        this.ParentTextFrame = textBox;
         this.portions = new ResettableLazy<PortionCollection>(this.GetPortions);
     }
+
+    internal event Action? TextChanged;
 
     public bool IsRemoved { get; set; }
 
@@ -80,7 +82,7 @@ internal class SCParagraph : IParagraph
         set => this.SetAlignment(value);
     }
 
-    internal TextFrame TextFrame { get; }
+    internal TextFrame ParentTextFrame { get; }
 
     internal A.Paragraph AParagraph { get; }
 
@@ -221,6 +223,8 @@ internal class SCParagraph : IParagraph
         {
             basePortion.Text = text;
         }
+
+        this.TextChanged?.Invoke();
     }
 
     private PortionCollection GetPortions()
@@ -262,7 +266,7 @@ internal class SCParagraph : IParagraph
             return this.alignment.Value;
         }
 
-        var shape = this.TextFrame.TextFrameContainer.Shape;
+        var shape = this.ParentTextFrame.TextFrameContainer.Shape;
         var placeholder = shape.Placeholder;
 
         var aTextAlignmentType = this.AParagraph.ParagraphProperties?.Alignment!;
