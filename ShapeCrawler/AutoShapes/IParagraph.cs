@@ -36,6 +36,11 @@ public interface IParagraph
     SCTextAlignment Alignment { get; set; }
 
     /// <summary>
+    ///     Gets paragraph's indent level.
+    /// </summary>
+    int IndentLevel { get; }
+
+    /// <summary>
     ///     Adds new text portion in paragraph.
     /// </summary>
     void AddPortion(string text);
@@ -81,6 +86,8 @@ internal class SCParagraph : IParagraph
         get => this.GetAlignment();
         set => this.SetAlignment(value);
     }
+
+    public int IndentLevel => this.GetIndentLevel();
 
     internal TextFrame ParentTextFrame { get; }
 
@@ -200,6 +207,17 @@ internal class SCParagraph : IParagraph
         }
 
         return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next);
+    }
+
+    private int GetIndentLevel()
+    {
+        var level = this.AParagraph.ParagraphProperties!.Level;
+        if (level is null)
+        {
+            return 1; // it is default indent level
+        }
+
+        return level + 1;
     }
 
     private void SetText(string text)

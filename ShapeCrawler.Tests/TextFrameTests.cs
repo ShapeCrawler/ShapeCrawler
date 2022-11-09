@@ -278,8 +278,20 @@ namespace ShapeCrawler.Tests
             autoShapeCase3.Should().NotBeNull();
         }
 
+        [Theory]
+        [SlideParagraphData("autoshape-case003.pptx", 1, "AutoShape 5", 1, 1)]
+        [SlideParagraphData("autoshape-case003.pptx", 1, "AutoShape 5", 2, 2)]
+        public void Paragraph_IndentLevel_returns_indent_level(IParagraph para, int expectedLevel)
+        {
+            // Act
+            var indentLevel = para.IndentLevel;
+
+            // Arrange
+            indentLevel.Should().Be(expectedLevel);
+        }
+        
         [Fact]
-        public void ParagraphBulletFontNameProperty_ReturnsFontName()
+        public void Paragraph_Bullet_FontName_Getter_returns_font_name()
         {
             // Arrange
             var shapes = _fixture.Pre002.Slides[1].Shapes;

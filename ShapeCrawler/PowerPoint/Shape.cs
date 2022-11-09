@@ -179,7 +179,8 @@ internal abstract class Shape : IShape
         }
 
         var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().First();
-        if (this.Placeholder is not null)
+        var isPlaceholder = this.Placeholder is not null;
+        if (isPlaceholder)
         {
             throw new PlaceholderCannotBeChangedException();
         }

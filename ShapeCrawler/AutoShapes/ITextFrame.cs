@@ -213,11 +213,6 @@ internal class TextFrame : ITextFrame
 
     private string GetText()
     {
-        if (this.TextBodyElement == null)
-        {
-            return string.Empty;
-        }
-
         var sb = new StringBuilder();
         sb.Append(this.Paragraphs[0].Text);
 
