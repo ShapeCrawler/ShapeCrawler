@@ -66,7 +66,7 @@ internal class SCPortion : IPortion
 
     private string GetText()
     {
-        string portionText = this.AText.Text;
+        var portionText = this.AText.Text;
         if (this.AText.Parent!.NextSibling<A.Break>() != null)
         {
             portionText += Environment.NewLine;

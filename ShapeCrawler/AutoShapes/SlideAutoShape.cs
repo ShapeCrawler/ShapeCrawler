@@ -19,9 +19,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler;
 
-/// <summary>
-///     Represents AutoShape located on Slide.
-/// </summary>
 internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
 {
     private readonly Lazy<ShapeFill> shapeFill;
@@ -33,7 +30,7 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
         : base(pShape, oneOfSlide, groupShape)
     {
         this.pShape = pShape;
-        this.textFrame = new Lazy<TextFrame?>(this.GetTextBox);
+        this.textFrame = new Lazy<TextFrame?>(this.GetTextFrame);
         this.shapeFill = new Lazy<ShapeFill>(this.GetFill);
         this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
     }
@@ -122,7 +119,7 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
         return lvlToFontData;
     }
 
-    private TextFrame? GetTextBox()
+    private TextFrame? GetTextFrame()
     {
         var pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
         if (pTextBody == null)
