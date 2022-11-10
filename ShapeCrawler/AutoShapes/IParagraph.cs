@@ -61,7 +61,7 @@ internal class SCParagraph : IParagraph
     {
         this.AParagraph = aParagraph;
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
-        this.Level = GetInnerLevel(aParagraph);
+        this.Level = this.GetIndentLevel();
         this.bullet = new Lazy<SCBullet>(this.GetBullet);
         this.ParentTextFrame = textBox;
         this.portions = new ResettableLazy<PortionCollection>(this.GetPortions);
@@ -170,7 +170,10 @@ internal class SCParagraph : IParagraph
         lastElement = lastElement.InsertAfterSelf(new A.Break());
     }
 
-    private static void AddText(ref OpenXmlElement? lastElement, OpenXmlElement aTextParent, string text,
+    private static void AddText(
+        ref OpenXmlElement? lastElement,
+        OpenXmlElement aTextParent,
+        string text,
         A.Paragraph aParagraph)
     {
         var newARun = (A.Run)aTextParent.CloneNode(true);
@@ -183,15 +186,6 @@ internal class SCParagraph : IParagraph
         {
             lastElement = lastElement.InsertAfterSelf(newARun);
         }
-    }
-
-    private static int GetInnerLevel(A.Paragraph aParagraph)
-    {
-        // XML-paragraph enumeration started from zero. Null is also zero
-        Int32Value xmlParagraphLvl = aParagraph.ParagraphProperties?.Level ?? 0;
-        int paragraphLvl = ++xmlParagraphLvl;
-
-        return paragraphLvl;
     }
 
     private SCBullet GetBullet()

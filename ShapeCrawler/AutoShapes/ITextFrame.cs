@@ -108,6 +108,7 @@ internal class TextFrame : ITextFrame
 
     internal void OnParagraphTextChanged()
     {
+        this.text.Reset();
         this.TextChanged?.Invoke();
     }
 
@@ -216,10 +217,9 @@ internal class TextFrame : ITextFrame
         var sb = new StringBuilder();
         sb.Append(this.Paragraphs[0].Text);
 
-        // If the number of paragraphs more than one
-        var numPr = this.Paragraphs.Count;
-        var index = 1;
-        while (index < numPr)
+        var paragraphsCount = this.Paragraphs.Count;
+        var index = 1; // we've already added the text of first paragraph
+        while (index < paragraphsCount)
         {
             sb.AppendLine();
             sb.Append(this.Paragraphs[index].Text);

@@ -139,24 +139,24 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             var pres = testTextBoxQuery.Presentation;
-            var textBox = testTextBoxQuery.GetAutoShape().TextFrame;
+            var textFrame = testTextBoxQuery.GetAutoShape().TextFrame;
             const string newText = "Test";
             var mStream = new MemoryStream();
 
             // Act
-            textBox.Text = newText;
+            textFrame.Text = newText;
 
             // Assert
-            textBox.Text.Should().BeEquivalentTo(newText);
-            textBox.Paragraphs.Should().HaveCount(1);
+            textFrame.Text.Should().BeEquivalentTo(newText);
+            textFrame.Paragraphs.Should().HaveCount(1);
 
             pres.SaveAs(mStream);
             pres.Close();
 
             testTextBoxQuery.Presentation = SCPresentation.Open(mStream);
-            textBox = testTextBoxQuery.GetAutoShape().TextFrame;
-            textBox.Text.Should().BeEquivalentTo(newText);
-            textBox.Paragraphs.Should().HaveCount(1);
+            textFrame = testTextBoxQuery.GetAutoShape().TextFrame;
+            textFrame.Text.Should().BeEquivalentTo(newText);
+            textFrame.Paragraphs.Should().HaveCount(1);
         }
         
         public static TheoryData<TestElementQuery> TestCasesTextSetter
@@ -243,6 +243,20 @@ namespace ShapeCrawler.Tests
             // Assert
             shape.Height.Should().Be(46);
             shape.Y.Should().Be(148);
+        }
+        
+        [Fact]
+        public void Text_Setter_should_not_throw_exception()
+        {
+            // Arrange
+            var pptxStream = GetTestStream("autoshape-case012.pptx");
+            var pres = SCPresentation.Open(pptxStream);
+            var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("Shape 1");
+            var textFrame = shape.TextFrame;
+
+            // Act
+            var text = textFrame.Text;
+            textFrame.Text = "some text";
         }
 
         [Fact]
