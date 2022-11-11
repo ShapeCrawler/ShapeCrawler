@@ -2,7 +2,7 @@
 
 internal class RuntimeDefinedPropertyException : ShapeCrawlerException
 {
-    public RuntimeDefinedPropertyException(string message)
+    internal RuntimeDefinedPropertyException(string message)
         : base(message, ExceptionCode.RuntimeDefinedPropertyException)
     {
     }

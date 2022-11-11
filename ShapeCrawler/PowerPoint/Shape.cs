@@ -179,11 +179,6 @@ internal abstract class Shape : IShape
         }
 
         var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().First();
-        var isPlaceholder = this.Placeholder is not null;
-        if (isPlaceholder)
-        {
-            throw new PlaceholderCannotBeChangedException();
-        }
 
         aOffset.Y = UnitConverter.VerticalPixelToEmu(value);
     }

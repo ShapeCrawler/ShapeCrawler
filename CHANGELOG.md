@@ -3,6 +3,8 @@
 ## Version 0.37.0 - Unreleased
 - Added `IPicture.SvgContent` property to read SVG graphic content [#344](https://github.com/ShapeCrawler/ShapeCrawler/issues/355)
 - Added `ITextFrame.LeftMargin`, `ITextFrame.RightMargin`, `ITextFrame.TopMargin` and `ITextFrame.BottomMargin` properties to get margins of text box [#375](https://github.com/ShapeCrawler/ShapeCrawler/issues/375)
+- Added `IParagraph.IndentLevel` to get indent level of paragraph [#377](https://github.com/ShapeCrawler/ShapeCrawler/issues/377)
+- Added processing "Resize shape to fit text" flag [#360](https://github.com/ShapeCrawler/ShapeCrawler/issues/360)
 
 
 ## Version 0.36.0 - 2022-10-31
