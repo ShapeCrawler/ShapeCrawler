@@ -253,7 +253,7 @@ namespace ShapeCrawler.Tests
             var autoShape = (IAutoShape)shape;
             var textFrame = autoShape.TextFrame;
 
-            // Act
+            // Act-Assert
             var text = textFrame.Text;
             textFrame.Text = "some text";
         }
@@ -269,6 +269,9 @@ namespace ShapeCrawler.Tests
             // Act
             var text = textFrame.Text;
             textFrame.Text = "Some sentence. Some sentence";
+            
+            // Assert
+            shape.Height.Should().Be(88);
         }
 
         [Fact]
