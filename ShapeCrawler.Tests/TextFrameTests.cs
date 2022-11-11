@@ -245,18 +245,30 @@ namespace ShapeCrawler.Tests
             shape.Y.Should().Be(148);
         }
         
-        [Fact]
-        public void Text_Setter_should_not_throw_exception()
+        [Theory]
+        [SlideShapeData("autoshape-case012.pptx", 1, "Shape 1")]
+        public void Text_Setter_should_not_throw_exception(IShape shape)
         {
             // Arrange
-            var pptxStream = GetTestStream("autoshape-case012.pptx");
-            var pres = SCPresentation.Open(pptxStream);
-            var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("Shape 1");
-            var textFrame = shape.TextFrame;
+            var autoShape = (IAutoShape)shape;
+            var textFrame = autoShape.TextFrame;
 
             // Act
             var text = textFrame.Text;
             textFrame.Text = "some text";
+        }
+        
+        [Theory]
+        [SlideShapeData("autoshape-case013.pptx", 1, "AutoShape 1")]
+        public void Text_Setter_sets_long_text(IShape shape)
+        {
+            // Arrange
+            var autoShape = (IAutoShape)shape;
+            var textFrame = autoShape.TextFrame;
+
+            // Act
+            var text = textFrame.Text;
+            textFrame.Text = "Some sentence. Some sentence";
         }
 
         [Fact]
@@ -300,7 +312,7 @@ namespace ShapeCrawler.Tests
             // Act
             var indentLevel = para.IndentLevel;
 
-            // Arrange
+            // Assert
             indentLevel.Should().Be(expectedLevel);
         }
         
