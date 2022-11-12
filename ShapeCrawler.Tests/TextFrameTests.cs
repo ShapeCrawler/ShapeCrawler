@@ -284,10 +284,10 @@ namespace ShapeCrawler.Tests
             var textFrame = autoShape.TextFrame!;
 
             // Act
-            var wrappedText = textFrame.TextWrapped;
+            var textWrapped = textFrame.TextWrapped;
 
             // Assert
-            wrappedText.Should().Be(isTextWrapped);
+            textWrapped.Should().Be(isTextWrapped);
         }
         
         [Fact]
