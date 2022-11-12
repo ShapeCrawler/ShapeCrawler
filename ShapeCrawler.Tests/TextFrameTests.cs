@@ -274,6 +274,22 @@ namespace ShapeCrawler.Tests
             shape.Height.Should().Be(88);
         }
 
+        [Theory]
+        [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 6", false)]
+        [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 2", true)]
+        public void TextWrapped_Getter_returns_value_indicating_whether_text_is_wrapped_in_shape(IShape shape, bool isTextWrapped)
+        {
+            // Arrange
+            var autoShape = (IAutoShape)shape;
+            var textFrame = autoShape.TextFrame!;
+
+            // Act
+            var wrappedText = textFrame.TextWrapped;
+
+            // Assert
+            wrappedText.Should().Be(isTextWrapped);
+        }
+        
         [Fact]
         public void AutofitType_Getter_returns_text_autofit_type()
         {

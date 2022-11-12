@@ -56,6 +56,11 @@ public interface ITextFrame
     double BottomMargin { get; }
 
     /// <summary>
+    ///     Gets a value indicating whether text is wrapped in shape.
+    /// </summary>
+    bool TextWrapped { get; }
+
+    /// <summary>
     ///     Gets a value indicating whether text frame can be changed.
     /// </summary>
     bool CanChangeText();
@@ -94,6 +99,8 @@ internal class TextFrame : ITextFrame
 
     public double BottomMargin => this.GetBottomMargin();
 
+    public bool TextWrapped => this.IsTextWrapped();
+
     internal ITextFrameContainer TextFrameContainer { get; }
 
     internal OpenXmlCompositeElement TextBodyElement { get; }
@@ -129,6 +136,12 @@ internal class TextFrame : ITextFrame
         var bodyProperties = this.TextBodyElement.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.RightInset;
         return ins is null ? SCConstants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(ins.Value);
+    }
+
+    private bool IsTextWrapped()
+    {
+        var aBodyPr = this.TextBodyElement.GetFirstChild<A.BodyProperties>() !;
+        return aBodyPr.GetAttributes().All(a => a.LocalName != "wrap");
     }
 
     private double GetTopMargin()
