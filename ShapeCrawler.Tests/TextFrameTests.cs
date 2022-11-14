@@ -300,7 +300,6 @@ namespace ShapeCrawler.Tests
 
             // Act
             textFrame.AutofitType = SCAutofitType.Resize;
-            pres.SaveAs(@"c:\temp\output.pptx");
 
             // Assert
             textFrame.AutofitType.Should().Be(SCAutofitType.Resize);

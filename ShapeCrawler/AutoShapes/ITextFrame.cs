@@ -30,10 +30,21 @@ public interface ITextFrame
     /// </summary>
     string Text { get; set; }
 
+#if DEBUG
+
     /// <summary>
     ///     Gets or sets Autofit type.
     /// </summary>
     SCAutofitType AutofitType { get; set; }
+
+#else
+
+    /// <summary>
+    ///     Gets Autofit type.
+    /// </summary>
+    SCAutofitType AutofitType { get; }
+    
+    #endif
 
     /// <summary>
     ///     Gets left margin of text frame in centimeters.
