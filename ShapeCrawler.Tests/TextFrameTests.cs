@@ -290,6 +290,23 @@ namespace ShapeCrawler.Tests
             textWrapped.Should().Be(isTextWrapped);
         }
         
+        [Fact (Skip = "In Progress: https://github.com/ShapeCrawler/ShapeCrawler/issues/360")]
+        public void Autofit_Setter_sets_text_autofit_type()
+        {
+            // Arrange
+            var pptxStream = GetTestStream("autoshape-case003.pptx");
+            var pres = SCPresentation.Open(pptxStream);
+            var textFrame = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 6").TextFrame!;
+
+            // Act
+            textFrame.AutofitType = SCAutofitType.Resize;
+
+            // Assert
+            textFrame.AutofitType.Should().Be(SCAutofitType.Resize);
+            var errors = PptxValidator.Validate(pres);
+            errors.Should().BeEmpty();
+        }
+        
         [Fact]
         public void AutofitType_Getter_returns_text_autofit_type()
         {
@@ -301,7 +318,7 @@ namespace ShapeCrawler.Tests
             var autofitType = textBox.AutofitType;
 
             // Assert
-            autofitType.Should().Be(SCAutoFitType.Shrink);
+            autofitType.Should().Be(SCAutofitType.Shrink);
         }
 
         [Fact]
