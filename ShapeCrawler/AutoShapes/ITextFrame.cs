@@ -43,7 +43,7 @@ public interface ITextFrame
     ///     Gets Autofit type.
     /// </summary>
     SCAutofitType AutofitType { get; }
-    
+
     #endif
 
     /// <summary>
