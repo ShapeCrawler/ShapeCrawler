@@ -71,20 +71,20 @@ internal class SCFont : IFont
     {
         get
         {
-            A.RunProperties aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
-            return aRunProperties?.Underline?.Value ?? A.TextUnderlineValues.None;
+            var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+            return aRunPr?.Underline?.Value ?? A.TextUnderlineValues.None;
         }
 
         set
         {
-            A.RunProperties aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+            var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
             if (aRunPr != null)
             {
                 aRunPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
             }
             else
             {
-                A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                var aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
                 if (aEndParaRPr != null)
                 {
                     aEndParaRPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
@@ -121,7 +121,7 @@ internal class SCFont : IFont
         }
         else
         {
-            A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+            var aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
             if (aEndParaRPr != null)
             {
                 aEndParaRPr.Baseline = int32Value;
@@ -143,7 +143,7 @@ internal class SCFont : IFont
             return aRunProperties.Baseline.Value / 1000;
         }
 
-        A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+        var aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
         if (aEndParaRPr is not null)
         {
             return aEndParaRPr.Baseline! / 1000;
@@ -165,8 +165,8 @@ internal class SCFont : IFont
 
     private A.LatinFont GetALatinFont()
     {
-        A.RunProperties aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
-        A.LatinFont aLatinFont = aRunProperties?.GetFirstChild<A.LatinFont>();
+        var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+        var aLatinFont = aRunProperties?.GetFirstChild<A.LatinFont>();
 
         if (aLatinFont != null)
         {
@@ -207,7 +207,7 @@ internal class SCFont : IFont
         }
 
         var presentation = textFrameContainer.Shape.SlideBase.PresentationInternal;
-        if (presentation.ParaLvlToFontData.TryGetValue(paraLevel, out FontData fontData))
+        if (presentation.ParaLvlToFontData.TryGetValue(paraLevel, out var fontData))
         {
             if (fontData.FontSize is not null)
             {
@@ -221,8 +221,8 @@ internal class SCFont : IFont
     private static bool TryFromPlaceholder(Shape shape, int paraLevel, out int i)
     {
         i = -1;
-        var placeholder = (Placeholder)shape.Placeholder;
-        var referencedShape = (SlideAutoShape)placeholder?.ReferencedShape;
+        var placeholder = shape.Placeholder as Placeholder;
+        var referencedShape = placeholder?.ReferencedShape as SlideAutoShape;
         var fontDataPlaceholder = new FontData();
         if (referencedShape != null)
         {
@@ -290,13 +290,13 @@ internal class SCFont : IFont
 
     private bool GetItalicFlag()
     {
-        A.RunProperties aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
-        if (aRunProperties == null)
+        var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+        if (aRunPr == null)
         {
             return false;
         }
 
-        if (aRunProperties.Italic is not null  && aRunProperties.Italic == true)
+        if (aRunPr.Italic is not null && aRunPr.Italic == true)
         {
             return true;
         }
@@ -328,7 +328,7 @@ internal class SCFont : IFont
             }
             else
             {
-                A.EndParagraphRunProperties aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
+                var aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
                 if (aEndParaRPr != null)
                 {
                     aEndParaRPr.Bold = new BooleanValue(value);

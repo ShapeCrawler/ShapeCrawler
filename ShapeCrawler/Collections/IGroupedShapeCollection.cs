@@ -64,7 +64,7 @@ internal class GroupedShapeCollection : LibraryCollection<IShape>, IGroupedShape
         var groupedShapes = new List<IShape>();
         foreach (var child in pGroupShapeParam.ChildElements.OfType<OpenXmlCompositeElement>())
         {
-            Shape shape;
+            Shape? shape;
             if (child is P.GroupShape pGroupShape)
             {
                 shape = new SCGroupShape(pGroupShape, oneOfSlide, groupShape);

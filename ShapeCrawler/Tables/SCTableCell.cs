@@ -1,7 +1,5 @@
 ﻿using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shared;
-using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Tables;

@@ -5,6 +5,7 @@ using ShapeCrawler.Exceptions;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 // ReSharper disable PossibleMultipleEnumeration
+// ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
 
 /// <summary>

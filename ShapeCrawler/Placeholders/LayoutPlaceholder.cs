@@ -19,8 +19,7 @@ internal class LayoutPlaceholder : Placeholder
 
     internal static LayoutPlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, LayoutShape layoutShape)
     {
-        P.PlaceholderShape pPlaceholderShape =
-            pShapeTreeChild.GetPNvPr().GetFirstChild<P.PlaceholderShape>();
+        var pPlaceholderShape = pShapeTreeChild.GetPNvPr().GetFirstChild<P.PlaceholderShape>();
         if (pPlaceholderShape == null)
         {
             return null;

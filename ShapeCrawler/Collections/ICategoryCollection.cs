@@ -84,7 +84,7 @@ internal class CategoryCollection : LibraryCollection<ICategory>, ICategoryColle
             }
 
             int catIndex = 0;
-            ResettableLazy<List<X.Cell>> xCells = null;
+            ResettableLazy<List<X.Cell>> xCells;
 
             xCells = new ResettableLazy<List<X.Cell>>(() =>
                 ChartReferencesParser.GetXCellsByFormula(cFormula, chart));
@@ -123,7 +123,7 @@ internal class CategoryCollection : LibraryCollection<ICategory>, ICategoryColle
                 foreach (C.StringPoint cStrPoint in cStringPoints)
                 {
                     uint index = cStrPoint.Index!.Value;
-                    C.NumericValue cachedCatName = cStrPoint.NumericValue;
+                    var cachedCatName = cStrPoint.NumericValue;
                     var category = new Category(null, -1, cachedCatName!);
                     nextIndexToCategory.Add(new KeyValuePair<uint, Category>(index, category));
                 }

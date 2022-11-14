@@ -272,7 +272,7 @@ internal abstract class Shape : IShape
             }
         }
 
-        var placeholder = (Placeholder)this.Placeholder;
+        var placeholder = this.Placeholder as Placeholder;
         if (placeholder?.ReferencedShape != null)
         {
             return placeholder.ReferencedShape.GeometryType;

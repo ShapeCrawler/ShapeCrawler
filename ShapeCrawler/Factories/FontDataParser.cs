@@ -35,7 +35,7 @@ internal static class FontDataParser
         var lvlToFontData = new Dictionary<int, FontData>();
         foreach (OpenXmlElement textPr in lvlParagraphPropertyList)
         {
-            A.DefaultRunProperties aDefRPr = textPr.GetFirstChild<A.DefaultRunProperties>();
+            var aDefRPr = textPr.GetFirstChild<A.DefaultRunProperties>();
 
             int? fontSize = null;
             if (aDefRPr?.FontSize is not null)
@@ -55,25 +55,25 @@ internal static class FontDataParser
                 isItalic = aDefRPr.Italic;
             }
 
-            A.LatinFont aLatinFont = aDefRPr?.GetFirstChild<A.LatinFont>();
+            var aLatinFont = aDefRPr?.GetFirstChild<A.LatinFont>();
 
-            A.RgbColorModelHex aRgbColorModelHex;
-            A.SchemeColor aSchemeColor;
-            A.SystemColor aSystemColor;
-            A.PresetColor aPresetColor;
+            A.RgbColorModelHex? aRgbColorModelHex;
+            A.SchemeColor? aSchemeColor;
+            A.SystemColor? aSystemColor;
+            A.PresetColor? aPresetColor;
 
             // Try get color from <a:solidFill>
-            A.SolidFill aSolidFill = aDefRPr?.GetASolidFill();
+            var aSolidFill = aDefRPr?.GetASolidFill();
             if (aSolidFill != null)
             {
-                aRgbColorModelHex = aSolidFill.RgbColorModelHex;
+                aRgbColorModelHex = aSolidFill.RgbColorModelHex!;
                 aSchemeColor = aSolidFill.SchemeColor;
                 aSystemColor = aSolidFill.SystemColor;
                 aPresetColor = aSolidFill.PresetColor;
             }
             else
             {
-                A.GradientStop aGradientStop = aDefRPr?.GetFirstChild<A.GradientFill>()?.GradientStopList!
+                var aGradientStop = aDefRPr?.GetFirstChild<A.GradientFill>()?.GradientStopList!
                     .GetFirstChild<A.GradientStop>();
                 aRgbColorModelHex = aGradientStop?.RgbColorModelHex;
                 aSchemeColor = aGradientStop?.SchemeColor;

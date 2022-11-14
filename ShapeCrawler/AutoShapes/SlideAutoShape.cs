@@ -64,7 +64,7 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
             var rect = new SKRect(this.X, this.Y, this.Width, this.Height);
             canvas.DrawRect(rect, paint);
 
-            var textFrameInternal = (TextFrame)this.TextFrame;
+            var textFrameInternal = this.TextFrame as TextFrame;
             if (textFrameInternal != null)
             {
                 textFrameInternal.Draw(canvas, rect);
@@ -144,7 +144,7 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
 
     internal void FillFontData(int paragraphLvl, ref FontData fontData)
     {
-        if (this.lvlToFontData.Value.TryGetValue(paragraphLvl, out FontData layoutFontData))
+        if (this.lvlToFontData.Value.TryGetValue(paragraphLvl, out var layoutFontData))
         {
             fontData = layoutFontData;
             if (!fontData.IsFilled() && this.Placeholder != null)
