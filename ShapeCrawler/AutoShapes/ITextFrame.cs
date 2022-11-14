@@ -31,9 +31,9 @@ public interface ITextFrame
     string Text { get; set; }
 
     /// <summary>
-    ///     Gets Autofit type.
+    ///     Gets or sets Autofit type.
     /// </summary>
-    SCAutoFitType AutofitType { get; }
+    SCAutofitType AutofitType { get; set; }
 
     /// <summary>
     ///     Gets left margin of text frame in centimeters.
@@ -89,7 +89,11 @@ internal class TextFrame : ITextFrame
         set => this.SetText(value);
     }
 
-    public SCAutoFitType AutofitType => this.GetAutoFitType();
+    public SCAutofitType AutofitType
+    {
+        get => this.GetAutofitType();
+        set => this.SetAutofitType(value);
+    }
 
     public double LeftMargin => this.GetLeftMargin();
 
@@ -122,6 +126,49 @@ internal class TextFrame : ITextFrame
     internal void Draw(SKCanvas slideCanvas, SKRect shapeRect)
     {
         throw new System.NotImplementedException();
+    }
+
+    private void SetAutofitType(SCAutofitType newType)
+    {
+        var currentType = this.AutofitType;
+        if (currentType == newType)
+        {
+            return;
+        }
+
+        var aBodyPr = this.TextBodyElement.GetFirstChild<A.BodyProperties>() !;
+        var dontAutofit = aBodyPr.GetFirstChild<A.NoAutoFit>();
+        var shrink = aBodyPr.GetFirstChild<A.NormalAutoFit>();
+        var resize = aBodyPr.GetFirstChild<A.ShapeAutoFit>();
+
+        switch (newType)
+        {
+            case SCAutofitType.None:
+                shrink?.Remove();
+                resize?.Remove();
+                dontAutofit = new A.NoAutoFit();
+                aBodyPr.Append(dontAutofit);
+                break;
+            case SCAutofitType.Shrink:
+                dontAutofit?.Remove();
+                resize?.Remove();
+                shrink = new A.NormalAutoFit();
+                aBodyPr.Append(shrink);
+                break;
+            case SCAutofitType.Resize:
+            {
+                dontAutofit?.Remove();
+                shrink?.Remove();
+                resize = new A.ShapeAutoFit();
+                aBodyPr.Append(resize);
+                var parentAutoShape = (SlideAutoShape)this.TextFrameContainer.Shape;
+                parentAutoShape.ResizeShape();
+                break;
+            }
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(newType), newType, null);
+        }
     }
 
     private double GetLeftMargin()
@@ -163,25 +210,25 @@ internal class TextFrame : ITextFrame
         return new ParagraphCollection(this);
     }
 
-    private SCAutoFitType GetAutoFitType()
+    private SCAutofitType GetAutofitType()
     {
         if (this.TextBodyElement == null)
         {
-            return SCAutoFitType.None;
+            return SCAutofitType.None;
         }
 
         var aBodyPr = this.TextBodyElement.GetFirstChild<A.BodyProperties>();
         if (aBodyPr!.GetFirstChild<A.NormalAutoFit>() != null)
         {
-            return SCAutoFitType.Shrink;
+            return SCAutofitType.Shrink;
         }
 
         if (aBodyPr.GetFirstChild<A.ShapeAutoFit>() != null)
         {
-            return SCAutoFitType.Resize;
+            return SCAutofitType.Resize;
         }
 
-        return SCAutoFitType.None;
+        return SCAutofitType.None;
     }
 
     private void SetText(string newText)
@@ -203,7 +250,7 @@ internal class TextFrame : ITextFrame
 
         baseParagraph.Text = newText;
 
-        if (this.AutofitType == SCAutoFitType.Shrink)
+        if (this.AutofitType == SCAutofitType.Shrink)
         {
             this.ShrinkText(newText, baseParagraph);
         }

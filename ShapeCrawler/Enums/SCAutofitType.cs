@@ -3,7 +3,7 @@
 /// <summary>
 ///     Autofit type.
 /// </summary>
-public enum SCAutoFitType
+public enum SCAutofitType
 {
     /// <summary>
     ///     Do not Autofit.
