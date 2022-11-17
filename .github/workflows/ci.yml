@@ -15,10 +15,6 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.0.401
-      - name: Install Calibri
-        run: |
-          sudo apt install ttf-mscorefonts-installer
-          sudo apt-get install fontforge
       - name: Install dependencies
         run: dotnet restore
       - name: Build Release
