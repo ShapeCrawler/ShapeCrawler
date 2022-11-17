@@ -305,7 +305,7 @@ namespace ShapeCrawler.Tests
 
             // Assert
             textFrame.AutofitType.Should().Be(SCAutofitType.Resize);
-            shape.Width.Should().Be(97);
+            shape.Width.Should().Be(107);
             var errors = PptxValidator.Validate(pres);
             errors.Should().BeEmpty();
         }
