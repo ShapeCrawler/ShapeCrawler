@@ -101,10 +101,10 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
         var newTextW = newTextRect.Width;
         var newTextH = paint.TextSize;
         var textBlockW = this.Width - lMarginPixel - rMarginPixel;
-        var shapeTextBlockH = this.Height - tMarginPixel - bMarginPixel;
+        var currentTextBlockHeight = this.Height - tMarginPixel - bMarginPixel;
 
         var hasTextBlockEnoughWidth = textBlockW > newTextW;
-        if (hasTextBlockEnoughWidth)
+        if (hasTextBlockEnoughWidth && this.TextFrame.TextWrapped)
         {
             return;
         }
@@ -117,17 +117,18 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
             integerPart++;
         }
 
-        var neededShapeH = (integerPart * newTextH) + tMarginPixel + bMarginPixel;
-        if (!(shapeTextBlockH < neededShapeH))
+        var requiredTextBlockHeight = (integerPart * newTextH) + tMarginPixel + bMarginPixel;
+        var hasRequiredHeight = currentTextBlockHeight >= requiredTextBlockHeight;
+        if (hasRequiredHeight && this.TextFrame.TextWrapped)
         {
             return;
         }
 
-        this.Height = (int)neededShapeH + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
+        this.Height = (int)requiredTextBlockHeight + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
 
         // We should raise the shape up by the amount which is half of the increased offset.
         // PowerPoint does the same thing.
-        var yOffset = (neededShapeH - shapeTextBlockH) / 2;
+        var yOffset = (requiredTextBlockHeight - currentTextBlockHeight) / 2;
         this.Y -= (int)yOffset;
 
         if (!this.TextFrame.TextWrapped)
@@ -138,7 +139,7 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
                 .First().Text;
             var paraTextRect = default(SKRect);
             var widthInPixels = paint.MeasureText(longerText, ref paraTextRect);
-            this.Width = (int)widthInPixels + lMarginPixel + rMarginPixel;
+            this.Width = (int)(widthInPixels * 1.4) + lMarginPixel + rMarginPixel;
         }
     }
 

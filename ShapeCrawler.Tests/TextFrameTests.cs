@@ -277,6 +277,7 @@ namespace ShapeCrawler.Tests
         [Theory]
         [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 6", false)]
         [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 2", true)]
+        [SlideShapeData("autoshape-case013.pptx", 1, "AutoShape 1", true)]
         public void TextWrapped_Getter_returns_value_indicating_whether_text_is_wrapped_in_shape(IShape shape, bool isTextWrapped)
         {
             // Arrange
@@ -290,19 +291,21 @@ namespace ShapeCrawler.Tests
             textWrapped.Should().Be(isTextWrapped);
         }
         
-        [Fact (Skip = "In Progress: https://github.com/ShapeCrawler/ShapeCrawler/issues/360")]
+        [Fact]
         public void Autofit_Setter_sets_text_autofit_type()
         {
             // Arrange
             var pptxStream = GetTestStream("autoshape-case003.pptx");
             var pres = SCPresentation.Open(pptxStream);
-            var textFrame = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 6").TextFrame!;
+            var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 6");
+            var textFrame = shape.TextFrame!;
 
             // Act
             textFrame.AutofitType = SCAutofitType.Resize;
 
             // Assert
             textFrame.AutofitType.Should().Be(SCAutofitType.Resize);
+            shape.Width.Should().Be(97);
             var errors = PptxValidator.Validate(pres);
             errors.Should().BeEmpty();
         }
