@@ -324,7 +324,7 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
         var shapes = new List<IShape>(pShapeTree.Count());
         foreach (var childElementOfShapeTree in pShapeTree.OfType<OpenXmlCompositeElement>())
         {
-            IShape shape;
+            IShape? shape;
             if (childElementOfShapeTree is P.GroupShape pGroupShape)
             {
                 shape = new SCGroupShape(pGroupShape, oneOfSlide, null);

@@ -142,7 +142,7 @@ internal class SCChart : SlideShape, IChart
             return null;
         }
 
-        C.ChartText cChartText = cTitle.ChartText;
+        var cChartText = cTitle.ChartText;
         bool staticAvailable = this.TryGetStaticTitle(cChartText!, out var staticTitle);
         if (staticAvailable)
         {

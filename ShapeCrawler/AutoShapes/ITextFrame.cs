@@ -199,7 +199,19 @@ internal class TextFrame : ITextFrame
     private bool IsTextWrapped()
     {
         var aBodyPr = this.TextBodyElement.GetFirstChild<A.BodyProperties>() !;
-        return aBodyPr.GetAttributes().All(a => a.LocalName != "wrap");
+        var wrap = aBodyPr.GetAttributes().FirstOrDefault(a => a.LocalName == "wrap");
+
+        if (wrap == null)
+        {
+            return false;
+        }
+
+        if (wrap.Value == "none")
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private double GetTopMargin()

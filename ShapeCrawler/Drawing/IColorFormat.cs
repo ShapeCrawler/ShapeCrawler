@@ -126,8 +126,8 @@ internal class ColorFormat : IColorFormat
 
             // Presentation level
             string colorHexVariant;
-            if (this.parentSlideMaster.Presentation.ParaLvlToFontData.TryGetValue(paragraphLevel,
-                    out FontData preFontData))
+            if (this.parentSlideMaster.PresentationInternal.ParaLvlToFontData.TryGetValue(paragraphLevel,
+                    out var preFontData))
             {
                 colorHexVariant = this.GetHexVariantByScheme(preFontData.ASchemeColor!.Val!);
                 this.colorType = SCColorType.Scheme;
@@ -146,7 +146,7 @@ internal class ColorFormat : IColorFormat
     {
         var txBodyListStyle = paragraph.ParentTextFrame.TextBodyElement!.GetFirstChild<A.ListStyle>();
         var paraLvlToFontData = FontDataParser.FromCompositeElement(txBodyListStyle!);
-        if (!paraLvlToFontData.TryGetValue(paragraph.Level, out FontData txBodyFontData))
+        if (!paraLvlToFontData.TryGetValue(paragraph.Level, out var txBodyFontData))
         {
             return false;
         }
@@ -343,7 +343,7 @@ internal class ColorFormat : IColorFormat
 
     private string GetThemeMappedColor(A.SchemeColorValues fontSchemeColor)
     {
-        P.ColorMap slideMasterPColorMap = this.parentSlideMaster.PSlideMaster.ColorMap;
+        var slideMasterPColorMap = this.parentSlideMaster.PSlideMaster.ColorMap;
         if (fontSchemeColor == A.SchemeColorValues.Text1)
         {
             return this.GetThemeColorByString(slideMasterPColorMap!.Text1!.ToString()!);

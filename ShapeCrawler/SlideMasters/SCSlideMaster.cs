@@ -29,11 +29,7 @@ internal class SCSlideMaster : SlideObject, ISlideMaster
 
     public IShapeCollection Shapes => ShapeCollection.Create(this.PSlideMaster.SlideMasterPart!, this);
 
-    public SCPresentation PresentationInternal => this.Presentation; // TODO: make internal
-
     internal P.SlideMaster PSlideMaster { get; }
-
-    internal SCPresentation Presentation { get; }
 
     internal Dictionary<int, FontData> BodyParaLvlToFontData =>
         FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.BodyStyle!);
@@ -49,9 +45,9 @@ internal class SCSlideMaster : SlideObject, ISlideMaster
 
     internal bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
     {
-        Dictionary<int, FontData> bodyParaLvlToFontData =
+        var bodyParaLvlToFontData =
             FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.BodyStyle!);
-        if (bodyParaLvlToFontData.TryGetValue(paragraphLvl, out FontData fontData))
+        if (bodyParaLvlToFontData.TryGetValue(paragraphLvl, out var fontData))
         {
             if (fontData.FontSize is not null)
             {

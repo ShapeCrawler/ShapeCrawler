@@ -27,8 +27,6 @@ internal class SCSlideLayout : SlideObject, ISlideLayout
 
     public ISlideMaster SlideMaster => this.slideMaster;
 
-    public SCPresentation PresentationInternal => this.SlideMasterInternal.PresentationInternal;
-
     internal SlideLayoutPart SlideLayoutPart { get; }
 
     internal SCSlideMaster SlideMasterInternal => (SCSlideMaster)this.SlideMaster;

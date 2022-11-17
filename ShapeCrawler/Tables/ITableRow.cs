@@ -76,7 +76,7 @@ internal class SCTableRow : ITableRow
     {
         var cellList = new List<SCTableCell?>();
         var aCells = this.ATableRow.Elements<A.TableCell>();
-        SCTableCell addedCell = null;
+        SCTableCell? addedCell = null;
 
         var columnIdx = 0;
         foreach (var aTableCell in aCells)

@@ -36,7 +36,7 @@ public interface ISlide : ISlideObject
     ISlideLayout SlideLayout { get; }
 
     /// <summary>
-    ///     Gets instance of <see cref=" DocumentFormat.OpenXml.Packaging.SlidePart"/> class of the underlying Open XML SDK.
+    ///     Gets instance of <see cref="DocumentFormat.OpenXml.Packaging.SlidePart"/> class of the underlying Open XML SDK.
     /// </summary>
     SlidePart SDKSlidePart { get; }
 

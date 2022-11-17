@@ -18,7 +18,7 @@ internal abstract class SlideObject : ISlideObject
         this.Presentation = pres;
     }
 
-    public IPresentation Presentation { get; }
+    public IPresentation Presentation { get; init; }
 
     internal SCPresentation PresentationInternal => (SCPresentation)this.Presentation;
 

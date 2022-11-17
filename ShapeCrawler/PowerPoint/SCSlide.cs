@@ -27,7 +27,6 @@ internal class SCSlide : SlideObject, ISlide
     internal SCSlide(SCPresentation pres, SlidePart slidePart, SlideId slideId)
     : base(pres)
     {
-        this.PresentationInternal = pres;
         this.Presentation = pres;
         this.SDKSlidePart = slidePart;
         this.shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.Create(this.SDKSlidePart, this));
@@ -57,11 +56,7 @@ internal class SCSlide : SlideObject, ISlide
 
     public bool Hidden => this.SDKSlidePart.Slide.Show is not null && this.SDKSlidePart.Slide.Show.Value == false;
 
-    public IPresentation Presentation { get; }
-
     public SlidePart SDKSlidePart { get; }
-
-    public SCPresentation PresentationInternal { get; } // TODO: make internal
 
     internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
 
@@ -187,7 +182,7 @@ internal class SCSlide : SlideObject, ISlide
         // Get the slide ID of the source slide.
         var sourceSlide = (SlideId)slideIdList.ChildElements[from];
 
-        SlideId targetSlide;
+        SlideId? targetSlide;
 
         // Identify the position of the target slide after which to move the source slide
         if (to == 0)
