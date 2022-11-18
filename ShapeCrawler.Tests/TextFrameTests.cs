@@ -242,7 +242,7 @@ namespace ShapeCrawler.Tests
 
             // Assert
             shape.Height.Should().Be(46);
-            shape.Y.Should().Be(148);
+            shape.Y.Should().Be(152);
         }
         
         [Theory]
@@ -306,6 +306,25 @@ namespace ShapeCrawler.Tests
             // Assert
             textFrame.AutofitType.Should().Be(SCAutofitType.Resize);
             shape.Width.Should().Be(107);
+            var errors = PptxValidator.Validate(pres);
+            errors.Should().BeEmpty();
+        }
+        
+        [Fact]
+        public void Autofit_Setter_updates_height()
+        {
+            // Arrange
+            var pptxStream = GetTestStream("autoshape-case003.pptx");
+            var pres = SCPresentation.Open(pptxStream);
+            var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 7");
+            var textFrame = shape.TextFrame!;
+
+            // Act
+            textFrame.AutofitType = SCAutofitType.Resize;
+
+            // Assert
+            textFrame.AutofitType.Should().Be(SCAutofitType.Resize);
+            shape.Height.Should().Be(35);
             var errors = PptxValidator.Validate(pres);
             errors.Should().BeEmpty();
         }
