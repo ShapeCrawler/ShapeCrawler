@@ -159,6 +159,81 @@ internal abstract class Shape : IShape
             aXfrm.Offset!.X = UnitConverter.HorizontalPixelToEmu(newXPixels);
         }
     }
+    
+    private void SetYCoordinate(int newYPixels)
+    {
+        if (this.GroupShape is not null)
+        {
+            throw new RuntimeDefinedPropertyException("Y coordinate of grouped shape cannot be changed.");
+        }
+        
+        var pSpPr = this.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !;
+        var aXfrm = pSpPr.Transform2D;
+        if (aXfrm is null)
+        {
+            var placeholder = (Placeholder)this.Placeholder!;
+            var referencedShape = placeholder.ReferencedShape;
+            var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
+            var yEmu = UnitConverter.HorizontalPixelToEmu(newYPixels);
+            var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
+            var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
+            pSpPr.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
+        }
+        else
+        {
+            aXfrm.Offset!.Y = UnitConverter.HorizontalPixelToEmu(newYPixels);
+        }
+    }
+    
+    private void SetHeight(int newHPixels)
+    {
+        if (this.GroupShape is not null)
+        {
+            throw new RuntimeDefinedPropertyException("Height coordinate of grouped shape cannot be changed.");
+        }
+        
+        var pSpPr = this.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !;
+        var aXfrm = pSpPr.Transform2D;
+        if (aXfrm is null)
+        {
+            var placeholder = (Placeholder)this.Placeholder!;
+            var referencedShape = placeholder.ReferencedShape;
+            var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
+            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
+            var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
+            var hEmu = UnitConverter.VerticalPixelToEmu(newHPixels);
+            pSpPr.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
+        }
+        else
+        {
+            aXfrm.Extents!.Cy = UnitConverter.HorizontalPixelToEmu(newHPixels);
+        }
+    }
+    
+    private void SetWidth(int newWPixels)
+    {
+        if (this.GroupShape is not null)
+        {
+            throw new RuntimeDefinedPropertyException("Width coordinate of grouped shape cannot be changed.");
+        }
+        
+        var pSpPr = this.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !;
+        var aXfrm = pSpPr.Transform2D;
+        if (aXfrm is null)
+        {
+            var placeholder = (Placeholder)this.Placeholder!;
+            var referencedShape = placeholder.ReferencedShape;
+            var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
+            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
+            var wEmu = UnitConverter.VerticalPixelToEmu(newWPixels);
+            var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
+            pSpPr.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
+        }
+        else
+        {
+            aXfrm.Extents!.Cx = UnitConverter.HorizontalPixelToEmu(newWPixels);
+        }
+    }
 
     private int GetXCoordinate()
     {
@@ -177,18 +252,6 @@ internal abstract class Shape : IShape
         }
 
         return UnitConverter.HorizontalEmuToPixel(xEmu);
-    }
-
-    private void SetYCoordinate(long value)
-    {
-        if (this.GroupShape is not null)
-        {
-            throw new RuntimeDefinedPropertyException("Y coordinate of grouped shape cannot be changed.");
-        }
-
-        var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().First();
-
-        aOffset.Y = UnitConverter.VerticalPixelToEmu(value);
     }
 
     private int GetYCoordinate()
@@ -223,17 +286,6 @@ internal abstract class Shape : IShape
         return UnitConverter.HorizontalEmuToPixel(aExtents.Cx!);
     }
 
-    private void SetWidth(int pixels)
-    {
-        var aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
-        if (aExtents == null)
-        {
-            throw new PlaceholderCannotBeChangedException();
-        }
-
-        aExtents.Cx = UnitConverter.HorizontalPixelToEmu(pixels);
-    }
-
     private int GetHeightPixels()
     {
         var aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
@@ -243,17 +295,6 @@ internal abstract class Shape : IShape
         }
 
         return UnitConverter.VerticalEmuToPixel(aExtents!.Cy!);
-    }
-
-    private void SetHeight(int pixels)
-    {
-        var aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
-        if (aExtents == null)
-        {
-            throw new PlaceholderCannotBeChangedException();
-        }
-
-        aExtents.Cy = UnitConverter.VerticalPixelToEmu(pixels);
     }
 
     private SCGeometry GetGeometryType()
