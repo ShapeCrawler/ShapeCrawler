@@ -139,7 +139,9 @@ internal class SCSlideCollection : ISlideCollection
         }
     }
 
-    private static uint AddNewSlideMasterId(Presentation sdkPresDest, PresentationDocument sdkPresDocDest,
+    private static uint AddNewSlideMasterId(
+        Presentation sdkPresDest, 
+        PresentationDocument sdkPresDocDest,
         SlideMasterPart addedSlideMasterPart)
     {
         var masterId = CreateId(sdkPresDest.SlideMasterIdList!);
@@ -153,7 +155,9 @@ internal class SCSlideCollection : ISlideCollection
         return masterId;
     }
 
-    private static void AddNewSlideId(Presentation sdkPresDest, PresentationDocument sdkPresDocDest,
+    private static void AddNewSlideId(
+        Presentation sdkPresDest, 
+        PresentationDocument sdkPresDocDest,
         SlidePart addedSdkSlidePart)
     {
         SlideId slideId = new ()

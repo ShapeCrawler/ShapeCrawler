@@ -11,16 +11,18 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.SlideMasters;
 
 [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrawler")]
+[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 internal class SCSlideMaster : SlideObject, ISlideMaster
 {
     private readonly ResettableLazy<List<SCSlideLayout>> slideLayouts;
 
-    internal SCSlideMaster(SCPresentation pres, P.SlideMaster pSlideMaster)
+    internal SCSlideMaster(SCPresentation pres, P.SlideMaster pSlideMaster, int number)
         : base(pres)
     {
         this.Presentation = pres;
         this.PSlideMaster = pSlideMaster;
         this.slideLayouts = new ResettableLazy<List<SCSlideLayout>>(this.GetSlideLayouts);
+        this.Number = number;
     }
 
     public IImage? Background => this.GetBackground();
@@ -28,6 +30,8 @@ internal class SCSlideMaster : SlideObject, ISlideMaster
     public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
     public IShapeCollection Shapes => ShapeCollection.Create(this.PSlideMaster.SlideMasterPart!, this);
+    
+    public override int Number { get; set; }
 
     internal P.SlideMaster PSlideMaster { get; }
 
@@ -40,7 +44,7 @@ internal class SCSlideMaster : SlideObject, ISlideMaster
     internal ThemePart ThemePart => this.PSlideMaster.SlideMasterPart!.ThemePart!;
 
     internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
-
+    
     internal override TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
 
     internal bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
@@ -86,12 +90,13 @@ internal class SCSlideMaster : SlideObject, ISlideMaster
 
     private List<SCSlideLayout> GetSlideLayouts()
     {
-        var rIdList = this.PSlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>().Select(x => x.RelationshipId!);
+        var rIdList = this.PSlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>().Select(layoutId => layoutId.RelationshipId!);
         var layouts = new List<SCSlideLayout>(rIdList.Count());
+        var number = 1;
         foreach (var rId in rIdList)
         {
             var layoutPart = (SlideLayoutPart)this.PSlideMaster.SlideMasterPart!.GetPartById(rId.Value!);
-            layouts.Add(new SCSlideLayout(this, layoutPart));
+            layouts.Add(new SCSlideLayout(this, layoutPart, number++));
         }
 
         return layouts;

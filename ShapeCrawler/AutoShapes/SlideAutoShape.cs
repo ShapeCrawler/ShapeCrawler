@@ -30,7 +30,9 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
     private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
     private readonly P.Shape pShape;
 
-    internal SlideAutoShape(P.Shape pShape, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide,
+    internal SlideAutoShape(
+        P.Shape pShape, 
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide,
         SCGroupShape groupShape)
         : base(pShape, oneOfSlide, groupShape)
     {

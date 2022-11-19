@@ -18,7 +18,9 @@ namespace ShapeCrawler;
 
 internal abstract class Shape : IShape
 {
-    protected Shape(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject,
+    protected Shape(
+        OpenXmlCompositeElement pShapeTreeChild, 
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject,
         Shape? groupShape)
         : this(pShapeTreeChild, slideObject)
     {
@@ -133,22 +135,28 @@ internal abstract class Shape : IShape
         return parsedHiddenValue is true;
     }
 
-    private void SetXCoordinate(int value)
+    private void SetXCoordinate(int newXPixels)
     {
         if (this.GroupShape is not null)
         {
             throw new RuntimeDefinedPropertyException("X coordinate of grouped shape cannot be changed.");
         }
-
-        var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
-        if (aOffset == null)
+        
+        var pSpPr = this.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !;
+        var aXfrm = pSpPr.Transform2D;
+        if (aXfrm is null)
         {
-            var placeholderShape = ((Placeholder)this.Placeholder!).ReferencedShape;
-            placeholderShape.X = value;
+            var placeholder = (Placeholder)this.Placeholder!;
+            var referencedShape = placeholder.ReferencedShape;
+            var xEmu = UnitConverter.HorizontalPixelToEmu(newXPixels);
+            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.Y);
+            var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
+            var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
+            pSpPr.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
         }
         else
         {
-            aOffset.X = UnitConverter.HorizontalPixelToEmu(value);
+            aXfrm.Offset!.X = UnitConverter.HorizontalPixelToEmu(newXPixels);
         }
     }
 

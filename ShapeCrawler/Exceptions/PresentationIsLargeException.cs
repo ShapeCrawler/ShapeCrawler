@@ -17,8 +17,10 @@ internal class PresentationIsLargeException : ShapeCrawlerException
     internal static PresentationIsLargeException FromMax(int maxSize)
     {
 #if NET6_0
-        var message = ExceptionMessages.PresentationIsLarge.Replace("{0}",
-            maxSize.ToString(CultureInfo.CurrentCulture), StringComparison.OrdinalIgnoreCase);
+        var message = ExceptionMessages.PresentationIsLarge.Replace(
+            "{0}",
+            maxSize.ToString(CultureInfo.CurrentCulture), 
+            StringComparison.OrdinalIgnoreCase);
 #else
             var message =
                 ExceptionMessages.PresentationIsLarge.Replace("{0}", maxSize.ToString(CultureInfo.CurrentCulture));

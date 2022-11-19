@@ -11,11 +11,6 @@ namespace ShapeCrawler;
 public interface ISlide : ISlideObject
 {
     /// <summary>
-    ///     Gets or sets slide number.
-    /// </summary>
-    int Number { get; set; }
-
-    /// <summary>
     ///     Gets background image if it exist, otherwise <see langword="null"/>.
     /// </summary>
     IImage? Background { get; }

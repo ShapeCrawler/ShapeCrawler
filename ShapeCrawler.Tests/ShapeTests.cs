@@ -7,6 +7,7 @@ using FluentAssertions;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.Tests.Helpers.Attributes;
 using ShapeCrawler.Tests.Properties;
 using Xunit;
 
@@ -246,26 +247,44 @@ namespace ShapeCrawler.Tests
             autoShape.Y.Should().Be(100);
         }
 
-        [Fact]
-        public void XAndWidth_SetterSetXAndWidthOfTheShape()
+        [Theory]
+        [SlideShapeData("006_1 slides.pptx", 1, "Shape 1")]
+        [SlideShapeData("001.pptx", 1, "Head 1")]
+        public void X_Setter_sets_x_coordinate(IShape shape)
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(Resources._006_1_slides);
-            IShape shape = presentation.Slides.First().Shapes.First(sp => sp.Id == 3);
-            Stream stream = new MemoryStream();
-            const int xPixels = 400;
+            var pres = shape.SlideObject.Presentation;
+            var slideIndex = shape.SlideObject.Number - 1;
+            var shapeName = shape.Name;
+            var stream = new MemoryStream();
+
+            // Act
+            shape.X = 400;
+
+            // Assert
+            pres.SaveAs(stream);
+            pres = SCPresentation.Open(stream);
+            shape = pres.Slides[slideIndex].Shapes.GetByName<IShape>(shapeName);
+            shape.X.Should().Be(400);
+        }
+        
+        [Fact]
+        public void Width_Setter_sets_width()
+        {
+            // Arrange
+            var pres = SCPresentation.Open(Resources._006_1_slides);
+            var shape = pres.Slides.First().Shapes.First(sp => sp.Id == 3);
+            var stream = new MemoryStream();
             const int widthPixels = 600;
 
             // Act
-            shape.X = xPixels;
             shape.Width = widthPixels;
 
             // Assert
-            presentation.SaveAs(stream);
-            presentation = SCPresentation.Open(stream);
-            shape = presentation.Slides.First().Shapes.First(sp => sp.Id == 3);
+            pres.SaveAs(stream);
+            pres = SCPresentation.Open(stream);
+            shape = pres.Slides.First().Shapes.First(sp => sp.Id == 3);
 
-            shape.X.Should().Be(xPixels);
             shape.Width.Should().Be(widthPixels);
         }
 

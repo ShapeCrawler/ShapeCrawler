@@ -40,7 +40,7 @@ internal class SCSlide : SlideObject, ISlide
 
     public IShapeCollection Shapes => this.shapes.Value;
 
-    public int Number
+    public override int Number
     {
         get => this.GetNumber();
         set => this.SetNumber(value);
