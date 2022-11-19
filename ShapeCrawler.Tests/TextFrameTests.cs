@@ -243,6 +243,8 @@ namespace ShapeCrawler.Tests
             // Assert
             shape.Height.Should().Be(46);
             shape.Y.Should().Be(152);
+            var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+            errors.Should().BeEmpty();
         }
         
         [Theory]

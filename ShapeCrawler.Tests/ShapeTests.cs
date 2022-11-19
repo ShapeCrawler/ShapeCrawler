@@ -244,6 +244,8 @@ namespace ShapeCrawler.Tests
 
             // Assert
             shape.Y.Should().Be(100);
+            var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+            errors.Should().BeEmpty();
         }
 
         [Theory]
@@ -265,6 +267,8 @@ namespace ShapeCrawler.Tests
             pres = SCPresentation.Open(stream);
             shape = pres.Slides[slideIndex].Shapes.GetByName<IShape>(shapeName);
             shape.X.Should().Be(400);
+            var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+            errors.Should().BeEmpty();
         }
         
         [Fact]
@@ -283,8 +287,9 @@ namespace ShapeCrawler.Tests
             pres.SaveAs(stream);
             pres = SCPresentation.Open(stream);
             shape = pres.Slides.First().Shapes.First(sp => sp.Id == 3);
-
             shape.Width.Should().Be(widthPixels);
+            var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+            errors.Should().BeEmpty();
         }
 
         [Fact]
