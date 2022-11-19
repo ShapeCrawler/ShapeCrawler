@@ -242,7 +242,9 @@ namespace ShapeCrawler.Tests
 
             // Assert
             shape.Height.Should().Be(46);
-            shape.Y.Should().Be(148);
+            shape.Y.Should().Be(152);
+            var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+            errors.Should().BeEmpty();
         }
         
         [Theory]
@@ -306,6 +308,42 @@ namespace ShapeCrawler.Tests
             // Assert
             textFrame.AutofitType.Should().Be(SCAutofitType.Resize);
             shape.Width.Should().Be(107);
+            var errors = PptxValidator.Validate(pres);
+            errors.Should().BeEmpty();
+        }
+        
+        [Theory]
+        [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 7")]
+        [SlideShapeData("001.pptx", 1, "Head 1")]
+        public void Autofit_Setter_sets_autofit_type(IShape shape)
+        {
+            // Arrange
+            var autoShape = (IAutoShape)shape;
+            var textFrame = autoShape.TextFrame!;
+
+            // Act
+            textFrame.AutofitType = SCAutofitType.Resize;
+
+            // Assert
+            textFrame.AutofitType.Should().Be(SCAutofitType.Resize);
+            var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+            errors.Should().BeEmpty();
+        }
+        
+        [Fact]
+        public void Autofit_Setter_updates_height()
+        {
+            // Arrange
+            var pptxStream = GetTestStream("autoshape-case003.pptx");
+            var pres = SCPresentation.Open(pptxStream);
+            var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 7");
+            var textFrame = shape.TextFrame!;
+
+            // Act
+            textFrame.AutofitType = SCAutofitType.Resize;
+
+            // Assert
+            shape.Height.Should().Be(35);
             var errors = PptxValidator.Validate(pres);
             errors.Should().BeEmpty();
         }

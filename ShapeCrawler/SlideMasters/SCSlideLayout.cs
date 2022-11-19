@@ -14,18 +14,21 @@ internal class SCSlideLayout : SlideObject, ISlideLayout
     private readonly ResettableLazy<ShapeCollection> shapes;
     private readonly SCSlideMaster slideMaster;
 
-    internal SCSlideLayout(SCSlideMaster slideMaster, SlideLayoutPart slideLayoutPart)
+    internal SCSlideLayout(SCSlideMaster slideMaster, SlideLayoutPart slideLayoutPart, int number)
     : base(slideMaster.Presentation)
     {
         this.slideMaster = slideMaster;
         this.SlideLayoutPart = slideLayoutPart;
         this.shapes = new ResettableLazy<ShapeCollection>(() =>
             ShapeCollection.Create(slideLayoutPart, this));
+        this.Number = number;
     }
 
     public IShapeCollection Shapes => this.shapes.Value;
 
     public ISlideMaster SlideMaster => this.slideMaster;
+    
+    public override int Number { get; set; }
 
     internal SlideLayoutPart SlideLayoutPart { get; }
 

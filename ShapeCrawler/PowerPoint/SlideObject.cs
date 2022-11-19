@@ -8,7 +8,10 @@ namespace ShapeCrawler;
 /// </summary>
 public interface ISlideObject : IPresentationComponent
 {
-
+    /// <summary>
+    ///     Gets or sets slide number.
+    /// </summary>
+    int Number { get; set; }
 }
 
 internal abstract class SlideObject : ISlideObject
@@ -19,6 +22,8 @@ internal abstract class SlideObject : ISlideObject
     }
 
     public IPresentation Presentation { get; init; }
+    
+    public abstract int Number { get; set; }
 
     internal SCPresentation PresentationInternal => (SCPresentation)this.Presentation;
 

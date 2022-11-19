@@ -13,7 +13,9 @@ internal class SlidesMuchMoreException : ShapeCrawlerException
     internal static SlidesMuchMoreException FromMax(int maxNum)
     {
 #if NET6_0
-        var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString(CultureInfo.CurrentCulture),
+        var message = ExceptionMessages.SlidesMuchMore.Replace(
+            "{0}", 
+            maxNum.ToString(CultureInfo.CurrentCulture),
             StringComparison.OrdinalIgnoreCase);
 #else
             var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString(CultureInfo.CurrentCulture));

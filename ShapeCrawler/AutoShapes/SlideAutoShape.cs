@@ -21,12 +21,18 @@ namespace ShapeCrawler;
 
 internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
 {
+    // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi.
+    // 96/72=1.4
+    private const double Scale = 1.4;
+
     private readonly Lazy<ShapeFill> shapeFill;
     private readonly Lazy<TextFrame?> textFrame;
     private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
     private readonly P.Shape pShape;
 
-    internal SlideAutoShape(P.Shape pShape, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide,
+    internal SlideAutoShape(
+        P.Shape pShape, 
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide,
         SCGroupShape groupShape)
         : base(pShape, oneOfSlide, groupShape)
     {
@@ -95,52 +101,16 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
         var tMarginPixel = UnitConverter.CentimeterToPixel(this.TextFrame.TopMargin);
         var bMarginPixel = UnitConverter.CentimeterToPixel(this.TextFrame.BottomMargin);
 
-        var newTextRect = default(SKRect);
-        var newText = this.TextFrame.Text;
-        paint.MeasureText(newText, ref newTextRect);
-        var newTextW = newTextRect.Width;
-        var newTextH = paint.TextSize;
-        var textBlockW = this.Width - lMarginPixel - rMarginPixel;
-        var currentTextBlockHeight = this.Height - tMarginPixel - bMarginPixel;
+        var textRect = default(SKRect);
+        var text = this.TextFrame.Text;
+        paint.MeasureText(text, ref textRect);
+        var textWidth = textRect.Width;
+        var textHeight = paint.TextSize;
+        var currentBlockWidth = this.Width - lMarginPixel - rMarginPixel;
+        var currentBlockHeight = this.Height - tMarginPixel - bMarginPixel;
 
-        var hasTextBlockEnoughWidth = textBlockW > newTextW;
-        if (hasTextBlockEnoughWidth && this.TextFrame.TextWrapped)
-        {
-            return;
-        }
-
-        var neededRowsCount = newTextW / textBlockW;
-        var integerPart = (int)neededRowsCount;
-        var fractionalPart = neededRowsCount - integerPart;
-        if (fractionalPart > 0)
-        {
-            integerPart++;
-        }
-
-        var requiredTextBlockHeight = (integerPart * newTextH) + tMarginPixel + bMarginPixel;
-        var hasRequiredHeight = currentTextBlockHeight >= requiredTextBlockHeight;
-        if (hasRequiredHeight && this.TextFrame.TextWrapped)
-        {
-            return;
-        }
-
-        this.Height = (int)requiredTextBlockHeight + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
-
-        // We should raise the shape up by the amount which is half of the increased offset.
-        // PowerPoint does the same thing.
-        var yOffset = (requiredTextBlockHeight - currentTextBlockHeight) / 2;
-        this.Y -= (int)yOffset;
-
-        if (!this.TextFrame.TextWrapped)
-        {
-            var longerText = this.TextFrame.Paragraphs
-                .Select(x => new { x.Text, x.Text.Length })
-                .OrderByDescending(x => x.Length)
-                .First().Text;
-            var paraTextRect = default(SKRect);
-            var widthInPixels = paint.MeasureText(longerText, ref paraTextRect);
-            this.Width = (int)(widthInPixels * 1.4) + lMarginPixel + rMarginPixel;
-        }
+        this.UpdateHeight(textWidth, currentBlockWidth, textHeight, tMarginPixel, bMarginPixel, currentBlockHeight);
+        this.UpdateWidthIfNeed(paint, lMarginPixel, rMarginPixel);
     }
 
     internal void FillFontData(int paragraphLvl, ref FontData fontData)
@@ -189,6 +159,45 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
         }
 
         return lvlToFontData;
+    }
+    
+    private void UpdateHeight(
+        float textWidth, 
+        int currentBlockWidth, 
+        float textHeight, 
+        int tMarginPixel, 
+        int bMarginPixel,
+        int currentBlockHeight)
+    {
+        var requiredRowsCount = textWidth / currentBlockWidth;
+        var integerPart = (int)requiredRowsCount;
+        var fractionalPart = requiredRowsCount - integerPart;
+        if (fractionalPart > 0)
+        {
+            integerPart++;
+        }
+
+        var requiredHeight = (integerPart * textHeight) + tMarginPixel + bMarginPixel;
+        this.Height = (int)requiredHeight + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
+
+        // We should raise the shape up by the amount which is half of the increased offset.
+        // PowerPoint does the same thing.
+        var yOffset = (requiredHeight - currentBlockHeight) / 2;
+        this.Y -= (int)yOffset;
+    }
+    
+    private void UpdateWidthIfNeed(SKPaint paint, int lMarginPixel, int rMarginPixel)
+    {
+        if (!this.TextFrame!.TextWrapped)
+        {
+            var longerText = this.TextFrame.Paragraphs
+                .Select(x => new { x.Text, x.Text.Length })
+                .OrderByDescending(x => x.Length)
+                .First().Text;
+            var paraTextRect = default(SKRect);
+            var widthInPixels = paint.MeasureText(longerText, ref paraTextRect);
+            this.Width = (int)(widthInPixels * Scale) + lMarginPixel + rMarginPixel;
+        }
     }
 
     private TextFrame? GetTextFrame()
