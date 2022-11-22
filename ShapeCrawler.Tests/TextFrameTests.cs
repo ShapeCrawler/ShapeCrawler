@@ -294,7 +294,7 @@ namespace ShapeCrawler.Tests
         }
         
         [Fact]
-        public void Autofit_Setter_sets_text_autofit_type()
+        public void Autofit_Setter_resizes_width()
         {
             // Arrange
             var pptxStream = GetTestStream("autoshape-case003.pptx");
@@ -306,7 +306,6 @@ namespace ShapeCrawler.Tests
             textFrame.AutofitType = SCAutofitType.Resize;
 
             // Assert
-            textFrame.AutofitType.Should().Be(SCAutofitType.Resize);
             shape.Width.Should().Be(107);
             var errors = PptxValidator.Validate(pres);
             errors.Should().BeEmpty();
@@ -315,6 +314,7 @@ namespace ShapeCrawler.Tests
         [Theory]
         [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 7")]
         [SlideShapeData("001.pptx", 1, "Head 1")]
+        [SlideShapeData("autoshape-case014.pptx", 1, "Content Placeholder 1")]
         public void Autofit_Setter_sets_autofit_type(IShape shape)
         {
             // Arrange

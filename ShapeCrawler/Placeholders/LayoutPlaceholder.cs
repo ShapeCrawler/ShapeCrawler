@@ -15,7 +15,7 @@ internal class LayoutPlaceholder : Placeholder
         this.layoutShape = layoutShape;
     }
 
-    protected override ResettableLazy<Shape> ReferencedShapeLazy => new ResettableLazy<Shape>(this.GetReferencedShape);
+    internal override ResettableLazy<Shape> ReferencedShapeLazy => new ResettableLazy<Shape>(this.GetReferencedShape);
 
     internal static LayoutPlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, LayoutShape layoutShape)
     {

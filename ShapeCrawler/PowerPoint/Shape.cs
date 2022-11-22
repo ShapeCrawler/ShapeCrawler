@@ -147,7 +147,7 @@ internal abstract class Shape : IShape
         if (aXfrm is null)
         {
             var placeholder = (Placeholder)this.Placeholder!;
-            var referencedShape = placeholder.ReferencedShape;
+            var referencedShape = placeholder.ReferencedShapeLazy.Value;
             var xEmu = UnitConverter.HorizontalPixelToEmu(newXPixels);
             var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.Y);
             var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
@@ -172,7 +172,7 @@ internal abstract class Shape : IShape
         if (aXfrm is null)
         {
             var placeholder = (Placeholder)this.Placeholder!;
-            var referencedShape = placeholder.ReferencedShape;
+            var referencedShape = placeholder.ReferencedShapeLazy.Value;
             var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
             var yEmu = UnitConverter.HorizontalPixelToEmu(newYPixels);
             var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
@@ -197,7 +197,7 @@ internal abstract class Shape : IShape
         if (aXfrm is null)
         {
             var placeholder = (Placeholder)this.Placeholder!;
-            var referencedShape = placeholder.ReferencedShape;
+            var referencedShape = placeholder.ReferencedShapeLazy.Value;
             var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
             var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
             var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
@@ -222,7 +222,7 @@ internal abstract class Shape : IShape
         if (aXfrm is null)
         {
             var placeholder = (Placeholder)this.Placeholder!;
-            var referencedShape = placeholder.ReferencedShape;
+            var referencedShape = placeholder.ReferencedShapeLazy.Value;
             var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
             var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
             var wEmu = UnitConverter.VerticalPixelToEmu(newWPixels);
@@ -240,7 +240,9 @@ internal abstract class Shape : IShape
         var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
         if (aOffset == null)
         {
-            return ((Placeholder)this.Placeholder!).ReferencedShape.X;
+            var placeholder = (Placeholder)this.Placeholder!;
+            var referencedShape = placeholder.ReferencedShapeLazy.Value; 
+            return referencedShape.X;
         }
 
         long xEmu = aOffset.X!;
@@ -259,7 +261,7 @@ internal abstract class Shape : IShape
         var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
         if (aOffset == null)
         {
-            return ((Placeholder)this.Placeholder!).ReferencedShape.Y;
+            return ((Placeholder)this.Placeholder!).ReferencedShapeLazy.Value.Y;
         }
 
         var yEmu = aOffset.Y!;
@@ -280,7 +282,7 @@ internal abstract class Shape : IShape
         if (aExtents == null)
         {
             var placeholder = (Placeholder)this.Placeholder!;
-            return placeholder.ReferencedShape.Width;
+            return placeholder.ReferencedShapeLazy.Value.Width;
         }
 
         return UnitConverter.HorizontalEmuToPixel(aExtents.Cx!);
@@ -291,7 +293,7 @@ internal abstract class Shape : IShape
         var aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
         if (aExtents == null)
         {
-            return ((Placeholder)this.Placeholder!).ReferencedShape.Height;
+            return ((Placeholder)this.Placeholder!).ReferencedShapeLazy.Value.Height;
         }
 
         return UnitConverter.VerticalEmuToPixel(aExtents!.Cy!);
@@ -322,9 +324,9 @@ internal abstract class Shape : IShape
         }
 
         var placeholder = this.Placeholder as Placeholder;
-        if (placeholder?.ReferencedShape != null)
+        if (placeholder?.ReferencedShapeLazy.Value != null)
         {
-            return placeholder.ReferencedShape.GeometryType;
+            return placeholder.ReferencedShapeLazy.Value.GeometryType;
         }
 
         return SCGeometry.Rectangle; // return default
