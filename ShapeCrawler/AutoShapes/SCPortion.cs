@@ -94,8 +94,8 @@ internal class SCPortion : IPortion
             return null;
         }
 
-        var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextFrame.TextFrameContainer;
-        var typedOpenXmlPart = slideAutoShape.Slide.TypedOpenXmlPart;
+        var slideObject = (SlideObject)this.ParentParagraph.ParentTextFrame.TextFrameContainer.Shape.SlideObject;
+        var typedOpenXmlPart = slideObject.TypedOpenXmlPart;
         var hyperlinkRelationship = (HyperlinkRelationship)typedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
 
         return hyperlinkRelationship.Uri.AbsoluteUri;
@@ -121,19 +121,12 @@ internal class SCPortion : IPortion
             runProperties.Append(hyperlink);
         }
 
-        var slideAutoShape = (SlideAutoShape)this.ParentParagraph.ParentTextFrame.TextFrameContainer;
-        var slidePart = slideAutoShape.Slide.TypedOpenXmlPart;
+        var slideObject = (SlideObject)this.ParentParagraph.ParentTextFrame.TextFrameContainer.Shape.SlideObject;
+        var slidePart = slideObject.TypedOpenXmlPart;
 
         var uri = new Uri(url, UriKind.Absolute);
         var addedHyperlinkRelationship = slidePart.AddHyperlinkRelationship(uri, true);
 
         hyperlink.Id = addedHyperlinkRelationship.Id;
-    }
-}
-
-internal class SCField : IField
-{
-    public SCField(A.Field aField)
-    {
     }
 }
