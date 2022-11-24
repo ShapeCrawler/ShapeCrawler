@@ -21,7 +21,7 @@ internal static class FontDataParser
         }
 
         var placeholder = (Placeholder)shape.Placeholder;
-        var autoShape = (SlideAutoShape)placeholder.ReferencedShapeLazy.Value;
+        var autoShape = (SlideAutoShape)placeholder.ReferencedShape.Value;
         autoShape?.FillFontData(paragraph.Level, ref phFontData);
     }
 
