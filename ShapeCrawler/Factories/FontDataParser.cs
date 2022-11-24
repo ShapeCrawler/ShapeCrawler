@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
@@ -20,7 +21,7 @@ internal static class FontDataParser
         }
 
         var placeholder = (Placeholder)shape.Placeholder;
-        var autoShape = (SlideAutoShape)placeholder.ReferencedShape;
+        var autoShape = (SlideAutoShape)placeholder.ReferencedShape.Value;
         autoShape?.FillFontData(paragraph.Level, ref phFontData);
     }
 
@@ -85,9 +86,9 @@ internal static class FontDataParser
                 var paragraphLvl =
  int.Parse(textPr.LocalName[3].ToString(System.Globalization.CultureInfo.CurrentCulture), System.Globalization.CultureInfo.CurrentCulture);
 #else
-            // fourth character of LocalName contains level number, example: "lvl1pPr -> 1, lvl2pPr -> 2, etc."
-            var localNameAsSpan = textPr.LocalName.AsSpan();
-            int paragraphLvl = int.Parse(localNameAsSpan.Slice(3, 1));
+            var localName = textPr.LocalName.AsSpan();
+            var level = localName.Slice(3, 1); // the fourth character contains level number, eg. "lvl1pPr -> 1, lvl2pPr -> 2, etc."
+            var paragraphLvl = int.Parse(level, NumberStyles.Number, CultureInfo.CurrentCulture);
 #endif
             var fontData = new FontData
             {

@@ -121,7 +121,7 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
             if (!fontData.IsFilled() && this.Placeholder != null)
             {
                 var placeholder = (Placeholder)this.Placeholder;
-                var referencedMasterShape = (SlideAutoShape)placeholder.ReferencedShape;
+                var referencedMasterShape = (SlideAutoShape)placeholder.ReferencedShape.Value;
                 referencedMasterShape?.FillFontData(paragraphLvl, ref fontData);
             }
 
@@ -131,7 +131,7 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
         if (this.Placeholder != null)
         {
             var placeholder = (Placeholder)this.Placeholder;
-            var referencedMasterShape = (SlideAutoShape)placeholder.ReferencedShape;
+            var referencedMasterShape = (SlideAutoShape)placeholder.ReferencedShape.Value;
             if (referencedMasterShape != null)
             {
                 referencedMasterShape.FillFontData(paragraphLvl, ref fontData);

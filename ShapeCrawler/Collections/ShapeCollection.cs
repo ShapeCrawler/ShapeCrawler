@@ -259,46 +259,46 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
         return (T)shape;
     }
 
-    public Shape? GetReferencedShapeOrDefault(P.PlaceholderShape inputPPlaceholderShape)
+    public Shape? GetReferencedShapeOrDefault(P.PlaceholderShape inputPph)
     {
-        var collectionShapes = this.CollectionItems.Where(sp => sp.Placeholder != null).OfType<Shape>();
-        var mappedShape = collectionShapes.FirstOrDefault(IsEqual);
+        var phShapes = this.CollectionItems.Where(sp => sp.Placeholder != null).OfType<Shape>();
+        var mappedShape = phShapes.FirstOrDefault(IsEqual);
 
         bool IsEqual(Shape collectionShape)
         {
             var placeholder = (Placeholder)collectionShape.Placeholder!;
-            var colPPlaceholderShape = placeholder.PPlaceholderShape;
+            var pPh = placeholder.PPlaceholderShape;
 
-            if (inputPPlaceholderShape.Index is not null && colPPlaceholderShape.Index is not null &&
-                inputPPlaceholderShape.Index == colPPlaceholderShape.Index)
+            if (inputPph.Index is not null && pPh.Index is not null &&
+                inputPph.Index == pPh.Index)
             {
                 return true;
             }
 
-            if (inputPPlaceholderShape.Type != null && colPPlaceholderShape.Type != null)
+            if (inputPph.Type == null || pPh.Type == null)
             {
-                if (inputPPlaceholderShape.Type == P.PlaceholderValues.Body &&
-                    inputPPlaceholderShape.Index is not null && colPPlaceholderShape.Index is not null )
-                {
-                    return inputPPlaceholderShape.Index == colPPlaceholderShape.Index;
-                }
-
-                var left = inputPPlaceholderShape.Type;
-                if (inputPPlaceholderShape.Type == PlaceholderValues.CenteredTitle)
-                {
-                    left = PlaceholderValues.Title;
-                }
-
-                var right = colPPlaceholderShape.Type;
-                if (colPPlaceholderShape.Type == PlaceholderValues.CenteredTitle)
-                {
-                    right = PlaceholderValues.Title;
-                }
-
-                return left.Equals(right);
+                return false;
+            }
+            
+            if (inputPph.Type == P.PlaceholderValues.Body &&
+                inputPph.Index is not null && pPh.Index is not null)
+            {
+                return inputPph.Index == pPh.Index;
             }
 
-            return false;
+            var left = inputPph.Type;
+            if (inputPph.Type == PlaceholderValues.CenteredTitle)
+            {
+                left = PlaceholderValues.Title;
+            }
+
+            var right = pPh.Type;
+            if (pPh.Type == PlaceholderValues.CenteredTitle)
+            {
+                right = PlaceholderValues.Title;
+            }
+
+            return left.Equals(right);
         }
 
         return mappedShape;
