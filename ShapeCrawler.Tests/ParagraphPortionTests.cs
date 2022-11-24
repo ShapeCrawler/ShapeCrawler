@@ -98,4 +98,22 @@ public class ParagraphPortionTests : ShapeCrawlerTest, IClassFixture<Presentatio
         portion3.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
         portion4.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
     }
+    
+    [Fact]
+    public void Hyperlink_Setter_sets_hyperlink_for_table_Cell()
+    {
+        // Arrange
+        var pptxStream = GetTestStream("table-case001.pptx");
+        var pres = SCPresentation.Open(pptxStream);
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var portion = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0];
+
+        // Act
+        portion.Hyperlink = "https://github.com/ShapeCrawler/ShapeCrawler";
+
+        // Assert
+        portion.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
+    }
 }

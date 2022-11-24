@@ -17,9 +17,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Copyright>MIT</Copyright>
     <LangVersion>10</LangVersion>
     <ApplicationIcon>logo.ico</ApplicationIcon>
-    <PackageReleaseNotes>- Added `IPicture.SvgContent` property to read SVG graphic content.
-- Added `ITextFrame.LeftMargin`, `ITextFrame.RightMargin`, `ITextFrame.TopMargin` and `ITextFrame.BottomMargin` properties to get margins of text box.
-- Added `IParagraph.IndentLevel` to get indent level of paragraph.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix`IPortion.Hyperlink.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RepositoryType>Git</RepositoryType>
@@ -28,10 +26,10 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <nullable>enable</nullable>
-    <AssemblyVersion>0.37.0</AssemblyVersion>
-    <FileVersion>0.37.0</FileVersion>
+    <AssemblyVersion>0.37.1</AssemblyVersion>
+    <FileVersion>0.37.1</FileVersion>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-    <PackageVersion>0.37.0</PackageVersion>
+    <PackageVersion>0.37.1</PackageVersion>
     <Title>ShapeCrawler</Title>
     <Configurations>Debug;Release;Test</Configurations>
     <Platforms>AnyCPU</Platforms>
