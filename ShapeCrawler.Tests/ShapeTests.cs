@@ -251,6 +251,7 @@ namespace ShapeCrawler.Tests
         [Theory]
         [SlideShapeData("006_1 slides.pptx", 1, "Shape 1")]
         [SlideShapeData("001.pptx", 1, "Head 1")]
+        [SlideShapeData("autoshape-case015.pptx", 1, "Group 1")]
         public void X_Setter_sets_x_coordinate(IShape shape)
         {
             // Arrange

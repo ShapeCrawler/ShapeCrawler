@@ -108,34 +108,8 @@ internal abstract class Shape : IShape
     private Shape? GroupShape { get; }
 
     internal abstract void Draw(SKCanvas canvas);
-
-    private void SetCustomData(string value)
-    {
-        string customDataElement =
-            $@"<{SCConstants.CustomDataElementName}>{value}</{SCConstants.CustomDataElementName}>";
-        this.PShapeTreesChild.InnerXml += customDataElement;
-    }
-
-    private string? GetCustomData()
-    {
-        var pattern = @$"<{SCConstants.CustomDataElementName}>(.*)<\/{SCConstants.CustomDataElementName}>";
-        var regex = new Regex(pattern);
-        var elementText = regex.Match(this.PShapeTreesChild.InnerXml).Groups[1];
-        if (elementText.Value.Length == 0)
-        {
-            return null;
-        }
-
-        return elementText.Value;
-    }
-
-    private bool DefineHidden()
-    {
-        var parsedHiddenValue = this.PShapeTreesChild.GetNonVisualDrawingProperties().Hidden?.Value;
-        return parsedHiddenValue is true;
-    }
-
-    private void SetXCoordinate(int newXPixels)
+    
+    protected virtual void SetXCoordinate(int xPx)
     {
         if (this.GroupShape is not null)
         {
@@ -148,7 +122,7 @@ internal abstract class Shape : IShape
         {
             var placeholder = (Placeholder)this.Placeholder!;
             var referencedShape = placeholder.ReferencedShape.Value;
-            var xEmu = UnitConverter.HorizontalPixelToEmu(newXPixels);
+            var xEmu = UnitConverter.HorizontalPixelToEmu(xPx);
             var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.Y);
             var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
             var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
@@ -156,11 +130,11 @@ internal abstract class Shape : IShape
         }
         else
         {
-            aXfrm.Offset!.X = UnitConverter.HorizontalPixelToEmu(newXPixels);
+            aXfrm.Offset!.X = UnitConverter.HorizontalPixelToEmu(xPx);
         }
     }
     
-    private void SetYCoordinate(int newYPixels)
+    protected virtual void SetYCoordinate(int newYPixels)
     {
         if (this.GroupShape is not null)
         {
@@ -185,7 +159,33 @@ internal abstract class Shape : IShape
         }
     }
     
-    private void SetHeight(int newHPixels)
+    
+    protected virtual void SetWidth(int newWPixels)
+    {
+        if (this.GroupShape is not null)
+        {
+            throw new RuntimeDefinedPropertyException("Width coordinate of grouped shape cannot be changed.");
+        }
+        
+        var pSpPr = this.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !;
+        var aXfrm = pSpPr.Transform2D;
+        if (aXfrm is null)
+        {
+            var placeholder = (Placeholder)this.Placeholder!;
+            var referencedShape = placeholder.ReferencedShape.Value;
+            var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.X);
+            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
+            var wEmu = UnitConverter.VerticalPixelToEmu(newWPixels);
+            var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
+            pSpPr.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
+        }
+        else
+        {
+            aXfrm.Extents!.Cx = UnitConverter.HorizontalPixelToEmu(newWPixels);
+        }
+    }
+    
+    protected virtual void SetHeight(int newHPixels)
     {
         if (this.GroupShape is not null)
         {
@@ -210,29 +210,30 @@ internal abstract class Shape : IShape
         }
     }
     
-    private void SetWidth(int newWPixels)
+    private void SetCustomData(string value)
     {
-        if (this.GroupShape is not null)
+        string customDataElement =
+            $@"<{SCConstants.CustomDataElementName}>{value}</{SCConstants.CustomDataElementName}>";
+        this.PShapeTreesChild.InnerXml += customDataElement;
+    }
+
+    private string? GetCustomData()
+    {
+        var pattern = @$"<{SCConstants.CustomDataElementName}>(.*)<\/{SCConstants.CustomDataElementName}>";
+        var regex = new Regex(pattern);
+        var elementText = regex.Match(this.PShapeTreesChild.InnerXml).Groups[1];
+        if (elementText.Value.Length == 0)
         {
-            throw new RuntimeDefinedPropertyException("Width coordinate of grouped shape cannot be changed.");
+            return null;
         }
-        
-        var pSpPr = this.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !;
-        var aXfrm = pSpPr.Transform2D;
-        if (aXfrm is null)
-        {
-            var placeholder = (Placeholder)this.Placeholder!;
-            var referencedShape = placeholder.ReferencedShape.Value;
-            var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.X);
-            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
-            var wEmu = UnitConverter.VerticalPixelToEmu(newWPixels);
-            var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
-            pSpPr.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
-        }
-        else
-        {
-            aXfrm.Extents!.Cx = UnitConverter.HorizontalPixelToEmu(newWPixels);
-        }
+
+        return elementText.Value;
+    }
+
+    private bool DefineHidden()
+    {
+        var parsedHiddenValue = this.PShapeTreesChild.GetNonVisualDrawingProperties().Hidden?.Value;
+        return parsedHiddenValue is true;
     }
 
     private int GetXCoordinate()
