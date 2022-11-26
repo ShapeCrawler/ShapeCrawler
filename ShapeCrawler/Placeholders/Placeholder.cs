@@ -15,7 +15,7 @@ internal abstract class Placeholder : IPlaceholder
 
     internal P.PlaceholderShape PPlaceholderShape { get; }
 
-    internal abstract ResettableLazy<Shape> ReferencedShape { get; }
+    internal abstract ResettableLazy<Shape?> ReferencedShape { get; }
 
     #region Private Methods
 

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.Tests.Helpers.Attributes;
 using ShapeCrawler.Tests.Properties;
 using Xunit;
 
@@ -20,23 +22,22 @@ public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
         _fixture = fixture;
     }
 
-    [Fact]
-    public void Name_GetterReturnsFontNameOfTheParagraphPortion()
+    [Theory]
+    [SlideShapeData("002.pptx", 2, 3, "Palatino Linotype")]
+    [SlideShapeData("001.pptx", 1, 4, "Broadway")]
+    [SlideShapeData("001.pptx", 1, 7, "Calibri Light")]
+    [SlideShapeData("autoshape-case015.pptx", 1, "Title 1", "Franklin Gothic Medium")]
+    public void Name_Getter_returns_font_name(IShape shape, string expectedFontName)
     {
         // Arrange
-        ITextFrame textBox1 = ((IAutoShape)_fixture.Pre002.Slides[1].Shapes.First(sp => sp.Id == 3)).TextFrame;
-        ITextFrame textBox2 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 4)).TextFrame;
-        ITextFrame textBox3 = ((IAutoShape)_fixture.Pre001.Slides[0].Shapes.First(sp => sp.Id == 7)).TextFrame;
+        var autoShape = (IAutoShape)shape;
+        var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
 
         // Act
-        string portionFontNameCase1 = textBox1.Paragraphs[0].Portions[0].Font.Name;
-        string portionFontNameCase2 = textBox2.Paragraphs[0].Portions[0].Font.Name;
-        string portionFontNameCase3 = textBox3.Paragraphs[0].Portions[0].Font.Name;
+        var fontName = font.Name;
 
         // Assert
-        portionFontNameCase1.Should().BeEquivalentTo("Palatino Linotype");
-        portionFontNameCase2.Should().BeEquivalentTo("Broadway");
-        portionFontNameCase3.Should().BeEquivalentTo("Calibri Light");
+        fontName.Should().Be(expectedFontName);
     }
 
     [Fact]

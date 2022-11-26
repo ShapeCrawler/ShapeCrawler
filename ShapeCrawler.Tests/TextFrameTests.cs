@@ -314,6 +314,7 @@ namespace ShapeCrawler.Tests
         [Theory]
         [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 7")]
         [SlideShapeData("001.pptx", 1, "Head 1")]
+        [SlideShapeData("autoshape-case014.pptx", 1, "Content Placeholder 1")]
         public void Autofit_Setter_sets_autofit_type(IShape shape)
         {
             // Arrange
