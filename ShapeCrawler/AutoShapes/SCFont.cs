@@ -173,17 +173,8 @@ internal class SCFont : IFont
             return aLatinFont;
         }
 
-        FontData phFontData = new ();
-        FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
-        {
-            if (phFontData.ALatinFont != null)
-            {
-                return phFontData.ALatinFont;
-            }
-        }
-
-        // Get from theme
-        return this.aFontScheme.MinorFont!.LatinFont!;
+        var phFontData = FontDataParser.FromPlaceholder(this.ParentPortion.ParentParagraph);
+        return phFontData.ALatinFont ?? this.aFontScheme.MinorFont!.LatinFont!;
     }
 
     private int GetSize()
@@ -241,7 +232,7 @@ internal class SCFont : IFont
         {
             var pTextStyles = slideMaster.PSlideMaster.TextStyles!;
             var titleFontSize = pTextStyles.TitleStyle!.Level1ParagraphProperties!
-                .GetFirstChild<A.DefaultRunProperties>()!.FontSize!.Value;
+                .GetFirstChild<A.DefaultRunProperties>() !.FontSize!.Value;
             i = titleFontSize / 100;
             return true;
         }
@@ -273,7 +264,7 @@ internal class SCFont : IFont
             return false;
         }
 
-        if (aRunProperties.Bold is not null  && aRunProperties.Bold == true)
+        if (aRunProperties.Bold is not null && aRunProperties.Bold == true)
         {
             return true;
         }
@@ -303,7 +294,7 @@ internal class SCFont : IFont
 
         FontData phFontData = new ();
         FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
-        if (phFontData.IsItalic is not null )
+        if (phFontData.IsItalic is not null)
         {
             return phFontData.IsItalic.Value;
         }
@@ -322,7 +313,7 @@ internal class SCFont : IFont
         {
             FontData phFontData = new ();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
-            if (phFontData.IsBold is not null )
+            if (phFontData.IsBold is not null)
             {
                 phFontData.IsBold = new BooleanValue(value);
             }

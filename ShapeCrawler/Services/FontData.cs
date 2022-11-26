@@ -3,7 +3,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Services;
 
-internal class FontData
+internal sealed class FontData
 {
     internal A.SystemColor? ASystemColor { get; set; }
 

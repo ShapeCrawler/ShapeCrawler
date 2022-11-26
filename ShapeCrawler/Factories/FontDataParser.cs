@@ -21,8 +21,33 @@ internal static class FontDataParser
         }
 
         var placeholder = (Placeholder)shape.Placeholder;
-        var autoShape = (SlideAutoShape)placeholder.ReferencedShape.Value;
+        var autoShape = (SlideAutoShape?)placeholder.ReferencedShape.Value;
         autoShape?.FillFontData(paragraph.Level, ref phFontData);
+    }
+    
+    internal static FontData FromPlaceholder(SCParagraph para)
+    {
+        var fontData = new FontData();
+        var shape = (Shape)para.ParentTextFrame.TextFrameContainer;
+        var placeholder = (Placeholder?)shape.Placeholder;
+        if (placeholder is null)
+        {
+            return fontData;
+        }
+        
+        var referencedShape = (SlideAutoShape?)placeholder.ReferencedShape.Value;
+        
+        if (referencedShape is null && placeholder.Type is SCPlaceholderType.Title or SCPlaceholderType.CenteredTitle)
+        {
+            fontData.ALatinFont = shape.SlideMasterInternal.PSlideMaster.TextStyles!.TitleStyle!.Level1ParagraphProperties!
+                .GetFirstChild<A.DefaultRunProperties>() !.GetFirstChild<A.LatinFont>();
+        }
+        else
+        {
+            referencedShape?.FillFontData(para.Level, ref fontData);    
+        }
+
+        return fontData;
     }
 
     internal static Dictionary<int, FontData>

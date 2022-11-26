@@ -11,7 +11,6 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.SlideMasters;
 
 [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrawler")]
-[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 internal class SCSlideMaster : SlideObject, ISlideMaster
 {
     private readonly ResettableLazy<List<SCSlideLayout>> slideLayouts;

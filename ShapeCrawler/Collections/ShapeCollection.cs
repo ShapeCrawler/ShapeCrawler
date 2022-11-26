@@ -259,11 +259,29 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
         return (T)shape;
     }
 
-    public Shape? GetReferencedShapeOrDefault(P.PlaceholderShape inputPph)
+    public Shape? GetReferencedShapeOrNull(P.PlaceholderShape inputPph)
     {
         var phShapes = this.CollectionItems.Where(sp => sp.Placeholder != null).OfType<Shape>();
-        var mappedShape = phShapes.FirstOrDefault(IsEqual);
+        var referencedShape = phShapes.FirstOrDefault(IsEqual);
+        
+        // https://answers.microsoft.com/en-us/msoffice/forum/all/placeholder-master/0d51dcec-f982-4098-b6b6-94785304607a?page=3
+        if (referencedShape == null && inputPph.Index?.Value == 4294967295 && this.slideObject.IsT2)
+        {
+            var custom = phShapes.Select(sp =>
+            {
+                var placeholder = (Placeholder?)sp.Placeholder;
+                return new
+                {
+                    shape = sp,
+                    index = placeholder?.PPlaceholderShape.Index?.Value
+                };
+            });
+            
+            return custom.FirstOrDefault(x => x.index == 1)?.shape;
+        }
 
+        return referencedShape;
+        
         bool IsEqual(Shape collectionShape)
         {
             var placeholder = (Placeholder)collectionShape.Placeholder!;
@@ -300,8 +318,6 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
 
             return left.Equals(right);
         }
-
-        return mappedShape;
     }
 
     internal static ShapeCollection Create(OneOf<SlidePart, SlideLayoutPart, SlideMasterPart> oneOfSlidePart, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
