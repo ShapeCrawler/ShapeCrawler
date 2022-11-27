@@ -134,7 +134,7 @@ public class PresentationTests : ShapeCrawlerTest, IClassFixture<PresentationFix
     public void Slides_Add_adds_should_copy_only_layout_of_copying_slide()
     {
         // Arrange
-        var sourcePptx = GetTestStream("pictures-case003.pptx");
+        var sourcePptx = GetTestStream("pictures-case004.pptx");
         var destPptx = GetTestStream("autoshape-case015.pptx");
         var sourcePres = SCPresentation.Open(sourcePptx);
         var copyingSlide = sourcePres.Slides[0];
