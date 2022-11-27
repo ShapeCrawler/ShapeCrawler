@@ -129,9 +129,35 @@ public class PresentationTests : ShapeCrawlerTest, IClassFixture<PresentationFix
         destPre = SCPresentation.Open(savedPre);
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
+    
+    [Fact]
+    public void Slides_Add_adds_should_copy_only_layout_of_copying_slide()
+    {
+        // Arrange
+        var sourcePptx = GetTestStream("pictures-case004.pptx");
+        var destPptx = GetTestStream("autoshape-case015.pptx");
+        var sourcePres = SCPresentation.Open(sourcePptx);
+        var copyingSlide = sourcePres.Slides[0];
+        var destPres = SCPresentation.Open(destPptx);
+        var expectedCount = destPres.Slides.Count + 1;
+        MemoryStream savedPre = new ();
+
+        // Act
+        destPres.Slides.Add(copyingSlide);
+
+        // Assert
+        destPres.Slides.Count.Should().Be(expectedCount);
+
+        destPres.SaveAs(savedPre);
+        destPres = SCPresentation.Open(savedPre);
+        destPres.Slides.Count.Should().Be(expectedCount);
+        destPres.Slides[1].SlideLayout.SlideMaster.SlideLayouts.Count.Should().Be(1);
+        var errors = PptxValidator.Validate(destPres);
+        errors.Should().BeEmpty();
+    }
 
     [Fact]
-    public void SlidesInsert_InsertsSpecifiedSlideAtTheSpecifiedPosition()
+    public void Slides_Insert_inserts_specified_slide_at_the_specified_position()
     {
         // Arrange
         ISlide sourceSlide = SCPresentation.Open(TestFiles.Presentations.pre001).Slides[0];

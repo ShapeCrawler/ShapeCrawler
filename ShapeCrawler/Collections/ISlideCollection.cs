@@ -16,7 +16,7 @@ public interface ISlideCollection : IReadOnlyList<ISlide>
     /// <summary>
     ///     Adds a slide into the collection at the specified position.
     /// </summary>
-    void Add(ISlide addingSlide);
+    void Add(ISlide sourceSlide);
 
     /// <summary>
     ///     Inserts slide.
