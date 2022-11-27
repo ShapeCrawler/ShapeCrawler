@@ -80,49 +80,88 @@ internal class SCSlideCollection : ISlideCollection
         this.OnCollectionChanged();
     }
 
-    public void Add(ISlide addingSlide)
+    public void Add(ISlide sourceSlide)
     {
-        var sourceSlide = (SCSlide)addingSlide;
-        PresentationDocument sdkPreDocSource;
-        if (sourceSlide.Presentation == this.presentation)
+        var sourceSlideInternal = (SCSlide)sourceSlide;
+        PresentationDocument sourcePresDoc;
+        var tempStream = new MemoryStream();
+        if (sourceSlideInternal.Presentation == this.presentation)
         {
-            var tempStream = new MemoryStream();
-            sdkPreDocSource = (PresentationDocument)this.presentation.SDKPresentationInternal.Clone(tempStream);
+            sourcePresDoc = (PresentationDocument)this.presentation.SDKPresentationInternal.Clone(tempStream);
         }
         else
         {
-            sdkPreDocSource = sourceSlide.PresentationInternal.SDKPresentationInternal;
+            sourcePresDoc = (PresentationDocument)sourceSlideInternal.PresentationInternal.SDKPresentationInternal.Clone(tempStream);
         }
 
-        var sdkPresDocDest = this.presentation.SDKPresentationInternal;
-        var sdkPresPartSource = sdkPreDocSource.PresentationPart!;
-        var sdkPresPartDest = sdkPresDocDest.PresentationPart!;
-        var sdkPresDest = sdkPresPartDest.Presentation;
-        var sourceSlideIndex = addingSlide.Number - 1;
-        var sdkSlideIdSource = (SlideId)sdkPresPartSource.Presentation.SlideIdList!.ChildElements[sourceSlideIndex];
-        var sdkSlidePartSource = (SlidePart)sdkPresPartSource.GetPartById(sdkSlideIdSource.RelationshipId!);
+        var destPresDoc = this.presentation.SDKPresentationInternal;
+        var sourcePresPart = sourcePresDoc.PresentationPart!;
+        var destPresPart = destPresDoc.PresentationPart!;
+        var destSdkPres = destPresPart.Presentation;
+        var sourceSlideIndex = sourceSlide.Number - 1;
+        var sourceSlideId = (SlideId)sourcePresPart.Presentation.SlideIdList!.ChildElements[sourceSlideIndex];
+        var sourceSlidePart = (SlidePart)sourcePresPart.GetPartById(sourceSlideId.RelationshipId!);
 
-        var addedSdkSlidePart = sdkPresPartDest.AddPart(sdkSlidePartSource);
-        var sdkNoticePart = addedSdkSlidePart.GetPartsOfType<NotesSlidePart>().FirstOrDefault();
-        if (sdkNoticePart != null)
-        {
-            addedSdkSlidePart.DeletePart(sdkNoticePart);
-        }
+        NormalizeLayouts(sourceSlidePart);
 
-        var addedSlideMasterPart = sdkPresPartDest.AddPart(addedSdkSlidePart.SlideLayoutPart!.SlideMasterPart!);
+        var addedSlidePart = AddSlidePart(destPresPart, sourceSlidePart, out var addedSlideMasterPart);
 
-        AddNewSlideId(sdkPresDest, sdkPresDocDest, addedSdkSlidePart);
-        var masterId = AddNewSlideMasterId(sdkPresDest, sdkPresDocDest, addedSlideMasterPart);
-        AdjustLayoutIds(sdkPresDocDest, masterId);
+        AddNewSlideId(destSdkPres, destPresDoc, addedSlidePart);
+        var masterId = AddNewSlideMasterId(destSdkPres, destPresDoc, addedSlideMasterPart);
+        AdjustLayoutIds(destPresDoc, masterId);
 
         this.slides.Reset();
         this.presentation.SlideMastersValue.Reset();
         this.OnCollectionChanged();
     }
-
+    
     internal SCSlide GetBySlideId(string slideId)
     {
         return this.slides.Value.First(scSlide => scSlide.SlideId.Id == slideId);
+    }
+    
+    private static SlidePart AddSlidePart(
+        PresentationPart destPresPart, 
+        SlidePart sourceSlidePart,
+        out SlideMasterPart addedSlideMasterPart)
+    {
+        var addedSlidePart = destPresPart.AddPart(sourceSlidePart);
+        var sdkNoticePart = addedSlidePart.GetPartsOfType<NotesSlidePart>().FirstOrDefault();
+        if (sdkNoticePart != null)
+        {
+            addedSlidePart.DeletePart(sdkNoticePart);
+        }
+
+        addedSlideMasterPart = destPresPart.AddPart(addedSlidePart.SlideLayoutPart!.SlideMasterPart!);
+        var layoutIdList = addedSlideMasterPart.SlideMaster!.SlideLayoutIdList!.OfType<P.SlideLayoutId>();
+        foreach (var lId in layoutIdList.ToList())
+        {
+            if (!addedSlideMasterPart.TryGetPartById(lId!.RelationshipId!, out _))
+            {
+                lId.Remove();
+            }
+        }
+
+        return addedSlidePart;
+    }
+
+    private static void NormalizeLayouts(SlidePart sourceSlidePart)
+    {
+        var sourceMasterPart = sourceSlidePart.SlideLayoutPart!.SlideMasterPart!;
+        var layoutParts = sourceMasterPart.SlideLayoutParts.ToList();
+        var layoutIdList = sourceMasterPart.SlideMaster!.SlideLayoutIdList!.OfType<P.SlideLayoutId>();
+        foreach (var layoutPart in layoutParts)
+        {
+            if (layoutPart == sourceSlidePart.SlideLayoutPart)
+            {
+                continue;
+            }
+
+            var id = sourceMasterPart.GetIdOfPart(layoutPart);
+            var layoutId = layoutIdList.First(x => x.RelationshipId == id);
+            layoutId.Remove();
+            sourceMasterPart.DeletePart(layoutPart);
+        }
     }
 
     private static void AdjustLayoutIds(PresentationDocument sdkPresDocDest, uint masterId)
