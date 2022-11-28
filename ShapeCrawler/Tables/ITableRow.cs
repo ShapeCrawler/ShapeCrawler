@@ -29,7 +29,7 @@ public interface ITableRow
 
 internal class SCTableRow : ITableRow
 {
-    private readonly Lazy<List<SCTableCell>> cells;
+    private readonly Lazy<List<SCTableCell?>> cells;
     private readonly int index;
 
     internal SCTableRow(SlideTable table, A.TableRow aTableRow, int index)
@@ -37,15 +37,10 @@ internal class SCTableRow : ITableRow
         this.ParentTable = table;
         this.ATableRow = aTableRow;
         this.index = index;
-
-#if NETSTANDARD2_0
-        this.cells = new Lazy<List<SCTableCell>>(() => this.GetCells());
-#else
-        this.cells = new Lazy<List<SCTableCell>>(this.GetCells);
-#endif
+        this.cells = new Lazy<List<SCTableCell?>>(() => this.GetCells());
     }
 
-    public IReadOnlyList<ITableCell> Cells => this.cells.Value;
+    public IReadOnlyList<ITableCell?> Cells => this.cells.Value;
 
     public long Height
     {
@@ -72,7 +67,7 @@ internal class SCTableRow : ITableRow
 
     #region Private Methods
 
-    private List<SCTableCell> GetCells()
+    private List<SCTableCell?> GetCells()
     {
         var cellList = new List<SCTableCell?>();
         var aCells = this.ATableRow.Elements<A.TableCell>();

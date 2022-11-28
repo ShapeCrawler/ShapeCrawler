@@ -13,9 +13,9 @@ namespace ShapeCrawler;
 public class SCBullet // TODO: extract interface
 {
     private readonly A.ParagraphProperties aParagraphProperties;
-    private readonly Lazy<string> character;
-    private readonly Lazy<string> colorHex;
-    private readonly Lazy<string> fontName;
+    private readonly Lazy<string?> character;
+    private readonly Lazy<string?> colorHex;
+    private readonly Lazy<string?> fontName;
     private readonly Lazy<int> size;
     private readonly Lazy<SCBulletType> type;
 
@@ -23,9 +23,9 @@ public class SCBullet // TODO: extract interface
     {
         this.aParagraphProperties = aParagraphProperties;
         this.type = new Lazy<SCBulletType>(this.ParseType);
-        this.colorHex = new Lazy<string>(this.ParseColorHex);
-        this.character = new Lazy<string>(this.ParseChar);
-        this.fontName = new Lazy<string>(this.ParseFontName);
+        this.colorHex = new Lazy<string?>(this.ParseColorHex);
+        this.character = new Lazy<string?>(this.ParseChar);
+        this.fontName = new Lazy<string?>(this.ParseFontName);
         this.size = new Lazy<int>(this.ParseSize);
     }
 
@@ -34,12 +34,12 @@ public class SCBullet // TODO: extract interface
     /// <summary>
     ///     Gets RGB color in HEX format.
     /// </summary>
-    public string ColorHex => this.colorHex.Value;
+    public string? ColorHex => this.colorHex.Value;
 
     /// <summary>
     ///     Gets or sets bullet character.
     /// </summary>
-    public string Character
+    public string? Character
     {
         get => this.character.Value;
 
@@ -62,9 +62,9 @@ public class SCBullet // TODO: extract interface
     }
 
     /// <summary>
-    ///     Gets or sets bullet font name.
+    ///     Gets or sets bullet font name. Returns <see langword="null"/> if bullet doesn't exist.
     /// </summary>
-    public string FontName
+    public string? FontName
     {
         get => this.fontName.Value;
 

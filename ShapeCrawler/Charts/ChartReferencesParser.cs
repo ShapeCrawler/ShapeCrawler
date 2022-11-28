@@ -43,7 +43,7 @@ internal static class ChartReferencesParser
 
     internal static string GetSingleString(C.StringReference stringReference, SCChart slideChart)
     {
-        string fromCache = stringReference.StringCache?.GetFirstChild<C.StringPoint>()!.Single().InnerText!;
+        string fromCache = stringReference.StringCache?.GetFirstChild<C.StringPoint>() !.Single().InnerText!;
         if (fromCache != null)
         {
             return fromCache;

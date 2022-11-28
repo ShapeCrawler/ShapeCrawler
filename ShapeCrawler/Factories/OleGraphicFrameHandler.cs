@@ -17,7 +17,7 @@ internal class OleGraphicFrameHandler : OpenXmlElementHandler
     {
         if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
         {
-            var aGraphicData = pShapeTreeChild!.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>();
+            var aGraphicData = pShapeTreeChild!.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>();
             if (aGraphicData!.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
             {
                  var oleObject = new SlideOLEObject (pGraphicFrame, oneOfSlide, groupShape);

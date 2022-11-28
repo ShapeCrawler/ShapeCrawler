@@ -20,10 +20,10 @@ internal class SCChart : SlideShape, IChart
 {
     private readonly ResettableLazy<ICategoryCollection?> categories;
     private readonly Lazy<SCChartType> chartType;
-    private readonly Lazy<OpenXmlElement> firstSeries;
+    private readonly Lazy<OpenXmlElement?> firstSeries;
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly Lazy<SCSeriesCollection> series;
-    private readonly Lazy<LibraryCollection<double>> xValues;
+    private readonly Lazy<LibraryCollection<double>?> xValues;
 
     // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
     // then collection contains only single item.
@@ -35,18 +35,18 @@ internal class SCChart : SlideShape, IChart
         : base(pGraphicFrame, oneOfSlide, null)
     {
         this.pGraphicFrame = pGraphicFrame;
-        this.firstSeries = new Lazy<OpenXmlElement>(this.GetFirstSeries);
-        this.xValues = new Lazy<LibraryCollection<double>>(this.GetXValues);
+        this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
+        this.xValues = new Lazy<LibraryCollection<double>?>(this.GetXValues);
         this.series = new Lazy<SCSeriesCollection>(this.GetSeries);
         this.categories = new ResettableLazy<ICategoryCollection?>(this.GetCategories);
         this.chartType = new Lazy<SCChartType>(this.GetChartType);
 
         var cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
-            .GetFirstChild<C.ChartReference>()!;
+            .GetFirstChild<C.ChartReference>() !;
 
         this.ChartPart = (ChartPart)this.Slide.TypedOpenXmlPart.GetPartById(cChartReference.Id!);
 
-        var cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>()!.PlotArea;
+        var cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
         this.cXCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
         this.ChartWorkbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartWorkbook(this, this.ChartPart.EmbeddedPackagePart) : null;
@@ -135,7 +135,7 @@ internal class SCChart : SlideShape, IChart
 
     private string? GetTitleOrDefault()
     {
-        var cTitle = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>()!.Title;
+        var cTitle = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
         if (cTitle == null)
         {
             // chart has not title

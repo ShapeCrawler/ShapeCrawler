@@ -33,7 +33,7 @@ internal class CategoryCollection : LibraryCollection<ICategory>, ICategoryColle
     {
     }
 
-    public static CategoryCollection? Create(SCChart chart, OpenXmlElement firstChartSeries, SCChartType chartType)
+    public static CategoryCollection? Create(SCChart chart, OpenXmlElement? firstChartSeries, SCChartType chartType)
     {
         if (chartType is SCChartType.BubbleChart or SCChartType.ScatterChart)
         {
@@ -59,7 +59,7 @@ internal class CategoryCollection : LibraryCollection<ICategory>, ICategoryColle
         //          </c:strCache>
         //      </c:strRef>
         //  </c:cat>
-        C.CategoryAxisData cCatAxisData = (C.CategoryAxisData)firstChartSeries.First(x => x is C.CategoryAxisData);
+        C.CategoryAxisData cCatAxisData = (C.CategoryAxisData)firstChartSeries!.First(x => x is C.CategoryAxisData);
 
         C.MultiLevelStringReference? cMultiLvlStringRef = cCatAxisData.MultiLevelStringReference;
         if (cMultiLvlStringRef != null)

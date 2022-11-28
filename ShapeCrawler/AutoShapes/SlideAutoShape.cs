@@ -146,7 +146,7 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
 
         if (!lvlToFontData.Any())
         {
-            var endParaRunPrFs = textBody.GetFirstChild<A.Paragraph>()!
+            var endParaRunPrFs = textBody.GetFirstChild<A.Paragraph>() !
                 .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
             if (endParaRunPrFs is not null)
             {
