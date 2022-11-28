@@ -346,20 +346,20 @@ internal class ColorFormat : IColorFormat
         var slideMasterPColorMap = this.parentSlideMaster.PSlideMaster.ColorMap;
         if (fontSchemeColor == A.SchemeColorValues.Text1)
         {
-            return this.GetThemeColorByString(slideMasterPColorMap!.Text1!.ToString()!);
+            return this.GetThemeColorByString(slideMasterPColorMap!.Text1!.ToString() !);
         }
 
         if (fontSchemeColor == A.SchemeColorValues.Text2)
         {
-            return this.GetThemeColorByString(slideMasterPColorMap!.Text2!.ToString()!);
+            return this.GetThemeColorByString(slideMasterPColorMap!.Text2!.ToString() !);
         }
 
         if (fontSchemeColor == A.SchemeColorValues.Background1)
         {
-            return this.GetThemeColorByString(slideMasterPColorMap!.Background1!.ToString()!);
+            return this.GetThemeColorByString(slideMasterPColorMap!.Background1!.ToString() !);
         }
 
-        return this.GetThemeColorByString(slideMasterPColorMap!.Background2!.ToString()!);
+        return this.GetThemeColorByString(slideMasterPColorMap!.Background2!.ToString() !);
     }
 
     private string GetThemeColorByString(string fontSchemeColor)

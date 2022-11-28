@@ -20,8 +20,8 @@ namespace ShapeCrawler;
 
 internal class SCSlide : SlideObject, ISlide
 {
-    private readonly Lazy<SCImage> backgroundImage;
-    private Lazy<CustomXmlPart> customXmlPart;
+    private readonly Lazy<SCImage?> backgroundImage;
+    private Lazy<CustomXmlPart?> customXmlPart;
     private readonly ResettableLazy<ShapeCollection> shapes;
 
     internal SCSlide(SCPresentation pres, SlidePart slidePart, SlideId slideId)
@@ -31,7 +31,7 @@ internal class SCSlide : SlideObject, ISlide
         this.SDKSlidePart = slidePart;
         this.shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.Create(this.SDKSlidePart, this));
         this.backgroundImage = new Lazy<SCImage?>(() => SCImage.ForBackground(this));
-        this.customXmlPart = new Lazy<CustomXmlPart>(this.GetSldCustomXmlPart);
+        this.customXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideId = slideId;
     }
 
@@ -46,7 +46,7 @@ internal class SCSlide : SlideObject, ISlide
         set => this.SetNumber(value);
     }
 
-    public IImage Background => this.backgroundImage.Value;
+    public IImage? Background => this.backgroundImage.Value;
 
     public string? CustomData
     {
@@ -232,7 +232,7 @@ internal class SCSlide : SlideObject, ISlide
         {
             CustomXmlPart newSlideCustomXmlPart = this.SDKSlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
             customXmlPartStream = newSlideCustomXmlPart.GetStream();
-            this.customXmlPart = new Lazy<CustomXmlPart>(() => newSlideCustomXmlPart);
+            this.customXmlPart = new Lazy<CustomXmlPart?>(() => newSlideCustomXmlPart);
         }
         else
         {

@@ -7,6 +7,6 @@ internal static class GraphicFrameExtensions
 {
     internal static A.Table GetATable(this P.GraphicFrame pGraphicFrame)
     {
-        return pGraphicFrame.GetFirstChild<A.Graphic>()!.GraphicData!.GetFirstChild<A.Table>()!;
+        return pGraphicFrame.GetFirstChild<A.Graphic>() !.GraphicData!.GetFirstChild<A.Table>() !;
     }
 }

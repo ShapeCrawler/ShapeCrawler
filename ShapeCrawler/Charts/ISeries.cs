@@ -36,7 +36,7 @@ public interface ISeries
 
 internal class Series : ISeries
 {
-    private readonly Lazy<string> name;
+    private readonly Lazy<string?> name;
     private readonly OpenXmlElement seriesXmlElement;
     private readonly SCChart parentChart;
 
@@ -44,7 +44,7 @@ internal class Series : ISeries
     {
         this.parentChart = parentChart;
         this.seriesXmlElement = seriesXmlElement;
-        this.name = new Lazy<string>(this.GetNameOrDefault);
+        this.name = new Lazy<string?>(this.GetNameOrDefault);
         this.Type = seriesChartType;
     }
 
