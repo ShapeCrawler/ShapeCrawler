@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.38.0 - 2022-11-28
+- Added setter for `ITextFrame.AutofitType` property [#360](https://github.com/ShapeCrawler/ShapeCrawler/issues/360)
+
 ## Version 0.37.1 - 2022-11-24
 - Fix `IPortion.Hyperlink` [#394](https://github.com/ShapeCrawler/ShapeCrawler/discussions/394)
 
