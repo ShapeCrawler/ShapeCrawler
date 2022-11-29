@@ -36,24 +36,24 @@ public interface ITextFrame
     SCAutofitType AutofitType { get; set; }
 
     /// <summary>
-    ///     Gets or sets left margin of text frame in centimeters.
+    ///     Gets left margin of text frame in centimeters.
     /// </summary>
-    double LeftMargin { get; set; }
+    double LeftMargin { get; }
 
     /// <summary>
-    ///     Gets or sets right margin of text frame in centimeters.
+    ///     Gets right margin of text frame in centimeters.
     /// </summary>
-    double RightMargin { get; set; }
+    double RightMargin { get; }
 
     /// <summary>
-    ///     Gets or sets top margin of text frame in centimeters.
+    ///     Gets top margin of text frame in centimeters.
     /// </summary>
-    double TopMargin { get; set; }
+    double TopMargin { get; }
 
     /// <summary>
-    ///     Gets or sets bottom margin of text frame in centimeters.
+    ///     Gets bottom margin of text frame in centimeters.
     /// </summary>
-    double BottomMargin { get; set; }
+    double BottomMargin { get; }
 
     /// <summary>
     ///     Gets a value indicating whether text is wrapped in shape.
@@ -95,29 +95,13 @@ internal class TextFrame : ITextFrame
         set => this.SetAutofitType(value);
     }
 
-    public double LeftMargin
-    {
-        get => this.GetLeftMargin();
-        set => this.SetLeftMargin(value);
-    }
+    public double LeftMargin => this.GetLeftMargin();
 
-    public double RightMargin
-    {
-        get => this.GetRightMargin();
-        set => this.SetRightMargin(value);
-    }
+    public double RightMargin => this.GetRightMargin();
 
-    public double TopMargin
-    {
-        get => this.GetTopMargin();
-        set => this.SetTopMargin(value);
-    }
+    public double TopMargin => this.GetTopMargin();
 
-    public double BottomMargin
-    {
-        get => this.GetBottomMargin();
-        set => this.SetBottomMargin(value);
-    }
+    public double BottomMargin => this.GetBottomMargin();
 
     public bool TextWrapped => this.IsTextWrapped();
 
@@ -193,40 +177,12 @@ internal class TextFrame : ITextFrame
         var ins = bodyProperties.LeftInset;
         return ins is null ? SCConstants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
-    
+
     private double GetRightMargin()
     {
         var bodyProperties = this.TextBodyElement.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.RightInset;
         return ins is null ? SCConstants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(ins.Value);
-    }
-
-    private void SetLeftMargin(double centimetre)
-    {
-        var bodyProperties = this.TextBodyElement.GetFirstChild<A.BodyProperties>() !;
-        var emu = UnitConverter.CentimeterToEmu(centimetre);
-        bodyProperties.LeftInset = new Int32Value((int)emu);
-    }
-
-    private void SetRightMargin(double centimetre)
-    {
-        var bodyProperties = this.TextBodyElement.GetFirstChild<A.BodyProperties>() !;
-        var emu = UnitConverter.CentimeterToEmu(centimetre);
-        bodyProperties.RightInset = new Int32Value((int)emu);
-    }
-    
-    private void SetTopMargin(double centimetre)
-    {
-        var bodyProperties = this.TextBodyElement.GetFirstChild<A.BodyProperties>() !;
-        var emu = UnitConverter.CentimeterToEmu(centimetre);
-        bodyProperties.TopInset = new Int32Value((int)emu);
-    }
-
-    private void SetBottomMargin(double centimetre)
-    {
-        var bodyProperties = this.TextBodyElement.GetFirstChild<A.BodyProperties>() !;
-        var emu = UnitConverter.CentimeterToEmu(centimetre);
-        bodyProperties.BottomInset = new Int32Value((int)emu);
     }
 
     private bool IsTextWrapped()
