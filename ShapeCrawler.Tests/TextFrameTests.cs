@@ -294,7 +294,7 @@ namespace ShapeCrawler.Tests
         }
         
         [Fact]
-        public void Autofit_Setter_resizes_width()
+        public void AutofitType_Setter_resizes_width()
         {
             // Arrange
             var pptxStream = GetTestStream("autoshape-case003.pptx");
@@ -315,7 +315,7 @@ namespace ShapeCrawler.Tests
         [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 7")]
         [SlideShapeData("001.pptx", 1, "Head 1")]
         [SlideShapeData("autoshape-case014.pptx", 1, "Content Placeholder 1")]
-        public void Autofit_Setter_sets_autofit_type(IShape shape)
+        public void AutofitType_Setter_sets_autofit_type(IShape shape)
         {
             // Arrange
             var autoShape = (IAutoShape)shape;
@@ -331,7 +331,7 @@ namespace ShapeCrawler.Tests
         }
         
         [Fact]
-        public void Autofit_Setter_updates_height()
+        public void AutofitType_Setter_updates_height()
         {
             // Arrange
             var pptxStream = GetTestStream("autoshape-case003.pptx");
@@ -514,7 +514,7 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void ParagraphBulletColorHexAndCharAndSizeProperties_ReturnCorrectValues()
+        public void Paragraph_BulletColorHexAndCharAndSizeProperties_ReturnCorrectValues()
         {
             // Arrange
             var shapeList = _fixture.Pre002.Slides[1].Shapes;
@@ -652,16 +652,16 @@ namespace ShapeCrawler.Tests
         }
 
         [Fact]
-        public void ParagraphPortions_CollectionCounterReturnsNumberOfTextPortionsInTheParagraph()
+        public void Paragraph_Portions_counter_returns_number_of_text_portions_in_the_paragraph()
         {
             // Arrange
-            ITextFrame textBox = ((IAutoShape)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 2)).TextFrame;
+            var textFrame = _fixture.Pre009.Slides[2].Shapes.GetById<IAutoShape>(2).TextFrame;
 
             // Act
-            IEnumerable<IPortion> paragraphPortions = textBox.Paragraphs[0].Portions;
+            var portions = textFrame.Paragraphs[0].Portions;
 
             // Assert
-            paragraphPortions.Should().HaveCount(2);
+            portions.Should().HaveCount(2);
         }
 
         [Theory]
@@ -801,6 +801,22 @@ namespace ShapeCrawler.Tests
             
             // Assert
             leftMargin.Should().Be(expectedMargin);
+        }
+        
+        [Theory]
+        [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 2")]
+        public void LeftMargin_setter_sets_left_margin_of_text_frame_in_centimeters(IShape shape)
+        {
+            // Arrange
+            var autoShape = (IAutoShape)shape;
+            var textFrame = autoShape.TextFrame;
+            
+            // Act
+            textFrame.LeftMargin = 0.5;
+            shape.SlideObject.Presentation.SaveAs(@"c:\temp\output.pptx");
+            
+            // Assert
+            textFrame.LeftMargin.Should().Be(0.5);
         }
         
         [Theory]
