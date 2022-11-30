@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
@@ -98,7 +97,7 @@ public class ParagraphPortionTests : ShapeCrawlerTest, IClassFixture<Presentatio
         portion3.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
         portion4.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
     }
-    
+
     [Fact]
     public void Hyperlink_Setter_sets_hyperlink_for_table_Cell()
     {
@@ -115,5 +114,37 @@ public class ParagraphPortionTests : ShapeCrawlerTest, IClassFixture<Presentatio
         portion.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
         var errors = PptxValidator.Validate(pres);
         errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void TextHighlightColor_Getter_returns_text_highlight_color()
+    {
+        // Arrange
+        var pptx = GetTestStream("autoshape-case015.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
+        var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
+
+        // Act
+        var textHighlightColor = portion.TextHighlightColor;
+
+        // Assert
+        textHighlightColor.Should().Be("FFFF00");
+    }
+
+    [Fact]
+    public void TextHighlightColor_Setter_sets_text_highlight_color()
+    {
+        // Arrange
+        var pptx = GetTestStream("autoshape-case015.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
+        var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
+
+        // Act
+        portion.TextHighlightColor = "FFFF00";
+
+        // Assert
+        portion.TextHighlightColor.Should().Be("FFFF00");
     }
 }
