@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -80,7 +81,7 @@ internal class SCPortion : IPortion
     public string? TextHighlightColor
     {
         get => this.GetTextHighlightColor();
-        set => this.SetTextHighlightColor(value);
+        set => this.SetTextHighlightColor(value!);
     }
 
     #endregion Public Properties
@@ -102,27 +103,20 @@ internal class SCPortion : IPortion
             return new SCField(this.aField);
         }
     }
-    
-    private void SetTextHighlightColor(string? value)
-    {
-        throw new NotImplementedException();
-    }
 
     private string? GetTextHighlightColor()
     {
         var arPr = this.AText.PreviousSibling<A.RunProperties>();
-        if (arPr is null)
-        {
-            return null;
-        }
+        var aSrgbClr = arPr?.GetFirstChild<A.Highlight>()?.RgbColorModelHex;
+        
+        return aSrgbClr?.Val;
+    }
 
-        var aSrgbClr = arPr.GetFirstChild<A.Highlight>()?.RgbColorModelHex;
-        if (aSrgbClr is null)
-        {
-            return null;
-        }
-
-        return aSrgbClr.Val;
+    private void SetTextHighlightColor(string hex)
+    {
+        var arPr = this.AText.PreviousSibling<A.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
+        
+        arPr.AddAHighlight(hex!);
     }
     
     private string GetText()
