@@ -116,4 +116,20 @@ public class ParagraphPortionTests : ShapeCrawlerTest, IClassFixture<Presentatio
         var errors = PptxValidator.Validate(pres);
         errors.Should().BeEmpty();
     }
+
+    [Fact]
+    public void TextHighlightColor_Getter_returns_text_highlight_color()
+    {
+        // Arrange
+        var pptx = GetTestStream("autoshape-case015.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
+        var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
+        
+        // Act
+        var textHighlightColor = portion.TextHighlightColor;
+
+        // Assert
+        textHighlightColor.Should().Be("FFFF00");
+    }
 }
