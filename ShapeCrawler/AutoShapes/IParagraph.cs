@@ -3,6 +3,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -41,6 +42,11 @@ public interface IParagraph
     int IndentLevel { get; }
 
     /// <summary>
+    ///     Gets spacing.
+    /// </summary>
+    ISpacing Spacing { get; }
+
+    /// <summary>
     ///     Adds new text portion in paragraph.
     /// </summary>
     void AddPortion(string text);
@@ -49,6 +55,17 @@ public interface IParagraph
     ///     Finds and replaces text.
     /// </summary>
     void ReplaceText(string oldValue, string newValue);
+}
+
+/// <summary>
+///     Represents a spacing of paragraph.
+/// </summary>
+public interface ISpacing
+{
+    /// <summary>
+    ///     Gets Line Spacing.
+    /// </summary>
+    LineSpacing LineSpacing { get; }
 }
 
 internal class SCParagraph : IParagraph
@@ -88,6 +105,8 @@ internal class SCParagraph : IParagraph
     }
 
     public int IndentLevel => this.GetIndentLevel();
+
+    public ISpacing Spacing => this.GetSpacing();
 
     internal TextFrame ParentTextFrame { get; }
 
@@ -164,7 +183,12 @@ internal class SCParagraph : IParagraph
     }
 
     #region Private Methods
-
+    
+    private ISpacing GetSpacing()
+    {
+        return new SCSpacing(this, this.AParagraph);
+    }
+    
     private static void AddBreak(ref OpenXmlElement lastElement)
     {
         lastElement = lastElement.InsertAfterSelf(new A.Break());
@@ -311,4 +335,29 @@ internal class SCParagraph : IParagraph
     }
 
     #endregion Private Methods
+}
+
+internal class SCSpacing : ISpacing
+{
+    private readonly SCParagraph paragraph;
+    private readonly A.Paragraph aParagraph;
+
+    public SCSpacing(SCParagraph paragraph, A.Paragraph aParagraph)
+    {
+        this.paragraph = paragraph;
+        this.aParagraph = aParagraph;
+    }
+
+    public LineSpacing LineSpacing => this.GetLineSpacing();
+
+    private LineSpacing GetLineSpacing()
+    {
+        var apPr = this.aParagraph.ParagraphProperties!;
+        if (apPr.LineSpacing == null)
+        {
+            return LineSpacing.Single;
+        }
+
+        throw new ShapeCrawlerException();
+    }
 }
