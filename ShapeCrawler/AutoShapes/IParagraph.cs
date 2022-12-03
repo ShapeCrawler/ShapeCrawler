@@ -57,17 +57,6 @@ public interface IParagraph
     void ReplaceText(string oldValue, string newValue);
 }
 
-/// <summary>
-///     Represents a spacing of paragraph.
-/// </summary>
-public interface ISpacing
-{
-    /// <summary>
-    ///     Gets Line Spacing.
-    /// </summary>
-    LineSpacing LineSpacing { get; }
-}
-
 internal class SCParagraph : IParagraph
 {
     private readonly Lazy<SCBullet> bullet;
@@ -335,29 +324,4 @@ internal class SCParagraph : IParagraph
     }
 
     #endregion Private Methods
-}
-
-internal class SCSpacing : ISpacing
-{
-    private readonly SCParagraph paragraph;
-    private readonly A.Paragraph aParagraph;
-
-    public SCSpacing(SCParagraph paragraph, A.Paragraph aParagraph)
-    {
-        this.paragraph = paragraph;
-        this.aParagraph = aParagraph;
-    }
-
-    public LineSpacing LineSpacing => this.GetLineSpacing();
-
-    private LineSpacing GetLineSpacing()
-    {
-        var apPr = this.aParagraph.ParagraphProperties!;
-        if (apPr.LineSpacing == null)
-        {
-            return LineSpacing.Single;
-        }
-
-        throw new ShapeCrawlerException();
-    }
 }

@@ -310,18 +310,37 @@ namespace ShapeCrawler.Tests
         }
 
         [Theory]
-        [SlideShapeData("autoshape-case015.pptx", 1, "TextBox 5", LineSpacing.Single)]
-        public void Paragraph_Spacing_LineSpacing_returns_line_spacing_type(IShape shape, LineSpacing expectedSpacing)
+        [SlideShapeData("autoshape-case015.pptx", 1, "TextBox 5", 1.0)]
+        [SlideShapeData("autoshape-case015.pptx", 1, "TextBox 4", 1.5)]
+        [SlideShapeData("autoshape-case015.pptx", 1, "TextBox 3", 2.0)]
+        public void Paragraph_Spacing_LineSpacingLines_returns_line_spacing_in_Lines(IShape shape, double expectedLines)
         {
             // Arrange
             var autoShape = (IAutoShape)shape;
             var paragraph = autoShape.TextFrame!.Paragraphs[0];
             
             // Act
-            var lineSpacing = paragraph.Spacing.LineSpacing;
+            var spacingLines = paragraph.Spacing.LineSpacingLines;
             
             // Assert
-            lineSpacing.Should().Be(expectedSpacing);
+            spacingLines.Should().Be(expectedLines);
+            paragraph.Spacing.LineSpacingPoints.Should().BeNull();
+        }
+        
+        [Theory]
+        [SlideShapeData("autoshape-case015.pptx", 1, "TextBox 6", 21.6)]
+        public void Paragraph_Spacing_LineSpacingPoints_returns_line_spacing_in_Points(IShape shape, double expectedPoints)
+        {
+            // Arrange
+            var autoShape = (IAutoShape)shape;
+            var paragraph = autoShape.TextFrame!.Paragraphs[0];
+            
+            // Act
+            var spacingPoints = paragraph.Spacing.LineSpacingPoints;
+            
+            // Assert
+            spacingPoints.Should().Be(expectedPoints);
+            paragraph.Spacing.LineSpacingLines.Should().BeNull();
         }
     }
 }
