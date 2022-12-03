@@ -72,6 +72,18 @@ public class PresentationTests : ShapeCrawlerTest, IClassFixture<PresentationFix
     }
 
     [Fact]
+    public void Create_creates_a_new_presentation()
+    {
+        // Act
+        var pres = SCPresentation.Create();
+
+        // Assert
+        pres.Should().NotBeNull();
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
     public void Slide_Width_returns_presentation_slides_width_in_pixels()
     {
         // Arrange
