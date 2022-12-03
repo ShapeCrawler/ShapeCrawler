@@ -3,6 +3,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -39,6 +40,11 @@ public interface IParagraph
     ///     Gets paragraph's indent level.
     /// </summary>
     int IndentLevel { get; }
+
+    /// <summary>
+    ///     Gets spacing.
+    /// </summary>
+    ISpacing Spacing { get; }
 
     /// <summary>
     ///     Adds new text portion in paragraph.
@@ -88,6 +94,8 @@ internal class SCParagraph : IParagraph
     }
 
     public int IndentLevel => this.GetIndentLevel();
+
+    public ISpacing Spacing => this.GetSpacing();
 
     internal TextFrame ParentTextFrame { get; }
 
@@ -164,7 +172,12 @@ internal class SCParagraph : IParagraph
     }
 
     #region Private Methods
-
+    
+    private ISpacing GetSpacing()
+    {
+        return new SCSpacing(this, this.AParagraph);
+    }
+    
     private static void AddBreak(ref OpenXmlElement lastElement)
     {
         lastElement = lastElement.InsertAfterSelf(new A.Break());
