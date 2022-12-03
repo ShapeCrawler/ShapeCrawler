@@ -3,6 +3,7 @@
 ## Version 0.39.0 - Unreleased
 - Added setter for `ITextFrame.LeftMargin`, `ITextFrame.RightMargin`, `ITextFrame.TopMargin` and `ITextFrame.BottomMargin` properties [#385](https://github.com/ShapeCrawler/ShapeCrawler/issues/385)
 - Added `IPortion.TextHighlightColor` [#139](https://github.com/ShapeCrawler/ShapeCrawler/issues/139)
+- Added `IParagraph.Spacing` [#379](https://github.com/ShapeCrawler/ShapeCrawler/issues/379)
 
 ## Version 0.38.0 - 2022-11-28
 - Added setter for `ITextFrame.AutofitType` property [#360](https://github.com/ShapeCrawler/ShapeCrawler/issues/360)
