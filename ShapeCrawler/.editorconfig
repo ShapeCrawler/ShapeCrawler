@@ -12,7 +12,7 @@ dotnet_diagnostic.CS0108.severity = error
 dotnet_diagnostic.CS0114.severity = error
 dotnet_diagnostic.CA1062.severity = none
 dotnet_diagnostic.CA1051.severity = error
-dotnet_diagnostic.CA1305.severity = error
+dotnet_diagnostic.CA1305.severity = none
 dotnet_diagnostic.CA1310.severity = error
 dotnet_diagnostic.CA1717.severity = error
 dotnet_diagnostic.CA2007.severity = error
@@ -23,6 +23,7 @@ dotnet_diagnostic.CS8601.severity = error
 dotnet_diagnostic.CS8618.severity = error
 
 # Stylecop
+dotnet_diagnostic.SA1000.severity = none
 dotnet_diagnostic.SA1009.severity = error
 dotnet_diagnostic.SA1028.severity = none
 dotnet_diagnostic.SA1117.severity = error
@@ -34,7 +35,6 @@ dotnet_diagnostic.SA1615.severity = none
 dotnet_diagnostic.SA1413.severity = none
 dotnet_diagnostic.SA1633.severity = none
 dotnet_diagnostic.SA1201.severity = error
-dotnet_diagnostic.SA1000.severity = error
 dotnet_diagnostic.SA1003.severity = error
 dotnet_diagnostic.SA1005.severity = error
 dotnet_diagnostic.SA1101.severity = error

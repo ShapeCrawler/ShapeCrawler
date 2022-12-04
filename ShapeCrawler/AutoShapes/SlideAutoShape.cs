@@ -33,7 +33,7 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
     internal SlideAutoShape(
         P.Shape pShape, 
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide,
-        SCGroupShape groupShape)
+        SCGroupShape? groupShape)
         : base(pShape, oneOfSlide, groupShape)
     {
         this.pShape = pShape;
