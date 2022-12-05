@@ -1,4 +1,5 @@
 using System;
+using DocumentFormat.OpenXml;
 
 namespace ShapeCrawler.Statics;
 
@@ -32,9 +33,9 @@ internal static class UnitConverter
         return Math.Round(emu * 0.000002734, 2);
     }
 
-    internal static long CentimeterToEmu(double centimetre)
+    internal static long CentimeterToEmu(double centimeter)
     {
-        return (long)(centimetre / 0.000002734);
+        return (long)(centimeter / 0.000002734);
     }
 
     internal static int CentimeterToPixel(double centimeter)
@@ -45,5 +46,10 @@ internal static class UnitConverter
     internal static double EmuToPoint(int emu)
     {
         return emu * 1.0 / 12700; // 1pt = 12700 EMUs (http://officeopenxml.com/drwSp-outline.php)
+    }
+
+    internal static int PointToEmu(double point)
+    {
+        return (int)(point * 12700); // 1pt = 12700 EMUs (http://officeopenxml.com/drwSp-outline.php)
     }
 }

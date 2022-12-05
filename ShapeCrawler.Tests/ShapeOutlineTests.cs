@@ -22,4 +22,21 @@ public class ShapeOutlineTests : ShapeCrawlerTest
         // Assert
         outlineWeight.Should().Be(expectedWeight);
     }
+
+    [Fact]
+    public void Weight_Setter_sets_outline_weight_in_points()
+    {
+        // Arrange
+        var pptx = GetTestStream("autoshape-case015.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var outline = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4").Outline;
+        
+        // Act
+        outline.Weight = 0.25;
+
+        // Assert
+        outline.Weight.Should().Be(0.25);
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
+    }
 }
