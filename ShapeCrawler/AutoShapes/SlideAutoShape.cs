@@ -46,6 +46,8 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
 
     public IShapeFill Fill => this.shapeFill.Value;
 
+    public IShapeOutline Outline => this.GetOutline();
+
     public Shape Shape => this; // TODO: should be internal?
 
     public override SCShapeType ShapeType => SCShapeType.AutoShape;
@@ -138,7 +140,12 @@ internal class SlideAutoShape : SlideShape, IAutoShape, ITextFrameContainer
             }
         }
     }
-
+    
+    private IShapeOutline GetOutline()
+    {
+        return new SCShapeOutline(this);
+    }
+    
     private Dictionary<int, FontData> GetLvlToFontData()
     {
         var textBody = this.pShape.TextBody!;

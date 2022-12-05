@@ -176,15 +176,14 @@ public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
     }
 
     [Fact]
-    public void AddAutoShape_adds_autoShape()
+    public void AddAutoShape_adds_autoshape_in_the_New_Presentation()
     {
         // Arrange
         var pres = SCPresentation.Create();
         var shapes = pres.Slides[0].Shapes;
             
         // Act
-        IAutoShape autoShape = shapes.AddAutoShape(SCGeometry.Rectangle, 50, 60, 100, 70);
-        pres.SaveAs(@"c:\temp\output.pptx");
+        var autoShape = shapes.AddAutoShape(SCGeometry.Rectangle, 50, 60, 100, 70);
 
         // Assert
         autoShape.GeometryType.Should().Be(SCGeometry.Rectangle);
@@ -192,6 +191,24 @@ public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
         autoShape.Y.Should().Be(60);
         autoShape.Width.Should().Be(100);
         autoShape.Height.Should().Be(70);
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void AddAutoShape_sets_valid_id_and_name_for_the_new_shape()
+    {
+        // Arrange
+        var pptx = GetTestStream("autoshape-case011_save-as-png.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var shapes = pres.Slides[0].Shapes;
+            
+        // Act
+        var autoShape = shapes.AddAutoShape(SCGeometry.Rectangle, 50, 60, 100, 70);
+
+        // Assert
+        autoShape.Name.Should().Be("AutoShape 3");
+        autoShape.Id.Should().Be(7);
         var errors = PptxValidator.Validate(pres);
         errors.Should().BeEmpty();
     }

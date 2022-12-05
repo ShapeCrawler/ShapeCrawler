@@ -12,6 +12,11 @@ public interface IAutoShape : IShape
     ///     Gets shape fill.
     /// </summary>
     IShapeFill Fill { get; }
+    
+    /// <summary>
+    ///     Gets shape outline.
+    /// </summary>
+    IShapeOutline Outline { get; }
 
     /// <summary>
     ///     Gets text frame if shape is text holder, otherwise <see langword="null"/>.

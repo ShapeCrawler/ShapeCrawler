@@ -41,4 +41,9 @@ internal static class UnitConverter
     {
         return (int)(centimeter * 37.795275591);
     }
+
+    internal static double EmuToPoint(int emu)
+    {
+        return emu * 1.0 / 12700; // 1pt = 12700 EMUs (http://officeopenxml.com/drwSp-outline.php)
+    }
 }

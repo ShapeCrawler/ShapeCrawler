@@ -262,28 +262,7 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
 
     public IAutoShape AddAutoShape(SCGeometry geometry, int x, int y, int width, int height)
     {
-        var maxOrder = 0;
-        var maxId = 0;
-        foreach (var shape in this.CollectionItems)
-        {
-            if (shape.Id > maxId)
-            {
-                maxId = shape.Id;
-            }
-            
-            var matchOrder = Regex.Match(shape.Name, "(?!AutoShape )\\d+");
-            if (matchOrder.Success)
-            {
-                var order = int.Parse(matchOrder.Value);
-                if (order > maxOrder)
-                {
-                    maxOrder = order;
-                }    
-            }
-        }
-
-        var id = maxId + 1;
-        var shapeName = $"AutoShape {maxOrder + 1}";
+        var idAndName = this.GenerateIdAndName();
 
         var adjustValueList = new A.AdjustValueList();
         var presetGeometry = new A.PresetGeometry(adjustValueList) { Preset = A.ShapeTypeValues.Rectangle };
@@ -297,7 +276,7 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
         
         var newPShape = new P.Shape(
             new P.NonVisualShapeProperties(
-            new P.NonVisualDrawingProperties { Id = (uint)id, Name = shapeName },
+            new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
             new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
             new ApplicationNonVisualDrawingProperties()),
             shapeProperties,
@@ -310,7 +289,7 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
 
         return new SlideAutoShape(newPShape, this.slideObject, null);
     }
-    
+
     public T GetById<T>(int shapeId)
         where T : IShape
     {
@@ -430,5 +409,33 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
         }
 
         return new ShapeCollection(shapes, pShapeTree, oneOfSlide);
+    }
+    
+    private (int, string) GenerateIdAndName()
+    {
+        var maxOrder = 0;
+        var maxId = 0;
+        foreach (var shape in this.CollectionItems)
+        {
+            if (shape.Id > maxId)
+            {
+                maxId = shape.Id;
+            }
+
+            var matchOrder = Regex.Match(shape.Name, "(?!AutoShape )\\d+");
+            if (matchOrder.Success)
+            {
+                var order = int.Parse(matchOrder.Value);
+                if (order > maxOrder)
+                {
+                    maxOrder = order;
+                }
+            }
+        }
+
+        var shapeId = maxId + 1;
+        var shapeName = $"AutoShape {maxOrder + 1}";
+        
+        return (shapeId, shapeName);
     }
 }
