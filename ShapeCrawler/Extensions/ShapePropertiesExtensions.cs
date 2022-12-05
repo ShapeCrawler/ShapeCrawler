@@ -23,13 +23,12 @@ internal static class ShapePropertiesExtensions
 
     internal static A.Outline AddAOutline(this P.ShapeProperties pSpPr)
     {
+        var aOutline = pSpPr.GetFirstChild<A.Outline>();
+        aOutline?.Remove();
+        
         var aSchemeClr = new A.SchemeColor { Val = new EnumValue<A.SchemeColorValues>(A.SchemeColorValues.Text1) };
         var aSolidFill = new A.SolidFill(aSchemeClr);
-        var aOutline = new A.Outline(aSolidFill)
-        {
-            Width = new Int32Value()
-        };
-            
+        aOutline = new A.Outline(aSolidFill);
         pSpPr.Append(aOutline);
 
         return aOutline;

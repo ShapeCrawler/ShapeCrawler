@@ -36,20 +36,26 @@ internal class SCShapeOutline : IShapeOutline
     private void SetWeight(double points)
     {
         var pShapeProperties = this.parentAutoShape.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !;
-        var aOutline = pShapeProperties.GetFirstChild<A.Outline>() ?? pShapeProperties.AddAOutline();
+        var aOutline = pShapeProperties.GetFirstChild<A.Outline>();
+        var aNoFill = aOutline?.GetFirstChild<A.NoFill>();
 
-        aOutline.Width!.Value = UnitConverter.PointToEmu(points);
+        if (aOutline == null || aNoFill != null)
+        {
+            aOutline = pShapeProperties.AddAOutline();
+        }
+
+        aOutline.Width = new Int32Value(UnitConverter.PointToEmu(points));
     }
 
     private double GetWeight()
     {
-        var aOutline = this.parentAutoShape.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !.GetFirstChild<A.Outline>();
-        if (aOutline is null)
+        var width = this.parentAutoShape.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !.GetFirstChild<A.Outline>()?.Width;
+        if (width is null)
         {
             return 0;
         }
 
-        var widthEmu = aOutline.Width!.Value;
+        var widthEmu = width.Value;
 
         return UnitConverter.EmuToPoint(widthEmu);
     }
