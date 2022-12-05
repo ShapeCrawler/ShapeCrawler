@@ -148,7 +148,6 @@ public sealed class SCPresentation : IPresentation
 
         presDoc.Close();
 
-        stream.Position = 0;
         return Open(stream);
     }
 

@@ -41,13 +41,23 @@ public interface IShapeCollection : IEnumerable<IShape>
     /// <param name="xPixel">The X coordinate for the left side of the shape.</param>
     /// <param name="yPixels">The Y coordinate for the left side of the shape.</param>
     /// <param name="mp3Stream">Audio stream data.</param>
-    IAudioShape AddNewAudio(int xPixel, int yPixels, Stream mp3Stream);
+    IAudioShape AddAudio(int xPixel, int yPixels, Stream mp3Stream);
 
     /// <summary>
     ///     Create a new video shape from stream and adds it to the end of the collection.
     /// </summary>
-    /// <param name="xPixel">The X coordinate for the left side of the shape.</param>
-    /// <param name="yPixels">The Y coordinate for the left side of the shape.</param>
-    /// <param name="videoStream">Video stream data.</param>
-    IVideoShape AddNewVideo(int xPixel, int yPixels, Stream videoStream);
+    /// <param name="x">X coordinate in pixels.</param>
+    /// <param name="y">Y coordinate in pixels.</param>
+    /// <param name="stream">Video stream data.</param>
+    IVideoShape AddVideo(int x, int y, Stream stream);
+
+    /// <summary>
+    ///     Creates a new AutoShape.
+    /// </summary>
+    /// <param name="geometry">Geometry form.</param>
+    /// <param name="x">X coordinate in pixels.</param>
+    /// <param name="y">Y coordinate in pixels.</param>
+    /// <param name="width">Width in pixels.</param>
+    /// <param name="height">Height in pixels.</param>
+    IAutoShape AddAutoShape(SCGeometry geometry, int x, int y, int width, int height);
 }

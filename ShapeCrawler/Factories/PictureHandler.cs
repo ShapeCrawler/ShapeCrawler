@@ -13,7 +13,7 @@ namespace ShapeCrawler.Factories;
 
 internal class PictureHandler : OpenXmlElementHandler
 {
-    internal override Shape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCGroupShape groupShape)
+    internal override Shape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape groupShape)
     {
         P.Picture? pPicture;
         if (pShapeTreeChild is P.Picture treePic)
@@ -28,7 +28,7 @@ internal class PictureHandler : OpenXmlElementHandler
                         .GetFirstChild<A.AudioFromFile>();
                     if (aAudioFile is not null)
                     {
-                        return new AudioShape(pShapeTreeChild, oneOfSlide);
+                        return new AudioShape(pShapeTreeChild, slideObject);
                     }
 
                     break;
@@ -40,7 +40,7 @@ internal class PictureHandler : OpenXmlElementHandler
 
                     if (aVideoFile != null)
                     {
-                        return new VideoShape(oneOfSlide, pShapeTreeChild);
+                        return new VideoShape(slideObject, pShapeTreeChild);
                     }
 
                     break;
@@ -56,7 +56,7 @@ internal class PictureHandler : OpenXmlElementHandler
 
         if (pPicture == null)
         {
-            return this.Successor?.Create(pShapeTreeChild, oneOfSlide, groupShape);
+            return this.Successor?.Create(pShapeTreeChild, slideObject, groupShape);
         }
 
         var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
@@ -66,7 +66,7 @@ internal class PictureHandler : OpenXmlElementHandler
             return null;
         }
 
-        var picture = new SlidePicture(pPicture, oneOfSlide, aBlip!);
+        var picture = new SlidePicture(pPicture, slideObject, aBlip!);
 
         return picture;
     }
