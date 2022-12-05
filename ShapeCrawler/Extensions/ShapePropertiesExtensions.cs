@@ -1,4 +1,5 @@
-﻿using A = DocumentFormat.OpenXml.Drawing;
+﻿using DocumentFormat.OpenXml;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Extensions;
@@ -20,6 +21,20 @@ internal static class ShapePropertiesExtensions
         return aSolidFill;
     }
 
+    internal static A.Outline AddAOutline(this P.ShapeProperties pSpPr)
+    {
+        var aSchemeClr = new A.SchemeColor { Val = new EnumValue<A.SchemeColorValues>(A.SchemeColorValues.Text1) };
+        var aSolidFill = new A.SolidFill(aSchemeClr);
+        var aOutline = new A.Outline(aSolidFill)
+        {
+            Width = new Int32Value()
+        };
+            
+        pSpPr.Append(aOutline);
+
+        return aOutline;
+    }
+    
     internal static void AddAXfrm(this P.ShapeProperties pSpPr, long xEmu, long yEmu, long wEmu, long hEmu)
     {
         var aXfrm = pSpPr.Transform2D;

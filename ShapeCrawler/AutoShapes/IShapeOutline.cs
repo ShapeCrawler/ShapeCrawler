@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -35,16 +36,8 @@ internal class SCShapeOutline : IShapeOutline
     private void SetWeight(double points)
     {
         var pShapeProperties = this.parentAutoShape.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !;
-        var aOutline = pShapeProperties.GetFirstChild<A.Outline>();
-        if (aOutline is null)
-        {
-            aOutline = new A.Outline
-            {
-                Width = new Int32Value()
-            };
-            pShapeProperties.AppendChild(aOutline);
-        }
-        
+        var aOutline = pShapeProperties.GetFirstChild<A.Outline>() ?? pShapeProperties.AddAOutline();
+
         aOutline.Width!.Value = UnitConverter.PointToEmu(points);
     }
 
