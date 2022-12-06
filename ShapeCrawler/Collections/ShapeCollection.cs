@@ -260,7 +260,7 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
         return new VideoShape(this.slideObject, this.shapeTree);
     }
 
-    public IAutoShape AddAutoShape(SCGeometry geometry, int x, int y, int width, int height)
+    public IAutoShape AddAutoShape(SCAutoShapeType type, int x, int y, int width, int height)
     {
         var idAndName = this.GenerateIdAndName();
 
@@ -286,8 +286,138 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
             new A.Paragraph(new A.EndParagraphRunProperties { Language = "en-US" })));
 
         this.shapeTree.Append(newPShape);
+        
+        var autoShape = new SlideAutoShape(newPShape, this.slideObject, null);
 
-        return new SlideAutoShape(newPShape, this.slideObject, null);
+        return autoShape;
+    }
+
+    public ITable AddTable(int xPx, int yPx, int columns, int rows)
+    {
+        var shapeName = "Table 1";
+        var xEmu = UnitConverter.HorizontalPixelToEmu(xPx);
+        var yEmu = UnitConverter.VerticalPixelToEmu(yPx);
+        var widthEmu = 8128000L;
+        var heightEmu = 370840L;
+
+        var graphicFrame = new GraphicFrame();
+        var nonVisualGraphicFrameProperties = new NonVisualGraphicFrameProperties();
+        var nonVisualDrawingProperties = new NonVisualDrawingProperties { Id = (UInt32Value)2U, Name = shapeName };
+        var nonVisualDrawingPropertiesExtensionList = new A.NonVisualDrawingPropertiesExtensionList();
+        var nonVisualDrawingPropertiesExtension = new A.NonVisualDrawingPropertiesExtension { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
+        var openXmlUnknownElement = OpenXmlUnknownElement.CreateOpenXmlUnknownElement(
+            "<a16:creationId xmlns:a16=\"http://schemas.microsoft.com/office/drawing/2014/main\" id=\"{384FFE3A-A793-EEBE-E597-6BD0DE1E7683}\" />");
+        nonVisualDrawingPropertiesExtension.Append(openXmlUnknownElement);
+        nonVisualDrawingPropertiesExtensionList.Append(nonVisualDrawingPropertiesExtension);
+        nonVisualDrawingProperties.Append(nonVisualDrawingPropertiesExtensionList);
+        var nonVisualGraphicFrameDrawingProperties = new NonVisualGraphicFrameDrawingProperties();
+        var graphicFrameLocks = new A.GraphicFrameLocks { NoGrouping = true };
+        nonVisualGraphicFrameDrawingProperties.Append(graphicFrameLocks);
+        var applicationNonVisualDrawingProperties = new ApplicationNonVisualDrawingProperties();
+        var applicationNonVisualDrawingPropertiesExtensionList = new ApplicationNonVisualDrawingPropertiesExtensionList();
+        var applicationNonVisualDrawingPropertiesExtension = new ApplicationNonVisualDrawingPropertiesExtension { Uri = "{D42A27DB-BD31-4B8C-83A1-F6EECF244321}" };
+        var modificationId = new P14.ModificationId { Val = (UInt32Value)3410121172U };
+        modificationId.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
+        applicationNonVisualDrawingPropertiesExtension.Append(modificationId);
+        applicationNonVisualDrawingPropertiesExtensionList.Append(applicationNonVisualDrawingPropertiesExtension);
+        applicationNonVisualDrawingProperties.Append(applicationNonVisualDrawingPropertiesExtensionList);
+        nonVisualGraphicFrameProperties.Append(nonVisualDrawingProperties);
+        nonVisualGraphicFrameProperties.Append(nonVisualGraphicFrameDrawingProperties);
+        nonVisualGraphicFrameProperties.Append(applicationNonVisualDrawingProperties);
+
+        var pTransform = new P.Transform();
+        var offset = new A.Offset { X = xEmu, Y = yEmu };
+        var extents = new A.Extents { Cx = widthEmu, Cy = heightEmu };
+        pTransform.Append(offset);
+        pTransform.Append(extents);
+
+        var graphic = new A.Graphic();
+        var graphicData = new A.GraphicData { Uri = "http://schemas.openxmlformats.org/drawingml/2006/table" };
+        var table = new A.Table();
+
+        var tableProperties = new A.TableProperties { FirstRow = true, BandRow = true };
+        var tableStyleId = new A.TableStyleId { Text = "{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}" };
+        tableProperties.Append(tableStyleId);
+
+        var tableGrid = new A.TableGrid();
+        
+        var gridColumn1 = new A.GridColumn { Width = 4064000L };
+        var extensionList = new A.ExtensionList();
+        var extension = new A.Extension { Uri = "{9D8B030D-6E8A-4147-A177-3AD203B41FA5}" };
+        var openXmlUnknownElement2 = OpenXmlUnknownElement.CreateOpenXmlUnknownElement(
+            "<a16:colId xmlns:a16=\"http://schemas.microsoft.com/office/drawing/2014/main\" val=\"1617513997\" />");
+        extension.Append(openXmlUnknownElement2);
+        extensionList.Append(extension);
+        gridColumn1.Append(extensionList);
+        
+        var gridColumn2 = new A.GridColumn { Width = 4064000L };
+        var extensionList2 = new A.ExtensionList();
+        var extension2 = new A.Extension { Uri = "{9D8B030D-6E8A-4147-A177-3AD203B41FA5}" };
+        var openXmlUnknownElement3 = OpenXmlUnknownElement.CreateOpenXmlUnknownElement(
+            "<a16:colId xmlns:a16=\"http://schemas.microsoft.com/office/drawing/2014/main\" val=\"2215697276\" />");
+        extension2.Append(openXmlUnknownElement3);
+        extensionList2.Append(extension2);
+        gridColumn2.Append(extensionList2);
+
+        tableGrid.Append(gridColumn1);
+        tableGrid.Append(gridColumn2);
+
+        var tableRow = new A.TableRow { Height = 370840L };
+        
+        var tableCell = new A.TableCell();
+        var textBody1 = new A.TextBody();
+        var bodyProperties1 = new A.BodyProperties();
+        var listStyle1 = new A.ListStyle();
+        var paragraph1 = new A.Paragraph();
+        var endParagraphRunProperties1 = new A.EndParagraphRunProperties { Language = "en-US" };
+        paragraph1.Append(endParagraphRunProperties1);
+        textBody1.Append(bodyProperties1);
+        textBody1.Append(listStyle1);
+        textBody1.Append(paragraph1);
+        var tableCellProperties1 = new A.TableCellProperties();
+        tableCell.Append(textBody1);
+        tableCell.Append(tableCellProperties1);
+
+        var tableCell2 = new A.TableCell();
+        var textBody2 = new A.TextBody();
+        var bodyProperties2 = new A.BodyProperties();
+        var listStyle2 = new A.ListStyle();
+        var paragraph2 = new A.Paragraph();
+        var endParagraphRunProperties2 = new A.EndParagraphRunProperties { Language = "en-US", Dirty = false };
+        paragraph2.Append(endParagraphRunProperties2);
+        textBody2.Append(bodyProperties2);
+        textBody2.Append(listStyle2);
+        textBody2.Append(paragraph2);
+        var tableCellProperties2 = new A.TableCellProperties();
+        tableCell2.Append(textBody2);
+        tableCell2.Append(tableCellProperties2);
+
+        var extensionList3 = new A.ExtensionList();
+        var extension3 = new A.Extension { Uri = "{0D108BD9-81ED-4DB2-BD59-A6C34878D82A}" };
+        var openXmlUnknownElement4 = OpenXmlUnknownElement.CreateOpenXmlUnknownElement(
+            "<a16:rowId xmlns:a16=\"http://schemas.microsoft.com/office/drawing/2014/main\" val=\"1618530090\" />");
+        extension3.Append(openXmlUnknownElement4);
+        extensionList3.Append(extension3);
+
+        tableRow.Append(tableCell);
+        tableRow.Append(tableCell2);
+        tableRow.Append(extensionList3);
+
+        table.Append(tableProperties);
+        table.Append(tableGrid);
+        table.Append(tableRow);
+
+        graphicData.Append(table);
+        graphic.Append(graphicData);
+
+        graphicFrame.Append(nonVisualGraphicFrameProperties);
+        graphicFrame.Append(pTransform);
+        graphicFrame.Append(graphic);
+
+        this.shapeTree.Append(graphicFrame);
+        var newTable = new SCTable(graphicFrame, this.slideObject, null);
+
+        return newTable;
     }
 
     public T GetById<T>(int shapeId)

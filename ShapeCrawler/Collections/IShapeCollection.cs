@@ -54,10 +54,26 @@ public interface IShapeCollection : IEnumerable<IShape>
     /// <summary>
     ///     Creates a new AutoShape.
     /// </summary>
-    /// <param name="geometry">Geometry form.</param>
+    /// <param name="type">AutoShape type.</param>
     /// <param name="x">X coordinate in pixels.</param>
     /// <param name="y">Y coordinate in pixels.</param>
     /// <param name="width">Width in pixels.</param>
     /// <param name="height">Height in pixels.</param>
-    IAutoShape AddAutoShape(SCGeometry geometry, int x, int y, int width, int height);
+    IAutoShape AddAutoShape(SCAutoShapeType type, int x, int y, int width, int height);
+
+    /// <summary>
+    ///     Creates a new Table.
+    /// </summary>
+    ITable AddTable(int xPx, int yPx, int columns, int rows);
+}
+
+/// <summary>
+///     AutoShape type.
+/// </summary>
+public enum SCAutoShapeType
+{
+    /// <summary>
+    ///     Text Box.
+    /// </summary>
+    TextBox = 22
 }
