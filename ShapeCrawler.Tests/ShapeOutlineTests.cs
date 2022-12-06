@@ -42,4 +42,36 @@ public class ShapeOutlineTests : ShapeCrawlerTest
         var errors = PptxValidator.Validate(autoShape.SlideObject.Presentation);
         errors.Should().BeEmpty();
     }
+
+    [Theory]
+    [SlideShapeData("autoshape-case015.pptx", 1, "TextBox 6", "000000")]
+    public void Color_Getter_returns_outline_color_in_hex_format(IShape shape, string expectedColor)
+    {
+        // Arrange
+        var autoShape = (IAutoShape)shape;
+        var outline = autoShape.Outline;
+        
+        // Act
+        var outlineColor = outline.Color;
+        
+        // Assert
+        outlineColor.Should().Be(expectedColor);
+    }
+    
+    [Theory]
+    [SlideShapeData("autoshape-case015.pptx", 1, "TextBox 6")]
+    public void Color_Setter_sets_outline_color(IShape shape)
+    {
+        // Arrange
+        var autoShape = (IAutoShape)shape;
+        var outline = autoShape.Outline;
+        
+        // Act
+        outline.Color = "be3455";
+
+        // Assert
+        outline.Color.Should().Be("be3455");
+        var errors = PptxValidator.Validate(autoShape.SlideObject.Presentation);
+        errors.Should().BeEmpty();
+    }
 }
