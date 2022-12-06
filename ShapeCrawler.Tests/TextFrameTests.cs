@@ -530,7 +530,6 @@ namespace ShapeCrawler.Tests
             
             // Act
             textFrame.LeftMargin = 0.5;
-            shape.SlideObject.Presentation.SaveAs(@"c:\temp\output.pptx");
             
             // Assert
             textFrame.LeftMargin.Should().Be(0.5);

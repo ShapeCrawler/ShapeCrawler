@@ -35,7 +35,7 @@ public interface IColorFormat
 
 internal class ColorFormat : IColorFormat
 {
-    private readonly SCFont _font;
+    private readonly SCFont font;
     private readonly ITextFrameContainer textFrameContainer;
     private readonly SCSlideMaster parentSlideMaster;
     private bool initialized;
@@ -44,7 +44,7 @@ internal class ColorFormat : IColorFormat
 
     internal ColorFormat(SCFont font)
     {
-        this._font = font;
+        this.font = font;
         this.textFrameContainer = font.ParentPortion.ParentParagraph.ParentTextFrame.TextFrameContainer;
         var shape = this.textFrameContainer.Shape;
         this.parentSlideMaster = shape.SlideMasterInternal;
@@ -56,7 +56,7 @@ internal class ColorFormat : IColorFormat
 
     public void SetColorByHex(string hex)
     {
-        var portion = this._font.ParentPortion;
+        var portion = this.font.ParentPortion;
         var aTextContainer = portion.AText.Parent!;
         var aRunProperties = aTextContainer.GetFirstChild<A.RunProperties>() ?? aTextContainer.AddRunProperties();
 
@@ -93,11 +93,13 @@ internal class ColorFormat : IColorFormat
     private void InitializeColor()
     {
         this.initialized = true;
-        var portion = this._font.ParentPortion;
+        var portion = this.font.ParentPortion;
         var aSolidFill = portion.AText.Parent!.GetFirstChild<A.RunProperties>()?.GetASolidFill();
         if (aSolidFill != null)
         {
-            this.FromRunSolidFill(aSolidFill);
+            var typeAndHex = HexParser.FromSolidFill(aSolidFill, this.parentSlideMaster);
+            this.colorType = typeAndHex.Item1;
+            this.hexColor = typeAndHex.Item2;
         }
         else
         {
@@ -126,8 +128,7 @@ internal class ColorFormat : IColorFormat
 
             // Presentation level
             string colorHexVariant;
-            if (this.parentSlideMaster.PresentationInternal.ParaLvlToFontData.TryGetValue(paragraphLevel,
-                    out var preFontData))
+            if (this.parentSlideMaster.PresentationInternal.ParaLvlToFontData.TryGetValue(paragraphLevel, out var preFontData))
             {
                 colorHexVariant = this.GetHexVariantByScheme(preFontData.ASchemeColor!.Val!);
                 this.colorType = SCColorType.Scheme;
@@ -186,7 +187,7 @@ internal class ColorFormat : IColorFormat
         }
 
         var phFontData = new FontData();
-        var paragraph = this._font.ParentPortion.ParentParagraph;
+        var paragraph = this.font.ParentPortion.ParentParagraph;
         FontDataParser.GetFontDataFromPlaceholder(ref phFontData, paragraph);
         if (this.TryFromFontData(phFontData))
         {
@@ -261,42 +262,6 @@ internal class ColorFormat : IColorFormat
         }
 
         return false;
-    }
-
-    private void FromRunSolidFill(A.SolidFill aSolidFill)
-    {
-        var aSrgbClr = aSolidFill.RgbColorModelHex;
-        string colorHexVariant;
-        if (aSrgbClr != null)
-        {
-            colorHexVariant = aSrgbClr.Val!;
-            this.colorType = SCColorType.RGB;
-            this.hexColor = colorHexVariant;
-            return;
-        }
-
-        var aSchemeColor = aSolidFill.SchemeColor;
-        if (aSchemeColor != null)
-        {
-            colorHexVariant = this.GetHexVariantByScheme(aSchemeColor.Val!);
-            this.colorType = SCColorType.Scheme;
-            this.hexColor = colorHexVariant;
-            return;
-        }
-
-        var aSysClr = aSolidFill.SystemColor;
-        if (aSysClr != null)
-        {
-            colorHexVariant = aSysClr.LastColor!;
-            this.colorType = SCColorType.System;
-            this.hexColor = colorHexVariant;
-            return;
-        }
-
-        var aPresetColor = aSolidFill.PresetColor!;
-        this.colorType = SCColorType.Preset;
-        var coloName = aPresetColor.Val!.Value.ToString();
-        this.hexColor = SCColorTranslator.HexFromName(coloName);
     }
 
     private string GetHexVariantByScheme(A.SchemeColorValues fontSchemeColor)
