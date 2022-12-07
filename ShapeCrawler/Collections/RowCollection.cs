@@ -81,7 +81,7 @@ internal class RowCollection : IRowCollection
         return this.collectionItems.GetEnumerator();
     }
 
-    internal static RowCollection Create(SlideTable table, P.GraphicFrame pGraphicFrame)
+    internal static RowCollection Create(SCTable table, P.GraphicFrame pGraphicFrame)
     {
         IEnumerable<A.TableRow> aTableRows = pGraphicFrame.GetATable().Elements<A.TableRow>();
         var rowList = new List<SCTableRow>(aTableRows.Count());

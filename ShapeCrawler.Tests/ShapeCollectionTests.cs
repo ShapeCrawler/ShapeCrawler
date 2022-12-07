@@ -183,7 +183,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
         var shapes = pres.Slides[0].Shapes;
             
         // Act
-        var autoShape = shapes.AddAutoShape(SCGeometry.Rectangle, 50, 60, 100, 70);
+        var autoShape = shapes.AddAutoShape(SCAutoShapeType.TextBox, 50, 60, 100, 70);
 
         // Assert
         autoShape.GeometryType.Should().Be(SCGeometry.Rectangle);
@@ -191,6 +191,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
         autoShape.Y.Should().Be(60);
         autoShape.Width.Should().Be(100);
         autoShape.Height.Should().Be(70);
+        autoShape.TextFrame!.Paragraphs.Count.Should().Be(1);
         var errors = PptxValidator.Validate(pres);
         errors.Should().BeEmpty();
     }
@@ -204,11 +205,31 @@ public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
         var shapes = pres.Slides[0].Shapes;
             
         // Act
-        var autoShape = shapes.AddAutoShape(SCGeometry.Rectangle, 50, 60, 100, 70);
+        var autoShape = shapes.AddAutoShape(SCAutoShapeType.TextBox, 50, 60, 100, 70);
 
         // Assert
         autoShape.Name.Should().Be("AutoShape 3");
         autoShape.Id.Should().Be(7);
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void AddTable_adds_table()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var shapes = pres.Slides[0].Shapes;
+        
+        // Act
+        var table = shapes.AddTable(xPx: 50, yPx: 60, columns: 3, rows: 2);
+
+        // Assert
+        table.Columns.Should().HaveCount(3);
+        table.Rows.Should().HaveCount(2);
+        table.Id.Should().Be(1);
+        table.Name.Should().Be("Table 1");
+        table.Columns[0].Width.Should().Be(284);
         var errors = PptxValidator.Validate(pres);
         errors.Should().BeEmpty();
     }

@@ -275,6 +275,24 @@ namespace ShapeCrawler.Tests
             // Assert
             shape.Height.Should().Be(88);
         }
+        
+        [Fact]
+        public void Text_setter_sets_text_for_New_Shape()
+        {
+            // Arrange
+            var pres = SCPresentation.Create();
+            var shapes = pres.Slides[0].Shapes;
+            var autoShape = shapes.AddAutoShape(SCAutoShapeType.TextBox, 50, 60, 100, 70);
+            var textFrame = autoShape.TextFrame!;
+            
+            // Act
+            textFrame.Text = "Test";
+    
+            // Assert
+            textFrame.Text.Should().Be("Test");
+            var errors = PptxValidator.Validate(pres);
+            errors.Should().BeEmpty();
+        }
 
         [Theory]
         [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 6", false)]

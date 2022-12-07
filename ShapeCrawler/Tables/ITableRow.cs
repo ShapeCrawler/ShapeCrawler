@@ -32,7 +32,7 @@ internal class SCTableRow : ITableRow
     private readonly Lazy<List<SCTableCell?>> cells;
     private readonly int index;
 
-    internal SCTableRow(SlideTable table, A.TableRow aTableRow, int index)
+    internal SCTableRow(SCTable table, A.TableRow aTableRow, int index)
     {
         this.ParentTable = table;
         this.ATableRow = aTableRow;
@@ -48,7 +48,7 @@ internal class SCTableRow : ITableRow
         set => this.ATableRow.Height!.Value = value;
     }
 
-    internal SlideTable ParentTable { get; }
+    internal SCTable ParentTable { get; }
 
     internal A.TableRow ATableRow { get; }
 

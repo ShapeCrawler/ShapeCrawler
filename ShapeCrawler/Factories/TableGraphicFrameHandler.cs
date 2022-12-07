@@ -22,7 +22,7 @@ internal class TableGraphicFrameHandler : OpenXmlElementHandler
                 return this.Successor?.Create(pShapeTreeChild, slideObject, groupShape);
             }
 
-            var table = new SlideTable(pGraphicFrame, slideObject, groupShape);
+            var table = new SCTable(pGraphicFrame, slideObject, groupShape);
 
             return table;
         }
