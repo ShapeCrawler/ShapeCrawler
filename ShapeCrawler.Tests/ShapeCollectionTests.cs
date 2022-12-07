@@ -223,10 +223,11 @@ public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
         
         // Act
         var table = shapes.AddTable(xPx: 50, yPx: 60, columns: 3, rows: 2);
-        pres.SaveAs(@"c:\temp\output.pptx");
 
         // Assert
         table.Columns.Should().HaveCount(3);
         table.Rows.Should().HaveCount(2);
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
     }
 }
