@@ -86,6 +86,8 @@ public interface IShapeCollection : IEnumerable<IShape>
 
 internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
 {
+    private const long DefaultRowHeightEmu = 370840L;
+    private const long DefaultTableWidthEmu = 8128000L;
     private readonly P.ShapeTree shapeTree;
     private readonly OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject;
 
@@ -356,73 +358,59 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
 
     public ITable AddTable(int xPx, int yPx, int columns, int rows)
     {
-        var shapeName = "Table 1";
+        var shapeName = this.GenerateNextTableName();
+        var shapeId = this.GenerateNextShapeId();
         var xEmu = UnitConverter.HorizontalPixelToEmu(xPx);
         var yEmu = UnitConverter.VerticalPixelToEmu(yPx);
-        var widthEmu = 8128000L;
-        var heightEmu = 370840L;
+        var tableHeightEmu = DefaultRowHeightEmu * rows;
 
         var graphicFrame = new GraphicFrame();
         var nonVisualGraphicFrameProperties = new NonVisualGraphicFrameProperties();
-        var nonVisualDrawingProperties = new NonVisualDrawingProperties { Id = (UInt32Value)2U, Name = shapeName };
-        var nonVisualDrawingPropertiesExtensionList = new A.NonVisualDrawingPropertiesExtensionList();
-        var nonVisualDrawingPropertiesExtension = new A.NonVisualDrawingPropertiesExtension { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
-        nonVisualDrawingPropertiesExtensionList.Append(nonVisualDrawingPropertiesExtension);
-        nonVisualDrawingProperties.Append(nonVisualDrawingPropertiesExtensionList);
+        var nonVisualDrawingProperties = new NonVisualDrawingProperties { Id = (uint)shapeId, Name = shapeName };
         var nonVisualGraphicFrameDrawingProperties = new NonVisualGraphicFrameDrawingProperties();
-        var graphicFrameLocks = new A.GraphicFrameLocks { NoGrouping = true };
-        nonVisualGraphicFrameDrawingProperties.Append(graphicFrameLocks);
         var applicationNonVisualDrawingProperties = new ApplicationNonVisualDrawingProperties();
-        var applicationNonVisualDrawingPropertiesExtensionList = new ApplicationNonVisualDrawingPropertiesExtensionList();
-        var applicationNonVisualDrawingPropertiesExtension = new ApplicationNonVisualDrawingPropertiesExtension { Uri = "{D42A27DB-BD31-4B8C-83A1-F6EECF244321}" };
-        var modificationId = new P14.ModificationId { Val = (UInt32Value)3410121172U };
-        modificationId.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
-        applicationNonVisualDrawingPropertiesExtension.Append(modificationId);
-        applicationNonVisualDrawingPropertiesExtensionList.Append(applicationNonVisualDrawingPropertiesExtension);
-        applicationNonVisualDrawingProperties.Append(applicationNonVisualDrawingPropertiesExtensionList);
         nonVisualGraphicFrameProperties.Append(nonVisualDrawingProperties);
         nonVisualGraphicFrameProperties.Append(nonVisualGraphicFrameDrawingProperties);
         nonVisualGraphicFrameProperties.Append(applicationNonVisualDrawingProperties);
 
-        var pTransform = new P.Transform();
         var offset = new A.Offset { X = xEmu, Y = yEmu };
-        var extents = new A.Extents { Cx = widthEmu, Cy = heightEmu };
-        pTransform.Append(offset);
-        pTransform.Append(extents);
+        var extents = new A.Extents { Cx = DefaultTableWidthEmu, Cy = tableHeightEmu };
+        var pTransform = new P.Transform(offset, extents);
 
         var graphic = new A.Graphic();
         var graphicData = new A.GraphicData { Uri = "http://schemas.openxmlformats.org/drawingml/2006/table" };
-        var table = new A.Table();
+        var aTable = new A.Table();
 
         var tableProperties = new A.TableProperties { FirstRow = true, BandRow = true };
         var tableStyleId = new A.TableStyleId { Text = "{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}" };
         tableProperties.Append(tableStyleId);
 
         var tableGrid = new A.TableGrid();
+        var gridWidthEmu = DefaultTableWidthEmu / columns;
         for (var i = 0; i < columns; i++)
         {
-            var gridColumn = CreateAGridColumn();
+            var gridColumn = new A.GridColumn { Width = gridWidthEmu };
             tableGrid.Append(gridColumn);
         }
 
-        table.Append(tableProperties);
-        table.Append(tableGrid);
+        aTable.Append(tableProperties);
+        aTable.Append(tableGrid);
         for (var i = 0; i < rows; i++)
         {
             var tableRow = CreateATableRow(columns);
-            table.Append(tableRow);
+            aTable.Append(tableRow);
         }
         
-        graphicData.Append(table);
+        graphicData.Append(aTable);
         graphic.Append(graphicData);
         graphicFrame.Append(nonVisualGraphicFrameProperties);
         graphicFrame.Append(pTransform);
         graphicFrame.Append(graphic);
 
         this.shapeTree.Append(graphicFrame);
-        var newTable = new SCTable(graphicFrame, this.slideObject, null);
+        var table = new SCTable(graphicFrame, this.slideObject, null);
 
-        return newTable;
+        return table;
     }
 
     public T GetById<T>(int shapeId)
@@ -546,6 +534,35 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
         return new ShapeCollection(shapes, pShapeTree, oneOfSlide);
     }
     
+    private int GenerateNextShapeId()
+    {
+        var maxId = this.CollectionItems.Select(shape => shape.Id).Prepend(0).Max();
+        
+        return maxId + 1;
+    }
+    
+    
+    private string GenerateNextTableName()
+    {
+        var maxOrder = 0;
+        foreach (var shape in this.CollectionItems)
+        {
+            var matchOrder = Regex.Match(shape.Name, "(?!Table )\\d+");
+            if (!matchOrder.Success)
+            {
+                continue;
+            }
+            
+            var order = int.Parse(matchOrder.Value);
+            if (order > maxOrder)
+            {
+                maxOrder = order;
+            }
+        }
+
+        return $"Table {maxOrder + 1}";
+    }
+    
     private (int, string) GenerateIdAndName()
     {
         var maxOrder = 0;
@@ -574,42 +591,28 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
         return (shapeId, shapeName);
     }
     
-    private static A.GridColumn CreateAGridColumn()
-    {
-        var gridColumn = new A.GridColumn { Width = 4064000L };
-        
-        return gridColumn;
-    }
-    
-    
     private static A.TableRow CreateATableRow(int columns)
     {
-        var tableRow = new A.TableRow { Height = 370840L };
+        var tableRow = new A.TableRow { Height = DefaultRowHeightEmu };
         for (var i = 0; i < columns; i++)
         {
-            var tableCell = CreateATableCell();
+            var tableCell = new A.TableCell();
+            var textBody = new A.TextBody();
+            var bodyProperties = new A.BodyProperties();
+            var listStyle = new A.ListStyle();
+            var paragraph = new A.Paragraph();
+            var endParagraphRunProperties = new A.EndParagraphRunProperties { Language = "en-US" };
+            paragraph.Append(endParagraphRunProperties);
+            textBody.Append(bodyProperties);
+            textBody.Append(listStyle);
+            textBody.Append(paragraph);
+            var tableCellProperties = new A.TableCellProperties();
+            tableCell.Append(textBody);
+            tableCell.Append(tableCellProperties);
+            
             tableRow.Append(tableCell);
         }
 
         return tableRow;
-    }
-
-    private static A.TableCell CreateATableCell()
-    {
-        var tableCell = new A.TableCell();
-        var textBody = new A.TextBody();
-        var bodyProperties = new A.BodyProperties();
-        var listStyle = new A.ListStyle();
-        var paragraph = new A.Paragraph();
-        var endParagraphRunProperties = new A.EndParagraphRunProperties { Language = "en-US" };
-        paragraph.Append(endParagraphRunProperties);
-        textBody.Append(bodyProperties);
-        textBody.Append(listStyle);
-        textBody.Append(paragraph);
-        var tableCellProperties1 = new A.TableCellProperties();
-        tableCell.Append(textBody);
-        tableCell.Append(tableCellProperties1);
-        
-        return tableCell;
     }
 }

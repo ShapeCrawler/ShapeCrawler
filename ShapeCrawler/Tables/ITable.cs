@@ -24,7 +24,7 @@ public interface ITable : IShape
     /// <summary>
     ///     Gets table columns.
     /// </summary>
-    IReadOnlyList<SCColumn> Columns { get; }
+    IReadOnlyList<IColumn> Columns { get; }
 
     /// <summary>
     ///     Gets table rows.
@@ -57,7 +57,7 @@ internal class SCTable : SlideShape, ITable
 
     public override SCShapeType ShapeType => SCShapeType.Table;
 
-    public IReadOnlyList<SCColumn> Columns => this.GetColumnList(); // TODO: make lazy
+    public IReadOnlyList<IColumn> Columns => this.GetColumnList(); // TODO: make lazy
 
     public IRowCollection Rows => this.rowCollection.Value;
 

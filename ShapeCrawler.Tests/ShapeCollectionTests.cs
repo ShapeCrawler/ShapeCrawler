@@ -227,6 +227,9 @@ public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
         // Assert
         table.Columns.Should().HaveCount(3);
         table.Rows.Should().HaveCount(2);
+        table.Id.Should().Be(1);
+        table.Name.Should().Be("Table 1");
+        table.Columns[0].Width.Should().Be(284);
         var errors = PptxValidator.Validate(pres);
         errors.Should().BeEmpty();
     }
