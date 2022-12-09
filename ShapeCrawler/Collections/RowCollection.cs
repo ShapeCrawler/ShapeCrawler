@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -11,9 +10,9 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler.Collections;
 
 /// <summary>
-///     Represent a collect of table rows.
+///     Represent a table row collection.
 /// </summary>
-public interface IRowCollection : IEnumerable<ITableRow>
+public interface IRowCollection : IEnumerable<IRow>
 {
     /// <summary>
     ///     Gets number of rows.
@@ -23,39 +22,44 @@ public interface IRowCollection : IEnumerable<ITableRow>
     /// <summary>
     ///     Gets row at the specified index.
     /// </summary>
-    ITableRow this[int index] { get; }
+    IRow this[int index] { get; }
 
     /// <summary>
     ///     Removes specified row from collection.
     /// </summary>
-    void Remove(ITableRow row);
+    void Remove(IRow row);
 
     /// <summary>
     ///     Removes table row by index.
     /// </summary>
     void RemoveAt(int index);
+
+    /// <summary>
+    ///     Adds a new row at the end of table.
+    /// </summary>
+    IRow Add();
 }
 
 internal class RowCollection : IRowCollection
 {
-    private readonly List<SCTableRow> collectionItems;
+    private readonly List<SCRow> collectionItems;
+    private readonly SCTable parentTable;
+    private readonly A.Table aTable;
 
-    #region Constructors
-
-    private RowCollection(List<SCTableRow> rowList)
+    private RowCollection(List<SCRow> rowList, SCTable parentTable, A.Table aTable)
     {
         this.collectionItems = rowList;
+        this.parentTable = parentTable;
+        this.aTable = aTable;
     }
-
-    #endregion Constructors
 
     public int Count => this.collectionItems.Count;
 
-    public ITableRow this[int index] => this.collectionItems[index];
+    public IRow this[int index] => this.collectionItems[index];
 
-    public void Remove(ITableRow removingRow)
+    public void Remove(IRow removingRow)
     {
-        var removingRowInternal = (SCTableRow)removingRow;
+        var removingRowInternal = (SCRow)removingRow;
         removingRowInternal.ATableRow.Remove();
         this.collectionItems.Remove(removingRowInternal);
     }
@@ -71,7 +75,17 @@ internal class RowCollection : IRowCollection
         this.Remove(innerRow);
     }
 
-    IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator()
+    public IRow Add()
+    {
+        var columnsCount = this.collectionItems[0].Cells.Count;
+        var aTableRow = this.aTable.AddRow(columnsCount);
+        var tableRow = new SCRow(this.parentTable, aTableRow, this.collectionItems.Count);
+        this.collectionItems.Add(tableRow);
+
+        return tableRow;
+    }
+
+    IEnumerator<IRow> IEnumerable<IRow>.GetEnumerator()
     {
         return this.collectionItems.GetEnumerator();
     }
@@ -83,11 +97,12 @@ internal class RowCollection : IRowCollection
 
     internal static RowCollection Create(SCTable table, P.GraphicFrame pGraphicFrame)
     {
-        IEnumerable<A.TableRow> aTableRows = pGraphicFrame.GetATable().Elements<A.TableRow>();
-        var rowList = new List<SCTableRow>(aTableRows.Count());
-        int rowIndex = 0;
-        rowList.AddRange(aTableRows.Select(aTblRow => new SCTableRow(table, aTblRow, rowIndex++)));
+        var aTable = pGraphicFrame.GetATable();
+        var aTableRows = aTable.Elements<A.TableRow>();
+        var rowList = new List<SCRow>(aTableRows.Count());
+        var rowIndex = 0;
+        rowList.AddRange(aTableRows.Select(aTblRow => new SCRow(table, aTblRow, rowIndex++)));
 
-        return new RowCollection(rowList);
+        return new RowCollection(rowList, table, aTable);
     }
 }

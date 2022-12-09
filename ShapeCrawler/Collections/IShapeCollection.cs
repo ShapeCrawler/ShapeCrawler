@@ -9,6 +9,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using OneOf;
 using ShapeCrawler.Collections;
+using ShapeCrawler.Constants;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Media;
@@ -86,7 +87,6 @@ public interface IShapeCollection : IEnumerable<IShape>
 
 internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
 {
-    private const long DefaultRowHeightEmu = 370840L;
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly P.ShapeTree shapeTree;
     private readonly OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject;
@@ -362,7 +362,7 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
         var shapeId = this.GenerateNextShapeId();
         var xEmu = UnitConverter.HorizontalPixelToEmu(xPx);
         var yEmu = UnitConverter.VerticalPixelToEmu(yPx);
-        var tableHeightEmu = DefaultRowHeightEmu * rows;
+        var tableHeightEmu = SCConstants.DefaultRowHeightEmu * rows;
 
         var graphicFrame = new GraphicFrame();
         var nonVisualGraphicFrameProperties = new NonVisualGraphicFrameProperties();
@@ -397,8 +397,7 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
         aTable.Append(tableGrid);
         for (var i = 0; i < rows; i++)
         {
-            var tableRow = CreateATableRow(columns);
-            aTable.Append(tableRow);
+            aTable.AddRow(columns);
         }
         
         graphicData.Append(aTable);
@@ -589,30 +588,5 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
         var shapeName = $"AutoShape {maxOrder + 1}";
         
         return (shapeId, shapeName);
-    }
-    
-    private static A.TableRow CreateATableRow(int columns)
-    {
-        var tableRow = new A.TableRow { Height = DefaultRowHeightEmu };
-        for (var i = 0; i < columns; i++)
-        {
-            var tableCell = new A.TableCell();
-            var textBody = new A.TextBody();
-            var bodyProperties = new A.BodyProperties();
-            var listStyle = new A.ListStyle();
-            var paragraph = new A.Paragraph();
-            var endParagraphRunProperties = new A.EndParagraphRunProperties { Language = "en-US" };
-            paragraph.Append(endParagraphRunProperties);
-            textBody.Append(bodyProperties);
-            textBody.Append(listStyle);
-            textBody.Append(paragraph);
-            var tableCellProperties = new A.TableCellProperties();
-            tableCell.Append(textBody);
-            tableCell.Append(tableCellProperties);
-            
-            tableRow.Append(tableCell);
-        }
-
-        return tableRow;
     }
 }

@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents a row in a table.
+///     Represents table row.
 /// </summary>
-public interface ITableRow
+public interface IRow
 {
     /// <summary>
     ///     Gets row's cells.
     /// </summary>
-    IReadOnlyList<ITableCell> Cells { get; }
+    IReadOnlyList<ICell> Cells { get; }
 
     /// <summary>
     ///     Gets or sets height.
@@ -24,23 +23,23 @@ public interface ITableRow
     /// <summary>
     ///     Creates a duplicate of the current row and adds this at the table end.
     /// </summary>
-    ITableRow Clone();
+    IRow Clone();
 }
 
-internal class SCTableRow : ITableRow
+internal class SCRow : IRow
 {
-    private readonly Lazy<List<SCTableCell?>> cells;
+    private readonly Lazy<List<SCCell?>> cells;
     private readonly int index;
 
-    internal SCTableRow(SCTable table, A.TableRow aTableRow, int index)
+    internal SCRow(SCTable table, A.TableRow aTableRow, int index)
     {
         this.ParentTable = table;
         this.ATableRow = aTableRow;
         this.index = index;
-        this.cells = new Lazy<List<SCTableCell?>>(() => this.GetCells());
+        this.cells = new Lazy<List<SCCell?>>(() => this.GetCells());
     }
 
-    public IReadOnlyList<ITableCell?> Cells => this.cells.Value;
+    public IReadOnlyList<ICell?> Cells => this.cells.Value;
 
     public long Height
     {
@@ -52,7 +51,7 @@ internal class SCTableRow : ITableRow
 
     internal A.TableRow ATableRow { get; }
 
-    public ITableRow Clone()
+    public IRow Clone()
     {
         var clonedRow = (A.TableRow)this.ATableRow.Clone();
         var addedRow = this.ParentTable.AppendRow(clonedRow);
@@ -67,11 +66,11 @@ internal class SCTableRow : ITableRow
 
     #region Private Methods
 
-    private List<SCTableCell?> GetCells()
+    private List<SCCell?> GetCells()
     {
-        var cellList = new List<SCTableCell?>();
+        var cellList = new List<SCCell?>();
         var aCells = this.ATableRow.Elements<A.TableCell>();
-        SCTableCell? addedCell = null;
+        SCCell? addedCell = null;
 
         var columnIdx = 0;
         foreach (var aTableCell in aCells)
@@ -83,13 +82,13 @@ internal class SCTableRow : ITableRow
             else if (aTableCell.VerticalMerge is not null)
             {
                 int upRowIdx = this.index - 1;
-                SCTableCell upNeighborScCell = (SCTableCell)this.ParentTable[upRowIdx, columnIdx];
+                SCCell upNeighborScCell = (SCCell)this.ParentTable[upRowIdx, columnIdx];
                 cellList.Add(upNeighborScCell);
                 addedCell = upNeighborScCell;
             }
             else
             {
-                addedCell = new SCTableCell(this, aTableCell, this.index, columnIdx);
+                addedCell = new SCCell(this, aTableCell, this.index, columnIdx);
                 cellList.Add(addedCell);
             }
 

@@ -6,6 +6,8 @@
 - Added `IParagraph.Spacing` [#379](https://github.com/ShapeCrawler/ShapeCrawler/issues/379)
 - Added `IAutoShape.Outline` [#373](https://github.com/ShapeCrawler/ShapeCrawler/issues/373)
 - Added `IShapeCollection.AddAutoShape()` [#53](https://github.com/ShapeCrawler/ShapeCrawler/issues/53)
+- Added `IShapeCollection.AddTable()` [#53](https://github.com/ShapeCrawler/ShapeCrawler/issues/53)
+- Added `IRowCollection.Add()` [#309](https://github.com/ShapeCrawler/ShapeCrawler/issues/309)
 
 ## Version 0.38.0 - 2022-11-28
 - Added setter for `ITextFrame.AutofitType` property [#360](https://github.com/ShapeCrawler/ShapeCrawler/issues/360)

@@ -7,7 +7,6 @@ using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Tables;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.AutoShapes;
@@ -29,7 +28,7 @@ internal class SCFont : IFont
         this.ParentPortion = portion;
         var parentTextBoxContainer = portion.ParentParagraph.ParentTextFrame.TextFrameContainer;
         Shape shape;
-        if (parentTextBoxContainer is SCTableCell cell)
+        if (parentTextBoxContainer is SCCell cell)
         {
             shape = cell.Shape;
         }
