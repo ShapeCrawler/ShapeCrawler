@@ -103,8 +103,6 @@ internal abstract class Shape : IShape
 
     internal SlideObject SlideBase { get; }
 
-    internal P.ShapeProperties PShapeProperties => this.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !;
-
     private Shape? GroupShape { get; }
 
     internal abstract void Draw(SKCanvas canvas);

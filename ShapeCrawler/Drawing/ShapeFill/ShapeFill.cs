@@ -2,31 +2,33 @@
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Drawing;
+// ReSharper disable All
+namespace ShapeCrawler.Drawing.ShapeFill;
 
-internal class ShapeFill : IShapeFill
+internal abstract class ShapeFill : IShapeFill
 {
-    private readonly Shape shape;
+    protected BooleanValue? useBgFill;
+    protected SCFillType fillType;
+    protected A.NoFill? aNoFill;
+    protected readonly TypedOpenXmlCompositeElement framePr;
     private bool isDirty;
-    private SCFillType fillType;
     private string? hexSolidColor;
     private SCImage? pictureImage;
     private A.SolidFill? aSolidFill;
     private A.GradientFill? aGradFill;
     private A.PatternFill? aPattFill;
-    private BooleanValue? useBgFill;
     private A.BlipFill? aBlipFill;
-    private A.NoFill? aNoFill;
+    private readonly SlideObject slideObject;
 
-    internal ShapeFill(Shape shape)
+    internal ShapeFill(SlideObject slideObject, TypedOpenXmlCompositeElement framePr)
     {
-        this.shape = shape;
+        this.slideObject = slideObject;
+        this.framePr = framePr;
         this.isDirty = true;
     }
 
-    public string? HexSolidColor => this.GetHexSolidColor();
+    public string? Color => this.GetHexSolidColor();
 
     public IImage? Picture => this.GetPicture();
 
@@ -45,15 +47,15 @@ internal class ShapeFill : IShapeFill
         }
         else
         {
-            var rId = this.shape.SlideBase.TypedOpenXmlPart.AddImagePart(imageStream);
+            var rId = this.slideObject.TypedOpenXmlPart.AddImagePart(imageStream);
 
-            var aBlipFill = new A.BlipFill();
-            var aStretch = new A.Stretch();
-            aStretch.Append(new A.FillRectangle());
-            aBlipFill.Append(new A.Blip { Embed = rId });
+            var aBlipFill = new DocumentFormat.OpenXml.Drawing.BlipFill();
+            var aStretch = new DocumentFormat.OpenXml.Drawing.Stretch();
+            aStretch.Append(new DocumentFormat.OpenXml.Drawing.FillRectangle());
+            aBlipFill.Append(new DocumentFormat.OpenXml.Drawing.Blip { Embed = rId });
             aBlipFill.Append(aStretch);
 
-            this.shape.PShapeProperties.Append(aBlipFill);
+            this.framePr.Append(aBlipFill);
 
             this.aSolidFill?.Remove();
             this.aBlipFill = null;
@@ -67,15 +69,15 @@ internal class ShapeFill : IShapeFill
         this.isDirty = true;
     }
 
-    public void SetHexSolidColor(string hex)
+    public void SetColor(string hex)
     {
         if (this.isDirty)
         {
             this.Initialize();
         }
 
-        var pShape = (P.Shape)this.shape.PShapeTreesChild;
-        pShape.ShapeProperties!.AddASolidFill(hex);
+        // var pShape = (P.Shape)this.shape.PShapeTreesChild;
+        this.framePr.AddASolidFill(hex);
 
         this.aSolidFill?.Remove();
         this.aSolidFill = null;
@@ -92,6 +94,12 @@ internal class ShapeFill : IShapeFill
         this.isDirty = true;
     }
 
+    protected virtual void InitSlideBackgroundFillOr()
+    {
+        this.aNoFill = this.framePr.GetFirstChild<DocumentFormat.OpenXml.Drawing.NoFill>(); 
+        this.fillType = SCFillType.NoFill;
+    }
+    
     private SCFillType GetFillType()
     {
         if (this.isDirty)
@@ -110,8 +118,7 @@ internal class ShapeFill : IShapeFill
 
     private void InitSolidFillOr()
     {
-        var pShape = (P.Shape)this.shape.PShapeTreesChild;
-        this.aSolidFill = pShape.ShapeProperties!.GetFirstChild<A.SolidFill>();
+        this.aSolidFill = this.framePr.GetFirstChild<DocumentFormat.OpenXml.Drawing.SolidFill>();
         if (this.aSolidFill != null)
         {
             var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
@@ -130,65 +137,50 @@ internal class ShapeFill : IShapeFill
         }
         else
         {
-            this.InitGradientFillOr(pShape);
+            this.InitGradientFillOr();
         }
     }
 
-    private void InitGradientFillOr(P.Shape pShape)
+    private void InitGradientFillOr()
     {
-        this.aGradFill = pShape.ShapeProperties!.GetFirstChild<A.GradientFill>();
+        this.aGradFill = this.framePr!.GetFirstChild<DocumentFormat.OpenXml.Drawing.GradientFill>();
         if (this.aGradFill != null)
         {
             this.fillType = SCFillType.Gradient;
         }
         else
         {
-            this.InitPictureFillOr(pShape);
+            this.InitPictureFillOr();
         }
     }
 
-    private void InitPictureFillOr(P.Shape pShape)
+    private void InitPictureFillOr()
     {
-        var xmlPart = this.shape.SlideBase.TypedOpenXmlPart;
-        this.aBlipFill = pShape.ShapeProperties!.GetFirstChild<A.BlipFill>();
+        var xmlPart = this.slideObject.TypedOpenXmlPart;
+        this.aBlipFill = this.framePr.GetFirstChild<DocumentFormat.OpenXml.Drawing.BlipFill>();
 
         if (this.aBlipFill is not null)
         {
-            var image = SCImage.ForAutoShapeFill(this.shape, xmlPart, this.aBlipFill);
+            var image = SCImage.ForAutoShapeFill(this.slideObject, xmlPart, this.aBlipFill);
             this.pictureImage = image;
             this.fillType = SCFillType.Picture;
         }
         else
         {
-            this.InitPatternFillOr(pShape);
+            this.InitPatternFillOr();
         }
     }
 
-    private void InitPatternFillOr(P.Shape pShape)
+    private void InitPatternFillOr()
     {
-        this.aPattFill = this.shape.PShapeProperties.GetFirstChild<A.PatternFill>();
+        this.aPattFill = this.framePr.GetFirstChild<DocumentFormat.OpenXml.Drawing.PatternFill>();
         if (this.aPattFill != null)
         {
             this.fillType = SCFillType.Pattern;
         }
         else
         {
-            this.InitSlideBackgroundFillOr(pShape);
-        }
-    }
-
-    private void InitSlideBackgroundFillOr(P.Shape pShape)
-    {
-        this.useBgFill = pShape.UseBackgroundFill;
-        if (this.useBgFill is not null && this.useBgFill)
-        {
-            this.useBgFill = pShape.UseBackgroundFill;
-            this.fillType = SCFillType.SlideBackground;
-        }
-        else
-        {
-            this.aNoFill = pShape.ShapeProperties!.GetFirstChild<A.NoFill>();
-            this.fillType = SCFillType.NoFill;
+            this.InitSlideBackgroundFillOr();
         }
     }
 

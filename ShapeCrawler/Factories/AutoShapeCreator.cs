@@ -12,7 +12,7 @@ internal class AutoShapeCreator : OpenXmlElementHandler
     {
         if (pShapeTreeChild is P.Shape pShape)
         {
-            var slideAutoShape = new SlideAutoShape(pShape, slideObject, groupShape);
+            var slideAutoShape = new AutoShape(pShape, slideObject, groupShape);
             return slideAutoShape;
         }
 

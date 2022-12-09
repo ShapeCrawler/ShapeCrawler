@@ -130,7 +130,7 @@ internal class SCImage : IImage
         return backgroundImage;
     }
 
-    internal static SCImage? ForAutoShapeFill(Shape autoShape, TypedOpenXmlPart slidePart, A.BlipFill aBlipFill)
+    internal static SCImage? ForAutoShapeFill(SlideObject slideObject, TypedOpenXmlPart slidePart, A.BlipFill aBlipFill)
     {
         var picReference = aBlipFill.Blip?.Embed;
         if (picReference == null)
@@ -140,7 +140,7 @@ internal class SCImage : IImage
 
         var imagePart = (ImagePart)slidePart.GetPartById(picReference.Value!);
 
-        return new SCImage(imagePart, picReference, slidePart, autoShape.SlideBase.PresentationInternal);
+        return new SCImage(imagePart, picReference, slidePart, slideObject.PresentationInternal);
     }
 
     private string GetName()

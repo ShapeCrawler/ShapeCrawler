@@ -351,7 +351,7 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
 
         this.shapeTree.Append(newPShape);
         
-        var autoShape = new SlideAutoShape(newPShape, this.slideObject, null);
+        var autoShape = new AutoShape(newPShape, this.slideObject, null);
 
         return autoShape;
     }

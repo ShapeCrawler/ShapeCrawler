@@ -21,7 +21,7 @@ internal static class FontDataParser
         }
 
         var placeholder = (Placeholder)shape.Placeholder;
-        var autoShape = (SlideAutoShape?)placeholder.ReferencedShape.Value;
+        var autoShape = (AutoShape?)placeholder.ReferencedShape.Value;
         autoShape?.FillFontData(paragraph.Level, ref phFontData);
     }
     
@@ -35,7 +35,7 @@ internal static class FontDataParser
             return fontData;
         }
         
-        var referencedShape = (SlideAutoShape?)placeholder.ReferencedShape.Value;
+        var referencedShape = (AutoShape?)placeholder.ReferencedShape.Value;
         
         if (referencedShape is null && placeholder.Type is SCPlaceholderType.Title or SCPlaceholderType.CenteredTitle)
         {

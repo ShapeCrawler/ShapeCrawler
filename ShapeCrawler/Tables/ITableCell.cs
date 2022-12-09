@@ -15,4 +15,9 @@ public interface ITableCell
     ///     Gets a value indicating whether cell belongs to merged cell.
     /// </summary>
     bool IsMergedCell { get; }
+
+    /// <summary>
+    ///     Gets Shape Fill of the cell.
+    /// </summary>
+    IShapeFill Fill { get; }
 }
