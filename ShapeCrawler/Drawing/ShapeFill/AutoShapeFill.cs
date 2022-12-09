@@ -5,9 +5,9 @@ namespace ShapeCrawler.Drawing.ShapeFill;
 
 internal class AutoShapeFill : ShapeFill
 {
-    private readonly SCAutoShape autoShape;
+    private readonly AutoShape autoShape;
 
-    internal AutoShapeFill(SlideObject slideObject, P.ShapeProperties shapeProperties, SCAutoShape autoShape)
+    internal AutoShapeFill(SlideObject slideObject, P.ShapeProperties shapeProperties, AutoShape autoShape)
         : base(slideObject, shapeProperties)
     {
         this.autoShape = autoShape;

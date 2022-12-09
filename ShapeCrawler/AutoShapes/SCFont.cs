@@ -213,7 +213,7 @@ internal class SCFont : IFont
     {
         i = -1;
         var placeholder = shape.Placeholder as Placeholder;
-        var referencedShape = placeholder?.ReferencedShape.Value as SCAutoShape;
+        var referencedShape = placeholder?.ReferencedShape.Value as AutoShape;
         var fontDataPlaceholder = new FontData();
         if (referencedShape != null)
         {

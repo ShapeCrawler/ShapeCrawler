@@ -39,7 +39,7 @@ public interface IAutoShape : IShape
     ITextFrame? TextFrame { get; }
 }
 
-internal class SCAutoShape : SlideShape, IAutoShape, ITextFrameContainer
+internal class AutoShape : SlideShape, IAutoShape, ITextFrameContainer
 {
     // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi.
     // 96/72=1.4
@@ -50,7 +50,7 @@ internal class SCAutoShape : SlideShape, IAutoShape, ITextFrameContainer
     private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
     private readonly P.Shape pShape;
 
-    internal SCAutoShape(
+    internal AutoShape(
         P.Shape pShape, 
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide,
         SCGroupShape? groupShape)
@@ -143,7 +143,7 @@ internal class SCAutoShape : SlideShape, IAutoShape, ITextFrameContainer
             if (!fontData.IsFilled() && this.Placeholder != null)
             {
                 var placeholder = (Placeholder)this.Placeholder;
-                var referencedMasterShape = (SCAutoShape?)placeholder.ReferencedShape.Value;
+                var referencedMasterShape = (AutoShape?)placeholder.ReferencedShape.Value;
                 referencedMasterShape?.FillFontData(paragraphLvl, ref fontData);
             }
 
@@ -153,7 +153,7 @@ internal class SCAutoShape : SlideShape, IAutoShape, ITextFrameContainer
         if (this.Placeholder != null)
         {
             var placeholder = (Placeholder)this.Placeholder;
-            var referencedMasterShape = (SCAutoShape?)placeholder.ReferencedShape.Value;
+            var referencedMasterShape = (AutoShape?)placeholder.ReferencedShape.Value;
             if (referencedMasterShape != null)
             {
                 referencedMasterShape.FillFontData(paragraphLvl, ref fontData);
