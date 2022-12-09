@@ -8,7 +8,6 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
-using ShapeCrawler.Tables;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -34,12 +33,12 @@ public interface ITable : IShape
     /// <summary>
     ///     Gets cell by row and column indexes.
     /// </summary>
-    ITableCell this[int rowIndex, int columnIndex] { get; }
+    ICell this[int rowIndex, int columnIndex] { get; }
 
     /// <summary>
     ///     Merge neighbor cells.
     /// </summary>
-    void MergeCells(ITableCell cell1, ITableCell cell2);
+    void MergeCells(ICell cell1, ICell cell2);
 }
 
 internal class SCTable : SlideShape, ITable
@@ -65,12 +64,12 @@ internal class SCTable : SlideShape, ITable
 
     private A.Table ATable => this.pGraphicFrame.GetATable();
 
-    public ITableCell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
+    public ICell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
 
-    public void MergeCells(ITableCell inputCell1, ITableCell inputCell2) // TODO: Optimize method
+    public void MergeCells(ICell inputCell1, ICell inputCell2) // TODO: Optimize method
     {
-        SCTableCell cell1 = (SCTableCell)inputCell1;
-        SCTableCell cell2 = (SCTableCell)inputCell2;
+        SCCell cell1 = (SCCell)inputCell1;
+        SCCell cell2 = (SCCell)inputCell2;
         if (CannotBeMerged(cell1, cell2))
         {
             return;
@@ -130,9 +129,9 @@ internal class SCTable : SlideShape, ITable
         // Delete a:gridCol and a:tc elements if all columns are merged
         for (int colIdx = 0; colIdx < this.Columns.Count;)
         {
-            int? gridSpan = ((SCTableCell)this.Rows[0].Cells[colIdx]).ATableCell.GridSpan?.Value;
+            int? gridSpan = ((SCCell)this.Rows[0].Cells[colIdx]).ATableCell.GridSpan?.Value;
             if (gridSpan > 1 && this.Rows.All(row =>
-                    ((SCTableCell)row.Cells[colIdx]).ATableCell.GridSpan?.Value == gridSpan))
+                    ((SCCell)row.Cells[colIdx]).ATableCell.GridSpan?.Value == gridSpan))
             {
                 int deleteColumnCount = gridSpan.Value - 1;
 
@@ -164,15 +163,15 @@ internal class SCTable : SlideShape, ITable
         // Delete a:tr
         for (int rowIdx = 0; rowIdx < this.Rows.Count;)
         {
-            int? rowSpan = ((SCTableCell)this.Rows[rowIdx].Cells[0]).ATableCell.RowSpan?.Value;
-            if (rowSpan > 1 && this.Rows[rowIdx].Cells.All(c => ((SCTableCell)c).ATableCell.RowSpan?.Value == rowSpan))
+            int? rowSpan = ((SCCell)this.Rows[rowIdx].Cells[0]).ATableCell.RowSpan?.Value;
+            if (rowSpan > 1 && this.Rows[rowIdx].Cells.All(c => ((SCCell)c).ATableCell.RowSpan?.Value == rowSpan))
             {
                 int deleteRowsCount = rowSpan.Value - 1;
 
                 // Delete a:gridCol elements
                 foreach (var row in this.Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
                 {
-                    ((SCTableRow)row).ATableRow.Remove();
+                    ((SCRow)row).ATableRow.Remove();
                     this.Rows[rowIdx].Height += row.Height;
                 }
 
@@ -191,7 +190,7 @@ internal class SCTable : SlideShape, ITable
         throw new NotImplementedException();
     }
 
-    internal ITableRow AppendRow(A.TableRow row)
+    internal IRow AppendRow(A.TableRow row)
     {
         this.ATable.AppendChild(row);
 
@@ -204,7 +203,7 @@ internal class SCTable : SlideShape, ITable
 
     private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
     {
-        A.TextBody? mergedCellTextBody = ((SCTableCell)this[minRowIndex, minColIndex]).ATableCell.TextBody;
+        A.TextBody? mergedCellTextBody = ((SCCell)this[minRowIndex, minColIndex]).ATableCell.TextBody;
         bool hasMoreOnePara = false;
         IEnumerable<A.Paragraph> aParagraphsWithARun =
             aTblCell.TextBody!.Elements<A.Paragraph>().Where(p => !p.IsEmpty());
@@ -232,7 +231,7 @@ internal class SCTable : SlideShape, ITable
         return columnList;
     }
 
-    private static bool CannotBeMerged(SCTableCell cell1, SCTableCell cell2)
+    private static bool CannotBeMerged(SCCell cell1, SCCell cell2)
     {
         if (cell1 == cell2)
         {

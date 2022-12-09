@@ -3,14 +3,36 @@ using ShapeCrawler.Drawing.ShapeFill;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Tables;
+// ReSharper disable CheckNamespace
+namespace ShapeCrawler;
 
-internal class SCTableCell : ITableCell, ITextFrameContainer
+/// <summary>
+///     Represents a table cell.
+/// </summary>
+public interface ICell
+{
+    /// <summary>
+    ///     Gets text box.
+    /// </summary>
+    ITextFrame TextFrame { get; }
+
+    /// <summary>
+    ///     Gets a value indicating whether cell belongs to merged cell.
+    /// </summary>
+    bool IsMergedCell { get; }
+
+    /// <summary>
+    ///     Gets Shape Fill of the cell.
+    /// </summary>
+    IShapeFill Fill { get; }
+}
+
+internal class SCCell : ICell, ITextFrameContainer
 {
     private readonly ResettableLazy<TextFrame> textFrame;
     private readonly ResettableLazy<ShapeFill> fill;
 
-    internal SCTableCell(SCTableRow tableRow, A.TableCell aTableCell, int rowIndex, int columnIndex)
+    internal SCCell(SCRow tableRow, A.TableCell aTableCell, int rowIndex, int columnIndex)
     {
         this.ParentTableRow = tableRow;
         this.ATableCell = aTableCell;
@@ -36,7 +58,7 @@ internal class SCTableCell : ITableCell, ITextFrameContainer
 
     internal int ColumnIndex { get; }
 
-    private SCTableRow ParentTableRow { get; }
+    private SCRow ParentTableRow { get; }
 
     private TextFrame GetTextFrame()
     {
