@@ -6,7 +6,7 @@ namespace ShapeCrawler.Extensions;
 
 internal static class ShapePropertiesExtensions
 {
-    internal static A.SolidFill AddASolidFill(this P.ShapeProperties pShapeProperties, string hex)
+    internal static A.SolidFill AddASolidFill(this TypedOpenXmlCompositeElement pShapeProperties, string hex)
     {
         var aSolidFill = pShapeProperties.GetFirstChild<A.SolidFill>();
         aSolidFill?.Remove();

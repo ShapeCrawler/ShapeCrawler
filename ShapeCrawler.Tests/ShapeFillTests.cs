@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Validation;
 using FluentAssertions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
@@ -56,17 +54,34 @@ public class ShapeFillTests : ShapeCrawlerTest, IClassFixture<PresentationFixtur
 
     [Theory]
     [SlideShapeData("autoshape-case005_text-frame.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
-    public void SetHexSolidColor_sets_solid_color(IShape shape)
+    public void SetColor_sets_solid_color(IShape shape)
     {
         // Arrange
         var autoShape = (IAutoShape)shape;
         var shapeFill = autoShape.Fill;
 
         // Act
-        shapeFill.SetHexSolidColor("32a852");
+        shapeFill.SetColor("32a852");
 
         // Assert
-        shapeFill.HexSolidColor.Should().Be("32a852");
+        shapeFill.Color.Should().Be("32a852");
+        var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+        errors.Should().BeEmpty();
+    }
+    
+    [Theory]
+    [SlideShapeData("table-case001.pptx", slideNumber: 1, shapeName: "Table 1")]
+    public void SetColor_sets_solid_color_as_fill_of_Table_Cell(IShape shape)
+    {
+        // Arrange
+        var table = (ITable)shape;
+        var shapeFill = table[0, 0].Fill;
+
+        // Act
+        shapeFill.SetColor("32a852");
+
+        // Assert
+        shapeFill.Color.Should().Be("32a852");
         var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
         errors.Should().BeEmpty();
     }
@@ -82,10 +97,10 @@ public class ShapeFillTests : ShapeCrawlerTest, IClassFixture<PresentationFixtur
 
         // Act
         shapeFill.SetPicture(imageStream);
-        shapeFill.SetHexSolidColor("32a852");
+        shapeFill.SetColor("32a852");
         
         // Assert
-        shapeFill.HexSolidColor.Should().Be("32a852");
+        shapeFill.Color.Should().Be("32a852");
         var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
         errors.Should().BeEmpty();
     }
@@ -165,7 +180,7 @@ public class ShapeFillTests : ShapeCrawlerTest, IClassFixture<PresentationFixtur
         var autoShape = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
 
         // Act
-        var shapeSolidColorName = autoShape.Fill.HexSolidColor;
+        var shapeSolidColorName = autoShape.Fill.Color;
 
         // Assert
         shapeSolidColorName.Should().BeEquivalentTo("ff0000");

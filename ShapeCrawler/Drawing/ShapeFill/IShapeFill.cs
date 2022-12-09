@@ -19,17 +19,17 @@ public interface IShapeFill
     public IImage? Picture { get; }
 
     /// <summary>
-    ///     Gets color hexadecimal representation if it is solid color, otherwise <see langword="null"/>.
+    ///     Gets color in hexadecimal representation if it is filled with solid color, otherwise <see langword="null"/>.
     /// </summary>
-    public string? HexSolidColor { get; }
+    public string? Color { get; }
 
     /// <summary>
-    ///     Sets picture fill.
+    ///     Fills the shape with picture.
     /// </summary>
     void SetPicture(Stream image);
 
     /// <summary>
-    ///     Sets solid color.
+    ///     Fills the shape with solid color in hexadecimal representation.
     /// </summary>
-    void SetHexSolidColor(string hex);
+    void SetColor(string hex);
 }

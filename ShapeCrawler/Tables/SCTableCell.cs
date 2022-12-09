@@ -1,4 +1,5 @@
 ﻿using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Drawing.ShapeFill;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -7,6 +8,7 @@ namespace ShapeCrawler.Tables;
 internal class SCTableCell : ITableCell, ITextFrameContainer
 {
     private readonly ResettableLazy<TextFrame> textFrame;
+    private readonly ResettableLazy<ShapeFill> fill;
 
     internal SCTableCell(SCTableRow tableRow, A.TableCell aTableCell, int rowIndex, int columnIndex)
     {
@@ -15,9 +17,14 @@ internal class SCTableCell : ITableCell, ITextFrameContainer
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
         this.textFrame = new ResettableLazy<TextFrame>(this.GetTextFrame);
+        var slideObject = tableRow.ParentTable.SlideObject;
+        var framePr = aTableCell.TableCellProperties!;
+        this.fill = new ResettableLazy<ShapeFill>(() => new CellFill((SlideObject)slideObject, framePr));
     }
 
     public bool IsMergedCell => this.DefineWhetherCellIsMerged();
+
+    public IShapeFill Fill => this.fill.Value;
 
     public Shape Shape => this.ParentTableRow.ParentTable;
 
@@ -30,11 +37,6 @@ internal class SCTableCell : ITableCell, ITextFrameContainer
     internal int ColumnIndex { get; }
 
     private SCTableRow ParentTableRow { get; }
-
-    public void ThrowIfRemoved()
-    {
-        this.ParentTableRow.ThrowIfRemoved();
-    }
 
     private TextFrame GetTextFrame()
     {
