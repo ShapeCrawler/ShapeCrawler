@@ -86,6 +86,7 @@ public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     }
 
     [Theory]
+    [MasterShapeData("001.pptx", "Freeform: Shape 7", 18)]
     [SlideShapeData("020.pptx", 1, 3, 18)]
     [SlideShapeData("015.pptx", 2, 61, 18)]
     [SlideShapeData("009_table.pptx", 3, 2, 18)]
@@ -99,7 +100,7 @@ public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     [SlideShapeData("014.pptx", 4, 5, 12)]
     [SlideShapeData("014.pptx", 5, 4, 12)]
     [SlideShapeData("014.pptx", 6, 52, 27)]
-    [MasterShapeData("001.pptx", "Freeform: Shape 7", 18)]
+    [SlideShapeData("autoshape-case016.pptx", 1, "Text Placeholder 1", 28)]
     public void Size_Getter_returns_font_size(IShape shape, int expectedSize)
     {
         // Arrange
@@ -177,25 +178,26 @@ public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
 
     [Theory]
     [MemberData(nameof(TestCasesSizeSetter))]
-    public void Size_Setter_changes_Font_Size_of_paragraph_portion(TestCase testCase)
+    public void Size_Setter_sets_font_size(TestCase testCase)
     {
         // Arrange
         var pres = testCase.Presentation;
         var font = testCase.AutoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
-        const int newFontSize = 28;
         var mStream = new MemoryStream();
-        var oldFontSize = font.Size;
+        var oldSize = font.Size;
+        var newSize = oldSize + 2;
 
         // Act
-        font.Size = newFontSize;
-        pres.SaveAs(mStream);
+        font.Size = newSize;
+        pres.SaveAs(@"c:\temp\output.pptx");
 
         // Assert
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
+        pres.SaveAs(mStream);
         testCase.SetPresentation(mStream);
         font = testCase.AutoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
-        font.Size.Should().NotBe(oldFontSize);
-        font.Size.Should().Be(newFontSize);
-        font.CanChange().Should().BeTrue();
+        font.Size.Should().Be(newSize);
     }
 
     public static IEnumerable<object[]> TestCasesSizeSetter
@@ -205,17 +207,40 @@ public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
             var testCase1 = new TestCase("#1");
             testCase1.PresentationName = "001.pptx";
             testCase1.SlideNumber = 1;
-            testCase1.ShapeId = 4;
+            testCase1.ShapeName = "TextBox 3";
             yield return new object[] { testCase1 };
-
+            
             var testCase2 = new TestCase("#2");
             testCase2.PresentationName = "026.pptx";
             testCase2.SlideNumber = 1;
             testCase2.ShapeName = "AutoShape 1";
             yield return new object[] { testCase2 };
+            
+            var testCase3 = new TestCase("#3");
+            testCase3.PresentationName = "autoshape-case016.pptx";
+            testCase3.SlideNumber = 1;
+            testCase3.ShapeName = "Text Placeholder 1";
+            yield return new object[] { testCase3 };
         }
     }
 
+    [Theory]
+    [SlideShapeData("001.pptx", 1, "TextBox 3")]
+    [SlideShapeData("026.pptx", 1, "AutoShape 1")]
+    [SlideShapeData("autoshape-case016.pptx", 1, "Text Placeholder 1")]
+    public void CanChanged_returns_true(IShape shape)
+    {
+        // Arrange
+        var autoShape = (IAutoShape)shape;
+        var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
+
+        // Act
+        var canChange = font.CanChange();
+
+        // Assert
+        canChange.Should().BeTrue();
+    }
+    
     [Fact]
     public void IsBold_GetterReturnsTrue_WhenFontOfNonPlaceholderTextIsBold()
     {
