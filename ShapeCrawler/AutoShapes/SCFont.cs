@@ -107,7 +107,9 @@ internal class SCFont : IFont
 
     public bool CanChange()
     {
-        return this.ParentPortion.ParentParagraph.ParentTextFrame.TextFrameContainer.Shape.Placeholder == null;
+        var placeholder = this.ParentPortion.ParentParagraph.ParentTextFrame.TextFrameContainer.Shape.Placeholder;
+
+        return placeholder is null or { Type: SCPlaceholderType.Text };
     }
 
     private void SetOffset(int value)

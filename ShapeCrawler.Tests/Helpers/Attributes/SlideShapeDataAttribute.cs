@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using ShapeCrawler.Shapes;
 using Xunit.Sdk;
 
@@ -12,6 +13,7 @@ public class SlideShapeDataAttribute : DataAttribute
     private readonly string shapeName;
     private readonly int shapeId;
     private readonly object expectedResult;
+    private readonly string displayName;
 
     public SlideShapeDataAttribute(string pptxFile, int slideNumber, string shapeName, object expectedResult)
     : this(pptxFile, slideNumber, shapeName)
@@ -19,6 +21,12 @@ public class SlideShapeDataAttribute : DataAttribute
         this.expectedResult = expectedResult;
     }
 
+    public SlideShapeDataAttribute(string displayName, string pptxFile, int slideNumber, string shapeName)
+        : this(pptxFile, slideNumber, shapeName)
+    {
+        this.displayName = displayName;
+    }
+    
     public SlideShapeDataAttribute(string pptxFile, int slideNumber, string shapeName)
     {
         this.pptxFile = pptxFile;
@@ -43,13 +51,21 @@ public class SlideShapeDataAttribute : DataAttribute
             ? slide.Shapes.GetByName<IShape>(this.shapeName)
             : slide.Shapes.GetById<IShape>(this.shapeId);
 
+        var input = new List<object>();
+
+        if (this.displayName != null)
+        {
+            input.Add(this.displayName);
+        }
+        
+        input.Add(shape);
+        
         if (this.expectedResult != null)
         {
-            yield return new object[] { shape, this.expectedResult };
+            input.Add(this.expectedResult);
         }
-        else
-        {
-            yield return new object[] { shape };
-        }
+
+        yield return input.ToArray();
+    }
     }
 }

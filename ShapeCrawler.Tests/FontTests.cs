@@ -189,7 +189,6 @@ public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
 
         // Act
         font.Size = newSize;
-        pres.SaveAs(@"c:\temp\output.pptx");
 
         // Assert
         var errors = PptxValidator.Validate(pres);
@@ -225,10 +224,10 @@ public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     }
 
     [Theory]
-    [SlideShapeData("001.pptx", 1, "TextBox 3")]
-    [SlideShapeData("026.pptx", 1, "AutoShape 1")]
-    [SlideShapeData("autoshape-case016.pptx", 1, "Text Placeholder 1")]
-    public void CanChanged_returns_true(IShape shape)
+    [SlideShapeData("#1", "001.pptx", 1, "TextBox 3")]
+    [SlideShapeData("#2", "026.pptx", 1, "AutoShape 1")]
+    [SlideShapeData("#3", "autoshape-case016.pptx", 1, "Text Placeholder 1")]
+    public void CanChange_returns_true(string displayName, IShape shape)
     {
         // Arrange
         var autoShape = (IAutoShape)shape;

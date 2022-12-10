@@ -11,13 +11,6 @@ public class SlideDataAttribute : DataAttribute
     private readonly object expectedResult;
     private readonly string testCaseLabel;
 
-    public SlideDataAttribute(string pptxFile, int slideNumber, object expectedResult)
-    {
-        this.pptxFile = pptxFile;
-        this.slideNumber = slideNumber;
-        this.expectedResult = expectedResult;
-    }
-    
     public SlideDataAttribute(string testCaseLabel, string pptxFile, int slideNumber, object expectedResult)
     {
         this.testCaseLabel = testCaseLabel;
