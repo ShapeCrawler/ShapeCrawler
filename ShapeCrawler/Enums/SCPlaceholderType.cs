@@ -6,6 +6,41 @@
 public enum SCPlaceholderType
 {
     /// <summary>
+    ///     Content Placeholder.
+    /// </summary>
+    Content,
+    
+    /// <summary>
+    ///     Text Placeholder.
+    /// </summary>
+    Text,
+    
+    /// <summary>
+    ///     Picture Placeholder.
+    /// </summary>
+    Picture,
+    
+    /// <summary>
+    ///     Table Placeholder.
+    /// </summary>
+    Table,
+    
+    /// <summary>
+    ///     SmartArt Placeholder.
+    /// </summary>
+    SmartArt,
+    
+    /// <summary>
+    ///     Media Placeholder.
+    /// </summary>
+    Media,
+    
+    /// <summary>
+    ///     Online Image Placeholder.
+    /// </summary>
+    OnlineImage,
+    
+    /// <summary>
     ///     Title.
     /// </summary>
     Title,
@@ -14,11 +49,6 @@ public enum SCPlaceholderType
     ///     Centered Title.
     /// </summary>
     CenteredTitle,
-
-    /// <summary>
-    ///     Body.
-    /// </summary>
-    Body,
 
     /// <summary>
     ///     Subtitle.
@@ -56,37 +86,7 @@ public enum SCPlaceholderType
     Chart,
 
     /// <summary>
-    ///     Table.
-    /// </summary>
-    Table,
-
-    /// <summary>
-    ///     Clip Art.
-    /// </summary>
-    ClipArt,
-
-    /// <summary>
-    ///     Diagram.
-    /// </summary>
-    Diagram,
-
-    /// <summary>
-    ///     Media.
-    /// </summary>
-    Media,
-
-    /// <summary>
     ///     Slide Image.
     /// </summary>
-    SlideImage,
-
-    /// <summary>
-    ///     Picture.
-    /// </summary>
-    Picture,
-
-    /// <summary>
-    ///     Custom
-    /// </summary>
-    Custom
+    SlideImage
 }

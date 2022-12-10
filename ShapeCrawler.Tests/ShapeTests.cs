@@ -27,29 +27,24 @@ namespace ShapeCrawler.Tests
         }
 
         [Theory]
-        [MemberData(nameof(TestCasesPlaceholderType))]
-        public void PlaceholderType_GetterReturnsPlaceholderTypeOfTheShape(IShape shape, SCPlaceholderType expectedType)
+        [SlideShapeData("021.pptx", 4, 2, SCPlaceholderType.Footer)]
+        [SlideShapeData("008.pptx", 1, 3, SCPlaceholderType.DateAndTime)]
+        [SlideShapeData("019.pptx", 1, 2, SCPlaceholderType.SlideNumber)]
+        [SlideShapeData("013.pptx", 1, 281, SCPlaceholderType.Content)]
+        [SlideShapeData("autoshape-case016.pptx", 1, "Content Placeholder 1", SCPlaceholderType.Content)]
+        [SlideShapeData("autoshape-case016.pptx", 1, "Text Placeholder 1", SCPlaceholderType.Text)]
+        [SlideShapeData("autoshape-case016.pptx", 1, "Picture Placeholder 1", SCPlaceholderType.Picture)]
+        [SlideShapeData("autoshape-case016.pptx", 1, "Table Placeholder 1", SCPlaceholderType.Table)]
+        [SlideShapeData("autoshape-case016.pptx", 1, "SmartArt Placeholder 1", SCPlaceholderType.SmartArt)]
+        [SlideShapeData("autoshape-case016.pptx", 1, "Media Placeholder 1", SCPlaceholderType.Media)]
+        [SlideShapeData("autoshape-case016.pptx", 1, "Online Image Placeholder 1", SCPlaceholderType.OnlineImage)]
+        public void PlaceholderType_returns_placeholder_type(IShape shape, SCPlaceholderType expectedType)
         {
             // Act
-            SCPlaceholderType actualType = shape.Placeholder.Type;
+            var placeholderType = shape.Placeholder!.Type;
 
             // Assert
-            actualType.Should().Be(expectedType);
-        }
-
-        public static IEnumerable<object[]> TestCasesPlaceholderType()
-        {
-            IShape shape = SCPresentation.Open(Resources._021).Slides[3].Shapes.First(sp => sp.Id == 2);
-            yield return new object[] { shape, SCPlaceholderType.Footer };
-
-            shape = SCPresentation.Open(Resources._008).Slides[0].Shapes.First(sp => sp.Id == 3);
-            yield return new object[] { shape, SCPlaceholderType.DateAndTime };
-
-            shape = SCPresentation.Open(Resources._019).Slides[0].Shapes.First(sp => sp.Id == 2);
-            yield return new object[] { shape, SCPlaceholderType.SlideNumber };
-
-            shape = SCPresentation.Open(Resources._013).Slides[0].Shapes.First(sp => sp.Id == 281);
-            yield return new object[] { shape, SCPlaceholderType.Custom };
+            placeholderType.Should().Be(expectedType);
         }
 
         [Fact]
