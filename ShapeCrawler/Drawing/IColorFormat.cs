@@ -210,7 +210,7 @@ internal class ColorFormat : IColorFormat
                 break;
             }
 
-            case SCPlaceholderType.Body:
+            case SCPlaceholderType.Text:
             {
                 Dictionary<int, FontData> bodyParaLvlToFontData = this.parentSlideMaster.BodyParaLvlToFontData;
                 FontData masterBodyFontData = bodyParaLvlToFontData[paragraphLevel];

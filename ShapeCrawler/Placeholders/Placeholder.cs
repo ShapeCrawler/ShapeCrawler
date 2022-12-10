@@ -24,7 +24,7 @@ internal abstract class Placeholder : IPlaceholder
         var pPlaceholderValue = this.PPlaceholderShape.Type;
         if (pPlaceholderValue == null)
         {
-            return SCPlaceholderType.Custom;
+            return SCPlaceholderType.Content;
         }
 
         if (pPlaceholderValue == P.PlaceholderValues.Title)
@@ -37,6 +37,21 @@ internal abstract class Placeholder : IPlaceholder
             return SCPlaceholderType.CenteredTitle;
         }
 
+        if (pPlaceholderValue == P.PlaceholderValues.Body)
+        {
+            return SCPlaceholderType.Text;
+        }
+
+        if (pPlaceholderValue == P.PlaceholderValues.Diagram)
+        {
+            return SCPlaceholderType.SmartArt;
+        }
+
+        if (pPlaceholderValue == P.PlaceholderValues.ClipArt)
+        {
+            return SCPlaceholderType.OnlineImage;
+        }
+        
         return (SCPlaceholderType)Enum.Parse(typeof(SCPlaceholderType), pPlaceholderValue.Value.ToString());
     }
 
