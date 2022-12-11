@@ -113,7 +113,7 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
         mp3Stream.Position = 0;
         mediaDataPart.FeedData(mp3Stream);
         string imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
-        var slidePart = slideBase.TypedOpenXmlPart as SlidePart;
+        var slidePart = (SlidePart)slideBase.TypedOpenXmlPart;
         var imagePart = slidePart!.AddNewPart<ImagePart>("image/png", imgPartRId);
         var imgStream = Assembly.GetExecutingAssembly().GetStream("audio-image.png");
         imgStream.Position = 0;
@@ -225,8 +225,8 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
         stream.Position = 0;
         mediaDataPart.FeedData(stream);
         string imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
-        var slidePart = slideBase.TypedOpenXmlPart as SlidePart;
-        var imagePart = slidePart!.AddNewPart<ImagePart>("image/png", imgPartRId);
+        var slidePart = (SlidePart)slideBase.TypedOpenXmlPart;
+        var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
         var imageStream = Assembly.GetExecutingAssembly().GetStream("video-image.bmp");
         imagePart.FeedData(imageStream);
 

@@ -23,4 +23,9 @@ public interface ISlideMaster
     ///     Gets collection of shape.
     /// </summary>
     IShapeCollection Shapes { get; }
+
+    /// <summary>
+    ///     Gets parent Presentation
+    /// </summary>
+    IPresentation Presentation { get; }
 }

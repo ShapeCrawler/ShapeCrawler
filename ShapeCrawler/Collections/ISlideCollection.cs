@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ShapeCrawler.SlideMasters;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
@@ -9,19 +10,24 @@ namespace ShapeCrawler;
 public interface ISlideCollection : IReadOnlyList<ISlide>
 {
     /// <summary>
-    ///     Removes slide from presentation.
+    ///     Removes specified slide.
     /// </summary>
-    void Remove(ISlide removingSlide);
+    void Remove(ISlide slide);
 
     /// <summary>
-    ///     Adds a slide into the collection at the specified position.
+    ///     Creates a new slide.
     /// </summary>
-    void Add(ISlide sourceSlide);
+    ISlide AddEmptySlide(ISlideLayout layout);
+    
+    /// <summary>
+    ///     Adds specified slide.
+    /// </summary>
+    void Add(ISlide slide);
 
     /// <summary>
-    ///     Inserts slide.
+    ///     Inserts slide at specified position.
     /// </summary>
-    /// <param name="position">Position (number) at which slide should be inserted.</param>
-    /// <param name="outerSlide">The slide to insert.</param>
-    void Insert(int position, ISlide outerSlide);
+    /// <param name="position">Position at which specified slide will be inserted.</param>
+    /// <param name="slide">The slide to insert.</param>
+    void Insert(int position, ISlide slide);
 }

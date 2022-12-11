@@ -239,7 +239,7 @@ public sealed class SCPresentation : IPresentation
     {
         var slideMasterIdList = new P.SlideMasterIdList(new P.SlideMasterId
             { Id = (UInt32Value)2147483648U, RelationshipId = "rId1" });
-        var slideIdList = new P.SlideIdList(new P.SlideId() { Id = (UInt32Value)256U, RelationshipId = "rId2" });
+        var slideIdList = new P.SlideIdList(new P.SlideId { Id = (UInt32Value)256U, RelationshipId = "rId2" });
         var slideSize = new P.SlideSize { Cx = 9144000, Cy = 6858000, Type = P.SlideSizeValues.Screen4x3 };
         var notesSize = new P.NotesSize { Cx = 6858000, Cy = 9144000 };
         var defaultTextStyle = new P.DefaultTextStyle();
@@ -251,7 +251,7 @@ public sealed class SCPresentation : IPresentation
             notesSize,
             defaultTextStyle);
 
-        var slidePart = CreateSlidePart(presPart);
+        var slidePart = presPart.AddNewSlidePart("rId2");
         var slideLayoutPart = CreateSlideLayoutPart(slidePart);
         var slideMasterPart = CreateSlideMasterPart(slideLayoutPart);
         var themePart = CreateTheme(slideMasterPart);
@@ -259,21 +259,6 @@ public sealed class SCPresentation : IPresentation
         slideMasterPart.AddPart(slideLayoutPart, "rId1");
         presPart.AddPart(slideMasterPart, "rId1");
         presPart.AddPart(themePart, "rId5");
-    }
-
-    private static SlidePart CreateSlidePart(PresentationPart presPart)
-    {
-        var slidePart = presPart.AddNewPart<SlidePart>("rId2");
-        slidePart.Slide = new P.Slide(
-            new P.CommonSlideData(
-                new P.ShapeTree(
-                    new P.NonVisualGroupShapeProperties(
-                        new P.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = "" },
-                        new P.NonVisualGroupShapeDrawingProperties(),
-                        new P.ApplicationNonVisualDrawingProperties()),
-                    new P.GroupShapeProperties(new A.TransformGroup()))),
-            new P.ColorMapOverride(new A.MasterColorMapping()));
-        return slidePart;
     }
 
     private static SlideLayoutPart CreateSlideLayoutPart(SlidePart slidePart)

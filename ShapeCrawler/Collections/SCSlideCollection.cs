@@ -6,7 +6,9 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Collections;
@@ -15,12 +17,12 @@ internal class SCSlideCollection : ISlideCollection
 {
     private readonly SCPresentation presentation;
     private readonly ResettableLazy<List<SCSlide>> slides;
-    private PresentationPart presentationPart;
+    private PresentationPart presPart;
 
-    internal SCSlideCollection(SCPresentation presentation)
+    internal SCSlideCollection(SCPresentation pres)
     {
-        this.presentation = presentation;
-        this.presentationPart = presentation.SDKPresentationInternal.PresentationPart!;
+        this.presentation = pres;
+        this.presPart = pres.SDKPresentationInternal.PresentationPart!;
         this.slides = new ResettableLazy<List<SCSlide>>(this.GetSlides);
     }
 
@@ -43,7 +45,7 @@ internal class SCSlideCollection : ISlideCollection
     public void Remove(ISlide removingSlide)
     {
         // TODO: slide layout and master of removed slide also should be deleted if they are unused
-        var sdkPresentation = this.presentationPart.Presentation;
+        var sdkPresentation = this.presPart.Presentation;
         var slideIdList = sdkPresentation.SlideIdList!;
         var removingSlideIndex = removingSlide.Number - 1;
         var removingSlideId = (P.SlideId)slideIdList.ChildElements[removingSlideIndex];
@@ -54,14 +56,32 @@ internal class SCSlideCollection : ISlideCollection
         slideIdList.RemoveChild(removingSlideId);
         RemoveFromCustomShow(sdkPresentation, removingSlideRelId);
 
-        var removingSlidePart = (SlidePart)this.presentationPart.GetPartById(removingSlideRelId!);
-        this.presentationPart.DeletePart(removingSlidePart);
+        var removingSlidePart = (SlidePart)this.presPart.GetPartById(removingSlideRelId!);
+        this.presPart.DeletePart(removingSlidePart);
 
-        this.presentationPart.Presentation.Save();
+        this.presPart.Presentation.Save();
 
         this.slides.Reset();
 
         this.OnCollectionChanged();
+    }
+
+    public ISlide AddEmptySlide(ISlideLayout layout)
+    {
+        var rId = this.presPart.GetNextRelationshipId();
+        SlidePart slidePart = this.presPart.AddNewSlidePart(rId);
+        var layoutInternal = (SCSlideLayout)layout;
+        slidePart.AddPart(layoutInternal.SlideLayoutPart, "rId1");
+
+        var pSlideIdList = this.presPart.Presentation.SlideIdList!;  
+        var nextId = pSlideIdList.OfType<P.SlideId>().Last().Id! + 1;
+        var pSlideId = new P.SlideId { Id = nextId, RelationshipId = rId };
+        pSlideIdList.Append(pSlideId);
+        
+        var newSlide = new SCSlide(this.presentation, slidePart, pSlideId);
+        this.slides.Value.Add(newSlide);
+
+        return newSlide;
     }
 
     public void Insert(int position, ISlide outerSlide)
@@ -237,14 +257,14 @@ internal class SCSlideCollection : ISlideCollection
 
     private List<SCSlide> GetSlides()
     {
-        this.presentationPart = this.presentation.SDKPresentationInternal.PresentationPart!;
-        int slidesCount = this.presentationPart.SlideParts.Count();
+        this.presPart = this.presentation.SDKPresentationInternal.PresentationPart!;
+        int slidesCount = this.presPart.SlideParts.Count();
         var slides = new List<SCSlide>(slidesCount);
-        var slideIds = this.presentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
+        var slideIds = this.presPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
         for (var slideIndex = 0; slideIndex < slidesCount; slideIndex++)
         {
             var slideId = slideIds[slideIndex];
-            var slidePart = (SlidePart)this.presentationPart.GetPartById(slideId.RelationshipId!);
+            var slidePart = (SlidePart)this.presPart.GetPartById(slideId.RelationshipId!);
             var newSlide = new SCSlide(this.presentation, slidePart, slideId);
             slides.Add(newSlide);
         }
