@@ -82,7 +82,7 @@ public interface IShapeCollection : IEnumerable<IShape>
     /// <summary>
     ///     Creates a new Table.
     /// </summary>
-    ITable AddTable(int xPx, int yPx, int columns, int rows);
+    ITable AddTable(int x, int y, int columns, int rows);
 }
 
 internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
