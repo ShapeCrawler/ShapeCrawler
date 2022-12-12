@@ -14,10 +14,12 @@ public interface ISlideCollection : IReadOnlyList<ISlide>
     /// </summary>
     void Remove(ISlide slide);
 
+#if DEBUG
     /// <summary>
     ///     Creates a new slide.
     /// </summary>
     ISlide AddEmptySlide(ISlideLayout layout);
+#endif
     
     /// <summary>
     ///     Adds specified slide.
