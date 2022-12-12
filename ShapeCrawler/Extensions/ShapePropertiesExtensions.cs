@@ -28,10 +28,10 @@ internal static class ShapePropertiesExtensions
         
         var aSchemeClr = new A.SchemeColor { Val = new EnumValue<A.SchemeColorValues>(A.SchemeColorValues.Text1) };
         var aSolidFill = new A.SolidFill(aSchemeClr);
-        aOutline = new A.Outline(aSolidFill);
-        pSpPr.Append(aOutline);
+        var aOutlineNew = new A.Outline(aSolidFill);
+        pSpPr.Append(aOutlineNew);
 
-        return aOutline;
+        return aOutlineNew;
     }
     
     internal static void AddAXfrm(this P.ShapeProperties pSpPr, long xEmu, long yEmu, long wEmu, long hEmu)

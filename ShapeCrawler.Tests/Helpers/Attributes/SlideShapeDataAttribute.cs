@@ -67,5 +67,4 @@ public class SlideShapeDataAttribute : DataAttribute
 
         yield return input.ToArray();
     }
-    }
 }

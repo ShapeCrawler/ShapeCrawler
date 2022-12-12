@@ -14,4 +14,9 @@ public interface ISlideLayout
     ///     Gets collection of shape.
     /// </summary>
     IShapeCollection Shapes { get; }
+
+    /// <summary>
+    ///     Gets layout name.
+    /// </summary>
+    string Name { get; }
 }

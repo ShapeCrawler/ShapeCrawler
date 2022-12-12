@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Shared;
 
 namespace ShapeCrawler.SlideMasters;
@@ -26,6 +25,8 @@ internal class SCSlideLayout : SlideObject, ISlideLayout
 
     public IShapeCollection Shapes => this.shapes.Value;
 
+    public string Name => this.GetName();
+
     public ISlideMaster SlideMaster => this.slideMaster;
     
     public override int Number { get; set; }
@@ -37,4 +38,9 @@ internal class SCSlideLayout : SlideObject, ISlideLayout
     internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
 
     internal override TypedOpenXmlPart TypedOpenXmlPart => this.SlideLayoutPart;
+    
+    private string GetName()
+    {
+        return this.SlideLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
+    }
 }

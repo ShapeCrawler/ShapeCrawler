@@ -172,7 +172,7 @@ internal abstract class Shape : IShape
             var placeholder = (Placeholder)this.Placeholder!;
             var referencedShape = placeholder.ReferencedShape.Value;
             var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.X);
-            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
+            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.Y);
             var wEmu = UnitConverter.VerticalPixelToEmu(newWPixels);
             var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
             pSpPr.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
@@ -197,7 +197,7 @@ internal abstract class Shape : IShape
             var placeholder = (Placeholder)this.Placeholder!;
             var referencedShape = placeholder.ReferencedShape.Value;
             var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.X);
-            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
+            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.Y);
             var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
             var hEmu = UnitConverter.VerticalPixelToEmu(newHPixels);
             pSpPr.AddAXfrm(xEmu, yEmu, wEmu, hEmu);

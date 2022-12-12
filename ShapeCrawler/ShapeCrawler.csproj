@@ -17,7 +17,12 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Copyright>MIT</Copyright>
     <LangVersion>10</LangVersion>
     <ApplicationIcon>logo.ico</ApplicationIcon>
-    <PackageReleaseNotes> Added setter for ITextFrame.AutofitType property.</PackageReleaseNotes>
+    <PackageReleaseNotes>- Added IPortion.TextHighlightColor
+- Added IParagraph.Spacing
+- Added IAutoShape.Outline
+- Added IShapeCollection.AddAutoShape()
+- Added IShapeCollection.AddTable()
+- Added IRowCollection.Add()</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RepositoryType>Git</RepositoryType>
@@ -26,10 +31,10 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <nullable>enable</nullable>
-    <AssemblyVersion>0.38.0</AssemblyVersion>
-    <FileVersion>0.38.0</FileVersion>
+    <AssemblyVersion>0.39.0</AssemblyVersion>
+    <FileVersion>0.39.0</FileVersion>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-    <PackageVersion>0.38.0</PackageVersion>
+    <PackageVersion>0.39.0</PackageVersion>
     <Title>ShapeCrawler</Title>
     <Configurations>Debug;Release;Test</Configurations>
     <Platforms>AnyCPU</Platforms>

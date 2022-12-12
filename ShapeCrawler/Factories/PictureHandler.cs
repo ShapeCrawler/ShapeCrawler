@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
+using OneOf;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
-using OneOf;
 
 namespace ShapeCrawler.Factories;
 
@@ -34,16 +34,9 @@ internal class PictureHandler : OpenXmlElementHandler
                     break;
                 }
 
-                case VideoFromFile file:
+                case VideoFromFile:
                 {
-                    A.VideoFromFile aVideoFile = file;
-
-                    if (aVideoFile != null)
-                    {
-                        return new VideoShape(slideObject, pShapeTreeChild);
-                    }
-
-                    break;
+                    return new VideoShape(slideObject, pShapeTreeChild);
                 }
             }
 
