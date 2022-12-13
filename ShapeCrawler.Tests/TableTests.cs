@@ -375,7 +375,6 @@ public class TableTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
 
         // Act
         table.MergeCells(table[0, 0], table[1, 0]);
-        // pres.SaveAs(@"c:\temp\output.pptx");
 
         // Assert
         table[1, 0].IsMergedCell.Should().BeTrue();

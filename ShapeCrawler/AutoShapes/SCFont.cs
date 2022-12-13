@@ -358,14 +358,8 @@ internal class SCFont : IFont
 
     private void SetName(string fontName)
     {
-        Shape parentShape = (Shape)this.ParentPortion.ParentParagraph.ParentTextFrame.TextFrameContainer;
-        if (parentShape.Placeholder != null)
-        {
-            throw new PlaceholderCannotBeChangedException();
-        }
-
-        A.LatinFont latinFont = this.latinFont.Value;
-        latinFont.Typeface = fontName;
+        var aLatinFont = this.latinFont.Value;
+        aLatinFont.Typeface = fontName;
         this.latinFont.Reset();
     }
 
