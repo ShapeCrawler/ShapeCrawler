@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -28,7 +29,7 @@ public interface IRow
 
 internal class SCRow : IRow
 {
-    private readonly Lazy<List<SCCell?>> cells;
+    private readonly Lazy<List<SCCell>> cells;
     private readonly int index;
 
     internal SCRow(SCTable table, A.TableRow aTableRow, int index)
@@ -36,10 +37,10 @@ internal class SCRow : IRow
         this.ParentTable = table;
         this.ATableRow = aTableRow;
         this.index = index;
-        this.cells = new Lazy<List<SCCell?>>(() => this.GetCells());
+        this.cells = new Lazy<List<SCCell>>(() => this.GetCells());
     }
 
-    public IReadOnlyList<ICell?> Cells => this.cells.Value;
+    public IReadOnlyList<ICell> Cells => this.cells.Value;
 
     public long Height
     {
@@ -59,14 +60,9 @@ internal class SCRow : IRow
         return addedRow;
     }
 
-    internal void ThrowIfRemoved()
-    {
-
-    }
-
     #region Private Methods
 
-    private List<SCCell?> GetCells()
+    private List<SCCell> GetCells()
     {
         var cellList = new List<SCCell?>();
         var aCells = this.ATableRow.Elements<A.TableCell>();
@@ -95,7 +91,7 @@ internal class SCRow : IRow
             columnIdx++;
         }
 
-        return cellList;
+        return cellList!;
     }
 
     #endregion

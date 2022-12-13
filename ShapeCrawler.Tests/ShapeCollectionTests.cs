@@ -222,7 +222,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
         var shapes = pres.Slides[0].Shapes;
         
         // Act
-        var table = shapes.AddTable(xPx: 50, yPx: 60, columns: 3, rows: 2);
+        var table = shapes.AddTable(x: 50, y: 60, columns: 3, rows: 2);
 
         // Assert
         table.Columns.Should().HaveCount(3);

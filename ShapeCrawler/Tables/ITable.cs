@@ -80,47 +80,31 @@ internal class SCTable : SlideShape, ITable
         int minColIndex = cell1.ColumnIndex < cell2.ColumnIndex ? cell1.ColumnIndex : cell2.ColumnIndex;
         int maxColIndex = cell1.ColumnIndex > cell2.ColumnIndex ? cell1.ColumnIndex : cell2.ColumnIndex;
 
-        // Horizontal merging
-        List<A.TableRow> aTableRowList = this.ATable.Elements<A.TableRow>().ToList();
+        var aTableRows = this.ATable.Elements<A.TableRow>().ToList();
         if (minColIndex != maxColIndex)
         {
-            int horizontalMergingCount = maxColIndex - minColIndex + 1;
-            for (int rowIdx = minRowIndex; rowIdx <= maxRowIndex; rowIdx++)
-            {
-                A.TableCell[] rowATblCells = aTableRowList[rowIdx].Elements<A.TableCell>().ToArray();
-                A.TableCell firstMergingCell = rowATblCells[minColIndex];
-                firstMergingCell.GridSpan = new Int32Value(horizontalMergingCount);
-                Span<A.TableCell> nextMergingCells =
-                    new Span<A.TableCell>(rowATblCells, minColIndex + 1, horizontalMergingCount - 1);
-                foreach (A.TableCell aTblCell in nextMergingCells)
-                {
-                    aTblCell.HorizontalMerge = new BooleanValue(true);
-
-                    this.MergeParagraphs(minRowIndex, minColIndex, aTblCell);
-                }
-            }
+            this.MergeHorizontal(maxColIndex, minColIndex, minRowIndex, maxRowIndex, aTableRows);
         }
 
         // Vertical merging
         if (minRowIndex != maxRowIndex)
         {
             // Set row span value for the first cell in the merged cells
-            int verticalMergingCount = maxRowIndex - minRowIndex + 1;
-            IEnumerable<A.TableCell> rowSpanCells = aTableRowList[minRowIndex].Elements<A.TableCell>()
+            var verticalMergingCount = maxRowIndex - minRowIndex + 1;
+            var rowSpanCells = aTableRows[minRowIndex].Elements<A.TableCell>()
                 .Skip(minColIndex)
                 .Take(maxColIndex + 1);
-            foreach (A.TableCell aTblCell in rowSpanCells)
+            foreach (var aTblCell in rowSpanCells)
             {
                 aTblCell.RowSpan = new Int32Value(verticalMergingCount);
             }
 
             // Set vertical merging flag
-            foreach (A.TableRow aTblRow in aTableRowList.Skip(minRowIndex + 1).Take(maxRowIndex))
+            foreach (var aTableRow in aTableRows.Skip(minRowIndex + 1).Take(maxRowIndex))
             {
-                foreach (A.TableCell aTblCell in aTblRow.Elements<A.TableCell>().Take(maxColIndex + 1))
+                foreach (A.TableCell aTblCell in aTableRow.Elements<A.TableCell>().Take(maxColIndex + 1))
                 {
                     aTblCell.VerticalMerge = new BooleanValue(true);
-
                     this.MergeParagraphs(minRowIndex, minColIndex, aTblCell);
                 }
             }
@@ -143,7 +127,7 @@ internal class SCTable : SlideShape, ITable
                 }
 
                 // Delete a:tc elements
-                foreach (A.TableRow aTblRow in aTableRowList)
+                foreach (A.TableRow aTblRow in aTableRows)
                 {
                     IEnumerable<A.TableCell> removeCells =
                         aTblRow.Elements<A.TableCell>().Skip(colIdx).Take(deleteColumnCount);
@@ -160,11 +144,13 @@ internal class SCTable : SlideShape, ITable
             colIdx++;
         }
 
-        // Delete a:tr
-        for (int rowIdx = 0; rowIdx < this.Rows.Count;)
+        // Delete a:tr if need
+        for (var rowIdx = 0; rowIdx < this.Rows.Count;)
         {
-            int? rowSpan = ((SCCell)this.Rows[rowIdx].Cells[0]).ATableCell.RowSpan?.Value;
-            if (rowSpan > 1 && this.Rows[rowIdx].Cells.All(c => ((SCCell)c).ATableCell.RowSpan?.Value == rowSpan))
+            var rowCells = this.Rows[rowIdx].Cells.OfType<SCCell>().ToList();
+            var firstRowCell = rowCells[0];
+            var rowSpan = firstRowCell.ATableCell.RowSpan?.Value;
+            if (rowSpan > 1 && rowCells.All(cell => cell.ATableCell.RowSpan?.Value == rowSpan))
             {
                 int deleteRowsCount = rowSpan.Value - 1;
 
@@ -221,7 +207,26 @@ internal class SCTable : SlideShape, ITable
             }
         }
     }
+    
+    private void MergeHorizontal(int maxColIndex, int minColIndex, int minRowIndex, int maxRowIndex, List<A.TableRow> aTableRows)
+    {
+        int horizontalMergingCount = maxColIndex - minColIndex + 1;
+        for (int rowIdx = minRowIndex; rowIdx <= maxRowIndex; rowIdx++)
+        {
+            A.TableCell[] rowATblCells = aTableRows[rowIdx].Elements<A.TableCell>().ToArray();
+            A.TableCell firstMergingCell = rowATblCells[minColIndex];
+            firstMergingCell.GridSpan = new Int32Value(horizontalMergingCount);
+            Span<A.TableCell> nextMergingCells =
+                new Span<A.TableCell>(rowATblCells, minColIndex + 1, horizontalMergingCount - 1);
+            foreach (A.TableCell aTblCell in nextMergingCells)
+            {
+                aTblCell.HorizontalMerge = new BooleanValue(true);
 
+                this.MergeParagraphs(minRowIndex, minColIndex, aTblCell);
+            }
+        }
+    }
+    
     private IReadOnlyList<SCColumn> GetColumnList()
     {
         IEnumerable<A.GridColumn> aGridColumns = this.ATable.TableGrid!.Elements<A.GridColumn>();
