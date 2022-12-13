@@ -53,36 +53,20 @@ public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
         portionFontName.Should().BeEquivalentTo("Calibri Light");
     }
 
-    [Fact]
-    public void Name_SetterChangesFontName()
+    [Theory]
+    [SlideShapeData("001.pptx", 1, "TextBox 3")]
+    [SlideShapeData("001.pptx", 3, "Text Placeholder 3")]
+    public void Name_Setter_sets_font_name(IShape shape)
     {
         // Arrange
-        const string newFont = "Time New Roman";
-        IAutoShape autoShape =
-            SCPresentation.Open(TestFiles.Presentations.pre001).Slides[0].Shapes
-                .First(sp => sp.Id == 4) as IAutoShape;
-        IPortion paragraphPortion = autoShape.TextFrame.Paragraphs[0].Portions[0];
+        var autoShape = (IAutoShape)shape;
+        var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
 
         // Act
-        paragraphPortion.Font.Name = newFont;
+        font.Name = "Time New Roman";
 
         // Assert
-        paragraphPortion.Font.Name.Should().BeEquivalentTo(newFont);
-    }
-
-    [Fact]
-    public void Name_SetterThrowsException_WhenAnUserTryChangeFontNameForPortionOfAPlaceholderShape()
-    {
-        // Arrange
-        IAutoShape autoShape = (IAutoShape)SCPresentation.Open(Resources._001).Slides[2].Shapes
-            .First(sp => sp.Id == 4);
-        IPortion paragraphPortion = autoShape.TextFrame.Paragraphs[0].Portions[0];
-
-        // Act
-        Action action = () => paragraphPortion.Font.Name = "Time New Roman";
-
-        // Assert
-        action.Should().Throw<Exception>();
+        font.Name.Should().Be("Time New Roman");
     }
 
     [Theory]
