@@ -19,7 +19,7 @@ ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoin
 
 ### Usage
 
-### Read presentation
+#### Read presentation
 
 ```c#
 // open existing presentation
@@ -27,7 +27,7 @@ using var pres = SCPresentation.Open("some.pptx");
 
 var shapeCollection = pres.Slides[0].Shapes;
 
-// get number of shapes of slide
+// get number of shapes on slide
 var slidesCount = shapeCollection.Count;
 
 // get text
@@ -35,7 +35,7 @@ var autoShape = shapeCollection.GetByName<IAutoShape>("TextBox 1");
 var text = autoShape.TextFrame!.Text;
 ```
 
-### Create presentation
+#### Create presentation
 
 ```c#
 // create a new presentation
