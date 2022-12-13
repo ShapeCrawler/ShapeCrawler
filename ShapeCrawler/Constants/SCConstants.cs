@@ -2,7 +2,7 @@
 
 internal static class SCConstants
 {
-    internal const int MinReduceFontSize = 5;
+    internal const float MinReduceFontSize = 5;
 
     internal const string CustomDataElementName = "ctd";
 

@@ -232,6 +232,7 @@ namespace ShapeCrawler.Tests
         [Theory]
         [SlideShapeData("001.pptx", 1, "TextBox 3")]
         [SlideShapeData("001.pptx", 1, "Head 1")]
+        [SlideShapeData("autoshape-case015.pptx", 1, "Group 1")]
         public void Y_Setter_sets_y_coordinate(IShape shape)
         {
             // Act
@@ -267,23 +268,25 @@ namespace ShapeCrawler.Tests
             errors.Should().BeEmpty();
         }
         
-        [Fact]
-        public void Width_Setter_sets_width()
+        [Theory]
+        [SlideShapeData("006_1 slides.pptx", 1, "Shape 1")]
+        [SlideShapeData("autoshape-case015.pptx", 1, "Group 1")]
+        public void Width_Setter_sets_width(IShape shape)
         {
             // Arrange
-            var pres = SCPresentation.Open(Resources._006_1_slides);
-            var shape = pres.Slides.First().Shapes.First(sp => sp.Id == 3);
+            var pres = shape.SlideObject.Presentation;
+            var slideIndex = shape.SlideObject.Number - 1;
+            var shapeName = shape.Name;
             var stream = new MemoryStream();
-            const int widthPixels = 600;
 
             // Act
-            shape.Width = widthPixels;
+            shape.Width = 600;
 
             // Assert
             pres.SaveAs(stream);
             pres = SCPresentation.Open(stream);
-            shape = pres.Slides.First().Shapes.First(sp => sp.Id == 3);
-            shape.Width.Should().Be(widthPixels);
+            shape = pres.Slides[slideIndex].Shapes.GetByName<IShape>(shapeName);
+            shape.Width.Should().Be(600);
             var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
             errors.Should().BeEmpty();
         }
