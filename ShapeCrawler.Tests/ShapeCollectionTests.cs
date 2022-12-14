@@ -233,4 +233,23 @@ public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
         var errors = PptxValidator.Validate(pres);
         errors.Should().BeEmpty();
     }
+
+    [Fact]
+    public void Remove_removes_shape()
+    {
+        // Arrange
+        var pptx = GetTestStream("autoshape-case015.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var shapeCollection = pres.Slides[0].Shapes;
+        var shape = shapeCollection.GetByName("TextBox 3")!;
+
+        // Act
+        shapeCollection.Remove(shape);
+
+        // Assert
+        shape = shapeCollection.GetByName("TextBox 3");
+        shape.Should().BeNull();
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
+    }
 }

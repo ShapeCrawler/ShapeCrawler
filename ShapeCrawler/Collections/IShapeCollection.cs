@@ -40,18 +40,23 @@ public interface IShapeCollection : IEnumerable<IShape>
     IShape this[int index] { get; }
 
     /// <summary>
-    ///     Gets shape by identifier.
+    ///     Gets shape by identifier. Returns <see langword="null"/> if shape is not found.
     /// </summary>
     /// <typeparam name="T">The type of shape.</typeparam>
-    T GetById<T>(int shapeId)
+    T? GetById<T>(int shapeId)
         where T : IShape;
 
     /// <summary>
-    ///     Get shape by name.
+    ///     Gets shape by name. Returns <see langword="null"/> if shape is not found.
     /// </summary>
     /// <typeparam name="T">The type of shape.</typeparam>
-    T GetByName<T>(string shapeName)
+    T? GetByName<T>(string shapeName)
         where T : IShape;
+
+    /// <summary>
+    ///     Gets shape by name. Returns <see langword="null"/> if shape is not found.
+    /// </summary>
+    IShape? GetByName(string shapeName);
 
     /// <summary>
     ///     Create a new audio shape from stream and adds it to the end of the collection.
@@ -83,6 +88,11 @@ public interface IShapeCollection : IEnumerable<IShape>
     ///     Creates a new Table.
     /// </summary>
     ITable AddTable(int x, int y, int columns, int rows);
+
+    /// <summary>
+    ///     Removes specified shape.
+    /// </summary>
+    void Remove(IShape shape);
 }
 
 internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
@@ -412,19 +422,32 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
         return table;
     }
 
-    public T GetById<T>(int shapeId)
+    public void Remove(IShape shape)
+    {
+        this.CollectionItems.Remove(shape);
+        
+        var shapeInternal = (Shape)shape;
+        shapeInternal.PShapeTreesChild.Remove();
+    }
+
+    public T? GetById<T>(int shapeId)
         where T : IShape
     {
-           var shape = this.CollectionItems.First(shape => shape.Id == shapeId);
-           return (T)shape;
+           var shape = this.CollectionItems.FirstOrDefault(shape => shape.Id == shapeId);
+           return (T?)shape;
+    }
+
+    public T? GetByName<T>(string shapeName)
+        where T : IShape
+    {
+        var shape = this.GetByName(shapeName);
+  
+        return (T?)shape;
     }
     
-    public T GetByName<T>(string shapeName)
-        where T : IShape
+    public IShape? GetByName(string shapeName)
     {
-        var shape = this.CollectionItems.First(shape => shape.Name == shapeName);
-  
-        return (T)shape;
+        return this.CollectionItems.FirstOrDefault(shape => shape.Name == shapeName);
     }
 
     public Shape? GetReferencedShapeOrNull(P.PlaceholderShape inputPph)

@@ -1,7 +1,6 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Constants;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
