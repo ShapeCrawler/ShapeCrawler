@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Factories;
@@ -29,7 +30,9 @@ internal class SCSlideMaster : SlideObject, ISlideMaster
     public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
     public IShapeCollection Shapes => ShapeCollection.Create(this.PSlideMaster.SlideMasterPart!, this);
-    
+
+    public ITheme Theme => this.GetTheme();
+
     public override int Number { get; set; }
 
     internal P.SlideMaster PSlideMaster { get; }
@@ -86,7 +89,12 @@ internal class SCSlideMaster : SlideObject, ISlideMaster
     {
         return null;
     }
-
+    
+    private ITheme GetTheme()
+    {
+        return new SCTheme(this, this.PSlideMaster.SlideMasterPart!.ThemePart!.Theme);
+    }
+    
     private List<SCSlideLayout> GetSlideLayouts()
     {
         var rIdList = this.PSlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>().Select(layoutId => layoutId.RelationshipId!);
@@ -99,5 +107,24 @@ internal class SCSlideMaster : SlideObject, ISlideMaster
         }
 
         return layouts;
+    }
+}
+
+internal sealed class SCTheme : ITheme
+{
+    private readonly SCSlideMaster parentMaster;
+    private readonly Theme aTheme;
+
+    internal SCTheme(SCSlideMaster parentMaster, Theme aTheme)
+    {
+        this.parentMaster = parentMaster;
+        this.aTheme = aTheme;
+    }
+
+    public IThemeFontSetting FontSettings => this.GetFontSetting();
+
+    private IThemeFontSetting GetFontSetting()
+    {
+        return new ThemeFontSettings(this.aTheme.ThemeElements!.FontScheme!);
     }
 }

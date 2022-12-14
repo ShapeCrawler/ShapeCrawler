@@ -111,4 +111,64 @@ public class SlideMasterTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
         // Act-Assert
         autoShape.TextFrame.Text.Should().BeEquivalentTo("id8");
     }
+
+    [Fact]
+    public void Theme_FontSettings_Head_Getter_returns_name_of_theme_heading_font()
+    {
+        // Arrange
+        var pptx = GetTestStream("autoshape-case015.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var slideMaster = pres.SlideMasters[0];
+
+        // Act
+        var headingFontName = slideMaster.Theme.FontSettings.Head;
+
+        // Assert
+        headingFontName.Should().Be("Arial");
+    }
+    
+    [Fact]
+    public void Theme_FontSettings_Head_Setter_sets_name_of_theme_heading_font()
+    {
+        // Arrange
+        var pptx = GetTestStream("autoshape-case015.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var slideMaster = pres.SlideMasters[0];
+
+        // Act
+        slideMaster.Theme.FontSettings.Head = "Times New Roman";
+
+        // Assert
+        slideMaster.Theme.FontSettings.Head.Should().Be("Times New Roman");
+    }
+    
+    [Fact]
+    public void Theme_FontSettings_Body_Getter_returns_name_of_theme_body_font()
+    {
+        // Arrange
+        var pptx = GetTestStream("autoshape-case015.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var slideMaster = pres.SlideMasters[0];
+
+        // Act
+        var bodyFontName = slideMaster.Theme.FontSettings.Body;
+
+        // Assert
+        bodyFontName.Should().Be("Times New Roman");
+    }
+    
+    [Fact]
+    public void Theme_FontSettings_Body_Setter_sets_name_of_theme_body_font()
+    {
+        // Arrange
+        var pptx = GetTestStream("autoshape-case015.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var slideMaster = pres.SlideMasters[0];
+
+        // Act
+        slideMaster.Theme.FontSettings.Body = "Arial";
+
+        // Assert
+        slideMaster.Theme.FontSettings.Body.Should().Be("Arial");
+    }
 }
