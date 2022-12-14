@@ -54,10 +54,10 @@ public interface IThemeFontSetting
     /// <summary>
     ///     Gets heading font name.
     /// </summary>
-    string Head { get; }
+    string Head { get; set; }
 
     /// <summary>
     ///     Gets body font name.
     /// </summary>
-    string Body { get; }
+    string Body { get; set; }
 }

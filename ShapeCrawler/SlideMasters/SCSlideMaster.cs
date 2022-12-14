@@ -128,27 +128,3 @@ internal sealed class SCTheme : ITheme
         return new ThemeFontSettings(this.aTheme.ThemeElements!.FontScheme!);
     }
 }
-
-internal class ThemeFontSettings : IThemeFontSetting
-{
-    private readonly FontScheme aFontScheme;
-
-    internal ThemeFontSettings(FontScheme aFontScheme)
-    {
-        this.aFontScheme = aFontScheme;
-    }
-
-    public string Head => this.GetHeadingFontName();
-
-    public string Body => this.GetBodyFontName();
-
-    private string GetBodyFontName()
-    {
-        return this.aFontScheme.MinorFont!.LatinFont!.Typeface!.Value!;
-    }
-
-    private string GetHeadingFontName()
-    {
-        return this.aFontScheme.MajorFont!.LatinFont!.Typeface!.Value!;
-    }
-}
