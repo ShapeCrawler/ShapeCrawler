@@ -1,40 +1,58 @@
-﻿using ShapeCrawler.SlideMasters;
+﻿using DocumentFormat.OpenXml;
+using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Drawing;
 
 internal static class HexParser
 {
-    internal static (SCColorType, string) FromSolidFill(A.SolidFill aSolidFill, SCSlideMaster slideMaster)
+    internal static (SCColorType, string) FromSolidFill(TypedOpenXmlCompositeElement typedElement, SCSlideMaster slideMaster)
     {
-        var aSrgbClr = aSolidFill.RgbColorModelHex;
+        var colorHexVariant = GetWithoutScheme(typedElement);
+        if (colorHexVariant is not null)
+        {
+            return ((SCColorType, string))colorHexVariant;
+        }
+
+        var aSchemeColor = typedElement.GetFirstChild<A.SchemeColor>() !;
+        var fromScheme = GetByThemeColorScheme(aSchemeColor.Val!, slideMaster); 
+        return (SCColorType.Scheme, fromScheme);
+    }
+
+    internal static (SCColorType, string)? GetWithoutScheme(TypedOpenXmlCompositeElement typedElement)
+    {
+        var aSrgbClr = typedElement.GetFirstChild<A.RgbColorModelHex>();
         string colorHexVariant;
         if (aSrgbClr != null)
         {
             colorHexVariant = aSrgbClr.Val!;
-            return (SCColorType.RGB, colorHexVariant);
+            {
+                return (SCColorType.RGB, colorHexVariant);
+            }
         }
 
-        var aSchemeColor = aSolidFill.SchemeColor;
-        if (aSchemeColor != null)
-        {
-            colorHexVariant = GetHexVariantByScheme(aSchemeColor.Val!, slideMaster);
-            return (SCColorType.Scheme, colorHexVariant);
-        }
-
-        var aSysClr = aSolidFill.SystemColor;
+        var aSysClr = typedElement.GetFirstChild<A.SystemColor>();
         if (aSysClr != null)
         {
             colorHexVariant = aSysClr.LastColor!;
-            return (SCColorType.System, colorHexVariant);
+            {
+                return (SCColorType.System, colorHexVariant);
+            }
         }
 
-        var aPresetColor = aSolidFill.PresetColor!;
-        var coloName = aPresetColor.Val!.Value.ToString();
-        return (SCColorType.Preset, SCColorTranslator.HexFromName(coloName));
+        var aPresetColor = typedElement.GetFirstChild<A.PresetColor>();
+        if (aPresetColor != null)
+        {
+            var coloName = aPresetColor.Val!.Value.ToString();
+            {
+                return (SCColorType.Preset, SCColorTranslator.HexFromName(coloName));
+            }
+        }
+
+        return null;
     }
 
-    private static string GetHexVariantByScheme(A.SchemeColorValues fontSchemeColor, SCSlideMaster slideMaster)
+    private static string GetByThemeColorScheme(A.SchemeColorValues fontSchemeColor, SCSlideMaster slideMaster)
     {
         var themeAColorScheme = slideMaster.ThemePart.Theme.ThemeElements!.ColorScheme!;
         return fontSchemeColor switch

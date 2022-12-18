@@ -41,23 +41,12 @@ public interface ISlideMaster
 public interface ITheme
 {
     /// <summary>
-    ///     Gets font settings.
+    ///     Gets font scheme.
     /// </summary>
-    IThemeFontSetting FontSettings { get; }
-}
-
-/// <summary>
-///     Represents a settings of theme font.
-/// </summary>
-public interface IThemeFontSetting
-{
-    /// <summary>
-    ///     Gets heading font name.
-    /// </summary>
-    string Head { get; set; }
+    IThemeFontScheme FontScheme { get; }
 
     /// <summary>
-    ///     Gets body font name.
+    ///     Gets color scheme.
     /// </summary>
-    string Body { get; set; }
+    IThemeColorScheme ThemeColorScheme { get; }
 }

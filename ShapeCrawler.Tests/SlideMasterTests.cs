@@ -121,7 +121,7 @@ public class SlideMasterTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
         var slideMaster = pres.SlideMasters[0];
 
         // Act
-        var headingFontName = slideMaster.Theme.FontSettings.Head;
+        var headingFontName = slideMaster.Theme.FontScheme.Head;
 
         // Assert
         headingFontName.Should().Be("Arial");
@@ -136,10 +136,10 @@ public class SlideMasterTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
         var slideMaster = pres.SlideMasters[0];
 
         // Act
-        slideMaster.Theme.FontSettings.Head = "Times New Roman";
+        slideMaster.Theme.FontScheme.Head = "Times New Roman";
 
         // Assert
-        slideMaster.Theme.FontSettings.Head.Should().Be("Times New Roman");
+        slideMaster.Theme.FontScheme.Head.Should().Be("Times New Roman");
     }
     
     [Fact]
@@ -151,7 +151,7 @@ public class SlideMasterTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
         var slideMaster = pres.SlideMasters[0];
 
         // Act
-        var bodyFontName = slideMaster.Theme.FontSettings.Body;
+        var bodyFontName = slideMaster.Theme.FontScheme.Body;
 
         // Assert
         bodyFontName.Should().Be("Times New Roman");
@@ -166,9 +166,24 @@ public class SlideMasterTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
         var slideMaster = pres.SlideMasters[0];
 
         // Act
-        slideMaster.Theme.FontSettings.Body = "Arial";
+        slideMaster.Theme.FontScheme.Body = "Arial";
 
         // Assert
-        slideMaster.Theme.FontSettings.Body.Should().Be("Arial");
+        slideMaster.Theme.FontScheme.Body.Should().Be("Arial");
+    }
+
+    [Fact]
+    public void Theme_ColorScheme_Dark1_Getter_gets_color_Dark1()
+    {
+        // Arrange
+        var pptx = GetTestStream("autoshape-case015.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var slideMaster = pres.SlideMasters[0];
+
+        // Act
+        var dark1Color = slideMaster.Theme.ThemeColorScheme.Dark1;
+
+        // Assert
+        dark1Color.Should().Be("000000");
     }
 }

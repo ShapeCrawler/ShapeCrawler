@@ -1,12 +1,28 @@
-﻿using DocumentFormat.OpenXml.Drawing;
+﻿using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.SlideMasters;
+namespace ShapeCrawler;
 
-internal class ThemeFontSettings : IThemeFontSetting
+/// <summary>
+///     Represents a settings of theme font.
+/// </summary>
+public interface IThemeFontScheme
 {
-    private readonly FontScheme aFontScheme;
+    /// <summary>
+    ///     Gets or sets font name for head.
+    /// </summary>
+    string Head { get; set; }
 
-    internal ThemeFontSettings(FontScheme aFontScheme)
+    /// <summary>
+    ///     Gets or sets font name for body.
+    /// </summary>
+    string Body { get; set; }
+}
+
+internal class ThemeFontScheme : IThemeFontScheme
+{
+    private readonly A.FontScheme aFontScheme;
+
+    internal ThemeFontScheme(A.FontScheme aFontScheme)
     {
         this.aFontScheme = aFontScheme;
     }

@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
@@ -121,10 +120,17 @@ internal sealed class SCTheme : ITheme
         this.aTheme = aTheme;
     }
 
-    public IThemeFontSetting FontSettings => this.GetFontSetting();
+    public IThemeFontScheme FontScheme => this.GetFontSetting();
 
-    private IThemeFontSetting GetFontSetting()
+    public IThemeColorScheme ThemeColorScheme => this.GetColorScheme();
+
+    private IThemeFontScheme GetFontSetting()
     {
-        return new ThemeFontSettings(this.aTheme.ThemeElements!.FontScheme!);
+        return new ThemeFontScheme(this.aTheme.ThemeElements!.FontScheme!);
+    }
+    
+    private IThemeColorScheme GetColorScheme()
+    {
+        return new ThemeColorScheme(this.aTheme.ThemeElements!.ColorScheme!);
     }
 }
