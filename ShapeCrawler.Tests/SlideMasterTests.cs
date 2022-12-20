@@ -173,7 +173,7 @@ public class SlideMasterTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
     }
 
     [Fact]
-    public void Theme_ColorScheme_returns_scheme_with_colors()
+    public void Theme_ColorScheme_color_getter_returns_scheme_with_colors()
     {
         // Arrange
         var pptx = GetTestStream("autoshape-case015.pptx");
@@ -207,5 +207,30 @@ public class SlideMasterTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
         accent6.Should().Be("F79646");
         hyperlink.Should().Be("002857");
         followedHyperlink.Should().Be("800080");
+    }
+    
+    [Fact]
+    public void Theme_ColorScheme_color_setter_sets_scheme_color()
+    {
+        // Arrange
+        var pptx = GetTestStream("autoshape-case015.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var slideMaster = pres.SlideMasters[0];
+
+        // Act
+        slideMaster.Theme.ColorScheme.Dark1 = "FFC0CB";
+        slideMaster.Theme.ColorScheme.Light2 = "FFC0CB";
+        slideMaster.Theme.ColorScheme.Accent1 = "FFC0CB";
+        slideMaster.Theme.ColorScheme.Hyperlink = "FFC0CB";
+        slideMaster.Theme.ColorScheme.FollowedHyperlink = "FFC0CB";
+
+        // Assert
+        slideMaster.Theme.ColorScheme.Dark1.Should().Be("FFC0CB");
+        slideMaster.Theme.ColorScheme.Light2.Should().Be("FFC0CB");
+        slideMaster.Theme.ColorScheme.Accent1.Should().Be("FFC0CB");
+        slideMaster.Theme.ColorScheme.Hyperlink.Should().Be("FFC0CB");
+        slideMaster.Theme.ColorScheme.FollowedHyperlink.Should().Be("FFC0CB");
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
     }
 }
