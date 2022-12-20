@@ -34,19 +34,3 @@ public interface ISlideMaster
     /// </summary>
     ITheme Theme { get; }
 }
-
-/// <summary>
-///     Represents a theme.
-/// </summary>
-public interface ITheme
-{
-    /// <summary>
-    ///     Gets font scheme.
-    /// </summary>
-    IThemeFontScheme FontScheme { get; }
-
-    /// <summary>
-    ///     Gets color scheme.
-    /// </summary>
-    IThemeColorScheme ThemeColorScheme { get; }
-}
