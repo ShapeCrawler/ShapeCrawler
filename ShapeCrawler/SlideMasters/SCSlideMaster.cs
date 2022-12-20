@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
@@ -107,24 +105,5 @@ internal class SCSlideMaster : SlideObject, ISlideMaster
         }
 
         return layouts;
-    }
-}
-
-internal sealed class SCTheme : ITheme
-{
-    private readonly SCSlideMaster parentMaster;
-    private readonly Theme aTheme;
-
-    internal SCTheme(SCSlideMaster parentMaster, Theme aTheme)
-    {
-        this.parentMaster = parentMaster;
-        this.aTheme = aTheme;
-    }
-
-    public IThemeFontSetting FontSettings => this.GetFontSetting();
-
-    private IThemeFontSetting GetFontSetting()
-    {
-        return new ThemeFontSettings(this.aTheme.ThemeElements!.FontScheme!);
     }
 }

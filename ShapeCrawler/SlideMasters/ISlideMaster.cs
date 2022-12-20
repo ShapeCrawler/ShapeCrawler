@@ -34,30 +34,3 @@ public interface ISlideMaster
     /// </summary>
     ITheme Theme { get; }
 }
-
-/// <summary>
-///     Represents a theme.
-/// </summary>
-public interface ITheme
-{
-    /// <summary>
-    ///     Gets font settings.
-    /// </summary>
-    IThemeFontSetting FontSettings { get; }
-}
-
-/// <summary>
-///     Represents a settings of theme font.
-/// </summary>
-public interface IThemeFontSetting
-{
-    /// <summary>
-    ///     Gets heading font name.
-    /// </summary>
-    string Head { get; set; }
-
-    /// <summary>
-    ///     Gets body font name.
-    /// </summary>
-    string Body { get; set; }
-}
