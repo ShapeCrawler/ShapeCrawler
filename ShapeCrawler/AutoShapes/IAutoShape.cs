@@ -84,9 +84,8 @@ internal class AutoShape : SlideShape, IAutoShape, ITextFrameContainer
         {
             Color = skColorOutline,
             IsAntialias = true,
-            Style = SKPaintStyle.Stroke,
-            TextAlign = SKTextAlign.Center, // TODO: get real
-            TextSize = 12 // TODO: get real
+            StrokeWidth = UnitConverter.PointToPixel(this.Outline.Weight),
+            Style = SKPaintStyle.Stroke
         };
         
         if (this.GeometryType == SCGeometry.Rectangle)
@@ -97,7 +96,8 @@ internal class AutoShape : SlideShape, IAutoShape, ITextFrameContainer
             float bottom = this.Y + this.Height;
             var rect = new SKRect(left, top, right, bottom);
             slideCanvas.DrawRect(rect, paint);
-            var textFrame = (TextFrame)this.TextFrame!; // TODO: #344 draw text frame
+            var textFrame = (TextFrame)this.TextFrame!;
+            textFrame.Draw(slideCanvas, left, this.Y);
         }
     }
 

@@ -40,7 +40,8 @@ internal static class UnitConverter
 
     internal static int CentimeterToPixel(double centimeter)
     {
-        return (int)(centimeter * 37.795275591);
+        return (int)(centimeter * 96 / 2.54);
+        // return (int)(centimeter * 37.795275591);
     }
 
     internal static double EmuToPoint(int emu)
@@ -51,5 +52,10 @@ internal static class UnitConverter
     internal static int PointToEmu(double point)
     {
         return (int)(point * 12700); // 1pt = 12700 EMUs (http://officeopenxml.com/drwSp-outline.php)
+    }
+
+    internal static float PointToPixel(double points)
+    {
+        return (float)(points * 96 / 72);
     }
 }

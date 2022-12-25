@@ -139,9 +139,20 @@ internal class TextFrame : ITextFrame
         this.TextChanged?.Invoke();
     }
 
-    internal void Draw(SKCanvas slideCanvas, SKRect shapeRect)
+    internal void Draw(SKCanvas slideCanvas, float shapeX, float shapeY)
     {
-        throw new System.NotImplementedException();
+        using var paint = new SKPaint();
+        paint.Color = SKColors.Black;
+        var firstPortion = this.paragraphs.Value.First().Portions.First();
+        paint.TextSize = firstPortion.Font.Size;
+        var typeFace = SKTypeface.FromFamilyName(firstPortion.Font.Name); 
+        paint.Typeface = typeFace;
+        float leftMarginPx = UnitConverter.CentimeterToPixel(this.LeftMargin);
+        float topMarginPx = UnitConverter.CentimeterToPixel(this.TopMargin);
+        float fontHeightPx = UnitConverter.PointToPixel(16);
+        float x = shapeX + leftMarginPx; 
+        float y = shapeY + topMarginPx + fontHeightPx; 
+        slideCanvas.DrawText(this.Text, x, y, paint);
     }
 
     private void SetAutofitType(SCAutofitType newType)

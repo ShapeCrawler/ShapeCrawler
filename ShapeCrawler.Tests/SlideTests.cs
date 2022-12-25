@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Tests.Helpers;
 using Xunit;
 
@@ -167,7 +168,8 @@ public class SlideTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
 
 #if DEBUG
 
-    [Fact(Skip = "In progress")]
+    // [Fact(Skip = "In progress")]
+    [Fact]
     public void SaveAsPng_saves_slide_as_image()
     {
         // Arrange
@@ -178,6 +180,8 @@ public class SlideTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
         
         // Act
         slide.SaveAsPng(mStream);
+
+        mStream.ToFile(@"c:\temp\output.png");
     }
 
 #endif
