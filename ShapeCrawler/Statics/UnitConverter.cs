@@ -1,5 +1,4 @@
 using System;
-using DocumentFormat.OpenXml;
 
 namespace ShapeCrawler.Statics;
 
@@ -10,6 +9,7 @@ internal static class UnitConverter
 
     internal static int HorizontalEmuToPixel(long horizontalEmus)
     {
+        
         return (int)(horizontalEmus * HorizontalResolutionDpi / 914400);
     }
 

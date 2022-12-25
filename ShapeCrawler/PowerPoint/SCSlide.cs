@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.AutoShapes;
@@ -82,13 +83,17 @@ internal class SCSlide : SlideObject, ISlide
         var imageInfo = new SKImageInfo(this.PresentationInternal.SlideWidth, this.PresentationInternal.SlideHeight);
         var surface = SKSurface.Create(imageInfo);
         var canvas = surface.Canvas;
-
-        canvas.Clear(SKColors.White);
-
-        foreach (var shape in this.Shapes.OfType<Shape>())
+        canvas.Clear(SKColors.White); // TODO: #344 get real
+        
+        foreach (var autoShape in this.Shapes.OfType<AutoShape>())
         {
-            shape.Draw(canvas);
+            autoShape.Draw(canvas);
         }
+        
+        var image = surface.Snapshot();
+        var bitmap = SKBitmap.FromImage(image);
+        var data = bitmap.Encode(SKEncodedImageFormat.Png, 100);
+        data.SaveTo(stream);
     }
 
     public IList<ITextFrame> GetAllTextFrames()
