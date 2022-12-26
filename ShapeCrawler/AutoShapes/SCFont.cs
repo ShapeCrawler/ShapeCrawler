@@ -111,6 +111,53 @@ internal class SCFont : IFont
         return placeholder is null or { Type: SCPlaceholderType.Text };
     }
 
+    private static bool TryFromPlaceholder(Shape shape, int paraLevel, out int i)
+    {
+        i = -1;
+        var placeholder = shape.Placeholder as Placeholder;
+        var referencedShape = placeholder?.ReferencedShape.Value as AutoShape;
+        var fontDataPlaceholder = new FontData();
+        if (referencedShape != null)
+        {
+            referencedShape.FillFontData(paraLevel, ref fontDataPlaceholder);
+            if (fontDataPlaceholder.FontSize is not null)
+            {
+                {
+                    i = fontDataPlaceholder.FontSize / 100;
+                    return true;
+                }
+            }
+        }
+
+        var slideMaster = shape.SlideMasterInternal;
+        if (placeholder?.Type == SCPlaceholderType.Title)
+        {
+            var pTextStyles = slideMaster.PSlideMaster.TextStyles!;
+            var titleFontSize = pTextStyles.TitleStyle!.Level1ParagraphProperties!
+                .GetFirstChild<A.DefaultRunProperties>() !.FontSize!.Value;
+            i = titleFontSize / 100;
+            return true;
+        }
+
+        if (slideMaster.TryGetFontSizeFromBody(paraLevel, out var fontSizeBody))
+        {
+            {
+                i = fontSizeBody / 100;
+                return true;
+            }
+        }
+
+        if (slideMaster.TryGetFontSizeFromOther(paraLevel, out var fontSizeOther))
+        {
+            {
+                i = fontSizeOther / 100;
+                return true;
+            }
+        }
+
+        return false;
+    }
+    
     private void SetOffset(int value)
     {
         var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
@@ -207,53 +254,6 @@ internal class SCFont : IFont
         }
 
         return SCConstants.DefaultFontSize;
-    }
-
-    private static bool TryFromPlaceholder(Shape shape, int paraLevel, out int i)
-    {
-        i = -1;
-        var placeholder = shape.Placeholder as Placeholder;
-        var referencedShape = placeholder?.ReferencedShape.Value as AutoShape;
-        var fontDataPlaceholder = new FontData();
-        if (referencedShape != null)
-        {
-            referencedShape.FillFontData(paraLevel, ref fontDataPlaceholder);
-            if (fontDataPlaceholder.FontSize is not null)
-            {
-                {
-                    i = fontDataPlaceholder.FontSize / 100;
-                    return true;
-                }
-            }
-        }
-
-        var slideMaster = shape.SlideMasterInternal;
-        if (placeholder?.Type == SCPlaceholderType.Title)
-        {
-            var pTextStyles = slideMaster.PSlideMaster.TextStyles!;
-            var titleFontSize = pTextStyles.TitleStyle!.Level1ParagraphProperties!
-                .GetFirstChild<A.DefaultRunProperties>() !.FontSize!.Value;
-            i = titleFontSize / 100;
-            return true;
-        }
-
-        if (slideMaster.TryGetFontSizeFromBody(paraLevel, out var fontSizeBody))
-        {
-            {
-                i = fontSizeBody / 100;
-                return true;
-            }
-        }
-
-        if (slideMaster.TryGetFontSizeFromOther(paraLevel, out var fontSizeOther))
-        {
-            {
-                i = fontSizeOther / 100;
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private bool GetBoldFlag()
