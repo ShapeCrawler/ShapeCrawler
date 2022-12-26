@@ -186,7 +186,18 @@ internal class SCTable : SlideShape, ITable
         // the new row is the last one in the row collection
         return this.Rows.Last();
     }
+    
+    private static bool CannotBeMerged(SCCell cell1, SCCell cell2)
+    {
+        if (cell1 == cell2)
+        {
+            // The cells are already merged
+            return true;
+        }
 
+        return false;
+    }
+    
     private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
     {
         A.TextBody? mergedCellTextBody = ((SCCell)this[minRowIndex, minColIndex]).ATableCell.TextBody;
@@ -235,16 +246,4 @@ internal class SCTable : SlideShape, ITable
 
         return columnList;
     }
-
-    private static bool CannotBeMerged(SCCell cell1, SCCell cell2)
-    {
-        if (cell1 == cell2)
-        {
-            // The cells are already merged
-            return true;
-        }
-
-        return false;
-    }
-
 }

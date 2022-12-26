@@ -3,7 +3,6 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -171,18 +170,11 @@ internal class SCParagraph : IParagraph
         }
     }
 
-    #region Private Methods
-    
-    private ISpacing GetSpacing()
-    {
-        return new SCSpacing(this, this.AParagraph);
-    }
-    
     private static void AddBreak(ref OpenXmlElement lastElement)
     {
         lastElement = lastElement.InsertAfterSelf(new A.Break());
     }
-
+    
     private static void AddText(
         ref OpenXmlElement? lastElement,
         OpenXmlElement aTextParent,
@@ -199,6 +191,11 @@ internal class SCParagraph : IParagraph
         {
             lastElement = lastElement.InsertAfterSelf(newARun);
         }
+    }
+    
+    private ISpacing GetSpacing()
+    {
+        return new SCSpacing(this, this.AParagraph);
     }
 
     private SCBullet GetBullet()
@@ -322,6 +319,4 @@ internal class SCParagraph : IParagraph
 
         return this.alignment.Value;
     }
-
-    #endregion Private Methods
 }

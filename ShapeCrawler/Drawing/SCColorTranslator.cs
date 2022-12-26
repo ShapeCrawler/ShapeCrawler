@@ -14,7 +14,7 @@ internal static class SCColorTranslator
         fieldInfoList = typeof(SKColors).GetFields(BindingFlags.Static | BindingFlags.Public);
     }
 
-    public static string HexFromName(string coloName)
+    internal static string HexFromName(string coloName)
     {
         if (coloName.ToLower() == "white")
         {
@@ -22,7 +22,7 @@ internal static class SCColorTranslator
         }
 
         var fieldInfo = fieldInfoList.First(fieldInfo => string.Equals(fieldInfo.Name, coloName, StringComparison.CurrentCultureIgnoreCase));
-        var color = (SKColor)fieldInfo.GetValue(null);
+        var color = (SKColor)fieldInfo.GetValue(null) !;
 
         return color.ToString();
     }

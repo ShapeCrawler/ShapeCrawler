@@ -461,46 +461,7 @@ public sealed class SCPresentation : IPresentation
         themePart1.Theme = theme1;
         return themePart1;
     }
-
-    private byte[] GetByteArray()
-    {
-        var stream = new MemoryStream();
-        this.SDKPresentationInternal.Clone(stream);
-
-        return stream.ToArray();
-    }
-
-    private PresentationDocument GetSDKPresentation()
-    {
-        return (PresentationDocument)this.SDKPresentationInternal.Clone();
-    }
-
-    private List<ImagePart> GetImageParts()
-    {
-        var allShapes = this.SlidesInternal.SelectMany(slide => slide.Shapes);
-        var imgParts = new List<ImagePart>();
-
-        FromShapes(allShapes);
-
-        return imgParts;
-
-        void FromShapes(IEnumerable<IShape> shapes)
-        {
-            foreach (var shape in shapes)
-            {
-                switch (shape)
-                {
-                    case SlidePicture slidePicture:
-                        imgParts.Add(((SCImage)slidePicture.Image).SDKImagePart);
-                        break;
-                    case IGroupShape groupShape:
-                        FromShapes(groupShape.Shapes.Select(x => x));
-                        break;
-                }
-            }
-        }
-    }
-
+    
     private static Dictionary<int, FontData> ParseFontHeights(P.Presentation pPresentation)
     {
         var lvlToFontData = new Dictionary<int, FontData>();
@@ -552,6 +513,45 @@ public sealed class SCPresentation : IPresentation
         if (length > Limitations.MaxPresentationSize)
         {
             throw PresentationIsLargeException.FromMax(Limitations.MaxPresentationSize);
+        }
+    }
+
+    private byte[] GetByteArray()
+    {
+        var stream = new MemoryStream();
+        this.SDKPresentationInternal.Clone(stream);
+
+        return stream.ToArray();
+    }
+
+    private PresentationDocument GetSDKPresentation()
+    {
+        return (PresentationDocument)this.SDKPresentationInternal.Clone();
+    }
+
+    private List<ImagePart> GetImageParts()
+    {
+        var allShapes = this.SlidesInternal.SelectMany(slide => slide.Shapes);
+        var imgParts = new List<ImagePart>();
+
+        FromShapes(allShapes);
+
+        return imgParts;
+
+        void FromShapes(IEnumerable<IShape> shapes)
+        {
+            foreach (var shape in shapes)
+            {
+                switch (shape)
+                {
+                    case SlidePicture slidePicture:
+                        imgParts.Add(((SCImage)slidePicture.Image).SDKImagePart);
+                        break;
+                    case IGroupShape groupShape:
+                        FromShapes(groupShape.Shapes.Select(x => x));
+                        break;
+                }
+            }
         }
     }
 
