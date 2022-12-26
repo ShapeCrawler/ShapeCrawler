@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Tests.Helpers;
 using Xunit;
 

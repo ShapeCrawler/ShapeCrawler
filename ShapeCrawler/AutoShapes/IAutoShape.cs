@@ -76,27 +76,28 @@ internal class AutoShape : SlideShape, IAutoShape, ITextFrameContainer
 
     #endregion Public Properties
 
-    internal override void Draw(SKCanvas canvas)
+    internal override void Draw(SKCanvas slideCanvas)
     {
-        var paint = new SKPaint
+        var skColorOutline = SKColor.Parse(this.Outline.Color);
+        
+        using var paint = new SKPaint
         {
-            Color = SKColors.Black,
+            Color = skColorOutline,
             IsAntialias = true,
-            Style = SKPaintStyle.Fill,
-            TextAlign = SKTextAlign.Center,
-            TextSize = 12
+            StrokeWidth = UnitConverter.PointToPixel(this.Outline.Weight),
+            Style = SKPaintStyle.Stroke
         };
-
+        
         if (this.GeometryType == SCGeometry.Rectangle)
         {
-            var rect = new SKRect(this.X, this.Y, this.Width, this.Height);
-            canvas.DrawRect(rect, paint);
-
-            var textFrameInternal = this.TextFrame as TextFrame;
-            if (textFrameInternal != null)
-            {
-                textFrameInternal.Draw(canvas, rect);
-            }
+            float left = this.X;
+            float top = this.Y;
+            float right = this.X + this.Width;
+            float bottom = this.Y + this.Height;
+            var rect = new SKRect(left, top, right, bottom);
+            slideCanvas.DrawRect(rect, paint);
+            var textFrame = (TextFrame)this.TextFrame!;
+            textFrame.Draw(slideCanvas, left, this.Y);
         }
     }
 

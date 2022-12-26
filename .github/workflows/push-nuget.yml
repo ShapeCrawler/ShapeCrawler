@@ -1,0 +1,28 @@
+name: Push NuGet package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.401
+      - name: Restore NuGet packages
+        run: dotnet restore
+      - name: Build solution
+        run: dotnet build --configuration Release
+      - name: Pack NuGet package
+        run: dotnet pack --configuration Release
+      - name: Push NuGet package
+        uses: jpwest/nuget-push-action@v1
+        with:
+          api_key: ${{ secrets.NUGET_API_KEY }}
+          package: "*.nupkg"

@@ -208,7 +208,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
         var autoShape = shapes.AddAutoShape(SCAutoShapeType.TextBox, 50, 60, 100, 70);
 
         // Assert
-        autoShape.Name.Should().Be("AutoShape 3");
+        autoShape.Name.Should().Be("AutoShape 4");
         autoShape.Id.Should().Be(7);
         var errors = PptxValidator.Validate(pres);
         errors.Should().BeEmpty();
