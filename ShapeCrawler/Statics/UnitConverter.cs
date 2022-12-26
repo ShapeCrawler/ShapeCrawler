@@ -40,7 +40,6 @@ internal static class UnitConverter
     internal static int CentimeterToPixel(double centimeter)
     {
         return (int)(centimeter * 96 / 2.54);
-        // return (int)(centimeter * 37.795275591);
     }
 
     internal static double EmuToPoint(int emu)

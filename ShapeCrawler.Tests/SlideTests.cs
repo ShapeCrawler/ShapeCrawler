@@ -168,8 +168,7 @@ public class SlideTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
 
 #if DEBUG
 
-    // [Fact(Skip = "In progress")]
-    [Fact]
+    [Fact(Skip = "In progress")]
     public void SaveAsPng_saves_slide_as_image()
     {
         // Arrange
@@ -180,8 +179,6 @@ public class SlideTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
         
         // Act
         slide.SaveAsPng(mStream);
-
-        mStream.ToFile(@"c:\temp\output.png");
     }
 
 #endif
