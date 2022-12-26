@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 0.40.0 - Unreleased
+## Version 0.40.0 - 2022-12-26
 - Added `ISlideCollection.AddEmptySlide()` [#141](https://github.com/ShapeCrawler/ShapeCrawler/issues/141)
 - Adeed `IShapeCollection.Remove()` [#34](https://github.com/ShapeCrawler/ShapeCrawler/issues/34)
 - Adeed `ISlideMaster.ITheme` [#369](https://github.com/ShapeCrawler/ShapeCrawler/issues/369)
