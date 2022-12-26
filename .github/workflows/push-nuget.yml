@@ -25,4 +25,4 @@ jobs:
         run: dotnet pack --configuration Release
       - name: Push NuGet package
         run: |
-          dotnet nuget push -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json "*.nupkg"
+          dotnet nuget push -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json "ShapeCrawler\bin\Release\*.nupkg"
