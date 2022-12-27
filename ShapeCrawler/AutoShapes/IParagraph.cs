@@ -3,7 +3,6 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
@@ -113,7 +112,7 @@ internal static class FontDataParser
 #else
             var localName = textPr.LocalName.AsSpan();
             var level = localName.Slice(3, 1); // the fourth character contains level number, eg. "lvl1pPr -> 1, lvl2pPr -> 2, etc."
-            var paragraphLvl = int.Parse(level, NumberStyles.Number, CultureInfo.CurrentCulture);
+            var paragraphLvl = int.Parse(level, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture);
 #endif
             var fontData = new FontData
             {

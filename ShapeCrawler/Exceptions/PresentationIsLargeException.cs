@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace ShapeCrawler.Exceptions;
 
@@ -20,7 +19,7 @@ internal class PresentationIsLargeException : ShapeCrawlerException
         var message = ExceptionMessages.PresentationIsLarge.Replace(
             "{0}",
             maxSize.ToString(CultureInfo.CurrentCulture), 
-            StringComparison.OrdinalIgnoreCase);
+            System.StringComparison.OrdinalIgnoreCase);
 #else
             var message =
                 ExceptionMessages.PresentationIsLarge.Replace("{0}", maxSize.ToString(CultureInfo.CurrentCulture));
