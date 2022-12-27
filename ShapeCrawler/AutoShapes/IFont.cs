@@ -9,9 +9,14 @@ namespace ShapeCrawler;
 public interface IFont
 {
     /// <summary>
-    ///     Gets or sets font name.
+    ///     Gets or sets font for the Latin characters. Returns <see langword="null"/> if the Latin font is not present.
     /// </summary>
-    string Name { get; set; }
+    string? LatinName { get; set; }
+    
+    /// <summary>
+    ///     Gets or sets font for the East Asian characters. Returns <see langword="null"/> if the East Asian font is not present.
+    /// </summary>
+    string? EastAsianName { get; set; }
 
     /// <summary>
     ///     Gets or sets font size in points.

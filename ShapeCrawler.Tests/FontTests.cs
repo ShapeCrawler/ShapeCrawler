@@ -26,47 +26,50 @@ public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     [SlideShapeData("002.pptx", 2, 3, "Palatino Linotype")]
     [SlideShapeData("001.pptx", 1, 4, "Broadway")]
     [SlideShapeData("001.pptx", 1, 7, "Calibri Light")]
+    [SlideShapeData("001.pptx", 5, 5, "Calibri Light")]
     [SlideShapeData("autoshape-case015.pptx", 1, "Title 1", "Franklin Gothic Medium")]
-    public void Name_Getter_returns_font_name(IShape shape, string expectedFontName)
+    public void LatinName_Getter_returns_font_for_Latin_characters(IShape shape, string expectedFontName)
     {
         // Arrange
         var autoShape = (IAutoShape)shape;
         var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
 
         // Act
-        var fontName = font.Name;
+        var fontName = font.LatinName;
+
+        // Assert
+        fontName.Should().Be(expectedFontName);
+    }
+    
+    [Theory]
+    [SlideShapeData("autoshape-case015.pptx", 1, "TextBox 7", "SimSun")]
+    public void EastAsianName_Getter_returns_font_for_East_Asian_characters(IShape shape, string expectedFontName)
+    {
+        // Arrange
+        var autoShape = (IAutoShape)shape;
+        var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
+
+        // Act
+        var fontName = font.EastAsianName;
 
         // Assert
         fontName.Should().Be(expectedFontName);
     }
 
-    [Fact]
-    public void Name_Getter_returns_Calibri_Light()
-    {
-        // Arrange
-        ITextFrame textBox = ((IAutoShape)_fixture.Pre001.Slides[4].Shapes.First(sp => sp.Id == 5)).TextFrame;
-
-        // Act
-        string portionFontName = textBox.Paragraphs[0].Portions[0].Font.Name;
-
-        // Assert
-        portionFontName.Should().BeEquivalentTo("Calibri Light");
-    }
-
     [Theory]
     [SlideShapeData("001.pptx", 1, "TextBox 3")]
     [SlideShapeData("001.pptx", 3, "Text Placeholder 3")]
-    public void Name_Setter_sets_font_name(IShape shape)
+    public void LatinName_Setter_sets_font_Latin_characters(IShape shape)
     {
         // Arrange
         var autoShape = (IAutoShape)shape;
         var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
 
         // Act
-        font.Name = "Time New Roman";
+        font.LatinName = "Time New Roman";
 
         // Assert
-        font.Name.Should().Be("Time New Roman");
+        font.LatinName.Should().Be("Time New Roman");
     }
 
     [Theory]

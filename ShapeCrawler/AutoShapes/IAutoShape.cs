@@ -116,7 +116,7 @@ internal class AutoShape : SlideShape, IAutoShape, ITextFrameContainer
         var paint = new SKPaint();
         var fontSize = font.Size;
         paint.TextSize = fontSize;
-        paint.Typeface = SKTypeface.FromFamilyName(font.Name);
+        paint.Typeface = SKTypeface.FromFamilyName(font.LatinName);
         paint.IsAntialias = true;
 
         var lMarginPixel = UnitConverter.CentimeterToPixel(this.TextFrame.LeftMargin);

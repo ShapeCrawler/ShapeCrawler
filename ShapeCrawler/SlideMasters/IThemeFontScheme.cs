@@ -20,11 +20,9 @@ public interface IThemeFontScheme
 
 internal class ThemeFontScheme : IThemeFontScheme
 {
-    private readonly A.FontScheme aFontScheme;
-
     internal ThemeFontScheme(A.FontScheme aFontScheme)
     {
-        this.aFontScheme = aFontScheme;
+        this.AFontScheme = aFontScheme;
     }
 
     public string Head
@@ -39,23 +37,25 @@ internal class ThemeFontScheme : IThemeFontScheme
         set => this.SetBodyFontName(value);
     }
 
+    internal A.FontScheme AFontScheme { get; }
+
     private string GetBodyFontName()
     {
-        return this.aFontScheme.MinorFont!.LatinFont!.Typeface!.Value!;
+        return this.AFontScheme.MinorFont!.LatinFont!.Typeface!.Value!;
     }
     
     private void SetHeadingFontName(string fontName)
     {
-        this.aFontScheme.MajorFont!.LatinFont!.Typeface!.Value = fontName;
+        this.AFontScheme.MajorFont!.LatinFont!.Typeface!.Value = fontName;
     }
 
     private void SetBodyFontName(string fontName)
     {
-        this.aFontScheme.MinorFont!.LatinFont!.Typeface!.Value = fontName;
+        this.AFontScheme.MinorFont!.LatinFont!.Typeface!.Value = fontName;
     }
     
     private string GetHeadingFontName()
     {
-        return this.aFontScheme.MajorFont!.LatinFont!.Typeface!.Value!;
+        return this.AFontScheme.MajorFont!.LatinFont!.Typeface!.Value!;
     }
 }
