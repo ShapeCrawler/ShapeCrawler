@@ -145,7 +145,7 @@ internal class TextFrame : ITextFrame
         paint.Color = SKColors.Black;
         var firstPortion = this.paragraphs.Value.First().Portions.First();
         paint.TextSize = firstPortion.Font.Size;
-        var typeFace = SKTypeface.FromFamilyName(firstPortion.Font.Name); 
+        var typeFace = SKTypeface.FromFamilyName(firstPortion.Font.LatinName); 
         paint.Typeface = typeFace;
         float leftMarginPx = UnitConverter.CentimeterToPixel(this.LeftMargin);
         float topMarginPx = UnitConverter.CentimeterToPixel(this.TopMargin);

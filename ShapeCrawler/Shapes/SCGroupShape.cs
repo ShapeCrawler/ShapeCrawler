@@ -1,6 +1,5 @@
 ﻿using OneOf;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Statics;
 using SkiaSharp;

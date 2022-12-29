@@ -36,13 +36,20 @@ internal class SCFont : IFont
             shape = (Shape)portion.ParentParagraph.ParentTextFrame.TextFrameContainer;
         }
 
-        this.aFontScheme = shape.SlideMasterInternal.ThemePart.Theme.ThemeElements!.FontScheme!;
+        var themeFontScheme = (ThemeFontScheme)shape.SlideMasterInternal.Theme.FontScheme; 
+        this.aFontScheme = themeFontScheme.AFontScheme;
     }
 
-    public string Name
+    public string? LatinName
     {
-        get => this.GetName();
-        set => this.SetName(value);
+        get => this.GetLatinName();
+        set => this.SetLatinName(value!);
+    }
+
+    public string? EastAsianName
+    {
+        get => this.GetEastAsianName();
+        set => this.SetEastAsianName(value!);
     }
 
     public int Size
@@ -180,7 +187,17 @@ internal class SCFont : IFont
             }
         }
     }
+    
+    private void SetEastAsianName(string name)
+    {
+        throw new NotImplementedException();
+    }
 
+    private string GetEastAsianName()
+    {
+        throw new NotImplementedException();
+    }
+    
     private int GetOffsetEffect()
     {
         var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
@@ -199,7 +216,7 @@ internal class SCFont : IFont
         return 0;
     }
 
-    private string GetName()
+    private string GetLatinName()
     {
         const string majorLatinFont = "+mj-lt";
         if (this.latinFont.Value.Typeface == majorLatinFont)
@@ -355,7 +372,7 @@ internal class SCFont : IFont
         }
     }
 
-    private void SetName(string fontName)
+    private void SetLatinName(string fontName)
     {
         var aLatinFont = this.latinFont.Value;
         aLatinFont.Typeface = fontName;

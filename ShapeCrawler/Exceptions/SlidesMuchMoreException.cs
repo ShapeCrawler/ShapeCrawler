@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace ShapeCrawler.Exceptions;
 
@@ -16,7 +15,7 @@ internal class SlidesMuchMoreException : ShapeCrawlerException
         var message = ExceptionMessages.SlidesMuchMore.Replace(
             "{0}", 
             maxNum.ToString(CultureInfo.CurrentCulture),
-            StringComparison.OrdinalIgnoreCase);
+            System.StringComparison.OrdinalIgnoreCase);
 #else
             var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString(CultureInfo.CurrentCulture));
 #endif
