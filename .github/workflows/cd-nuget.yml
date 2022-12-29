@@ -1,4 +1,4 @@
-name: Push NuGet package
+name: CD - Push NuGet package
 
 on:
   push:

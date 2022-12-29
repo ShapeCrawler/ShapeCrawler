@@ -269,6 +269,40 @@ internal class SCSlideCollection : ISlideCollection
         return ++currentId;
     }
 
+    private static void RemoveFromCustomShow(P.Presentation sdkPresentation, StringValue? removingSlideRelId)
+    {
+        if (sdkPresentation.CustomShowList == null)
+        {
+            return;
+        }
+
+        // Iterate through the list of custom shows
+        foreach (var customShow in sdkPresentation.CustomShowList.Elements<P.CustomShow>())
+        {
+            if (customShow.SlideList == null)
+            {
+                continue;
+            }
+
+            // declares a link list of slide list entries
+            var slideListEntries = new LinkedList<P.SlideListEntry>();
+            foreach (P.SlideListEntry slideListEntry in customShow.SlideList.Elements())
+            {
+                // finds the slide reference to remove from the custom show
+                if (slideListEntry.Id != null && slideListEntry.Id == removingSlideRelId)
+                {
+                    slideListEntries.AddLast(slideListEntry);
+                }
+            }
+
+            // Removes all references to the slide from the custom show
+            foreach (P.SlideListEntry slideListEntry in slideListEntries)
+            {
+                customShow.SlideList.RemoveChild(slideListEntry);
+            }
+        }
+    }
+    
     private static uint CreateId(P.SlideMasterIdList slideMasterIdList)
     {
         uint currentId = 0;
@@ -303,39 +337,5 @@ internal class SCSlideCollection : ISlideCollection
     private void OnCollectionChanged()
     {
         this.CollectionChanged?.Invoke(this, null);
-    }
-
-    private static void RemoveFromCustomShow(P.Presentation sdkPresentation, StringValue? removingSlideRelId)
-    {
-        if (sdkPresentation.CustomShowList == null)
-        {
-            return;
-        }
-
-        // Iterate through the list of custom shows
-        foreach (var customShow in sdkPresentation.CustomShowList.Elements<P.CustomShow>())
-        {
-            if (customShow.SlideList == null)
-            {
-                continue;
-            }
-
-            // declares a link list of slide list entries
-            var slideListEntries = new LinkedList<P.SlideListEntry>();
-            foreach (P.SlideListEntry slideListEntry in customShow.SlideList.Elements())
-            {
-                // finds the slide reference to remove from the custom show
-                if (slideListEntry.Id != null && slideListEntry.Id == removingSlideRelId)
-                {
-                    slideListEntries.AddLast(slideListEntry);
-                }
-            }
-
-            // Removes all references to the slide from the custom show
-            foreach (P.SlideListEntry slideListEntry in slideListEntries)
-            {
-                customShow.SlideList.RemoveChild(slideListEntry);
-            }
-        }
     }
 }
