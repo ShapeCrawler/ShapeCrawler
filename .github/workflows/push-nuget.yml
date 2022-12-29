@@ -16,7 +16,7 @@ jobs:
       - name: Install .NET SDK
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 6.0.401
+          dotnet-version: 7.0.101
       - name: Restore NuGet packages
         run: dotnet restore
       - name: Build solution

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.SlideMasters;
 
@@ -54,6 +53,6 @@ public interface ISlide : ISlideObject
     /// <summary>
     ///     Saves slide as PNG image.
     /// </summary>
-    void SaveAsPng(Stream stream);
+    void SaveAsPng(System.IO.Stream stream);
 #endif
 }

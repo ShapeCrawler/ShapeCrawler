@@ -41,7 +41,7 @@ public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
         fontName.Should().Be(expectedFontName);
     }
     
-    [Theory]
+    [Theory(Skip = "In Progress")]
     [SlideShapeData("autoshape-case015.pptx", 1, "TextBox 7", "SimSun")]
     public void EastAsianName_Getter_returns_font_for_East_Asian_characters(IShape shape, string expectedFontName)
     {
