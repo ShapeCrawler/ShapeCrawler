@@ -60,7 +60,7 @@ dotnet_diagnostic.CS8604.severity = error
 dotnet_diagnostic.CS8619.severity = error
 dotnet_diagnostic.CS8621.severity = error
 dotnet_diagnostic.CS8764.severity = error
-dotnet_diagnostic.CS8766.severity = error
+dotnet_diagnostic.CS8766.severity = suggestion
 dotnet_diagnostic.CS8767.severity = error
 
 
