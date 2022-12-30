@@ -11,7 +11,7 @@ namespace ShapeCrawler.Collections;
 /// <summary>
 ///     <inheritdoc cref="IPortionCollection"/>
 /// </summary>
-internal class PortionCollection : IPortionCollection
+internal sealed class PortionCollection : IPortionCollection
 {
     private readonly ResettableLazy<List<SCPortion>> portions;
 

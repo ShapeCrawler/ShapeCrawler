@@ -2,7 +2,7 @@
 
 namespace ShapeCrawler.Factories;
 
-internal class ARunPropertiesBuilder
+internal sealed class ARunPropertiesBuilder
 {
     private readonly A.RunProperties aRunProperties = new () { Language = "en-US", FontSize = 1400, Dirty = false };
 

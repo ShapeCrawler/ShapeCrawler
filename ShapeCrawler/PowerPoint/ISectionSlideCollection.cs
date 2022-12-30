@@ -22,7 +22,7 @@ public interface ISectionSlideCollection : IEnumerable<ISlide>
     ISlide this[int index] { get; }
 }
 
-internal class SCSectionCollection : ISectionCollection
+internal sealed class SCSectionCollection : ISectionCollection
 {
     private readonly List<SCSection> sections;
     private readonly SectionList? sdkSectionList;

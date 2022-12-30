@@ -1,6 +1,4 @@
-using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 
 namespace ShapeCrawler.Tests.Helpers;

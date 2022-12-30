@@ -41,7 +41,7 @@ public interface ISlideCollection : IReadOnlyList<ISlide>
     void Insert(int position, ISlide slide);
 }
 
-internal class SCSlideCollection : ISlideCollection
+internal sealed class SCSlideCollection : ISlideCollection
 {
     private readonly SCPresentation presentation;
     private readonly ResettableLazy<List<SCSlide>> slides;

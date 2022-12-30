@@ -7,7 +7,7 @@ using SkiaSharp;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.OLEObjects;
 
-internal class SlideOLEObject : SlideShape, IOLEObject
+internal sealed class SlideOLEObject : SlideShape, IOLEObject
 {
     internal SlideOLEObject(OpenXmlCompositeElement pShapeTreesChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCGroupShape groupShape)
         : base(pShapeTreesChild, oneOfSlide, groupShape)

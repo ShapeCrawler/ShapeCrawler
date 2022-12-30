@@ -66,7 +66,7 @@ public interface ITextFrame
     bool CanChangeText();
 }
 
-internal class TextFrame : ITextFrame
+internal sealed class TextFrame : ITextFrame
 {
     private readonly ResettableLazy<string> text;
     private readonly ResettableLazy<ParagraphCollection> paragraphs;

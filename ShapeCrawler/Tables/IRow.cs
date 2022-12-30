@@ -26,7 +26,7 @@ public interface IRow
     IRow Clone();
 }
 
-internal class SCRow : IRow
+internal sealed class SCRow : IRow
 {
     private readonly Lazy<List<SCCell>> cells;
     private readonly int index;

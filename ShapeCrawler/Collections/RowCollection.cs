@@ -40,7 +40,7 @@ public interface IRowCollection : IEnumerable<IRow>
     IRow Add();
 }
 
-internal class RowCollection : IRowCollection
+internal sealed class RowCollection : IRowCollection
 {
     private readonly List<SCRow> collectionItems;
     private readonly SCTable parentTable;

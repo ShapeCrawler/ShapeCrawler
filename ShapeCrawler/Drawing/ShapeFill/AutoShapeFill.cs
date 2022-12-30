@@ -3,7 +3,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing.ShapeFill;
 
-internal class AutoShapeFill : ShapeFill
+internal sealed class AutoShapeFill : ShapeFill
 {
     private readonly AutoShape autoShape;
 

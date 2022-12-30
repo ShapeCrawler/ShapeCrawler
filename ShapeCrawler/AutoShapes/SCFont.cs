@@ -10,7 +10,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.AutoShapes;
 
-internal class SCFont : IFont
+internal sealed class SCFont : IFont
 {
     private readonly A.Text aText;
     private readonly A.FontScheme aFontScheme;

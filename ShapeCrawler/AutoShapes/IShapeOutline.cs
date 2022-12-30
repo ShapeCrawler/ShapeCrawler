@@ -24,7 +24,7 @@ public interface IShapeOutline
     string? Color { get; set; }
 }
 
-internal class SCShapeOutline : IShapeOutline
+internal sealed class SCShapeOutline : IShapeOutline
 {
     private readonly AutoShape parentAutoShape;
 

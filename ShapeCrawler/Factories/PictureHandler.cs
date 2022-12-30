@@ -11,7 +11,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Factories;
 
-internal class PictureHandler : OpenXmlElementHandler
+internal sealed class PictureHandler : OpenXmlElementHandler
 {
     internal override Shape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape groupShape)
     {

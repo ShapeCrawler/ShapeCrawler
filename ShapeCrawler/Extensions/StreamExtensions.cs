@@ -4,15 +4,8 @@ using System.IO;
 namespace ShapeCrawler.Extensions;
 
 [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", MessageId = "Elements should be documented", Justification = "Will be converted to internal")]
-public static class StreamExtensions
+internal static class StreamExtensions
 {
-    public static void ToFile(this Stream stream, string filePath)
-    {
-        stream.Position = 0;
-        using var destStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-        stream.CopyTo(destStream);
-    }
-
     internal static byte[] ToArray(this Stream stream)
     {
         if (stream is MemoryStream inputMs)

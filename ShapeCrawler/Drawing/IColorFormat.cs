@@ -5,7 +5,6 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
-using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -33,7 +32,7 @@ public interface IColorFormat
     void SetColorByHex(string hex);
 }
 
-internal class ColorFormat : IColorFormat
+internal sealed class ColorFormat : IColorFormat
 {
     private readonly SCFont font;
     private readonly ITextFrameContainer textFrameContainer;

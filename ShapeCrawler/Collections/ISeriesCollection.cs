@@ -24,7 +24,7 @@ public interface ISeriesCollection : IEnumerable<ISeries>
     ISeries this[int index] { get; }
 }
 
-internal class SCSeriesCollection : LibraryCollection<ISeries>, ISeriesCollection
+internal sealed class SCSeriesCollection : LibraryCollection<ISeries>, ISeriesCollection
 {
     internal SCSeriesCollection(List<ISeries> seriesList)
         : base(seriesList)

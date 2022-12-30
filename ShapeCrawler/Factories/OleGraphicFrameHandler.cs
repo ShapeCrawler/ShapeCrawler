@@ -9,7 +9,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Factories;
 
-internal class OleGraphicFrameHandler : OpenXmlElementHandler
+internal sealed class OleGraphicFrameHandler : OpenXmlElementHandler
 {
     private const string Uri = "http://schemas.openxmlformats.org/presentationml/2006/ole";
 

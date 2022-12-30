@@ -18,7 +18,7 @@ using SkiaSharp;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler;
 
-internal class SCSlide : SlideObject, ISlide
+internal sealed class SCSlide : SlideObject, ISlide
 {
     private readonly Lazy<SCImage?> backgroundImage;
     private Lazy<CustomXmlPart?> customXmlPart;
@@ -222,7 +222,7 @@ internal class SCSlide : SlideObject, ISlide
         var customXmlPartStream = this.customXmlPart.Value.GetStream();
         using var customXmlStreamReader = new StreamReader(customXmlPartStream);
         var raw = customXmlStreamReader.ReadToEnd();
-#if NET6_0
+#if NET7_0
         return raw[SCConstants.CustomDataElementName.Length..];
 #else
             return raw.Substring(SCConstants.CustomDataElementName.Length);

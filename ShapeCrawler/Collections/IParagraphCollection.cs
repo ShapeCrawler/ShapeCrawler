@@ -24,7 +24,7 @@ public interface IParagraphCollection : IReadOnlyList<IParagraph>
     void Remove(IEnumerable<IParagraph> removeParagraphs);
 }
 
-internal class ParagraphCollection : IParagraphCollection
+internal sealed class ParagraphCollection : IParagraphCollection
 {
     private readonly ResettableLazy<List<SCParagraph>> paragraphs;
     private readonly TextFrame textFrame;

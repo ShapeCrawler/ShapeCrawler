@@ -18,7 +18,7 @@ public interface IThemeFontScheme
     string Body { get; set; }
 }
 
-internal class ThemeFontScheme : IThemeFontScheme
+internal sealed class ThemeFontScheme : IThemeFontScheme
 {
     internal ThemeFontScheme(A.FontScheme aFontScheme)
     {

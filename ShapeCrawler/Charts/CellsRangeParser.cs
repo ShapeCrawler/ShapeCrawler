@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ShapeCrawler.Charts;
 
-internal class CellsRangeParser
+internal sealed class CellsRangeParser
 {
     private readonly string cellRange;
     private readonly LinkedList<string> tempList = new ();

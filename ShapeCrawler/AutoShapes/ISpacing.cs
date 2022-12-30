@@ -18,7 +18,7 @@ public interface ISpacing
     double? LineSpacingPoints { get; }
 }
 
-internal class SCSpacing : ISpacing
+internal sealed class SCSpacing : ISpacing
 {
     private readonly SCParagraph paragraph;
     private readonly A.Paragraph aParagraph;

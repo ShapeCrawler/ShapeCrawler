@@ -95,7 +95,7 @@ public interface IShapeCollection : IEnumerable<IShape>
     void Remove(IShape shape);
 }
 
-internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
+internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
 {
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly P.ShapeTree shapeTree;

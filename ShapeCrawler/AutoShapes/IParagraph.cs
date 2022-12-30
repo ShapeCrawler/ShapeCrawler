@@ -56,7 +56,7 @@ public interface IParagraph
     void ReplaceText(string oldValue, string newValue);
 }
 
-internal class SCParagraph : IParagraph
+internal sealed class SCParagraph : IParagraph
 {
     private readonly Lazy<SCBullet> bullet;
     private readonly ResettableLazy<PortionCollection> portions;

@@ -2,7 +2,7 @@
 
 namespace ShapeCrawler.Factories;
 
-internal class ARunBuilder
+internal sealed class ARunBuilder
 {
     private readonly A.Run aRun;
 

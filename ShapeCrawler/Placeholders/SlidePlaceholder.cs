@@ -6,7 +6,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Placeholders;
 
-internal class SlidePlaceholder : Placeholder
+internal sealed class SlidePlaceholder : Placeholder
 {
     private readonly SlideShape slideShape;
 

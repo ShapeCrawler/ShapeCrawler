@@ -1,6 +1,6 @@
 ﻿namespace ShapeCrawler.AutoShapes;
 
-internal class SCField : IField
+internal sealed class SCField : IField
 {
     public SCField(DocumentFormat.OpenXml.Drawing.Field aField)
     {
