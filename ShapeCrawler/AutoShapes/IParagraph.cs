@@ -46,11 +46,6 @@ public interface IParagraph
     ISpacing Spacing { get; }
 
     /// <summary>
-    ///     Gets font.
-    /// </summary>
-    IFont Font { get; }
-
-    /// <summary>
     ///     Adds new text portion in paragraph.
     /// </summary>
     void AddPortion(string text);
@@ -100,8 +95,6 @@ internal sealed class SCParagraph : IParagraph
     public int IndentLevel => this.GetIndentLevel();
 
     public ISpacing Spacing => this.GetSpacing();
-
-    public IFont Font => this.GetFont();
 
     internal TextFrame ParentTextFrame { get; }
 
@@ -198,11 +191,6 @@ internal sealed class SCParagraph : IParagraph
         {
             lastElement = lastElement.InsertAfterSelf(newARun);
         }
-    }
-    
-    private IFont GetFont()
-    {
-        throw new NotImplementedException();
     }
     
     private ISpacing GetSpacing()
