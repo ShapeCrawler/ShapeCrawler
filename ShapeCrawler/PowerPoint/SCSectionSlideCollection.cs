@@ -5,7 +5,7 @@ using DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler;
 
-internal class SCSectionSlideCollection : ISectionSlideCollection
+internal sealed class SCSectionSlideCollection : ISectionSlideCollection
 {
     private readonly SCSection parentSection;
     private List<SCSlide> sectionSlides;

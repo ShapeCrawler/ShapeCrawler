@@ -75,14 +75,13 @@ public interface IShapeCollection : IEnumerable<IShape>
     IVideoShape AddVideo(int x, int y, Stream stream);
 
     /// <summary>
-    ///     Creates a new AutoShape.
+    ///     Creates a new rectangle shape on slide.
     /// </summary>
-    /// <param name="type">AutoShape type.</param>
     /// <param name="x">X coordinate in pixels.</param>
     /// <param name="y">Y coordinate in pixels.</param>
     /// <param name="width">Width in pixels.</param>
     /// <param name="height">Height in pixels.</param>
-    IAutoShape AddAutoShape(SCAutoShapeType type, int x, int y, int width, int height);
+    IAutoShape AddRectangle(int x, int y, int width, int height);
 
     /// <summary>
     ///     Creates a new Table.
@@ -95,7 +94,7 @@ public interface IShapeCollection : IEnumerable<IShape>
     void Remove(IShape shape);
 }
 
-internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
+internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
 {
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly P.ShapeTree shapeTree;
@@ -334,7 +333,7 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
         return new VideoShape(this.slideObject, this.shapeTree);
     }
 
-    public IAutoShape AddAutoShape(SCAutoShapeType type, int x, int y, int width, int height)
+    public IAutoShape AddRectangle(int x, int y, int width, int height)
     {
         var idAndName = this.GenerateIdAndName();
 
@@ -347,17 +346,23 @@ internal class ShapeCollection : LibraryCollection<IShape>, IShapeCollection
         var heightEmu = UnitConverter.VerticalPixelToEmu(height);
         shapeProperties.AddAXfrm(xEmu, yEmu, widthEmu, heightEmu);
         shapeProperties.Append(presetGeometry);
-        
+
+        var aRunProperties = new A.RunProperties { Language = "en-US" };
+        var aText = new A.Text(string.Empty);
+        var aRun = new A.Run(aRunProperties, aText);
+        var aEndParaRPr = new A.EndParagraphRunProperties { Language = "en-US" };
+        var aParagraph = new A.Paragraph(aRun, aEndParaRPr);
+
         var newPShape = new P.Shape(
             new P.NonVisualShapeProperties(
-            new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
-            new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
-            new ApplicationNonVisualDrawingProperties()),
+                new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
+                new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
+                new ApplicationNonVisualDrawingProperties()),
             shapeProperties,
             new P.TextBody(
-            new A.BodyProperties(),
-            new A.ListStyle(),
-            new A.Paragraph(new A.EndParagraphRunProperties { Language = "en-US" })));
+                new A.BodyProperties(),
+                new A.ListStyle(),
+                aParagraph));
 
         this.shapeTree.Append(newPShape);
         

@@ -27,7 +27,7 @@ public interface ICell
     IShapeFill Fill { get; }
 }
 
-internal class SCCell : ICell, ITextFrameContainer
+internal sealed class SCCell : ICell, ITextFrameContainer
 {
     private readonly ResettableLazy<TextFrame> textFrame;
     private readonly ResettableLazy<ShapeFill> fill;

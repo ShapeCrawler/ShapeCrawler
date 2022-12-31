@@ -6,7 +6,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Factories;
 
-internal class AutoShapeCreator : OpenXmlElementHandler
+internal sealed class AutoShapeCreator : OpenXmlElementHandler
 {
     internal override Shape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape groupShape)
     {

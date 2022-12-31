@@ -1,6 +1,6 @@
 ﻿namespace ShapeCrawler.Services;
 
-internal class SCSlideSize
+internal sealed class SCSlideSize
 {
     internal SCSlideSize(int slideWidth, int slideHeight)
     {

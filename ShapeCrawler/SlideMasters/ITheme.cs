@@ -1,6 +1,4 @@
-﻿using ShapeCrawler.SlideMasters;
-
-namespace ShapeCrawler;
+﻿namespace ShapeCrawler;
 
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -19,7 +17,6 @@ public interface ITheme
     /// </summary>
     IThemeColorScheme ColorScheme { get; }
 }
-
 
 internal sealed class SCTheme : ITheme
 {

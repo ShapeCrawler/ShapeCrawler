@@ -12,7 +12,7 @@ public interface ILineChart : IChart
 {
 }
 
-internal class SCLineChart : SCChart, ILineChart
+internal sealed class SCLineChart : SCChart, ILineChart
 {
     internal SCLineChart(P.GraphicFrame pGraphicFrame, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject)
         : base(pGraphicFrame, slideObject)

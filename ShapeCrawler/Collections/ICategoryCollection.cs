@@ -26,14 +26,14 @@ public interface ICategoryCollection : IEnumerable<ICategory>
     ICategory this[int index] { get; }
 }
 
-internal class CategoryCollection : LibraryCollection<ICategory>, ICategoryCollection
+internal sealed class CategoryCollection : LibraryCollection<ICategory>, ICategoryCollection
 {
     private CategoryCollection(List<Category> categoryList)
         : base(categoryList)
     {
     }
 
-    public static CategoryCollection? Create(SCChart chart, OpenXmlElement? firstChartSeries, SCChartType chartType)
+    internal static CategoryCollection? Create(SCChart chart, OpenXmlElement? firstChartSeries, SCChartType chartType)
     {
         if (chartType is SCChartType.BubbleChart or SCChartType.ScatterChart)
         {

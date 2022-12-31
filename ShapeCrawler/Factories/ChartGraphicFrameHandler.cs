@@ -12,7 +12,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Factories;
 
-internal class ChartGraphicFrameHandler : OpenXmlElementHandler
+internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 {
     private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart";
 

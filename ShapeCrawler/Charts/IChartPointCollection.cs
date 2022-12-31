@@ -16,7 +16,7 @@ public interface IChartPointCollection : IReadOnlyList<IChartPoint>
 {
 }
 
-internal class ChartPointCollection : IChartPointCollection
+internal sealed class ChartPointCollection : IChartPointCollection
 {
     private readonly List<ChartPoint> chartPoints;
 

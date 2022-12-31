@@ -45,7 +45,7 @@ public interface IImage
     void SetImage(string filePath);
 }
 
-internal class SCImage : IImage
+internal sealed class SCImage : IImage
 {
     private readonly SCPresentation presentation;
     private readonly StringValue blipEmbed;

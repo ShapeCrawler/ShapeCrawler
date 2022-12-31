@@ -41,7 +41,7 @@ public interface ITable : IShape
     void MergeCells(ICell cell1, ICell cell2);
 }
 
-internal class SCTable : SlideShape, ITable
+internal sealed class SCTable : SlideShape, ITable
 {
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly ResettableLazy<RowCollection> rowCollection;

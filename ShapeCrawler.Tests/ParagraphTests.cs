@@ -196,7 +196,7 @@ namespace ShapeCrawler.Tests
 
         [Theory]
         [MemberData(nameof(TestCasesParagraphText))]
-        public void Paragraph_Text_Setter_updates_paragraph_text(TestElementQuery paragraphQuery, string newText,
+        public void Text_Setter_sets_paragraph_text(TestElementQuery paragraphQuery, string newText,
             int expectedPortionsCount)
         {
             // Arrange
@@ -217,6 +217,24 @@ namespace ShapeCrawler.Tests
             paragraph = paragraphQuery.GetParagraph();
             paragraph.Text.Should().BeEquivalentTo(newText);
             paragraph.Portions.Should().HaveCount(expectedPortionsCount);
+        }
+        
+        [Fact]
+        public void Text_Setter_sets_paragraph_text_in_New_Presentation()
+        {
+            // Arrange
+            var pres = SCPresentation.Create();
+            var slide = pres.Slides[0];
+            var shape = slide.Shapes.AddRectangle(10, 10, 10, 10);
+            var paragraph = shape.TextFrame!.Paragraphs[0];
+
+            // Act
+            paragraph.Text = "test";
+
+            // Assert
+            paragraph.Text.Should().Be("test");
+            var errors = PptxValidator.Validate(slide.Presentation);
+            errors.Should().BeEmpty();
         }
 
         public static IEnumerable<object[]> TestCasesParagraphText()

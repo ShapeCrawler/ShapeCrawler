@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -41,7 +40,7 @@ public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
         fontName.Should().Be(expectedFontName);
     }
     
-    [Theory(Skip = "In Progress")]
+    [Theory]
     [SlideShapeData("autoshape-case015.pptx", 1, "TextBox 7", "SimSun")]
     public void EastAsianName_Getter_returns_font_for_East_Asian_characters(IShape shape, string expectedFontName)
     {
@@ -55,11 +54,46 @@ public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
         // Assert
         fontName.Should().Be(expectedFontName);
     }
+    
+    [Theory]
+    [SlideShapeData("001.pptx", 1, "TextBox 3")]
+    public void EastAsianName_Setter_sets_font_for_the_east_asian_characters(IShape shape)
+    {
+        // Arrange
+        var autoShape = (IAutoShape)shape;
+        var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
+
+        // Act
+        font.EastAsianName = "SimSun";
+
+        // Assert
+        font.EastAsianName.Should().Be("SimSun");
+        var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+        errors.Should().BeEmpty();
+    }
+    
+    [Fact]
+    public void EastAsianName_Setter_sets_font_for_the_east_asian_characters_in_New_Presentation()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var slide = pres.Slides[0];
+        var rectangle = slide.Shapes.AddRectangle(10, 10, 10, 10);
+        var font = rectangle.TextFrame!.Paragraphs[0].Portions[0].Font;
+
+        // Act
+        font.EastAsianName = "SimSun";
+
+        // Assert
+        font.EastAsianName.Should().Be("SimSun");
+        var errors = PptxValidator.Validate(slide.Presentation);
+        errors.Should().BeEmpty();
+    }
 
     [Theory]
     [SlideShapeData("001.pptx", 1, "TextBox 3")]
     [SlideShapeData("001.pptx", 3, "Text Placeholder 3")]
-    public void LatinName_Setter_sets_font_Latin_characters(IShape shape)
+    public void LatinName_Setter_sets_font_for_the_latin_characters(IShape shape)
     {
         // Arrange
         var autoShape = (IAutoShape)shape;
@@ -304,24 +338,24 @@ public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
 
     [Theory]
     [MemberData(nameof(TestCasesIsBold))]
-    public void IsBold_Setter_AddsBoldForPlaceholderTextFont(TestElementQuery portionQuery)
+    public void IsBold_Setter_sets_the_placeholder_font_to_be_bold(TestElementQuery portionQuery)
     {
         // Arrange
-        MemoryStream mStream = new();
-        var portion = portionQuery.GetParagraphPortion();
+        var stream = new MemoryStream();
         var pres = portionQuery.Presentation;
+        var font = portionQuery.GetParagraphPortion().Font;
 
         // Act
-        portion.Font.IsBold = true;
+        font.IsBold = true;
 
         // Assert
-        portion.Font.IsBold.Should().BeTrue();
+        font.IsBold.Should().BeTrue();
 
-        pres.SaveAs(mStream);
-        pres = SCPresentation.Open(mStream);
+        pres.SaveAs(stream);
+        pres = SCPresentation.Open(stream);
         portionQuery.Presentation = pres;
-        portion = portionQuery.GetParagraphPortion();
-        portion.Font.IsBold.Should().BeTrue();
+        font = portionQuery.GetParagraphPortion().Font;
+        font.IsBold.Should().BeTrue();
     }
 
     public static IEnumerable<object[]> TestCasesIsBold()

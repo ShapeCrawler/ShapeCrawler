@@ -38,8 +38,10 @@ internal static class FontDataParser
         
         if (referencedShape is null && placeholder.Type is SCPlaceholderType.Title or SCPlaceholderType.CenteredTitle)
         {
-            fontData.ALatinFont = shape.SlideMasterInternal.PSlideMaster.TextStyles!.TitleStyle!.Level1ParagraphProperties!
-                .GetFirstChild<A.DefaultRunProperties>() !.GetFirstChild<A.LatinFont>();
+            var aDefRPr = shape.SlideMasterInternal.PSlideMaster.TextStyles!.TitleStyle!.Level1ParagraphProperties!
+                .GetFirstChild<A.DefaultRunProperties>() !;
+            fontData.ALatinFont = aDefRPr.GetFirstChild<A.LatinFont>();
+            fontData.AEastAsianFont = aDefRPr.GetFirstChild<A.EastAsianFont>();
         }
         else
         {

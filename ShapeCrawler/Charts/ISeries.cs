@@ -34,7 +34,7 @@ public interface ISeries
     bool HasName { get; }
 }
 
-internal class Series : ISeries
+internal sealed class Series : ISeries
 {
     private readonly Lazy<string?> name;
     private readonly OpenXmlElement seriesXmlElement;

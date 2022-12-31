@@ -7,7 +7,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Factories;
 
-internal class TableGraphicFrameHandler : OpenXmlElementHandler
+internal sealed class TableGraphicFrameHandler : OpenXmlElementHandler
 {
     private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/table";
 

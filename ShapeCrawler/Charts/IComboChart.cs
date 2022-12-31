@@ -14,7 +14,7 @@ public interface IComboChart : IChart
 
 }
 
-internal class SCComboChart : SCChart, IComboChart
+internal sealed class SCComboChart : SCChart, IComboChart
 {
     internal SCComboChart(P.GraphicFrame pGraphicFrame, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject)
         : base(pGraphicFrame, slideObject)

@@ -40,7 +40,7 @@ public interface IPortion
     string? TextHighlightColor { get; set; }
 }
 
-internal class SCPortion : IPortion
+internal sealed class SCPortion : IPortion
 {
     private readonly ResettableLazy<SCFont> font;
     private readonly A.Field? aField;

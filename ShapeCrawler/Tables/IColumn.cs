@@ -15,7 +15,7 @@ public interface IColumn
     int Width { get; set; }
 }
 
-internal class SCColumn : IColumn
+internal sealed class SCColumn : IColumn
 {
     internal SCColumn(A.GridColumn aGridColumn)
     {

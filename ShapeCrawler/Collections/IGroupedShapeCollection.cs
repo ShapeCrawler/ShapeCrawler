@@ -28,7 +28,7 @@ public interface IGroupedShapeCollection : IEnumerable<IShape>
     T GetByName<T>(string shapeName);
 }
 
-internal class GroupedShapeCollection : LibraryCollection<IShape>, IGroupedShapeCollection
+internal sealed class GroupedShapeCollection : LibraryCollection<IShape>, IGroupedShapeCollection
 {
     private GroupedShapeCollection(List<IShape> groupedShapes)
         : base(groupedShapes)

@@ -18,7 +18,7 @@ public interface IChartPoint
     public double Value { get; set; }
 }
 
-internal class ChartPoint : IChartPoint
+internal sealed class ChartPoint : IChartPoint
 {
     private readonly string address;
     private readonly SCChart parentChart;

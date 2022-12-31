@@ -7,7 +7,7 @@ using ShapeCrawler.SlideMasters;
 namespace ShapeCrawler.Collections;
 
 [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-internal class SlideMasterCollection : ISlideMasterCollection
+internal sealed class SlideMasterCollection : ISlideMasterCollection
 {
     private readonly List<ISlideMaster> slideMasters;
 

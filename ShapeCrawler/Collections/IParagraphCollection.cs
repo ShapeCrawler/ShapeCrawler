@@ -8,7 +8,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents paragraph collection.
+///     Represents a collection of paragraphs.
 /// </summary>
 public interface IParagraphCollection : IReadOnlyList<IParagraph>
 {
@@ -24,7 +24,7 @@ public interface IParagraphCollection : IReadOnlyList<IParagraph>
     void Remove(IEnumerable<IParagraph> removeParagraphs);
 }
 
-internal class ParagraphCollection : IParagraphCollection
+internal sealed class ParagraphCollection : IParagraphCollection
 {
     private readonly ResettableLazy<List<SCParagraph>> paragraphs;
     private readonly TextFrame textFrame;

@@ -5,7 +5,7 @@ using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 namespace ShapeCrawler;
 
 [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Exception")]
-internal class SCSection : ISection
+internal sealed class SCSection : ISection
 {
     internal SCSection(SCSectionCollection sections, P14.Section p14Section)
     {

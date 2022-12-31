@@ -56,7 +56,7 @@ public interface IParagraph
     void ReplaceText(string oldValue, string newValue);
 }
 
-internal class SCParagraph : IParagraph
+internal sealed class SCParagraph : IParagraph
 {
     private readonly Lazy<SCBullet> bullet;
     private readonly ResettableLazy<PortionCollection> portions;
@@ -69,7 +69,7 @@ internal class SCParagraph : IParagraph
         this.Level = this.GetIndentLevel();
         this.bullet = new Lazy<SCBullet>(this.GetBullet);
         this.ParentTextFrame = textBox;
-        this.portions = new ResettableLazy<PortionCollection>(this.GetPortions);
+        this.portions = new ResettableLazy<PortionCollection>(() => new PortionCollection(this.AParagraph, this));
     }
 
     internal event Action? TextChanged;
@@ -247,11 +247,6 @@ internal class SCParagraph : IParagraph
         }
 
         this.TextChanged?.Invoke();
-    }
-
-    private PortionCollection GetPortions()
-    {
-        return new PortionCollection(this.AParagraph, this);
     }
 
     private void SetAlignment(SCTextAlignment alignmentValue)

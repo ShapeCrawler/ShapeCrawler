@@ -2,7 +2,7 @@
 
 namespace ShapeCrawler.Shared;
 
-internal class ResettableLazy<T>
+internal sealed class ResettableLazy<T>
 {
     private readonly Func<T?> valueFactory;
     private Lazy<T> lazy;

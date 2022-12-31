@@ -71,7 +71,7 @@ public interface IThemeColorScheme
     string FollowedHyperlink { get; set; }
 }
 
-internal class ThemeColorScheme : IThemeColorScheme
+internal sealed class ThemeColorScheme : IThemeColorScheme
 {
     private readonly A.ColorScheme aColorScheme;
 
