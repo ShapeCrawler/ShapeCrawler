@@ -11,7 +11,7 @@ public interface ISection
     ISectionSlideCollection Slides { get; }
 
     /// <summary>
-    ///     Gets section name;
+    ///     Gets section name.
     /// </summary>
     string Name { get; }
 }

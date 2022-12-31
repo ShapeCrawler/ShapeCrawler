@@ -28,14 +28,14 @@ namespace ShapeCrawler;
 [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "SC — ShapeCrawler")]
 public sealed class SCPresentation : IPresentation
 {
-    private bool closed;
+    private readonly MemoryStream internalStream;
     private readonly Lazy<Dictionary<int, FontData>> paraLvlToFontData;
     private readonly Lazy<SCSlideSize> slideSize;
     private readonly ResettableLazy<SCSectionCollection> sectionCollectionLazy;
     private readonly ResettableLazy<SCSlideCollection> slideCollectionLazy;
+    private bool closed;
     private Stream? outerStream;
     private string? outerPath;
-    private readonly MemoryStream internalStream;
 
     private SCPresentation(string outerPath)
     {
@@ -267,7 +267,7 @@ public sealed class SCPresentation : IPresentation
         var slideLayout = new P.SlideLayout(
             new P.CommonSlideData(new P.ShapeTree(
                 new P.NonVisualGroupShapeProperties(
-                    new P.NonVisualDrawingProperties { Id = (UInt32Value)1U, Name = "" },
+                    new P.NonVisualDrawingProperties { Id = (UInt32Value)1U, Name = string.Empty },
                     new P.NonVisualGroupShapeDrawingProperties(),
                     new P.ApplicationNonVisualDrawingProperties()),
                 new P.GroupShapeProperties(new A.TransformGroup()))),
@@ -283,7 +283,7 @@ public sealed class SCPresentation : IPresentation
         var slideMaster = new P.SlideMaster(
             new P.CommonSlideData(new P.ShapeTree(
                 new P.NonVisualGroupShapeProperties(
-                    new P.NonVisualDrawingProperties { Id = (UInt32Value)1U, Name = "" },
+                    new P.NonVisualDrawingProperties { Id = (UInt32Value)1U, Name = string.Empty },
                     new P.NonVisualGroupShapeDrawingProperties(),
                     new P.ApplicationNonVisualDrawingProperties()),
                 new P.GroupShapeProperties(new A.TransformGroup()),
@@ -336,27 +336,30 @@ public sealed class SCPresentation : IPresentation
             new A.FontScheme(
                 new A.MajorFont(
                     new A.LatinFont() { Typeface = "Calibri" },
-                    new A.EastAsianFont() { Typeface = "" },
-                    new A.ComplexScriptFont() { Typeface = "" }),
+                    new A.EastAsianFont() { Typeface = string.Empty },
+                    new A.ComplexScriptFont() { Typeface = string.Empty }),
                 new A.MinorFont(
                     new A.LatinFont() { Typeface = "Calibri" },
-                    new A.EastAsianFont() { Typeface = "" },
-                    new A.ComplexScriptFont() { Typeface = "" })) { Name = "Office" },
+                    new A.EastAsianFont() { Typeface = string.Empty },
+                    new A.ComplexScriptFont() { Typeface = string.Empty })) { Name = "Office" },
             new A.FormatScheme(
                 new A.FillStyleList(
                     new A.SolidFill(new A.SchemeColor() { Val = A.SchemeColorValues.PhColor }),
                     new A.GradientFill(
                         new A.GradientStopList(
-                            new A.GradientStop(new A.SchemeColor(new A.Tint() { Val = 50000 },
-                                        new A.SaturationModulation() { Val = 300000 })
+                            new A.GradientStop(new A.SchemeColor(
+                                new A.Tint() { Val = 50000 },
+                                new A.SaturationModulation() { Val = 300000 })
                                     { Val = A.SchemeColorValues.PhColor })
                                 { Position = 0 },
-                            new A.GradientStop(new A.SchemeColor(new A.Tint() { Val = 37000 },
-                                        new A.SaturationModulation() { Val = 300000 })
+                            new A.GradientStop(new A.SchemeColor(
+                                new A.Tint() { Val = 37000 },
+                                new A.SaturationModulation() { Val = 300000 })
                                     { Val = A.SchemeColorValues.PhColor })
                                 { Position = 35000 },
-                            new A.GradientStop(new A.SchemeColor(new A.Tint() { Val = 15000 },
-                                        new A.SaturationModulation() { Val = 350000 })
+                            new A.GradientStop(new A.SchemeColor(
+                                new A.Tint() { Val = 15000 },
+                                new A.SaturationModulation() { Val = 350000 })
                                     { Val = A.SchemeColorValues.PhColor })
                                 { Position = 100000 }),
                         new A.LinearGradientFill() { Angle = 16200000, Scaled = true }),
@@ -430,27 +433,32 @@ public sealed class SCPresentation : IPresentation
                     new A.GradientFill(
                         new A.GradientStopList(
                             new A.GradientStop(
-                                new A.SchemeColor(new A.Tint() { Val = 50000 },
-                                        new A.SaturationModulation() { Val = 300000 })
+                                new A.SchemeColor(
+                                    new A.Tint() { Val = 50000 },
+                                    new A.SaturationModulation() { Val = 300000 })
                                     { Val = A.SchemeColorValues.PhColor }) { Position = 0 },
                             new A.GradientStop(
-                                new A.SchemeColor(new A.Tint() { Val = 50000 },
-                                        new A.SaturationModulation() { Val = 300000 })
+                                new A.SchemeColor(
+                                    new A.Tint() { Val = 50000 },
+                                    new A.SaturationModulation() { Val = 300000 })
                                     { Val = A.SchemeColorValues.PhColor }) { Position = 0 },
                             new A.GradientStop(
-                                new A.SchemeColor(new A.Tint() { Val = 50000 },
-                                        new A.SaturationModulation() { Val = 300000 })
+                                new A.SchemeColor(
+                                    new A.Tint() { Val = 50000 },
+                                    new A.SaturationModulation() { Val = 300000 })
                                     { Val = A.SchemeColorValues.PhColor }) { Position = 0 }),
                         new A.LinearGradientFill() { Angle = 16200000, Scaled = true }),
                     new A.GradientFill(
                         new A.GradientStopList(
                             new A.GradientStop(
-                                new A.SchemeColor(new A.Tint() { Val = 50000 },
-                                        new A.SaturationModulation() { Val = 300000 })
+                                new A.SchemeColor(
+                                    new A.Tint() { Val = 50000 },
+                                    new A.SaturationModulation() { Val = 300000 })
                                     { Val = A.SchemeColorValues.PhColor }) { Position = 0 },
                             new A.GradientStop(
-                                new A.SchemeColor(new A.Tint() { Val = 50000 },
-                                        new A.SaturationModulation() { Val = 300000 })
+                                new A.SchemeColor(
+                                    new A.Tint() { Val = 50000 },
+                                    new A.SaturationModulation() { Val = 300000 })
                                     { Val = A.SchemeColorValues.PhColor }) { Position = 0 }),
                         new A.LinearGradientFill() { Angle = 16200000, Scaled = true }))) { Name = "Office" });
 

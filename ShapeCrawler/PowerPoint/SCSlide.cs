@@ -20,9 +20,9 @@ namespace ShapeCrawler;
 
 internal sealed class SCSlide : SlideObject, ISlide
 {
+    private readonly ResettableLazy<ShapeCollection> shapes;
     private readonly Lazy<SCImage?> backgroundImage;
     private Lazy<CustomXmlPart?> customXmlPart;
-    private readonly ResettableLazy<ShapeCollection> shapes;
 
     internal SCSlide(SCPresentation pres, SlidePart slidePart, SlideId slideId)
     : base(pres)
@@ -253,8 +253,9 @@ internal sealed class SCSlide : SlideObject, ISlide
         {
             using var customXmlPartStream = new StreamReader(customXmlPart.GetStream());
             string customXmlPartText = customXmlPartStream.ReadToEnd();
-            if (customXmlPartText.StartsWith(SCConstants.CustomDataElementName,
-                    StringComparison.CurrentCulture))
+            if (customXmlPartText.StartsWith(
+                SCConstants.CustomDataElementName,
+                StringComparison.CurrentCulture))
             {
                 return customXmlPart;
             }

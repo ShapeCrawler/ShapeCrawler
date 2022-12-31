@@ -14,7 +14,7 @@ internal static class PresentationPartExtensions
             new P.CommonSlideData(
                 new P.ShapeTree(
                     new P.NonVisualGroupShapeProperties(
-                        new P.NonVisualDrawingProperties { Id = (UInt32Value)1U, Name = "" },
+                        new P.NonVisualDrawingProperties { Id = (UInt32Value)1U, Name = string.Empty },
                         new P.NonVisualGroupShapeDrawingProperties(),
                         new P.ApplicationNonVisualDrawingProperties()),
                     new P.GroupShapeProperties(new A.TransformGroup()))),

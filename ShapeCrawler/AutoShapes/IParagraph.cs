@@ -26,7 +26,7 @@ public interface IParagraph
     IPortionCollection Portions { get; }
 
     /// <summary>
-    ///     Gets paragraph bullet if bullet exist, otherwise <see langword="null"/>
+    ///     Gets paragraph bullet if bullet exist, otherwise <see langword="null"/>.
     /// </summary>
     SCBullet Bullet { get; }
 
