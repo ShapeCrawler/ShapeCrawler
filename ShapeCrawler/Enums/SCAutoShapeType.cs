@@ -6,7 +6,27 @@
 public enum SCAutoShapeType
 {
     /// <summary>
-    ///     Text Box.
+    ///     Rectangle.
     /// </summary>
-    TextBox = 22
+    Rectangle = 1,
+    
+    /// <summary>
+    ///     Rounded rectangle.
+    /// </summary>
+    RoundedRectangle = 2,
+    
+    /// <summary>
+    ///     Oval.
+    /// </summary>
+    Oval = 3,
+    
+    /// <summary>
+    ///     Triangle.
+    /// </summary>
+    Triangle = 4,
+    
+    /// <summary>
+    ///     Diamond.
+    /// </summary>
+    Diamond
 }

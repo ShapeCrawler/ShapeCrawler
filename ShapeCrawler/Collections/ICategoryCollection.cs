@@ -33,7 +33,7 @@ internal sealed class CategoryCollection : LibraryCollection<ICategory>, ICatego
     {
     }
 
-    public static CategoryCollection? Create(SCChart chart, OpenXmlElement? firstChartSeries, SCChartType chartType)
+    internal static CategoryCollection? Create(SCChart chart, OpenXmlElement? firstChartSeries, SCChartType chartType)
     {
         if (chartType is SCChartType.BubbleChart or SCChartType.ScatterChart)
         {

@@ -75,14 +75,13 @@ public interface IShapeCollection : IEnumerable<IShape>
     IVideoShape AddVideo(int x, int y, Stream stream);
 
     /// <summary>
-    ///     Creates a new AutoShape.
+    ///     Creates a new rectangle shape on slide.
     /// </summary>
-    /// <param name="type">AutoShape type.</param>
     /// <param name="x">X coordinate in pixels.</param>
     /// <param name="y">Y coordinate in pixels.</param>
     /// <param name="width">Width in pixels.</param>
     /// <param name="height">Height in pixels.</param>
-    IAutoShape AddAutoShape(SCAutoShapeType type, int x, int y, int width, int height);
+    IAutoShape AddRectangle(int x, int y, int width, int height);
 
     /// <summary>
     ///     Creates a new Table.
@@ -334,7 +333,7 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
         return new VideoShape(this.slideObject, this.shapeTree);
     }
 
-    public IAutoShape AddAutoShape(SCAutoShapeType type, int x, int y, int width, int height)
+    public IAutoShape AddRectangle(int x, int y, int width, int height)
     {
         var idAndName = this.GenerateIdAndName();
 

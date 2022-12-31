@@ -187,11 +187,6 @@ internal sealed class SCFont : IFont
             }
         }
     }
-    
-    private void SetEastAsianName(string name)
-    {
-        throw new NotImplementedException();
-    }
 
     private int GetOffsetEffect()
     {
@@ -391,11 +386,17 @@ internal sealed class SCFont : IFont
         }
     }
 
-    private void SetLatinName(string fontName)
+    private void SetLatinName(string latinFont)
     {
         var aLatinFont = this.latinFont.Value;
-        aLatinFont.Typeface = fontName;
+        aLatinFont.Typeface = latinFont;
         this.latinFont.Reset();
+    }
+    
+    private void SetEastAsianName(string eastAsianFont)
+    {
+        var aEastAsianFont = this.GetAEastAsianFont();
+        aEastAsianFont.Typeface = eastAsianFont;
     }
 
     private void SetFontSize(int newFontSize)

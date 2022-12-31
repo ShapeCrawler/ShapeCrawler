@@ -8,7 +8,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents paragraph collection.
+///     Represents a collection of paragraphs.
 /// </summary>
 public interface IParagraphCollection : IReadOnlyList<IParagraph>
 {
