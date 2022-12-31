@@ -346,17 +346,23 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
         var heightEmu = UnitConverter.VerticalPixelToEmu(height);
         shapeProperties.AddAXfrm(xEmu, yEmu, widthEmu, heightEmu);
         shapeProperties.Append(presetGeometry);
-        
+
+        var aRunProperties = new A.RunProperties { Language = "en-US" };
+        var aText = new A.Text(string.Empty);
+        var aRun = new A.Run(aRunProperties, aText);
+        var aEndParaRPr = new A.EndParagraphRunProperties { Language = "en-US" };
+        var aParagraph = new A.Paragraph(aRun, aEndParaRPr);
+
         var newPShape = new P.Shape(
             new P.NonVisualShapeProperties(
-            new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
-            new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
-            new ApplicationNonVisualDrawingProperties()),
+                new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
+                new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
+                new ApplicationNonVisualDrawingProperties()),
             shapeProperties,
             new P.TextBody(
-            new A.BodyProperties(),
-            new A.ListStyle(),
-            new A.Paragraph(new A.EndParagraphRunProperties { Language = "en-US" })));
+                new A.BodyProperties(),
+                new A.ListStyle(),
+                aParagraph));
 
         this.shapeTree.Append(newPShape);
         

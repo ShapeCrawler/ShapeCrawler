@@ -61,7 +61,7 @@ public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     {
         // Arrange
         var autoShape = (IAutoShape)shape;
-        var font = autoShape.TextFrame!.Paragraphs[0].Font;
+        var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
 
         // Act
         font.EastAsianName = "SimSun";
@@ -79,7 +79,7 @@ public class FontTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
         var pres = SCPresentation.Create();
         var slide = pres.Slides[0];
         var rectangle = slide.Shapes.AddRectangle(10, 10, 10, 10);
-        var font = rectangle.TextFrame!.Paragraphs[0].Font;
+        var font = rectangle.TextFrame!.Paragraphs[0].Portions[0].Font;
 
         // Act
         font.EastAsianName = "SimSun";

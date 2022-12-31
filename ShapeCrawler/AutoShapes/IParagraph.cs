@@ -74,7 +74,7 @@ internal sealed class SCParagraph : IParagraph
         this.Level = this.GetIndentLevel();
         this.bullet = new Lazy<SCBullet>(this.GetBullet);
         this.ParentTextFrame = textBox;
-        this.portions = new ResettableLazy<PortionCollection>(this.GetPortions);
+        this.portions = new ResettableLazy<PortionCollection>(() => new PortionCollection(this.AParagraph, this));
     }
 
     internal event Action? TextChanged;
@@ -259,11 +259,6 @@ internal sealed class SCParagraph : IParagraph
         }
 
         this.TextChanged?.Invoke();
-    }
-
-    private PortionCollection GetPortions()
-    {
-        return new PortionCollection(this.AParagraph, this);
     }
 
     private void SetAlignment(SCTextAlignment alignmentValue)
