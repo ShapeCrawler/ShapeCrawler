@@ -20,6 +20,12 @@ public static class PptxValidator
             "The 'uri' attribute is not declared.",
             "/c:chartSpace[1]/c:chart[1]/c:extLst[1]/c:ext[1]"),
         new ValidationError(
+            "The 'mod' attribute is not declared.",
+            "/p:sldLayout[1]/p:extLst[1]"),
+        new ValidationError(
+            "The 'mod' attribute is not declared.",
+            "/p:sldMaster[1]/p:extLst[1]"),
+        new ValidationError(
             "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:pPr'.",
             "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]/p:txBody[1]/a:p[1]")
     };
