@@ -1,7 +1,7 @@
 ﻿namespace ShapeCrawler.Placeholders;
 
 /// <summary>
-///     Represents placeholder.
+///     Represents a placeholder.
 /// </summary>
 public interface IPlaceholder
 {

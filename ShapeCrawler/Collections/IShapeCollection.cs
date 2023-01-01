@@ -137,7 +137,7 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
 
         uint shapeId = (uint)this.CollectionItems.Max(sp => sp.Id) + 1;
         P.NonVisualDrawingProperties nonVisualDrawingProperties2 = new() { Id = shapeId, Name = $"Audio{shapeId}" };
-        A.HyperlinkOnClick hyperlinkOnClick1 = new A.HyperlinkOnClick() { Id = "", Action = "ppaction://media" };
+        A.HyperlinkOnClick hyperlinkOnClick1 = new A.HyperlinkOnClick() { Id = string.Empty, Action = "ppaction://media" };
 
         A.NonVisualDrawingPropertiesExtensionList nonVisualDrawingPropertiesExtensionList1 = new();
 
@@ -248,7 +248,7 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
 
         uint shapeId = (uint)this.CollectionItems.Max(sp => sp.Id) + 1;
         P.NonVisualDrawingProperties nonVisualDrawingProperties2 = new() { Id = shapeId, Name = $"Video{shapeId}" };
-        A.HyperlinkOnClick hyperlinkOnClick1 = new A.HyperlinkOnClick() { Id = "", Action = "ppaction://media" };
+        A.HyperlinkOnClick hyperlinkOnClick1 = new A.HyperlinkOnClick() { Id = string.Empty, Action = "ppaction://media" };
 
         A.NonVisualDrawingPropertiesExtensionList nonVisualDrawingPropertiesExtensionList1 = new();
 

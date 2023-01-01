@@ -31,7 +31,7 @@ public interface ISlideMaster
     IShapeCollection Shapes { get; }
 
     /// <summary>
-    ///     Gets parent Presentation
+    ///     Gets parent Presentation.
     /// </summary>
     IPresentation Presentation { get; }
 

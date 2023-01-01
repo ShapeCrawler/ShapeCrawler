@@ -4,7 +4,7 @@
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents OLE Object.
+///     Represents an OLE Object.
 /// </summary>
 public interface IOLEObject : IShape
 {

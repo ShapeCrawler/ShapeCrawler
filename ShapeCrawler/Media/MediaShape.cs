@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
+using OneOf;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
-using OneOf;
 
 namespace ShapeCrawler.Media;
 

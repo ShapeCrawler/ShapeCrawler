@@ -12,12 +12,12 @@ namespace ShapeCrawler;
 public interface ISectionSlideCollection : IEnumerable<ISlide>
 {
     /// <summary>
-    ///     Gets sections count
+    ///     Gets sections count.
     /// </summary>
     int Count { get; }
 
     /// <summary>
-    ///     Gets section slide by index
+    ///     Gets section slide by index.
     /// </summary>
     ISlide this[int index] { get; }
 }

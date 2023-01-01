@@ -8,10 +8,12 @@ namespace ShapeCrawler.Drawing.ShapeFill;
 
 internal abstract class ShapeFill : IShapeFill
 {
+    protected readonly TypedOpenXmlCompositeElement framePr;
     protected BooleanValue? useBgFill;
     protected SCFillType fillType;
     protected A.NoFill? aNoFill;
-    protected readonly TypedOpenXmlCompositeElement framePr;
+    
+    private readonly SlideObject slideObject;
     private bool isDirty;
     private string? hexSolidColor;
     private SCImage? pictureImage;
@@ -19,7 +21,6 @@ internal abstract class ShapeFill : IShapeFill
     private A.GradientFill? aGradFill;
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
-    private readonly SlideObject slideObject;
 
     internal ShapeFill(SlideObject slideObject, TypedOpenXmlCompositeElement framePr)
     {
