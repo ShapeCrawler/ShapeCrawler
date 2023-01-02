@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
@@ -176,24 +177,41 @@ public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
     }
 
     [Fact]
-    public void AddAutoShape_adds_autoshape_in_the_New_Presentation()
+    public void AutoShapes_AddRectangle_adds_Rectangle_in_the_New_Presentation()
     {
         // Arrange
         var pres = SCPresentation.Create();
         var shapes = pres.Slides[0].Shapes;
             
         // Act
-        var autoShape = shapes.AddRectangle( 50, 60, 100, 70);
+        var rectangle = shapes.AutoShapes.AddRectangle(50, 60, 100, 70);
 
         // Assert
-        autoShape.GeometryType.Should().Be(SCGeometry.Rectangle);
-        autoShape.X.Should().Be(50);
-        autoShape.Y.Should().Be(60);
-        autoShape.Width.Should().Be(100);
-        autoShape.Height.Should().Be(70);
-        autoShape.TextFrame!.Paragraphs.Count.Should().Be(1);
+        rectangle.GeometryType.Should().Be(SCGeometry.Rectangle);
+        rectangle.X.Should().Be(50);
+        rectangle.Y.Should().Be(60);
+        rectangle.Width.Should().Be(100);
+        rectangle.Height.Should().Be(70);
+        rectangle.TextFrame!.Paragraphs.Count.Should().Be(1);
         var errors = PptxValidator.Validate(pres);
         errors.Should().BeEmpty();
+    }
+    
+    [Fact]
+    public void AutoShapes_AddRoundedRectangle_adds_Rounded_Rectangle()
+    {
+        // Arrange
+        var pptx = GetTestStream("autoshape-case015.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var shapes = pres.Slides[0].Shapes;
+            
+        // Act
+        var roundedRectangle = shapes.AutoShapes.AddRoundedRectangle();
+
+        // Assert
+        
+        // var errors = PptxValidator.Validate(pres);
+        // errors.Should().BeEmpty();
     }
 
     [Fact]

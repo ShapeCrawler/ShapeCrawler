@@ -37,8 +37,12 @@ public sealed class SCPresentation : IPresentation
     private Stream? outerStream;
     private string? outerPath;
 
+    #region Constructors
+    
     private SCPresentation(string outerPath)
     {
+        SCLogger.Send();
+        
         this.outerPath = outerPath;
 
         ThrowIfSourceInvalid(outerPath);
@@ -59,13 +63,13 @@ public sealed class SCPresentation : IPresentation
         this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
     }
 
-    private SCPresentation(Stream sourceStream)
+    private SCPresentation(Stream outerStream)
     {
-        this.outerStream = sourceStream;
-        ThrowIfSourceInvalid(sourceStream);
+        this.outerStream = outerStream;
+        ThrowIfSourceInvalid(outerStream);
 
         this.internalStream = new MemoryStream();
-        sourceStream.CopyTo(this.internalStream);
+        outerStream.CopyTo(this.internalStream);
         this.SDKPresentationInternal = PresentationDocument.Open(this.internalStream, true);
 
         this.ThrowIfSlidesNumberLarge();
@@ -79,23 +83,8 @@ public sealed class SCPresentation : IPresentation
             new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
         this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
     }
-
-    private SCPresentation(byte[] sourceBytes)
-    {
-        this.internalStream = sourceBytes.ToExpandableStream();
-        this.SDKPresentationInternal = PresentationDocument.Open(this.internalStream, true);
-
-        this.ThrowIfSlidesNumberLarge();
-        this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
-        this.SlideMastersValue =
-            new ResettableLazy<SlideMasterCollection>(() => SlideMasterCollection.Create(this));
-        this.paraLvlToFontData =
-            new Lazy<Dictionary<int, FontData>>(() =>
-                ParseFontHeights(this.SDKPresentationInternal.PresentationPart!.Presentation));
-        this.sectionCollectionLazy =
-            new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
-        this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
-    }
+    
+    #endregion Constructors
 
     /// <inheritdoc/>
     public ISlideCollection Slides => this.slideCollectionLazy.Value;
@@ -132,8 +121,6 @@ public sealed class SCPresentation : IPresentation
 
     internal SCSlideCollection SlidesInternal => (SCSlideCollection)this.Slides;
 
-    #region Public Methods
-
     /// <summary>
     ///     Creates a new presentation.
     /// </summary>
@@ -152,7 +139,7 @@ public sealed class SCPresentation : IPresentation
     }
 
     /// <summary>
-    ///     Opens existing presentation from specified file path.
+    ///     Opens presentation path.
     /// </summary>
     public static IPresentation Open(string pptxPath)
     {
@@ -160,17 +147,7 @@ public sealed class SCPresentation : IPresentation
     }
 
     /// <summary>
-    ///     Opens presentation from specified byte array.
-    /// </summary>
-    public static IPresentation Open(byte[] pptxBytes)
-    {
-        ThrowIfSourceInvalid(pptxBytes);
-
-        return new SCPresentation(pptxBytes);
-    }
-
-    /// <summary>
-    ///     Opens presentation from specified stream.
+    ///     Opens presentation stream.
     /// </summary>
     public static IPresentation Open(Stream pptxStream)
     {
@@ -232,8 +209,6 @@ public sealed class SCPresentation : IPresentation
     {
         this.Close();
     }
-
-    #endregion Public Methods
 
     private static void CreatePresentationParts(PresentationPart presPart)
     {

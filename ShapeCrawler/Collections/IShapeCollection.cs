@@ -35,6 +35,11 @@ public interface IShapeCollection : IEnumerable<IShape>
     int Count { get; }
 
     /// <summary>
+    ///     Gets collection of AutoShapes.
+    /// </summary>
+    IAutoShapeCollection AutoShapes { get; }
+
+    /// <summary>
     ///     Gets shape at the specified index.
     /// </summary>
     IShape this[int index] { get; }
@@ -75,15 +80,6 @@ public interface IShapeCollection : IEnumerable<IShape>
     IVideoShape AddVideo(int x, int y, Stream stream);
 
     /// <summary>
-    ///     Creates a new rectangle shape on slide.
-    /// </summary>
-    /// <param name="x">X coordinate in pixels.</param>
-    /// <param name="y">Y coordinate in pixels.</param>
-    /// <param name="width">Width in pixels.</param>
-    /// <param name="height">Height in pixels.</param>
-    IAutoShape AddRectangle(int x, int y, int width, int height);
-
-    /// <summary>
     ///     Creates a new Table.
     /// </summary>
     ITable AddTable(int x, int y, int columns, int rows);
@@ -110,6 +106,8 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
         this.shapeTree = shapeTree;
     }
 
+    public IAutoShapeCollection AutoShapes => this.GetAutoShapes();
+    
     public IAudioShape AddAudio(int xPixels, int yPixels, Stream mp3Stream)
     {
         long xEmu = UnitConverter.HorizontalPixelToEmu(xPixels);
@@ -333,44 +331,6 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
         return new VideoShape(this.slideObject, this.shapeTree);
     }
 
-    public IAutoShape AddRectangle(int x, int y, int width, int height)
-    {
-        var idAndName = this.GenerateIdAndName();
-
-        var adjustValueList = new A.AdjustValueList();
-        var presetGeometry = new A.PresetGeometry(adjustValueList) { Preset = A.ShapeTypeValues.Rectangle };
-        var shapeProperties = new P.ShapeProperties();
-        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
-        var yEmu = UnitConverter.VerticalPixelToEmu(y);
-        var widthEmu = UnitConverter.HorizontalPixelToEmu(width);
-        var heightEmu = UnitConverter.VerticalPixelToEmu(height);
-        shapeProperties.AddAXfrm(xEmu, yEmu, widthEmu, heightEmu);
-        shapeProperties.Append(presetGeometry);
-
-        var aRunProperties = new A.RunProperties { Language = "en-US" };
-        var aText = new A.Text(string.Empty);
-        var aRun = new A.Run(aRunProperties, aText);
-        var aEndParaRPr = new A.EndParagraphRunProperties { Language = "en-US" };
-        var aParagraph = new A.Paragraph(aRun, aEndParaRPr);
-
-        var newPShape = new P.Shape(
-            new P.NonVisualShapeProperties(
-                new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
-                new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
-                new ApplicationNonVisualDrawingProperties()),
-            shapeProperties,
-            new P.TextBody(
-                new A.BodyProperties(),
-                new A.ListStyle(),
-                aParagraph));
-
-        this.shapeTree.Append(newPShape);
-        
-        var autoShape = new AutoShape(newPShape, this.slideObject, null);
-
-        return autoShape;
-    }
-
     public ITable AddTable(int xPx, int yPx, int columns, int rows)
     {
         var shapeName = this.GenerateNextTableName();
@@ -568,6 +528,11 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
         return maxId + 1;
     }
     
+    private IAutoShapeCollection GetAutoShapes()
+    {
+        var autoShapes = this.CollectionItems.OfType<IAutoShape>();
+        return new AutoShapeCollection(autoShapes, this.shapeTree);
+    }
     
     private string GenerateNextTableName()
     {
@@ -588,33 +553,5 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
         }
 
         return $"Table {maxOrder + 1}";
-    }
-    
-    private (int, string) GenerateIdAndName()
-    {
-        var maxOrder = 0;
-        var maxId = 0;
-        foreach (var shape in this.CollectionItems)
-        {
-            if (shape.Id > maxId)
-            {
-                maxId = shape.Id;
-            }
-
-            var matchOrder = Regex.Match(shape.Name, "(?!AutoShape )\\d+");
-            if (matchOrder.Success)
-            {
-                var order = int.Parse(matchOrder.Value);
-                if (order > maxOrder)
-                {
-                    maxOrder = order;
-                }
-            }
-        }
-
-        var shapeId = maxId + 1;
-        var shapeName = $"AutoShape {maxOrder + 1}";
-        
-        return (shapeId, shapeName);
     }
 }
