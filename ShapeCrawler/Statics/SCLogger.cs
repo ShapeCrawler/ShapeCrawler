@@ -35,7 +35,8 @@ internal static class SCLogger
             }
             
             using var httpClient = new HttpClient();
-            var content = new StringContent(JsonSerializer.Serialize(Log.Value), Encoding.UTF8, "application/json");
+            var json = JsonSerializer.Serialize(Log.Value);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
             try
             {
                 httpClient.PostAsync("http://domain/api/statistics", content).GetAwaiter().GetResult();

@@ -17,15 +17,8 @@ using Xunit;
 
 namespace ShapeCrawler.Tests
 {
-    public class ShapeTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
+    public class ShapeTests : ShapeCrawlerTest
     {
-        private readonly PresentationFixture _fixture;
-
-        public ShapeTests(PresentationFixture fixture)
-        {
-            _fixture = fixture;
-        }
-
         [Theory]
         [SlideShapeData("021.pptx", 4, 2, SCPlaceholderType.Footer)]
         [SlideShapeData("008.pptx", 1, 3, SCPlaceholderType.DateAndTime)]
@@ -111,7 +104,8 @@ namespace ShapeCrawler.Tests
         public void PictureSetImage_ShouldNotImpactOtherPictureImage_WhenItsOriginImageIsShared()
         {
             // Arrange
-            IPresentation presentation = SCPresentation.Open(TestFiles.Presentations.pre009);
+            var pptx = GetTestStream("009_table.pptx");
+            IPresentation presentation = SCPresentation.Open(pptx);
             IPicture picture5 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 5);
             IPicture picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
             int pic6LengthBefore = picture6.Image.BinaryData.GetAwaiter().GetResult().Length;
@@ -198,9 +192,11 @@ namespace ShapeCrawler.Tests
         public void Y_Getter_returns_y_coordinate_in_pixels()
         {
             // Arrange
-            IShape shapeCase1 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
-            IShape shapeCase2 = _fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7);
-            IShape shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
+            var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
+            var pres18 = SCPresentation.Open(GetTestStream("018.pptx"));
+            IShape shapeCase1 = SCPresentation.Open(GetTestStream("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
+            IShape shapeCase2 = SCPresentation.Open(GetTestStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
+            IShape shapeCase3 = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
             float verticalResoulution = TestHelper.VerticalResolution;
 
             // Act
@@ -295,10 +291,10 @@ namespace ShapeCrawler.Tests
         public void Width_returns_shape_width_in_pixels()
         {
             // Arrange
-            IShape shapeCase1 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
-            IGroupShape groupShape = (IGroupShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
+            IShape shapeCase1 = SCPresentation.Open(GetTestStream("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
+            IGroupShape groupShape = (IGroupShape)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 7);
             IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
-            IShape shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
+            IShape shapeCase3 = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
 
             // Act
             int width1 = shapeCase1.Width;
@@ -331,10 +327,10 @@ namespace ShapeCrawler.Tests
         public void Height_ReturnsHeightInPixels()
         {
             // Arrange
-            IShape shapeCase1 = _fixture.Pre006.Slides[0].Shapes.First(sp => sp.Id == 2);
-            IGroupShape groupShape = (IGroupShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 7);
+            IShape shapeCase1 = SCPresentation.Open(GetTestStream("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
+            IGroupShape groupShape = (IGroupShape)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 7);
             IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
-            IShape shapeCase3 = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 9);
+            IShape shapeCase3 = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
             float verticalResulution = TestHelper.VerticalResolution;
 
             // Act
@@ -371,7 +367,7 @@ namespace ShapeCrawler.Tests
         public void Shape_IsOLEObject()
         {
             // Arrange
-            IOLEObject oleObject = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 8) as IOLEObject;
+            IOLEObject oleObject = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 8) as IOLEObject;
 
             // Act-Assert
             oleObject.Should().NotBeNull();
@@ -381,7 +377,7 @@ namespace ShapeCrawler.Tests
         public void Shape_IsNotGroupShape()
         {
             // Arrange
-            IShape shape = _fixture.Pre006.Slides[0].Shapes.First(x => x.Id == 3);
+            IShape shape = SCPresentation.Open(GetTestStream("006_1 slides.pptx")).Slides[0].Shapes.First(x => x.Id == 3);
 
             // Act-Assert
             shape.Should().NotBeOfType<IGroupShape>();
@@ -391,8 +387,12 @@ namespace ShapeCrawler.Tests
         public void Shape_IsNotAutoShape()
         {
             // Arrange
-            IShape shapeCase1 = _fixture.Pre009.Slides[4].Shapes.First(sp => sp.Id == 5);
-            IShape shapeCase2 = _fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 4);
+            var pptx9 = GetTestStream("009_table.pptx");
+            var pres9 = SCPresentation.Open(pptx9);
+            var pptx11 = GetTestStream("011_dt.pptx");
+            var pres11 = SCPresentation.Open(pptx11);
+            var shapeCase1 = pres9.Slides[4].Shapes.First(sp => sp.Id == 5);
+            var shapeCase2 = pres11.Slides[0].Shapes.First(sp => sp.Id == 4);
 
             // Act-Assert
             shapeCase1.Should().NotBeOfType<IAutoShape>();
@@ -403,7 +403,8 @@ namespace ShapeCrawler.Tests
         public void CustomData_ReturnsNull_WhenShapeHasNotCustomData()
         {
             // Arrange
-            var shape = _fixture.Pre009.Slides.First().Shapes.First();
+            var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
+            var shape = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides.First().Shapes.First();
 
             // Act
             var shapeCustomData = shape.CustomData;
@@ -418,7 +419,7 @@ namespace ShapeCrawler.Tests
             // Arrange
             const string customDataString = "Test custom data";
             var savedPreStream = new MemoryStream();
-            var presentation = SCPresentation.Open(Resources._009);
+            var presentation = SCPresentation.Open(GetTestStream("009_table.pptx"));
             var shape = presentation.Slides.First().Shapes.First();
 
             // Act
@@ -435,7 +436,7 @@ namespace ShapeCrawler.Tests
         public void Name_ReturnsShapeNameString()
         {
             // Arrange
-            IShape shape = _fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 8);
+            IShape shape = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 8);
 
             // Act
             string shapeName = shape.Name;
@@ -448,8 +449,8 @@ namespace ShapeCrawler.Tests
         public void Hidden_ReturnsValueIndicatingWhetherShapeIsHiddenFromTheSlide()
         {
             // Arrange
-            IShape shapeCase1 = _fixture.Pre004.Slides[0].Shapes[0];
-            IShape shapeCase2 = _fixture.Pre004.Slides[0].Shapes[1];
+            IShape shapeCase1 = SCPresentation.Open(GetTestStream("004.pptx")).Slides[0].Shapes[0];
+            IShape shapeCase2 = SCPresentation.Open(GetTestStream("004.pptx")).Slides[0].Shapes[1];
 
             // Act-Assert
             shapeCase1.Hidden.Should().BeTrue();

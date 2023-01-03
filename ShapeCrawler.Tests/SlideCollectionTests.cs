@@ -7,21 +7,18 @@ using Xunit;
 
 namespace ShapeCrawler.Tests;
 
-public class SlideCollectionTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
+public class SlideCollectionTests : ShapeCrawlerTest
 {
-    private readonly PresentationFixture _fixture;
-
-    public SlideCollectionTests(PresentationFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
     [Fact]
     public void Count_returns_one_When_presentation_contains_one_slide()
     {
         // Act
-        var numberSlidesCase1 = _fixture.Pre017.Slides.Count;
-        var numberSlidesCase2 = _fixture.Pre016.Slides.Count;
+        var pptx17 = GetTestStream("017.pptx");
+        var pres17 = SCPresentation.Open(pptx17);        
+        var pptx16 = GetTestStream("016.pptx");
+        var pres16 = SCPresentation.Open(pptx16);
+        var numberSlidesCase1 = pres17.Slides.Count;
+        var numberSlidesCase2 = pres16.Slides.Count;
 
         // Assert
         numberSlidesCase1.Should().Be(1);
@@ -32,8 +29,10 @@ public class SlideCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
     public void Add_adds_slide_from_External_presentation()
     {
         // Arrange
-        var sourceSlide = _fixture.Pre001.Slides[0];
-        var destPre = SCPresentation.Open(Properties.Resources._002);
+        var pres1 = SCPresentation.Open(GetTestStream("001.pptx"));
+        var sourceSlide = SCPresentation.Open(GetTestStream("001.pptx")).Slides[0];
+        var pptx = GetTestStream("002.pptx");
+        var destPre = SCPresentation.Open(pptx);
         var originSlidesCount = destPre.Slides.Count;
         var expectedSlidesCount = ++originSlidesCount;
         MemoryStream savedPre = new ();
@@ -88,10 +87,12 @@ public class SlideCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
     public void Slides_Insert_inserts_slide_at_the_specified_position()
     {
         // Arrange
-        var sourceSlide = SCPresentation.Open(TestFiles.Presentations.pre001).Slides[0];
+        var pptx = GetTestStream("001.pptx");
+        var sourceSlide = SCPresentation.Open(pptx).Slides[0];
         var sourceSlideId = Guid.NewGuid().ToString();
         sourceSlide.CustomData = sourceSlideId;
-        var destPre = SCPresentation.Open(Properties.Resources._002);
+        pptx = GetTestStream("002.pptx");
+        var destPre = SCPresentation.Open(pptx);
 
         // Act
         destPre.Slides.Insert(2, sourceSlide);
@@ -102,10 +103,11 @@ public class SlideCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
 
     [Theory]
     [MemberData(nameof(TestCasesSlidesRemove))]
-    public void Slides_Remove_removes_slide(byte[] pptxBytes, int expectedSlidesCount)
+    public void Slides_Remove_removes_slide(string file, int expectedSlidesCount)
     {
         // Arrange
-        var pres = SCPresentation.Open(pptxBytes);
+        var pptx = GetTestStream(file);
+        var pres = SCPresentation.Open(pptx);
         var removingSlide = pres.Slides[0];
         var mStream = new MemoryStream();
 
@@ -122,8 +124,8 @@ public class SlideCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
         
     public static IEnumerable<object[]> TestCasesSlidesRemove()
     {
-        yield return new object[] {Properties.Resources._007_2_slides, 1};
-        yield return new object[] {Properties.Resources._006_1_slides, 0};
+        yield return new object[] {"007_2 slides.pptx", 1};
+        yield return new object[] {"006_1 slides.pptx", 0};
     }
         
     [Fact]

@@ -179,6 +179,18 @@
     <EmbeddedResource Include="Resource\autoshape\autoshape-case016.pptx" />
     <None Remove="Resource\015.pptx" />
     <EmbeddedResource Include="Resource\015.pptx" />
+    <None Remove="Resource\017.pptx" />
+    <EmbeddedResource Include="Resource\017.pptx" />
+    <None Remove="Resource\016.pptx" />
+    <EmbeddedResource Include="Resource\016.pptx" />
+    <None Remove="Resource\004.pptx" />
+    <EmbeddedResource Include="Resource\004.pptx" />
+    <None Remove="Resource\040_video.pptx" />
+    <EmbeddedResource Include="Resource\040_video.pptx" />
+    <None Remove="Resource\007_2 slides.pptx" />
+    <EmbeddedResource Include="Resource\007_2 slides.pptx" />
+    <None Remove="Resource\tables-case001.pptx" />
+    <EmbeddedResource Include="Resource\tables-case001.pptx" />
   </ItemGroup>
 
 </Project>

@@ -17,23 +17,22 @@ using Xunit;
 
 namespace ShapeCrawler.Tests
 {
-    public class TextFrameTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
+    public class TextFrameTests : ShapeCrawlerTest
     {
-        private readonly PresentationFixture _fixture;
-
-        public TextFrameTests(PresentationFixture fixture)
-        {
-            _fixture = fixture;
-        }
-
         [Fact]
         public void Text_Getter_returns_text_of_table_Cell()
         {
             // Arrange
-            var textFrame1 = ((IAutoShape)_fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3)).TextFrame;
-            var textFrame2 = ((ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+            var pptx8 = GetTestStream("008.pptx");
+            var pres8 = SCPresentation.Open(pptx8);
+            var pptx1 = GetTestStream("001.pptx");
+            var pres1 = SCPresentation.Open(pptx1);
+            var pptx9 = GetTestStream("009_table.pptx");
+            var pres9 = SCPresentation.Open(pptx9);
+            var textFrame1 = ((IAutoShape)SCPresentation.Open(GetTestStream("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3)).TextFrame;
+            var textFrame2 = ((ITable)SCPresentation.Open(GetTestStream("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
                 .TextFrame;
-            var textFrame3 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+            var textFrame3 = ((ITable)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
                 .TextFrame;
             
             // Act
@@ -115,7 +114,7 @@ namespace ShapeCrawler.Tests
         public void Text_Setter_can_update_content_multiple_times()
         {
             // Arrange
-            var pres = SCPresentation.Open(Properties.Resources.autoshape_case005_text_frame);
+            var pres = SCPresentation.Open(GetTestStream("005.pptx"));
             var textFrame = pres.Slides.First().Shapes.OfType<IAutoShape>().First().TextFrame;
 
             // Act
@@ -277,12 +276,12 @@ namespace ShapeCrawler.Tests
         }
         
         [Fact]
-        public void Text_setter_sets_text_for_New_Shape()
+        public void Text_Setter_sets_text_for_New_Shape()
         {
             // Arrange
             var pres = SCPresentation.Create();
             var shapes = pres.Slides[0].Shapes;
-            var autoShape = shapes.AddRectangle( 50, 60, 100, 70);
+            var autoShape = shapes.AutoShapes.AddRectangle( 50, 60, 100, 70);
             var textFrame = autoShape.TextFrame!;
             
             // Act
@@ -384,9 +383,11 @@ namespace ShapeCrawler.Tests
         public void Shape_IsAutoShape()
         {
             // Arrange
-            IShape shapeCase1 = _fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 3);
-            IShape shapeCase2 = _fixture.Pre021.Slides[3].Shapes.First(sp => sp.Id == 2);
-            IShape shapeCase3 = _fixture.Pre011.Slides[0].Shapes.First(sp => sp.Id == 54275);
+            var pres8 = SCPresentation.Open(GetTestStream("008.pptx"));
+            var pres21 = SCPresentation.Open(GetTestStream("021.pptx"));
+            IShape shapeCase1 = SCPresentation.Open(GetTestStream("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3);
+            IShape shapeCase2 = SCPresentation.Open(GetTestStream("021.pptx")).Slides[3].Shapes.First(sp => sp.Id == 2);
+            IShape shapeCase3 = SCPresentation.Open(GetTestStream("011_dt.pptx")).Slides[0].Shapes.First(sp => sp.Id == 54275);
 
             // Act
             var autoShapeCase1 = shapeCase1 as IAutoShape;
@@ -455,7 +456,7 @@ namespace ShapeCrawler.Tests
             // Arrange
             const string TEST_TEXT = "ParagraphsAdd";
             var mStream = new MemoryStream();
-            var pres = SCPresentation.Open(Resources._001);
+            var pres = SCPresentation.Open(GetTestStream("001.pptx"));
             var textFrame = ((IAutoShape)pres.Slides[0].Shapes.First(sp => sp.Id == 4)).TextFrame;
             int originParagraphsCount = textFrame.Paragraphs.Count;
 
@@ -493,7 +494,7 @@ namespace ShapeCrawler.Tests
         [Fact]
         public void Paragraphs_Add_adds_new_text_paragraph_at_the_end_And_returns_added_paragraph_When_it_has_been_added_after_text_frame_changed()
         {
-            var pres = SCPresentation.Open(Properties.Resources._001);
+            var pres = SCPresentation.Open(GetTestStream("001.pptx"));
             var autoShape = (IAutoShape)pres.Slides[0].Shapes.First(sp => sp.Id == 3);
             var textBox = autoShape.TextFrame;
             var paragraphs = textBox.Paragraphs;
