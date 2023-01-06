@@ -114,21 +114,20 @@ namespace ShapeCrawler.Tests
         public void Text_Setter_can_update_content_multiple_times()
         {
             // Arrange
-            var pres = SCPresentation.Open(GetTestStream("005.pptx"));
-            var textFrame = pres.Slides.First().Shapes.OfType<IAutoShape>().First().TextFrame;
+            var pptx = GetTestStream("005.pptx");
+            var pres = SCPresentation.Open(pptx);
+            var textFrame = pres.Slides[0].Shapes.GetByName<IAutoShape>("Header").TextFrame;
 
             // Act
             textFrame.Text = textFrame.Text.Replace("{{replace_this}}", "confirm this");
             textFrame.Text = textFrame.Text.Replace("{{replace_that}}", "confirm that");
 
+            // Assert
             var modifiedPres = new MemoryStream();
             pres.SaveAs(modifiedPres);
             pres.Close();
             pres = SCPresentation.Open(modifiedPres);
-
-            // Assert
             var changedTextFrame = pres.Slides.First().Shapes.OfType<IAutoShape>().First().TextFrame;
-
             changedTextFrame.Text.Should().ContainAll("confirm this", "confirm that");
         }
         

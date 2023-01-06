@@ -191,6 +191,8 @@
     <EmbeddedResource Include="Resource\007_2 slides.pptx" />
     <None Remove="Resource\tables-case001.pptx" />
     <EmbeddedResource Include="Resource\tables-case001.pptx" />
+    <None Remove="Resource\005.pptx" />
+    <EmbeddedResource Include="Resource\005.pptx" />
   </ItemGroup>
 
 </Project>

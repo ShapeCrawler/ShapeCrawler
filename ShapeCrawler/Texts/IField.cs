@@ -1,4 +1,11 @@
-﻿namespace ShapeCrawler.AutoShapes;
+﻿namespace ShapeCrawler;
+
+/// <summary>
+///     Represents a field.
+/// </summary>
+public interface IField
+{
+}
 
 internal sealed class SCField : IField
 {
