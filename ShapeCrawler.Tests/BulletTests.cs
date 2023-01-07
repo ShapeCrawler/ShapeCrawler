@@ -40,7 +40,8 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             var mStream = new MemoryStream();
-            IPresentation presentation = SCPresentation.Open(Resources._020);
+            var pptx = GetTestStream("020.pptx");
+            IPresentation presentation = SCPresentation.Open(pptx);
             IAutoShape placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
             IParagraph paragraph = placeholderAutoShape.TextFrame.Paragraphs.Add();
 
@@ -72,7 +73,8 @@ namespace ShapeCrawler.Tests
         {
             // Arrange
             var mStream = new MemoryStream();
-            IPresentation presentation = SCPresentation.Open(Resources._020);
+            var pptx = GetTestStream("020.pptx");
+            IPresentation presentation = SCPresentation.Open(pptx);
             IAutoShape placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
             IParagraph paragraph = placeholderAutoShape.TextFrame.Paragraphs.Add();
 

@@ -12,8 +12,8 @@ internal sealed class AutoShapeCreator : OpenXmlElementHandler
     {
         if (pShapeTreeChild is P.Shape pShape)
         {
-            var slideAutoShape = new AutoShape(pShape, slideObject, groupShape);
-            return slideAutoShape;
+            var autoShape = new AutoShape(slideObject, pShape, groupShape);
+            return autoShape;
         }
 
         return this.Successor?.Create(pShapeTreeChild, slideObject, groupShape);

@@ -6,20 +6,15 @@ using Xunit;
 
 namespace ShapeCrawler.Tests;
 
-public class SlideMasterTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
+public class SlideMasterTests : ShapeCrawlerTest
 {
-    private readonly PresentationFixture _fixture;
-
-    public SlideMasterTests(PresentationFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
     [Fact]
     public void ShapeXAndY_ReturnXAndYAxesCoordinatesOfTheMasterShape()
     {
         // Arrange
-        ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
+        var pptx = GetTestStream("001.pptx");
+        var pres = SCPresentation.Open(pptx);
+        ISlideMaster slideMaster = pres.SlideMasters[0];
         IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
 
         // Act
@@ -35,7 +30,9 @@ public class SlideMasterTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
     public void ShapeWidthAndHeight_ReturnWidthAndHeightSizesOfTheMaster()
     {
         // Arrange
-        ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
+        var pptx = GetTestStream("001.pptx");
+        var pres = SCPresentation.Open(pptx);
+        ISlideMaster slideMaster = pres.SlideMasters[0];
         IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
         float horizontalResolution = TestHelper.HorizontalResolution;
         float verticalResolution = TestHelper.VerticalResolution;
@@ -68,7 +65,8 @@ public class SlideMasterTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
     public void AutoShapePlaceholderType_ReturnsPlaceholderType()
     {
         // Arrange
-        ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
+        var pres1 = SCPresentation.Open(GetTestStream("001.pptx"));
+        ISlideMaster slideMaster = SCPresentation.Open(GetTestStream("001.pptx")).SlideMasters[0];
         IShape masterAutoShapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
         IShape masterAutoShapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
         IShape masterAutoShapeCase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
@@ -88,7 +86,9 @@ public class SlideMasterTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
     public void ShapeGeometryType_ReturnsShapesGeometryFormType()
     {
         // Arrange
-        ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
+        var pptx = GetTestStream("001.pptx");
+        var pres = SCPresentation.Open(pptx);
+        ISlideMaster slideMaster = pres.SlideMasters[0];
         IShape shapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
         IShape shapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
 
@@ -105,7 +105,8 @@ public class SlideMasterTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
     public void AutoShapeTextBoxText_ReturnsText_WhenTheSlideMasterAutoShapesTextBoxIsNotEmpty()
     {
         // Arrange
-        ISlideMaster slideMaster = _fixture.Pre001.SlideMasters[0];
+        var pres1 = SCPresentation.Open(GetTestStream("001.pptx"));
+        ISlideMaster slideMaster = SCPresentation.Open(GetTestStream("001.pptx")).SlideMasters[0];
         IAutoShape autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
         // Act-Assert

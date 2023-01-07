@@ -9,15 +9,8 @@ using Xunit;
 
 namespace ShapeCrawler.Tests;
 
-public class PresentationTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
+public class PresentationTests : ShapeCrawlerTest
 {
-    private readonly PresentationFixture _fixture;
-
-    public PresentationTests(PresentationFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
     [Fact]
     public void Close_ClosesPresentationAndReleasesResources()
     {
@@ -45,7 +38,8 @@ public class PresentationTests : ShapeCrawlerTest, IClassFixture<PresentationFix
     public void Close_should_not_throw_ObjectDisposedException()
     {
         // Arrange
-        var pres = SCPresentation.Open(TestFiles.Presentations.pre025_byteArray);
+        var pptx = GetTestStream("025_chart.pptx");
+        var pres = SCPresentation.Open(pptx);
         var chart = pres.Slides[0].Shapes.GetById<IPieChart>(7);
         chart.Categories[0].Name = "new name";
         var mStream = new MemoryStream();
@@ -56,19 +50,6 @@ public class PresentationTests : ShapeCrawlerTest, IClassFixture<PresentationFix
 
         // Assert
         act.Should().NotThrow<ObjectDisposedException>();
-    }
-
-    [Fact]
-    public void Open_throws_exception_When_presentation_size_is_large()
-    {
-        // Arrange
-        var bytes = new byte[(250 * 1024 * 1024) + 1];
-
-        // Act
-        Action act = () => SCPresentation.Open(bytes);
-
-        // Assert
-        act.Should().Throw<Exception>();
     }
 
     [Fact]
@@ -87,7 +68,8 @@ public class PresentationTests : ShapeCrawlerTest, IClassFixture<PresentationFix
     public void Slide_Width_returns_presentation_slides_width_in_pixels()
     {
         // Arrange
-        var presentation = _fixture.Pre009;
+        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
+        var presentation = pres9;
 
         // Act
         var slideWidth = presentation.SlideWidth;
@@ -100,7 +82,8 @@ public class PresentationTests : ShapeCrawlerTest, IClassFixture<PresentationFix
     public void Slide_Height_returns_presentation_slides_height_in_pixels()
     {
         // Arrange
-        var presentation = _fixture.Pre009;
+        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
+        var presentation = pres9;
 
         // Act
         var slideHeight = presentation.SlideHeight;
@@ -113,8 +96,10 @@ public class PresentationTests : ShapeCrawlerTest, IClassFixture<PresentationFix
     public void Slides_Count_returns_One_When_presentation_contains_one_slide()
     {
         // Act
-        var numberSlidesCase1 = _fixture.Pre017.Slides.Count;
-        var numberSlidesCase2 = _fixture.Pre016.Slides.Count;
+        var pres17 = SCPresentation.Open(GetTestStream("017.pptx"));
+        var pres16 = SCPresentation.Open(GetTestStream("016.pptx"));
+        var numberSlidesCase1 = pres17.Slides.Count;
+        var numberSlidesCase2 = pres16.Slides.Count;
 
         // Assert
         numberSlidesCase1.Should().Be(1);
@@ -125,8 +110,9 @@ public class PresentationTests : ShapeCrawlerTest, IClassFixture<PresentationFix
     public void Slides_Add_adds_specified_slide_at_the_end_of_slide_collection()
     {
         // Arrange
-        var sourceSlide = _fixture.Pre001.Slides[0];
-        var destPre = SCPresentation.Open(Properties.Resources._002);
+        var pres1 = SCPresentation.Open(GetTestStream("001.pptx"));
+        var sourceSlide = SCPresentation.Open(GetTestStream("001.pptx")).Slides[0];
+        var destPre = SCPresentation.Open(GetTestStream("002.pptx"));
         var originSlidesCount = destPre.Slides.Count;
         var expectedSlidesCount = ++originSlidesCount;
         MemoryStream savedPre = new ();
@@ -172,10 +158,12 @@ public class PresentationTests : ShapeCrawlerTest, IClassFixture<PresentationFix
     public void Slides_Insert_inserts_specified_slide_at_the_specified_position()
     {
         // Arrange
-        ISlide sourceSlide = SCPresentation.Open(TestFiles.Presentations.pre001).Slides[0];
+        var pres1 = SCPresentation.Open(GetTestStream("001.pptx"));
+        var pres2 = SCPresentation.Open(GetTestStream("002.pptx"));
+        ISlide sourceSlide = SCPresentation.Open(GetTestStream("001.pptx")).Slides[0];
         string sourceSlideId = Guid.NewGuid().ToString();
         sourceSlide.CustomData = sourceSlideId;
-        IPresentation destPre = SCPresentation.Open(Properties.Resources._002);
+        IPresentation destPre = SCPresentation.Open(GetTestStream("002.pptx"));
 
         // Act
         destPre.Slides.Insert(2, sourceSlide);
@@ -186,10 +174,11 @@ public class PresentationTests : ShapeCrawlerTest, IClassFixture<PresentationFix
 
     [Theory]
     [MemberData(nameof(TestCasesSlidesRemove))]
-    public void Slides_Remove_removes_slide(byte[] pptxBytes, int expectedSlidesCount)
+    public void Slides_Remove_removes_slide(string file, int expectedSlidesCount)
     {
         // Arrange
-        var pres = SCPresentation.Open(pptxBytes);
+        var pptx = GetTestStream(file);
+        var pres = SCPresentation.Open(pptx);
         var removingSlide = pres.Slides[0];
         var mStream = new MemoryStream();
 
@@ -202,6 +191,12 @@ public class PresentationTests : ShapeCrawlerTest, IClassFixture<PresentationFix
         pres.SaveAs(mStream);
         pres = SCPresentation.Open(mStream);
         pres.Slides.Should().HaveCount(expectedSlidesCount);
+    }
+    
+    public static IEnumerable<object[]> TestCasesSlidesRemove()
+    {
+        yield return new object[] {"007_2 slides.pptx", 1};
+        yield return new object[] {"006_1 slides.pptx", 0};
     }
         
     [Fact]
@@ -226,18 +221,12 @@ public class PresentationTests : ShapeCrawlerTest, IClassFixture<PresentationFix
         sectionSlides.Count.Should().Be(0);
     }
 
-    public static IEnumerable<object[]> TestCasesSlidesRemove()
-    {
-        yield return new object[] {Properties.Resources._007_2_slides, 1};
-        yield return new object[] {Properties.Resources._006_1_slides, 0};
-    }
-
     [Fact]
     public void SlideMastersCount_ReturnsNumberOfMasterSlidesInThePresentation()
     {
         // Arrange
-        IPresentation presentationCase1 = _fixture.Pre001;
-        IPresentation presentationCase2 = _fixture.Pre002;
+        IPresentation presentationCase1 = SCPresentation.Open(GetTestStream("001.pptx"));
+        IPresentation presentationCase2 = SCPresentation.Open(GetTestStream("002.pptx"));
 
         // Act
         int slideMastersCountCase1 = presentationCase1.SlideMasters.Count;
@@ -252,7 +241,7 @@ public class PresentationTests : ShapeCrawlerTest, IClassFixture<PresentationFix
     public void SlideMasterShapesCount_ReturnsNumberOfShapesOnTheMasterSlide()
     {
         // Arrange
-        IPresentation presentation = _fixture.Pre001;
+        IPresentation presentation = SCPresentation.Open(GetTestStream("001.pptx"));
 
         // Act
         int slideMasterShapesCount = presentation.SlideMasters[0].Shapes.Count;

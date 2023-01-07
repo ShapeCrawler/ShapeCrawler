@@ -13,20 +13,14 @@ using Xunit;
 namespace ShapeCrawler.Tests;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-public class SlideTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
+public class SlideTests : ShapeCrawlerTest
 {
-    private readonly PresentationFixture fixture;
-
-    public SlideTests(PresentationFixture fixture)
-    {
-        this.fixture = fixture;
-    }
-
     [Fact]
     public void Hide_MethodHidesSlide_WhenItIsExecuted()
     {
         // Arrange
-        var pre = SCPresentation.Open(Properties.Resources._001);
+        var pptx = GetTestStream("001.pptx");
+        var pre = SCPresentation.Open(pptx);
         var slide = pre.Slides.First();
 
         // Act
@@ -40,7 +34,9 @@ public class SlideTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     public void Hidden_GetterReturnsTrue_WhenTheSlideIsHidden()
     {
         // Arrange
-        ISlide slideEx = this.fixture.Pre002.Slides[2];
+        var pptx = GetTestStream("002.pptx");
+        var pres = SCPresentation.Open(pptx);
+        ISlide slideEx = pres.Slides[2];
 
         // Act
         bool hidden = slideEx.Hidden;
@@ -53,7 +49,8 @@ public class SlideTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     public async void Background_SetImage_updates_background()
     {
         // Arrange
-        var pre = SCPresentation.Open(Properties.Resources._009);
+        var pptx = GetTestStream("009_table.pptx");
+var pre = SCPresentation.Open(pptx);
         var backgroundImage = pre.Slides[0].Background;
         var imgStream = new MemoryStream(Properties.Resources.test_image_2);
         var bytesBefore = await backgroundImage.BinaryData.ConfigureAwait(false);
@@ -70,7 +67,8 @@ public class SlideTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     public void Background_ImageIsNull_WhenTheSlideHasNotBackground()
     {
         // Arrange
-        var slide = this.fixture.Pre009.Slides[1];
+        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
+        var slide = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1];
 
         // Act
         var backgroundImage = slide.Background;
@@ -84,7 +82,7 @@ public class SlideTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     {
         // Arrange
         const string customDataString = "Test custom data";
-        var originPre = SCPresentation.Open(Properties.Resources._001);
+        var originPre = SCPresentation.Open(GetTestStream("001.pptx"));
         var slide = originPre.Slides.First();
 
         // Act
@@ -103,7 +101,8 @@ public class SlideTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     public void CustomData_PropertyIsNull_WhenTheSlideHasNotCustomData()
     {
         // Arrange
-        var slide = this.fixture.Pre001.Slides.First();
+        var pres1 = SCPresentation.Open(GetTestStream("001.pptx"));
+        var slide = SCPresentation.Open(GetTestStream("001.pptx")).Slides.First();
 
         // Act
         var sldCustomData = slide.CustomData;

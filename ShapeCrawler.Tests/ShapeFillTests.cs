@@ -12,20 +12,15 @@ using Xunit;
 
 namespace ShapeCrawler.Tests;
 
-public class ShapeFillTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
+public class ShapeFillTests : ShapeCrawlerTest
 {
-    private readonly PresentationFixture _fixture;
-
-    public ShapeFillTests(PresentationFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
     [Fact]
     public void Fill_is_not_null()
     {
         // Arrange
-        var autoShape = (IAutoShape)_fixture.Pre021.Slides[0].Shapes.First(sp => sp.Id == 108);
+        var pptx = GetTestStream("021.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var autoShape = (IAutoShape)pres.Slides[0].Shapes.First(sp => sp.Id == 108);
 
         // Act-Assert
         autoShape.Fill.Should().NotBeNull();
@@ -109,8 +104,8 @@ public class ShapeFillTests : ShapeCrawlerTest, IClassFixture<PresentationFixtur
     public void Picture_SetImage_updates_picture_fill()
     {
         // Arrange
-        var pres = SCPresentation.Open(TestFiles.Presentations.pre009);
-        var shape = (IAutoShape)pres.Slides[2].Shapes.First(sp => sp.Id == 4);
+        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
+        var shape = (IAutoShape)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4);
         var fill = shape.Fill;
         var newImage = TestFiles.Images.img02_stream;
         var imageSizeBefore = fill.Picture!.BinaryData.GetAwaiter().GetResult().Length;
@@ -164,7 +159,8 @@ public class ShapeFillTests : ShapeCrawlerTest, IClassFixture<PresentationFixtur
     public void AutoShape_Fill_Type_returns_NoFill_When_shape_is_Not_filled()
     {
         // Arrange
-        var autoShape = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 6);
+        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
+        var autoShape = (IAutoShape)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 6);
 
         // Act
         var fillType = autoShape.Fill.Type;
@@ -177,7 +173,8 @@ public class ShapeFillTests : ShapeCrawlerTest, IClassFixture<PresentationFixtur
     public void HexSolidColor_getter_returns_color_name()
     {
         // Arrange
-        var autoShape = (IAutoShape)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 2);
+        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
+        var autoShape = (IAutoShape)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 2);
 
         // Act
         var shapeSolidColorName = autoShape.Fill.Color;

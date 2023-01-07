@@ -39,7 +39,7 @@ public interface IAutoShape : IShape
     ITextFrame? TextFrame { get; }
 }
 
-internal sealed class AutoShape : SlideShape, IAutoShape, ITextFrameContainer
+internal class AutoShape : SlideShape, IAutoShape, ITextFrameContainer
 {
     // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi.
     // 96/72=1.4
@@ -51,10 +51,10 @@ internal sealed class AutoShape : SlideShape, IAutoShape, ITextFrameContainer
     private readonly P.Shape pShape;
 
     internal AutoShape(
-        P.Shape pShape, 
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
+        P.Shape pShape,
         SCGroupShape? groupShape)
-        : base(pShape, oneOfSlide, groupShape)
+        : base(pShape, parentSlideObject, groupShape)
     {
         this.pShape = pShape;
         this.textFrame = new Lazy<TextFrame?>(this.GetTextFrame);

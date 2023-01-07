@@ -14,21 +14,18 @@ using Xunit;
 namespace ShapeCrawler.Tests;
 
 [SuppressMessage("Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task")]
-public class PictureTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
+public class PictureTests : ShapeCrawlerTest
 {
-    private readonly PresentationFixture _fixture;
-
-    public PictureTests(PresentationFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
     [Fact]
     public async void Image_BinaryData_returns_image_byte_array()
     {
         // Arrange
-        var shapePicture1 = (IPicture)_fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
-        var shapePicture2 = (IPicture)_fixture.Pre018.Slides[0].Shapes.First(sp => sp.Id == 7);
+        var pptx9 = GetTestStream("009_table.pptx");
+        var pres9 = SCPresentation.Open(pptx9);
+        var pptx18 = GetTestStream("018.pptx");
+        var pres18 = SCPresentation.Open(pptx18);
+        var shapePicture1 = (IPicture)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
+        var shapePicture2 = (IPicture)SCPresentation.Open(GetTestStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
 
         // Act
         var shapePictureContentCase1 = await shapePicture1.Image.BinaryData.ConfigureAwait(false);
@@ -166,7 +163,7 @@ public class PictureTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
     {
         // TODO: Deeper learn such pictures, where content generated via a:ln
         // Arrange
-        var pre = _fixture.Pre019;
+        var pre = SCPresentation.Open(GetTestStream("019.pptx"));
 
         // Act - Assert
         Assert.ThrowsAny<Exception>(() => pre.Slides[1].Shapes.Single(x => x.Id == 47));

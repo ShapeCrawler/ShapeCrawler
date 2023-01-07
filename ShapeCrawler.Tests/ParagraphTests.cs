@@ -17,15 +17,8 @@ using Xunit;
 
 namespace ShapeCrawler.Tests
 {
-    public class ParagraphTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
+    public class ParagraphTests : ShapeCrawlerTest
     {
-        private readonly PresentationFixture _fixture;
-
-        public ParagraphTests(PresentationFixture fixture)
-        {
-            _fixture = fixture;
-        }
-
         [Theory]
         [SlideParagraphData("autoshape-case003.pptx", 1, "AutoShape 5", 1, 1)]
         [SlideParagraphData("autoshape-case003.pptx", 1, "AutoShape 5", 2, 2)]
@@ -42,7 +35,9 @@ namespace ShapeCrawler.Tests
         public void Paragraph_Bullet_FontName_Getter_returns_font_name()
         {
             // Arrange
-            var shapes = _fixture.Pre002.Slides[1].Shapes;
+            var pptx = GetTestStream("002.pptx");
+            var pres = SCPresentation.Open(pptx);
+            var shapes = pres.Slides[1].Shapes;
             var shape3Pr1Bullet = ((IAutoShape)shapes.First(x => x.Id == 3)).TextFrame.Paragraphs[0].Bullet;
             var shape4Pr2Bullet = ((IAutoShape)shapes.First(x => x.Id == 4)).TextFrame.Paragraphs[1].Bullet;
 
@@ -59,7 +54,9 @@ namespace ShapeCrawler.Tests
         public void Paragraph_Bullet_Type_Getter_returns_bullet_type()
         {
             // Arrange
-            var shapeList = _fixture.Pre002.Slides[1].Shapes;
+            var pptx = GetTestStream("002.pptx");
+            var pres = SCPresentation.Open(pptx);
+            var shapeList = pres.Slides[1].Shapes;
             var shape4 = shapeList.First(x => x.Id == 4);
             var shape5 = shapeList.First(x => x.Id == 5);
             var shape4Pr2Bullet = ((IAutoShape)shape4).TextFrame.Paragraphs[1].Bullet;
@@ -96,7 +93,7 @@ namespace ShapeCrawler.Tests
         {
             var pptxStream1 = GetTestStream("001.pptx");
             var pres1 = SCPresentation.Open(pptxStream1);
-            var autoShape1 = pres1.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
+            var autoShape1 = SCPresentation.Open(GetTestStream("001.pptx")).Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
             yield return new object[] { autoShape1, SCTextAlignment.Center };
 
             var pptxStream2 = GetTestStream("001.pptx");
@@ -162,7 +159,8 @@ namespace ShapeCrawler.Tests
         public void Paragraph_BulletColorHexAndCharAndSizeProperties_ReturnCorrectValues()
         {
             // Arrange
-            var shapeList = _fixture.Pre002.Slides[1].Shapes;
+            var pres2 = SCPresentation.Open(GetTestStream("002.pptx"));
+            var shapeList = pres2.Slides[1].Shapes;
             var shape4 = shapeList.First(x => x.Id == 4);
             var shape4Pr2Bullet = ((IAutoShape)shape4).TextFrame.Paragraphs[1].Bullet;
 
@@ -225,7 +223,7 @@ namespace ShapeCrawler.Tests
             // Arrange
             var pres = SCPresentation.Create();
             var slide = pres.Slides[0];
-            var shape = slide.Shapes.AddRectangle(10, 10, 10, 10);
+            var shape = slide.Shapes.AutoShapes.AddRectangle(10, 10, 10, 10);
             var paragraph = shape.TextFrame!.Paragraphs[0];
 
             // Act
@@ -245,7 +243,7 @@ namespace ShapeCrawler.Tests
                 ShapeId = 4,
                 ParagraphIndex = 2
             };
-            paragraphQuery.Presentation = SCPresentation.Open(Resources._002);
+            paragraphQuery.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
             yield return new object[] { paragraphQuery, "Text", 1 };
 
             paragraphQuery = new TestElementQuery
@@ -254,7 +252,7 @@ namespace ShapeCrawler.Tests
                 ShapeId = 4,
                 ParagraphIndex = 2
             };
-            paragraphQuery.Presentation = SCPresentation.Open(Resources._002);
+            paragraphQuery.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
             yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}", 1 };
 
             paragraphQuery = new TestElementQuery
@@ -263,7 +261,7 @@ namespace ShapeCrawler.Tests
                 ShapeId = 4,
                 ParagraphIndex = 2
             };
-            paragraphQuery.Presentation = SCPresentation.Open(Resources._002);
+            paragraphQuery.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
             yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}Text2", 2 };
 
             paragraphQuery = new TestElementQuery
@@ -272,7 +270,7 @@ namespace ShapeCrawler.Tests
                 ShapeId = 4,
                 ParagraphIndex = 2
             };
-            paragraphQuery.Presentation = SCPresentation.Open(Resources._002);
+            paragraphQuery.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
             yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}Text2{Environment.NewLine}", 2 };
         }
 
@@ -280,10 +278,10 @@ namespace ShapeCrawler.Tests
         public void Paragraph_Text_Getter_returns_paragraph_text()
         {
             // Arrange
-            ITextFrame textBox1 = ((IAutoShape)_fixture.Pre008.Slides[0].Shapes.First(sp => sp.Id == 37)).TextFrame;
-            ITextFrame textBox2 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+            ITextFrame textBox1 = ((IAutoShape)SCPresentation.Open(GetTestStream("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 37)).TextFrame;
+            ITextFrame textBox2 = ((ITable)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
                 .TextFrame;
-            ITextFrame textBox3 = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+            ITextFrame textBox3 = ((ITable)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
                 .TextFrame;
 
             // Act
@@ -318,7 +316,7 @@ namespace ShapeCrawler.Tests
         public void Paragraph_Portions_counter_returns_number_of_text_portions_in_the_paragraph()
         {
             // Arrange
-            var textFrame = _fixture.Pre009.Slides[2].Shapes.GetById<IAutoShape>(2).TextFrame;
+            var textFrame = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.GetById<IAutoShape>(2).TextFrame;
 
             // Act
             var portions = textFrame.Paragraphs[0].Portions;

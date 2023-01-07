@@ -9,20 +9,15 @@ using Xunit;
 
 namespace ShapeCrawler.Tests;
 
-public class ParagraphPortionTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
+public class ParagraphPortionTests : ShapeCrawlerTest
 {
-    private readonly PresentationFixture _fixture;
-
-    public ParagraphPortionTests(PresentationFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
     [Fact]
     public void Text_Getter_returns_text_of_paragraph_portion()
     {
         // Arrange
-        IPortion portion = ((ITable)_fixture.Pre009.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+        var pptx = GetTestStream("009_table");
+        var pres = SCPresentation.Open(pptx);
+        IPortion portion = ((ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
             .TextFrame
             .Paragraphs[0].Portions[0];
 

@@ -8,15 +8,8 @@ using Xunit;
 
 namespace ShapeCrawler.Tests;
 
-public class ColorFormatTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
+public class ColorFormatTests : ShapeCrawlerTest
 {
-    private readonly PresentationFixture _fixture;
-
-    public ColorFormatTests(PresentationFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
     [Theory]
     [MemberData(nameof(TestCasesSetColorHex))]
     public void SetColorHex_updates_font_color(TestElementQuery colorFormatQuery)
@@ -67,9 +60,10 @@ public class ColorFormatTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
             };
             testCases.Add(portionQuery);
 
+            var pptx = GetTestStream("001.pptx");
             portionQuery = new TestElementQuery
             {
-                Presentation = SCPresentation.Open(Resources._020),
+                Presentation = SCPresentation.Open(pptx),
                 Location = Location.Slide,
                 SlideIndex = 0,
                 ShapeId = 3,
@@ -78,9 +72,10 @@ public class ColorFormatTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
             };
             testCases.Add(portionQuery);
 
+            pptx = GetTestStream("001.pptx");
             portionQuery = new TestElementQuery
             {
-                Presentation = SCPresentation.Open(Resources._001),
+                Presentation = SCPresentation.Open(pptx),
                 Location = Location.Slide,
                 SlideIndex = 2,
                 ShapeId = 4,
@@ -89,9 +84,10 @@ public class ColorFormatTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
             };
             testCases.Add(portionQuery);
 
+            pptx = GetTestStream("001.pptx");
             portionQuery = new TestElementQuery
             {
-                Presentation = SCPresentation.Open(Resources._001),
+                Presentation = SCPresentation.Open(pptx),
                 Location = Location.Slide,
                 SlideIndex = 4,
                 ShapeId = 5,
@@ -245,7 +241,8 @@ public class ColorFormatTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
     public void ColorHex_Getter_returns_White_color()
     {
         // Arrange
-        var shape = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 4);
+        var pres20 = SCPresentation.Open(GetTestStream("020.pptx"));
+        var shape = (IAutoShape)SCPresentation.Open(GetTestStream("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
         var colorFormat = shape.TextFrame!.Paragraphs[0].Portions[0].Font.ColorFormat;
 
         // Act-Assert
@@ -256,7 +253,8 @@ public class ColorFormatTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
     public void ColorHex_Getter_returns_color_of_SlideLayout_Placeholder()
     {
         // Arrange
-        IAutoShape titlePh = (IAutoShape)_fixture.Pre001.Slides[0].SlideLayout.Shapes.First(sp => sp.Id == 2);
+        var pres1 = SCPresentation.Open(GetTestStream("001.pptx"));
+        IAutoShape titlePh = (IAutoShape)SCPresentation.Open(GetTestStream("001.pptx")).Slides[0].SlideLayout.Shapes.First(sp => sp.Id == 2);
         IColorFormat colorFormat = titlePh.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
         // Act-Assert
@@ -267,7 +265,7 @@ public class ColorFormatTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
     public void ColorHex_Getter_returns_color_of_SlideMaster_Non_Placeholder()
     {
         // Arrange
-        IAutoShape nonPlaceholder = (IAutoShape)_fixture.Pre001.SlideMasters[0].Shapes.First(sp => sp.Id == 8);
+        IAutoShape nonPlaceholder = (IAutoShape)SCPresentation.Open(GetTestStream("001.pptx")).SlideMasters[0].Shapes.First(sp => sp.Id == 8);
         IColorFormat colorFormat = nonPlaceholder.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
         // Act-Assert
@@ -278,7 +276,7 @@ public class ColorFormatTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
     public void ColorHex_Getter_returns_color_of_Title_SlideMaster_Placeholder()
     {
         // Arrange
-        IAutoShape titlePlaceholder = (IAutoShape)_fixture.Pre001.SlideMasters[0].Shapes.First(sp => sp.Id == 2);
+        IAutoShape titlePlaceholder = (IAutoShape)SCPresentation.Open(GetTestStream("001.pptx")).SlideMasters[0].Shapes.First(sp => sp.Id == 2);
         IColorFormat colorFormat = titlePlaceholder.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
         // Act-Assert
@@ -289,7 +287,8 @@ public class ColorFormatTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
     public void ColorHex_Getter_returns_color_of_Table_Cell_on_Slide()
     {
         // Arrange
-        ITable table = (ITable)_fixture.Pre001.Slides[1].Shapes.First(sp => sp.Id == 4);
+        var pres1 = SCPresentation.Open(GetTestStream("001.pptx"));
+        ITable table = (ITable)SCPresentation.Open(GetTestStream("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
         IColorFormat colorFormat = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
         // Act-Assert
@@ -300,7 +299,8 @@ public class ColorFormatTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
     public void ColorType_ReturnsSchemeColorType_WhenFontColorIsTakenFromThemeScheme()
     {
         // Arrange
-        IAutoShape nonPhAutoShape = (IAutoShape)_fixture.Pre020.Slides[0].Shapes.First(sp => sp.Id == 2);
+        var pres20 = SCPresentation.Open(GetTestStream("020.pptx"));
+        IAutoShape nonPhAutoShape = (IAutoShape)SCPresentation.Open(GetTestStream("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
         IColorFormat colorFormat = nonPhAutoShape.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
         // Act
@@ -314,7 +314,7 @@ public class ColorFormatTests : ShapeCrawlerTest, IClassFixture<PresentationFixt
     public void ColorType_ReturnsSchemeColorType_WhenFontColorIsSetAsRGB()
     {
         // Arrange
-        IAutoShape placeholder = (IAutoShape)_fixture.Pre014.Slides[5].Shapes.First(sp => sp.Id == 52);
+        IAutoShape placeholder = (IAutoShape)SCPresentation.Open(GetTestStream("014.pptx")).Slides[5].Shapes.First(sp => sp.Id == 52);
         IColorFormat colorFormat = placeholder.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
         // Act

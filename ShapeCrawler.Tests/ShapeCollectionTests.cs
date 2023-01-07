@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
@@ -16,15 +17,8 @@ using Xunit;
 namespace ShapeCrawler.Tests;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<PresentationFixture>
+public class ShapeCollectionTests : ShapeCrawlerTest
 {
-    private readonly PresentationFixture fixture;
-
-    public ShapeCollectionTests(PresentationFixture fixture)
-    {
-        this.fixture = fixture;
-    }
-
     [Theory]
     [LayoutShapeData("autoshape-case004_subtitle.pptx", slideNumber: 1, shapeName: "Group 1")]
     [MasterShapeData("autoshape-case004_subtitle.pptx", shapeName: "Group 1")]
@@ -45,7 +39,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
     public void Contains_particular_shape_Types()
     {
         // Arrange
-        var pres = this.fixture.Pre003;
+        var pres = SCPresentation.Open(GetTestStream("003.pptx"));
 
         // Act
         var shapes = pres.Slides.First().Shapes;
@@ -62,7 +56,8 @@ public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
     public void Contains_Picture_shape()
     {
         // Arrange
-        IShape shape = this.fixture.Pre009.Slides[1].Shapes.First(sp => sp.Id == 3);
+        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
+        IShape shape = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
 
         // Act-Assert
         IPicture picture = shape as IPicture;
@@ -99,7 +94,9 @@ public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
     public void Contains_Video_shape()
     {
         // Arrange
-        IShape shape = this.fixture.Pre040.Slides[0].Shapes.First(sp => sp.Id == 8);
+        var pptx = GetTestStream("040_video.pptx");
+        var pres = SCPresentation.Open(pptx);
+        IShape shape = pres.Slides[0].Shapes.First(sp => sp.Id == 8);
             
         // Act
         bool isVideo = shape is IVideoShape;
@@ -176,22 +173,39 @@ public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
     }
 
     [Fact]
-    public void AddAutoShape_adds_autoshape_in_the_New_Presentation()
+    public void AutoShapes_AddRectangle_adds_Rectangle_in_the_New_Presentation()
     {
         // Arrange
         var pres = SCPresentation.Create();
         var shapes = pres.Slides[0].Shapes;
             
         // Act
-        var autoShape = shapes.AddRectangle( 50, 60, 100, 70);
+        var rectangle = shapes.AutoShapes.AddRectangle(50, 60, 100, 70);
 
         // Assert
-        autoShape.GeometryType.Should().Be(SCGeometry.Rectangle);
-        autoShape.X.Should().Be(50);
-        autoShape.Y.Should().Be(60);
-        autoShape.Width.Should().Be(100);
-        autoShape.Height.Should().Be(70);
-        autoShape.TextFrame!.Paragraphs.Count.Should().Be(1);
+        rectangle.GeometryType.Should().Be(SCGeometry.Rectangle);
+        rectangle.X.Should().Be(50);
+        rectangle.Y.Should().Be(60);
+        rectangle.Width.Should().Be(100);
+        rectangle.Height.Should().Be(70);
+        rectangle.TextFrame!.Paragraphs.Count.Should().Be(1);
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
+    }
+    
+    [Fact(Skip = "In Progress")]
+    public void AutoShapes_AddRoundedRectangle_adds_Rounded_Rectangle()
+    {
+        // Arrange
+        var pptx = GetTestStream("autoshape-case015.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var shapes = pres.Slides[0].Shapes;
+            
+        // Act
+        var roundedRectangle = shapes.AutoShapes.AddRoundedRectangle();
+
+        // Assert
+        
         var errors = PptxValidator.Validate(pres);
         errors.Should().BeEmpty();
     }
@@ -205,7 +219,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest, IClassFixture<Presentation
         var shapes = pres.Slides[0].Shapes;
             
         // Act
-        var autoShape = shapes.AddRectangle( 50, 60, 100, 70);
+        var autoShape = shapes.AutoShapes.AddRectangle( 50, 60, 100, 70);
 
         // Assert
         autoShape.Name.Should().Be("AutoShape 4");
