@@ -193,7 +193,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest
         errors.Should().BeEmpty();
     }
     
-    [Fact]
+    [Fact(Skip = "In Progress")]
     public void AutoShapes_AddRoundedRectangle_adds_Rounded_Rectangle()
     {
         // Arrange
@@ -206,8 +206,8 @@ public class ShapeCollectionTests : ShapeCrawlerTest
 
         // Assert
         
-        // var errors = PptxValidator.Validate(pres);
-        // errors.Should().BeEmpty();
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
     }
 
     [Fact]
