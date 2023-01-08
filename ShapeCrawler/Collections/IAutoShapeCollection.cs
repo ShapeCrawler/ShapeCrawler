@@ -24,7 +24,7 @@ public interface IAutoShapeCollection : IReadOnlyList<IAutoShape>
     /// <summary>
     ///     Adds a new Rounded Rectangle shape. 
     /// </summary>
-    IRoundedRectangle AddRoundedRectangle();
+    IRoundedRectangle AddRoundedRectangle(int x, int y, int w, int h);
 }
 
 internal class AutoShapeCollection : IAutoShapeCollection
@@ -49,86 +49,25 @@ internal class AutoShapeCollection : IAutoShapeCollection
     
     public IRectangle AddRectangle(int x, int y, int width, int height)
     {
-        var idAndName = this.GenerateIdAndName();
-
-        var adjustValueList = new A.AdjustValueList();
-        var presetGeometry = new A.PresetGeometry(adjustValueList) { Preset = A.ShapeTypeValues.Rectangle };
-        var shapeProperties = new P.ShapeProperties();
-        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
-        var yEmu = UnitConverter.VerticalPixelToEmu(y);
-        var widthEmu = UnitConverter.HorizontalPixelToEmu(width);
-        var heightEmu = UnitConverter.VerticalPixelToEmu(height);
-        shapeProperties.AddAXfrm(xEmu, yEmu, widthEmu, heightEmu);
-        shapeProperties.Append(presetGeometry);
-
-        var aRunProperties = new A.RunProperties { Language = "en-US" };
-        var aText = new A.Text(string.Empty);
-        var aRun = new A.Run(aRunProperties, aText);
-        var aEndParaRPr = new A.EndParagraphRunProperties { Language = "en-US" };
-        var aParagraph = new A.Paragraph(aRun, aEndParaRPr);
-
-        var newPShape = new P.Shape(
-            new P.NonVisualShapeProperties(
-                new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
-                new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
-                new P.ApplicationNonVisualDrawingProperties()),
-            shapeProperties,
-            new P.TextBody(
-                new A.BodyProperties(),
-                new A.ListStyle(),
-                aParagraph));
+        var newPShape = this.CreatePShape(x, y, width, height, A.ShapeTypeValues.Rectangle);
 
         this.pShapeTree.Append(newPShape);
         
         var rectangle = new SCRectangle(this, newPShape, null);
+        rectangle.Outline.Color = "000000";
      
         return rectangle;
     }
-    
-    public IRoundedRectangle AddRoundedRectangle()
+
+    public IRoundedRectangle AddRoundedRectangle(int x, int y, int width, int height)
     {
-        // var idAndName = this.GenerateIdAndName();
-        var id = 1;
-        var name = "Rounded Rectangle 1";
-        var x = 10;
-        var y = 10;
-        var width = 100;
-        var height = 50;
+        var newPShape = this.CreatePShape(x, y, width, height, A.ShapeTypeValues.RoundRectangle);
 
-        // p:nvSpPr
-        var pNvSpPr = new P.NonVisualShapeProperties(
-            new P.NonVisualDrawingProperties { Id = (uint)id, Name = name },
-            new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
-            new P.ApplicationNonVisualDrawingProperties());
-        
-        // p:spPr
-        var adjustValueList = new A.AdjustValueList();
-        var presetGeometry = new A.PresetGeometry(adjustValueList) { Preset = A.ShapeTypeValues.RoundRectangle };
-        var shapeProperties = new P.ShapeProperties();
-        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
-        var yEmu = UnitConverter.VerticalPixelToEmu(y);
-        var widthEmu = UnitConverter.HorizontalPixelToEmu(width);
-        var heightEmu = UnitConverter.VerticalPixelToEmu(height);
-        shapeProperties.AddAXfrm(xEmu, yEmu, widthEmu, heightEmu);
-        shapeProperties.Append(presetGeometry);
+        var roundedRectangle = new SCRoundedRectangle(this, newPShape, null);
 
-        // p:txBody
-        var aRunProperties = new A.RunProperties { Language = "en-US" };
-        var aText = new A.Text(string.Empty);
-        var aRun = new A.Run(aRunProperties, aText);
-        var aEndParaRPr = new A.EndParagraphRunProperties { Language = "en-US" };
-        var aParagraph = new A.Paragraph(aRun, aEndParaRPr);
+        roundedRectangle.Outline.Color = "000000";
 
-        var newPShape = new P.Shape(
-            shapeProperties,
-            new P.TextBody(
-                new A.BodyProperties(),
-                new A.ListStyle(),
-                aParagraph));
-
-        this.pShapeTree.Append(newPShape);
-
-        return null!;
+        return roundedRectangle;
     }
 
     public IEnumerator<IAutoShape> GetEnumerator()
@@ -142,31 +81,50 @@ internal class AutoShapeCollection : IAutoShapeCollection
         return this.GetEnumerator();
     }
     
+    private P.Shape CreatePShape(int x, int y, int width, int height, A.ShapeTypeValues form)
+    {
+        var idAndName = this.GenerateIdAndName();
+        var adjustValueList = new A.AdjustValueList();
+        var presetGeometry = new A.PresetGeometry(adjustValueList) { Preset = form };
+        var shapeProperties = new P.ShapeProperties();
+        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
+        var yEmu = UnitConverter.VerticalPixelToEmu(y);
+        var widthEmu = UnitConverter.HorizontalPixelToEmu(width);
+        var heightEmu = UnitConverter.VerticalPixelToEmu(height);
+        shapeProperties.AddAXfrm(xEmu, yEmu, widthEmu, heightEmu);
+        shapeProperties.Append(presetGeometry);
+
+        var aRunProperties = new A.RunProperties { Language = "en-US" };
+        var aText = new A.Text(string.Empty);
+        var aRun = new A.Run(aRunProperties, aText);
+        var aEndParaRPr = new A.EndParagraphRunProperties { Language = "en-US" };
+        var aParagraph = new A.Paragraph(aRun, aEndParaRPr);
+
+        var pShape = new P.Shape(
+            new P.NonVisualShapeProperties(
+                new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
+                new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
+                new P.ApplicationNonVisualDrawingProperties()),
+            shapeProperties,
+            new P.TextBody(
+                new A.BodyProperties(),
+                new A.ListStyle(),
+                aParagraph));
+
+        return pShape;
+    }
+    
     private (int, string) GenerateIdAndName()
     {
-        var maxOrder = 0;
-        var maxId = 0;
-        foreach (var shape in this.allShapes)
-        {
-            if (shape.Id > maxId)
-            {
-                maxId = shape.Id;
-            }
-
-            var matchOrder = Regex.Match(shape.Name, "(?!AutoShape )\\d+");
-            if (matchOrder.Success)
-            {
-                var order = int.Parse(matchOrder.Value);
-                if (order > maxOrder)
-                {
-                    maxOrder = order;
-                }
-            }
-        }
-
-        var shapeId = maxId + 1;
-        var shapeName = $"AutoShape {maxOrder + 1}";
+        var maxId = this.allShapes.Max(s => s.Id);
+        var maxOrder = Regex.Matches(string.Join(string.Empty, this.allShapes.Select(s => s.Name)), "\\d+")
+            #if NETSTANDARD2_0
+            .Cast<Match>()
+            #endif
+            .Select(m => int.Parse(m.Value))
+            .DefaultIfEmpty(0)
+            .Max();
         
-        return (shapeId, shapeName);
+        return (maxId + 1, $"AutoShape {maxOrder + 1}");
     }
 }
