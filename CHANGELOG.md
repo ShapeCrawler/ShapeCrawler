@@ -2,6 +2,7 @@
   
 ## Version 0.41.0 - Unreleased  
 🍀Added supporting East Asian fonts [#419](https://github.com/ShapeCrawler/ShapeCrawler/issues/419)  
+🍀Added `IAutoShapeCollection.AddRoundedRectangle()`  
   
 ## Version 0.40.0 - 2022-12-26  
 🍀Added `ISlideCollection.AddEmptySlide()` [#141](https://github.com/ShapeCrawler/ShapeCrawler/issues/141)    

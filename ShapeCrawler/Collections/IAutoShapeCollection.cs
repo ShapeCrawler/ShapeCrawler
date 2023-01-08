@@ -118,6 +118,9 @@ internal class AutoShapeCollection : IAutoShapeCollection
     {
         var maxId = this.allShapes.Max(s => s.Id);
         var maxOrder = Regex.Matches(string.Join(string.Empty, this.allShapes.Select(s => s.Name)), "\\d+")
+            #if NETSTANDARD2_0
+            .Cast<Match>()
+            #endif
             .Select(m => int.Parse(m.Value))
             .DefaultIfEmpty(0)
             .Max();
