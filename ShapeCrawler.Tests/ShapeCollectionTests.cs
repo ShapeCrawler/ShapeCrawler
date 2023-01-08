@@ -171,6 +171,24 @@ public class ShapeCollectionTests : ShapeCrawlerTest
         addedVideo.X.Should().Be(xPxCoordinate);
         addedVideo.Y.Should().Be(yPxCoordinate);
     }
+    
+    [Fact]
+    public void AutoShapes_AddRectangle_adds_rectangle_with_valid_id_and_name()
+    {
+        // Arrange
+        var pptx = GetTestStream("autoshape-case011_save-as-png.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var shapes = pres.Slides[0].Shapes;
+            
+        // Act
+        var autoShape = shapes.AutoShapes.AddRectangle( 50, 60, 100, 70);
+
+        // Assert
+        autoShape.Name.Should().Be("AutoShape 4");
+        autoShape.Id.Should().Be(7);
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
+    }
 
     [Fact]
     public void AutoShapes_AddRectangle_adds_Rectangle_in_the_New_Presentation()
@@ -189,11 +207,12 @@ public class ShapeCollectionTests : ShapeCrawlerTest
         rectangle.Width.Should().Be(100);
         rectangle.Height.Should().Be(70);
         rectangle.TextFrame!.Paragraphs.Count.Should().Be(1);
+        rectangle.Outline.Color.Should().Be("000000");
         var errors = PptxValidator.Validate(pres);
         errors.Should().BeEmpty();
     }
     
-    [Fact(Skip = "In Progress")]
+    [Fact]
     public void AutoShapes_AddRoundedRectangle_adds_Rounded_Rectangle()
     {
         // Arrange
@@ -202,28 +221,12 @@ public class ShapeCollectionTests : ShapeCrawlerTest
         var shapes = pres.Slides[0].Shapes;
             
         // Act
-        var roundedRectangle = shapes.AutoShapes.AddRoundedRectangle();
+        var roundedRectangle = shapes.AutoShapes.AddRoundedRectangle(50, 60, 100, 70);
 
         // Assert
-        
-        var errors = PptxValidator.Validate(pres);
-        errors.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void AddAutoShape_sets_valid_id_and_name_for_the_new_shape()
-    {
-        // Arrange
-        var pptx = GetTestStream("autoshape-case011_save-as-png.pptx");
-        var pres = SCPresentation.Open(pptx);
-        var shapes = pres.Slides[0].Shapes;
-            
-        // Act
-        var autoShape = shapes.AutoShapes.AddRectangle( 50, 60, 100, 70);
-
-        // Assert
-        autoShape.Name.Should().Be("AutoShape 4");
-        autoShape.Id.Should().Be(7);
+        roundedRectangle.GeometryType.Should().Be(SCGeometry.RoundRectangle);
+        roundedRectangle.Name.Should().Be("AutoShape 8");
+        roundedRectangle.Outline.Color.Should().Be("000000");
         var errors = PptxValidator.Validate(pres);
         errors.Should().BeEmpty();
     }

@@ -24,7 +24,7 @@ public interface IAutoShapeCollection : IReadOnlyList<IAutoShape>
     /// <summary>
     ///     Adds a new Rounded Rectangle shape. 
     /// </summary>
-    IRoundedRectangle AddRoundedRectangle();
+    IRoundedRectangle AddRoundedRectangle(int x, int y, int w, int h);
 }
 
 internal class AutoShapeCollection : IAutoShapeCollection
@@ -81,27 +81,15 @@ internal class AutoShapeCollection : IAutoShapeCollection
         this.pShapeTree.Append(newPShape);
         
         var rectangle = new SCRectangle(this, newPShape, null);
+        rectangle.Outline.Color = "000000";
      
         return rectangle;
     }
     
-    public IRoundedRectangle AddRoundedRectangle()
+    public IRoundedRectangle AddRoundedRectangle(int x, int y, int width, int height)
     {
-        // var idAndName = this.GenerateIdAndName();
-        var id = 1;
-        var name = "Rounded Rectangle 1";
-        var x = 10;
-        var y = 10;
-        var width = 100;
-        var height = 50;
+        var idAndName = this.GenerateIdAndName();
 
-        // p:nvSpPr
-        var pNvSpPr = new P.NonVisualShapeProperties(
-            new P.NonVisualDrawingProperties { Id = (uint)id, Name = name },
-            new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
-            new P.ApplicationNonVisualDrawingProperties());
-        
-        // p:spPr
         var adjustValueList = new A.AdjustValueList();
         var presetGeometry = new A.PresetGeometry(adjustValueList) { Preset = A.ShapeTypeValues.RoundRectangle };
         var shapeProperties = new P.ShapeProperties();
@@ -112,7 +100,6 @@ internal class AutoShapeCollection : IAutoShapeCollection
         shapeProperties.AddAXfrm(xEmu, yEmu, widthEmu, heightEmu);
         shapeProperties.Append(presetGeometry);
 
-        // p:txBody
         var aRunProperties = new A.RunProperties { Language = "en-US" };
         var aText = new A.Text(string.Empty);
         var aRun = new A.Run(aRunProperties, aText);
@@ -120,6 +107,10 @@ internal class AutoShapeCollection : IAutoShapeCollection
         var aParagraph = new A.Paragraph(aRun, aEndParaRPr);
 
         var newPShape = new P.Shape(
+            new P.NonVisualShapeProperties(
+                new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
+                new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
+                new P.ApplicationNonVisualDrawingProperties()),
             shapeProperties,
             new P.TextBody(
                 new A.BodyProperties(),
@@ -128,7 +119,11 @@ internal class AutoShapeCollection : IAutoShapeCollection
 
         this.pShapeTree.Append(newPShape);
 
-        return null!;
+        var roundedRectangle = new SCRoundedRectangle(this, newPShape, null);
+
+        roundedRectangle.Outline.Color = "000000";
+
+        return roundedRectangle;
     }
 
     public IEnumerator<IAutoShape> GetEnumerator()

@@ -133,13 +133,10 @@ public enum SCGeometry
     /// <summary>
     ///     Round Rectangle.
     /// </summary>
-    /// <summary>
-    ///     RoundRectangle
-    /// </summary>
     RoundRectangle,
 
     /// <summary>
-    ///     Round1Rectangle
+    ///     Round1Rectangle.
     /// </summary>
     Round1Rectangle,
 
