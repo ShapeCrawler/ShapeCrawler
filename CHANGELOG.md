@@ -1,6 +1,6 @@
 # Changelog  
   
-## Version 0.41.0 - Unreleased  
+## Version 0.41.0 - 2022-01-10
 🍀Added supporting East Asian fonts [#419](https://github.com/ShapeCrawler/ShapeCrawler/issues/419)  
 🍀Added `IAutoShapeCollection.AddRoundedRectangle()`  
   
