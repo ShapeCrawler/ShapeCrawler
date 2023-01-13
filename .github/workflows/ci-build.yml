@@ -37,4 +37,4 @@ jobs:
       - name: Build
         run: msbuild /p:Configuration=Release
       - name: Run tests
-        run: vstest.console.exe /p:Platform=x86 /p:Configuration=Release **/*.Tests.dll
+        run: vstest.console.exe /p:Platform=x64 /p:Configuration=Release **/*.Tests.dll
