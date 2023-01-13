@@ -30,6 +30,8 @@ jobs:
           choco install netfx-4.8 -y
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
+      - name: Setup VSTest Path
+        uses: darenm/Setup-VSTest@v1.2
       - name: Restore packages
         run: nuget restore
       - name: Build
