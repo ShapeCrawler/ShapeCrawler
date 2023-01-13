@@ -1,4 +1,4 @@
-name: CI - Build and Test
+name: Build
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
 jobs:
   build-net6:
     runs-on: ubuntu-latest
-    name: Pipeline
+    name: .NET 7
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET 7
@@ -22,11 +22,14 @@ jobs:
         run: dotnet test --configuration Release --no-restore --verbosity normal -f net7.0
   build-net48:
     runs-on: windows-latest
+    name: .NET Framework 4.8
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET Framework 4.8
         run: |
           choco install netfx-4.8 -y
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
       - name: Restore packages
         run: nuget restore
       - name: Build
