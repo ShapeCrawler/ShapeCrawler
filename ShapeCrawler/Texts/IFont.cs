@@ -271,7 +271,7 @@ internal sealed class SCFont : IFont
     private string? GetEastAsianName()
     {
         var aEastAsianFont = this.GetAEastAsianFont();
-        if (aEastAsianFont.Typeface == "+mj-lt")
+        if (aEastAsianFont.Typeface == "+mj-ea")
         {
             return this.aFontScheme.MajorFont!.EastAsianFont!.Typeface!;
         }

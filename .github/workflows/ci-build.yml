@@ -22,4 +22,4 @@ jobs:
       - name: Build Debug
         run: dotnet build --configuration Debug --no-restore
       - name: Run tests
-        run: dotnet test --configuration Debug --no-restore --verbosity normal -f net6.0
+        run: dotnet test --configuration Debug --no-restore --verbosity normal -f net7.0

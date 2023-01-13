@@ -116,7 +116,12 @@ internal class AutoShapeCollection : IAutoShapeCollection
     
     private (int, string) GenerateIdAndName()
     {
-        var maxId = this.allShapes.Max(s => s.Id);
+        var maxId = 0;
+        if(this.allShapes.Any())
+        {
+            maxId = this.allShapes.Max(s => s.Id);    
+        }
+        
         var maxOrder = Regex.Matches(string.Join(string.Empty, this.allShapes.Select(s => s.Name)), "\\d+")
             #if NETSTANDARD2_0
             .Cast<Match>()
