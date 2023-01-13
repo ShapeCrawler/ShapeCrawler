@@ -5,36 +5,47 @@ on:
     branches: [ master ]
 
 jobs:
-  build-net6:
+  build-net70:
     runs-on: ubuntu-latest
     name: .NET 7
     steps:
       - uses: actions/checkout@v2
+      
       - name: Setup .NET 7
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 7.0.101
+      
       - name: Restore packages
         run: dotnet restore
+      
       - name: Build
         run: dotnet build ShapeCrawler/ShapeCrawler.csproj --configuration Release --no-restore
+      
       - name: Run tests
         run: dotnet test --configuration Release --no-restore --verbosity normal -f net7.0
+  
   build-net48:
     runs-on: windows-latest
     name: .NET Framework 4.8
     steps:
       - uses: actions/checkout@v2
+      
       - name: Setup .NET Framework 4.8
         run: |
           choco install netfx-4.8 -y
+      
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
+      
       - name: Setup VSTest Path
         uses: darenm/Setup-VSTest@v1.2
+      
       - name: Restore packages
         run: nuget restore
+      
       - name: Build
         run: msbuild /p:Configuration=Release
+      
       - name: Run tests
-        run: vstest.console.exe /p:Platform=x64 /p:Configuration=Release **/*.Tests.dll
+        run: vstest.console.exe /Platform=x64 **/*.Tests.dll
