@@ -45,7 +45,7 @@ jobs:
         run: nuget restore
       
       - name: Build
-        run: msbuild /p:TargetFramework=netstandard2.0 /p:Configuration=Release
+        run: msbuild /p:Configuration=Release
       
       - name: Run tests
-        run: vstest.console.exe **/*.Tests.dll
+        run: vstest.console.exe **/*.Tests.dll /Framework:Framework48 
