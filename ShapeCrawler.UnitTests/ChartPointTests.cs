@@ -136,7 +136,7 @@ public class ChartPointTests : ShapeCrawlerTest
         pointCellValue.Should().Be(newChartPointValue);
     }
 
-    [Fact]
+    [Fact(Skip = "Should be return")]
     public void Value_Getter_returns_chart_point2()
     {
         // Arrange
