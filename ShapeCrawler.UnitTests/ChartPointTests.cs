@@ -3,6 +3,7 @@ using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable SuggestVarOrType_SimpleTypes

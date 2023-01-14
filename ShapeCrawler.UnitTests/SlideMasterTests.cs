@@ -2,6 +2,7 @@
 using FluentAssertions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
 namespace ShapeCrawler.Tests;

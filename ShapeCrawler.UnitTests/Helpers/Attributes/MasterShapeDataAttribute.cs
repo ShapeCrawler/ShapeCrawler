@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.UnitTests.Helpers;
 using Xunit.Sdk;
 
 namespace ShapeCrawler.Tests.Helpers.Attributes;

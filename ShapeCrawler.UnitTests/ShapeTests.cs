@@ -8,14 +8,14 @@ using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Tests.Helpers.Attributes;
-using ShapeCrawler.Tests.Properties;
+using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations
 // ReSharper disable InconsistentNaming
 // ReSharper disable TooManyChainedReferences
 
-namespace ShapeCrawler.Tests
+namespace ShapeCrawler.UnitTests
 {
     public class ShapeTests : ShapeCrawlerTest
     {
@@ -314,7 +314,9 @@ namespace ShapeCrawler.Tests
             int expectedWidth)
         {
             // Arrange
-            var autoShape = GetAutoShape(filename, slideNumber, shapeId);
+            var pptx = GetTestStream(filename);
+            var pres = SCPresentation.Open(pptx);
+            var autoShape = pres.Slides[slideNumber - 1].Shapes.GetById<IAutoShape>(shapeId);
 
             // Act
             var shapeWidth = autoShape.Width;

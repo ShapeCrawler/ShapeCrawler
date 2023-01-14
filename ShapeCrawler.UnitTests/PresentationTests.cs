@@ -5,6 +5,7 @@ using FluentAssertions;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
 namespace ShapeCrawler.Tests;

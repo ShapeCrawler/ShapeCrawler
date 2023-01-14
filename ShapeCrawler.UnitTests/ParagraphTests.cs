@@ -9,6 +9,7 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Tests.Helpers.Attributes;
 using ShapeCrawler.Tests.Properties;
+using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
 // ReSharper disable All
@@ -145,7 +146,9 @@ namespace ShapeCrawler.Tests
         public void Paragraph_Bullet_Type_Getter_returns_None_value_When_paragraph_doesnt_have_bullet()
         {
             // Arrange
-            IAutoShape autoShape = GetAutoShape(presentation: "001.pptx", slideNumber: 1, shapeId: 2);
+            var pptx = GetTestStream("001.pptx");
+            var pres = SCPresentation.Open(pptx);
+            var autoShape = pres.Slides[0].Shapes.GetById<IAutoShape>(2);
             var bullet = autoShape.TextFrame.Paragraphs[0].Bullet;
 
             // Act

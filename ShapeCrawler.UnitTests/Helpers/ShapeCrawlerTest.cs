@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Reflection;
 using ClosedXML.Excel;
-using ShapeCrawler.Extensions;
+using ShapeCrawler.Tests.Helpers;
 
-namespace ShapeCrawler.Tests.Helpers;
+namespace ShapeCrawler.UnitTests.Helpers;
 
 public abstract class ShapeCrawlerTest
 {
@@ -15,15 +15,6 @@ public abstract class ShapeCrawlerTest
         var shape = slide.Shapes.First(sp => sp.Id == shapeId);
 
         return (T)shape;
-    }
-
-    protected static IAutoShape GetAutoShape(string presentation, int slideNumber, int shapeId)
-    {
-        var scPresentation = GetPresentationFromAssembly(presentation);
-        var slide = scPresentation.Slides.First(s => s.Number == slideNumber);
-        var shape = slide.Shapes.First(sp => sp.Id == shapeId);
-
-        return (IAutoShape)shape;
     }
 
     protected static T GetWorksheetCellValue<T>(byte[] workbookByteArray, string cellAddress)

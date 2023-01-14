@@ -1,7 +1,8 @@
 ﻿using System.IO;
+using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Tests.Properties;
 
-namespace ShapeCrawler.Tests.Helpers
+namespace ShapeCrawler.UnitTests.Helpers
 {
     public static class TestFiles
     {

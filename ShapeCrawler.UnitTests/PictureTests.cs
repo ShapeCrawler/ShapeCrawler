@@ -6,6 +6,7 @@ using ClosedXML;
 using FluentAssertions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
 // ReSharper disable TooManyChainedReferences

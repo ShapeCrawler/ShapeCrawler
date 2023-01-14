@@ -1,7 +1,8 @@
 ﻿using System.Globalization;
 using System.IO;
+using ShapeCrawler.Tests.Helpers;
 
-namespace ShapeCrawler.Tests.Helpers;
+namespace ShapeCrawler.UnitTests.Helpers;
 
 public class TestCase
 {

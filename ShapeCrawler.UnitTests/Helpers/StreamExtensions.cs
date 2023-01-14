@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace ShapeCrawler.Tests.Helpers;
+namespace ShapeCrawler.UnitTests.Helpers;
 
 public static class StreamExtensions
 {

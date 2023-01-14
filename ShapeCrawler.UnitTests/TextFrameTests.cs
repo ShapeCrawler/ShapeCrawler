@@ -9,6 +9,7 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Tests.Helpers.Attributes;
 using ShapeCrawler.Tests.Properties;
+using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
 // ReSharper disable All
@@ -368,7 +369,9 @@ namespace ShapeCrawler.Tests
         public void AutofitType_Getter_returns_text_autofit_type()
         {
             // Arrange
-            IAutoShape autoShape = GetAutoShape(presentation: "001.pptx", slideNumber: 1, shapeId: 9);
+            var pptx = GetTestStream("001.pptx");
+            var pres = SCPresentation.Open(pptx);
+            var autoShape = pres.Slides[0].Shapes.GetById<IAutoShape>(9);
             var textBox = autoShape.TextFrame;
 
             // Act

@@ -8,6 +8,7 @@ using ShapeCrawler.Charts;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Tests.Properties;
+using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations

@@ -2,6 +2,7 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Validation;
+using ShapeCrawler.UnitTests.Helpers;
 
 namespace ShapeCrawler.Tests.Helpers;
 

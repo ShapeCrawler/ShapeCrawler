@@ -8,6 +8,7 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.Tests.Helpers.Attributes;
 using ShapeCrawler.Tests.Properties;
+using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
 namespace ShapeCrawler.Tests;
