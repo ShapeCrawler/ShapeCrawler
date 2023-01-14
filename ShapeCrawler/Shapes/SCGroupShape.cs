@@ -19,6 +19,13 @@ internal sealed class SCGroupShape : SlideShape, IGroupShape
         this.pGroupShape = pGroupShape;
         this.oneOfSlide = oneOfSlide;
     }
+    
+    public SCGroupShape(P.GroupShape pGroupShape, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
+        : base(pGroupShape, oneOfSlide)
+    {
+        this.pGroupShape = pGroupShape;
+        this.oneOfSlide = oneOfSlide;
+    }
 
     public IGroupedShapeCollection Shapes => GroupedShapeCollection.Create(this.pGroupShape, this.oneOfSlide, this);
 

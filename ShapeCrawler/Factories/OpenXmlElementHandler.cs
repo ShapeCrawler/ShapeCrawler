@@ -9,5 +9,5 @@ internal abstract class OpenXmlElementHandler
 {
     internal OpenXmlElementHandler? Successor { get; set; }
 
-    internal abstract Shape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape groupShape);
+    internal abstract Shape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape? groupShape);
 }

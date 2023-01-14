@@ -111,10 +111,10 @@ internal sealed class CategoryCollection : LibraryCollection<ICategory>, ICatego
                     indexToCategory.OrderByDescending(kvp => kvp.Key).ToList();
                 foreach (C.StringPoint cStrPoint in cStringPoints)
                 {
-                    uint index = cStrPoint.Index!.Value;
-                    C.NumericValue cachedCatName = cStrPoint.NumericValue!;
+                    var index = cStrPoint.Index!.Value;
+                    var cachedCatName = cStrPoint.NumericValue!;
                     KeyValuePair<uint, Category> parent = descOrderedMains.First(kvp => kvp.Key <= index);
-                    Category category = new (null, -1, cachedCatName, parent.Value);
+                    var category = new Category(-1, cachedCatName, parent.Value);
                     nextIndexToCategory.Add(new KeyValuePair<uint, Category>(index, category));
                 }
             }
@@ -122,9 +122,9 @@ internal sealed class CategoryCollection : LibraryCollection<ICategory>, ICatego
             {
                 foreach (C.StringPoint cStrPoint in cStringPoints)
                 {
-                    uint index = cStrPoint.Index!.Value;
+                    var index = cStrPoint.Index!.Value;
                     var cachedCatName = cStrPoint.NumericValue;
-                    var category = new Category(null, -1, cachedCatName!);
+                    var category = new Category(-1, cachedCatName!);
                     nextIndexToCategory.Add(new KeyValuePair<uint, Category>(index, category));
                 }
             }
