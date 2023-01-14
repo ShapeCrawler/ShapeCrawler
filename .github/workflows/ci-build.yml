@@ -48,4 +48,4 @@ jobs:
         run: msbuild /p:Configuration=Release
       
       - name: Run tests
-        run: vstest.console.exe **/*.UnitTests.dll, **/*.IntegrationTests.dll /Framework:Framework45 
+        run: vstest.console.exe **/*.*Tests.dll /Framework:Framework45 
