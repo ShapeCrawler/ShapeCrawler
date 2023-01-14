@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using ShapeCrawler.Tests.Helpers;
-using ShapeCrawler.Tests.Properties;
+using ShapeCrawler.UnitTests.Helpers;
+using ShapeCrawler.UnitTests.Properties;
 
 namespace ShapeCrawler.UnitTests.Helpers
 {

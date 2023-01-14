@@ -6,8 +6,8 @@ using FluentAssertions;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Tests.Helpers;
-using ShapeCrawler.Tests.Helpers.Attributes;
+using ShapeCrawler.UnitTests.Helpers;
+using ShapeCrawler.UnitTests.Helpers.Attributes;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
@@ -15,7 +15,7 @@ using Xunit;
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
 
-namespace ShapeCrawler.Tests;
+namespace ShapeCrawler.UnitTests;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
 public class ShapeCollectionTests : ShapeCrawlerTest

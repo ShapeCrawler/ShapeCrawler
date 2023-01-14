@@ -2,7 +2,7 @@ using System.IO;
 using System.Reflection;
 using ShapeCrawler.UnitTests.Helpers;
 
-namespace ShapeCrawler.Tests.Helpers;
+namespace ShapeCrawler.UnitTests.Helpers;
 
 public static class TestHelper
 {

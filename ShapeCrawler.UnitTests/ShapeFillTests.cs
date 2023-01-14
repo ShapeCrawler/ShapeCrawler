@@ -2,8 +2,8 @@
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Tests.Helpers;
-using ShapeCrawler.Tests.Helpers.Attributes;
+using ShapeCrawler.UnitTests.Helpers;
+using ShapeCrawler.UnitTests.Helpers.Attributes;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
@@ -11,7 +11,7 @@ using Xunit;
 // ReSharper disable InconsistentNaming
 // ReSharper disable TooManyChainedReferences
 
-namespace ShapeCrawler.Tests;
+namespace ShapeCrawler.UnitTests;
 
 public class ShapeFillTests : ShapeCrawlerTest
 {

@@ -5,13 +5,12 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Tests.Helpers;
-using ShapeCrawler.Tests.Helpers.Attributes;
-using ShapeCrawler.Tests.Properties;
+using ShapeCrawler.UnitTests.Helpers;
+using ShapeCrawler.UnitTests.Helpers.Attributes;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
-namespace ShapeCrawler.Tests;
+namespace ShapeCrawler.UnitTests;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
 [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]

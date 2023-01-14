@@ -6,8 +6,8 @@ using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Tests.Helpers;
-using ShapeCrawler.Tests.Helpers.Attributes;
+using ShapeCrawler.UnitTests.Helpers;
+using ShapeCrawler.UnitTests.Helpers.Attributes;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 

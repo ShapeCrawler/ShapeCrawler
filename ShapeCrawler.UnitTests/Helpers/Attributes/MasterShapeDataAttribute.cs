@@ -4,7 +4,7 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit.Sdk;
 
-namespace ShapeCrawler.Tests.Helpers.Attributes;
+namespace ShapeCrawler.UnitTests.Helpers.Attributes;
 
 public class MasterShapeDataAttribute : DataAttribute
 {

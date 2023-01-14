@@ -3,7 +3,7 @@ using System.Reflection;
 using ShapeCrawler.Shapes;
 using Xunit.Sdk;
 
-namespace ShapeCrawler.Tests.Helpers.Attributes;
+namespace ShapeCrawler.UnitTests.Helpers.Attributes;
 
 public class LayoutShapeDataAttribute : DataAttribute
 {

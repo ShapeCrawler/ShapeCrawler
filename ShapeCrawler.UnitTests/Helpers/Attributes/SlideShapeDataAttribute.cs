@@ -4,7 +4,7 @@ using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using ShapeCrawler.Shapes;
 using Xunit.Sdk;
 
-namespace ShapeCrawler.Tests.Helpers.Attributes;
+namespace ShapeCrawler.UnitTests.Helpers.Attributes;
 
 public class SlideShapeDataAttribute : DataAttribute
 {

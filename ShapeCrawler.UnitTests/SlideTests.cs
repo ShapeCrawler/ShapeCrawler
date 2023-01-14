@@ -2,16 +2,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.Extensions;
-using ShapeCrawler.Tests.Helpers;
 using ShapeCrawler.UnitTests.Helpers;
+using ShapeCrawler.UnitTests.Properties;
 using Xunit;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
 
-namespace ShapeCrawler.Tests;
+namespace ShapeCrawler.UnitTests;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
 public class SlideTests : ShapeCrawlerTest
@@ -53,7 +52,7 @@ public class SlideTests : ShapeCrawlerTest
         var pptx = GetTestStream("009_table.pptx");
 var pre = SCPresentation.Open(pptx);
         var backgroundImage = pre.Slides[0].Background;
-        var imgStream = new MemoryStream(Properties.Resources.test_image_2);
+        var imgStream = new MemoryStream(Resources.test_image_2);
         var bytesBefore = await backgroundImage.BinaryData.ConfigureAwait(false);
 
         // Act

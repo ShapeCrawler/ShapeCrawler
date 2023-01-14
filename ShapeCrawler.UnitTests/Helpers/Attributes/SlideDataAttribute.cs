@@ -2,7 +2,7 @@
 using System.Reflection;
 using Xunit.Sdk;
 
-namespace ShapeCrawler.Tests.Helpers.Attributes;
+namespace ShapeCrawler.UnitTests.Helpers.Attributes;
 
 public class SlideDataAttribute : DataAttribute
 {

@@ -5,14 +5,14 @@ using System.Linq;
 using ClosedXML;
 using FluentAssertions;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
 
-namespace ShapeCrawler.Tests;
+namespace ShapeCrawler.UnitTests;
 
 [SuppressMessage("Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task")]
 public class PictureTests : ShapeCrawlerTest

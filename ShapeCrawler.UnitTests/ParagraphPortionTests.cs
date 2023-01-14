@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.Tests.Helpers;
+using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
 
-namespace ShapeCrawler.Tests;
+namespace ShapeCrawler.UnitTests;
 
 public class ParagraphPortionTests : ShapeCrawlerTest
 {

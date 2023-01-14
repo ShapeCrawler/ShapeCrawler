@@ -4,7 +4,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Validation;
 using ShapeCrawler.UnitTests.Helpers;
 
-namespace ShapeCrawler.Tests.Helpers;
+namespace ShapeCrawler.UnitTests.Helpers;
 
 public static class PptxValidator
 {

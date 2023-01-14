@@ -5,9 +5,7 @@ using System.Linq;
 using ClosedXML.Excel;
 using FluentAssertions;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Factories;
-using ShapeCrawler.Tests.Helpers;
-using ShapeCrawler.Tests.Properties;
+using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
@@ -15,7 +13,7 @@ using Xunit;
 // ReSharper disable InconsistentNaming
 // ReSharper disable TooManyChainedReferences
 
-namespace ShapeCrawler.Tests;
+namespace ShapeCrawler.UnitTests;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
 [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]

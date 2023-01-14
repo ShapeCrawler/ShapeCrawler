@@ -2,7 +2,7 @@ using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Drawing;
 
-namespace ShapeCrawler.Tests.Helpers
+namespace ShapeCrawler.UnitTests.Helpers
 {
     public enum Location
     {

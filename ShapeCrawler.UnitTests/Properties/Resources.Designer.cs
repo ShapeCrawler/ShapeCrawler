@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ShapeCrawler.Tests.Properties {
+namespace ShapeCrawler.UnitTests.Properties {
     using System;
     
     

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ShapeCrawler.Tests.Helpers;
+namespace ShapeCrawler.UnitTests.Helpers;
 
 public static class LinqExtensions
 {
