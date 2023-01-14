@@ -72,8 +72,8 @@
     <EmbeddedResource Include="Resource\002.pptx" />
     <None Remove="Resource\charts\charts-case002.pptx" />
     <EmbeddedResource Include="Resource\charts\charts-case002.pptx" />
-    <None Remove="Resource\Pictures\pictures-case001.pptx" />
-    <EmbeddedResource Include="Resource\Pictures\pictures-case001.pptx" />
+    <None Remove="Resource\pictures\pictures-case001.pptx" />
+    <EmbeddedResource Include="Resource\pictures\pictures-case001.pptx" />
     <None Remove="Resource\charts\charts-case003.pptx" />
     <EmbeddedResource Include="Resource\charts\charts-case003.pptx" />
     <None Remove="Resource\030.pptx" />
@@ -82,14 +82,14 @@
     <EmbeddedResource Include="Resource\008.pptx" />
     <None Remove="Resource\test-image-1.png" />
     <EmbeddedResource Include="Resource\test-image-1.png" />
-    <None Remove="Resource\Audio\audio-case001.pptx" />
-    <EmbeddedResource Include="Resource\Audio\audio-case001.pptx" />
-    <None Remove="Resource\Video\test-video.avi" />
-    <EmbeddedResource Include="Resource\Video\test-video.avi" />
-    <None Remove="Resource\Video\test-video.mp4" />
-    <EmbeddedResource Include="Resource\Video\test-video.mp4" />
-    <None Remove="Resource\Video\video-case001.pptx" />
-    <EmbeddedResource Include="Resource\Video\video-case001.pptx" />
+    <None Remove="Resource\audio\audio-case001.pptx" />
+    <EmbeddedResource Include="Resource\audio\audio-case001.pptx" />
+    <None Remove="Resource\video\test-video.avi" />
+    <EmbeddedResource Include="Resource\video\test-video.avi" />
+    <None Remove="Resource\video\test-video.mp4" />
+    <EmbeddedResource Include="Resource\video\test-video.mp4" />
+    <None Remove="Resource\video\video-case001.pptx" />
+    <EmbeddedResource Include="Resource\video\video-case001.pptx" />
     <None Remove="Resource\autoshape\autoshape-case001.pptx" />
     <EmbeddedResource Include="Resource\autoshape\autoshape-case001.pptx" />
     <None Remove="Resource\autoshape\autoshape-case002.pptx" />
@@ -191,6 +191,8 @@
     <EmbeddedResource Include="Resource\tables-case001.pptx" />
     <None Remove="Resource\005.pptx" />
     <EmbeddedResource Include="Resource\005.pptx" />
+    <None Remove="Resource\charts\charts-case004_bars.pptx" />
+    <EmbeddedResource Include="Resource\charts\charts-case004_bars.pptx" />
   </ItemGroup>
 
 </Project>

@@ -136,11 +136,11 @@ public class ChartPointTests : ShapeCrawlerTest
         pointCellValue.Should().Be(newChartPointValue);
     }
 
-    [Fact(Skip = "Should be return")]
+    [Fact]
     public void Value_Getter_returns_chart_point2()
     {
         // Arrange
-        var pptxStream = GetTestStream("bars.pptx");
+        var pptxStream = GetTestStream("charts-case004_bars.pptx");
         var pres = SCPresentation.Open(pptxStream);
         {
             var chart = pres.Slides[0].Shapes.First() as IChart;
