@@ -12,6 +12,12 @@ internal abstract class SlideShape : Shape
     {
         this.Slide = oneOfSlide.Match(slide => slide as SlideObject, layout => layout, master => master);
     }
+    
+    protected SlideShape(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
+        : base(pShapeTreeChild, oneOfSlide)
+    {
+        this.Slide = oneOfSlide.Match(slide => slide as SlideObject, layout => layout, master => master);
+    }
 
     public override IPlaceholder? Placeholder => SlidePlaceholder.Create(this.PShapeTreesChild, this);
 

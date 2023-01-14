@@ -8,7 +8,7 @@ namespace ShapeCrawler.Factories;
 
 internal sealed class AutoShapeCreator : OpenXmlElementHandler
 {
-    internal override Shape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape groupShape)
+    internal override Shape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape? groupShape)
     {
         if (pShapeTreeChild is P.Shape pShape)
         {

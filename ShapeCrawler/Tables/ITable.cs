@@ -46,12 +46,20 @@ internal sealed class SCTable : SlideShape, ITable
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly ResettableLazy<RowCollection> rowCollection;
 
-    internal SCTable(OpenXmlCompositeElement childOfPShapeTrees, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOrLayout, SCGroupShape groupShape)
-        : base(childOfPShapeTrees, slideOrLayout, groupShape)
+    internal SCTable(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOrLayout, SCGroupShape groupShape)
+        : base(pShapeTreeChild, slideOrLayout, groupShape)
     {
         this.rowCollection =
             new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame)this.PShapeTreesChild));
-        this.pGraphicFrame = (P.GraphicFrame)childOfPShapeTrees;
+        this.pGraphicFrame = (P.GraphicFrame)pShapeTreeChild;
+    }
+    
+    internal SCTable(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOrLayout)
+        : base(pShapeTreeChild, slideOrLayout)
+    {
+        this.rowCollection =
+            new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame)this.PShapeTreesChild));
+        this.pGraphicFrame = (P.GraphicFrame)pShapeTreeChild;
     }
 
     public override SCShapeType ShapeType => SCShapeType.Table;

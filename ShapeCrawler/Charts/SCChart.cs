@@ -165,7 +165,7 @@ internal class SCChart : SlideShape, IChart
         return null;
     }
 
-    private bool TryGetStaticTitle(C.ChartText chartText, out string staticTitle)
+    private bool TryGetStaticTitle(C.ChartText chartText, out string? staticTitle)
     {
         staticTitle = null;
         if (this.Type == SCChartType.Combination)

@@ -383,7 +383,7 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
         graphicFrame.Append(graphic);
 
         this.shapeTree.Append(graphicFrame);
-        var table = new SCTable(graphicFrame, this.ParentSlideObject, null);
+        var table = new SCTable(graphicFrame, this.ParentSlideObject);
 
         return table;
     }
@@ -502,7 +502,7 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
             IShape? shape;
             if (childElementOfShapeTree is P.GroupShape pGroupShape)
             {
-                shape = new SCGroupShape(pGroupShape, slideObject, null);
+                shape = new SCGroupShape(pGroupShape, slideObject);
             }
             else if (childElementOfShapeTree is P.ConnectionShape)
             {

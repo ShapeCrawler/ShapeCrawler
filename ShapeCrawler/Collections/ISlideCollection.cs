@@ -336,6 +336,6 @@ internal sealed class SCSlideCollection : ISlideCollection
 
     private void OnCollectionChanged()
     {
-        this.CollectionChanged?.Invoke(this, null);
+        this.CollectionChanged?.Invoke(this, EventArgs.Empty);
     }
 }

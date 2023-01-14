@@ -27,17 +27,19 @@ internal sealed class Category : ICategory
 {
     private readonly int index;
     private readonly NumericValue cachedValue;
-    private readonly ResettableLazy<List<X.Cell>> xCells;
+    private readonly ResettableLazy<List<X.Cell>>? xCells;
 
-    internal Category(
-        ResettableLazy<List<X.Cell>> xCells,
-        int index,
-        NumericValue cachedValue,
-        Category mainCategory)
-        : this(xCells, index, cachedValue)
+    internal Category(int index, NumericValue cachedValue, Category mainCategory)
     {
-        // TODO: what about creating a new separate class like MultiCategory:Category
+        this.index = index;
+        this.cachedValue = cachedValue;
         this.MainCategory = mainCategory;
+    }
+    
+    internal Category(int index, NumericValue cachedValue)
+    {
+        this.index = index;
+        this.cachedValue = cachedValue;
     }
 
     internal Category(ResettableLazy<List<X.Cell>> xCells, int index, NumericValue cachedValue)
@@ -65,7 +67,7 @@ internal sealed class Category : ICategory
 
             this.cachedValue.Text = value;
 
-            var xCell = this.xCells.Value[this.index];
+            var xCell = this.xCells!.Value[this.index];
             xCell.DataType = new DocumentFormat.OpenXml.EnumValue<X.CellValues>(X.CellValues.String);
             xCell.CellValue = new X.CellValue(value);
 
