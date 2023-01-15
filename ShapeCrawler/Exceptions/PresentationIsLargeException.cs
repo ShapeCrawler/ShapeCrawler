@@ -2,7 +2,7 @@
 
 namespace ShapeCrawler.Exceptions;
 
-internal sealed class PresentationIsLargeException : ShapeCrawlerException
+internal sealed class PresentationIsLargeException : SCException
 {
     private PresentationIsLargeException(string message)
         : base(message, (int)ExceptionCode.PresentationIsLargeException)

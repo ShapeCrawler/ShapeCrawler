@@ -22,9 +22,9 @@ public interface IVideoShape : IShape
     string MIME { get; }
 }
 
-internal sealed class VideoShape : MediaShape, IVideoShape
+internal sealed class VideoSCShape : SCMediaSCShape, IVideoShape
 {
-    internal VideoShape(OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, OpenXmlCompositeElement pShapeTreeChild)
+    internal VideoSCShape(OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, OpenXmlCompositeElement pShapeTreeChild)
         : base(pShapeTreeChild, oneOfSlide, null)
     {
     }

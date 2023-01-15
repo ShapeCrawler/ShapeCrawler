@@ -13,28 +13,28 @@ internal static class FontDataParser
 {
     internal static void GetFontDataFromPlaceholder(ref FontData phFontData, SCParagraph paragraph)
     {
-        var shape = (Shape)paragraph.ParentTextFrame.TextFrameContainer;
+        var shape = (SCShape)paragraph.ParentTextFrame.TextFrameContainer;
         if (shape.Placeholder == null)
         {
             return;
         }
 
-        var placeholder = (Placeholder)shape.Placeholder;
-        var autoShape = (AutoShape?)placeholder.ReferencedShape.Value;
+        var placeholder = (SCPlaceholder)shape.Placeholder;
+        var autoShape = (AutoSCShape?)placeholder.ReferencedShape.Value;
         autoShape?.FillFontData(paragraph.Level, ref phFontData);
     }
     
     internal static FontData FromPlaceholder(SCParagraph para)
     {
         var fontData = new FontData();
-        var shape = (Shape)para.ParentTextFrame.TextFrameContainer;
-        var placeholder = (Placeholder?)shape.Placeholder;
+        var shape = (SCShape)para.ParentTextFrame.TextFrameContainer;
+        var placeholder = (SCPlaceholder?)shape.Placeholder;
         if (placeholder is null)
         {
             return fontData;
         }
         
-        var referencedShape = (AutoShape?)placeholder.ReferencedShape.Value;
+        var referencedShape = (AutoSCShape?)placeholder.ReferencedShape.Value;
         
         if (referencedShape is null && placeholder.Type is SCPlaceholderType.Title or SCPlaceholderType.CenteredTitle)
         {

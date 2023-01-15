@@ -7,9 +7,9 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Media;
 
-internal abstract class MediaShape : SlideShape
+internal abstract class SCMediaSCShape : SlideSCShape
 {
-    protected MediaShape(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, Shape? groupShape)
+    protected SCMediaSCShape(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCShape? groupShape)
         : base(pShapeTreeChild, oneOfSlide, groupShape)
     {
     }

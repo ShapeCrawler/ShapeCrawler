@@ -30,7 +30,7 @@ public interface ICell
 internal sealed class SCCell : ICell, ITextFrameContainer
 {
     private readonly ResettableLazy<TextFrame> textFrame;
-    private readonly ResettableLazy<ShapeFill> fill;
+    private readonly ResettableLazy<SCShapeFill> fill;
 
     internal SCCell(SCRow tableRow, A.TableCell aTableCell, int rowIndex, int columnIndex)
     {
@@ -41,14 +41,14 @@ internal sealed class SCCell : ICell, ITextFrameContainer
         this.textFrame = new ResettableLazy<TextFrame>(this.GetTextFrame);
         var slideObject = tableRow.ParentTable.SlideObject;
         var framePr = aTableCell.TableCellProperties!;
-        this.fill = new ResettableLazy<ShapeFill>(() => new CellFill((SlideObject)slideObject, framePr));
+        this.fill = new ResettableLazy<SCShapeFill>(() => new CellFill((SlideObject)slideObject, framePr));
     }
 
     public bool IsMergedCell => this.DefineWhetherCellIsMerged();
 
     public IShapeFill Fill => this.fill.Value;
 
-    public Shape Shape => this.ParentTableRow.ParentTable;
+    public SCShape SCShape => this.ParentTableRow.ParentTable;
 
     public ITextFrame TextFrame => this.textFrame.Value;
 

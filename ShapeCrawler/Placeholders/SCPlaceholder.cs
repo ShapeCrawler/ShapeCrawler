@@ -4,9 +4,9 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Placeholders;
 
-internal abstract class Placeholder : IPlaceholder
+internal abstract class SCPlaceholder : IPlaceholder
 {
-    protected Placeholder(P.PlaceholderShape pPlaceholderShape)
+    protected SCPlaceholder(P.PlaceholderShape pPlaceholderShape)
     {
         this.PPlaceholderShape = pPlaceholderShape;
     }
@@ -15,7 +15,7 @@ internal abstract class Placeholder : IPlaceholder
 
     internal P.PlaceholderShape PPlaceholderShape { get; }
 
-    internal abstract ResettableLazy<Shape?> ReferencedShape { get; }
+    internal abstract ResettableLazy<SCShape?> ReferencedShape { get; }
 
     #region Private Methods
 

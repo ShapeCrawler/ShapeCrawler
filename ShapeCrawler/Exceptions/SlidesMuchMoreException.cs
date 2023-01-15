@@ -2,7 +2,7 @@
 
 namespace ShapeCrawler.Exceptions;
 
-internal sealed class SlidesMuchMoreException : ShapeCrawlerException
+internal sealed class SlidesMuchMoreException : SCException
 {
     private SlidesMuchMoreException(string message)
         : base(message, (int)ExceptionCode.SlidesMuchMoreException)

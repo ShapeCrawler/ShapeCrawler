@@ -25,7 +25,7 @@ internal static class ErrorHandler
                               "please report this log content as an issue on GitHub https://github.com/ShapeCrawler/ShapeCrawler/issues). " +
                               "We will fix it.";
 
-            throw new ShapeCrawlerException(userMessage, ex);
+            throw new SCException(userMessage, ex);
         }
     }
 
@@ -46,7 +46,7 @@ internal static class ErrorHandler
                               "please report this log content as an issue on GitHub https://github.com/ShapeCrawler/ShapeCrawler/issues). " +
                               "We will fix it.";
 
-            throw new ShapeCrawlerException(userMessage, ex);
+            throw new SCException(userMessage, ex);
         }
     }
 
@@ -66,7 +66,7 @@ internal static class ErrorHandler
                               "please report this log content as an issue on GitHub https://github.com/ShapeCrawler/ShapeCrawler/issues). " +
                               "We will fix it.";
 
-            throw new ShapeCrawlerException(userMessage, ex);
+            throw new SCException(userMessage, ex);
         }
     }
 }

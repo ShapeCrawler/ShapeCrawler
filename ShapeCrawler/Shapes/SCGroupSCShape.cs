@@ -8,19 +8,19 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Shapes;
 
-internal sealed class SCGroupShape : SlideShape, IGroupShape
+internal sealed class SCGroupSCShape : SlideSCShape, IGroupShape
 {
     private readonly P.GroupShape pGroupShape;
     private readonly OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide;
 
-    public SCGroupShape(P.GroupShape pGroupShape, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, Shape groupShape)
-        : base(pGroupShape, oneOfSlide, groupShape)
+    public SCGroupSCShape(P.GroupShape pGroupShape, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCShape groupSCShape)
+        : base(pGroupShape, oneOfSlide, groupSCShape)
     {
         this.pGroupShape = pGroupShape;
         this.oneOfSlide = oneOfSlide;
     }
     
-    public SCGroupShape(P.GroupShape pGroupShape, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
+    public SCGroupSCShape(P.GroupShape pGroupShape, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
         : base(pGroupShape, oneOfSlide)
     {
         this.pGroupShape = pGroupShape;

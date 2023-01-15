@@ -38,26 +38,26 @@ public interface IAutoShape : IShape
     ITextFrame? TextFrame { get; }
 }
 
-internal class AutoShape : SlideShape, IAutoShape, ITextFrameContainer
+internal class AutoSCShape : SlideSCShape, IAutoShape, ITextFrameContainer
 {
     // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi.
     // 96/72=1.4
     private const double Scale = 1.4;
 
-    private readonly Lazy<ShapeFill> shapeFill;
+    private readonly Lazy<SCShapeFill> shapeFill;
     private readonly Lazy<TextFrame?> textFrame;
     private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
     private readonly P.Shape pShape;
 
-    internal AutoShape(
+    internal AutoSCShape(
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
         P.Shape pShape,
-        SCGroupShape? groupShape)
+        SCGroupSCShape? groupShape)
         : base(pShape, parentSlideObject, groupShape)
     {
         this.pShape = pShape;
         this.textFrame = new Lazy<TextFrame?>(this.GetTextFrame);
-        this.shapeFill = new Lazy<ShapeFill>(this.GetFill);
+        this.shapeFill = new Lazy<SCShapeFill>(this.GetFill);
         this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
     }
 
@@ -67,7 +67,7 @@ internal class AutoShape : SlideShape, IAutoShape, ITextFrameContainer
 
     public IShapeOutline Outline => this.GetOutline();
 
-    public Shape Shape => this; // TODO: should be internal?
+    public SCShape SCShape => this; // TODO: should be internal?
 
     public override SCShapeType ShapeType => SCShapeType.AutoShape;
 
@@ -142,8 +142,8 @@ internal class AutoShape : SlideShape, IAutoShape, ITextFrameContainer
             fontData = layoutFontData;
             if (!fontData.IsFilled() && this.Placeholder != null)
             {
-                var placeholder = (Placeholder)this.Placeholder;
-                var referencedMasterShape = (AutoShape?)placeholder.ReferencedShape.Value;
+                var placeholder = (SCPlaceholder)this.Placeholder;
+                var referencedMasterShape = (AutoSCShape?)placeholder.ReferencedShape.Value;
                 referencedMasterShape?.FillFontData(paragraphLvl, ref fontData);
             }
 
@@ -152,8 +152,8 @@ internal class AutoShape : SlideShape, IAutoShape, ITextFrameContainer
 
         if (this.Placeholder != null)
         {
-            var placeholder = (Placeholder)this.Placeholder;
-            var referencedMasterShape = (AutoShape?)placeholder.ReferencedShape.Value;
+            var placeholder = (SCPlaceholder)this.Placeholder;
+            var referencedMasterShape = (AutoSCShape?)placeholder.ReferencedShape.Value;
             if (referencedMasterShape != null)
             {
                 referencedMasterShape.FillFontData(paragraphLvl, ref fontData);
@@ -236,10 +236,10 @@ internal class AutoShape : SlideShape, IAutoShape, ITextFrameContainer
         return newTextFrame;
     }
 
-    private ShapeFill GetFill()
+    private SCShapeFill GetFill()
     {
         var slideObject = (SlideObject)this.SlideObject;
-        return new AutoShapeFill(slideObject, this.pShape.ShapeProperties!, this);
+        return new SCAutoSCShapeFill(slideObject, this.pShape.ShapeProperties!, this);
     }
     
     private IShapeOutline GetOutline()

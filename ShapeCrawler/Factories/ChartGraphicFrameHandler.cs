@@ -16,17 +16,17 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 {
     private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart";
 
-    internal override Shape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape groupShape)
+    internal override SCShape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupSCShape groupSCShape)
     {
         if (pShapeTreeChild is not P.GraphicFrame pGraphicFrame)
         {
-            return this.Successor?.Create(pShapeTreeChild, slideObject, groupShape);
+            return this.Successor?.Create(pShapeTreeChild, slideObject, groupSCShape);
         }
 
         var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
         if (!aGraphicData.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
         {
-            return this.Successor?.Create(pShapeTreeChild, slideObject, groupShape);
+            return this.Successor?.Create(pShapeTreeChild, slideObject, groupSCShape);
         }
 
         var slideBase = slideObject.Match(slide => slide as SlideObject, layout => layout, master => master);

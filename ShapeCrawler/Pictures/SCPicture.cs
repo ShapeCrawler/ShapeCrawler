@@ -13,16 +13,16 @@ using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable PossibleMultipleEnumeration
-namespace ShapeCrawler.Drawing;
+namespace ShapeCrawler.Pictures;
 
 /// <inheritdoc cref="IPicture" />
 [SuppressMessage("ReSharper", "SuggestBaseTypeForParameterInConstructor", Justification = "Internal member")]
-internal sealed class SlidePicture : SlideShape, IPicture
+internal sealed class SCPicture : SlideSCShape, IPicture
 {
     private readonly StringValue? blipEmbed;
     private readonly A.Blip aBlip;
 
-    internal SlidePicture(P.Picture pPicture, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, A.Blip aBlip)
+    internal SCPicture(P.Picture pPicture, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, A.Blip aBlip)
         : base(pPicture, slideObject, null)
     {
         this.aBlip = aBlip;

@@ -6,7 +6,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
@@ -84,7 +83,7 @@ internal sealed class SCSlide : SlideObject, ISlide
         var canvas = surface.Canvas;
         canvas.Clear(SKColors.White); // TODO: #344 get real
         
-        foreach (var autoShape in this.Shapes.OfType<AutoShape>())
+        foreach (var autoShape in this.Shapes.OfType<AutoSCShape>())
         {
             autoShape.Draw(canvas);
         }
@@ -165,7 +164,7 @@ internal sealed class SCSlide : SlideObject, ISlide
             }
         }
 
-        throw new ShapeCrawlerException("An error occurred while parsing slide number.");
+        throw new SCException("An error occurred while parsing slide number.");
     }
 
     private void SetNumber(int newSlideNumber)

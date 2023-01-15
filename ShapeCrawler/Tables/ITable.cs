@@ -41,16 +41,16 @@ public interface ITable : IShape
     void MergeCells(ICell cell1, ICell cell2);
 }
 
-internal sealed class SCTable : SlideShape, ITable
+internal sealed class SCTable : SlideSCShape, ITable
 {
     private readonly P.GraphicFrame pGraphicFrame;
-    private readonly ResettableLazy<RowCollection> rowCollection;
+    private readonly ResettableLazy<SCRowCollection> rowCollection;
 
-    internal SCTable(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOrLayout, SCGroupShape groupShape)
-        : base(pShapeTreeChild, slideOrLayout, groupShape)
+    internal SCTable(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOrLayout, SCGroupSCShape groupSCShape)
+        : base(pShapeTreeChild, slideOrLayout, groupSCShape)
     {
         this.rowCollection =
-            new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame)this.PShapeTreesChild));
+            new ResettableLazy<SCRowCollection>(() => SCRowCollection.Create(this, (P.GraphicFrame)this.PShapeTreesChild));
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeChild;
     }
     
@@ -58,7 +58,7 @@ internal sealed class SCTable : SlideShape, ITable
         : base(pShapeTreeChild, slideOrLayout)
     {
         this.rowCollection =
-            new ResettableLazy<RowCollection>(() => RowCollection.Create(this, (P.GraphicFrame)this.PShapeTreesChild));
+            new ResettableLazy<SCRowCollection>(() => SCRowCollection.Create(this, (P.GraphicFrame)this.PShapeTreesChild));
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeChild;
     }
 

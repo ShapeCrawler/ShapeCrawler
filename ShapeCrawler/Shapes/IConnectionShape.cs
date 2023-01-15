@@ -14,9 +14,9 @@ public interface IConnectionShape : IShape
 {
 }
 
-internal sealed class SCConnectionShape : SlideShape, IConnectionShape
+internal sealed class SCConnectionSCShape : SlideSCShape, IConnectionShape
 {
-    public SCConnectionShape(OpenXmlCompositeElement childOfPShapeTree, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
+    public SCConnectionSCShape(OpenXmlCompositeElement childOfPShapeTree, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
         : base(childOfPShapeTree, oneOfSlide, null)
     {
     }

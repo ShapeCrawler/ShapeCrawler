@@ -1,12 +1,32 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.SlideMasters;
 
-namespace ShapeCrawler.Collections;
+// ReSharper disable once CheckNamespace
+namespace ShapeCrawler;
 
-[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+/// <summary>
+///     Represents a collections of Slide Masters.
+/// </summary>
+public interface ISlideMasterCollection
+{
+    /// <summary>
+    ///     Gets the number of series items in the collection.
+    /// </summary>
+    int Count { get; }
+
+    /// <summary>
+    ///     Gets the element at the specified index.
+    /// </summary>
+    ISlideMaster this[int index] { get; }
+
+    /// <summary>
+    ///     Gets the generic enumerator that iterates through the collection.
+    /// </summary>
+    IEnumerator<ISlideMaster> GetEnumerator();
+}
+
 internal sealed class SlideMasterCollection : ISlideMasterCollection
 {
     private readonly List<ISlideMaster> slideMasters;

@@ -40,13 +40,13 @@ public interface IRowCollection : IEnumerable<IRow>
     IRow Add();
 }
 
-internal sealed class RowCollection : IRowCollection
+internal sealed class SCRowCollection : IRowCollection
 {
     private readonly List<SCRow> collectionItems;
     private readonly SCTable parentTable;
     private readonly A.Table aTable;
 
-    private RowCollection(List<SCRow> rowList, SCTable parentTable, A.Table aTable)
+    private SCRowCollection(List<SCRow> rowList, SCTable parentTable, A.Table aTable)
     {
         this.collectionItems = rowList;
         this.parentTable = parentTable;
@@ -95,7 +95,7 @@ internal sealed class RowCollection : IRowCollection
         return this.collectionItems.GetEnumerator();
     }
 
-    internal static RowCollection Create(SCTable table, P.GraphicFrame pGraphicFrame)
+    internal static SCRowCollection Create(SCTable table, P.GraphicFrame pGraphicFrame)
     {
         var aTable = pGraphicFrame.GetATable();
         var aTableRows = aTable.Elements<A.TableRow>();
@@ -103,6 +103,6 @@ internal sealed class RowCollection : IRowCollection
         var rowIndex = 0;
         rowList.AddRange(aTableRows.Select(aTblRow => new SCRow(table, aTblRow, rowIndex++)));
 
-        return new RowCollection(rowList, table, aTable);
+        return new SCRowCollection(rowList, table, aTable);
     }
 }

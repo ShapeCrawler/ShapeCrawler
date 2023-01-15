@@ -2,8 +2,8 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using OneOf;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Media;
+using ShapeCrawler.Pictures;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -13,7 +13,7 @@ namespace ShapeCrawler.Factories;
 
 internal sealed class PictureHandler : OpenXmlElementHandler
 {
-    internal override Shape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape groupShape)
+    internal override SCShape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupSCShape groupSCShape)
     {
         P.Picture? pPicture;
         if (pShapeTreeChild is P.Picture treePic)
@@ -28,7 +28,7 @@ internal sealed class PictureHandler : OpenXmlElementHandler
                         .GetFirstChild<A.AudioFromFile>();
                     if (aAudioFile is not null)
                     {
-                        return new AudioShape(pShapeTreeChild, slideObject);
+                        return new AudioSCShape(pShapeTreeChild, slideObject);
                     }
 
                     break;
@@ -36,7 +36,7 @@ internal sealed class PictureHandler : OpenXmlElementHandler
 
                 case VideoFromFile:
                 {
-                    return new VideoShape(slideObject, pShapeTreeChild);
+                    return new VideoSCShape(slideObject, pShapeTreeChild);
                 }
             }
 
@@ -49,7 +49,7 @@ internal sealed class PictureHandler : OpenXmlElementHandler
 
         if (pPicture == null)
         {
-            return this.Successor?.Create(pShapeTreeChild, slideObject, groupShape);
+            return this.Successor?.Create(pShapeTreeChild, slideObject, groupSCShape);
         }
 
         var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
@@ -59,7 +59,7 @@ internal sealed class PictureHandler : OpenXmlElementHandler
             return null;
         }
 
-        var picture = new SlidePicture(pPicture, slideObject, aBlip!);
+        var picture = new SCPicture(pPicture, slideObject, aBlip!);
 
         return picture;
     }

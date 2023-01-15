@@ -78,17 +78,17 @@ internal sealed class SCFont : IFont
         this.colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
         this.ParentPortion = portion;
         var parentTextBoxContainer = portion.ParentParagraph.ParentTextFrame.TextFrameContainer;
-        Shape shape;
+        SCShape scShape;
         if (parentTextBoxContainer is SCCell cell)
         {
-            shape = cell.Shape;
+            scShape = cell.SCShape;
         }
         else
         {
-            shape = (Shape)portion.ParentParagraph.ParentTextFrame.TextFrameContainer;
+            scShape = (SCShape)portion.ParentParagraph.ParentTextFrame.TextFrameContainer;
         }
 
-        var themeFontScheme = (ThemeFontScheme)shape.SlideMasterInternal.Theme.FontScheme; 
+        var themeFontScheme = (ThemeFontScheme)scShape.SlideMasterInternal.Theme.FontScheme; 
         this.aFontScheme = themeFontScheme.AFontScheme;
     }
 
@@ -165,16 +165,16 @@ internal sealed class SCFont : IFont
 
     public bool CanChange()
     {
-        var placeholder = this.ParentPortion.ParentParagraph.ParentTextFrame.TextFrameContainer.Shape.Placeholder;
+        var placeholder = this.ParentPortion.ParentParagraph.ParentTextFrame.TextFrameContainer.SCShape.Placeholder;
 
         return placeholder is null or { Type: SCPlaceholderType.Text };
     }
 
-    private static bool TryFromPlaceholder(Shape shape, int paraLevel, out int i)
+    private static bool TryFromPlaceholder(SCShape scShape, int paraLevel, out int i)
     {
         i = -1;
-        var placeholder = shape.Placeholder as Placeholder;
-        var referencedShape = placeholder?.ReferencedShape.Value as AutoShape;
+        var placeholder = scShape.Placeholder as SCPlaceholder;
+        var referencedShape = placeholder?.ReferencedShape.Value as AutoSCShape;
         var fontDataPlaceholder = new FontData();
         if (referencedShape != null)
         {
@@ -188,7 +188,7 @@ internal sealed class SCFont : IFont
             }
         }
 
-        var slideMaster = shape.SlideMasterInternal;
+        var slideMaster = scShape.SlideMasterInternal;
         if (placeholder?.Type == SCPlaceholderType.Title)
         {
             var pTextStyles = slideMaster.PSlideMaster.TextStyles!;
@@ -319,7 +319,7 @@ internal sealed class SCFont : IFont
         var textFrameContainer = paragraph.ParentTextFrame.TextFrameContainer;
         var paraLevel = paragraph.Level;
 
-        if (textFrameContainer is Shape { Placeholder: { } } shape)
+        if (textFrameContainer is SCShape { Placeholder: { } } shape)
         {
             if (TryFromPlaceholder(shape, paraLevel, out var sizeFromPlaceholder))
             {
@@ -327,7 +327,7 @@ internal sealed class SCFont : IFont
             }
         }
 
-        var presentation = textFrameContainer.Shape.SlideBase.PresentationInternal;
+        var presentation = textFrameContainer.SCShape.SlideBase.PresentationInternal;
         if (presentation.ParaLvlToFontData.TryGetValue(paraLevel, out var fontData))
         {
             if (fontData.FontSize is not null)

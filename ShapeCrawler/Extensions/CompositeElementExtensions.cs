@@ -17,7 +17,7 @@ internal static class CompositeElementExtensions
             P.Picture pPicture => pPicture.NonVisualPictureProperties!.NonVisualDrawingProperties!,
             P.GroupShape pGroupShape => pGroupShape.NonVisualGroupShapeProperties!.NonVisualDrawingProperties!,
             P.ConnectionShape pCxnSp => pCxnSp.NonVisualConnectionShapeProperties!.NonVisualDrawingProperties!,
-            _ => throw new ShapeCrawlerException()
+            _ => throw new SCException()
         };
     }
 
@@ -31,7 +31,7 @@ internal static class CompositeElementExtensions
             P.Picture pPicture => pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!,
             P.ConnectionShape pCxnSp => pCxnSp.NonVisualConnectionShapeProperties!.ApplicationNonVisualDrawingProperties!,
             P.GroupShape pGroupShape => pGroupShape.NonVisualGroupShapeProperties!.ApplicationNonVisualDrawingProperties!,
-            _ => throw new ShapeCrawlerException()
+            _ => throw new SCException()
         };
     }
 }

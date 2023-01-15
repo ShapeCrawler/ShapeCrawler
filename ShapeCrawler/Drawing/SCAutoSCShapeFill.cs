@@ -3,19 +3,19 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing.ShapeFill;
 
-internal sealed class AutoShapeFill : ShapeFill
+internal sealed class SCAutoSCShapeFill : SCShapeFill
 {
-    private readonly AutoShape autoShape;
+    private readonly AutoSCShape _autoSCShape;
 
-    internal AutoShapeFill(SlideObject slideObject, P.ShapeProperties shapeProperties, AutoShape autoShape)
+    internal SCAutoSCShapeFill(SlideObject slideObject, P.ShapeProperties shapeProperties, AutoSCShape autoSCShape)
         : base(slideObject, shapeProperties)
     {
-        this.autoShape = autoShape;
+        this._autoSCShape = autoSCShape;
     }
 
     protected override void InitSlideBackgroundFillOr()
     {
-        var pShape = (P.Shape)this.autoShape.PShapeTreesChild;
+        var pShape = (P.Shape)this._autoSCShape.PShapeTreesChild;
         this.useBgFill = pShape.UseBackgroundFill;
         if (this.useBgFill is not null && this.useBgFill)
         {

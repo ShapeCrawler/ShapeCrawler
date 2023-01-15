@@ -6,7 +6,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 // ReSharper disable All
 namespace ShapeCrawler.Drawing.ShapeFill;
 
-internal abstract class ShapeFill : IShapeFill
+internal abstract class SCShapeFill : IShapeFill
 {
     protected readonly TypedOpenXmlCompositeElement framePr;
     protected BooleanValue? useBgFill;
@@ -22,7 +22,7 @@ internal abstract class ShapeFill : IShapeFill
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
 
-    internal ShapeFill(SlideObject slideObject, TypedOpenXmlCompositeElement framePr)
+    internal SCShapeFill(SlideObject slideObject, TypedOpenXmlCompositeElement framePr)
     {
         this.slideObject = slideObject;
         this.framePr = framePr;

@@ -11,21 +11,21 @@ internal sealed class TableGraphicFrameHandler : OpenXmlElementHandler
 {
     private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/table";
 
-    internal override Shape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape groupShape)
+    internal override SCShape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupSCShape groupSCShape)
     {
         if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
         {
             var graphicData = pGraphicFrame.Graphic!.GraphicData!;
             if (!graphicData.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
             {
-                return this.Successor?.Create(pShapeTreeChild, slideObject, groupShape);
+                return this.Successor?.Create(pShapeTreeChild, slideObject, groupSCShape);
             }
 
-            var table = new SCTable(pGraphicFrame, slideObject, groupShape);
+            var table = new SCTable(pGraphicFrame, slideObject, groupSCShape);
 
             return table;
         }
 
-        return this.Successor?.Create(pShapeTreeChild, slideObject, groupShape);
+        return this.Successor?.Create(pShapeTreeChild, slideObject, groupSCShape);
     }
 }

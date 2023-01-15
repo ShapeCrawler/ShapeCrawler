@@ -16,7 +16,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
 
-internal class SCChart : SlideShape, IChart
+internal class SCChart : SlideSCShape, IChart
 {
     private readonly ResettableLazy<ICategoryCollection?> categories;
     private readonly Lazy<SCChartType> chartType;

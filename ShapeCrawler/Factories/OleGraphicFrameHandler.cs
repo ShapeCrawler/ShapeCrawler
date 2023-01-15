@@ -13,19 +13,19 @@ internal sealed class OleGraphicFrameHandler : OpenXmlElementHandler
 {
     private const string Uri = "http://schemas.openxmlformats.org/presentationml/2006/ole";
 
-    internal override Shape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape groupShape)
+    internal override SCShape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupSCShape groupSCShape)
     {
         if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
         {
             var aGraphicData = pShapeTreeChild!.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>();
             if (aGraphicData!.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
             {
-                 var oleObject = new SlideOLEObject (pGraphicFrame, slideObject, groupShape);
+                 var oleObject = new SCOLEObject (pGraphicFrame, slideObject, groupSCShape);
 
                  return oleObject;
             }
         }
 
-        return this.Successor?.Create(pShapeTreeChild, slideObject, groupShape);
+        return this.Successor?.Create(pShapeTreeChild, slideObject, groupSCShape);
     }
 }

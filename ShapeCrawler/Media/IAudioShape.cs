@@ -24,9 +24,9 @@ public interface IAudioShape : IShape
     string MIME { get; }
 }
 
-internal sealed class AudioShape : MediaShape, IAudioShape
+internal sealed class AudioSCShape : SCMediaSCShape, IAudioShape
 {
-    internal AudioShape(OpenXmlCompositeElement pShapeTreesChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
+    internal AudioSCShape(OpenXmlCompositeElement pShapeTreesChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
         : base(pShapeTreesChild, oneOfSlide, null)
     {
     }
