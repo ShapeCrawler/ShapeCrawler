@@ -11,6 +11,10 @@
 
 </h3>
 
+<div style="background-color: #FFFF33; padding: 10px; margin-bottom: 15px; border-radius: 7px">
+  <strong>Warning:</strong> Since 15 February, the library will collect some usage statistics. You can turn it off. For more details, please visit <a href="https://github.com/ShapeCrawler/ShapeCrawler#statistics-collection">Statistics Collection</a>.
+</div>
+
 ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoint presentations. It provides a simplified object model on top of the [Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK), allowing users to process presentations without having Microsoft Office installed.
 
 ## Getting Started
@@ -55,15 +59,19 @@ pres.SaveAs("my_pres.pptx");
 
 Visit [**Wiki**](https://github.com/ShapeCrawler/ShapeCrawler/wiki/Examples) page to find more usage samples.
 
-# Have questions?
+## Have questions?
 
 If you have a question:
 - [join](https://github.com/ShapeCrawler/ShapeCrawler/discussions/categories/q-a) our Discussions Forum  and open discussion;
 - you can always email the author to theadamo86@gmail.com
 
-# Contributing
+## Contributing
 How you can contribute?
 - **Give a Star**⭐ If you find this useful, please give it a star to show your support.
 - **Polls**. Participate in the voting on [Polls](https://github.com/ShapeCrawler/ShapeCrawler/discussions/categories/polls) discussion.
 - **Bug report**. If you get some issue, please don't ignore and report this bug on [issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) page.
 - **Code contributing**. There are features/bugs tagged with [help-wanted](https://github.com/ShapeCrawler/ShapeCrawler/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) label which waiting for your Pull Request🙂 Please read [Contribution Guide](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CONTRIBUTING.md) to get more details.
+
+## Statistics Collection
+
+Starting from February 15th, the library will begin collecting usage statistics to help us improve it. Rest assured that we do not collect any sensitive or presentation content data. The collection will include, for example, information on the operating system, target framework, and frequently used shape types being utilized. If you prefer not to participate in this data collection, you can easily opt-out by setting the global setting `SCSettings.CanCollectLogs = false`.
