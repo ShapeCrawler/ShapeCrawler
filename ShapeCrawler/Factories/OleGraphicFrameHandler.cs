@@ -13,7 +13,7 @@ internal sealed class OleGraphicFrameHandler : OpenXmlElementHandler
 {
     private const string Uri = "http://schemas.openxmlformats.org/presentationml/2006/ole";
 
-    internal override SCShape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupSCShape groupSCShape)
+    internal override SCShape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape groupSCShape)
     {
         if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
         {

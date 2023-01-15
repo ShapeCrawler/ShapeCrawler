@@ -174,7 +174,7 @@ internal sealed class SCFont : IFont
     {
         i = -1;
         var placeholder = scShape.Placeholder as SCPlaceholder;
-        var referencedShape = placeholder?.ReferencedShape.Value as AutoSCShape;
+        var referencedShape = placeholder?.ReferencedShape.Value as SCAutoShape;
         var fontDataPlaceholder = new FontData();
         if (referencedShape != null)
         {

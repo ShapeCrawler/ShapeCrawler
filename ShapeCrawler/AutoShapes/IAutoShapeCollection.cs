@@ -38,7 +38,7 @@ internal class AutoShapeCollection : IAutoShapeCollection
         this.allShapes = allShapes;
         this.pShapeTree = pShapeTree;
         this.ParentShapeCollection = parentShapeCollection;
-        this.autoShapes = allShapes.Where(shape => shape is AutoSCShape).OfType<IAutoShape>().ToArray();
+        this.autoShapes = allShapes.Where(shape => shape is SCAutoShape).OfType<IAutoShape>().ToArray();
     }
     
     public int Count => this.autoShapes.Length;

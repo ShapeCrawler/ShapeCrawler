@@ -6,11 +6,11 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Placeholders;
 
-internal sealed class SlideSCPlaceholder : SCPlaceholder
+internal sealed class SCSlidePlaceholder : SCPlaceholder
 {
-    private readonly SlideSCShape _slideSCShape;
+    private readonly SCSlideShape _slideSCShape;
 
-    private SlideSCPlaceholder(P.PlaceholderShape pPlaceholderShape, SlideSCShape slideSCShape)
+    private SCSlidePlaceholder(P.PlaceholderShape pPlaceholderShape, SCSlideShape slideSCShape)
         : base(pPlaceholderShape)
     {
         this._slideSCShape = slideSCShape;
@@ -18,7 +18,7 @@ internal sealed class SlideSCPlaceholder : SCPlaceholder
 
     internal override ResettableLazy<SCShape?> ReferencedShape => new (this.GetReferencedShape);
 
-    internal static SlideSCPlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, SlideSCShape slideSCShape)
+    internal static SCSlidePlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, SCSlideShape slideSCShape)
     {
         var pPlaceholder = pShapeTreeChild.GetPNvPr().GetFirstChild<P.PlaceholderShape>();
         if (pPlaceholder == null)
@@ -26,7 +26,7 @@ internal sealed class SlideSCPlaceholder : SCPlaceholder
             return null;
         }
 
-        return new SlideSCPlaceholder(pPlaceholder, slideSCShape);
+        return new SCSlidePlaceholder(pPlaceholder, slideSCShape);
     }
 
     private SCShape? GetReferencedShape()

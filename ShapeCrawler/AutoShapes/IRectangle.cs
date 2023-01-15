@@ -11,9 +11,9 @@ public interface IRectangle : IAutoShape
 {
 }
 
-internal sealed class SCRectangle : AutoSCShape, IRectangle
+internal sealed class SCRectangle : SCAutoShape, IRectangle
 {
-    public SCRectangle(AutoShapeCollection autoShapeCollection, P.Shape pShape, SCGroupSCShape? groupShape) 
+    public SCRectangle(AutoShapeCollection autoShapeCollection, P.Shape pShape, SCGroupShape? groupShape) 
         : base(autoShapeCollection.ParentShapeCollection.ParentSlideObject, pShape, groupShape)
     {
     }

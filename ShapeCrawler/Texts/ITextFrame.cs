@@ -187,7 +187,7 @@ internal sealed class TextFrame : ITextFrame
                 shrink?.Remove();
                 resize = new A.ShapeAutoFit();
                 aBodyPr.Append(resize);
-                var parentAutoShape = (AutoSCShape)this.TextFrameContainer.SCShape;
+                var parentAutoShape = (SCAutoShape)this.TextFrameContainer.SCShape;
                 parentAutoShape.ResizeShape();
                 break;
             }

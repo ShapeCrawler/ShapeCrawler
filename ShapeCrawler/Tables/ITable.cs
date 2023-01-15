@@ -41,12 +41,12 @@ public interface ITable : IShape
     void MergeCells(ICell cell1, ICell cell2);
 }
 
-internal sealed class SCTable : SlideSCShape, ITable
+internal sealed class SCTable : SCSlideShape, ITable
 {
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly ResettableLazy<SCRowCollection> rowCollection;
 
-    internal SCTable(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOrLayout, SCGroupSCShape groupSCShape)
+    internal SCTable(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOrLayout, SCGroupShape groupSCShape)
         : base(pShapeTreeChild, slideOrLayout, groupSCShape)
     {
         this.rowCollection =

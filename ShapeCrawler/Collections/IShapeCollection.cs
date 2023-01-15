@@ -218,7 +218,7 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
         P14.CreationId creationId1 = new() { Val = (UInt32Value)3972997422U };
         creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
-        return new AudioSCShape(this.shapeTree, this.ParentSlideObject);
+        return new SCAudioShape(this.shapeTree, this.ParentSlideObject);
     }
 
     public IVideoShape AddVideo(int x, int y, Stream stream)
@@ -502,7 +502,7 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
             IShape? shape;
             if (childElementOfShapeTree is P.GroupShape pGroupShape)
             {
-                shape = new SCGroupSCShape(pGroupShape, slideObject);
+                shape = new SCGroupShape(pGroupShape, slideObject);
             }
             else if (childElementOfShapeTree is P.ConnectionShape)
             {

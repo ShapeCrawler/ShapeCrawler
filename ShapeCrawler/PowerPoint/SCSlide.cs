@@ -83,7 +83,7 @@ internal sealed class SCSlide : SlideObject, ISlide
         var canvas = surface.Canvas;
         canvas.Clear(SKColors.White); // TODO: #344 get real
         
-        foreach (var autoShape in this.Shapes.OfType<AutoSCShape>())
+        foreach (var autoShape in this.Shapes.OfType<SCAutoShape>())
         {
             autoShape.Draw(canvas);
         }

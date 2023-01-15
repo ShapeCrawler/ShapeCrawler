@@ -1,13 +1,14 @@
-﻿using A = DocumentFormat.OpenXml.Drawing;
+﻿using ShapeCrawler.Drawing.ShapeFill;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Drawing.ShapeFill;
+namespace ShapeCrawler.Drawing;
 
-internal sealed class SCAutoSCShapeFill : SCShapeFill
+internal sealed class SCAutoShapeFill : SCShapeFill
 {
-    private readonly AutoSCShape _autoSCShape;
+    private readonly SCAutoShape _autoSCShape;
 
-    internal SCAutoSCShapeFill(SlideObject slideObject, P.ShapeProperties shapeProperties, AutoSCShape autoSCShape)
+    internal SCAutoShapeFill(SlideObject slideObject, P.ShapeProperties shapeProperties, SCAutoShape autoSCShape)
         : base(slideObject, shapeProperties)
     {
         this._autoSCShape = autoSCShape;

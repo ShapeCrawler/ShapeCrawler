@@ -17,7 +17,7 @@ namespace ShapeCrawler.Pictures;
 
 /// <inheritdoc cref="IPicture" />
 [SuppressMessage("ReSharper", "SuggestBaseTypeForParameterInConstructor", Justification = "Internal member")]
-internal sealed class SCPicture : SlideSCShape, IPicture
+internal sealed class SCPicture : SCSlideShape, IPicture
 {
     private readonly StringValue? blipEmbed;
     private readonly A.Blip aBlip;

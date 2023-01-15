@@ -11,7 +11,7 @@ internal sealed class TableGraphicFrameHandler : OpenXmlElementHandler
 {
     private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/table";
 
-    internal override SCShape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupSCShape groupSCShape)
+    internal override SCShape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape groupSCShape)
     {
         if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
         {

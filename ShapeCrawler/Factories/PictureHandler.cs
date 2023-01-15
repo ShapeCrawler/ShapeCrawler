@@ -13,7 +13,7 @@ namespace ShapeCrawler.Factories;
 
 internal sealed class PictureHandler : OpenXmlElementHandler
 {
-    internal override SCShape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupSCShape groupSCShape)
+    internal override SCShape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape groupSCShape)
     {
         P.Picture? pPicture;
         if (pShapeTreeChild is P.Picture treePic)
@@ -28,7 +28,7 @@ internal sealed class PictureHandler : OpenXmlElementHandler
                         .GetFirstChild<A.AudioFromFile>();
                     if (aAudioFile is not null)
                     {
-                        return new AudioSCShape(pShapeTreeChild, slideObject);
+                        return new SCAudioShape(pShapeTreeChild, slideObject);
                     }
 
                     break;

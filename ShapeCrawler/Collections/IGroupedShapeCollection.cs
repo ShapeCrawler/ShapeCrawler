@@ -48,7 +48,7 @@ internal sealed class GroupedShapeCollection : LibraryCollection<IShape>, IGroup
         return (T)shape;
     }
 
-    internal static GroupedShapeCollection Create(P.GroupShape pGroupShapeParam, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCGroupSCShape groupSCShape)
+    internal static GroupedShapeCollection Create(P.GroupShape pGroupShapeParam, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCGroupShape groupSCShape)
     {
         var autoShapeCreator = new AutoShapeCreator();
         var oleGrFrameHandler = new OleGraphicFrameHandler();
@@ -67,7 +67,7 @@ internal sealed class GroupedShapeCollection : LibraryCollection<IShape>, IGroup
             SCShape? shape;
             if (child is P.GroupShape pGroupShape)
             {
-                shape = new SCGroupSCShape(pGroupShape, oneOfSlide, groupSCShape);
+                shape = new SCGroupShape(pGroupShape, oneOfSlide, groupSCShape);
             }
             else
             {
