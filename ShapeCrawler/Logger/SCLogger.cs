@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.Json;
+using ShapeCrawler.Logger;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
@@ -27,18 +27,18 @@ internal static class SCLogger
             return;
         }
 
-        lock (LoggingLock)
+        try
         {
-            if ((DateTime.Now - Log.Value.SentDate).TotalDays < 1)
+            lock (LoggingLock)
             {
-                return;
-            }
-            
-            using var httpClient = new HttpClient();
-            var json = JsonSerializer.Serialize(Log.Value);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            try
-            {
+                if ((DateTime.Now - Log.Value.SentDate).TotalDays < 1)
+                {
+                    return;
+                }
+
+                using var httpClient = new HttpClient();
+                var json = JsonSerializer.Serialize(Log.Value);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
                 httpClient.PostAsync("http://domain/api/statistics", content).GetAwaiter().GetResult();
 
                 Log.Value.Reset();
@@ -46,34 +46,25 @@ internal static class SCLogger
                 using var fileStream = File.Open(path, FileMode.Create);
                 JsonSerializer.Serialize(fileStream, Log);
             }
-            catch (Exception)
-            {
-                // ignored
-            }
+        }
+        catch (Exception)
+        {
+            // ignored
         }
     }
 
     private static SCLog GetLog()
     {
-        var logPath = Path.Combine(Path.GetTempPath(), "sc.log");
-        if (File.Exists(logPath))
+        var logFilePath = Path.Combine(Path.GetTempPath(), "sc.log");
+        if (File.Exists(logFilePath))
         {
-            try
+            if (TryGetLogFromFile(logFilePath, out var log))
             {
-                using var fileStream = File.OpenRead(logPath);
-                var fileLogValue = JsonSerializer.Deserialize<SCLog>(fileStream);
-                if (fileLogValue != null)
-                {
-                    return fileLogValue;
-                }
-            }
-            catch (Exception)
-            {
-                // ignored
+                return log!;
             }
         }
 
-        NetworkInterface? firstInterface; 
+        NetworkInterface? firstInterface;
         try
         {
             firstInterface = NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault();
@@ -93,21 +84,27 @@ internal static class SCLogger
         newLogValue.UserId = firstInterface.GetPhysicalAddress().ToString();
         return newLogValue;
     }
-}
 
-internal class SCLog
-{
-    internal string UserId { get; set; } = "undefined";
-
-    internal string? TargetFramework { get; set; }
-    
-    internal DateTime SentDate { get; set; }
-    
-    internal List<string>? Errors { get; set; }
-
-    internal void Reset()
+    private static bool TryGetLogFromFile(string logPath, out SCLog? log)
     {
-        this.SentDate = DateTime.Now;
-        this.Errors = null;
+        try
+        {
+            using var fileStream = File.OpenRead(logPath);
+            var fileLogValue = JsonSerializer.Deserialize<SCLog>(fileStream);
+            if (fileLogValue != null)
+            {
+                {
+                    log = fileLogValue;
+                    return true;
+                }
+            }
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+
+        log = null;
+        return false;
     }
 }

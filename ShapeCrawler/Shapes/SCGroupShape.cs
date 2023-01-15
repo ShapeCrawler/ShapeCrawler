@@ -1,7 +1,7 @@
 ﻿using OneOf;
 using ShapeCrawler.Collections;
+using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
-using ShapeCrawler.Statics;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 

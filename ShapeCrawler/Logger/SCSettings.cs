@@ -1,4 +1,5 @@
-﻿namespace ShapeCrawler;
+﻿// ReSharper disable CheckNamespace
+namespace ShapeCrawler;
 
 /// <summary>
 ///     Represents the ShapeCrawler global settings.

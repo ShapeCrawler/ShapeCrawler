@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Statics;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
