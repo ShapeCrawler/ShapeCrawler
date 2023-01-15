@@ -148,7 +148,7 @@ internal sealed class SCPortion : IPortion
             return null;
         }
 
-        var slideObject = (SlideObject)this.ParentParagraph.ParentTextFrame.TextFrameContainer.Shape.SlideObject;
+        var slideObject = (SlideObject)this.ParentParagraph.ParentTextFrame.TextFrameContainer.SCShape.SlideObject;
         var typedOpenXmlPart = slideObject.TypedOpenXmlPart;
         var hyperlinkRelationship = (HyperlinkRelationship)typedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
 
@@ -159,7 +159,7 @@ internal sealed class SCPortion : IPortion
     {
         if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
         {
-            throw new ShapeCrawlerException("Hyperlink is invalid.");
+            throw new SCException("Hyperlink is invalid.");
         }
 
         var runProperties = this.AText.PreviousSibling<A.RunProperties>();
@@ -175,7 +175,7 @@ internal sealed class SCPortion : IPortion
             runProperties.Append(hyperlink);
         }
 
-        var slideObject = (SlideObject)this.ParentParagraph.ParentTextFrame.TextFrameContainer.Shape.SlideObject;
+        var slideObject = (SlideObject)this.ParentParagraph.ParentTextFrame.TextFrameContainer.SCShape.SlideObject;
         var slidePart = slideObject.TypedOpenXmlPart;
 
         var uri = new Uri(url, UriKind.Absolute);

@@ -1,20 +1,20 @@
 ﻿using OneOf;
 using ShapeCrawler.Collections;
+using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
-using ShapeCrawler.Statics;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Shapes;
 
-internal sealed class SCGroupShape : SlideShape, IGroupShape
+internal sealed class SCGroupShape : SCSlideShape, IGroupShape
 {
     private readonly P.GroupShape pGroupShape;
     private readonly OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide;
 
-    public SCGroupShape(P.GroupShape pGroupShape, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, Shape groupShape)
-        : base(pGroupShape, oneOfSlide, groupShape)
+    public SCGroupShape(P.GroupShape pGroupShape, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCShape groupSCShape)
+        : base(pGroupShape, oneOfSlide, groupSCShape)
     {
         this.pGroupShape = pGroupShape;
         this.oneOfSlide = oneOfSlide;

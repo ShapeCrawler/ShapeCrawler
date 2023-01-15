@@ -6,19 +6,19 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Placeholders;
 
-internal sealed class SlidePlaceholder : Placeholder
+internal sealed class SCSlidePlaceholder : SCPlaceholder
 {
-    private readonly SlideShape slideShape;
+    private readonly SCSlideShape _slideSCShape;
 
-    private SlidePlaceholder(P.PlaceholderShape pPlaceholderShape, SlideShape slideShape)
+    private SCSlidePlaceholder(P.PlaceholderShape pPlaceholderShape, SCSlideShape slideSCShape)
         : base(pPlaceholderShape)
     {
-        this.slideShape = slideShape;
+        this._slideSCShape = slideSCShape;
     }
 
-    internal override ResettableLazy<Shape?> ReferencedShape => new (this.GetReferencedShape);
+    internal override ResettableLazy<SCShape?> ReferencedShape => new (this.GetReferencedShape);
 
-    internal static SlidePlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, SlideShape slideShape)
+    internal static SCSlidePlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, SCSlideShape slideSCShape)
     {
         var pPlaceholder = pShapeTreeChild.GetPNvPr().GetFirstChild<P.PlaceholderShape>();
         if (pPlaceholder == null)
@@ -26,23 +26,23 @@ internal sealed class SlidePlaceholder : Placeholder
             return null;
         }
 
-        return new SlidePlaceholder(pPlaceholder, slideShape);
+        return new SCSlidePlaceholder(pPlaceholder, slideSCShape);
     }
 
-    private Shape? GetReferencedShape()
+    private SCShape? GetReferencedShape()
     {
-        if (this.slideShape.SlideBase is SCSlideLayout slideLayout)
+        if (this._slideSCShape.SlideBase is SCSlideLayout slideLayout)
         {
             var masterShapes = slideLayout.SlideMasterInternal.ShapesInternal;
             return masterShapes.GetReferencedShapeOrNull(this.PPlaceholderShape);
         }
 
-        if (this.slideShape.SlideBase is SCSlideMaster)
+        if (this._slideSCShape.SlideBase is SCSlideMaster)
         {
             return null;
         }
 
-        var slide = (SCSlide)this.slideShape.SlideBase;
+        var slide = (SCSlide)this._slideSCShape.SlideBase;
         var layout = (SCSlideLayout)slide.SlideLayout;
         var layoutShapes = layout.ShapesInternal;
         var referencedShape = layoutShapes.GetReferencedShapeOrNull(this.PPlaceholderShape);

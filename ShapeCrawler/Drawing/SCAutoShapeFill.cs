@@ -1,21 +1,22 @@
-﻿using A = DocumentFormat.OpenXml.Drawing;
+﻿using ShapeCrawler.Drawing.ShapeFill;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Drawing.ShapeFill;
+namespace ShapeCrawler.Drawing;
 
-internal sealed class AutoShapeFill : ShapeFill
+internal sealed class SCAutoShapeFill : SCShapeFill
 {
-    private readonly AutoShape autoShape;
+    private readonly SCAutoShape _autoSCShape;
 
-    internal AutoShapeFill(SlideObject slideObject, P.ShapeProperties shapeProperties, AutoShape autoShape)
+    internal SCAutoShapeFill(SlideObject slideObject, P.ShapeProperties shapeProperties, SCAutoShape autoSCShape)
         : base(slideObject, shapeProperties)
     {
-        this.autoShape = autoShape;
+        this._autoSCShape = autoSCShape;
     }
 
     protected override void InitSlideBackgroundFillOr()
     {
-        var pShape = (P.Shape)this.autoShape.PShapeTreesChild;
+        var pShape = (P.Shape)this._autoSCShape.PShapeTreesChild;
         this.useBgFill = pShape.UseBackgroundFill;
         if (this.useBgFill is not null && this.useBgFill)
         {

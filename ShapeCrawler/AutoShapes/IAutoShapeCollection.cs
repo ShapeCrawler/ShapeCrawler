@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Statics;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -38,7 +38,7 @@ internal class AutoShapeCollection : IAutoShapeCollection
         this.allShapes = allShapes;
         this.pShapeTree = pShapeTree;
         this.ParentShapeCollection = parentShapeCollection;
-        this.autoShapes = allShapes.Where(shape => shape is AutoShape).OfType<IAutoShape>().ToArray();
+        this.autoShapes = allShapes.Where(shape => shape is SCAutoShape).OfType<IAutoShape>().ToArray();
     }
     
     public int Count => this.autoShapes.Length;

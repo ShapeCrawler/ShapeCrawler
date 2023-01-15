@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Statics;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -102,11 +102,11 @@ internal sealed class SCImage : IImage
         this.SetImage(sourceBytes);
     }
 
-    internal static SCImage ForPicture(Shape pictureShape, OpenXmlPart openXmlPart, StringValue? blipEmbed)
+    internal static SCImage ForPicture(SCShape pictureSCShape, OpenXmlPart openXmlPart, StringValue? blipEmbed)
     {
         var imagePart = (ImagePart)openXmlPart.GetPartById(blipEmbed!.Value!);
 
-        return new SCImage(imagePart, blipEmbed, openXmlPart, pictureShape.SlideBase.PresentationInternal);
+        return new SCImage(imagePart, blipEmbed, openXmlPart, pictureSCShape.SlideBase.PresentationInternal);
     }
 
     internal static SCImage? ForBackground(SCSlide slide)

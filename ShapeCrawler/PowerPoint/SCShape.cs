@@ -8,27 +8,27 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
-using ShapeCrawler.Statics;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler;
 
-internal abstract class Shape : IShape
+internal abstract class SCShape : IShape
 {
-    protected Shape(
+    protected SCShape(
         OpenXmlCompositeElement pShapeTreeChild, 
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject,
-        Shape? groupShape)
+        SCShape? groupSCShape)
         : this(pShapeTreeChild, slideObject)
     {
-        this.GroupShape = groupShape;
+        this.GroupSCShape = groupSCShape;
         this.SlideObject = slideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
     }
 
-    protected Shape(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject)
+    protected SCShape(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject)
     {
         this.PShapeTreesChild = pShapeTreeChild;
         this.SlideObject = slideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
@@ -103,13 +103,13 @@ internal abstract class Shape : IShape
 
     internal SlideObject SlideBase { get; }
 
-    private Shape? GroupShape { get; }
+    private SCShape? GroupSCShape { get; }
 
     internal abstract void Draw(SKCanvas canvas);
     
     protected virtual void SetXCoordinate(int xPx)
     {
-        if (this.GroupShape is not null)
+        if (this.GroupSCShape is not null)
         {
             throw new RuntimeDefinedPropertyException("X coordinate of grouped shape cannot be changed.");
         }
@@ -118,7 +118,7 @@ internal abstract class Shape : IShape
         var aXfrm = pSpPr.Transform2D;
         if (aXfrm is null)
         {
-            var placeholder = (Placeholder)this.Placeholder!;
+            var placeholder = (SCPlaceholder)this.Placeholder!;
             var referencedShape = placeholder.ReferencedShape.Value;
             var xEmu = UnitConverter.HorizontalPixelToEmu(xPx);
             var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.Y);
@@ -134,7 +134,7 @@ internal abstract class Shape : IShape
     
     protected virtual void SetYCoordinate(int newYPixels)
     {
-        if (this.GroupShape is not null)
+        if (this.GroupSCShape is not null)
         {
             throw new RuntimeDefinedPropertyException("Y coordinate of grouped shape cannot be changed.");
         }
@@ -143,7 +143,7 @@ internal abstract class Shape : IShape
         var aXfrm = pSpPr.Transform2D;
         if (aXfrm is null)
         {
-            var placeholder = (Placeholder)this.Placeholder!;
+            var placeholder = (SCPlaceholder)this.Placeholder!;
             var referencedShape = placeholder.ReferencedShape.Value!;
             var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
             var yEmu = UnitConverter.HorizontalPixelToEmu(newYPixels);
@@ -160,7 +160,7 @@ internal abstract class Shape : IShape
     
     protected virtual void SetWidth(int newWPixels)
     {
-        if (this.GroupShape is not null)
+        if (this.GroupSCShape is not null)
         {
             throw new RuntimeDefinedPropertyException("Width coordinate of grouped shape cannot be changed.");
         }
@@ -169,7 +169,7 @@ internal abstract class Shape : IShape
         var aXfrm = pSpPr.Transform2D;
         if (aXfrm is null)
         {
-            var placeholder = (Placeholder)this.Placeholder!;
+            var placeholder = (SCPlaceholder)this.Placeholder!;
             var referencedShape = placeholder.ReferencedShape.Value;
             var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.X);
             var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.Y);
@@ -185,7 +185,7 @@ internal abstract class Shape : IShape
     
     protected virtual void SetHeight(int newHPixels)
     {
-        if (this.GroupShape is not null)
+        if (this.GroupSCShape is not null)
         {
             throw new RuntimeDefinedPropertyException("Height coordinate of grouped shape cannot be changed.");
         }
@@ -194,7 +194,7 @@ internal abstract class Shape : IShape
         var aXfrm = pSpPr.Transform2D;
         if (aXfrm is null)
         {
-            var placeholder = (Placeholder)this.Placeholder!;
+            var placeholder = (SCPlaceholder)this.Placeholder!;
             var referencedShape = placeholder.ReferencedShape.Value;
             var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.X);
             var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.Y);
@@ -239,16 +239,16 @@ internal abstract class Shape : IShape
         var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
         if (aOffset == null)
         {
-            var placeholder = (Placeholder)this.Placeholder!;
+            var placeholder = (SCPlaceholder)this.Placeholder!;
             var referencedShape = placeholder.ReferencedShape.Value; 
             return referencedShape!.X;
         }
 
         long xEmu = aOffset.X!;
 
-        if (this.GroupShape is not null)
+        if (this.GroupSCShape is not null)
         {
-            var aTransformGroup = ((P.GroupShape)this.GroupShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup;
+            var aTransformGroup = ((P.GroupShape)this.GroupSCShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup;
             xEmu = xEmu - aTransformGroup!.ChildOffset!.X! + aTransformGroup!.Offset!.X!;
         }
 
@@ -260,16 +260,16 @@ internal abstract class Shape : IShape
         var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
         if (aOffset == null)
         {
-            var placeholder = (Placeholder)this.Placeholder!; 
+            var placeholder = (SCPlaceholder)this.Placeholder!; 
             return placeholder.ReferencedShape.Value!.Y;
         }
 
         var yEmu = aOffset.Y!;
 
-        if (this.GroupShape is not null)
+        if (this.GroupSCShape is not null)
         {
             var aTransformGroup =
-                ((P.GroupShape)this.GroupShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup!;
+                ((P.GroupShape)this.GroupSCShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup!;
             yEmu = yEmu - aTransformGroup.ChildOffset!.Y! + aTransformGroup!.Offset!.Y!;
         }
 
@@ -281,7 +281,7 @@ internal abstract class Shape : IShape
         var aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
         if (aExtents == null)
         {
-            var placeholder = (Placeholder)this.Placeholder!;
+            var placeholder = (SCPlaceholder)this.Placeholder!;
             return placeholder.ReferencedShape.Value!.Width;
         }
 
@@ -293,7 +293,7 @@ internal abstract class Shape : IShape
         var aExtents = this.PShapeTreesChild.Descendants<A.Extents>().FirstOrDefault();
         if (aExtents == null)
         {
-            var placeholder = (Placeholder)this.Placeholder!; 
+            var placeholder = (SCPlaceholder)this.Placeholder!; 
             return placeholder.ReferencedShape.Value!.Height;
         }
 
@@ -324,7 +324,7 @@ internal abstract class Shape : IShape
             }
         }
 
-        var placeholder = this.Placeholder as Placeholder;
+        var placeholder = this.Placeholder as SCPlaceholder;
         if (placeholder?.ReferencedShape.Value != null)
         {
             return placeholder.ReferencedShape.Value.GeometryType;

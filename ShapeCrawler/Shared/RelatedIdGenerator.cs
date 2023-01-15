@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ShapeCrawler.Statics;
+namespace ShapeCrawler.Shared;
 
 internal static class RelatedIdGenerator
 {

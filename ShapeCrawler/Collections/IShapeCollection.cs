@@ -15,8 +15,8 @@ using ShapeCrawler.Factories;
 using ShapeCrawler.Media;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
-using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
@@ -218,7 +218,7 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
         P14.CreationId creationId1 = new() { Val = (UInt32Value)3972997422U };
         creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
-        return new AudioShape(this.shapeTree, this.ParentSlideObject);
+        return new SCAudioShape(this.shapeTree, this.ParentSlideObject);
     }
 
     public IVideoShape AddVideo(int x, int y, Stream stream)
@@ -329,7 +329,7 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
         P14.CreationId creationId1 = new() { Val = (UInt32Value)3972997422U };
         creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
-        return new VideoShape(this.ParentSlideObject, this.shapeTree);
+        return new VideoSCShape(this.ParentSlideObject, this.shapeTree);
     }
 
     public ITable AddTable(int xPx, int yPx, int columns, int rows)
@@ -392,7 +392,7 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
     {
         this.CollectionItems.Remove(shape);
         
-        var shapeInternal = (Shape)shape;
+        var shapeInternal = (SCShape)shape;
         shapeInternal.PShapeTreesChild.Remove();
     }
 
@@ -416,9 +416,9 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
         return this.CollectionItems.FirstOrDefault(shape => shape.Name == shapeName);
     }
 
-    public Shape? GetReferencedShapeOrNull(P.PlaceholderShape inputPph)
+    public SCShape? GetReferencedShapeOrNull(P.PlaceholderShape inputPph)
     {
-        var phShapes = this.CollectionItems.Where(sp => sp.Placeholder != null).OfType<Shape>();
+        var phShapes = this.CollectionItems.Where(sp => sp.Placeholder != null).OfType<SCShape>();
         var referencedShape = phShapes.FirstOrDefault(IsEqual);
 
         // https://answers.microsoft.com/en-us/msoffice/forum/all/placeholder-master/0d51dcec-f982-4098-b6b6-94785304607a?page=3
@@ -426,7 +426,7 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
         {
             var custom = phShapes.Select(sp =>
             {
-                var placeholder = (Placeholder?)sp.Placeholder;
+                var placeholder = (SCPlaceholder?)sp.Placeholder;
                 return new
                 {
                     shape = sp,
@@ -439,9 +439,9 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
 
         return referencedShape;
 
-        bool IsEqual(Shape collectionShape)
+        bool IsEqual(SCShape collectionShape)
         {
-            var placeholder = (Placeholder)collectionShape.Placeholder!;
+            var placeholder = (SCPlaceholder)collectionShape.Placeholder!;
             var pPh = placeholder.PPlaceholderShape;
 
             if (inputPph.Index is not null && pPh.Index is not null &&
@@ -506,7 +506,7 @@ internal sealed class ShapeCollection : LibraryCollection<IShape>, IShapeCollect
             }
             else if (childElementOfShapeTree is P.ConnectionShape)
             {
-                shape = new SCConnectionShape(childElementOfShapeTree, slideObject);
+                shape = new SCConnectionSCShape(childElementOfShapeTree, slideObject);
             }
             else
             {

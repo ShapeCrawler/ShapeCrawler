@@ -1,4 +1,4 @@
-﻿using ShapeCrawler.Statics;
+﻿using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace

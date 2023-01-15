@@ -45,7 +45,7 @@ internal sealed class ColorFormat : IColorFormat
     {
         this.font = font;
         this.textFrameContainer = font.ParentPortion.ParentParagraph.ParentTextFrame.TextFrameContainer;
-        var shape = this.textFrameContainer.Shape;
+        var shape = this.textFrameContainer.SCShape;
         this.parentSlideMaster = shape.SlideMasterInternal;
     }
 
@@ -156,7 +156,7 @@ internal sealed class ColorFormat : IColorFormat
 
     private bool TryFromShapeFontReference()
     {
-        if (this.textFrameContainer is Shape parentShape)
+        if (this.textFrameContainer is SCShape parentShape)
         {
             var parentPShape = (P.Shape)parentShape.PShapeTreesChild;
             if (parentPShape.ShapeStyle == null)
@@ -180,7 +180,7 @@ internal sealed class ColorFormat : IColorFormat
 
     private bool TryFromPlaceholder(int paragraphLevel)
     {
-        if (this.textFrameContainer.Shape.Placeholder is not Placeholder placeholder)
+        if (this.textFrameContainer.SCShape.Placeholder is not SCPlaceholder placeholder)
         {
             return false;
         }

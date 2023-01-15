@@ -6,16 +6,14 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Constants;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
+using ShapeCrawler.Pictures;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Statics;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -527,7 +525,7 @@ public sealed class SCPresentation : IPresentation
             {
                 switch (shape)
                 {
-                    case SlidePicture slidePicture:
+                    case SCPicture slidePicture:
                         imgParts.Add(((SCImage)slidePicture.Image).SDKImagePart);
                         break;
                     case IGroupShape groupShape:
