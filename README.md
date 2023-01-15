@@ -1,3 +1,6 @@
+<span style="color: yellow;">Warning: This feature is currently in beta and may contain bugs. Use at your own risk.</span>
+
+<p style="color: yellow;">Warning: This feature is currently in beta and may contain bugs. Use at your own risk.</p>
 
 <h3 align="center">
 
