@@ -1,7 +1,3 @@
-<span style="color: yellow;">Warning: This feature is currently in beta and may contain bugs. Use at your own risk.</span>
-
-<p style="color: yellow;">Warning: This feature is currently in beta and may contain bugs. Use at your own risk.</p>
-
 <h3 align="center">
 
 ![ShapeCrawler](./resources/readme.png)
@@ -14,11 +10,10 @@
 
 </h3>
 
-<div style="background-color: #FFFF33; padding: 10px; margin-bottom: 15px; border-radius: 7px">
-  <strong>Warning:</strong> Since 15 February, the library will collect some usage statistics. You can turn it off. For more details, please visit <a href="https://github.com/ShapeCrawler/ShapeCrawler#statistics-collection">Statistics Collection</a>.
-</div>
-
 ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoint presentations. It provides a simplified object model on top of the [Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK), allowing users to process presentations without having Microsoft Office installed.
+
+
+⚠️**Warning:** Since 15 February, the library will collect some usage statistics. You can turn it off. For more details, please visit [Statistics Collection](https://github.com/ShapeCrawler/ShapeCrawler#statistics-collection).
 
 ## Getting Started
 
