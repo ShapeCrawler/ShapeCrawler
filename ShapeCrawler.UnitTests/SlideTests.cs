@@ -68,7 +68,6 @@ var pre = SCPresentation.Open(pptx);
     public void Background_ImageIsNull_WhenTheSlideHasNotBackground()
     {
         // Arrange
-        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
         var slide = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1];
 
         // Act

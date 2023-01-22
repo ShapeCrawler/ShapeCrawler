@@ -21,10 +21,6 @@ public class PictureTests : ShapeCrawlerTest
     public async void Image_BinaryData_returns_image_byte_array()
     {
         // Arrange
-        var pptx9 = GetTestStream("009_table.pptx");
-        var pres9 = SCPresentation.Open(pptx9);
-        var pptx18 = GetTestStream("018.pptx");
-        var pres18 = SCPresentation.Open(pptx18);
         var shapePicture1 = (IPicture)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
         var shapePicture2 = (IPicture)SCPresentation.Open(GetTestStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
 

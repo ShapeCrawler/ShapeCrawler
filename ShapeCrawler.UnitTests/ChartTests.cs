@@ -59,7 +59,6 @@ public class ChartTests : ShapeCrawlerTest
     public void HasCategories_ReturnsFalse_WhenAChartHasNotCategories()
     {
         // Arrange
-        var pres21 = SCPresentation.Open(GetTestStream("021.pptx"));
         IChart chart = (IChart)SCPresentation.Open(GetTestStream("021.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4);
 
         // Act
@@ -73,11 +72,8 @@ public class ChartTests : ShapeCrawlerTest
     public void TitleAndHasTitle_ReturnChartTitleStringAndFlagIndicatingWhetherChartHasATitle()
     {
         // Arrange
-        var pres18 = SCPresentation.Open(GetTestStream("018.pptx"));
-        var pres25 = SCPresentation.Open(GetTestStream("025_chart.pptx"));
         var pres13 = SCPresentation.Open(GetTestStream("013.pptx"));
         var pres19 = SCPresentation.Open(GetTestStream("019.pptx"));
-        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
         IChart chartCase1 = (IChart)SCPresentation.Open(GetTestStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 6);
         IChart chartCase2 = (IChart)SCPresentation.Open(GetTestStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
         IChart chartCase3 = (IChart)pres13.Slides[0].Shapes.First(sp => sp.Id == 5);
@@ -161,8 +157,6 @@ public class ChartTests : ShapeCrawlerTest
     public void CategoryName_GetterReturnsChartCategoryName()
     {
         // Arrange
-        var pres25 = SCPresentation.Open(GetTestStream("025_chart.pptx"));
-        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
         IBarChart chartCase1 = (IBarChart)SCPresentation.Open(GetTestStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
         IPieChart chartCase3 = (IPieChart)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
 
@@ -178,8 +172,7 @@ public class ChartTests : ShapeCrawlerTest
     public void Category_Name_Getter_returns_category_name_for_chart_from_collection_of_Combination_chart()
     {
         // Arrange
-        var pres21 = SCPresentation.Open(GetTestStream("021.pptx"));
-        IComboChart comboChart = (IComboChart)SCPresentation.Open(GetTestStream("021.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
+        var comboChart = (IComboChart)SCPresentation.Open(GetTestStream("021.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
 
         // Act-Assert
         comboChart.Categories[0].Name.Should().BeEquivalentTo("2015");
@@ -189,8 +182,7 @@ public class ChartTests : ShapeCrawlerTest
     public void CategoryName_GetterReturnsChartCategoryName_OfMultiCategoryChart()
     {
         // Arrange
-        var pres25 = SCPresentation.Open(GetTestStream("025_chart.pptx"));
-        IBarChart chartCase1 = (IBarChart)SCPresentation.Open(GetTestStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
+        var chartCase1 = (IBarChart)SCPresentation.Open(GetTestStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
 
         // Act-Assert
         chartCase1.Categories[0].MainCategory.Name.Should().BeEquivalentTo("Clothing");
@@ -292,9 +284,7 @@ public class ChartTests : ShapeCrawlerTest
     public void Type_ReturnsChartType()
     {
         // Arrange
-        var pres21 = SCPresentation.Open(GetTestStream("021.pptx"));
         var pres13 = SCPresentation.Open(GetTestStream("013.pptx"));
-        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
         IChart chartCase1 = (IChart)SCPresentation.Open(GetTestStream("021.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
         IChart chartCase2 = (IChart)SCPresentation.Open(GetTestStream("021.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4);
         IChart chartCase3 = (IChart)pres13.Slides[0].Shapes.First(sp => sp.Id == 5);

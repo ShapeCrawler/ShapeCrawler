@@ -134,8 +134,6 @@ public class FontTests : ShapeCrawlerTest
         // Arrange
         var pptx15 = GetTestStream("015.pptx");
         var pres15 = SCPresentation.Open(pptx15);
-        var pptx9 = GetTestStream("009_table.pptx");
-        var pres9 = SCPresentation.Open(pptx9);
         var font1 = pres15.Slides[0].Shapes.GetById<IAutoShape>(5).TextFrame!.Paragraphs[0].Portions[2].Font;
         var font2 = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.GetById<IAutoShape>(2).TextFrame!.Paragraphs[0].Portions[1].Font;
 
@@ -187,7 +185,6 @@ public class FontTests : ShapeCrawlerTest
     public void Size_Getter_returns_Font_Size_of_Non_Placeholder_Table()
     {
         // Arrange
-        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
         var table = (ITable)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3);
         var cellPortion = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0];
 
@@ -263,8 +260,7 @@ public class FontTests : ShapeCrawlerTest
     public void IsBold_GetterReturnsTrue_WhenFontOfNonPlaceholderTextIsBold()
     {
         // Arrange
-        var pres20 = SCPresentation.Open(GetTestStream("020.pptx"));
-        IAutoShape nonPlaceholderAutoShapeCase1 =
+        var nonPlaceholderAutoShapeCase1 =
             (IAutoShape)SCPresentation.Open(GetTestStream("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3);
         IFont fontC1 = nonPlaceholderAutoShapeCase1.TextFrame.Paragraphs[0].Portions[0].Font;
 
@@ -276,7 +272,6 @@ public class FontTests : ShapeCrawlerTest
     public void IsBold_GetterReturnsTrue_WhenFontOfPlaceholderTextIsBold()
     {
         // Arrange
-        var pres20 = SCPresentation.Open(GetTestStream("020.pptx"));
         IAutoShape placeholderAutoShape = (IAutoShape)SCPresentation.Open(GetTestStream("020.pptx")).Slides[1].Shapes.First(sp => sp.Id == 6);
         IPortion portion = placeholderAutoShape.TextFrame.Paragraphs[0].Portions[0];
 
@@ -291,7 +286,6 @@ public class FontTests : ShapeCrawlerTest
     public void IsBold_GetterReturnsFalse_WhenFontOfNonPlaceholderTextIsNotBold()
     {
         // Arrange
-        var pres20 = SCPresentation.Open(GetTestStream("020.pptx"));
         IAutoShape nonPlaceholderAutoShape = (IAutoShape)SCPresentation.Open(GetTestStream("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
         IPortion portion = nonPlaceholderAutoShape.TextFrame.Paragraphs[0].Portions[0];
 
@@ -306,9 +300,8 @@ public class FontTests : ShapeCrawlerTest
     public void IsBold_GetterReturnsFalse_WhenFontOfPlaceholderTextIsNotBold()
     {
         // Arrange
-        var pres20 = SCPresentation.Open(GetTestStream("020.pptx"));
-        IAutoShape placeholderAutoShape = (IAutoShape)SCPresentation.Open(GetTestStream("020.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
-        IPortion portion = placeholderAutoShape.TextFrame.Paragraphs[0].Portions[0];
+        var placeholderAutoShape = (IAutoShape)SCPresentation.Open(GetTestStream("020.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
+        var portion = placeholderAutoShape.TextFrame.Paragraphs[0].Portions[0];
 
         // Act
         bool isBold = portion.Font.IsBold;

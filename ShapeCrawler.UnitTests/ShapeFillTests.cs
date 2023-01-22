@@ -105,7 +105,6 @@ public class ShapeFillTests : ShapeCrawlerTest
     public void Picture_SetImage_updates_picture_fill()
     {
         // Arrange
-        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
         var shape = (IAutoShape)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4);
         var fill = shape.Fill;
         var newImage = TestFiles.Images.img02_stream;
@@ -160,7 +159,6 @@ public class ShapeFillTests : ShapeCrawlerTest
     public void AutoShape_Fill_Type_returns_NoFill_When_shape_is_Not_filled()
     {
         // Arrange
-        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
         var autoShape = (IAutoShape)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 6);
 
         // Act
@@ -174,7 +172,6 @@ public class ShapeFillTests : ShapeCrawlerTest
     public void HexSolidColor_getter_returns_color_name()
     {
         // Arrange
-        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
         var autoShape = (IAutoShape)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 2);
 
         // Act
