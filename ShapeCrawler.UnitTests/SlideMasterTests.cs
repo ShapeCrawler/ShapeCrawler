@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
@@ -13,7 +14,7 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void ShapeXAndY_ReturnXAndYAxesCoordinatesOfTheMasterShape()
     {
         // Arrange
-        var pptx = GetTestStream("001.pptx");
+        var pptx = Assets.GetStream("001.pptx");
         var pres = SCPresentation.Open(pptx);
         ISlideMaster slideMaster = pres.SlideMasters[0];
         IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
@@ -31,7 +32,7 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void ShapeWidthAndHeight_ReturnWidthAndHeightSizesOfTheMaster()
     {
         // Arrange
-        var pptx = GetTestStream("001.pptx");
+        var pptx = Assets.GetStream("001.pptx");
         var pres = SCPresentation.Open(pptx);
         ISlideMaster slideMaster = pres.SlideMasters[0];
         IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
@@ -66,8 +67,8 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void AutoShapePlaceholderType_ReturnsPlaceholderType()
     {
         // Arrange
-        var pres1 = SCPresentation.Open(GetTestStream("001.pptx"));
-        ISlideMaster slideMaster = SCPresentation.Open(GetTestStream("001.pptx")).SlideMasters[0];
+        var pres1 = SCPresentation.Open(Assets.GetStream("001.pptx"));
+        ISlideMaster slideMaster = SCPresentation.Open(Assets.GetStream("001.pptx")).SlideMasters[0];
         IShape masterAutoShapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
         IShape masterAutoShapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
         IShape masterAutoShapeCase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
@@ -87,7 +88,7 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void ShapeGeometryType_ReturnsShapesGeometryFormType()
     {
         // Arrange
-        var pptx = GetTestStream("001.pptx");
+        var pptx = Assets.GetStream("001.pptx");
         var pres = SCPresentation.Open(pptx);
         ISlideMaster slideMaster = pres.SlideMasters[0];
         IShape shapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
@@ -106,8 +107,8 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void AutoShapeTextBoxText_ReturnsText_WhenTheSlideMasterAutoShapesTextBoxIsNotEmpty()
     {
         // Arrange
-        var pres1 = SCPresentation.Open(GetTestStream("001.pptx"));
-        ISlideMaster slideMaster = SCPresentation.Open(GetTestStream("001.pptx")).SlideMasters[0];
+        var pres1 = SCPresentation.Open(Assets.GetStream("001.pptx"));
+        ISlideMaster slideMaster = SCPresentation.Open(Assets.GetStream("001.pptx")).SlideMasters[0];
         IAutoShape autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
         // Act-Assert

@@ -2,6 +2,7 @@
 using System.Reflection;
 using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Tests.Shared;
 using Xunit.Sdk;
 
 namespace ShapeCrawler.UnitTests.Helpers.Attributes;
@@ -44,7 +45,7 @@ public class SlideShapeDataAttribute : DataAttribute
 
     public override IEnumerable<object[]> GetData(MethodInfo testMethod)
     {
-        var pptxStream = TestHelper.GetStream(this.pptxFile);
+        var pptxStream = this.pptxFile == "001.pptx" ? Assets.GetStream(this.pptxFile) : TestHelper.GetStream(this.pptxFile);
         var pres = SCPresentation.Open(pptxStream);
         var slide = pres.Slides[this.slideNumber - 1];
         var shape = this.shapeName != null

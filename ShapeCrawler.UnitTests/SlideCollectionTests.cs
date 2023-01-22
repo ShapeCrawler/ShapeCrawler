@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using FluentAssertions;
+using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
@@ -30,8 +31,7 @@ public class SlideCollectionTests : ShapeCrawlerTest
     public void Add_adds_slide_from_External_presentation()
     {
         // Arrange
-        var pres1 = SCPresentation.Open(GetTestStream("001.pptx"));
-        var sourceSlide = SCPresentation.Open(GetTestStream("001.pptx")).Slides[0];
+        var sourceSlide = SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[0];
         var pptx = GetTestStream("002.pptx");
         var destPre = SCPresentation.Open(pptx);
         var originSlidesCount = destPre.Slides.Count;
@@ -88,7 +88,7 @@ public class SlideCollectionTests : ShapeCrawlerTest
     public void Slides_Insert_inserts_slide_at_the_specified_position()
     {
         // Arrange
-        var pptx = GetTestStream("001.pptx");
+        var pptx = Assets.GetStream("001.pptx");
         var sourceSlide = SCPresentation.Open(pptx).Slides[0];
         var sourceSlideId = Guid.NewGuid().ToString();
         sourceSlide.CustomData = sourceSlideId;

@@ -6,6 +6,7 @@ using FluentAssertions;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers.Attributes;
 using ShapeCrawler.UnitTests.Helpers;
@@ -83,7 +84,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest
     [Fact]
     public void Contains_Connection_shape()
     {
-        var pptxStream = GetTestStream("001.pptx");
+        var pptxStream = Assets.GetStream("001.pptx");
         var presentation = SCPresentation.Open(pptxStream);
         var shapesCollection = presentation.Slides[0].Shapes;
 
@@ -130,7 +131,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest
     public void AddAudio_adds_Audio_shape()
     {
         // Arrange
-        var preStream = TestFiles.Presentations.pre001_stream;
+        var preStream = Assets.GetStream("001.pptx");
         var presentation = SCPresentation.Open(preStream);
         var shapes = presentation.Slides[1].Shapes;
         var mp3 = TestFiles.Audio.TestMp3;
@@ -154,7 +155,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest
     public void AddVideo_adds_Video_shape()
     {
         // Arrange
-        var preStream = TestFiles.Presentations.pre001_stream;
+        var preStream = Assets.GetStream("001.pptx");
         var presentation = SCPresentation.Open(preStream);
         var shapesCollection = presentation.Slides[1].Shapes;
         var videoStream = GetTestStream("test-video.mp4");

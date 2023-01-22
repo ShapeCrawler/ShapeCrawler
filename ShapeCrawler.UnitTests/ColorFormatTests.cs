@@ -61,7 +61,7 @@ public class ColorFormatTests : ShapeCrawlerTest
             };
             testCases.Add(portionQuery);
 
-            pptx = GetTestStream("001.pptx");
+            pptx = Assets.GetStream("001.pptx");
             portionQuery = new TestElementQuery
             {
                 Presentation = SCPresentation.Open(pptx),
@@ -73,7 +73,7 @@ public class ColorFormatTests : ShapeCrawlerTest
             };
             testCases.Add(portionQuery);
 
-            pptx = GetTestStream("001.pptx");
+            pptx = Assets.GetStream("001.pptx");
             portionQuery = new TestElementQuery
             {
                 Presentation = SCPresentation.Open(pptx),
@@ -85,7 +85,7 @@ public class ColorFormatTests : ShapeCrawlerTest
             };
             testCases.Add(portionQuery);
 
-            pptx = GetTestStream("001.pptx");
+            pptx = Assets.GetStream("001.pptx");
             portionQuery = new TestElementQuery
             {
                 Presentation = SCPresentation.Open(pptx),
@@ -140,7 +140,7 @@ public class ColorFormatTests : ShapeCrawlerTest
             var testCase3 = new TestCase<IParagraph, string>(3, paragraph3, "FFFF00");
             yield return new object[] { testCase3 };
 
-            var stream4 = GetTestStream("001.pptx");
+            var stream4 = Assets.GetStream("001.pptx");
             var pres4 = SCPresentation.Open(stream4);
             var paragraph4 = pres4.Slides[0].Shapes.GetById<IAutoShape>(4).TextFrame!.Paragraphs[0];
             var testCase4 = new TestCase<IParagraph, string>(4, paragraph4, "000000");
@@ -182,13 +182,13 @@ public class ColorFormatTests : ShapeCrawlerTest
             var testCase10 = new TestCase<IParagraph, string>(10, paragraph10, "000000");
             yield return new object[] { testCase10 };
 
-            var stream11 = GetTestStream("001.pptx");
+            var stream11 = Assets.GetStream("001.pptx");
             var pres11 = SCPresentation.Open(stream11);
             var paragraph11 = pres11.Slides[2].Shapes.GetById<IAutoShape>(4).TextFrame!.Paragraphs[0];
             var testCase11 = new TestCase<IParagraph, string>(11, paragraph11, "000000");
             yield return new object[] { testCase11 };
 
-            var stream12 = GetTestStream("001.pptx");
+            var stream12 = Assets.GetStream("001.pptx");
             var pres12 = SCPresentation.Open(stream12);
             var paragraph12 = pres12.Slides[4].Shapes.GetById<IAutoShape>(5).TextFrame!.Paragraphs[0];
             var testCase12 = new TestCase<IParagraph, string>(12, paragraph12, "000000");
@@ -254,8 +254,8 @@ public class ColorFormatTests : ShapeCrawlerTest
     public void ColorHex_Getter_returns_color_of_SlideLayout_Placeholder()
     {
         // Arrange
-        var pres1 = SCPresentation.Open(GetTestStream("001.pptx"));
-        IAutoShape titlePh = (IAutoShape)SCPresentation.Open(GetTestStream("001.pptx")).Slides[0].SlideLayout.Shapes.First(sp => sp.Id == 2);
+        var pres1 = SCPresentation.Open(Assets.GetStream("001.pptx"));
+        IAutoShape titlePh = (IAutoShape)SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[0].SlideLayout.Shapes.First(sp => sp.Id == 2);
         IColorFormat colorFormat = titlePh.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
         // Act-Assert
@@ -266,7 +266,7 @@ public class ColorFormatTests : ShapeCrawlerTest
     public void ColorHex_Getter_returns_color_of_SlideMaster_Non_Placeholder()
     {
         // Arrange
-        IAutoShape nonPlaceholder = (IAutoShape)SCPresentation.Open(GetTestStream("001.pptx")).SlideMasters[0].Shapes.First(sp => sp.Id == 8);
+        IAutoShape nonPlaceholder = (IAutoShape)SCPresentation.Open(Assets.GetStream("001.pptx")).SlideMasters[0].Shapes.First(sp => sp.Id == 8);
         IColorFormat colorFormat = nonPlaceholder.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
         // Act-Assert
@@ -277,7 +277,7 @@ public class ColorFormatTests : ShapeCrawlerTest
     public void ColorHex_Getter_returns_color_of_Title_SlideMaster_Placeholder()
     {
         // Arrange
-        IAutoShape titlePlaceholder = (IAutoShape)SCPresentation.Open(GetTestStream("001.pptx")).SlideMasters[0].Shapes.First(sp => sp.Id == 2);
+        IAutoShape titlePlaceholder = (IAutoShape)SCPresentation.Open(Assets.GetStream("001.pptx")).SlideMasters[0].Shapes.First(sp => sp.Id == 2);
         IColorFormat colorFormat = titlePlaceholder.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
         // Act-Assert
@@ -288,8 +288,8 @@ public class ColorFormatTests : ShapeCrawlerTest
     public void ColorHex_Getter_returns_color_of_Table_Cell_on_Slide()
     {
         // Arrange
-        var pres1 = SCPresentation.Open(GetTestStream("001.pptx"));
-        ITable table = (ITable)SCPresentation.Open(GetTestStream("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
+        var pres1 = SCPresentation.Open(Assets.GetStream("001.pptx"));
+        ITable table = (ITable)SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
         IColorFormat colorFormat = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
         // Act-Assert

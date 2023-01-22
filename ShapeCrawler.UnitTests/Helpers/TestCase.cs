@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.IO;
+using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.UnitTests.Helpers;
 
 namespace ShapeCrawler.UnitTests.Helpers;
@@ -34,8 +35,8 @@ public class TestCase
                 return this.pres;
             }
             
-            var stream = TestHelper.GetStream(this.PresentationName);
-            this.pres = SCPresentation.Open(stream);
+            var pptxStream = this.PresentationName == "001.pptx" ? Assets.GetStream(this.PresentationName) : TestHelper.GetStream(this.PresentationName);
+            this.pres = SCPresentation.Open(pptxStream);
 
             return this.pres;
         }
