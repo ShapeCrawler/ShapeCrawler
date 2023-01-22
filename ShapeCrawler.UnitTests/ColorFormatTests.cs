@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
@@ -37,10 +38,10 @@ public class ColorFormatTests : ShapeCrawlerTest
         get
         {
             var testCases = new TheoryData<TestElementQuery>();
-
+            var pptx = Assets.GetStream("autoshape-case001.pptx");
             testCases.Add(new TestElementQuery
             {
-                Presentation = SCPresentation.Open(GetTestStream("autoshape-case001.pptx")),
+                Presentation = SCPresentation.Open(pptx),
                 Location = Location.SlideMaster,
                 SlideMasterNumber = 1,
                 ShapeName = "AutoShape 1",
@@ -48,10 +49,10 @@ public class ColorFormatTests : ShapeCrawlerTest
                 PortionNumber = 1
             });
 
-            var pptxStream = GetTestStream("020.pptx");
+            pptx = GetTestStream("020.pptx");
             var portionQuery = new TestElementQuery
             {
-                Presentation = SCPresentation.Open(pptxStream),
+                Presentation = SCPresentation.Open(pptx),
                 Location = Location.Slide,
                 SlideIndex = 0,
                 ShapeName = "TextBox 1",
@@ -60,7 +61,7 @@ public class ColorFormatTests : ShapeCrawlerTest
             };
             testCases.Add(portionQuery);
 
-            var pptx = GetTestStream("001.pptx");
+            pptx = GetTestStream("001.pptx");
             portionQuery = new TestElementQuery
             {
                 Presentation = SCPresentation.Open(pptx),
