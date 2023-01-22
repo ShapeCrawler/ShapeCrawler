@@ -12,10 +12,6 @@ using ShapeCrawler.UnitTests.Helpers.Attributes;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
-// ReSharper disable All
-// ReSharper disable TooManyChainedReferences
-// ReSharper disable TooManyDeclarations
-
 namespace ShapeCrawler.UnitTests
 {
     public class ParagraphTests : ShapeCrawlerTest
