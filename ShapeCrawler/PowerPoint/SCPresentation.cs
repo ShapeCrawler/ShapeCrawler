@@ -39,8 +39,6 @@ public sealed class SCPresentation : IPresentation
     
     private SCPresentation(string outerPath)
     {
-        SCLogger.Send();
-        
         this.outerPath = outerPath;
 
         ThrowIfSourceInvalid(outerPath);
@@ -119,11 +117,15 @@ public sealed class SCPresentation : IPresentation
 
     internal SCSlideCollection SlidesInternal => (SCSlideCollection)this.Slides;
 
+    #region Global Statics
+
     /// <summary>
     ///     Creates a new presentation.
     /// </summary>
     public static IPresentation Create()
     {
+        SCLogger.Send();
+        
         var stream = new MemoryStream();
         var presDoc = PresentationDocument.Create(stream, PresentationDocumentType.Presentation);
         var presPart = presDoc.AddPresentationPart();
@@ -141,6 +143,8 @@ public sealed class SCPresentation : IPresentation
     /// </summary>
     public static IPresentation Open(string pptxPath)
     {
+        SCLogger.Send();
+        
         return new SCPresentation(pptxPath);
     }
 
@@ -149,9 +153,13 @@ public sealed class SCPresentation : IPresentation
     /// </summary>
     public static IPresentation Open(Stream pptxStream)
     {
+        SCLogger.Send();
+        
         pptxStream.Position = 0;
         return new SCPresentation(pptxStream);
     }
+
+    #endregion Global Statics
 
     /// <inheritdoc/>
     public void Save()

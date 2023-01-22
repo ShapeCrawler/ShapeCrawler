@@ -14,15 +14,17 @@ internal static class SCLogger
 {
     private static readonly Lazy<SCLog> Log = new(GetLog);
     private static readonly object LoggingLock = new();
+    private static readonly string LogPath = Path.Combine(Path.GetTempPath(), "sc-log.json");
 
     public static void Send()
     {
-        if (!SCSettings.CanCollectLogs)
+        if (!SCSettings.CanCollectLogs || DateTime.UtcNow < new DateTime(2023, 02, 15))
         {
             return;
         }
 
-        if ((DateTime.Now - Log.Value.SentDate).TotalDays < 1)
+        var shouldSend = Log.Value.SentDate == null || (DateTime.Now - Log.Value.SentDate).Value.TotalDays > 1;
+        if (!shouldSend)
         {
             return;
         }
@@ -31,7 +33,8 @@ internal static class SCLogger
         {
             lock (LoggingLock)
             {
-                if ((DateTime.Now - Log.Value.SentDate).TotalDays < 1)
+                shouldSend = Log.Value.SentDate == null || (DateTime.Now - Log.Value.SentDate).Value.TotalDays > 1; 
+                if (!shouldSend)
                 {
                     return;
                 }
@@ -42,23 +45,21 @@ internal static class SCLogger
                 httpClient.PostAsync("http://domain/api/statistics", content).GetAwaiter().GetResult();
 
                 Log.Value.Reset();
-                var path = Path.Combine(Path.GetTempPath(), "sc.log");
-                using var fileStream = File.Open(path, FileMode.Create);
-                JsonSerializer.Serialize(fileStream, Log);
+                using var fileStream = File.Open(LogPath, FileMode.Create);
+                JsonSerializer.Serialize(fileStream, Log.Value);
             }
         }
         catch (Exception)
         {
-            // ignored
+            Log.Value.SendFailed = DateTime.Now;
         }
     }
 
     private static SCLog GetLog()
     {
-        var logFilePath = Path.Combine(Path.GetTempPath(), "sc.log");
-        if (File.Exists(logFilePath))
+        if (File.Exists(LogPath))
         {
-            if (TryGetLogFromFile(logFilePath, out var log))
+            if (TryGetLogFromFile(LogPath, out var log))
             {
                 return log!;
             }
@@ -82,6 +83,7 @@ internal static class SCLogger
 
         var newLogValue = new SCLog();
         newLogValue.UserId = firstInterface.GetPhysicalAddress().ToString();
+        
         return newLogValue;
     }
 
