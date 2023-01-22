@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
@@ -33,7 +34,7 @@ public class ParagraphPortionTests : ShapeCrawlerTest
     public void Text_Setter_updates_text()
     {
         // Arrange
-        var pptxStream = GetTestStream("autoshape-case001.pptx");
+        var pptxStream = Assets.GetStream("autoshape-case001.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var autoShape = pres.SlideMasters[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
         var portion = autoShape.TextFrame.Paragraphs[0].Portions[0];
@@ -50,7 +51,7 @@ public class ParagraphPortionTests : ShapeCrawlerTest
     public void Hyperlink_Setter_sets_hyperlink(string pptxFile, string shapeName)
     {
         // Arrange
-        var pptxStream = GetTestStream(pptxFile);
+        var pptxStream = Assets.GetStream(pptxFile);
         var presentation = SCPresentation.Open(pptxStream);
         var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>(shapeName);
         var portion = autoShape.TextFrame.Paragraphs[0].Portions[0];
@@ -78,7 +79,7 @@ public class ParagraphPortionTests : ShapeCrawlerTest
     public void Hyperlink_Setter_sets_hyperlink_for_two_shape_on_the_Same_slide()
     {
         // Arrange
-        var pptxStream = GetTestStream("001.pptx");
+        var pptxStream = Assets.GetStream("001.pptx");
         var presentation = SCPresentation.Open(pptxStream);
         var textBox3 = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
         var textBox4 = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");

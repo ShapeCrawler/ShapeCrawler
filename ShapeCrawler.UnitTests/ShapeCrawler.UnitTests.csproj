@@ -3,7 +3,7 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <LangVersion>10</LangVersion>
+    <LangVersion>11</LangVersion>
     <TargetFrameworks>net48;net7.0</TargetFrameworks>
     <Configurations>Debug;Release;Test</Configurations>
     <Platforms>AnyCPU</Platforms>
@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ShapeCrawler.Tests.Shared\ShapeCrawler.Tests.Shared.csproj" />
     <ProjectReference Include="..\ShapeCrawler\ShapeCrawler.csproj" />
   </ItemGroup>
 
@@ -50,7 +51,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Remove="Resource\001.pptx" />
-    <EmbeddedResource Include="Resource\001.pptx" />
     <None Remove="Resource\050_title-placeholder.pptx" />
     <EmbeddedResource Include="Resource\050_title-placeholder.pptx" />
     <None Remove="Resource\051_title-placeholder.pptx" />
@@ -91,9 +91,7 @@
     <None Remove="Resource\video\video-case001.pptx" />
     <EmbeddedResource Include="Resource\video\video-case001.pptx" />
     <None Remove="Resource\autoshape\autoshape-case001.pptx" />
-    <EmbeddedResource Include="Resource\autoshape\autoshape-case001.pptx" />
     <None Remove="Resource\autoshape\autoshape-case002.pptx" />
-    <EmbeddedResource Include="Resource\autoshape\autoshape-case002.pptx" />
     <None Remove="Resource\020.pptx" />
     <EmbeddedResource Include="Resource\020.pptx" />
     <None Remove="Resource\autoshape\autoshape-case003.pptx" />

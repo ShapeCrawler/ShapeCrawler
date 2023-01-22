@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>11</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="assets\autoshape\autoshape-case001.pptx" />
+    <EmbeddedResource Include="assets\autoshape\autoshape-case001.pptx" />
+    <None Remove="assets\autoshape\001.pptx" />
+    <EmbeddedResource Include="assets\autoshape\001.pptx" />
+    <None Remove="assets\autoshape\autoshape-case002.pptx" />
+    <EmbeddedResource Include="assets\autoshape\autoshape-case002.pptx" />
+  </ItemGroup>
+
+</Project>

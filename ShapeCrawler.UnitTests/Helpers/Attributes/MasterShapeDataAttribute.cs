@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit.Sdk;
 
@@ -27,8 +28,7 @@ public class MasterShapeDataAttribute : DataAttribute
 
     public override IEnumerable<object[]> GetData(MethodInfo testMethod)
     {
-        var assembly = Assembly.GetExecutingAssembly();
-        var pptxStream = assembly.GetResourceStream(this.pptxFile);
+        var pptxStream = this.pptxFile == "001.pptx" ? Assets.GetStream(this.pptxFile) : TestHelper.GetStream(this.pptxFile);
         var pres = SCPresentation.Open(pptxStream);
         var slideMaster = pres.SlideMasters[0];
         var shape = slideMaster.Shapes.GetByName<IShape>(this.shapeName);
