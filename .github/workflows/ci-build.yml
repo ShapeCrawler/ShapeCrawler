@@ -24,28 +24,3 @@ jobs:
       
       - name: Run tests
         run: dotnet test --configuration Release --no-restore --verbosity normal -f net7.0
-  
-  build-net48:
-    runs-on: windows-latest
-    name: .NET Framework 4.8
-    steps:
-      - uses: actions/checkout@v2
-      
-      - name: Setup .NET Framework 4.8
-        run: |
-          choco install netfx-4.8 -y
-      
-      - name: Setup msbuild
-        uses: microsoft/setup-msbuild@v1.1
-      
-      - name: Setup VSTest
-        uses: darenm/Setup-VSTest@v1.2
-      
-      - name: Restore packages
-        run: nuget restore
-      
-      - name: Build
-        run: msbuild /p:Configuration=Release
-      
-      - name: Run tests
-        run: vstest.console.exe **/*.*Tests.dll /Framework:Framework45 

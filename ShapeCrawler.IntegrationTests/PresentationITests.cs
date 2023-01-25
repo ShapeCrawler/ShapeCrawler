@@ -23,7 +23,7 @@ public class PresentationITests
         File.Exists(logPath).Should().BeFalse();
     }
     
-    [Fact]
+    [Fact("Wait deploy statistics service")]
     public void Open_create_log_file()
     {
         // Arrange
