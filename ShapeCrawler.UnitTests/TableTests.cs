@@ -109,8 +109,6 @@ public class TableTests : ShapeCrawlerTest
 
     public static IEnumerable<object[]> TestCasesCellIsMergedCell()
     {
-        var pptx1 = Assets.GetStream("001.pptx");
-        var pres1 = SCPresentation.Open(pptx1);
         var table1 = SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[1].Shapes.GetById<ITable>(3);
         yield return new object[] {table1[0, 0], table1[1, 0]};
         
@@ -129,7 +127,6 @@ public class TableTests : ShapeCrawlerTest
     public void ColumnsCount_ReturnsNumberOfColumnsInTheTable()
     {
         // Arrange
-        var pres1 = SCPresentation.Open(Assets.GetStream("001.pptx"));
         ITable table = (ITable)SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
 
         // Act
@@ -143,7 +140,6 @@ public class TableTests : ShapeCrawlerTest
     public void Column_Width_Getter_returns_width_of_column_in_pixels()
     {
         // Arrange
-        var pres1 = SCPresentation.Open(Assets.GetStream("001.pptx"));
         var table = (ITable)SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
 
         // Act

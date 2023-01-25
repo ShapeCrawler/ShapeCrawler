@@ -58,7 +58,6 @@ public class ShapeCollectionTests : ShapeCrawlerTest
     public void Contains_Picture_shape()
     {
         // Arrange
-        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
         IShape shape = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
 
         // Act-Assert

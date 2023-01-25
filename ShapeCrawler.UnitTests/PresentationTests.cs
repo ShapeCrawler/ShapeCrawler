@@ -89,7 +89,6 @@ public class PresentationTests : ShapeCrawlerTest
     public void Slides_Add_adds_specified_slide_at_the_end_of_slide_collection()
     {
         // Arrange
-        var pres1 = SCPresentation.Open(Assets.GetStream("001.pptx"));
         var sourceSlide = SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[0];
         var destPre = SCPresentation.Open(GetTestStream("002.pptx"));
         var originSlidesCount = destPre.Slides.Count;
@@ -137,12 +136,10 @@ public class PresentationTests : ShapeCrawlerTest
     public void Slides_Insert_inserts_specified_slide_at_the_specified_position()
     {
         // Arrange
-        var pres1 = SCPresentation.Open(Assets.GetStream("001.pptx"));
-        var pres2 = SCPresentation.Open(GetTestStream("002.pptx"));
-        ISlide sourceSlide = SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[0];
+        var sourceSlide = SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[0];
         string sourceSlideId = Guid.NewGuid().ToString();
         sourceSlide.CustomData = sourceSlideId;
-        IPresentation destPre = SCPresentation.Open(GetTestStream("002.pptx"));
+        var destPre = SCPresentation.Open(GetTestStream("002.pptx"));
 
         // Act
         destPre.Slides.Insert(2, sourceSlide);

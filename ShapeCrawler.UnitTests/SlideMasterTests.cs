@@ -67,7 +67,6 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void AutoShapePlaceholderType_ReturnsPlaceholderType()
     {
         // Arrange
-        var pres1 = SCPresentation.Open(Assets.GetStream("001.pptx"));
         ISlideMaster slideMaster = SCPresentation.Open(Assets.GetStream("001.pptx")).SlideMasters[0];
         IShape masterAutoShapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
         IShape masterAutoShapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
@@ -107,7 +106,6 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void AutoShapeTextBoxText_ReturnsText_WhenTheSlideMasterAutoShapesTextBoxIsNotEmpty()
     {
         // Arrange
-        var pres1 = SCPresentation.Open(Assets.GetStream("001.pptx"));
         ISlideMaster slideMaster = SCPresentation.Open(Assets.GetStream("001.pptx")).SlideMasters[0];
         IAutoShape autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 

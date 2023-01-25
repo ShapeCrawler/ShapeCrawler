@@ -11,9 +11,11 @@ internal class SCLog
     
     internal string? LibraryVersion { get; set; }
 
-    internal DateTime SentDate { get; set; }
+    internal DateTime? SentDate { get; set; }
 
     internal List<string>? Errors { get; set; }
+    
+    internal DateTime? SendFailed { get; set; }
 
     internal void Reset()
     {

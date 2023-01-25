@@ -192,8 +192,6 @@ namespace ShapeCrawler.UnitTests
         public void Y_Getter_returns_y_coordinate_in_pixels()
         {
             // Arrange
-            var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
-            var pres18 = SCPresentation.Open(GetTestStream("018.pptx"));
             IShape shapeCase1 = SCPresentation.Open(GetTestStream("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
             IShape shapeCase2 = SCPresentation.Open(GetTestStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
             IShape shapeCase3 = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
@@ -405,7 +403,6 @@ namespace ShapeCrawler.UnitTests
         public void CustomData_ReturnsNull_WhenShapeHasNotCustomData()
         {
             // Arrange
-            var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
             var shape = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides.First().Shapes.First();
 
             // Act

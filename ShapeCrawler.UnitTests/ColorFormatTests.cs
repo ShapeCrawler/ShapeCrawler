@@ -242,7 +242,6 @@ public class ColorFormatTests : ShapeCrawlerTest
     public void ColorHex_Getter_returns_White_color()
     {
         // Arrange
-        var pres20 = SCPresentation.Open(GetTestStream("020.pptx"));
         var shape = (IAutoShape)SCPresentation.Open(GetTestStream("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
         var colorFormat = shape.TextFrame!.Paragraphs[0].Portions[0].Font.ColorFormat;
 
@@ -254,9 +253,8 @@ public class ColorFormatTests : ShapeCrawlerTest
     public void ColorHex_Getter_returns_color_of_SlideLayout_Placeholder()
     {
         // Arrange
-        var pres1 = SCPresentation.Open(Assets.GetStream("001.pptx"));
-        IAutoShape titlePh = (IAutoShape)SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[0].SlideLayout.Shapes.First(sp => sp.Id == 2);
-        IColorFormat colorFormat = titlePh.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
+        var titlePh = (IAutoShape)SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[0].SlideLayout.Shapes.First(sp => sp.Id == 2);
+        var colorFormat = titlePh.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
         // Act-Assert
         colorFormat.ColorHex.Should().Be("000000");
@@ -288,9 +286,8 @@ public class ColorFormatTests : ShapeCrawlerTest
     public void ColorHex_Getter_returns_color_of_Table_Cell_on_Slide()
     {
         // Arrange
-        var pres1 = SCPresentation.Open(Assets.GetStream("001.pptx"));
-        ITable table = (ITable)SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
-        IColorFormat colorFormat = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
+        var table = (ITable)SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
+        var colorFormat = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
         // Act-Assert
         colorFormat.ColorHex.Should().Be("FF0000");
@@ -300,9 +297,8 @@ public class ColorFormatTests : ShapeCrawlerTest
     public void ColorType_ReturnsSchemeColorType_WhenFontColorIsTakenFromThemeScheme()
     {
         // Arrange
-        var pres20 = SCPresentation.Open(GetTestStream("020.pptx"));
-        IAutoShape nonPhAutoShape = (IAutoShape)SCPresentation.Open(GetTestStream("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
-        IColorFormat colorFormat = nonPhAutoShape.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
+        var nonPhAutoShape = (IAutoShape)SCPresentation.Open(GetTestStream("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
+        var colorFormat = nonPhAutoShape.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
 
         // Act
         SCColorType colorType = colorFormat.ColorType;

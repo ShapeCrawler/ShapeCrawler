@@ -1,4 +1,4 @@
-name: CD - Push NuGet package
+name: Push NuGet package
 
 on:
   push:
@@ -6,9 +6,31 @@ on:
       - 'v*'
   workflow_dispatch:
 
-jobs:
-  build:
+jobs:  
+  build-net48:
+    name: .NET Framework 4.8
     runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2    
+      - name: Setup .NET Framework 4.8
+        run: |
+          choco install netfx-4.8 -y      
+      - name: Setup msbuild
+        uses: microsoft/setup-msbuild@v1.1      
+      - name: Setup VSTest
+        uses: darenm/Setup-VSTest@v1.2      
+      - name: Restore packages
+        run: nuget restore      
+      - name: Build
+        run: msbuild /p:Configuration=Release      
+      - name: Run tests
+        run: vstest.console.exe **/*.*Tests.dll /Framework:Framework45
+  
+  deploy:
+    name: Deploy
+    runs-on: windows-latest
+    needs: build-net48
+    if: ${{ success(build-net48) }} 
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
