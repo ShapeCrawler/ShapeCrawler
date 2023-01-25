@@ -6,14 +6,12 @@ using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers.Attributes;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
-
-// ReSharper disable TooManyDeclarations
-// ReSharper disable InconsistentNaming
-// ReSharper disable TooManyChainedReferences
+using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 namespace ShapeCrawler.UnitTests
 {
@@ -70,6 +68,24 @@ namespace ShapeCrawler.UnitTests
             mime.Should().Be("audio/mpeg");
         }
 
+        [Fact]
+        public void Duplicate_duplicates_AutoShape()
+        {
+            // Arrange
+            var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+            var pres = SCPresentation.Open(pptx);
+            var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 6");
+
+            // Act
+            IAutoShape shapeCopy = shape.Duplicate();
+
+            // Assert
+            shapeCopy.Id.Should().Be()
+            shapeCopy.X.Should().Be(shape.X);
+            shapeCopy.Width.Should().Be(shape.Width);
+            shapeCopy.TextFrame.Text.Should().Be(shapeCopy.TextFrame.Text);
+        }
+        
         [Fact]
         public void VideoShape_BinaryData_returns_video_bytes()
         {
@@ -195,7 +211,7 @@ namespace ShapeCrawler.UnitTests
             IShape shapeCase1 = SCPresentation.Open(GetTestStream("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
             IShape shapeCase2 = SCPresentation.Open(GetTestStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
             IShape shapeCase3 = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
-            float verticalResoulution = TestHelper.VerticalResolution;
+            float verticalResoulution = Helpers.TestHelper.VerticalResolution;
 
             // Act
             int yCoordinate1 = shapeCase1.Y;
@@ -300,9 +316,9 @@ namespace ShapeCrawler.UnitTests
             int width3 = shapeCase3.Width;
 
             // Assert
-            (width1 * 914400 / TestHelper.HorizontalResolution).Should().Be(9144000);
-            (width2 * 914400 / TestHelper.HorizontalResolution).Should().Be(1181100);
-            (width3 * 914400 / TestHelper.HorizontalResolution).Should().Be(485775);
+            (width1 * 914400 / Helpers.TestHelper.HorizontalResolution).Should().Be(9144000);
+            (width2 * 914400 / Helpers.TestHelper.HorizontalResolution).Should().Be(1181100);
+            (width3 * 914400 / Helpers.TestHelper.HorizontalResolution).Should().Be(485775);
         }
 
         [Theory]
@@ -331,7 +347,7 @@ namespace ShapeCrawler.UnitTests
             IGroupShape groupShape = (IGroupShape)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 7);
             IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
             IShape shapeCase3 = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
-            float verticalResulution = TestHelper.VerticalResolution;
+            float verticalResulution = Helpers.TestHelper.VerticalResolution;
 
             // Act
             int height1 = shapeCase1.Height;

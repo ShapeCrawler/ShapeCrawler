@@ -6,6 +6,7 @@ using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Properties;
 using Xunit;
+using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable TooManyChainedReferences
@@ -20,7 +21,7 @@ public class SlideTests : ShapeCrawlerTest
     public void Hide_MethodHidesSlide_WhenItIsExecuted()
     {
         // Arrange
-        var pptx = Assets.GetStream("001.pptx");
+        var pptx = TestHelper.GetStream("001.pptx");
         var pre = SCPresentation.Open(pptx);
         var slide = pre.Slides.First();
 
@@ -82,7 +83,7 @@ var pre = SCPresentation.Open(pptx);
     {
         // Arrange
         const string customDataString = "Test custom data";
-        var originPre = SCPresentation.Open(Assets.GetStream("001.pptx"));
+        var originPre = SCPresentation.Open(TestHelper.GetStream("001.pptx"));
         var slide = originPre.Slides.First();
 
         // Act
@@ -101,7 +102,7 @@ var pre = SCPresentation.Open(pptx);
     public void CustomData_PropertyIsNull_WhenTheSlideHasNotCustomData()
     {
         // Arrange
-        var slide = SCPresentation.Open(Assets.GetStream("001.pptx")).Slides.First();
+        var slide = SCPresentation.Open(TestHelper.GetStream("001.pptx")).Slides.First();
 
         // Act
         var sldCustomData = slide.CustomData;
@@ -114,7 +115,7 @@ var pre = SCPresentation.Open(pptx);
     public void Number_Setter_moves_slide_to_specified_number_position()
     {
         // Arrange
-        var pptxStream = Assets.GetStream("001.pptx");
+        var pptxStream = TestHelper.GetStream("001.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var slide1 = pres.Slides[0];
         var slide2 = pres.Slides[1];

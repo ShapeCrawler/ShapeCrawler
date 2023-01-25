@@ -5,9 +5,8 @@ on:
     branches: [ master ]
 
 jobs:
-  build-net70:
+  build:
     runs-on: ubuntu-latest
-    name: .NET 7
     steps:
       - uses: actions/checkout@v2
       
