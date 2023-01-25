@@ -18,6 +18,8 @@ internal static class SCLogger
 
     public static void Send()
     {
+        return;
+
         if (!SCSettings.CanCollectLogs || DateTime.UtcNow < new DateTime(2023, 02, 15))
         {
             return;
