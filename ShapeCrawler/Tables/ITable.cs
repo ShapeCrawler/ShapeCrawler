@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
@@ -195,6 +196,83 @@ internal sealed class SCTable : SCSlideShape, ITable
         return this.Rows.Last();
     }
     
+    protected override void SetXCoordinate(int xPx)
+    {
+        var pXfrm = this.pGraphicFrame.Transform;
+        if (pXfrm is null)
+        {
+            var placeholder = (SCPlaceholder)this.Placeholder!;
+            var referencedShape = placeholder.ReferencedShape.Value;
+            var xEmu = UnitConverter.HorizontalPixelToEmu(xPx);
+            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.Y);
+            var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
+            var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
+            
+            this.pGraphicFrame.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
+        }
+        else
+        {
+            pXfrm.Offset!.X = UnitConverter.HorizontalPixelToEmu(xPx);
+        }
+    }
+
+    protected override void SetYCoordinate(int yPx)
+    {
+        var pXfrm = this.pGraphicFrame.Transform;
+        if (pXfrm is null)
+        {
+            var placeholder = (SCPlaceholder)this.Placeholder!;
+            var referencedShape = placeholder.ReferencedShape.Value!;
+            var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
+            var yEmu = UnitConverter.HorizontalPixelToEmu(yPx);
+            var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
+            var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
+            this.pGraphicFrame.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
+        }
+        else
+        {
+            pXfrm.Offset!.Y = UnitConverter.HorizontalPixelToEmu(yPx);
+        }
+    }
+
+    protected override void SetWidth(int wPx)
+    {
+        var pXfrm = this.pGraphicFrame.Transform;
+        if (pXfrm is null)
+        {
+            var placeholder = (SCPlaceholder)this.Placeholder!;
+            var referencedShape = placeholder.ReferencedShape.Value;
+            var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.X);
+            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.Y);
+            var wEmu = UnitConverter.VerticalPixelToEmu(wPx);
+            var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
+            this.pGraphicFrame.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
+        }
+        else
+        {
+            pXfrm.Extents!.Cx = UnitConverter.HorizontalPixelToEmu(wPx);
+        }
+    }
+    
+    protected override void SetHeight(int hPx)
+    {
+        var pXfrm = this.pGraphicFrame.Transform;
+        if (pXfrm is null)
+        {
+            var placeholder = (SCPlaceholder)this.Placeholder!;
+            var referencedShape = placeholder.ReferencedShape.Value;
+            var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.X);
+            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.Y);
+            var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
+            var hEmu = UnitConverter.VerticalPixelToEmu(hPx);
+            this.pGraphicFrame.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
+        }
+        else
+        {
+            pXfrm.Extents!.Cy = UnitConverter.HorizontalPixelToEmu(hPx);
+        }
+    }
+
     private static bool CannotBeMerged(SCCell cell1, SCCell cell2)
     {
         if (cell1 == cell2)

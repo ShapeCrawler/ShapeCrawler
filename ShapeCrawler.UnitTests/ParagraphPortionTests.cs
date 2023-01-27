@@ -100,7 +100,7 @@ public class ParagraphPortionTests : ShapeCrawlerTest
     public void Hyperlink_Setter_sets_hyperlink_for_table_Cell()
     {
         // Arrange
-        var pptxStream = GetTestStream("table-case001.pptx");
+        var pptxStream =  TestHelper.GetStream("table-case001.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
         var portion = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0];

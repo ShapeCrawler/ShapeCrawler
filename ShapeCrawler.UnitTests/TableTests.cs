@@ -57,7 +57,7 @@ public class TableTests : ShapeCrawlerTest
     public void Rows_Add_adds_row()
     {
         // Arrange
-        var pptx = GetTestStream("table-case001.pptx");
+        var pptx = TestHelper.GetStream("table-case001.pptx");
         var pres = SCPresentation.Open(pptx);
         var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
 

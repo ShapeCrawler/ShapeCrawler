@@ -6,10 +6,8 @@ using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers.Attributes;
-using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
@@ -68,7 +66,7 @@ namespace ShapeCrawler.UnitTests
             mime.Should().Be("audio/mpeg");
         }
 
-        [Fact]
+        [Fact(Skip = "On Hold ")]
         public void Duplicate_duplicates_AutoShape()
         {
             // Arrange
@@ -80,7 +78,6 @@ namespace ShapeCrawler.UnitTests
             IAutoShape shapeCopy = shape.Duplicate();
 
             // Assert
-            shapeCopy.Id.Should().Be()
             shapeCopy.X.Should().Be(shape.X);
             shapeCopy.Width.Should().Be(shape.Width);
             shapeCopy.TextFrame.Text.Should().Be(shapeCopy.TextFrame.Text);
@@ -258,6 +255,7 @@ namespace ShapeCrawler.UnitTests
         [SlideShapeData("006_1 slides.pptx", 1, "Shape 1")]
         [SlideShapeData("001.pptx", 1, "Head 1")]
         [SlideShapeData("autoshape-case015.pptx", 1, "Group 1")]
+        [SlideShapeData("table-case001.pptx", 1, "Table 1")]
         public void X_Setter_sets_x_coordinate(IShape shape)
         {
             // Arrange

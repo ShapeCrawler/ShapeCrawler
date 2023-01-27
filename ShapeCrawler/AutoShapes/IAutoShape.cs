@@ -37,6 +37,14 @@ public interface IAutoShape : IShape
     ///     Gets text frame if shape is text holder, otherwise <see langword="null"/>.
     /// </summary>
     ITextFrame? TextFrame { get; }
+
+#if DEBUG
+    /// <summary>
+    ///     Duplicate the shape.
+    /// </summary>
+    /// <returns></returns>
+    IAutoShape Duplicate();
+#endif
 }
 
 internal class SCAutoShape : SCSlideShape, IAutoShape, ITextFrameContainer
@@ -73,6 +81,11 @@ internal class SCAutoShape : SCSlideShape, IAutoShape, ITextFrameContainer
     public override SCShapeType ShapeType => SCShapeType.AutoShape;
 
     public ITextFrame? TextFrame => this.textFrame.Value;
+    
+    public IAutoShape Duplicate()
+    {
+        throw new NotImplementedException();
+    }
 
     #endregion Public Properties
 
