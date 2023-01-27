@@ -6,6 +6,7 @@ using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
+using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 namespace ShapeCrawler.UnitTests;
 
@@ -31,7 +32,7 @@ public class SlideCollectionTests : ShapeCrawlerTest
     public void Add_adds_slide_from_External_presentation()
     {
         // Arrange
-        var sourceSlide = SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[0];
+        var sourceSlide = SCPresentation.Open(TestHelper.GetStream("001.pptx")).Slides[0];
         var pptx = GetTestStream("002.pptx");
         var destPre = SCPresentation.Open(pptx);
         var originSlidesCount = destPre.Slides.Count;
@@ -70,7 +71,7 @@ public class SlideCollectionTests : ShapeCrawlerTest
     public void Add_add_adds_New_slide()
     {
         // Arrange
-        var pptx = GetTestStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
         var pres = SCPresentation.Open(pptx);
         var layout = pres.SlideMasters[0].SlideLayouts[0]; 
         var slides = pres.Slides;
@@ -88,7 +89,7 @@ public class SlideCollectionTests : ShapeCrawlerTest
     public void Slides_Insert_inserts_slide_at_the_specified_position()
     {
         // Arrange
-        var pptx = Assets.GetStream("001.pptx");
+        var pptx = TestHelper.GetStream("001.pptx");
         var sourceSlide = SCPresentation.Open(pptx).Slides[0];
         var sourceSlideId = Guid.NewGuid().ToString();
         sourceSlide.CustomData = sourceSlideId;

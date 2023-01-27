@@ -11,6 +11,7 @@ using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers.Attributes;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
+using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 namespace ShapeCrawler.UnitTests
 {
@@ -88,10 +89,10 @@ namespace ShapeCrawler.UnitTests
 
         public static IEnumerable<object[]> TestCasesAlignmentGetter()
         {
-            var autoShape1 = SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
+            var autoShape1 = SCPresentation.Open(TestHelper.GetStream("001.pptx")).Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
             yield return new object[] { autoShape1, SCTextAlignment.Center };
 
-            var pptxStream2 = Assets.GetStream("001.pptx");
+            var pptxStream2 = TestHelper.GetStream("001.pptx");
             var pres2 = SCPresentation.Open(pptxStream2);
             var autoShape2 = pres2.Slides[0].Shapes.GetByName<IAutoShape>("Head 1");
             yield return new object[] { autoShape2, SCTextAlignment.Center };
@@ -140,7 +141,7 @@ namespace ShapeCrawler.UnitTests
         public void Paragraph_Bullet_Type_Getter_returns_None_value_When_paragraph_doesnt_have_bullet()
         {
             // Arrange
-            var pptx = Assets.GetStream("001.pptx");
+            var pptx = TestHelper.GetStream("001.pptx");
             var pres = SCPresentation.Open(pptx);
             var autoShape = pres.Slides[0].Shapes.GetById<IAutoShape>(2);
             var bullet = autoShape.TextFrame.Paragraphs[0].Bullet;

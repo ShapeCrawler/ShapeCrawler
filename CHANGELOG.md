@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.41.2 - Unreleased
+🐞Fixed updating Table coordinates [d443](https://github.com/ShapeCrawler/ShapeCrawler/discussions/443)
+
 ## Version 0.41.1 - 2022-01-13
 🐞Fixed East Asian font parsing.  
 🐞Fixed adding a new shape.

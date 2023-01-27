@@ -11,6 +11,7 @@ using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers.Attributes;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
+using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable TooManyChainedReferences
@@ -83,7 +84,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest
     [Fact]
     public void Contains_Connection_shape()
     {
-        var pptxStream = Assets.GetStream("001.pptx");
+        var pptxStream = TestHelper.GetStream("001.pptx");
         var presentation = SCPresentation.Open(pptxStream);
         var shapesCollection = presentation.Slides[0].Shapes;
 
@@ -130,7 +131,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest
     public void AddAudio_adds_Audio_shape()
     {
         // Arrange
-        var preStream = Assets.GetStream("001.pptx");
+        var preStream = TestHelper.GetStream("001.pptx");
         var presentation = SCPresentation.Open(preStream);
         var shapes = presentation.Slides[1].Shapes;
         var mp3 = TestFiles.Audio.TestMp3;
@@ -154,7 +155,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest
     public void AddVideo_adds_Video_shape()
     {
         // Arrange
-        var preStream = Assets.GetStream("001.pptx");
+        var preStream = TestHelper.GetStream("001.pptx");
         var presentation = SCPresentation.Open(preStream);
         var shapesCollection = presentation.Slides[1].Shapes;
         var videoStream = GetTestStream("test-video.mp4");
@@ -217,7 +218,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest
     public void AutoShapes_AddRoundedRectangle_adds_Rounded_Rectangle()
     {
         // Arrange
-        var pptx = GetTestStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
         var pres = SCPresentation.Open(pptx);
         var shapes = pres.Slides[0].Shapes;
             
@@ -256,7 +257,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest
     public void Remove_removes_shape()
     {
         // Arrange
-        var pptx = GetTestStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
         var pres = SCPresentation.Open(pptx);
         var shapeCollection = pres.Slides[0].Shapes;
         var shape = shapeCollection.GetByName("TextBox 3")!;

@@ -8,6 +8,7 @@ using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
+using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 namespace ShapeCrawler.UnitTests;
 
@@ -89,7 +90,7 @@ public class PresentationTests : ShapeCrawlerTest
     public void Slides_Add_adds_specified_slide_at_the_end_of_slide_collection()
     {
         // Arrange
-        var sourceSlide = SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[0];
+        var sourceSlide = SCPresentation.Open(TestHelper.GetStream("001.pptx")).Slides[0];
         var destPre = SCPresentation.Open(GetTestStream("002.pptx"));
         var originSlidesCount = destPre.Slides.Count;
         var expectedSlidesCount = ++originSlidesCount;
@@ -111,7 +112,7 @@ public class PresentationTests : ShapeCrawlerTest
     {
         // Arrange
         var sourcePptx = GetTestStream("pictures-case004.pptx");
-        var destPptx = GetTestStream("autoshape-case015.pptx");
+        var destPptx = TestHelper.GetStream("autoshape-case015.pptx");
         var sourcePres = SCPresentation.Open(sourcePptx);
         var copyingSlide = sourcePres.Slides[0];
         var destPres = SCPresentation.Open(destPptx);
@@ -136,7 +137,7 @@ public class PresentationTests : ShapeCrawlerTest
     public void Slides_Insert_inserts_specified_slide_at_the_specified_position()
     {
         // Arrange
-        var sourceSlide = SCPresentation.Open(Assets.GetStream("001.pptx")).Slides[0];
+        var sourceSlide = SCPresentation.Open(TestHelper.GetStream("001.pptx")).Slides[0];
         string sourceSlideId = Guid.NewGuid().ToString();
         sourceSlide.CustomData = sourceSlideId;
         var destPre = SCPresentation.Open(GetTestStream("002.pptx"));
@@ -201,7 +202,7 @@ public class PresentationTests : ShapeCrawlerTest
     public void SlideMastersCount_ReturnsNumberOfMasterSlidesInThePresentation()
     {
         // Arrange
-        IPresentation presentationCase1 = SCPresentation.Open(Assets.GetStream("001.pptx"));
+        IPresentation presentationCase1 = SCPresentation.Open(TestHelper.GetStream("001.pptx"));
         IPresentation presentationCase2 = SCPresentation.Open(GetTestStream("002.pptx"));
 
         // Act
@@ -217,7 +218,7 @@ public class PresentationTests : ShapeCrawlerTest
     public void SlideMasterShapesCount_ReturnsNumberOfShapesOnTheMasterSlide()
     {
         // Arrange
-        IPresentation presentation = SCPresentation.Open(Assets.GetStream("001.pptx"));
+        IPresentation presentation = SCPresentation.Open(TestHelper.GetStream("001.pptx"));
 
         // Act
         int slideMasterShapesCount = presentation.SlideMasters[0].Shapes.Count;
@@ -329,7 +330,7 @@ public class PresentationTests : ShapeCrawlerTest
     public void SaveAs_should_not_change_the_Original_Stream_when_it_is_saved_to_New_Stream()
     {
         // Arrange
-        var originalStream = Assets.GetStream("001.pptx");
+        var originalStream = TestHelper.GetStream("001.pptx");
         var pres = SCPresentation.Open(originalStream);
         var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
         var originalText = textBox!.Text;

@@ -109,11 +109,6 @@ internal abstract class SCShape : IShape
     
     protected virtual void SetXCoordinate(int xPx)
     {
-        if (this.GroupSCShape is not null)
-        {
-            throw new RuntimeDefinedPropertyException("X coordinate of grouped shape cannot be changed.");
-        }
-        
         var pSpPr = this.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !;
         var aXfrm = pSpPr.Transform2D;
         if (aXfrm is null)

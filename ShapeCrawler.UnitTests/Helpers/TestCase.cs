@@ -35,7 +35,7 @@ public class TestCase
                 return this.pres;
             }
             
-            var pptxStream = this.PresentationName == "001.pptx" ? Assets.GetStream(this.PresentationName) : TestHelper.GetStream(this.PresentationName);
+            var pptxStream = this.PresentationName == "001.pptx" ? Tests.Shared.TestHelper.GetStream(this.PresentationName) : TestHelper.GetStream(this.PresentationName);
             this.pres = SCPresentation.Open(pptxStream);
 
             return this.pres;
