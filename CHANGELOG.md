@@ -1,6 +1,6 @@
 # Changelog  
 
-## Version 0.41.2 - Unreleased
+## Version 0.41.2 - 2023-01-28
 🐞Fixed updating Table coordinates [d443](https://github.com/ShapeCrawler/ShapeCrawler/discussions/443)
 
 ## Version 0.41.1 - 2022-01-13
