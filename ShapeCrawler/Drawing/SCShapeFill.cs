@@ -77,19 +77,8 @@ internal abstract class SCShapeFill : IShapeFill
             this.Initialize();
         }
 
-        // var pShape = (P.Shape)this.shape.PShapeTreesChild;
         this.framePr.AddASolidFill(hex);
-
-        this.aSolidFill?.Remove();
-        this.aSolidFill = null;
-        this.aGradFill?.Remove();
-        this.aGradFill = null;
-        this.aPattFill?.Remove();
-        this.aPattFill = null;
-        this.aNoFill?.Remove();
-        this.aNoFill = null;
-        this.aBlipFill?.Remove();
-        this.aBlipFill = null;
+        
         this.useBgFill = false;
 
         this.isDirty = true;
@@ -97,7 +86,7 @@ internal abstract class SCShapeFill : IShapeFill
 
     protected virtual void InitSlideBackgroundFillOr()
     {
-        this.aNoFill = this.framePr.GetFirstChild<DocumentFormat.OpenXml.Drawing.NoFill>(); 
+        this.aNoFill = this.framePr.GetFirstChild<A.NoFill>(); 
         this.fillType = SCFillType.NoFill;
     }
     
@@ -144,7 +133,7 @@ internal abstract class SCShapeFill : IShapeFill
 
     private void InitGradientFillOr()
     {
-        this.aGradFill = this.framePr!.GetFirstChild<DocumentFormat.OpenXml.Drawing.GradientFill>();
+        this.aGradFill = this.framePr!.GetFirstChild<A.GradientFill>();
         if (this.aGradFill != null)
         {
             this.fillType = SCFillType.Gradient;

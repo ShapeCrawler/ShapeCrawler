@@ -8,8 +8,14 @@ internal static class ShapePropertiesExtensions
 {
     internal static A.SolidFill AddASolidFill(this TypedOpenXmlCompositeElement pShapeProperties, string hex)
     {
+        pShapeProperties.GetFirstChild<A.GradientFill>()?.Remove();
+        pShapeProperties.GetFirstChild<A.PatternFill>()?.Remove();
+        pShapeProperties.GetFirstChild<A.NoFill>()?.Remove();
+        pShapeProperties.GetFirstChild<A.BlipFill>()?.Remove();
+        
         var aSolidFill = pShapeProperties.GetFirstChild<A.SolidFill>();
         aSolidFill?.Remove();
+        
         var aRgbColorModelHex = new A.RgbColorModelHex
         {
             Val = hex
