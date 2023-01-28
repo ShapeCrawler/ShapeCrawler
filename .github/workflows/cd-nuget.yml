@@ -2,8 +2,8 @@ name: Push NuGet package
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - 'fix-cd'
   workflow_dispatch:
 
 jobs:  
@@ -29,8 +29,8 @@ jobs:
   deploy:
     name: Deploy
     runs-on: windows-latest
-    needs: build-net48
-    if: ${{ success(build-net48) }} 
+    needs: [build-net48]
+    if: needs.build-net48.result == 'success'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
