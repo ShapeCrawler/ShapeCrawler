@@ -17,8 +17,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Copyright>MIT</Copyright>
     <LangVersion>11</LangVersion>
     <ApplicationIcon>logo.ico</ApplicationIcon>
-    <PackageReleaseNotes>- fixed East Asian font parsing;  
-- fixed adding a new shape.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed updating Table coordinates.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RepositoryType>Git</RepositoryType>
@@ -27,10 +26,10 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <nullable>enable</nullable>
-    <AssemblyVersion>0.41.1</AssemblyVersion>
-    <FileVersion>0.41.1</FileVersion>
+    <AssemblyVersion>0.41.2</AssemblyVersion>
+    <FileVersion>0.41.2</FileVersion>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-    <PackageVersion>0.41.1</PackageVersion>
+    <PackageVersion>0.41.2</PackageVersion>
     <Title>ShapeCrawler</Title>
     <Configurations>Debug;Release;Test</Configurations>
     <Platforms>AnyCPU</Platforms>
