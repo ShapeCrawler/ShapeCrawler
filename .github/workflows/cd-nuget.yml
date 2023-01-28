@@ -8,7 +8,7 @@ on:
 
 jobs:  
   build-net48:
-    name: .NET Framework 4.8
+    name: Test .NET Framework 4.8
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2    
@@ -27,10 +27,10 @@ jobs:
         run: vstest.console.exe **/*.*Tests.dll /Framework:Framework45
   
   deploy:
-    name: Deploy
+    name: Push NuGet package
     runs-on: windows-latest
-    needs: build-net48
-    if: ${{ success(build-net48) }} 
+    needs: [build-net48]
+    if: needs.build-net48.result == 'success'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
