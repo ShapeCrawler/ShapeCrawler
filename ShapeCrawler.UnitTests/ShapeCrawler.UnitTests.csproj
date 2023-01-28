@@ -149,7 +149,6 @@
     <None Remove="Resource\autoshape\autoshape-case010.pptx" />
     <EmbeddedResource Include="Resource\autoshape\autoshape-case010.pptx" />
     <None Remove="Resource\autoshape\autoshape-case005_text-frame.pptx" />
-    <EmbeddedResource Include="Resource\autoshape\autoshape-case005_text-frame.pptx" />
     <None Remove="Resource\010.pptx" />
     <EmbeddedResource Include="Resource\010.pptx" />
     <None Remove="Resource\003.pptx" />

@@ -4,7 +4,6 @@ using FluentAssertions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers.Attributes;
-using ShapeCrawler.UnitTests.Helpers;
 using Xunit;
 
 // ReSharper disable TooManyDeclarations
@@ -50,6 +49,7 @@ public class ShapeFillTests : ShapeCrawlerTest
 
     [Theory]
     [SlideShapeData("autoshape-case005_text-frame.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
+    [SlideShapeData("autoshape-case005_text-frame.pptx", slideNumber: 1, shapeName: "AutoShape 2")]
     public void SetColor_sets_solid_color(IShape shape)
     {
         // Arrange
@@ -84,7 +84,7 @@ public class ShapeFillTests : ShapeCrawlerTest
     
     [Theory]
     [SlideShapeData("009_table.pptx", slideNumber: 2, shapeName: "AutoShape 2")]
-    public void SetHexSolidColor_sets_solid_color_After_picture(IShape shape)
+    public void SetColor_sets_solid_color_After_picture(IShape shape)
     {
         // Arrange
         var autoShape = (IAutoShape)shape;
