@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.41.3 - 2023-01-29
+🐞Fixed solid color setting [d442](https://github.com/ShapeCrawler/ShapeCrawler/discussions/442)
+
 ## Version 0.41.2 - 2023-01-28
 🐞Fixed updating Table coordinates [d443](https://github.com/ShapeCrawler/ShapeCrawler/discussions/443)
 
