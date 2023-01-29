@@ -40,12 +40,12 @@ jobs:
           dotnet-version: 7.0.101
       - name: Restore packages
         run: dotnet restore
-      - name: Build Release
+      - name: Build
         run: dotnet build ShapeCrawler/ShapeCrawler.csproj --configuration Release --no-restore
-      - name: Run tests
+      - name: Test
         run: dotnet test --no-restore --verbosity normal -f net7.0
-      - name: Create NuGet package
-        run: dotnet pack
-      - name: Push NuGet package
+      - name: Create package
+        run: dotnet pack --configuration Release
+      - name: Push package
         run: |
           dotnet nuget push -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json "ShapeCrawler\bin\Release\*.nupkg"
