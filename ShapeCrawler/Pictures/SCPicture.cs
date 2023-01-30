@@ -17,19 +17,23 @@ namespace ShapeCrawler.Pictures;
 
 /// <inheritdoc cref="IPicture" />
 [SuppressMessage("ReSharper", "SuggestBaseTypeForParameterInConstructor", Justification = "Internal member")]
-internal sealed class SCPicture : SCSlideShape, IPicture
+internal sealed class SCPicture : SCShape, IPicture
 {
     private readonly StringValue? blipEmbed;
     private readonly A.Blip aBlip;
 
-    internal SCPicture(P.Picture pPicture, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, A.Blip aBlip)
-        : base(pPicture, slideObject, null)
+    internal SCPicture(
+        P.Picture pPicture, 
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
+        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection,
+        A.Blip aBlip)
+        : base(pPicture, parentSlideObject, parentShapeCollection)
     {
         this.aBlip = aBlip;
         this.blipEmbed = aBlip.Embed;
     }
 
-    public IImage Image => SCImage.ForPicture(this, this.Slide.TypedOpenXmlPart, this.blipEmbed);
+    public IImage Image => SCImage.ForPicture(this, this.SlideBase.TypedOpenXmlPart, this.blipEmbed);
 
     public string? SvgContent => this.GetSvgContent();
 
@@ -51,7 +55,7 @@ internal sealed class SCPicture : SCSlideShape, IPicture
 
         var svgId = svgBlipList.First().Embed!.Value!;
 
-        var imagePart = (ImagePart)this.Slide.TypedOpenXmlPart.GetPartById(svgId);
+        var imagePart = (ImagePart)this.SlideBase.TypedOpenXmlPart.GetPartById(svgId);
         using var svgStream = imagePart.GetStream(System.IO.FileMode.Open, System.IO.FileAccess.Read);
         using var sReader = new StreamReader(svgStream);
 

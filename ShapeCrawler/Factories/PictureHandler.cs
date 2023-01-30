@@ -13,7 +13,10 @@ namespace ShapeCrawler.Factories;
 
 internal sealed class PictureHandler : OpenXmlElementHandler
 {
-    internal override SCShape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape groupSCShape)
+    internal override SCShape? Create(
+        OpenXmlCompositeElement pShapeTreeChild,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollection)
     {
         P.Picture? pPicture;
         if (pShapeTreeChild is P.Picture treePic)
@@ -28,7 +31,7 @@ internal sealed class PictureHandler : OpenXmlElementHandler
                         .GetFirstChild<A.AudioFromFile>();
                     if (aAudioFile is not null)
                     {
-                        return new SCAudioShape(pShapeTreeChild, slideObject);
+                        return new SCAudioShape(pShapeTreeChild, slideObject, shapeCollection);
                     }
 
                     break;
@@ -36,7 +39,7 @@ internal sealed class PictureHandler : OpenXmlElementHandler
 
                 case VideoFromFile:
                 {
-                    return new VideoSCShape(slideObject, pShapeTreeChild);
+                    return new SCVideoShape(pShapeTreeChild, slideObject, shapeCollection);
                 }
             }
 
@@ -49,7 +52,7 @@ internal sealed class PictureHandler : OpenXmlElementHandler
 
         if (pPicture == null)
         {
-            return this.Successor?.Create(pShapeTreeChild, slideObject, groupSCShape);
+            return this.Successor?.Create(pShapeTreeChild, slideObject, shapeCollection);
         }
 
         var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
@@ -59,7 +62,7 @@ internal sealed class PictureHandler : OpenXmlElementHandler
             return null;
         }
 
-        var picture = new SCPicture(pPicture, slideObject, aBlip!);
+        var picture = new SCPicture(pPicture, slideObject, shapeCollection, aBlip!);
 
         return picture;
     }

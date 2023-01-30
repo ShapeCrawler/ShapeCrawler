@@ -1,5 +1,6 @@
-﻿using ShapeCrawler.Collections;
+﻿using OneOf;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes;
@@ -13,8 +14,11 @@ public interface IRectangle : IAutoShape
 
 internal sealed class SCRectangle : SCAutoShape, IRectangle
 {
-    public SCRectangle(AutoShapeCollection autoShapeCollection, P.Shape pShape, SCGroupShape? groupShape) 
-        : base(autoShapeCollection.ParentShapeCollection.ParentSlideObject, pShape, groupShape)
+    internal SCRectangle(
+        P.Shape pShape,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
+        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
+        : base(pShape, parentSlideObject, parentShapeCollection)
     {
     }
 }

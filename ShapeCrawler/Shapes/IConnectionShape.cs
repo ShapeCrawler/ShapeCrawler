@@ -14,10 +14,13 @@ public interface IConnectionShape : IShape
 {
 }
 
-internal sealed class SCConnectionSCShape : SCSlideShape, IConnectionShape
+internal sealed class SCConnectionShape : SCShape, IConnectionShape
 {
-    public SCConnectionSCShape(OpenXmlCompositeElement childOfPShapeTree, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
-        : base(childOfPShapeTree, oneOfSlide, null)
+    public SCConnectionShape(
+        OpenXmlCompositeElement childOfPShapeTree,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
+        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
+        : base(childOfPShapeTree, parentSlideObject, parentShapeCollection)
     {
     }
 

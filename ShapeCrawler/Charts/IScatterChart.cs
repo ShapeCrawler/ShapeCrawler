@@ -1,5 +1,6 @@
 ﻿using OneOf;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -14,8 +15,11 @@ public interface IScatterChart : IChart
 
 internal sealed class SCScatterChart : SCChart, IScatterChart
 {
-    internal SCScatterChart(P.GraphicFrame pGraphicFrame, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
-        : base(pGraphicFrame, oneOfSlide)
+    internal SCScatterChart(
+        P.GraphicFrame pGraphicFrame, 
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
+        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
+        : base(pGraphicFrame, parentSlideObject, parentShapeCollection)
     {
     }
 }

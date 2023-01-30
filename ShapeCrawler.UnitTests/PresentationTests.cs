@@ -215,16 +215,17 @@ public class PresentationTests : ShapeCrawlerTest
     }
 
     [Fact]
-    public void SlideMasterShapesCount_ReturnsNumberOfShapesOnTheMasterSlide()
+    public void SlideMaster_Shapes_Count_returns_number_of_master_shapes()
     {
         // Arrange
-        IPresentation presentation = SCPresentation.Open(TestHelper.GetStream("001.pptx"));
+        var pptx = TestHelper.GetStream("001.pptx");
+        var pres = SCPresentation.Open(pptx);
 
         // Act
-        int slideMasterShapesCount = presentation.SlideMasters[0].Shapes.Count;
+        var masterShapesCount = pres.SlideMasters[0].Shapes.Count;
 
         // Assert
-        slideMasterShapesCount.Should().Be(7);
+        masterShapesCount.Should().Be(7);
     }
 
     [Fact]

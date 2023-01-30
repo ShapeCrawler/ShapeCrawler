@@ -8,26 +8,22 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Shapes;
 
-internal sealed class SCGroupShape : SCSlideShape, IGroupShape
+internal sealed class SCGroupShape : SCShape, IGroupShape
 {
     private readonly P.GroupShape pGroupShape;
-    private readonly OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide;
-
-    public SCGroupShape(P.GroupShape pGroupShape, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCShape groupSCShape)
-        : base(pGroupShape, oneOfSlide, groupSCShape)
-    {
-        this.pGroupShape = pGroupShape;
-        this.oneOfSlide = oneOfSlide;
-    }
+    private readonly OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject;
     
-    public SCGroupShape(P.GroupShape pGroupShape, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
-        : base(pGroupShape, oneOfSlide)
+    internal SCGroupShape(
+        P.GroupShape pGroupShape, 
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
+        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
+        : base(pGroupShape, parentSlideObject, parentShapeCollection)
     {
         this.pGroupShape = pGroupShape;
-        this.oneOfSlide = oneOfSlide;
+        this.parentSlideObject = parentSlideObject;
     }
 
-    public IGroupedShapeCollection Shapes => GroupedShapeCollection.Create(this.pGroupShape, this.oneOfSlide, this);
+    public IGroupedShapeCollection Shapes => GroupedShapeCollection.Create(this.pGroupShape, this.parentSlideObject, this);
 
     public override SCShapeType ShapeType => SCShapeType.GroupShape;
 
