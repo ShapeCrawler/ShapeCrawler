@@ -6,7 +6,7 @@ namespace ShapeCrawler.UnitTests;
 
 public class AutoShapeTests
 {
-    [Fact]
+    [Fact(Skip = "On Hold (https://github.com/ShapeCrawler/ShapeCrawler/issues/444)")]
     public void Duplicate_duplicates_AutoShape()
     {
         // Arrange

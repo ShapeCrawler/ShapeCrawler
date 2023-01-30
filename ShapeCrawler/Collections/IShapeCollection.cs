@@ -512,10 +512,12 @@ internal sealed class ShapeCollection : IShapeCollection
             if (pShapeTreeChild is P.GroupShape pGroupShape)
             {
                 shape = new SCGroupShape(pGroupShape, slideObject, shapeCollection);
+                shapes.Add(shape);
             }
             else if (pShapeTreeChild is P.ConnectionShape)
             {
                 shape = new SCConnectionShape(pShapeTreeChild, slideObject, shapeCollection);
+                shapes.Add(shape);
             }
             else
             {

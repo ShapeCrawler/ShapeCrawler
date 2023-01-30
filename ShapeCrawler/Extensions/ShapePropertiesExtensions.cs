@@ -14,15 +14,25 @@ internal static class ShapePropertiesExtensions
         pShapeProperties.GetFirstChild<A.BlipFill>()?.Remove();
         
         var aSolidFill = pShapeProperties.GetFirstChild<A.SolidFill>();
-        aSolidFill?.Remove();
+        if (aSolidFill != null)
+        {
+            foreach (var child in aSolidFill)
+            {
+                child.Remove();
+            }
+        }
+        else
+        {
+            aSolidFill = new A.SolidFill();
+            pShapeProperties.Append(aSolidFill);
+        }
         
         var aRgbColorModelHex = new A.RgbColorModelHex
         {
             Val = hex
         };
-        aSolidFill = new A.SolidFill();
+        
         aSolidFill.Append(aRgbColorModelHex);
-        pShapeProperties.Append(aSolidFill);
 
         return aSolidFill;
     }

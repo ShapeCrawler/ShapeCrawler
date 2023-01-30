@@ -8,7 +8,7 @@ namespace ShapeCrawler.Drawing.ShapeFill;
 
 internal abstract class SCShapeFill : IShapeFill
 {
-    protected readonly TypedOpenXmlCompositeElement framePr;
+    protected readonly TypedOpenXmlCompositeElement properties;
     protected BooleanValue? useBgFill;
     protected SCFillType fillType;
     protected A.NoFill? aNoFill;
@@ -22,10 +22,10 @@ internal abstract class SCShapeFill : IShapeFill
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
 
-    internal SCShapeFill(SlideObject slideObject, TypedOpenXmlCompositeElement framePr)
+    internal SCShapeFill(SlideObject slideObject, TypedOpenXmlCompositeElement properties)
     {
         this.slideObject = slideObject;
-        this.framePr = framePr;
+        this.properties = properties;
         this.isDirty = true;
     }
 
@@ -56,7 +56,7 @@ internal abstract class SCShapeFill : IShapeFill
             aBlipFill.Append(new DocumentFormat.OpenXml.Drawing.Blip { Embed = rId });
             aBlipFill.Append(aStretch);
 
-            this.framePr.Append(aBlipFill);
+            this.properties.Append(aBlipFill);
 
             this.aSolidFill?.Remove();
             this.aBlipFill = null;
@@ -77,7 +77,7 @@ internal abstract class SCShapeFill : IShapeFill
             this.Initialize();
         }
 
-        this.framePr.AddASolidFill(hex);
+        this.properties.AddASolidFill(hex);
         
         this.useBgFill = false;
 
@@ -86,7 +86,7 @@ internal abstract class SCShapeFill : IShapeFill
 
     protected virtual void InitSlideBackgroundFillOr()
     {
-        this.aNoFill = this.framePr.GetFirstChild<A.NoFill>(); 
+        this.aNoFill = this.properties.GetFirstChild<A.NoFill>(); 
         this.fillType = SCFillType.NoFill;
     }
     
@@ -108,7 +108,7 @@ internal abstract class SCShapeFill : IShapeFill
 
     private void InitSolidFillOr()
     {
-        this.aSolidFill = this.framePr.GetFirstChild<DocumentFormat.OpenXml.Drawing.SolidFill>();
+        this.aSolidFill = this.properties.GetFirstChild<DocumentFormat.OpenXml.Drawing.SolidFill>();
         if (this.aSolidFill != null)
         {
             var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
@@ -133,7 +133,7 @@ internal abstract class SCShapeFill : IShapeFill
 
     private void InitGradientFillOr()
     {
-        this.aGradFill = this.framePr!.GetFirstChild<A.GradientFill>();
+        this.aGradFill = this.properties!.GetFirstChild<A.GradientFill>();
         if (this.aGradFill != null)
         {
             this.fillType = SCFillType.Gradient;
@@ -147,7 +147,7 @@ internal abstract class SCShapeFill : IShapeFill
     private void InitPictureFillOr()
     {
         var xmlPart = this.slideObject.TypedOpenXmlPart;
-        this.aBlipFill = this.framePr.GetFirstChild<DocumentFormat.OpenXml.Drawing.BlipFill>();
+        this.aBlipFill = this.properties.GetFirstChild<DocumentFormat.OpenXml.Drawing.BlipFill>();
 
         if (this.aBlipFill is not null)
         {
@@ -163,7 +163,7 @@ internal abstract class SCShapeFill : IShapeFill
 
     private void InitPatternFillOr()
     {
-        this.aPattFill = this.framePr.GetFirstChild<DocumentFormat.OpenXml.Drawing.PatternFill>();
+        this.aPattFill = this.properties.GetFirstChild<DocumentFormat.OpenXml.Drawing.PatternFill>();
         if (this.aPattFill != null)
         {
             this.fillType = SCFillType.Pattern;
