@@ -51,7 +51,7 @@ internal sealed class GroupedShapeCollection : LibraryCollection<IShape>, IGroup
     internal static GroupedShapeCollection Create(
         P.GroupShape pGroupShapeParam,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
+        SCGroupShape parentShapeCollection) 
     {
         var autoShapeCreator = new AutoShapeCreator();
         var oleGrFrameHandler = new OleGraphicFrameHandler();

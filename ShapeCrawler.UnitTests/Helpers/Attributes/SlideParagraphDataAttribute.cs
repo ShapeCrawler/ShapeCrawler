@@ -28,7 +28,7 @@ public class SlideParagraphDataAttribute : DataAttribute
 
     public override IEnumerable<object[]> GetData(MethodInfo testMethod)
     {
-        var pptxStream = TestHelper.GetStream(this.pptxFile);
+        var pptxStream = TestHelperOld.GetStream(this.pptxFile);
         var pres = SCPresentation.Open(pptxStream);
         var slide = pres.Slides[this.slideNumber - 1];
         var shape = slide.Shapes.GetByName<IAutoShape>(this.shapeName);

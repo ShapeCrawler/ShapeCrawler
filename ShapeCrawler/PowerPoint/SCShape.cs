@@ -29,6 +29,8 @@ internal abstract class SCShape : IShape
         this.SlideObject = parentSlideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
     }
 
+    internal event EventHandler<int>? XChanged;
+    
     public int Id => (int)this.PShapeTreesChild.GetNonVisualDrawingProperties().Id!.Value;
 
     public string Name => this.PShapeTreesChild.GetNonVisualDrawingProperties().Name!;
@@ -110,8 +112,8 @@ internal abstract class SCShape : IShape
             var placeholder = (SCPlaceholder)this.Placeholder!;
             var referencedShape = placeholder.ReferencedShape.Value;
             var xEmu = UnitConverter.HorizontalPixelToEmu(xPx);
-            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.Y);
-            var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
+            var yEmu = UnitConverter.VerticalPixelToEmu(referencedShape!.Y);
+            var wEmu = UnitConverter.HorizontalEmuToPixel(referencedShape.Width);
             var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
             pSpPr.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
         }
@@ -119,6 +121,8 @@ internal abstract class SCShape : IShape
         {
             aXfrm.Offset!.X = UnitConverter.HorizontalPixelToEmu(xPx);
         }
+
+        this.XChanged?.Invoke(this, this.X);
     }
     
     protected virtual void SetYCoordinate(int newYPixels)

@@ -118,7 +118,7 @@ public class ParagraphPortionTests : ShapeCrawlerTest
     public void TextHighlightColor_Getter_returns_text_highlight_color()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
@@ -134,7 +134,7 @@ public class ParagraphPortionTests : ShapeCrawlerTest
     public void TextHighlightColor_Setter_sets_text_highlight_color()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];

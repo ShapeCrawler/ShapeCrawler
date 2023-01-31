@@ -51,7 +51,7 @@ public class ShapeFillTests : ShapeCrawlerTest
     [Theory]
     [SlideShapeData("autoshape-case005_text-frame.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
     [SlideShapeData("autoshape-case005_text-frame.pptx", slideNumber: 1, shapeName: "AutoShape 2")]
-    [SlideShapeData("autoshape-case015.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
+    [SlideShapeData("autoshape-grouping.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
     public void SetColor_sets_solid_color(IShape shape)
     {
         // Arrange

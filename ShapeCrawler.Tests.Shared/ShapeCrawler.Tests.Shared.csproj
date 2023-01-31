@@ -12,8 +12,8 @@
     <EmbeddedResource Include="assets\autoshapes\001.pptx" />
     <None Remove="assets\autoshapes\autoshape-case002.pptx" />
     <EmbeddedResource Include="assets\autoshapes\autoshape-case002.pptx" />
-    <None Remove="assets\autoshapes\autoshape-case015.pptx" />
-    <EmbeddedResource Include="assets\autoshapes\autoshape-case015.pptx" />
+    <None Remove="assets\autoshapes\autoshape-grouping.pptx" />
+    <EmbeddedResource Include="assets\autoshapes\autoshape-grouping.pptx" />
     <None Remove="assets\tables\table-case001.pptx" />
     <EmbeddedResource Include="assets\tables\table-case001.pptx" />
     <None Remove="assets\autoshapes\autoshape-case005_text-frame.pptx" />

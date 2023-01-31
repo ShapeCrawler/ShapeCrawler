@@ -45,8 +45,8 @@ public class SlideShapeDataAttribute : DataAttribute
 
     public override IEnumerable<object[]> GetData(MethodInfo testMethod)
     {
-        var helperAssets = new List<string> { "autoshape-case015.pptx", "001.pptx", "table-case001.pptx", "autoshape-case005_text-frame.pptx" };
-        var pptxStream = helperAssets.Contains(this.pptxFile) ? Tests.Shared.TestHelper.GetStream(this.pptxFile) : TestHelper.GetStream(this.pptxFile);
+        var helperAssets = new List<string> { "autoshape-grouping.pptx", "001.pptx", "table-case001.pptx", "autoshape-case005_text-frame.pptx" };
+        var pptxStream = helperAssets.Contains(this.pptxFile) ? Tests.Shared.TestHelper.GetStream(this.pptxFile) : TestHelperOld.GetStream(this.pptxFile);
         var pres = SCPresentation.Open(pptxStream);
         var slide = pres.Slides[this.slideNumber - 1];
         var shape = this.shapeName != null
