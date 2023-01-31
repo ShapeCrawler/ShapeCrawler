@@ -6,18 +6,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="assets\autoshape\autoshape-case001.pptx" />
-    <EmbeddedResource Include="assets\autoshape\autoshape-case001.pptx" />
-    <None Remove="assets\autoshape\001.pptx" />
-    <EmbeddedResource Include="assets\autoshape\001.pptx" />
-    <None Remove="assets\autoshape\autoshape-case002.pptx" />
-    <EmbeddedResource Include="assets\autoshape\autoshape-case002.pptx" />
-    <None Remove="assets\autoshape\autoshape-case015.pptx" />
-    <EmbeddedResource Include="assets\autoshape\autoshape-case015.pptx" />
+    <None Remove="assets\autoshapes\autoshape-case001.pptx" />
+    <EmbeddedResource Include="assets\autoshapes\autoshape-case001.pptx" />
+    <None Remove="assets\autoshapes\001.pptx" />
+    <EmbeddedResource Include="assets\autoshapes\001.pptx" />
+    <None Remove="assets\autoshapes\autoshape-case002.pptx" />
+    <EmbeddedResource Include="assets\autoshapes\autoshape-case002.pptx" />
+    <None Remove="assets\autoshapes\autoshape-case015.pptx" />
+    <EmbeddedResource Include="assets\autoshapes\autoshape-case015.pptx" />
     <None Remove="assets\tables\table-case001.pptx" />
     <EmbeddedResource Include="assets\tables\table-case001.pptx" />
-    <None Remove="assets\autoshape\autoshape-case005_text-frame.pptx" />
-    <EmbeddedResource Include="assets\autoshape\autoshape-case005_text-frame.pptx" />
+    <None Remove="assets\autoshapes\autoshape-case005_text-frame.pptx" />
+    <EmbeddedResource Include="assets\autoshapes\autoshape-case005_text-frame.pptx" />
   </ItemGroup>
 
 </Project>
