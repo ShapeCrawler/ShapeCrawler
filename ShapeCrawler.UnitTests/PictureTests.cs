@@ -119,25 +119,25 @@ public class PictureTests : ShapeCrawlerTest
     }
 
     [Fact]
-    public async void Image_SetImage_should_not_update_image_of_other_grouped_picture()
+    public void Image_SetImage_should_not_update_image_of_other_grouped_picture()
     {
         // Arrange
-        var pptxStream = GetTestStream("pictures-case001.pptx");
-        var imgBytes = GetTestBytes("test-image-2.png");
-        var pres = SCPresentation.Open(pptxStream);
+        var pptx = GetTestStream("pictures-case001.pptx");
+        var image = GetTestBytes("test-image-2.png");
+        var pres = SCPresentation.Open(pptx);
         var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1");
-        var picture1 = groupShape.Shapes.GetByName<IPicture>("Picture 1");
-        var picture2 = groupShape.Shapes.OfType<IPicture>().First(s => s.Name == "Picture 2");
-        var mStream = new MemoryStream();
+        var groupedPicture1 = groupShape.Shapes.GetByName<IPicture>("Picture 1");
+        var groupedPicture2 = groupShape.Shapes.GetByName<IPicture>("Picture 2");
+        var stream = new MemoryStream();
 
         // Act
-        picture1.Image.SetImage(imgBytes);
+        groupedPicture1.Image.SetImage(image);
 
         // Assert
-        pres.SaveAs(mStream);
-        var bytes1 = await picture1.Image.BinaryData; 
-        var bytes2 = await picture2.Image.BinaryData;
-        bytes1.SequenceEqual(bytes2).Should().BeFalse();
+        pres.SaveAs(stream);
+        var pictureContent1 = groupedPicture1.Image.BinaryData.GetAwaiter().GetResult(); 
+        var pictureContent2 =  groupedPicture2.Image.BinaryData.GetAwaiter().GetResult();
+        pictureContent1.SequenceEqual(pictureContent2).Should().BeFalse();
     }
         
     [Fact]

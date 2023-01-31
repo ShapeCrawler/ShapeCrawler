@@ -1,5 +1,5 @@
-﻿using DocumentFormat.OpenXml;
-using OneOf;
+﻿using OneOf;
+using DocumentFormat.OpenXml;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 
@@ -9,5 +9,8 @@ internal abstract class OpenXmlElementHandler
 {
     internal OpenXmlElementHandler? Successor { get; set; }
 
-    internal abstract SCShape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape? groupShape);
+    internal abstract SCShape? Create(
+        OpenXmlCompositeElement pShapeTreeChild,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollection);
 }

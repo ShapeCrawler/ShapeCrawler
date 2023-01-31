@@ -19,20 +19,14 @@ namespace ShapeCrawler;
 internal abstract class SCShape : IShape
 {
     protected SCShape(
-        OpenXmlCompositeElement pShapeTreeChild, 
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject,
-        SCShape? groupSCShape)
-        : this(pShapeTreeChild, slideObject)
-    {
-        this.GroupSCShape = groupSCShape;
-        this.SlideObject = slideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
-    }
-
-    protected SCShape(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject)
+        OpenXmlCompositeElement pShapeTreeChild,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
+        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
     {
         this.PShapeTreesChild = pShapeTreeChild;
-        this.SlideObject = slideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
-        this.SlideBase = slideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
+        this.SlideBase = parentSlideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
+        this.GroupShape = parentShapeCollection.IsT1 ? parentShapeCollection.AsT1 : null;
+        this.SlideObject = parentSlideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
     }
 
     public int Id => (int)this.PShapeTreesChild.GetNonVisualDrawingProperties().Id!.Value;
@@ -52,7 +46,7 @@ internal abstract class SCShape : IShape
 
     public ISlideObject SlideObject { get; }
 
-    public abstract IPlaceholder? Placeholder { get; }
+    public IPlaceholder? Placeholder => SCSlidePlaceholder.Create(this.PShapeTreesChild, this);
 
     public virtual SCGeometry GeometryType => this.GetGeometryType();
 
@@ -103,7 +97,7 @@ internal abstract class SCShape : IShape
 
     internal SlideObject SlideBase { get; }
 
-    private SCShape? GroupSCShape { get; }
+    private SCShape? GroupShape { get; }
 
     internal abstract void Draw(SKCanvas canvas);
     
@@ -129,11 +123,6 @@ internal abstract class SCShape : IShape
     
     protected virtual void SetYCoordinate(int newYPixels)
     {
-        if (this.GroupSCShape is not null)
-        {
-            throw new RuntimeDefinedPropertyException("Y coordinate of grouped shape cannot be changed.");
-        }
-        
         var pSpPr = this.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !;
         var aXfrm = pSpPr.Transform2D;
         if (aXfrm is null)
@@ -155,7 +144,7 @@ internal abstract class SCShape : IShape
     
     protected virtual void SetWidth(int newWPixels)
     {
-        if (this.GroupSCShape is not null)
+        if (this.GroupShape is not null)
         {
             throw new RuntimeDefinedPropertyException("Width coordinate of grouped shape cannot be changed.");
         }
@@ -180,7 +169,7 @@ internal abstract class SCShape : IShape
     
     protected virtual void SetHeight(int newHPixels)
     {
-        if (this.GroupSCShape is not null)
+        if (this.GroupShape is not null)
         {
             throw new RuntimeDefinedPropertyException("Height coordinate of grouped shape cannot be changed.");
         }
@@ -241,9 +230,9 @@ internal abstract class SCShape : IShape
 
         long xEmu = aOffset.X!;
 
-        if (this.GroupSCShape is not null)
+        if (this.GroupShape is not null)
         {
-            var aTransformGroup = ((P.GroupShape)this.GroupSCShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup;
+            var aTransformGroup = ((P.GroupShape)this.GroupShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup;
             xEmu = xEmu - aTransformGroup!.ChildOffset!.X! + aTransformGroup!.Offset!.X!;
         }
 
@@ -261,10 +250,10 @@ internal abstract class SCShape : IShape
 
         var yEmu = aOffset.Y!;
 
-        if (this.GroupSCShape is not null)
+        if (this.GroupShape is not null)
         {
             var aTransformGroup =
-                ((P.GroupShape)this.GroupSCShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup!;
+                ((P.GroupShape)this.GroupShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup!;
             yEmu = yEmu - aTransformGroup.ChildOffset!.Y! + aTransformGroup!.Offset!.Y!;
         }
 

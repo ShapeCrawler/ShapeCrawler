@@ -26,8 +26,11 @@ public interface IAudioShape : IShape
 
 internal sealed class SCAudioShape : SCMediaShape, IAudioShape
 {
-    internal SCAudioShape(OpenXmlCompositeElement pShapeTreesChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
-        : base(pShapeTreesChild, oneOfSlide, null)
+    internal SCAudioShape(
+        OpenXmlCompositeElement pShapeTreesChild,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
+        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
+            : base(pShapeTreesChild, parentSlideObject, parentShapeCollection)
     {
     }
 

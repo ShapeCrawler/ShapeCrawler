@@ -1,5 +1,6 @@
 ﻿using OneOf;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -16,8 +17,11 @@ public interface IComboChart : IChart
 
 internal sealed class SCComboChart : SCChart, IComboChart
 {
-    internal SCComboChart(P.GraphicFrame pGraphicFrame, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject)
-        : base(pGraphicFrame, slideObject)
+    internal SCComboChart(
+        P.GraphicFrame pGraphicFrame, 
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
+        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
+        : base(pGraphicFrame, parentSlideObject, parentShapeCollection)
     {
     }
 }

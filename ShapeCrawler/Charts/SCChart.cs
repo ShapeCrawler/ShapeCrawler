@@ -16,7 +16,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
 
-internal class SCChart : SCSlideShape, IChart
+internal class SCChart : SCShape, IChart
 {
     private readonly ResettableLazy<ICategoryCollection?> categories;
     private readonly Lazy<SCChartType> chartType;
@@ -31,8 +31,11 @@ internal class SCChart : SCSlideShape, IChart
 
     private string? chartTitle;
 
-    internal SCChart(P.GraphicFrame pGraphicFrame, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide)
-        : base(pGraphicFrame, oneOfSlide, null)
+    internal SCChart(
+        P.GraphicFrame pGraphicFrame, 
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject, 
+        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
+        : base(pGraphicFrame, parentSlideObject, parentShapeCollection)
     {
         this.pGraphicFrame = pGraphicFrame;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
@@ -44,7 +47,7 @@ internal class SCChart : SCSlideShape, IChart
         var cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
             .GetFirstChild<C.ChartReference>() !;
 
-        this.ChartPart = (ChartPart)this.Slide.TypedOpenXmlPart.GetPartById(cChartReference.Id!);
+        this.ChartPart = (ChartPart)this.SlideBase.TypedOpenXmlPart.GetPartById(cChartReference.Id!);
 
         var cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
         this.cXCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));

@@ -8,9 +8,9 @@ namespace ShapeCrawler.Placeholders;
 
 internal sealed class SCSlidePlaceholder : SCPlaceholder
 {
-    private readonly SCSlideShape _slideSCShape;
+    private readonly SCShape _slideSCShape;
 
-    private SCSlidePlaceholder(P.PlaceholderShape pPlaceholderShape, SCSlideShape slideSCShape)
+    private SCSlidePlaceholder(P.PlaceholderShape pPlaceholderShape, SCShape slideSCShape)
         : base(pPlaceholderShape)
     {
         this._slideSCShape = slideSCShape;
@@ -18,7 +18,7 @@ internal sealed class SCSlidePlaceholder : SCPlaceholder
 
     internal override ResettableLazy<SCShape?> ReferencedShape => new (this.GetReferencedShape);
 
-    internal static SCSlidePlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, SCSlideShape slideSCShape)
+    internal static SCSlidePlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, SCShape slideSCShape)
     {
         var pPlaceholder = pShapeTreeChild.GetPNvPr().GetFirstChild<P.PlaceholderShape>();
         if (pPlaceholder == null)

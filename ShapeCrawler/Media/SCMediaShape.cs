@@ -2,15 +2,19 @@
 using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Media;
 
-internal abstract class SCMediaShape : SCSlideShape
+internal abstract class SCMediaShape : SCShape
 {
-    protected SCMediaShape(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> oneOfSlide, SCShape? groupShape)
-        : base(pShapeTreeChild, oneOfSlide, groupShape)
+    protected SCMediaShape(
+        OpenXmlCompositeElement pShapeTreeChild,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
+        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection) 
+        : base(pShapeTreeChild, parentSlideObject, parentShapeCollection)
     {
     }
 
@@ -22,7 +26,7 @@ internal abstract class SCMediaShape : SCSlideShape
     {
         var pPic = (P.Picture)this.PShapeTreesChild;
         var p14Media = pPic.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!.Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();
-        var relationship = this.Slide.TypedOpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
+        var relationship = this.SlideBase.TypedOpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
         var stream = relationship.DataPart.GetStream();
         var bytes = stream.ToArray();
         stream.Close();
@@ -34,7 +38,7 @@ internal abstract class SCMediaShape : SCSlideShape
     {
         var pPic = (P.Picture)this.PShapeTreesChild;
         var p14Media = pPic.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!.Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();
-        var relationship = this.Slide.TypedOpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
+        var relationship = this.SlideBase.TypedOpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
 
         return relationship.DataPart.ContentType;
     }

@@ -16,17 +16,20 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 {
     private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart";
 
-    internal override SCShape? Create(OpenXmlCompositeElement pShapeTreeChild, OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject, SCGroupShape groupSCShape)
+    internal override SCShape? Create(
+        OpenXmlCompositeElement pShapeTreeChild,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollection)
     {
         if (pShapeTreeChild is not P.GraphicFrame pGraphicFrame)
         {
-            return this.Successor?.Create(pShapeTreeChild, slideObject, groupSCShape);
+            return this.Successor?.Create(pShapeTreeChild, slideObject, shapeCollection);
         }
 
         var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
         if (!aGraphicData.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
         {
-            return this.Successor?.Create(pShapeTreeChild, slideObject, groupSCShape);
+            return this.Successor?.Create(pShapeTreeChild, slideObject, shapeCollection);
         }
 
         var slideBase = slideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
@@ -37,31 +40,31 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 
         if (cCharts.Count() > 1)
         {
-            return new SCComboChart(pGraphicFrame, slideObject);
+            return new SCComboChart(pGraphicFrame, slideObject, shapeCollection);
         }
 
         var chartTypeName = cCharts.Single().LocalName;
 
         if (chartTypeName == "lineChart")
         {
-            return new SCLineChart(pGraphicFrame, slideObject);
+            return new SCLineChart(pGraphicFrame, slideObject, shapeCollection);
         }
 
         if (chartTypeName == "barChart")
         {
-            return new SCBarChart(pGraphicFrame, slideObject);
+            return new SCBarChart(pGraphicFrame, slideObject, shapeCollection);
         }
 
         if (chartTypeName == "pieChart")
         {
-            return new SCPieChart(pGraphicFrame, slideObject);
+            return new SCPieChart(pGraphicFrame, slideObject, shapeCollection);
         }
 
         if (chartTypeName == "scatterChart")
         {
-            return new SCScatterChart(pGraphicFrame, slideObject);
+            return new SCScatterChart(pGraphicFrame, slideObject, shapeCollection);
         }
 
-        return new SCChart(pGraphicFrame, slideObject);
+        return new SCChart(pGraphicFrame, slideObject, shapeCollection);
     }
 }

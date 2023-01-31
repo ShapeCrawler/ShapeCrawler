@@ -24,7 +24,7 @@ internal sealed class SCAutoShapeFill : SCShapeFill
         }
         else
         {
-            this.aNoFill = this.framePr.GetFirstChild<A.NoFill>();
+            this.aNoFill = this.properties.GetFirstChild<A.NoFill>();
             this.fillType = SCFillType.NoFill;
         }
     }

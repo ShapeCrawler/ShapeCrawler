@@ -47,7 +47,7 @@ public interface IAutoShape : IShape
 #endif
 }
 
-internal class SCAutoShape : SCSlideShape, IAutoShape, ITextFrameContainer
+internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
 {
     // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi.
     // 96/72=1.4
@@ -59,10 +59,10 @@ internal class SCAutoShape : SCSlideShape, IAutoShape, ITextFrameContainer
     private readonly P.Shape pShape;
 
     internal SCAutoShape(
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
         P.Shape pShape,
-        SCGroupShape? groupShape)
-        : base(pShape, parentSlideObject, groupShape)
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
+        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
+        : base(pShape, parentSlideObject, parentShapeCollection)
     {
         this.pShape = pShape;
         this.textFrame = new Lazy<TextFrame?>(this.GetTextFrame);
@@ -79,11 +79,13 @@ internal class SCAutoShape : SCSlideShape, IAutoShape, ITextFrameContainer
     public SCShape SCShape => this; // TODO: should be internal?
 
     public override SCShapeType ShapeType => SCShapeType.AutoShape;
-
+    
     public ITextFrame? TextFrame => this.textFrame.Value;
     
     public IAutoShape Duplicate()
     {
+        var copy = this.PShapeTreesChild.Clone();
+
         throw new NotImplementedException();
     }
 
