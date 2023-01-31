@@ -1,6 +1,4 @@
-﻿#if DEBUG
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
@@ -9,7 +7,6 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers.Attributes;
 using Xunit;
-using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 namespace ShapeCrawler.UnitTests
 {
@@ -454,5 +451,3 @@ namespace ShapeCrawler.UnitTests
         }
     }
 }
-
-#endif
