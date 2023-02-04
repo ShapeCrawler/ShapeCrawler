@@ -176,8 +176,8 @@ namespace ShapeCrawler.UnitTests
                 
                 var pptxStream7 = GetTestStream("009_table.pptx");
                 var pres7 = SCPresentation.Open(pptxStream7);
-                var shape7 = pres7.Slides[1].Shapes.GetById<IGroupShape>(7).Shapes.GetById<IShape>(5);
-                var testCase7 = new TestCase<IShape, int>(7, shape7, 166);
+                var shape7 = pres7.Slides[1].Shapes.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IShape>("Shape 1");
+                var testCase7 = new TestCase<IShape, int>(7, shape7, 53);
                 yield return new object[] { testCase7 };
             }
         }
@@ -258,7 +258,7 @@ namespace ShapeCrawler.UnitTests
         }
 
         [Fact]
-        public void X_Setter_sets_x_for_Grouped_Shape()
+        public void X_Setter_moves_the_left_hand_grouped_shape_to_left()
         {
             // Arrange
             var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
@@ -267,11 +267,12 @@ namespace ShapeCrawler.UnitTests
             var groupedShape = parentGroupShape.Shapes.GetByName<IShape>("Shape 1");
             
             // Act
-            groupedShape.X = 60;
+            groupedShape.X = 67;
 
             // Assert
-            groupedShape.X.Should().Be(60);
-            parentGroupShape.X.Should().Be(60);
+            groupedShape.X.Should().Be(67);
+            parentGroupShape.X.Should().Be(67, "because the moved grouped shape was on the left-hand side");
+            parentGroupShape.Width.Should().Be(117);
         }
         
         [Theory]
