@@ -1,12 +1,11 @@
 using System.IO;
 using System.Reflection;
-using ShapeCrawler.UnitTests.Helpers;
 
 namespace ShapeCrawler.UnitTests.Helpers;
 
-public static class TestHelper
+public static class TestHelperOld
 {
-    static TestHelper()
+    static TestHelperOld()
     {
         HorizontalResolution = 96;
         VerticalResolution = 96;

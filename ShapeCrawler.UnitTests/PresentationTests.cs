@@ -112,7 +112,7 @@ public class PresentationTests : ShapeCrawlerTest
     {
         // Arrange
         var sourcePptx = GetTestStream("pictures-case004.pptx");
-        var destPptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var destPptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var sourcePres = SCPresentation.Open(sourcePptx);
         var copyingSlide = sourcePres.Slides[0];
         var destPres = SCPresentation.Open(destPptx);

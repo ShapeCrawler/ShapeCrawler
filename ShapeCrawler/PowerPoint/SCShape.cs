@@ -29,6 +29,8 @@ internal abstract class SCShape : IShape
         this.SlideObject = parentSlideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
     }
 
+    internal event EventHandler<int>? XChanged;
+    
     public int Id => (int)this.PShapeTreesChild.GetNonVisualDrawingProperties().Id!.Value;
 
     public string Name => this.PShapeTreesChild.GetNonVisualDrawingProperties().Name!;
@@ -97,7 +99,7 @@ internal abstract class SCShape : IShape
 
     internal SlideObject SlideBase { get; }
 
-    private SCShape? GroupShape { get; }
+    private SCGroupShape? GroupShape { get; }
 
     internal abstract void Draw(SKCanvas canvas);
     
@@ -110,8 +112,8 @@ internal abstract class SCShape : IShape
             var placeholder = (SCPlaceholder)this.Placeholder!;
             var referencedShape = placeholder.ReferencedShape.Value;
             var xEmu = UnitConverter.HorizontalPixelToEmu(xPx);
-            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.Y);
-            var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
+            var yEmu = UnitConverter.VerticalPixelToEmu(referencedShape!.Y);
+            var wEmu = UnitConverter.HorizontalEmuToPixel(referencedShape.Width);
             var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
             pSpPr.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
         }
@@ -119,6 +121,8 @@ internal abstract class SCShape : IShape
         {
             aXfrm.Offset!.X = UnitConverter.HorizontalPixelToEmu(xPx);
         }
+
+        this.XChanged?.Invoke(this, this.X);
     }
     
     protected virtual void SetYCoordinate(int newYPixels)
@@ -165,6 +169,31 @@ internal abstract class SCShape : IShape
         {
             aXfrm.Extents!.Cx = UnitConverter.HorizontalPixelToEmu(newWPixels);
         }
+    }
+    
+    protected virtual int GetXCoordinate()
+    {
+        var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
+        if (aOffset == null)
+        {
+            var placeholder = (SCPlaceholder)this.Placeholder!;
+            var referencedShape = placeholder.ReferencedShape.Value; 
+            
+            return referencedShape!.X;
+        }
+
+        var xEmu = aOffset.X!.Value;
+        if (this.GroupShape == null)
+        {
+            return UnitConverter.HorizontalEmuToPixel(xEmu);    
+        }
+        
+        var groupedShapeX = aOffset.X!.Value;
+        var groupShapeX = this.GroupShape!.ATransformGroup.Offset!.X!.Value;
+        var groupShapeChildX = this.GroupShape!.ATransformGroup.ChildOffset!.X!.Value;
+        var absoluteX = groupShapeX - (groupShapeChildX - groupedShapeX);
+
+        return UnitConverter.HorizontalEmuToPixel(absoluteX);
     }
     
     protected virtual void SetHeight(int newHPixels)
@@ -216,27 +245,6 @@ internal abstract class SCShape : IShape
     {
         var parsedHiddenValue = this.PShapeTreesChild.GetNonVisualDrawingProperties().Hidden?.Value;
         return parsedHiddenValue is true;
-    }
-
-    private int GetXCoordinate()
-    {
-        var aOffset = this.PShapeTreesChild.Descendants<A.Offset>().FirstOrDefault();
-        if (aOffset == null)
-        {
-            var placeholder = (SCPlaceholder)this.Placeholder!;
-            var referencedShape = placeholder.ReferencedShape.Value; 
-            return referencedShape!.X;
-        }
-
-        long xEmu = aOffset.X!;
-
-        if (this.GroupShape is not null)
-        {
-            var aTransformGroup = ((P.GroupShape)this.GroupShape.PShapeTreesChild).GroupShapeProperties!.TransformGroup;
-            xEmu = xEmu - aTransformGroup!.ChildOffset!.X! + aTransformGroup!.Offset!.X!;
-        }
-
-        return UnitConverter.HorizontalEmuToPixel(xEmu);
     }
 
     private int GetYCoordinate()

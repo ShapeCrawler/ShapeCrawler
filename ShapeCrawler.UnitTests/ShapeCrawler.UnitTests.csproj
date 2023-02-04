@@ -164,7 +164,7 @@
     <None Remove="Resource\autoshape\autoshape-case014.pptx" />
     <EmbeddedResource Include="Resource\autoshape\autoshape-case014.pptx" />
     <None Remove="Resource\tables\table-case001.pptx" />
-    <None Remove="Resource\autoshape\autoshape-case015.pptx" />
+    <None Remove="Resource\autoshape\autoshape-grouping.pptx" />
     <None Remove="Resource\pictures\pictures-case003.pptx" />
     <None Remove="Resource\pictures\pictures-case004.pptx" />
     <EmbeddedResource Include="Resource\pictures\pictures-case004.pptx" />

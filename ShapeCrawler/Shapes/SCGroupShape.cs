@@ -1,8 +1,10 @@
-﻿using OneOf;
+﻿using DocumentFormat.OpenXml;
+using OneOf;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using SkiaSharp;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable PossibleMultipleEnumeration
@@ -27,16 +29,45 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
 
     public override SCShapeType ShapeType => SCShapeType.GroupShape;
 
+    internal A.TransformGroup ATransformGroup => this.pGroupShape.GroupShapeProperties!.TransformGroup!;
+
     internal override void Draw(SKCanvas canvas)
     {
         throw new System.NotImplementedException();
     }
-    
+
+    internal void OnGroupedShapeXChanged(object sender, int xGroupedShape)
+    {
+        if (xGroupedShape < this.X)
+        {
+            var groupedXEmu = UnitConverter.HorizontalPixelToEmu(xGroupedShape); 
+            var diff = this.ATransformGroup.Offset!.X! - groupedXEmu;
+            
+            var offset = this.ATransformGroup.Offset!;
+            var extents = this.ATransformGroup.Extents!;
+            var childOffset = this.ATransformGroup.ChildOffset!;
+            var childExtents = this.ATransformGroup.ChildExtents!;
+            
+            offset.X = new Int64Value(offset.X! - diff);
+            extents.Cx = new Int64Value(extents.Cx! + diff);
+            childOffset.X = new Int64Value(childOffset.X! - diff);
+            childExtents.Cx = new Int64Value(childExtents.Cx! + diff);
+        }
+    }
+
+    protected override int GetXCoordinate()
+    {
+        var aXfrm = ((P.GroupShape)this.PShapeTreesChild).GroupShapeProperties!.TransformGroup!;
+
+        return UnitConverter.HorizontalEmuToPixel(aXfrm.Offset!.X!);
+    }
+
     protected override void SetXCoordinate(int xPx)
     {
         var pGrpSpPr = this.PShapeTreesChild.GetFirstChild<P.GroupShapeProperties>() !;
         var aXfrm = pGrpSpPr.TransformGroup!;
         aXfrm.Offset!.X = UnitConverter.HorizontalPixelToEmu(xPx);
+        aXfrm.ChildOffset!.X = UnitConverter.HorizontalPixelToEmu(xPx);
     }
     
     protected override void SetYCoordinate(int yPx)

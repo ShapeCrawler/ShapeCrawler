@@ -218,7 +218,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest
     public void AutoShapes_AddRoundedRectangle_adds_Rounded_Rectangle()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var shapes = pres.Slides[0].Shapes;
             
@@ -257,7 +257,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest
     public void Remove_removes_shape()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var shapeCollection = pres.Slides[0].Shapes;
         var shape = shapeCollection.GetByName("TextBox 3")!;

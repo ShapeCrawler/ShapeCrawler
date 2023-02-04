@@ -71,7 +71,7 @@ public class SlideCollectionTests : ShapeCrawlerTest
     public void Add_add_adds_New_slide()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var layout = pres.SlideMasters[0].SlideLayouts[0]; 
         var slides = pres.Slides;

@@ -10,7 +10,7 @@ public class AutoShapeTests
     public void Duplicate_duplicates_AutoShape()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 6");
 

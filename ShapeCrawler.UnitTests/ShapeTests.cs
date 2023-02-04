@@ -4,6 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.UnitTests.Helpers;
 using ShapeCrawler.UnitTests.Helpers.Attributes;
 using Xunit;
@@ -175,8 +176,8 @@ namespace ShapeCrawler.UnitTests
                 
                 var pptxStream7 = GetTestStream("009_table.pptx");
                 var pres7 = SCPresentation.Open(pptxStream7);
-                var shape7 = pres7.Slides[1].Shapes.GetById<IGroupShape>(7).Shapes.GetById<IShape>(5);
-                var testCase7 = new TestCase<IShape, int>(7, shape7, 166);
+                var shape7 = pres7.Slides[1].Shapes.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IShape>("Shape 1");
+                var testCase7 = new TestCase<IShape, int>(7, shape7, 53);
                 yield return new object[] { testCase7 };
             }
         }
@@ -188,7 +189,7 @@ namespace ShapeCrawler.UnitTests
             IShape shapeCase1 = SCPresentation.Open(GetTestStream("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
             IShape shapeCase2 = SCPresentation.Open(GetTestStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
             IShape shapeCase3 = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
-            float verticalResoulution = Helpers.TestHelper.VerticalResolution;
+            float verticalResoulution = Helpers.TestHelperOld.VerticalResolution;
 
             // Act
             int yCoordinate1 = shapeCase1.Y;
@@ -219,7 +220,7 @@ namespace ShapeCrawler.UnitTests
         [Theory]
         [SlideShapeData("001.pptx", 1, "TextBox 3")]
         [SlideShapeData("001.pptx", 1, "Head 1")]
-        [SlideShapeData("autoshape-case015.pptx", 1, "Group 1")]
+        [SlideShapeData("autoshape-grouping.pptx", 1, "Group 1")]
         public void Y_Setter_sets_y_coordinate(IShape shape)
         {
             // Act
@@ -234,7 +235,7 @@ namespace ShapeCrawler.UnitTests
         [Theory]
         [SlideShapeData("006_1 slides.pptx", 1, "Shape 1")]
         [SlideShapeData("001.pptx", 1, "Head 1")]
-        [SlideShapeData("autoshape-case015.pptx", 1, "Group 1")]
+        [SlideShapeData("autoshape-grouping.pptx", 1, "Group 1")]
         [SlideShapeData("table-case001.pptx", 1, "Table 1")]
         public void X_Setter_sets_x_coordinate(IShape shape)
         {
@@ -255,10 +256,28 @@ namespace ShapeCrawler.UnitTests
             var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
             errors.Should().BeEmpty();
         }
+
+        [Fact]
+        public void X_Setter_moves_the_left_hand_grouped_shape_to_left()
+        {
+            // Arrange
+            var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
+            var pres = SCPresentation.Open(pptx);
+            var parentGroupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
+            var groupedShape = parentGroupShape.Shapes.GetByName<IShape>("Shape 1");
+            
+            // Act
+            groupedShape.X = 67;
+
+            // Assert
+            groupedShape.X.Should().Be(67);
+            parentGroupShape.X.Should().Be(67, "because the moved grouped shape was on the left-hand side");
+            parentGroupShape.Width.Should().Be(117);
+        }
         
         [Theory]
         [SlideShapeData("006_1 slides.pptx", 1, "Shape 1")]
-        [SlideShapeData("autoshape-case015.pptx", 1, "Group 1")]
+        [SlideShapeData("autoshape-grouping.pptx", 1, "Group 1")]
         public void Width_Setter_sets_width(IShape shape)
         {
             // Arrange
@@ -294,9 +313,9 @@ namespace ShapeCrawler.UnitTests
             int width3 = shapeCase3.Width;
 
             // Assert
-            (width1 * 914400 / Helpers.TestHelper.HorizontalResolution).Should().Be(9144000);
-            (width2 * 914400 / Helpers.TestHelper.HorizontalResolution).Should().Be(1181100);
-            (width3 * 914400 / Helpers.TestHelper.HorizontalResolution).Should().Be(485775);
+            (width1 * 914400 / Helpers.TestHelperOld.HorizontalResolution).Should().Be(9144000);
+            (width2 * 914400 / Helpers.TestHelperOld.HorizontalResolution).Should().Be(1181100);
+            (width3 * 914400 / Helpers.TestHelperOld.HorizontalResolution).Should().Be(485775);
         }
 
         [Theory]
@@ -325,7 +344,7 @@ namespace ShapeCrawler.UnitTests
             IGroupShape groupShape = (IGroupShape)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 7);
             IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
             IShape shapeCase3 = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
-            float verticalResulution = Helpers.TestHelper.VerticalResolution;
+            float verticalResulution = Helpers.TestHelperOld.VerticalResolution;
 
             // Act
             int height1 = shapeCase1.Height;

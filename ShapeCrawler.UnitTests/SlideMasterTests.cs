@@ -25,8 +25,8 @@ public class SlideMasterTests : ShapeCrawlerTest
         int shapeYCoordinate = shape.Y;
 
         // Assert
-        shapeXCoordinate.Should().Be((int)(838200 * Helpers.TestHelper.HorizontalResolution / 914400));
-        shapeYCoordinate.Should().Be((int)(365125 * Helpers.TestHelper.VerticalResolution / 914400));
+        shapeXCoordinate.Should().Be((int)(838200 * Helpers.TestHelperOld.HorizontalResolution / 914400));
+        shapeYCoordinate.Should().Be((int)(365125 * Helpers.TestHelperOld.VerticalResolution / 914400));
     }
 
     [Fact]
@@ -37,8 +37,8 @@ public class SlideMasterTests : ShapeCrawlerTest
         var pres = SCPresentation.Open(pptx);
         ISlideMaster slideMaster = pres.SlideMasters[0];
         IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
-        float horizontalResolution = Helpers.TestHelper.HorizontalResolution;
-        float verticalResolution = Helpers.TestHelper.VerticalResolution;
+        float horizontalResolution = Helpers.TestHelperOld.HorizontalResolution;
+        float verticalResolution = Helpers.TestHelperOld.VerticalResolution;
 
         // Act
         int shapeWidth = shape.Width;
@@ -118,7 +118,7 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void Theme_FontScheme_HeadLatinFont_Getter_returns_font_name_for_the_Latin_characters_of_Heading()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -133,7 +133,7 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void Theme_FontScheme_HeadEastAsianFont_Getter_returns_font_name_for_the_EastAsian_characters_of_Heading()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -148,7 +148,7 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void Theme_FontScheme_HeadLatinFont_Setter_sets_font_name_for_the_Latin_characters_of_heading()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -163,7 +163,7 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void Theme_FontScheme_HeadEastAsianFont_Setter_sets_font_for_the_East_Asian_characters_of_heading()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -180,7 +180,7 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void Theme_FontScheme_BodyLatinFont_Getter_returns_font_name_for_the_Latin_characters_of_body()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -195,7 +195,7 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void Theme_FontScheme_BodyEastAsianFont_Getter_returns_font_for_the_EastAsian_characters_of_body()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -210,7 +210,7 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void Theme_FontScheme_BodyLatinFont_Setter_font_name_for_the_Latin_characters_of_body()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -225,7 +225,7 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void Theme_FontScheme_BodyEastAsianFont_Setter_font_for_the_East_Asian_characters_of_body()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -240,7 +240,7 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void Theme_ColorScheme_color_getter_returns_scheme_with_colors()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var slideMaster = pres.SlideMasters[0];
 
@@ -277,7 +277,7 @@ public class SlideMasterTests : ShapeCrawlerTest
     public void Theme_ColorScheme_color_setter_sets_scheme_color()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case015.pptx");
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var slideMaster = pres.SlideMasters[0];
 

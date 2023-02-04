@@ -322,9 +322,9 @@ namespace ShapeCrawler.UnitTests
         }
 
         [Theory]
-        [SlideShapeData("autoshape-case015.pptx", 1, "TextBox 5", 1.0)]
-        [SlideShapeData("autoshape-case015.pptx", 1, "TextBox 4", 1.5)]
-        [SlideShapeData("autoshape-case015.pptx", 1, "TextBox 3", 2.0)]
+        [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 5", 1.0)]
+        [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 4", 1.5)]
+        [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 3", 2.0)]
         public void Paragraph_Spacing_LineSpacingLines_returns_line_spacing_in_Lines(IShape shape, double expectedLines)
         {
             // Arrange
@@ -340,7 +340,7 @@ namespace ShapeCrawler.UnitTests
         }
         
         [Theory]
-        [SlideShapeData("autoshape-case015.pptx", 1, "TextBox 6", 21.6)]
+        [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 6", 21.6)]
         public void Paragraph_Spacing_LineSpacingPoints_returns_line_spacing_in_Points(IShape shape, double expectedPoints)
         {
             // Arrange

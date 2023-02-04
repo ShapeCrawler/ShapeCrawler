@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using ShapeCrawler.Shapes;
 using Xunit.Sdk;
@@ -20,7 +21,11 @@ public class LayoutShapeDataAttribute : DataAttribute
 
     public override IEnumerable<object[]> GetData(MethodInfo testMethod)
     {
-        var pptxStream = TestHelper.GetStream(this.pptxFile);
+        var assembly = Assembly.GetExecutingAssembly();
+        var stream = assembly.GetResourceStream(this.pptxFile);
+        var pptxStream = new MemoryStream();
+        stream.CopyTo(pptxStream);
+        pptxStream.Position = 0;
         var pres = SCPresentation.Open(pptxStream);
         var layout = pres.SlideMasters[0].SlideLayouts[this.slideNumber - 1];
         var shape = layout.Shapes.GetByName<IShape>(this.shapeName);

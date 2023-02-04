@@ -19,7 +19,7 @@ public class FontTests : ShapeCrawlerTest
     [SlideShapeData("001.pptx", 1, 4, "Broadway")]
     [SlideShapeData("001.pptx", 1, 7, "Calibri Light")]
     [SlideShapeData("001.pptx", 5, 5, "Calibri Light")]
-    [SlideShapeData("autoshape-case015.pptx", 1, "Title 1", "Franklin Gothic Medium")]
+    [SlideShapeData("autoshape-grouping.pptx", 1, "Title 1", "Franklin Gothic Medium")]
     public void LatinName_Getter_returns_font_for_Latin_characters(IShape shape, string expectedFontName)
     {
         // Arrange
@@ -34,7 +34,7 @@ public class FontTests : ShapeCrawlerTest
     }
     
     [Theory]
-    [SlideShapeData("autoshape-case015.pptx", 1, "TextBox 7", "SimSun")]
+    [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 7", "SimSun")]
     public void EastAsianName_Getter_returns_font_for_East_Asian_characters(IShape shape, string expectedFontName)
     {
         // Arrange
