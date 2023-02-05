@@ -13,8 +13,8 @@ jobs:
       - name: Restore packages
         run: dotnet restore
       
-      - name: Build
-        run: dotnet build ShapeCrawler/ShapeCrawler.csproj --configuration Release --no-restore
+      # - name: Build
+      #   run: dotnet build ShapeCrawler/ShapeCrawler.csproj --configuration Release --no-restore
       
       - name: Test
         run: dotnet test -c Release -f net7.0 --no-restore --verbosity normal
