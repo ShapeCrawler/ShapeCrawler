@@ -32,7 +32,7 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
             return this.Successor?.Create(pShapeTreeChild, slideObject, shapeCollection);
         }
 
-        var slideBase = slideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
+        var slideBase = slideObject.Match(slide => slide as SlideStructure, layout => layout, master => master);
         var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
         var chartPart = (ChartPart)slideBase.TypedOpenXmlPart.GetPartById(cChartRef.Id!);
         var cPlotArea = chartPart!.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;

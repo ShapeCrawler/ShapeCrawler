@@ -6,11 +6,11 @@ using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-// ReSharper disable PossibleMultipleEnumeration
-namespace ShapeCrawler.Collections;
+// ReSharper disable once CheckNamespace
+namespace ShapeCrawler;
 
 /// <summary>
-///     Represent a table row collection.
+///     Represents a table row collection.
 /// </summary>
 public interface IRowCollection : IEnumerable<IRow>
 {

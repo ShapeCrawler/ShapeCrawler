@@ -24,7 +24,7 @@ public interface ISlideLayout
     string Name { get; }
 }
 
-internal sealed class SCSlideLayout : SlideObject, ISlideLayout
+internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
 {
     private readonly ResettableLazy<ShapeCollection> shapes;
     private readonly SCSlideMaster slideMaster;
