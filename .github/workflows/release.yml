@@ -1,4 +1,4 @@
-name: Push package
+name: Publish package
 
 on:
   push:
@@ -23,22 +23,20 @@ jobs:
       - name: Run tests
         run: vstest.console.exe **/*.*Tests.dll /Framework:Framework45
   
-  push-package:
-    name: Push NuGet package
+  publish-package:
+    name: Publish package
     runs-on: windows-latest
     needs: [test-net48]
     if: needs.test-net48.result == 'success'
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
       - name: Restore packages
         run: dotnet restore
-      - name: Build
-        run: dotnet build ShapeCrawler/ShapeCrawler.csproj --configuration Release --no-restore
       - name: Test
-        run: dotnet test --no-restore --verbosity normal -f net7.0
-      - name: Create package
+        run: dotnet test -c Release -f net7.0 --no-restore --verbosity normal
+      - name: Create the package
         run: dotnet pack --configuration Release
-      - name: Push package
-        run: |
-          dotnet nuget push -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json "ShapeCrawler\bin\Release\*.nupkg"
+      - name: Publish the package to nuget.org
+        run: dotnet nuget push -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json "ShapeCrawler\bin\Release\*.nupkg"
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
