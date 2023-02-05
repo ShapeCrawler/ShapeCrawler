@@ -6,6 +6,7 @@ namespace ShapeCrawler.UnitTests;
 
 public class AutoShapeTests
 {
+#if DEBUG
     [Fact(Skip = "On Hold (https://github.com/ShapeCrawler/ShapeCrawler/issues/444)")]
     public void Duplicate_duplicates_AutoShape()
     {
@@ -22,4 +23,5 @@ public class AutoShapeTests
         shapeCopy.Width.Should().Be(shape.Width);
         shapeCopy.TextFrame.Text.Should().Be(shapeCopy.TextFrame.Text);
     }
+#endif
 }
