@@ -11,7 +11,7 @@ jobs:
     name: Test on .NET Framework 4.8
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2    
+      - uses: actions/checkout@v3    
       - name: Setup .NET Framework 4.8
         run: |
           choco install netfx-4.8 -y      
