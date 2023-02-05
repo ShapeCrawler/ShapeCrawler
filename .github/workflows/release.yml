@@ -37,6 +37,6 @@ jobs:
       - name: Create the package
         run: dotnet pack --configuration Release
       - name: Publish the package to nuget.org
-        run: dotnet nuget push -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json "ShapeCrawler\bin\Release\*.nupkg"
+        run: dotnet nuget push -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json "src\ShapeCrawler\bin\Release\*.nupkg"
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}

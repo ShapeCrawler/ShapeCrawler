@@ -11,7 +11,7 @@ The internal structure of PowerPoint presentation is one the most difficult amon
 - **[Open XML SDK 2.5 Productivity Tool](https://github.com/OfficeDev/Open-XML-SDK/releases/tag/v2.5)** — application for generating C#-code from Open XML document. It can be useful, for example, when you wanna know what C#-code is needed to add a new shape or slide.
 - **.pptx is ZIP** — do not forget that .pptx-file is a zip file as well as other Open XML documents. Thus you can rename the extension of the presentation file on .zip and watch his internals:
 
-![.pptx is zip](/resources/pptx_is_zip.gif)
+![.pptx is zip](./doc/pptx-is-zip.gif)
 
 ## Code style and conventions
 
