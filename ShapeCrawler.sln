@@ -12,7 +12,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapeCrawler", "src\ShapeCr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapeCrawler.UnitTests", "test\ShapeCrawler.UnitTests\ShapeCrawler.UnitTests.csproj", "{1D037182-15DF-4700-9E13-63CA8FED962D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapeCrawler.IntegrationTests", "test\ShapeCrawler.IntegrationTests\ShapeCrawler.IntegrationTests.csproj", "{745E108F-2981-40DB-A607-ECE65C83F77D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShapeCrawler.Tests.Integration", "test\ShapeCrawler.Tests.Integration\ShapeCrawler.Tests.Integration.csproj", "{745E108F-2981-40DB-A607-ECE65C83F77D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapeCrawler.Tests.Shared", "test\ShapeCrawler.Tests.Shared\ShapeCrawler.Tests.Shared.csproj", "{F75942D3-1DD5-4644-A689-6D5BCDB26F0F}"
 EndProject
