@@ -1,10 +1,10 @@
 <h3 align="center">
 
-![ShapeCrawler](./resources/readme.png)
+![ShapeCrawler](./doc/logo-extend.png)
 
 </h3>
 
-<h3 align="center">
+<h3 align="center"> 
 
 [![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=orange)](https://www.nuget.org/packages/ShapeCrawler) ![Nuget](https://img.shields.io/nuget/dt/ShapeCrawler?color=orange) [![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE) 
 
