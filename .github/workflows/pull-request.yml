@@ -17,4 +17,4 @@ jobs:
         run: dotnet build ShapeCrawler/ShapeCrawler.csproj --configuration Release --no-restore
       
       - name: Test
-        run: dotnet test --no-restore --verbosity normal -f net7.0
+        run: dotnet test -configuration Release -framework net7.0--no-restore --verbosity normal
