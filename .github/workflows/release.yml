@@ -3,7 +3,9 @@ name: Push NuGet package
 on:
   push:
     tags:
-      - 'v*'
+      - 'v*'    
+  pull_request:
+    branches: [ master ]
   workflow_dispatch:
 
 jobs:  
@@ -15,8 +17,8 @@ jobs:
       - name: Setup .NET Framework 4.8
         run: |
           choco install netfx-4.8 -y      
-      - name: Setup msbuild
-        uses: microsoft/setup-msbuild@v1.1      
+      # - name: Setup MSBuild
+      #   uses: microsoft/setup-msbuild@v1.1      
       - name: Setup VSTest
         uses: darenm/Setup-VSTest@v1.2      
       - name: Restore packages
@@ -46,6 +48,6 @@ jobs:
         run: dotnet test --no-restore --verbosity normal -f net7.0
       - name: Create package
         run: dotnet pack --configuration Release
-      - name: Push package
-        run: |
-          dotnet nuget push -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json "ShapeCrawler\bin\Release\*.nupkg"
+      # - name: Push package
+      #   run: |
+      #     dotnet nuget push -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json "ShapeCrawler\bin\Release\*.nupkg"
