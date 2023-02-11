@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using OneOf;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Drawing.ShapeFill;
 using ShapeCrawler.Factories;
@@ -11,6 +10,7 @@ using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
+using ShapeCrawler.Texts;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -254,7 +254,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
 
     private SCShapeFill GetFill()
     {
-        var slideObject = (SlideObject)this.SlideObject;
+        var slideObject = (SlideStructure)this.SlideObject;
         return new SCAutoShapeFill(slideObject, this.pShape.ShapeProperties!, this);
     }
     

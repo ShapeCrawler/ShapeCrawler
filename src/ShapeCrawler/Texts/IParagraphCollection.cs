@@ -15,7 +15,6 @@ public interface IParagraphCollection : IReadOnlyList<IParagraph>
     /// <summary>
     ///     Adds a new paragraph in collection.
     /// </summary>
-    /// <returns>Added <see cref="SCParagraph" /> instance.</returns>
     IParagraph Add();
 
     /// <summary>

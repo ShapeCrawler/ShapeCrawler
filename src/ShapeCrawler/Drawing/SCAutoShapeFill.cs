@@ -8,7 +8,7 @@ internal sealed class SCAutoShapeFill : SCShapeFill
 {
     private readonly SCAutoShape _autoSCShape;
 
-    internal SCAutoShapeFill(SlideObject slideObject, P.ShapeProperties shapeProperties, SCAutoShape autoSCShape)
+    internal SCAutoShapeFill(SlideStructure slideObject, P.ShapeProperties shapeProperties, SCAutoShape autoSCShape)
         : base(slideObject, shapeProperties)
     {
         this._autoSCShape = autoSCShape;

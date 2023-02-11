@@ -9,7 +9,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using OneOf;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Constants;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
@@ -110,7 +109,7 @@ internal sealed class ShapeCollection : IShapeCollection
         long xEmu = UnitConverter.HorizontalPixelToEmu(xPixels);
         long yEmu = UnitConverter.VerticalPixelToEmu(yPixels);
 
-        var slideBase = this.ParentSlideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
+        var slideBase = this.ParentSlideObject.Match(slide => slide as SlideStructure, layout => layout, master => master);
         var mediaDataPart =
             slideBase.PresentationInternal.SDKPresentationInternal.CreateMediaDataPart("audio/mpeg", ".mp3");
 
@@ -223,7 +222,7 @@ internal sealed class ShapeCollection : IShapeCollection
         long xEmu = UnitConverter.HorizontalPixelToEmu(x);
         long yEmu = UnitConverter.VerticalPixelToEmu(y);
 
-        var slideBase = this.ParentSlideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
+        var slideBase = this.ParentSlideObject.Match(slide => slide as SlideStructure, layout => layout, master => master);
         MediaDataPart mediaDataPart =
             slideBase.PresentationInternal.SDKPresentationInternal.CreateMediaDataPart("video/mp4", ".mp4");
 

@@ -1,6 +1,6 @@
-﻿using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Drawing.ShapeFill;
+﻿using ShapeCrawler.Drawing.ShapeFill;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -41,7 +41,7 @@ internal sealed class SCCell : ICell, ITextFrameContainer
         this.textFrame = new ResettableLazy<TextFrame>(this.GetTextFrame);
         var slideObject = tableRow.ParentTable.SlideObject;
         var framePr = aTableCell.TableCellProperties!;
-        this.fill = new ResettableLazy<SCShapeFill>(() => new CellFill((SlideObject)slideObject, framePr));
+        this.fill = new ResettableLazy<SCShapeFill>(() => new CellFill((SlideStructure)slideObject, framePr));
     }
 
     public bool IsMergedCell => this.DefineWhetherCellIsMerged();

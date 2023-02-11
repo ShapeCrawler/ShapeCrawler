@@ -41,7 +41,7 @@ public interface ISlideMaster
     ITheme Theme { get; }
 }
 
-internal sealed class SCSlideMaster : SlideObject, ISlideMaster
+internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
 {
     private readonly ResettableLazy<List<SCSlideLayout>> slideLayouts;
 

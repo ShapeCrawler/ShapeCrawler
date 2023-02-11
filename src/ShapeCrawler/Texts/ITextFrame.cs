@@ -4,18 +4,18 @@ using System;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Texts;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents text frame.
+///     Represents a text frame.
 /// </summary>
 public interface ITextFrame
 {

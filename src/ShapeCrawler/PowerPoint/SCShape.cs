@@ -24,9 +24,9 @@ internal abstract class SCShape : IShape
         OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
     {
         this.PShapeTreesChild = pShapeTreeChild;
-        this.SlideBase = parentSlideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
+        this.SlideBase = parentSlideObject.Match(slide => slide as SlideStructure, layout => layout, master => master);
         this.GroupShape = parentShapeCollection.IsT1 ? parentShapeCollection.AsT1 : null;
-        this.SlideObject = parentSlideObject.Match(slide => slide as SlideObject, layout => layout, master => master);
+        this.SlideObject = parentSlideObject.Match(slide => slide as SlideStructure, layout => layout, master => master);
     }
 
     internal event EventHandler<int>? XChanged;
@@ -46,7 +46,7 @@ internal abstract class SCShape : IShape
 
     public abstract SCShapeType ShapeType { get; }
 
-    public ISlideObject SlideObject { get; }
+    public ISlideStructure SlideObject { get; }
 
     public IPlaceholder? Placeholder => SCSlidePlaceholder.Create(this.PShapeTreesChild, this);
 
@@ -97,7 +97,7 @@ internal abstract class SCShape : IShape
 
     internal OpenXmlCompositeElement PShapeTreesChild { get; }
 
-    internal SlideObject SlideBase { get; }
+    internal SlideStructure SlideBase { get; }
 
     private SCGroupShape? GroupShape { get; }
 

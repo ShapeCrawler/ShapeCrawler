@@ -65,5 +65,5 @@ public interface IShape
     /// <summary>
     ///     Gets slide object.
     /// </summary>
-    ISlideObject SlideObject { get; }
+    ISlideStructure SlideObject { get; }
 }

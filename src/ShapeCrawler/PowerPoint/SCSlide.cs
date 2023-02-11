@@ -5,19 +5,19 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
+using ShapeCrawler.Texts;
 using SkiaSharp;
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler;
 
-internal sealed class SCSlide : SlideObject, ISlide
+internal sealed class SCSlide : SlideStructure, ISlide
 {
     private readonly ResettableLazy<ShapeCollection> shapes;
     private readonly Lazy<SCImage?> backgroundImage;
@@ -143,8 +143,6 @@ internal sealed class SCSlide : SlideObject, ISlide
                         textBoxes.Add(((ITextFrameContainer)shape).TextFrame!);
                     }
 
-                    break;
-                default:
                     break;
             }
         }

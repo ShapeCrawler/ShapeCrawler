@@ -13,7 +13,7 @@ internal abstract class SCShapeFill : IShapeFill
     protected SCFillType fillType;
     protected A.NoFill? aNoFill;
     
-    private readonly SlideObject slideObject;
+    private readonly SlideStructure slideObject;
     private bool isDirty;
     private string? hexSolidColor;
     private SCImage? pictureImage;
@@ -22,7 +22,7 @@ internal abstract class SCShapeFill : IShapeFill
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
 
-    internal SCShapeFill(SlideObject slideObject, TypedOpenXmlCompositeElement properties)
+    internal SCShapeFill(SlideStructure slideObject, TypedOpenXmlCompositeElement properties)
     {
         this.slideObject = slideObject;
         this.properties = properties;
