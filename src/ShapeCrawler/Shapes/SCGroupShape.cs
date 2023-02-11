@@ -38,20 +38,34 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
 
     internal void OnGroupedShapeXChanged(object sender, int xGroupedShape)
     {
+        var offset = this.ATransformGroup.Offset!;
+        var extents = this.ATransformGroup.Extents!;
+        var childOffset = this.ATransformGroup.ChildOffset!;
+        var childExtents = this.ATransformGroup.ChildExtents!;
+        
         if (xGroupedShape < this.X)
         {
             var groupedXEmu = UnitConverter.HorizontalPixelToEmu(xGroupedShape); 
             var diff = this.ATransformGroup.Offset!.X! - groupedXEmu;
             
-            var offset = this.ATransformGroup.Offset!;
-            var extents = this.ATransformGroup.Extents!;
-            var childOffset = this.ATransformGroup.ChildOffset!;
-            var childExtents = this.ATransformGroup.ChildExtents!;
-            
             offset.X = new Int64Value(offset.X! - diff);
             extents.Cx = new Int64Value(extents.Cx! + diff);
             childOffset.X = new Int64Value(childOffset.X! - diff);
             childExtents.Cx = new Int64Value(childExtents.Cx! + diff);
+            
+            return;
+        }
+
+        var groupedShape = (SCShape)sender;
+        var parentGroupRight = this.X + this.Width; 
+        var groupedShapeRight = groupedShape.X + groupedShape.Width;
+        if (groupedShapeRight > parentGroupRight)
+        {
+            
+            var diff = groupedShapeRight - parentGroupRight;
+            var diffEmu = UnitConverter.HorizontalPixelToEmu(diff);
+            extents.Cx = new Int64Value(extents.Cx! + diffEmu);
+            childExtents.Cx = new Int64Value(childExtents.Cx! + diffEmu);
         }
     }
 
