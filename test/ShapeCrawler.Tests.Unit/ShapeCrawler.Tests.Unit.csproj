@@ -5,13 +5,12 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <LangVersion>11</LangVersion>
     <TargetFrameworks>net48;net7.0</TargetFrameworks>
-    <Configurations>Debug;Release;Test</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Test' ">
-    <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
-    <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
