@@ -31,22 +31,15 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
     <PackageVersion>0.41.4-beta.1</PackageVersion>
     <Title>ShapeCrawler</Title>
-    <Configurations>Debug;Release;Test</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DefineConstants>TRACE;TEST</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>bin\Debug\ShapeCrawler.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Test' ">
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DefineConstants>TRACE;TEST;DEBUG</DefineConstants>
-    <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
-    <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
-  </PropertyGroup>
+  </PropertyGroup>  
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DocumentationFile>bin\Release\ShapeCrawler.xml</DocumentationFile>
