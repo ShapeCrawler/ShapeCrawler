@@ -247,7 +247,7 @@ public class ShapeTests : SCTest
         // Assert
         groupedShape.Y.Should().Be(359);
         parentGroupShape.Y.Should().Be(359, "because the moved grouped shape was on the up-hand side");
-        parentGroupShape.Height.Should().Be(110);
+        parentGroupShape.Height.Should().Be(172);
     }
 
     [Theory]
@@ -376,6 +376,7 @@ public class ShapeTests : SCTest
     [Theory]
     [SlideShapeData("006_1 slides.pptx", 1, "Shape 2", 149)]
     [SlideShapeData( "009_table.pptx", 2, "Object 3", 39)]
+    [SlideShapeData( "autoshape-grouping.pptx", 1, "Group 2", 108)]
     public void Height_returns_shape_height_in_pixels(IShape shape, int expectedHeight)
     {
         // Act
