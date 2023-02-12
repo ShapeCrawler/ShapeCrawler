@@ -18,6 +18,8 @@
     <EmbeddedResource Include="assets\tables\table-case001.pptx" />
     <None Remove="assets\autoshapes\autoshape-case005_text-frame.pptx" />
     <EmbeddedResource Include="assets\autoshapes\autoshape-case005_text-frame.pptx" />
+    <None Remove="assets\autoshapes\009_table.pptx" />
+    <EmbeddedResource Include="assets\autoshapes\009_table.pptx" />
   </ItemGroup>
 
 </Project>

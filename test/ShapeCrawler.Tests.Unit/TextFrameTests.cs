@@ -18,7 +18,7 @@ using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 namespace ShapeCrawler.Tests.Unit
 {
-    public class TextFrameTests : ShapeCrawlerTest
+    public class TextFrameTests : SCTest
     {
         [Fact]
         public void Text_Getter_returns_text_of_table_Cell()
@@ -28,12 +28,12 @@ namespace ShapeCrawler.Tests.Unit
             var pres8 = SCPresentation.Open(pptx8);
             var pptx1 = TestHelper.GetStream("001.pptx");
             var pres1 = SCPresentation.Open(pptx1);
-            var pptx9 = GetTestStream("009_table.pptx");
+            var pptx9 = TestHelper.GetStream("009_table.pptx");
             var pres9 = SCPresentation.Open(pptx9);
             var textFrame1 = ((IAutoShape)SCPresentation.Open(GetTestStream("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3)).TextFrame;
             var textFrame2 = ((ITable)SCPresentation.Open(TestHelper.GetStream("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
                 .TextFrame;
-            var textFrame3 = ((ITable)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+            var textFrame3 = ((ITable)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
                 .TextFrame;
             
             // Act
@@ -422,7 +422,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             get
             {
-                var pptxStream1 = GetTestStream("009_table.pptx");
+                var pptxStream1 = TestHelper.GetStream("009_table.pptx");
                 var pres1 = SCPresentation.Open(pptxStream1);
                 var autoShape1 = pres1.Slides[2].Shapes.GetById<IAutoShape>(2);
                 var textBox1 = autoShape1.TextFrame;
@@ -436,7 +436,7 @@ namespace ShapeCrawler.Tests.Unit
                 var testCase2 = new TestCase<ITextFrame, int>(2, textBox2, 2);
                 yield return new object[] { testCase2 };
 
-                var pptxStream3 = GetTestStream("009_table.pptx");
+                var pptxStream3 = TestHelper.GetStream("009_table.pptx");
                 var pres3 = SCPresentation.Open(pptxStream3);
                 var table3 = pres3.Slides[2].Shapes.GetById<ITable>(3);
                 var textBox3 = table3.Rows[0].Cells[0].TextFrame;

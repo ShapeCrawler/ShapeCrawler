@@ -6,7 +6,7 @@ using Xunit;
 
 namespace ShapeCrawler.Tests.Unit
 {
-    public class BulletTests : ShapeCrawlerTest
+    public class BulletTests : SCTest
     {
         [Fact]
         public void Type_Setter_updates_bullet_type()

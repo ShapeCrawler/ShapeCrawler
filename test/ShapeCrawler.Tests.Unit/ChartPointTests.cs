@@ -2,6 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 // ReSharper disable SuggestVarOrType_BuiltInTypes
@@ -9,7 +10,7 @@ using Xunit;
 
 namespace ShapeCrawler.Tests.Unit;
 
-public class ChartPointTests : ShapeCrawlerTest
+public class ChartPointTests : SCTest
 {
     [Fact]
     public void Value_Getter_returns_point_value_of_Bar_chart()
@@ -68,7 +69,7 @@ public class ChartPointTests : ShapeCrawlerTest
         // Arrange
         ISeries seriesCase1 = ((IChart)SCPresentation.Open(GetTestStream("021.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3)).SeriesCollection[0];
         ISeries seriesCase2 = ((IChart)SCPresentation.Open(GetTestStream("021.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4)).SeriesCollection[0];
-        ISeries seriesCase4 = ((IChart)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7)).SeriesCollection[0];
+        ISeries seriesCase4 = ((IChart)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7)).SeriesCollection[0];
 
         // Act
         double seriesPointValueCase1 = seriesCase1.Points[0].Value;

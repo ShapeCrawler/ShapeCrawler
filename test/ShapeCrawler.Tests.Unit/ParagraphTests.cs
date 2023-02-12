@@ -14,7 +14,7 @@ using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 namespace ShapeCrawler.Tests.Unit
 {
-    public class ParagraphTests : ShapeCrawlerTest
+    public class ParagraphTests : SCTest
     {
         [Theory]
         [SlideParagraphData("autoshape-case003.pptx", 1, "AutoShape 5", 1, 1)]
@@ -276,7 +276,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             var textBox1 = ((IAutoShape)SCPresentation.Open(GetTestStream("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 37)).TextFrame;
-            var textBox2 = ((ITable)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+            var textBox2 = ((ITable)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
                 .TextFrame;
 
             // Act
@@ -311,7 +311,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Paragraph_Portions_counter_returns_number_of_text_portions_in_the_paragraph()
         {
             // Arrange
-            var textFrame = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.GetById<IAutoShape>(2).TextFrame;
+            var textFrame = SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[2].Shapes.GetById<IAutoShape>(2).TextFrame;
 
             // Act
             var portions = textFrame.Paragraphs[0].Portions;

@@ -15,7 +15,7 @@ namespace ShapeCrawler.Tests.Unit;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
 [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
-public class TableTests : ShapeCrawlerTest
+public class TableTests : SCTest
 {
     [Theory]
     [SlideShapeData("009_table.pptx", 3, 3, 3)]
@@ -36,7 +36,7 @@ public class TableTests : ShapeCrawlerTest
     public void Rows_RemoveAt_removes_row_with_specified_index()
     {
         // Arrange
-        var pptx = GetTestStream("009_table.pptx");
+        var pptx = TestHelper.GetStream("009_table.pptx");
         var pres = SCPresentation.Open(pptx);
         var table = (ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3);
         int originRowsCount = table.Rows.Count;
@@ -73,7 +73,7 @@ public class TableTests : ShapeCrawlerTest
     public void Row_Cells_Count_returns_number_of_cells_in_the_row()
     {
         // Arrange
-        var table = (ITable)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3);
+        var table = (ITable)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3);
 
         // Act
         var cellsCount = table.Rows[0].Cells.Count;

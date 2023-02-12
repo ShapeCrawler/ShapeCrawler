@@ -11,13 +11,13 @@ using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 namespace ShapeCrawler.Tests.Unit;
 
-public class ParagraphPortionTests : ShapeCrawlerTest
+public class ParagraphPortionTests : SCTest
 {
     [Fact]
     public void Text_Getter_returns_text_of_paragraph_portion()
     {
         // Arrange
-        var pptx = GetTestStream("009_table");
+        var pptx = TestHelper.GetStream("009_table");
         var pres = SCPresentation.Open(pptx);
         IPortion portion = ((ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
             .TextFrame

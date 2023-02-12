@@ -6,7 +6,7 @@ using Xunit;
 
 namespace ShapeCrawler.Tests.Unit;
 
-public class ShapeOutlineTests : ShapeCrawlerTest
+public class ShapeOutlineTests : SCTest
 {
     [Theory]
     [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 4", 0)]

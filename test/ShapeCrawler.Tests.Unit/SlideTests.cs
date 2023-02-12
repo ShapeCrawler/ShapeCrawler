@@ -15,7 +15,7 @@ using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 namespace ShapeCrawler.Tests.Unit;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-public class SlideTests : ShapeCrawlerTest
+public class SlideTests : SCTest
 {
     [Fact]
     public void Hide_MethodHidesSlide_WhenItIsExecuted()
@@ -51,7 +51,7 @@ public class SlideTests : ShapeCrawlerTest
     public async void Background_SetImage_updates_background()
     {
         // Arrange
-        var pptx = GetTestStream("009_table.pptx");
+        var pptx = TestHelper.GetStream("009_table.pptx");
 var pre = SCPresentation.Open(pptx);
         var backgroundImage = pre.Slides[0].Background;
         var imgStream = new MemoryStream(Resources.test_image_2);
@@ -69,7 +69,7 @@ var pre = SCPresentation.Open(pptx);
     public void Background_ImageIsNull_WhenTheSlideHasNotBackground()
     {
         // Arrange
-        var slide = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1];
+        var slide = SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[1];
 
         // Act
         var backgroundImage = slide.Background;
