@@ -66,8 +66,6 @@
     <EmbeddedResource Include="Resource\021.pptx" />
     <None Remove="Resource\013.pptx" />
     <EmbeddedResource Include="Resource\013.pptx" />
-    <None Remove="Resource\009_table.pptx" />
-    <EmbeddedResource Include="Resource\009_table.pptx" />
     <None Remove="Resource\charts\charts-case001.pptx" />
     <None Remove="Resource\053_font-offset.pptx" />
     <EmbeddedResource Include="Resource\charts\charts-case001.pptx" />

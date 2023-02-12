@@ -9,7 +9,7 @@ using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 namespace ShapeCrawler.Tests.Unit;
 
-public class SlideCollectionTests : ShapeCrawlerTest
+public class SlideCollectionTests : SCTest
 {
     [Fact]
     public void Count_returns_one_When_presentation_contains_one_slide()

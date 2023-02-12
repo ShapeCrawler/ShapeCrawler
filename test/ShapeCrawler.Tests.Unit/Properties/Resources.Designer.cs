@@ -112,16 +112,6 @@ namespace ShapeCrawler.Tests.Unit.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] _009 {
-            get {
-                object obj = ResourceManager.GetObject("_009", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] _010 {
             get {
                 object obj = ResourceManager.GetObject("_010", resourceCulture);

@@ -19,7 +19,7 @@ using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 namespace ShapeCrawler.Tests.Unit;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-public class ShapeCollectionTests : ShapeCrawlerTest
+public class ShapeCollectionTests : SCTest
 {
     [Theory]
     [LayoutShapeData("autoshape-case004_subtitle.pptx", slideNumber: 1, shapeName: "Group 1")]
@@ -58,7 +58,7 @@ public class ShapeCollectionTests : ShapeCrawlerTest
     public void Contains_Picture_shape()
     {
         // Arrange
-        IShape shape = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
+        IShape shape = SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
 
         // Act-Assert
         IPicture picture = shape as IPicture;

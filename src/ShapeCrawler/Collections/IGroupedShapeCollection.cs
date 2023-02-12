@@ -2,12 +2,13 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using OneOf;
+using ShapeCrawler.Collections;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Collections;
+namespace ShapeCrawler;
 
 /// <summary>
 ///     Represents collection of grouped shapes.
@@ -78,6 +79,7 @@ internal sealed class GroupedShapeCollection : LibraryCollection<IShape>, IGroup
                 if (shape != null)
                 {
                     shape.XChanged += groupShape.OnGroupedShapeXChanged;    
+                    shape.YChanged += groupShape.OnGroupedShapeYChanged;    
                 }
             }
 

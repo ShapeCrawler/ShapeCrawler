@@ -11,7 +11,7 @@ using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 namespace ShapeCrawler.Tests.Unit;
 
-public class PresentationTests : ShapeCrawlerTest
+public class PresentationTests : SCTest
 {
     [Fact]
     public void Close_should_not_throw_ObjectDisposedException()
@@ -47,7 +47,7 @@ public class PresentationTests : ShapeCrawlerTest
     public void Slide_Width_returns_presentation_slides_width_in_pixels()
     {
         // Arrange
-        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
+        var pres9 = SCPresentation.Open(TestHelper.GetStream("009_table.pptx"));
         var presentation = pres9;
 
         // Act
@@ -61,7 +61,7 @@ public class PresentationTests : ShapeCrawlerTest
     public void Slide_Height_returns_presentation_slides_height_in_pixels()
     {
         // Arrange
-        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
+        var pres9 = SCPresentation.Open(TestHelper.GetStream("009_table.pptx"));
         var presentation = pres9;
 
         // Act

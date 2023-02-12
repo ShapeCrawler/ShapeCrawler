@@ -8,7 +8,7 @@ using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 namespace ShapeCrawler.Tests.Unit;
 
-public class SlideMasterTests : ShapeCrawlerTest
+public class SlideMasterTests : SCTest
 {
     [Fact]
     public void ShapeXAndY_ReturnXAndYAxesCoordinatesOfTheMasterShape()

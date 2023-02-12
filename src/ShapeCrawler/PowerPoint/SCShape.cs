@@ -30,6 +30,8 @@ internal abstract class SCShape : IShape
     }
 
     internal event EventHandler<int>? XChanged;
+
+    internal event EventHandler<int>? YChanged;
     
     public int Id => (int)this.PShapeTreesChild.GetNonVisualDrawingProperties().Id!.Value;
 
@@ -103,7 +105,7 @@ internal abstract class SCShape : IShape
 
     internal abstract void Draw(SKCanvas canvas);
     
-    protected virtual void SetXCoordinate(int xPx)
+    protected virtual void SetXCoordinate(int newXPx)
     {
         var pSpPr = this.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !;
         var aXfrm = pSpPr.Transform2D;
@@ -111,7 +113,7 @@ internal abstract class SCShape : IShape
         {
             var placeholder = (SCPlaceholder)this.Placeholder!;
             var referencedShape = placeholder.ReferencedShape.Value;
-            var xEmu = UnitConverter.HorizontalPixelToEmu(xPx);
+            var xEmu = UnitConverter.HorizontalPixelToEmu(newXPx);
             var yEmu = UnitConverter.VerticalPixelToEmu(referencedShape!.Y);
             var wEmu = UnitConverter.HorizontalEmuToPixel(referencedShape.Width);
             var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
@@ -119,13 +121,13 @@ internal abstract class SCShape : IShape
         }
         else
         {
-            aXfrm.Offset!.X = UnitConverter.HorizontalPixelToEmu(xPx);
+            aXfrm.Offset!.X = UnitConverter.HorizontalPixelToEmu(newXPx);
         }
 
         this.XChanged?.Invoke(this, this.X);
     }
     
-    protected virtual void SetYCoordinate(int newYPixels)
+    protected virtual void SetYCoordinate(int newYPx)
     {
         var pSpPr = this.PShapeTreesChild.GetFirstChild<P.ShapeProperties>() !;
         var aXfrm = pSpPr.Transform2D;
@@ -134,15 +136,17 @@ internal abstract class SCShape : IShape
             var placeholder = (SCPlaceholder)this.Placeholder!;
             var referencedShape = placeholder.ReferencedShape.Value!;
             var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
-            var yEmu = UnitConverter.HorizontalPixelToEmu(newYPixels);
+            var yEmu = UnitConverter.HorizontalPixelToEmu(newYPx);
             var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
             var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
             pSpPr.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
         }
         else
         {
-            aXfrm.Offset!.Y = UnitConverter.HorizontalPixelToEmu(newYPixels);
+            aXfrm.Offset!.Y = UnitConverter.HorizontalPixelToEmu(newYPx);
         }
+        
+        this.YChanged?.Invoke(this, this.Y);
     }
     
     

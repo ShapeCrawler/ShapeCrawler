@@ -20,7 +20,6 @@ public static class TestFiles
 
         public static byte[] pre025_byteArray => Resources._025;
 
-        public static byte[] pre009 => Resources._009;
     }
 
     public class Audio

@@ -1,6 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
 using OneOf;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using SkiaSharp;
@@ -66,6 +65,27 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
             var diffEmu = UnitConverter.HorizontalPixelToEmu(diff);
             extents.Cx = new Int64Value(extents.Cx! + diffEmu);
             childExtents.Cx = new Int64Value(childExtents.Cx! + diffEmu);
+        }
+    }
+    
+    internal void OnGroupedShapeYChanged(object sender, int yGroupedShape)
+    {
+        var offset = this.ATransformGroup.Offset!;
+        var extents = this.ATransformGroup.Extents!;
+        var childOffset = this.ATransformGroup.ChildOffset!;
+        var childExtents = this.ATransformGroup.ChildExtents!;
+        
+        if(yGroupedShape < this.Y)
+        {
+            var groupedYEmu = UnitConverter.VerticalPixelToEmu(yGroupedShape); 
+            var diff = this.ATransformGroup.Offset!.Y! - groupedYEmu;
+            
+            offset.Y = new Int64Value(offset.Y! - diff);
+            extents.Cy = new Int64Value(extents.Cy! + diff);
+            childOffset.Y = new Int64Value(childOffset.Y! - diff);
+            childExtents.Cy = new Int64Value(childExtents.Cy! + diff);
+            
+            return;
         }
     }
 

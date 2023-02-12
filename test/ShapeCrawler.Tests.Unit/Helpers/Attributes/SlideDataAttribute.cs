@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using ShapeCrawler.Tests.Shared;
 using Xunit.Sdk;
 
 namespace ShapeCrawler.Tests.Unit.Helpers.Attributes;
@@ -21,8 +23,8 @@ public class SlideDataAttribute : DataAttribute
         
     public override IEnumerable<object[]> GetData(MethodInfo testMethod)
     {
-        var pptxStream = TestHelperOld.GetStream(this.pptxFile);
-        var pres = SCPresentation.Open(pptxStream);
+        var pptx = SCTest.HelperAssets.Contains(this.pptxFile) ? TestHelper.GetStream(this.pptxFile) : TestHelperOld.GetStream(this.pptxFile);
+        var pres = SCPresentation.Open(pptx);
         var slide = pres.Slides[this.slideNumber - 1];
 
         if (this.testCaseLabel == null)

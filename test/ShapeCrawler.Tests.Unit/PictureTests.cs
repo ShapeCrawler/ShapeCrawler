@@ -5,6 +5,7 @@ using System.Linq;
 using ClosedXML;
 using FluentAssertions;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 
@@ -14,13 +15,13 @@ using Xunit;
 namespace ShapeCrawler.Tests.Unit;
 
 [SuppressMessage("Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task")]
-public class PictureTests : ShapeCrawlerTest
+public class PictureTests : SCTest
 {
     [Fact]
     public async void Image_BinaryData_returns_image_byte_array()
     {
         // Arrange
-        var shapePicture1 = (IPicture)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
+        var shapePicture1 = (IPicture)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
         var shapePicture2 = (IPicture)SCPresentation.Open(GetTestStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
 
         // Act
@@ -82,7 +83,7 @@ public class PictureTests : ShapeCrawlerTest
     public void Image_SetImage_updates_picture_image()
     {
         // Arrange
-        var pptxStream = GetTestStream("009_table");
+        var pptxStream = TestHelper.GetStream("009_table");
         var pngStream = GetTestStream("test-image-2.png");
         var pres = SCPresentation.Open(pptxStream);
         var mStream = new MemoryStream();

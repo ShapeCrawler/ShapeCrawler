@@ -9,7 +9,7 @@ using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 namespace ShapeCrawler.Tests.Unit;
 
-public class ColorFormatTests : ShapeCrawlerTest
+public class ColorFormatTests : SCTest
 {
     [Theory]
     [MemberData(nameof(TestCasesSetColorHex))]

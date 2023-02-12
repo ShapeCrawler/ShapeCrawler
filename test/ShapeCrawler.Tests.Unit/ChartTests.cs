@@ -5,6 +5,7 @@ using System.Linq;
 using ClosedXML.Excel;
 using FluentAssertions;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 
@@ -16,7 +17,7 @@ namespace ShapeCrawler.Tests.Unit;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
 [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
-public class ChartTests : ShapeCrawlerTest
+public class ChartTests : SCTest
 {
     [Fact]
     public void XValues_ReturnsParticularXAxisValue_ViaItsCollectionIndexer()
@@ -79,11 +80,11 @@ public class ChartTests : ShapeCrawlerTest
         IChart chartCase4 = (IChart)pres13.Slides[0].Shapes.First(sp => sp.Id == 4);
         IChart chartCase5 = (IChart)pres19.Slides[0].Shapes.First(sp => sp.Id == 4);
         IChart chartCase6 = (IChart)pres13.Slides[0].Shapes.First(sp => sp.Id == 6);
-        IChart chartCase7 = (IChart)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
-        IChart chartCase8 = (IChart)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 6);
-        IChart chartCase9 = (IChart)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[4].Shapes.First(sp => sp.Id == 6);
-        IChart chartCase10 = (IChart)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[4].Shapes.First(sp => sp.Id == 3);
-        IChart chartCase11 = (IChart)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[4].Shapes.First(sp => sp.Id == 5);
+        IChart chartCase7 = (IChart)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
+        IChart chartCase8 = (IChart)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 6);
+        IChart chartCase9 = (IChart)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[4].Shapes.First(sp => sp.Id == 6);
+        IChart chartCase10 = (IChart)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[4].Shapes.First(sp => sp.Id == 3);
+        IChart chartCase11 = (IChart)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[4].Shapes.First(sp => sp.Id == 5);
             
         // Act
         string charTitleCase1 = chartCase1.Title;
@@ -130,7 +131,7 @@ public class ChartTests : ShapeCrawlerTest
         IChart chart = (IChart) presentation.Slides[0].Shapes.First(sp => sp.Id == 5);
         yield return new object[] {chart, 3};
 
-        pptxStream = GetTestStream("009_table.pptx");
+        pptxStream = TestHelper.GetStream("009_table.pptx");
         presentation = SCPresentation.Open(pptxStream);
         chart = (IChart) presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
         yield return new object[] {chart, 1};
@@ -157,7 +158,7 @@ public class ChartTests : ShapeCrawlerTest
     {
         // Arrange
         IBarChart chartCase1 = (IBarChart)SCPresentation.Open(GetTestStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
-        IPieChart chartCase3 = (IPieChart)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
+        IPieChart chartCase3 = (IPieChart)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
 
         // Act-Assert
         chartCase1.Categories[0].Name.Should().BeEquivalentTo("Dresses");
@@ -287,7 +288,7 @@ public class ChartTests : ShapeCrawlerTest
         IChart chartCase1 = (IChart)SCPresentation.Open(GetTestStream("021.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
         IChart chartCase2 = (IChart)SCPresentation.Open(GetTestStream("021.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4);
         IChart chartCase3 = (IChart)pres13.Slides[0].Shapes.First(sp => sp.Id == 5);
-        IChart chartCase4 = (IChart)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
+        IChart chartCase4 = (IChart)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
 
         // Act
         SCChartType chartTypeCase1 = chartCase1.Type;
