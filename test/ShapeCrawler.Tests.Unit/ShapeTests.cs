@@ -264,7 +264,7 @@ public class ShapeTests : SCTest
 
         // Assert
         groupedShape.Y.Should().Be(555);
-        parentGroupShape.Height.Should().Be(179, "because it was 108, down-hand grouped shape was moved got down on 71 pixels");
+        parentGroupShape.Height.Should().Be(179, "because it was 108 and the down-hand grouped shape got down on 71 pixels");
     }
 
     [Theory]

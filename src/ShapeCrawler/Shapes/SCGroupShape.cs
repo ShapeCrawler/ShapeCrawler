@@ -87,13 +87,12 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
 
             return;
         }
-        
+
         var groupedShape = (SCShape)sender;
-        var parentGroupBottom = this.Y + this.Height; 
+        var parentGroupBottom = this.Y + this.Height;
         var groupedShapeBottom = groupedShape.Y + groupedShape.Height;
         if (groupedShapeBottom > parentGroupBottom)
         {
-            
             var diff = groupedShapeBottom - parentGroupBottom;
             var diffEmu = UnitConverter.HorizontalPixelToEmu(diff);
             extents.Cy = new Int64Value(extents.Cy! + diffEmu);
