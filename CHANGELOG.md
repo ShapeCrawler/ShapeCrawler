@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.41.4 - 2023-02-13
+🐞Fixed updating X/Y coordinates of grouped shape [#452](https://github.com/ShapeCrawler/ShapeCrawler/issues/452)
+
 ## Version 0.41.3 - 2023-01-29
 🐞Fixed solid color setting [d442](https://github.com/ShapeCrawler/ShapeCrawler/discussions/442)
 
