@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*'    
+  pull_request:
+    branches: [ master ]
   workflow_dispatch:
 
 jobs:  
@@ -17,11 +19,15 @@ jobs:
       - name: Setup VSTest
         uses: darenm/Setup-VSTest@v1.2      
       - name: Restore packages
-        run: nuget restore      
-      - name: Build
-        run: msbuild /p:Configuration=Release      
-      - name: Run tests
-        run: vstest.console.exe **/*.*Tests.dll /Framework:Framework45
+        run: dotnet restore      
+      # - name: Restore packages
+      #   run: nuget restore      
+      # - name: Build
+      #   run: msbuild /p:Configuration=Release      
+      # - name: Run tests
+      #   run: vstest.console.exe **/*.*Tests.dll /Framework:Framework45
+      - name: Test on net48
+        run: dotnet test -c Release -f net48
   
   publish-package:
     name: Publish package
@@ -32,11 +38,11 @@ jobs:
       - uses: actions/checkout@v3
       - name: Restore packages
         run: dotnet restore
-      - name: Test
+      - name: Test on net7.0
         run: dotnet test -c Release -f net7.0 --no-restore --verbosity normal
       - name: Create the package
         run: dotnet pack --configuration Release
-      - name: Publish the package to nuget.org
-        run: dotnet nuget push -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json "src\ShapeCrawler\bin\Release\*.nupkg"
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      # - name: Publish the package to nuget.org
+      #   run: dotnet nuget push -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json "src\ShapeCrawler\bin\Release\*.nupkg"
+      #   env:
+      #     NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
