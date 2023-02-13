@@ -74,18 +74,29 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
         var extents = this.ATransformGroup.Extents!;
         var childOffset = this.ATransformGroup.ChildOffset!;
         var childExtents = this.ATransformGroup.ChildExtents!;
-        
-        if(yGroupedShape < this.Y)
+
+        if (yGroupedShape < this.Y)
         {
-            var groupedYEmu = UnitConverter.VerticalPixelToEmu(yGroupedShape); 
+            var groupedYEmu = UnitConverter.VerticalPixelToEmu(yGroupedShape);
             var diff = this.ATransformGroup.Offset!.Y! - groupedYEmu;
-            
+
             offset.Y = new Int64Value(offset.Y! - diff);
             extents.Cy = new Int64Value(extents.Cy! + diff);
             childOffset.Y = new Int64Value(childOffset.Y! - diff);
             childExtents.Cy = new Int64Value(childExtents.Cy! + diff);
-            
+
             return;
+        }
+
+        var groupedShape = (SCShape)sender;
+        var parentGroupBottom = this.Y + this.Height;
+        var groupedShapeBottom = groupedShape.Y + groupedShape.Height;
+        if (groupedShapeBottom > parentGroupBottom)
+        {
+            var diff = groupedShapeBottom - parentGroupBottom;
+            var diffEmu = UnitConverter.HorizontalPixelToEmu(diff);
+            extents.Cy = new Int64Value(extents.Cy! + diffEmu);
+            childExtents.Cy = new Int64Value(childExtents.Cy! + diffEmu);
         }
     }
 

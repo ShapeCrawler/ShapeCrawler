@@ -249,6 +249,23 @@ public class ShapeTests : SCTest
         parentGroupShape.Y.Should().Be(359, "because the moved grouped shape was on the up-hand side");
         parentGroupShape.Height.Should().Be(172);
     }
+    
+    [Fact]
+    public void Y_Setter_moves_the_Down_hand_grouped_shape_to_Down()
+    {
+        // Arrange
+        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var parentGroupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
+        var groupedShape = parentGroupShape.Shapes.GetByName<IShape>("Shape 2");
+            
+        // Act
+        groupedShape.Y = 555;
+
+        // Assert
+        groupedShape.Y.Should().Be(555);
+        parentGroupShape.Height.Should().Be(179, "because it was 108 and the down-hand grouped shape got down on 71 pixels");
+    }
 
     [Theory]
     [SlideShapeData("006_1 slides.pptx", 1, "Shape 1")]
