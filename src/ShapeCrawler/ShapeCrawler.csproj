@@ -11,11 +11,9 @@
 This library provides a simplified object model on top of the Open XML SDK for manipulating PowerPoint documents without any COM+ or COM interop layers.</Description>
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageIcon>logo.ico</PackageIcon>
-    <Copyright>MIT</Copyright>
+    <Copyright></Copyright>
     <LangVersion>11</LangVersion>
-    <ApplicationIcon>logo.ico</ApplicationIcon>
+    <ApplicationIcon></ApplicationIcon>
     <PackageReleaseNotes>Fixed updating X/Y coordinates of grouped shape.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
@@ -32,7 +30,13 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Title>ShapeCrawler</Title>
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageIcon>package-icon.jpg</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="package-icon.jpg" Pack="true" PackagePath=""/>
+  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
