@@ -37,7 +37,7 @@ public class ParagraphPortionTests : SCTest
         var pptxStream = TestHelper.GetStream("autoshape-case001.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var autoShape = pres.SlideMasters[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
-        var portion = autoShape.TextFrame.Paragraphs[0].Portions[0];
+        var portion = autoShape.TextFrame!.Paragraphs[0].Portions[0];
 
         // Act
         portion.Text = "test";

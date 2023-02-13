@@ -1,15 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
 
         <IsPackable>false</IsPackable>
 
         <Configurations>Debug;Release</Configurations>
 
         <Platforms>AnyCPU</Platforms>
+
+        <TargetFrameworks>net48;net7.0</TargetFrameworks>
+
+        <OutputType>Library</OutputType>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -29,6 +31,10 @@
     <ItemGroup>
       <ProjectReference Include="..\ShapeCrawler.Tests.Shared\ShapeCrawler.Tests.Shared.csproj" />
       <ProjectReference Include="..\..\src\ShapeCrawler\ShapeCrawler.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.CSharp" Condition="'$(TargetFramework)' == 'net48'" />
     </ItemGroup>
 
 </Project>
