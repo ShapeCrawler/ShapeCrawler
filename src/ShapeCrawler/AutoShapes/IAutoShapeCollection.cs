@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -30,41 +31,46 @@ public interface IAutoShapeCollection : IReadOnlyList<IAutoShape>
 
 internal class AutoShapeCollection : IAutoShapeCollection
 {
+    internal EventHandler<P.Shape>? AutoShapeAdded;
+    
     private readonly P.ShapeTree pShapeTree;
-    private readonly IAutoShape[] autoShapes;
+    private readonly List<IAutoShape> autoShapes;
     private readonly IEnumerable<IShape> allShapes;
+    private readonly ShapeCollection parentShapeCollection;
 
     internal AutoShapeCollection(IEnumerable<IShape> allShapes, P.ShapeTree pShapeTree, ShapeCollection parentShapeCollection)
     {
         this.allShapes = allShapes;
         this.pShapeTree = pShapeTree;
-        this.ParentShapeCollection = parentShapeCollection;
-        this.autoShapes = allShapes.Where(shape => shape is SCAutoShape).OfType<IAutoShape>().ToArray();
+        this.parentShapeCollection = parentShapeCollection;
+        this.autoShapes = allShapes.Where(shape => shape is SCAutoShape).OfType<IAutoShape>().ToList();
     }
-    
-    public int Count => this.autoShapes.Length;
 
-    internal ShapeCollection ParentShapeCollection { get; }
-    
+    public int Count => this.autoShapes.Count;
+
     public IAutoShape this[int index] => this.autoShapes[index];
     
     public IRectangle AddRectangle(int x, int y, int width, int height)
     {
         var newPShape = this.CreatePShape(x, y, width, height, A.ShapeTypeValues.Rectangle);
 
+        var newRectangle = new SCRectangle(newPShape, this.parentShapeCollection.ParentSlideObject, this.parentShapeCollection);
+        newRectangle.Outline.Color = "000000";
+        
+        this.autoShapes.Add(newRectangle);
+        
         this.pShapeTree.Append(newPShape);
         
-        var rectangle = new SCRectangle(newPShape, this.ParentShapeCollection.ParentSlideObject, this.ParentShapeCollection);
-        rectangle.Outline.Color = "000000";
-     
-        return rectangle;
+        this.AutoShapeAdded?.Invoke(this, newPShape);
+
+        return newRectangle;
     }
 
     public IRoundedRectangle AddRoundedRectangle(int x, int y, int width, int height)
     {
         var newPShape = this.CreatePShape(x, y, width, height, A.ShapeTypeValues.RoundRectangle);
 
-        var roundedRectangle = new SCRoundedRectangle(newPShape, this.ParentShapeCollection.ParentSlideObject, this.ParentShapeCollection);
+        var roundedRectangle = new SCRoundedRectangle(newPShape, this.parentShapeCollection.ParentSlideObject, this.parentShapeCollection);
 
         roundedRectangle.Outline.Color = "000000";
 
@@ -75,7 +81,6 @@ internal class AutoShapeCollection : IAutoShapeCollection
     {
         return this.autoShapes.OfType<IAutoShape>().GetEnumerator();
     }
-    
 
     IEnumerator IEnumerable.GetEnumerator()
     {

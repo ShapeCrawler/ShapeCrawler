@@ -83,16 +83,16 @@ public interface IShapeCollection : IReadOnlyList<IShape>
 internal sealed class ShapeCollection : IShapeCollection
 {
     private const long DefaultTableWidthEmu = 8128000L;
-    private readonly P.ShapeTree shapeTree;
+    private readonly P.ShapeTree pShapeTree;
     private readonly List<IShape> shapes;
 
     private ShapeCollection(
         List<IShape> shapes,
-        P.ShapeTree shapeTree,
+        P.ShapeTree pShapeTree,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject)
     {
         this.ParentSlideObject = slideObject;
-        this.shapeTree = shapeTree;
+        this.pShapeTree = pShapeTree;
         this.shapes = shapes;
     }
 
@@ -209,12 +209,12 @@ internal sealed class ShapeCollection : IShapeCollection
         picture1.Append(blipFill1);
         picture1.Append(shapeProperties1);
 
-        this.shapeTree.Append(picture1);
+        this.pShapeTree.Append(picture1);
 
         P14.CreationId creationId1 = new() { Val = (UInt32Value)3972997422U };
         creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
-        return new SCAudioShape(this.shapeTree, this.ParentSlideObject, this);
+        return new SCAudioShape(this.pShapeTree, this.ParentSlideObject, this);
     }
 
     public IVideoShape AddVideo(int x, int y, Stream stream)
@@ -321,12 +321,12 @@ internal sealed class ShapeCollection : IShapeCollection
         picture1.Append(blipFill1);
         picture1.Append(shapeProperties1);
 
-        this.shapeTree.Append(picture1);
+        this.pShapeTree.Append(picture1);
 
         P14.CreationId creationId1 = new() { Val = (UInt32Value)3972997422U };
         creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
-        return new SCVideoShape(this.shapeTree, this.ParentSlideObject, this);
+        return new SCVideoShape(this.pShapeTree, this.ParentSlideObject, this);
     }
 
     public ITable AddTable(int xPx, int yPx, int columns, int rows)
@@ -379,7 +379,7 @@ internal sealed class ShapeCollection : IShapeCollection
         graphicFrame.Append(pTransform);
         graphicFrame.Append(graphic);
 
-        this.shapeTree.Append(graphicFrame);
+        this.pShapeTree.Append(graphicFrame);
         var table = new SCTable(graphicFrame, this.ParentSlideObject, this);
 
         return table;
@@ -540,8 +540,7 @@ internal sealed class ShapeCollection : IShapeCollection
 
     private IAutoShapeCollection GetAutoShapes()
     {
-        var autoShapes = this.shapes.OfType<IAutoShape>();
-        return new AutoShapeCollection(autoShapes, this.shapeTree, this);
+        return new AutoShapeCollection(this.shapes, this.pShapeTree, this);
     }
 
     private string GenerateNextTableName()
