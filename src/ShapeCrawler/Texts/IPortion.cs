@@ -146,7 +146,7 @@ internal sealed class SCPortion : IPortion
             return null;
         }
 
-        var slideObject = (SlideStructure)this.ParentParagraph.ParentTextFrame.TextFrameContainer.SCShape.SlideObject;
+        var slideObject = (SlideStructure)this.ParentParagraph.ParentTextFrame.TextFrameContainer.SCShape.SlideStructure;
         var typedOpenXmlPart = slideObject.TypedOpenXmlPart;
         var hyperlinkRelationship = (HyperlinkRelationship)typedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
 
@@ -173,8 +173,8 @@ internal sealed class SCPortion : IPortion
             runProperties.Append(hyperlink);
         }
 
-        var slideObject = (SlideStructure)this.ParentParagraph.ParentTextFrame.TextFrameContainer.SCShape.SlideObject;
-        var slidePart = slideObject.TypedOpenXmlPart;
+        var slideStructureCore = (SlideStructure)this.ParentParagraph.ParentTextFrame.TextFrameContainer.SCShape.SlideStructure;
+        var slidePart = slideStructureCore.TypedOpenXmlPart;
 
         var uri = new Uri(url, UriKind.Absolute);
         var addedHyperlinkRelationship = slidePart.AddHyperlinkRelationship(uri, true);

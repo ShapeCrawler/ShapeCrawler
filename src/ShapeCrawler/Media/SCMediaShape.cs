@@ -24,9 +24,10 @@ internal abstract class SCMediaShape : SCShape
 
     private byte[] GetBinaryData()
     {
-        var pPic = (P.Picture)this.PShapeTreesChild;
+        var pPic = (P.Picture)this.PShapeTreeChild;
         var p14Media = pPic.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!.Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();
-        var relationship = this.SlideBase.TypedOpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
+        var slideStructureCore = (SlideStructure)this.SlideStructure;
+        var relationship = slideStructureCore.TypedOpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
         var stream = relationship.DataPart.GetStream();
         var bytes = stream.ToArray();
         stream.Close();
@@ -36,9 +37,10 @@ internal abstract class SCMediaShape : SCShape
 
     private string GetMime()
     {
-        var pPic = (P.Picture)this.PShapeTreesChild;
+        var pPic = (P.Picture)this.PShapeTreeChild;
         var p14Media = pPic.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!.Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();
-        var relationship = this.SlideBase.TypedOpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
+        var slideStructureCore = (SlideStructure)this.SlideStructure;
+        var relationship = slideStructureCore.TypedOpenXmlPart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
 
         return relationship.DataPart.ContentType;
     }

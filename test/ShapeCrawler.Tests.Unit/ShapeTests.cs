@@ -228,7 +228,7 @@ public class ShapeTests : SCTest
 
         // Assert
         shape.Y.Should().Be(100);
-        var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+        var errors = PptxValidator.Validate(shape.SlideStructure.Presentation);
         errors.Should().BeEmpty();
     }
     
@@ -275,8 +275,8 @@ public class ShapeTests : SCTest
     public void X_Setter_sets_x_coordinate(IShape shape)
     {
         // Arrange
-        var pres = shape.SlideObject.Presentation;
-        var slideIndex = shape.SlideObject.Number - 1;
+        var pres = shape.SlideStructure.Presentation;
+        var slideIndex = shape.SlideStructure.Number - 1;
         var shapeName = shape.Name;
         var stream = new MemoryStream();
 
@@ -288,7 +288,7 @@ public class ShapeTests : SCTest
         pres = SCPresentation.Open(stream);
         shape = pres.Slides[slideIndex].Shapes.GetByName<IShape>(shapeName);
         shape.X.Should().Be(400);
-        var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+        var errors = PptxValidator.Validate(shape.SlideStructure.Presentation);
         errors.Should().BeEmpty();
     }
 
@@ -335,8 +335,8 @@ public class ShapeTests : SCTest
     public void Width_Setter_sets_width(IShape shape)
     {
         // Arrange
-        var pres = shape.SlideObject.Presentation;
-        var slideIndex = shape.SlideObject.Number - 1;
+        var pres = shape.SlideStructure.Presentation;
+        var slideIndex = shape.SlideStructure.Number - 1;
         var shapeName = shape.Name;
         var stream = new MemoryStream();
 
@@ -348,7 +348,7 @@ public class ShapeTests : SCTest
         pres = SCPresentation.Open(stream);
         shape = pres.Slides[slideIndex].Shapes.GetByName<IShape>(shapeName);
         shape.Width.Should().Be(600);
-        var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+        var errors = PptxValidator.Validate(shape.SlideStructure.Presentation);
         errors.Should().BeEmpty();
     }
 

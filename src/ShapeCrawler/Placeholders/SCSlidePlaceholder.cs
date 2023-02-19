@@ -31,18 +31,18 @@ internal sealed class SCSlidePlaceholder : SCPlaceholder
 
     private SCShape? GetReferencedShape()
     {
-        if (this._slideSCShape.SlideBase is SCSlideLayout slideLayout)
+        if (this._slideSCShape.SlideStructure is SCSlideLayout slideLayout)
         {
             var masterShapes = slideLayout.SlideMasterInternal.ShapesInternal;
             return masterShapes.GetReferencedShapeOrNull(this.PPlaceholderShape);
         }
 
-        if (this._slideSCShape.SlideBase is SCSlideMaster)
+        if (this._slideSCShape.SlideStructure is SCSlideMaster)
         {
             return null;
         }
 
-        var slide = (SCSlide)this._slideSCShape.SlideBase;
+        var slide = (SCSlide)this._slideSCShape.SlideStructure;
         var layout = (SCSlideLayout)slide.SlideLayout;
         var layoutShapes = layout.ShapesInternal;
         var referencedShape = layoutShapes.GetReferencedShapeOrNull(this.PPlaceholderShape);

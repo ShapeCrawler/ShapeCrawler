@@ -35,7 +35,7 @@ internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
         this.slideMaster = slideMaster;
         this.SlideLayoutPart = slideLayoutPart;
         this.shapes = new ResettableLazy<ShapeCollection>(() =>
-            ShapeCollection.Create(slideLayoutPart, this));
+            new ShapeCollection(slideLayoutPart, this));
         this.Number = number;
     }
 

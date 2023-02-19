@@ -78,17 +78,17 @@ internal sealed class SCFont : IFont
         this.colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
         this.ParentPortion = portion;
         var parentTextBoxContainer = portion.ParentParagraph.ParentTextFrame.TextFrameContainer;
-        SCShape scShape;
+        SCShape shape;
         if (parentTextBoxContainer is SCCell cell)
         {
-            scShape = cell.SCShape;
+            shape = cell.SCShape;
         }
         else
         {
-            scShape = (SCShape)portion.ParentParagraph.ParentTextFrame.TextFrameContainer;
+            shape = (SCShape)portion.ParentParagraph.ParentTextFrame.TextFrameContainer;
         }
 
-        var themeFontScheme = (ThemeFontScheme)scShape.SlideMasterInternal.Theme.FontScheme; 
+        var themeFontScheme = (ThemeFontScheme)shape.SlideMasterInternal.Theme.FontScheme; 
         this.aFontScheme = themeFontScheme.AFontScheme;
     }
 
@@ -327,8 +327,9 @@ internal sealed class SCFont : IFont
             }
         }
 
-        var presentation = textFrameContainer.SCShape.SlideBase.PresentationInternal;
-        if (presentation.ParaLvlToFontData.TryGetValue(paraLevel, out var fontData))
+        var sldStructureCore = (SlideStructure)textFrameContainer.SCShape.SlideStructure;
+        var pres = sldStructureCore.PresentationInternal;
+        if (pres.ParaLvlToFontData.TryGetValue(paraLevel, out var fontData))
         {
             if (fontData.FontSize is not null)
             {

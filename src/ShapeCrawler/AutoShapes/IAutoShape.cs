@@ -84,7 +84,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
     
     public IAutoShape Duplicate()
     {
-        var copy = this.PShapeTreesChild.Clone();
+        var copy = this.PShapeTreeChild.Clone();
 
         throw new NotImplementedException();
     }
@@ -240,7 +240,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
 
     private TextFrame? GetTextFrame()
     {
-        var pTextBody = this.PShapeTreesChild.GetFirstChild<P.TextBody>();
+        var pTextBody = this.PShapeTreeChild.GetFirstChild<P.TextBody>();
         if (pTextBody == null)
         {
             return null;
@@ -254,7 +254,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
 
     private SCShapeFill GetFill()
     {
-        var slideObject = (SlideStructure)this.SlideObject;
+        var slideObject = (SlideStructure)this.SlideStructure;
         return new SCAutoShapeFill(slideObject, this.pShape.ShapeProperties!, this);
     }
     

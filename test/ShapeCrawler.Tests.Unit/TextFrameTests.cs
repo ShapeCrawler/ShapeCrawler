@@ -242,7 +242,7 @@ namespace ShapeCrawler.Tests.Unit
             // Assert
             shape.Height.Should().Be(46);
             shape.Y.Should().Be(152);
-            var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+            var errors = PptxValidator.Validate(shape.SlideStructure.Presentation);
             errors.Should().BeEmpty();
         }
         
@@ -343,7 +343,7 @@ namespace ShapeCrawler.Tests.Unit
 
             // Assert
             textFrame.AutofitType.Should().Be(SCAutofitType.Resize);
-            var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+            var errors = PptxValidator.Validate(shape.SlideStructure.Presentation);
             errors.Should().BeEmpty();
         }
         

@@ -53,7 +53,7 @@ internal sealed class SCTable : SCShape, ITable
         : base(pShapeTreeChild, parentSlideObject, parentShapeCollection)
     {
         this.rowCollection =
-            new ResettableLazy<SCRowCollection>(() => SCRowCollection.Create(this, (P.GraphicFrame)this.PShapeTreesChild));
+            new ResettableLazy<SCRowCollection>(() => SCRowCollection.Create(this, (P.GraphicFrame)this.PShapeTreeChild));
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeChild;
     }
     

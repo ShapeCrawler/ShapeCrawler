@@ -16,7 +16,7 @@ internal sealed class SCAutoShapeFill : SCShapeFill
 
     protected override void InitSlideBackgroundFillOr()
     {
-        var pShape = (P.Shape)this._autoSCShape.PShapeTreesChild;
+        var pShape = (P.Shape)this._autoSCShape.PShapeTreeChild;
         this.useBgFill = pShape.UseBackgroundFill;
         if (this.useBgFill is not null && this.useBgFill)
         {

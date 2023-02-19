@@ -39,7 +39,7 @@ public class ShapeOutlineTests : SCTest
 
         // Assert
         outline.Weight.Should().Be(0.25);
-        var errors = PptxValidator.Validate(autoShape.SlideObject.Presentation);
+        var errors = PptxValidator.Validate(autoShape.SlideStructure.Presentation);
         errors.Should().BeEmpty();
     }
 
@@ -71,7 +71,7 @@ public class ShapeOutlineTests : SCTest
 
         // Assert
         outline.Color.Should().Be("be3455");
-        var errors = PptxValidator.Validate(autoShape.SlideObject.Presentation);
+        var errors = PptxValidator.Validate(autoShape.SlideStructure.Presentation);
         errors.Should().BeEmpty();
     }
 }

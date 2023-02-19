@@ -47,7 +47,9 @@ internal class SCChart : SCShape, IChart
         var cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
             .GetFirstChild<C.ChartReference>() !;
 
-        this.ChartPart = (ChartPart)this.SlideBase.TypedOpenXmlPart.GetPartById(cChartReference.Id!);
+        var slideStructureCore = (SlideStructure)this.SlideStructure; 
+
+        this.ChartPart = (ChartPart)slideStructureCore.TypedOpenXmlPart.GetPartById(cChartReference.Id!);
 
         var cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
         this.cXCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));

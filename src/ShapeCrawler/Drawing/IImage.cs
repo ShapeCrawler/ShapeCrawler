@@ -106,7 +106,8 @@ internal sealed class SCImage : IImage
     {
         var imagePart = (ImagePart)openXmlPart.GetPartById(blipEmbed!.Value!);
 
-        return new SCImage(imagePart, blipEmbed, openXmlPart, pictureSCShape.SlideBase.PresentationInternal);
+        var slideStructureCore = (SlideStructure)pictureSCShape.SlideStructure;
+        return new SCImage(imagePart, blipEmbed, openXmlPart, slideStructureCore.PresentationInternal);
     }
 
     internal static SCImage? ForBackground(SCSlide slide)

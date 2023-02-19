@@ -33,7 +33,7 @@ internal sealed class SCPicture : SCShape, IPicture
         this.blipEmbed = aBlip.Embed;
     }
 
-    public IImage Image => SCImage.ForPicture(this, this.SlideBase.TypedOpenXmlPart, this.blipEmbed);
+    public IImage Image => SCImage.ForPicture(this, ((SlideStructure)this.SlideStructure).TypedOpenXmlPart, this.blipEmbed);
 
     public string? SvgContent => this.GetSvgContent();
 
@@ -55,7 +55,8 @@ internal sealed class SCPicture : SCShape, IPicture
 
         var svgId = svgBlipList.First().Embed!.Value!;
 
-        var imagePart = (ImagePart)this.SlideBase.TypedOpenXmlPart.GetPartById(svgId);
+        var slideStructureCore = (SlideStructure)this.SlideStructure;
+        var imagePart = (ImagePart)slideStructureCore.TypedOpenXmlPart.GetPartById(svgId);
         using var svgStream = imagePart.GetStream(System.IO.FileMode.Open, System.IO.FileAccess.Read);
         using var sReader = new StreamReader(svgStream);
 

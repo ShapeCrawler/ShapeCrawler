@@ -1,27 +1,27 @@
-﻿using FluentAssertions;
-using ShapeCrawler.Tests.Shared;
+﻿using System.Linq;
+using FluentAssertions;
 using Xunit;
 
 namespace ShapeCrawler.Tests.Unit;
 
 public class AutoShapeTests
 {
-#if DEBUG
-    [Fact(Skip = "On Hold (https://github.com/ShapeCrawler/ShapeCrawler/issues/444)")]
+    #if DEBUG
+    [Fact(Skip = "Not implemented yet")]
     public void Duplicate_duplicates_AutoShape()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
-        var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 6");
+        var pres = SCPresentation.Create();
+        pres.Slides[0].Shapes.AutoShapes.AddRectangle(10, 20, 30, 40);
+        var shapes = pres.Slides[0].Shapes;
+        var autoShape = shapes.AutoShapes.Single();
 
         // Act
-        var shapeCopy = shape.Duplicate();
+        var autoShapeCopy = autoShape.Duplicate();
 
         // Assert
-        shapeCopy.X.Should().Be(12);
-        shapeCopy.Width.Should().Be(shape.Width);
-        shapeCopy.TextFrame.Text.Should().Be(shapeCopy.TextFrame.Text);
+        shapes.AutoShapes.Should().HaveCount(2);
+        autoShapeCopy.Id.Should().Be(2, "because it is the second shape in the collection");
     }
 #endif
 }

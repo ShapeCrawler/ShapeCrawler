@@ -102,14 +102,14 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
 
     protected override int GetXCoordinate()
     {
-        var aXfrm = ((P.GroupShape)this.PShapeTreesChild).GroupShapeProperties!.TransformGroup!;
+        var aXfrm = ((P.GroupShape)this.PShapeTreeChild).GroupShapeProperties!.TransformGroup!;
 
         return UnitConverter.HorizontalEmuToPixel(aXfrm.Offset!.X!);
     }
 
     protected override void SetXCoordinate(int xPx)
     {
-        var pGrpSpPr = this.PShapeTreesChild.GetFirstChild<P.GroupShapeProperties>() !;
+        var pGrpSpPr = this.PShapeTreeChild.GetFirstChild<P.GroupShapeProperties>() !;
         var aXfrm = pGrpSpPr.TransformGroup!;
         aXfrm.Offset!.X = UnitConverter.HorizontalPixelToEmu(xPx);
         aXfrm.ChildOffset!.X = UnitConverter.HorizontalPixelToEmu(xPx);
@@ -117,21 +117,21 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
     
     protected override void SetYCoordinate(int yPx)
     {
-        var pGrpSpPr = this.PShapeTreesChild.GetFirstChild<P.GroupShapeProperties>() !;
+        var pGrpSpPr = this.PShapeTreeChild.GetFirstChild<P.GroupShapeProperties>() !;
         var aXfrm = pGrpSpPr.TransformGroup!;
         aXfrm.Offset!.Y = UnitConverter.VerticalPixelToEmu(yPx);
     }
     
     protected override void SetWidth(int wPx)
     {
-        var pGrpSpPr = this.PShapeTreesChild.GetFirstChild<P.GroupShapeProperties>() !;
+        var pGrpSpPr = this.PShapeTreeChild.GetFirstChild<P.GroupShapeProperties>() !;
         var aXfrm = pGrpSpPr.TransformGroup!;
         aXfrm.Extents!.Cx = UnitConverter.HorizontalPixelToEmu(wPx);
     }
     
     protected override void SetHeight(int hPx)
     {
-        var pGrpSpPr = this.PShapeTreesChild.GetFirstChild<P.GroupShapeProperties>() !;
+        var pGrpSpPr = this.PShapeTreeChild.GetFirstChild<P.GroupShapeProperties>() !;
         var aXfrm = pGrpSpPr.TransformGroup!;
         aXfrm.Extents!.Cy = UnitConverter.VerticalPixelToEmu(hPx);
     }
