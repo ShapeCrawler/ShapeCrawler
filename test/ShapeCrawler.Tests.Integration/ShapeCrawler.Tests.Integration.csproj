@@ -8,10 +8,16 @@
 
         <Platforms>AnyCPU</Platforms>
 
-        <TargetFrameworks>net48;net7.0</TargetFrameworks>
-
         <OutputType>Library</OutputType>
         <LangVersion>11</LangVersion>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+      <TargetFramework>net7.0</TargetFramework>
+    </PropertyGroup>
+  
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+      <TargetFrameworks>net7.0;netstandard2.0</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
