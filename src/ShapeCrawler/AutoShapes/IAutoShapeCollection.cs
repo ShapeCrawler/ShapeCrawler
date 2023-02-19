@@ -54,7 +54,7 @@ internal class AutoShapeCollection : IAutoShapeCollection
     {
         var newPShape = this.CreatePShape(x, y, width, height, A.ShapeTypeValues.Rectangle);
 
-        var newRectangle = new SCRectangle(newPShape, this.parentShapeCollection.ParentSlideObject, this.parentShapeCollection);
+        var newRectangle = new SCRectangle(newPShape, this.parentShapeCollection.ParentSlideStructure, this.parentShapeCollection);
         newRectangle.Outline.Color = "000000";
         
         this.autoShapes.Add(newRectangle);
@@ -70,7 +70,7 @@ internal class AutoShapeCollection : IAutoShapeCollection
     {
         var newPShape = this.CreatePShape(x, y, width, height, A.ShapeTypeValues.RoundRectangle);
 
-        var roundedRectangle = new SCRoundedRectangle(newPShape, this.parentShapeCollection.ParentSlideObject, this.parentShapeCollection);
+        var roundedRectangle = new SCRoundedRectangle(newPShape, this.parentShapeCollection.ParentSlideStructure, this.parentShapeCollection);
 
         roundedRectangle.Outline.Color = "000000";
 

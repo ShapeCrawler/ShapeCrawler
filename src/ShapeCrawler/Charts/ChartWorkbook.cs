@@ -108,7 +108,8 @@ internal sealed class ChartWorkbook // TODO: implement IDispose to correctly dis
     {
         this.embeddedPackagePartStream = this.embeddedPackagePart.GetStream();
         var spreadsheetDocument = DocumentFormat.OpenXml.Packaging.SpreadsheetDocument.Open(this.embeddedPackagePartStream, true);
-        this.chart.SlideBase.PresentationInternal.ChartWorkbooks.Add(this);
+        var slideStructureCore = (SlideStructure)this.chart.SlideStructure;
+        slideStructureCore.PresentationInternal.ChartWorkbooks.Add(this);
 
         return spreadsheetDocument;
     }

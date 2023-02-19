@@ -64,7 +64,7 @@ public class ShapeFillTests : SCTest
 
         // Assert
         shapeFill.Color.Should().Be("32a852");
-        var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+        var errors = PptxValidator.Validate(shape.SlideStructure.Presentation);
         errors.Should().BeEmpty();
     }
 
@@ -81,7 +81,7 @@ public class ShapeFillTests : SCTest
 
         // Assert
         shapeFill.Color.Should().Be("32a852");
-        var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+        var errors = PptxValidator.Validate(shape.SlideStructure.Presentation);
         errors.Should().BeEmpty();
     }
     
@@ -100,7 +100,7 @@ public class ShapeFillTests : SCTest
         
         // Assert
         shapeFill.Color.Should().Be("32a852");
-        var errors = PptxValidator.Validate(shape.SlideObject.Presentation);
+        var errors = PptxValidator.Validate(shape.SlideStructure.Presentation);
         errors.Should().BeEmpty();
     }
 

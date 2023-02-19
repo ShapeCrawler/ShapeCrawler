@@ -28,7 +28,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
     {
         this.Presentation = pres;
         this.SDKSlidePart = slidePart;
-        this.shapes = new ResettableLazy<ShapeCollection>(() => ShapeCollection.Create(this.SDKSlidePart, this));
+        this.shapes = new ResettableLazy<ShapeCollection>(() => new ShapeCollection(this.SDKSlidePart, this));
         this.backgroundImage = new Lazy<SCImage?>(() => SCImage.ForBackground(this));
         this.customXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideId = slideId;

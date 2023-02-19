@@ -2,7 +2,7 @@
 
 namespace ShapeCrawler;
 
-internal abstract class SlideStructure : ISlideStructure // TODO: do we need both SlideObject and ISlideObject?
+internal abstract class SlideStructure : ISlideStructure
 {
     protected SlideStructure(IPresentation pres)
     {

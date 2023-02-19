@@ -158,7 +158,7 @@ internal sealed class ColorFormat : IColorFormat
     {
         if (this.textFrameContainer is SCShape parentShape)
         {
-            var parentPShape = (P.Shape)parentShape.PShapeTreesChild;
+            var parentPShape = (P.Shape)parentShape.PShapeTreeChild;
             if (parentPShape.ShapeStyle == null)
             {
                 return false;

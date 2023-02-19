@@ -61,9 +61,9 @@ public interface IShape
     ///     Gets shape type.
     /// </summary>
     SCShapeType ShapeType { get; }
-
+    
     /// <summary>
-    ///     Gets slide object.
+    ///     Gets parent Slide, SlideLayout or SlideMaster.
     /// </summary>
-    ISlideStructure SlideObject { get; }
+    ISlideStructure SlideStructure { get; }
 }
