@@ -20,18 +20,20 @@ internal abstract class SCShape : IShape
 {
     protected SCShape(
         OpenXmlCompositeElement pShapeTreeChild,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideStructure,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideStructureOf,
+        OneOf<ShapeCollection, SCGroupShape> parentShapeCollectionStructureOf)
     {
         this.PShapeTreeChild = pShapeTreeChild;
-        this.SlideStructure = parentSlideStructure.Match(slide => slide as SlideStructure, layout => layout, master => master);
-        this.GroupShape = parentShapeCollection.IsT1 ? parentShapeCollection.AsT1 : null;
+        this.ParentSlideStructureOf = parentSlideStructureOf;
+        this.ParentShapeCollectionStructureOf = parentShapeCollectionStructureOf;
+        this.SlideStructure = parentSlideStructureOf.Match(slide => slide as SlideStructure, layout => layout, master => master);
+        this.GroupShape = parentShapeCollectionStructureOf.IsT1 ? parentShapeCollectionStructureOf.AsT1 : null;
     }
 
     internal event EventHandler<int>? XChanged;
 
     internal event EventHandler<int>? YChanged;
-    
+
     public int Id => (int)this.PShapeTreeChild.GetNonVisualDrawingProperties().Id!.Value;
 
     public string Name => this.PShapeTreeChild.GetNonVisualDrawingProperties().Name!;
@@ -77,6 +79,10 @@ internal abstract class SCShape : IShape
         set => this.SetWidth(value);
     }
 
+    internal OneOf<ShapeCollection, SCGroupShape> ParentShapeCollectionStructureOf { get; set; }
+
+    internal OneOf<SCSlide, SCSlideLayout, SCSlideMaster> ParentSlideStructureOf { get; set; }
+    
     internal SCSlideMaster SlideMasterInternal
     {
         get

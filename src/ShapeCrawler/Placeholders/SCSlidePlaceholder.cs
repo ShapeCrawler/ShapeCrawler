@@ -8,12 +8,12 @@ namespace ShapeCrawler.Placeholders;
 
 internal sealed class SCSlidePlaceholder : SCPlaceholder
 {
-    private readonly SCShape _slideSCShape;
+    private readonly SCShape slideShape;
 
     private SCSlidePlaceholder(P.PlaceholderShape pPlaceholderShape, SCShape slideSCShape)
         : base(pPlaceholderShape)
     {
-        this._slideSCShape = slideSCShape;
+        this.slideShape = slideSCShape;
     }
 
     internal override ResettableLazy<SCShape?> ReferencedShape => new (this.GetReferencedShape);
@@ -31,18 +31,18 @@ internal sealed class SCSlidePlaceholder : SCPlaceholder
 
     private SCShape? GetReferencedShape()
     {
-        if (this._slideSCShape.SlideStructure is SCSlideLayout slideLayout)
+        if (this.slideShape.SlideStructure is SCSlideLayout slideLayout)
         {
             var masterShapes = slideLayout.SlideMasterInternal.ShapesInternal;
             return masterShapes.GetReferencedShapeOrNull(this.PPlaceholderShape);
         }
 
-        if (this._slideSCShape.SlideStructure is SCSlideMaster)
+        if (this.slideShape.SlideStructure is SCSlideMaster)
         {
             return null;
         }
 
-        var slide = (SCSlide)this._slideSCShape.SlideStructure;
+        var slide = (SCSlide)this.slideShape.SlideStructure;
         var layout = (SCSlideLayout)slide.SlideLayout;
         var layoutShapes = layout.ShapesInternal;
         var referencedShape = layoutShapes.GetReferencedShapeOrNull(this.PPlaceholderShape);

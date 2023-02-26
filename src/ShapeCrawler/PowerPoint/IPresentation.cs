@@ -80,6 +80,8 @@ public interface IPresentation : IDisposable
     void Close();
 }
 
+
+/// <inheritdoc cref="IPresentation"/>
 public sealed class SCPresentation : IPresentation
 {
     private readonly MemoryStream internalStream;
@@ -502,7 +504,7 @@ public sealed class SCPresentation : IPresentation
         theme1.Append(themeElements1);
         theme1.Append(new A.ObjectDefaults());
         theme1.Append(new A.ExtraColorSchemeList());
-
+        
         themePart1.Theme = theme1;
         return themePart1;
     }

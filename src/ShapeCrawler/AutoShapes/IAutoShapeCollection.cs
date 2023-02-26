@@ -54,25 +54,28 @@ internal class AutoShapeCollection : IAutoShapeCollection
     {
         var newPShape = this.CreatePShape(x, y, width, height, A.ShapeTypeValues.Rectangle);
 
-        var newRectangle = new SCRectangle(newPShape, this.parentShapeCollection.ParentSlideStructure, this.parentShapeCollection);
-        newRectangle.Outline.Color = "000000";
+        var newAutoShape = new SCRectangle(newPShape, this.parentShapeCollection.ParentSlideStructure, this.parentShapeCollection);
+        newAutoShape.Outline.Color = "000000";
         
-        this.autoShapes.Add(newRectangle);
+        this.autoShapes.Add(newAutoShape);
         
         this.AutoShapeAdded?.Invoke(this, newPShape);
 
-        return newRectangle;
+        return newAutoShape;
     }
 
     public IRoundedRectangle AddRoundedRectangle(int x, int y, int width, int height)
     {
         var newPShape = this.CreatePShape(x, y, width, height, A.ShapeTypeValues.RoundRectangle);
 
-        var roundedRectangle = new SCRoundedRectangle(newPShape, this.parentShapeCollection.ParentSlideStructure, this.parentShapeCollection);
+        var newAutoShape = new SCRoundedRectangle(newPShape, this.parentShapeCollection.ParentSlideStructure, this.parentShapeCollection);
+        newAutoShape.Outline.Color = "000000";
 
-        roundedRectangle.Outline.Color = "000000";
+        this.autoShapes.Add(newAutoShape);
+        
+        this.AutoShapeAdded?.Invoke(this, newPShape);
 
-        return roundedRectangle;
+        return newAutoShape;
     }
 
     public IEnumerator<IAutoShape> GetEnumerator()

@@ -30,6 +30,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Platforms>AnyCPU</Platforms>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageIcon>package-icon.jpg</PackageIcon>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -98,6 +99,10 @@ This library provides a simplified object model on top of the Open XML SDK for m
 
   <ItemGroup>
     <Folder Include="Resources\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Analyzer Include="ShapeCrawler.Analyzer.dll" />
   </ItemGroup>
 
 </Project>

@@ -71,4 +71,4 @@ How you can contribute?
 
 ## Statistics Collection
 
-Since 15 February, the library collects usage data to help us to improve your experience. It is collected by the maintainer and not shared with the community. You can opt out of telemetry. Rest assured that we do not collect any sensitive or presentation content data. The collection will include, for example, information on the operating system, target framework, and frequently used shape types being utilized. If you prefer not to participate in this data collection, you can easily opt-out by setting the global setting `SCSettings.CanCollectLogs = false`.
+Since 15 February, the library collects usage data to help us to improve your experience. It is collected by the maintainer and not shared with the community. Rest assured that we do not collect any sensitive or presentation content data. The collection will include, for example, information on the operating system, target framework, and frequently used shape types being utilized. If you prefer not to participate in this data collection, you can easily opt-out by setting the global setting `SCSettings.CanCollectLogs = false`.

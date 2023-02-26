@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Text.Json;
 using FluentAssertions;
-using ShapeCrawler.Logger;
 using ShapeCrawler.Tests.Shared;
 using Xunit;
 

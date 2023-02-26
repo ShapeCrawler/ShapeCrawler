@@ -6,7 +6,7 @@ namespace ShapeCrawler.Tests.Unit;
 
 public class AutoShapeTests
 {
-    [Fact(Skip = "In Progress")]
+    [Fact]
     public void Duplicate_duplicates_AutoShape()
     {
         // Arrange
