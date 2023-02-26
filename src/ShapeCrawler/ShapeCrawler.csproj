@@ -33,7 +33,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="package-icon.jpg" Pack="true" PackagePath=""/>
+    <None Include="package-icon.jpg" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

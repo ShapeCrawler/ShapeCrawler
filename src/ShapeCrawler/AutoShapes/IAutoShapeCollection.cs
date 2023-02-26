@@ -59,8 +59,6 @@ internal class AutoShapeCollection : IAutoShapeCollection
         
         this.autoShapes.Add(newRectangle);
         
-        this.pShapeTree.Append(newPShape);
-        
         this.AutoShapeAdded?.Invoke(this, newPShape);
 
         return newRectangle;

@@ -513,12 +513,13 @@ internal sealed class ShapeCollection : IShapeCollection
         var autoShapes = new AutoShapeCollection(this.shapes.Value, this.pShapeTree, this);
         autoShapes.AutoShapeAdded += this.OnAutoShapeAdded;
         
-        return new AutoShapeCollection(this.shapes.Value, this.pShapeTree, this);
+        return autoShapes;
     }
 
-    private void OnAutoShapeAdded(object sender, Shape e)
+    private void OnAutoShapeAdded(object sender, P.Shape pShape)
     {
-        throw new NotImplementedException();
+        this.pShapeTree.Append(pShape);
+        this.shapes.Reset();
     }
 
     private string GenerateNextTableName()
