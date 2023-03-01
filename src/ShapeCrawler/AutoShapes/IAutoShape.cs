@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using OneOf;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Drawing.ShapeFill;
 using ShapeCrawler.Factories;
@@ -39,13 +40,11 @@ public interface IAutoShape : IShape
     /// </summary>
     ITextFrame? TextFrame { get; }
 
-#if DEBUG
     /// <summary>
     ///     Duplicate the shape.
     /// </summary>
     /// <returns></returns>
     IAutoShape Duplicate();
-#endif
 }
 
 internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
@@ -71,7 +70,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
         this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
     }
     
-    internal event EventHandler? Duplicating;
+    internal event EventHandler<NewAutoShape>? Duplicated;
 
     #region Public Properties
 
@@ -93,6 +92,9 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
             this.ParentSlideStructureOf,
             this.ParentShapeCollectionStructureOf);
 
+        var duplicatedShape = new NewAutoShape(newAutoShape, typedCompositeElement);
+        this.Duplicated?.Invoke(this, duplicatedShape);
+        
         return newAutoShape;
     }
 

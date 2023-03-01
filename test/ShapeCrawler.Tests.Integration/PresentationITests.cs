@@ -37,7 +37,7 @@ public class PresentationITests
         // Assert
         File.Exists(logPath).Should().BeTrue();
         var json = File.OpenRead(logPath);
-        var log = JsonSerializer.Deserialize<dynamic>(json)!;
+        var log = JsonSerializer.Deserialize<SCLog>(json)!;
         var sendDate = (DateTime)log.SendDate;
         sendDate.Day.Should().Be(DateTime.UtcNow.Day);
         

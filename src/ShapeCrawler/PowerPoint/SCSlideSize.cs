@@ -1,4 +1,4 @@
-﻿namespace ShapeCrawler.Services;
+﻿namespace ShapeCrawler;
 
 internal sealed class SCSlideSize
 {

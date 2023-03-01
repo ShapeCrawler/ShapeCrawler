@@ -31,19 +31,19 @@ public interface IAutoShapeCollection : IReadOnlyList<IAutoShape>
 
 internal class AutoShapeCollection : IAutoShapeCollection
 {
-    internal EventHandler<P.Shape>? AutoShapeAdded;
+    internal EventHandler<NewAutoShape>? AutoShapeAdded;
     
-    private readonly P.ShapeTree pShapeTree;
-    private readonly List<IAutoShape> autoShapes;
+    private readonly List<SCAutoShape> autoShapes;
     private readonly IEnumerable<IShape> allShapes;
     private readonly ShapeCollection parentShapeCollection;
-
-    internal AutoShapeCollection(IEnumerable<IShape> allShapes, P.ShapeTree pShapeTree, ShapeCollection parentShapeCollection)
+    
+    internal AutoShapeCollection(IEnumerable<IShape> allShapes, ShapeCollection parentShapeCollection, List<SCAutoShape> autoShapes)
     {
         this.allShapes = allShapes;
-        this.pShapeTree = pShapeTree;
         this.parentShapeCollection = parentShapeCollection;
-        this.autoShapes = allShapes.Where(shape => shape is SCAutoShape).OfType<IAutoShape>().ToList();
+        this.autoShapes = autoShapes;
+        
+        autoShapes.ForEach(shape => shape.Duplicated += this.OnDuplicatedAutoShape);
     }
 
     public int Count => this.autoShapes.Count;
@@ -52,30 +52,32 @@ internal class AutoShapeCollection : IAutoShapeCollection
     
     public IRectangle AddRectangle(int x, int y, int width, int height)
     {
-        var newPShape = this.CreatePShape(x, y, width, height, A.ShapeTypeValues.Rectangle);
+        var newPShapeTreeChild = this.CreatePShape(x, y, width, height, A.ShapeTypeValues.Rectangle);
 
-        var newAutoShape = new SCRectangle(newPShape, this.parentShapeCollection.ParentSlideStructure, this.parentShapeCollection);
-        newAutoShape.Outline.Color = "000000";
+        var newRectangle = new SCRectangle(newPShapeTreeChild, this.parentShapeCollection.ParentSlideStructure, this.parentShapeCollection);
+        newRectangle.Outline.Color = "000000";
         
-        this.autoShapes.Add(newAutoShape);
-        
-        this.AutoShapeAdded?.Invoke(this, newPShape);
+        this.autoShapes.Add(newRectangle);
 
-        return newAutoShape;
+        var newAutoShape = new NewAutoShape(newRectangle, newPShapeTreeChild);
+        this.AutoShapeAdded?.Invoke(this, newAutoShape);
+
+        return newRectangle;
     }
 
     public IRoundedRectangle AddRoundedRectangle(int x, int y, int width, int height)
     {
         var newPShape = this.CreatePShape(x, y, width, height, A.ShapeTypeValues.RoundRectangle);
 
-        var newAutoShape = new SCRoundedRectangle(newPShape, this.parentShapeCollection.ParentSlideStructure, this.parentShapeCollection);
-        newAutoShape.Outline.Color = "000000";
+        var newRoundedRectangle = new SCRoundedRectangle(newPShape, this.parentShapeCollection.ParentSlideStructure, this.parentShapeCollection);
+        newRoundedRectangle.Outline.Color = "000000";
 
-        this.autoShapes.Add(newAutoShape);
+        this.autoShapes.Add(newRoundedRectangle);
         
-        this.AutoShapeAdded?.Invoke(this, newPShape);
+        var newAutoShape = new NewAutoShape(newRoundedRectangle, newPShape);
+        this.AutoShapeAdded?.Invoke(this, newAutoShape);
 
-        return newAutoShape;
+        return newRoundedRectangle;
     }
 
     public IEnumerator<IAutoShape> GetEnumerator()
@@ -86,6 +88,18 @@ internal class AutoShapeCollection : IAutoShapeCollection
     IEnumerator IEnumerable.GetEnumerator()
     {
         return this.GetEnumerator();
+    }
+    
+    internal static AutoShapeCollection Create(IEnumerable<IShape> allShapes, ShapeCollection shapeCollection)
+    {
+        var autoShapes = allShapes.Where(shape => shape is SCAutoShape).OfType<SCAutoShape>().ToList();
+        return new AutoShapeCollection(allShapes, shapeCollection, autoShapes);
+    }
+
+    private void OnDuplicatedAutoShape(object? sender, NewAutoShape newAutoShape)
+    {
+        this.autoShapes.Add(newAutoShape.newAutoShape);
+        newAutoShape.newAutoShape.Duplicated += this.OnDuplicatedAutoShape;
     }
     
     private P.Shape CreatePShape(int x, int y, int width, int height, A.ShapeTypeValues form)

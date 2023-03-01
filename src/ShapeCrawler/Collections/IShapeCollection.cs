@@ -9,6 +9,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using OneOf;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Constants;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
@@ -87,10 +88,10 @@ internal sealed class ShapeCollection : IShapeCollection
     private readonly ResettableLazy<List<IShape>> shapes;
 
     internal ShapeCollection(
-        OneOf<SlidePart, SlideLayoutPart, SlideMasterPart> parentSlidePart,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideStructure)
+        OneOf<SlidePart, SlideLayoutPart, SlideMasterPart> parentSlidePartOf,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideStructureOf)
     {
-        this.ParentSlideStructure = parentSlideStructure;
+        this.ParentSlideStructure = parentSlideStructureOf;
         
         var chartGrFrameHandler = new ChartGraphicFrameHandler();
         var tableGrFrameHandler = new TableGraphicFrameHandler();
@@ -103,7 +104,7 @@ internal sealed class ShapeCollection : IShapeCollection
         pictureHandler.Successor = chartGrFrameHandler;
         chartGrFrameHandler.Successor = tableGrFrameHandler;
 
-        this.pShapeTree = parentSlidePart.Match(
+        this.pShapeTree = parentSlidePartOf.Match(
             slidePart => slidePart.Slide.CommonSlideData!.ShapeTree!,
             layoutPart => layoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
             masterPart => masterPart.SlideMaster.CommonSlideData!.ShapeTree!);
@@ -510,15 +511,15 @@ internal sealed class ShapeCollection : IShapeCollection
 
     private IAutoShapeCollection GetAutoShapes()
     {
-        var autoShapes = new AutoShapeCollection(this.shapes.Value, this.pShapeTree, this);
+        var autoShapes = AutoShapeCollection.Create(this.shapes.Value, this);
         autoShapes.AutoShapeAdded += this.OnAutoShapeAdded;
         
         return autoShapes;
     }
 
-    private void OnAutoShapeAdded(object sender, P.Shape pShape)
+    private void OnAutoShapeAdded(object sender, NewAutoShape newAutoShape)
     {
-        this.pShapeTree.Append(pShape);
+        this.pShapeTree.Append(newAutoShape.pShapeTreeChild);
         this.shapes.Reset();
     }
 
@@ -565,6 +566,11 @@ internal sealed class ShapeCollection : IShapeCollection
                 if (shape != null)
                 {
                     shapesValue.Add(shape);
+                }
+
+                if (shape is SCAutoShape autoShape)
+                {
+                    autoShape.Duplicated += this.OnAutoShapeAdded;
                 }
             }
         }
