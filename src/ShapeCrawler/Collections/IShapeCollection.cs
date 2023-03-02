@@ -31,11 +31,6 @@ namespace ShapeCrawler;
 public interface IShapeCollection : IReadOnlyList<IShape>
 {
     /// <summary>
-    ///     Gets collection of AutoShapes.
-    /// </summary>
-    IAutoShapeCollection AutoShapes { get; }
-
-    /// <summary>
     ///     Gets shape by identifier. Returns <see langword="null"/> if shape is not found.
     /// </summary>
     /// <typeparam name="T">The type of shape.</typeparam>
@@ -69,6 +64,16 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     /// <param name="y">Y coordinate in pixels.</param>
     /// <param name="stream">Video stream data.</param>
     IVideoShape AddVideo(int x, int y, Stream stream);
+    
+    /// <summary>
+    ///     Adds a new Rectangle shape.
+    /// </summary>
+    IRectangle AddRectangle(int x, int y, int w, int h);
+    
+    /// <summary>
+    ///     Adds a new Rounded Rectangle shape. 
+    /// </summary>
+    IRoundedRectangle AddRoundedRectangle(int x, int y, int w, int h);
 
     /// <summary>
     ///     Creates a new Table.
@@ -113,8 +118,6 @@ internal sealed class ShapeCollection : IShapeCollection
     }
 
     public int Count => this.shapes.Value.Count;
-
-    public IAutoShapeCollection AutoShapes => this.GetAutoShapes();
 
     internal OneOf<SCSlide, SCSlideLayout, SCSlideMaster> ParentSlideStructure { get; }
 
@@ -347,6 +350,83 @@ internal sealed class ShapeCollection : IShapeCollection
         return new SCVideoShape(this.pShapeTree, this.ParentSlideStructure, this);
     }
 
+    public IRectangle AddRectangle(int x, int y, int width, int height)
+    {
+        var newPShapeTreeChild = this.CreatePShape(x, y, width, height, A.ShapeTypeValues.Rectangle);
+
+        var newRectangle = new SCRectangle(newPShapeTreeChild, this.ParentSlideStructure, this);
+        newRectangle.Outline.Color = "000000";
+        
+        this.shapes.Value.Add(newRectangle);
+
+        return newRectangle;
+    }
+    
+    private P.Shape CreatePShape(int x, int y, int width, int height, A.ShapeTypeValues form)
+    {
+        var idAndName = this.GenerateIdAndName();
+        var adjustValueList = new A.AdjustValueList();
+        var presetGeometry = new A.PresetGeometry(adjustValueList) { Preset = form };
+        var shapeProperties = new P.ShapeProperties();
+        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
+        var yEmu = UnitConverter.VerticalPixelToEmu(y);
+        var widthEmu = UnitConverter.HorizontalPixelToEmu(width);
+        var heightEmu = UnitConverter.VerticalPixelToEmu(height);
+        shapeProperties.AddAXfrm(xEmu, yEmu, widthEmu, heightEmu);
+        shapeProperties.Append(presetGeometry);
+
+        var aRunProperties = new A.RunProperties { Language = "en-US" };
+        var aText = new A.Text(string.Empty);
+        var aRun = new A.Run(aRunProperties, aText);
+        var aEndParaRPr = new A.EndParagraphRunProperties { Language = "en-US" };
+        var aParagraph = new A.Paragraph(aRun, aEndParaRPr);
+
+        var pShape = new P.Shape(
+            new P.NonVisualShapeProperties(
+                new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
+                new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
+                new P.ApplicationNonVisualDrawingProperties()),
+            shapeProperties,
+            new P.TextBody(
+                new A.BodyProperties(),
+                new A.ListStyle(),
+                aParagraph));
+
+        return pShape;
+    }
+    
+        
+    private (int, string) GenerateIdAndName()
+    {
+        var maxId = 0;
+        if(this.shapes.Value.Any())
+        {
+            maxId = this.shapes.Value.Max(s => s.Id);    
+        }
+        
+        var maxOrder = Regex.Matches(string.Join(string.Empty, this.shapes.Value.Select(s => s.Name)), "\\d+")
+#if NETSTANDARD2_0
+            .Cast<Match>()
+#endif
+            .Select(m => int.Parse(m.Value))
+            .DefaultIfEmpty(0)
+            .Max();
+        
+        return (maxId + 1, $"AutoShape {maxOrder + 1}");
+    }
+
+    public IRoundedRectangle AddRoundedRectangle(int x, int y, int w, int h)
+    {
+        var newPShape = this.CreatePShape(x, y, w, h, A.ShapeTypeValues.RoundRectangle);
+
+        var newRoundedRectangle = new SCRoundedRectangle(newPShape, this.ParentSlideStructure, this);
+        newRoundedRectangle.Outline.Color = "000000";
+
+        this.shapes.Value.Add(newRoundedRectangle);
+
+        return newRoundedRectangle;
+    }
+
     public ITable AddTable(int xPx, int yPx, int columns, int rows)
     {
         var shapeName = this.GenerateNextTableName();
@@ -509,17 +589,11 @@ internal sealed class ShapeCollection : IShapeCollection
         return maxId + 1;
     }
 
-    private IAutoShapeCollection GetAutoShapes()
-    {
-        var autoShapes = AutoShapeCollection.Create(this.shapes.Value, this);
-        autoShapes.AutoShapeAdded += this.OnAutoShapeAdded;
-        
-        return autoShapes;
-    }
-
     private void OnAutoShapeAdded(object sender, NewAutoShape newAutoShape)
     {
         this.pShapeTree.Append(newAutoShape.pShapeTreeChild);
+        newAutoShape.autoShape.Duplicated += this.OnAutoShapeAdded;
+        
         this.shapes.Reset();
     }
 

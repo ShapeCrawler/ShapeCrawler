@@ -23,7 +23,7 @@ internal class SCChart : SCShape, IChart
     private readonly Lazy<OpenXmlElement?> firstSeries;
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly Lazy<SCSeriesCollection> series;
-    private readonly Lazy<LibraryCollection<double>?> xValues;
+    private readonly Lazy<SCLibraryCollection<double>?> xValues;
 
     // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
     // then collection contains only single item.
@@ -39,7 +39,7 @@ internal class SCChart : SCShape, IChart
     {
         this.pGraphicFrame = pGraphicFrame;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
-        this.xValues = new Lazy<LibraryCollection<double>?>(this.GetXValues);
+        this.xValues = new Lazy<SCLibraryCollection<double>?>(this.GetXValues);
         this.series = new Lazy<SCSeriesCollection>(this.GetSeries);
         this.categories = new ResettableLazy<ICategoryCollection?>(this.GetCategories);
         this.chartType = new Lazy<SCChartType>(this.GetChartType);
@@ -87,7 +87,7 @@ internal class SCChart : SCShape, IChart
 
     public bool HasXValues => this.xValues.Value != null;
 
-    public LibraryCollection<double> XValues
+    public SCLibraryCollection<double> XValues
     {
         get
         {
@@ -190,7 +190,7 @@ internal class SCChart : SCShape, IChart
         return false;
     }
 
-    private LibraryCollection<double>? GetXValues()
+    private SCLibraryCollection<double>? GetXValues()
     {
         var sdkXValues = this.firstSeries.Value?.GetFirstChild<C.XValues>();
         if (sdkXValues?.NumberReference == null)
@@ -201,7 +201,7 @@ internal class SCChart : SCShape, IChart
         IEnumerable<double> points =
             ChartReferencesParser.GetNumbersFromCacheOrWorkbook(sdkXValues.NumberReference, this);
 
-        return new LibraryCollection<double>(points);
+        return new SCLibraryCollection<double>(points);
     }
 
     private OpenXmlElement? GetFirstSeries()

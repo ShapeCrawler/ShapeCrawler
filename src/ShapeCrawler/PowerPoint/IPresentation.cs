@@ -93,8 +93,6 @@ public sealed class SCPresentation : IPresentation
     private Stream? outerStream;
     private string? outerPath;
 
-    #region Constructors
-    
     private SCPresentation(string outerPath)
     {
         this.outerPath = outerPath;
@@ -138,9 +136,6 @@ public sealed class SCPresentation : IPresentation
         this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
     }
     
-    #endregion Constructors
-
-    /// <inheritdoc/>
     public ISlideCollection Slides => this.slideCollectionLazy.Value;
 
     /// <inheritdoc/>

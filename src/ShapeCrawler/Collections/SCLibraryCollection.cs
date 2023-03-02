@@ -7,12 +7,12 @@ namespace ShapeCrawler.Collections;
 ///     Represents a base class for all library collections.
 /// </summary>
 /// <typeparam name="T">The type of elements in the collection.</typeparam>
-public class LibraryCollection<T> : IReadOnlyCollection<T> // TODO: make internal
+public class SCLibraryCollection<T> : IReadOnlyCollection<T> // TODO: make internal
 {
     /// <summary>
-    ///     Initializes a new instance of the <see cref="LibraryCollection{T}"/> class.
+    ///     Initializes a new instance of the <see cref="SCLibraryCollection{T}"/> class.
     /// </summary>
-    public LibraryCollection(IEnumerable<T> items)
+    public SCLibraryCollection(IEnumerable<T> items)
     {
         this.CollectionItems = new List<T>(items);
     }

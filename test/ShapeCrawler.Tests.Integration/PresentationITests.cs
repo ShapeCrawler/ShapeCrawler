@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 using FluentAssertions;
+using ShapeCrawler.Logger;
 using ShapeCrawler.Tests.Shared;
 using Xunit;
 
@@ -38,7 +39,7 @@ public class PresentationITests
         File.Exists(logPath).Should().BeTrue();
         var json = File.OpenRead(logPath);
         var log = JsonSerializer.Deserialize<SCLog>(json)!;
-        var sendDate = (DateTime)log.SendDate;
+        var sendDate = (DateTime)log.SentDate;
         sendDate.Day.Should().Be(DateTime.UtcNow.Day);
         
         // Clean
