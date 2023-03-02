@@ -8,6 +8,7 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
+// ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
 
 /// <summary>
@@ -29,7 +30,7 @@ public interface IGroupedShapeCollection : IEnumerable<IShape>
     T GetByName<T>(string shapeName);
 }
 
-internal sealed class GroupedShapeCollection : LibraryCollection<IShape>, IGroupedShapeCollection
+internal sealed class GroupedShapeCollection : SCLibraryCollection<IShape>, IGroupedShapeCollection
 {
     private GroupedShapeCollection(List<IShape> groupedShapes)
         : base(groupedShapes)

@@ -59,8 +59,6 @@ internal sealed class SCRow : IRow
         return addedRow;
     }
 
-    #region Private Methods
-
     private List<SCCell> GetCells()
     {
         var cellList = new List<SCCell?>();
@@ -92,6 +90,4 @@ internal sealed class SCRow : IRow
 
         return cellList!;
     }
-
-    #endregion
 }

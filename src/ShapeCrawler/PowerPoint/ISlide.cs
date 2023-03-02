@@ -35,11 +35,6 @@ public interface ISlide : ISlideStructure
     SlidePart SDKSlidePart { get; }
 
     /// <summary>
-    ///     Gets collection of shapes.
-    /// </summary>
-    IShapeCollection Shapes { get; }
-
-    /// <summary>
     /// Gets a list of all textboxes on that slide, including those in tables.
     /// </summary>
     public IList<ITextFrame> GetAllTextFrames();

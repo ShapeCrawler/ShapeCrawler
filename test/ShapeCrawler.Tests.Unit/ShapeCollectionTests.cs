@@ -182,7 +182,7 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides[0].Shapes;
             
         // Act
-        var autoShape = shapes.AutoShapes.AddRectangle( 50, 60, 100, 70);
+        var autoShape = shapes.AddRectangle( 50, 60, 100, 70);
 
         // Assert
         autoShape.Name.Should().Be("AutoShape 4");
@@ -199,7 +199,7 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides[0].Shapes;
             
         // Act
-        var rectangle = shapes.AutoShapes.AddRectangle(50, 60, 100, 70);
+        var rectangle = shapes.AddRectangle(50, 60, 100, 70);
 
         // Assert
         rectangle.GeometryType.Should().Be(SCGeometry.Rectangle);
@@ -222,7 +222,7 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides[0].Shapes;
             
         // Act
-        var roundedRectangle = shapes.AutoShapes.AddRoundedRectangle(50, 60, 100, 70);
+        var roundedRectangle = shapes.AddRoundedRectangle(50, 60, 100, 70);
 
         // Assert
         roundedRectangle.GeometryType.Should().Be(SCGeometry.RoundRectangle);

@@ -43,6 +43,7 @@ dotnet_diagnostic.SA1202.severity = error
 dotnet_diagnostic.SA1204.severity = error
 dotnet_diagnostic.SA1300.severity = error
 dotnet_diagnostic.SA1306.severity = error
+dotnet_diagnostic.SA1309.severity = error
 dotnet_diagnostic.SA1401.severity = none
 dotnet_diagnostic.SA1503.severity = error
 dotnet_diagnostic.SA1507.severity = none
@@ -67,7 +68,3 @@ dotnet_diagnostic.CS8621.severity = error
 dotnet_diagnostic.CS8764.severity = error
 dotnet_diagnostic.CS8766.severity = suggestion
 dotnet_diagnostic.CS8767.severity = error
-
-
-
-

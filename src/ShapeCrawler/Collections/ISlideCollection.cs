@@ -160,7 +160,8 @@ internal sealed class SCSlideCollection : ISlideCollection
 
         this.slides.Reset();
         this.presentation.SlideMastersValue.Reset();
-        this.OnCollectionChanged();
+        
+        this.CollectionChanged?.Invoke(this, EventArgs.Empty);
     }
     
     internal SCSlide GetBySlideId(string slideId)
@@ -173,14 +174,16 @@ internal sealed class SCSlideCollection : ISlideCollection
         SlidePart sourceSlidePart,
         out SlideMasterPart addedSlideMasterPart)
     {
-        var addedSlidePart = destPresPart.AddPart(sourceSlidePart);
+        var rId = destPresPart.GetNextRelationshipId();
+        var addedSlidePart = destPresPart.AddPart(sourceSlidePart, rId);
         var sdkNoticePart = addedSlidePart.GetPartsOfType<NotesSlidePart>().FirstOrDefault();
         if (sdkNoticePart != null)
         {
             addedSlidePart.DeletePart(sdkNoticePart);
         }
 
-        addedSlideMasterPart = destPresPart.AddPart(addedSlidePart.SlideLayoutPart!.SlideMasterPart!);
+        rId = destPresPart.GetNextRelationshipId();
+        addedSlideMasterPart = destPresPart.AddPart(addedSlidePart.SlideLayoutPart!.SlideMasterPart!, rId);
         var layoutIdList = addedSlideMasterPart.SlideMaster!.SlideLayoutIdList!.OfType<P.SlideLayoutId>();
         foreach (var lId in layoutIdList.ToList())
         {

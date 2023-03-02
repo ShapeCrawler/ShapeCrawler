@@ -34,7 +34,7 @@ public static class PptxValidator
     public static List<ValidationErrorInfo> Validate(IPresentation pres)
     {
         var validator = new OpenXmlValidator(FileFormatVersions.Microsoft365);
-        var errors = validator.Validate(pres.SDKPresentation);
+        var errors = validator.Validate(pres.SDKPresentationDocument);
 
         var removing = new List<ValidationErrorInfo>();
         foreach (var error in errors)

@@ -26,7 +26,7 @@ public interface ICategoryCollection : IEnumerable<ICategory>
     ICategory this[int index] { get; }
 }
 
-internal sealed class CategoryCollection : LibraryCollection<ICategory>, ICategoryCollection
+internal sealed class CategoryCollection : SCLibraryCollection<ICategory>, ICategoryCollection
 {
     private CategoryCollection(List<Category> categoryList)
         : base(categoryList)

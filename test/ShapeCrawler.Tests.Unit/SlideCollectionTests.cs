@@ -6,6 +6,7 @@ using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tests.Unit;
 
@@ -28,7 +29,7 @@ public class SlideCollectionTests : SCTest
     }
 
     [Fact]
-    public void Add_adds_slide_from_External_presentation()
+    public void Add_adds_external_slide()
     {
         // Arrange
         var sourceSlide = SCPresentation.Open(TestHelper.GetStream("001.pptx")).Slides[0];
@@ -47,6 +48,25 @@ public class SlideCollectionTests : SCTest
         destPre.SaveAs(savedPre);
         destPre = SCPresentation.Open(savedPre);
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
+    }
+    
+    [Fact]
+    public void Add_generates_valid_RelationshipId()
+    {
+        // Arrange
+        var sourcePres = SCPresentation.Create();
+        var destPres = SCPresentation.Create();
+        var copyingSlide = sourcePres.Slides[0];
+        
+        // Act
+        destPres.Slides.Add(copyingSlide);
+
+        // Assert
+        var pPresentation = destPres.SDKPresentationDocument.PresentationPart!.Presentation!;
+        var pSldMaster = (P.SlideMasterId)pPresentation.SlideMasterIdList!.ChildElements[1];
+        var pSldId = (P.SlideId)pPresentation.SlideIdList!.ChildElements[1];
+        pSldMaster.RelationshipId!.Value.Should().Be("rId7");
+        pSldId.RelationshipId!.Value.Should().Be("rId6");
     }
         
     [Fact]

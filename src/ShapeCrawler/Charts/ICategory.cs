@@ -23,6 +23,7 @@ public interface ICategory
     string Name { get; set; }
 }
 
+
 internal sealed class Category : ICategory
 {
     private readonly int index;

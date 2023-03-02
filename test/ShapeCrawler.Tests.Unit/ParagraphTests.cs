@@ -220,7 +220,7 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             var pres = SCPresentation.Create();
             var slide = pres.Slides[0];
-            var shape = slide.Shapes.AutoShapes.AddRectangle(10, 10, 10, 10);
+            var shape = slide.Shapes.AddRectangle(10, 10, 10, 10);
             var paragraph = shape.TextFrame!.Paragraphs[0];
 
             // Act

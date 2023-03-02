@@ -9,6 +9,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using OneOf;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Constants;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
@@ -29,11 +30,6 @@ namespace ShapeCrawler;
 /// </summary>
 public interface IShapeCollection : IReadOnlyList<IShape>
 {
-    /// <summary>
-    ///     Gets collection of AutoShapes.
-    /// </summary>
-    IAutoShapeCollection AutoShapes { get; }
-
     /// <summary>
     ///     Gets shape by identifier. Returns <see langword="null"/> if shape is not found.
     /// </summary>
@@ -68,6 +64,16 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     /// <param name="y">Y coordinate in pixels.</param>
     /// <param name="stream">Video stream data.</param>
     IVideoShape AddVideo(int x, int y, Stream stream);
+    
+    /// <summary>
+    ///     Adds a new Rectangle shape.
+    /// </summary>
+    IRectangle AddRectangle(int x, int y, int w, int h);
+    
+    /// <summary>
+    ///     Adds a new Rounded Rectangle shape. 
+    /// </summary>
+    IRoundedRectangle AddRoundedRectangle(int x, int y, int w, int h);
 
     /// <summary>
     ///     Creates a new Table.
@@ -87,10 +93,10 @@ internal sealed class ShapeCollection : IShapeCollection
     private readonly ResettableLazy<List<IShape>> shapes;
 
     internal ShapeCollection(
-        OneOf<SlidePart, SlideLayoutPart, SlideMasterPart> parentSlidePart,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideStructure)
+        OneOf<SlidePart, SlideLayoutPart, SlideMasterPart> parentSlidePartOf,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideStructureOf)
     {
-        this.ParentSlideStructure = parentSlideStructure;
+        this.ParentSlideStructure = parentSlideStructureOf;
         
         var chartGrFrameHandler = new ChartGraphicFrameHandler();
         var tableGrFrameHandler = new TableGraphicFrameHandler();
@@ -103,7 +109,7 @@ internal sealed class ShapeCollection : IShapeCollection
         pictureHandler.Successor = chartGrFrameHandler;
         chartGrFrameHandler.Successor = tableGrFrameHandler;
 
-        this.pShapeTree = parentSlidePart.Match(
+        this.pShapeTree = parentSlidePartOf.Match(
             slidePart => slidePart.Slide.CommonSlideData!.ShapeTree!,
             layoutPart => layoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
             masterPart => masterPart.SlideMaster.CommonSlideData!.ShapeTree!);
@@ -112,8 +118,6 @@ internal sealed class ShapeCollection : IShapeCollection
     }
 
     public int Count => this.shapes.Value.Count;
-
-    public IAutoShapeCollection AutoShapes => this.GetAutoShapes();
 
     internal OneOf<SCSlide, SCSlideLayout, SCSlideMaster> ParentSlideStructure { get; }
 
@@ -346,6 +350,32 @@ internal sealed class ShapeCollection : IShapeCollection
         return new SCVideoShape(this.pShapeTree, this.ParentSlideStructure, this);
     }
 
+    public IRectangle AddRectangle(int x, int y, int width, int height)
+    {
+        var newPShapeTreeChild = this.CreatePShape(x, y, width, height, A.ShapeTypeValues.Rectangle);
+
+        var newRectangle = new SCRectangle(newPShapeTreeChild, this.ParentSlideStructure, this);
+        newRectangle.Outline.Color = "000000";
+        
+        newRectangle.Duplicated += this.OnAutoShapeAdded;
+        this.shapes.Value.Add(newRectangle);
+        this.pShapeTree.Append(newPShapeTreeChild);
+
+        return newRectangle;
+    }
+
+    public IRoundedRectangle AddRoundedRectangle(int x, int y, int w, int h)
+    {
+        var newPShape = this.CreatePShape(x, y, w, h, A.ShapeTypeValues.RoundRectangle);
+
+        var newRoundedRectangle = new SCRoundedRectangle(newPShape, this.ParentSlideStructure, this);
+        newRoundedRectangle.Outline.Color = "000000";
+
+        this.shapes.Value.Add(newRoundedRectangle);
+
+        return newRoundedRectangle;
+    }
+
     public ITable AddTable(int xPx, int yPx, int columns, int rows)
     {
         var shapeName = this.GenerateNextTableName();
@@ -501,24 +531,71 @@ internal sealed class ShapeCollection : IShapeCollection
         return this.GetEnumerator();
     }
 
+     
+    private P.Shape CreatePShape(int x, int y, int width, int height, A.ShapeTypeValues form)
+    {
+        var idAndName = this.GenerateIdAndName();
+        var adjustValueList = new A.AdjustValueList();
+        var presetGeometry = new A.PresetGeometry(adjustValueList) { Preset = form };
+        var shapeProperties = new P.ShapeProperties();
+        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
+        var yEmu = UnitConverter.VerticalPixelToEmu(y);
+        var widthEmu = UnitConverter.HorizontalPixelToEmu(width);
+        var heightEmu = UnitConverter.VerticalPixelToEmu(height);
+        shapeProperties.AddAXfrm(xEmu, yEmu, widthEmu, heightEmu);
+        shapeProperties.Append(presetGeometry);
+
+        var aRunProperties = new A.RunProperties { Language = "en-US" };
+        var aText = new A.Text(string.Empty);
+        var aRun = new A.Run(aRunProperties, aText);
+        var aEndParaRPr = new A.EndParagraphRunProperties { Language = "en-US" };
+        var aParagraph = new A.Paragraph(aRun, aEndParaRPr);
+
+        var pShape = new P.Shape(
+            new P.NonVisualShapeProperties(
+                new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
+                new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
+                new P.ApplicationNonVisualDrawingProperties()),
+            shapeProperties,
+            new P.TextBody(
+                new A.BodyProperties(),
+                new A.ListStyle(),
+                aParagraph));
+
+        return pShape;
+    }
+    
+        
+    private (int, string) GenerateIdAndName()
+    {
+        var maxId = 0;
+        if(this.shapes.Value.Any())
+        {
+            maxId = this.shapes.Value.Max(s => s.Id);    
+        }
+        
+        var maxOrder = Regex.Matches(string.Join(string.Empty, this.shapes.Value.Select(s => s.Name)), "\\d+")
+#if NETSTANDARD2_0
+            .Cast<Match>()
+#endif
+            .Select(m => int.Parse(m.Value))
+            .DefaultIfEmpty(0)
+            .Max();
+        
+        return (maxId + 1, $"AutoShape {maxOrder + 1}");
+    }
+    
     private int GenerateNextShapeId()
     {
-        var maxId = this.shapes.Value.Select(shape => shape.Id).Prepend(0).Max();
-
-        return maxId + 1;
+        return this.shapes.Value.Select(shape => shape.Id).Prepend(0).Max() + 1;
     }
 
-    private IAutoShapeCollection GetAutoShapes()
+    private void OnAutoShapeAdded(object sender, NewAutoShape newAutoShape)
     {
-        var autoShapes = new AutoShapeCollection(this.shapes.Value, this.pShapeTree, this);
-        autoShapes.AutoShapeAdded += this.OnAutoShapeAdded;
+        this.pShapeTree.Append(newAutoShape.PShapeTreeChild);
+        newAutoShape.AutoShape.Duplicated += this.OnAutoShapeAdded;
         
-        return new AutoShapeCollection(this.shapes.Value, this.pShapeTree, this);
-    }
-
-    private void OnAutoShapeAdded(object sender, Shape e)
-    {
-        throw new NotImplementedException();
+        this.shapes.Reset();
     }
 
     private string GenerateNextTableName()
@@ -564,6 +641,11 @@ internal sealed class ShapeCollection : IShapeCollection
                 if (shape != null)
                 {
                     shapesValue.Add(shape);
+                }
+
+                if (shape is SCAutoShape autoShape)
+                {
+                    autoShape.Duplicated += this.OnAutoShapeAdded;
                 }
             }
         }

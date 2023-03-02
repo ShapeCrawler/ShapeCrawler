@@ -11,4 +11,9 @@ public interface ISlideStructure : IPresentationComponent
     ///     Gets or sets slide number.
     /// </summary>
     int Number { get; set; }
+    
+    /// <summary>
+    ///     Gets collection of shapes.
+    /// </summary>
+    IShapeCollection Shapes { get; }
 }

@@ -48,7 +48,7 @@ public interface IChart : IShape
     /// <summary>
     ///     Gets collection of x-axis values.
     /// </summary>
-    LibraryCollection<double> XValues { get; } // TODO: should be excluded
+    SCLibraryCollection<double> XValues { get; } // TODO: should be excluded
 
     /// <summary>
     ///     Gets byte array of workbook containing chart data source.

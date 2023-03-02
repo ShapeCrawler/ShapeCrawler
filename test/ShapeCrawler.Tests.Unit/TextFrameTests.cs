@@ -281,7 +281,7 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             var pres = SCPresentation.Create();
             var shapes = pres.Slides[0].Shapes;
-            var autoShape = shapes.AutoShapes.AddRectangle( 50, 60, 100, 70);
+            var autoShape = shapes.AddRectangle( 50, 60, 100, 70);
             var textFrame = autoShape.TextFrame!;
             
             // Act

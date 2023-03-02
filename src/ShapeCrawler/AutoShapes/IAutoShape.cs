@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml;
 using OneOf;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Drawing.ShapeFill;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
@@ -27,7 +30,7 @@ public interface IAutoShape : IShape
     ///     Gets shape fill.
     /// </summary>
     IShapeFill Fill { get; }
-    
+
     /// <summary>
     ///     Gets shape outline.
     /// </summary>
@@ -38,13 +41,11 @@ public interface IAutoShape : IShape
     /// </summary>
     ITextFrame? TextFrame { get; }
 
-#if DEBUG
     /// <summary>
     ///     Duplicate the shape.
     /// </summary>
     /// <returns></returns>
     IAutoShape Duplicate();
-#endif
 }
 
 internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
@@ -56,19 +57,21 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
     private readonly Lazy<SCShapeFill> shapeFill;
     private readonly Lazy<TextFrame?> textFrame;
     private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
-    private readonly P.Shape pShape;
+    private readonly TypedOpenXmlCompositeElement pShape;
 
     internal SCAutoShape(
-        P.Shape pShape,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
+        TypedOpenXmlCompositeElement pShape,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideStructureOf,
         OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
-        : base(pShape, parentSlideObject, parentShapeCollection)
+        : base(pShape, parentSlideStructureOf, parentShapeCollection)
     {
         this.pShape = pShape;
         this.textFrame = new Lazy<TextFrame?>(this.GetTextFrame);
         this.shapeFill = new Lazy<SCShapeFill>(this.GetFill);
         this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
     }
+    
+    internal event EventHandler<NewAutoShape>? Duplicated;
 
     #region Public Properties
 
@@ -79,14 +82,23 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
     public SCShape SCShape => this; // TODO: should be internal?
 
     public override SCShapeType ShapeType => SCShapeType.AutoShape;
-    
-    public ITextFrame? TextFrame => this.textFrame.Value;
-    
-    public IAutoShape Duplicate()
-    {
-        var copy = this.PShapeTreeChild.Clone();
 
-        throw new NotImplementedException();
+    public ITextFrame? TextFrame => this.textFrame.Value;
+
+    public virtual IAutoShape Duplicate()
+    {
+        var typedCompositeElement = (TypedOpenXmlCompositeElement)this.PShapeTreeChild.CloneNode(true);
+        var id = ((SlideStructure)this.ParentSlideStructureOf.Value).GetNextShapeId();
+        typedCompositeElement.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
+        var newAutoShape = new SCAutoShape(
+            typedCompositeElement, 
+            this.ParentSlideStructureOf,
+            this.ParentShapeCollectionStructureOf);
+
+        var duplicatedShape = new NewAutoShape(newAutoShape, typedCompositeElement);
+        this.Duplicated?.Invoke(this, duplicatedShape);
+        
+        return newAutoShape;
     }
 
     #endregion Public Properties
@@ -94,7 +106,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
     internal override void Draw(SKCanvas slideCanvas)
     {
         var skColorOutline = SKColor.Parse(this.Outline.Color);
-        
+
         using var paint = new SKPaint
         {
             Color = skColorOutline,
@@ -102,7 +114,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
             StrokeWidth = UnitConverter.PointToPixel(this.Outline.Weight),
             Style = SKPaintStyle.Stroke
         };
-        
+
         if (this.GeometryType == SCGeometry.Rectangle)
         {
             float left = this.X;
@@ -179,8 +191,8 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
 
     private Dictionary<int, FontData> GetLvlToFontData()
     {
-        var textBody = this.pShape.TextBody!;
-        var lvlToFontData = FontDataParser.FromCompositeElement(textBody.ListStyle!);
+        var textBody = this.pShape.GetFirstChild<P.TextBody>();
+        var lvlToFontData = FontDataParser.FromCompositeElement(textBody!.ListStyle!);
 
         if (!lvlToFontData.Any())
         {
@@ -198,12 +210,12 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
 
         return lvlToFontData;
     }
-    
+
     private void UpdateHeight(
-        float textWidth, 
-        int currentBlockWidth, 
-        float textHeight, 
-        int tMarginPixel, 
+        float textWidth,
+        int currentBlockWidth,
+        float textHeight,
+        int tMarginPixel,
         int bMarginPixel,
         int currentBlockHeight)
     {
@@ -223,7 +235,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
         var yOffset = (requiredHeight - currentBlockHeight) / 2;
         this.Y -= (int)yOffset;
     }
-    
+
     private void UpdateWidthIfNeed(SKPaint paint, int lMarginPixel, int rMarginPixel)
     {
         if (!this.TextFrame!.TextWrapped)
@@ -255,9 +267,9 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
     private SCShapeFill GetFill()
     {
         var slideObject = (SlideStructure)this.SlideStructure;
-        return new SCAutoShapeFill(slideObject, this.pShape.ShapeProperties!, this);
+        return new SCAutoShapeFill(slideObject, this.pShape.GetFirstChild<P.ShapeProperties>() !, this);
     }
-    
+
     private IShapeOutline GetOutline()
     {
         return new SCShapeOutline(this);

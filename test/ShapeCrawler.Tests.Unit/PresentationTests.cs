@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using FluentAssertions;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Extensions;
-using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tests.Unit;
 
