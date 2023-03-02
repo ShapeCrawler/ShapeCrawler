@@ -39,13 +39,13 @@ internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
         this.Number = number;
     }
 
-    public IShapeCollection Shapes => this.shapes.Value;
-
     public string Name => this.GetName();
 
     public ISlideMaster SlideMaster => this.slideMaster;
     
     public override int Number { get; set; }
+
+    public override IShapeCollection Shapes => this.shapes.Value;
 
     internal SlideLayoutPart SlideLayoutPart { get; }
 

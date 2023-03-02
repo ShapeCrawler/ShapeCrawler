@@ -6,6 +6,7 @@ using OneOf;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Drawing.ShapeFill;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
@@ -87,6 +88,8 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
     public virtual IAutoShape Duplicate()
     {
         var typedCompositeElement = (TypedOpenXmlCompositeElement)this.PShapeTreeChild.CloneNode(true);
+        var id = ((SlideStructure)this.ParentSlideStructureOf.Value).GetNextShapeId();
+        typedCompositeElement.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
         var newAutoShape = new SCAutoShape(
             typedCompositeElement, 
             this.ParentSlideStructureOf,

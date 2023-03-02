@@ -357,62 +357,11 @@ internal sealed class ShapeCollection : IShapeCollection
         var newRectangle = new SCRectangle(newPShapeTreeChild, this.ParentSlideStructure, this);
         newRectangle.Outline.Color = "000000";
         
+        newRectangle.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newRectangle);
+        this.pShapeTree.Append(newPShapeTreeChild);
 
         return newRectangle;
-    }
-    
-    private P.Shape CreatePShape(int x, int y, int width, int height, A.ShapeTypeValues form)
-    {
-        var idAndName = this.GenerateIdAndName();
-        var adjustValueList = new A.AdjustValueList();
-        var presetGeometry = new A.PresetGeometry(adjustValueList) { Preset = form };
-        var shapeProperties = new P.ShapeProperties();
-        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
-        var yEmu = UnitConverter.VerticalPixelToEmu(y);
-        var widthEmu = UnitConverter.HorizontalPixelToEmu(width);
-        var heightEmu = UnitConverter.VerticalPixelToEmu(height);
-        shapeProperties.AddAXfrm(xEmu, yEmu, widthEmu, heightEmu);
-        shapeProperties.Append(presetGeometry);
-
-        var aRunProperties = new A.RunProperties { Language = "en-US" };
-        var aText = new A.Text(string.Empty);
-        var aRun = new A.Run(aRunProperties, aText);
-        var aEndParaRPr = new A.EndParagraphRunProperties { Language = "en-US" };
-        var aParagraph = new A.Paragraph(aRun, aEndParaRPr);
-
-        var pShape = new P.Shape(
-            new P.NonVisualShapeProperties(
-                new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
-                new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
-                new P.ApplicationNonVisualDrawingProperties()),
-            shapeProperties,
-            new P.TextBody(
-                new A.BodyProperties(),
-                new A.ListStyle(),
-                aParagraph));
-
-        return pShape;
-    }
-    
-        
-    private (int, string) GenerateIdAndName()
-    {
-        var maxId = 0;
-        if(this.shapes.Value.Any())
-        {
-            maxId = this.shapes.Value.Max(s => s.Id);    
-        }
-        
-        var maxOrder = Regex.Matches(string.Join(string.Empty, this.shapes.Value.Select(s => s.Name)), "\\d+")
-#if NETSTANDARD2_0
-            .Cast<Match>()
-#endif
-            .Select(m => int.Parse(m.Value))
-            .DefaultIfEmpty(0)
-            .Max();
-        
-        return (maxId + 1, $"AutoShape {maxOrder + 1}");
     }
 
     public IRoundedRectangle AddRoundedRectangle(int x, int y, int w, int h)
@@ -582,17 +531,69 @@ internal sealed class ShapeCollection : IShapeCollection
         return this.GetEnumerator();
     }
 
+     
+    private P.Shape CreatePShape(int x, int y, int width, int height, A.ShapeTypeValues form)
+    {
+        var idAndName = this.GenerateIdAndName();
+        var adjustValueList = new A.AdjustValueList();
+        var presetGeometry = new A.PresetGeometry(adjustValueList) { Preset = form };
+        var shapeProperties = new P.ShapeProperties();
+        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
+        var yEmu = UnitConverter.VerticalPixelToEmu(y);
+        var widthEmu = UnitConverter.HorizontalPixelToEmu(width);
+        var heightEmu = UnitConverter.VerticalPixelToEmu(height);
+        shapeProperties.AddAXfrm(xEmu, yEmu, widthEmu, heightEmu);
+        shapeProperties.Append(presetGeometry);
+
+        var aRunProperties = new A.RunProperties { Language = "en-US" };
+        var aText = new A.Text(string.Empty);
+        var aRun = new A.Run(aRunProperties, aText);
+        var aEndParaRPr = new A.EndParagraphRunProperties { Language = "en-US" };
+        var aParagraph = new A.Paragraph(aRun, aEndParaRPr);
+
+        var pShape = new P.Shape(
+            new P.NonVisualShapeProperties(
+                new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
+                new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
+                new P.ApplicationNonVisualDrawingProperties()),
+            shapeProperties,
+            new P.TextBody(
+                new A.BodyProperties(),
+                new A.ListStyle(),
+                aParagraph));
+
+        return pShape;
+    }
+    
+        
+    private (int, string) GenerateIdAndName()
+    {
+        var maxId = 0;
+        if(this.shapes.Value.Any())
+        {
+            maxId = this.shapes.Value.Max(s => s.Id);    
+        }
+        
+        var maxOrder = Regex.Matches(string.Join(string.Empty, this.shapes.Value.Select(s => s.Name)), "\\d+")
+#if NETSTANDARD2_0
+            .Cast<Match>()
+#endif
+            .Select(m => int.Parse(m.Value))
+            .DefaultIfEmpty(0)
+            .Max();
+        
+        return (maxId + 1, $"AutoShape {maxOrder + 1}");
+    }
+    
     private int GenerateNextShapeId()
     {
-        var maxId = this.shapes.Value.Select(shape => shape.Id).Prepend(0).Max();
-
-        return maxId + 1;
+        return this.shapes.Value.Select(shape => shape.Id).Prepend(0).Max() + 1;
     }
 
     private void OnAutoShapeAdded(object sender, NewAutoShape newAutoShape)
     {
-        this.pShapeTree.Append(newAutoShape.pShapeTreeChild);
-        newAutoShape.autoShape.Duplicated += this.OnAutoShapeAdded;
+        this.pShapeTree.Append(newAutoShape.PShapeTreeChild);
+        newAutoShape.AutoShape.Duplicated += this.OnAutoShapeAdded;
         
         this.shapes.Reset();
     }

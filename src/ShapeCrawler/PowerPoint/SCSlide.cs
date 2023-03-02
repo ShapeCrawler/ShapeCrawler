@@ -37,7 +37,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
     public ISlideLayout SlideLayout =>
         ((SlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
 
-    public IShapeCollection Shapes => this.shapes.Value;
+    public override IShapeCollection Shapes => this.shapes.Value;
 
     public override int Number
     {

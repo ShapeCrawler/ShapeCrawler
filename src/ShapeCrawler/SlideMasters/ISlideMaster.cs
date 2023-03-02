@@ -58,7 +58,7 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
 
     public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
-    public IShapeCollection Shapes => new ShapeCollection(this.PSlideMaster.SlideMasterPart!, this);
+    public override IShapeCollection Shapes => new ShapeCollection(this.PSlideMaster.SlideMasterPart!, this);
 
     public ITheme Theme => this.GetTheme();
 

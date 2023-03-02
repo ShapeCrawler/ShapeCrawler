@@ -136,6 +136,7 @@ public sealed class SCPresentation : IPresentation
         this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
     }
     
+    /// <inheritdoc/>
     public ISlideCollection Slides => this.slideCollectionLazy.Value;
 
     /// <inheritdoc/>
