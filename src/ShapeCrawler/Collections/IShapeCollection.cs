@@ -58,7 +58,7 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     IAudioShape AddAudio(int xPixel, int yPixels, Stream mp3Stream);
 
     /// <summary>
-    ///     Adds new video from stream.
+    ///     Adds a new video from stream.
     /// </summary>
     /// <param name="x">X coordinate in pixels.</param>
     /// <param name="y">Y coordinate in pixels.</param>
@@ -74,7 +74,13 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     ///     Adds a new Rounded Rectangle shape. 
     /// </summary>
     IRoundedRectangle AddRoundedRectangle(int x, int y, int w, int h);
-
+    
+    /// <summary>
+    ///     Adds a line from XML.
+    /// </summary>
+    /// <param name="xml">Content of p:cxnSp Open XML element.</param>
+    ILine AddLine(string xml);
+    
     /// <summary>
     ///     Adds a new table.
     /// </summary>
@@ -84,12 +90,6 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     ///     Removes specified shape.
     /// </summary>
     void Remove(IShape shape);
-
-    /// <summary>
-    ///     Adds line shape from XML content.
-    /// </summary>
-    /// <param name="xml">Content of p:cxnSp Open XML element.</param>
-    void AddLine(string xml);
 }
 
 internal sealed class ShapeCollection : IShapeCollection
@@ -446,10 +446,15 @@ internal sealed class ShapeCollection : IShapeCollection
         shapeInternal.PShapeTreeChild.Remove();
     }
 
-    public void AddLine(string xml)
+    public ILine AddLine(string xml)
     {
         var pCxnSp = new ConnectionShape(xml);
         this.pShapeTree.Append(pCxnSp);
+        
+        var newLine = new SCLine(pCxnSp, this.ParentSlideStructure, this);
+        var line = (ILine)this.shapes.Value.Last();
+
+        return line;
     }
 
     public T? GetById<T>(int shapeId)
@@ -542,7 +547,6 @@ internal sealed class ShapeCollection : IShapeCollection
     {
         return this.GetEnumerator();
     }
-
      
     private P.Shape CreatePShape(int x, int y, int width, int height, A.ShapeTypeValues form)
     {
@@ -576,7 +580,6 @@ internal sealed class ShapeCollection : IShapeCollection
 
         return pShape;
     }
-    
         
     private (int, string) GenerateIdAndName()
     {
@@ -644,7 +647,7 @@ internal sealed class ShapeCollection : IShapeCollection
             }
             else if (pShapeTreeChild is P.ConnectionShape)
             {
-                shape = new SCConnectionShape(pShapeTreeChild, this.ParentSlideStructure, this);
+                shape = new SCLine(pShapeTreeChild, this.ParentSlideStructure, this);
                 shapesValue.Add(shape);
             }
             else

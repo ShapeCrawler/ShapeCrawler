@@ -88,7 +88,7 @@ public class ShapeCollectionTests : SCTest
         var shapesCollection = presentation.Slides[0].Shapes;
 
         // Act-Assert
-        Assert.Contains(shapesCollection, shape => shape.Id == 10 && shape is IConnectionShape && shape.GeometryType == SCGeometry.Line);
+        Assert.Contains(shapesCollection, shape => shape.Id == 10 && shape is ILine && shape.GeometryType == SCGeometry.Line);
     }
         
     [Fact]
@@ -135,9 +135,10 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides[0].Shapes;
         
         // Act
-        shapes.AddLine(xml);
+        var line = shapes.AddLine(xml);
 
         // Assert
+        line.Id.Should().Be(1);
         shapes.Count.Should().Be(1);
     }
     
