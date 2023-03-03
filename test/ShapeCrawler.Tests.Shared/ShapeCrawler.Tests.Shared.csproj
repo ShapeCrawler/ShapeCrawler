@@ -22,6 +22,8 @@
     <EmbeddedResource Include="assets\autoshapes\autoshape-case005_text-frame.pptx" />
     <None Remove="assets\autoshapes\009_table.pptx" />
     <EmbeddedResource Include="assets\autoshapes\009_table.pptx" />
+    <None Remove="assets\autoshapes\line-shape.xml" />
+    <EmbeddedResource Include="assets\autoshapes\line-shape.xml" />
   </ItemGroup>
 
 </Project>

@@ -32,4 +32,10 @@ public static class TestHelper
 
         return mStream;
     }
+
+    public static string GetString(string fileName)
+    {
+        var stream = GetStream(fileName);
+        return System.Text.Encoding.UTF8.GetString(stream.ToArray());
+    }
 }
