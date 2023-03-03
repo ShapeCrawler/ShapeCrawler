@@ -8,15 +8,15 @@ using SkiaSharp;
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents a connection shape.
+///     Represents a line shape.
 /// </summary>
-public interface IConnectionShape : IShape
+public interface ILine : IShape
 {
 }
 
-internal sealed class SCConnectionShape : SCShape, IConnectionShape
+internal sealed class SCLine : SCShape, ILine
 {
-    public SCConnectionShape(
+    public SCLine(
         OpenXmlCompositeElement childOfPShapeTree,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
         OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
