@@ -127,6 +127,21 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Fact]
+    public void AddLine_adds_a_new_shape_from_raw_open_xml_content()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var xml = TestHelper.GetString("line-shape.xml");
+        var shapes = pres.Slides[0].Shapes;
+        
+        // Act
+        shapes.AddLine(xml);
+
+        // Assert
+        shapes.Count.Should().Be(1);
+    }
+    
+    [Fact]
     public void AddAudio_adds_Audio_shape()
     {
         // Arrange
@@ -174,7 +189,7 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Fact]
-    public void AutoShapes_AddRectangle_adds_rectangle_with_valid_id_and_name()
+    public void AddRectangle_adds_rectangle_with_valid_id_and_name()
     {
         // Arrange
         var pptx = GetTestStream("autoshape-case011_save-as-png.pptx");
@@ -192,7 +207,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Fact]
-    public void AutoShapes_AddRectangle_adds_Rectangle_in_the_New_Presentation()
+    public void AddRectangle_adds_Rectangle_in_the_New_Presentation()
     {
         // Arrange
         var pres = SCPresentation.Create();
@@ -214,7 +229,7 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Fact]
-    public void AutoShapes_AddRoundedRectangle_adds_Rounded_Rectangle()
+    public void AddRoundedRectangle_adds_Rounded_Rectangle()
     {
         // Arrange
         var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
@@ -240,7 +255,7 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides[0].Shapes;
         
         // Act
-        var table = shapes.AddTable(x: 50, y: 60, columns: 3, rows: 2);
+        var table = shapes.AddTable(x: 50, y: 60, columnsCount: 3, rowsCount: 2);
 
         // Assert
         table.Columns.Should().HaveCount(3);

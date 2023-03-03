@@ -50,7 +50,7 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     IShape? GetByName(string shapeName);
 
     /// <summary>
-    ///     Create a new audio shape from stream and adds it to the end of the collection.
+    ///     Adds a new audio from stream.
     /// </summary>
     /// <param name="xPixel">The X coordinate for the left side of the shape.</param>
     /// <param name="yPixels">The Y coordinate for the left side of the shape.</param>
@@ -58,7 +58,7 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     IAudioShape AddAudio(int xPixel, int yPixels, Stream mp3Stream);
 
     /// <summary>
-    ///     Create a new video shape from stream and adds it to the end of the collection.
+    ///     Adds new video from stream.
     /// </summary>
     /// <param name="x">X coordinate in pixels.</param>
     /// <param name="y">Y coordinate in pixels.</param>
@@ -76,14 +76,20 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     IRoundedRectangle AddRoundedRectangle(int x, int y, int w, int h);
 
     /// <summary>
-    ///     Creates a new Table.
+    ///     Adds a new table.
     /// </summary>
-    ITable AddTable(int x, int y, int columns, int rows);
+    ITable AddTable(int x, int y, int columnsCount, int rowsCount);
 
     /// <summary>
     ///     Removes specified shape.
     /// </summary>
     void Remove(IShape shape);
+
+    /// <summary>
+    ///     Adds line shape from XML content.
+    /// </summary>
+    /// <param name="xml">Content of p:cxnSp Open XML element.</param>
+    void AddLine(string xml);
 }
 
 internal sealed class ShapeCollection : IShapeCollection
@@ -438,6 +444,12 @@ internal sealed class ShapeCollection : IShapeCollection
 
         var shapeInternal = (SCShape)shape;
         shapeInternal.PShapeTreeChild.Remove();
+    }
+
+    public void AddLine(string xml)
+    {
+        var pCxnSp = new ConnectionShape(xml);
+        this.pShapeTree.Append(pCxnSp);
     }
 
     public T? GetById<T>(int shapeId)
