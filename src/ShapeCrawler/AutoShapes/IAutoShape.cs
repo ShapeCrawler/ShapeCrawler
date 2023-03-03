@@ -55,7 +55,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
     private const double Scale = 1.4;
 
     private readonly Lazy<SCShapeFill> shapeFill;
-    private readonly Lazy<TextFrame?> textFrame;
+    private readonly Lazy<SCTextFrame?> textFrame;
     private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
     private readonly TypedOpenXmlCompositeElement pShape;
 
@@ -66,7 +66,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
         : base(pShape, parentSlideStructureOf, parentShapeCollection)
     {
         this.pShape = pShape;
-        this.textFrame = new Lazy<TextFrame?>(this.GetTextFrame);
+        this.textFrame = new Lazy<SCTextFrame?>(this.GetTextFrame);
         this.shapeFill = new Lazy<SCShapeFill>(this.GetFill);
         this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
     }
@@ -123,7 +123,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
             float bottom = this.Y + this.Height;
             var rect = new SKRect(left, top, right, bottom);
             slideCanvas.DrawRect(rect, paint);
-            var textFrame = (TextFrame)this.TextFrame!;
+            var textFrame = (SCTextFrame)this.TextFrame!;
             textFrame.Draw(slideCanvas, left, this.Y);
         }
     }
@@ -250,7 +250,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
         }
     }
 
-    private TextFrame? GetTextFrame()
+    private SCTextFrame? GetTextFrame()
     {
         var pTextBody = this.PShapeTreeChild.GetFirstChild<P.TextBody>();
         if (pTextBody == null)
@@ -258,7 +258,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
             return null;
         }
 
-        var newTextFrame = new TextFrame(this, pTextBody);
+        var newTextFrame = new SCTextFrame(this, pTextBody);
         newTextFrame.TextChanged += this.ResizeShape;
 
         return newTextFrame;

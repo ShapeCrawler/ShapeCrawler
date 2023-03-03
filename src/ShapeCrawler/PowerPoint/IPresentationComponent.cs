@@ -1,9 +1,9 @@
-﻿namespace ShapeCrawler.Services;
+﻿namespace ShapeCrawler;
 
 /// <summary>
 ///     Represents a presentation component.
 /// </summary>
-public interface IPresentationComponent
+public interface IPresentationComponent // TODO: make internal
 {
     /// <summary>
     ///     Gets presentation.

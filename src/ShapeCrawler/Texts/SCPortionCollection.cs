@@ -6,13 +6,13 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable PossibleMultipleEnumeration
-namespace ShapeCrawler.Collections;
+namespace ShapeCrawler.Texts;
 
-internal sealed class PortionCollection : IPortionCollection
+internal sealed class SCPortionCollection : IPortionCollection
 {
     private readonly ResettableLazy<List<SCPortion>> portions;
 
-    internal PortionCollection(A.Paragraph aParagraph, SCParagraph paragraph)
+    internal SCPortionCollection(A.Paragraph aParagraph, SCParagraph paragraph)
     {
         this.portions = new ResettableLazy<List<SCPortion>>(() => GetPortions(aParagraph, paragraph));
     }

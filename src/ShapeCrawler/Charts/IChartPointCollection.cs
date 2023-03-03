@@ -7,6 +7,7 @@ using DocumentFormat.OpenXml.Drawing.Charts;
 using ShapeCrawler.Charts;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
+// ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
 
 /// <summary>

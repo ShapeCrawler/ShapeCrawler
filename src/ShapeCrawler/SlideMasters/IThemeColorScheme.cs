@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using ShapeCrawler.Drawing;
 
+// ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
 
 using A = DocumentFormat.OpenXml.Drawing;

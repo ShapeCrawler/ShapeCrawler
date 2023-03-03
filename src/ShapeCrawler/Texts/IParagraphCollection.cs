@@ -26,9 +26,9 @@ public interface IParagraphCollection : IReadOnlyList<IParagraph>
 internal sealed class ParagraphCollection : IParagraphCollection
 {
     private readonly ResettableLazy<List<SCParagraph>> paragraphs;
-    private readonly TextFrame textFrame;
+    private readonly SCTextFrame textFrame;
 
-    internal ParagraphCollection(TextFrame textFrame)
+    internal ParagraphCollection(SCTextFrame textFrame)
     {
         this.textFrame = textFrame;
         this.paragraphs = new ResettableLazy<List<SCParagraph>>(this.GetParagraphs);
