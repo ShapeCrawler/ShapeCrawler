@@ -34,7 +34,7 @@ internal sealed class SCAudioShape : SCMediaShape, IAudioShape
     {
     }
 
-    public override SCShapeType ShapeType => SCShapeType.AudioShape;
+    public override SCShapeType ShapeType => SCShapeType.Audio;
 
     internal override void Draw(SKCanvas canvas)
     {

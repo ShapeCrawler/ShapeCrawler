@@ -1,6 +1,4 @@
-﻿using ShapeCrawler.Services;
-
-namespace ShapeCrawler;
+﻿namespace ShapeCrawler;
 
 /// <summary>
 ///     Represents slide object.

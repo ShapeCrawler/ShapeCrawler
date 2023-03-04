@@ -6,9 +6,9 @@ namespace ShapeCrawler.Shapes;
 public enum SCShapeType
 {
     /// <summary>
-    ///     Audio shape.
+    ///     Audio.
     /// </summary>
-    AudioShape,
+    Audio,
 
     /// <summary>
     ///     AutoShape.
@@ -21,14 +21,14 @@ public enum SCShapeType
     Chart,
 
     /// <summary>
-    ///     Connection.
+    ///     Line.
     /// </summary>
-    ConnectionShape,
+    Line,
 
     /// <summary>
-    ///     Group shape.
+    ///     Group.
     /// </summary>
-    GroupShape,
+    Group,
 
     /// <summary>
     ///     OLE Object.
@@ -41,9 +41,9 @@ public enum SCShapeType
     Picture,
 
     /// <summary>
-    ///     Video shape.
+    ///     Video.
     /// </summary>
-    VideoShape,
+    Video,
 
     /// <summary>
     ///     Table.

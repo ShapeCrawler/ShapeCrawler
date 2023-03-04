@@ -27,20 +27,20 @@ namespace ShapeCrawler;
 public interface IAutoShape : IShape
 {
     /// <summary>
-    ///     Gets shape fill.
-    /// </summary>
-    IShapeFill Fill { get; }
-
-    /// <summary>
     ///     Gets shape outline.
     /// </summary>
     IShapeOutline Outline { get; }
-
+ 
     /// <summary>
-    ///     Gets text frame if shape is text holder, otherwise <see langword="null"/>.
+    ///     Gets shape fill. It returns <see langword="null"/> if the shape can not be filled.
+    /// </summary>
+    IShapeFill? Fill { get; }
+    
+    /// <summary>
+    ///     Gets text frame. It returns <see langword="null"/> if the shape is not a text holder.
     /// </summary>
     ITextFrame? TextFrame { get; }
-
+    
     /// <summary>
     ///     Duplicate the shape.
     /// </summary>
@@ -75,15 +75,15 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
 
     #region Public Properties
 
-    public IShapeFill Fill => this.shapeFill.Value;
-
     public IShapeOutline Outline => this.GetOutline();
 
     public SCShape SCShape => this; // TODO: should be internal?
 
     public override SCShapeType ShapeType => SCShapeType.AutoShape;
 
-    public ITextFrame? TextFrame => this.textFrame.Value;
+    public virtual IShapeFill? Fill => this.shapeFill.Value;
+    
+    public virtual ITextFrame? TextFrame => this.textFrame.Value;
 
     public virtual IAutoShape Duplicate()
     {
