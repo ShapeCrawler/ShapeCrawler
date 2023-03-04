@@ -10,21 +10,25 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a line shape.
 /// </summary>
-public interface ILine : IShape
+public interface ILine : IAutoShape
 {
 }
 
-internal sealed class SCLine : SCShape, ILine
+internal sealed class SCLine : SCAutoShape, ILine
 {
     public SCLine(
-        OpenXmlCompositeElement childOfPShapeTree,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
-        : base(childOfPShapeTree, parentSlideObject, parentShapeCollection)
+        TypedOpenXmlCompositeElement pShapeTreeChild,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideStructureOf,
+        OneOf<ShapeCollection, SCGroupShape> parentShapeCollectionOf)
+        : base(pShapeTreeChild, parentSlideStructureOf, parentShapeCollectionOf)
     {
     }
 
-    public override SCShapeType ShapeType => SCShapeType.ConnectionShape;
+    public override SCShapeType ShapeType => SCShapeType.Line;
+
+    public override ITextFrame? TextFrame => null;
+
+    public override IShapeFill? Fill => null;
 
     internal override void Draw(SKCanvas canvas)
     {

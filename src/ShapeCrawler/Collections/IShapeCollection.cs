@@ -637,7 +637,7 @@ internal sealed class ShapeCollection : IShapeCollection
     private List<IShape> GetShapes(AutoShapeCreator autoShapeCreator)
     {
         var shapesValue = new List<IShape>(this.pShapeTree.Count());
-        foreach (var pShapeTreeChild in this.pShapeTree.OfType<OpenXmlCompositeElement>())
+        foreach (var pShapeTreeChild in this.pShapeTree.OfType<TypedOpenXmlCompositeElement>())
         {
             IShape? shape;
             if (pShapeTreeChild is P.GroupShape pGroupShape)

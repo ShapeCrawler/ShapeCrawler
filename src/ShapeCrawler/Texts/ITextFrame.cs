@@ -65,12 +65,12 @@ public interface ITextFrame
     bool CanChangeText();
 }
 
-internal sealed class TextFrame : ITextFrame
+internal sealed class SCTextFrame : ITextFrame
 {
     private readonly ResettableLazy<string> text;
     private readonly ResettableLazy<ParagraphCollection> paragraphs;
 
-    internal TextFrame(ITextFrameContainer frameContainer, TypedOpenXmlCompositeElement textBodyElement)
+    internal SCTextFrame(ITextFrameContainer frameContainer, TypedOpenXmlCompositeElement textBodyElement)
     {
         this.TextFrameContainer = frameContainer;
         this.TextBodyElement = textBodyElement;

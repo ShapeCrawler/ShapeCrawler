@@ -27,20 +27,20 @@ namespace ShapeCrawler;
 public interface IAutoShape : IShape
 {
     /// <summary>
-    ///     Gets shape fill.
-    /// </summary>
-    IShapeFill Fill { get; }
-
-    /// <summary>
     ///     Gets shape outline.
     /// </summary>
     IShapeOutline Outline { get; }
-
+ 
     /// <summary>
-    ///     Gets text frame if shape is text holder, otherwise <see langword="null"/>.
+    ///     Gets shape fill. It returns <see langword="null"/> if the shape can not be filled.
+    /// </summary>
+    IShapeFill? Fill { get; }
+    
+    /// <summary>
+    ///     Gets text frame. It returns <see langword="null"/> if the shape is not a text holder.
     /// </summary>
     ITextFrame? TextFrame { get; }
-
+    
     /// <summary>
     ///     Duplicate the shape.
     /// </summary>
@@ -55,7 +55,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
     private const double Scale = 1.4;
 
     private readonly Lazy<SCShapeFill> shapeFill;
-    private readonly Lazy<TextFrame?> textFrame;
+    private readonly Lazy<SCTextFrame?> textFrame;
     private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
     private readonly TypedOpenXmlCompositeElement pShape;
 
@@ -66,7 +66,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
         : base(pShape, parentSlideStructureOf, parentShapeCollection)
     {
         this.pShape = pShape;
-        this.textFrame = new Lazy<TextFrame?>(this.GetTextFrame);
+        this.textFrame = new Lazy<SCTextFrame?>(this.GetTextFrame);
         this.shapeFill = new Lazy<SCShapeFill>(this.GetFill);
         this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
     }
@@ -75,15 +75,15 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
 
     #region Public Properties
 
-    public IShapeFill Fill => this.shapeFill.Value;
-
     public IShapeOutline Outline => this.GetOutline();
 
     public SCShape SCShape => this; // TODO: should be internal?
 
     public override SCShapeType ShapeType => SCShapeType.AutoShape;
 
-    public ITextFrame? TextFrame => this.textFrame.Value;
+    public virtual IShapeFill? Fill => this.shapeFill.Value;
+    
+    public virtual ITextFrame? TextFrame => this.textFrame.Value;
 
     public virtual IAutoShape Duplicate()
     {
@@ -123,7 +123,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
             float bottom = this.Y + this.Height;
             var rect = new SKRect(left, top, right, bottom);
             slideCanvas.DrawRect(rect, paint);
-            var textFrame = (TextFrame)this.TextFrame!;
+            var textFrame = (SCTextFrame)this.TextFrame!;
             textFrame.Draw(slideCanvas, left, this.Y);
         }
     }
@@ -250,7 +250,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
         }
     }
 
-    private TextFrame? GetTextFrame()
+    private SCTextFrame? GetTextFrame()
     {
         var pTextBody = this.PShapeTreeChild.GetFirstChild<P.TextBody>();
         if (pTextBody == null)
@@ -258,7 +258,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
             return null;
         }
 
-        var newTextFrame = new TextFrame(this, pTextBody);
+        var newTextFrame = new SCTextFrame(this, pTextBody);
         newTextFrame.TextChanged += this.ResizeShape;
 
         return newTextFrame;

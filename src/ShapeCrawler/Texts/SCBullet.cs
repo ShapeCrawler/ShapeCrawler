@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
 
+// ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
 
 /// <summary>

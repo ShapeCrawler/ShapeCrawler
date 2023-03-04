@@ -2,9 +2,9 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -59,17 +59,17 @@ public interface IParagraph
 internal sealed class SCParagraph : IParagraph
 {
     private readonly Lazy<SCBullet> bullet;
-    private readonly ResettableLazy<PortionCollection> portions;
+    private readonly ResettableLazy<SCPortionCollection> portions;
     private SCTextAlignment? alignment;
 
-    internal SCParagraph(A.Paragraph aParagraph, TextFrame textBox)
+    internal SCParagraph(A.Paragraph aParagraph, SCTextFrame textBox)
     {
         this.AParagraph = aParagraph;
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.Level = this.GetIndentLevel();
         this.bullet = new Lazy<SCBullet>(this.GetBullet);
         this.ParentTextFrame = textBox;
-        this.portions = new ResettableLazy<PortionCollection>(() => new PortionCollection(this.AParagraph, this));
+        this.portions = new ResettableLazy<SCPortionCollection>(() => new SCPortionCollection(this.AParagraph, this));
     }
 
     internal event Action? TextChanged;
@@ -96,7 +96,7 @@ internal sealed class SCParagraph : IParagraph
 
     public ISpacing Spacing => this.GetSpacing();
 
-    internal TextFrame ParentTextFrame { get; }
+    internal SCTextFrame ParentTextFrame { get; }
 
     internal A.Paragraph AParagraph { get; }
 

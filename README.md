@@ -46,7 +46,7 @@ var pres = SCPresentation.Create();
 var shapeCollection = pres.Slides[0].Shapes;
 
 // add new shape
-var addedShape = shapeCollection.AutoShapes.AddRectangle(x: 50, y: 60, w: 100, h: 70);
+var addedShape = shapeCollection.AddRectangle(x: 50, y: 60, w: 100, h: 70);
 
 addedShape.TextFrame!.Text = "Hello World!";
 
@@ -68,6 +68,14 @@ How you can contribute?
 - **Give a Star**⭐ If you find this useful, please give it a star to show your support.
 - **Bug report**. If you get some issue, please don't ignore and report this bug on [issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) page.
 - **Code contributing**. There are features/bugs tagged with [help-wanted](https://github.com/ShapeCrawler/ShapeCrawler/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) label which waiting for your Pull Request🙂 Please read [Contribution Guide](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CONTRIBUTING.md) to get more details.
+
+
+## Changelog
+### Version 0.42.0 - 2023-03-04
+🍀Added `IAutoShape.Duplicate()` [#444](https://github.com/ShapeCrawler/ShapeCrawler/issues/444)  
+🍀Added `IShapeCollection.AddLine()` [#465](https://github.com/ShapeCrawler/ShapeCrawler/issues/465)
+
+Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full log.
 
 ## Statistics Collection
 

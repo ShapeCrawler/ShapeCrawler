@@ -1,4 +1,5 @@
-﻿namespace ShapeCrawler;
+﻿// ReSharper disable once CheckNamespace
+namespace ShapeCrawler;
 
 using A = DocumentFormat.OpenXml.Drawing;
 

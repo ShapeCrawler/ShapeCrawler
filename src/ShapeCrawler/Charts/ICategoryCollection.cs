@@ -2,13 +2,15 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
 // ReSharper disable PossibleMultipleEnumeration
-namespace ShapeCrawler.Collections;
+// ReSharper disable once CheckNamespace
+namespace ShapeCrawler;
 
 /// <summary>
 ///     Represents a chart category collection.

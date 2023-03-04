@@ -32,7 +32,7 @@ internal sealed class SCVideoShape : SCMediaShape, IVideoShape
     {
     }
 
-    public override SCShapeType ShapeType => SCShapeType.VideoShape;
+    public override SCShapeType ShapeType => SCShapeType.Video;
 
     internal override void Draw(SKCanvas canvas)
     {

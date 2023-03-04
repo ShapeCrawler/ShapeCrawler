@@ -134,7 +134,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
         {
             switch (shape.ShapeType)
             {
-                case SCShapeType.GroupShape:
+                case SCShapeType.Group:
                     this.AddAllTextboxesInGroupToList((IGroupShape)shape, textBoxes);
                     break;
                 case SCShapeType.AutoShape:
