@@ -5,7 +5,6 @@ using OneOf;
 using ShapeCrawler.Media;
 using ShapeCrawler.Pictures;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 

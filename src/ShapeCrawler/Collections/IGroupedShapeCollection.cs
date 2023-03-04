@@ -5,7 +5,6 @@ using OneOf;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable once CheckNamespace

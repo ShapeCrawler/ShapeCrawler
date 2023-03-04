@@ -1,7 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMasters;
 using SkiaSharp;
 
 // ReSharper disable PossibleMultipleEnumeration

@@ -1,7 +1,8 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shared;
+// ReSharper disable CheckNamespace
 
-namespace ShapeCrawler.SlideMasters;
+namespace ShapeCrawler;
 
 /// <summary>
 ///     Represents a Slide Layout.

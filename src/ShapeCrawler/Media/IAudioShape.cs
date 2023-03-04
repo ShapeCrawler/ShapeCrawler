@@ -2,7 +2,6 @@
 using OneOf;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMasters;
 using SkiaSharp;
 
 // ReSharper disable once CheckNamespace

@@ -1,9 +1,10 @@
 ﻿using OneOf;
+using ShapeCrawler.Charts;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Charts;
+// ReSharper disable once CheckNamespace
+namespace ShapeCrawler;
 
 /// <summary>
 ///     Represents a Bar or Column chart.

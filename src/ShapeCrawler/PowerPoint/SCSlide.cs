@@ -9,7 +9,6 @@ using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
-using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Texts;
 using SkiaSharp;
 

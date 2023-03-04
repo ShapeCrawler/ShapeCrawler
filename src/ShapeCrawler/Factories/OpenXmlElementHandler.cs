@@ -1,7 +1,6 @@
 ﻿using OneOf;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMasters;
 
 namespace ShapeCrawler.Factories;
 

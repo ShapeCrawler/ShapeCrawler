@@ -1,9 +1,9 @@
 ﻿using OneOf;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
+// ReSharper disable CheckNamespace
 
-namespace ShapeCrawler.AutoShapes;
+namespace ShapeCrawler;
 
 /// <summary>
 ///     Represents a Rectangle shape.
