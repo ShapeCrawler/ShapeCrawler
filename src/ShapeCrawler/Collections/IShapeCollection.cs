@@ -13,7 +13,6 @@ using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Constants;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Media;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;

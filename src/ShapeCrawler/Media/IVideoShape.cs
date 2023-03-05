@@ -1,9 +1,11 @@
 ﻿using DocumentFormat.OpenXml;
 using OneOf;
+using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
 using SkiaSharp;
 
-namespace ShapeCrawler.Media;
+// ReSharper disable once CheckNamespace
+namespace ShapeCrawler;
 
 /// <summary>
 ///     Represents a shape containing video content.
