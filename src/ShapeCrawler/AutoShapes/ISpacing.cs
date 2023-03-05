@@ -1,6 +1,7 @@
 ﻿using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.AutoShapes;
+// ReSharper disable once CheckNamespace
+namespace ShapeCrawler;
 
 /// <summary>
 ///     Represents a spacing of paragraph.

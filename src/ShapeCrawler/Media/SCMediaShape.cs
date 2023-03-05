@@ -3,7 +3,6 @@ using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Media;

@@ -2,10 +2,9 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using OneOf;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMasters;
-using OneOf;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;

@@ -12,7 +12,6 @@ using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
-using ShapeCrawler.SlideMasters;
 using ShapeCrawler.Texts;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -32,19 +31,18 @@ public interface IAutoShape : IShape
     IShapeOutline Outline { get; }
  
     /// <summary>
-    ///     Gets shape fill. It returns <see langword="null"/> if the shape can not be filled.
+    ///     Gets shape fill. Returns <see langword="null"/> if the shape can not be filled.
     /// </summary>
     IShapeFill? Fill { get; }
     
     /// <summary>
-    ///     Gets text frame. It returns <see langword="null"/> if the shape is not a text holder.
+    ///     Gets text frame. Returns <see langword="null"/> if the shape is not a text holder.
     /// </summary>
     ITextFrame? TextFrame { get; }
     
     /// <summary>
     ///     Duplicate the shape.
     /// </summary>
-    /// <returns></returns>
     IAutoShape Duplicate();
 }
 

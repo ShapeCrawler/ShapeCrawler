@@ -13,11 +13,9 @@ using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Constants;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
-using ShapeCrawler.Media;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
-using ShapeCrawler.SlideMasters;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
@@ -80,6 +78,11 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     /// </summary>
     /// <param name="xml">Content of p:cxnSp Open XML element.</param>
     ILine AddLine(string xml);
+    
+    /// <summary>
+    ///     Adds a new line.
+    /// </summary>
+    ILine AddLine(int startPointX, int startPointY, int endPointX, int endPointY);
     
     /// <summary>
     ///     Adds a new table.
@@ -358,28 +361,61 @@ internal sealed class ShapeCollection : IShapeCollection
 
     public IRectangle AddRectangle(int x, int y, int width, int height)
     {
-        var newPShapeTreeChild = this.CreatePShape(x, y, width, height, A.ShapeTypeValues.Rectangle);
+        var newPShape = this.CreatePShape(x, y, width, height, A.ShapeTypeValues.Rectangle);
 
-        var newRectangle = new SCRectangle(newPShapeTreeChild, this.ParentSlideStructure, this);
-        newRectangle.Outline.Color = "000000";
+        var newShape = new SCRectangle(newPShape, this.ParentSlideStructure, this);
+        newShape.Outline.Color = "000000";
         
-        newRectangle.Duplicated += this.OnAutoShapeAdded;
-        this.shapes.Value.Add(newRectangle);
-        this.pShapeTree.Append(newPShapeTreeChild);
+        newShape.Duplicated += this.OnAutoShapeAdded;
+        this.shapes.Value.Add(newShape);
+        this.pShapeTree.Append(newPShape);
 
-        return newRectangle;
+        return newShape;
     }
 
     public IRoundedRectangle AddRoundedRectangle(int x, int y, int w, int h)
     {
         var newPShape = this.CreatePShape(x, y, w, h, A.ShapeTypeValues.RoundRectangle);
 
-        var newRoundedRectangle = new SCRoundedRectangle(newPShape, this.ParentSlideStructure, this);
-        newRoundedRectangle.Outline.Color = "000000";
+        var newShape = new SCRoundedRectangle(newPShape, this.ParentSlideStructure, this);
+        newShape.Outline.Color = "000000";
 
-        this.shapes.Value.Add(newRoundedRectangle);
+        newShape.Duplicated += this.OnAutoShapeAdded;
+        this.shapes.Value.Add(newShape);
+        this.pShapeTree.Append(newPShape);
 
-        return newRoundedRectangle;
+        return newShape;
+    }
+    
+    public ILine AddLine(string xml)
+    {
+        var newPConnectionShape = new ConnectionShape(xml);
+        
+        var newShape = new SCLine(newPConnectionShape, this.ParentSlideStructure, this);
+        
+        newShape.Duplicated += this.OnAutoShapeAdded;
+        this.shapes.Value.Add(newShape);
+        this.pShapeTree.Append(newPConnectionShape);
+
+        return newShape;
+    }
+    
+    public ILine AddLine(int startPointX, int startPointY, int endPointX, int endPointY)
+    {
+        var deltaX = endPointX - startPointX;
+        var deltaY = endPointY - startPointY;
+        var distance = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        var newPConnectionShape = this.CreatePConnectionShape(startPointX, startPointY, (int)distance);
+
+        var newShape = new SCLine(newPConnectionShape, this.ParentSlideStructure, this);
+        newShape.Outline.Color = "000000";
+        
+        newShape.Duplicated += this.OnAutoShapeAdded;
+        this.shapes.Value.Add(newShape);
+        this.pShapeTree.Append(newPConnectionShape);
+
+        return newShape;
     }
 
     public ITable AddTable(int xPx, int yPx, int columns, int rows)
@@ -444,17 +480,6 @@ internal sealed class ShapeCollection : IShapeCollection
 
         var shapeInternal = (SCShape)shape;
         shapeInternal.PShapeTreeChild.Remove();
-    }
-
-    public ILine AddLine(string xml)
-    {
-        var pCxnSp = new ConnectionShape(xml);
-        this.pShapeTree.Append(pCxnSp);
-        
-        var newLine = new SCLine(pCxnSp, this.ParentSlideStructure, this);
-        var line = (ILine)this.shapes.Value.Last();
-
-        return line;
     }
 
     public T? GetById<T>(int shapeId)
@@ -580,6 +605,28 @@ internal sealed class ShapeCollection : IShapeCollection
 
         return pShape;
     }
+    
+    private P.ConnectionShape CreatePConnectionShape(int x, int y, int width)
+    {
+        var idAndName = this.GenerateIdAndName();
+        var adjustValueList = new A.AdjustValueList();
+        var presetGeometry = new A.PresetGeometry(adjustValueList) { Preset = A.ShapeTypeValues.Line };
+        var shapeProperties = new P.ShapeProperties();
+        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
+        var yEmu = UnitConverter.VerticalPixelToEmu(y);
+        var widthEmu = UnitConverter.HorizontalPixelToEmu(width);
+        shapeProperties.AddAXfrm(xEmu, yEmu, widthEmu, 0);
+        shapeProperties.Append(presetGeometry);
+
+        var pConnectionShape = new P.ConnectionShape(
+            new P.NonVisualConnectionShapeProperties(
+                new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 }, 
+                new P.NonVisualConnectorShapeDrawingProperties(), 
+                new P.ApplicationNonVisualDrawingProperties()),
+            shapeProperties);
+        
+        return pConnectionShape;
+    }
         
     private (int, string) GenerateIdAndName()
     {
@@ -605,7 +652,7 @@ internal sealed class ShapeCollection : IShapeCollection
         return this.shapes.Value.Select(shape => shape.Id).Prepend(0).Max() + 1;
     }
 
-    private void OnAutoShapeAdded(object sender, NewAutoShape newAutoShape)
+    private void OnAutoShapeAdded(object? sender, NewAutoShape newAutoShape)
     {
         this.pShapeTree.Append(newAutoShape.PShapeTreeChild);
         newAutoShape.AutoShape.Duplicated += this.OnAutoShapeAdded;

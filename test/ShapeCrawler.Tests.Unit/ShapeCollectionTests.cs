@@ -127,7 +127,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Fact]
-    public void AddLine_adds_a_new_shape_from_raw_open_xml_content()
+    public void AddLine_adds_a_new_Line_shape_from_raw_open_xml_content()
     {
         // Arrange
         var pres = SCPresentation.Create();
@@ -140,6 +140,25 @@ public class ShapeCollectionTests : SCTest
         // Assert
         line.Id.Should().Be(1);
         shapes.Count.Should().Be(1);
+    }
+    
+    [Fact]
+    public void AddLine_adds_a_new_Line_shape()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var shapes = pres.Slides[0].Shapes;
+
+        // Act
+        var line = shapes.AddLine(startPointX: 50, startPointY: 60, endPointX: 100, endPointY: 60);
+        
+        // Assert
+        shapes.Should().ContainSingle();
+        line.ShapeType.Should().Be(SCShapeType.Line);
+        line.X.Should().Be(50);
+        line.Y.Should().Be(60);
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
     }
     
     [Fact]

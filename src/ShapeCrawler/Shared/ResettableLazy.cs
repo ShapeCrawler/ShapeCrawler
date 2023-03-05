@@ -7,7 +7,7 @@ internal sealed class ResettableLazy<T>
     private readonly Func<T?> valueFactory;
     private Lazy<T> lazy;
 
-    public ResettableLazy(Func<T> valueFactory)
+    public ResettableLazy(Func<T?> valueFactory)
     {
         this.valueFactory = valueFactory;
         this.lazy = new Lazy<T>(this.valueFactory);

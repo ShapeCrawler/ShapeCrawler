@@ -7,7 +7,6 @@ using DocumentFormat.OpenXml.Office2019.Drawing.SVG;
 using DocumentFormat.OpenXml.Packaging;
 using OneOf;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.SlideMasters;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
