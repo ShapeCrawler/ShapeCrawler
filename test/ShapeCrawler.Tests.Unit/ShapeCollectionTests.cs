@@ -127,7 +127,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Fact]
-    public void AddLine_adds_a_new_shape_from_raw_open_xml_content()
+    public void AddLine_adds_a_new_Line_shape_from_raw_open_xml_content()
     {
         // Arrange
         var pres = SCPresentation.Create();

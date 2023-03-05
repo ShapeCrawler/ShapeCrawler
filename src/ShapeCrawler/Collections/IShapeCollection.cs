@@ -80,6 +80,9 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     /// <param name="xml">Content of p:cxnSp Open XML element.</param>
     ILine AddLine(string xml);
     
+    /// <summary>
+    ///     Adds a new line.
+    /// </summary>
     ILine AddLine(int startPointX, int startPointY, int endPointX, int endPointY);
     
     /// <summary>

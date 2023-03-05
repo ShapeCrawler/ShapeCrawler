@@ -1,6 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Collections;
-using ShapeCrawler.Shapes;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
