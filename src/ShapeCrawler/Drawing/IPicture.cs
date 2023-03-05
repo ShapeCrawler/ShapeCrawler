@@ -1,5 +1,6 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿// ReSharper disable CheckNamespace
+
+using System;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
@@ -11,11 +12,24 @@ using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-// ReSharper disable PossibleMultipleEnumeration
-namespace ShapeCrawler.Pictures;
+namespace ShapeCrawler;
 
-/// <inheritdoc cref="IPicture" />
-[SuppressMessage("ReSharper", "SuggestBaseTypeForParameterInConstructor", Justification = "Internal member")]
+/// <summary>
+///     Represents a picture shape on a slide.
+/// </summary>
+public interface IPicture : IShape
+{
+    /// <summary>
+    ///     Gets image. Returns <see langword="null"/> if the picture is not binary picture. 
+    /// </summary>
+    IImage? Image { get; }
+
+    /// <summary>
+    ///     Gets SVG content. Returns <see langword="null"/> if the picture is not SVG graphic.
+    /// </summary>
+    string? SvgContent { get; }
+}
+
 internal sealed class SCPicture : SCShape, IPicture
 {
     private readonly StringValue? blipEmbed;
