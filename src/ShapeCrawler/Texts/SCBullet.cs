@@ -156,7 +156,6 @@ public class SCBullet // TODO: extract interface
                 this.aParagraphProperties.AddChild(child);
             }
         }
-
     }
 
     #endregion Public Properties

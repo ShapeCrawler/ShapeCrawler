@@ -143,6 +143,25 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Fact]
+    public void AddLine_adds_a_new_Line_shape()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var shapes = pres.Slides[0].Shapes;
+
+        // Act
+        var line = shapes.AddLine(startPointX: 50, startPointY: 60, endPointX: 100, endPointY: 60);
+        
+        // Assert
+        shapes.Should().ContainSingle();
+        line.ShapeType.Should().Be(SCShapeType.Line);
+        line.X.Should().Be(50);
+        line.Y.Should().Be(60);
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
+    }
+    
+    [Fact]
     public void AddAudio_adds_Audio_shape()
     {
         // Arrange

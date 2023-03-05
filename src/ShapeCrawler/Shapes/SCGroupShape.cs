@@ -34,7 +34,7 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
         throw new System.NotImplementedException();
     }
 
-    internal void OnGroupedShapeXChanged(object sender, int xGroupedShape)
+    internal void OnGroupedShapeXChanged(object? sender, int xGroupedShape)
     {
         var offset = this.ATransformGroup.Offset!;
         var extents = this.ATransformGroup.Extents!;
@@ -54,7 +54,7 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
             return;
         }
 
-        var groupedShape = (SCShape)sender;
+        var groupedShape = (SCShape)sender!;
         var parentGroupRight = this.X + this.Width; 
         var groupedShapeRight = groupedShape.X + groupedShape.Width;
         if (groupedShapeRight > parentGroupRight)
@@ -67,7 +67,7 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
         }
     }
     
-    internal void OnGroupedShapeYChanged(object sender, int yGroupedShape)
+    internal void OnGroupedShapeYChanged(object? sender, int yGroupedShape)
     {
         var offset = this.ATransformGroup.Offset!;
         var extents = this.ATransformGroup.Extents!;
@@ -87,7 +87,7 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
             return;
         }
 
-        var groupedShape = (SCShape)sender;
+        var groupedShape = (SCShape)sender!;
         var parentGroupBottom = this.Y + this.Height;
         var groupedShapeBottom = groupedShape.Y + groupedShape.Height;
         if (groupedShapeBottom > parentGroupBottom)

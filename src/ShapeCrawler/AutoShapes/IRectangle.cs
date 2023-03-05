@@ -1,8 +1,8 @@
 ﻿using OneOf;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
-// ReSharper disable CheckNamespace
 
+// ReSharper disable CheckNamespace
 namespace ShapeCrawler;
 
 /// <summary>

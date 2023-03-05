@@ -1,5 +1,5 @@
-﻿using OneOf;
-using DocumentFormat.OpenXml;
+﻿using DocumentFormat.OpenXml;
+using OneOf;
 using ShapeCrawler.Shapes;
 
 namespace ShapeCrawler.Factories;
