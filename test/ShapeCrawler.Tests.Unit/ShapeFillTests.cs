@@ -108,7 +108,7 @@ public class ShapeFillTests : SCTest
     public void Picture_SetImage_updates_picture_fill()
     {
         // Arrange
-        var shape = (IAutoShape)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4);
+        var shape = (IAutoShape)SCPresentation.Open(TestHelperShared.GetStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4);
         var fill = shape.Fill;
         var newImage = TestFiles.Images.img02_stream;
         var imageSizeBefore = fill.Picture!.BinaryData.GetAwaiter().GetResult().Length;
@@ -134,7 +134,7 @@ public class ShapeFillTests : SCTest
 
     public static IEnumerable<object[]> TestCasesFillType()
     {
-        var pptxStream = TestHelper.GetStream("009_table.pptx");
+        var pptxStream = TestHelperShared.GetStream("009_table.pptx");
         var pres = SCPresentation.Open(pptxStream);
 
         var withNoFill = pres.Slides[1].Shapes.GetById<IAutoShape>(6);
@@ -162,7 +162,7 @@ public class ShapeFillTests : SCTest
     public void AutoShape_Fill_Type_returns_NoFill_When_shape_is_Not_filled()
     {
         // Arrange
-        var autoShape = (IAutoShape)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 6);
+        var autoShape = (IAutoShape)SCPresentation.Open(TestHelperShared.GetStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 6);
 
         // Act
         var fillType = autoShape.Fill.Type;
@@ -175,7 +175,7 @@ public class ShapeFillTests : SCTest
     public void HexSolidColor_getter_returns_color_name()
     {
         // Arrange
-        var autoShape = (IAutoShape)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 2);
+        var autoShape = (IAutoShape)SCPresentation.Open(TestHelperShared.GetStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 2);
 
         // Act
         var shapeSolidColorName = autoShape.Fill.Color;
@@ -188,7 +188,7 @@ public class ShapeFillTests : SCTest
     public async void Picture_BinaryData_returns_binary_content_of_picture_image()
     {
         // Arrange
-        var pptxStream = TestHelper.GetStream("009_table.pptx");
+        var pptxStream = TestHelperShared.GetStream("009_table.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var shapeFill = pres.Slides[2].Shapes.GetByName<IAutoShape>("AutoShape 1").Fill;
 

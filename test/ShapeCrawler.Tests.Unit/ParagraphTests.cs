@@ -10,7 +10,6 @@ using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Helpers.Attributes;
 using Xunit;
-using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 namespace ShapeCrawler.Tests.Unit
 {
@@ -88,10 +87,10 @@ namespace ShapeCrawler.Tests.Unit
 
         public static IEnumerable<object[]> TestCasesAlignmentGetter()
         {
-            var autoShape1 = SCPresentation.Open(TestHelper.GetStream("001.pptx")).Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
+            var autoShape1 = SCPresentation.Open(TestHelperShared.GetStream("001.pptx")).Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
             yield return new object[] { autoShape1, SCTextAlignment.Center };
 
-            var pptxStream2 = TestHelper.GetStream("001.pptx");
+            var pptxStream2 = TestHelperShared.GetStream("001.pptx");
             var pres2 = SCPresentation.Open(pptxStream2);
             var autoShape2 = pres2.Slides[0].Shapes.GetByName<IAutoShape>("Head 1");
             yield return new object[] { autoShape2, SCTextAlignment.Center };
@@ -140,7 +139,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Paragraph_Bullet_Type_Getter_returns_None_value_When_paragraph_doesnt_have_bullet()
         {
             // Arrange
-            var pptx = TestHelper.GetStream("001.pptx");
+            var pptx = TestHelperShared.GetStream("001.pptx");
             var pres = SCPresentation.Open(pptx);
             var autoShape = pres.Slides[0].Shapes.GetById<IAutoShape>(2);
             var bullet = autoShape.TextFrame.Paragraphs[0].Bullet;
@@ -276,7 +275,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             // Arrange
             var textBox1 = ((IAutoShape)SCPresentation.Open(GetTestStream("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 37)).TextFrame;
-            var textBox2 = ((ITable)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+            var textBox2 = ((ITable)SCPresentation.Open(TestHelperShared.GetStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
                 .TextFrame;
 
             // Act
@@ -311,7 +310,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Paragraph_Portions_counter_returns_number_of_text_portions_in_the_paragraph()
         {
             // Arrange
-            var textFrame = SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[2].Shapes.GetById<IAutoShape>(2).TextFrame;
+            var textFrame = SCPresentation.Open(TestHelperShared.GetStream("009_table.pptx")).Slides[2].Shapes.GetById<IAutoShape>(2).TextFrame;
 
             // Act
             var portions = textFrame.Paragraphs[0].Portions;

@@ -45,7 +45,7 @@ public abstract class SCTest
     {
         if (fileName == "009_table.pptx")
         {
-            return TestHelper.GetStream(fileName);
+            return TestHelperShared.GetStream(fileName);
         }
         var assembly = Assembly.GetExecutingAssembly();
         return assembly.GetResourceStream(fileName);

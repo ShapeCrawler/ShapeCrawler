@@ -4,7 +4,6 @@ using FluentAssertions;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
-using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
@@ -17,7 +16,7 @@ public class ParagraphPortionTests : SCTest
     public void Text_Getter_returns_text_of_paragraph_portion()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("009_table");
+        var pptx = TestHelperShared.GetStream("009_table");
         var pres = SCPresentation.Open(pptx);
         IPortion portion = ((ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
             .TextFrame
@@ -34,7 +33,7 @@ public class ParagraphPortionTests : SCTest
     public void Text_Setter_updates_text()
     {
         // Arrange
-        var pptxStream = TestHelper.GetStream("autoshape-case001.pptx");
+        var pptxStream = TestHelperShared.GetStream("autoshape-case001.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var autoShape = pres.SlideMasters[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
         var portion = autoShape.TextFrame!.Paragraphs[0].Portions[0];
@@ -51,7 +50,7 @@ public class ParagraphPortionTests : SCTest
     public void Hyperlink_Setter_sets_hyperlink(string pptxFile, string shapeName)
     {
         // Arrange
-        var pptxStream = TestHelper.GetStream(pptxFile);
+        var pptxStream = TestHelperShared.GetStream(pptxFile);
         var presentation = SCPresentation.Open(pptxStream);
         var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>(shapeName);
         var portion = autoShape.TextFrame.Paragraphs[0].Portions[0];
@@ -79,7 +78,7 @@ public class ParagraphPortionTests : SCTest
     public void Hyperlink_Setter_sets_hyperlink_for_two_shape_on_the_Same_slide()
     {
         // Arrange
-        var pptxStream = TestHelper.GetStream("001.pptx");
+        var pptxStream = TestHelperShared.GetStream("001.pptx");
         var presentation = SCPresentation.Open(pptxStream);
         var textBox3 = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
         var textBox4 = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
@@ -99,7 +98,7 @@ public class ParagraphPortionTests : SCTest
     public void Hyperlink_Setter_sets_hyperlink_for_table_Cell()
     {
         // Arrange
-        var pptxStream =  TestHelper.GetStream("table-case001.pptx");
+        var pptxStream =  TestHelperShared.GetStream("table-case001.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
         var portion = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0];
@@ -117,7 +116,7 @@ public class ParagraphPortionTests : SCTest
     public void TextHighlightColor_Getter_returns_text_highlight_color()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
+        var pptx = TestHelperShared.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
@@ -133,7 +132,7 @@ public class ParagraphPortionTests : SCTest
     public void TextHighlightColor_Setter_sets_text_highlight_color()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
+        var pptx = TestHelperShared.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
