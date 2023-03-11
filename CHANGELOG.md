@@ -2,6 +2,7 @@
 
 ## Version 0.43.0 - Unreleased
 🍀Added `IShapeCollection.AddLine(int startPointX, int startPointY, int endPointX, int endPointY)`  
+🐞Fixed the table cell merging problem [#472](https://github.com/ShapeCrawler/ShapeCrawler/issues/472)
 
 ## Version 0.42.0 - 2023-03-04
 🍀Added `IAutoShape.Duplicate()` [#444](https://github.com/ShapeCrawler/ShapeCrawler/issues/444)  
