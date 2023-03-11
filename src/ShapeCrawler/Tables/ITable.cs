@@ -154,29 +154,6 @@ internal sealed class SCTable : SCShape, ITable
         this.rowCollection.Reset();
     }
 
-    private void MergeVertically(int bottomIndex, int topRowIndex, List<A.TableRow> aTableRows, int leftColIndex, int rightColIndex)
-    {
-        // Set row span value for the first cell in the merged cells
-        var verticalMergingCount = bottomIndex - topRowIndex + 1;
-        var rowSpanCells = aTableRows[topRowIndex].Elements<A.TableCell>()
-            .Skip(leftColIndex)
-            .Take(rightColIndex + 1);
-        foreach (var aTblCell in rowSpanCells)
-        {
-            aTblCell.RowSpan = new Int32Value(verticalMergingCount);
-        }
-
-        // Set vertical merging flag
-        foreach (var aTableRow in aTableRows.Skip(topRowIndex + 1).Take(bottomIndex-topRowIndex))
-        {
-            foreach (A.TableCell aTableCell in aTableRow.Elements<A.TableCell>().Take(rightColIndex + 1))
-            {
-                aTableCell.VerticalMerge = new BooleanValue(true);
-                this.MergeParagraphs(topRowIndex, leftColIndex, aTableCell);
-            }
-        }
-    }
-
     internal override void Draw(SKCanvas canvas)
     {
         throw new NotImplementedException();
@@ -281,6 +258,29 @@ internal sealed class SCTable : SCShape, ITable
         return false;
     }
     
+    private void MergeVertically(int bottomIndex, int topRowIndex, List<A.TableRow> aTableRows, int leftColIndex, int rightColIndex)
+    {
+        // Set row span value for the first cell in the merged cells
+        var verticalMergingCount = bottomIndex - topRowIndex + 1;
+        var rowSpanCells = aTableRows[topRowIndex].Elements<A.TableCell>()
+            .Skip(leftColIndex)
+            .Take(rightColIndex + 1);
+        foreach (var aTblCell in rowSpanCells)
+        {
+            aTblCell.RowSpan = new Int32Value(verticalMergingCount);
+        }
+
+        // Set vertical merging flag
+        foreach (var aTableRow in aTableRows.Skip(topRowIndex + 1).Take(bottomIndex - topRowIndex))
+        {
+            foreach (A.TableCell aTableCell in aTableRow.Elements<A.TableCell>().Take(rightColIndex + 1))
+            {
+                aTableCell.VerticalMerge = new BooleanValue(true);
+                this.MergeParagraphs(topRowIndex, leftColIndex, aTableCell);
+            }
+        }
+    }
+
     private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
     {
         A.TextBody? mergedCellTextBody = ((SCCell)this[minRowIndex, minColIndex]).ATableCell.TextBody;
