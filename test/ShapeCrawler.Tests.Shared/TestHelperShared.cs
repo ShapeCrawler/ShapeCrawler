@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace ShapeCrawler.Tests.Shared;
 
-public static class TestHelper
+public static class TestHelperShared
 {
     public static string GetPath(string fileName)
     {

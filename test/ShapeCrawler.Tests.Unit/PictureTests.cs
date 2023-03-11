@@ -21,7 +21,7 @@ public class PictureTests : SCTest
     public async void Image_BinaryData_returns_image_byte_array()
     {
         // Arrange
-        var shapePicture1 = (IPicture)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
+        var shapePicture1 = (IPicture)SCPresentation.Open(TestHelperShared.GetStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
         var shapePicture2 = (IPicture)SCPresentation.Open(GetTestStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
 
         // Act
@@ -83,7 +83,7 @@ public class PictureTests : SCTest
     public void Image_SetImage_updates_picture_image()
     {
         // Arrange
-        var pptxStream = TestHelper.GetStream("009_table");
+        var pptxStream = TestHelperShared.GetStream("009_table");
         var pngStream = GetTestStream("test-image-2.png");
         var pres = SCPresentation.Open(pptxStream);
         var mStream = new MemoryStream();

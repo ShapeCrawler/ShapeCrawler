@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using FluentAssertions;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
-using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tests.Unit;
@@ -46,7 +46,7 @@ public class PresentationTests : SCTest
     public void Slide_Width_returns_presentation_slides_width_in_pixels()
     {
         // Arrange
-        var pres9 = SCPresentation.Open(TestHelper.GetStream("009_table.pptx"));
+        var pres9 = SCPresentation.Open(TestHelperShared.GetStream("009_table.pptx"));
         var presentation = pres9;
 
         // Act
@@ -60,7 +60,7 @@ public class PresentationTests : SCTest
     public void Slide_Height_returns_presentation_slides_height_in_pixels()
     {
         // Arrange
-        var pres9 = SCPresentation.Open(TestHelper.GetStream("009_table.pptx"));
+        var pres9 = SCPresentation.Open(TestHelperShared.GetStream("009_table.pptx"));
         var presentation = pres9;
 
         // Act
@@ -88,7 +88,7 @@ public class PresentationTests : SCTest
     public void Slides_Add_adds_specified_slide_at_the_end_of_slide_collection()
     {
         // Arrange
-        var sourceSlide = SCPresentation.Open(TestHelper.GetStream("001.pptx")).Slides[0];
+        var sourceSlide = SCPresentation.Open(TestHelperShared.GetStream("001.pptx")).Slides[0];
         var destPre = SCPresentation.Open(GetTestStream("002.pptx"));
         var originSlidesCount = destPre.Slides.Count;
         var expectedSlidesCount = ++originSlidesCount;
@@ -110,7 +110,7 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var sourcePptx = GetTestStream("pictures-case004.pptx");
-        var destPptx = TestHelper.GetStream("autoshape-grouping.pptx");
+        var destPptx = TestHelperShared.GetStream("autoshape-grouping.pptx");
         var sourcePres = SCPresentation.Open(sourcePptx);
         var copyingSlide = sourcePres.Slides[0];
         var destPres = SCPresentation.Open(destPptx);
@@ -135,7 +135,7 @@ public class PresentationTests : SCTest
     public void Slides_Insert_inserts_specified_slide_at_the_specified_position()
     {
         // Arrange
-        var sourceSlide = SCPresentation.Open(TestHelper.GetStream("001.pptx")).Slides[0];
+        var sourceSlide = SCPresentation.Open(TestHelperShared.GetStream("001.pptx")).Slides[0];
         string sourceSlideId = Guid.NewGuid().ToString();
         sourceSlide.CustomData = sourceSlideId;
         var destPre = SCPresentation.Open(GetTestStream("002.pptx"));
@@ -200,7 +200,7 @@ public class PresentationTests : SCTest
     public void SlideMastersCount_ReturnsNumberOfMasterSlidesInThePresentation()
     {
         // Arrange
-        IPresentation presentationCase1 = SCPresentation.Open(TestHelper.GetStream("001.pptx"));
+        IPresentation presentationCase1 = SCPresentation.Open(TestHelperShared.GetStream("001.pptx"));
         IPresentation presentationCase2 = SCPresentation.Open(GetTestStream("002.pptx"));
 
         // Act
@@ -216,7 +216,7 @@ public class PresentationTests : SCTest
     public void SlideMaster_Shapes_Count_returns_number_of_master_shapes()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("001.pptx");
+        var pptx = TestHelperShared.GetStream("001.pptx");
         var pres = SCPresentation.Open(pptx);
 
         // Act
@@ -329,7 +329,7 @@ public class PresentationTests : SCTest
     public void SaveAs_should_not_change_the_Original_Stream_when_it_is_saved_to_New_Stream()
     {
         // Arrange
-        var originalStream = TestHelper.GetStream("001.pptx");
+        var originalStream = TestHelperShared.GetStream("001.pptx");
         var pres = SCPresentation.Open(originalStream);
         var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
         var originalText = textBox!.Text;

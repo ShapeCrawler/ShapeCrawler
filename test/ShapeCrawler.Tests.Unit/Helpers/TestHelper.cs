@@ -1,11 +1,12 @@
 using System.IO;
 using System.Reflection;
+using NUnit.Framework;
 
 namespace ShapeCrawler.Tests.Unit.Helpers;
 
-public static class TestHelperOld
+public static class TestHelper
 {
-    static TestHelperOld()
+    static TestHelper()
     {
         HorizontalResolution = 96;
         VerticalResolution = 96;
@@ -32,4 +33,13 @@ public static class TestHelperOld
     public static readonly float HorizontalResolution;
         
     public static readonly float VerticalResolution;
+
+    public static void SaveToTemp(IPresentation pres)
+    {
+        var folderPath = Path.Combine(@"c:\temp", TestContext.CurrentContext.Test.Name);
+        var filePath = Path.Combine(folderPath, "result.pptx");
+        Directory.CreateDirectory(folderPath);
+        
+        pres.SaveAs(filePath);
+    }
 }

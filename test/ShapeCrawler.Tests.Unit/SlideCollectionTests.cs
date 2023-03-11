@@ -5,7 +5,6 @@ using FluentAssertions;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
-using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tests.Unit;
@@ -32,7 +31,7 @@ public class SlideCollectionTests : SCTest
     public void Add_adds_external_slide()
     {
         // Arrange
-        var sourceSlide = SCPresentation.Open(TestHelper.GetStream("001.pptx")).Slides[0];
+        var sourceSlide = SCPresentation.Open(TestHelperShared.GetStream("001.pptx")).Slides[0];
         var pptx = GetTestStream("002.pptx");
         var destPre = SCPresentation.Open(pptx);
         var originSlidesCount = destPre.Slides.Count;
@@ -90,7 +89,7 @@ public class SlideCollectionTests : SCTest
     public void Add_add_adds_New_slide()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-grouping.pptx");
+        var pptx = TestHelperShared.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var layout = pres.SlideMasters[0].SlideLayouts[0]; 
         var slides = pres.Slides;
@@ -108,7 +107,7 @@ public class SlideCollectionTests : SCTest
     public void Slides_Insert_inserts_slide_at_the_specified_position()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("001.pptx");
+        var pptx = TestHelperShared.GetStream("001.pptx");
         var sourceSlide = SCPresentation.Open(pptx).Slides[0];
         var sourceSlideId = Guid.NewGuid().ToString();
         sourceSlide.CustomData = sourceSlideId;

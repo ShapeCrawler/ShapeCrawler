@@ -68,10 +68,10 @@ internal sealed class SCTable : SCShape, ITable
 
     public ICell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
 
-    public void MergeCells(ICell inputCell1, ICell inputCell2) // TODO: Optimize method
+    public void MergeCells(ICell inputCell1, ICell inputCell2)
     {
-        SCCell cell1 = (SCCell)inputCell1;
-        SCCell cell2 = (SCCell)inputCell2;
+        var cell1 = (SCCell)inputCell1;
+        var cell2 = (SCCell)inputCell2;
         if (CannotBeMerged(cell1, cell2))
         {
             return;
@@ -88,28 +88,9 @@ internal sealed class SCTable : SCShape, ITable
             this.MergeHorizontal(maxColIndex, minColIndex, minRowIndex, maxRowIndex, aTableRows);
         }
 
-        // Vertical merging
         if (minRowIndex != maxRowIndex)
         {
-            // Set row span value for the first cell in the merged cells
-            var verticalMergingCount = maxRowIndex - minRowIndex + 1;
-            var rowSpanCells = aTableRows[minRowIndex].Elements<A.TableCell>()
-                .Skip(minColIndex)
-                .Take(maxColIndex + 1);
-            foreach (var aTblCell in rowSpanCells)
-            {
-                aTblCell.RowSpan = new Int32Value(verticalMergingCount);
-            }
-
-            // Set vertical merging flag
-            foreach (var aTableRow in aTableRows.Skip(minRowIndex + 1).Take(maxRowIndex))
-            {
-                foreach (A.TableCell aTblCell in aTableRow.Elements<A.TableCell>().Take(maxColIndex + 1))
-                {
-                    aTblCell.VerticalMerge = new BooleanValue(true);
-                    this.MergeParagraphs(minRowIndex, minColIndex, aTblCell);
-                }
-            }
+            this.MergeVertically(maxRowIndex, minRowIndex, aTableRows, minColIndex, maxColIndex);
         }
 
         // Delete a:gridCol and a:tc elements if all columns are merged
@@ -277,6 +258,29 @@ internal sealed class SCTable : SCShape, ITable
         return false;
     }
     
+    private void MergeVertically(int bottomIndex, int topRowIndex, List<A.TableRow> aTableRows, int leftColIndex, int rightColIndex)
+    {
+        // Set row span value for the first cell in the merged cells
+        var verticalMergingCount = bottomIndex - topRowIndex + 1;
+        var rowSpanCells = aTableRows[topRowIndex].Elements<A.TableCell>()
+            .Skip(leftColIndex)
+            .Take(rightColIndex + 1);
+        foreach (var aTblCell in rowSpanCells)
+        {
+            aTblCell.RowSpan = new Int32Value(verticalMergingCount);
+        }
+
+        // Set vertical merging flag
+        foreach (var aTableRow in aTableRows.Skip(topRowIndex + 1).Take(bottomIndex - topRowIndex))
+        {
+            foreach (A.TableCell aTableCell in aTableRow.Elements<A.TableCell>().Take(rightColIndex + 1))
+            {
+                aTableCell.VerticalMerge = new BooleanValue(true);
+                this.MergeParagraphs(topRowIndex, leftColIndex, aTableCell);
+            }
+        }
+    }
+
     private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
     {
         A.TextBody? mergedCellTextBody = ((SCCell)this[minRowIndex, minColIndex]).ATableCell.TextBody;

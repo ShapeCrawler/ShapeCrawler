@@ -135,7 +135,7 @@ public class FontTests : SCTest
         var pptx15 = GetTestStream("015.pptx");
         var pres15 = SCPresentation.Open(pptx15);
         var font1 = pres15.Slides[0].Shapes.GetById<IAutoShape>(5).TextFrame!.Paragraphs[0].Portions[2].Font;
-        var font2 = SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[2].Shapes.GetById<IAutoShape>(2).TextFrame!.Paragraphs[0].Portions[1].Font;
+        var font2 = SCPresentation.Open(TestHelperShared.GetStream("009_table.pptx")).Slides[2].Shapes.GetById<IAutoShape>(2).TextFrame!.Paragraphs[0].Portions[1].Font;
 
         // Act
         var fontSize1 = font1.Size;
@@ -185,7 +185,7 @@ public class FontTests : SCTest
     public void Size_Getter_returns_Font_Size_of_Non_Placeholder_Table()
     {
         // Arrange
-        var table = (ITable)SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3);
+        var table = (ITable)SCPresentation.Open(TestHelperShared.GetStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3);
         var cellPortion = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0];
 
         // Act-Assert

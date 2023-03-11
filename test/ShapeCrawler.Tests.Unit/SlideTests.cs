@@ -6,7 +6,6 @@ using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
 using Xunit;
-using TestHelper = ShapeCrawler.Tests.Shared.TestHelper;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable TooManyChainedReferences
@@ -21,7 +20,7 @@ public class SlideTests : SCTest
     public void Hide_MethodHidesSlide_WhenItIsExecuted()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("001.pptx");
+        var pptx = TestHelperShared.GetStream("001.pptx");
         var pre = SCPresentation.Open(pptx);
         var slide = pre.Slides.First();
 
@@ -51,7 +50,7 @@ public class SlideTests : SCTest
     public async void Background_SetImage_updates_background()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("009_table.pptx");
+        var pptx = TestHelperShared.GetStream("009_table.pptx");
 var pre = SCPresentation.Open(pptx);
         var backgroundImage = pre.Slides[0].Background;
         var imgStream = new MemoryStream(Resources.test_image_2);
@@ -69,7 +68,7 @@ var pre = SCPresentation.Open(pptx);
     public void Background_ImageIsNull_WhenTheSlideHasNotBackground()
     {
         // Arrange
-        var slide = SCPresentation.Open(TestHelper.GetStream("009_table.pptx")).Slides[1];
+        var slide = SCPresentation.Open(TestHelperShared.GetStream("009_table.pptx")).Slides[1];
 
         // Act
         var backgroundImage = slide.Background;
@@ -83,7 +82,7 @@ var pre = SCPresentation.Open(pptx);
     {
         // Arrange
         const string customDataString = "Test custom data";
-        var originPre = SCPresentation.Open(TestHelper.GetStream("001.pptx"));
+        var originPre = SCPresentation.Open(TestHelperShared.GetStream("001.pptx"));
         var slide = originPre.Slides.First();
 
         // Act
@@ -102,7 +101,7 @@ var pre = SCPresentation.Open(pptx);
     public void CustomData_PropertyIsNull_WhenTheSlideHasNotCustomData()
     {
         // Arrange
-        var slide = SCPresentation.Open(TestHelper.GetStream("001.pptx")).Slides.First();
+        var slide = SCPresentation.Open(TestHelperShared.GetStream("001.pptx")).Slides.First();
 
         // Act
         var sldCustomData = slide.CustomData;
@@ -115,7 +114,7 @@ var pre = SCPresentation.Open(pptx);
     public void Number_Setter_moves_slide_to_specified_number_position()
     {
         // Arrange
-        var pptxStream = TestHelper.GetStream("001.pptx");
+        var pptxStream = TestHelperShared.GetStream("001.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var slide1 = pres.Slides[0];
         var slide2 = pres.Slides[1];

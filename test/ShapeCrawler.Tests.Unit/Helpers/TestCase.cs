@@ -33,7 +33,7 @@ public class TestCase
                 return this.pres;
             }
             
-            var pptxStream = this.PresentationName == "001.pptx" ? Tests.Shared.TestHelper.GetStream(this.PresentationName) : TestHelperOld.GetStream(this.PresentationName);
+            var pptxStream = this.PresentationName == "001.pptx" ? Tests.Shared.TestHelperShared.GetStream(this.PresentationName) : TestHelper.GetStream(this.PresentationName);
             this.pres = SCPresentation.Open(pptxStream);
 
             return this.pres;
@@ -78,7 +78,7 @@ public class TestCase<T1>
                 return this.pres;
             }
             
-            var stream = TestHelperOld.GetStream(this.PresentationName);
+            var stream = TestHelper.GetStream(this.PresentationName);
             this.pres = SCPresentation.Open(stream);
 
             return this.pres;
