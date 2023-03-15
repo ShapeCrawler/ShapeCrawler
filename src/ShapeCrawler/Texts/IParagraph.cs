@@ -183,7 +183,8 @@ internal sealed class SCParagraph : IParagraph
         newARun.Text!.Text = text;
         if (lastElement == null)
         {
-            aParagraph.InsertAt(newARun, 0);
+            var apPr = aParagraph.GetFirstChild<A.ParagraphProperties>();
+            lastElement = apPr != null ? apPr.InsertAfterSelf(newARun) : aParagraph.InsertAt(newARun, 0);
         }
         else
         {
