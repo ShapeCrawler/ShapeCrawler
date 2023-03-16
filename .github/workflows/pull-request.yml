@@ -13,6 +13,26 @@ jobs:
       
       - name: Restore packages
         run: dotnet restore    
+
+      - name: Install ReportGenerator
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
       
       - name: Test
-        run: dotnet test -c Release -f net7.0 --no-restore --verbosity normal
+        run: dotnet test -c Release -f net7.0 --no-restore --collect:"XPlat Code Coverage"
+
+      - name: Generate coverage report
+        run: reportgenerator -reports:./**/coverage.cobertura.xml -targetdir:./coverage/report
+      - name: Archive coverage report
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report
+          path: ./coverage/report
+      - name: Fail if coverage is less than 60%
+        run: |
+          coverage=$(grep -oP 'Total\sline\scoverage:\s\K[\d.]+' ./coverage/report/index.html)
+          if (( $(echo "$coverage < 60" | bc -l) )); then
+            echo "Error: Test coverage is less than 60% ($coverage%)"
+            exit 1
+          else
+            echo "Test coverage is greater than or equal to 60% ($coverage%)"
+          fi
