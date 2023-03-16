@@ -18,21 +18,17 @@ jobs:
         run: dotnet tool install --global dotnet-reportgenerator-globaltool
       
       - name: Test
-        run: dotnet test -c Release -f net7.0 --no-restore --collect:"XPlat Code Coverage"
+        run: dotnet test -c Release -f net7.0 --no-restore --collect:"XPlat Code Coverage" --results-directory ./coverage
 
-      - name: Generate coverage report
-        run: reportgenerator -reports:./**/coverage.cobertura.xml -targetdir:./coverage/report
-      - name: Archive coverage report
-        uses: actions/upload-artifact@v2
+      - name: Code Coverage Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
         with:
-          name: coverage-report
-          path: ./coverage/report
-      - name: Fail if coverage is less than 60%
-        run: |
-          coverage=$(grep -oP 'Total\sline\scoverage:\s\K[\d.]+' ./coverage/report/index.html)
-          if (( $(echo "$coverage < 60" | bc -l) )); then
-            echo "Error: Test coverage is less than 60% ($coverage%)"
-            exit 1
-          else
-            echo "Test coverage is greater than or equal to 60% ($coverage%)"
-          fi
+          filename: coverage/**/coverage.cobertura.xml
+          badge: true
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '60 80'
