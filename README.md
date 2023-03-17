@@ -71,9 +71,9 @@ How you can contribute?
 
 
 ## Changelog
-### Version 0.42.0 - 2023-03-04
-🍀Added `IAutoShape.Duplicate()` [#444](https://github.com/ShapeCrawler/ShapeCrawler/issues/444)  
-🍀Added `IShapeCollection.AddLine()` [#465](https://github.com/ShapeCrawler/ShapeCrawler/issues/465)
+## Version 0.42.1 - 2023-03-17
+🐞Fixed the table cell merging problem [#472](https://github.com/ShapeCrawler/ShapeCrawler/issues/472)  
+🐞Fixed text alignment [#476](https://github.com/ShapeCrawler/ShapeCrawler/issues/476)
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full log.
 

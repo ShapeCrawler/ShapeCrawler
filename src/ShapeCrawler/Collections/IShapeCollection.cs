@@ -72,12 +72,16 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     ///     Adds a new Rounded Rectangle shape. 
     /// </summary>
     IRoundedRectangle AddRoundedRectangle(int x, int y, int w, int h);
+
+#if DEBUG
     
     /// <summary>
     ///     Adds a line from XML.
     /// </summary>
     /// <param name="xml">Content of p:cxnSp Open XML element.</param>
     ILine AddLine(string xml);
+
+#endif
     
     /// <summary>
     ///     Adds a new line.
