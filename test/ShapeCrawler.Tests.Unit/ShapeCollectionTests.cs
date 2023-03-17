@@ -125,6 +125,8 @@ public class ShapeCollectionTests : SCTest
         shapesCount.Should().Be(expectedCount);
     }
 
+#if DEBUG
+
     [Fact]
     public void AddLine_adds_a_new_Line_shape_from_raw_open_xml_content()
     {
@@ -140,7 +142,9 @@ public class ShapeCollectionTests : SCTest
         line.Id.Should().Be(1);
         shapes.Count.Should().Be(1);
     }
-    
+
+#endif
+
     [Fact]
     public void AddLine_adds_a_new_Line_shape()
     {
