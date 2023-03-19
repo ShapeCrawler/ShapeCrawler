@@ -55,7 +55,12 @@ internal sealed class SCLine : SCAutoShape, ILine
     private SCPoint GetEndPoint()
     {
         var x = this.X + this.Width;
-        var y = this.Y + this.Height;
+        var y = this.Height;
+
+        if (y == 0)
+        {
+            y = this.Y;
+        }
 
         return new SCPoint(x, y);
     }

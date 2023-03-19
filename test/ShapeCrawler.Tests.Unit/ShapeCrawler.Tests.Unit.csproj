@@ -50,6 +50,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Remove="TestResults\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -193,6 +194,8 @@
     <EmbeddedResource Include="Resource\005.pptx" />
     <None Remove="Resource\charts\charts-case004_bars.pptx" />
     <EmbeddedResource Include="Resource\charts\charts-case004_bars.pptx" />
+    <EmbeddedResource Remove="TestResults\**" />
+    <None Remove="TestResults\**" />
   </ItemGroup>
 
 </Project>

@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using NUnit.Framework;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
@@ -10,6 +11,7 @@ using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Helpers.Attributes;
 using Xunit;
+using Assert = Xunit.Assert;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable TooManyChainedReferences
@@ -20,7 +22,7 @@ namespace ShapeCrawler.Tests.Unit;
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
 public class ShapeCollectionTests : SCTest
 {
-    [Theory]
+    [Xunit.Theory]
     [LayoutShapeData("autoshape-case004_subtitle.pptx", slideNumber: 1, shapeName: "Group 1")]
     [MasterShapeData("autoshape-case004_subtitle.pptx", shapeName: "Group 1")]
     public void GetByName_returns_shape_by_specified_name(IShape shape)
@@ -105,7 +107,7 @@ public class ShapeCollectionTests : SCTest
         isVideo.Should().BeTrue();
     }
 
-    [Theory]
+    [Xunit.Theory]
     [SlideData("#1", "002.pptx", slideNumber: 1, expectedResult: 4)]
     [SlideData("#2","003.pptx", slideNumber: 1, expectedResult: 5)]
     [SlideData("#3","013.pptx", slideNumber: 1, expectedResult: 4)]
@@ -125,8 +127,6 @@ public class ShapeCollectionTests : SCTest
         shapesCount.Should().Be(expectedCount);
     }
 
-#if DEBUG
-
     [Fact]
     public void AddLine_adds_a_new_Line_shape_from_raw_open_xml_content()
     {
@@ -143,10 +143,8 @@ public class ShapeCollectionTests : SCTest
         shapes.Count.Should().Be(1);
     }
 
-#endif
-
     [Fact]
-    public void AddLine_adds_a_new_Line_shape()
+    public void AddLine_adds_line_When_Y_coordinates_are_the_same()
     {
         // Arrange
         var pres = SCPresentation.Create();
@@ -160,10 +158,31 @@ public class ShapeCollectionTests : SCTest
         line.ShapeType.Should().Be(SCShapeType.Line);
         line.X.Should().Be(50);
         line.Y.Should().Be(60);
+        line.EndPoint.Y.Should().Be(60);
         var errors = PptxValidator.Validate(pres);
         errors.Should().BeEmpty();
     }
     
+    [Test]
+    public void AddLine_adds_line_When_EndPointY_is_higher()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var shapes = pres.Slides[0].Shapes;
+
+        // Act
+        var line = shapes.AddLine(startPointX: 10, startPointY: 10, endPointX: 20, endPointY: 5);
+        TestHelper.SaveResult(pres);
+        
+        // Assert
+        shapes.Should().ContainSingle();
+        line.ShapeType.Should().Be(SCShapeType.Line);
+        line.EndPoint.X.Should().Be(21, "because of conversion EMU <-> Pixel it can a little bit differ from the original value.");
+        line.EndPoint.Y.Should().Be(5);
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
+    }
+
     [Fact]
     public void AddAudio_adds_Audio_shape()
     {

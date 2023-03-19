@@ -31,15 +31,19 @@ public static class TestHelper
     }
 
     public static readonly float HorizontalResolution;
-        
+
     public static readonly float VerticalResolution;
 
-    public static void SaveToTemp(IPresentation pres)
+#if DEBUG
+
+    public static void SaveResult(IPresentation pres)
     {
-        var folderPath = Path.Combine(@"c:\temp", TestContext.CurrentContext.Test.Name);
-        var filePath = Path.Combine(folderPath, "result.pptx");
-        Directory.CreateDirectory(folderPath);
-        
-        pres.SaveAs(filePath);
+        var testFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "..", "TestResults",
+            TestContext.CurrentContext.Test.Name);
+        Directory.CreateDirectory(testFolder);
+
+        pres.SaveAs(Path.Combine(testFolder, "result.pptx"));
     }
+
+#endif
 }
