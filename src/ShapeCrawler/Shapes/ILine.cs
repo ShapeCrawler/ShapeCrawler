@@ -51,12 +51,19 @@ internal sealed class SCLine : SCAutoShape, ILine
 
     private SCPoint GetStartPoint()
     {
-        var horizontalFlipped = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>()!.Transform2D!.HorizontalFlip?.Value;
-        if(horizontalFlipped != null && horizontalFlipped.Value && this.Height == 0)
+        var horizontalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>()!.Transform2D!.HorizontalFlip?.Value;
+        var flipH = horizontalFlip != null && horizontalFlip.Value;
+        var verticalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>()!.Transform2D!.VerticalFlip?.Value;
+        var flipV = verticalFlip != null && verticalFlip.Value;
+        if (flipH && this.X > this.Y)
         {
             return new SCPoint(this.X, this.Width);
         }
-        if (horizontalFlipped != null && horizontalFlipped.Value)
+        if(flipH && this.Height == 0)
+        {
+            return new SCPoint(this.X, this.Width);
+        }
+        if (flipH  && !flipV && this.X < this.Y)
         {
             return new SCPoint(this.X + this.Width, this.Y);    
         }
@@ -74,6 +81,11 @@ internal sealed class SCLine : SCAutoShape, ILine
         }
 
         var horizontalFlipped = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>()!.Transform2D!.HorizontalFlip?.Value;
+        var verticalFlipped = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>()!.Transform2D!.HorizontalFlip?.Value;
+        if(verticalFlipped != null && verticalFlipped.Value)
+        {
+            return new SCPoint(this.Width, this.Height);
+        }
         if (horizontalFlipped != null && horizontalFlipped.Value && this.Height == 0)
         {
             return new SCPoint(this.Y, this.Width);

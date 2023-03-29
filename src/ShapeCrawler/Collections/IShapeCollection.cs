@@ -423,6 +423,7 @@ internal sealed class ShapeCollection : IShapeCollection
 
         var x = startPointX;
         var y = startPointY;
+        var flipV = false;
         var flipH = false;
         if (startPointX > endPointX && endPointY > startPointY)
         {
@@ -432,16 +433,35 @@ internal sealed class ShapeCollection : IShapeCollection
             cy = endPointY;
             flipH = true;
         }
-        else if (startPointY == endPointY)
+        else if (startPointX > endPointX && startPointY == endPointY)
         {
             x = startPointX;
-            y = endPointX;
-            cx = startPointY;
+            cx = Math.Abs(startPointX - endPointX);
             cy = 0;
-            flipH = true;
+        }
+        else if (startPointY > endPointY)
+        {
+            y = startPointY;
+            cy = endPointY;
+            flipV = true;
+        }
+        
+        if(cy == y)
+        {
+            flipV = true;
         }
 
-        var newPConnectionShape = this.CreatePConnectionShape(x, y, (int)cx, cy, flipH);
+        if (cx == 0)
+        {
+            flipV = true;
+        }
+
+        if(startPointX > endPointX)
+        {
+            flipH = true;
+        }
+        
+        var newPConnectionShape = this.CreatePConnectionShape(x, y, (int)cx, cy, flipH, flipV);
 
         var newShape = new SCLine(newPConnectionShape, this.ParentSlideStructure, this);
         newShape.Outline.Color = "000000";
@@ -641,7 +661,7 @@ internal sealed class ShapeCollection : IShapeCollection
         return pShape;
     }
 
-    private P.ConnectionShape CreatePConnectionShape(int xPx, int yPx, int cxPx, int cyPx, bool flipH)
+    private P.ConnectionShape CreatePConnectionShape(int xPx, int yPx, int cxPx, int cyPx, bool flipH, bool flipV)
     {
         var idAndName = this.GenerateIdAndName();
         var adjustValueList = new A.AdjustValueList();
@@ -652,9 +672,8 @@ internal sealed class ShapeCollection : IShapeCollection
         var cxEmu = UnitConverter.HorizontalPixelToEmu(cxPx);
         var cyEmu = UnitConverter.VerticalPixelToEmu(cyPx);
         var aXfrm = shapeProperties.AddAXfrm(xEmu, yEmu, cxEmu, cyEmu);
-        aXfrm.VerticalFlip = new BooleanValue(cyPx < yPx);
-        aXfrm.VerticalFlip = new BooleanValue(cxPx == 0);
         aXfrm.HorizontalFlip = new BooleanValue(flipH);
+        aXfrm.VerticalFlip = new BooleanValue(flipV);
         shapeProperties.Append(presetGeometry);
 
         var pConnectionShape = new P.ConnectionShape(
