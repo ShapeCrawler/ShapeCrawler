@@ -62,19 +62,19 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     /// <param name="y">Y coordinate in pixels.</param>
     /// <param name="stream">Video stream data.</param>
     IVideoShape AddVideo(int x, int y, Stream stream);
-    
+
     /// <summary>
     ///     Adds a new Rectangle shape.
     /// </summary>
     IRectangle AddRectangle(int x, int y, int w, int h);
-    
+
     /// <summary>
     ///     Adds a new Rounded Rectangle shape. 
     /// </summary>
     IRoundedRectangle AddRoundedRectangle(int x, int y, int w, int h);
 
 #if DEBUG
-    
+
     /// <summary>
     ///     Adds a line from XML.
     /// </summary>
@@ -82,12 +82,12 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     ILine AddLine(string xml);
 
 #endif
-    
+
     /// <summary>
     ///     Adds a new line.
     /// </summary>
     ILine AddLine(int startPointX, int startPointY, int endPointX, int endPointY);
-    
+
     /// <summary>
     ///     Adds a new table.
     /// </summary>
@@ -110,7 +110,7 @@ internal sealed class ShapeCollection : IShapeCollection
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideStructureOf)
     {
         this.ParentSlideStructure = parentSlideStructureOf;
-        
+
         var chartGrFrameHandler = new ChartGraphicFrameHandler();
         var tableGrFrameHandler = new TableGraphicFrameHandler();
         var oleGrFrameHandler = new OleGraphicFrameHandler();
@@ -369,7 +369,7 @@ internal sealed class ShapeCollection : IShapeCollection
 
         var newShape = new SCRectangle(newPShape, this.ParentSlideStructure, this);
         newShape.Outline.Color = "000000";
-        
+
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(newPShape);
@@ -390,20 +390,20 @@ internal sealed class ShapeCollection : IShapeCollection
 
         return newShape;
     }
-    
+
     public ILine AddLine(string xml)
     {
         var newPConnectionShape = new ConnectionShape(xml);
-        
+
         var newShape = new SCLine(newPConnectionShape, this.ParentSlideStructure, this);
-        
+
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(newPConnectionShape);
 
         return newShape;
     }
-    
+
     public ILine AddLine(int startPointX, int startPointY, int endPointX, int endPointY)
     {
         var deltaX = endPointX - startPointX;
@@ -415,12 +415,37 @@ internal sealed class ShapeCollection : IShapeCollection
         {
             cy = 0;
         }
-            
-        var newPConnectionShape = this.CreatePConnectionShape(startPointX, startPointY, (int)cx, cy);
+
+        if (startPointX == endPointX)
+        {
+            cx = 0;
+        }
+
+        var x = startPointX;
+        var y = startPointY;
+        var flipH = false;
+        if (startPointX > endPointX && endPointY > startPointY)
+        {
+            x = endPointX;
+            y = startPointY;
+            cx = startPointX - endPointX;
+            cy = endPointY;
+            flipH = true;
+        }
+        else if (startPointY == endPointY)
+        {
+            x = startPointX;
+            y = endPointX;
+            cx = startPointY;
+            cy = 0;
+            flipH = true;
+        }
+
+        var newPConnectionShape = this.CreatePConnectionShape(x, y, (int)cx, cy, flipH);
 
         var newShape = new SCLine(newPConnectionShape, this.ParentSlideStructure, this);
         newShape.Outline.Color = "000000";
-        
+
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(newPConnectionShape);
@@ -582,7 +607,7 @@ internal sealed class ShapeCollection : IShapeCollection
     {
         return this.GetEnumerator();
     }
-     
+
     private P.Shape CreatePShape(int x, int y, int width, int height, A.ShapeTypeValues form)
     {
         var idAndName = this.GenerateIdAndName();
@@ -615,8 +640,8 @@ internal sealed class ShapeCollection : IShapeCollection
 
         return pShape;
     }
-    
-    private P.ConnectionShape CreatePConnectionShape(int xPx, int yPx, int cxPx, int cyPx)
+
+    private P.ConnectionShape CreatePConnectionShape(int xPx, int yPx, int cxPx, int cyPx, bool flipH)
     {
         var idAndName = this.GenerateIdAndName();
         var adjustValueList = new A.AdjustValueList();
@@ -628,26 +653,28 @@ internal sealed class ShapeCollection : IShapeCollection
         var cyEmu = UnitConverter.VerticalPixelToEmu(cyPx);
         var aXfrm = shapeProperties.AddAXfrm(xEmu, yEmu, cxEmu, cyEmu);
         aXfrm.VerticalFlip = new BooleanValue(cyPx < yPx);
+        aXfrm.VerticalFlip = new BooleanValue(cxPx == 0);
+        aXfrm.HorizontalFlip = new BooleanValue(flipH);
         shapeProperties.Append(presetGeometry);
 
         var pConnectionShape = new P.ConnectionShape(
             new P.NonVisualConnectionShapeProperties(
-                new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 }, 
-                new P.NonVisualConnectorShapeDrawingProperties(), 
+                new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
+                new P.NonVisualConnectorShapeDrawingProperties(),
                 new P.ApplicationNonVisualDrawingProperties()),
             shapeProperties);
-        
+
         return pConnectionShape;
     }
-        
+
     private (int, string) GenerateIdAndName()
     {
         var maxId = 0;
-        if(this.shapes.Value.Any())
+        if (this.shapes.Value.Any())
         {
-            maxId = this.shapes.Value.Max(s => s.Id);    
+            maxId = this.shapes.Value.Max(s => s.Id);
         }
-        
+
         var maxOrder = Regex.Matches(string.Join(string.Empty, this.shapes.Value.Select(s => s.Name)), "\\d+")
 #if NETSTANDARD2_0
             .Cast<Match>()
@@ -655,10 +682,10 @@ internal sealed class ShapeCollection : IShapeCollection
             .Select(m => int.Parse(m.Value))
             .DefaultIfEmpty(0)
             .Max();
-        
+
         return (maxId + 1, $"AutoShape {maxOrder + 1}");
     }
-    
+
     private int GenerateNextShapeId()
     {
         return this.shapes.Value.Select(shape => shape.Id).Prepend(0).Max() + 1;
@@ -668,7 +695,7 @@ internal sealed class ShapeCollection : IShapeCollection
     {
         this.pShapeTree.Append(newAutoShape.PShapeTreeChild);
         newAutoShape.AutoShape.Duplicated += this.OnAutoShapeAdded;
-        
+
         this.shapes.Reset();
     }
 
@@ -692,7 +719,7 @@ internal sealed class ShapeCollection : IShapeCollection
 
         return $"Table {maxOrder + 1}";
     }
-    
+
     private List<IShape> GetShapes(AutoShapeCreator autoShapeCreator)
     {
         var shapesValue = new List<IShape>(this.pShapeTree.Count());

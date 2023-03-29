@@ -2,6 +2,8 @@
 using OneOf;
 using ShapeCrawler.Shapes;
 using SkiaSharp;
+using P = DocumentFormat.OpenXml.Presentation;
+using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler;
@@ -49,6 +51,16 @@ internal sealed class SCLine : SCAutoShape, ILine
 
     private SCPoint GetStartPoint()
     {
+        var horizontalFlipped = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>()!.Transform2D!.HorizontalFlip?.Value;
+        if(horizontalFlipped != null && horizontalFlipped.Value && this.Height == 0)
+        {
+            return new SCPoint(this.X, this.Width);
+        }
+        if (horizontalFlipped != null && horizontalFlipped.Value)
+        {
+            return new SCPoint(this.X + this.Width, this.Y);    
+        }
+        
         return new SCPoint(this.X, this.Y);
     }
     
@@ -56,10 +68,20 @@ internal sealed class SCLine : SCAutoShape, ILine
     {
         var x = this.X + this.Width;
         var y = this.Height;
-
         if (y == 0)
         {
             y = this.Y;
+        }
+
+        var horizontalFlipped = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>()!.Transform2D!.HorizontalFlip?.Value;
+        if (horizontalFlipped != null && horizontalFlipped.Value && this.Height == 0)
+        {
+            return new SCPoint(this.Y, this.Width);
+        }
+
+        if (horizontalFlipped != null && horizontalFlipped.Value)
+        {
+            return new SCPoint(this.X, this.Height);
         }
 
         return new SCPoint(x, y);
