@@ -55,17 +55,15 @@ internal sealed class SCLine : SCAutoShape, ILine
         var flipH = horizontalFlip != null && horizontalFlip.Value;
         var verticalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>()!.Transform2D!.VerticalFlip?.Value;
         var flipV = verticalFlip != null && verticalFlip.Value;
-        if (flipH && this.X > this.Y)
+
+        if (flipH && (this.Height == 0 || flipV))
         {
-            return new SCPoint(this.X, this.Width);
+            return new SCPoint(this.X, Y);
         }
-        if(flipH && this.Height == 0)
+        
+        if (flipH)
         {
-            return new SCPoint(this.X, this.Width);
-        }
-        if (flipH  && !flipV && this.X < this.Y)
-        {
-            return new SCPoint(this.X + this.Width, this.Y);    
+            return new SCPoint(this.X + this.Width, Y);
         }
         
         return new SCPoint(this.X, this.Y);
@@ -73,29 +71,31 @@ internal sealed class SCLine : SCAutoShape, ILine
     
     private SCPoint GetEndPoint()
     {
-        var x = this.X + this.Width;
-        var y = this.Height;
-        if (y == 0)
-        {
-            y = this.Y;
-        }
+        var horizontalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>()!.Transform2D!.HorizontalFlip?.Value;
+        var flipH = horizontalFlip != null && horizontalFlip.Value;
+        var verticalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>()!.Transform2D!.VerticalFlip?.Value;
+        var flipV = verticalFlip != null && verticalFlip.Value;
 
-        var horizontalFlipped = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>()!.Transform2D!.HorizontalFlip?.Value;
-        var verticalFlipped = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>()!.Transform2D!.HorizontalFlip?.Value;
-        if(verticalFlipped != null && verticalFlipped.Value)
-        {
-            return new SCPoint(this.Width, this.Height);
-        }
-        if (horizontalFlipped != null && horizontalFlipped.Value && this.Height == 0)
-        {
-            return new SCPoint(this.Y, this.Width);
-        }
-
-        if (horizontalFlipped != null && horizontalFlipped.Value)
+        if(this.Width == 0)
         {
             return new SCPoint(this.X, this.Height);
         }
+        
+        if (flipH && this.Height == 0)
+        {
+            return new SCPoint(this.X - this.Width, this.Y);
+        }
 
-        return new SCPoint(x, y);
+        if (flipV)
+        {
+            return new SCPoint(this.Width, this.Height);
+        }
+        
+        if (flipH)
+        {
+            return new SCPoint(this.X, this.Height);
+        }
+        
+        return new SCPoint(this.Width, this.Y);
     }
 }

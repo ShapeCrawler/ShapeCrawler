@@ -406,9 +406,8 @@ internal sealed class ShapeCollection : IShapeCollection
 
     public ILine AddLine(int startPointX, int startPointY, int endPointX, int endPointY)
     {
-        var deltaX = endPointX - startPointX;
         var deltaY = endPointY - startPointY;
-        var cx = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+        var cx = endPointX;
 
         var cy = endPointY;
         if (deltaY == 0)
@@ -446,11 +445,6 @@ internal sealed class ShapeCollection : IShapeCollection
             flipV = true;
         }
         
-        if(cy == y)
-        {
-            flipV = true;
-        }
-
         if (cx == 0)
         {
             flipV = true;

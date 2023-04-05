@@ -144,30 +144,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void AddLine_adds_line_When_EndPointY_is_same()
-    {
-        // Arrange
-        var pres = SCPresentation.Create();
-        var shapes = pres.Slides[0].Shapes;
-
-        // Act
-        var line = shapes.AddLine(startPointX: 50, startPointY: 60, endPointX: 100, endPointY: 60);
-        
-        // Assert
-        shapes.Should().ContainSingle();
-        line.ShapeType.Should().Be(SCShapeType.Line);
-        line.X.Should().Be(50);
-        line.Y.Should().Be(60);
-        line.StartPoint.X.Should().Be(50);
-        line.StartPoint.Y.Should().Be(60);
-        line.EndPoint.X.Should().Be(100);
-        line.EndPoint.Y.Should().Be(60);
-        var errors = PptxValidator.Validate(pres);
-        errors.Should().BeEmpty();
-    }
-    
-    [Test]
-    public void AddLine_adds_line_When_EndPointY_is_higher()
+    public void AddLine_adds_line_Right_Up()
     {
         // Arrange
         var pres = SCPresentation.Create();
@@ -181,14 +158,14 @@ public class ShapeCollectionTests : SCTest
         line.ShapeType.Should().Be(SCShapeType.Line);
         line.StartPoint.X.Should().Be(10);
         line.StartPoint.Y.Should().Be(10);
-        line.EndPoint.X.Should().Be(21, "because of conversion EMU <-> Pixel it can a little bit differ from the original value.");
+        line.EndPoint.X.Should().Be(20);
         line.EndPoint.Y.Should().Be(5);
         var errors = PptxValidator.Validate(pres);
         errors.Should().BeEmpty();
     }
     
     [Test]
-    public void AddLine_adds_line_When_EndPointY_is_up()
+    public void AddLine_adds_line_Up_Up()
     {
         // Arrange
         var pres = SCPresentation.Create();
@@ -207,7 +184,7 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    public void AddLine_adds_line_When_EndPointY_is_left_up()
+    public void AddLine_adds_line_Left_Up()
     {
         // Arrange
         var pres = SCPresentation.Create();
@@ -227,7 +204,7 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    public void AddLine_adds_line_When_EndPointY_is_left_down()
+    public void AddLine_adds_line_Left_Down()
     {
         // Arrange
         var pres = SCPresentation.Create();
@@ -235,6 +212,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         var line = shapes.AddLine(startPointX: 50, startPointY: 10, endPointX: 40, endPointY: 20);
+        // TestHelper.SaveResult(pres);
         
         // Assert
         line.StartPoint.X.Should().Be(50);
@@ -246,7 +224,46 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    public void AddLine_adds_line_When_EndPointY_is_left_left()
+    public void AddLine_adds_line_Right_Right()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var shapes = pres.Slides[0].Shapes;
+
+        // Act
+        var line = shapes.AddLine(startPointX: 50, startPointY: 60, endPointX: 100, endPointY: 60);
+        TestHelper.SaveResult(pres);
+        
+        // Assert
+        line.StartPoint.X.Should().Be(50);
+        line.StartPoint.Y.Should().Be(60);
+        line.EndPoint.X.Should().Be(100);
+        line.EndPoint.Y.Should().Be(60);
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
+    }
+    
+    [Test]
+    public void AddLine_adds_line()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var shapes = pres.Slides[0].Shapes;
+
+        // Act
+        var line = shapes.AddLine(startPointX: 50, startPointY: 60, endPointX: 100, endPointY: 60);
+        
+        // Assert
+        shapes.Should().ContainSingle();
+        line.ShapeType.Should().Be(SCShapeType.Line);
+        line.X.Should().Be(50);
+        line.Y.Should().Be(60);
+        var errors = PptxValidator.Validate(pres);
+        errors.Should().BeEmpty();
+    }
+
+    [Test]
+    public void AddLine_adds_line_Left_Left()
     {
         // Arrange
         var pres = SCPresentation.Create();
