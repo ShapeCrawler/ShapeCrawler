@@ -3,7 +3,6 @@ using OneOf;
 using ShapeCrawler.Shapes;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
-using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler;
@@ -51,19 +50,19 @@ internal sealed class SCLine : SCAutoShape, ILine
 
     private SCPoint GetStartPoint()
     {
-        var horizontalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>()!.Transform2D!.HorizontalFlip?.Value;
+        var horizontalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !.Transform2D!.HorizontalFlip?.Value;
         var flipH = horizontalFlip != null && horizontalFlip.Value;
-        var verticalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>()!.Transform2D!.VerticalFlip?.Value;
+        var verticalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !.Transform2D!.VerticalFlip?.Value;
         var flipV = verticalFlip != null && verticalFlip.Value;
 
         if (flipH && (this.Height == 0 || flipV))
         {
-            return new SCPoint(this.X, Y);
+            return new SCPoint(this.X, this.Y);
         }
         
         if (flipH)
         {
-            return new SCPoint(this.X + this.Width, Y);
+            return new SCPoint(this.X + this.Width, this.Y);
         }
         
         return new SCPoint(this.X, this.Y);
@@ -71,9 +70,9 @@ internal sealed class SCLine : SCAutoShape, ILine
     
     private SCPoint GetEndPoint()
     {
-        var horizontalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>()!.Transform2D!.HorizontalFlip?.Value;
+        var horizontalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !.Transform2D!.HorizontalFlip?.Value;
         var flipH = horizontalFlip != null && horizontalFlip.Value;
-        var verticalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>()!.Transform2D!.VerticalFlip?.Value;
+        var verticalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !.Transform2D!.VerticalFlip?.Value;
         var flipV = verticalFlip != null && verticalFlip.Value;
 
         if(this.Width == 0)

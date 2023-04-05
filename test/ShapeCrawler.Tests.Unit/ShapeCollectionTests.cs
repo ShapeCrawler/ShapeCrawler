@@ -192,7 +192,6 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         var line = shapes.AddLine(startPointX: 100, startPointY: 50, endPointX: 40, endPointY: 20);
-        TestHelper.SaveResult(pres);
         
         // Assert
         line.StartPoint.X.Should().Be(100);
@@ -232,7 +231,6 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         var line = shapes.AddLine(startPointX: 50, startPointY: 60, endPointX: 100, endPointY: 60);
-        TestHelper.SaveResult(pres);
         
         // Assert
         line.StartPoint.X.Should().Be(50);
@@ -271,7 +269,6 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         var line = shapes.AddLine(startPointX: 100, startPointY: 50, endPointX: 80, endPointY: 50);
-        TestHelper.SaveResult(pres);
         
         // Assert
         line.StartPoint.X.Should().Be(100);
