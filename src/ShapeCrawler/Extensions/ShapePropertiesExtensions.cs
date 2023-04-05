@@ -50,7 +50,7 @@ internal static class ShapePropertiesExtensions
         return aOutlineNew;
     }
     
-    internal static void AddAXfrm(this P.ShapeProperties pSpPr, long xEmu, long yEmu, long wEmu, long hEmu)
+    internal static A.Transform2D AddAXfrm(this P.ShapeProperties pSpPr, long xEmu, long yEmu, long wEmu, long hEmu)
     {
         var aXfrm = pSpPr.Transform2D;
         aXfrm?.Remove();
@@ -71,5 +71,7 @@ internal static class ShapePropertiesExtensions
             Cy = hEmu
         };
         aXfrm.Append(aExt);
+
+        return aXfrm;
     }
 }

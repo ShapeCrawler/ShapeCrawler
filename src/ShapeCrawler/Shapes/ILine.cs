@@ -2,6 +2,7 @@
 using OneOf;
 using ShapeCrawler.Shapes;
 using SkiaSharp;
+using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler;
@@ -49,14 +50,51 @@ internal sealed class SCLine : SCAutoShape, ILine
 
     private SCPoint GetStartPoint()
     {
+        var horizontalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !.Transform2D!.HorizontalFlip?.Value;
+        var flipH = horizontalFlip != null && horizontalFlip.Value;
+        var verticalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !.Transform2D!.VerticalFlip?.Value;
+        var flipV = verticalFlip != null && verticalFlip.Value;
+
+        if (flipH && (this.Height == 0 || flipV))
+        {
+            return new SCPoint(this.X, this.Y);
+        }
+        
+        if (flipH)
+        {
+            return new SCPoint(this.X + this.Width, this.Y);
+        }
+        
         return new SCPoint(this.X, this.Y);
     }
     
     private SCPoint GetEndPoint()
     {
-        var x = this.X + this.Width;
-        var y = this.Y + this.Height;
+        var horizontalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !.Transform2D!.HorizontalFlip?.Value;
+        var flipH = horizontalFlip != null && horizontalFlip.Value;
+        var verticalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !.Transform2D!.VerticalFlip?.Value;
+        var flipV = verticalFlip != null && verticalFlip.Value;
 
-        return new SCPoint(x, y);
+        if(this.Width == 0)
+        {
+            return new SCPoint(this.X, this.Height);
+        }
+        
+        if (flipH && this.Height == 0)
+        {
+            return new SCPoint(this.X - this.Width, this.Y);
+        }
+
+        if (flipV)
+        {
+            return new SCPoint(this.Width, this.Height);
+        }
+        
+        if (flipH)
+        {
+            return new SCPoint(this.X, this.Height);
+        }
+        
+        return new SCPoint(this.Width, this.Y);
     }
 }
