@@ -1,4 +1,6 @@
 # Changelog  
+## Version 0.43.0 - 2023-04-06
+🍀Added `IShapeCollection.AddLine()` to add Line shape [#465](https://github.com/ShapeCrawler/ShapeCrawler/issues/465)
 
 ## Version 0.42.1 - 2023-03-17
 🐞Fixed the table cell merging problem [#472](https://github.com/ShapeCrawler/ShapeCrawler/issues/472)  
