@@ -199,11 +199,11 @@ internal sealed class ShapeCollection : IShapeCollection
         var shapeId = (uint)this.GenerateNextShapeId();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties { Id = shapeId, Name = $"{shapeName} {shapeId}" };
         var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
-        var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
+        var appNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
         
         nonVisualPictureProperties.Append(nonVisualDrawingProperties);
         nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
-        nonVisualPictureProperties.Append(applicationNonVisualDrawingProperties);
+        nonVisualPictureProperties.Append(appNonVisualDrawingProperties);
 
         var blipFill = new P.BlipFill ();
         var blip = new A.Blip { Embed = imgPartRId };
@@ -211,11 +211,10 @@ internal sealed class ShapeCollection : IShapeCollection
         blipFill.Append(blip);
         blipFill.Append(stretch);
 
-        var transform2D = new A.Transform2D();
-        var offset = new A.Offset { X = 0, Y = 0 };
-        var extents = new A.Extents { Cx = 0, Cy = 0 };
-        transform2D.Append(offset);
-        transform2D.Append(extents);
+        var transform2D = new A.Transform2D(
+            new A.Offset { X = 0, Y = 0 }, 
+            new A.Extents { Cx = 0, Cy = 0 }
+        );
 
         var presetGeometry = new A.PresetGeometry { Preset = A.ShapeTypeValues.Rectangle };
         var shapeProperties = new P.ShapeProperties();
@@ -248,15 +247,15 @@ internal sealed class ShapeCollection : IShapeCollection
         imgStream.Position = 0;
         imagePart.FeedData(imgStream);
 
-        var nonVisualPictureProperties = new P.NonVisualPictureProperties();
+        var nonVisualPictureProps = new P.NonVisualPictureProperties();
         var shapeId = (uint)this.GenerateNextShapeId();
-        var nonVisualDrawingProperties = new P.NonVisualDrawingProperties { Id = shapeId, Name = $"{name} {shapeId}" };
-        var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
-        var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
+        var nonVisualDrawingProps = new P.NonVisualDrawingProperties { Id = shapeId, Name = $"{name} {shapeId}" };
+        var nonVisualPictureDrawingProps = new P.NonVisualPictureDrawingProperties();
+        var appNonVisualDrawingProps = new P.ApplicationNonVisualDrawingProperties();
         
-        nonVisualPictureProperties.Append(nonVisualDrawingProperties);
-        nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
-        nonVisualPictureProperties.Append(applicationNonVisualDrawingProperties);
+        nonVisualPictureProps.Append(nonVisualDrawingProps);
+        nonVisualPictureProps.Append(nonVisualPictureDrawingProps);
+        nonVisualPictureProps.Append(appNonVisualDrawingProps);
 
         var blipFill = new P.BlipFill ();
         var blip = new A.Blip { Embed = imgPartRId };
@@ -276,7 +275,7 @@ internal sealed class ShapeCollection : IShapeCollection
         shapeProperties.Append(presetGeometry);
 
         var pPicture = new P.Picture();
-        pPicture.Append(nonVisualPictureProperties);
+        pPicture.Append(nonVisualPictureProps);
         pPicture.Append(blipFill);
         pPicture.Append(shapeProperties);
 
