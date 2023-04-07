@@ -284,8 +284,8 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var preStream = TestHelperShared.GetStream("001.pptx");
-        var presentation = SCPresentation.Open(preStream);
-        var shapes = presentation.Slides[1].Shapes;
+        var pres = SCPresentation.Open(preStream);
+        var shapes = pres.Slides[1].Shapes;
         var mp3 = TestFiles.Audio.TestMp3;
         int xPxCoordinate = 300;
         int yPxCoordinate = 100;
@@ -293,10 +293,10 @@ public class ShapeCollectionTests : SCTest
         // Act
         shapes.AddAudio(xPxCoordinate, yPxCoordinate, mp3);
 
-        presentation.Save();
-        presentation.Close();
-        presentation = SCPresentation.Open(preStream);
-        IAudioShape addedAudio = presentation.Slides[1].Shapes.OfType<IAudioShape>().Last();
+        pres.Save();
+        pres.Close();
+        pres = SCPresentation.Open(preStream);
+        IAudioShape addedAudio = pres.Slides[1].Shapes.OfType<IAudioShape>().Last();
 
         // Assert
         addedAudio.X.Should().Be(xPxCoordinate);

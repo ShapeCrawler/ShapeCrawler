@@ -185,7 +185,7 @@ public sealed class SCPresentation : IPresentation
 
         CreatePresentationParts(presPart);
 
-        presDoc.Close();
+        presDoc.Dispose();
 
         return Open(stream);
     }
@@ -226,7 +226,7 @@ public sealed class SCPresentation : IPresentation
         else if (this.outerPath != null)
         {
             var pres = this.SDKPresentationInternal.Clone(this.outerPath);
-            pres.Close();
+            pres.Dispose();
         }
     }
 
@@ -255,7 +255,7 @@ public sealed class SCPresentation : IPresentation
         }
 
         this.ChartWorkbooks.ForEach(cw => cw.Close());
-        this.SDKPresentationInternal.Close();
+        this.SDKPresentationInternal.Dispose();
 
         this.closed = true;
     }

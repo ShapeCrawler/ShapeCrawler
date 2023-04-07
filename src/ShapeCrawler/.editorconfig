@@ -10,6 +10,7 @@ dotnet_diagnostic.IDE0005.severity = error
 # Roslyn - Code quality
 dotnet_diagnostic.CS0108.severity = error
 dotnet_diagnostic.CS0114.severity = error
+dotnet_diagnostic.CS0618.severity = error
 dotnet_diagnostic.CA1062.severity = none
 dotnet_diagnostic.CA1051.severity = error
 dotnet_diagnostic.CA1305.severity = none

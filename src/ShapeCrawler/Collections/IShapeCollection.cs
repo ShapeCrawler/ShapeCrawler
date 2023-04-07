@@ -134,8 +134,8 @@ internal sealed class ShapeCollection : IShapeCollection
 
     public IAudioShape AddAudio(int xPixels, int yPixels, Stream mp3Stream)
     {
-        long xEmu = UnitConverter.HorizontalPixelToEmu(xPixels);
-        long yEmu = UnitConverter.VerticalPixelToEmu(yPixels);
+        var xEmu = UnitConverter.HorizontalPixelToEmu(xPixels);
+        var yEmu = UnitConverter.VerticalPixelToEmu(yPixels);
 
         var slideBase =
             this.ParentSlideStructure.Match(slide => slide as SlideStructure, layout => layout, master => master);
@@ -144,7 +144,7 @@ internal sealed class ShapeCollection : IShapeCollection
 
         mp3Stream.Position = 0;
         mediaDataPart.FeedData(mp3Stream);
-        string imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
+        var imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
         var slidePart = (SlidePart)slideBase.TypedOpenXmlPart;
         var imagePart = slidePart!.AddNewPart<ImagePart>("image/png", imgPartRId);
         var imgStream = Assembly.GetExecutingAssembly().GetStream("audio-image.png");
@@ -158,9 +158,9 @@ internal sealed class ShapeCollection : IShapeCollection
 
         P.NonVisualPictureProperties nonVisualPictureProperties1 = new();
 
-        uint shapeId = (uint)this.shapes.Value.Max(sp => sp.Id) + 1;
+        var shapeId = (uint)this.shapes.Value.Max(sp => sp.Id) + 1;
         P.NonVisualDrawingProperties nonVisualDrawingProperties2 = new() { Id = shapeId, Name = $"Audio{shapeId}" };
-        A.HyperlinkOnClick hyperlinkOnClick1 = new A.HyperlinkOnClick()
+        var hyperlinkOnClick1 = new A.HyperlinkOnClick()
             { Id = string.Empty, Action = "ppaction://media" };
 
         A.NonVisualDrawingPropertiesExtensionList nonVisualDrawingPropertiesExtensionList1 = new();
@@ -168,23 +168,18 @@ internal sealed class ShapeCollection : IShapeCollection
         A.NonVisualDrawingPropertiesExtension nonVisualDrawingPropertiesExtension1 =
             new() { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
 
-        OpenXmlUnknownElement openXmlUnknownElement1 = OpenXmlUnknownElement.CreateOpenXmlUnknownElement(
-            "<a16:creationId xmlns:a16=\"http://schemas.microsoft.com/office/drawing/2014/main\" id=\"{2FF36D28-5328-4DA3-BF85-A2B65D7EE127}\" />");
-
-        nonVisualDrawingPropertiesExtension1.Append(openXmlUnknownElement1);
-
         nonVisualDrawingPropertiesExtensionList1.Append(nonVisualDrawingPropertiesExtension1);
 
         nonVisualDrawingProperties2.Append(hyperlinkOnClick1);
         nonVisualDrawingProperties2.Append(nonVisualDrawingPropertiesExtensionList1);
 
         P.NonVisualPictureDrawingProperties nonVisualPictureDrawingProperties1 = new();
-        A.PictureLocks pictureLocks1 = new A.PictureLocks() { NoChangeAspect = true };
+        var pictureLocks1 = new A.PictureLocks() { NoChangeAspect = true };
 
         nonVisualPictureDrawingProperties1.Append(pictureLocks1);
 
         P.ApplicationNonVisualDrawingProperties applicationNonVisualDrawingProperties2 = new();
-        A.AudioFromFile audioFromFile1 = new A.AudioFromFile() { Link = audioRr.Id };
+        var audioFromFile1 = new A.AudioFromFile() { Link = audioRr.Id };
 
         P.ApplicationNonVisualDrawingPropertiesExtensionList
             applicationNonVisualDrawingPropertiesExtensionList1 = new();
@@ -192,7 +187,7 @@ internal sealed class ShapeCollection : IShapeCollection
         P.ApplicationNonVisualDrawingPropertiesExtension applicationNonVisualDrawingPropertiesExtension1 =
             new() { Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" };
 
-        P14.Media media1 = new P14.Media() { Embed = mediaRr.Id };
+        var media1 = new P14.Media() { Embed = mediaRr.Id };
         media1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
         applicationNonVisualDrawingPropertiesExtension1.Append(media1);
@@ -248,17 +243,17 @@ internal sealed class ShapeCollection : IShapeCollection
 
     public IVideoShape AddVideo(int x, int y, Stream stream)
     {
-        long xEmu = UnitConverter.HorizontalPixelToEmu(x);
-        long yEmu = UnitConverter.VerticalPixelToEmu(y);
+        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
+        var yEmu = UnitConverter.VerticalPixelToEmu(y);
 
         var slideBase =
             this.ParentSlideStructure.Match(slide => slide as SlideStructure, layout => layout, master => master);
-        MediaDataPart mediaDataPart =
+        var mediaDataPart =
             slideBase.PresentationInternal.SDKPresentationInternal.CreateMediaDataPart("video/mp4", ".mp4");
 
         stream.Position = 0;
         mediaDataPart.FeedData(stream);
-        string imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
+        var imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
         var slidePart = (SlidePart)slideBase.TypedOpenXmlPart;
         var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
         var imageStream = Assembly.GetExecutingAssembly().GetStream("video-image.bmp");
@@ -271,9 +266,9 @@ internal sealed class ShapeCollection : IShapeCollection
 
         P.NonVisualPictureProperties nonVisualPictureProperties1 = new();
 
-        uint shapeId = (uint)this.shapes.Value.Max(sp => sp.Id) + 1;
+        var shapeId = (uint)this.shapes.Value.Max(sp => sp.Id) + 1;
         P.NonVisualDrawingProperties nonVisualDrawingProperties2 = new() { Id = shapeId, Name = $"Video{shapeId}" };
-        A.HyperlinkOnClick hyperlinkOnClick1 = new A.HyperlinkOnClick()
+        var hyperlinkOnClick1 = new A.HyperlinkOnClick()
             { Id = string.Empty, Action = "ppaction://media" };
 
         A.NonVisualDrawingPropertiesExtensionList nonVisualDrawingPropertiesExtensionList1 = new();
@@ -281,23 +276,18 @@ internal sealed class ShapeCollection : IShapeCollection
         A.NonVisualDrawingPropertiesExtension nonVisualDrawingPropertiesExtension1 =
             new() { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
 
-        OpenXmlUnknownElement openXmlUnknownElement1 = OpenXmlUnknownElement.CreateOpenXmlUnknownElement(
-            "<a16:creationId xmlns:a16=\"http://schemas.microsoft.com/office/drawing/2014/main\" id=\"{2FF36D28-5328-4DA3-BF85-A2B65D7EE127}\" />");
-
-        nonVisualDrawingPropertiesExtension1.Append(openXmlUnknownElement1);
-
         nonVisualDrawingPropertiesExtensionList1.Append(nonVisualDrawingPropertiesExtension1);
 
         nonVisualDrawingProperties2.Append(hyperlinkOnClick1);
         nonVisualDrawingProperties2.Append(nonVisualDrawingPropertiesExtensionList1);
 
         P.NonVisualPictureDrawingProperties nonVisualPictureDrawingProperties1 = new();
-        A.PictureLocks pictureLocks1 = new A.PictureLocks() { NoChangeAspect = true };
+        var pictureLocks1 = new A.PictureLocks() { NoChangeAspect = true };
 
         nonVisualPictureDrawingProperties1.Append(pictureLocks1);
 
         P.ApplicationNonVisualDrawingProperties applicationNonVisualDrawingProperties2 = new();
-        A.VideoFromFile videoFromFile1 = new A.VideoFromFile() { Link = videoRr.Id };
+        var videoFromFile1 = new A.VideoFromFile() { Link = videoRr.Id };
 
         P.ApplicationNonVisualDrawingPropertiesExtensionList
             applicationNonVisualDrawingPropertiesExtensionList1 = new();
@@ -305,7 +295,7 @@ internal sealed class ShapeCollection : IShapeCollection
         P.ApplicationNonVisualDrawingPropertiesExtension applicationNonVisualDrawingPropertiesExtension1 =
             new() { Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" };
 
-        P14.Media media1 = new P14.Media() { Embed = mediaRr.Id };
+        var media1 = new P14.Media() { Embed = mediaRr.Id };
         media1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
         applicationNonVisualDrawingPropertiesExtension1.Append(media1);

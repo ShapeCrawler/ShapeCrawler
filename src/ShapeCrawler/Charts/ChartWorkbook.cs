@@ -41,7 +41,7 @@ internal sealed class ChartWorkbook // TODO: implement IDispose to correctly dis
             return;
         }
 
-        this.SpreadsheetDocument.Value?.Close();
+        this.SpreadsheetDocument.Value.Dispose();
         this.embeddedPackagePartStream?.Close();
         this.closed = true;
     }
