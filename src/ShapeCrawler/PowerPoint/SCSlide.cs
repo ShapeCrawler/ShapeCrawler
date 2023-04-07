@@ -95,7 +95,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
 
     public IList<ITextFrame> GetAllTextFrames()
     {
-        List<ITextFrame> returnList = new List<ITextFrame>();
+        var returnList = new List<ITextFrame>();
 
         // this will add all textboxes from shapes on that slide that directly inherit ITextBoxContainer
         returnList.AddRange(this.Shapes.OfType<ITextFrameContainer>()
