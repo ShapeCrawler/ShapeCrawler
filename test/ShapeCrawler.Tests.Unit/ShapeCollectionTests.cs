@@ -293,7 +293,6 @@ public class ShapeCollectionTests : SCTest
         pres.Close();
         pres = SCPresentation.Open(preStream);
         IAudioShape addedAudio = pres.Slides[1].Shapes.OfType<IAudioShape>().Last();
-        TestHelper.SaveResult(pres);
 
         // Assert
         addedAudio.X.Should().Be(xPxCoordinate);
@@ -333,7 +332,6 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         var picture = shapes.AddPicture(image);
-        TestHelper.SaveResult(pres);
 
         // Assert
         picture.ShapeType.Should().Be(SCShapeType.Picture);

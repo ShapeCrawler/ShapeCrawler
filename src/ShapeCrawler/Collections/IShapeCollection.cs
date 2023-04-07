@@ -94,6 +94,9 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     /// </summary>
     void Remove(IShape shape);
 
+    /// <summary>
+    ///     Adds picture.
+    /// </summary>
     IPicture AddPicture(Stream imageStream);
 }
 
@@ -183,52 +186,6 @@ internal sealed class ShapeCollection : IShapeCollection
         applicationNonVisualDrawingProps.Append(appNonVisualDrawingPropsExtensionList);
 
         return new SCAudioShape(this.pShapeTree, this.ParentSlideStructure, this);
-    }
-
-    private P.Picture CreatePPicture(Stream imageStream, string shapeName)
-    {
-        var slideStructure =
-            this.ParentSlideStructure.Match(slide => slide as SlideStructure, layout => layout, master => master);
-        var slidePart = (SlidePart)slideStructure.TypedOpenXmlPart;
-        var imgPartRId = slidePart.GetNextRelationshipId();
-        var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
-        imageStream.Position = 0;
-        imagePart.FeedData(imageStream);
-
-        var nonVisualPictureProperties = new P.NonVisualPictureProperties();
-        var shapeId = (uint)this.GenerateNextShapeId();
-        var nonVisualDrawingProperties = new P.NonVisualDrawingProperties { Id = shapeId, Name = $"{shapeName} {shapeId}" };
-        var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
-        var appNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
-        
-        nonVisualPictureProperties.Append(nonVisualDrawingProperties);
-        nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
-        nonVisualPictureProperties.Append(appNonVisualDrawingProperties);
-
-        var blipFill = new P.BlipFill ();
-        var blip = new A.Blip { Embed = imgPartRId };
-        var stretch = new A.Stretch();
-        blipFill.Append(blip);
-        blipFill.Append(stretch);
-
-        var transform2D = new A.Transform2D(
-            new A.Offset { X = 0, Y = 0 }, 
-            new A.Extents { Cx = 0, Cy = 0 }
-        );
-
-        var presetGeometry = new A.PresetGeometry { Preset = A.ShapeTypeValues.Rectangle };
-        var shapeProperties = new P.ShapeProperties();
-        shapeProperties.Append(transform2D);
-        shapeProperties.Append(presetGeometry);
-
-        var pPicture = new P.Picture();
-        pPicture.Append(nonVisualPictureProperties);
-        pPicture.Append(blipFill);
-        pPicture.Append(shapeProperties);
-
-        this.pShapeTree.Append(pPicture);
-        
-        return pPicture;
     }
 
     public IPicture AddPicture(Stream imgStream)
@@ -794,5 +751,51 @@ internal sealed class ShapeCollection : IShapeCollection
         }
 
         return shapesValue;
+    }
+    
+    
+    private P.Picture CreatePPicture(Stream imageStream, string shapeName)
+    {
+        var slideStructure =
+            this.ParentSlideStructure.Match(slide => slide as SlideStructure, layout => layout, master => master);
+        var slidePart = (SlidePart)slideStructure.TypedOpenXmlPart;
+        var imgPartRId = slidePart.GetNextRelationshipId();
+        var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
+        imageStream.Position = 0;
+        imagePart.FeedData(imageStream);
+
+        var nonVisualPictureProperties = new P.NonVisualPictureProperties();
+        var shapeId = (uint)this.GenerateNextShapeId();
+        var nonVisualDrawingProperties = new P.NonVisualDrawingProperties { Id = shapeId, Name = $"{shapeName} {shapeId}" };
+        var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
+        var appNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
+        
+        nonVisualPictureProperties.Append(nonVisualDrawingProperties);
+        nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
+        nonVisualPictureProperties.Append(appNonVisualDrawingProperties);
+
+        var blipFill = new P.BlipFill ();
+        var blip = new A.Blip { Embed = imgPartRId };
+        var stretch = new A.Stretch();
+        blipFill.Append(blip);
+        blipFill.Append(stretch);
+
+        var transform2D = new A.Transform2D(
+            new A.Offset { X = 0, Y = 0 }, 
+            new A.Extents { Cx = 0, Cy = 0 });
+
+        var presetGeometry = new A.PresetGeometry { Preset = A.ShapeTypeValues.Rectangle };
+        var shapeProperties = new P.ShapeProperties();
+        shapeProperties.Append(transform2D);
+        shapeProperties.Append(presetGeometry);
+
+        var pPicture = new P.Picture();
+        pPicture.Append(nonVisualPictureProperties);
+        pPicture.Append(blipFill);
+        pPicture.Append(shapeProperties);
+
+        this.pShapeTree.Append(pPicture);
+        
+        return pPicture;
     }
 }
