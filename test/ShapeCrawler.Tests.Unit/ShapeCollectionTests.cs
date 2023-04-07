@@ -325,6 +325,23 @@ public class ShapeCollectionTests : SCTest
         addedVideo.X.Should().Be(xPxCoordinate);
         addedVideo.Y.Should().Be(yPxCoordinate);
     }
+
+    [Test]
+    public void AddPicture_adds_picture()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-image-1");
+
+        // Act
+        var picture = shapes.AddPicture(image);
+        TestHelper.SaveResult(pres);
+
+        // Assert
+        picture.ShapeType.Should().Be(SCShapeType.Picture);
+        TestHelper.Validate(pres);
+    }
     
     [Test]
     public void AddRectangle_adds_rectangle_with_valid_id_and_name()

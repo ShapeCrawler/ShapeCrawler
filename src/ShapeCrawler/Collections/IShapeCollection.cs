@@ -93,6 +93,8 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     ///     Removes specified shape.
     /// </summary>
     void Remove(IShape shape);
+
+    IPicture AddPicture(Stream imageStream);
 }
 
 internal sealed class ShapeCollection : IShapeCollection
@@ -241,6 +243,59 @@ internal sealed class ShapeCollection : IShapeCollection
         return new SCAudioShape(this.pShapeTree, this.ParentSlideStructure, this);
     }
 
+    public IPicture AddPicture(Stream imgStream)
+    {
+        var xEmu = UnitConverter.HorizontalPixelToEmu(100);
+        var yEmu = UnitConverter.VerticalPixelToEmu(100);
+        var cxEmu = 609600L;
+        var cyEmu = 609600L;
+        var name = "Picture";
+
+        var slideStructure =
+            this.ParentSlideStructure.Match(slide => slide as SlideStructure, layout => layout, master => master);
+        var slidePart = (SlidePart)slideStructure.TypedOpenXmlPart;
+        var imgPartRId = slidePart.GetNextRelationshipId();
+        var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
+        imgStream.Position = 0;
+        imagePart.FeedData(imgStream);
+
+        var nonVisualPictureProperties = new P.NonVisualPictureProperties();
+        var shapeId = (uint)this.GenerateNextShapeId();
+        var nonVisualDrawingProperties = new P.NonVisualDrawingProperties { Id = shapeId, Name = $"{name} {shapeId}" };
+        var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
+        var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
+        
+        nonVisualPictureProperties.Append(nonVisualDrawingProperties);
+        nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
+        nonVisualPictureProperties.Append(applicationNonVisualDrawingProperties);
+
+        var blipFill = new P.BlipFill ();
+        var blip = new A.Blip { Embed = imgPartRId };
+        var stretch = new A.Stretch();
+        blipFill.Append(blip);
+        blipFill.Append(stretch);
+
+        var transform2D = new A.Transform2D();
+        var offset = new A.Offset { X = xEmu, Y = yEmu };
+        var extents = new A.Extents { Cx = cxEmu, Cy = cyEmu };
+        transform2D.Append(offset);
+        transform2D.Append(extents);
+
+        var presetGeometry = new A.PresetGeometry { Preset = A.ShapeTypeValues.Rectangle };
+        var shapeProperties = new P.ShapeProperties();
+        shapeProperties.Append(transform2D);
+        shapeProperties.Append(presetGeometry);
+
+        var pPicture = new P.Picture();
+        pPicture.Append(nonVisualPictureProperties);
+        pPicture.Append(blipFill);
+        pPicture.Append(shapeProperties);
+
+        this.pShapeTree.Append(pPicture);
+
+        return null!;
+    }
+    
     public IVideoShape AddVideo(int x, int y, Stream stream)
     {
         var xEmu = UnitConverter.HorizontalPixelToEmu(x);
@@ -430,17 +485,17 @@ internal sealed class ShapeCollection : IShapeCollection
             cy = endPointY;
             flipV = true;
         }
-        
+
         if (cx == 0)
         {
             flipV = true;
         }
 
-        if(startPointX > endPointX)
+        if (startPointX > endPointX)
         {
             flipH = true;
         }
-        
+
         var newPConnectionShape = this.CreatePConnectionShape(x, y, (int)cx, cy, flipH, flipV);
 
         var newShape = new SCLine(newPConnectionShape, this.ParentSlideStructure, this);

@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 
@@ -33,6 +34,15 @@ public static class TestHelper
     public static readonly float HorizontalResolution;
 
     public static readonly float VerticalResolution;
+    
+    public static void Validate(IPresentation pres)
+    {
+        var errors = PptxValidator.Validate(pres);
+        if (errors.Any())
+        {
+            throw new AssertionException($"Presentation is invalid: {string.Join(", ", errors)}");
+        }
+    }
 
 #if DEBUG
 
