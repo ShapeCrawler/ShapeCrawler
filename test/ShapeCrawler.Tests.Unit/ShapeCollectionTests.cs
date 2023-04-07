@@ -1,16 +1,11 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Helpers.Attributes;
-using Xunit;
 using Assert = Xunit.Assert;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
@@ -20,6 +15,7 @@ using Assert = Xunit.Assert;
 namespace ShapeCrawler.Tests.Unit;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
+[SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class ShapeCollectionTests : SCTest
 {
     [Xunit.Theory]
@@ -297,6 +293,7 @@ public class ShapeCollectionTests : SCTest
         pres.Close();
         pres = SCPresentation.Open(preStream);
         IAudioShape addedAudio = pres.Slides[1].Shapes.OfType<IAudioShape>().Last();
+        TestHelper.SaveResult(pres);
 
         // Assert
         addedAudio.X.Should().Be(xPxCoordinate);
