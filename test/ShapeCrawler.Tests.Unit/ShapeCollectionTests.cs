@@ -1,16 +1,11 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Helpers.Attributes;
-using Xunit;
 using Assert = Xunit.Assert;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
@@ -20,6 +15,7 @@ using Assert = Xunit.Assert;
 namespace ShapeCrawler.Tests.Unit;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
+[SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class ShapeCollectionTests : SCTest
 {
     [Xunit.Theory]
@@ -324,6 +320,22 @@ public class ShapeCollectionTests : SCTest
         var addedVideo = presentation.Slides[1].Shapes.OfType<IVideoShape>().Last();
         addedVideo.X.Should().Be(xPxCoordinate);
         addedVideo.Y.Should().Be(yPxCoordinate);
+    }
+
+    [Test]
+    public void AddPicture_adds_picture()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-image-1");
+
+        // Act
+        var picture = shapes.AddPicture(image);
+
+        // Assert
+        picture.ShapeType.Should().Be(SCShapeType.Picture);
+        TestHelper.Validate(pres);
     }
     
     [Test]
