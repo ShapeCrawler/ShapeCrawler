@@ -202,7 +202,7 @@ internal sealed class ShapeCollection : IShapeCollection
         var xEmu = UnitConverter.HorizontalPixelToEmu(100);
         var yEmu = UnitConverter.VerticalPixelToEmu(100);
         var cxEmu = UnitConverter.HorizontalPixelToEmu(skBitmap.Width);
-        var cyEmu = UnitConverter.HorizontalPixelToEmu(skBitmap.Height);
+        var cyEmu = UnitConverter.VerticalEmuToPixel(skBitmap.Height);
 
         var pPicture = this.CreatePPicture(imageStream, "Picture");
 
@@ -213,7 +213,7 @@ internal sealed class ShapeCollection : IShapeCollection
         transform2D.Extents!.Cy = cyEmu;
 
         var pictureHandler = new PictureHandler();
-        var shape = pictureHandler.Create(pPicture, this.ParentSlideStructure, this)!;
+        var shape = pictureHandler.Create(pPicture, this.ParentSlideStructure, this) !;
         
         this.shapes.Reset();
         

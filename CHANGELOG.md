@@ -1,4 +1,8 @@
 # Changelog  
+
+## Version 0.44.0 - Unreleased
+🍀Added `IShapeCollection.AddPicture()` [#481](https://github.com/ShapeCrawler/ShapeCrawler/issues/481)
+
 ## Version 0.43.0 - 2023-04-06
 🍀Added `IShapeCollection.AddLine()` to add Line shape [#465](https://github.com/ShapeCrawler/ShapeCrawler/issues/465)
 

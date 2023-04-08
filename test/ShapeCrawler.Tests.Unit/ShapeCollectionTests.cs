@@ -332,7 +332,6 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         var picture = shapes.AddPicture(image);
-        TestHelper.SaveResult(pres);
 
         // Assert
         shapes.Should().HaveCount(1);
