@@ -186,6 +186,8 @@ internal sealed class ShapeCollection : IShapeCollection
         applicationNonVisualDrawingProps.Append(audioFromFile);
         applicationNonVisualDrawingProps.Append(appNonVisualDrawingPropsExtensionList);
 
+        this.shapes.Reset();
+        
         return new SCAudioShape(this.pShapeTree, this.ParentSlideStructure, this);
     }
 
@@ -212,7 +214,9 @@ internal sealed class ShapeCollection : IShapeCollection
 
         var pictureHandler = new PictureHandler();
         var shape = pictureHandler.Create(pPicture, this.ParentSlideStructure, this)!;
-
+        
+        this.shapes.Reset();
+        
         return (SCPicture)shape;
     }
     
@@ -321,6 +325,8 @@ internal sealed class ShapeCollection : IShapeCollection
         P14.CreationId creationId1 = new() { Val = (UInt32Value)3972997422U };
         creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
+        this.shapes.Reset();
+        
         return new SCVideoShape(this.pShapeTree, this.ParentSlideStructure, this);
     }
 
@@ -334,6 +340,8 @@ internal sealed class ShapeCollection : IShapeCollection
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(newPShape);
+        
+        this.shapes.Reset();
 
         return newShape;
     }
@@ -348,6 +356,8 @@ internal sealed class ShapeCollection : IShapeCollection
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(newPShape);
+        
+        this.shapes.Reset();
 
         return newShape;
     }
@@ -361,6 +371,8 @@ internal sealed class ShapeCollection : IShapeCollection
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(newPConnectionShape);
+        
+        this.shapes.Reset();
 
         return newShape;
     }
@@ -424,6 +436,8 @@ internal sealed class ShapeCollection : IShapeCollection
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(newPConnectionShape);
+        
+        this.shapes.Reset();
 
         return newShape;
     }
@@ -480,6 +494,8 @@ internal sealed class ShapeCollection : IShapeCollection
 
         this.pShapeTree.Append(graphicFrame);
         var table = new SCTable(graphicFrame, this.ParentSlideStructure, this);
+        
+        this.shapes.Reset();
 
         return table;
     }
