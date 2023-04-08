@@ -126,6 +126,11 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
         }
     }
 
+    internal override string ToJson()
+    {
+        throw new NotImplementedException();
+    }
+
     internal void ResizeShape()
     {
         if (this.TextFrame!.AutofitType != SCAutofitType.Resize)

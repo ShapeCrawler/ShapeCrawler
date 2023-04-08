@@ -159,6 +159,11 @@ internal sealed class SCTable : SCShape, ITable
         throw new NotImplementedException();
     }
 
+    internal override string ToJson()
+    {
+        throw new NotImplementedException();
+    }
+
     internal IRow AppendRow(A.TableRow row)
     {
         this.ATable.AppendChild(row);

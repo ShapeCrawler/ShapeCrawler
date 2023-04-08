@@ -34,6 +34,11 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
         throw new System.NotImplementedException();
     }
 
+    internal override string ToJson()
+    {
+        throw new System.NotImplementedException();
+    }
+
     internal void OnGroupedShapeXChanged(object? sender, int xGroupedShape)
     {
         var offset = this.ATransformGroup.Offset!;

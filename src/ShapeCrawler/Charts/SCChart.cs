@@ -114,6 +114,11 @@ internal class SCChart : SCShape, IChart
         throw new NotImplementedException();
     }
 
+    internal override string ToJson()
+    {
+        throw new NotImplementedException();
+    }
+
     private SCChartType GetChartType()
     {
         if (this.cXCharts.Count() > 1)

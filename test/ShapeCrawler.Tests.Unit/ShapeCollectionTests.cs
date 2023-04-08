@@ -328,12 +328,14 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = SCPresentation.Create();
         var shapes = pres.Slides[0].Shapes;
-        var image = TestHelper.GetStream("test-image-1");
+        var image = TestHelper.GetStream("test-image-1.png");
 
         // Act
         var picture = shapes.AddPicture(image);
+        TestHelper.SaveResult(pres);
 
         // Assert
+        shapes.Should().HaveCount(1);
         picture.ShapeType.Should().Be(SCShapeType.Picture);
         TestHelper.Validate(pres);
     }

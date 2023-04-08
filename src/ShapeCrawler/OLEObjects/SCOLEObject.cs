@@ -24,4 +24,9 @@ internal sealed class SCOLEObject : SCShape, IOLEObject
     {
         throw new System.NotImplementedException();
     }
+
+    internal override string ToJson()
+    {
+        throw new System.NotImplementedException();
+    }
 }
