@@ -106,6 +106,8 @@ internal abstract class SCShape : IShape
     private SCGroupShape? GroupShape { get; }
 
     internal abstract void Draw(SKCanvas canvas);
+
+    internal abstract string ToJson();
     
     protected virtual void SetXCoordinate(int newXPx)
     {

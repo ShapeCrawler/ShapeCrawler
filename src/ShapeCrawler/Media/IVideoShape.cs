@@ -39,4 +39,9 @@ internal sealed class SCVideoShape : SCMediaShape, IVideoShape
     {
         throw new System.NotImplementedException();
     }
+
+    internal override string ToJson()
+    {
+        throw new System.NotImplementedException();
+    }
 }

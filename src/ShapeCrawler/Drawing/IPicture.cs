@@ -57,6 +57,11 @@ internal sealed class SCPicture : SCShape, IPicture
         throw new NotImplementedException();
     }
 
+    internal override string ToJson()
+    {
+        throw new NotImplementedException();
+    }
+
     private string? GetSvgContent()
     {
         var bel = this.aBlip.GetFirstChild<A.BlipExtensionList>();

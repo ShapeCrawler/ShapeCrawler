@@ -16,6 +16,7 @@ using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
+using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
@@ -185,60 +186,38 @@ internal sealed class ShapeCollection : IShapeCollection
         applicationNonVisualDrawingProps.Append(audioFromFile);
         applicationNonVisualDrawingProps.Append(appNonVisualDrawingPropsExtensionList);
 
+        this.shapes.Reset();
+        
         return new SCAudioShape(this.pShapeTree, this.ParentSlideStructure, this);
     }
 
-    public IPicture AddPicture(Stream imgStream)
+    public IPicture AddPicture(Stream imageStream)
     {
+        imageStream.Position = 0;
+        var imageCopy = new MemoryStream();
+        imageStream.CopyTo(imageCopy);
+        imageCopy.Position = 0;
+        imageStream.Position = 0;
+        using var skBitmap = SKBitmap.Decode(imageCopy);
         var xEmu = UnitConverter.HorizontalPixelToEmu(100);
         var yEmu = UnitConverter.VerticalPixelToEmu(100);
-        var cxEmu = 609600L;
-        var cyEmu = 609600L;
-        var name = "Picture";
+        var cxEmu = UnitConverter.HorizontalPixelToEmu(skBitmap.Width);
+        var cyEmu = UnitConverter.VerticalEmuToPixel(skBitmap.Height);
 
-        var slideStructure =
-            this.ParentSlideStructure.Match(slide => slide as SlideStructure, layout => layout, master => master);
-        var slidePart = (SlidePart)slideStructure.TypedOpenXmlPart;
-        var imgPartRId = slidePart.GetNextRelationshipId();
-        var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
-        imgStream.Position = 0;
-        imagePart.FeedData(imgStream);
+        var pPicture = this.CreatePPicture(imageStream, "Picture");
 
-        var nonVisualPictureProps = new P.NonVisualPictureProperties();
-        var shapeId = (uint)this.GenerateNextShapeId();
-        var nonVisualDrawingProps = new P.NonVisualDrawingProperties { Id = shapeId, Name = $"{name} {shapeId}" };
-        var nonVisualPictureDrawingProps = new P.NonVisualPictureDrawingProperties();
-        var appNonVisualDrawingProps = new P.ApplicationNonVisualDrawingProperties();
+        var transform2D = pPicture.ShapeProperties!.Transform2D!;
+        transform2D.Offset!.X = xEmu;
+        transform2D.Offset!.Y = yEmu;
+        transform2D.Extents!.Cx = cxEmu;
+        transform2D.Extents!.Cy = cyEmu;
+
+        var pictureHandler = new PictureHandler();
+        var shape = pictureHandler.Create(pPicture, this.ParentSlideStructure, this) !;
         
-        nonVisualPictureProps.Append(nonVisualDrawingProps);
-        nonVisualPictureProps.Append(nonVisualPictureDrawingProps);
-        nonVisualPictureProps.Append(appNonVisualDrawingProps);
-
-        var blipFill = new P.BlipFill ();
-        var blip = new A.Blip { Embed = imgPartRId };
-        var stretch = new A.Stretch();
-        blipFill.Append(blip);
-        blipFill.Append(stretch);
-
-        var transform2D = new A.Transform2D();
-        var offset = new A.Offset { X = xEmu, Y = yEmu };
-        var extents = new A.Extents { Cx = cxEmu, Cy = cyEmu };
-        transform2D.Append(offset);
-        transform2D.Append(extents);
-
-        var presetGeometry = new A.PresetGeometry { Preset = A.ShapeTypeValues.Rectangle };
-        var shapeProperties = new P.ShapeProperties();
-        shapeProperties.Append(transform2D);
-        shapeProperties.Append(presetGeometry);
-
-        var pPicture = new P.Picture();
-        pPicture.Append(nonVisualPictureProps);
-        pPicture.Append(blipFill);
-        pPicture.Append(shapeProperties);
-
-        this.pShapeTree.Append(pPicture);
-
-        return null!;
+        this.shapes.Reset();
+        
+        return (SCPicture)shape;
     }
     
     public IVideoShape AddVideo(int x, int y, Stream stream)
@@ -346,6 +325,8 @@ internal sealed class ShapeCollection : IShapeCollection
         P14.CreationId creationId1 = new() { Val = (UInt32Value)3972997422U };
         creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
+        this.shapes.Reset();
+        
         return new SCVideoShape(this.pShapeTree, this.ParentSlideStructure, this);
     }
 
@@ -359,6 +340,8 @@ internal sealed class ShapeCollection : IShapeCollection
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(newPShape);
+        
+        this.shapes.Reset();
 
         return newShape;
     }
@@ -373,6 +356,8 @@ internal sealed class ShapeCollection : IShapeCollection
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(newPShape);
+        
+        this.shapes.Reset();
 
         return newShape;
     }
@@ -386,6 +371,8 @@ internal sealed class ShapeCollection : IShapeCollection
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(newPConnectionShape);
+        
+        this.shapes.Reset();
 
         return newShape;
     }
@@ -449,6 +436,8 @@ internal sealed class ShapeCollection : IShapeCollection
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(newPConnectionShape);
+        
+        this.shapes.Reset();
 
         return newShape;
     }
@@ -505,6 +494,8 @@ internal sealed class ShapeCollection : IShapeCollection
 
         this.pShapeTree.Append(graphicFrame);
         var table = new SCTable(graphicFrame, this.ParentSlideStructure, this);
+        
+        this.shapes.Reset();
 
         return table;
     }

@@ -69,8 +69,8 @@ This library provides a simplified object model on top of the Open XML SDK for m
 
 
   <ItemGroup>
-    <PackageReference Include="AngleSharp" Version="0.16.1" />
-    <PackageReference Include="AngleSharp.Css" Version="0.16.2" />
+    <PackageReference Include="AngleSharp" Version="1.0.1" />
+    <PackageReference Include="AngleSharp.Css" Version="0.17.0" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.20.0" />
     <PackageReference Include="OneOf" Version="3.0.243" />
     <PackageReference Include="SkiaSharp" Version="2.88.3" />
