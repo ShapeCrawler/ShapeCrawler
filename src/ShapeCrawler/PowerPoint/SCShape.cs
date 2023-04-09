@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using AngleSharp.Dom;
+using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.Constants;
@@ -106,8 +108,10 @@ internal abstract class SCShape : IShape
     private SCGroupShape? GroupShape { get; }
 
     internal abstract void Draw(SKCanvas canvas);
-
+    
     internal abstract string ToJson();
+    
+    internal abstract IHtmlElement ToHtmlElement();
     
     protected virtual void SetXCoordinate(int newXPx)
     {

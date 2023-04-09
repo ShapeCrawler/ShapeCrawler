@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml;
+﻿using AngleSharp.Html.Dom;
+using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.Shapes;
 using SkiaSharp;
@@ -21,6 +22,11 @@ internal sealed class SCOLEObject : SCShape, IOLEObject
     public override SCShapeType ShapeType => SCShapeType.OLEObject;
 
     internal override void Draw(SKCanvas canvas)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    internal override IHtmlElement ToHtmlElement()
     {
         throw new System.NotImplementedException();
     }

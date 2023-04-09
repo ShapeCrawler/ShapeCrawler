@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using NUnit.Framework;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Properties;
@@ -14,6 +15,7 @@ using Xunit;
 namespace ShapeCrawler.Tests.Unit;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
+[SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class SlideTests : SCTest
 {
     [Fact]
@@ -178,22 +180,20 @@ var pre = SCPresentation.Open(pptx);
         // Act
         slide.SaveAsPng(mStream);
     }
+    
+    [Test]
+    public void ToHTML_converts_slide_to_HTML()
+    {
+        // Arrange
+        var pptx = TestHelper.GetStream("autoshape-case011_save-as-png.pptx");
+        var pre = SCPresentation.Open(pptx);
+        var slide = pre.Slides[0];
 
-#endif
+        // Act
+        var slideHtml = slide.ToHtml();
 
-#if TEST
-        [Fact]
-        public void ToHtml_converts_slide_to_HTML()
-        {
-            // Arrange
-            var slide = this.GetSlide("052_slide-to-html.pptx", 1);
+        // Arrange
+    }
 
-            // Act
-            var html = slide.ToHtml().Result;
-            File.WriteAllText(@"C:\Documents\ShapeCrawler\Issues\SC-189_convert-slide-to-html\to-html\output.html", html);
-
-            // Arrange
-            
-        }
 #endif
 }

@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml;
+﻿using AngleSharp.Html.Dom;
+using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.Shared;
 using SkiaSharp;
@@ -30,6 +31,11 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
     internal A.TransformGroup ATransformGroup => this.pGroupShape.GroupShapeProperties!.TransformGroup!;
 
     internal override void Draw(SKCanvas canvas)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    internal override IHtmlElement ToHtmlElement()
     {
         throw new System.NotImplementedException();
     }

@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Office2019.Drawing.SVG;
 using DocumentFormat.OpenXml.Packaging;
@@ -53,6 +54,11 @@ internal sealed class SCPicture : SCShape, IPicture
     public override SCShapeType ShapeType => SCShapeType.Picture;
 
     internal override void Draw(SKCanvas canvas)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal override IHtmlElement ToHtmlElement()
     {
         throw new NotImplementedException();
     }

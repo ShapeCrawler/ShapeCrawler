@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml;
+﻿using AngleSharp.Html.Dom;
+using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
@@ -36,6 +37,11 @@ internal sealed class SCVideoShape : SCMediaShape, IVideoShape
     public override SCShapeType ShapeType => SCShapeType.Video;
 
     internal override void Draw(SKCanvas canvas)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    internal override IHtmlElement ToHtmlElement()
     {
         throw new System.NotImplementedException();
     }

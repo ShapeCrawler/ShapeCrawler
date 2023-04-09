@@ -338,7 +338,7 @@ public class ShapeCollectionTests : SCTest
         picture.ShapeType.Should().Be(SCShapeType.Picture);
         TestHelper.Validate(pres);
     }
-    
+
     [Test]
     public void AddRectangle_adds_rectangle_with_valid_id_and_name()
     {

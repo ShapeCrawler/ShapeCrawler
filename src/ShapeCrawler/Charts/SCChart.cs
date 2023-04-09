@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using OneOf;
@@ -110,6 +111,11 @@ internal class SCChart : SCShape, IChart
     internal ChartPart ChartPart { get; private set; }
 
     internal override void Draw(SKCanvas canvas)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal override IHtmlElement ToHtmlElement()
     {
         throw new NotImplementedException();
     }
