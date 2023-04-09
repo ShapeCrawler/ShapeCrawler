@@ -44,6 +44,9 @@ public interface ISlide : ISlideStructure
     void Hide();
 
 #if DEBUG
+    
+    Task<string> ToHtml();
+    
     /// <summary>
     ///     Saves slide as PNG image.
     /// </summary>

@@ -1,4 +1,5 @@
-﻿using OneOf;
+﻿using AngleSharp.Html.Dom;
+using OneOf;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -20,5 +21,10 @@ internal sealed class SCRectangle : SCAutoShape, IRectangle
         OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
         : base(pShape, parentSlideObject, parentShapeCollection)
     {
+    }
+
+    internal override IHtmlElement ToHtmlElement()
+    {
+        throw new System.NotImplementedException();
     }
 }

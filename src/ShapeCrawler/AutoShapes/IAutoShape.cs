@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.AutoShapes;
@@ -127,6 +128,11 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
     }
 
     internal override string ToJson()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal override IHtmlElement ToHtmlElement()
     {
         throw new NotImplementedException();
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.Extensions;
@@ -155,6 +156,11 @@ internal sealed class SCTable : SCShape, ITable
     }
 
     internal override void Draw(SKCanvas canvas)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal override IHtmlElement ToHtmlElement()
     {
         throw new NotImplementedException();
     }

@@ -749,7 +749,7 @@ internal sealed class ShapeCollection : IShapeCollection
     {
         var slideStructure =
             this.ParentSlideStructure.Match(slide => slide as SlideStructure, layout => layout, master => master);
-        var slidePart = (SlidePart)slideStructure.TypedOpenXmlPart;
+        var slidePart = (TypedOpenXmlPart)slideStructure.TypedOpenXmlPart;
         var imgPartRId = slidePart.GetNextRelationshipId();
         var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
         imageStream.Position = 0;

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using AngleSharp;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
@@ -73,6 +75,20 @@ internal sealed class SCSlide : SlideStructure, ISlide
         {
             this.SDKSlidePart.Slide.Show = false;
         }
+    }
+
+    public async Task<string> ToHtml()
+    {
+        var browsingContext = BrowsingContext.New(Configuration.Default.WithDefaultLoader().WithCss());
+        var document = await browsingContext.OpenNewAsync().ConfigureAwait(false);
+        var body = document.Body!;
+        
+        foreach (var shape in this.Shapes.OfType<SCShape>())
+        {
+            body.AppendChild(shape.ToHtmlElement());
+        }
+
+        return document.DocumentElement.OuterHtml;
     }
 
     public void SaveAsPng(Stream stream)
