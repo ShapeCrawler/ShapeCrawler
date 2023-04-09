@@ -80,7 +80,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
     public async Task<string> ToHtml()
     {
         var browsingContext = BrowsingContext.New(Configuration.Default.WithDefaultLoader().WithCss());
-        var document = await browsingContext.OpenNewAsync();
+        var document = await browsingContext.OpenNewAsync().ConfigureAwait(false);
         var body = document.Body!;
         
         foreach (var shape in this.Shapes.OfType<SCShape>())
