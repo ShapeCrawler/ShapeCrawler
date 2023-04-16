@@ -58,4 +58,9 @@ public interface IChart : IShape
     ///     Gets instance of <see cref="SpreadsheetDocument"/> of Open XML SDK.
     /// </summary>
     SpreadsheetDocument SDKSpreadsheetDocument { get; }
+
+    /// <summary>
+    ///     Gets chart axis formatting options. Returns <see langword="null"/> if chart axis formatting options are not available, for example, for pie charts.
+    /// </summary>
+    IFormatAxis? FormatAxis { get; }
 }

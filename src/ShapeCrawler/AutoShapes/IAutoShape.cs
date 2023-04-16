@@ -32,7 +32,7 @@ public interface IAutoShape : IShape
     IShapeOutline Outline { get; }
  
     /// <summary>
-    ///     Gets shape fill. Returns <see langword="null"/> if the shape can not be filled.
+    ///     Gets shape fill. Returns <see langword="null"/> if the shape can not be filled, for example, a line.
     /// </summary>
     IShapeFill? Fill { get; }
     

@@ -197,6 +197,8 @@
     <EmbeddedResource Include="Resource\charts\charts-case004_bars.pptx" />
     <EmbeddedResource Remove="TestResults\**" />
     <None Remove="TestResults\**" />
+    <None Remove="Resource\charts\charts_bar-chart.pptx" />
+    <EmbeddedResource Include="Resource\charts\charts_bar-chart.pptx" />
   </ItemGroup>
 
 </Project>
