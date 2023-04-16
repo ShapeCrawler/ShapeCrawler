@@ -30,6 +30,7 @@ internal class SCChart : SCShape, IChart
     private readonly IEnumerable<OpenXmlElement> cXCharts;
 
     private string? chartTitle;
+    private C.Scaling cScaling;
 
     internal SCChart(
         P.GraphicFrame pGraphicFrame, 
@@ -51,10 +52,11 @@ internal class SCChart : SCShape, IChart
 
         this.ChartPart = (ChartPart)slideStructureCore.TypedOpenXmlPart.GetPartById(cChartReference.Id!);
 
-        var cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
-        this.cXCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
+        var cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+        this.cXCharts = cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
         this.ChartWorkbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartWorkbook(this, this.ChartPart.EmbeddedPackagePart) : null;
+        this.cScaling = cPlotArea.Descendants<C.Scaling>().First();
     }
 
     public SCChartType Type => this.chartType.Value;
@@ -105,6 +107,12 @@ internal class SCChart : SCShape, IChart
     public byte[] WorkbookByteArray => this.ChartWorkbook!.BinaryData;
 
     public SpreadsheetDocument SDKSpreadsheetDocument => this.ChartWorkbook!.SpreadsheetDocument.Value;
+    public IFormatAxis FormatAxis => this.GetFormatAxis();
+
+    private IFormatAxis GetFormatAxis()
+    {
+        return new SCFormatAxis(this.cScaling);
+    }
 
     internal ChartWorkbook? ChartWorkbook { get; set; }
 

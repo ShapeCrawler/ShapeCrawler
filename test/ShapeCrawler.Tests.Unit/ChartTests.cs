@@ -4,10 +4,12 @@ using System.IO;
 using System.Linq;
 using ClosedXML.Excel;
 using FluentAssertions;
+using NUnit.Framework;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
+using Assert = Xunit.Assert;
 
 // ReSharper disable TooManyDeclarations
 // ReSharper disable InconsistentNaming
@@ -17,6 +19,7 @@ namespace ShapeCrawler.Tests.Unit;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
 [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
+[SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class ChartTests : SCTest
 {
     
@@ -116,7 +119,7 @@ public class ChartTests : SCTest
         hasTitleCase6.Should().BeFalse();
     }
         
-    [Theory]
+    [Xunit.Theory]
     [MemberData(nameof(TestCasesSeriesCollectionCount))]
     public void SeriesCollection_Count_returns_number_of_series(IChart chart, int expectedSeriesCount)
     {
@@ -316,7 +319,6 @@ public class ChartTests : SCTest
         chart.GeometryType.Should().Be(SCGeometry.Rectangle);
     }
         
-                
     [Fact]
     public void SDKSpreadsheetDocument_return_underlying_SpreadsheetDocument()
     {
@@ -330,5 +332,20 @@ public class ChartTests : SCTest
             
         // Assert
         spreadSheetDocument.Should().NotBeNull();
+    }
+
+    [Test]
+    public void FormatAxis_AxisOptions_Bounds_Minimum_Getter()
+    {
+        // Arrange
+        var pptx = TestHelper.GetStream("charts_bar-chart.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
+        
+        // Act
+        var minimum = barChart.FormatAxis.AxisOptions.Bounds.Minimum;
+        
+        // Assert
+        minimum.Should().Be(0);
     }
 }
