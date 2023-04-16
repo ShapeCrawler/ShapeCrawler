@@ -1,11 +1,13 @@
-﻿using ShapeCrawler.Charts;
-
+﻿// ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
 
+/// <summary>
+///     Represents chart axis options.
+/// </summary>
 public interface IAxisOptions
 {
     /// <summary>
-    ///     Gets bounds. Returns <see langword="null"/> if bounds are not available, for example, for pie charts.
+    ///     Gets axis bounds. Returns <see langword="null"/> if bounds are not available, for example, for pie charts.
     /// </summary>
     IBounds? Bounds { get; }
 }

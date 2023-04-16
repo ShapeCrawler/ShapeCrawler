@@ -5,7 +5,6 @@ using System.Linq;
 using ClosedXML.Excel;
 using FluentAssertions;
 using NUnit.Framework;
-using ShapeCrawler.Charts;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
@@ -347,5 +346,20 @@ public class ChartTests : SCTest
         
         // Assert
         minimum.Should().Be(0);
+    }
+    
+    [Test]
+    public void FormatAxis_AxisOptions_Bounds_Maximum_Getter_returns_default_6()
+    {
+        // Arrange
+        var pptx = TestHelper.GetStream("charts_bar-chart.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
+        
+        // Act
+        var maximum = barChart.FormatAxis!.AxisOptions.Bounds!.Maximum;
+        
+        // Assert
+        maximum.Should().Be(6);
     }
 }
