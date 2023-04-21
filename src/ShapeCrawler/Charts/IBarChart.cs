@@ -21,6 +21,5 @@ internal sealed class SCBarChart : SCChart, IBarChart
         OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
         : base(pGraphicFrame, parentSlideObject, parentShapeCollection)
     {
-        
     }
 }

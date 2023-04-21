@@ -1,9 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+#if DEBUG
 using System.Net.Http;
+#endif
 using System.Net.NetworkInformation;
+#if DEBUG
 using System.Text;
+#endif
 using System.Text.Json;
 using ShapeCrawler.Logger;
 
@@ -18,8 +22,7 @@ internal static class SCLogger
 
     public static void Send()
     {
-        return;
-
+#if DEBUG
         if (!SCSettings.CanCollectLogs || DateTime.UtcNow < new DateTime(2023, 02, 15))
         {
             return;
@@ -55,6 +58,8 @@ internal static class SCLogger
         {
             Log.Value.SendFailed = DateTime.Now;
         }
+
+#endif
     }
 
     private static SCLog GetLog()
@@ -85,7 +90,7 @@ internal static class SCLogger
 
         var newLogValue = new SCLog();
         newLogValue.UserId = firstInterface.GetPhysicalAddress().ToString();
-        
+
         return newLogValue;
     }
 

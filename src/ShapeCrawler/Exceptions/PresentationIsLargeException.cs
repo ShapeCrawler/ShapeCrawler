@@ -21,8 +21,8 @@ internal sealed class PresentationIsLargeException : SCException
             maxSize.ToString(CultureInfo.CurrentCulture), 
             System.StringComparison.OrdinalIgnoreCase);
 #else
-            var message =
-                ExceptionMessages.PresentationIsLarge.Replace("{0}", maxSize.ToString(CultureInfo.CurrentCulture));
+        var message =
+            ExceptionMessages.PresentationIsLarge.Replace("{0}", maxSize.ToString(CultureInfo.CurrentCulture));
 #endif
         return new PresentationIsLargeException(message);
     }

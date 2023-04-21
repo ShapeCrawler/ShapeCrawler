@@ -1,6 +1,6 @@
 ﻿using A = DocumentFormat.OpenXml.Drawing;
-// ReSharper disable CheckNamespace
 
+// ReSharper disable CheckNamespace
 namespace ShapeCrawler;
 
 /// <summary>

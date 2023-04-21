@@ -70,7 +70,6 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
         var groupedShapeRight = groupedShape.X + groupedShape.Width;
         if (groupedShapeRight > parentGroupRight)
         {
-            
             var diff = groupedShapeRight - parentGroupRight;
             var diffEmu = UnitConverter.HorizontalPixelToEmu(diff);
             extents.Cx = new Int64Value(extents.Cx! + diffEmu);

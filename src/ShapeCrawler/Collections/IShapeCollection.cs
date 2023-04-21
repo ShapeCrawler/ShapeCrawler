@@ -765,7 +765,7 @@ internal sealed class ShapeCollection : IShapeCollection
         nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
         nonVisualPictureProperties.Append(appNonVisualDrawingProperties);
 
-        var blipFill = new P.BlipFill ();
+        var blipFill = new P.BlipFill();
         var blip = new A.Blip { Embed = imgPartRId };
         var stretch = new A.Stretch();
         blipFill.Append(blip);
