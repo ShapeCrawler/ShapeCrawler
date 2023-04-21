@@ -34,7 +34,7 @@ internal sealed class SCSectionSlideCollection : ISectionSlideCollection
         return this.GetEnumerator();
     }
 
-    private void OnPresSlideCollectionChanged(object sender, EventArgs e)
+    private void OnPresSlideCollectionChanged(object? sender, EventArgs e)
     {
         this.Initialize();
     }

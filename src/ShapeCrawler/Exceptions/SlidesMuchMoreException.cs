@@ -17,7 +17,7 @@ internal sealed class SlidesMuchMoreException : SCException
             maxNum.ToString(CultureInfo.CurrentCulture),
             System.StringComparison.OrdinalIgnoreCase);
 #else
-            var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString(CultureInfo.CurrentCulture));
+        var message = ExceptionMessages.SlidesMuchMore.Replace("{0}", maxNum.ToString(CultureInfo.CurrentCulture));
 #endif
         return new SlidesMuchMoreException(message);
     }

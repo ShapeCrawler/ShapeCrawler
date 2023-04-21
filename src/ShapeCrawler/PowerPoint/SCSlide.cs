@@ -113,11 +113,11 @@ internal sealed class SCSlide : SlideStructure, ISlide
     {
         var returnList = new List<ITextFrame>();
 
-        // this will add all textboxes from shapes on that slide that directly inherit ITextBoxContainer
-        returnList.AddRange(this.Shapes.OfType<ITextFrameContainer>()
+        var frames = this.Shapes.OfType<ITextFrameContainer>()
             .Where(t => t.TextFrame != null)
-            .Select(t => t.TextFrame)
-            .ToList());
+            .Select(t => t.TextFrame!)
+            .ToList();
+        returnList.AddRange(frames);
 
         // if this slide contains a table, the cells from that table will have to be added as well, since they inherit from ITextBoxContainer but are not direct descendants of the slide
         var tablesOnSlide = this.Shapes.OfType<ITable>().ToList();
@@ -237,7 +237,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
 #if NET7_0
         return raw[SCConstants.CustomDataElementName.Length..];
 #else
-            return raw.Substring(SCConstants.CustomDataElementName.Length);
+        return raw.Substring(SCConstants.CustomDataElementName.Length);
 #endif
     }
 

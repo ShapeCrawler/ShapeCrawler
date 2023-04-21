@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shared;
-// ReSharper disable CheckNamespace
 
+// ReSharper disable CheckNamespace
 namespace ShapeCrawler;
 
 /// <summary>

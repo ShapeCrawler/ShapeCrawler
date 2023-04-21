@@ -21,8 +21,8 @@ public interface IBounds
 
 internal class SCBounds : IBounds
 {
-    private readonly DocumentFormat.OpenXml.Drawing.Charts.Scaling cScaling;
     private const double DefaultMax = 6;
+    private readonly DocumentFormat.OpenXml.Drawing.Charts.Scaling cScaling;
 
     public SCBounds(DocumentFormat.OpenXml.Drawing.Charts.Scaling cScaling)
     {

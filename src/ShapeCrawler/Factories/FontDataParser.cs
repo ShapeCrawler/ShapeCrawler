@@ -23,7 +23,7 @@ internal static class FontDataParser
         var autoShape = (SCAutoShape?)placeholder.ReferencedShape.Value;
         autoShape?.FillFontData(paragraph.Level, ref phFontData);
     }
-    
+
     internal static FontData FromPlaceholder(SCParagraph para)
     {
         var fontData = new FontData();
@@ -33,9 +33,9 @@ internal static class FontDataParser
         {
             return fontData;
         }
-        
+
         var referencedShape = (SCAutoShape?)placeholder.ReferencedShape.Value;
-        
+
         if (referencedShape is null && placeholder.Type is SCPlaceholderType.Title or SCPlaceholderType.CenteredTitle)
         {
             var aDefRPr = shape.SlideMasterInternal.PSlideMaster.TextStyles!.TitleStyle!.Level1ParagraphProperties!
@@ -45,7 +45,7 @@ internal static class FontDataParser
         }
         else
         {
-            referencedShape?.FillFontData(para.Level, ref fontData);    
+            referencedShape?.FillFontData(para.Level, ref fontData);
         }
 
         return fontData;
@@ -109,12 +109,16 @@ internal static class FontDataParser
             }
 
 #if NETSTANDARD2_0
-                var paragraphLvl =
- int.Parse(textPr.LocalName[3].ToString(System.Globalization.CultureInfo.CurrentCulture), System.Globalization.CultureInfo.CurrentCulture);
+            var paragraphLvl =
+                int.Parse(
+                    textPr.LocalName[3].ToString(System.Globalization.CultureInfo.CurrentCulture),
+                    System.Globalization.CultureInfo.CurrentCulture);
 #else
             var localName = textPr.LocalName.AsSpan();
-            var level = localName.Slice(3, 1); // the fourth character contains level number, eg. "lvl1pPr -> 1, lvl2pPr -> 2, etc."
-            var paragraphLvl = int.Parse(level, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture);
+            var level =
+ localName.Slice(3, 1); // the fourth character contains level number, eg. "lvl1pPr -> 1, lvl2pPr -> 2, etc."
+            var paragraphLvl =
+ int.Parse(level, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture);
 #endif
             var fontData = new FontData
             {

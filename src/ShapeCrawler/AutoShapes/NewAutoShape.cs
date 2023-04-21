@@ -4,7 +4,6 @@ namespace ShapeCrawler.AutoShapes;
 
 internal readonly struct NewAutoShape
 {
-    
     internal NewAutoShape(SCAutoShape newAutoShape, TypedOpenXmlCompositeElement pShapeTreeChild)
     {
         this.AutoShape = newAutoShape;

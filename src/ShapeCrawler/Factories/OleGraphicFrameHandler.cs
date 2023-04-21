@@ -22,7 +22,7 @@ internal sealed class OleGraphicFrameHandler : OpenXmlElementHandler
             var aGraphicData = pShapeTreeChild!.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>();
             if (aGraphicData!.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
             {
-                 var oleObject = new SCOLEObject (pGraphicFrame, slideObject, shapeCollection);
+                 var oleObject = new SCOLEObject(pGraphicFrame, slideObject, shapeCollection);
 
                  return oleObject;
             }

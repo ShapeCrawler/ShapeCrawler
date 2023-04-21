@@ -93,7 +93,7 @@ internal sealed class SCPortionCollection : IPortionCollection
         {
             var aText = aField.GetFirstChild<A.Text>();
             var newPortion = new SCPortion(aText!, paragraph, aField);
-            var fieldPortions = new List<SCPortion>(new[] { newPortion});
+            var fieldPortions = new List<SCPortion>(new[] { newPortion });
             return fieldPortions;
         }
 

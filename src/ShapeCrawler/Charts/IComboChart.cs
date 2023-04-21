@@ -11,7 +11,6 @@ namespace ShapeCrawler;
 /// </summary>
 public interface IComboChart : IChart
 {
-
 }
 
 internal sealed class SCComboChart : SCChart, IComboChart
