@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+#if DEBUG
+using System.Threading.Tasks;
+#endif
 using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler;
