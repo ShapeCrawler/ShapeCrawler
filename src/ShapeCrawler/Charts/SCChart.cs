@@ -107,7 +107,7 @@ internal class SCChart : SCShape, IChart
 
     public SpreadsheetDocument SDKSpreadsheetDocument => this.ChartWorkbook!.SpreadsheetDocument.Value;
     
-    public IFormatAxis FormatAxis => this.GetFormatAxis();
+    public IAxesManager Axes => this.GetAxes();
 
     internal ChartWorkbook? ChartWorkbook { get; set; }
 
@@ -141,9 +141,9 @@ internal class SCChart : SCShape, IChart
         return enumChartType;
     }
     
-    private IFormatAxis GetFormatAxis()
+    private IAxesManager GetAxes()
     {
-        return new SCFormatAxis(this.cPlotArea);
+        return new SCAxesManager(this.cPlotArea);
     }
 
     private ICategoryCollection? GetCategories()

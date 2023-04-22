@@ -60,7 +60,7 @@ public interface IChart : IShape
     SpreadsheetDocument SDKSpreadsheetDocument { get; }
 
     /// <summary>
-    ///     Gets chart axis formatting options. Returns <see langword="null"/> if chart axis formatting options are not available, for example, for pie charts.
+    ///     Gets chart axes manager.
     /// </summary>
-    IFormatAxis? FormatAxis { get; }
+    IAxesManager Axes { get; }
 }

@@ -334,7 +334,7 @@ public class ChartTests : SCTest
     }
 
     [Test]
-    public void FormatAxis_AxisOptions_Bounds_Minimum_Getter()
+    public void Axes_HorizontalAxis_Minimum_Getter()
     {
         // Arrange
         var pptx = TestHelper.GetStream("charts_bar-chart.pptx");
@@ -342,14 +342,14 @@ public class ChartTests : SCTest
         var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
         
         // Act
-        var minimum = barChart.FormatAxis.AxisOptions.Bounds.Minimum;
+        var minimum = barChart.Axes.HorizontalAxis.Minimum;
         
         // Assert
         minimum.Should().Be(0);
     }
     
     [Test]
-    public void FormatAxis_AxisOptions_Bounds_Maximum_Getter_returns_default_6()
+    public void Axes_HorizontalAxis_Maximum_Getter_returns_default_6()
     {
         // Arrange
         var pptx = TestHelper.GetStream("charts_bar-chart.pptx");
@@ -357,7 +357,7 @@ public class ChartTests : SCTest
         var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
         
         // Act
-        var maximum = barChart.FormatAxis!.AxisOptions.Bounds!.Maximum;
+        var maximum = barChart.Axes.HorizontalAxis.Maximum;
         
         // Assert
         maximum.Should().Be(6);
