@@ -59,17 +59,8 @@ public interface IChart : IShape
     /// </summary>
     SpreadsheetDocument SDKSpreadsheetDocument { get; }
 
+    /// <summary>
+    ///     Gets chart axes manager.
+    /// </summary>
     IAxesManager Axes { get; }
-}
-
-public interface IAxesManager
-{
-    IAxis HorizontalAxis { get; }
-}
-
-public interface IAxis
-{
-    double Minimum { get; set; }
-    
-    double Maximum { get; set; }
 }
