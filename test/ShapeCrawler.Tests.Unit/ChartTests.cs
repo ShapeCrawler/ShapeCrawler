@@ -376,8 +376,7 @@ public class ChartTests : SCTest
         var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
         
         // Act
-        barChart.Axes.ValueAxis.Maximum = 7;
-        TestHelper.SaveResult(pres);
+        barChart.Axes.ValueAxis!.Maximum = 7;
 
         // Assert
         barChart.Axes.ValueAxis.Maximum.Should().Be(7);

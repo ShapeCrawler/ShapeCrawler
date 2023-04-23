@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace ShapeCrawler;
+﻿namespace ShapeCrawler;
 
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
