@@ -24,11 +24,11 @@ public interface IAxis
 internal class SCAxis : IAxis
 {
     private const double DefaultMax = 6;
-    private readonly C.PlotArea cPlotArea;
+    private readonly C.Scaling cScaling;
 
-    public SCAxis(C.PlotArea cPlotArea)
+    public SCAxis(C.Scaling cScaling)
     {
-        this.cPlotArea = cPlotArea;
+        this.cScaling = cScaling;
     }
 
     public double Minimum
@@ -45,26 +45,24 @@ internal class SCAxis : IAxis
 
     private void SetMaximum(double value)
     {
-        throw new NotImplementedException();
+        this.cScaling.MaxAxisValue = new C.MaxAxisValue { Val = value };
     }
 
     private void SetMinimum(double value)
     {
-        throw new NotImplementedException();
+        this.cScaling.MinAxisValue = new C.MinAxisValue { Val = value };
     }
 
     private double GetMinimum()
     {
-        var cScaling = this.cPlotArea.Descendants<C.Scaling>().First();
-        var cMin = cScaling.MinAxisValue;
+        var cMin = this.cScaling.MinAxisValue;
         
         return cMin == null ? 0 : cMin.Val!;
     }
     
     private double GetMaximum()
     {
-        var cScaling = this.cPlotArea.Descendants<C.Scaling>().First();
-        var cMax = cScaling.MaxAxisValue;
+        var cMax = this.cScaling.MaxAxisValue;
         
         return cMax == null ? DefaultMax : cMax.Val!;
     }

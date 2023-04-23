@@ -8,19 +8,25 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 public interface IAxesManager
 {
     /// <summary>
-    ///     Gets horizintal axis.
+    ///     Gets value axis. Returns <see langword="null"/> if chart has no value axis, e.g. pie chart.
     /// </summary>
-    IAxis HorizontalAxis { get; }
+    IAxis? ValueAxis { get; }
 }
 
 internal class SCAxesManager : IAxesManager
 {
     private readonly C.PlotArea cPlotArea;
 
-    public SCAxesManager(C.PlotArea cPlotArea)
+    internal SCAxesManager(C.PlotArea cPlotArea)
     {
         this.cPlotArea = cPlotArea;
     }
 
-    public IAxis HorizontalAxis => new SCAxis(this.cPlotArea);
+    public IAxis? ValueAxis => this.GetValueAxis();
+
+    private IAxis? GetValueAxis()
+    {
+        var cValueAxis = this.cPlotArea.GetFirstChild<C.ValueAxis>();
+        return cValueAxis == null ? null : new SCAxis(cValueAxis.Scaling!);
+    }
 }
