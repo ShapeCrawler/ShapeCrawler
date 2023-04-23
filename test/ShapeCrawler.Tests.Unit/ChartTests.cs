@@ -157,6 +157,21 @@ public class ChartTests : SCTest
         // Assert
         chartPoints.Should().NotBeEmpty();
     }
+    
+    [Test]
+    public void SeriesCollection_RemoveAt_removes_series_by_index()
+    {
+        // Arrange
+        var pptx = GetTestStream("charts_bar-chart.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var barChart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
+            
+        // Act
+        barChart.SeriesCollection.RemoveAt(0);
+
+        // Assert
+        barChart.SeriesCollection.Count.Should().Be(2);
+    }
             
     [Fact]
     public void CategoryName_GetterReturnsChartCategoryName()
