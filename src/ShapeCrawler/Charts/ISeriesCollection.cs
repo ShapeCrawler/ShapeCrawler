@@ -39,10 +39,10 @@ internal sealed class SCSeriesCollection : ISeriesCollection
     
     public void RemoveAt(int index)
     {
-        this.seriesList.RemoveAt(index);
-        
         var seriesCore = (SCSeries)this.seriesList[index];
         seriesCore.cSer.Remove();
+        
+        this.seriesList.RemoveAt(index);
     }
 
     public IEnumerator<ISeries> GetEnumerator()
