@@ -1,5 +1,9 @@
 # Changelog  
 
+## Version 0.45.0 - Unreleased
+🍀Added setters for `IChart.Axes.ValueAxis.Minumum/Maximum` [#482](https://github.com/ShapeCrawler/ShapeCrawler/issues/482)  
+🍀Added `ISeriesCollection.RemoveAt(int index)` [#491](https://github.com/ShapeCrawler/ShapeCrawler/issues/491)  
+
 ## Version 0.44.0 - 2023-04-21
 🍀Added `IShapeCollection.AddPicture()` [#481](https://github.com/ShapeCrawler/ShapeCrawler/issues/481)  
 🍀Added `IChart.FormatAxis.AxisOptions.Bounds.Minimum/Maximum` [#482](https://github.com/ShapeCrawler/ShapeCrawler/issues/482)
