@@ -41,7 +41,7 @@ public interface ITable : IShape
     void MergeCells(ICell cell1, ICell cell2);
 
     /// <summary>
-    ///     Deletes a column at specified index
+    ///     Removes a column at specified index.
     /// </summary>
     void RemoveColumn(int columnIndex);
 }
