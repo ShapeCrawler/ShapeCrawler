@@ -31,6 +31,27 @@ public class TableTests : SCTest
         // Assert
         rowsCount.Should().Be(expectedCount);
     }
+
+    [Fact]
+    public void Columns_RemoveColumn_Removes_Column_With_Specified_Index()
+    {
+        // Arrange
+        using var ms = new MemoryStream();
+        using var pptx = TestHelperShared.GetStream("table-case001.pptx");
+        using var pres = SCPresentation.Open(pptx);
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var originalColumnCount = table.Columns.Count;
+        
+        // Act
+        table.RemoveColumn(1);
+        
+        // Assert
+        table.Columns.Should().HaveCountLessThan(originalColumnCount);
+        pres.SaveAs(ms);
+        using var pres2 = SCPresentation.Open(ms);
+        var table2 = pres2.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        table2.Columns.Should().HaveCountLessThan(originalColumnCount);
+    }
     
     [Fact]
     public void Rows_RemoveAt_removes_row_with_specified_index()
