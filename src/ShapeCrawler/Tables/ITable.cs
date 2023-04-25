@@ -43,7 +43,7 @@ public interface ITable : IShape
     /// <summary>
     ///     Removes a column at specified index.
     /// </summary>
-    void RemoveColumn(int columnIndex);
+    void RemoveColumnAt(int columnIndex);
 }
 
 internal sealed class SCTable : SCShape, ITable
@@ -74,10 +74,10 @@ internal sealed class SCTable : SCShape, ITable
 
     public ICell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
 
-    public void RemoveColumn(int columnIndex)
+    public void RemoveColumnAt(int columnIndex)
     {
-        var column = this.Columns[columnIndex] as SCColumn;
-        column!.AGridColumn.Remove();
+        var column = (SCColumn)this.Columns[columnIndex];
+        column.AGridColumn.Remove();
         
         var aTableRows = this.ATable.Elements<A.TableRow>();
 
