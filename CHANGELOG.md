@@ -1,8 +1,10 @@
 # Changelog  
 
+## Version 0.45.0 - Unreleased
+
 ## Version 0.44.0 - 2023-04-21
 🍀Added `IShapeCollection.AddPicture()` [#481](https://github.com/ShapeCrawler/ShapeCrawler/issues/481)  
-🍀Added `IChart.FormatAxis.AxisOptions.Bounds.Minimum/Maximum` [#482](https://github.com/ShapeCrawler/ShapeCrawler/issues/482)
+🍀Added `IChart.FormatAxis.AxisOptions.Bounds.Minimum/Maximum` [#482](https://github.com/ShapeCrawler/ShapeCrawler/issues/482)  
 
 ## Version 0.43.0 - 2023-04-06
 🍀Added `IShapeCollection.AddLine()` to add Line shape [#465](https://github.com/ShapeCrawler/ShapeCrawler/issues/465)

@@ -39,6 +39,11 @@ public interface ITable : IShape
     ///     Merge neighbor cells.
     /// </summary>
     void MergeCells(ICell cell1, ICell cell2);
+
+    /// <summary>
+    ///     Removes a column at specified index.
+    /// </summary>
+    void RemoveColumnAt(int columnIndex);
 }
 
 internal sealed class SCTable : SCShape, ITable
@@ -68,6 +73,20 @@ internal sealed class SCTable : SCShape, ITable
     private A.Table ATable => this.pGraphicFrame.GetATable();
 
     public ICell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
+
+    public void RemoveColumnAt(int columnIndex)
+    {
+        var column = (SCColumn)this.Columns[columnIndex];
+        column.AGridColumn.Remove();
+        
+        var aTableRows = this.ATable.Elements<A.TableRow>();
+
+        foreach (var aTableRow in aTableRows)
+        {
+            var aTableCell = aTableRow.Elements<A.TableCell>().ElementAt(columnIndex);
+            aTableCell.Remove();
+        }
+    }
 
     public void MergeCells(ICell inputCell1, ICell inputCell2)
     {

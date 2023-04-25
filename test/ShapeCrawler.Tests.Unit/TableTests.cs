@@ -15,6 +15,7 @@ namespace ShapeCrawler.Tests.Unit;
 
 [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
 [SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
+[SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class TableTests : SCTest
 {
     [Xunit.Theory]
@@ -30,6 +31,28 @@ public class TableTests : SCTest
 
         // Assert
         rowsCount.Should().Be(expectedCount);
+    }
+
+    [Test]
+    public void RemoveColumnAt_removes_column_by_specified_index()
+    {
+        // Arrange
+        var ms = new MemoryStream();
+        var pptx = TestHelperShared.GetStream("table-case001.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var expectedColumnsCount = table.Columns.Count - 1;
+        
+        // Act
+        table.RemoveColumnAt(1);
+        
+        // Assert
+        table.Columns.Should().HaveCount(expectedColumnsCount);
+        pres.SaveAs(ms);
+        pres = SCPresentation.Open(ms);
+        table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        table.Columns.Should().HaveCount(expectedColumnsCount);
+        PptxValidator.Validate(pres);
     }
     
     [Fact]
