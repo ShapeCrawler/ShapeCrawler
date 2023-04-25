@@ -34,16 +34,17 @@ public interface ISeries
     bool HasName { get; }
 }
 
-internal sealed class Series : ISeries
+internal sealed class SCSeries : ISeries
 {
+    internal readonly OpenXmlElement cSer;
+    
     private readonly Lazy<string?> name;
-    private readonly OpenXmlElement seriesXmlElement;
     private readonly SCChart parentChart;
 
-    internal Series(SCChart parentChart, OpenXmlElement seriesXmlElement, SCChartType seriesChartType)
+    internal SCSeries(SCChart parentChart, OpenXmlElement cSer, SCChartType seriesChartType)
     {
         this.parentChart = parentChart;
-        this.seriesXmlElement = seriesXmlElement;
+        this.cSer = cSer;
         this.name = new Lazy<string?>(this.GetNameOrDefault);
         this.Type = seriesChartType;
     }
@@ -54,7 +55,7 @@ internal sealed class Series : ISeries
     {
         get
         {
-            ErrorHandler.Execute(() => ChartPointCollection.Create(this.parentChart, this.seriesXmlElement), out var result);
+            ErrorHandler.Execute(() => ChartPointCollection.Create(this.parentChart, this.cSer), out var result);
             return result;
         }
     }
@@ -76,7 +77,7 @@ internal sealed class Series : ISeries
 
     private string? GetNameOrDefault()
     {
-        var cStringReference = this.seriesXmlElement.GetFirstChild<C.SeriesText>()?.StringReference;
+        var cStringReference = this.cSer.GetFirstChild<C.SeriesText>()?.StringReference;
         if (cStringReference == null)
         {
             return null;

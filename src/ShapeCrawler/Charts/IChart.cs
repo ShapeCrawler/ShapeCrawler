@@ -30,7 +30,7 @@ public interface IChart : IShape
     bool HasCategories { get; }
 
     /// <summary>
-    ///     Gets collection of categories if chart type has categories, otherwise <c>null</c>.
+    ///     Gets collection of categories. Returns <see langword="null"/> if chart type has no categories.
     /// </summary>
     public ICategoryCollection? Categories { get; }
 
