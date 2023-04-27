@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using Microsoft.VisualStudio.TestPlatform.TestExecutor;
+using NUnit.Framework;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Helpers.Attributes;
@@ -10,9 +13,10 @@ using Xunit;
 
 namespace ShapeCrawler.Tests.Unit;
 
+[SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class ParagraphTests : SCTest
 {
-    [Theory]
+    [Xunit.Theory]
     [SlideParagraphData("autoshape-case003.pptx", 1, "AutoShape 5", 1, 1)]
     [SlideParagraphData("autoshape-case003.pptx", 1, "AutoShape 5", 2, 2)]
     public void IndentLevel_returns_indent_level(IParagraph paragraph, int expectedLevel)
@@ -67,7 +71,7 @@ public class ParagraphTests : SCTest
         shape4Pr2BulletType.Should().Be(SCBulletType.Character);
     }
 
-    [Theory]
+    [Xunit.Theory]
     [MemberData(nameof(TestCasesAlignmentGetter))]
     public void Alignment_Getter_returns_text_alignment(IAutoShape autoShape,
         SCTextAlignment expectedAlignment)
@@ -82,7 +86,7 @@ public class ParagraphTests : SCTest
         textAlignment.Should().Be(expectedAlignment);
     }
 
-    [Theory]
+    [Xunit.Theory]
     [MemberData(nameof(TestCasesParagraphsAlignmentSetter))]
     public void Alignment_Setter_updates_text_alignment(TestCase testCase)
     {
@@ -204,9 +208,11 @@ public class ParagraphTests : SCTest
         shape.Y.Should().Be(148);
     }
 
-    [Theory]
+    [Xunit.Theory]
     [MemberData(nameof(TestCasesParagraphText))]
-    public void Text_Setter_sets_paragraph_text(TestElementQuery paragraphQuery, string newText,
+    public void Text_Setter_sets_paragraph_text(
+        TestElementQuery paragraphQuery, 
+        string newText,
         int expectedPortionsCount)
     {
         // Arrange
@@ -245,6 +251,23 @@ public class ParagraphTests : SCTest
         paragraph.Text.Should().Be("test");
         var errors = PptxValidator.Validate(slide.Presentation);
         errors.Should().BeEmpty();
+    }
+    
+    [Test]
+    public void Text_Setter_sets_paragraph_text_for_grouped_shape()
+    {
+        // Arrange
+        var pptx = TestHelper.GetStream("autoshape-case003.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var shape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IAutoShape>("Shape 1");
+        var paragraph = shape.TextFrame!.Paragraphs[0];
+        
+        // Act
+        paragraph.Text = "Safety\n\n\n";
+        
+        // Assert
+        paragraph.Text.Should().BeEquivalentTo("Safety\n\n\n");
+        TestHelper.ThrowIfPresentationInvalid(pres);
     }
 
     public static IEnumerable<object[]> TestCasesParagraphText()
@@ -306,7 +329,7 @@ public class ParagraphTests : SCTest
     }
 
     [Fact]
-    public void Paragraph_ReplaceText_finds_and_replaces_text()
+    public void ReplaceText_finds_and_replaces_text()
     {
         // Arrange
         var pptxStream = GetTestStream("autoshape-case003.pptx");
@@ -335,7 +358,7 @@ public class ParagraphTests : SCTest
         portions.Should().HaveCount(2);
     }
 
-    [Theory]
+    [Xunit.Theory]
     [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 5", 1.0)]
     [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 4", 1.5)]
     [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 3", 2.0)]
@@ -353,7 +376,7 @@ public class ParagraphTests : SCTest
         paragraph.Spacing.LineSpacingPoints.Should().BeNull();
     }
         
-    [Theory]
+    [Xunit.Theory]
     [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 6", 21.6)]
     public void Paragraph_Spacing_LineSpacingPoints_returns_line_spacing_in_Points(IShape shape, double expectedPoints)
     {

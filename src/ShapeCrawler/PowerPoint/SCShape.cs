@@ -209,11 +209,6 @@ internal abstract class SCShape : IShape
     
     protected virtual void SetHeight(int newHPixels)
     {
-        if (this.GroupShape is not null)
-        {
-            throw new RuntimeDefinedPropertyException("Height coordinate of grouped shape cannot be changed.");
-        }
-        
         var pSpPr = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !;
         var aXfrm = pSpPr.Transform2D;
         if (aXfrm is null)

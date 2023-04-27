@@ -35,7 +35,7 @@ public static class TestHelper
 
     public static readonly float VerticalResolution;
     
-    public static void Validate(IPresentation pres)
+    public static void ThrowIfPresentationInvalid(IPresentation pres)
     {
         var errors = PptxValidator.Validate(pres);
         if (errors.Any())
