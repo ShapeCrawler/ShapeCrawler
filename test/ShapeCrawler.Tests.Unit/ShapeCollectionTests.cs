@@ -336,7 +336,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         shapes.Should().HaveCount(1);
         picture.ShapeType.Should().Be(SCShapeType.Picture);
-        TestHelper.Validate(pres);
+        TestHelper.ThrowIfPresentationInvalid(pres);
     }
 
     [Test]
