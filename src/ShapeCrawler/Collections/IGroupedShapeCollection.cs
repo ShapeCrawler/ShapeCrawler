@@ -75,7 +75,7 @@ internal sealed class GroupedShapeCollection : SCLibraryCollection<IShape>, IGro
             }
             else
             {
-                shape = autoShapeCreator.Create(child, parentSlideObject, groupShape);
+                shape = autoShapeCreator.FromTreeChild(child, parentSlideObject, groupShape);
                 if (shape != null)
                 {
                     shape.XChanged += groupShape.OnGroupedShapeXChanged;    

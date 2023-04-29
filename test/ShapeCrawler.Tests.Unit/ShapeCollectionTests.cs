@@ -323,6 +323,20 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
+    public void AddBarChart_adds_Bar_Chart()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        
+        // Act
+        var barChart = pres.Slides[0].Shapes.AddBarChart(BarChartType.ClusteredBar);
+
+        // Assert
+        barChart.Should().NotBeNull();
+        TestHelper.ThrowIfPresentationInvalid(pres);
+    }
+
+    [Test]
     public void AddPicture_adds_picture()
     {
         // Arrange

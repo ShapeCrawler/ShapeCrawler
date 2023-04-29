@@ -19,6 +19,8 @@ using ShapeCrawler.Shared;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
+using C = DocumentFormat.OpenXml.Drawing.Charts;
+using C14 = DocumentFormat.OpenXml.Office2010.Drawing.Charts;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 // ReSharper disable once CheckNamespace
@@ -99,6 +101,18 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     ///     Adds picture.
     /// </summary>
     IPicture AddPicture(Stream imageStream);
+
+    IChart AddBarChart(BarChartType barChartType);
+}
+
+public enum BarChartType
+{
+    ClusteredBar,
+    Stacked,
+    Stacked100Percent,
+    Clustered3D,
+    Stacked3D,
+    Stacked100Percent3D
 }
 
 internal sealed class ShapeCollection : IShapeCollection
@@ -169,7 +183,7 @@ internal sealed class ShapeCollection : IShapeCollection
         appNonVisualDrawingPropsExtensionList.Append(appNonVisualDrawingPropsExtension);
 
         var pPicture = this.CreatePPicture(imageStream, "Audio");
-        
+
         var transform2D = pPicture.ShapeProperties!.Transform2D!;
         transform2D.Offset!.X = xEmu;
         transform2D.Offset!.Y = yEmu;
@@ -181,13 +195,13 @@ internal sealed class ShapeCollection : IShapeCollection
         var hyperlinkOnClick = new A.HyperlinkOnClick { Id = string.Empty, Action = "ppaction://media" };
         nonVisualDrawingProps.Append(hyperlinkOnClick);
         nonVisualPictureProps.Append(new P.NonVisualPictureDrawingProperties());
-        
+
         var applicationNonVisualDrawingProps = nonVisualPictureProps.ApplicationNonVisualDrawingProperties!;
         applicationNonVisualDrawingProps.Append(audioFromFile);
         applicationNonVisualDrawingProps.Append(appNonVisualDrawingPropsExtensionList);
 
         this.shapes.Reset();
-        
+
         return new SCAudioShape(this.pShapeTree, this.ParentSlideStructure, this);
     }
 
@@ -213,13 +227,27 @@ internal sealed class ShapeCollection : IShapeCollection
         transform2D.Extents!.Cy = cyEmu;
 
         var pictureHandler = new PictureHandler();
-        var shape = pictureHandler.Create(pPicture, this.ParentSlideStructure, this) !;
-        
+        var shape = pictureHandler.FromTreeChild(pPicture, this.ParentSlideStructure, this) !;
+
         this.shapes.Reset();
-        
+
         return (SCPicture)shape;
     }
-    
+
+    public IChart AddBarChart(BarChartType barChartType)
+    {
+        var slideStructure =
+            this.ParentSlideStructure.Match(slide => slide as SlideStructure, layout => layout, master => master);
+
+        var chartFactory = new ChartGraphicFrameHandler();
+        var newPGraphicFrame = chartFactory.Create(slideStructure.TypedOpenXmlPart);
+        
+
+        this.pShapeTree.Append(newPGraphicFrame);
+
+        return null!;
+    }
+
     public IVideoShape AddVideo(int x, int y, Stream stream)
     {
         var xEmu = UnitConverter.HorizontalPixelToEmu(x);
@@ -326,7 +354,7 @@ internal sealed class ShapeCollection : IShapeCollection
         creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
 
         this.shapes.Reset();
-        
+
         return new SCVideoShape(this.pShapeTree, this.ParentSlideStructure, this);
     }
 
@@ -340,7 +368,7 @@ internal sealed class ShapeCollection : IShapeCollection
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(newPShape);
-        
+
         this.shapes.Reset();
 
         return newShape;
@@ -356,7 +384,7 @@ internal sealed class ShapeCollection : IShapeCollection
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(newPShape);
-        
+
         this.shapes.Reset();
 
         return newShape;
@@ -371,7 +399,7 @@ internal sealed class ShapeCollection : IShapeCollection
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(newPConnectionShape);
-        
+
         this.shapes.Reset();
 
         return newShape;
@@ -436,7 +464,7 @@ internal sealed class ShapeCollection : IShapeCollection
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(newPConnectionShape);
-        
+
         this.shapes.Reset();
 
         return newShape;
@@ -494,7 +522,7 @@ internal sealed class ShapeCollection : IShapeCollection
 
         this.pShapeTree.Append(graphicFrame);
         var table = new SCTable(graphicFrame, this.ParentSlideStructure, this);
-        
+
         this.shapes.Reset();
 
         return table;
@@ -728,7 +756,7 @@ internal sealed class ShapeCollection : IShapeCollection
             }
             else
             {
-                shape = autoShapeCreator.Create(pShapeTreeChild, this.ParentSlideStructure, this);
+                shape = autoShapeCreator.FromTreeChild(pShapeTreeChild, this.ParentSlideStructure, this);
                 if (shape != null)
                 {
                     shapesValue.Add(shape);
@@ -743,8 +771,8 @@ internal sealed class ShapeCollection : IShapeCollection
 
         return shapesValue;
     }
-    
-    
+
+
     private P.Picture CreatePPicture(Stream imageStream, string shapeName)
     {
         var slideStructure =
@@ -757,10 +785,11 @@ internal sealed class ShapeCollection : IShapeCollection
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
         var shapeId = (uint)this.GenerateNextShapeId();
-        var nonVisualDrawingProperties = new P.NonVisualDrawingProperties { Id = shapeId, Name = $"{shapeName} {shapeId}" };
+        var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
+            { Id = shapeId, Name = $"{shapeName} {shapeId}" };
         var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
         var appNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
-        
+
         nonVisualPictureProperties.Append(nonVisualDrawingProperties);
         nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
         nonVisualPictureProperties.Append(appNonVisualDrawingProperties);
@@ -772,7 +801,7 @@ internal sealed class ShapeCollection : IShapeCollection
         blipFill.Append(stretch);
 
         var transform2D = new A.Transform2D(
-            new A.Offset { X = 0, Y = 0 }, 
+            new A.Offset { X = 0, Y = 0 },
             new A.Extents { Cx = 0, Cy = 0 });
 
         var presetGeometry = new A.PresetGeometry { Preset = A.ShapeTypeValues.Rectangle };
@@ -786,7 +815,7 @@ internal sealed class ShapeCollection : IShapeCollection
         pPicture.Append(shapeProperties);
 
         this.pShapeTree.Append(pPicture);
-        
+
         return pPicture;
     }
 }
