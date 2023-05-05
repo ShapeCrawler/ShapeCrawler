@@ -13,7 +13,10 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Copyright></Copyright>
     <LangVersion>11</LangVersion>
     <ApplicationIcon></ApplicationIcon>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageReleaseNotes>- added setters for IChart.Axes.ValueAxis.Minumum/Maximum
+- added `ISeriesCollection.RemoveAt(int index)
+- added `ITable.RemoveColumnAt(int columnIndex)
+- fixed updating text of the grouped shape</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RepositoryType>Git</RepositoryType>
@@ -21,10 +24,10 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <AssemblyVersion>0.44.0</AssemblyVersion>
-    <FileVersion>0.44.0</FileVersion>
+    <AssemblyVersion>0.45.0</AssemblyVersion>
+    <FileVersion>0.45.0</FileVersion>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-    <PackageVersion>0.45.0-beta.1</PackageVersion>
+    <PackageVersion>0.45.0</PackageVersion>
     <Title>ShapeCrawler</Title>
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
