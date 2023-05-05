@@ -10,7 +10,7 @@ internal sealed class TableGraphicFrameHandler : OpenXmlElementHandler
 {
     private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/table";
 
-    internal override SCShape? Create(
+    internal override SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject,
         OneOf<ShapeCollection, SCGroupShape> shapeCollection)
@@ -20,7 +20,7 @@ internal sealed class TableGraphicFrameHandler : OpenXmlElementHandler
             var graphicData = pGraphicFrame.Graphic!.GraphicData!;
             if (!graphicData.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
             {
-                return this.Successor?.Create(pShapeTreeChild, slideObject, shapeCollection);
+                return this.Successor?.FromTreeChild(pShapeTreeChild, slideObject, shapeCollection);
             }
 
             var table = new SCTable(pGraphicFrame, slideObject, shapeCollection);
@@ -28,6 +28,6 @@ internal sealed class TableGraphicFrameHandler : OpenXmlElementHandler
             return table;
         }
 
-        return this.Successor?.Create(pShapeTreeChild, slideObject, shapeCollection);
+        return this.Successor?.FromTreeChild(pShapeTreeChild, slideObject, shapeCollection);
     }
 }

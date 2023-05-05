@@ -10,7 +10,7 @@ namespace ShapeCrawler.Factories;
 
 internal sealed class PictureHandler : OpenXmlElementHandler
 {
-    internal override SCShape? Create(
+    internal override SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideStructure,
         OneOf<ShapeCollection, SCGroupShape> shapeCollection)
@@ -49,7 +49,7 @@ internal sealed class PictureHandler : OpenXmlElementHandler
 
         if (pPicture == null)
         {
-            return this.Successor?.Create(pShapeTreeChild, slideStructure, shapeCollection);
+            return this.Successor?.FromTreeChild(pShapeTreeChild, slideStructure, shapeCollection);
         }
 
         var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
