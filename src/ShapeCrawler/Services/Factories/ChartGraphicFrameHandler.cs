@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
@@ -18,6 +17,133 @@ namespace ShapeCrawler.Factories;
 internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 {
     private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart";
+
+    public P.GraphicFrame Create(TypedOpenXmlPart typedOpenXmlPart)
+    {
+        var id = (UInt32Value)6U;
+        var name = "Chart X";
+
+        var chartPart = typedOpenXmlPart.AddNewPart<ChartPart>("rId2");
+        this.GenerateChartPartContent(chartPart);
+
+        // Create Excel
+        var embeddedPackagePart = chartPart.AddNewPart<EmbeddedPackagePart>(
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "rId3");
+        var embeddedPackagePartStream = embeddedPackagePart.GetStream(FileMode.Create);
+        using var spreadsheetDocument = SpreadsheetDocument.Create(
+            embeddedPackagePartStream,
+            SpreadsheetDocumentType.Workbook);
+        var workbookPart = spreadsheetDocument.AddWorkbookPart();
+        workbookPart.Workbook = new X.Workbook();
+        var sheets = new X.Sheets();
+        workbookPart.Workbook.AppendChild(sheets);
+
+        var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+        var sheetData = new X.SheetData();
+        worksheetPart.Worksheet = new X.Worksheet(sheetData);
+        var sheet = new X.Sheet
+        {
+            Id = spreadsheetDocument.WorkbookPart!.GetIdOfPart(worksheetPart),
+            SheetId = 1,
+            Name = "Sheet1"
+        };
+        sheets.Append(sheet);
+
+        var cellB1 = new X.Cell
+            { CellReference = "B1", DataType = X.CellValues.String, CellValue = new X.CellValue("Series 1") };
+        var cellC1 = new X.Cell
+            { CellReference = "C1", DataType = X.CellValues.String, CellValue = new X.CellValue("Series 2") };
+        var row1 = new X.Row { RowIndex = 1 };
+        row1.Append(cellB1);
+        row1.Append(cellC1);
+        sheetData.Append(row1);
+
+        var cellA2 = new X.Cell
+            { CellReference = "A2", DataType = X.CellValues.String, CellValue = new X.CellValue("Category 1") };
+        var cellB2 = new X.Cell
+            { CellReference = "B2", DataType = X.CellValues.Number, CellValue = new X.CellValue("1") };
+        var cellC2 = new X.Cell
+            { CellReference = "C2", DataType = X.CellValues.Number, CellValue = new X.CellValue("2") };
+        var row2 = new X.Row { RowIndex = 2 };
+        row2.Append(cellA2);
+        row2.Append(cellB2);
+        row2.Append(cellC2);
+        sheetData.Append(row2);
+
+        var cellA3 = new X.Cell
+            { CellReference = "A3", DataType = X.CellValues.String, CellValue = new X.CellValue("Category 2") };
+        var cellB3 = new X.Cell
+            { CellReference = "B3", DataType = X.CellValues.Number, CellValue = new X.CellValue("3") };
+        var cellC3 = new X.Cell
+            { CellReference = "C3", DataType = X.CellValues.Number, CellValue = new X.CellValue("4") };
+        var row3 = new X.Row { RowIndex = 3 };
+        row3.Append(cellA3);
+        row3.Append(cellB3);
+        row3.Append(cellC3);
+        sheetData.Append(row3);
+
+        var cellA4 = new X.Cell
+            { CellReference = "A4", DataType = X.CellValues.String, CellValue = new X.CellValue("Category 3") };
+        var cellB4 = new X.Cell
+            { CellReference = "B4", DataType = X.CellValues.Number, CellValue = new X.CellValue("5") };
+        var cellC4 = new X.Cell
+            { CellReference = "C4", DataType = X.CellValues.Number, CellValue = new X.CellValue("6") };
+        var row4 = new X.Row { RowIndex = 4 };
+        row4.Append(cellA4);
+        row4.Append(cellB4);
+        row4.Append(cellC4);
+        sheetData.Append(row4);
+
+        spreadsheetDocument.Save();
+        spreadsheetDocument.Dispose();
+        embeddedPackagePartStream.Dispose();
+
+        // Create Shape
+        var graphicFrame = new P.GraphicFrame();
+
+        var nonVisualGraphicFrameProperties = new P.NonVisualGraphicFrameProperties();
+        var nonVisualDrawingProperties = new P.NonVisualDrawingProperties { Id = id, Name = name };
+
+        var nonVisualDrawingPropertiesExtensionList = new A.NonVisualDrawingPropertiesExtensionList();
+
+        var nonVisualDrawingPropertiesExtension1 =
+            new A.NonVisualDrawingPropertiesExtension { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
+
+        nonVisualDrawingPropertiesExtensionList.Append(nonVisualDrawingPropertiesExtension1);
+
+        nonVisualDrawingProperties.Append(nonVisualDrawingPropertiesExtensionList);
+        var nonVisualGraphicFrameDrawingProperties =
+            new P.NonVisualGraphicFrameDrawingProperties();
+        var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
+
+        nonVisualGraphicFrameProperties.Append(nonVisualDrawingProperties);
+        nonVisualGraphicFrameProperties.Append(nonVisualGraphicFrameDrawingProperties);
+        nonVisualGraphicFrameProperties.Append(applicationNonVisualDrawingProperties);
+
+        var transform = new P.Transform();
+        var offset = new A.Offset { X = 2032000L, Y = 719666L };
+        var extents = new A.Extents { Cx = 8128000L, Cy = 5418667L };
+
+        transform.Append(offset);
+        transform.Append(extents);
+
+        var graphic = new A.Graphic();
+        var graphicData = new A.GraphicData { Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart" };
+
+        var chartReference = new C.ChartReference { Id = "rId2" };
+        chartReference.AddNamespaceDeclaration("c", "http://schemas.openxmlformats.org/drawingml/2006/chart");
+        chartReference.AddNamespaceDeclaration("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+
+        graphicData.Append(chartReference);
+
+        graphic.Append(graphicData);
+
+        graphicFrame.Append(nonVisualGraphicFrameProperties);
+        graphicFrame.Append(transform);
+        graphicFrame.Append(graphic);
+
+        return graphicFrame;
+    }
 
     internal override SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
@@ -71,122 +197,6 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         return new SCChart(pGraphicFrame, slideStructure, shapeCollection);
     }
 
-    public P.GraphicFrame Create(TypedOpenXmlPart typedOpenXmlPart)
-    {
-        var id = (UInt32Value)6U;
-        var name = "Chart X";
-        
-        var chartPart = typedOpenXmlPart.AddNewPart<ChartPart>("rId2");
-        this.GenerateChartPartContent(chartPart);
-
-        // Create Excel
-        var embeddedPackagePart = chartPart.AddNewPart<EmbeddedPackagePart>(
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "rId3");
-        var embeddedPackagePartStream = embeddedPackagePart.GetStream(FileMode.Create);
-        using var spreadsheetDocument = SpreadsheetDocument.Create(embeddedPackagePartStream,
-            SpreadsheetDocumentType.Workbook);
-        var workbookPart = spreadsheetDocument.AddWorkbookPart();
-        workbookPart.Workbook = new X.Workbook();
-        var sheets = new X.Sheets();
-        workbookPart.Workbook.AppendChild(sheets);
-
-        var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-        var sheetData = new X.SheetData();
-        worksheetPart.Worksheet = new X.Worksheet(sheetData);
-        var sheet = new X.Sheet
-        {
-            Id = spreadsheetDocument.WorkbookPart!.GetIdOfPart(worksheetPart),
-            SheetId = 1,
-            Name = "Sheet1"
-        };
-        sheets.Append(sheet);
-        
-        var cellB1 = new X.Cell { CellReference = "B1", DataType = X.CellValues.String, CellValue = new X.CellValue("Series 1") };
-        var cellC1 = new X.Cell { CellReference = "C1", DataType = X.CellValues.String, CellValue = new X.CellValue("Series 2") };
-        var row1 = new X.Row { RowIndex = 1 };
-        row1.Append(cellB1);
-        row1.Append(cellC1);
-        sheetData.Append(row1);
-        
-        var cellA2 = new X.Cell { CellReference = "A2", DataType = X.CellValues.String, CellValue = new X.CellValue("Category 1") };
-        var cellB2 = new X.Cell { CellReference = "B2", DataType = X.CellValues.Number, CellValue = new X.CellValue("1") };
-        var cellC2 = new X.Cell { CellReference = "C2", DataType = X.CellValues.Number, CellValue = new X.CellValue("2") };
-        var row2 = new X.Row { RowIndex = 2 };
-        row2.Append(cellA2);
-        row2.Append(cellB2);
-        row2.Append(cellC2);
-        sheetData.Append(row2);
-        
-        var cellA3 = new X.Cell { CellReference = "A3", DataType = X.CellValues.String, CellValue = new X.CellValue("Category 2") };
-        var cellB3 = new X.Cell { CellReference = "B3", DataType = X.CellValues.Number, CellValue = new X.CellValue("3") };
-        var cellC3 = new X.Cell { CellReference = "C3", DataType = X.CellValues.Number, CellValue = new X.CellValue("4") };
-        var row3 = new X.Row { RowIndex = 3 };
-        row3.Append(cellA3);
-        row3.Append(cellB3);
-        row3.Append(cellC3);
-        sheetData.Append(row3);
-        
-        var cellA4 = new X.Cell { CellReference = "A4", DataType = X.CellValues.String, CellValue = new X.CellValue("Category 3") };
-        var cellB4 = new X.Cell { CellReference = "B4", DataType = X.CellValues.Number, CellValue = new X.CellValue("5") };
-        var cellC4 = new X.Cell { CellReference = "C4", DataType = X.CellValues.Number, CellValue = new X.CellValue("6") };
-        var row4 = new X.Row { RowIndex = 4 };
-        row4.Append(cellA4);
-        row4.Append(cellB4);
-        row4.Append(cellC4);
-        sheetData.Append(row4);
-        
-        spreadsheetDocument.Save();
-        spreadsheetDocument.Dispose();
-        embeddedPackagePartStream.Dispose();
-
-        // Create Shape
-        var graphicFrame = new P.GraphicFrame();
-
-        var nonVisualGraphicFrameProperties = new P.NonVisualGraphicFrameProperties();
-        var nonVisualDrawingProperties = new P.NonVisualDrawingProperties { Id = id, Name = name };
-
-        var nonVisualDrawingPropertiesExtensionList = new A.NonVisualDrawingPropertiesExtensionList();
-
-        var nonVisualDrawingPropertiesExtension1 =
-            new A.NonVisualDrawingPropertiesExtension { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
-
-        nonVisualDrawingPropertiesExtensionList.Append(nonVisualDrawingPropertiesExtension1);
-
-        nonVisualDrawingProperties.Append(nonVisualDrawingPropertiesExtensionList);
-        var nonVisualGraphicFrameDrawingProperties =
-            new P.NonVisualGraphicFrameDrawingProperties();
-        var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
-
-        nonVisualGraphicFrameProperties.Append(nonVisualDrawingProperties);
-        nonVisualGraphicFrameProperties.Append(nonVisualGraphicFrameDrawingProperties);
-        nonVisualGraphicFrameProperties.Append(applicationNonVisualDrawingProperties);
-
-        var transform = new P.Transform();
-        var offset = new A.Offset { X = 2032000L, Y = 719666L };
-        var extents = new A.Extents { Cx = 8128000L, Cy = 5418667L };
-
-        transform.Append(offset);
-        transform.Append(extents);
-
-        var graphic = new A.Graphic();
-        var graphicData = new A.GraphicData { Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart" };
-
-        var chartReference = new C.ChartReference { Id = "rId2" };
-        chartReference.AddNamespaceDeclaration("c", "http://schemas.openxmlformats.org/drawingml/2006/chart");
-        chartReference.AddNamespaceDeclaration("r",
-            "http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-
-        graphicData.Append(chartReference);
-
-        graphic.Append(graphicData);
-
-        graphicFrame.Append(nonVisualGraphicFrameProperties);
-        graphicFrame.Append(transform);
-        graphicFrame.Append(graphic);
-
-        return graphicFrame;
-    }
-    
     private void GenerateChartPartContent(ChartPart chartPart1)
     {
         var chartSpace = new C.ChartSpace();
@@ -202,8 +212,7 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         alternateContent1.AddNamespaceDeclaration("mc", "http://schemas.openxmlformats.org/markup-compatibility/2006");
 
         AlternateContentChoice alternateContentChoice1 = new AlternateContentChoice() { Requires = "c14" };
-        alternateContentChoice1.AddNamespaceDeclaration("c14",
-            "http://schemas.microsoft.com/office/drawing/2007/8/2/chart");
+        alternateContentChoice1.AddNamespaceDeclaration("c14", "http://schemas.microsoft.com/office/drawing/2007/8/2/chart");
         C14.Style style1 = new C14.Style() { Val = 102 };
 
         alternateContentChoice1.Append(style1);
@@ -296,7 +305,7 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         C.BarGrouping barGrouping1 = new C.BarGrouping() { Val = C.BarGroupingValues.Clustered };
         C.VaryColors varyColors1 = new C.VaryColors() { Val = false };
 
-        
+
         C.Index index1 = new C.Index() { Val = (UInt32Value)0U };
         C.Order order1 = new C.Order() { Val = (UInt32Value)0U };
 
@@ -358,19 +367,19 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         var seriesBNumCache = new C.NumberingCache();
         var seriesBFormatCode = new C.FormatCode();
         seriesBFormatCode.Text = "General";
-        
+
         var seriesBPointCount = new C.PointCount { Val = (UInt32Value)4U };
 
         seriesBNumCache.Append(seriesBFormatCode);
         seriesBNumCache.Append(seriesBPointCount);
-        
+
         var defaultSeriesValues = new[] { 1, 3, 5 };
         for (var i = 0; i < defaultSeriesValues.Length; i++)
         {
             var seriesBNumPoint = this.CreateCNumericPoint(i, defaultSeriesValues[i]);
             seriesBNumCache.Append(seriesBNumPoint);
         }
-        
+
         seriesBNumRef.Append(seriesBNumCache);
         seriesBNumRef.Append(seriesBFormula);
         seriesBValues.Append(seriesBNumRef);
@@ -514,7 +523,6 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         numberingCache2.Append(numericPoint8);
 
         seriesCNumRef.Append(seriesBValuesFormula);
-        // seriesCNumRef.Append(numberingCache2);
 
         seriesCValues.Append(seriesCNumRef);
 

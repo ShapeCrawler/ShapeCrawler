@@ -19,8 +19,6 @@ using ShapeCrawler.Shared;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
-using C = DocumentFormat.OpenXml.Drawing.Charts;
-using C14 = DocumentFormat.OpenXml.Office2010.Drawing.Charts;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 // ReSharper disable once CheckNamespace
@@ -102,17 +100,9 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     /// </summary>
     IPicture AddPicture(Stream imageStream);
 
+#if DEBUG
     IChart AddBarChart(BarChartType barChartType);
-}
-
-public enum BarChartType
-{
-    ClusteredBar,
-    Stacked,
-    Stacked100Percent,
-    Clustered3D,
-    Stacked3D,
-    Stacked100Percent3D
+#endif
 }
 
 internal sealed class ShapeCollection : IShapeCollection
