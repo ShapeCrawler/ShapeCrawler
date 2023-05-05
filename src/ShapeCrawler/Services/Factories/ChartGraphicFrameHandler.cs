@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
@@ -73,7 +74,7 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
     public P.GraphicFrame Create(TypedOpenXmlPart typedOpenXmlPart)
     {
         var id = (UInt32Value)6U;
-        var name = "Chart 5";
+        var name = "Chart X";
         
         var chartPart = typedOpenXmlPart.AddNewPart<ChartPart>("rId2");
         this.GenerateChartPartContent(chartPart);
@@ -81,7 +82,8 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         // Create Excel
         var embeddedPackagePart = chartPart.AddNewPart<EmbeddedPackagePart>(
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "rId3");
-        using var spreadsheetDocument = SpreadsheetDocument.Create(embeddedPackagePart.GetStream(FileMode.Create),
+        var embeddedPackagePartStream = embeddedPackagePart.GetStream(FileMode.Create);
+        using var spreadsheetDocument = SpreadsheetDocument.Create(embeddedPackagePartStream,
             SpreadsheetDocumentType.Workbook);
         var workbookPart = spreadsheetDocument.AddWorkbookPart();
         workbookPart.Workbook = new X.Workbook();
@@ -99,17 +101,43 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         };
         sheets.Append(sheet);
         
-        var row = new X.Row { RowIndex = 1 };
-        var cell = new X.Cell
-        {
-            CellReference = "B1",
-            DataType = X.CellValues.String,
-            CellValue = new X.CellValue("Series 1")
-        };
-        row.Append(cell);
-        sheetData.Append(row);
+        var cellB1 = new X.Cell { CellReference = "B1", DataType = X.CellValues.String, CellValue = new X.CellValue("Series 1") };
+        var cellC1 = new X.Cell { CellReference = "C1", DataType = X.CellValues.String, CellValue = new X.CellValue("Series 2") };
+        var row1 = new X.Row { RowIndex = 1 };
+        row1.Append(cellB1);
+        row1.Append(cellC1);
+        sheetData.Append(row1);
+        
+        var cellA2 = new X.Cell { CellReference = "A2", DataType = X.CellValues.String, CellValue = new X.CellValue("Category 1") };
+        var cellB2 = new X.Cell { CellReference = "B2", DataType = X.CellValues.Number, CellValue = new X.CellValue("1") };
+        var cellC2 = new X.Cell { CellReference = "C2", DataType = X.CellValues.Number, CellValue = new X.CellValue("2") };
+        var row2 = new X.Row { RowIndex = 2 };
+        row2.Append(cellA2);
+        row2.Append(cellB2);
+        row2.Append(cellC2);
+        sheetData.Append(row2);
+        
+        var cellA3 = new X.Cell { CellReference = "A3", DataType = X.CellValues.String, CellValue = new X.CellValue("Category 2") };
+        var cellB3 = new X.Cell { CellReference = "B3", DataType = X.CellValues.Number, CellValue = new X.CellValue("3") };
+        var cellC3 = new X.Cell { CellReference = "C3", DataType = X.CellValues.Number, CellValue = new X.CellValue("4") };
+        var row3 = new X.Row { RowIndex = 3 };
+        row3.Append(cellA3);
+        row3.Append(cellB3);
+        row3.Append(cellC3);
+        sheetData.Append(row3);
+        
+        var cellA4 = new X.Cell { CellReference = "A4", DataType = X.CellValues.String, CellValue = new X.CellValue("Category 3") };
+        var cellB4 = new X.Cell { CellReference = "B4", DataType = X.CellValues.Number, CellValue = new X.CellValue("5") };
+        var cellC4 = new X.Cell { CellReference = "C4", DataType = X.CellValues.Number, CellValue = new X.CellValue("6") };
+        var row4 = new X.Row { RowIndex = 4 };
+        row4.Append(cellA4);
+        row4.Append(cellB4);
+        row4.Append(cellC4);
+        sheetData.Append(row4);
+        
         spreadsheetDocument.Save();
         spreadsheetDocument.Dispose();
+        embeddedPackagePartStream.Dispose();
 
         // Create Shape
         var graphicFrame = new P.GraphicFrame();
@@ -263,141 +291,89 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         C.PlotArea plotArea1 = new C.PlotArea();
         C.Layout layout1 = new C.Layout();
 
-        C.BarChart barChart1 = new C.BarChart();
+        C.BarChart barChart = new C.BarChart();
         C.BarDirection barDirection1 = new C.BarDirection() { Val = C.BarDirectionValues.Bar };
         C.BarGrouping barGrouping1 = new C.BarGrouping() { Val = C.BarGroupingValues.Clustered };
         C.VaryColors varyColors1 = new C.VaryColors() { Val = false };
 
-        C.BarChartSeries barChartSeries1 = new C.BarChartSeries();
+        
         C.Index index1 = new C.Index() { Val = (UInt32Value)0U };
         C.Order order1 = new C.Order() { Val = (UInt32Value)0U };
 
-        var series1TitleText = new C.SeriesText();
-        var series1TitleRef = new C.StringReference();
-        var series1TitleFormula = new C.Formula();
-        series1TitleFormula.Text = "Sheet1!$B$1";
-        series1TitleRef.Append(series1TitleFormula);
-        series1TitleText.Append(series1TitleRef);
+        // CATEGORY AXIS
+        var catAxisData = new C.CategoryAxisData();
+        var catStrRef = new C.StringReference();
+        var catFormula = new C.Formula();
+        catFormula.Text = "Sheet1!$A$2:$A$4";
+        var catStrCache = new C.StringCache();
+        var catPointCount = new C.PointCount { Val = (UInt32Value)3U };
+        var catStrPoint1 = new C.StringPoint { Index = (UInt32Value)0U };
+        var catNumValue1 = new C.NumericValue();
+        catNumValue1.Text = "Category 1";
+        catStrPoint1.Append(catNumValue1);
+        var catStrPoint2 = new C.StringPoint { Index = (UInt32Value)1U };
+        var catNumValue2 = new C.NumericValue();
+        catNumValue2.Text = "Category 2";
+        catStrPoint2.Append(catNumValue2);
+        var catStrPoint3 = new C.StringPoint { Index = (UInt32Value)2U };
+        var catNumValue = new C.NumericValue();
+        catNumValue.Text = "Category 3";
+        catStrPoint3.Append(catNumValue);
+        catStrCache.Append(catPointCount);
+        catStrCache.Append(catStrPoint1);
+        catStrCache.Append(catStrPoint2);
+        catStrCache.Append(catStrPoint3);
+        catStrRef.Append(catFormula);
+        catStrRef.Append(catStrCache);
+        catAxisData.Append(catStrRef);
 
-        var stringCache1 = new C.StringCache();
-        var pointCount1 = new C.PointCount { Val = (UInt32Value)1U };
-        var stringPoint1 = new C.StringPoint { Index = (UInt32Value)0U };
-        var numericValue1 = new C.NumericValue();
-        numericValue1.Text = "Series 1";
-        stringPoint1.Append(numericValue1);
-        stringCache1.Append(pointCount1);
-        stringCache1.Append(stringPoint1);
-        series1TitleRef.Append(stringCache1);
+        // SERIES B
+        var seriesBTitleText = new C.SeriesText();
+        var seriesBTitleStrRef = new C.StringReference();
+        var seriesBTitleFormula = new C.Formula();
+        seriesBTitleFormula.Text = "Sheet1!$B$1";
+        seriesBTitleText.Append(seriesBTitleStrRef);
+        var seriesBTitleStrCache = new C.StringCache(new C.PointCount { Val = (UInt32Value)1U });
+        var seriesBTitlePoint = new C.StringPoint { Index = (UInt32Value)0U };
+        var seriesBTitlePointValue = new C.NumericValue();
+        seriesBTitlePointValue.Text = "Series 1";
+        seriesBTitlePoint.Append(seriesBTitlePointValue);
+        seriesBTitleStrCache.Append(seriesBTitlePoint);
+        seriesBTitleStrRef.Append(seriesBTitleFormula);
+        seriesBTitleStrRef.Append(seriesBTitleStrCache);
+
+        var seriesBChartShapeProperties = new C.ChartShapeProperties();
+        var solidFill11 = new A.SolidFill(new A.SchemeColor { Val = A.SchemeColorValues.Accent1 });
+        var effectList2 = new A.EffectList();
+        seriesBChartShapeProperties.Append(solidFill11);
+        seriesBChartShapeProperties.Append(new A.Outline(new A.NoFill()));
+        seriesBChartShapeProperties.Append(effectList2);
+        var seriesBInvertIfNegative = new C.InvertIfNegative { Val = false };
+
+        var seriesBValues = new C.Values();
+        var seriesBNumRef = new C.NumberReference();
+        var seriesBFormula = new C.Formula();
+        seriesBFormula.Text = "Sheet1!$B$2:$B$4";
+
+        var seriesBNumCache = new C.NumberingCache();
+        var seriesBFormatCode = new C.FormatCode();
+        seriesBFormatCode.Text = "General";
         
+        var seriesBPointCount = new C.PointCount { Val = (UInt32Value)4U };
 
-        C.ChartShapeProperties chartShapeProperties2 = new C.ChartShapeProperties();
-
-        A.SolidFill solidFill11 = new A.SolidFill();
-        A.SchemeColor schemeColor11 = new A.SchemeColor() { Val = A.SchemeColorValues.Accent1 };
-
-        solidFill11.Append(schemeColor11);
-
-        A.Outline outline2 = new A.Outline();
-        A.NoFill noFill3 = new A.NoFill();
-
-        outline2.Append(noFill3);
-        A.EffectList effectList2 = new A.EffectList();
-
-        chartShapeProperties2.Append(solidFill11);
-        chartShapeProperties2.Append(outline2);
-        chartShapeProperties2.Append(effectList2);
-        C.InvertIfNegative invertIfNegative1 = new C.InvertIfNegative() { Val = false };
-
-        C.CategoryAxisData categoryAxisData1 = new C.CategoryAxisData();
-
-        C.StringReference stringReference2 = new C.StringReference();
-        C.Formula formula2 = new C.Formula();
-        formula2.Text = "Sheet1!$A$2:$A$5";
-
-        C.StringCache stringCache2 = new C.StringCache();
-        C.PointCount pointCount2 = new C.PointCount() { Val = (UInt32Value)4U };
-
-        C.StringPoint stringPoint2 = new C.StringPoint() { Index = (UInt32Value)0U };
-        C.NumericValue numericValue2 = new C.NumericValue();
-        numericValue2.Text = "Category 1";
-
-        stringPoint2.Append(numericValue2);
-
-        C.StringPoint stringPoint3 = new C.StringPoint() { Index = (UInt32Value)1U };
-        C.NumericValue numericValue3 = new C.NumericValue();
-        numericValue3.Text = "Category 2";
-
-        stringPoint3.Append(numericValue3);
-
-        C.StringPoint stringPoint4 = new C.StringPoint() { Index = (UInt32Value)2U };
-        C.NumericValue numericValue4 = new C.NumericValue();
-        numericValue4.Text = "Category 3";
-
-        stringPoint4.Append(numericValue4);
-
-        C.StringPoint stringPoint5 = new C.StringPoint() { Index = (UInt32Value)3U };
-        C.NumericValue numericValue5 = new C.NumericValue();
-        numericValue5.Text = "Category 4";
-
-        stringPoint5.Append(numericValue5);
-
-        stringCache2.Append(pointCount2);
-        stringCache2.Append(stringPoint2);
-        stringCache2.Append(stringPoint3);
-        stringCache2.Append(stringPoint4);
-        stringCache2.Append(stringPoint5);
-
-        stringReference2.Append(formula2);
-        stringReference2.Append(stringCache2);
-
-        categoryAxisData1.Append(stringReference2);
-
-        C.Values values1 = new C.Values();
-
-        C.NumberReference numberReference1 = new C.NumberReference();
-        C.Formula formula3 = new C.Formula();
-        formula3.Text = "Sheet1!$B$2:$B$5";
-
-        C.NumberingCache numberingCache1 = new C.NumberingCache();
-        C.FormatCode formatCode1 = new C.FormatCode();
-        formatCode1.Text = "General";
-        C.PointCount pointCount3 = new C.PointCount() { Val = (UInt32Value)4U };
-
-        C.NumericPoint numericPoint1 = new C.NumericPoint() { Index = (UInt32Value)0U };
-        C.NumericValue numericValue6 = new C.NumericValue();
-        numericValue6.Text = "4.3";
-
-        numericPoint1.Append(numericValue6);
-
-        C.NumericPoint numericPoint2 = new C.NumericPoint() { Index = (UInt32Value)1U };
-        C.NumericValue numericValue7 = new C.NumericValue();
-        numericValue7.Text = "2.5";
-
-        numericPoint2.Append(numericValue7);
-
-        C.NumericPoint numericPoint3 = new C.NumericPoint() { Index = (UInt32Value)2U };
-        C.NumericValue numericValue8 = new C.NumericValue();
-        numericValue8.Text = "3.5";
-
-        numericPoint3.Append(numericValue8);
-
-        C.NumericPoint numericPoint4 = new C.NumericPoint() { Index = (UInt32Value)3U };
-        C.NumericValue numericValue9 = new C.NumericValue();
-        numericValue9.Text = "4.5";
-
-        numericPoint4.Append(numericValue9);
-
-        numberingCache1.Append(formatCode1);
-        numberingCache1.Append(pointCount3);
-        numberingCache1.Append(numericPoint1);
-        numberingCache1.Append(numericPoint2);
-        numberingCache1.Append(numericPoint3);
-        numberingCache1.Append(numericPoint4);
-
-        numberReference1.Append(formula3);
-        numberReference1.Append(numberingCache1);
-
-        values1.Append(numberReference1);
+        seriesBNumCache.Append(seriesBFormatCode);
+        seriesBNumCache.Append(seriesBPointCount);
+        
+        var defaultSeriesValues = new[] { 1, 3, 5 };
+        for (var i = 0; i < defaultSeriesValues.Length; i++)
+        {
+            var seriesBNumPoint = this.CreateCNumericPoint(i, defaultSeriesValues[i]);
+            seriesBNumCache.Append(seriesBNumPoint);
+        }
+        
+        seriesBNumRef.Append(seriesBNumCache);
+        seriesBNumRef.Append(seriesBFormula);
+        seriesBValues.Append(seriesBNumRef);
 
         C.BarSerExtensionList barSerExtensionList1 = new C.BarSerExtensionList();
 
@@ -406,43 +382,39 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 
         barSerExtensionList1.Append(barSerExtension1);
 
-        barChartSeries1.Append(index1);
-        barChartSeries1.Append(order1);
-        barChartSeries1.Append(series1TitleText);
-        barChartSeries1.Append(chartShapeProperties2);
-        barChartSeries1.Append(invertIfNegative1);
-        barChartSeries1.Append(categoryAxisData1);
-        barChartSeries1.Append(values1);
-        barChartSeries1.Append(barSerExtensionList1);
+        var barChartSeriesB = new C.BarChartSeries();
+        barChartSeriesB.Append(index1);
+        barChartSeriesB.Append(order1);
+        barChartSeriesB.Append(seriesBTitleText);
+        barChartSeriesB.Append(seriesBChartShapeProperties);
+        barChartSeriesB.Append(seriesBInvertIfNegative);
+        barChartSeriesB.Append(catAxisData);
+        barChartSeriesB.Append(seriesBValues);
+        barChartSeriesB.Append(barSerExtensionList1);
 
-        C.BarChartSeries barChartSeries2 = new C.BarChartSeries();
-        C.Index index2 = new C.Index() { Val = (UInt32Value)1U };
-        C.Order order2 = new C.Order() { Val = (UInt32Value)1U };
+        var barChartSeriesC = new C.BarChartSeries();
+        var index2 = new C.Index { Val = (UInt32Value)1U };
+        var order2 = new C.Order { Val = (UInt32Value)1U };
 
-        C.SeriesText seriesText2 = new C.SeriesText();
-
-        C.StringReference stringReference3 = new C.StringReference();
-        C.Formula formula4 = new C.Formula();
-        formula4.Text = "Sheet1!$C$1";
+        var seriesCTitleRef = new C.StringReference();
+        var seriesCTitleFormula = new C.Formula();
+        seriesCTitleFormula.Text = "Sheet1!$C$1";
 
         C.StringCache stringCache3 = new C.StringCache();
         C.PointCount pointCount4 = new C.PointCount() { Val = (UInt32Value)1U };
-
         C.StringPoint stringPoint6 = new C.StringPoint() { Index = (UInt32Value)0U };
         C.NumericValue numericValue10 = new C.NumericValue();
         numericValue10.Text = "Series 2";
-
         stringPoint6.Append(numericValue10);
-
         stringCache3.Append(pointCount4);
         stringCache3.Append(stringPoint6);
 
-        stringReference3.Append(formula4);
-        stringReference3.Append(stringCache3);
+        seriesCTitleRef.Append(seriesCTitleFormula);
+        seriesCTitleRef.Append(stringCache3);
+        var seriesCTitleText = new C.SeriesText();
+        seriesCTitleText.Append(seriesCTitleRef);
 
-        seriesText2.Append(stringReference3);
-
-        C.ChartShapeProperties chartShapeProperties3 = new C.ChartShapeProperties();
+        var chartShapeProperties3 = new C.ChartShapeProperties();
 
         A.SolidFill solidFill12 = new A.SolidFill();
         A.SchemeColor schemeColor12 = new A.SchemeColor() { Val = A.SchemeColorValues.Accent2 };
@@ -459,8 +431,6 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         chartShapeProperties3.Append(outline3);
         chartShapeProperties3.Append(effectList3);
         C.InvertIfNegative invertIfNegative2 = new C.InvertIfNegative() { Val = false };
-
-        C.CategoryAxisData categoryAxisData2 = new C.CategoryAxisData();
 
         var categoryStringReference4 = new C.StringReference();
         var categoryFormula5 = new C.Formula();
@@ -502,13 +472,10 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         categoryStringReference4.Append(categoryFormula5);
         categoryStringReference4.Append(stringCache4);
 
-        categoryAxisData2.Append(categoryStringReference4);
-
-        C.Values values2 = new C.Values();
-
-        C.NumberReference numberReference2 = new C.NumberReference();
-        C.Formula formula6 = new C.Formula();
-        formula6.Text = "Sheet1!$C$2:$C$5";
+        var seriesCValues = new C.Values();
+        var seriesCNumRef = new C.NumberReference();
+        var seriesBValuesFormula = new C.Formula();
+        seriesBValuesFormula.Text = "Sheet1!$C$2:$C$4";
 
         C.NumberingCache numberingCache2 = new C.NumberingCache();
         C.FormatCode formatCode2 = new C.FormatCode();
@@ -546,10 +513,10 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         numberingCache2.Append(numericPoint7);
         numberingCache2.Append(numericPoint8);
 
-        numberReference2.Append(formula6);
-        numberReference2.Append(numberingCache2);
+        seriesCNumRef.Append(seriesBValuesFormula);
+        // seriesCNumRef.Append(numberingCache2);
 
-        values2.Append(numberReference2);
+        seriesCValues.Append(seriesCNumRef);
 
         C.BarSerExtensionList barSerExtensionList2 = new C.BarSerExtensionList();
 
@@ -558,41 +525,26 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 
         barSerExtensionList2.Append(barSerExtension2);
 
-        barChartSeries2.Append(index2);
-        barChartSeries2.Append(order2);
-        barChartSeries2.Append(seriesText2);
-        barChartSeries2.Append(chartShapeProperties3);
-        barChartSeries2.Append(invertIfNegative2);
-        barChartSeries2.Append(categoryAxisData2);
-        barChartSeries2.Append(values2);
-        barChartSeries2.Append(barSerExtensionList2);
-
-        C.BarChartSeries barChartSeries3 = new C.BarChartSeries();
-        C.Index index3 = new C.Index() { Val = (UInt32Value)2U };
-        C.Order order3 = new C.Order() { Val = (UInt32Value)2U };
-
-        C.SeriesText seriesText3 = new C.SeriesText();
+        barChartSeriesC.Append(index2);
+        barChartSeriesC.Append(order2);
+        barChartSeriesC.Append(seriesCTitleText);
+        barChartSeriesC.Append(chartShapeProperties3);
+        barChartSeriesC.Append(invertIfNegative2);
+        barChartSeriesC.Append(catAxisData.CloneNode(true));
+        barChartSeriesC.Append(seriesCValues);
+        barChartSeriesC.Append(barSerExtensionList2);
 
         C.StringReference stringReference5 = new C.StringReference();
-        C.Formula formula7 = new C.Formula();
-        formula7.Text = "Sheet1!$D$1";
 
         C.StringCache stringCache5 = new C.StringCache();
         C.PointCount pointCount7 = new C.PointCount() { Val = (UInt32Value)1U };
 
         C.StringPoint stringPoint11 = new C.StringPoint() { Index = (UInt32Value)0U };
-        C.NumericValue numericValue19 = new C.NumericValue();
-        numericValue19.Text = "Series 3";
-
-        stringPoint11.Append(numericValue19);
 
         stringCache5.Append(pointCount7);
         stringCache5.Append(stringPoint11);
 
-        stringReference5.Append(formula7);
         stringReference5.Append(stringCache5);
-
-        seriesText3.Append(stringReference5);
 
         C.ChartShapeProperties chartShapeProperties4 = new C.ChartShapeProperties();
 
@@ -610,38 +562,27 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         chartShapeProperties4.Append(solidFill13);
         chartShapeProperties4.Append(outline4);
         chartShapeProperties4.Append(effectList4);
-        C.InvertIfNegative invertIfNegative3 = new C.InvertIfNegative() { Val = false };
-
-        C.CategoryAxisData categoryAxisData3 = new C.CategoryAxisData();
-
-        C.StringReference stringReference6 = new C.StringReference();
-        C.Formula formula8 = new C.Formula();
-        formula8.Text = "Sheet1!$A$2:$A$5";
 
         C.StringCache stringCache6 = new C.StringCache();
         C.PointCount pointCount8 = new C.PointCount() { Val = (UInt32Value)4U };
 
         C.StringPoint stringPoint12 = new C.StringPoint() { Index = (UInt32Value)0U };
         C.NumericValue numericValue20 = new C.NumericValue();
-        numericValue20.Text = "Category 1";
 
         stringPoint12.Append(numericValue20);
 
         C.StringPoint stringPoint13 = new C.StringPoint() { Index = (UInt32Value)1U };
         C.NumericValue numericValue21 = new C.NumericValue();
-        numericValue21.Text = "Category 2";
 
         stringPoint13.Append(numericValue21);
 
         C.StringPoint stringPoint14 = new C.StringPoint() { Index = (UInt32Value)2U };
         C.NumericValue numericValue22 = new C.NumericValue();
-        numericValue22.Text = "Category 3";
 
         stringPoint14.Append(numericValue22);
 
         C.StringPoint stringPoint15 = new C.StringPoint() { Index = (UInt32Value)3U };
         C.NumericValue numericValue23 = new C.NumericValue();
-        numericValue23.Text = "Category 4";
 
         stringPoint15.Append(numericValue23);
 
@@ -651,21 +592,12 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         stringCache6.Append(stringPoint14);
         stringCache6.Append(stringPoint15);
 
-        stringReference6.Append(formula8);
-        stringReference6.Append(stringCache6);
-
-        categoryAxisData3.Append(stringReference6);
+        // stringReference6.Append(stringCache6);
 
         C.Values values3 = new C.Values();
 
         C.NumberReference numberReference3 = new C.NumberReference();
         C.Formula formula9 = new C.Formula();
-        formula9.Text = "Sheet1!$D$2:$D$5";
-
-        C.NumberingCache numberingCache3 = new C.NumberingCache();
-        C.FormatCode formatCode3 = new C.FormatCode();
-        formatCode3.Text = "General";
-        C.PointCount pointCount9 = new C.PointCount() { Val = (UInt32Value)4U };
 
         C.NumericPoint numericPoint9 = new C.NumericPoint() { Index = (UInt32Value)0U };
         C.NumericValue numericValue24 = new C.NumericValue();
@@ -673,51 +605,16 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 
         numericPoint9.Append(numericValue24);
 
-        C.NumericPoint numericPoint10 = new C.NumericPoint() { Index = (UInt32Value)1U };
         C.NumericValue numericValue25 = new C.NumericValue();
         numericValue25.Text = "2";
 
-        numericPoint10.Append(numericValue25);
-
-        C.NumericPoint numericPoint11 = new C.NumericPoint() { Index = (UInt32Value)2U };
-        C.NumericValue numericValue26 = new C.NumericValue();
-        numericValue26.Text = "3";
-
-        numericPoint11.Append(numericValue26);
-
-        C.NumericPoint numericPoint12 = new C.NumericPoint() { Index = (UInt32Value)3U };
-        C.NumericValue numericValue27 = new C.NumericValue();
-        numericValue27.Text = "5";
-
-        numericPoint12.Append(numericValue27);
-
-        numberingCache3.Append(formatCode3);
-        numberingCache3.Append(pointCount9);
-        numberingCache3.Append(numericPoint9);
-        numberingCache3.Append(numericPoint10);
-        numberingCache3.Append(numericPoint11);
-        numberingCache3.Append(numericPoint12);
-
         numberReference3.Append(formula9);
-        numberReference3.Append(numberingCache3);
 
         values3.Append(numberReference3);
-
-        C.BarSerExtensionList barSerExtensionList3 = new C.BarSerExtensionList();
 
         C.BarSerExtension barSerExtension3 = new C.BarSerExtension() { Uri = "{C3380CC4-5D6E-409C-BE32-E72D297353CC}" };
         barSerExtension3.AddNamespaceDeclaration("c16", "http://schemas.microsoft.com/office/drawing/2014/chart");
 
-        barSerExtensionList3.Append(barSerExtension3);
-
-        barChartSeries3.Append(index3);
-        barChartSeries3.Append(order3);
-        barChartSeries3.Append(seriesText3);
-        barChartSeries3.Append(chartShapeProperties4);
-        barChartSeries3.Append(invertIfNegative3);
-        barChartSeries3.Append(categoryAxisData3);
-        barChartSeries3.Append(values3);
-        barChartSeries3.Append(barSerExtensionList3);
 
         C.DataLabels dataLabels1 = new C.DataLabels();
         C.ShowLegendKey showLegendKey1 = new C.ShowLegendKey() { Val = false };
@@ -737,16 +634,15 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         C.AxisId axisId1 = new C.AxisId() { Val = (UInt32Value)2020378015U };
         C.AxisId axisId2 = new C.AxisId() { Val = (UInt32Value)2020386175U };
 
-        barChart1.Append(barDirection1);
-        barChart1.Append(barGrouping1);
-        barChart1.Append(varyColors1);
-        barChart1.Append(barChartSeries1);
-        barChart1.Append(barChartSeries2);
-        barChart1.Append(barChartSeries3);
-        barChart1.Append(dataLabels1);
-        barChart1.Append(gapWidth1);
-        barChart1.Append(axisId1);
-        barChart1.Append(axisId2);
+        barChart.Append(barDirection1);
+        barChart.Append(barGrouping1);
+        barChart.Append(varyColors1);
+        barChart.Append(barChartSeriesB);
+        barChart.Append(barChartSeriesC);
+        barChart.Append(dataLabels1);
+        barChart.Append(gapWidth1);
+        barChart.Append(axisId1);
+        barChart.Append(axisId2);
 
         C.CategoryAxis categoryAxis1 = new C.CategoryAxis();
         C.AxisId axisId3 = new C.AxisId() { Val = (UInt32Value)2020378015U };
@@ -1002,7 +898,7 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         shapeProperties1.Append(effectList8);
 
         plotArea1.Append(layout1);
-        plotArea1.Append(barChart1);
+        plotArea1.Append(barChart);
         plotArea1.Append(categoryAxis1);
         plotArea1.Append(valueAxis1);
         plotArea1.Append(shapeProperties1);
@@ -1149,5 +1045,15 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         chartSpace.Append(externalData1);
 
         chartPart1.ChartSpace = chartSpace;
+    }
+
+    private C.NumericPoint CreateCNumericPoint(int index, int seriesValue)
+    {
+        var cNumPoint = new C.NumericPoint { Index = (uint)index };
+        var cNumValue = new C.NumericValue();
+        cNumValue.Text = seriesValue.ToString();
+        cNumPoint.Append(cNumValue);
+
+        return cNumPoint;
     }
 }
