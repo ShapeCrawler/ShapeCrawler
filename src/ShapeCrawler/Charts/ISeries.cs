@@ -36,7 +36,7 @@ public interface ISeries
 
 internal sealed class SCSeries : ISeries
 {
-    internal readonly OpenXmlElement cSer;
+    internal readonly OpenXmlElement CSer;
     
     private readonly Lazy<string?> name;
     private readonly SCChart parentChart;
@@ -44,7 +44,7 @@ internal sealed class SCSeries : ISeries
     internal SCSeries(SCChart parentChart, OpenXmlElement cSer, SCChartType seriesChartType)
     {
         this.parentChart = parentChart;
-        this.cSer = cSer;
+        this.CSer = cSer;
         this.name = new Lazy<string?>(this.GetNameOrDefault);
         this.Type = seriesChartType;
     }
@@ -55,7 +55,7 @@ internal sealed class SCSeries : ISeries
     {
         get
         {
-            ErrorHandler.Execute(() => ChartPointCollection.Create(this.parentChart, this.cSer), out var result);
+            ErrorHandler.Execute(() => ChartPointCollection.Create(this.parentChart, this.CSer), out var result);
             return result;
         }
     }
@@ -77,7 +77,7 @@ internal sealed class SCSeries : ISeries
 
     private string? GetNameOrDefault()
     {
-        var cStringReference = this.cSer.GetFirstChild<C.SeriesText>()?.StringReference;
+        var cStringReference = this.CSer.GetFirstChild<C.SeriesText>()?.StringReference;
         if (cStringReference == null)
         {
             return null;

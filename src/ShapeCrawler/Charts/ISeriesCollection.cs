@@ -40,7 +40,7 @@ internal sealed class SCSeriesCollection : ISeriesCollection
     public void RemoveAt(int index)
     {
         var seriesCore = (SCSeries)this.seriesList[index];
-        seriesCore.cSer.Remove();
+        seriesCore.CSer.Remove();
         
         this.seriesList.RemoveAt(index);
     }

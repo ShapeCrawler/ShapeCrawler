@@ -600,8 +600,6 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         stringCache6.Append(stringPoint14);
         stringCache6.Append(stringPoint15);
 
-        // stringReference6.Append(stringCache6);
-
         C.Values values3 = new C.Values();
 
         C.NumberReference numberReference3 = new C.NumberReference();
@@ -988,10 +986,6 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 
         C.Extension extension1 = new C.Extension() { Uri = "{56B9EC1D-385E-4148-901F-78D8002777C0}" };
         extension1.AddNamespaceDeclaration("c16r3", "http://schemas.microsoft.com/office/drawing/2017/03/chart");
-
-        // OpenXmlUnknownElement openXmlUnknownElement5 = OpenXmlUnknownElement.CreateOpenXmlUnknownElement(
-        //     "<c16r3:dataDisplayOptions16 xmlns:c16r3=\"http://schemas.microsoft.com/office/drawing/2017/03/chart\"><c16r3:dispNaAsBlank val=\"1\" /></c16r3:dataDisplayOptions16>");
-        // extension1.Append(openXmlUnknownElement5);
 
         extensionList1.Append(extension1);
         C.ShowDataLabelsOverMaximum showDataLabelsOverMaximum1 = new C.ShowDataLabelsOverMaximum() { Val = false };
