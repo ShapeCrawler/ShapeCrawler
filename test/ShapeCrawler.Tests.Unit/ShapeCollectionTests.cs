@@ -322,6 +322,24 @@ public class ShapeCollectionTests : SCTest
         addedVideo.Y.Should().Be(yPxCoordinate);
     }
 
+#if DEBUG
+
+    [Test]
+    public void AddBarChart_adds_Bar_Chart()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        
+        // Act
+        var barChart = pres.Slides[0].Shapes.AddBarChart(BarChartType.ClusteredBar);
+
+        // Assert
+        barChart.Should().NotBeNull();
+        TestHelper.ThrowIfPresentationInvalid(pres);
+    }
+
+#endif
+
     [Test]
     public void AddPicture_adds_picture()
     {

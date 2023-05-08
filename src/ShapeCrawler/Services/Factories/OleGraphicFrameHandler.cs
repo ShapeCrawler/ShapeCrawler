@@ -12,7 +12,7 @@ internal sealed class OleGraphicFrameHandler : OpenXmlElementHandler
 {
     private const string Uri = "http://schemas.openxmlformats.org/presentationml/2006/ole";
 
-    internal override SCShape? Create(
+    internal override SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject,
         OneOf<ShapeCollection, SCGroupShape> shapeCollection)
@@ -28,6 +28,6 @@ internal sealed class OleGraphicFrameHandler : OpenXmlElementHandler
             }
         }
 
-        return this.Successor?.Create(pShapeTreeChild, slideObject, shapeCollection);
+        return this.Successor?.FromTreeChild(pShapeTreeChild, slideObject, shapeCollection);
     }
 }
