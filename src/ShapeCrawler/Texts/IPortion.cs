@@ -80,7 +80,7 @@ internal sealed class SCPortion : IPortion
     public string? TextHighlightColor
     {
         get => this.GetTextHighlightColor();
-        set => this.SetTextHighlightColor(value!);
+        set => this.SetTextHighlightColor(value);
     }
 
     #endregion Public Properties
@@ -109,11 +109,11 @@ internal sealed class SCPortion : IPortion
         return aSrgbClr?.Val;
     }
 
-    private void SetTextHighlightColor(string hex)
+    private void SetTextHighlightColor(string? hex)
     {
         var arPr = this.AText.PreviousSibling<A.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
         
-        arPr.AddAHighlight(hex!);
+        arPr.AddAHighlight(hex);
     }
     
     private string GetText()

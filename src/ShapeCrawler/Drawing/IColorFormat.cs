@@ -62,7 +62,8 @@ internal sealed class ColorFormat : IColorFormat
         var aSolidFill = aRunProperties.GetASolidFill();
         aSolidFill?.Remove();
 
-        hex = hex.Substring(1); // to skip '#'
+        // All hex values are expected to be without hashtag.
+        hex = hex.StartsWith("#") ? hex.Substring(1) : hex; // to skip '#'
         var rgbColorModelHex = new A.RgbColorModelHex { Val = hex };
         aSolidFill = new A.SolidFill();
         aSolidFill.Append(rgbColorModelHex);
