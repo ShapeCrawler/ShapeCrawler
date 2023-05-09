@@ -38,6 +38,12 @@ public interface IPortion
     ///     Gets or sets Text Highlight Color in hexadecimal format. Returns <see langword="null"/> if Text Highlight Color is not present. 
     /// </summary>
     string? TextHighlightColor { get; set; }
+
+    /// <summary>
+    /// Set hightlight.
+    /// </summary>
+    /// <param name="color">Color value.</param>
+    void SetTextHighlight(SCColor color);
 }
 
 internal sealed class SCPortion : IPortion
@@ -81,7 +87,7 @@ internal sealed class SCPortion : IPortion
     public string? TextHighlightColor
     {
         get => this.GetTextHighlightColor();
-        set => this.SetTextHighlightColor(value);
+        set => this.SetTextHighlightColor(value!);
     }
 
     #endregion Public Properties
@@ -117,7 +123,9 @@ internal sealed class SCPortion : IPortion
         arPr.AddAHighlight(hex!);
     }
 
-    public void SetTextHighlightColor(SCColor hex)
+#pragma warning disable SA1202 // Elements should be ordered by access
+    public void SetTextHighlight(SCColor hex)
+#pragma warning restore SA1202 // Elements should be ordered by access
     {
         var arPr = this.AText.PreviousSibling<A.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
 

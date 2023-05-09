@@ -22,6 +22,7 @@ public class SCColor
     /// Gets a white color.
     /// </summary>
     public static readonly SCColor White = new(255, 255, 255);
+
     /// <summary>
     /// Set alpha value.
     /// </summary>
@@ -140,7 +141,7 @@ public class SCColor
             // 3 or 6 chars without alpha (rgb): F01, FF0011,
             // 4 or 8 chars with alpha (rgba): F01F, FF0011FF 
             // Ignores hex values starting with "#" character.
-            result = ParseHexValue(hex.StartsWith("#", StringComparison.Ordinal) ? hex[1..] : hex);
+            result = ParseHexValue(hex.StartsWith("#", StringComparison.Ordinal) ? hex.Substring(1) : hex);
 
             return true;
         }
