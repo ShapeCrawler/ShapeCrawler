@@ -1,5 +1,6 @@
 ﻿using System;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
@@ -109,13 +110,20 @@ internal sealed class SCPortion : IPortion
         return aSrgbClr?.Val;
     }
 
-    private void SetTextHighlightColor(string? hex)
+    private void SetTextHighlightColor(string hex)
     {
         var arPr = this.AText.PreviousSibling<A.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
         
-        arPr.AddAHighlight(hex);
+        arPr.AddAHighlight(hex!);
     }
-    
+
+    public void SetTextHighlightColor(SCColor hex)
+    {
+        var arPr = this.AText.PreviousSibling<A.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
+
+        arPr.AddAHighlight(hex!);
+    }
+
     private string GetText()
     {
         var portionText = this.AText.Text;
