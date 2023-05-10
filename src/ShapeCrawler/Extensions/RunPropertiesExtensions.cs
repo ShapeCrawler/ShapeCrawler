@@ -56,7 +56,7 @@ internal static class RunPropertiesExtensions
         // Creates a alpha node...
         var alpha = new A.Alpha
         {
-            Val = (Int32Value)(100000f * (color.Alpha / 255))
+            Val = (Int32Value)(100000f * (color.Alpha / SCColor.OPACITY))
         };
 
         model.AddChild(alpha);

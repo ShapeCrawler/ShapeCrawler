@@ -45,6 +45,28 @@ public class SCColor
     /// <summary>
     /// Initializes a new instance of the <see cref="SCColor"/> class.
     /// </summary>
+    /// <example>
+    /// This shows how to creates a new instance of white color.
+    /// <code>
+    /// var white = new SCColor("FFF");
+    /// var white = new SCColor("FFFF"); // Four char is for opacity (RGBA)
+    /// var white = new SCColor("FFFFFF");
+    /// var white = new SCColor("FFFFFF7F"); // 7F = ~50%
+    /// </code>
+    /// </example>
+    /// <exception cref="Exception">Thrown when RGBA value is invalid.</exception>
+    /// <remarks>
+    /// "<paramref name="hex"/>" requires a RGBA value, but alpha (A) is optional.
+    /// </remarks>
+    /// <param name="hex">RGBA value.</param>
+    public SCColor(string hex) 
+        : this(ParseHexValue(hex))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SCColor"/> class.
+    /// </summary>
     /// <param name="red">Red value.</param>
     /// <param name="green">Green value.</param>
     /// <param name="blue">Blue value.</param>
@@ -66,6 +88,18 @@ public class SCColor
         this.green = green;
         this.blue = blue;
         this.Alpha = alpha;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SCColor"/> class.
+    /// </summary>
+    /// <remarks>
+    /// This constructor is reserved for <see cref="SCColor(string)"/>.
+    /// </remarks>
+    /// <param name="color">A RGBA tuple.</param>
+    private SCColor((int r, int g, int b, float a) color) 
+        : this(color.r, color.g, color.b, color.a)
+    {
     }
 
     /// <summary>
@@ -117,7 +151,13 @@ public class SCColor
             // 3 or 6 chars without alpha (rgb): F01, FF0011,
             // 4 or 8 chars with alpha (rgba): F01F, FF0011FF 
             // Ignores hex values starting with "#" character.
-            result = ParseHexValue(hex.StartsWith("#", StringComparison.Ordinal) ? hex.Substring(1) : hex);
+            var value = hex.StartsWith("#", StringComparison.Ordinal) ? hex.Substring(1) : hex;
+
+            // Parse value.
+            (int r, int g, int b, float a) = ParseHexValue(value);
+
+            // Creates a new instance
+            result = new(r, g, b, a);
 
             return true;
         }
@@ -135,16 +175,16 @@ public class SCColor
     }
 
     /// <summary>
-    /// Initializes a new instance of <see cref="SCColor"/> class.
+    /// Returns a color of RGBA.
     /// </summary>
     /// <param name="hex">Hex value.</param>
-    /// <returns>A new color.</returns>
-    private static SCColor ParseHexValue(string hex)
+    /// <returns>A RGBA color.</returns>
+    private static (int, int, int, float) ParseHexValue(string hex)
     {
-        int a = 255;
         int r;
         int b;
         int g;
+        int a = 255;
 
         switch (hex.Length)
         {
@@ -177,6 +217,6 @@ public class SCColor
             return Convert.ToInt32($"0x{hex}", 16);
         }
 
-        return new(r, g, b, a);
+        return (r, g, b, a);
     }
 }

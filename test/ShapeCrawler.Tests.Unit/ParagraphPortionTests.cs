@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
@@ -129,6 +130,22 @@ public class ParagraphPortionTests : SCTest
     }
 
     [Fact]
+    public void TextHighlightColor_Getter_returns_text_highlight_sccolor()
+    {
+        // Arrange
+        var pptx = TestHelperShared.GetStream("autoshape-grouping.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
+        var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
+
+        // Act
+        var textHighlightColor = portion.GetTextHighlight();
+
+        // Assert
+        textHighlightColor.ToString().Should().Be("FFFF00");
+    }
+
+    [Fact]
     public void TextHighlightColor_Setter_sets_text_highlight_color()
     {
         // Arrange
@@ -142,5 +159,21 @@ public class ParagraphPortionTests : SCTest
 
         // Assert
         portion.TextHighlightColor.Should().Be("FFFF00");
+    }
+
+    [Fact]
+    public void TextHighlightColor_Setter_sets_text_highlight_sccolor()
+    {
+        // Arrange
+        var pptx = TestHelperShared.GetStream("autoshape-grouping.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
+        var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
+
+        // Act
+        portion.SetTextHighlight(new SCColor("FFFF00"));
+
+        // Assert
+        portion.GetTextHighlight().ToString().Should().Be("FFFF00");
     }
 }
