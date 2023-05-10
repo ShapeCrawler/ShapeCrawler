@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 
 namespace ShapeCrawler.Drawing;
 
@@ -45,15 +44,6 @@ public class SCColor
     /// Set color red.
     /// </summary>
     private readonly int red;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SCColor"/> class.
-    /// </summary>
-    /// <param name="color">Color value.</param>
-    public SCColor(Color color)
-        : this(Convert.ToInt32(color.R), Convert.ToInt32(color.G), Convert.ToInt32(color.B), Convert.ToInt32(color.A))
-    {
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SCColor"/> class.
@@ -113,17 +103,6 @@ public class SCColor
     /// Gets a value indicating whether if color is solid.
     /// </summary>
     internal bool IsSolid => this.Alpha == 255;
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="SCColor"/> class.
-    /// </summary>
-    /// <param name="name">Name of color.</param>
-    /// <returns>A new color instance.</returns>
-    public static SCColor FromName(string name)
-    {
-        // see https://learn.microsoft.com/en-us/dotnet/api/system.drawing.color.fromname?view=net-7.0#system-drawing-color-fromname(system-string)
-        return new(Color.FromName(name));
-    }
 
     /// <summary>
     /// Returns a value indicating wheather hex is a valid value.
