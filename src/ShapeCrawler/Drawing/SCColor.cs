@@ -131,7 +131,7 @@ public class SCColor
     public override string ToString()
     {
         // String representation ignores alpha value.
-        return $"{this.R:X}{this.G:X}{this.B:X}";
+        return $"{this.R:X2}{this.G:X2}{this.B:X2}";
     }
 
     /// <summary>
