@@ -198,8 +198,9 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         return new SCChart(pGraphicFrame, slideStructure, shapeCollection);
     }
 
-    private void GenerateChartPartContent(ChartPart chartPart1)
+    private void GenerateChartPartContent(ChartPart chartPart)
     {
+        var externamDataRId = "rId3";
         var chartSpace = new C.ChartSpace();
         chartSpace.AddNamespaceDeclaration("c", "http://schemas.openxmlformats.org/drawingml/2006/chart");
         chartSpace.AddNamespaceDeclaration("a", "http://schemas.openxmlformats.org/drawingml/2006/main");
@@ -247,9 +248,13 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         C.TextProperties textProperties1 = new C.TextProperties();
         A.BodyProperties bodyProperties1 = new A.BodyProperties()
         {
-            Rotation = 0, UseParagraphSpacing = true, VerticalOverflow = A.TextVerticalOverflowValues.Ellipsis,
-            Vertical = A.TextVerticalValues.Horizontal, Wrap = A.TextWrappingValues.Square,
-            Anchor = A.TextAnchoringTypeValues.Center, AnchorCenter = true
+            Rotation = 0,
+            UseParagraphSpacing = true,
+            VerticalOverflow = A.TextVerticalOverflowValues.Ellipsis,
+            Vertical = A.TextVerticalValues.Horizontal,
+            Wrap = A.TextWrappingValues.Square,
+            Anchor = A.TextAnchoringTypeValues.Center,
+            AnchorCenter = true
         };
         A.ListStyle listStyle1 = new A.ListStyle();
 
@@ -259,8 +264,14 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 
         A.DefaultRunProperties defaultRunProperties11 = new A.DefaultRunProperties()
         {
-            FontSize = 1862, Bold = false, Italic = false, Underline = A.TextUnderlineValues.None,
-            Strike = A.TextStrikeValues.NoStrike, Kerning = 1200, Spacing = 0, Baseline = 0
+            FontSize = 1862,
+            Bold = false,
+            Italic = false,
+            Underline = A.TextUnderlineValues.None,
+            Strike = A.TextStrikeValues.NoStrike,
+            Kerning = 1200,
+            Spacing = 0,
+            Baseline = 0
         };
 
         A.SolidFill solidFill10 = new A.SolidFill();
@@ -306,50 +317,24 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         C.BarGrouping barGrouping1 = new C.BarGrouping() { Val = C.BarGroupingValues.Clustered };
         C.VaryColors varyColors1 = new C.VaryColors() { Val = false };
 
-
-        // CATEGORY AXIS
-        var catAxisData = new C.CategoryAxisData();
-        var catStrRef = new C.StringReference();
-        var catFormula = new C.Formula();
-        catFormula.Text = "Sheet1!$A$2:$A$4";
-        var catStrCache = new C.StringCache();
-        var catPointCount = new C.PointCount { Val = (UInt32Value)3U };
-        var catStrPoint1 = new C.StringPoint { Index = (UInt32Value)0U };
-        var catNumValue1 = new C.NumericValue();
-        catNumValue1.Text = "Category 1";
-        catStrPoint1.Append(catNumValue1);
-        var catStrPoint2 = new C.StringPoint { Index = (UInt32Value)1U };
-        var catNumValue2 = new C.NumericValue();
-        catNumValue2.Text = "Category 2";
-        catStrPoint2.Append(catNumValue2);
-        var catStrPoint3 = new C.StringPoint { Index = (UInt32Value)2U };
-        var catNumValue = new C.NumericValue();
-        catNumValue.Text = "Category 3";
-        catStrPoint3.Append(catNumValue);
-        catStrCache.Append(catPointCount);
-        catStrCache.Append(catStrPoint1);
-        catStrCache.Append(catStrPoint2);
-        catStrCache.Append(catStrPoint3);
-        catStrRef.Append(catFormula);
-        catStrRef.Append(catStrCache);
-        catAxisData.Append(catStrRef);
+        var catAxisData = this.CreateCCategoryAxisData();
 
         // Series 1    
         var defaultSeries1Values = new[] { 1, 3, 5 };
         var barChartSeries1 = this.CreateBarChartSeries(
-            "Series1", 
-            "Sheet1!$B$1", 
-            defaultSeries1Values, 
-            "Sheet1!$B$2:$B$4", 
+            "Series1",
+            "Sheet1!$B$1",
+            defaultSeries1Values,
+            "Sheet1!$B$2:$B$4",
             catAxisData.CloneNode(true), 0);
 
         // Series 2
         var defaultSeries2Values = new[] { 2, 4, 6 };
         var barChartSeriesC = this.CreateBarChartSeries(
-            "Series2", 
+            "Series2",
             "Sheet1!$C$1",
-            defaultSeries2Values, 
-            "Sheet1!$C$2:$C$4", 
+            defaultSeries2Values,
+            "Sheet1!$C$2:$C$4",
             catAxisData.CloneNode(true), 1);
 
         C.DataLabels dataLabels1 = new C.DataLabels();
@@ -380,7 +365,8 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         barChart.Append(axisId1);
         barChart.Append(axisId2);
 
-        C.CategoryAxis categoryAxis1 = new C.CategoryAxis();
+        // CATEGORY AXIS
+        var categoryAxis = new C.CategoryAxis();
         C.AxisId axisId3 = new C.AxisId() { Val = (UInt32Value)2020378015U };
 
         C.Scaling scaling1 = new C.Scaling();
@@ -399,7 +385,9 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 
         A.Outline outline5 = new A.Outline()
         {
-            Width = 9525, CapType = A.LineCapValues.Flat, CompoundLineType = A.CompoundLineValues.Single,
+            Width = 9525,
+            CapType = A.LineCapValues.Flat,
+            CompoundLineType = A.CompoundLineValues.Single,
             Alignment = A.PenAlignmentValues.Center
         };
 
@@ -426,9 +414,13 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         C.TextProperties textProperties2 = new C.TextProperties();
         A.BodyProperties bodyProperties2 = new A.BodyProperties()
         {
-            Rotation = -60000000, UseParagraphSpacing = true, VerticalOverflow = A.TextVerticalOverflowValues.Ellipsis,
-            Vertical = A.TextVerticalValues.Horizontal, Wrap = A.TextWrappingValues.Square,
-            Anchor = A.TextAnchoringTypeValues.Center, AnchorCenter = true
+            Rotation = -60000000,
+            UseParagraphSpacing = true,
+            VerticalOverflow = A.TextVerticalOverflowValues.Ellipsis,
+            Vertical = A.TextVerticalValues.Horizontal,
+            Wrap = A.TextWrappingValues.Square,
+            Anchor = A.TextAnchoringTypeValues.Center,
+            AnchorCenter = true
         };
         A.ListStyle listStyle2 = new A.ListStyle();
 
@@ -438,8 +430,13 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 
         A.DefaultRunProperties defaultRunProperties12 = new A.DefaultRunProperties()
         {
-            FontSize = 1197, Bold = false, Italic = false, Underline = A.TextUnderlineValues.None,
-            Strike = A.TextStrikeValues.NoStrike, Kerning = 1200, Baseline = 0
+            FontSize = 1197,
+            Bold = false,
+            Italic = false,
+            Underline = A.TextUnderlineValues.None,
+            Strike = A.TextStrikeValues.NoStrike,
+            Kerning = 1200,
+            Baseline = 0
         };
 
         A.SolidFill solidFill15 = new A.SolidFill();
@@ -478,24 +475,25 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         C.LabelOffset labelOffset1 = new C.LabelOffset() { Val = (UInt16Value)100U };
         C.NoMultiLevelLabels noMultiLevelLabels1 = new C.NoMultiLevelLabels() { Val = false };
 
-        categoryAxis1.Append(axisId3);
-        categoryAxis1.Append(scaling1);
-        categoryAxis1.Append(delete1);
-        categoryAxis1.Append(axisPosition1);
-        categoryAxis1.Append(numberingFormat1);
-        categoryAxis1.Append(majorTickMark1);
-        categoryAxis1.Append(minorTickMark1);
-        categoryAxis1.Append(tickLabelPosition1);
-        categoryAxis1.Append(chartShapeProperties5);
-        categoryAxis1.Append(textProperties2);
-        categoryAxis1.Append(crossingAxis1);
-        categoryAxis1.Append(crosses1);
-        categoryAxis1.Append(autoLabeled1);
-        categoryAxis1.Append(labelAlignment1);
-        categoryAxis1.Append(labelOffset1);
-        categoryAxis1.Append(noMultiLevelLabels1);
+        categoryAxis.Append(axisId3);
+        categoryAxis.Append(scaling1);
+        categoryAxis.Append(delete1);
+        categoryAxis.Append(axisPosition1);
+        categoryAxis.Append(numberingFormat1);
+        categoryAxis.Append(majorTickMark1);
+        categoryAxis.Append(minorTickMark1);
+        categoryAxis.Append(tickLabelPosition1);
+        categoryAxis.Append(chartShapeProperties5);
+        categoryAxis.Append(textProperties2);
+        categoryAxis.Append(crossingAxis1);
+        categoryAxis.Append(crosses1);
+        categoryAxis.Append(autoLabeled1);
+        categoryAxis.Append(labelAlignment1);
+        categoryAxis.Append(labelOffset1);
+        categoryAxis.Append(noMultiLevelLabels1);
 
-        C.ValueAxis valueAxis1 = new C.ValueAxis();
+        // VALUES AXIS
+        var cValueAxis = new C.ValueAxis();
         C.AxisId axisId4 = new C.AxisId() { Val = (UInt32Value)2020386175U };
 
         C.Scaling scaling2 = new C.Scaling();
@@ -511,7 +509,9 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 
         A.Outline outline6 = new A.Outline()
         {
-            Width = 9525, CapType = A.LineCapValues.Flat, CompoundLineType = A.CompoundLineValues.Single,
+            Width = 9525,
+            CapType = A.LineCapValues.Flat,
+            CompoundLineType = A.CompoundLineValues.Single,
             Alignment = A.PenAlignmentValues.Center
         };
 
@@ -556,9 +556,13 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         C.TextProperties textProperties3 = new C.TextProperties();
         A.BodyProperties bodyProperties3 = new A.BodyProperties()
         {
-            Rotation = -60000000, UseParagraphSpacing = true, VerticalOverflow = A.TextVerticalOverflowValues.Ellipsis,
-            Vertical = A.TextVerticalValues.Horizontal, Wrap = A.TextWrappingValues.Square,
-            Anchor = A.TextAnchoringTypeValues.Center, AnchorCenter = true
+            Rotation = -60000000,
+            UseParagraphSpacing = true,
+            VerticalOverflow = A.TextVerticalOverflowValues.Ellipsis,
+            Vertical = A.TextVerticalValues.Horizontal,
+            Wrap = A.TextWrappingValues.Square,
+            Anchor = A.TextAnchoringTypeValues.Center,
+            AnchorCenter = true
         };
         A.ListStyle listStyle3 = new A.ListStyle();
 
@@ -568,8 +572,13 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 
         A.DefaultRunProperties defaultRunProperties13 = new A.DefaultRunProperties()
         {
-            FontSize = 1197, Bold = false, Italic = false, Underline = A.TextUnderlineValues.None,
-            Strike = A.TextStrikeValues.NoStrike, Kerning = 1200, Baseline = 0
+            FontSize = 1197,
+            Bold = false,
+            Italic = false,
+            Underline = A.TextUnderlineValues.None,
+            Strike = A.TextStrikeValues.NoStrike,
+            Kerning = 1200,
+            Baseline = 0
         };
 
         A.SolidFill solidFill17 = new A.SolidFill();
@@ -605,20 +614,20 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         C.Crosses crosses2 = new C.Crosses() { Val = C.CrossesValues.AutoZero };
         C.CrossBetween crossBetween1 = new C.CrossBetween() { Val = C.CrossBetweenValues.Between };
 
-        valueAxis1.Append(axisId4);
-        valueAxis1.Append(scaling2);
-        valueAxis1.Append(delete2);
-        valueAxis1.Append(axisPosition2);
-        valueAxis1.Append(majorGridlines1);
-        valueAxis1.Append(numberingFormat2);
-        valueAxis1.Append(majorTickMark2);
-        valueAxis1.Append(minorTickMark2);
-        valueAxis1.Append(tickLabelPosition2);
-        valueAxis1.Append(chartShapeProperties7);
-        valueAxis1.Append(textProperties3);
-        valueAxis1.Append(crossingAxis2);
-        valueAxis1.Append(crosses2);
-        valueAxis1.Append(crossBetween1);
+        cValueAxis.Append(axisId4);
+        cValueAxis.Append(scaling2);
+        cValueAxis.Append(delete2);
+        cValueAxis.Append(axisPosition2);
+        cValueAxis.Append(majorGridlines1);
+        cValueAxis.Append(numberingFormat2);
+        cValueAxis.Append(majorTickMark2);
+        cValueAxis.Append(minorTickMark2);
+        cValueAxis.Append(tickLabelPosition2);
+        cValueAxis.Append(chartShapeProperties7);
+        cValueAxis.Append(textProperties3);
+        cValueAxis.Append(crossingAxis2);
+        cValueAxis.Append(crosses2);
+        cValueAxis.Append(crossBetween1);
 
         C.ShapeProperties shapeProperties1 = new C.ShapeProperties();
         A.NoFill noFill9 = new A.NoFill();
@@ -635,8 +644,8 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 
         plotArea1.Append(layout1);
         plotArea1.Append(barChart);
-        plotArea1.Append(categoryAxis1);
-        plotArea1.Append(valueAxis1);
+        plotArea1.Append(categoryAxis);
+        plotArea1.Append(cValueAxis);
         plotArea1.Append(shapeProperties1);
 
         C.Legend legend1 = new C.Legend();
@@ -659,9 +668,13 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         C.TextProperties textProperties4 = new C.TextProperties();
         A.BodyProperties bodyProperties4 = new A.BodyProperties()
         {
-            Rotation = 0, UseParagraphSpacing = true, VerticalOverflow = A.TextVerticalOverflowValues.Ellipsis,
-            Vertical = A.TextVerticalValues.Horizontal, Wrap = A.TextWrappingValues.Square,
-            Anchor = A.TextAnchoringTypeValues.Center, AnchorCenter = true
+            Rotation = 0,
+            UseParagraphSpacing = true,
+            VerticalOverflow = A.TextVerticalOverflowValues.Ellipsis,
+            Vertical = A.TextVerticalValues.Horizontal,
+            Wrap = A.TextWrappingValues.Square,
+            Anchor = A.TextAnchoringTypeValues.Center,
+            AnchorCenter = true
         };
         A.ListStyle listStyle4 = new A.ListStyle();
 
@@ -671,8 +684,13 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 
         A.DefaultRunProperties defaultRunProperties14 = new A.DefaultRunProperties()
         {
-            FontSize = 1197, Bold = false, Italic = false, Underline = A.TextUnderlineValues.None,
-            Strike = A.TextStrikeValues.NoStrike, Kerning = 1200, Baseline = 0
+            FontSize = 1197,
+            Bold = false,
+            Italic = false,
+            Underline = A.TextUnderlineValues.None,
+            Strike = A.TextStrikeValues.NoStrike,
+            Kerning = 1200,
+            Baseline = 0
         };
 
         A.SolidFill solidFill18 = new A.SolidFill();
@@ -762,10 +780,10 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         textProperties5.Append(listStyle5);
         textProperties5.Append(paragraph5);
 
-        C.ExternalData externalData1 = new C.ExternalData() { Id = "rId3" };
+        var externalData = new C.ExternalData() { Id = externamDataRId };
         C.AutoUpdate autoUpdate1 = new C.AutoUpdate() { Val = false };
 
-        externalData1.Append(autoUpdate1);
+        externalData.Append(autoUpdate1);
 
         chartSpace.Append(date19041);
         chartSpace.Append(editingLanguage1);
@@ -774,9 +792,41 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         chartSpace.Append(cChart);
         chartSpace.Append(shapeProperties2);
         chartSpace.Append(textProperties5);
-        chartSpace.Append(externalData1);
+        chartSpace.Append(externalData);
 
-        chartPart1.ChartSpace = chartSpace;
+        chartPart.ChartSpace = chartSpace;
+    }
+
+    private CategoryAxisData CreateCCategoryAxisData()
+    {
+        var catAxisData = new C.CategoryAxisData();
+
+        var catStrRef = new C.StringReference();
+        var catFormula = new C.Formula();
+        catFormula.Text = "Sheet1!$A$2:$A$4";
+        var catStrCache = new C.StringCache();
+        var catPointCount = new C.PointCount { Val = (UInt32Value)3U };
+        var catStrPoint1 = new C.StringPoint { Index = (UInt32Value)0U };
+        var catNumValue1 = new C.NumericValue();
+        catNumValue1.Text = "Category 1";
+        catStrPoint1.Append(catNumValue1);
+        var catStrPoint2 = new C.StringPoint { Index = (UInt32Value)1U };
+        var catNumValue2 = new C.NumericValue();
+        catNumValue2.Text = "Category 2";
+        catStrPoint2.Append(catNumValue2);
+        var catStrPoint = new C.StringPoint { Index = (UInt32Value)2U };
+        var catNumValue = new C.NumericValue();
+        catNumValue.Text = "Category 3";
+        catStrPoint.Append(catNumValue);
+        catStrCache.Append(catPointCount);
+        catStrCache.Append(catStrPoint1);
+        catStrCache.Append(catStrPoint2);
+        catStrCache.Append(catStrPoint);
+        catStrRef.Append(catFormula);
+        catStrRef.Append(catStrCache);
+        catAxisData.Append(catStrRef);
+
+        return catAxisData;
     }
 
     private C.BarChartSeries CreateBarChartSeries(
