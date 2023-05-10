@@ -1,5 +1,6 @@
 ﻿using System;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
@@ -37,6 +38,18 @@ public interface IPortion
     ///     Gets or sets Text Highlight Color in hexadecimal format. Returns <see langword="null"/> if Text Highlight Color is not present. 
     /// </summary>
     string? TextHighlightColor { get; set; }
+
+    /// <summary>
+    /// Set hightlight.
+    /// </summary>
+    /// <param name="color">Color value.</param>
+    void SetTextHighlight(SCColor color);
+
+    /// <summary>
+    /// Gets highlight color.
+    /// </summary>
+    /// <returns>Returns <see langword="null" /> if  the text doesn't have a highlight defined.</returns>
+    SCColor? GetTextHighlight();
 }
 
 internal sealed class SCPortion : IPortion
@@ -115,7 +128,47 @@ internal sealed class SCPortion : IPortion
         
         arPr.AddAHighlight(hex!);
     }
-    
+
+#pragma warning disable SA1202 // Elements should be ordered by access
+    public SCColor? GetTextHighlight()
+#pragma warning restore SA1202 // Elements should be ordered by access
+    {
+        var arPr = this.AText.PreviousSibling<A.RunProperties>();
+        
+        // Ensure RgbColorModelHex exists and his value is not null.
+        if (arPr?.GetFirstChild<A.Highlight>()?.RgbColorModelHex is not A.RgbColorModelHex aSrgbClr 
+            || aSrgbClr.Val is null)
+        {
+            return null;
+        }
+
+        // Gets node value.
+        // TODO: Check if DocumentFormat.OpenXml.StringValue is necessary.
+        var hex = aSrgbClr.Val.ToString();
+
+        // Check if color value is valid, we are expecting values as "000000".
+        if (!SCColor.TryGetColorFromHex(hex!, out var color))
+        {
+            // TODO: Add an exception code.
+            throw new Exception();
+        }
+
+        // Calculate alpha value if is defined in highlight node.
+        var aAlphaValue = aSrgbClr.GetFirstChild<A.Alpha>()?.Val ?? 100000;
+        color.Alpha = SCColor.OPACITY / (100000 / aAlphaValue);
+
+        return color;
+    }
+
+#pragma warning disable SA1202 // Elements should be ordered by access
+    public void SetTextHighlight(SCColor hex)
+#pragma warning restore SA1202 // Elements should be ordered by access
+    {
+        var arPr = this.AText.PreviousSibling<A.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
+
+        arPr.AddAHighlight(hex!);
+    }
+
     private string GetText()
     {
         var portionText = this.AText.Text;
