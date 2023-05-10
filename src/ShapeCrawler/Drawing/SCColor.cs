@@ -23,12 +23,9 @@ public class SCColor
     public static readonly SCColor White = new(255, 255, 255);
 
     /// <summary>
-    /// Set alpha value.
+    /// Max opacity value, equivalent to 1.
     /// </summary>
-    /// <remarks>
-    /// If the alpha or opacity parameter is set t 0 it will be transparent.
-    /// </remarks>
-    private readonly float alpha;
+    internal const float OPACITY = 255;
 
     /// <summary>
     /// Set color blue.
@@ -68,16 +65,16 @@ public class SCColor
         this.red = red;
         this.green = green;
         this.blue = blue;
-        this.alpha = alpha;
+        this.Alpha = alpha;
     }
 
     /// <summary>
-    /// Gets the alpha value.
+    /// Gets or sets the alpha value.
     /// </summary>
     /// <remarks>
     /// Values are 0 to 255, where 0 is totally transparent.
     /// </remarks>
-    public float Alpha => this.alpha;
+    public float Alpha { get; set; }
 
     /// <summary>
     /// Gets the blue value.
@@ -95,14 +92,14 @@ public class SCColor
     public int R => this.red;
 
     /// <summary>
-    /// Gets a value indicating whether if color is transparent.
-    /// </summary>
-    internal bool IsTransparent => this.Alpha == 0;
-
-    /// <summary>
     /// Gets a value indicating whether if color is solid.
     /// </summary>
     internal bool IsSolid => this.Alpha == 255;
+
+    /// <summary>
+    /// Gets a value indicating whether if color is transparent.
+    /// </summary>
+    internal bool IsTransparent => this.Alpha == 0;
 
     /// <summary>
     /// Returns a value indicating wheather hex is a valid value.
