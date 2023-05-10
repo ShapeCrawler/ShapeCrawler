@@ -101,7 +101,7 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     IPicture AddPicture(Stream imageStream);
 
     /// <summary>
-    ///     Adds Bar chart
+    ///     Adds Bar chart.
     /// </summary>
     IChart AddBarChart(BarChartType barChartType);
 }

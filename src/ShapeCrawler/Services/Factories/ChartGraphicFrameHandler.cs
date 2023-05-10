@@ -326,7 +326,8 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
             "Sheet1!$B$1",
             defaultSeries1Values,
             "Sheet1!$B$2:$B$4",
-            catAxisData.CloneNode(true), 0);
+            catAxisData.CloneNode(true), 
+            0);
 
         // Series 2
         var defaultSeries2Values = new[] { 2, 4, 6 };
@@ -335,7 +336,8 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
             "Sheet1!$C$1",
             defaultSeries2Values,
             "Sheet1!$C$2:$C$4",
-            catAxisData.CloneNode(true), 1);
+            catAxisData.CloneNode(true), 
+            1);
 
         C.DataLabels dataLabels1 = new C.DataLabels();
         C.ShowLegendKey showLegendKey1 = new C.ShowLegendKey() { Val = false };
@@ -865,6 +867,7 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
             var seriesBNumPoint = this.CreateCNumericPoint(i, values[i]);
             seriesBNumCache.Append(seriesBNumPoint);
         }
+
         seriesNumRef.Append(seriesBNumCache);
         seriesNumRef.Append(valuesCFormula);
         cValues.Append(seriesNumRef);
