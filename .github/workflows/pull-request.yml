@@ -15,4 +15,4 @@ jobs:
         run: dotnet restore    
       
       - name: Test
-        run: dotnet test -c Release -f net7.0 --no-restore --verbosity normal
+        run: dotnet test -c Release -f net7.0 --no-restore
