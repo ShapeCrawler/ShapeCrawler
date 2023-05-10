@@ -323,7 +323,7 @@ public class ShapeCollectionTests : SCTest
     }
 
 #if DEBUG
-
+    
     [Test]
     public void AddBarChart_adds_Bar_Chart()
     {
@@ -337,7 +337,7 @@ public class ShapeCollectionTests : SCTest
         barChart.Should().NotBeNull();
         TestHelper.ThrowIfPresentationInvalid(pres);
     }
-
+    
 #endif
 
     [Test]

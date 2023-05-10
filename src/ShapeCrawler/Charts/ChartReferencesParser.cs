@@ -57,17 +57,6 @@ internal static class ChartReferencesParser
     /// <summary>
     ///     Gets cell values.
     /// </summary>
-    /// <param name="cFormula">
-    ///     Cell range formula (c:f).
-    ///     <c:cat>
-    ///         <c:strRef>
-    ///             <c:f>
-    ///                 Sheet1!$A$2:$A$3
-    ///             </c:f>
-    ///         </c:strRef>
-    ///     </c:cat>
-    /// </param>
-    /// <param name="chart">Internal chart instance.</param>
     internal static List<X.Cell> GetXCellsByFormula(C.Formula cFormula, SCChart chart)
     {
         var normalizedFormula = cFormula.Text.Replace("'", string.Empty).Replace("$", string.Empty); // eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5

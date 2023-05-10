@@ -100,9 +100,10 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     /// </summary>
     IPicture AddPicture(Stream imageStream);
 
-#if DEBUG
+    /// <summary>
+    ///     Adds Bar chart.
+    /// </summary>
     IChart AddBarChart(BarChartType barChartType);
-#endif
 }
 
 internal sealed class ShapeCollection : IShapeCollection
@@ -231,7 +232,6 @@ internal sealed class ShapeCollection : IShapeCollection
 
         var chartFactory = new ChartGraphicFrameHandler();
         var newPGraphicFrame = chartFactory.Create(slideStructure.TypedOpenXmlPart);
-        
 
         this.pShapeTree.Append(newPGraphicFrame);
 

@@ -34,6 +34,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageIcon>package-icon.jpg</PackageIcon>
     <Nullable>enable</Nullable>
+    <NoWarn>NU1608</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -68,7 +69,6 @@ This library provides a simplified object model on top of the Open XML SDK for m
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
-
 
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="1.0.1" />
