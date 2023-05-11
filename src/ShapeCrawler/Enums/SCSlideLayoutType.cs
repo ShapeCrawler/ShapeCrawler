@@ -8,7 +8,7 @@ public interface ISlideLayoutType
     /// <summary>
     /// Gets the layout type.
     /// </summary>
-    string Type { get; }
+    string Value { get; }
 }
 
 /// <summary>
@@ -193,17 +193,17 @@ public class SCSlideLayoutType : ISlideLayoutType
 
     internal SCSlideLayoutType(string type)
     {
-        this.Type = type;
+        this.Value = type;
     }
 
     /// <summary>
     /// Gets the layout type.
     /// </summary>
-    public string Type { get; }
+    public string Value { get; }
 
     /// <inheritdoc/>
     public override string ToString()
     {
-        return this.Type;
+        return this.Value;
     }
 }
