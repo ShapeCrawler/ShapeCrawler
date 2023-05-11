@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FluentAssertions;
+using NUnit.Framework;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
@@ -11,6 +13,7 @@ using Xunit;
 
 namespace ShapeCrawler.Tests.Unit;
 
+[SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class ParagraphPortionTests : SCTest
 {
     [Fact]
@@ -46,7 +49,7 @@ public class ParagraphPortionTests : SCTest
         portion.Text.Should().Be("test");
     }
 
-    [Theory]
+    [Xunit.Theory]
     [MemberData(nameof(TestCasesHyperlinkSetter))]
     public void Hyperlink_Setter_sets_hyperlink(string pptxFile, string shapeName)
     {
@@ -113,7 +116,7 @@ public class ParagraphPortionTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Fact]
+    [Test]
     public void TextHighlightColor_Getter_returns_text_highlight_color()
     {
         // Arrange
@@ -122,11 +125,8 @@ public class ParagraphPortionTests : SCTest
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
 
-        // Act
-        var textHighlightColor = portion.TextHighlightColor;
-
-        // Assert
-        textHighlightColor.Should().Be("FFFF00");
+        // Act-Assert
+        portion.TextHighlightColor.ToString().Should().Be("FFFF00");
     }
 
     [Fact]
@@ -138,14 +138,11 @@ public class ParagraphPortionTests : SCTest
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
 
-        // Act
-        var textHighlightColor = portion.GetTextHighlight();
-
-        // Assert
-        textHighlightColor.ToString().Should().Be("FFFF00");
+        // Act-Assert
+        portion.TextHighlightColor.ToString().Should().Be("FFFF00");
     }
 
-    [Fact]
+    [Test]
     public void TextHighlightColor_Setter_sets_text_highlight_color()
     {
         // Arrange
@@ -155,25 +152,26 @@ public class ParagraphPortionTests : SCTest
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
 
         // Act
-        portion.TextHighlightColor = "FFFF00";
+        portion.TextHighlightColor = SCColor.FromHex("FFFF00");
 
         // Assert
-        portion.TextHighlightColor.Should().Be("FFFF00");
+        portion.TextHighlightColor.ToString().Should().Be("FFFF00");
     }
 
-    [Fact]
-    public void TextHighlightColor_Setter_sets_text_highlight_sccolor()
+    [Test]
+    public void TextHighlightColor_Setter_sets_text_highlight()
     {
         // Arrange
         var pptx = TestHelperShared.GetStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
+        var color = SCColor.FromHex("FFFF00");
 
         // Act
-        portion.SetTextHighlight(new SCColor("FFFF00"));
+        portion.TextHighlightColor = color;
 
         // Assert
-        portion.GetTextHighlight().ToString().Should().Be("FFFF00");
+        portion.TextHighlightColor.ToString().Should().Be("FFFF00");
     }
 }

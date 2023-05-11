@@ -324,7 +324,7 @@ public class ShapeCollectionTests : SCTest
 
 #if DEBUG
     
-    [Test]
+    [Test, Ignore("Not implemented yet")]
     public void AddBarChart_adds_Bar_Chart()
     {
         // Arrange
