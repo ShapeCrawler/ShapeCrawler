@@ -1,17 +1,6 @@
 ﻿namespace ShapeCrawler.Enums;
 
 /// <summary>
-/// Slide layout type.
-/// </summary>
-public interface ISlideLayoutType
-{
-    /// <summary>
-    /// Gets the layout type.
-    /// </summary>
-    string Value { get; }
-}
-
-/// <summary>
 /// Enumerate all posible layout types.
 /// </summary>
 public class SCSlideLayoutType : ISlideLayoutType
