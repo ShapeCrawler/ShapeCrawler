@@ -22,18 +22,18 @@ internal static class RunPropertiesExtensions
         arPr.Append(aHighlight);
     }
 
-    internal static void AddAHighlight(this RunProperties arPr, SCColor hex)
+    internal static void AddAHighlight(this RunProperties arPr, SCColor color)
     {
         var aHighlight = arPr.GetFirstChild<A.Highlight>();
         aHighlight?.Remove();
 
-        if (hex.IsTransparent)
+        if (color.IsTransparent)
         {
             return;
         }
 
         aHighlight = new A.Highlight();
-        aHighlight.Append(hex.ToRgbColorModelHex());
+        aHighlight.Append(color.ToRgbColorModelHex());
 
         arPr.Append(aHighlight);
     }

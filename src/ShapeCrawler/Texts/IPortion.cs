@@ -35,21 +35,9 @@ public interface IPortion
     IField? Field { get; }
 
     /// <summary>
-    ///     Gets or sets Text Highlight Color in hexadecimal format. Returns <see langword="null"/> if Text Highlight Color is not present. 
+    ///     Gets or sets Text Highlight Color. 
     /// </summary>
-    string? TextHighlightColor { get; set; }
-
-    /// <summary>
-    /// Set hightlight.
-    /// </summary>
-    /// <param name="color">Color value.</param>
-    void SetTextHighlight(SCColor color);
-
-    /// <summary>
-    /// Gets highlight color.
-    /// </summary>
-    /// <returns>Returns <see langword="null" /> if  the text doesn't have a highlight defined.</returns>
-    SCColor? GetTextHighlight();
+    SCColor TextHighlightColor { get; set; }
 }
 
 internal sealed class SCPortion : IPortion
@@ -90,10 +78,10 @@ internal sealed class SCPortion : IPortion
 
     public IField? Field => this.GetField();
 
-    public string? TextHighlightColor
+    public SCColor TextHighlightColor
     {
         get => this.GetTextHighlightColor();
-        set => this.SetTextHighlightColor(value!);
+        set => this.SetTextHighlightColor(value);
     }
 
     #endregion Public Properties
@@ -114,44 +102,23 @@ internal sealed class SCPortion : IPortion
         return new SCField(this.aField);
     }
 
-    private string? GetTextHighlightColor()
+    private SCColor GetTextHighlightColor()
     {
         var arPr = this.AText.PreviousSibling<A.RunProperties>();
-        var aSrgbClr = arPr?.GetFirstChild<A.Highlight>()?.RgbColorModelHex;
-        
-        return aSrgbClr?.Val;
-    }
 
-    private void SetTextHighlightColor(string hex)
-    {
-        var arPr = this.AText.PreviousSibling<A.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
-        
-        arPr.AddAHighlight(hex!);
-    }
-
-#pragma warning disable SA1202 // Elements should be ordered by access
-    public SCColor? GetTextHighlight()
-#pragma warning restore SA1202 // Elements should be ordered by access
-    {
-        var arPr = this.AText.PreviousSibling<A.RunProperties>();
-        
         // Ensure RgbColorModelHex exists and his value is not null.
-        if (arPr?.GetFirstChild<A.Highlight>()?.RgbColorModelHex is not A.RgbColorModelHex aSrgbClr 
+        if (arPr?.GetFirstChild<A.Highlight>()?.RgbColorModelHex is not A.RgbColorModelHex aSrgbClr
             || aSrgbClr.Val is null)
         {
-            return null;
+            return SCColor.Transparent;
         }
 
         // Gets node value.
         // TODO: Check if DocumentFormat.OpenXml.StringValue is necessary.
-        var hex = aSrgbClr.Val.ToString();
+        var hex = aSrgbClr.Val.ToString() !;
 
         // Check if color value is valid, we are expecting values as "000000".
-        if (!SCColor.TryGetColorFromHex(hex!, out var color))
-        {
-            // TODO: Add an exception code.
-            throw new Exception();
-        }
+        var color = SCColor.FromHex(hex);
 
         // Calculate alpha value if is defined in highlight node.
         var aAlphaValue = aSrgbClr.GetFirstChild<A.Alpha>()?.Val ?? 100000;
@@ -160,13 +127,11 @@ internal sealed class SCPortion : IPortion
         return color;
     }
 
-#pragma warning disable SA1202 // Elements should be ordered by access
-    public void SetTextHighlight(SCColor hex)
-#pragma warning restore SA1202 // Elements should be ordered by access
+    private void SetTextHighlightColor(SCColor color)
     {
         var arPr = this.AText.PreviousSibling<A.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
 
-        arPr.AddAHighlight(hex!);
+        arPr.AddAHighlight(color);
     }
 
     private string GetText()
@@ -199,7 +164,8 @@ internal sealed class SCPortion : IPortion
             return null;
         }
 
-        var slideObject = (SlideStructure)this.ParentParagraph.ParentTextFrame.TextFrameContainer.SCShape.SlideStructure;
+        var slideObject =
+            (SlideStructure)this.ParentParagraph.ParentTextFrame.TextFrameContainer.SCShape.SlideStructure;
         var typedOpenXmlPart = slideObject.TypedOpenXmlPart;
         var hyperlinkRelationship = (HyperlinkRelationship)typedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
 
@@ -226,7 +192,8 @@ internal sealed class SCPortion : IPortion
             runProperties.Append(hyperlink);
         }
 
-        var slideStructureCore = (SlideStructure)this.ParentParagraph.ParentTextFrame.TextFrameContainer.SCShape.SlideStructure;
+        var slideStructureCore =
+            (SlideStructure)this.ParentParagraph.ParentTextFrame.TextFrameContainer.SCShape.SlideStructure;
         var slidePart = slideStructureCore.TypedOpenXmlPart;
 
         var uri = new Uri(url, UriKind.Absolute);
