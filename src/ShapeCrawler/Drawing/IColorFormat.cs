@@ -120,8 +120,6 @@ internal sealed class ColorFormat : IColorFormat
                 return;
             }
 
-
-            // FontData masterBodyFontData = this.parentSlideMaster.BodyParaLvlToFontData[paragraphLevel];
             if (this.parentSlideMaster.BodyParaLvlToFontData.TryGetValue(paragraphLevel, out var masterBodyFontData) && this.TryFromFontData(masterBodyFontData))
             {
                 return;
