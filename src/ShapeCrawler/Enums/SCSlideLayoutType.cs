@@ -5,7 +5,7 @@ namespace ShapeCrawler.Enums;
 /// <summary>
 /// Enumerate all posible layout types.
 /// </summary>
-public class SCSlideLayoutType : Enumeration<SCSlideLayoutType>, ISlideLayoutType
+public class SCSlideLayoutType : SCEnumeration<SCSlideLayoutType>, ISlideLayoutType
 {
     /// <summary>
     /// Chart.
