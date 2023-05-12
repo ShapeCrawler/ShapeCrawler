@@ -1,6 +1,4 @@
-﻿using ShapeCrawler.Shared;
-
-namespace ShapeCrawler;
+﻿namespace ShapeCrawler;
 
 /// <summary>
 /// Slide layout type.
