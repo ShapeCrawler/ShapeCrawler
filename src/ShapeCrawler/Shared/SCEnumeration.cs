@@ -45,7 +45,7 @@ public abstract class SCEnumeration
 /// </summary>
 /// <typeparam name="T">Enum type.</typeparam>
 public abstract class SCEnumeration
-    <T> : SCEnumeration, IEnumeration
+    <T> : SCEnumeration
     where T : SCEnumeration
 {
     /// <summary>
