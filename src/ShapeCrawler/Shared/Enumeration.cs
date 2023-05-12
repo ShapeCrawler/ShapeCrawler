@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml;
+using ShapeCrawler.Enums;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -82,6 +84,25 @@ public abstract class Enumeration<T> : Enumeration, IEnumeration where T : Enume
             .FirstOrDefault(item => item.Value == value);
 
         return result is not null;
+    }
+
+    /// <summary>
+    /// Try to get a type from string value.
+    /// </summary>
+    /// <typeparam name="V">Value of the schema: type.</typeparam>
+    /// <param name="value">Enum value.</param>
+    /// <param name="result">Enum member.</param>
+    /// <returns>Returns <see langword="true"/> <paramref name="value"/> exists in <typeparamref name="T"/>.</returns>
+    public static bool TryParse<V>(EnumValue<V>? value, out T? result) where V : struct
+    {
+        if (value is null)
+        {
+            result = null;
+
+            return false;
+        }
+
+        return TryParse(value?.InnerText ?? string.Empty, out result);
     }
 
     /// <summary>
