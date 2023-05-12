@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml;
-using ShapeCrawler.Shared;
-using System;
+﻿using ShapeCrawler.Shared;
 
 namespace ShapeCrawler.Enums;
 
@@ -184,7 +182,8 @@ public class SCSlideLayoutType : Enumeration<SCSlideLayoutType>, ISlideLayoutTyp
     /// </summary>
     public static readonly SCSlideLayoutType VerticalTitleAndText = new("txOverObj", nameof(VerticalTitleAndText));
 
-    internal SCSlideLayoutType(string value, string name) : base(value, name)
+    internal SCSlideLayoutType(string value, string name)
+        : base(value, name)
     {
     }
 }

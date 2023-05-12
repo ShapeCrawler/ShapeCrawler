@@ -1,5 +1,4 @@
 ﻿using DocumentFormat.OpenXml;
-using ShapeCrawler.Enums;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,7 +20,7 @@ public abstract class Enumeration
     /// <param name="name">Enum name.</param>
     internal protected Enumeration(string value, string name)
     {
-        (Value, Name) = (value, name);
+        (this.Value, this.Name) = (value, name);
     }
 
     /// <summary>
@@ -44,14 +43,16 @@ public abstract class Enumeration
 /// <summary>
 /// This is a generic enum.
 /// </summary>
-public abstract class Enumeration<T> : Enumeration, IEnumeration where T : Enumeration
+/// <typeparam name="T">Enum type.</typeparam>
+public abstract class Enumeration<T> : Enumeration, IEnumeration
+    where T : Enumeration
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Enumeration{T}"/> class.
     /// </summary>
     /// <param name="value">Enum value.</param>
     /// <param name="name">Enum name.</param>
-    internal protected Enumeration(string value, string name)
+    protected Enumeration(string value, string name)
         : base(value, name)
     {
     }
@@ -60,7 +61,7 @@ public abstract class Enumeration<T> : Enumeration, IEnumeration where T : Enume
     /// Returns an enum member of <typeparamref name="T"/>.
     /// </summary>
     /// <param name="value">Enum value.</param>
-    /// <returns></returns>
+    /// <returns>An enum member.</returns>
     /// <exception cref="Exception">Throws when value doesn't exists.</exception>
     public static T Parse(string value)
     {
@@ -109,7 +110,7 @@ public abstract class Enumeration<T> : Enumeration, IEnumeration where T : Enume
     /// Gets all public and static members of type <typeparamref name="T"/>.
     /// </summary>
     /// <returns>A member list of type value.</returns>
-    protected static IEnumerable<T> GetAll() 
+    protected static IEnumerable<T> GetAll()
     {
         return typeof(T).GetFields(BindingFlags.Public |
                             BindingFlags.Static |
