@@ -1,4 +1,6 @@
-﻿using ShapeCrawler.Shared;
+﻿using DocumentFormat.OpenXml;
+using ShapeCrawler.Shared;
+using System;
 
 namespace ShapeCrawler.Enums;
 
