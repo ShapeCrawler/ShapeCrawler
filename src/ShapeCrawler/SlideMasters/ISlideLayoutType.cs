@@ -1,12 +1,10 @@
-﻿namespace ShapeCrawler;
+﻿using ShapeCrawler.Shared;
+
+namespace ShapeCrawler;
 
 /// <summary>
 /// Slide layout type.
 /// </summary>
-public interface ISlideLayoutType
+public interface ISlideLayoutType : IEnumeration
 {
-    /// <summary>
-    /// Gets the layout type.
-    /// </summary>
-    string Value { get; }
 }

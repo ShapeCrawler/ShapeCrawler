@@ -71,6 +71,16 @@ internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
 
     private ISlideLayoutType GetLayoutType()
     {
-        return new SCSlideLayoutType(this.SlideLayoutPart.SlideLayout.Type?.InnerText ?? "cust");
+        // Set default layout type to cust.
+        var innerText = this.SlideLayoutPart.SlideLayout.Type?.InnerText 
+            ?? "cust";
+
+        if (SCSlideLayoutType.TryParse(innerText, out var layoutType))
+        {
+            return layoutType!;
+        }
+
+        // TODO: Add a custom exception.
+        throw new System.Exception();
     }
 }
