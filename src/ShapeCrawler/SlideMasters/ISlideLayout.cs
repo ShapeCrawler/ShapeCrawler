@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Enums;
 using ShapeCrawler.Shared;
 
 // ReSharper disable CheckNamespace
@@ -23,6 +24,11 @@ public interface ISlideLayout
     ///     Gets layout name.
     /// </summary>
     string Name { get; }
+
+    /// <summary>
+    /// Gets layout type.
+    /// </summary>
+    ISlideLayoutType Type { get; }
 }
 
 internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
@@ -42,8 +48,10 @@ internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
 
     public string Name => this.GetName();
 
+    public ISlideLayoutType Type => this.GetLayoutType();
+
     public ISlideMaster SlideMaster => this.slideMaster;
-    
+
     public override int Number { get; set; }
 
     public override IShapeCollection Shapes => this.shapes.Value;
@@ -55,9 +63,19 @@ internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
     internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
 
     internal override TypedOpenXmlPart TypedOpenXmlPart => this.SlideLayoutPart;
-    
+
     private string GetName()
     {
         return this.SlideLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
+    }
+
+    private ISlideLayoutType GetLayoutType()
+    {
+        if (SCSlideLayoutType.TryParse(this.SlideLayoutPart.SlideLayout.Type, out var layoutType))
+        {
+            return layoutType!;
+        }
+
+        return SCSlideLayoutType.Custom;
     }
 }

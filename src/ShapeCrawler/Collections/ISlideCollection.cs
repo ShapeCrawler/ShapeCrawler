@@ -7,6 +7,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
+using D = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable once CheckNamespace
@@ -26,7 +27,19 @@ public interface ISlideCollection : IReadOnlyList<ISlide>
     ///     Creates a new slide.
     /// </summary>
     ISlide AddEmptySlide(ISlideLayout layout);
-    
+
+    /// <summary>
+    ///     Creates a new slide.
+    /// </summary>
+    ISlide AddEmptySlide(string layoutName);
+
+    /// <summary>
+    /// Creates a new slide of layout type.
+    /// </summary>
+    /// <param name="layoutType">Layout type.</param>
+    /// <returns>A new slide.</returns>
+    ISlide AddEmptySlide(ISlideLayoutType layoutType);
+
     /// <summary>
     ///     Adds specified slide.
     /// </summary>
@@ -100,6 +113,43 @@ internal sealed class SCSlideCollection : ISlideCollection
         var layoutInternal = (SCSlideLayout)layout;
         slidePart.AddPart(layoutInternal.SlideLayoutPart, "rId1");
 
+        // Copy layout placeholders
+        if (layoutInternal.SlideLayoutPart.SlideLayout.CommonSlideData is P.CommonSlideData commonSlideData
+            && commonSlideData.ShapeTree is P.ShapeTree shapeTree)
+        {
+            var placeholderShapes = shapeTree.ChildElements
+                                        .OfType<P.Shape>()
+
+                                        // Select all shapes with placeholder.
+                                        .Where(shape => shape.NonVisualShapeProperties!
+                                            .OfType<P.ApplicationNonVisualDrawingProperties>()
+                                            .Any(anvdp => anvdp.PlaceholderShape is not null))
+
+                                        // And creates a new shape with the placeholder.
+                                        .Select(shape => new P.Shape()
+                                        {
+                                            // Clone placeholder
+                                            NonVisualShapeProperties = (P.NonVisualShapeProperties)shape.NonVisualShapeProperties!.CloneNode(true),
+
+                                            // Creates a new TextBody with no content.
+                                            TextBody = new P.TextBody(new[] { new D.Paragraph(new D.EndParagraphRunProperties()) })
+                                            {
+                                                BodyProperties = new D.BodyProperties(),
+                                                ListStyle = new D.ListStyle()
+                                            },
+                                            ShapeProperties = new P.ShapeProperties()
+                                        });
+
+            slidePart.Slide.CommonSlideData = new P.CommonSlideData(placeholderShapes)
+            {
+                ShapeTree = new P.ShapeTree(placeholderShapes)
+                {
+                    GroupShapeProperties = (P.GroupShapeProperties)shapeTree.GroupShapeProperties!.CloneNode(true),
+                    NonVisualGroupShapeProperties = (P.NonVisualGroupShapeProperties)shapeTree.NonVisualGroupShapeProperties!.CloneNode(true)
+                }
+            };
+        }
+
         var pSlideIdList = this.presPart.Presentation.SlideIdList!;  
         var nextId = pSlideIdList.OfType<P.SlideId>().Last().Id! + 1;
         var pSlideId = new P.SlideId { Id = nextId, RelationshipId = rId };
@@ -109,6 +159,18 @@ internal sealed class SCSlideCollection : ISlideCollection
         this.slides.Value.Add(newSlide);
 
         return newSlide;
+    }
+
+    public ISlide AddEmptySlide(ISlideLayoutType layoutType)
+    {
+        // Gets slide layoutName by type
+        return this.AddEmptySlide(c => c.Type.Value == layoutType.Value);
+    }
+
+    public ISlide AddEmptySlide(string layoutName)
+    {
+        // Gets slide layoutName by type
+        return this.AddEmptySlide(c => c.Name == layoutName);
     }
 
     public void Insert(int position, ISlide outerSlide)
@@ -167,7 +229,7 @@ internal sealed class SCSlideCollection : ISlideCollection
     {
         return this.slides.Value.First(scSlide => scSlide.SlideId.Id == slideId);
     }
-    
+
     private static SlidePart AddSlidePart(
         PresentationPart destPresPart, 
         SlidePart sourceSlidePart,
@@ -318,6 +380,22 @@ internal sealed class SCSlideCollection : ISlideCollection
 
         return ++currentId;
     }
+
+    private ISlide AddEmptySlide(Func<ISlideLayout, bool> query)
+    {
+        // Gets slide layoutName by type
+        if (this.presentation.SlideMasters?[0] is not ISlideMaster slideMaster)
+        {
+            // TODO: add an exception.
+            throw new Exception();
+        }
+
+        // Find layoutName of type.
+        var layout = slideMaster.SlideLayouts.First(query);
+
+        return this.AddEmptySlide(layout);
+    }
+
 
     private List<SCSlide> GetSlides()
     {
