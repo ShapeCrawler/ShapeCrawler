@@ -8,35 +8,14 @@ namespace ShapeCrawler;
 public enum SCSlideLayoutType
 {
     /// <summary>
-    ///     Custom.
+    ///     Blank.
     /// </summary>
-    [EnumMember(Value = "cust")]
-    Custom,
+    Blank,
 
     /// <summary>
-    ///     Title.
+    ///   Title and Chart.
     /// </summary>
-    Title,
-
-    /// <summary>
-    ///     Text.
-    /// </summary>
-    Text,
-
-    /// <summary>
-    ///     Two Column Text.
-    /// </summary>
-    TwoColumnText,
-
-    /// <summary>
-    ///     Table.
-    /// </summary>
-    Table,
-
-    /// <summary>
-    ///     Text and Chart.
-    /// </summary>
-    TextAndChart,
+    Chart,
 
     /// <summary>
     ///     Chart and Text.
@@ -44,39 +23,44 @@ public enum SCSlideLayoutType
     ChartAndText,
 
     /// <summary>
+    ///    Clip Art and Text.     
+    /// </summary>
+    ClipArtAndText,
+
+    /// <summary>
+    ///     Clip Art and Vertical Text.
+    /// </summary>
+    ClipArtAndVerticalText,
+
+    /// <summary>
+    ///     Custom.
+    /// </summary>
+    Custom,
+
+    /// <summary>
     ///     Diagram.
     /// </summary>
     Diagram,
 
     /// <summary>
-    ///     Chart.
+    ///     Four Objects.
     /// </summary>
-    Chart,
+    FourObjects,
 
     /// <summary>
-    ///     Text and Clip Art.
+    ///     Media and Text.
     /// </summary>
-    TextAndClipArt,
+    MediaAndText,
 
     /// <summary>
-    ///     Clip Art and Text.
+    ///     Title and Object.
     /// </summary>
-    ClipArtAndText,
+    Object,
 
     /// <summary>
-    ///     Title Only.
+    ///     Object and Two Objects.
     /// </summary>
-    TitleOnly,
-
-    /// <summary>
-    ///     Blank.
-    /// </summary>
-    Blank,
-
-    /// <summary>
-    ///     Text and Object.
-    /// </summary>
-    TextAndObject,
+    ObjectAndTwoObjects,
 
     /// <summary>
     ///     Object and Text.
@@ -86,22 +70,7 @@ public enum SCSlideLayoutType
     /// <summary>
     ///     Object.
     /// </summary>
-    Object,
-
-    /// <summary>
-    ///     Title and Object.
-    /// </summary>
-    TitleAndObject,
-
-    /// <summary>
-    ///     Text and Media.
-    /// </summary>
-    TextAndMedia,
-
-    /// <summary>
-    ///     Media and Text.
-    /// </summary>
-    MediaAndText,
+    ObjectOnly,
 
     /// <summary>
     ///     Object over Text.
@@ -109,14 +78,49 @@ public enum SCSlideLayoutType
     ObjectOverText,
 
     /// <summary>
-    ///     Text over Object.
+    ///     Title, Object, and Caption.    
     /// </summary>
-    TextOverObject,
+    ObjectText,
 
     /// <summary>
-    ///     Text and Two Objects.
+    ///     Picture and Caption.
     /// </summary>
-    TextAndTwoObjects,
+    PictureAndCaption,
+
+    /// <summary>
+    ///     Section Header.
+    /// </summary>
+    SectionHeader,
+
+    /// <summary>
+    ///     Table.
+    /// </summary>
+    Table,
+
+    /// <summary>
+    ///     Title.
+    /// </summary>
+    Title,
+
+    /// <summary>
+    ///     Title Only.
+    /// </summary>
+    TitleOnly,
+
+    /// <summary>
+    ///     Two Column Text. 
+    /// </summary>
+    TwoColumnText,
+
+    /// <summary>
+    ///     Two Objects.
+    /// </summary>
+    TwoObjects,
+
+    /// <summary>
+    ///     Two Objects and Object.
+    /// </summary>
+    TwoObjectsAndObject,
 
     /// <summary>
     ///     Two Objects and Text.
@@ -129,19 +133,44 @@ public enum SCSlideLayoutType
     TwoObjectsOverText,
 
     /// <summary>
-    ///     Four Objects.
+    ///     Two Text and Two Objects.
     /// </summary>
-    FourObjects,
+    TwoTextAndTwoObjects,
 
     /// <summary>
-    ///     Vertical Text.
+    ///     Text.
     /// </summary>
-    VerticalText,
+    Text,
 
     /// <summary>
-    ///     Clip Art and Vertical Text.
+    ///     Text and Chart.
     /// </summary>
-    ClipArtAndVerticalText,
+    TextAndChart,
+
+    /// <summary>
+    ///     Text and Clip Art.
+    /// </summary>
+    TextAndClipArt,
+
+    /// <summary>
+    ///     Text and Media.
+    /// </summary>
+    TextAndMedia,
+
+    /// <summary>
+    ///     Text and Object.
+    /// </summary>
+    TextAndObject,
+
+    /// <summary>
+    ///     Text and Two Objects.
+    /// </summary>
+    TextAndTwoObjects,
+
+    /// <summary>
+    ///     Text over Object.
+    /// </summary>
+    TextOverObject,
 
     /// <summary>
     ///     Vertical Title and Text.
@@ -149,37 +178,12 @@ public enum SCSlideLayoutType
     VerticalTitleAndText,
 
     /// <summary>
-    ///     Vertical Title and Text Over Chart.
+    ///     Vertical Title and Text over Chart.
     /// </summary>
     VerticalTitleAndTextOverChart,
 
     /// <summary>
-    ///     Two Objects.
+    ///     Vertical Text.
     /// </summary>
-    TwoObjects,
-
-    /// <summary>
-    ///     Object and Two Object.
-    /// </summary>
-    ObjectAndTwoObject,
-
-    /// <summary>
-    ///     Two Objects and Object.
-    /// </summary>
-    TwoObjectsAndObject,
-
-    /// <summary>
-    ///     Section Header.
-    /// </summary>
-    SectionHeader,
-
-    /// <summary>
-    ///     Title, Object, and Caption.
-    /// </summary>
-    TitleObjectAndCaption,
-
-    /// <summary>
-    ///     Picture and Caption.
-    /// </summary>
-    PictureAndCaption
+    VerticalText
 }
