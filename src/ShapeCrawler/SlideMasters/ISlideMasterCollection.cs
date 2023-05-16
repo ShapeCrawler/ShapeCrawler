@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 
@@ -8,7 +9,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a collections of Slide Masters.
 /// </summary>
-public interface ISlideMasterCollection
+public interface ISlideMasterCollection : IEnumerable<ISlideMaster>
 {
     /// <summary>
     ///     Gets the number of series items in the collection.
@@ -19,18 +20,13 @@ public interface ISlideMasterCollection
     ///     Gets the element at the specified index.
     /// </summary>
     ISlideMaster this[int index] { get; }
-
-    /// <summary>
-    ///     Gets the generic enumerator that iterates through the collection.
-    /// </summary>
-    IEnumerator<ISlideMaster> GetEnumerator();
 }
 
-internal sealed class SlideMasterCollection : ISlideMasterCollection
+internal sealed class SCSlideMasterCollection : ISlideMasterCollection
 {
     private readonly List<ISlideMaster> slideMasters;
 
-    private SlideMasterCollection(SCPresentation presentation, List<ISlideMaster> slideMasters)
+    private SCSlideMasterCollection(SCPresentation presentation, List<ISlideMaster> slideMasters)
     {
         this.Presentation = presentation;
         this.slideMasters = slideMasters;
@@ -47,7 +43,7 @@ internal sealed class SlideMasterCollection : ISlideMasterCollection
         return this.slideMasters.GetEnumerator();
     }
 
-    internal static SlideMasterCollection Create(SCPresentation presentation)
+    internal static SCSlideMasterCollection Create(SCPresentation presentation)
     {
         var masterParts = presentation.SDKPresentationInternal.PresentationPart!.SlideMasterParts;
         var slideMasters = new List<ISlideMaster>(masterParts.Count());
@@ -57,7 +53,7 @@ internal sealed class SlideMasterCollection : ISlideMasterCollection
             slideMasters.Add(new SCSlideMaster(presentation, slideMasterPart.SlideMaster, number++));
         }
 
-        return new SlideMasterCollection(presentation, slideMasters);
+        return new SCSlideMasterCollection(presentation, slideMasters);
     }
 
     internal SCSlideLayout GetSlideLayoutBySlide(SCSlide slide)
@@ -66,5 +62,10 @@ internal sealed class SlideMasterCollection : ISlideMasterCollection
         IEnumerable<SCSlideLayout> allLayouts = this.slideMasters.SelectMany(sm => sm.SlideLayouts).OfType<SCSlideLayout>();
 
         return allLayouts.First(sl => sl.SlideLayoutPart.Uri == inputSlideLayoutPart.Uri);
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return this.GetEnumerator();
     }
 }

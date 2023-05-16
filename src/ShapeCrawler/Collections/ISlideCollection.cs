@@ -7,7 +7,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
-using D = DocumentFormat.OpenXml.Drawing;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable once CheckNamespace
@@ -24,21 +24,16 @@ public interface ISlideCollection : IReadOnlyList<ISlide>
     void Remove(ISlide slide);
 
     /// <summary>
-    ///     Creates a new slide.
+    ///     Adds a new slide based on the existing layout.
     /// </summary>
+    /// <returns>A new slide.</returns>
     ISlide AddEmptySlide(ISlideLayout layout);
 
     /// <summary>
-    ///     Creates a new slide.
+    ///     Adds a new slide based on the predefined layout type.
     /// </summary>
-    ISlide AddEmptySlide(string layoutName);
-
-    /// <summary>
-    /// Creates a new slide of layout type.
-    /// </summary>
-    /// <param name="layoutType">Layout type.</param>
     /// <returns>A new slide.</returns>
-    ISlide AddEmptySlide(ISlideLayoutType layoutType);
+    ISlide AddEmptySlide(SCSlideLayoutType layoutType);
 
     /// <summary>
     ///     Adds specified slide.
@@ -106,6 +101,14 @@ internal sealed class SCSlideCollection : ISlideCollection
         this.OnCollectionChanged();
     }
 
+    public ISlide AddEmptySlide(SCSlideLayoutType layoutType)
+    {
+        var masters = (SCSlideMasterCollection)presentation.SlideMasters;
+        var layout = masters.SelectMany(m => m.SlideLayouts).First(l => l.Type == layoutType);
+
+        return this.AddEmptySlide(layout);
+    }
+    
     public ISlide AddEmptySlide(ISlideLayout layout)
     {
         var rId = this.presPart.GetNextRelationshipId();
@@ -132,10 +135,10 @@ internal sealed class SCSlideCollection : ISlideCollection
                                             NonVisualShapeProperties = (P.NonVisualShapeProperties)shape.NonVisualShapeProperties!.CloneNode(true),
 
                                             // Creates a new TextBody with no content.
-                                            TextBody = new P.TextBody(new[] { new D.Paragraph(new D.EndParagraphRunProperties()) })
+                                            TextBody = new P.TextBody(new[] { new A.Paragraph(new A.EndParagraphRunProperties()) })
                                             {
-                                                BodyProperties = new D.BodyProperties(),
-                                                ListStyle = new D.ListStyle()
+                                                BodyProperties = new A.BodyProperties(),
+                                                ListStyle = new A.ListStyle()
                                             },
                                             ShapeProperties = new P.ShapeProperties()
                                         });
@@ -159,18 +162,6 @@ internal sealed class SCSlideCollection : ISlideCollection
         this.slides.Value.Add(newSlide);
 
         return newSlide;
-    }
-
-    public ISlide AddEmptySlide(ISlideLayoutType layoutType)
-    {
-        // Gets slide layoutName by type
-        return this.AddEmptySlide(c => c.Type.Value == layoutType.Value);
-    }
-
-    public ISlide AddEmptySlide(string layoutName)
-    {
-        // Gets slide layoutName by type
-        return this.AddEmptySlide(c => c.Name == layoutName);
     }
 
     public void Insert(int position, ISlide outerSlide)

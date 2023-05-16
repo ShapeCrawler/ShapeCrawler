@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.Enums;
+using NUnit.Framework;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
@@ -11,6 +12,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tests.Unit;
 
+[SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class SlideCollectionTests : SCTest
 {
     [Fact]
@@ -105,7 +107,7 @@ public class SlideCollectionTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Fact]
+    [Test]
     public void Add_add_adds_slide_from_layout()
     {
         // Arrange
@@ -115,7 +117,7 @@ public class SlideCollectionTests : SCTest
         var titleAndContentLayout = pres.SlideMasters[0].SlideLayouts[0];
 
         // First layout must to be a "title" layout.
-        titleAndContentLayout.Type.Value.Should().Be(SCSlideLayoutType.Title.Value);
+        titleAndContentLayout.Type.Should().Be(SCSlideLayoutType.Title);
 
         
         // We expect:
@@ -163,7 +165,7 @@ public class SlideCollectionTests : SCTest
         destPre.Slides[1].CustomData.Should().Be(sourceSlideId);
     }
 
-    [Theory]
+    [Xunit.Theory]
     [MemberData(nameof(TestCasesSlidesRemove))]
     public void Slides_Remove_removes_slide(string file, int expectedSlidesCount)
     {

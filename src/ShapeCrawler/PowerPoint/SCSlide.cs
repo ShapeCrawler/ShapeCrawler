@@ -36,7 +36,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
     }
 
     public ISlideLayout SlideLayout =>
-        ((SlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
+        ((SCSlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
 
     public override IShapeCollection Shapes => this.shapes.Value;
 
