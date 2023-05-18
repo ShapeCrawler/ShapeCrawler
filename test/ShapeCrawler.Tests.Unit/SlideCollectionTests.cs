@@ -108,43 +108,19 @@ public class SlideCollectionTests : SCTest
     }
 
     [Test]
-    public void Add_add_adds_slide_from_layout()
+    public void AddEmptySlide_adds_slide_from_layout()
     {
         // Arrange
-        var pptx = GetTestStream("017.pptx");
-        var pres = SCPresentation.Open(pptx);
-
+        var pres = SCPresentation.Open(GetTestStream("017.pptx"));
         var titleAndContentLayout = pres.SlideMasters[0].SlideLayouts[0];
 
-        // First layout must to be a "title" layout.
-        titleAndContentLayout.Type.Should().Be(SCSlideLayoutType.Title);
-
-        
-        // We expect:
-        // ctrTitle: Title 1,
-        // subTitle: Subtitle 2,
-        // dt: Date Placeholder 3,
-        // ftr: Footer Placeholder 4
-        // sldNum: Slide Number Placeholder 5
-        // Placeholders are cloned, so ST_PlaceholderType is the same.
+        // Act
         var addedSlide = pres.Slides.AddEmptySlide(SCSlideLayoutType.Title);
 
         // Assert
+        titleAndContentLayout.Type.Should().Be(SCSlideLayoutType.Title);
         addedSlide.Should().NotBeNull();
-
-        // Get all shapes names of the layout.
-        foreach (var shape in GetShapesNames(titleAndContentLayout)) {
-            // Assert source shape exists in the new slide.
-            addedSlide.Shapes.Any(c => c.Name == shape).Should().BeTrue(); 
-        }
-
-        static IEnumerable<string> GetShapesNames(ISlideLayout layout)
-        {
-            foreach (var shape in layout.Shapes)
-            {
-                yield return shape.Name;
-            }
-        }
+        titleAndContentLayout.Shapes.Select(s => s.Name).Should().BeSubsetOf(addedSlide.Shapes.Select(s => s.Name));
     }
 
     [Fact]

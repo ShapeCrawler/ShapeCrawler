@@ -108,7 +108,7 @@ internal sealed class SCSlideCollection : ISlideCollection
 
         return this.AddEmptySlide(layout);
     }
-    
+
     public ISlide AddEmptySlide(ISlideLayout layout)
     {
         var rId = this.presPart.GetNextRelationshipId();
@@ -121,43 +121,45 @@ internal sealed class SCSlideCollection : ISlideCollection
             && commonSlideData.ShapeTree is P.ShapeTree shapeTree)
         {
             var placeholderShapes = shapeTree.ChildElements
-                                        .OfType<P.Shape>()
+                .OfType<P.Shape>()
 
-                                        // Select all shapes with placeholder.
-                                        .Where(shape => shape.NonVisualShapeProperties!
-                                            .OfType<P.ApplicationNonVisualDrawingProperties>()
-                                            .Any(anvdp => anvdp.PlaceholderShape is not null))
+                // Select all shapes with placeholder.
+                .Where(shape => shape.NonVisualShapeProperties!
+                    .OfType<P.ApplicationNonVisualDrawingProperties>()
+                    .Any(anvdp => anvdp.PlaceholderShape is not null))
 
-                                        // And creates a new shape with the placeholder.
-                                        .Select(shape => new P.Shape()
-                                        {
-                                            // Clone placeholder
-                                            NonVisualShapeProperties = (P.NonVisualShapeProperties)shape.NonVisualShapeProperties!.CloneNode(true),
+                // And creates a new shape with the placeholder.
+                .Select(shape => new P.Shape()
+                {
+                    // Clone placeholder
+                    NonVisualShapeProperties =
+                        (P.NonVisualShapeProperties)shape.NonVisualShapeProperties!.CloneNode(true),
 
-                                            // Creates a new TextBody with no content.
-                                            TextBody = new P.TextBody(new[] { new A.Paragraph(new A.EndParagraphRunProperties()) })
-                                            {
-                                                BodyProperties = new A.BodyProperties(),
-                                                ListStyle = new A.ListStyle()
-                                            },
-                                            ShapeProperties = new P.ShapeProperties()
-                                        });
+                    // Creates a new TextBody with no content.
+                    TextBody = new P.TextBody(new[] { new A.Paragraph(new A.EndParagraphRunProperties()) })
+                    {
+                        BodyProperties = new A.BodyProperties(),
+                        ListStyle = new A.ListStyle()
+                    },
+                    ShapeProperties = new P.ShapeProperties()
+                });
 
             slidePart.Slide.CommonSlideData = new P.CommonSlideData(placeholderShapes)
             {
                 ShapeTree = new P.ShapeTree(placeholderShapes)
                 {
                     GroupShapeProperties = (P.GroupShapeProperties)shapeTree.GroupShapeProperties!.CloneNode(true),
-                    NonVisualGroupShapeProperties = (P.NonVisualGroupShapeProperties)shapeTree.NonVisualGroupShapeProperties!.CloneNode(true)
+                    NonVisualGroupShapeProperties =
+                        (P.NonVisualGroupShapeProperties)shapeTree.NonVisualGroupShapeProperties!.CloneNode(true)
                 }
             };
         }
 
-        var pSlideIdList = this.presPart.Presentation.SlideIdList!;  
+        var pSlideIdList = this.presPart.Presentation.SlideIdList!;
         var nextId = pSlideIdList.OfType<P.SlideId>().Last().Id! + 1;
         var pSlideId = new P.SlideId { Id = nextId, RelationshipId = rId };
         pSlideIdList.Append(pSlideId);
-        
+
         var newSlide = new SCSlide(this.presentation, slidePart, pSlideId);
         this.slides.Value.Add(newSlide);
 
@@ -191,7 +193,9 @@ internal sealed class SCSlideCollection : ISlideCollection
         }
         else
         {
-            sourcePresDoc = (PresentationDocument)sourceSlideInternal.PresentationInternal.SDKPresentationInternal.Clone(tempStream);
+            sourcePresDoc =
+                (PresentationDocument)sourceSlideInternal.PresentationInternal.SDKPresentationInternal
+                    .Clone(tempStream);
         }
 
         var destPresDoc = this.presentation.SDKPresentationInternal;
@@ -212,17 +216,17 @@ internal sealed class SCSlideCollection : ISlideCollection
 
         this.slides.Reset();
         this.presentation.SlideMastersValue.Reset();
-        
+
         this.CollectionChanged?.Invoke(this, EventArgs.Empty);
     }
-    
+
     internal SCSlide GetBySlideId(string slideId)
     {
         return this.slides.Value.First(scSlide => scSlide.SlideId.Id == slideId);
     }
 
     private static SlidePart AddSlidePart(
-        PresentationPart destPresPart, 
+        PresentationPart destPresPart,
         SlidePart sourceSlidePart,
         out SlideMasterPart addedSlideMasterPart)
     {
@@ -282,12 +286,12 @@ internal sealed class SCSlideCollection : ISlideCollection
     }
 
     private static uint AddNewSlideMasterId(
-        P.Presentation sdkPresDest, 
+        P.Presentation sdkPresDest,
         PresentationDocument sdkPresDocDest,
         SlideMasterPart addedSlideMasterPart)
     {
         var masterId = CreateId(sdkPresDest.SlideMasterIdList!);
-        P.SlideMasterId slideMaterId = new ()
+        P.SlideMasterId slideMaterId = new()
         {
             Id = masterId,
             RelationshipId = sdkPresDocDest.PresentationPart!.GetIdOfPart(addedSlideMasterPart!)
@@ -298,11 +302,11 @@ internal sealed class SCSlideCollection : ISlideCollection
     }
 
     private static void AddNewSlideId(
-        P.Presentation sdkPresDest, 
+        P.Presentation sdkPresDest,
         PresentationDocument sdkPresDocDest,
         SlidePart addedSdkSlidePart)
     {
-        P.SlideId slideId = new ()
+        P.SlideId slideId = new()
         {
             Id = CreateId(sdkPresDest.SlideIdList!),
             RelationshipId = sdkPresDocDest.PresentationPart!.GetIdOfPart(addedSdkSlidePart)
@@ -357,7 +361,7 @@ internal sealed class SCSlideCollection : ISlideCollection
             }
         }
     }
-    
+
     private static uint CreateId(P.SlideMasterIdList slideMasterIdList)
     {
         uint currentId = 0;
