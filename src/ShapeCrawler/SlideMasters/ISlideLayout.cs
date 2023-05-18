@@ -25,15 +25,15 @@ public interface ISlideLayout
     /// </summary>
     SCSlideLayoutType Type { get; }
 
+    /// <summary>
+    ///     Gets layout name.
+    /// </summary>
     string Name { get; }
 }
 
 internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
 {
-    private readonly ResettableLazy<ShapeCollection> shapes;
-    private readonly SCSlideMaster slideMaster;
-
-    private static readonly Dictionary<string, SCSlideLayoutType> typeMapping = new()
+    private static readonly Dictionary<string, SCSlideLayoutType> TypeMapping = new()
     {
         // https://c-rex.net/samples/ooxml/e1/Part4/OOXML_P4_DOCX_ST_SlideLayoutType_topic_ID0EKTIIB.html
         { "blank", SCSlideLayoutType.Blank },
@@ -74,6 +74,9 @@ internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
         { "vertTx", SCSlideLayoutType.VerticalText }
     };
 
+    private readonly ResettableLazy<ShapeCollection> shapes;
+    private readonly SCSlideMaster slideMaster;
+
     internal SCSlideLayout(SCSlideMaster slideMaster, SlideLayoutPart slideLayoutPart, int number)
         : base(slideMaster.Presentation)
     {
@@ -109,6 +112,6 @@ internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
 
     private SCSlideLayoutType GetLayoutType()
     {
-        return typeMapping[this.SlideLayoutPart.SlideLayout.Type!];
+        return TypeMapping[this.SlideLayoutPart.SlideLayout.Type!];
     }
 }

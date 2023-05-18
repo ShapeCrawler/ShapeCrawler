@@ -42,7 +42,12 @@ internal sealed class SCSlideMasterCollection : ISlideMasterCollection
     {
         return this.slideMasters.GetEnumerator();
     }
-
+    
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return this.GetEnumerator();
+    }
+    
     internal static SCSlideMasterCollection Create(SCPresentation presentation)
     {
         var masterParts = presentation.SDKPresentationInternal.PresentationPart!.SlideMasterParts;
@@ -62,10 +67,5 @@ internal sealed class SCSlideMasterCollection : ISlideMasterCollection
         IEnumerable<SCSlideLayout> allLayouts = this.slideMasters.SelectMany(sm => sm.SlideLayouts).OfType<SCSlideLayout>();
 
         return allLayouts.First(sl => sl.SlideLayoutPart.Uri == inputSlideLayoutPart.Uri);
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return this.GetEnumerator();
     }
 }

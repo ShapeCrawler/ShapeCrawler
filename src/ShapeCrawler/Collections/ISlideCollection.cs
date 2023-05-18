@@ -103,7 +103,7 @@ internal sealed class SCSlideCollection : ISlideCollection
 
     public ISlide AddEmptySlide(SCSlideLayoutType layoutType)
     {
-        var masters = (SCSlideMasterCollection)presentation.SlideMasters;
+        var masters = (SCSlideMasterCollection)this.presentation.SlideMasters;
         var layout = masters.SelectMany(m => m.SlideLayouts).First(l => l.Type == layoutType);
 
         return this.AddEmptySlide(layout);

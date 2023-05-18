@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace ShapeCrawler;
+﻿namespace ShapeCrawler;
 
 /// <summary>
 ///     Represents the slide layout type.
