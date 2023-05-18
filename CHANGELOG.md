@@ -1,7 +1,10 @@
 # Changelog  
 
+## Version 0.45.1 - 2023-05-18
+🐞Fixed bug where `ISlideCollection.Add()` doesn't copy placeholder shapes [#508](https://github.com/ShapeCrawler/ShapeCrawler/issues/508)
+
 ## Version 0.45.0 - 2023-05-05
-🍀Added setters for `IChart.Axes.ValueAxis.Minumum/Maximum` [#482](https://github.com/ShapeCrawler/ShapeCrawler/issues/482)  
+🍀Added setters for `IChart.Axes.ValueAxis.Minumum/Maximum`[#482](https://github.com/ShapeCrawler/ShapeCrawler/issues/482)  
 🍀Added `ISeriesCollection.RemoveAt(int index)` [#491](https://github.com/ShapeCrawler/ShapeCrawler/issues/491)  
 🍀Added `ITable.RemoveColumnAt(int columnIndex)` [#501](https://github.com/ShapeCrawler/ShapeCrawler/issues/501)  
 🐞Fixed updating text of the grouped shape [#452](https://github.com/ShapeCrawler/ShapeCrawler/issues/452)  
