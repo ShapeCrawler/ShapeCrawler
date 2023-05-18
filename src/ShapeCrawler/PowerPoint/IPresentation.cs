@@ -104,7 +104,7 @@ public sealed class SCPresentation : IPresentation
         this.ThrowIfSlidesNumberLarge();
         this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
         this.SlideMastersValue =
-            new ResettableLazy<SlideMasterCollection>(() => SlideMasterCollection.Create(this));
+            new ResettableLazy<SCSlideMasterCollection>(() => SCSlideMasterCollection.Create(this));
         this.paraLvlToFontData =
             new Lazy<Dictionary<int, FontData>>(() =>
                 ParseFontHeights(this.SDKPresentationInternal.PresentationPart!.Presentation));
@@ -125,7 +125,7 @@ public sealed class SCPresentation : IPresentation
         this.ThrowIfSlidesNumberLarge();
         this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
         this.SlideMastersValue =
-            new ResettableLazy<SlideMasterCollection>(() => SlideMasterCollection.Create(this));
+            new ResettableLazy<SCSlideMasterCollection>(() => SCSlideMasterCollection.Create(this));
         this.paraLvlToFontData =
             new Lazy<Dictionary<int, FontData>>(() =>
                 ParseFontHeights(this.SDKPresentationInternal.PresentationPart!.Presentation));
@@ -155,7 +155,7 @@ public sealed class SCPresentation : IPresentation
     /// <inheritdoc/>
     public PresentationDocument SDKPresentationDocument => this.GetSDKPresentation();
 
-    internal ResettableLazy<SlideMasterCollection> SlideMastersValue { get; private set; }
+    internal ResettableLazy<SCSlideMasterCollection> SlideMastersValue { get; private set; }
 
     internal PresentationDocument SDKPresentationInternal { get; private set; }
 

@@ -1,189 +1,187 @@
-﻿using ShapeCrawler.Shared;
-
-namespace ShapeCrawler.Enums;
+﻿namespace ShapeCrawler;
 
 /// <summary>
-/// Enumerate all posible layout types.
+///     Represents the slide layout type.
 /// </summary>
-public class SCSlideLayoutType : SCEnumeration<SCSlideLayoutType>, ISlideLayoutType
+public enum SCSlideLayoutType
 {
     /// <summary>
-    /// Chart.
+    ///     Blank.
     /// </summary>
-    public static readonly SCSlideLayoutType Chart = new("chart", nameof(Chart));
+    Blank,
 
     /// <summary>
-    /// Clip Art and Text.
+    ///   Title and Chart.
     /// </summary>
-    public static readonly SCSlideLayoutType ClipArtAndText = new("clipArtAndTx", nameof(ClipArtAndText));
+    Chart,
 
     /// <summary>
-    /// Clip Art and Vertical Text.
+    ///     Chart and Text.
     /// </summary>
-    public static readonly SCSlideLayoutType ClipArtAndVerticalText = new("clipArtAndVertTx", nameof(ClipArtAndVerticalText));
+    ChartAndText,
 
     /// <summary>
-    /// Four Objects.
+    ///    Clip Art and Text.     
     /// </summary>
-    public static readonly SCSlideLayoutType FourObjects = new("fourObj", nameof(FourObjects));
+    ClipArtAndText,
 
     /// <summary>
-    /// Object and Two Object.
+    ///     Clip Art and Vertical Text.
     /// </summary>
-    public static readonly SCSlideLayoutType ObjectAndTwoObject = new("objAndTwoObj", nameof(ObjectAndTwoObject));
+    ClipArtAndVerticalText,
 
     /// <summary>
-    /// Object.
+    ///     Custom.
     /// </summary>
-    public static readonly SCSlideLayoutType Object = new("objOnly", nameof(Object));
+    Custom,
 
     /// <summary>
-    /// Picture and Caption.
+    ///     Diagram.
     /// </summary>
-    public static readonly SCSlideLayoutType PictureAndCaption = new("picTx", nameof(PictureAndCaption));
+    Diagram,
 
     /// <summary>
-    /// Section Header.
+    ///     Four Objects.
     /// </summary>
-    public static readonly SCSlideLayoutType SectionHeader = new("secHead", nameof(SectionHeader));
+    FourObjects,
 
     /// <summary>
-    /// Slide Layout Type Enumeration (Chart and Text).
+    ///     Media and Text.
     /// </summary>
-    public static readonly SCSlideLayoutType ChartAndText = new("chartAndTx", nameof(ChartAndText));
+    MediaAndText,
 
     /// <summary>
-    /// Slide Layout Type Enumeration (Blank).
+    ///     Title and Object.
     /// </summary>
-    public static readonly SCSlideLayoutType Blank = new("blank", nameof(Blank));
+    Object,
 
     /// <summary>
-    /// Slide Layout Type Enumeration (Custom).
+    ///     Object and Two Objects.
     /// </summary>
-    public static readonly SCSlideLayoutType Custom = new("cust", nameof(Custom));
+    ObjectAndTwoObjects,
 
     /// <summary>
-    /// Slide Layout Type Enumeration (Diagram).
+    ///     Object and Text.
     /// </summary>
-    public static readonly SCSlideLayoutType Diagram = new("dgm", nameof(Diagram));
+    ObjectAndText,
 
     /// <summary>
-    /// Slide Layout Type Enumeration (Media and Text).
+    ///     Object.
     /// </summary>
-    public static readonly SCSlideLayoutType MediaAndText = new("mediaAndTx", nameof(MediaAndText));
+    ObjectOnly,
 
     /// <summary>
-    /// Slide Layout Type Enumeration (Object and Text).
+    ///     Object over Text.
     /// </summary>
-    public static readonly SCSlideLayoutType ObjectAndText = new("objAndTx", nameof(ObjectAndText));
+    ObjectOverText,
 
     /// <summary>
-    /// Slide Layout Type Enumeration (Object over Text).
+    ///     Title, Object, and Caption.    
     /// </summary>
-    public static readonly SCSlideLayoutType ObjectOverText = new("objOverTx", nameof(ObjectOverText));
+    ObjectText,
 
     /// <summary>
-    /// Slide Layout Type Enumeration (Table).
+    ///     Picture and Caption.
     /// </summary>
-    public static readonly SCSlideLayoutType Table = new("tbl", nameof(Table));
+    PictureAndCaption,
 
     /// <summary>
-    /// Slide Layout Type Enumeration (Text and Chart).
+    ///     Section Header.
     /// </summary>
-    public static readonly SCSlideLayoutType TextAndChart = new("tx", nameof(TextAndChart));
+    SectionHeader,
 
     /// <summary>
-    /// Slide Layout Type Enumeration (Text and Media).
+    ///     Table.
     /// </summary>
-    public static readonly SCSlideLayoutType TextAndMedia = new("txAndClipArt", nameof(TextAndMedia));
+    Table,
 
     /// <summary>
-    /// Slide Layout Type Enumeration (Text and Object).
+    ///     Title.
     /// </summary>
-    public static readonly SCSlideLayoutType TextAndObject = new("txAndMedia", nameof(TextAndObject));
+    Title,
 
     /// <summary>
-    /// Slide Layout Type Enumeration (Text over Object).
+    ///     Title Only.
     /// </summary>
-    public static readonly SCSlideLayoutType TextOverObject = new("txAndTwoObj", nameof(TextOverObject));
+    TitleOnly,
 
     /// <summary>
-    /// Slide Layout Type Enumeration (Text).
+    ///     Two Column Text. 
     /// </summary>
-    public static readonly SCSlideLayoutType Text = new("twoTxTwoObj", nameof(Text));
+    TwoColumnText,
 
     /// <summary>
-    /// Slide Layout Type Enumeration (Title Only).
+    ///     Two Objects.
     /// </summary>
-    public static readonly SCSlideLayoutType TitleOnly = new("titleOnly", nameof(TitleOnly));
+    TwoObjects,
 
     /// <summary>
-    /// Slide Layout Type Enumeration (Title).
+    ///     Two Objects and Object.
     /// </summary>
-    public static readonly SCSlideLayoutType Title = new("title", nameof(Title));
+    TwoObjectsAndObject,
 
     /// <summary>
-    /// Slide Layout Type Enumeration (Two Column Text).
+    ///     Two Objects and Text.
     /// </summary>
-    public static readonly SCSlideLayoutType TwoColumnText = new("twoColTx", nameof(TwoColumnText));
+    TwoObjectsAndText,
 
     /// <summary>
-    /// Text and Clip Art.
+    ///     Two Objects over Text.
     /// </summary>
-    public static readonly SCSlideLayoutType TextAndClipArt = new("txAndChart", nameof(TextAndClipArt));
+    TwoObjectsOverText,
 
     /// <summary>
-    /// Text and Two Objects.
+    ///     Two Text and Two Objects.
     /// </summary>
-    public static readonly SCSlideLayoutType TextAndTwoObjects = new("txAndObj", nameof(TextAndTwoObjects));
+    TwoTextAndTwoObjects,
 
     /// <summary>
-    /// Title and Object.
+    ///     Text.
     /// </summary>
-    public static readonly SCSlideLayoutType TitleAndObject = new("obj", nameof(TitleAndObject));
+    Text,
 
     /// <summary>
-    /// Title, Object, and Caption.
+    ///     Text and Chart.
     /// </summary>
-    public static readonly SCSlideLayoutType TitleObjectAndCaption = new("objTx", nameof(TitleObjectAndCaption));
+    TextAndChart,
 
     /// <summary>
-    /// Two Objects and Object.
+    ///     Text and Clip Art.
     /// </summary>
-    public static readonly SCSlideLayoutType TwoObjectsAndObject = new("twoObjAndObj", nameof(TwoObjectsAndObject));
+    TextAndClipArt,
 
     /// <summary>
-    /// Two Objects and Text.
+    ///     Text and Media.
     /// </summary>
-    public static readonly SCSlideLayoutType TwoObjectsAndText = new("twoObjAndTx", nameof(TwoObjectsAndText));
+    TextAndMedia,
 
     /// <summary>
-    /// Two Objects over Text.
+    ///     Text and Object.
     /// </summary>
-    public static readonly SCSlideLayoutType TwoObjectsOverText = new("twoObjOverTx", nameof(TwoObjectsOverText));
+    TextAndObject,
 
     /// <summary>
-    /// Two Objects.
+    ///     Text and Two Objects.
     /// </summary>
-    public static readonly SCSlideLayoutType TwoObjects = new("twoObj", nameof(TwoObjects));
+    TextAndTwoObjects,
 
     /// <summary>
-    /// Vertical Text.
+    ///     Text over Object.
     /// </summary>
-    public static readonly SCSlideLayoutType VerticalText = new("vertTx", nameof(VerticalText));
+    TextOverObject,
 
     /// <summary>
-    /// Vertical Title and Text Over Chart.
+    ///     Vertical Title and Text.
     /// </summary>
-    public static readonly SCSlideLayoutType VerticalTitleAndTextOverChart = new("vertTitleAndTx", nameof(VerticalTitleAndTextOverChart));
+    VerticalTitleAndText,
 
     /// <summary>
-    /// Vertical Title and Text.
+    ///     Vertical Title and Text over Chart.
     /// </summary>
-    public static readonly SCSlideLayoutType VerticalTitleAndText = new("txOverObj", nameof(VerticalTitleAndText));
+    VerticalTitleAndTextOverChart,
 
-    internal SCSlideLayoutType(string value, string name)
-        : base(value, name)
-    {
-    }
+    /// <summary>
+    ///     Vertical Text.
+    /// </summary>
+    VerticalText
 }
