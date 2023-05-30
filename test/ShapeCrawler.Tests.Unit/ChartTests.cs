@@ -21,8 +21,6 @@ namespace ShapeCrawler.Tests.Unit;
 [SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class ChartTests : SCTest
 {
-    
-    #if RELEASE
     [Fact]
     public void XValues_ReturnsParticularXAxisValue_ViaItsCollectionIndexer()
     {
@@ -38,7 +36,6 @@ public class ChartTests : SCTest
         xValue.Should().Be(10);
         chart.HasXValues.Should().BeTrue();
     }
-    #endif
 
     [Fact]
     public void HasXValues()

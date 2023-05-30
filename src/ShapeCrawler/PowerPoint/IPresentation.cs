@@ -560,6 +560,7 @@ public sealed class SCPresentation : IPresentation
     private byte[] GetByteArray()
     {
         var stream = new MemoryStream();
+        this.ChartWorkbooks.ForEach(c => c.Close());
         this.SDKPresentationInternal.Clone(stream);
 
         return stream.ToArray();

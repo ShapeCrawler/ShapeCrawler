@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using FluentAssertions;
+using NUnit.Framework;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
@@ -10,6 +12,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Tests.Unit;
 
+[SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class PresentationTests : SCTest
 {
     [Fact]
@@ -147,7 +150,7 @@ public class PresentationTests : SCTest
         destPre.Slides[1].CustomData.Should().Be(sourceSlideId);
     }
 
-    [Theory]
+    [Xunit.Theory]
     [MemberData(nameof(TestCasesSlidesRemove))]
     public void Slides_Remove_removes_slide(string file, int expectedSlidesCount)
     {
@@ -346,5 +349,21 @@ public class PresentationTests : SCTest
 
         // Assert
         autoShapeText.Should().BeEquivalentTo(originalText);
+    }
+    
+    [Test]
+    public void BinaryData_returns_presentation_binary_content_After_updating_series()
+    {
+        // Arrange
+        var pptx = TestHelper.GetStream("charts_bar-chart.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var chart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
+
+        // Act
+        chart.SeriesCollection[0].Points[0].Value = 1;
+        var binaryData = pres.BinaryData;
+        
+        // Assert
+        binaryData.Should().NotBeNull();
     }
 }
