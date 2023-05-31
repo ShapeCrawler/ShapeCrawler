@@ -189,7 +189,7 @@ internal sealed class SCSlideCollection : ISlideCollection
         var tempStream = new MemoryStream();
         if (sourceSlideInternal.Presentation == this.presentation)
         {
-            this.presentation.ChartWorkbooks.ForEach(c=>c.Close());
+            this.presentation.ChartWorkbooks.ForEach(c => c.Close());
             sourcePresDoc = (PresentationDocument)this.presentation.SDKPresentationInternal.Clone(tempStream);
         }
         else
