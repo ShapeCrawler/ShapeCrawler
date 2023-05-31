@@ -88,6 +88,23 @@ public class SlideCollectionTests : SCTest
         // Assert
         pres.Slides.Count.Should().Be(expectedSlidesCount);
     }
+    
+    [Test]
+    public void Add_adds_slide_After_updating_chart_series()
+    {
+        // Arrange
+        var pptx = TestHelper.GetStream("charts_bar-chart.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var chart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
+        var expectedSlidesCount = pres.Slides.Count + 1;
+
+        // Act
+        chart.SeriesCollection[0].Points[0].Value = 1;
+        pres.Slides.Add(pres.Slides[0]);
+        
+        // Assert
+        pres.Slides.Count.Should().Be(expectedSlidesCount);
+    }
 
     [Fact]
     public void Add_add_adds_New_slide()
