@@ -7,15 +7,6 @@ namespace ShapeCrawler.Tests.Shared;
 
 public static class TestHelperShared
 {
-    public static string GetPath(string fileName)
-    {
-        var stream = GetStream(fileName);
-        var path = Path.GetTempFileName();
-        File.WriteAllBytes(path, stream.ToArray());
-
-        return path;
-    }
-    
     public static MemoryStream GetStream(string fileName)
     {
         var assembly = Assembly.GetExecutingAssembly();

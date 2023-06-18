@@ -114,7 +114,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Text_Setter_can_update_content_multiple_times()
         {
             // Arrange
-            var pptx = TestHelperShared.GetStream("autoshape-case005_text-frame.pptx");
+            var pptx = GetTestStream("autoshape-case005_text-frame.pptx");
             var pres = SCPresentation.Open(pptx);
             var textFrame = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 1").TextFrame;
             var modifiedPres = new MemoryStream();

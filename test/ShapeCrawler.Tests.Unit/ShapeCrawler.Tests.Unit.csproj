@@ -221,4 +221,8 @@
     <EmbeddedResource Include="Resource\tables\table-case001.pptx" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Resource\autoshape\autoshape-case002.pptx" />
+  </ItemGroup>
+
 </Project>

@@ -72,7 +72,7 @@ public class PresentationITests : SCTest
     public void SaveAs_should_not_change_the_Original_Path_when_it_is_saved_to_New_Stream()
     {
         // Arrange
-        var originalPath = TestHelperShared.GetPath("001.pptx");
+        var originalPath = GetTestPath("001.pptx");
         var pres = SCPresentation.Open(originalPath);
         var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
         var originalText = textBox!.Text;
@@ -98,7 +98,7 @@ public class PresentationITests : SCTest
     public void SaveAs_should_not_change_the_Original_Stream_when_it_is_saved_to_New_Path()
     {
         // Arrange
-        var originalFile = TestHelperShared.GetPath("001.pptx");
+        var originalFile = GetTestPath("001.pptx");
         var pres = SCPresentation.Open(originalFile);
         var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
         var originalText = textBox!.Text;
@@ -124,7 +124,7 @@ public class PresentationITests : SCTest
     public void SaveAs_should_not_change_the_Original_Path_when_it_is_saved_to_New_Path()
     {
         // Arrange
-        var originalPath = TestHelperShared.GetPath("001.pptx");
+        var originalPath = GetTestPath("001.pptx");
         var pres = SCPresentation.Open(originalPath);
         var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
         var originalText = textBox!.Text;
