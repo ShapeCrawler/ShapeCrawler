@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.45.3 - Unreleased
+🐞Fixed updating Hyperlink [#518](https://github.com/ShapeCrawler/ShapeCrawler/issues/518)
+
 ## Version 0.45.2 - 2023-06-18
 🐞Fixed bug in `IPresentation.BinaryData` [#515](https://github.com/ShapeCrawler/ShapeCrawler/issues/515)
 
