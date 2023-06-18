@@ -1,23 +1,12 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Reflection;
 using ClosedXML.Excel;
-using ShapeCrawler.Tests.Shared;
 
 namespace ShapeCrawler.Tests.Unit.Helpers;
 
 public abstract class SCTest
 {
-    public static List<string> HelperAssets = new()
-    {
-        "autoshape-grouping.pptx",
-        "001.pptx",
-        "table-case001.pptx",
-        "autoshape-case005_text-frame.pptx",
-        "009_table.pptx"
-    };
-
     protected static T GetShape<T>(string presentation, int slideNumber, int shapeId)
     {
         var scPresentation = GetPresentationFromAssembly(presentation);
@@ -41,14 +30,23 @@ public abstract class SCTest
         return GetTestStream(fileName).ToArray();
     }
 
-    protected static MemoryStream GetTestStream(string fileName)
+    public static MemoryStream GetTestStream(string fileName)
     {
-        if (fileName == "009_table.pptx")
-        {
-            return TestHelperShared.GetStream(fileName);
-        }
         var assembly = Assembly.GetExecutingAssembly();
-        return assembly.GetResourceStream(fileName);
+        var stream = assembly.GetResourceStream(fileName);
+        var mStream = new MemoryStream();
+        stream!.CopyTo(mStream);
+
+        return mStream;
+    }
+    
+    protected string GetTestPath(string fileName)
+    {
+        var stream = GetTestStream(fileName);
+        var path = Path.GetTempFileName();
+        File.WriteAllBytes(path, stream.ToArray());
+
+        return path;
     }
 
     protected static IPresentation SaveAndOpenPresentation(IPresentation presentation)

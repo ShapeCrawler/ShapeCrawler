@@ -23,7 +23,7 @@ public class SlideDataAttribute : DataAttribute
         
     public override IEnumerable<object[]> GetData(MethodInfo testMethod)
     {
-        var pptx = SCTest.HelperAssets.Contains(this.pptxFile) ? TestHelperShared.GetStream(this.pptxFile) : TestHelper.GetStream(this.pptxFile);
+        var pptx = SCTest.GetTestStream(this.pptxFile);
         var pres = SCPresentation.Open(pptx);
         var slide = pres.Slides[this.slideNumber - 1];
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -169,16 +168,11 @@ internal sealed class SCPortion : IPortion
         var typedOpenXmlPart = slideObject.TypedOpenXmlPart;
         var hyperlinkRelationship = (HyperlinkRelationship)typedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
 
-        return hyperlinkRelationship.Uri.AbsoluteUri;
+        return hyperlinkRelationship.Uri.ToString();
     }
 
     private void SetHyperlink(string? url)
     {
-        if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
-        {
-            throw new SCException("Hyperlink is invalid.");
-        }
-
         var runProperties = this.AText.PreviousSibling<A.RunProperties>();
         if (runProperties == null)
         {
@@ -196,7 +190,7 @@ internal sealed class SCPortion : IPortion
             (SlideStructure)this.ParentParagraph.ParentTextFrame.TextFrameContainer.SCShape.SlideStructure;
         var slidePart = slideStructureCore.TypedOpenXmlPart;
 
-        var uri = new Uri(url, UriKind.Absolute);
+        var uri = new Uri(url!, UriKind.RelativeOrAbsolute);
         var addedHyperlinkRelationship = slidePart.AddHyperlinkRelationship(uri, true);
 
         hyperlink.Id = addedHyperlinkRelationship.Id;

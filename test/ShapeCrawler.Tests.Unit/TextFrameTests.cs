@@ -25,14 +25,14 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             var pptx8 = GetTestStream("008.pptx");
             var pres8 = SCPresentation.Open(pptx8);
-            var pptx1 = TestHelperShared.GetStream("001.pptx");
+            var pptx1 = GetTestStream("001.pptx");
             var pres1 = SCPresentation.Open(pptx1);
-            var pptx9 = TestHelperShared.GetStream("009_table.pptx");
+            var pptx9 = GetTestStream("009_table.pptx");
             var pres9 = SCPresentation.Open(pptx9);
             var textFrame1 = ((IAutoShape)SCPresentation.Open(GetTestStream("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3)).TextFrame;
-            var textFrame2 = ((ITable)SCPresentation.Open(TestHelperShared.GetStream("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+            var textFrame2 = ((ITable)SCPresentation.Open(GetTestStream("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
                 .TextFrame;
-            var textFrame3 = ((ITable)SCPresentation.Open(TestHelperShared.GetStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+            var textFrame3 = ((ITable)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
                 .TextFrame;
             
             // Act
@@ -114,7 +114,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Text_Setter_can_update_content_multiple_times()
         {
             // Arrange
-            var pptx = TestHelperShared.GetStream("autoshape-case005_text-frame.pptx");
+            var pptx = GetTestStream("autoshape-case005_text-frame.pptx");
             var pres = SCPresentation.Open(pptx);
             var textFrame = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 1").TextFrame;
             var modifiedPres = new MemoryStream();
@@ -165,7 +165,7 @@ namespace ShapeCrawler.Tests.Unit
                 
                 var case1 = new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(TestHelperShared.GetStream("001.pptx")),
+                    Presentation = SCPresentation.Open(GetTestStream("001.pptx")),
                     SlideIndex = 0,
                     ShapeId = 3
                 };
@@ -181,7 +181,7 @@ namespace ShapeCrawler.Tests.Unit
                 
                 var case3 = new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(TestHelperShared.GetStream("001.pptx")),
+                    Presentation = SCPresentation.Open(GetTestStream("001.pptx")),
                     SlideNumber = 2,
                     ShapeName = "Header 1",
                 };
@@ -211,7 +211,7 @@ namespace ShapeCrawler.Tests.Unit
         public void Text_Setter_updates_text_box_content_and_Reduces_font_size_When_text_is_Overflow()
         {
             // Arrange
-            var pptxStream = TestHelperShared.GetStream("001.pptx");
+            var pptxStream = GetTestStream("001.pptx");
             var pres = SCPresentation.Open(pptxStream);
             var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 8");
             var textFrame = textBox.TextFrame;
@@ -368,7 +368,7 @@ namespace ShapeCrawler.Tests.Unit
         public void AutofitType_Getter_returns_text_autofit_type()
         {
             // Arrange
-            var pptx = TestHelperShared.GetStream("001.pptx");
+            var pptx = GetTestStream("001.pptx");
             var pres = SCPresentation.Open(pptx);
             var autoShape = pres.Slides[0].Shapes.GetById<IAutoShape>(9);
             var textBox = autoShape.TextFrame;
@@ -421,7 +421,7 @@ namespace ShapeCrawler.Tests.Unit
         {
             get
             {
-                var pptxStream1 = TestHelperShared.GetStream("009_table.pptx");
+                var pptxStream1 = GetTestStream("009_table.pptx");
                 var pres1 = SCPresentation.Open(pptxStream1);
                 var autoShape1 = pres1.Slides[2].Shapes.GetById<IAutoShape>(2);
                 var textBox1 = autoShape1.TextFrame;
@@ -435,14 +435,14 @@ namespace ShapeCrawler.Tests.Unit
                 var testCase2 = new TestCase<ITextFrame, int>(2, textBox2, 2);
                 yield return new object[] { testCase2 };
 
-                var pptxStream3 = TestHelperShared.GetStream("009_table.pptx");
+                var pptxStream3 = GetTestStream("009_table.pptx");
                 var pres3 = SCPresentation.Open(pptxStream3);
                 var table3 = pres3.Slides[2].Shapes.GetById<ITable>(3);
                 var textBox3 = table3.Rows[0].Cells[0].TextFrame;
                 var testCase3 = new TestCase<ITextFrame, int>(3, textBox3, 2);
                 yield return new object[] { testCase3 };
 
-                var pptxStream4 = TestHelperShared.GetStream("001.pptx");
+                var pptxStream4 = GetTestStream("001.pptx");
                 var pres4 = SCPresentation.Open(pptxStream4);
                 var autoShape4 = pres4.Slides[1].Shapes.GetById<IAutoShape>(2);
                 var textBox4 = autoShape4.TextFrame;
@@ -457,7 +457,7 @@ namespace ShapeCrawler.Tests.Unit
             // Arrange
             const string TEST_TEXT = "ParagraphsAdd";
             var mStream = new MemoryStream();
-            var pres = SCPresentation.Open(TestHelperShared.GetStream("001.pptx"));
+            var pres = SCPresentation.Open(GetTestStream("001.pptx"));
             var textFrame = ((IAutoShape)pres.Slides[0].Shapes.First(sp => sp.Id == 4)).TextFrame;
             int originParagraphsCount = textFrame.Paragraphs.Count;
 
@@ -495,7 +495,7 @@ namespace ShapeCrawler.Tests.Unit
         [Fact]
         public void Paragraphs_Add_adds_new_text_paragraph_at_the_end_And_returns_added_paragraph_When_it_has_been_added_after_text_frame_changed()
         {
-            var pres = SCPresentation.Open(TestHelperShared.GetStream("001.pptx"));
+            var pres = SCPresentation.Open(GetTestStream("001.pptx"));
             var autoShape = (IAutoShape)pres.Slides[0].Shapes.First(sp => sp.Id == 3);
             var textBox = autoShape.TextFrame;
             var paragraphs = textBox.Paragraphs;

@@ -4,17 +4,18 @@ using System.Text.Json;
 using FluentAssertions;
 using ShapeCrawler.Logger;
 using ShapeCrawler.Tests.Shared;
+using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 
 namespace ShapeCrawler.Tests.Integration;
 
-public class PresentationITests
+public class PresentationITests : SCTest
 {
     [Fact]
     public void Open_doesnt_create_log_file_When_logger_is_off()
     {
         // Arrange
-        var pptxStream = TestHelperShared.GetStream("autoshape-case001.pptx");
+        var pptxStream = GetTestStream("autoshape-case001.pptx");
 
         // Act
         SCSettings.CanCollectLogs = false;
@@ -52,7 +53,7 @@ public class PresentationITests
         // Arrange
         var originFilePath = Path.GetTempFileName();
         var savedAsFilePath = Path.GetTempFileName();
-        var pptx = TestHelperShared.GetStream("001.pptx");
+        var pptx = GetTestStream("001.pptx");
         File.WriteAllBytes(originFilePath, pptx.ToArray());
         var pres = SCPresentation.Open(originFilePath);
         pres.SaveAs(savedAsFilePath);
@@ -71,7 +72,7 @@ public class PresentationITests
     public void SaveAs_should_not_change_the_Original_Path_when_it_is_saved_to_New_Stream()
     {
         // Arrange
-        var originalPath = TestHelperShared.GetPath("001.pptx");
+        var originalPath = GetTestPath("001.pptx");
         var pres = SCPresentation.Open(originalPath);
         var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
         var originalText = textBox!.Text;
@@ -97,7 +98,7 @@ public class PresentationITests
     public void SaveAs_should_not_change_the_Original_Stream_when_it_is_saved_to_New_Path()
     {
         // Arrange
-        var originalFile = TestHelperShared.GetPath("001.pptx");
+        var originalFile = GetTestPath("001.pptx");
         var pres = SCPresentation.Open(originalFile);
         var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
         var originalText = textBox!.Text;
@@ -123,7 +124,7 @@ public class PresentationITests
     public void SaveAs_should_not_change_the_Original_Path_when_it_is_saved_to_New_Path()
     {
         // Arrange
-        var originalPath = TestHelperShared.GetPath("001.pptx");
+        var originalPath = GetTestPath("001.pptx");
         var pres = SCPresentation.Open(originalPath);
         var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
         var originalText = textBox!.Text;

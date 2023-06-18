@@ -199,6 +199,30 @@
     <None Remove="TestResults\**" />
     <None Remove="Resource\charts\charts_bar-chart.pptx" />
     <EmbeddedResource Include="Resource\charts\charts_bar-chart.pptx" />
+    <None Remove="Resource\autoshape\009_table.pptx" />
+    <EmbeddedResource Include="Resource\autoshape\009_table.pptx" />
+    <None Remove="Resource\autoshape\001.pptx" />
+    <EmbeddedResource Include="Resource\autoshape\001.pptx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resource\autoshape\autoshape-case001.pptx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resource\autoshape\autoshape-grouping.pptx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resource\autoshape\autoshape-case005_text-frame.pptx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resource\tables\table-case001.pptx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resource\autoshape\autoshape-case002.pptx" />
   </ItemGroup>
 
 </Project>
