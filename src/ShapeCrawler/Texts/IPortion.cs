@@ -1,7 +1,6 @@
 ﻿using System;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
