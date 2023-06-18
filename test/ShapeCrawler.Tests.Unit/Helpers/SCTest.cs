@@ -41,14 +41,14 @@ public abstract class SCTest
         return GetTestStream(fileName).ToArray();
     }
 
-    protected static MemoryStream GetTestStream(string fileName)
+    public static MemoryStream GetTestStream(string fileName)
     {
-        if (fileName == "009_table.pptx")
-        {
-            return TestHelperShared.GetStream(fileName);
-        }
         var assembly = Assembly.GetExecutingAssembly();
-        return assembly.GetResourceStream(fileName);
+        var stream = assembly.GetResourceStream(fileName);
+        var mStream = new MemoryStream();
+        stream!.CopyTo(mStream);
+
+        return mStream;
     }
 
     protected static IPresentation SaveAndOpenPresentation(IPresentation presentation)
