@@ -71,8 +71,8 @@ How can you contribute?
 
 # Changelog  
 
-## Version 0.45.1 - 2023-05-18
-🐞Fixed bug where `ISlideCollection.Add()` doesn't copy placeholder shapes [#508](https://github.com/ShapeCrawler/ShapeCrawler/issues/508)
+## Version 0.45.2 - 2023-06-18
+🐞Fixed bug in `IPresentation.BinaryData` [#515](https://github.com/ShapeCrawler/ShapeCrawler/issues/515)
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full log.
 
