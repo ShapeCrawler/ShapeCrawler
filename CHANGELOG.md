@@ -1,6 +1,6 @@
 # Changelog  
 
-## Version 0.45.3 - Unreleased
+## Version 0.45.3 - 2023-06-24
 🐞Fixed updating Hyperlink [#518](https://github.com/ShapeCrawler/ShapeCrawler/issues/518)
 
 ## Version 0.45.2 - 2023-06-18
