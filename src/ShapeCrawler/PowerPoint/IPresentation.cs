@@ -28,14 +28,14 @@ public interface IPresentation : IDisposable
     ISlideCollection Slides { get; }
 
     /// <summary>
-    ///     Gets the presentation slides width.
+    ///     Gets or sets presentation slides width in pixels.
     /// </summary>
-    int SlideWidth { get; }
+    int SlideWidth { get; set; }
 
     /// <summary>
-    ///     Gets the presentation slides height.
+    ///     Gets or sets the presentation slides height.
     /// </summary>
-    int SlideHeight { get; }
+    int SlideHeight { get; set; }
 
     /// <summary>
     ///     Gets collection of the slide masters.
@@ -77,7 +77,6 @@ public interface IPresentation : IDisposable
     /// </summary>
     void Close();
 }
-
 
 /// <inheritdoc cref="IPresentation"/>
 public sealed class SCPresentation : IPresentation
@@ -133,15 +132,23 @@ public sealed class SCPresentation : IPresentation
             new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
         this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
     }
-    
+
     /// <inheritdoc/>
     public ISlideCollection Slides => this.slideCollectionLazy.Value;
 
     /// <inheritdoc/>
-    public int SlideWidth => this.slideSize.Value.Width;
+    public int SlideHeight
+    {
+        get => this.slideSize.Value.Height;
+        set => this.SetSlideHeight(value);
+    }
 
     /// <inheritdoc/>
-    public int SlideHeight => this.slideSize.Value.Height;
+    public int SlideWidth
+    {
+        get => this.slideSize.Value.Width;
+        set => this.SetSlideWidth(value);
+    }
 
     /// <inheritdoc/>
     public ISlideMasterCollection SlideMasters => this.SlideMastersValue.Value;
@@ -155,13 +162,13 @@ public sealed class SCPresentation : IPresentation
     /// <inheritdoc/>
     public PresentationDocument SDKPresentationDocument => this.GetSDKPresentation();
 
-    internal ResettableLazy<SCSlideMasterCollection> SlideMastersValue { get; private set; }
+    internal ResettableLazy<SCSlideMasterCollection> SlideMastersValue { get; }
 
-    internal PresentationDocument SDKPresentationInternal { get; private set; }
+    internal PresentationDocument SDKPresentationInternal { get; }
 
     internal SCSectionCollection SectionsInternal => (SCSectionCollection)this.Sections;
 
-    internal List<ChartWorkbook> ChartWorkbooks { get; } = new ();
+    internal List<ChartWorkbook> ChartWorkbooks { get; } = new();
 
     internal Dictionary<int, FontData> ParaLvlToFontData => this.paraLvlToFontData.Value;
 
@@ -177,7 +184,7 @@ public sealed class SCPresentation : IPresentation
     public static IPresentation Create()
     {
         SCLogger.Send();
-        
+
         var stream = new MemoryStream();
         var presDoc = PresentationDocument.Create(stream, PresentationDocumentType.Presentation);
         var presPart = presDoc.AddPresentationPart();
@@ -196,7 +203,7 @@ public sealed class SCPresentation : IPresentation
     public static IPresentation Open(string pptxPath)
     {
         SCLogger.Send();
-        
+
         return new SCPresentation(pptxPath);
     }
 
@@ -206,7 +213,7 @@ public sealed class SCPresentation : IPresentation
     public static IPresentation Open(Stream pptxStream)
     {
         SCLogger.Send();
-        
+
         pptxStream.Position = 0;
         return new SCPresentation(pptxStream);
     }
@@ -324,7 +331,8 @@ public sealed class SCPresentation : IPresentation
                     new P.NonVisualShapeProperties(
                         new P.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Title Placeholder 1" },
                         new P.NonVisualShapeDrawingProperties(new A.ShapeLocks() { NoGrouping = true }),
-                        new P.ApplicationNonVisualDrawingProperties(new P.PlaceholderShape { Type = P.PlaceholderValues.Title })),
+                        new P.ApplicationNonVisualDrawingProperties(new P.PlaceholderShape
+                            { Type = P.PlaceholderValues.Title })),
                     new P.ShapeProperties(),
                     new P.TextBody(
                         new A.BodyProperties(),
@@ -381,18 +389,18 @@ public sealed class SCPresentation : IPresentation
                     new A.GradientFill(
                         new A.GradientStopList(
                             new A.GradientStop(new A.SchemeColor(
-                                new A.Tint() { Val = 50000 },
-                                new A.SaturationModulation() { Val = 300000 })
+                                        new A.Tint() { Val = 50000 },
+                                        new A.SaturationModulation() { Val = 300000 })
                                     { Val = A.SchemeColorValues.PhColor })
                                 { Position = 0 },
                             new A.GradientStop(new A.SchemeColor(
-                                new A.Tint() { Val = 37000 },
-                                new A.SaturationModulation() { Val = 300000 })
+                                        new A.Tint() { Val = 37000 },
+                                        new A.SaturationModulation() { Val = 300000 })
                                     { Val = A.SchemeColorValues.PhColor })
                                 { Position = 35000 },
                             new A.GradientStop(new A.SchemeColor(
-                                new A.Tint() { Val = 15000 },
-                                new A.SaturationModulation() { Val = 350000 })
+                                        new A.Tint() { Val = 15000 },
+                                        new A.SaturationModulation() { Val = 350000 })
                                     { Val = A.SchemeColorValues.PhColor })
                                 { Position = 100000 }),
                         new A.LinearGradientFill() { Angle = 16200000, Scaled = true }),
@@ -467,42 +475,42 @@ public sealed class SCPresentation : IPresentation
                         new A.GradientStopList(
                             new A.GradientStop(
                                 new A.SchemeColor(
-                                    new A.Tint() { Val = 50000 },
-                                    new A.SaturationModulation() { Val = 300000 })
+                                        new A.Tint() { Val = 50000 },
+                                        new A.SaturationModulation() { Val = 300000 })
                                     { Val = A.SchemeColorValues.PhColor }) { Position = 0 },
                             new A.GradientStop(
                                 new A.SchemeColor(
-                                    new A.Tint() { Val = 50000 },
-                                    new A.SaturationModulation() { Val = 300000 })
+                                        new A.Tint() { Val = 50000 },
+                                        new A.SaturationModulation() { Val = 300000 })
                                     { Val = A.SchemeColorValues.PhColor }) { Position = 0 },
                             new A.GradientStop(
                                 new A.SchemeColor(
-                                    new A.Tint() { Val = 50000 },
-                                    new A.SaturationModulation() { Val = 300000 })
+                                        new A.Tint() { Val = 50000 },
+                                        new A.SaturationModulation() { Val = 300000 })
                                     { Val = A.SchemeColorValues.PhColor }) { Position = 0 }),
                         new A.LinearGradientFill() { Angle = 16200000, Scaled = true }),
                     new A.GradientFill(
                         new A.GradientStopList(
                             new A.GradientStop(
                                 new A.SchemeColor(
-                                    new A.Tint() { Val = 50000 },
-                                    new A.SaturationModulation() { Val = 300000 })
+                                        new A.Tint() { Val = 50000 },
+                                        new A.SaturationModulation() { Val = 300000 })
                                     { Val = A.SchemeColorValues.PhColor }) { Position = 0 },
                             new A.GradientStop(
                                 new A.SchemeColor(
-                                    new A.Tint() { Val = 50000 },
-                                    new A.SaturationModulation() { Val = 300000 })
+                                        new A.Tint() { Val = 50000 },
+                                        new A.SaturationModulation() { Val = 300000 })
                                     { Val = A.SchemeColorValues.PhColor }) { Position = 0 }),
                         new A.LinearGradientFill() { Angle = 16200000, Scaled = true }))) { Name = "Office" });
 
         theme1.Append(themeElements1);
         theme1.Append(new A.ObjectDefaults());
         theme1.Append(new A.ExtraColorSchemeList());
-        
+
         themePart1.Theme = theme1;
         return themePart1;
     }
-    
+
     private static Dictionary<int, FontData> ParseFontHeights(P.Presentation pPresentation)
     {
         var lvlToFontData = new Dictionary<int, FontData>();
@@ -544,11 +552,6 @@ public sealed class SCPresentation : IPresentation
         ThrowIfPptxSizeLarge(stream.Length);
     }
 
-    private static void ThrowIfSourceInvalid(byte[] bytes)
-    {
-        ThrowIfPptxSizeLarge(bytes.Length);
-    }
-
     private static void ThrowIfPptxSizeLarge(in long length)
     {
         if (length > Limitations.MaxPresentationSize)
@@ -566,6 +569,22 @@ public sealed class SCPresentation : IPresentation
         return stream.ToArray();
     }
 
+    private void SetSlideHeight(int pixel)
+    {
+        var pSlideSize = this.SDKPresentationInternal.PresentationPart!.Presentation.SlideSize!;
+        var emu = UnitConverter.VerticalPixelToEmu(pixel);
+
+        pSlideSize.Cy = new Int32Value((int)emu);
+    }
+
+    private void SetSlideWidth(int pixel)
+    {
+        var pSlideSize = this.SDKPresentationInternal.PresentationPart!.Presentation.SlideSize!;
+        var emu = UnitConverter.VerticalPixelToEmu(pixel);
+
+        pSlideSize.Cx = new Int32Value((int)emu);
+    }
+    
     private PresentationDocument GetSDKPresentation()
     {
         return (PresentationDocument)this.SDKPresentationInternal.Clone();

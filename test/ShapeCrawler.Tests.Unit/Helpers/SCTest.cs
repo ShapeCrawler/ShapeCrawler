@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using ClosedXML.Excel;
+using NUnit.Framework;
 
 namespace ShapeCrawler.Tests.Unit.Helpers;
 
@@ -56,6 +57,19 @@ public abstract class SCTest
 
         return SCPresentation.Open(stream);
     }
+
+#if DEBUG
+
+    protected void SaveResult(IPresentation pres)
+    {
+        var testFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "..", "TestResults",
+            TestContext.CurrentContext.Test.Name);
+        Directory.CreateDirectory(testFolder);
+
+        pres.SaveAs(Path.Combine(testFolder, "result.pptx"));
+    }
+
+#endif
 
     private static IPresentation GetPresentationFromAssembly(string fileName)
     {

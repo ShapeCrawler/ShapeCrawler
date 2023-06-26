@@ -43,17 +43,4 @@ public static class TestHelper
             throw new AssertionException($"Presentation is invalid: {string.Join(", ", errors)}");
         }
     }
-
-#if DEBUG
-
-    public static void SaveResult(IPresentation pres)
-    {
-        var testFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "..", "TestResults",
-            TestContext.CurrentContext.Test.Name);
-        Directory.CreateDirectory(testFolder);
-
-        pres.SaveAs(Path.Combine(testFolder, "result.pptx"));
-    }
-
-#endif
 }

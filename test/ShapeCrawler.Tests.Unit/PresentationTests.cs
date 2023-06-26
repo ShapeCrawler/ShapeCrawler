@@ -45,32 +45,60 @@ public class PresentationTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Fact]
-    public void Slide_Width_returns_presentation_slides_width_in_pixels()
+    [Test]
+    public void SlideWidth_Getter_returns_presentation_Slides_Width_in_pixels()
     {
         // Arrange
-        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
-        var presentation = pres9;
+        var pptx = GetTestStream("009_table.pptx");
+        var pres = SCPresentation.Open(pptx);
 
         // Act
-        var slideWidth = presentation.SlideWidth;
+        var slidesWidth = pres.SlideWidth;
 
         // Assert
-        slideWidth.Should().Be(960);
+        slidesWidth.Should().Be(960);
     }
-        
-    [Fact]
-    public void Slide_Height_returns_presentation_slides_height_in_pixels()
+    
+    [Test]
+    public void SlideWidth_Setter_sets_presentation_Slides_Width_in_pixels()
     {
         // Arrange
-        var pres9 = SCPresentation.Open(GetTestStream("009_table.pptx"));
-        var presentation = pres9;
+        var pptx = GetTestStream("009_table.pptx");
+        var pres = SCPresentation.Open(pptx);
 
         // Act
-        var slideHeight = presentation.SlideHeight;
+        pres.SlideWidth = 1000;
+
+        // Assert
+        pres.SlideWidth.Should().Be(1000);
+    }
+        
+    [Test]
+    public void SlideHeight_Getter_returns_presentation_Slides_Height_in_pixels()
+    {
+        // Arrange
+        var pptx = GetTestStream("009_table.pptx");
+        var pres = SCPresentation.Open(pptx);
+
+        // Act
+        var slideHeight = pres.SlideHeight;
 
         // Assert
         slideHeight.Should().Be(540);
+    }
+    
+    [Test]
+    public void SlideHeight_Setter_sets_presentation_Slides_Height_in_pixels()
+    {
+        // Arrange
+        var pptx = GetTestStream("009_table.pptx");
+        var pres = SCPresentation.Open(pptx);
+
+        // Act
+        pres.SlideHeight = 700;
+
+        // Assert
+        pres.SlideHeight.Should().Be(700);
     }
 
     [Fact]
