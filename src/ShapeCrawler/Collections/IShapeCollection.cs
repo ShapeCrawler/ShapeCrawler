@@ -182,8 +182,9 @@ internal sealed class ShapeCollection : IShapeCollection
             var currentShapeCollectionSuffixes = this
                 .Select(c => c.Name)
                 .Where(c => c.StartsWith(shape.Name, StringComparison.InvariantCulture))
+                
                 // Select only the suffix
-                .Select(c => c[shape.Name.Length..])
+                .Select(c => c.Substring(shape.Name.Length))
                 .ToArray();
 
             // We will try to check numeric suffixes only.
@@ -198,7 +199,7 @@ internal sealed class ShapeCollection : IShapeCollection
             }
 
             numericSuffixes.Sort();
-            var lastSuffix = numericSuffixes.LastOrDefault(2);
+            var lastSuffix = numericSuffixes.LastOrDefault();
 
             // Asign new name
             typedCompositeElement.GetNonVisualDrawingProperties().Name = shape.Name + " " + lastSuffix;
