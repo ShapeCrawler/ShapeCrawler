@@ -199,7 +199,7 @@ internal sealed class ShapeCollection : IShapeCollection
             }
 
             numericSuffixes.Sort();
-            var lastSuffix = numericSuffixes.LastOrDefault();
+            var lastSuffix = numericSuffixes.LastOrDefault() + 1;
 
             // Asign new name
             typedCompositeElement.GetNonVisualDrawingProperties().Name = shape.Name + " " + lastSuffix;
