@@ -136,6 +136,20 @@ var pre = SCPresentation.Open(pptx);
         slide2.Number.Should().Be(2);
     }
 
+    [Test]
+    public void Number_Setter()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var slide = pres.Slides[0];
+
+        // Act
+        slide.Number = 1;
+
+        // Assert
+        slide.Number.Should().Be(1);
+    }
+
     [Fact]
     public void GetAllTextboxes_contains_all_textboxes_withTable()
     {

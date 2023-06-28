@@ -182,12 +182,17 @@ internal sealed class SCSlide : SlideStructure, ISlide
 
     private void SetNumber(int newSlideNumber)
     {
-        int from = this.Number - 1;
-        int to = newSlideNumber - 1;
-
-        if (to < 0 || from >= this.PresentationInternal.Slides.Count || to == from)
+        if (this.Number == newSlideNumber)
         {
-            throw new ArgumentOutOfRangeException(nameof(to));
+            return;
+        }
+        
+        var currentIndex = this.Number - 1;
+        var destIndex = newSlideNumber - 1;
+
+        if (destIndex < 0 || currentIndex >= this.PresentationInternal.Slides.Count || destIndex == currentIndex)
+        {
+            throw new ArgumentOutOfRangeException(nameof(destIndex));
         }
 
         var presentationPart = this.PresentationInternal.SDKPresentationInternal.PresentationPart!;
@@ -196,22 +201,22 @@ internal sealed class SCSlide : SlideStructure, ISlide
         var slideIdList = presentation.SlideIdList!;
 
         // Get the slide ID of the source slide.
-        var sourceSlide = (SlideId)slideIdList.ChildElements[from];
+        var sourceSlide = (SlideId)slideIdList.ChildElements[currentIndex];
 
         SlideId? targetSlide;
 
         // Identify the position of the target slide after which to move the source slide
-        if (to == 0)
+        if (destIndex == 0)
         {
             targetSlide = null;
         }
-        else if (from < to)
+        else if (currentIndex < destIndex)
         {
-            targetSlide = (SlideId)slideIdList.ChildElements[to];
+            targetSlide = (SlideId)slideIdList.ChildElements[destIndex];
         }
         else
         {
-            targetSlide = (SlideId)slideIdList.ChildElements[to - 1];
+            targetSlide = (SlideId)slideIdList.ChildElements[destIndex - 1];
         }
 
         // Remove the source slide from its current position.
