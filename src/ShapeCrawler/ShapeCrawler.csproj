@@ -24,7 +24,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <AssemblyVersion>0.45.3</AssemblyVersion>
     <FileVersion>0.45.3</FileVersion>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-    <PackageVersion>0.46.0-beta.1</PackageVersion>
+    <PackageVersion>0.46.0-beta.2</PackageVersion>
     <Title>ShapeCrawler</Title>
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
