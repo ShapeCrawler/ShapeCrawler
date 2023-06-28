@@ -144,7 +144,7 @@ internal sealed class SCSlideCollection : ISlideCollection
                     ShapeProperties = new P.ShapeProperties()
                 });
 
-            slidePart.Slide.CommonSlideData = new P.CommonSlideData(placeholderShapes)
+            slidePart.Slide.CommonSlideData = new P.CommonSlideData()
             {
                 ShapeTree = new P.ShapeTree(placeholderShapes)
                 {
