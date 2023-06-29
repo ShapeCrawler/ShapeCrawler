@@ -11,6 +11,7 @@ using DocumentFormat.OpenXml.Presentation;
 using OneOf;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Constants;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
