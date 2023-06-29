@@ -209,7 +209,7 @@ public class PresentationTests : SCTest
     public void Slides_Remove_removes_slide_from_section()
     {
         // Arrange
-        var pptxStream = GetTestStream("030.pptx");
+        var pptxStream = GetTestStream("autoshape-case017_slide-number.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var sectionSlides = pres.Sections[0].Slides;
         var removingSlide = sectionSlides[0];
@@ -261,7 +261,7 @@ public class PresentationTests : SCTest
     public void Sections_Remove_removes_specified_section()
     {
         // Arrange
-        var pptxStream = GetTestStream("030.pptx");
+        var pptxStream = GetTestStream("autoshape-case017_slide-number.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var removingSection = pres.Sections[0];
 
@@ -276,7 +276,7 @@ public class PresentationTests : SCTest
     public void Sections_Remove_should_remove_section_after_Removing_Slide_from_section()
     {
         // Arrange
-        var pptxStream = GetTestStream("030.pptx");
+        var pptxStream = GetTestStream("autoshape-case017_slide-number.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var removingSection = pres.Sections[0];
 
@@ -306,7 +306,7 @@ public class PresentationTests : SCTest
     [Fact]
     public void Sections_Section_Slides_Count_returns_number_of_slides_in_section()
     {
-        var pptxStream = GetTestStream("030.pptx");
+        var pptxStream = GetTestStream("autoshape-case017_slide-number.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var section = pres.Sections.GetByName("Section 1");
 

@@ -199,9 +199,6 @@
   <data name="_029" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\029.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="_030" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resource\030.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="_031" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\031.pptx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
