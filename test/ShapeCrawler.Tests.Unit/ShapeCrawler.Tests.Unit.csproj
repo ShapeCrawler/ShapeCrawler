@@ -61,6 +61,7 @@
     </EmbeddedResource>
     <None Remove="Resource\001.pptx" />
     <None Remove="Resource\050_title-placeholder.pptx" />
+    <None Remove="Resource\053_add_shapes.pptx" />
     <EmbeddedResource Include="Resource\050_title-placeholder.pptx" />
     <None Remove="Resource\051_title-placeholder.pptx" />
     <EmbeddedResource Include="Resource\051_title-placeholder.pptx" />
@@ -74,6 +75,7 @@
     <EmbeddedResource Include="Resource\013.pptx" />
     <None Remove="Resource\charts\charts-case001.pptx" />
     <None Remove="Resource\053_font-offset.pptx" />
+    <EmbeddedResource Include="Resource\053_add_shapes.pptx" />
     <EmbeddedResource Include="Resource\charts\charts-case001.pptx" />
     <None Remove="Resource\002.pptx" />
     <EmbeddedResource Include="Resource\002.pptx" />
