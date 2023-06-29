@@ -6,6 +6,7 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Helpers.Attributes;
+using Xunit;
 using Assert = Xunit.Assert;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
@@ -32,6 +33,22 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         resultShape.Should().NotBeNull();
+    }
+
+    [Test]
+    public void Add_adds_shape()
+    {
+        // Arrange
+        var pptx = GetTestStream("053_add_shapes.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var copyingShape = pres.Slides[0].Shapes.GetByName("TextBox")!;
+        var shapeCollection = pres.Slides[1].Shapes;
+
+        // Act
+        shapeCollection.Add(copyingShape);
+
+        // Assert
+        shapeCollection.GetByName("TextBox 2").Should().NotBeNull();
     }
         
     [Test]

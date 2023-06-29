@@ -226,6 +226,21 @@ internal sealed class SCSlideCollection : ISlideCollection
         return this.slides.Value.First(scSlide => scSlide.SlideId.Id == slideId);
     }
 
+    private static P.TextBody ResolveTextBody(P.Shape shape)
+    {
+        // Creates a new TextBody
+        if (shape.TextBody is null)
+        {
+            return new P.TextBody(new OpenXmlElement[] { new A.Paragraph(new OpenXmlElement[] { new A.EndParagraphRunProperties() }) })
+            {
+                BodyProperties = new A.BodyProperties(),
+                ListStyle = new A.ListStyle(),
+            };
+        }
+
+        return (P.TextBody)shape.TextBody.CloneNode(true);
+    }
+    
     private static SlidePart AddSlidePart(
         PresentationPart destPresPart,
         SlidePart sourceSlidePart,
