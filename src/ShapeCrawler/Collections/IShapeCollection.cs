@@ -11,6 +11,7 @@ using DocumentFormat.OpenXml.Presentation;
 using OneOf;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Constants;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
@@ -158,8 +159,8 @@ internal sealed class ShapeCollection : IShapeCollection
         // Alternate content(<mc:AlternateContent /> http://schemas.openxmlformats.org/officeDocument/2006/math"> are not in the shape collection, data is referenced.
         if (shape is not SCShape scShape)
         {
-            // TODO: Move to ThrowHelper.
-            throw new NotImplementedException();
+            // SCShape is internal.
+            throw new SCException($"{shape.GetType().Name} is not supported.");
         }
 
         // Clone shape tree shild
