@@ -11,6 +11,7 @@ using DocumentFormat.OpenXml.Presentation;
 using OneOf;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Constants;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
@@ -47,6 +48,13 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     ///     Gets shape by name. Returns <see langword="null"/> if shape is not found.
     /// </summary>
     IShape? GetByName(string shapeName);
+
+    /// <summary>
+    ///     Adds a new shape from other shape.
+    /// </summary>
+    /// <param name="shape">Source shape.</param>
+    /// <returns>A new shape.</returns>
+    IShape Add(IShape shape);
 
     /// <summary>
     ///     Adds a new audio from stream.
@@ -142,6 +150,70 @@ internal sealed class ShapeCollection : IShapeCollection
     internal OneOf<SCSlide, SCSlideLayout, SCSlideMaster> ParentSlideStructure { get; }
 
     public IShape this[int index] => this.shapes.Value[index];
+
+    public IShape Add(IShape shape)
+    {
+        // SmartArt (<p:graphicFrame /> http://schemas.openxmlformats.org/drawingml/2006/diagram) are not in the shape collection, data is referenced.
+        // Chart (<p:graphicFrame /> http://schemas.openxmlformats.org/drawingml/2006/chart) are not in the shape collection, data is referenced.
+        // Object (<p:graphicFrame /> http://schemas.openxmlformats.org/presentationml/2006/ole) are not in the shape collection, data is referenced.
+        // Alternate content(<mc:AlternateContent /> http://schemas.openxmlformats.org/officeDocument/2006/math"> are not in the shape collection, data is referenced.
+        if (shape is not SCShape scShape)
+        {
+            // SCShape is internal.
+            throw new SCException($"{shape.GetType().Name} is not supported.");
+        }
+
+        // Clone shape tree shild
+        var typedCompositeElement = (TypedOpenXmlCompositeElement)scShape.PShapeTreeChild.CloneNode(true);
+        var id = ((SlideStructure)this.ParentSlideStructure.Value).GetNextShapeId();
+        typedCompositeElement.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
+
+        var newShape = new SCAutoShape(typedCompositeElement, this.ParentSlideStructure, this);
+
+        // Creates a new suffix for the new shape.
+        var nameExists = this.Any(c => c.Name == shape.Name);
+
+        if (nameExists)
+        {
+            // Get last name
+            // Rectangle 1 = 1
+            // Rectangle 2 = 2
+            // ..
+            // Rectangle H = H (ignored)
+            var currentShapeCollectionSuffixes = this
+                .Select(c => c.Name)
+                .Where(c => c.StartsWith(shape.Name, StringComparison.InvariantCulture))
+                
+                // Select only the suffix
+                .Select(c => c.Substring(shape.Name.Length))
+                .ToArray();
+
+            // We will try to check numeric suffixes only.
+            var numericSuffixes = new List<int>();
+
+            foreach (var currentSuffix in currentShapeCollectionSuffixes)
+            {
+                if (int.TryParse(currentSuffix, out var numericSuffix))
+                {
+                    numericSuffixes.Add(numericSuffix);
+                }
+            }
+
+            numericSuffixes.Sort();
+            var lastSuffix = numericSuffixes.LastOrDefault() + 1;
+
+            // Asign new name
+            typedCompositeElement.GetNonVisualDrawingProperties().Name = shape.Name + " " + lastSuffix;
+        }
+
+        newShape.Duplicated += this.OnAutoShapeAdded;
+        this.shapes.Value.Add(newShape);
+        this.pShapeTree.Append(typedCompositeElement);
+
+        this.shapes.Reset();
+
+        return newShape;
+    }
 
     public IAudioShape AddAudio(int xPixels, int yPixels, Stream mp3Stream)
     {

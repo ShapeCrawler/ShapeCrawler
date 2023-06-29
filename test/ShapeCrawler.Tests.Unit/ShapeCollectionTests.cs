@@ -6,6 +6,7 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Helpers.Attributes;
+using Xunit;
 using Assert = Xunit.Assert;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
@@ -32,6 +33,39 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         resultShape.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Add_Shape()
+    {
+        var pres = SCPresentation.Open(GetTestStream("053_add_shapes.pptx"));
+
+        // Get textbox
+        var textbox = pres.Slides[0].Shapes.GetByName("TextBox");
+
+        // Copy to anothe slide. The second slide contains a textbox with the same name.
+        pres.Slides[1].Shapes.Add(textbox);
+
+        // If the name doesn't contains a number, it be incremented...
+        pres.Slides[1].Shapes.GetByName("TextBox 2").Should().NotBeNull();
+
+        // Get textbox 1
+        var textbox1 = pres.Slides[0].Shapes.GetByName("TextBox 1");
+
+        // Copy to anothe slide. The second slide contains a textbox with the same name.
+        pres.Slides[1].Shapes.Add(textbox1);
+
+        // If the name contains a number, it cannot be incremented...
+        pres.Slides[1].Shapes.GetByName("TextBox 1 1").Should().NotBeNull();
+
+        // Get source
+        var source = pres.Slides[0].Shapes.GetByName("Source");
+
+        // Copy to anothe slide. The second slide doesn't contains a textbox with the same name.
+        pres.Slides[1].Shapes.Add(source);
+
+        // The name will be the same, because slide doesn't contain any other shape with the same name.
+        pres.Slides[1].Shapes.GetByName("Source").Should().NotBeNull();
     }
         
     [Test]
