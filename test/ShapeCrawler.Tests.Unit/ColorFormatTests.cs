@@ -157,7 +157,7 @@ public class ColorFormatTests : SCTest
             var testCase6 = new TestCase<IParagraph, string>(6, paragraph6, "000000");
             yield return new object[] { testCase6 };
 
-            var stream7 = GetTestStream("030.pptx");
+            var stream7 = GetTestStream("autoshape-case017_slide-number.pptx");
             var pres7 = SCPresentation.Open(stream7);
             var paragraph7 = pres7.Slides[0].Shapes.GetById<IAutoShape>(5).TextFrame!.Paragraphs[0];
             var testCase7 = new TestCase<IParagraph, string>(7, paragraph7, "000000");

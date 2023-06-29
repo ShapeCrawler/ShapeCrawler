@@ -156,7 +156,8 @@ internal sealed class SCSlideCollection : ISlideCollection
             // Creates a new TextBody
             if (shape.TextBody is null)
             {
-                return new P.TextBody(new OpenXmlElement[] { new A.Paragraph(new OpenXmlElement[] { new A.EndParagraphRunProperties() }) })
+                return new P.TextBody(new OpenXmlElement[]
+                    { new A.Paragraph(new OpenXmlElement[] { new A.EndParagraphRunProperties() }) })
                 {
                     BodyProperties = new A.BodyProperties(),
                     ListStyle = new A.ListStyle(),

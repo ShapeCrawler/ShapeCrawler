@@ -159,11 +159,10 @@ internal sealed class ShapeCollection : IShapeCollection
         // Alternate content(<mc:AlternateContent /> http://schemas.openxmlformats.org/officeDocument/2006/math"> are not in the shape collection, data is referenced.
         if (shape is not SCShape scShape)
         {
-            // SCShape is internal.
             throw new SCException($"{shape.GetType().Name} is not supported.");
         }
 
-        // Clone shape tree shild
+        // Clone shape tree child.
         var typedCompositeElement = (TypedOpenXmlCompositeElement)scShape.PShapeTreeChild.CloneNode(true);
         var id = ((SlideStructure)this.ParentSlideStructure.Value).GetNextShapeId();
         typedCompositeElement.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
@@ -202,7 +201,7 @@ internal sealed class ShapeCollection : IShapeCollection
             numericSuffixes.Sort();
             var lastSuffix = numericSuffixes.LastOrDefault() + 1;
 
-            // Asign new name
+            // Assign new name
             typedCompositeElement.GetNonVisualDrawingProperties().Name = shape.Name + " " + lastSuffix;
         }
 

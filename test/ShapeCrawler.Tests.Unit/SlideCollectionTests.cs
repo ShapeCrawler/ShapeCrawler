@@ -189,7 +189,7 @@ public class SlideCollectionTests : SCTest
     public void Slides_Remove_removes_slide_from_section()
     {
         // Arrange
-        var pptxStream = GetTestStream("030.pptx");
+        var pptxStream = GetTestStream("autoshape-case017_slide-number.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var sectionSlides = pres.Sections[0].Slides;
         var removingSlide = sectionSlides[0];
