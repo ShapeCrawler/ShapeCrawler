@@ -136,15 +136,11 @@ internal sealed class SCSlideCollection : ISlideCollection
                         (P.NonVisualShapeProperties)shape.NonVisualShapeProperties!.CloneNode(true),
 
                     // Creates a new TextBody with no content.
-                    TextBody = new P.TextBody(new[] { new A.Paragraph(new A.EndParagraphRunProperties()) })
-                    {
-                        BodyProperties = new A.BodyProperties(),
-                        ListStyle = new A.ListStyle()
-                    },
+                    TextBody = ResolveTextBody(shape),
                     ShapeProperties = new P.ShapeProperties()
                 });
 
-            slidePart.Slide.CommonSlideData = new P.CommonSlideData(placeholderShapes)
+            slidePart.Slide.CommonSlideData = new P.CommonSlideData()
             {
                 ShapeTree = new P.ShapeTree(placeholderShapes)
                 {
@@ -153,6 +149,21 @@ internal sealed class SCSlideCollection : ISlideCollection
                         (P.NonVisualGroupShapeProperties)shapeTree.NonVisualGroupShapeProperties!.CloneNode(true)
                 }
             };
+        }
+
+        static P.TextBody ResolveTextBody(P.Shape shape)
+        {
+            // Creates a new TextBody
+            if (shape.TextBody is null)
+            {
+                return new P.TextBody(new OpenXmlElement[] { new A.Paragraph(new OpenXmlElement[] { new A.EndParagraphRunProperties() }) })
+                {
+                    BodyProperties = new A.BodyProperties(),
+                    ListStyle = new A.ListStyle(),
+                };
+            }
+
+            return (P.TextBody)shape.TextBody.CloneNode(true);
         }
 
         var pSlideIdList = this.presPart.Presentation.SlideIdList!;

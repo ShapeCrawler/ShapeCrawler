@@ -6,7 +6,6 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Helpers.Attributes;
-using Xunit;
 using Assert = Xunit.Assert;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
