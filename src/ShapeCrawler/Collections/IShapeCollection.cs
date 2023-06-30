@@ -119,6 +119,7 @@ internal sealed class ShapeCollection : IShapeCollection
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly P.ShapeTree pShapeTree;
     private readonly ResettableLazy<List<IShape>> shapes;
+    private readonly AutoShapeCreator autoShapeCreator;
 
     internal ShapeCollection(
         OneOf<SlidePart, SlideLayoutPart, SlideMasterPart> parentSlidePartOf,
@@ -129,10 +130,10 @@ internal sealed class ShapeCollection : IShapeCollection
         var chartGrFrameHandler = new ChartGraphicFrameHandler();
         var tableGrFrameHandler = new TableGraphicFrameHandler();
         var oleGrFrameHandler = new OleGraphicFrameHandler();
-        var autoShapeCreator = new AutoShapeCreator();
+        this.autoShapeCreator = new AutoShapeCreator();
         var pictureHandler = new PictureHandler();
 
-        autoShapeCreator.Successor = oleGrFrameHandler;
+        this.autoShapeCreator.Successor = oleGrFrameHandler;
         oleGrFrameHandler.Successor = pictureHandler;
         pictureHandler.Successor = chartGrFrameHandler;
         chartGrFrameHandler.Successor = tableGrFrameHandler;
@@ -142,7 +143,7 @@ internal sealed class ShapeCollection : IShapeCollection
             layoutPart => layoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
             masterPart => masterPart.SlideMaster.CommonSlideData!.ShapeTree!);
 
-        this.shapes = new ResettableLazy<List<IShape>>(() => this.GetShapes(autoShapeCreator));
+        this.shapes = new ResettableLazy<List<IShape>>(() => this.GetShapes(this.autoShapeCreator));
     }
 
     public int Count => this.shapes.Value.Count;
