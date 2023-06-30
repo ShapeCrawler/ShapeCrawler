@@ -2,6 +2,7 @@
 
 ## Version 0.46.0 - Unreleased
 🍀Added setters for `IPresentation.SlideHeight/SlideWidth` [#522](https://github.com/ShapeCrawler/ShapeCrawler/issues/522)  
+🍀Added `IShapeCollection.Add()` [#264](https://github.com/ShapeCrawler/ShapeCrawler/issues/264)  
 🐞Fixed `ISlide.Number` setter
 
 ## Version 0.45.3 - 2023-06-24
