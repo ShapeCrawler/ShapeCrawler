@@ -168,7 +168,12 @@ internal sealed class ShapeCollection : IShapeCollection
         var id = ((SlideStructure)this.ParentSlideStructure.Value).GetNextShapeId();
         typedCompositeElement.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
 
-        var newShape = new SCAutoShape(typedCompositeElement, this.ParentSlideStructure, this);
+        var newShape = this.GetShape(this.autoShapeCreator, typedCompositeElement);
+
+        if (newShape == null)
+        {
+            throw new SCException($"Cannot create an instancie of type {shape.GetType().Name}.");
+        }
 
         // Creates a new suffix for the new shape.
         var nameExists = this.Any(c => c.Name == shape.Name);
@@ -206,7 +211,6 @@ internal sealed class ShapeCollection : IShapeCollection
             typedCompositeElement.GetNonVisualDrawingProperties().Name = shape.Name + " " + lastSuffix;
         }
 
-        newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(typedCompositeElement);
 
