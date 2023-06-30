@@ -804,35 +804,40 @@ internal sealed class ShapeCollection : IShapeCollection
         var shapesValue = new List<IShape>(this.pShapeTree.Count());
         foreach (var pShapeTreeChild in this.pShapeTree.OfType<TypedOpenXmlCompositeElement>())
         {
-            IShape? shape;
-            if (pShapeTreeChild is P.GroupShape pGroupShape)
-            {
-                shape = new SCGroupShape(pGroupShape, this.ParentSlideStructure, this);
-                shapesValue.Add(shape);
-            }
-            else if (pShapeTreeChild is P.ConnectionShape)
-            {
-                shape = new SCLine(pShapeTreeChild, this.ParentSlideStructure, this);
-                shapesValue.Add(shape);
-            }
-            else
-            {
-                shape = autoShapeCreator.FromTreeChild(pShapeTreeChild, this.ParentSlideStructure, this);
-                if (shape != null)
-                {
-                    shapesValue.Add(shape);
-                }
+            var shape = this.GetShape(autoShapeCreator, pShapeTreeChild);
 
-                if (shape is SCAutoShape autoShape)
-                {
-                    autoShape.Duplicated += this.OnAutoShapeAdded;
-                }
+            if (shape != null)
+            {
+                shapesValue.Add(shape);
             }
         }
 
         return shapesValue;
     }
 
+    private IShape? GetShape(AutoShapeCreator autoShapeCreator, TypedOpenXmlCompositeElement pShapeTreeChild)
+    {
+        IShape? shape;
+
+        if (pShapeTreeChild is P.GroupShape pGroupShape)
+        {
+            return new SCGroupShape(pGroupShape, this.ParentSlideStructure, this);
+        }
+        
+        if (pShapeTreeChild is P.ConnectionShape)
+        {
+            return new SCLine(pShapeTreeChild, this.ParentSlideStructure, this);
+        }
+        
+        shape = autoShapeCreator.FromTreeChild(pShapeTreeChild, this.ParentSlideStructure, this);
+
+        if (shape is SCAutoShape autoShape)
+        {
+            autoShape.Duplicated += this.OnAutoShapeAdded;
+        }
+
+        return shape;
+    }
 
     private P.Picture CreatePPicture(Stream imageStream, string shapeName)
     {
