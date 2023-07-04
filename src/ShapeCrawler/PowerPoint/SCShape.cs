@@ -69,7 +69,7 @@ internal abstract class SCShape : IShape
 
     public int Height
     {
-        get => this.GetHeightPixels();
+        get => this.GetHeight();
         set => this.SetHeight(value);
     }
 
@@ -286,7 +286,7 @@ internal abstract class SCShape : IShape
         return UnitConverter.HorizontalEmuToPixel(aExtents.Cx!);
     }
 
-    private int GetHeightPixels()
+    private int GetHeight()
     {
         var aExtents = this.PShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
         if (aExtents == null)
