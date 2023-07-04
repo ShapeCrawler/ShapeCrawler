@@ -48,6 +48,23 @@ internal sealed class SCRow : IRow
         set => this.SetHeight(value);
     }
 
+    internal SCTable ParentTable { get; }
+
+    internal A.TableRow ATableRow { get; }
+
+    public IRow Clone()
+    {
+        var clonedRow = (A.TableRow)this.ATableRow.Clone();
+        var addedRow = this.ParentTable.AppendRow(clonedRow);
+
+        return addedRow;
+    }
+    
+    private int GetHeight()
+    {
+        return (int)UnitConverter.EmuToPoint((int)this.ATableRow.Height!.Value);
+    }
+    
     private void SetHeight(int newPoints)
     {
         var currentPoints = this.GetHeight();
@@ -72,24 +89,7 @@ internal sealed class SCRow : IRow
             this.ParentTable.Height -= diffPixels;
         }
     }
-
-    private int GetHeight()
-    {
-        return (int)UnitConverter.EmuToPoint((int)this.ATableRow.Height!.Value);
-    }
-
-    internal SCTable ParentTable { get; }
-
-    internal A.TableRow ATableRow { get; }
-
-    public IRow Clone()
-    {
-        var clonedRow = (A.TableRow)this.ATableRow.Clone();
-        var addedRow = this.ParentTable.AppendRow(clonedRow);
-
-        return addedRow;
-    }
-
+    
     private List<SCCell> GetCells()
     {
         var cellList = new List<SCCell?>();
