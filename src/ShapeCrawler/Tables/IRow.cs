@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -16,9 +17,9 @@ public interface IRow
     IReadOnlyList<ICell> Cells { get; }
 
     /// <summary>
-    ///     Gets or sets height.
+    ///     Gets or sets height in points.
     /// </summary>
-    long Height { get; set; }
+    int Height { get; set; }
 
     /// <summary>
     ///     Creates a duplicate of the current row and adds this at the table end.
@@ -41,10 +42,10 @@ internal sealed class SCRow : IRow
 
     public IReadOnlyList<ICell> Cells => this.cells.Value;
 
-    public long Height
+    public int Height
     {
-        get => this.ATableRow.Height!.Value;
-        set => this.ATableRow.Height!.Value = value;
+        get => this.GetHeight();
+        set => this.SetHeight(value);
     }
 
     internal SCTable ParentTable { get; }
@@ -58,7 +59,37 @@ internal sealed class SCRow : IRow
 
         return addedRow;
     }
+    
+    private int GetHeight()
+    {
+        return (int)UnitConverter.EmuToPoint((int)this.ATableRow.Height!.Value);
+    }
+    
+    private void SetHeight(int newPoints)
+    {
+        var currentPoints = this.GetHeight();
+        if (currentPoints == newPoints)
+        {
+            return;
+        }
+        
+        var newEmu = UnitConverter.PointToEmu(newPoints);
+        this.ATableRow.Height!.Value = newEmu;
 
+        if (newPoints > currentPoints)
+        {
+            var diffPoints = newPoints - currentPoints;
+            var diffPixels = (int)UnitConverter.PointToPixel(diffPoints);
+            this.ParentTable.Height += diffPixels;
+        }
+        else
+        {
+            var diffPoints = currentPoints - newPoints;
+            var diffPixels = (int)UnitConverter.PointToPixel(diffPoints);
+            this.ParentTable.Height -= diffPixels;
+        }
+    }
+    
     private List<SCCell> GetCells()
     {
         var cellList = new List<SCCell?>();
