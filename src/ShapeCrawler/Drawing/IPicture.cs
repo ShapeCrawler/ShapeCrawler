@@ -8,6 +8,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Office2019.Drawing.SVG;
 using DocumentFormat.OpenXml.Packaging;
 using OneOf;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -52,6 +53,39 @@ internal sealed class SCPicture : SCShape, IPicture
     public string? SvgContent => this.GetSvgContent();
 
     public override SCShapeType ShapeType => SCShapeType.Picture;
+
+    /// <summary>
+    /// Copies all required parts from source slide if not exists.
+    /// </summary>
+    /// <param name="sourceSlide">Source slide.</param>
+    internal void CopyParts(SlideStructure sourceSlide)
+    {
+        if (this.blipEmbed is null) {
+            return;
+        }
+
+        // Get current relationship and try to find the part in current slide.
+        var relId = this.blipEmbed.Value!;
+        var slideStructure = ((SlideStructure)this.SlideStructure);
+        
+        // Image part already exists.
+        if (slideStructure.TypedOpenXmlPart.TryGetPartById(relId, out var _))
+        {
+            return;
+        }
+
+        // Creates a new part in this slide with a new Id...
+        var slidePart = slideStructure.TypedOpenXmlPart;
+        var imgPartRId = slidePart.GetNextRelationshipId();
+
+        // Get image part
+        var sSlidePart = sourceSlide.TypedOpenXmlPart;
+        var sImagePart = sSlidePart.GetPartById(relId);
+
+        // Adds to current slide parts and update relation id.
+        var c = slidePart.AddPart(sImagePart, imgPartRId);
+        this.blipEmbed.Value = imgPartRId;
+    }
 
     internal override void Draw(SKCanvas canvas)
     {
