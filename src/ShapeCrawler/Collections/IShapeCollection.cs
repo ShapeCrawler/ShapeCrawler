@@ -119,6 +119,7 @@ internal sealed class ShapeCollection : IShapeCollection
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly P.ShapeTree pShapeTree;
     private readonly ResettableLazy<List<IShape>> shapes;
+    private readonly AutoShapeCreator autoShapeCreator;
 
     internal ShapeCollection(
         OneOf<SlidePart, SlideLayoutPart, SlideMasterPart> parentSlidePartOf,
@@ -129,10 +130,10 @@ internal sealed class ShapeCollection : IShapeCollection
         var chartGrFrameHandler = new ChartGraphicFrameHandler();
         var tableGrFrameHandler = new TableGraphicFrameHandler();
         var oleGrFrameHandler = new OleGraphicFrameHandler();
-        var autoShapeCreator = new AutoShapeCreator();
+        this.autoShapeCreator = new AutoShapeCreator();
         var pictureHandler = new PictureHandler();
 
-        autoShapeCreator.Successor = oleGrFrameHandler;
+        this.autoShapeCreator.Successor = oleGrFrameHandler;
         oleGrFrameHandler.Successor = pictureHandler;
         pictureHandler.Successor = chartGrFrameHandler;
         chartGrFrameHandler.Successor = tableGrFrameHandler;
@@ -142,7 +143,7 @@ internal sealed class ShapeCollection : IShapeCollection
             layoutPart => layoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
             masterPart => masterPart.SlideMaster.CommonSlideData!.ShapeTree!);
 
-        this.shapes = new ResettableLazy<List<IShape>>(() => this.GetShapes(autoShapeCreator));
+        this.shapes = new ResettableLazy<List<IShape>>(() => this.GetShapes(this.autoShapeCreator));
     }
 
     public int Count => this.shapes.Value.Count;
@@ -157,7 +158,7 @@ internal sealed class ShapeCollection : IShapeCollection
         // Chart (<p:graphicFrame /> http://schemas.openxmlformats.org/drawingml/2006/chart) are not in the shape collection, data is referenced.
         // Object (<p:graphicFrame /> http://schemas.openxmlformats.org/presentationml/2006/ole) are not in the shape collection, data is referenced.
         // Alternate content(<mc:AlternateContent /> http://schemas.openxmlformats.org/officeDocument/2006/math"> are not in the shape collection, data is referenced.
-        if (shape is not SCShape scShape)
+        if (shape is not SCShape scShape || shape is IOLEObject || shape is IChart || shape is IPicture || shape is IAudioShape || shape is IVideoShape)
         {
             throw new SCException($"{shape.GetType().Name} is not supported.");
         }
@@ -167,7 +168,12 @@ internal sealed class ShapeCollection : IShapeCollection
         var id = ((SlideStructure)this.ParentSlideStructure.Value).GetNextShapeId();
         typedCompositeElement.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
 
-        var newShape = new SCAutoShape(typedCompositeElement, this.ParentSlideStructure, this);
+        var newShape = this.GetShape(this.autoShapeCreator, typedCompositeElement);
+
+        if (newShape == null)
+        {
+            throw new SCException($"Cannot create an instancie of type {shape.GetType().Name}.");
+        }
 
         // Creates a new suffix for the new shape.
         var nameExists = this.Any(c => c.Name == shape.Name);
@@ -205,7 +211,6 @@ internal sealed class ShapeCollection : IShapeCollection
             typedCompositeElement.GetNonVisualDrawingProperties().Name = shape.Name + " " + lastSuffix;
         }
 
-        newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(typedCompositeElement);
 
@@ -804,35 +809,40 @@ internal sealed class ShapeCollection : IShapeCollection
         var shapesValue = new List<IShape>(this.pShapeTree.Count());
         foreach (var pShapeTreeChild in this.pShapeTree.OfType<TypedOpenXmlCompositeElement>())
         {
-            IShape? shape;
-            if (pShapeTreeChild is P.GroupShape pGroupShape)
-            {
-                shape = new SCGroupShape(pGroupShape, this.ParentSlideStructure, this);
-                shapesValue.Add(shape);
-            }
-            else if (pShapeTreeChild is P.ConnectionShape)
-            {
-                shape = new SCLine(pShapeTreeChild, this.ParentSlideStructure, this);
-                shapesValue.Add(shape);
-            }
-            else
-            {
-                shape = autoShapeCreator.FromTreeChild(pShapeTreeChild, this.ParentSlideStructure, this);
-                if (shape != null)
-                {
-                    shapesValue.Add(shape);
-                }
+            var shape = this.GetShape(autoShapeCreator, pShapeTreeChild);
 
-                if (shape is SCAutoShape autoShape)
-                {
-                    autoShape.Duplicated += this.OnAutoShapeAdded;
-                }
+            if (shape != null)
+            {
+                shapesValue.Add(shape);
             }
         }
 
         return shapesValue;
     }
 
+    private IShape? GetShape(AutoShapeCreator autoShapeCreator, TypedOpenXmlCompositeElement pShapeTreeChild)
+    {
+        IShape? shape;
+
+        if (pShapeTreeChild is P.GroupShape pGroupShape)
+        {
+            return new SCGroupShape(pGroupShape, this.ParentSlideStructure, this);
+        }
+        
+        if (pShapeTreeChild is P.ConnectionShape)
+        {
+            return new SCLine(pShapeTreeChild, this.ParentSlideStructure, this);
+        }
+        
+        shape = autoShapeCreator.FromTreeChild(pShapeTreeChild, this.ParentSlideStructure, this);
+
+        if (shape is SCAutoShape autoShape)
+        {
+            autoShape.Duplicated += this.OnAutoShapeAdded;
+        }
+
+        return shape;
+    }
 
     private P.Picture CreatePPicture(Stream imageStream, string shapeName)
     {

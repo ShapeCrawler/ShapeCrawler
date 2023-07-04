@@ -49,7 +49,25 @@ public class ShapeCollectionTests : SCTest
         // Assert
         shapeCollection.GetByName("TextBox 2").Should().NotBeNull();
     }
-        
+
+    [Test]
+    public void Add_adds_table_shape()
+    {
+        // Arrange
+        var pptx = GetTestStream("053_add_shapes.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var copyingShape = pres.Slides[0].Shapes.GetByName("Table 1")!;
+        var shapeCollection = pres.Slides[1].Shapes;
+
+        // Act
+        // `copyingTable` is a Table, add clones shape tree and must
+        // to return a new table.
+        var isTable = shapeCollection.Add(copyingShape) is ITable;
+
+        // Assert
+        isTable.Should().BeTrue();
+    }
+
     [Test]
     public void Contains_particular_shape_Types()
     {
