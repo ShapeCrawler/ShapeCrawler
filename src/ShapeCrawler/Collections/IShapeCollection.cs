@@ -158,7 +158,7 @@ internal sealed class ShapeCollection : IShapeCollection
         // Chart (<p:graphicFrame /> http://schemas.openxmlformats.org/drawingml/2006/chart) are not in the shape collection, data is referenced.
         // Object (<p:graphicFrame /> http://schemas.openxmlformats.org/presentationml/2006/ole) are not in the shape collection, data is referenced.
         // Alternate content(<mc:AlternateContent /> http://schemas.openxmlformats.org/officeDocument/2006/math"> are not in the shape collection, data is referenced.
-        if (shape is not SCShape scShape || shape is IOLEObject || shape is IChart || shape is IPicture || shape is IAudioShape || shape is IVideoShape)
+        if (shape is not SCShape scShape || shape is IOLEObject || shape is IChart || shape is IAudioShape || shape is IVideoShape)
         {
             throw new SCException($"{shape.GetType().Name} is not supported.");
         }
@@ -173,6 +173,11 @@ internal sealed class ShapeCollection : IShapeCollection
         if (newShape == null)
         {
             throw new SCException($"Cannot create an instancie of type {shape.GetType().Name}.");
+        }
+
+        if (newShape is SCPicture pic)
+        {
+            pic.CopyParts((SlideStructure)scShape.ParentSlideStructureOf.Value);
         }
 
         // Creates a new suffix for the new shape.
