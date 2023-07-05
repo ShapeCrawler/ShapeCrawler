@@ -64,26 +64,24 @@ internal sealed class SCPicture : SCShape, IPicture
             return;
         }
 
-        // Get current relationship and try to find the part in current slide.
-        var relId = this.blipEmbed.Value!;
-        var slideStructure = ((SlideStructure)this.SlideStructure);
+        // Get image source part
+        var sSlidePart = sourceSlide.TypedOpenXmlPart;
         
-        // Image part already exists.
-        if (slideStructure.TypedOpenXmlPart.TryGetPartById(relId, out var _))
+        if (sSlidePart.GetPartById(this.blipEmbed.Value!) is not ImagePart imagePart)
         {
             return;
         }
 
         // Creates a new part in this slide with a new Id...
-        var slidePart = slideStructure.TypedOpenXmlPart;
+        var slidePart = ((SlideStructure)this.SlideStructure).TypedOpenXmlPart;
         var imgPartRId = slidePart.GetNextRelationshipId();
-
-        // Get image part
-        var sSlidePart = sourceSlide.TypedOpenXmlPart;
-        var sImagePart = sSlidePart.GetPartById(relId);
-
+        
         // Adds to current slide parts and update relation id.
-        var c = slidePart.AddPart(sImagePart, imgPartRId);
+        var nImagePart = slidePart.AddNewPart<ImagePart>(imagePart.ContentType, imgPartRId);
+        using var stream = imagePart.GetStream(FileMode.Open);
+        stream.Position = 0;
+        nImagePart.FeedData(stream);
+
         this.blipEmbed.Value = imgPartRId;
     }
 
