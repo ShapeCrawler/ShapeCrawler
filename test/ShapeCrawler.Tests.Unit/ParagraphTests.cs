@@ -18,7 +18,7 @@ public class ParagraphTests : SCTest
     [Xunit.Theory]
     [SlideParagraphData("autoshape-case003.pptx", 1, "AutoShape 5", 1, 1)]
     [SlideParagraphData("autoshape-case003.pptx", 1, "AutoShape 5", 2, 2)]
-    public void IndentLevel_returns_indent_level(IParagraph paragraph, int expectedLevel)
+    public void IndentLevel_Getter_returns_indent_level(IParagraph paragraph, int expectedLevel)
     {
         // Act
         var indentLevel = paragraph.IndentLevel;
@@ -26,7 +26,23 @@ public class ParagraphTests : SCTest
         // Assert
         indentLevel.Should().Be(expectedLevel);
     }
+    
+    [Test]
+    public void IndentLevel_Setter_sets_indent_level()
+    {
+        // Act
+        var pres = SCPresentation.Create();
+        var addedShape = pres.Slides[0].Shapes.AddRectangle(100,100, 500, 100);
+        var paragraph = addedShape.TextFrame!.Paragraphs.Add();
+        paragraph.Text = "Test";
         
+        // Act
+        paragraph.IndentLevel = 2;
+
+        // Assert
+        paragraph.IndentLevel.Should().Be(2);
+    }
+    
     [Fact]
     public void Bullet_FontName_Getter_returns_font_name()
     {
