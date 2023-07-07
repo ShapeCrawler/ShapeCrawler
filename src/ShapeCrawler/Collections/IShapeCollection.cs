@@ -170,14 +170,13 @@ internal sealed class ShapeCollection : IShapeCollection
 
         var newShape = this.GetShape(this.autoShapeCreator, typedCompositeElement);
 
-        if (newShape == null)
+        switch (newShape)
         {
-            throw new SCException($"Cannot create an instancie of type {shape.GetType().Name}.");
-        }
-
-        if (newShape is SCPicture pic)
-        {
-            pic.CopyParts((SlideStructure)scShape.ParentSlideStructureOf.Value);
+            case null:
+                throw new SCException($"Cannot create an instance of type {shape.GetType().Name}.");
+            case SCPicture pic:
+                pic.CopyParts((SlideStructure)scShape.ParentSlideStructureOf.Value);
+                break;
         }
 
         // Creates a new suffix for the new shape.

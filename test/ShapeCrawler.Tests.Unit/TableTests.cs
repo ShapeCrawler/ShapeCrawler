@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Helpers.Attributes;
@@ -55,6 +56,7 @@ public class TableTests : SCTest
         PptxValidator.Validate(pres);
     }
 
+
     [Fact]
     public void Rows_RemoveAt_removes_row_with_specified_index()
     {
@@ -75,7 +77,7 @@ public class TableTests : SCTest
         table.Rows.Should().HaveCountLessThan(originRowsCount);
     }
 
-    [Fact]
+    [Test]
     public void Rows_Add_adds_row()
     {
         // Arrange
@@ -92,11 +94,12 @@ public class TableTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Fact]
+    [Test]
     public void Row_Cells_Count_returns_number_of_cells_in_the_row()
     {
         // Arrange
-        var table = (ITable)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes
+        var pptx = GetTestStream("009_table.pptx");
+        var table = (ITable)SCPresentation.Open(pptx).Slides[2].Shapes
             .First(sp => sp.Id == 3);
 
         // Act

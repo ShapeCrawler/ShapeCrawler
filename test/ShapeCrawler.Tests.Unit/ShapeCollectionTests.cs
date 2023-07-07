@@ -51,7 +51,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void Add_adds_table_shape()
+    public void Add_adds_table()
     {
         // Arrange
         var pptx = GetTestStream("053_add_shapes.pptx");
@@ -60,12 +60,10 @@ public class ShapeCollectionTests : SCTest
         var shapeCollection = pres.Slides[1].Shapes;
 
         // Act
-        // `copyingTable` is a Table, add clones shape tree and must
-        // to return a new table.
-        var isTable = shapeCollection.Add(copyingShape) is ITable;
+        var addedShape = shapeCollection.Add(copyingShape);
 
         // Assert
-        isTable.Should().BeTrue();
+        addedShape.Should().BeAssignableTo<ITable>();
     }
 
     [Test]
