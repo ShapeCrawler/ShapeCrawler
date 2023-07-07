@@ -38,7 +38,7 @@ internal sealed class SCPicture : SCShape, IPicture
     private readonly A.Blip aBlip;
 
     internal SCPicture(
-        P.Picture pPicture, 
+        P.Picture pPicture,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
         OneOf<ShapeCollection, SCGroupShape> parentShapeCollection,
         A.Blip aBlip)
@@ -48,25 +48,27 @@ internal sealed class SCPicture : SCShape, IPicture
         this.blipEmbed = aBlip.Embed;
     }
 
-    public IImage Image => SCImage.ForPicture(this, ((SlideStructure)this.SlideStructure).TypedOpenXmlPart, this.blipEmbed);
+    public IImage Image =>
+        SCImage.ForPicture(this, ((SlideStructure)this.SlideStructure).TypedOpenXmlPart, this.blipEmbed);
 
     public string? SvgContent => this.GetSvgContent();
 
     public override SCShapeType ShapeType => SCShapeType.Picture;
 
     /// <summary>
-    /// Copies all required parts from source slide if not exists.
+    ///     Copies all required parts from the source slide if they do not exist.
     /// </summary>
     /// <param name="sourceSlide">Source slide.</param>
     internal void CopyParts(SlideStructure sourceSlide)
     {
-        if (this.blipEmbed is null) {
+        if (this.blipEmbed is null)
+        {
             return;
         }
 
         // Get image source part
         var sSlidePart = sourceSlide.TypedOpenXmlPart;
-        
+
         if (sSlidePart.GetPartById(this.blipEmbed.Value!) is not ImagePart imagePart)
         {
             return;
@@ -75,7 +77,7 @@ internal sealed class SCPicture : SCShape, IPicture
         // Creates a new part in this slide with a new Id...
         var slidePart = ((SlideStructure)this.SlideStructure).TypedOpenXmlPart;
         var imgPartRId = slidePart.GetNextRelationshipId();
-        
+
         // Adds to current slide parts and update relation id.
         var nImagePart = slidePart.AddNewPart<ImagePart>(imagePart.ContentType, imgPartRId);
         using var stream = imagePart.GetStream(FileMode.Open);
