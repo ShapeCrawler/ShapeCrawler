@@ -34,9 +34,9 @@ public interface IParagraph
     SCTextAlignment Alignment { get; set; }
 
     /// <summary>
-    ///     Gets paragraph's indent level.
+    ///     Gets or sets paragraph's indent level.
     /// </summary>
-    int IndentLevel { get; }
+    int IndentLevel { get; set; }
 
     /// <summary>
     ///     Gets spacing.
@@ -90,7 +90,11 @@ internal sealed class SCParagraph : IParagraph
         set => this.SetAlignment(value);
     }
 
-    public int IndentLevel => this.GetIndentLevel();
+    public int IndentLevel
+    {
+        get => this.GetIndentLevel();
+        set => this.SetIndentLevel(value);
+    }
 
     public ISpacing Spacing => this.GetSpacing();
 
@@ -221,6 +225,11 @@ internal sealed class SCParagraph : IParagraph
         }
 
         return level + 1;
+    }
+    
+    private void SetIndentLevel(int value)
+    {
+        this.AParagraph.ParagraphProperties!.Level = new Int32Value(value - 1);
     }
 
     private void SetText(string text)
