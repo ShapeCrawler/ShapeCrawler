@@ -168,9 +168,14 @@ internal sealed class SCParagraph : IParagraph
         this.Portions.Remove(removingPortions);
 
         var basePortion = this.portions.Value.Single();
-        var portionsCore = (SCPortionCollection) this.Portions;
+        var portionsCore = (SCPortionCollection)this.Portions;
 
+#if NETSTANDARD2_0
+        var textLines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+#else
         var textLines = text.Split(Environment.NewLine);
+#endif
+
         basePortion.Text = textLines.First();
 
         foreach (var textLine in textLines.Skip(1))

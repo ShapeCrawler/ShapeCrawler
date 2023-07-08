@@ -1,9 +1,7 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -16,8 +14,6 @@ namespace ShapeCrawler;
 /// </summary>
 public interface IPortionCollection : IEnumerable<IPortion>
 {
-    void Add(string newPortionText);
-    
     /// <summary>
     ///     Gets the number of series items in the collection.
     /// </summary>
@@ -27,6 +23,11 @@ public interface IPortionCollection : IEnumerable<IPortion>
     ///     Gets the element at the specified index.
     /// </summary>
     IPortion this[int index] { get; }
+
+    /// <summary>
+    ///     Adds portion item to collection.
+    /// </summary>
+    void Add(string newPortionText);
 
     /// <summary>
     ///     Removes portion item from collection.
@@ -51,6 +52,10 @@ internal sealed class SCPortionCollection : IPortionCollection
         this.parentParagraph = paragraph;
         this.portions = new ResettableLazy<List<SCPortion>>(() => GetPortions(aParagraph, paragraph));
     }
+    
+    public int Count => this.portions.Value.Count;
+
+    public IPortion this[int index] => this.portions.Value[index];
 
     public void Add(string newPortionText)
     {
@@ -63,26 +68,7 @@ internal sealed class SCPortionCollection : IPortionCollection
 
         this.portions.Reset();
     }
-
-    private static void AddText(ref OpenXmlElement? lastElement, OpenXmlElement aTextParent, string text, A.Paragraph aParagraph)
-    {
-        var newARun = (A.Run)aTextParent.CloneNode(true);
-        newARun.Text!.Text = text;
-        if (lastElement == null)
-        {
-            var apPr = aParagraph.GetFirstChild<A.ParagraphProperties>();
-            lastElement = apPr != null ? apPr.InsertAfterSelf(newARun) : aParagraph.InsertAt(newARun, 0);
-        }
-        else
-        {
-            lastElement = lastElement.InsertAfterSelf(newARun);
-        }
-    }
-
-    public int Count => this.portions.Value.Count;
-
-    public IPortion this[int index] => this.portions.Value[index];
-
+    
     public void Remove(IPortion removingPortion)
     {
         var removingInnerPortion = (SCPortion)removingPortion;
@@ -110,6 +96,27 @@ internal sealed class SCPortionCollection : IPortionCollection
     {
         return this.GetEnumerator();
     }
+    
+    internal void AddNewLine()
+    {
+        var lastARunOrABreak = this.aParagraph.Last();
+        lastARunOrABreak.InsertAfterSelf(new A.Break());
+    }
+
+    private static void AddText(ref OpenXmlElement? lastElement, OpenXmlElement aTextParent, string text, A.Paragraph aParagraph)
+    {
+        var newARun = (A.Run)aTextParent.CloneNode(true);
+        newARun.Text!.Text = text;
+        if (lastElement == null)
+        {
+            var apPr = aParagraph.GetFirstChild<A.ParagraphProperties>();
+            lastElement = apPr != null ? apPr.InsertAfterSelf(newARun) : aParagraph.InsertAt(newARun, 0);
+        }
+        else
+        {
+            lastElement = lastElement.InsertAfterSelf(newARun);
+        }
+    }
 
     private static List<SCPortion> GetPortions(A.Paragraph aParagraph, SCParagraph paragraph)
     {
@@ -135,11 +142,5 @@ internal sealed class SCPortionCollection : IPortionCollection
         }
 
         return new List<SCPortion>();
-    }
-
-    public void AddNewLine()
-    {
-        var lastARunOrABreak = this.aParagraph.Last();
-        lastARunOrABreak.InsertAfterSelf(new A.Break());
     }
 }
