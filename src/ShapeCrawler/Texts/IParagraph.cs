@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Factories;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -42,11 +41,6 @@ public interface IParagraph
     ///     Gets spacing.
     /// </summary>
     ISpacing Spacing { get; }
-
-    /// <summary>
-    ///     Adds new text portion in paragraph.
-    /// </summary>
-    void AddPortion(string text);
 
     /// <summary>
     ///     Finds and replaces text.
@@ -112,53 +106,6 @@ internal sealed class SCParagraph : IParagraph
         }
     }
 
-    public void AddPortion(string text)
-    {
-        if (text == string.Empty)
-        {
-            return;
-        }
-
-        var lastPortion = this.portions.Value.LastOrDefault() as SCPortion;
-        OpenXmlElement aRun;
-        OpenXmlElement? lastARunOrABreak = null;
-        if (lastPortion == null)
-        {
-            var aRunBuilder = new ARunBuilder();
-            aRun = aRunBuilder.Build();
-        }
-        else
-        {
-            aRun = lastPortion.AText.Parent!;
-            lastARunOrABreak = this.AParagraph.Last(p => p is A.Run or A.Break);
-            if (lastARunOrABreak is not A.Break && this.Text.EndsWith(Environment.NewLine, StringComparison.Ordinal))
-            {
-                AddBreak(ref lastARunOrABreak);
-            }
-        }
-
-        var textLines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-        if (lastPortion?.Text == string.Empty)
-        {
-            lastPortion.Text = textLines[0];
-        }
-        else
-        {
-            AddText(ref lastARunOrABreak, aRun, textLines[0], this.AParagraph);
-        }
-
-        for (var i = 1; i < textLines.Length; i++)
-        {
-            AddBreak(ref lastARunOrABreak!);
-            if (textLines[i] != string.Empty)
-            {
-                AddText(ref lastARunOrABreak, aRun, textLines[i], this.AParagraph);
-            }
-        }
-
-        this.portions.Reset();
-    }
-
     public void ReplaceText(string oldValue, string newValue)
     {
         foreach (var portion in this.Portions)
@@ -172,30 +119,7 @@ internal sealed class SCParagraph : IParagraph
         }
     }
 
-    private static void AddBreak(ref OpenXmlElement lastElement)
-    {
-        lastElement = lastElement.InsertAfterSelf(new A.Break());
-    }
-    
-    private static void AddText(
-        ref OpenXmlElement? lastElement,
-        OpenXmlElement aTextParent,
-        string text,
-        A.Paragraph aParagraph)
-    {
-        var newARun = (A.Run)aTextParent.CloneNode(true);
-        newARun.Text!.Text = text;
-        if (lastElement == null)
-        {
-            var apPr = aParagraph.GetFirstChild<A.ParagraphProperties>();
-            lastElement = apPr != null ? apPr.InsertAfterSelf(newARun) : aParagraph.InsertAt(newARun, 0);
-        }
-        else
-        {
-            lastElement = lastElement.InsertAfterSelf(newARun);
-        }
-    }
-    
+
     private ISpacing GetSpacing()
     {
         return new SCSpacing(this, this.AParagraph);
@@ -226,7 +150,7 @@ internal sealed class SCParagraph : IParagraph
 
         return level + 1;
     }
-    
+
     private void SetIndentLevel(int value)
     {
         this.AParagraph.ParagraphProperties!.Level = new Int32Value(value - 1);
@@ -234,24 +158,37 @@ internal sealed class SCParagraph : IParagraph
 
     private void SetText(string text)
     {
-        if (this.portions.Value.Count == 0)
+        if (!this.portions.Value.Any())
         {
-            this.AddPortion(" ");
+            this.Portions.Add(" ");
         }
 
-        // to set a paragraph text we use a single portion which is the first paragraph portion.
+        // To set a paragraph text we use a single portion which is the first paragraph portion.
         var removingPortions = this.Portions.Skip(1).ToList();
         this.Portions.Remove(removingPortions);
 
-        var basePortion = (SCPortion)this.portions.Value.Single();
-        if (text.Contains(Environment.NewLine))
+        var basePortion = this.portions.Value.Single();
+        var portionsCore = (SCPortionCollection)this.Portions;
+
+#if NETSTANDARD2_0
+        var textLines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+#else
+        var textLines = text.Split(Environment.NewLine);
+#endif
+
+        basePortion.Text = textLines.First();
+
+        foreach (var textLine in textLines.Skip(1))
         {
-            basePortion.Text = string.Empty;
-            this.AddPortion(text);
-        }
-        else
-        {
-            basePortion.Text = text;
+            if (!string.IsNullOrEmpty(textLine))
+            {
+                portionsCore.AddNewLine();
+                this.Portions.Add(textLine);
+            }
+            else
+            {
+                portionsCore.AddNewLine();
+            }
         }
 
         this.TextChanged?.Invoke();
