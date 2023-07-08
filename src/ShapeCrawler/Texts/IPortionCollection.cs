@@ -1,6 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using ShapeCrawler.Factories;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -12,6 +16,8 @@ namespace ShapeCrawler;
 /// </summary>
 public interface IPortionCollection : IEnumerable<IPortion>
 {
+    void Add(string newPortionText);
+    
     /// <summary>
     ///     Gets the number of series items in the collection.
     /// </summary>
@@ -36,10 +42,41 @@ public interface IPortionCollection : IEnumerable<IPortion>
 internal sealed class SCPortionCollection : IPortionCollection
 {
     private readonly ResettableLazy<List<SCPortion>> portions;
+    private readonly A.Paragraph aParagraph;
+    private readonly SCParagraph parentParagraph;
 
     internal SCPortionCollection(A.Paragraph aParagraph, SCParagraph paragraph)
     {
+        this.aParagraph = aParagraph;
+        this.parentParagraph = paragraph;
         this.portions = new ResettableLazy<List<SCPortion>>(() => GetPortions(aParagraph, paragraph));
+    }
+
+    public void Add(string newPortionText)
+    {
+        var lastARunOrABreak = this.aParagraph.LastOrDefault(p => p is A.Run or A.Break);
+    
+        var lastPortion = this.portions.Value.LastOrDefault();
+        var aTextParent = lastPortion?.AText.Parent ?? new ARunBuilder().Build();
+
+        AddText(ref lastARunOrABreak, aTextParent, newPortionText, this.aParagraph);
+
+        this.portions.Reset();
+    }
+
+    private static void AddText(ref OpenXmlElement? lastElement, OpenXmlElement aTextParent, string text, A.Paragraph aParagraph)
+    {
+        var newARun = (A.Run)aTextParent.CloneNode(true);
+        newARun.Text!.Text = text;
+        if (lastElement == null)
+        {
+            var apPr = aParagraph.GetFirstChild<A.ParagraphProperties>();
+            lastElement = apPr != null ? apPr.InsertAfterSelf(newARun) : aParagraph.InsertAt(newARun, 0);
+        }
+        else
+        {
+            lastElement = lastElement.InsertAfterSelf(newARun);
+        }
     }
 
     public int Count => this.portions.Value.Count;
@@ -98,5 +135,11 @@ internal sealed class SCPortionCollection : IPortionCollection
         }
 
         return new List<SCPortion>();
+    }
+
+    public void AddNewLine()
+    {
+        var lastARunOrABreak = this.aParagraph.Last();
+        lastARunOrABreak.InsertAfterSelf(new A.Break());
     }
 }

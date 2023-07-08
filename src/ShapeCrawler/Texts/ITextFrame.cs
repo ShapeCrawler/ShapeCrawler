@@ -308,7 +308,7 @@ internal sealed class SCTextFrame : ITextFrame
         if (baseParagraph == null)
         {
             baseParagraph = this.Paragraphs.First();
-            baseParagraph.AddPortion(newText);
+            baseParagraph.Portions.Add(newText);
         }
 
         var removingParagraphs = this.Paragraphs.Where(p => p != baseParagraph);

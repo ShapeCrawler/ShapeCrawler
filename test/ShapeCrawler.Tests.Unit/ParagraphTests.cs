@@ -226,10 +226,7 @@ public class ParagraphTests : SCTest
 
     [Xunit.Theory]
     [MemberData(nameof(TestCasesParagraphText))]
-    public void Text_Setter_sets_paragraph_text(
-        TestElementQuery paragraphQuery, 
-        string newText,
-        int expectedPortionsCount)
+    public void Text_Setter_sets_paragraph_text(TestElementQuery paragraphQuery, string newText, int expectedPortionsCount)
     {
         // Arrange
         var paragraph = paragraphQuery.GetParagraph();
@@ -250,7 +247,47 @@ public class ParagraphTests : SCTest
         paragraph.Text.Should().BeEquivalentTo(newText);
         paragraph.Portions.Should().HaveCount(expectedPortionsCount);
     }
+    
+    public static IEnumerable<object[]> TestCasesParagraphText()
+    {
+        var paragraphQuery = new TestElementQuery
+        {
+            SlideIndex = 1,
+            ShapeId = 4,
+            ParagraphIndex = 2
+        };
+        paragraphQuery.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
+        yield return new object[] { paragraphQuery, "Text", 1 };
+
+        var paragraphQuery2 = new TestElementQuery
+        {
+            SlideIndex = 1,
+            ShapeId = 4,
+            ParagraphIndex = 2
+        };
+        paragraphQuery2.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
+        yield return new object[] { paragraphQuery2, $"Text{Environment.NewLine}", 1 };
         
+        var paragraphQuery3 = new TestElementQuery
+        {
+            SlideIndex = 1,
+            ShapeId = 4,
+            ParagraphIndex = 2
+        };
+        paragraphQuery3.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
+        yield return new object[] { paragraphQuery3, $"Text{Environment.NewLine}Text2", 2 };
+        
+        
+        var paragraphQuery4 = new TestElementQuery
+        {
+            SlideIndex = 1,
+            ShapeId = 4,
+            ParagraphIndex = 2
+        };
+        paragraphQuery4.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
+        yield return new object[] { paragraphQuery4, $"Text{Environment.NewLine}Text2{Environment.NewLine}", 2 };
+    }
+
     [Fact]
     public void Text_Setter_sets_paragraph_text_in_New_Presentation()
     {
@@ -285,46 +322,7 @@ public class ParagraphTests : SCTest
         paragraph.Text.Should().BeEquivalentTo("Safety\n\n\n");
         TestHelper.ThrowIfPresentationInvalid(pres);
     }
-
-    public static IEnumerable<object[]> TestCasesParagraphText()
-    {
-        var paragraphQuery = new TestElementQuery
-        {
-            SlideIndex = 1,
-            ShapeId = 4,
-            ParagraphIndex = 2
-        };
-        paragraphQuery.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
-        yield return new object[] { paragraphQuery, "Text", 1 };
-
-        paragraphQuery = new TestElementQuery
-        {
-            SlideIndex = 1,
-            ShapeId = 4,
-            ParagraphIndex = 2
-        };
-        paragraphQuery.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
-        yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}", 1 };
-
-        paragraphQuery = new TestElementQuery
-        {
-            SlideIndex = 1,
-            ShapeId = 4,
-            ParagraphIndex = 2
-        };
-        paragraphQuery.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
-        yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}Text2", 2 };
-
-        paragraphQuery = new TestElementQuery
-        {
-            SlideIndex = 1,
-            ShapeId = 4,
-            ParagraphIndex = 2
-        };
-        paragraphQuery.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
-        yield return new object[] { paragraphQuery, $"Text{Environment.NewLine}Text2{Environment.NewLine}", 2 };
-    }
-
+    
     [Fact]
     public void Paragraph_Text_Getter_returns_paragraph_text()
     {
@@ -406,5 +404,22 @@ public class ParagraphTests : SCTest
         // Assert
         spacingPoints.Should().Be(expectedPoints);
         paragraph.Spacing.LineSpacingLines.Should().BeNull();
+    }
+    
+    [Test]
+    public void Portions_Add()
+    {
+        // Arrange
+        var pptx = GetTestStream("autoshape-case001.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var shape = pres.SlideMasters[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
+        var paragraph = shape.TextFrame!.Paragraphs.Add();
+        var expectedPortionCount = paragraph.Portions.Count + 1;
+        
+        // Act
+        paragraph.Portions.Add(" ");
+        
+        // Assert
+        paragraph.Portions.Count.Should().Be(expectedPortionCount);
     }
 }
