@@ -422,4 +422,23 @@ public class ParagraphTests : SCTest
         // Assert
         paragraph.Portions.Count.Should().Be(expectedPortionCount);
     }
+
+    [Test]
+    public void HeaderFooterManager_SetSlideNumberVisible()
+    {
+        
+    }
+    
+    [Test]
+    public void HeaderFooterManager_IsSlideNumberVisible_returns_false_When_slide_number_is_not_inserted()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        
+        // Act
+        var isSlideNumberVisible = pres.HeaderFooterManager.IsSlideNumberVisible;
+        
+        // Assert
+        isSlideNumberVisible.Should().BeFalse();
+    }
 }

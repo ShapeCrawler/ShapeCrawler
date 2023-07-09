@@ -57,6 +57,8 @@ public interface IPresentation : IDisposable
     /// </summary>
     PresentationDocument SDKPresentationDocument { get; }
 
+    HeaderFooterManager HeaderFooterManager { get; set; }
+
     /// <summary>
     ///     Saves presentation.
     /// </summary>
@@ -161,6 +163,8 @@ public sealed class SCPresentation : IPresentation
 
     /// <inheritdoc/>
     public PresentationDocument SDKPresentationDocument => this.GetSDKPresentation();
+
+    public HeaderFooterManager HeaderFooterManager { get; set; } = new();
 
     internal ResettableLazy<SCSlideMasterCollection> SlideMastersValue { get; }
 
@@ -634,4 +638,9 @@ public sealed class SCPresentation : IPresentation
 
         return new SCSlideSize(withPx, heightPx);
     }
+}
+
+public class HeaderFooterManager
+{
+    public bool IsSlideNumberVisible { get; set; }
 }
