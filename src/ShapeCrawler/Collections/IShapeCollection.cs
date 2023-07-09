@@ -152,35 +152,35 @@ internal sealed class ShapeCollection : IShapeCollection
 
     public IShape this[int index] => this.shapes.Value[index];
 
-    public IShape Add(IShape shape)
+    public IShape Add(IShape addingShape)
     {
         // SmartArt (<p:graphicFrame /> http://schemas.openxmlformats.org/drawingml/2006/diagram) are not in the shape collection, data is referenced.
         // Chart (<p:graphicFrame /> http://schemas.openxmlformats.org/drawingml/2006/chart) are not in the shape collection, data is referenced.
         // Object (<p:graphicFrame /> http://schemas.openxmlformats.org/presentationml/2006/ole) are not in the shape collection, data is referenced.
         // Alternate content(<mc:AlternateContent /> http://schemas.openxmlformats.org/officeDocument/2006/math"> are not in the shape collection, data is referenced.
-        if (shape is not SCShape scShape || shape is IOLEObject || shape is IChart || shape is IAudioShape || shape is IVideoShape)
+        if (addingShape is not SCShape addingShapeInternal || addingShape is IOLEObject || addingShape is IChart || addingShape is IAudioShape || addingShape is IVideoShape)
         {
-            throw new SCException($"{shape.GetType().Name} is not supported.");
+            throw new SCException($"{addingShape.GetType().Name} is not supported.");
         }
 
         // Clone shape tree child.
-        var typedCompositeElement = (TypedOpenXmlCompositeElement)scShape.PShapeTreeChild.CloneNode(true);
+        var addingShapeClone = (TypedOpenXmlCompositeElement)addingShapeInternal.PShapeTreeChild.CloneNode(true);
         var id = ((SlideStructure)this.ParentSlideStructure.Value).GetNextShapeId();
-        typedCompositeElement.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
+        addingShapeClone.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
 
-        var newShape = this.GetShape(this.autoShapeCreator, typedCompositeElement);
+        var newShape = this.GetShape(this.autoShapeCreator, addingShapeClone);
 
         switch (newShape)
         {
             case null:
-                throw new SCException($"Cannot create an instance of type {shape.GetType().Name}.");
+                throw new SCException($"Cannot create an instance of type {addingShape.GetType().Name}.");
             case SCPicture pic:
-                pic.CopyParts((SlideStructure)scShape.ParentSlideStructureOf.Value);
+                pic.CopyParts((SlideStructure)addingShapeInternal.ParentSlideStructureOf.Value);
                 break;
         }
 
         // Creates a new suffix for the new shape.
-        var nameExists = this.Any(c => c.Name == shape.Name);
+        var nameExists = this.Any(c => c.Name == addingShape.Name);
 
         if (nameExists)
         {
@@ -191,10 +191,10 @@ internal sealed class ShapeCollection : IShapeCollection
             // Rectangle H = H (ignored)
             var currentShapeCollectionSuffixes = this
                 .Select(c => c.Name)
-                .Where(c => c.StartsWith(shape.Name, StringComparison.InvariantCulture))
+                .Where(c => c.StartsWith(addingShape.Name, StringComparison.InvariantCulture))
                 
                 // Select only the suffix
-                .Select(c => c.Substring(shape.Name.Length))
+                .Select(c => c.Substring(addingShape.Name.Length))
                 .ToArray();
 
             // We will try to check numeric suffixes only.
@@ -212,11 +212,11 @@ internal sealed class ShapeCollection : IShapeCollection
             var lastSuffix = numericSuffixes.LastOrDefault() + 1;
 
             // Assign new name
-            typedCompositeElement.GetNonVisualDrawingProperties().Name = shape.Name + " " + lastSuffix;
+            addingShapeClone.GetNonVisualDrawingProperties().Name = addingShape.Name + " " + lastSuffix;
         }
 
         this.shapes.Value.Add(newShape);
-        this.pShapeTree.Append(typedCompositeElement);
+        this.pShapeTree.Append(addingShapeClone);
 
         this.shapes.Reset();
 
