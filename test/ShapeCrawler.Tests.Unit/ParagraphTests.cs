@@ -424,9 +424,30 @@ public class ParagraphTests : SCTest
     }
 
     [Test]
-    public void HeaderFooterManager_SetSlideNumberVisible()
+    public void HeaderFooterManager_SetSlideNumberVisible_add_slide_number()
     {
+        // Arrange
+        var pres = SCPresentation.Create();
         
+        // Act
+        pres.HeaderFooterManager.SetSlideNumberVisible(true);
+        
+        // Assert
+        pres.HeaderFooterManager.IsSlideNumberVisible().Should().BeTrue();
+    }
+    
+    [Test]
+    public void HeaderFooterManager_SetSlideNumberVisible_removes_slide_number()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        pres.HeaderFooterManager.SetSlideNumberVisible(true);
+        
+        // Act
+        pres.HeaderFooterManager.SetSlideNumberVisible(false);
+        
+        // Assert
+        pres.HeaderFooterManager.IsSlideNumberVisible().Should().BeFalse();
     }
     
     [Test]
@@ -435,10 +456,7 @@ public class ParagraphTests : SCTest
         // Arrange
         var pres = SCPresentation.Create();
         
-        // Act
-        var isSlideNumberVisible = pres.HeaderFooterManager.IsSlideNumberVisible;
-        
-        // Assert
-        isSlideNumberVisible.Should().BeFalse();
+        // Act-Assert
+        pres.HeaderFooterManager.IsSlideNumberVisible().Should().BeFalse();
     }
 }

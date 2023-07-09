@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
@@ -57,7 +58,10 @@ public interface IPresentation : IDisposable
     /// </summary>
     PresentationDocument SDKPresentationDocument { get; }
 
-    HeaderFooterManager HeaderFooterManager { get; set; }
+    /// <summary>
+    ///     Gets Header and Footer manager.
+    /// </summary>
+    IHeaderFooterManager HeaderFooterManager { get; }
 
     /// <summary>
     ///     Saves presentation.
@@ -101,6 +105,7 @@ public sealed class SCPresentation : IPresentation
 
         this.internalStream = pptxBytes.ToExpandableStream();
         this.SDKPresentationInternal = PresentationDocument.Open(this.internalStream, true);
+        this.HeaderFooterManager = new HeaderFooterManager(this);
 
         this.ThrowIfSlidesNumberLarge();
         this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
@@ -122,6 +127,7 @@ public sealed class SCPresentation : IPresentation
         this.internalStream = new MemoryStream();
         outerStream.CopyTo(this.internalStream);
         this.SDKPresentationInternal = PresentationDocument.Open(this.internalStream, true);
+        this.HeaderFooterManager = new HeaderFooterManager(this);
 
         this.ThrowIfSlidesNumberLarge();
         this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
@@ -164,7 +170,8 @@ public sealed class SCPresentation : IPresentation
     /// <inheritdoc/>
     public PresentationDocument SDKPresentationDocument => this.GetSDKPresentation();
 
-    public HeaderFooterManager HeaderFooterManager { get; set; } = new();
+    /// <inheritdoc/>
+    public IHeaderFooterManager HeaderFooterManager { get; }
 
     internal ResettableLazy<SCSlideMasterCollection> SlideMastersValue { get; }
 
@@ -189,16 +196,12 @@ public sealed class SCPresentation : IPresentation
     {
         SCLogger.Send();
 
-        var stream = new MemoryStream();
-        var presDoc = PresentationDocument.Create(stream, PresentationDocumentType.Presentation);
-        var presPart = presDoc.AddPresentationPart();
-        presPart.Presentation = new P.Presentation();
+        var assembly = Assembly.GetExecutingAssembly();
+        var rStream = assembly.GetManifestResourceStream("ShapeCrawler.Resources.new-presentation.pptx") !;
+        var mStream = new MemoryStream();
+        rStream.CopyTo(mStream);
 
-        CreatePresentationParts(presPart);
-
-        presDoc.Dispose();
-
-        return Open(stream);
+        return Open(mStream);
     }
 
     /// <summary>
@@ -638,9 +641,4 @@ public sealed class SCPresentation : IPresentation
 
         return new SCSlideSize(withPx, heightPx);
     }
-}
-
-public class HeaderFooterManager
-{
-    public bool IsSlideNumberVisible { get; set; }
 }

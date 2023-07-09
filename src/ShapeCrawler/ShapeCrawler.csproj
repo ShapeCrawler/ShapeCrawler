@@ -60,6 +60,8 @@ Fixed updating height of table row.</PackageReleaseNotes>
     <EmbeddedResource Include="Resources\video-image.bmp" />
     <None Remove="Resources\audio-image.png" />
     <EmbeddedResource Include="Resources\audio-image.png" />
+    <None Remove="Resources\new-presentation.pptx" />
+    <EmbeddedResource Include="Resources\new-presentation.pptx" />
   </ItemGroup>
 
   <ItemGroup>
