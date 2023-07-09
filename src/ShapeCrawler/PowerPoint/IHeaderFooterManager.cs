@@ -3,7 +3,7 @@
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents slide Header and Footer manager.
+///     Represents Header and Footer manager.
 /// </summary>
 public interface IHeaderFooterManager
 {
@@ -22,7 +22,7 @@ internal class HeaderFooterManager : IHeaderFooterManager
 {
     private readonly SCPresentation presentation;
 
-    public HeaderFooterManager(SCPresentation presentation)
+    internal HeaderFooterManager(SCPresentation presentation)
     {
         this.presentation = presentation;
     }

@@ -424,7 +424,7 @@ public class ParagraphTests : SCTest
     }
 
     [Test]
-    public void HeaderFooterManager_SetSlideNumberVisible_add_slide_number()
+    public void HeaderFooterManager_SetSlideNumberVisible_adds_slide_number()
     {
         // Arrange
         var pres = SCPresentation.Create();
@@ -451,7 +451,7 @@ public class ParagraphTests : SCTest
     }
     
     [Test]
-    public void HeaderFooterManager_IsSlideNumberVisible_returns_false_When_slide_number_is_not_inserted()
+    public void HeaderFooterManager_IsSlideNumberVisible_returns_false_When_slide_number_is_not_added()
     {
         // Arrange
         var pres = SCPresentation.Create();
