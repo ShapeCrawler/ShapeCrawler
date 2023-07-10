@@ -5,7 +5,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents Header and Footer manager.
 /// </summary>
-public interface IHeaderFooterManager
+public interface IHeaderAndFooter
 {
     /// <summary>
     ///     Gets a value indicating whether slide number is visible.
@@ -18,11 +18,11 @@ public interface IHeaderFooterManager
     void SetSlideNumberVisible(bool visible);
 }
 
-internal class HeaderFooterManager : IHeaderFooterManager
+internal class HeaderAndFooter : IHeaderAndFooter
 {
     private readonly SCPresentation presentation;
 
-    internal HeaderFooterManager(SCPresentation presentation)
+    internal HeaderAndFooter(SCPresentation presentation)
     {
         this.presentation = presentation;
     }

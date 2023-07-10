@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Charts;
@@ -393,5 +394,44 @@ public class PresentationTests : SCTest
         
         // Assert
         binaryData.Should().NotBeNull();
+    }
+    
+    [Test]
+    public void HeaderAndFooter_SetSlideNumberVisible_adds_slide_number()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        
+        // Act
+        pres.HeaderAndAndFooter.SetSlideNumberVisible(true);
+
+        // Assert
+        pres.HeaderAndAndFooter.IsSlideNumberVisible().Should().BeTrue();
+    }
+    
+    [Test]
+    public void HeaderAndFooter_SetSlideNumberVisible_removes_slide_number()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        pres.HeaderAndAndFooter.SetSlideNumberVisible(true);
+        
+        // Act
+        pres.HeaderAndAndFooter.SetSlideNumberVisible(false);
+        
+        // Assert
+        pres.HeaderAndAndFooter.IsSlideNumberVisible().Should().BeFalse();
+    }
+    
+    [Test]
+    public void HeaderAndFooter_IsSlideNumberVisible_returns_false_When_slide_number_is_not_added()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        
+        // Act-Assert
+        pres.HeaderAndAndFooter.IsSlideNumberVisible().Should().BeFalse();
+    }
+
     }
 }

@@ -422,41 +422,4 @@ public class ParagraphTests : SCTest
         // Assert
         paragraph.Portions.Count.Should().Be(expectedPortionCount);
     }
-
-    [Test]
-    public void HeaderFooterManager_SetSlideNumberVisible_adds_slide_number()
-    {
-        // Arrange
-        var pres = SCPresentation.Create();
-        
-        // Act
-        pres.HeaderFooterManager.SetSlideNumberVisible(true);
-        
-        // Assert
-        pres.HeaderFooterManager.IsSlideNumberVisible().Should().BeTrue();
-    }
-    
-    [Test]
-    public void HeaderFooterManager_SetSlideNumberVisible_removes_slide_number()
-    {
-        // Arrange
-        var pres = SCPresentation.Create();
-        pres.HeaderFooterManager.SetSlideNumberVisible(true);
-        
-        // Act
-        pres.HeaderFooterManager.SetSlideNumberVisible(false);
-        
-        // Assert
-        pres.HeaderFooterManager.IsSlideNumberVisible().Should().BeFalse();
-    }
-    
-    [Test]
-    public void HeaderFooterManager_IsSlideNumberVisible_returns_false_When_slide_number_is_not_added()
-    {
-        // Arrange
-        var pres = SCPresentation.Create();
-        
-        // Act-Assert
-        pres.HeaderFooterManager.IsSlideNumberVisible().Should().BeFalse();
-    }
 }

@@ -66,7 +66,7 @@ internal sealed class SCFont : IFont
 {
     private readonly A.Text aText;
     private readonly A.FontScheme aFontScheme;
-    private readonly Lazy<ColorFormat> colorFormat;
+    private readonly Lazy<SCColorFormat> colorFormat;
     private readonly ResettableLazy<A.LatinFont> latinFont;
     private readonly ResettableLazy<int> size;
 
@@ -75,7 +75,7 @@ internal sealed class SCFont : IFont
         this.aText = aText;
         this.size = new ResettableLazy<int>(this.GetSize);
         this.latinFont = new ResettableLazy<A.LatinFont>(this.GetALatinFont);
-        this.colorFormat = new Lazy<ColorFormat>(() => new ColorFormat(this));
+        this.colorFormat = new Lazy<SCColorFormat>(() => new SCColorFormat(this));
         this.ParentPortion = portion;
         var parentTextBoxContainer = portion.ParentParagraph.ParentTextFrame.TextFrameContainer;
         SCShape shape;

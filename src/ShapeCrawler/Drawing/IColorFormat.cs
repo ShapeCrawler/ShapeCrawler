@@ -32,7 +32,7 @@ public interface IColorFormat
     void SetColorByHex(string hex);
 }
 
-internal sealed class ColorFormat : IColorFormat
+internal sealed class SCColorFormat : IColorFormat
 {
     private readonly SCFont font;
     private readonly ITextFrameContainer textFrameContainer;
@@ -41,7 +41,7 @@ internal sealed class ColorFormat : IColorFormat
     private string? hexColor;
     private SCColorType colorType;
 
-    internal ColorFormat(SCFont font)
+    internal SCColorFormat(SCFont font)
     {
         this.font = font;
         this.textFrameContainer = font.ParentPortion.ParentParagraph.ParentTextFrame.TextFrameContainer;
