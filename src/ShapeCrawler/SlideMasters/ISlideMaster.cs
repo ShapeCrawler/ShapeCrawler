@@ -38,6 +38,11 @@ public interface ISlideMaster
     ///     Gets theme.
     /// </summary>
     ITheme Theme { get; }
+
+    /// <summary>
+    ///     Gets slide number. Returns <see langword="null"/> if slide master does not have slide number.
+    /// </summary>
+    ISlideNumber? SlideNumber { get; }
 }
 
 internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
@@ -51,6 +56,12 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
         this.PSlideMaster = pSlideMaster;
         this.slideLayouts = new ResettableLazy<List<SCSlideLayout>>(this.GetSlideLayouts);
         this.Number = number;
+        
+        var pSldNum = pSlideMaster.CommonSlideData!.ShapeTree!.Elements<P.Shape>().FirstOrDefault(s => s.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?.PlaceholderShape?.Type?.Value == P.PlaceholderValues.SlideNumber);
+        if (pSldNum is not null)
+        {
+            this.SlideNumber = new SCSlideNumber(pSldNum);
+        }
     }
 
     public IImage? Background => this.GetBackground();
@@ -60,6 +71,8 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
     public override IShapeCollection Shapes => new ShapeCollection(this.PSlideMaster.SlideMasterPart!, this);
 
     public ITheme Theme => this.GetTheme();
+
+    public ISlideNumber? SlideNumber { get; }
 
     public override int Number { get; set; }
 

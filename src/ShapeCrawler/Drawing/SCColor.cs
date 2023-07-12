@@ -8,57 +8,29 @@ namespace ShapeCrawler.Drawing;
 public struct SCColor
 {
     /// <summary>
-    ///     Gets the predefined black color.
+    ///     Predefined black color.
     /// </summary>
     public static readonly SCColor Black = new(0, 0, 0);
 
     /// <summary>
-    ///     Gets the predefined transparent color.
+    ///     Predefined transparent color.
     /// </summary>
     public static readonly SCColor Transparent = new(0, 0, 0, 0);
 
     /// <summary>
-    ///     Gets the predefined white color.
+    ///     Predefined white color.
     /// </summary>
     public static readonly SCColor White = new(255, 255, 255);
 
     /// <summary>
-    /// Max opacity value, equivalent to 1.
+    ///     Max opacity value, equivalent to 1.
     /// </summary>
     internal const float OPACITY = 255;
 
-    /// <summary>
-    /// Set color blue.
-    /// </summary>
     private readonly int blue;
-
-    /// <summary>
-    /// Set color green.
-    /// </summary>
     private readonly int green;
-
-    /// <summary>
-    /// Set color red.
-    /// </summary>
     private readonly int red;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SCColor"/> class.
-    /// </summary>
-    /// <example>
-    /// This shows how to creates a new instance of white color.
-    /// <code>
-    /// var white = new SCColor("FFF");
-    /// var white = new SCColor("FFFF"); // Four char is for opacity (RGBA)
-    /// var white = new SCColor("FFFFFF");
-    /// var white = new SCColor("FFFFFF7F"); // 7F = ~50%
-    /// </code>
-    /// </example>
-    /// <exception cref="Exception">Thrown when RGBA value is invalid.</exception>
-    /// <remarks>
-    /// "<paramref name="hex"/>" requires a RGBA value, but alpha (A) is optional.
-    /// </remarks>
-    /// <param name="hex">RGBA value.</param>
     internal SCColor(string hex) 
         : this(ParseHexValue(hex))
     {
@@ -104,19 +76,24 @@ public struct SCColor
     ///     Gets the red value.
     /// </summary>
     public int R => this.red;
-
+    
     /// <summary>
-    /// Gets a value indicating whether if color is solid.
+    ///     Gets hexadecimal code.
+    /// </summary>
+    public string Hex => this.ToString();
+    
+    /// <summary>
+    ///     Gets a value indicating whether the color is solid.
     /// </summary>
     internal bool IsSolid => this.Alpha == 255;
 
     /// <summary>
-    /// Gets a value indicating whether if color is transparent.
+    ///     Gets a value indicating whether the color is transparent.
     /// </summary>
     internal bool IsTransparent => this.Alpha == 0;
 
     /// <summary>
-    /// Returns a value indicating wheather hex is a valid value.
+    ///     Creates color from Hex value.
     /// </summary>
     /// <param name="hex">Hex value.</param>
     /// <param name="result">Color value.</param>
@@ -136,15 +113,17 @@ public struct SCColor
         return new(r, g, b, a);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    ///     Creates color hexadecimal code.
+    /// </summary>
     public override string ToString()
     {
-        // String representation ignores alpha value.
+        // String representation ignores alpha value
         return $"{this.R:X2}{this.G:X2}{this.B:X2}";
     }
 
     /// <summary>
-    /// Returns a color of RGBA.
+    ///     Returns a color of RGBA.
     /// </summary>
     /// <param name="hex">Hex value.</param>
     /// <returns>A RGBA color.</returns>

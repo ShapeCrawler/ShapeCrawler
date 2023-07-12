@@ -60,7 +60,7 @@ public interface IPresentation : IDisposable
     /// <summary>
     ///     Gets Header and Footer manager.
     /// </summary>
-    IHeaderFooterManager HeaderFooterManager { get; }
+    IHeaderAndFooter HeaderAndFooter { get; }
 
     /// <summary>
     ///     Saves presentation.
@@ -104,7 +104,6 @@ public sealed class SCPresentation : IPresentation
 
         this.internalStream = pptxBytes.ToExpandableStream();
         this.SDKPresentationInternal = PresentationDocument.Open(this.internalStream, true);
-        this.HeaderFooterManager = new HeaderFooterManager(this);
 
         this.ThrowIfSlidesNumberLarge();
         this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
@@ -116,6 +115,7 @@ public sealed class SCPresentation : IPresentation
         this.sectionCollectionLazy =
             new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
         this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
+        this.HeaderAndFooter = new HeaderAndFooter(this);
     }
 
     private SCPresentation(Stream outerStream)
@@ -126,7 +126,6 @@ public sealed class SCPresentation : IPresentation
         this.internalStream = new MemoryStream();
         outerStream.CopyTo(this.internalStream);
         this.SDKPresentationInternal = PresentationDocument.Open(this.internalStream, true);
-        this.HeaderFooterManager = new HeaderFooterManager(this);
 
         this.ThrowIfSlidesNumberLarge();
         this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
@@ -138,6 +137,7 @@ public sealed class SCPresentation : IPresentation
         this.sectionCollectionLazy =
             new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
         this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
+        this.HeaderAndFooter = new HeaderAndFooter(this);
     }
 
     /// <inheritdoc/>
@@ -170,7 +170,7 @@ public sealed class SCPresentation : IPresentation
     public PresentationDocument SDKPresentationDocument => this.GetSDKPresentation();
 
     /// <inheritdoc/>
-    public IHeaderFooterManager HeaderFooterManager { get; }
+    public IHeaderAndFooter HeaderAndFooter { get; }
 
     internal ResettableLazy<SCSlideMasterCollection> SlideMastersValue { get; }
 
