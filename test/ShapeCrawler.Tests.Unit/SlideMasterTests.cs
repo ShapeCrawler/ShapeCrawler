@@ -1,5 +1,8 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using FluentAssertions;
+using NUnit.Framework;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
@@ -7,6 +10,7 @@ using Xunit;
 
 namespace ShapeCrawler.Tests.Unit;
 
+[SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class SlideMasterTests : SCTest
 {
     [Fact]
@@ -294,5 +298,22 @@ public class SlideMasterTests : SCTest
         slideMaster.Theme.ColorScheme.FollowedHyperlink.Should().Be("FFC0CB");
         var errors = PptxValidator.Validate(pres);
         errors.Should().BeEmpty();
+    }
+    
+    [Test]
+    public void SlideNumber_Font_Color_Setter()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        pres.HeaderAndFooter.AddSlideNumber();
+        var slideMaster = pres.SlideMasters[0];
+        var green = SCColor.FromHex("00FF00");
+
+        // Act
+        slideMaster.SlideNumber.Font.Color = green;
+        SaveResult(pres);
+
+        // Assert
+        slideMaster.SlideNumber.Font.Color.Hex.Should().Be("00FF00");
     }
 }

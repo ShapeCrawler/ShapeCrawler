@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
@@ -38,6 +40,8 @@ public interface ISlideMaster
     ///     Gets theme.
     /// </summary>
     ITheme Theme { get; }
+
+    ISlideNumber SlideNumber { get; }
 }
 
 internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
@@ -51,6 +55,7 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
         this.PSlideMaster = pSlideMaster;
         this.slideLayouts = new ResettableLazy<List<SCSlideLayout>>(this.GetSlideLayouts);
         this.Number = number;
+        this.SlideNumber = new SCSlideNumber(this.PSlideMaster.CommonSlideData!.ShapeTree!);
     }
 
     public IImage? Background => this.GetBackground();
@@ -60,6 +65,7 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
     public override IShapeCollection Shapes => new ShapeCollection(this.PSlideMaster.SlideMasterPart!, this);
 
     public ITheme Theme => this.GetTheme();
+    public ISlideNumber SlideNumber { get; }
 
     public override int Number { get; set; }
 

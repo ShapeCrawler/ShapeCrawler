@@ -60,7 +60,7 @@ public interface IPresentation : IDisposable
     /// <summary>
     ///     Gets Header and Footer manager.
     /// </summary>
-    IHeaderAndFooter HeaderAndAndFooter { get; }
+    IHeaderAndFooter HeaderAndFooter { get; }
 
     /// <summary>
     ///     Saves presentation.
@@ -115,7 +115,7 @@ public sealed class SCPresentation : IPresentation
         this.sectionCollectionLazy =
             new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
         this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
-        this.HeaderAndAndFooter = new HeaderAndFooter(this);
+        this.HeaderAndFooter = new HeaderAndFooter(this);
     }
 
     private SCPresentation(Stream outerStream)
@@ -137,7 +137,7 @@ public sealed class SCPresentation : IPresentation
         this.sectionCollectionLazy =
             new ResettableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
         this.slideCollectionLazy = new ResettableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
-        this.HeaderAndAndFooter = new HeaderAndFooter(this);
+        this.HeaderAndFooter = new HeaderAndFooter(this);
     }
 
     /// <inheritdoc/>
@@ -170,7 +170,7 @@ public sealed class SCPresentation : IPresentation
     public PresentationDocument SDKPresentationDocument => this.GetSDKPresentation();
 
     /// <inheritdoc/>
-    public IHeaderAndFooter HeaderAndAndFooter { get; }
+    public IHeaderAndFooter HeaderAndFooter { get; }
 
     internal ResettableLazy<SCSlideMasterCollection> SlideMastersValue { get; }
 

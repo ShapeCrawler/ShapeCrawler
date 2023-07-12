@@ -50,6 +50,11 @@ internal abstract class SCShape : IShape
     public abstract SCShapeType ShapeType { get; }
     
     public ISlideStructure SlideStructure { get; }
+    
+    public IAutoShape? AsAutoShape()
+    {
+        return this as IAutoShape;
+    }
 
     public IPlaceholder? Placeholder => SCSlidePlaceholder.Create(this.PShapeTreeChild, this);
 

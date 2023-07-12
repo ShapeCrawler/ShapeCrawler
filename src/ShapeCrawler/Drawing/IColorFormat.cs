@@ -12,7 +12,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents a color.
+///     Represents a color format.
 /// </summary>
 public interface IColorFormat
 {
@@ -24,7 +24,7 @@ public interface IColorFormat
     /// <summary>
     ///     Gets color hexadecimal representation.
     /// </summary>
-    string ColorHex { get; } // TODO: combine with SetColorByHex?
+    string ColorHex { get; }
 
     /// <summary>
     ///     Sets solid color by its hexadecimal representation.

@@ -397,40 +397,40 @@ public class PresentationTests : SCTest
     }
     
     [Test]
-    public void HeaderAndFooter_SetSlideNumberVisible_adds_slide_number()
+    public void HeaderAndFooter_AddSlideNumber_adds_slide_number()
     {
         // Arrange
         var pres = SCPresentation.Create();
         
         // Act
-        pres.HeaderAndAndFooter.SetSlideNumberVisible(true);
+        pres.HeaderAndFooter.AddSlideNumber();
 
         // Assert
-        pres.HeaderAndAndFooter.IsSlideNumberVisible().Should().BeTrue();
+        pres.HeaderAndFooter.SlideNumberAdded().Should().BeTrue();
     }
     
     [Test]
-    public void HeaderAndFooter_SetSlideNumberVisible_removes_slide_number()
+    public void HeaderAndFooter_RemoveSlideNumber_removes_slide_number()
     {
         // Arrange
         var pres = SCPresentation.Create();
-        pres.HeaderAndAndFooter.SetSlideNumberVisible(true);
+        pres.HeaderAndFooter.AddSlideNumber();
         
         // Act
-        pres.HeaderAndAndFooter.SetSlideNumberVisible(false);
+        pres.HeaderAndFooter.RemoveSlideNumber();
         
         // Assert
-        pres.HeaderAndAndFooter.IsSlideNumberVisible().Should().BeFalse();
+        pres.HeaderAndFooter.SlideNumberAdded().Should().BeFalse();
     }
     
     [Test]
-    public void HeaderAndFooter_IsSlideNumberVisible_returns_false_When_slide_number_is_not_added()
+    public void HeaderAndFooter_SlideNumberAdded_returns_false_When_slide_number_is_not_added()
     {
         // Arrange
         var pres = SCPresentation.Create();
         
         // Act-Assert
-        pres.HeaderAndAndFooter.IsSlideNumberVisible().Should().BeFalse();
+        pres.HeaderAndFooter.SlideNumberAdded().Should().BeFalse();
     }
 
     }

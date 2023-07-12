@@ -69,4 +69,6 @@ public interface IShape
     ///     Gets parent Slide, SlideLayout or SlideMaster.
     /// </summary>
     ISlideStructure SlideStructure { get; }
+
+    IAutoShape? AsAutoShape();
 }

@@ -10,12 +10,17 @@ public interface IHeaderAndFooter
     /// <summary>
     ///     Gets a value indicating whether slide number is visible.
     /// </summary>
-    bool IsSlideNumberVisible();
+    bool SlideNumberAdded();
 
     /// <summary>
-    ///     Sets slide number visibility.
+    ///     Adds slide number on slides.
     /// </summary>
-    void SetSlideNumberVisible(bool visible);
+    void AddSlideNumber();
+
+    /// <summary>
+    ///     Removes slide number from slides.
+    /// </summary>
+    void RemoveSlideNumber();
 }
 
 internal class HeaderAndFooter : IHeaderAndFooter
@@ -27,42 +32,46 @@ internal class HeaderAndFooter : IHeaderAndFooter
         this.presentation = presentation;
     }
 
-    public bool IsSlideNumberVisible()
+    public bool SlideNumberAdded()
     {
-        return this.presentation.Slides.Any(slide => slide.Shapes.Any(shape => shape.Placeholder?.Type == SCPlaceholderType.SlideNumber));
+        return this.presentation.Slides.Any(slide =>
+            slide.Shapes.Any(shape => shape.Placeholder?.Type == SCPlaceholderType.SlideNumber));
     }
 
-    public void SetSlideNumberVisible(bool visible)
+    public void AddSlideNumber()
     {
-        if (this.IsSlideNumberVisible() == visible)
+        if (this.SlideNumberAdded())
         {
             return;
         }
 
-        if (visible)
+        foreach (var slide in this.presentation.Slides)
         {
-            foreach (var slide in this.presentation.Slides)
+            var slideNumberPlaceholder =
+                slide.SlideLayout.Shapes.FirstOrDefault(shape =>
+                    shape.Placeholder?.Type == SCPlaceholderType.SlideNumber);
+            if (slideNumberPlaceholder != null)
             {
-                var slideNumberPlaceholder =
-                    slide.SlideLayout.Shapes.FirstOrDefault(shape =>
-                        shape.Placeholder?.Type == SCPlaceholderType.SlideNumber);
-                if (slideNumberPlaceholder != null)
-                {
-                    slide.Shapes.Add(slideNumberPlaceholder);
-                }
+                slide.Shapes.Add(slideNumberPlaceholder);
             }
         }
-        else
+    }
+
+    public void RemoveSlideNumber()
+    {
+        if (!this.SlideNumberAdded())
         {
-            foreach (var slide in this.presentation.Slides)
+            return;
+        }
+
+        foreach (var slide in this.presentation.Slides)
+        {
+            var slideNumberPlaceholder =
+                slide.SlideLayout.Shapes.FirstOrDefault(shape =>
+                    shape.Placeholder?.Type == SCPlaceholderType.SlideNumber);
+            if (slideNumberPlaceholder != null)
             {
-                var slideNumberPlaceholder =
-                    slide.Shapes.FirstOrDefault(shape =>
-                        shape.Placeholder?.Type == SCPlaceholderType.SlideNumber);
-                if (slideNumberPlaceholder != null)
-                {
-                    slide.Shapes.Remove(slideNumberPlaceholder);
-                }
+                slide.Shapes.Add(slideNumberPlaceholder);
             }
         }
     }
