@@ -432,6 +432,4 @@ public class PresentationTests : SCTest
         // Act-Assert
         pres.HeaderAndFooter.SlideNumberAdded().Should().BeFalse();
     }
-
-    }
 }

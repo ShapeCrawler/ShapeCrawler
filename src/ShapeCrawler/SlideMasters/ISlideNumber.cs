@@ -1,23 +1,25 @@
-﻿using System.Linq;
-using A = DocumentFormat.OpenXml.Drawing;
+﻿using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
+// ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
 
+/// <summary>
+///     Represents a slide number.
+/// </summary>
 public interface ISlideNumber
 {
+    /// <summary>
+    ///     Gets font.
+    /// </summary>
     ISlideNumberFont Font { get; }
 }
 
 internal class SCSlideNumber : ISlideNumber
 {
-    private readonly P.ShapeTree pShapeTree;
-
-    public SCSlideNumber(P.ShapeTree pShapeTree)
+    public SCSlideNumber(P.Shape pSldNum)
     {
-        this.pShapeTree = pShapeTree;
-        var pSldNum = this.pShapeTree.Elements<P.Shape>().FirstOrDefault(shape => shape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!.PlaceholderShape!.Type!.Value == P.PlaceholderValues.SlideNumber);
-        var aDefaultRunProperties = pSldNum!.TextBody!.ListStyle!.Level1ParagraphProperties?.GetFirstChild<A.DefaultRunProperties>()!; 
+        var aDefaultRunProperties = pSldNum.TextBody!.ListStyle!.Level1ParagraphProperties?.GetFirstChild<A.DefaultRunProperties>() !; 
         this.Font = new SCSlideNumberFont(aDefaultRunProperties);
     }
 

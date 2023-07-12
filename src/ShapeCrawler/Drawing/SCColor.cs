@@ -21,11 +21,6 @@ public struct SCColor
     ///     Predefined white color.
     /// </summary>
     public static readonly SCColor White = new(255, 255, 255);
-    
-    /// <summary>
-    ///     Hexadecimal color code.
-    /// </summary>
-    public string Hex => this.ToString();
 
     /// <summary>
     ///     Max opacity value, equivalent to 1.
@@ -81,7 +76,12 @@ public struct SCColor
     ///     Gets the red value.
     /// </summary>
     public int R => this.red;
-
+    
+    /// <summary>
+    ///     Gets hexadecimal code.
+    /// </summary>
+    public string Hex => this.ToString();
+    
     /// <summary>
     ///     Gets a value indicating whether the color is solid.
     /// </summary>
@@ -116,7 +116,6 @@ public struct SCColor
     /// <summary>
     ///     Creates color hexadecimal code.
     /// </summary>
-    /// <returns></returns>
     public override string ToString()
     {
         // String representation ignores alpha value

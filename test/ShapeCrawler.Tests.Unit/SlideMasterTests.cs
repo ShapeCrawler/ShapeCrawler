@@ -305,13 +305,11 @@ public class SlideMasterTests : SCTest
     {
         // Arrange
         var pres = SCPresentation.Create();
-        pres.HeaderAndFooter.AddSlideNumber();
         var slideMaster = pres.SlideMasters[0];
         var green = SCColor.FromHex("00FF00");
 
         // Act
         slideMaster.SlideNumber.Font.Color = green;
-        SaveResult(pres);
 
         // Assert
         slideMaster.SlideNumber.Font.Color.Hex.Should().Be("00FF00");

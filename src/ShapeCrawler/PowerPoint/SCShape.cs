@@ -51,11 +51,6 @@ internal abstract class SCShape : IShape
     
     public ISlideStructure SlideStructure { get; }
     
-    public IAutoShape? AsAutoShape()
-    {
-        return this as IAutoShape;
-    }
-
     public IPlaceholder? Placeholder => SCSlidePlaceholder.Create(this.PShapeTreeChild, this);
 
     public virtual SCGeometry GeometryType => this.GetGeometryType();
@@ -111,6 +106,11 @@ internal abstract class SCShape : IShape
 
     private SCGroupShape? GroupShape { get; }
 
+    public IAutoShape? AsAutoShape()
+    {
+        return this as IAutoShape;
+    }
+    
     internal abstract void Draw(SKCanvas canvas);
     
     internal abstract string ToJson();

@@ -1,10 +1,17 @@
 ﻿using ShapeCrawler.Drawing;
 using A = DocumentFormat.OpenXml.Drawing;
 
+// ReSharper disable CheckNamespace
 namespace ShapeCrawler;
 
+/// <summary>
+///     Represents a slide number font.
+/// </summary>
 public interface ISlideNumberFont
 {
+    /// <summary>
+    ///     Gets or sets color.
+    /// </summary>
     SCColor Color { get; set; }
 }
 
@@ -25,7 +32,7 @@ internal class SCSlideNumberFont : ISlideNumberFont
 
     private void UpdateColor(SCColor color)
     {
-        var solidFill = this.aDefaultRunProperties.GetFirstChild<A.SolidFill>()!;
+        var solidFill = this.aDefaultRunProperties.GetFirstChild<A.SolidFill>() !;
         solidFill.RemoveAllChildren();
         
         var rgbColorModelHex = new A.RgbColorModelHex
@@ -37,7 +44,7 @@ internal class SCSlideNumberFont : ISlideNumberFont
 
     private SCColor ParseColor()
     {
-        var hex = this.aDefaultRunProperties.GetFirstChild<A.SolidFill>()!.RgbColorModelHex!.Val!.Value!;
+        var hex = this.aDefaultRunProperties.GetFirstChild<A.SolidFill>() !.RgbColorModelHex!.Val!.Value!;
 
         return SCColor.FromHex(hex);
     }
