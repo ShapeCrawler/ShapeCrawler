@@ -1,11 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
+using DocumentFormat.OpenXml.Presentation;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
+using ShapeCrawler.Tests.Unit.Helpers.Attributes;
 using Xunit;
 
 namespace ShapeCrawler.Tests.Unit;
@@ -301,15 +304,16 @@ public class SlideMasterTests : SCTest
     }
     
     [Test]
-    public void SlideNumber_Font_Color_Setter()
+    [PresentationData("new")]
+    [PresentationData("023.pptx")]
+    public void SlideNumber_Font_Color_Setter(IPresentation pres)
     {
         // Arrange
-        var pres = SCPresentation.Create();
         var slideMaster = pres.SlideMasters[0];
         var green = SCColor.FromHex("00FF00");
 
         // Act
-        slideMaster.SlideNumber.Font.Color = green;
+        slideMaster.SlideNumber!.Font.Color = green;
 
         // Assert
         slideMaster.SlideNumber.Font.Color.Hex.Should().Be("00FF00");

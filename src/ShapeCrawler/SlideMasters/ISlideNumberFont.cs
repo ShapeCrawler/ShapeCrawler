@@ -32,14 +32,13 @@ internal class SCSlideNumberFont : ISlideNumberFont
 
     private void UpdateColor(SCColor color)
     {
-        var solidFill = this.aDefaultRunProperties.GetFirstChild<A.SolidFill>() !;
-        solidFill.RemoveAllChildren();
+        var solidFill = this.aDefaultRunProperties.GetFirstChild<A.SolidFill>();
+        solidFill?.Remove();
+
+        var rgbColorModelHex = new A.RgbColorModelHex { Val = color.ToString() };
+        solidFill = new A.SolidFill(rgbColorModelHex);
         
-        var rgbColorModelHex = new A.RgbColorModelHex
-        {
-            Val = color.ToString()
-        };
-        solidFill.AppendChild(rgbColorModelHex);
+        this.aDefaultRunProperties.Append(solidFill);
     }
 
     private SCColor ParseColor()
