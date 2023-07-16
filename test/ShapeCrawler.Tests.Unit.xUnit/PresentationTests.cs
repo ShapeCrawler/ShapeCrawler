@@ -46,7 +46,7 @@ public class PresentationTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Test]
+    [Fact]
     public void SlideWidth_Getter_returns_presentation_Slides_Width_in_pixels()
     {
         // Arrange
@@ -60,7 +60,7 @@ public class PresentationTests : SCTest
         slidesWidth.Should().Be(960);
     }
     
-    [Test]
+    [Fact]
     public void SlideWidth_Setter_sets_presentation_Slides_Width_in_pixels()
     {
         // Arrange
@@ -74,7 +74,7 @@ public class PresentationTests : SCTest
         pres.SlideWidth.Should().Be(1000);
     }
         
-    [Test]
+    [Fact]
     public void SlideHeight_Getter_returns_presentation_Slides_Height_in_pixels()
     {
         // Arrange
@@ -88,7 +88,7 @@ public class PresentationTests : SCTest
         slideHeight.Should().Be(540);
     }
     
-    [Test]
+    [Fact]
     public void SlideHeight_Setter_sets_presentation_Slides_Height_in_pixels()
     {
         // Arrange
@@ -380,7 +380,7 @@ public class PresentationTests : SCTest
         autoShapeText.Should().BeEquivalentTo(originalText);
     }
     
-    [Test]
+    [Fact]
     public void BinaryData_returns_presentation_binary_content_After_updating_series()
     {
         // Arrange
@@ -396,7 +396,7 @@ public class PresentationTests : SCTest
         binaryData.Should().NotBeNull();
     }
     
-    [Test]
+    [Fact]
     public void HeaderAndFooter_AddSlideNumber_adds_slide_number()
     {
         // Arrange
@@ -409,7 +409,7 @@ public class PresentationTests : SCTest
         pres.HeaderAndFooter.SlideNumberAdded().Should().BeTrue();
     }
     
-    [Test]
+    [Fact]
     public void HeaderAndFooter_RemoveSlideNumber_removes_slide_number()
     {
         // Arrange
@@ -423,7 +423,7 @@ public class PresentationTests : SCTest
         pres.HeaderAndFooter.SlideNumberAdded().Should().BeFalse();
     }
     
-    [Test]
+    [Fact]
     public void HeaderAndFooter_SlideNumberAdded_returns_false_When_slide_number_is_not_added()
     {
         // Arrange

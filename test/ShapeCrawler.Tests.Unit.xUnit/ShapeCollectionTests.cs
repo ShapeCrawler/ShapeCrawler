@@ -6,6 +6,7 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Helpers.Attributes;
+using Xunit;
 using Assert = Xunit.Assert;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
@@ -34,7 +35,7 @@ public class ShapeCollectionTests : SCTest
         resultShape.Should().NotBeNull();
     }
 
-    [Test]
+    [Fact]
     public void Add_adds_shape()
     {
         // Arrange
@@ -50,7 +51,7 @@ public class ShapeCollectionTests : SCTest
         shapeCollection.GetByName("TextBox 2").Should().NotBeNull();
     }
 
-    [Test]
+    [Fact]
     public void Add_adds_table()
     {
         // Arrange
@@ -66,7 +67,7 @@ public class ShapeCollectionTests : SCTest
         addedShape.Should().BeAssignableTo<ITable>();
     }
 
-    [Test]
+    [Fact]
     public void Contains_particular_shape_Types()
     {
         // Arrange
@@ -83,7 +84,7 @@ public class ShapeCollectionTests : SCTest
         Assert.Single(shapes.Where(sp => sp is IGroupShape));
     }
 
-    [Test]
+    [Fact]
     public void Contains_Picture_shape()
     {
         // Arrange
@@ -94,7 +95,7 @@ public class ShapeCollectionTests : SCTest
         picture.Should().NotBeNull();
     }
 
-    [Test]
+    [Fact]
     public void Contains_Audio_shape()
     {
         // Arrange
@@ -109,7 +110,7 @@ public class ShapeCollectionTests : SCTest
         isAudio.Should().BeTrue();
     }
         
-    [Test]
+    [Fact]
     public void Contains_Connection_shape()
     {
         var pptxStream = GetInputStream("001.pptx");
@@ -120,7 +121,7 @@ public class ShapeCollectionTests : SCTest
         Assert.Contains(shapesCollection, shape => shape.Id == 10 && shape is ILine && shape.GeometryType == SCGeometry.Line);
     }
         
-    [Test]
+    [Fact]
     public void Contains_Video_shape()
     {
         // Arrange
@@ -155,7 +156,7 @@ public class ShapeCollectionTests : SCTest
         shapesCount.Should().Be(expectedCount);
     }
 
-    [Test]
+    [Fact]
     public void AddLine_adds_a_new_Line_shape_from_raw_open_xml_content()
     {
         // Arrange
@@ -171,7 +172,7 @@ public class ShapeCollectionTests : SCTest
         shapes.Count.Should().Be(1);
     }
 
-    [Test]
+    [Fact]
     public void AddLine_adds_line_Right_Up()
     {
         // Arrange
@@ -192,7 +193,7 @@ public class ShapeCollectionTests : SCTest
         errors.Should().BeEmpty();
     }
     
-    [Test]
+    [Fact]
     public void AddLine_adds_line_Up_Up()
     {
         // Arrange
@@ -211,7 +212,7 @@ public class ShapeCollectionTests : SCTest
         errors.Should().BeEmpty();
     }
     
-    [Test]
+    [Fact]
     public void AddLine_adds_line_Left_Up()
     {
         // Arrange
@@ -230,7 +231,7 @@ public class ShapeCollectionTests : SCTest
         errors.Should().BeEmpty();
     }
     
-    [Test]
+    [Fact]
     public void AddLine_adds_line_Left_Down()
     {
         // Arrange
@@ -250,7 +251,7 @@ public class ShapeCollectionTests : SCTest
         errors.Should().BeEmpty();
     }
     
-    [Test]
+    [Fact]
     public void AddLine_adds_line_Right_Right()
     {
         // Arrange
@@ -269,7 +270,7 @@ public class ShapeCollectionTests : SCTest
         errors.Should().BeEmpty();
     }
     
-    [Test]
+    [Fact]
     public void AddLine_adds_line()
     {
         // Arrange
@@ -288,7 +289,7 @@ public class ShapeCollectionTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Test]
+    [Fact]
     public void AddLine_adds_line_Left_Left()
     {
         // Arrange
@@ -307,14 +308,14 @@ public class ShapeCollectionTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Test]
+    [Fact]
     public void AddAudio_adds_Audio_shape()
     {
         // Arrange
-        var preStream = GetInputStream("001.pptx");
-        var pres = SCPresentation.Open(preStream);
+        var pptx = GetInputStream("001.pptx");
+        var mp3 = GetInputStream("test-mp3.mp3");
+        var pres = SCPresentation.Open(pptx);
         var shapes = pres.Slides[1].Shapes;
-        var mp3 = TestFiles.Audio.TestMp3;
         int xPxCoordinate = 300;
         int yPxCoordinate = 100;
 
@@ -323,7 +324,7 @@ public class ShapeCollectionTests : SCTest
 
         pres.Save();
         pres.Close();
-        pres = SCPresentation.Open(preStream);
+        pres = SCPresentation.Open(pptx);
         IAudioShape addedAudio = pres.Slides[1].Shapes.OfType<IAudioShape>().Last();
 
         // Assert
@@ -331,7 +332,7 @@ public class ShapeCollectionTests : SCTest
         addedAudio.Y.Should().Be(yPxCoordinate);
     }
 
-    [Test]
+    [Fact]
     public void AddVideo_adds_Video_shape()
     {
         // Arrange
@@ -372,7 +373,7 @@ public class ShapeCollectionTests : SCTest
     
 #endif
 
-    [Test]
+    [Fact]
     public void AddPicture_adds_picture()
     {
         // Arrange
@@ -389,7 +390,7 @@ public class ShapeCollectionTests : SCTest
         TestHelper.ThrowIfPresentationInvalid(pres);
     }
 
-    [Test]
+    [Fact]
     public void AddRectangle_adds_rectangle_with_valid_id_and_name()
     {
         // Arrange
@@ -407,7 +408,7 @@ public class ShapeCollectionTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Test]
+    [Fact]
     public void AddRectangle_adds_Rectangle_in_the_New_Presentation()
     {
         // Arrange
@@ -429,7 +430,7 @@ public class ShapeCollectionTests : SCTest
         errors.Should().BeEmpty();
     }
     
-    [Test]
+    [Fact]
     public void AddRoundedRectangle_adds_Rounded_Rectangle()
     {
         // Arrange
@@ -448,7 +449,7 @@ public class ShapeCollectionTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Test]
+    [Fact]
     public void AddTable_adds_table()
     {
         // Arrange
@@ -468,7 +469,7 @@ public class ShapeCollectionTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Test]
+    [Fact]
     public void Remove_removes_shape()
     {
         // Arrange

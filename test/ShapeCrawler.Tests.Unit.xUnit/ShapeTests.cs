@@ -99,6 +99,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pptx = GetInputStream("009_table.pptx");
+        var image = GetInputStream("test-image-2.png");
         IPresentation presentation = SCPresentation.Open(pptx);
         IPicture picture5 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 5);
         IPicture picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
@@ -106,7 +107,7 @@ public class ShapeTests : SCTest
         MemoryStream modifiedPresentation = new();
 
         // Act
-        picture5.Image.SetImage(TestFiles.Images.imageByteArray02);
+        picture5.Image.SetImage(image);
 
         // Assert
         int pic6LengthAfter = picture6.Image.BinaryData.GetAwaiter().GetResult().Length;

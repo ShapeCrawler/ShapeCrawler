@@ -27,7 +27,7 @@ public class ParagraphTests : SCTest
         indentLevel.Should().Be(expectedLevel);
     }
     
-    [Test]
+    [Fact]
     public void IndentLevel_Setter_sets_indent_level()
     {
         // Act
@@ -306,7 +306,7 @@ public class ParagraphTests : SCTest
         errors.Should().BeEmpty();
     }
     
-    [Test]
+    [Fact]
     public void Text_Setter_sets_paragraph_text_for_grouped_shape()
     {
         // Arrange
@@ -406,7 +406,7 @@ public class ParagraphTests : SCTest
         paragraph.Spacing.LineSpacingLines.Should().BeNull();
     }
     
-    [Test]
+    [Fact]
     public void Portions_Add()
     {
         // Arrange

@@ -98,7 +98,7 @@ public class ParagraphPortionTests : SCTest
         portion4.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
     }
 
-    [Test]
+    [Fact]
     public void Hyperlink_Setter_sets_File_Name_as_a_hyperlink()
     {
         // Arrange
@@ -132,7 +132,7 @@ public class ParagraphPortionTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Test]
+    [Fact]
     public void TextHighlightColor_Getter_returns_text_highlight_color()
     {
         // Arrange
@@ -158,7 +158,7 @@ public class ParagraphPortionTests : SCTest
         portion.TextHighlightColor.ToString().Should().Be("FFFF00");
     }
 
-    [Test]
+    [Fact]
     public void TextHighlightColor_Setter_sets_text_highlight_color()
     {
         // Arrange
@@ -174,7 +174,7 @@ public class ParagraphPortionTests : SCTest
         portion.TextHighlightColor.ToString().Should().Be("FFFF00");
     }
 
-    [Test]
+    [Fact]
     public void TextHighlightColor_Setter_sets_text_highlight()
     {
         // Arrange

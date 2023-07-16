@@ -108,13 +108,14 @@ public class ShapeFillTests : SCTest
     public void Picture_SetImage_updates_picture_fill()
     {
         // Arrange
-        var shape = (IAutoShape)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4);
+        var pptx = GetInputStream("009_table.pptx");
+        var image = GetInputStream("test-image-2.png");
+        var shape = (IAutoShape)SCPresentation.Open(pptx).Slides[2].Shapes.First(sp => sp.Id == 4);
         var fill = shape.Fill;
-        var newImage = TestFiles.Images.img02_stream;
         var imageSizeBefore = fill.Picture!.BinaryData.GetAwaiter().GetResult().Length;
 
         // Act
-        fill.Picture.SetImage(newImage);
+        fill.Picture.SetImage(image);
 
         // Assert
         var imageSizeAfter = shape.Fill.Picture.BinaryData.GetAwaiter().GetResult().Length;

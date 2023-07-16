@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using FluentAssertions;
+using NUnit.Framework;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 
@@ -8,7 +9,7 @@ namespace ShapeCrawler.Tests.Unit;
 
 public class BulletTests : SCTest
 {
-    [Fact]
+    [Test]
     public void Type_Setter_updates_bullet_type()
     {
         // Arrange
@@ -34,7 +35,7 @@ public class BulletTests : SCTest
         bullet.Character.Should().Be("*");
     }
         
-    [Fact]
+    [Test]
     public void Character_Setter_updates_bullet_character()
     {
         // Arrange
@@ -67,7 +68,7 @@ public class BulletTests : SCTest
         paragraph.Bullet.FontName.Should().Be("Tahoma");
     }
         
-    [Fact]
+    [Test]
     public void Type_Setter_sets_Numbered_bullet_type()
     {
         // Arrange

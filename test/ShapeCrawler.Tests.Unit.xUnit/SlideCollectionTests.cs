@@ -15,7 +15,7 @@ namespace ShapeCrawler.Tests.Unit;
 [SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class SlideCollectionTests : SCTest
 {
-    [Test]
+    [Fact]
     public void Count_returns_one_When_presentation_contains_one_slide()
     {
         // Act
@@ -70,7 +70,7 @@ public class SlideCollectionTests : SCTest
         pres.Slides.Count.Should().Be(expectedSlidesCount);
     }
     
-    [Test]
+    [Fact]
     public void Add_adds_slide_After_updating_chart_series()
     {
         // Arrange
@@ -105,7 +105,7 @@ public class SlideCollectionTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Test]
+    [Fact]
     public void AddEmptySlide_adds_slide_from_layout()
     {
         // Arrange

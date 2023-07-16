@@ -1,10 +1,8 @@
-﻿namespace ShapeCrawler.Tests.Unit.Helpers.Attributes;
-
-using System;
-using System.Collections.Generic;
-using NUnit.Framework.Interfaces;
+﻿using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using NUnit.Framework.Internal.Builders;
+
+namespace ShapeCrawler.Tests.Unit.Helpers;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public class PresentationDataAttribute : Attribute, ITestBuilder

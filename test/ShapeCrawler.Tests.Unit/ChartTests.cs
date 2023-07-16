@@ -21,7 +21,7 @@ namespace ShapeCrawler.Tests.Unit;
 [SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class ChartTests : SCTest
 {
-    [Fact]
+    [Test]
     public void XValues_ReturnsParticularXAxisValue_ViaItsCollectionIndexer()
     {
         // Arrange
@@ -37,7 +37,7 @@ public class ChartTests : SCTest
         chart.HasXValues.Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void HasXValues()
     {
         // Arrange
@@ -57,7 +57,7 @@ public class ChartTests : SCTest
         Assert.False(chart11HasXValues);
     }
 
-    [Fact]
+    [Test]
     public void HasCategories_ReturnsFalse_WhenAChartHasNotCategories()
     {
         // Arrange
@@ -70,7 +70,7 @@ public class ChartTests : SCTest
         hasChartCategories.Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void TitleAndHasTitle_ReturnChartTitleStringAndFlagIndicatingWhetherChartHasATitle()
     {
         // Arrange
@@ -115,31 +115,7 @@ public class ChartTests : SCTest
         hasTitleCase6.Should().BeFalse();
     }
         
-    [Xunit.Theory]
-    [MemberData(nameof(TestCasesSeriesCollectionCount))]
-    public void SeriesCollection_Count_returns_number_of_series(IChart chart, int expectedSeriesCount)
-    {
-        // Act
-        int seriesCount = chart.SeriesCollection.Count;
-
-        // Assert
-        Assert.Equal(expectedSeriesCount, seriesCount);
-    }
-
-    public static IEnumerable<object[]> TestCasesSeriesCollectionCount()
-    {
-        var pptxStream = GetInputStream("013.pptx");
-        var presentation = SCPresentation.Open(pptxStream);
-        IChart chart = (IChart) presentation.Slides[0].Shapes.First(sp => sp.Id == 5);
-        yield return new object[] {chart, 3};
-
-        pptxStream = GetInputStream("009_table.pptx");
-        presentation = SCPresentation.Open(pptxStream);
-        chart = (IChart) presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
-        yield return new object[] {chart, 1};
-    }
-
-    [Fact]
+    [Test]
     public void SeriesCollection_Series_Points_returns_chart_point_collection()
     {
         // Arrange
@@ -172,7 +148,7 @@ public class ChartTests : SCTest
         chart.SeriesCollection.Count.Should().Be(expectedSeriesCount);
     }
     
-    [Fact]
+    [Test]
     public void CategoryName_GetterReturnsChartCategoryName()
     {
         // Arrange
@@ -187,7 +163,7 @@ public class ChartTests : SCTest
         chartCase3.Categories[3].Name.Should().BeEquivalentTo("Q4");
     }
         
-    [Fact]
+    [Test]
     public void Category_Name_Getter_returns_category_name_for_chart_from_collection_of_Combination_chart()
     {
         // Arrange
@@ -197,7 +173,7 @@ public class ChartTests : SCTest
         comboChart.Categories[0].Name.Should().BeEquivalentTo("2015");
     }
 
-    [Fact]
+    [Test]
     public void CategoryName_GetterReturnsChartCategoryName_OfMultiCategoryChart()
     {
         // Arrange
@@ -207,7 +183,7 @@ public class ChartTests : SCTest
         chartCase1.Categories[0].MainCategory.Name.Should().BeEquivalentTo("Clothing");
     }
 
-    [Fact]
+    [Test]
     public void CategoryName_SetterChangesName_OfCategoryInNonMultiCategoryPieChart()
     {
         // Arrange
@@ -227,7 +203,7 @@ public class ChartTests : SCTest
         pieChart4.Categories[0].Name.Should().Be(newCategoryName);
     }
 
-    [Fact]
+    [Test]
     public void Category_Name_Setter_updates_value_of_Excel_cell()
     {
         // Arrange
@@ -246,7 +222,7 @@ public class ChartTests : SCTest
         cellValue.Should().BeEquivalentTo(newName);
     }
 
-    [Fact(Skip = "On Hold")]
+    [Test, Ignore("On Hold")]
     public void CategoryName_SetterChangeName_OfSecondaryCategoryInMultiCategoryBarChart()
     {
         // Arrange
@@ -267,7 +243,7 @@ public class ChartTests : SCTest
         barChart.Categories[0].Name.Should().Be(newCategoryName);
     }
 
-    [Fact]
+    [Test]
     public void SeriesType_ReturnsChartTypeOfTheSeries()
     {
         // Arrange
@@ -284,7 +260,7 @@ public class ChartTests : SCTest
         seriesChartType3.Should().Be(SCChartType.ScatterChart);
     }
 
-    [Fact]
+    [Test]
     public void Series_Name_returns_chart_series_name()
     {
         // Arrange
@@ -299,7 +275,7 @@ public class ChartTests : SCTest
         seriesNameCase2.Should().BeEquivalentTo("Ряд 3");
     }
 
-    [Fact]
+    [Test]
     public void Type_ReturnsChartType()
     {
         // Arrange
@@ -322,7 +298,7 @@ public class ChartTests : SCTest
         chartTypeCase4.Should().Be(SCChartType.PieChart);
     }
 
-    [Fact]
+    [Test]
     public void GeometryType_Getter_returns_rectangle()
     {
         // Arrange
@@ -332,7 +308,7 @@ public class ChartTests : SCTest
         chart.GeometryType.Should().Be(SCGeometry.Rectangle);
     }
         
-    [Fact]
+    [Test]
     public void SDKSpreadsheetDocument_return_underlying_SpreadsheetDocument()
     {
         // Arrange

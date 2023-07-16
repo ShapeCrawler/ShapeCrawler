@@ -34,7 +34,7 @@ public class TableTests : SCTest
         rowsCount.Should().Be(expectedCount);
     }
 
-    [Test]
+    [Fact]
     public void RemoveColumnAt_removes_column_by_specified_index()
     {
         // Arrange
@@ -77,7 +77,7 @@ public class TableTests : SCTest
         table.Rows.Should().HaveCountLessThan(originRowsCount);
     }
 
-    [Test]
+    [Fact]
     public void Rows_Add_adds_row()
     {
         // Arrange
@@ -94,7 +94,7 @@ public class TableTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Test]
+    [Fact]
     public void Row_Cells_Count_returns_number_of_cells_in_the_row()
     {
         // Arrange
@@ -109,7 +109,7 @@ public class TableTests : SCTest
         cellsCount.Should().Be(3);
     }
 
-    [Test]
+    [Fact]
     public void Row_Height_Getter_returns_row_height_in_points()
     {
         // Arrange
@@ -236,7 +236,7 @@ public class TableTests : SCTest
         rowCountAfter.Should().Be(rowCountBefore + 1);
     }
 
-    [Test]
+    [Fact]
     public void Row_Height_Setter_sets_height_of_table_row_in_points()
     {
         // Arrange
@@ -420,7 +420,7 @@ public class TableTests : SCTest
         table[1, 0].IsMergedCell.Should().BeTrue();
     }
 
-    [Test]
+    [Fact]
     public void MergeCells_merges_cells_with_content()
     {
         // Arrange

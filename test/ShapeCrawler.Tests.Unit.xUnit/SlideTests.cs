@@ -53,13 +53,13 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pptx = GetInputStream("009_table.pptx");
-var pre = SCPresentation.Open(pptx);
+        var pre = SCPresentation.Open(pptx);
         var backgroundImage = pre.Slides[0].Background;
-        var imgStream = new MemoryStream(Resources.test_image_2);
+        var image = GetInputStream("test-image-2.png");
         var bytesBefore = await backgroundImage.BinaryData.ConfigureAwait(false);
 
         // Act
-        backgroundImage.SetImage(imgStream);
+        backgroundImage.SetImage(image);
 
         // Assert
         var bytesAfter = await backgroundImage.BinaryData.ConfigureAwait(false);
@@ -136,7 +136,7 @@ var pre = SCPresentation.Open(pptx);
         slide2.Number.Should().Be(2);
     }
 
-    [Test]
+    [Fact]
     public void Number_Setter()
     {
         // Arrange
@@ -154,9 +154,9 @@ var pre = SCPresentation.Open(pptx);
     public void GetAllTextboxes_contains_all_textboxes_withTable()
     {
         // Arrange
-        var preStream = TestFiles.Presentations.pre039_stream;
-        var presentation = SCPresentation.Open(preStream);
-        var slide = presentation.Slides.First();
+        var pptx = GetInputStream("039.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var slide = pres.Slides.First();
 
         // Act
         var textboxes = slide.GetAllTextFrames();
@@ -169,8 +169,8 @@ var pre = SCPresentation.Open(pptx);
     public void GetAllTextboxes_contains_all_textboxes_withoutTable()
     {
         // Arrange
-        var pptxStream = TestFiles.Presentations.pre011_dt_stream;
-        var pres = SCPresentation.Open(pptxStream);
+        var pptx = GetInputStream("011_dt.pptx");
+        var pres = SCPresentation.Open(pptx);
         var slide = pres.Slides.First();
 
         // Act
@@ -181,7 +181,6 @@ var pre = SCPresentation.Open(pptx);
     }
 
 #if DEBUG
-
     [Fact(Skip = "In progress")]
     public void SaveAsPng_saves_slide_as_image()
     {
@@ -195,7 +194,7 @@ var pre = SCPresentation.Open(pptx);
         slide.SaveAsPng(mStream);
     }
     
-    [Test]
+    [Fact]
     public void ToHTML_converts_slide_to_HTML()
     {
         // Arrange

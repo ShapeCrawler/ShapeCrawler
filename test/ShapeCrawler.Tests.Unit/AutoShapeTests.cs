@@ -1,14 +1,12 @@
-﻿using System.Linq;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Tests.Unit.Helpers;
-using Xunit;
 
 namespace ShapeCrawler.Tests.Unit;
 
 public class AutoShapeTests : SCTest
 {
-    [Fact]
+    [Test]
     public void Duplicate_duplicates_AutoShape()
     {
         // Arrange
