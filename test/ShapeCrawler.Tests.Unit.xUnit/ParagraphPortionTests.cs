@@ -20,7 +20,7 @@ public class ParagraphPortionTests : SCTest
     public void Text_Getter_returns_text_of_paragraph_portion()
     {
         // Arrange
-        var pptx = GetTestStream("009_table");
+        var pptx = GetInputStream("009_table");
         var pres = SCPresentation.Open(pptx);
         IPortion portion = ((ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
             .TextFrame
@@ -37,7 +37,7 @@ public class ParagraphPortionTests : SCTest
     public void Text_Setter_updates_text()
     {
         // Arrange
-        var pptxStream = GetTestStream("autoshape-case001.pptx");
+        var pptxStream = GetInputStream("autoshape-case001.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var autoShape = pres.SlideMasters[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
         var portion = autoShape.TextFrame!.Paragraphs[0].Portions[0];
@@ -54,7 +54,7 @@ public class ParagraphPortionTests : SCTest
     public void Hyperlink_Setter_sets_hyperlink(string pptxFile, string shapeName)
     {
         // Arrange
-        var pptxStream = GetTestStream(pptxFile);
+        var pptxStream = GetInputStream(pptxFile);
         var presentation = SCPresentation.Open(pptxStream);
         var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>(shapeName);
         var portion = autoShape.TextFrame.Paragraphs[0].Portions[0];
@@ -82,7 +82,7 @@ public class ParagraphPortionTests : SCTest
     public void Hyperlink_Setter_sets_hyperlink_for_two_shape_on_the_Same_slide()
     {
         // Arrange
-        var pptxStream = GetTestStream("001.pptx");
+        var pptxStream = GetInputStream("001.pptx");
         var presentation = SCPresentation.Open(pptxStream);
         var textBox3 = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
         var textBox4 = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
@@ -98,11 +98,11 @@ public class ParagraphPortionTests : SCTest
         portion4.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
     }
 
-    [Test]
+    [Fact]
     public void Hyperlink_Setter_sets_File_Name_as_a_hyperlink()
     {
         // Arrange
-        var pptx = GetTestStream("autoshape-case001.pptx");
+        var pptx = GetInputStream("autoshape-case001.pptx");
         var pres = SCPresentation.Open(pptx);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
@@ -118,7 +118,7 @@ public class ParagraphPortionTests : SCTest
     public void Hyperlink_Setter_sets_hyperlink_for_table_Cell()
     {
         // Arrange
-        var pptxStream =  GetTestStream("table-case001.pptx");
+        var pptxStream =  GetInputStream("table-case001.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
         var portion = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0];
@@ -132,11 +132,11 @@ public class ParagraphPortionTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Test]
+    [Fact]
     public void TextHighlightColor_Getter_returns_text_highlight_color()
     {
         // Arrange
-        var pptx = GetTestStream("autoshape-grouping.pptx");
+        var pptx = GetInputStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
@@ -149,7 +149,7 @@ public class ParagraphPortionTests : SCTest
     public void TextHighlightColor_Getter_returns_text_highlight_sccolor()
     {
         // Arrange
-        var pptx = GetTestStream("autoshape-grouping.pptx");
+        var pptx = GetInputStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
@@ -158,11 +158,11 @@ public class ParagraphPortionTests : SCTest
         portion.TextHighlightColor.ToString().Should().Be("FFFF00");
     }
 
-    [Test]
+    [Fact]
     public void TextHighlightColor_Setter_sets_text_highlight_color()
     {
         // Arrange
-        var pptx = GetTestStream("autoshape-grouping.pptx");
+        var pptx = GetInputStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
@@ -174,11 +174,11 @@ public class ParagraphPortionTests : SCTest
         portion.TextHighlightColor.ToString().Should().Be("FFFF00");
     }
 
-    [Test]
+    [Fact]
     public void TextHighlightColor_Setter_sets_text_highlight()
     {
         // Arrange
-        var pptx = GetTestStream("autoshape-grouping.pptx");
+        var pptx = GetInputStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];

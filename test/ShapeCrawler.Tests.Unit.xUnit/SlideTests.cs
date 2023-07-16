@@ -22,7 +22,7 @@ public class SlideTests : SCTest
     public void Hide_MethodHidesSlide_WhenItIsExecuted()
     {
         // Arrange
-        var pptx = GetTestStream("001.pptx");
+        var pptx = GetInputStream("001.pptx");
         var pre = SCPresentation.Open(pptx);
         var slide = pre.Slides.First();
 
@@ -37,7 +37,7 @@ public class SlideTests : SCTest
     public void Hidden_GetterReturnsTrue_WhenTheSlideIsHidden()
     {
         // Arrange
-        var pptx = GetTestStream("002.pptx");
+        var pptx = GetInputStream("002.pptx");
         var pres = SCPresentation.Open(pptx);
         ISlide slideEx = pres.Slides[2];
 
@@ -52,14 +52,14 @@ public class SlideTests : SCTest
     public async void Background_SetImage_updates_background()
     {
         // Arrange
-        var pptx = GetTestStream("009_table.pptx");
-var pre = SCPresentation.Open(pptx);
+        var pptx = GetInputStream("009_table.pptx");
+        var pre = SCPresentation.Open(pptx);
         var backgroundImage = pre.Slides[0].Background;
-        var imgStream = new MemoryStream(Resources.test_image_2);
+        var image = GetInputStream("test-image-2.png");
         var bytesBefore = await backgroundImage.BinaryData.ConfigureAwait(false);
 
         // Act
-        backgroundImage.SetImage(imgStream);
+        backgroundImage.SetImage(image);
 
         // Assert
         var bytesAfter = await backgroundImage.BinaryData.ConfigureAwait(false);
@@ -70,7 +70,7 @@ var pre = SCPresentation.Open(pptx);
     public void Background_ImageIsNull_WhenTheSlideHasNotBackground()
     {
         // Arrange
-        var slide = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1];
+        var slide = SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[1];
 
         // Act
         var backgroundImage = slide.Background;
@@ -84,7 +84,7 @@ var pre = SCPresentation.Open(pptx);
     {
         // Arrange
         const string customDataString = "Test custom data";
-        var originPre = SCPresentation.Open(GetTestStream("001.pptx"));
+        var originPre = SCPresentation.Open(GetInputStream("001.pptx"));
         var slide = originPre.Slides.First();
 
         // Act
@@ -103,7 +103,7 @@ var pre = SCPresentation.Open(pptx);
     public void CustomData_PropertyIsNull_WhenTheSlideHasNotCustomData()
     {
         // Arrange
-        var slide = SCPresentation.Open(GetTestStream("001.pptx")).Slides.First();
+        var slide = SCPresentation.Open(GetInputStream("001.pptx")).Slides.First();
 
         // Act
         var sldCustomData = slide.CustomData;
@@ -116,7 +116,7 @@ var pre = SCPresentation.Open(pptx);
     public void Number_Setter_moves_slide_to_specified_number_position()
     {
         // Arrange
-        var pptxStream = GetTestStream("001.pptx");
+        var pptxStream = GetInputStream("001.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var slide1 = pres.Slides[0];
         var slide2 = pres.Slides[1];
@@ -136,7 +136,7 @@ var pre = SCPresentation.Open(pptx);
         slide2.Number.Should().Be(2);
     }
 
-    [Test]
+    [Fact]
     public void Number_Setter()
     {
         // Arrange
@@ -154,9 +154,9 @@ var pre = SCPresentation.Open(pptx);
     public void GetAllTextboxes_contains_all_textboxes_withTable()
     {
         // Arrange
-        var preStream = TestFiles.Presentations.pre039_stream;
-        var presentation = SCPresentation.Open(preStream);
-        var slide = presentation.Slides.First();
+        var pptx = GetInputStream("039.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var slide = pres.Slides.First();
 
         // Act
         var textboxes = slide.GetAllTextFrames();
@@ -169,8 +169,8 @@ var pre = SCPresentation.Open(pptx);
     public void GetAllTextboxes_contains_all_textboxes_withoutTable()
     {
         // Arrange
-        var pptxStream = TestFiles.Presentations.pre011_dt_stream;
-        var pres = SCPresentation.Open(pptxStream);
+        var pptx = GetInputStream("011_dt.pptx");
+        var pres = SCPresentation.Open(pptx);
         var slide = pres.Slides.First();
 
         // Act
@@ -181,12 +181,11 @@ var pre = SCPresentation.Open(pptx);
     }
 
 #if DEBUG
-
     [Fact(Skip = "In progress")]
     public void SaveAsPng_saves_slide_as_image()
     {
         // Arrange
-        var pptxStream = GetTestStream("autoshape-case011_save-as-png.pptx");
+        var pptxStream = GetInputStream("autoshape-case011_save-as-png.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var slide = pres.Slides[0];
         var mStream = new MemoryStream();
@@ -195,7 +194,7 @@ var pre = SCPresentation.Open(pptx);
         slide.SaveAsPng(mStream);
     }
     
-    [Test]
+    [Fact]
     public void ToHTML_converts_slide_to_HTML()
     {
         // Arrange

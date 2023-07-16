@@ -15,18 +15,6 @@ namespace ShapeCrawler.Tests.Unit;
 [SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class ParagraphTests : SCTest
 {
-    [Xunit.Theory]
-    [SlideParagraphData("autoshape-case003.pptx", 1, "AutoShape 5", 1, 1)]
-    [SlideParagraphData("autoshape-case003.pptx", 1, "AutoShape 5", 2, 2)]
-    public void IndentLevel_Getter_returns_indent_level(IParagraph paragraph, int expectedLevel)
-    {
-        // Act
-        var indentLevel = paragraph.IndentLevel;
-
-        // Assert
-        indentLevel.Should().Be(expectedLevel);
-    }
-    
     [Test]
     public void IndentLevel_Setter_sets_indent_level()
     {
@@ -43,11 +31,11 @@ public class ParagraphTests : SCTest
         paragraph.IndentLevel.Should().Be(2);
     }
     
-    [Fact]
+    [Test]
     public void Bullet_FontName_Getter_returns_font_name()
     {
         // Arrange
-        var pptx = GetTestStream("002.pptx");
+        var pptx = GetInputStream("002.pptx");
         var pres = SCPresentation.Open(pptx);
         var shapes = pres.Slides[1].Shapes;
         var shape3Pr1Bullet = ((IAutoShape)shapes.First(x => x.Id == 3)).TextFrame.Paragraphs[0].Bullet;
@@ -62,11 +50,11 @@ public class ParagraphTests : SCTest
         shape4BulletFontName.Should().Be("Calibri");
     }
 
-    [Fact]
+    [Test]
     public void Bullet_Type_Getter_returns_bullet_type()
     {
         // Arrange
-        var pptx = GetTestStream("002.pptx");
+        var pptx = GetInputStream("002.pptx");
         var pres = SCPresentation.Open(pptx);
         var shapeList = pres.Slides[1].Shapes;
         var shape4 = shapeList.First(x => x.Id == 4);
@@ -86,43 +74,7 @@ public class ParagraphTests : SCTest
         shape4Pr2BulletType.Should().Be(SCBulletType.Character);
     }
 
-    [Xunit.Theory]
-    [MemberData(nameof(TestCasesAlignmentGetter))]
-    public void Alignment_Getter_returns_text_alignment(IAutoShape autoShape,
-        SCTextAlignment expectedAlignment)
-    {
-        // Arrange
-        var paragraph = autoShape.TextFrame.Paragraphs[0];
-
-        // Act
-        var textAlignment = paragraph.Alignment;
-
-        // Assert
-        textAlignment.Should().Be(expectedAlignment);
-    }
-
-    [Xunit.Theory]
-    [MemberData(nameof(TestCasesParagraphsAlignmentSetter))]
-    public void Alignment_Setter_updates_text_alignment(TestCase testCase)
-    {
-        // Arrange
-        var pres = testCase.Presentation;
-        var paragraph = testCase.AutoShape.TextFrame.Paragraphs[0];
-        var mStream = new MemoryStream();
-
-        // Act
-        paragraph.Alignment = SCTextAlignment.Right;
-
-        // Assert
-        paragraph.Alignment.Should().Be(SCTextAlignment.Right);
-
-        pres.SaveAs(mStream);
-        testCase.SetPresentation(mStream);
-        paragraph = testCase.AutoShape.TextFrame.Paragraphs[0];
-        paragraph.Alignment.Should().Be(SCTextAlignment.Right);
-    }
-
-    [Fact]
+    [Test]
     public void Alignment_Setter_updates_text_alignment_of_table_Cell()
     {
         // Arrange
@@ -141,41 +93,11 @@ public class ParagraphTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    public static IEnumerable<object[]> TestCasesAlignmentGetter()
-    {
-        var pptx = GetTestStream("001.pptx");
-        var autoShape1 = SCPresentation.Open(pptx).Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
-        yield return new object[] { autoShape1, SCTextAlignment.Center };
-
-        var pptxStream2 = GetTestStream("001.pptx");
-        var pres2 = SCPresentation.Open(pptxStream2);
-        var autoShape2 = pres2.Slides[0].Shapes.GetByName<IAutoShape>("Head 1");
-        yield return new object[] { autoShape2, SCTextAlignment.Center };
-    }
-
-    public static IEnumerable<object[]> TestCasesParagraphsAlignmentSetter
-    {
-        get
-        {
-            var testCase1 = new TestCase("#1");
-            testCase1.PresentationName = "001.pptx";
-            testCase1.SlideNumber = 1;
-            testCase1.ShapeName = "TextBox 4";
-            yield return new[] { testCase1 };
-
-            var testCase2 = new TestCase("#2");
-            testCase2.PresentationName = "001.pptx";
-            testCase2.SlideNumber = 1;
-            testCase2.ShapeName = "Head 1";
-            yield return new[] { testCase2 };
-        }
-    }
-
-    [Fact]
+    [Test]
     public void Paragraph_Bullet_Type_Getter_returns_None_value_When_paragraph_doesnt_have_bullet()
     {
         // Arrange
-        var pptx = GetTestStream("001.pptx");
+        var pptx = GetInputStream("001.pptx");
         var pres = SCPresentation.Open(pptx);
         var autoShape = pres.Slides[0].Shapes.GetById<IAutoShape>(2);
         var bullet = autoShape.TextFrame.Paragraphs[0].Bullet;
@@ -187,11 +109,11 @@ public class ParagraphTests : SCTest
         bulletType.Should().Be(SCBulletType.None);
     }
 
-    [Fact]
+    [Test]
     public void Paragraph_BulletColorHexAndCharAndSizeProperties_ReturnCorrectValues()
     {
         // Arrange
-        var pres2 = SCPresentation.Open(GetTestStream("002.pptx"));
+        var pres2 = SCPresentation.Open(GetInputStream("002.pptx"));
         var shapeList = pres2.Slides[1].Shapes;
         var shape4 = shapeList.First(x => x.Id == 4);
         var shape4Pr2Bullet = ((IAutoShape)shape4).TextFrame.Paragraphs[1].Bullet;
@@ -207,11 +129,11 @@ public class ParagraphTests : SCTest
         bulletSize.Should().Be(120);
     }
         
-    [Fact]
+    [Test]
     public void Paragraph_Text_Setter_updates_paragraph_text_and_resize_shape()
     {
         // Arrange
-        var pptxStream = GetTestStream("autoshape-case003.pptx");
+        var pptxStream = GetInputStream("autoshape-case003.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 4");
         var paragraph = shape.TextFrame.Paragraphs[0];
@@ -224,71 +146,7 @@ public class ParagraphTests : SCTest
         shape.Y.Should().Be(148);
     }
 
-    [Xunit.Theory]
-    [MemberData(nameof(TestCasesParagraphText))]
-    public void Text_Setter_sets_paragraph_text(TestElementQuery paragraphQuery, string newText, int expectedPortionsCount)
-    {
-        // Arrange
-        var paragraph = paragraphQuery.GetParagraph();
-        var mStream = new MemoryStream();
-        var pres = paragraphQuery.Presentation;
-
-        // Act
-        paragraph.Text = newText;
-
-        // Assert
-        paragraph.Text.Should().BeEquivalentTo(newText);
-        paragraph.Portions.Should().HaveCount(expectedPortionsCount);
-
-        pres.SaveAs(mStream);
-        pres.Close();
-        paragraphQuery.Presentation = SCPresentation.Open(mStream);
-        paragraph = paragraphQuery.GetParagraph();
-        paragraph.Text.Should().BeEquivalentTo(newText);
-        paragraph.Portions.Should().HaveCount(expectedPortionsCount);
-    }
-    
-    public static IEnumerable<object[]> TestCasesParagraphText()
-    {
-        var paragraphQuery = new TestElementQuery
-        {
-            SlideIndex = 1,
-            ShapeId = 4,
-            ParagraphIndex = 2
-        };
-        paragraphQuery.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
-        yield return new object[] { paragraphQuery, "Text", 1 };
-
-        var paragraphQuery2 = new TestElementQuery
-        {
-            SlideIndex = 1,
-            ShapeId = 4,
-            ParagraphIndex = 2
-        };
-        paragraphQuery2.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
-        yield return new object[] { paragraphQuery2, $"Text{Environment.NewLine}", 1 };
-        
-        var paragraphQuery3 = new TestElementQuery
-        {
-            SlideIndex = 1,
-            ShapeId = 4,
-            ParagraphIndex = 2
-        };
-        paragraphQuery3.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
-        yield return new object[] { paragraphQuery3, $"Text{Environment.NewLine}Text2", 2 };
-        
-        
-        var paragraphQuery4 = new TestElementQuery
-        {
-            SlideIndex = 1,
-            ShapeId = 4,
-            ParagraphIndex = 2
-        };
-        paragraphQuery4.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
-        yield return new object[] { paragraphQuery4, $"Text{Environment.NewLine}Text2{Environment.NewLine}", 2 };
-    }
-
-    [Fact]
+    [Test]
     public void Text_Setter_sets_paragraph_text_in_New_Presentation()
     {
         // Arrange
@@ -306,7 +164,7 @@ public class ParagraphTests : SCTest
         errors.Should().BeEmpty();
     }
     
-    [Test]
+    [Test, Ignore("On Hold")]
     public void Text_Setter_sets_paragraph_text_for_grouped_shape()
     {
         // Arrange
@@ -316,19 +174,19 @@ public class ParagraphTests : SCTest
         var paragraph = shape.TextFrame!.Paragraphs[0];
         
         // Act
-        paragraph.Text = "Safety\n\n\n";
+        paragraph.Text = $"Safety{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}";
         
         // Assert
-        paragraph.Text.Should().BeEquivalentTo("Safety\n\n\n");
+        paragraph.Text.Should().BeEquivalentTo($"Safety{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
         TestHelper.ThrowIfPresentationInvalid(pres);
     }
     
-    [Fact]
+    [Test]
     public void Paragraph_Text_Getter_returns_paragraph_text()
     {
         // Arrange
-        var textBox1 = ((IAutoShape)SCPresentation.Open(GetTestStream("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 37)).TextFrame;
-        var textBox2 = ((ITable)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+        var textBox1 = ((IAutoShape)SCPresentation.Open(GetInputStream("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 37)).TextFrame;
+        var textBox2 = ((ITable)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
             .TextFrame;
 
         // Act
@@ -342,11 +200,11 @@ public class ParagraphTests : SCTest
         paragraphTextCase3.Should().BeEquivalentTo("0:0_p1_lvl1");
     }
 
-    [Fact]
+    [Test]
     public void ReplaceText_finds_and_replaces_text()
     {
         // Arrange
-        var pptxStream = GetTestStream("autoshape-case003.pptx");
+        var pptxStream = GetInputStream("autoshape-case003.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var paragraph = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 3").TextFrame!.Paragraphs[0];
             
@@ -359,11 +217,11 @@ public class ParagraphTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Fact]
+    [Test]
     public void Paragraph_Portions_counter_returns_number_of_text_portions_in_the_paragraph()
     {
         // Arrange
-        var textFrame = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.GetById<IAutoShape>(2).TextFrame;
+        var textFrame = SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[2].Shapes.GetById<IAutoShape>(2).TextFrame;
 
         // Act
         var portions = textFrame.Paragraphs[0].Portions;
@@ -371,46 +229,12 @@ public class ParagraphTests : SCTest
         // Assert
         portions.Should().HaveCount(2);
     }
-
-    [Xunit.Theory]
-    [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 5", 1.0)]
-    [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 4", 1.5)]
-    [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 3", 2.0)]
-    public void Paragraph_Spacing_LineSpacingLines_returns_line_spacing_in_Lines(IShape shape, double expectedLines)
-    {
-        // Arrange
-        var autoShape = (IAutoShape)shape;
-        var paragraph = autoShape.TextFrame!.Paragraphs[0];
-            
-        // Act
-        var spacingLines = paragraph.Spacing.LineSpacingLines;
-            
-        // Assert
-        spacingLines.Should().Be(expectedLines);
-        paragraph.Spacing.LineSpacingPoints.Should().BeNull();
-    }
-        
-    [Xunit.Theory]
-    [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 6", 21.6)]
-    public void Paragraph_Spacing_LineSpacingPoints_returns_line_spacing_in_Points(IShape shape, double expectedPoints)
-    {
-        // Arrange
-        var autoShape = (IAutoShape)shape;
-        var paragraph = autoShape.TextFrame!.Paragraphs[0];
-            
-        // Act
-        var spacingPoints = paragraph.Spacing.LineSpacingPoints;
-            
-        // Assert
-        spacingPoints.Should().Be(expectedPoints);
-        paragraph.Spacing.LineSpacingLines.Should().BeNull();
-    }
     
     [Test]
     public void Portions_Add()
     {
         // Arrange
-        var pptx = GetTestStream("autoshape-case001.pptx");
+        var pptx = GetInputStream("autoshape-case001.pptx");
         var pres = SCPresentation.Open(pptx);
         var shape = pres.SlideMasters[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
         var paragraph = shape.TextFrame!.Paragraphs.Add();

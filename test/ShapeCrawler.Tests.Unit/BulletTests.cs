@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using FluentAssertions;
+using NUnit.Framework;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 
@@ -8,11 +9,11 @@ namespace ShapeCrawler.Tests.Unit;
 
 public class BulletTests : SCTest
 {
-    [Fact]
+    [Test]
     public void Type_Setter_updates_bullet_type()
     {
         // Arrange
-        var pptxStream = GetTestStream("autoshape-case003.pptx");
+        var pptxStream = GetInputStream("autoshape-case003.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
         var bullet = shape.TextFrame!.Paragraphs[0].Bullet;
@@ -34,12 +35,12 @@ public class BulletTests : SCTest
         bullet.Character.Should().Be("*");
     }
         
-    [Fact]
+    [Test]
     public void Character_Setter_updates_bullet_character()
     {
         // Arrange
         var mStream = new MemoryStream();
-        var pptx = GetTestStream("020.pptx");
+        var pptx = GetInputStream("020.pptx");
         IPresentation presentation = SCPresentation.Open(pptx);
         IAutoShape placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
         IParagraph paragraph = placeholderAutoShape.TextFrame.Paragraphs.Add();
@@ -67,12 +68,12 @@ public class BulletTests : SCTest
         paragraph.Bullet.FontName.Should().Be("Tahoma");
     }
         
-    [Fact]
+    [Test]
     public void Type_Setter_sets_Numbered_bullet_type()
     {
         // Arrange
         var mStream = new MemoryStream();
-        var pptx = GetTestStream("020.pptx");
+        var pptx = GetInputStream("020.pptx");
         IPresentation presentation = SCPresentation.Open(pptx);
         IAutoShape placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
         IParagraph paragraph = placeholderAutoShape.TextFrame.Paragraphs.Add();

@@ -21,11 +21,11 @@ namespace ShapeCrawler.Tests.Unit;
 [SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class ChartTests : SCTest
 {
-    [Fact]
+    [Test]
     public void XValues_ReturnsParticularXAxisValue_ViaItsCollectionIndexer()
     {
         // Arrange
-        var pptx = GetTestStream("024_chart.pptx");
+        var pptx = GetInputStream("024_chart.pptx");
         var pres = SCPresentation.Open(pptx);
         IChart chart = pres.Slides[1].Shapes.First(sp => sp.Id == 5) as IChart;
 
@@ -37,11 +37,11 @@ public class ChartTests : SCTest
         chart.HasXValues.Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void HasXValues()
     {
         // Arrange
-        var pptx = GetTestStream("025_chart.pptx");
+        var pptx = GetInputStream("025_chart.pptx");
         var pres = SCPresentation.Open(pptx);
         ISlide slide1 = pres.Slides[0];
         ISlide slide2 = pres.Slides[1];
@@ -57,11 +57,11 @@ public class ChartTests : SCTest
         Assert.False(chart11HasXValues);
     }
 
-    [Fact]
+    [Test]
     public void HasCategories_ReturnsFalse_WhenAChartHasNotCategories()
     {
         // Arrange
-        IChart chart = (IChart)SCPresentation.Open(GetTestStream("021.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4);
+        IChart chart = (IChart)SCPresentation.Open(GetInputStream("021.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4);
 
         // Act
         bool hasChartCategories = chart.HasCategories;
@@ -70,23 +70,23 @@ public class ChartTests : SCTest
         hasChartCategories.Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void TitleAndHasTitle_ReturnChartTitleStringAndFlagIndicatingWhetherChartHasATitle()
     {
         // Arrange
-        var pres13 = SCPresentation.Open(GetTestStream("013.pptx"));
-        var pres19 = SCPresentation.Open(GetTestStream("019.pptx"));
-        IChart chartCase1 = (IChart)SCPresentation.Open(GetTestStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 6);
-        IChart chartCase2 = (IChart)SCPresentation.Open(GetTestStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
+        var pres13 = SCPresentation.Open(GetInputStream("013.pptx"));
+        var pres19 = SCPresentation.Open(GetInputStream("019.pptx"));
+        IChart chartCase1 = (IChart)SCPresentation.Open(GetInputStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 6);
+        IChart chartCase2 = (IChart)SCPresentation.Open(GetInputStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
         IChart chartCase3 = (IChart)pres13.Slides[0].Shapes.First(sp => sp.Id == 5);
         IChart chartCase4 = (IChart)pres13.Slides[0].Shapes.First(sp => sp.Id == 4);
         IChart chartCase5 = (IChart)pres19.Slides[0].Shapes.First(sp => sp.Id == 4);
         IChart chartCase6 = (IChart)pres13.Slides[0].Shapes.First(sp => sp.Id == 6);
-        IChart chartCase7 = (IChart)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
-        IChart chartCase8 = (IChart)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 6);
-        IChart chartCase9 = (IChart)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[4].Shapes.First(sp => sp.Id == 6);
-        IChart chartCase10 = (IChart)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[4].Shapes.First(sp => sp.Id == 3);
-        IChart chartCase11 = (IChart)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[4].Shapes.First(sp => sp.Id == 5);
+        IChart chartCase7 = (IChart)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
+        IChart chartCase8 = (IChart)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 6);
+        IChart chartCase9 = (IChart)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[4].Shapes.First(sp => sp.Id == 6);
+        IChart chartCase10 = (IChart)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[4].Shapes.First(sp => sp.Id == 3);
+        IChart chartCase11 = (IChart)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[4].Shapes.First(sp => sp.Id == 5);
             
         // Act
         string charTitleCase1 = chartCase1.Title;
@@ -115,35 +115,11 @@ public class ChartTests : SCTest
         hasTitleCase6.Should().BeFalse();
     }
         
-    [Xunit.Theory]
-    [MemberData(nameof(TestCasesSeriesCollectionCount))]
-    public void SeriesCollection_Count_returns_number_of_series(IChart chart, int expectedSeriesCount)
-    {
-        // Act
-        int seriesCount = chart.SeriesCollection.Count;
-
-        // Assert
-        Assert.Equal(expectedSeriesCount, seriesCount);
-    }
-
-    public static IEnumerable<object[]> TestCasesSeriesCollectionCount()
-    {
-        var pptxStream = GetTestStream("013.pptx");
-        var presentation = SCPresentation.Open(pptxStream);
-        IChart chart = (IChart) presentation.Slides[0].Shapes.First(sp => sp.Id == 5);
-        yield return new object[] {chart, 3};
-
-        pptxStream = GetTestStream("009_table.pptx");
-        presentation = SCPresentation.Open(pptxStream);
-        chart = (IChart) presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
-        yield return new object[] {chart, 1};
-    }
-
-    [Fact]
+    [Test]
     public void SeriesCollection_Series_Points_returns_chart_point_collection()
     {
         // Arrange
-        var pptxStream = GetTestStream("charts-case001.pptx");
+        var pptxStream = GetInputStream("charts-case001.pptx");
         var presentation = SCPresentation.Open(pptxStream);
         var chart = (IChart) presentation.Slides[0].Shapes.First(shape => shape.Name == "chart");
         var series = chart.SeriesCollection[0]; 
@@ -160,7 +136,7 @@ public class ChartTests : SCTest
     public void SeriesCollection_RemoveAt_removes_series_by_index(string pptxFile, string chartName)
     {
         // Arrange
-        var pptxStream = GetTestStream(pptxFile);
+        var pptxStream = GetInputStream(pptxFile);
         var pres = SCPresentation.Open(pptxStream);
         var chart = pres.Slides[0].Shapes.GetByName<IChart>(chartName);
         var expectedSeriesCount = chart.SeriesCollection.Count - 1; 
@@ -172,12 +148,12 @@ public class ChartTests : SCTest
         chart.SeriesCollection.Count.Should().Be(expectedSeriesCount);
     }
     
-    [Fact]
+    [Test]
     public void CategoryName_GetterReturnsChartCategoryName()
     {
         // Arrange
-        IBarChart chartCase1 = (IBarChart)SCPresentation.Open(GetTestStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
-        IPieChart chartCase3 = (IPieChart)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
+        IBarChart chartCase1 = (IBarChart)SCPresentation.Open(GetInputStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
+        IPieChart chartCase3 = (IPieChart)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
 
         // Act-Assert
         chartCase1.Categories[0].Name.Should().BeEquivalentTo("Dresses");
@@ -187,31 +163,31 @@ public class ChartTests : SCTest
         chartCase3.Categories[3].Name.Should().BeEquivalentTo("Q4");
     }
         
-    [Fact]
+    [Test]
     public void Category_Name_Getter_returns_category_name_for_chart_from_collection_of_Combination_chart()
     {
         // Arrange
-        var comboChart = (IComboChart)SCPresentation.Open(GetTestStream("021.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
+        var comboChart = (IComboChart)SCPresentation.Open(GetInputStream("021.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
 
         // Act-Assert
         comboChart.Categories[0].Name.Should().BeEquivalentTo("2015");
     }
 
-    [Fact]
+    [Test]
     public void CategoryName_GetterReturnsChartCategoryName_OfMultiCategoryChart()
     {
         // Arrange
-        var chartCase1 = (IBarChart)SCPresentation.Open(GetTestStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
+        var chartCase1 = (IBarChart)SCPresentation.Open(GetInputStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
 
         // Act-Assert
         chartCase1.Categories[0].MainCategory.Name.Should().BeEquivalentTo("Clothing");
     }
 
-    [Fact]
+    [Test]
     public void CategoryName_SetterChangesName_OfCategoryInNonMultiCategoryPieChart()
     {
         // Arrange
-        var pres = SCPresentation.Open(GetTestStream("025_chart.pptx"));
+        var pres = SCPresentation.Open(GetInputStream("025_chart.pptx"));
         MemoryStream mStream = new();
         IPieChart pieChart4 = (IPieChart)pres.Slides[0].Shapes.First(sp => sp.Id == 7);
         const string newCategoryName = "Category 1_new";
@@ -227,11 +203,11 @@ public class ChartTests : SCTest
         pieChart4.Categories[0].Name.Should().Be(newCategoryName);
     }
 
-    [Fact]
+    [Test]
     public void Category_Name_Setter_updates_value_of_Excel_cell()
     {
         // Arrange
-        var pres = SCPresentation.Open(GetTestStream("025_chart.pptx"));
+        var pres = SCPresentation.Open(GetInputStream("025_chart.pptx"));
         var lineChart = pres.Slides[3].Shapes.GetById<ILineChart>(13);
         const string newName = "Category 1_new";
         var category = lineChart.Categories[0]; 
@@ -246,7 +222,7 @@ public class ChartTests : SCTest
         cellValue.Should().BeEquivalentTo(newName);
     }
 
-    [Fact(Skip = "On Hold")]
+    [Test, Ignore("On Hold")]
     public void CategoryName_SetterChangeName_OfSecondaryCategoryInMultiCategoryBarChart()
     {
         // Arrange
@@ -267,11 +243,11 @@ public class ChartTests : SCTest
         barChart.Categories[0].Name.Should().Be(newCategoryName);
     }
 
-    [Fact]
+    [Test]
     public void SeriesType_ReturnsChartTypeOfTheSeries()
     {
         // Arrange
-        IChart chart = (IChart)SCPresentation.Open(GetTestStream("021.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3);
+        IChart chart = (IChart)SCPresentation.Open(GetInputStream("021.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3);
         ISeries series2 = chart.SeriesCollection[1];
         ISeries series3 = chart.SeriesCollection[2];
 
@@ -284,11 +260,11 @@ public class ChartTests : SCTest
         seriesChartType3.Should().Be(SCChartType.ScatterChart);
     }
 
-    [Fact]
+    [Test]
     public void Series_Name_returns_chart_series_name()
     {
         // Arrange
-        IChart chart = (IChart)SCPresentation.Open(GetTestStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 5);
+        IChart chart = (IChart)SCPresentation.Open(GetInputStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 5);
 
         // Act
         string seriesNameCase1 = chart.SeriesCollection[0].Name;
@@ -299,15 +275,15 @@ public class ChartTests : SCTest
         seriesNameCase2.Should().BeEquivalentTo("Ряд 3");
     }
 
-    [Fact]
+    [Test]
     public void Type_ReturnsChartType()
     {
         // Arrange
-        var pres13 = SCPresentation.Open(GetTestStream("013.pptx"));
-        IChart chartCase1 = (IChart)SCPresentation.Open(GetTestStream("021.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
-        IChart chartCase2 = (IChart)SCPresentation.Open(GetTestStream("021.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4);
+        var pres13 = SCPresentation.Open(GetInputStream("013.pptx"));
+        IChart chartCase1 = (IChart)SCPresentation.Open(GetInputStream("021.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
+        IChart chartCase2 = (IChart)SCPresentation.Open(GetInputStream("021.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4);
         IChart chartCase3 = (IChart)pres13.Slides[0].Shapes.First(sp => sp.Id == 5);
-        IChart chartCase4 = (IChart)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
+        IChart chartCase4 = (IChart)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
 
         // Act
         SCChartType chartTypeCase1 = chartCase1.Type;
@@ -322,21 +298,21 @@ public class ChartTests : SCTest
         chartTypeCase4.Should().Be(SCChartType.PieChart);
     }
 
-    [Fact]
+    [Test]
     public void GeometryType_Getter_returns_rectangle()
     {
         // Arrange
-        IChart chart = (IChart)SCPresentation.Open(GetTestStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 6);
+        IChart chart = (IChart)SCPresentation.Open(GetInputStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 6);
 
         // Act-Assert
         chart.GeometryType.Should().Be(SCGeometry.Rectangle);
     }
         
-    [Fact]
+    [Test]
     public void SDKSpreadsheetDocument_return_underlying_SpreadsheetDocument()
     {
         // Arrange
-        var pptxStream = GetTestStream("charts-case003.pptx");
+        var pptxStream = GetInputStream("charts-case003.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var chart = pres.Slides[0].Shapes.GetByName<IChart>("Chart 1");
             

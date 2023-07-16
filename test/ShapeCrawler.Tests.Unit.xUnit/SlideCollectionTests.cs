@@ -19,9 +19,9 @@ public class SlideCollectionTests : SCTest
     public void Count_returns_one_When_presentation_contains_one_slide()
     {
         // Act
-        var pptx17 = GetTestStream("017.pptx");
+        var pptx17 = GetInputStream("017.pptx");
         var pres17 = SCPresentation.Open(pptx17);        
-        var pptx16 = GetTestStream("016.pptx");
+        var pptx16 = GetInputStream("016.pptx");
         var pres16 = SCPresentation.Open(pptx16);
         var numberSlidesCase1 = pres17.Slides.Count;
         var numberSlidesCase2 = pres16.Slides.Count;
@@ -35,8 +35,8 @@ public class SlideCollectionTests : SCTest
     public void Add_adds_external_slide()
     {
         // Arrange
-        var sourceSlide = SCPresentation.Open(GetTestStream("001.pptx")).Slides[0];
-        var pptx = GetTestStream("002.pptx");
+        var sourceSlide = SCPresentation.Open(GetInputStream("001.pptx")).Slides[0];
+        var pptx = GetInputStream("002.pptx");
         var destPre = SCPresentation.Open(pptx);
         var originSlidesCount = destPre.Slides.Count;
         var expectedSlidesCount = ++originSlidesCount;
@@ -57,7 +57,7 @@ public class SlideCollectionTests : SCTest
     public void Add_adds_slide_from_the_Same_presentation()
     {
         // Arrange
-        var pptxStream = GetTestStream("charts-case003.pptx");
+        var pptxStream = GetInputStream("charts-case003.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var expectedSlidesCount = pres.Slides.Count + 1;
         var slideCollection = pres.Slides;
@@ -70,7 +70,7 @@ public class SlideCollectionTests : SCTest
         pres.Slides.Count.Should().Be(expectedSlidesCount);
     }
     
-    [Test]
+    [Fact]
     public void Add_adds_slide_After_updating_chart_series()
     {
         // Arrange
@@ -91,7 +91,7 @@ public class SlideCollectionTests : SCTest
     public void Add_add_adds_New_slide()
     {
         // Arrange
-        var pptx = GetTestStream("autoshape-grouping.pptx");
+        var pptx = GetInputStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var layout = pres.SlideMasters[0].SlideLayouts[0]; 
         var slides = pres.Slides;
@@ -105,11 +105,11 @@ public class SlideCollectionTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Test]
+    [Fact]
     public void AddEmptySlide_adds_slide_from_layout()
     {
         // Arrange
-        var pres = SCPresentation.Open(GetTestStream("017.pptx"));
+        var pres = SCPresentation.Open(GetInputStream("017.pptx"));
         var titleAndContentLayout = pres.SlideMasters[0].SlideLayouts[0];
 
         // Act
@@ -125,11 +125,11 @@ public class SlideCollectionTests : SCTest
     public void Slides_Insert_inserts_slide_at_the_specified_position()
     {
         // Arrange
-        var pptx = GetTestStream("001.pptx");
+        var pptx = GetInputStream("001.pptx");
         var sourceSlide = SCPresentation.Open(pptx).Slides[0];
         var sourceSlideId = Guid.NewGuid().ToString();
         sourceSlide.CustomData = sourceSlideId;
-        pptx = GetTestStream("002.pptx");
+        pptx = GetInputStream("002.pptx");
         var destPre = SCPresentation.Open(pptx);
 
         // Act
@@ -144,7 +144,7 @@ public class SlideCollectionTests : SCTest
     public void Slides_Remove_removes_slide(string file, int expectedSlidesCount)
     {
         // Arrange
-        var pptx = GetTestStream(file);
+        var pptx = GetInputStream(file);
         var pres = SCPresentation.Open(pptx);
         var removingSlide = pres.Slides[0];
         var mStream = new MemoryStream();
@@ -170,7 +170,7 @@ public class SlideCollectionTests : SCTest
     public void Slides_Remove_removes_slide_from_section()
     {
         // Arrange
-        var pptxStream = GetTestStream("autoshape-case017_slide-number.pptx");
+        var pptxStream = GetInputStream("autoshape-case017_slide-number.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var sectionSlides = pres.Sections[0].Slides;
         var removingSlide = sectionSlides[0];

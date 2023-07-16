@@ -67,11 +67,11 @@ internal class HeaderAndFooter : IHeaderAndFooter
         foreach (var slide in this.presentation.Slides)
         {
             var slideNumberPlaceholder =
-                slide.SlideLayout.Shapes.FirstOrDefault(shape =>
+                slide.Shapes.FirstOrDefault(shape =>
                     shape.Placeholder?.Type == SCPlaceholderType.SlideNumber);
             if (slideNumberPlaceholder != null)
             {
-                slide.Shapes.Add(slideNumberPlaceholder);
+                slide.Shapes.Remove(slideNumberPlaceholder);
             }
         }
     }

@@ -20,7 +20,7 @@ public class ShapeFillTests : SCTest
     public void Fill_is_not_null()
     {
         // Arrange
-        var pptx = GetTestStream("021.pptx");
+        var pptx = GetInputStream("021.pptx");
         var pres = SCPresentation.Open(pptx);
         var autoShape = (IAutoShape)pres.Slides[0].Shapes.First(sp => sp.Id == 108);
 
@@ -38,7 +38,7 @@ public class ShapeFillTests : SCTest
         // Arrange
         var autoShape = (IAutoShape)shape;
         var fill = autoShape.Fill;
-        var imageStream = GetTestStream("test-image-1.png");
+        var imageStream = GetInputStream("test-image-1.png");
 
         // Act
         fill.SetPicture(imageStream);
@@ -92,7 +92,7 @@ public class ShapeFillTests : SCTest
         // Arrange
         var autoShape = (IAutoShape)shape;
         var shapeFill = autoShape.Fill;
-        var imageStream = GetTestStream("test-image-1.png");
+        var imageStream = GetInputStream("test-image-1.png");
 
         // Act
         shapeFill.SetPicture(imageStream);
@@ -108,13 +108,14 @@ public class ShapeFillTests : SCTest
     public void Picture_SetImage_updates_picture_fill()
     {
         // Arrange
-        var shape = (IAutoShape)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 4);
+        var pptx = GetInputStream("009_table.pptx");
+        var image = GetInputStream("test-image-2.png");
+        var shape = (IAutoShape)SCPresentation.Open(pptx).Slides[2].Shapes.First(sp => sp.Id == 4);
         var fill = shape.Fill;
-        var newImage = TestFiles.Images.img02_stream;
         var imageSizeBefore = fill.Picture!.BinaryData.GetAwaiter().GetResult().Length;
 
         // Act
-        fill.Picture.SetImage(newImage);
+        fill.Picture.SetImage(image);
 
         // Assert
         var imageSizeAfter = shape.Fill.Picture.BinaryData.GetAwaiter().GetResult().Length;
@@ -134,7 +135,7 @@ public class ShapeFillTests : SCTest
 
     public static IEnumerable<object[]> TestCasesFillType()
     {
-        var pptxStream = GetTestStream("009_table.pptx");
+        var pptxStream = GetInputStream("009_table.pptx");
         var pres = SCPresentation.Open(pptxStream);
 
         var withNoFill = pres.Slides[1].Shapes.GetById<IAutoShape>(6);
@@ -152,7 +153,7 @@ public class ShapeFillTests : SCTest
         var withPattern = pres.Slides[1].Shapes.GetByName<IAutoShape>("AutoShape 2");
         yield return new object[] { withPattern, SCFillType.Pattern };
 
-        pptxStream = GetTestStream("autoshape-case003.pptx");
+        pptxStream = GetInputStream("autoshape-case003.pptx");
         pres = SCPresentation.Open(pptxStream);
         var withSlideBg = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
         yield return new object[] { withSlideBg, SCFillType.SlideBackground };
@@ -162,7 +163,7 @@ public class ShapeFillTests : SCTest
     public void AutoShape_Fill_Type_returns_NoFill_When_shape_is_Not_filled()
     {
         // Arrange
-        var autoShape = (IAutoShape)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 6);
+        var autoShape = (IAutoShape)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 6);
 
         // Act
         var fillType = autoShape.Fill.Type;
@@ -175,7 +176,7 @@ public class ShapeFillTests : SCTest
     public void HexSolidColor_getter_returns_color_name()
     {
         // Arrange
-        var autoShape = (IAutoShape)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 2);
+        var autoShape = (IAutoShape)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 2);
 
         // Act
         var shapeSolidColorName = autoShape.Fill.Color;
@@ -188,7 +189,7 @@ public class ShapeFillTests : SCTest
     public async void Picture_BinaryData_returns_binary_content_of_picture_image()
     {
         // Arrange
-        var pptxStream = GetTestStream("009_table.pptx");
+        var pptxStream = GetInputStream("009_table.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var shapeFill = pres.Slides[2].Shapes.GetByName<IAutoShape>("AutoShape 1").Fill;
 
