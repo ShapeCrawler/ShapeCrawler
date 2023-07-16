@@ -164,7 +164,7 @@ public class ParagraphTests : SCTest
         errors.Should().BeEmpty();
     }
     
-    [Test, Ignore("On Hold")]
+    [Test]
     public void Text_Setter_sets_paragraph_text_for_grouped_shape()
     {
         // Arrange
