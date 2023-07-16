@@ -12,7 +12,7 @@ public class BulletTests : SCTest
     public void Type_Setter_updates_bullet_type()
     {
         // Arrange
-        var pptxStream = GetTestStream("autoshape-case003.pptx");
+        var pptxStream = GetInputStream("autoshape-case003.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
         var bullet = shape.TextFrame!.Paragraphs[0].Bullet;
@@ -39,7 +39,7 @@ public class BulletTests : SCTest
     {
         // Arrange
         var mStream = new MemoryStream();
-        var pptx = GetTestStream("020.pptx");
+        var pptx = GetInputStream("020.pptx");
         IPresentation presentation = SCPresentation.Open(pptx);
         IAutoShape placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
         IParagraph paragraph = placeholderAutoShape.TextFrame.Paragraphs.Add();
@@ -72,7 +72,7 @@ public class BulletTests : SCTest
     {
         // Arrange
         var mStream = new MemoryStream();
-        var pptx = GetTestStream("020.pptx");
+        var pptx = GetInputStream("020.pptx");
         IPresentation presentation = SCPresentation.Open(pptx);
         IAutoShape placeholderAutoShape = (IAutoShape)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
         IParagraph paragraph = placeholderAutoShape.TextFrame.Paragraphs.Add();

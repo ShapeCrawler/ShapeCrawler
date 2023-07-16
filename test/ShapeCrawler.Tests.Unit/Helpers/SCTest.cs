@@ -28,10 +28,10 @@ public abstract class SCTest
 
     protected static byte[] GetTestBytes(string fileName)
     {
-        return GetTestStream(fileName).ToArray();
+        return GetInputStream(fileName).ToArray();
     }
 
-    public static MemoryStream GetTestStream(string fileName)
+    public static MemoryStream GetInputStream(string fileName)
     {
         var assembly = Assembly.GetExecutingAssembly();
         var stream = assembly.GetResourceStream(fileName);
@@ -43,7 +43,7 @@ public abstract class SCTest
     
     protected string GetTestPath(string fileName)
     {
-        var stream = GetTestStream(fileName);
+        var stream = GetInputStream(fileName);
         var path = Path.GetTempFileName();
         File.WriteAllBytes(path, stream.ToArray());
 
@@ -73,7 +73,7 @@ public abstract class SCTest
 
     private static IPresentation GetPresentationFromAssembly(string fileName)
     {
-        var stream = GetTestStream(fileName);
+        var stream = GetInputStream(fileName);
 
         return SCPresentation.Open(stream);
     }

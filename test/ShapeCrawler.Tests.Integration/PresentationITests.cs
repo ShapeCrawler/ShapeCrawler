@@ -15,7 +15,7 @@ public class PresentationITests : SCTest
     public void Open_doesnt_create_log_file_When_logger_is_off()
     {
         // Arrange
-        var pptxStream = GetTestStream("autoshape-case001.pptx");
+        var pptxStream = GetInputStream("autoshape-case001.pptx");
 
         // Act
         SCSettings.CanCollectLogs = false;
@@ -53,7 +53,7 @@ public class PresentationITests : SCTest
         // Arrange
         var originFilePath = Path.GetTempFileName();
         var savedAsFilePath = Path.GetTempFileName();
-        var pptx = GetTestStream("001.pptx");
+        var pptx = GetInputStream("001.pptx");
         File.WriteAllBytes(originFilePath, pptx.ToArray());
         var pres = SCPresentation.Open(originFilePath);
         pres.SaveAs(savedAsFilePath);

@@ -23,7 +23,7 @@ public class SlideDataAttribute : DataAttribute
         
     public override IEnumerable<object[]> GetData(MethodInfo testMethod)
     {
-        var pptx = SCTest.GetTestStream(this.pptxFile);
+        var pptx = SCTest.GetInputStream(this.pptxFile);
         var pres = SCPresentation.Open(pptx);
         var slide = pres.Slides[this.slideNumber - 1];
 

@@ -25,7 +25,7 @@ public class PresentationDataAttribute : Attribute, ITestBuilder
         }
         else
         {
-            var pptxStream = SCTest.GetTestStream(this.pptxName);
+            var pptxStream = SCTest.GetInputStream(this.pptxName);
             pres = SCPresentation.Open(pptxStream);
         }
 

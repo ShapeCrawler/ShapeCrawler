@@ -28,7 +28,7 @@ public class MasterShapeDataAttribute : DataAttribute
 
     public override IEnumerable<object[]> GetData(MethodInfo testMethod)
     {
-        var pptxStream = SCTest.GetTestStream(this.pptxFile);
+        var pptxStream = SCTest.GetInputStream(this.pptxFile);
         var pres = SCPresentation.Open(pptxStream);
         var slideMaster = pres.SlideMasters[0];
         var shape = slideMaster.Shapes.GetByName<IShape>(this.shapeName);

@@ -38,7 +38,7 @@ public class ShapeCollectionTests : SCTest
     public void Add_adds_shape()
     {
         // Arrange
-        var pptx = GetTestStream("053_add_shapes.pptx");
+        var pptx = GetInputStream("053_add_shapes.pptx");
         var pres = SCPresentation.Open(pptx);
         var copyingShape = pres.Slides[0].Shapes.GetByName("TextBox")!;
         var shapeCollection = pres.Slides[1].Shapes;
@@ -54,7 +54,7 @@ public class ShapeCollectionTests : SCTest
     public void Add_adds_table()
     {
         // Arrange
-        var pptx = GetTestStream("053_add_shapes.pptx");
+        var pptx = GetInputStream("053_add_shapes.pptx");
         var pres = SCPresentation.Open(pptx);
         var copyingShape = pres.Slides[0].Shapes.GetByName("Table 1")!;
         var shapeCollection = pres.Slides[1].Shapes;
@@ -70,7 +70,7 @@ public class ShapeCollectionTests : SCTest
     public void Contains_particular_shape_Types()
     {
         // Arrange
-        var pres = SCPresentation.Open(GetTestStream("003.pptx"));
+        var pres = SCPresentation.Open(GetInputStream("003.pptx"));
 
         // Act
         var shapes = pres.Slides.First().Shapes;
@@ -87,7 +87,7 @@ public class ShapeCollectionTests : SCTest
     public void Contains_Picture_shape()
     {
         // Arrange
-        IShape shape = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
+        IShape shape = SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
 
         // Act-Assert
         IPicture picture = shape as IPicture;
@@ -98,7 +98,7 @@ public class ShapeCollectionTests : SCTest
     public void Contains_Audio_shape()
     {
         // Arrange
-        var pptxStream = GetTestStream("audio-case001.pptx");
+        var pptxStream = GetInputStream("audio-case001.pptx");
         var pres = SCPresentation.Open(pptxStream);
         IShape shape = pres.Slides[0].Shapes.First(sp => sp.Id == 8);
 
@@ -112,7 +112,7 @@ public class ShapeCollectionTests : SCTest
     [Test]
     public void Contains_Connection_shape()
     {
-        var pptxStream = GetTestStream("001.pptx");
+        var pptxStream = GetInputStream("001.pptx");
         var presentation = SCPresentation.Open(pptxStream);
         var shapesCollection = presentation.Slides[0].Shapes;
 
@@ -124,7 +124,7 @@ public class ShapeCollectionTests : SCTest
     public void Contains_Video_shape()
     {
         // Arrange
-        var pptx = GetTestStream("040_video.pptx");
+        var pptx = GetInputStream("040_video.pptx");
         var pres = SCPresentation.Open(pptx);
         IShape shape = pres.Slides[0].Shapes.First(sp => sp.Id == 8);
             
@@ -311,7 +311,7 @@ public class ShapeCollectionTests : SCTest
     public void AddAudio_adds_Audio_shape()
     {
         // Arrange
-        var preStream = GetTestStream("001.pptx");
+        var preStream = GetInputStream("001.pptx");
         var pres = SCPresentation.Open(preStream);
         var shapes = pres.Slides[1].Shapes;
         var mp3 = TestFiles.Audio.TestMp3;
@@ -335,10 +335,10 @@ public class ShapeCollectionTests : SCTest
     public void AddVideo_adds_Video_shape()
     {
         // Arrange
-        var preStream = GetTestStream("001.pptx");
+        var preStream = GetInputStream("001.pptx");
         var presentation = SCPresentation.Open(preStream);
         var shapesCollection = presentation.Slides[1].Shapes;
-        var videoStream = GetTestStream("test-video.mp4");
+        var videoStream = GetInputStream("test-video.mp4");
         int xPxCoordinate = 300;
         int yPxCoordinate = 100;
 
@@ -393,7 +393,7 @@ public class ShapeCollectionTests : SCTest
     public void AddRectangle_adds_rectangle_with_valid_id_and_name()
     {
         // Arrange
-        var pptx = GetTestStream("autoshape-case011_save-as-png.pptx");
+        var pptx = GetInputStream("autoshape-case011_save-as-png.pptx");
         var pres = SCPresentation.Open(pptx);
         var shapes = pres.Slides[0].Shapes;
             
@@ -433,7 +433,7 @@ public class ShapeCollectionTests : SCTest
     public void AddRoundedRectangle_adds_Rounded_Rectangle()
     {
         // Arrange
-        var pptx = GetTestStream("autoshape-grouping.pptx");
+        var pptx = GetInputStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var shapes = pres.Slides[0].Shapes;
             
@@ -472,7 +472,7 @@ public class ShapeCollectionTests : SCTest
     public void Remove_removes_shape()
     {
         // Arrange
-        var pptx = GetTestStream("autoshape-grouping.pptx");
+        var pptx = GetInputStream("autoshape-grouping.pptx");
         var pres = SCPresentation.Open(pptx);
         var shapeCollection = pres.Slides[0].Shapes;
         var shape = shapeCollection.GetByName("TextBox 3")!;

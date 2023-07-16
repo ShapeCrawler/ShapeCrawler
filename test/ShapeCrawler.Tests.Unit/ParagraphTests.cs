@@ -47,7 +47,7 @@ public class ParagraphTests : SCTest
     public void Bullet_FontName_Getter_returns_font_name()
     {
         // Arrange
-        var pptx = GetTestStream("002.pptx");
+        var pptx = GetInputStream("002.pptx");
         var pres = SCPresentation.Open(pptx);
         var shapes = pres.Slides[1].Shapes;
         var shape3Pr1Bullet = ((IAutoShape)shapes.First(x => x.Id == 3)).TextFrame.Paragraphs[0].Bullet;
@@ -66,7 +66,7 @@ public class ParagraphTests : SCTest
     public void Bullet_Type_Getter_returns_bullet_type()
     {
         // Arrange
-        var pptx = GetTestStream("002.pptx");
+        var pptx = GetInputStream("002.pptx");
         var pres = SCPresentation.Open(pptx);
         var shapeList = pres.Slides[1].Shapes;
         var shape4 = shapeList.First(x => x.Id == 4);
@@ -143,11 +143,11 @@ public class ParagraphTests : SCTest
 
     public static IEnumerable<object[]> TestCasesAlignmentGetter()
     {
-        var pptx = GetTestStream("001.pptx");
+        var pptx = GetInputStream("001.pptx");
         var autoShape1 = SCPresentation.Open(pptx).Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
         yield return new object[] { autoShape1, SCTextAlignment.Center };
 
-        var pptxStream2 = GetTestStream("001.pptx");
+        var pptxStream2 = GetInputStream("001.pptx");
         var pres2 = SCPresentation.Open(pptxStream2);
         var autoShape2 = pres2.Slides[0].Shapes.GetByName<IAutoShape>("Head 1");
         yield return new object[] { autoShape2, SCTextAlignment.Center };
@@ -175,7 +175,7 @@ public class ParagraphTests : SCTest
     public void Paragraph_Bullet_Type_Getter_returns_None_value_When_paragraph_doesnt_have_bullet()
     {
         // Arrange
-        var pptx = GetTestStream("001.pptx");
+        var pptx = GetInputStream("001.pptx");
         var pres = SCPresentation.Open(pptx);
         var autoShape = pres.Slides[0].Shapes.GetById<IAutoShape>(2);
         var bullet = autoShape.TextFrame.Paragraphs[0].Bullet;
@@ -191,7 +191,7 @@ public class ParagraphTests : SCTest
     public void Paragraph_BulletColorHexAndCharAndSizeProperties_ReturnCorrectValues()
     {
         // Arrange
-        var pres2 = SCPresentation.Open(GetTestStream("002.pptx"));
+        var pres2 = SCPresentation.Open(GetInputStream("002.pptx"));
         var shapeList = pres2.Slides[1].Shapes;
         var shape4 = shapeList.First(x => x.Id == 4);
         var shape4Pr2Bullet = ((IAutoShape)shape4).TextFrame.Paragraphs[1].Bullet;
@@ -211,7 +211,7 @@ public class ParagraphTests : SCTest
     public void Paragraph_Text_Setter_updates_paragraph_text_and_resize_shape()
     {
         // Arrange
-        var pptxStream = GetTestStream("autoshape-case003.pptx");
+        var pptxStream = GetInputStream("autoshape-case003.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 4");
         var paragraph = shape.TextFrame.Paragraphs[0];
@@ -256,7 +256,7 @@ public class ParagraphTests : SCTest
             ShapeId = 4,
             ParagraphIndex = 2
         };
-        paragraphQuery.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
+        paragraphQuery.Presentation = SCPresentation.Open(GetInputStream("002.pptx"));
         yield return new object[] { paragraphQuery, "Text", 1 };
 
         var paragraphQuery2 = new TestElementQuery
@@ -265,7 +265,7 @@ public class ParagraphTests : SCTest
             ShapeId = 4,
             ParagraphIndex = 2
         };
-        paragraphQuery2.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
+        paragraphQuery2.Presentation = SCPresentation.Open(GetInputStream("002.pptx"));
         yield return new object[] { paragraphQuery2, $"Text{Environment.NewLine}", 1 };
         
         var paragraphQuery3 = new TestElementQuery
@@ -274,7 +274,7 @@ public class ParagraphTests : SCTest
             ShapeId = 4,
             ParagraphIndex = 2
         };
-        paragraphQuery3.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
+        paragraphQuery3.Presentation = SCPresentation.Open(GetInputStream("002.pptx"));
         yield return new object[] { paragraphQuery3, $"Text{Environment.NewLine}Text2", 2 };
         
         
@@ -284,7 +284,7 @@ public class ParagraphTests : SCTest
             ShapeId = 4,
             ParagraphIndex = 2
         };
-        paragraphQuery4.Presentation = SCPresentation.Open(GetTestStream("002.pptx"));
+        paragraphQuery4.Presentation = SCPresentation.Open(GetInputStream("002.pptx"));
         yield return new object[] { paragraphQuery4, $"Text{Environment.NewLine}Text2{Environment.NewLine}", 2 };
     }
 
@@ -327,8 +327,8 @@ public class ParagraphTests : SCTest
     public void Paragraph_Text_Getter_returns_paragraph_text()
     {
         // Arrange
-        var textBox1 = ((IAutoShape)SCPresentation.Open(GetTestStream("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 37)).TextFrame;
-        var textBox2 = ((ITable)SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+        var textBox1 = ((IAutoShape)SCPresentation.Open(GetInputStream("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 37)).TextFrame;
+        var textBox2 = ((ITable)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
             .TextFrame;
 
         // Act
@@ -346,7 +346,7 @@ public class ParagraphTests : SCTest
     public void ReplaceText_finds_and_replaces_text()
     {
         // Arrange
-        var pptxStream = GetTestStream("autoshape-case003.pptx");
+        var pptxStream = GetInputStream("autoshape-case003.pptx");
         var pres = SCPresentation.Open(pptxStream);
         var paragraph = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 3").TextFrame!.Paragraphs[0];
             
@@ -363,7 +363,7 @@ public class ParagraphTests : SCTest
     public void Paragraph_Portions_counter_returns_number_of_text_portions_in_the_paragraph()
     {
         // Arrange
-        var textFrame = SCPresentation.Open(GetTestStream("009_table.pptx")).Slides[2].Shapes.GetById<IAutoShape>(2).TextFrame;
+        var textFrame = SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[2].Shapes.GetById<IAutoShape>(2).TextFrame;
 
         // Act
         var portions = textFrame.Paragraphs[0].Portions;
@@ -410,7 +410,7 @@ public class ParagraphTests : SCTest
     public void Portions_Add()
     {
         // Arrange
-        var pptx = GetTestStream("autoshape-case001.pptx");
+        var pptx = GetInputStream("autoshape-case001.pptx");
         var pres = SCPresentation.Open(pptx);
         var shape = pres.SlideMasters[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
         var paragraph = shape.TextFrame!.Paragraphs.Add();

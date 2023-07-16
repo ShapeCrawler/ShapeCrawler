@@ -33,7 +33,7 @@ public class TestCase
                 return this.pres;
             }
             
-            var pptxStream = SCTest.GetTestStream(this.PresentationName);
+            var pptxStream = SCTest.GetInputStream(this.PresentationName);
             this.pres = SCPresentation.Open(pptxStream);
 
             return this.pres;
