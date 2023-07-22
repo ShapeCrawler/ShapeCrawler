@@ -1,5 +1,6 @@
 ﻿using OneOf;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable once CheckNamespace
@@ -16,9 +17,10 @@ internal sealed class SCRoundedRectangle : SCAutoShape, IRoundedRectangle
 {
     internal SCRoundedRectangle(
         P.Shape pShape, 
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection) 
-        : base(pShape, parentSlideObject, parentShapeCollection)
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> SlideOf,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        ITextFrameContainer textFrameContainer) 
+        : base(pShape, SlideOf, shapeCollectionOf, textFrameContainer)
     {
     }
 }

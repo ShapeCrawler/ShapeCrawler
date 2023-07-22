@@ -6,6 +6,7 @@ using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable once CheckNamespace
@@ -69,23 +70,24 @@ internal sealed class SCFont : IFont
     private readonly Lazy<SCColorFormat> colorFormat;
     private readonly ResettableLazy<A.LatinFont> latinFont;
     private readonly ResettableLazy<int> size;
+    private readonly ITextFrameContainer textFrameContainer;
 
-    internal SCFont(A.Text aText, SCPortion portion)
+    internal SCFont(A.Text aText, TextPortion portion, ITextFrameContainer textFrameContainer, SCParagraph paragraph)
     {
         this.aText = aText;
         this.size = new ResettableLazy<int>(this.GetSize);
         this.latinFont = new ResettableLazy<A.LatinFont>(this.GetALatinFont);
-        this.colorFormat = new Lazy<SCColorFormat>(() => new SCColorFormat(this));
+        this.colorFormat = new Lazy<SCColorFormat>(() => new SCColorFormat(this, textFrameContainer, paragraph));
         this.ParentPortion = portion;
-        var parentTextBoxContainer = portion.ParentParagraph.ParentTextFrame.TextFrameContainer;
         SCShape shape;
-        if (parentTextBoxContainer is SCCell cell)
+        this.textFrameContainer = textFrameContainer;
+        if (textFrameContainer is SCCell cell)
         {
             shape = cell.SCShape;
         }
         else
         {
-            shape = (SCShape)portion.ParentParagraph.ParentTextFrame.TextFrameContainer;
+            shape = (SCShape)textFrameContainer;
         }
 
         var themeFontScheme = (ThemeFontScheme)shape.SlideMasterInternal.Theme.FontScheme; 
@@ -161,11 +163,11 @@ internal sealed class SCFont : IFont
         set => this.SetOffset(value);
     }
 
-    internal SCPortion ParentPortion { get; }
+    internal TextPortion ParentPortion { get; }
 
     public bool CanChange()
     {
-        var placeholder = this.ParentPortion.ParentParagraph.ParentTextFrame.TextFrameContainer.SCShape.Placeholder;
+        var placeholder = this.textFrameContainer.SCShape.Placeholder;
 
         return placeholder is null or { Type: SCPlaceholderType.Text };
     }

@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Texts;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -27,9 +28,10 @@ internal sealed class SCLine : SCAutoShape, ILine
 {
     public SCLine(
         TypedOpenXmlCompositeElement pShapeTreeChild,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideStructureOf,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollectionOf)
-        : base(pShapeTreeChild, parentSlideStructureOf, parentShapeCollectionOf)
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        ITextFrameContainer textFrameContainer)
+        : base(pShapeTreeChild, slideOf, shapeCollectionOf, textFrameContainer)
     {
     }
 

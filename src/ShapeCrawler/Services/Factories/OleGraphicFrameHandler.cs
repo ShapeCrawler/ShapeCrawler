@@ -3,10 +3,11 @@ using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Factories;
+namespace ShapeCrawler.Services.Factories;
 
 internal sealed class OleGraphicFrameHandler : OpenXmlElementHandler
 {
@@ -15,7 +16,8 @@ internal sealed class OleGraphicFrameHandler : OpenXmlElementHandler
     internal override SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollection)
+        OneOf<ShapeCollection, SCGroupShape> shapeCollection,
+        ITextFrameContainer textFrameContainer)
     {
         if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
         {
@@ -28,6 +30,6 @@ internal sealed class OleGraphicFrameHandler : OpenXmlElementHandler
             }
         }
 
-        return this.Successor?.FromTreeChild(pShapeTreeChild, slideObject, shapeCollection);
+        return this.Successor?.FromTreeChild(pShapeTreeChild, slideObject, shapeCollection, textFrameContainer);
     }
 }

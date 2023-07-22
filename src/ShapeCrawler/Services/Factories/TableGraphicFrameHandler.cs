@@ -2,9 +2,10 @@
 using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Factories;
+namespace ShapeCrawler.Services.Factories;
 
 internal sealed class TableGraphicFrameHandler : OpenXmlElementHandler
 {
@@ -13,14 +14,15 @@ internal sealed class TableGraphicFrameHandler : OpenXmlElementHandler
     internal override SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollection)
+        OneOf<ShapeCollection, SCGroupShape> shapeCollection,
+        ITextFrameContainer textFrameContainer)
     {
         if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
         {
             var graphicData = pGraphicFrame.Graphic!.GraphicData!;
             if (!graphicData.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
             {
-                return this.Successor?.FromTreeChild(pShapeTreeChild, slideObject, shapeCollection);
+                return this.Successor?.FromTreeChild(pShapeTreeChild, slideObject, shapeCollection, textFrameContainer);
             }
 
             var table = new SCTable(pGraphicFrame, slideObject, shapeCollection);
@@ -28,6 +30,6 @@ internal sealed class TableGraphicFrameHandler : OpenXmlElementHandler
             return table;
         }
 
-        return this.Successor?.FromTreeChild(pShapeTreeChild, slideObject, shapeCollection);
+        return this.Successor?.FromTreeChild(pShapeTreeChild, slideObject, shapeCollection, textFrameContainer);
     }
 }

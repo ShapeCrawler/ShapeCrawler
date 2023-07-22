@@ -20,13 +20,13 @@ internal abstract class SCShape : IShape
 {
     protected SCShape(
         OpenXmlCompositeElement pShapeTreeChild,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideStructureOf,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
         OneOf<ShapeCollection, SCGroupShape> parentShapeCollectionStructureOf)
     {
         this.PShapeTreeChild = pShapeTreeChild;
-        this.ParentSlideStructureOf = parentSlideStructureOf;
-        this.ParentShapeCollectionStructureOf = parentShapeCollectionStructureOf;
-        this.SlideStructure = parentSlideStructureOf.Match(slide => slide as SlideStructure, layout => layout, master => master);
+        this.slideOf = slideOf;
+        this.shapeCollectionOf = parentShapeCollectionStructureOf;
+        this.SlideStructure = slideOf.Match(slide => slide as SlideStructure, layout => layout, master => master);
         this.GroupShape = parentShapeCollectionStructureOf.IsT1 ? parentShapeCollectionStructureOf.AsT1 : null;
     }
 
@@ -79,9 +79,9 @@ internal abstract class SCShape : IShape
         set => this.SetWidth(value);
     }
 
-    internal OneOf<ShapeCollection, SCGroupShape> ParentShapeCollectionStructureOf { get; set; }
+    internal OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf { get; set; }
 
-    internal OneOf<SCSlide, SCSlideLayout, SCSlideMaster> ParentSlideStructureOf { get; set; }
+    internal OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf { get; set; }
     
     internal SCSlideMaster SlideMasterInternal
     {

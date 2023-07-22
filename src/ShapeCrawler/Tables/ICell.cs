@@ -32,17 +32,20 @@ internal sealed class SCCell : ICell, ITextFrameContainer
 {
     private readonly ResettableLazy<SCTextFrame> textFrame;
     private readonly ResettableLazy<SCShapeFill> fill;
+    private readonly SlideStructure slideStructure;
+    private ITextFrameContainer textFrameContainer;
 
-    internal SCCell(SCRow tableRow, A.TableCell aTableCell, int rowIndex, int columnIndex)
+    internal SCCell(SCRow tableRow, A.TableCell aTableCell, int rowIndex, int columnIndex, ITextFrameContainer textFrameContainer)
     {
         this.ParentTableRow = tableRow;
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
-        this.textFrame = new ResettableLazy<SCTextFrame>(this.GetTextFrame);
-        var slideObject = tableRow.ParentTable.SlideStructure;
+        this.textFrame = new ResettableLazy<SCTextFrame>(this.CreateTextFrame);
+        this.slideStructure = (SlideStructure) tableRow.ParentTable.SlideStructure;
+        this.textFrameContainer = textFrameContainer;
         var framePr = aTableCell.TableCellProperties!;
-        this.fill = new ResettableLazy<SCShapeFill>(() => new CellFill((SlideStructure)slideObject, framePr));
+        this.fill = new ResettableLazy<SCShapeFill>(() => new CellFill(this.slideStructure, framePr));
     }
 
     public bool IsMergedCell => this.DefineWhetherCellIsMerged();
@@ -61,9 +64,9 @@ internal sealed class SCCell : ICell, ITextFrameContainer
 
     private SCRow ParentTableRow { get; }
 
-    private SCTextFrame GetTextFrame()
+    private SCTextFrame CreateTextFrame()
     {
-        return new SCTextFrame(this, this.ATableCell.TextBody!);
+        return new SCTextFrame(this, this.ATableCell.TextBody!, this.slideStructure, this.textFrameContainer);
     }
 
     private bool DefineWhetherCellIsMerged()

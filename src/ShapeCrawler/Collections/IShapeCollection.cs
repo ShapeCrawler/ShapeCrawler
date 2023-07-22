@@ -15,6 +15,7 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
+using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using SkiaSharp;
@@ -175,7 +176,7 @@ internal sealed class ShapeCollection : IShapeCollection
             case null:
                 throw new SCException($"Cannot create an instance of type {addingShape.GetType().Name}.");
             case SCPicture pic:
-                pic.CopyParts((SlideStructure)addingShapeInternal.ParentSlideStructureOf.Value);
+                pic.CopyParts((SlideStructure)addingShapeInternal.slideOf.Value);
                 break;
         }
 

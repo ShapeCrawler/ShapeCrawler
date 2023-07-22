@@ -6,7 +6,9 @@ using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using OneOf;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using C14 = DocumentFormat.OpenXml.Office2010.Drawing.Charts;
@@ -149,17 +151,18 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
     internal override SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideStructure,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollection)
+        OneOf<ShapeCollection, SCGroupShape> shapeCollection,
+        ITextFrameContainer textFrameContainer)
     {
         if (pShapeTreeChild is not P.GraphicFrame pGraphicFrame)
         {
-            return this.Successor?.FromTreeChild(pShapeTreeChild, slideStructure, shapeCollection);
+            return this.Successor?.FromTreeChild(pShapeTreeChild, slideStructure, shapeCollection, textFrameContainer);
         }
 
         var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
         if (!aGraphicData.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
         {
-            return this.Successor?.FromTreeChild(pShapeTreeChild, slideStructure, shapeCollection);
+            return this.Successor?.FromTreeChild(pShapeTreeChild, slideStructure, shapeCollection, textFrameContainer);
         }
 
         var slideBase = slideStructure.Match(slide => slide as SlideStructure, layout => layout, master => master);

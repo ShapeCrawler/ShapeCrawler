@@ -40,13 +40,15 @@ internal sealed class SCColorFormat : IColorFormat
     private bool initialized;
     private string? hexColor;
     private SCColorType colorType;
+    private readonly SCParagraph paragraph;
 
-    internal SCColorFormat(SCFont font)
+    internal SCColorFormat(SCFont font, ITextFrameContainer textFrameContainer, SCParagraph paragraph)
     {
         this.font = font;
-        this.textFrameContainer = font.ParentPortion.ParentParagraph.ParentTextFrame.TextFrameContainer;
+        this.textFrameContainer = textFrameContainer;
         var shape = this.textFrameContainer.SCShape;
         this.parentSlideMaster = shape.SlideMasterInternal;
+        this.paragraph = paragraph;
     }
 
     public SCColorType ColorType => this.GetColorType();
@@ -103,8 +105,7 @@ internal sealed class SCColorFormat : IColorFormat
         }
         else
         {
-            var paragraph = portion.ParentParagraph;
-            var paragraphLevel = paragraph.Level;
+            var paragraphLevel = this.paragraph.Level;
             if (this.TryFromTextBody(paragraph))
             {
                 return;
@@ -186,7 +187,6 @@ internal sealed class SCColorFormat : IColorFormat
         }
 
         var phFontData = new FontData();
-        var paragraph = this.font.ParentPortion.ParentParagraph;
         FontDataParser.GetFontDataFromPlaceholder(ref phFontData, paragraph);
         if (this.TryFromFontData(phFontData))
         {

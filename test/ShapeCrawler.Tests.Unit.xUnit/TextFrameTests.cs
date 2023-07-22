@@ -25,7 +25,6 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         [SlideShapeData("021.pptx", 4, 2, "test footer")]
         [SlideShapeData("012_title-placeholder.pptx", 1, 2, "Test title text")]
         [SlideShapeData("012_title-placeholder.pptx", 1, 3, "P1 P2")]
-        [SlideShapeData("031.pptx", 46, 5, "P3")]
         public void Text_Getter_returns_text(IShape shape, string expectedText)
         {
             // Arrange

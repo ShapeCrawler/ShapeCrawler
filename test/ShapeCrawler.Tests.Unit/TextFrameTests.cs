@@ -39,11 +39,9 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             text3.Should().BeEquivalentTo($"0:0_p1_lvl1{Environment.NewLine}0:0_p2_lvl2");
         }
 
-        // [SlideShapeData("031.pptx", 46, 5, "P3")]
         [Test]
         public void Text_Getter_returns_text_from_New_Slide()
         {
-            throw new Exception("In Progress.");
             // Arrange
             var pptx = GetInputStream("031.pptx");
             var pres = SCPresentation.Open(pptx);
@@ -51,11 +49,12 @@ namespace ShapeCrawler.Tests.Unit.xUnit
 
             // Act
             pres.Slides.AddEmptySlide(layout);
-            var textFrame = pres.Slides.Last().Shapes.GetById<IAutoShape>(5).TextFrame;
+            var newSlide = pres.Slides.Last();
+            var textFrame = newSlide.Shapes.GetByName<IAutoShape>("Holder 5").TextFrame;
             var text = textFrame.Text;
             
             // Assert
-            text.Should().BeEquivalentTo("some");
+            text.Should().BeEquivalentTo("");
         }
 
         [Test]

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -27,11 +28,15 @@ internal sealed class ParagraphCollection : IParagraphCollection
 {
     private readonly ResettableLazy<List<SCParagraph>> paragraphs;
     private readonly SCTextFrame textFrame;
+    private readonly SlideStructure slideStructure;
+    private readonly ITextFrameContainer textFrameContainer;
 
-    internal ParagraphCollection(SCTextFrame textFrame)
+    internal ParagraphCollection(SCTextFrame textFrame, SlideStructure slideStructure, ITextFrameContainer textFrameContainer)
     {
         this.textFrame = textFrame;
+        this.slideStructure = slideStructure;
         this.paragraphs = new ResettableLazy<List<SCParagraph>>(this.GetParagraphs);
+        this.textFrameContainer = textFrameContainer;
     }
 
     #region Public Properties
@@ -59,7 +64,7 @@ internal sealed class ParagraphCollection : IParagraphCollection
         newAParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         lastAParagraph.InsertAfterSelf(newAParagraph);
 
-        var newParagraph = new SCParagraph(newAParagraph, this.textFrame)
+        var newParagraph = new SCParagraph(newAParagraph, this.textFrame, this.slideStructure,this.textFrameContainer)
         {
             Text = string.Empty
         };
@@ -90,7 +95,7 @@ internal sealed class ParagraphCollection : IParagraphCollection
         var paraList = new List<SCParagraph>();
         foreach (var aPara in this.textFrame.TextBodyElement.Elements<A.Paragraph>())
         {
-            var para = new SCParagraph(aPara, this.textFrame);
+            var para = new SCParagraph(aPara, this.textFrame, this.slideStructure, this.textFrameContainer);
             para.TextChanged += this.textFrame.OnParagraphTextChanged;
             paraList.Add(para);
         }

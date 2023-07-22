@@ -1,8 +1,10 @@
 ﻿using System;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -16,12 +18,12 @@ public interface IPortion
     /// <summary>
     ///     Gets or sets text.
     /// </summary>
-    string Text { get; set; }
+    string? Text { get; set; }
 
     /// <summary>
     ///     Gets font.
     /// </summary>
-    IFont Font { get; }
+    IFont? Font { get; }
 
     /// <summary>
     ///     Gets or sets hypelink.
@@ -36,33 +38,43 @@ public interface IPortion
     /// <summary>
     ///     Gets or sets Text Highlight Color. 
     /// </summary>
-    SCColor TextHighlightColor { get; set; }
+    SCColor? TextHighlightColor { get; set; }
+
+    /// <summary>
+    /// 	Removes portion from paragraph.
+    /// </summary>
+    void Remove();
 }
 
-internal sealed class SCPortion : IPortion
+internal sealed class TextPortion : IPortion
 {
     private readonly ResettableLazy<SCFont> font;
     private readonly A.Field? aField;
+    private readonly A.Run? aRun;
+    private readonly SlideStructure slideStructure;
 
-    internal SCPortion(A.Text aText, SCParagraph paragraph, A.Field aField)
-        : this(aText, paragraph)
+    internal TextPortion(A.Field aField, SlideStructure slideStructure, ITextFrameContainer textFrameContainer, SCParagraph paragraph)
     {
+        this.slideStructure = slideStructure;
         this.aField = aField;
+        this.AText = aField.GetFirstChild<A.Text>()!;
+        this.font = new ResettableLazy<SCFont>(() => new SCFont(this.AText, this, textFrameContainer, paragraph));
     }
 
-    internal SCPortion(A.Text aText, SCParagraph paragraph)
+    internal TextPortion(A.Run aRun, SlideStructure slideStructure, ITextFrameContainer textFrameContainer, SCParagraph paragraph)
     {
-        this.AText = aText;
-        this.ParentParagraph = paragraph;
-        this.font = new ResettableLazy<SCFont>(() => new SCFont(this.AText, this));
+        this.slideStructure = slideStructure;
+        this.aRun = aRun;
+        this.AText = aRun.Text!;
+        this.font = new ResettableLazy<SCFont>(() => new SCFont(this.AText, this, textFrameContainer, paragraph));
     }
 
     #region Public Properties
 
     /// <inheritdoc/>
-    public string Text
+    public string? Text
     {
-        get => this.GetText();
+        get => this.ParseText();
         set => this.SetText(value);
     }
 
@@ -77,10 +89,15 @@ internal sealed class SCPortion : IPortion
 
     public IField? Field => this.GetField();
 
-    public SCColor TextHighlightColor
+    public SCColor? TextHighlightColor
     {
-        get => this.GetTextHighlightColor();
+        get => this.ParseTextHighlightColor();
         set => this.SetTextHighlightColor(value);
+    }
+
+    public void Remove()
+    {
+        throw new NotImplementedException();
     }
 
     #endregion Public Properties
@@ -88,8 +105,6 @@ internal sealed class SCPortion : IPortion
     internal A.Text AText { get; }
 
     internal bool IsRemoved { get; set; }
-
-    internal SCParagraph ParentParagraph { get; }
 
     private IField? GetField()
     {
@@ -101,7 +116,7 @@ internal sealed class SCPortion : IPortion
         return new SCField(this.aField);
     }
 
-    private SCColor GetTextHighlightColor()
+    private SCColor ParseTextHighlightColor()
     {
         var arPr = this.AText.PreviousSibling<A.RunProperties>();
 
@@ -126,26 +141,26 @@ internal sealed class SCPortion : IPortion
         return color;
     }
 
-    private void SetTextHighlightColor(SCColor color)
+    private void SetTextHighlightColor(SCColor? color)
     {
         var arPr = this.AText.PreviousSibling<A.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
 
-        arPr.AddAHighlight(color);
+        arPr.AddAHighlight((SCColor)color);
     }
 
-    private string GetText()
+    private string? ParseText()
     {
-        var portionText = this.AText.Text;
-        if (this.AText.Parent!.NextSibling<A.Break>() != null)
-        {
-            portionText += Environment.NewLine;
-        }
-
+        var portionText = this.AText?.Text;
         return portionText;
     }
 
-    private void SetText(string text)
+    private void SetText(string? text)
     {
+        if (text is null)
+        {
+            throw new ArgumentNullException(nameof(text));
+        }
+        
         this.AText.Text = text;
     }
 
@@ -162,10 +177,8 @@ internal sealed class SCPortion : IPortion
         {
             return null;
         }
-
-        var slideObject =
-            (SlideStructure)this.ParentParagraph.ParentTextFrame.TextFrameContainer.SCShape.SlideStructure;
-        var typedOpenXmlPart = slideObject.TypedOpenXmlPart;
+        
+        var typedOpenXmlPart = this.slideStructure.TypedOpenXmlPart;
         var hyperlinkRelationship = (HyperlinkRelationship)typedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
 
         return hyperlinkRelationship.Uri.ToString();
@@ -185,14 +198,44 @@ internal sealed class SCPortion : IPortion
             hyperlink = new A.HyperlinkOnClick();
             runProperties.Append(hyperlink);
         }
-
-        var slideStructureCore =
-            (SlideStructure)this.ParentParagraph.ParentTextFrame.TextFrameContainer.SCShape.SlideStructure;
-        var slidePart = slideStructureCore.TypedOpenXmlPart;
+        
+        var slidePart = this.slideStructure.TypedOpenXmlPart;
 
         var uri = new Uri(url!, UriKind.RelativeOrAbsolute);
         var addedHyperlinkRelationship = slidePart.AddHyperlinkRelationship(uri, true);
 
         hyperlink.Id = addedHyperlinkRelationship.Id;
+    }
+}
+
+internal sealed class NewLinePortion : IPortion
+{
+    private readonly A.Break aBreak;
+
+    internal NewLinePortion(A.Break aBreak)
+    {
+        this.aBreak = aBreak;
+    }
+
+    public string? Text { get; set; } = Environment.NewLine;
+    public IFont? Font { get; }
+
+    public string? Hyperlink
+    {
+        get => null; 
+        set => throw new SCException("New Line portion does not support hyperlink.");
+    }
+    public IField? Field { get; }
+
+    public SCColor? TextHighlightColor
+    {
+        get => null; 
+        set => throw new SCException("New Line portion does not support text highlight color.");
+    }
+
+    public void Remove()
+    {
+        this.aBreak.Remove();
+        
     }
 }

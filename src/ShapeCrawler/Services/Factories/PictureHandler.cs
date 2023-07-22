@@ -3,17 +3,19 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using OneOf;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Factories;
+namespace ShapeCrawler.Services.Factories;
 
 internal sealed class PictureHandler : OpenXmlElementHandler
 {
     internal override SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideStructure,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollection)
+        OneOf<ShapeCollection, SCGroupShape> shapeCollection,
+        ITextFrameContainer textFrameContainer)
     {
         P.Picture? pPicture;
         if (pShapeTreeChild is P.Picture treePic)

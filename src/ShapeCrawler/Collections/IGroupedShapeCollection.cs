@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.Collections;
 using ShapeCrawler.Factories;
+using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
