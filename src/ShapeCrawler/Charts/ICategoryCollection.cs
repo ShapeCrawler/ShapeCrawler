@@ -37,6 +37,20 @@ internal sealed class CategoryCollection : IReadOnlyCollection<ICategory>, ICate
         this.items = categoryList;
     }
 
+    public int Count => this.items.Count;
+
+    public ICategory this[int index] => this.items[index];
+
+    public IEnumerator<ICategory> GetEnumerator()
+    {
+        return this.items.GetEnumerator();
+    }
+        
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return this.GetEnumerator();
+    }
+    
     internal static CategoryCollection? Create(SCChart chart, OpenXmlElement? firstChartSeries, SCChartType chartType)
     {
         if (chartType is SCChartType.BubbleChart or SCChartType.ScatterChart)
@@ -138,18 +152,4 @@ internal sealed class CategoryCollection : IReadOnlyCollection<ICategory>, ICate
 
         return indexToCategory.Select(kvp => kvp.Value).ToList(indexToCategory.Count);
     }
-
-    public IEnumerator<ICategory> GetEnumerator()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return this.GetEnumerator();
-    }
-
-    public int Count => this.items.Count;
-
-    public ICategory this[int index] => this.items[index];
 }

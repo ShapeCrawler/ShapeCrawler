@@ -1,7 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Texts;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 

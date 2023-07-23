@@ -2,7 +2,6 @@
 using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Texts;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;

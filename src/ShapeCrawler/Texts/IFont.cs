@@ -5,6 +5,7 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -292,7 +293,7 @@ internal sealed class SCFont : IFont
             return aEastAsianFont;
         }
 
-        var phFontData = FontDataParser.FromPlaceholder(paragraph);
+        var phFontData = FontDataParser.FromPlaceholder(this.paragraph);
         
         return phFontData.AEastAsianFont ?? this.aFontScheme.MinorFont!.EastAsianFont!;
     }
@@ -320,7 +321,7 @@ internal sealed class SCFont : IFont
         }
 
         var textFrameContainer = this.paragraph.ParentTextFrame.TextFrameContainer;
-        var paraLevel = paragraph.Level;
+        var paraLevel = this.paragraph.Level;
 
         if (textFrameContainer is SCShape { Placeholder: { } } shape)
         {

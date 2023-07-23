@@ -4,6 +4,7 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -37,10 +38,10 @@ internal sealed class SCColorFormat : IColorFormat
     private readonly SCFont font;
     private readonly ITextFrameContainer textFrameContainer;
     private readonly SCSlideMaster parentSlideMaster;
+    private readonly SCParagraph paragraph;
     private bool initialized;
     private string? hexColor;
     private SCColorType colorType;
-    private readonly SCParagraph paragraph;
 
     internal SCColorFormat(SCFont font, ITextFrameContainer textFrameContainer, SCParagraph paragraph)
     {
@@ -106,7 +107,7 @@ internal sealed class SCColorFormat : IColorFormat
         else
         {
             var paragraphLevel = this.paragraph.Level;
-            if (this.TryFromTextBody(paragraph))
+            if (this.TryFromTextBody(this.paragraph))
             {
                 return;
             }
@@ -187,7 +188,7 @@ internal sealed class SCColorFormat : IColorFormat
         }
 
         var phFontData = new FontData();
-        FontDataParser.GetFontDataFromPlaceholder(ref phFontData, paragraph);
+        FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.paragraph);
         if (this.TryFromFontData(phFontData))
         {
             return true;

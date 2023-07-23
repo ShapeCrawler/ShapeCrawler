@@ -1,4 +1,5 @@
 ﻿using ShapeCrawler.Drawing;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -40,7 +41,7 @@ internal sealed class SCCell : ICell, ITextFrameContainer
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
         this.textFrame = new ResetAbleLazy<SCTextFrame>(this.CreateTextFrame);
-        this.slideStructure = (SlideStructure) tableRow.ParentTable.SlideStructure;
+        this.slideStructure = (SlideStructure)tableRow.ParentTable.SlideStructure;
         var framePr = aTableCell.TableCellProperties!;
         this.fill = new ResetAbleLazy<SCShapeFill>(() => new CellFill(this.slideStructure, framePr));
     }

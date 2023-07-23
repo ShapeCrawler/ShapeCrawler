@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -139,7 +138,7 @@ internal sealed class SCParagraph : IParagraph
             return string.Empty;
         }
 
-        return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next)!;
+        return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next) !;
     }
 
     private int GetIndentLevel()

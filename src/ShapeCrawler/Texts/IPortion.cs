@@ -53,7 +53,6 @@ internal sealed class SCTextPortion : IPortion
     private readonly A.Field? aField;
     private readonly SlideStructure slideStructure;
     
-    internal event Action? Removed;
 
     internal SCTextPortion(
         A.Run aRun, 
@@ -68,7 +67,7 @@ internal sealed class SCTextPortion : IPortion
         this.font = new ResetAbleLazy<SCFont>(() => new SCFont(this.AText, this, textFrameContainer, paragraph));
         this.Removed += onRemoveHandler;
     }
-
+    
     internal SCTextPortion(
         A.Field aField, 
         SlideStructure slideStructure, 
@@ -78,12 +77,12 @@ internal sealed class SCTextPortion : IPortion
     {
         this.aField = aField;
         this.slideStructure = slideStructure;
-        this.AText = aField.GetFirstChild<A.Text>()!;
+        this.AText = aField.GetFirstChild<A.Text>() !;
         this.font = new ResetAbleLazy<SCFont>(() => new SCFont(this.AText, this, textFrameContainer, paragraph));
         this.Removed += onRemoveHandler;
     }
-    
-    #region Public Properties
+
+    internal event Action? Removed;
 
     /// <inheritdoc/>
     public string? Text
@@ -109,18 +108,16 @@ internal sealed class SCTextPortion : IPortion
         set => this.SetTextHighlightColor(value);
     }
 
+    internal A.Text AText { get; }
+
+    internal bool IsRemoved { get; set; }
+    
     public void Remove()
     {
         this.aRun?.Remove();
         this.aField?.Remove();
         this.Removed?.Invoke();
     }
-
-    #endregion Public Properties
-
-    internal A.Text AText { get; }
-
-    internal bool IsRemoved { get; set; }
 
     private IField? GetField()
     {
@@ -227,15 +224,17 @@ internal sealed class SCTextPortion : IPortion
 internal sealed class SCLineBreak : IPortion
 {
     private readonly A.Break aBreak;
-    private event Action Removed;
     
     internal SCLineBreak(A.Break aBreak, Action onRemovedHandler)
     {
         this.aBreak = aBreak;
         this.Removed += onRemovedHandler;
     }
+    
+    private event Action Removed;
 
     public string? Text { get; set; } = Environment.NewLine;
+
     public IFont? Font { get; }
 
     public string? Hyperlink
@@ -243,6 +242,7 @@ internal sealed class SCLineBreak : IPortion
         get => null; 
         set => throw new SCException("New Line portion does not support hyperlink.");
     }
+
     public IField? Field { get; }
 
     public SCColor? TextHighlightColor

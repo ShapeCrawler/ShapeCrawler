@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
+using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Factories;

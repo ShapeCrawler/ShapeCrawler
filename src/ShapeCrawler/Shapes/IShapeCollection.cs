@@ -13,12 +13,10 @@ using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Texts;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -130,7 +128,7 @@ internal sealed class ShapeCollection : IShapeCollection
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf)
     {
         this.slideOf = slideOf;
-        this.slideStructure = (SlideStructure) slideOf.Value;
+        this.slideStructure = (SlideStructure)slideOf.Value;
         var chartGrFrameHandler = new ChartGraphicFrameHandler();
         var tableGrFrameHandler = new TableGraphicFrameHandler();
         var oleGrFrameHandler = new OleGraphicFrameHandler();

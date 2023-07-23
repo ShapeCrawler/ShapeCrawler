@@ -3,7 +3,6 @@ using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.OLEObjects;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 

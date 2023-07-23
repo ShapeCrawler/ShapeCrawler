@@ -1,8 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using OneOf;
-using ShapeCrawler.Factories;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Services.Factories;

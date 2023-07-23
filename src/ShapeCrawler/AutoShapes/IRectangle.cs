@@ -1,7 +1,6 @@
 ﻿using AngleSharp.Html.Dom;
 using OneOf;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace

@@ -6,16 +6,14 @@ using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using OneOf;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using C14 = DocumentFormat.OpenXml.Office2010.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
-namespace ShapeCrawler.Factories;
+namespace ShapeCrawler.Services.Factories;
 
 internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 {

@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using OneOf;
-using ShapeCrawler.Factories;
 using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable once CheckNamespace
@@ -34,12 +32,14 @@ public interface IGroupedShapeCollection : IEnumerable<IShape>
 internal sealed class GroupedShapeCollection : IReadOnlyCollection<IShape>, IGroupedShapeCollection
 {
     private readonly List<IShape> collectionItems;
-
+    
     private GroupedShapeCollection(List<IShape> groupedShapes)
     {
         this.collectionItems = groupedShapes;
     }
 
+    public int Count => this.collectionItems.Count;
+    
     public T GetById<T>(int shapeId)
         where T : IShape
     {
@@ -53,6 +53,17 @@ internal sealed class GroupedShapeCollection : IReadOnlyCollection<IShape>, IGro
         return (T)shape;
     }
 
+    public IEnumerator<IShape> GetEnumerator()
+    {
+        return this.collectionItems.GetEnumerator();
+    }
+
+    
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return this.GetEnumerator();
+    }
+    
     internal static GroupedShapeCollection Create(
         P.GroupShape pGroupShapeParam,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
@@ -96,15 +107,5 @@ internal sealed class GroupedShapeCollection : IReadOnlyCollection<IShape>, IGro
         return new GroupedShapeCollection(groupedShapes);
     }
 
-    public IEnumerator<IShape> GetEnumerator()
-    {
-        return this.collectionItems.GetEnumerator();
-    }
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return this.GetEnumerator();
-    }
-
-    public int Count => this.collectionItems.Count;
 }

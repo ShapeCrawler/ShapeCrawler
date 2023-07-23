@@ -8,16 +8,18 @@ using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Shapes;
 
 internal abstract class SCShape : IShape
 {
+    internal OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf;
+    internal OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf;
+
     protected SCShape(
         OpenXmlCompositeElement pShapeTreeChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
@@ -29,7 +31,7 @@ internal abstract class SCShape : IShape
         this.SlideStructure = slideOf.Match(slide => slide as SlideStructure, layout => layout, master => master);
         this.GroupShape = parentShapeCollectionStructureOf.IsT1 ? parentShapeCollectionStructureOf.AsT1 : null;
     }
-
+    
     internal event EventHandler<int>? XChanged;
 
     internal event EventHandler<int>? YChanged;
@@ -78,10 +80,6 @@ internal abstract class SCShape : IShape
         get => this.GetWidthPixels();
         set => this.SetWidth(value);
     }
-
-    internal OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf { get; set; }
-
-    internal OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf { get; set; }
     
     internal SCSlideMaster SlideMasterInternal
     {

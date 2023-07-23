@@ -64,7 +64,7 @@ internal sealed class SCPortionCollection : IPortionCollection
     {
         this.aParagraph = aParagraph;
         this.slideStructure = slideStructure;
-        this.portions = new ResetAbleLazy<List<IPortion>>(ParsePortions);
+        this.portions = new ResetAbleLazy<List<IPortion>>(this.ParsePortions);
         this.textFrameContainer = textFrameContainer;
         this.paragraph = paragraph;
     }
@@ -170,6 +170,7 @@ internal sealed class SCPortionCollection : IPortionCollection
                     portions.Add(fieldPortion);
                     break;
                 }
+
                 case A.Break aBreak:
                     var lineBreak = new SCLineBreak(aBreak, () => this.portions.Reset());
                     portions.Add(lineBreak);

@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
