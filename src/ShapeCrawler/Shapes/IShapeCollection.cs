@@ -754,10 +754,12 @@ internal sealed class ShapeCollection : IShapeCollection
             maxId = this.shapes.Value.Max(s => s.Id);
         }
 
-        var maxOrder = Regex.Matches(string.Join(string.Empty, this.shapes.Value.Select(s => s.Name)), "\\d+")
+        var maxOrder = Regex.Matches(string.Join(string.Empty, this.shapes.Value.Select(s => s.Name)), "\\d+", RegexOptions.None, TimeSpan.FromSeconds(100))
+            
 #if NETSTANDARD2_0
             .Cast<Match>()
 #endif
+            
             .Select(m => int.Parse(m.Value))
             .DefaultIfEmpty(0)
             .Max();
@@ -783,7 +785,7 @@ internal sealed class ShapeCollection : IShapeCollection
         var maxOrder = 0;
         foreach (var shape in this.shapes.Value)
         {
-            var matchOrder = Regex.Match(shape.Name, "(?!Table )\\d+");
+            var matchOrder = Regex.Match(shape.Name, "(?!Table )\\d+", RegexOptions.None, TimeSpan.FromSeconds(100));
             if (!matchOrder.Success)
             {
                 continue;

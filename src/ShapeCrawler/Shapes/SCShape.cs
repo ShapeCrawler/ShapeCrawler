@@ -240,7 +240,7 @@ internal abstract class SCShape : IShape
     private string? GetCustomData()
     {
         var pattern = @$"<{SCConstants.CustomDataElementName}>(.*)<\/{SCConstants.CustomDataElementName}>";
-        var regex = new Regex(pattern);
+        var regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(100));
         var elementText = regex.Match(this.PShapeTreeChild.InnerXml).Groups[1];
         if (elementText.Value.Length == 0)
         {
