@@ -71,8 +71,7 @@ internal sealed class SCPortionCollection : IPortionCollection
     
     public int Count => this.portions.Value.Count;
 
-    public IPortion 
-        this[int index] => this.portions.Value[index];
+    public IPortion this[int index] => this.portions.Value[index];
 
     public void AddText(string text)
     {
@@ -83,8 +82,9 @@ internal sealed class SCPortionCollection : IPortionCollection
         }
         
         var lastARunOrABreak = this.aParagraph.LastOrDefault(p => p is A.Run or A.Break);
-    
-        var lastPortion = (SCTextPortion?) this.portions.Value.OfType<SCTextPortion>().First();
+
+        var textPortions = this.portions.Value.OfType<SCTextPortion>();
+        var lastPortion = textPortions.Any() ? textPortions.Last() : null;
         var aTextParent = lastPortion?.AText.Parent ?? new ARunBuilder().Build();
 
         AddText(ref lastARunOrABreak, aTextParent, text, this.aParagraph);

@@ -98,7 +98,7 @@ internal sealed class GroupedShapeCollection : IReadOnlyCollection<IShape>, IGro
 
     public IEnumerator<IShape> GetEnumerator()
     {
-        throw new System.NotImplementedException();
+        return this.collectionItems.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -106,5 +106,5 @@ internal sealed class GroupedShapeCollection : IReadOnlyCollection<IShape>, IGro
         return this.GetEnumerator();
     }
 
-    public int Count { get; }
+    public int Count => this.collectionItems.Count;
 }
