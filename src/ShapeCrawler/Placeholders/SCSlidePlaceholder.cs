@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -15,7 +16,7 @@ internal sealed class SCSlidePlaceholder : SCPlaceholder
         this.slideShape = slideSCShape;
     }
 
-    internal override ResettableLazy<SCShape?> ReferencedShape => new (this.GetReferencedShape);
+    internal override ResetAbleLazy<SCShape?> ReferencedShape => new (this.GetReferencedShape);
 
     internal static SCSlidePlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, SCShape slideSCShape)
     {

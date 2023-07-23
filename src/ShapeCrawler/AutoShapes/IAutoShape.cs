@@ -6,7 +6,6 @@ using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Drawing.ShapeFill;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
@@ -55,19 +54,21 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
 
     private readonly Lazy<SCShapeFill> shapeFill;
     private readonly Lazy<SCTextFrame?> textFrame;
-    private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
+    private readonly ResetAbleLazy<Dictionary<int, FontData>> lvlToFontData;
     private readonly TypedOpenXmlCompositeElement pShape;
+    private readonly SlideStructure slideStructure;
 
     internal SCAutoShape(
         TypedOpenXmlCompositeElement pShape,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideStructureOf,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
         OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
-        : base(pShape, parentSlideStructureOf, parentShapeCollection)
+        : base(pShape, slideOf, parentShapeCollection)
     {
         this.pShape = pShape;
-        this.textFrame = new Lazy<SCTextFrame?>(this.GetTextFrame);
+        this.textFrame = new Lazy<SCTextFrame?>(this.ParseTextFrame);
         this.shapeFill = new Lazy<SCShapeFill>(this.GetFill);
-        this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
+        this.lvlToFontData = new ResetAbleLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
+        this.slideStructure = (SlideStructure)this.slideOf.Value;
     }
     
     internal event EventHandler<NewAutoShape>? Duplicated;
@@ -87,12 +88,12 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
     public virtual IAutoShape Duplicate()
     {
         var typedCompositeElement = (TypedOpenXmlCompositeElement)this.PShapeTreeChild.CloneNode(true);
-        var id = ((SlideStructure)this.ParentSlideStructureOf.Value).GetNextShapeId();
+        var id = ((SlideStructure)this.slideOf.Value).GetNextShapeId();
         typedCompositeElement.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
         var newAutoShape = new SCAutoShape(
             typedCompositeElement, 
-            this.ParentSlideStructureOf,
-            this.ParentShapeCollectionStructureOf);
+            this.slideOf,
+            this.shapeCollectionOf);
 
         var duplicatedShape = new NewAutoShape(newAutoShape, typedCompositeElement);
         this.Duplicated?.Invoke(this, duplicatedShape);
@@ -145,12 +146,12 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
         }
 
         var baseParagraph = this.TextFrame.Paragraphs.First();
-        var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
+        var popularPortion = baseParagraph.Portions.OfType<SCTextPortion>().GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
             .First().First();
         var font = popularPortion.Font;
 
         var paint = new SKPaint();
-        var fontSize = font.Size;
+        var fontSize = font!.Size;
         paint.TextSize = fontSize;
         paint.Typeface = SKTypeface.FromFamilyName(font.LatinName);
         paint.IsAntialias = true;
@@ -259,7 +260,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
         }
     }
 
-    private SCTextFrame? GetTextFrame()
+    private SCTextFrame? ParseTextFrame()
     {
         var pTextBody = this.PShapeTreeChild.GetFirstChild<P.TextBody>();
         if (pTextBody == null)
@@ -267,7 +268,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
             return null;
         }
 
-        var newTextFrame = new SCTextFrame(this, pTextBody);
+        var newTextFrame = new SCTextFrame(this, pTextBody, this.slideStructure, this);
         newTextFrame.TextChanged += this.ResizeShape;
 
         return newTextFrame;

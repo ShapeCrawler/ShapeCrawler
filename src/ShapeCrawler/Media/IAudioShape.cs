@@ -28,9 +28,9 @@ internal sealed class SCAudioShape : SCMediaShape, IAudioShape
 {
     internal SCAudioShape(
         OpenXmlCompositeElement pShapeTreesChild,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
-            : base(pShapeTreesChild, parentSlideObject, parentShapeCollection)
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf)
+            : base(pShapeTreesChild, slideOf, shapeCollectionOf)
     {
     }
 

@@ -164,7 +164,7 @@ public class ParagraphTests : SCTest
         errors.Should().BeEmpty();
     }
     
-    [Test, Ignore("On Hold")]
+    [Test]
     public void Text_Setter_sets_paragraph_text_for_grouped_shape()
     {
         // Arrange
@@ -175,6 +175,7 @@ public class ParagraphTests : SCTest
         
         // Act
         paragraph.Text = $"Safety{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}";
+        // SaveResult(pres);
         
         // Assert
         paragraph.Text.Should().BeEquivalentTo($"Safety{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
@@ -241,7 +242,7 @@ public class ParagraphTests : SCTest
         var expectedPortionCount = paragraph.Portions.Count + 1;
         
         // Act
-        paragraph.Portions.Add(" ");
+        paragraph.Portions.AddText(" ");
         
         // Assert
         paragraph.Portions.Count.Should().Be(expectedPortionCount);

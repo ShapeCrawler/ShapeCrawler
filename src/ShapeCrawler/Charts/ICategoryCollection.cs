@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -28,13 +28,29 @@ public interface ICategoryCollection : IEnumerable<ICategory>
     ICategory this[int index] { get; }
 }
 
-internal sealed class CategoryCollection : SCLibraryCollection<ICategory>, ICategoryCollection
+internal sealed class CategoryCollection : IReadOnlyCollection<ICategory>, ICategoryCollection
 {
+    private readonly List<Category> items;
+
     private CategoryCollection(List<Category> categoryList)
-        : base(categoryList)
     {
+        this.items = categoryList;
     }
 
+    public int Count => this.items.Count;
+
+    public ICategory this[int index] => this.items[index];
+
+    public IEnumerator<ICategory> GetEnumerator()
+    {
+        return this.items.GetEnumerator();
+    }
+        
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return this.GetEnumerator();
+    }
+    
     internal static CategoryCollection? Create(SCChart chart, OpenXmlElement? firstChartSeries, SCChartType chartType)
     {
         if (chartType is SCChartType.BubbleChart or SCChartType.ScatterChart)
@@ -86,9 +102,9 @@ internal sealed class CategoryCollection : SCLibraryCollection<ICategory>, ICate
             }
 
             int catIndex = 0;
-            ResettableLazy<List<X.Cell>> xCells;
+            ResetAbleLazy<List<X.Cell>> xCells;
 
-            xCells = new ResettableLazy<List<X.Cell>>(() =>
+            xCells = new ResetAbleLazy<List<X.Cell>>(() =>
                 ChartReferencesParser.GetXCellsByFormula(cFormula, chart));
             foreach (C.NumericValue cachedValue in cachedValues)
             {

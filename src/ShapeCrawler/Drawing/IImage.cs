@@ -1,9 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Shared;
+using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -79,7 +80,7 @@ internal sealed class SCImage : IImage
         var isSharedImagePart = this.presentation.ImageParts.Count(imgPart => imgPart == this.SDKImagePart) > 1;
         if (isSharedImagePart)
         {
-            var rId = RelatedIdGenerator.Generate();
+            var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
             this.SDKImagePart = this.openXmlPart.AddNewPart<ImagePart>("image/png", rId);
             this.blipEmbed.Value = rId;
         }

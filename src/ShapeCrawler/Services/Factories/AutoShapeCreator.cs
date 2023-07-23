@@ -3,7 +3,7 @@ using OneOf;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Factories;
+namespace ShapeCrawler.Services.Factories;
 
 internal sealed class AutoShapeCreator : OpenXmlElementHandler
 {
@@ -20,4 +20,5 @@ internal sealed class AutoShapeCreator : OpenXmlElementHandler
 
         return this.Successor?.FromTreeChild(pShapeTreeChild, slideObject, shapeCollection);
     }
+    
 }

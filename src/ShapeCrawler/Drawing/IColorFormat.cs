@@ -4,6 +4,7 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -37,16 +38,18 @@ internal sealed class SCColorFormat : IColorFormat
     private readonly SCFont font;
     private readonly ITextFrameContainer textFrameContainer;
     private readonly SCSlideMaster parentSlideMaster;
+    private readonly SCParagraph paragraph;
     private bool initialized;
     private string? hexColor;
     private SCColorType colorType;
 
-    internal SCColorFormat(SCFont font)
+    internal SCColorFormat(SCFont font, ITextFrameContainer textFrameContainer, SCParagraph paragraph)
     {
         this.font = font;
-        this.textFrameContainer = font.ParentPortion.ParentParagraph.ParentTextFrame.TextFrameContainer;
+        this.textFrameContainer = textFrameContainer;
         var shape = this.textFrameContainer.SCShape;
         this.parentSlideMaster = shape.SlideMasterInternal;
+        this.paragraph = paragraph;
     }
 
     public SCColorType ColorType => this.GetColorType();
@@ -103,9 +106,8 @@ internal sealed class SCColorFormat : IColorFormat
         }
         else
         {
-            var paragraph = portion.ParentParagraph;
-            var paragraphLevel = paragraph.Level;
-            if (this.TryFromTextBody(paragraph))
+            var paragraphLevel = this.paragraph.Level;
+            if (this.TryFromTextBody(this.paragraph))
             {
                 return;
             }
@@ -186,8 +188,7 @@ internal sealed class SCColorFormat : IColorFormat
         }
 
         var phFontData = new FontData();
-        var paragraph = this.font.ParentPortion.ParentParagraph;
-        FontDataParser.GetFontDataFromPlaceholder(ref phFontData, paragraph);
+        FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.paragraph);
         if (this.TryFromFontData(phFontData))
         {
             return true;

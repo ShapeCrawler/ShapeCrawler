@@ -1,5 +1,5 @@
 ﻿using ShapeCrawler.Drawing;
-using ShapeCrawler.Drawing.ShapeFill;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -30,8 +30,9 @@ public interface ICell
 
 internal sealed class SCCell : ICell, ITextFrameContainer
 {
-    private readonly ResettableLazy<SCTextFrame> textFrame;
-    private readonly ResettableLazy<SCShapeFill> fill;
+    private readonly ResetAbleLazy<SCTextFrame> textFrame;
+    private readonly ResetAbleLazy<SCShapeFill> fill;
+    private readonly SlideStructure slideStructure;
 
     internal SCCell(SCRow tableRow, A.TableCell aTableCell, int rowIndex, int columnIndex)
     {
@@ -39,10 +40,10 @@ internal sealed class SCCell : ICell, ITextFrameContainer
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
-        this.textFrame = new ResettableLazy<SCTextFrame>(this.GetTextFrame);
-        var slideObject = tableRow.ParentTable.SlideStructure;
+        this.textFrame = new ResetAbleLazy<SCTextFrame>(this.CreateTextFrame);
+        this.slideStructure = (SlideStructure)tableRow.ParentTable.SlideStructure;
         var framePr = aTableCell.TableCellProperties!;
-        this.fill = new ResettableLazy<SCShapeFill>(() => new CellFill((SlideStructure)slideObject, framePr));
+        this.fill = new ResetAbleLazy<SCShapeFill>(() => new CellFill(this.slideStructure, framePr));
     }
 
     public bool IsMergedCell => this.DefineWhetherCellIsMerged();
@@ -61,9 +62,9 @@ internal sealed class SCCell : ICell, ITextFrameContainer
 
     private SCRow ParentTableRow { get; }
 
-    private SCTextFrame GetTextFrame()
+    private SCTextFrame CreateTextFrame()
     {
-        return new SCTextFrame(this, this.ATableCell.TextBody!);
+        return new SCTextFrame(this, this.ATableCell.TextBody!, this.slideStructure, this);
     }
 
     private bool DefineWhetherCellIsMerged()

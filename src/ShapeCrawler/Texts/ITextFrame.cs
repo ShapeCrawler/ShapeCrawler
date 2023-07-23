@@ -67,15 +67,23 @@ public interface ITextFrame
 
 internal sealed class SCTextFrame : ITextFrame
 {
-    private readonly ResettableLazy<string> text;
-    private readonly ResettableLazy<ParagraphCollection> paragraphs;
+    private readonly ResetAbleLazy<string> text;
+    private readonly ResetAbleLazy<ParagraphCollection> paragraphs;
+    private readonly SlideStructure slideStructure;
+    private readonly ITextFrameContainer textFrameContainer;
 
-    internal SCTextFrame(ITextFrameContainer frameContainer, TypedOpenXmlCompositeElement textBodyElement)
+    internal SCTextFrame(
+        ITextFrameContainer frameContainer, 
+        TypedOpenXmlCompositeElement textBodyElement, 
+        SlideStructure slideStructure,
+        ITextFrameContainer textFrameContainer)
     {
         this.TextFrameContainer = frameContainer;
         this.TextBodyElement = textBodyElement;
-        this.text = new ResettableLazy<string>(this.GetText);
-        this.paragraphs = new ResettableLazy<ParagraphCollection>(this.GetParagraphs);
+        this.text = new ResetAbleLazy<string>(this.GetText);
+        this.paragraphs = new ResetAbleLazy<ParagraphCollection>(this.GetParagraphs);
+        this.slideStructure = slideStructure;
+        this.textFrameContainer = textFrameContainer;
     }
 
     internal event Action? TextChanged;
@@ -143,7 +151,7 @@ internal sealed class SCTextFrame : ITextFrame
         using var paint = new SKPaint();
         paint.Color = SKColors.Black;
         var firstPortion = this.paragraphs.Value.First().Portions.First();
-        paint.TextSize = firstPortion.Font.Size;
+        paint.TextSize = firstPortion.Font!.Size;
         var typeFace = SKTypeface.FromFamilyName(firstPortion.Font.LatinName); 
         paint.Typeface = typeFace;
         float leftMarginPx = UnitConverter.CentimeterToPixel(this.LeftMargin);
@@ -273,7 +281,7 @@ internal sealed class SCTextFrame : ITextFrame
 
     private ParagraphCollection GetParagraphs()
     {
-        return new ParagraphCollection(this);
+        return new ParagraphCollection(this, this.slideStructure, this.textFrameContainer);
     }
 
     private SCAutofitType GetAutofitType()
@@ -308,7 +316,7 @@ internal sealed class SCTextFrame : ITextFrame
         if (baseParagraph == null)
         {
             baseParagraph = this.Paragraphs.First();
-            baseParagraph.Portions.Add(newText);
+            baseParagraph.Portions.AddText(newText);
         }
 
         var removingParagraphs = this.Paragraphs.Where(p => p != baseParagraph);
@@ -327,12 +335,12 @@ internal sealed class SCTextFrame : ITextFrame
 
     private void ShrinkText(string newText, IParagraph baseParagraph)
     {
-        var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
+        var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font!.Size).OrderByDescending(x => x.Count())
             .First().First();
         var font = popularPortion.Font;
         var shape = this.TextFrameContainer.SCShape;
 
-        var fontSize = FontService.GetAdjustedFontSize(newText, font, shape);
+        var fontSize = FontService.GetAdjustedFontSize(newText, font!, shape);
 
         var paragraphInternal = (SCParagraph)baseParagraph;
         paragraphInternal.SetFontSize(fontSize);

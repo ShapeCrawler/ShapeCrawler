@@ -29,11 +29,6 @@ internal sealed class ChartWorkbook // TODO: implement IDispose to correctly dis
 
     internal Lazy<SpreadsheetDocument> SpreadsheetDocument { get; }
 
-    internal void Save()
-    {
-        this.SpreadsheetDocument.Value.Save();
-    }
-
     internal void Close()
     {
         if (this.closed)

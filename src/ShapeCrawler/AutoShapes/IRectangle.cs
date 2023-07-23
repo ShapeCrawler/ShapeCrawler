@@ -17,9 +17,9 @@ internal sealed class SCRectangle : SCAutoShape, IRectangle
 {
     internal SCRectangle(
         P.Shape pShape,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
-        : base(pShape, parentSlideObject, parentShapeCollection)
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf)
+        : base(pShape, slideOf, shapeCollectionOf)
     {
     }
 

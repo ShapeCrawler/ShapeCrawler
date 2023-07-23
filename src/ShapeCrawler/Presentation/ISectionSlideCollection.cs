@@ -5,6 +5,22 @@ using DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler;
 
+/// <summary>
+///     Represents collection of section slide.
+/// </summary>
+public interface ISectionSlideCollection : IEnumerable<ISlide>
+{
+    /// <summary>
+    ///     Gets sections count.
+    /// </summary>
+    int Count { get; }
+
+    /// <summary>
+    ///     Gets section slide by index.
+    /// </summary>
+    ISlide this[int index] { get; }
+}
+
 internal sealed class SCSectionSlideCollection : ISectionSlideCollection
 {
     private readonly SCSection parentSection;

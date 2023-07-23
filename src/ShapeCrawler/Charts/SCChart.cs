@@ -5,7 +5,6 @@ using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using OneOf;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
@@ -18,12 +17,12 @@ namespace ShapeCrawler.Charts;
 
 internal class SCChart : SCShape, IChart
 {
-    private readonly ResettableLazy<ICategoryCollection?> categories;
+    private readonly ResetAbleLazy<ICategoryCollection?> categories;
     private readonly Lazy<SCChartType> chartType;
     private readonly Lazy<OpenXmlElement?> firstSeries;
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly Lazy<SCSeriesCollection> series;
-    private readonly Lazy<SCLibraryCollection<double>?> xValues;
+    private readonly Lazy<List<double>?> xValues;
     private readonly C.PlotArea cPlotArea;
 
     // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
@@ -40,9 +39,9 @@ internal class SCChart : SCShape, IChart
     {
         this.pGraphicFrame = pGraphicFrame;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
-        this.xValues = new Lazy<SCLibraryCollection<double>?>(this.GetXValues);
+        this.xValues = new Lazy<List<double>?>(this.GetXValues);
         this.series = new Lazy<SCSeriesCollection>(this.GetSeries);
-        this.categories = new ResettableLazy<ICategoryCollection?>(this.GetCategories);
+        this.categories = new ResetAbleLazy<ICategoryCollection?>(this.GetCategories);
         this.chartType = new Lazy<SCChartType>(this.GetChartType);
 
         var cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
@@ -88,7 +87,7 @@ internal class SCChart : SCShape, IChart
 
     public bool HasXValues => this.xValues.Value != null;
 
-    public SCLibraryCollection<double> XValues
+    public List<double> XValues
     {
         get
         {
@@ -208,7 +207,7 @@ internal class SCChart : SCShape, IChart
         return false;
     }
 
-    private SCLibraryCollection<double>? GetXValues()
+    private List<double>? GetXValues()
     {
         var sdkXValues = this.firstSeries.Value?.GetFirstChild<C.XValues>();
         if (sdkXValues?.NumberReference == null)
@@ -219,7 +218,7 @@ internal class SCChart : SCShape, IChart
         IEnumerable<double> points =
             ChartReferencesParser.GetNumbersFromCacheOrWorkbook(sdkXValues.NumberReference, this);
 
-        return new SCLibraryCollection<double>(points);
+        return points.ToList();
     }
 
     private OpenXmlElement? GetFirstSeries()

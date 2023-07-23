@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
+using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Factories;
@@ -24,10 +25,10 @@ internal static class FontDataParser
         autoShape?.FillFontData(paragraph.Level, ref phFontData);
     }
 
-    internal static FontData FromPlaceholder(SCParagraph para)
+    internal static FontData FromPlaceholder(SCParagraph paragraph)
     {
         var fontData = new FontData();
-        var shape = (SCShape)para.ParentTextFrame.TextFrameContainer;
+        var shape = (SCShape)paragraph.ParentTextFrame.TextFrameContainer;
         var placeholder = (SCPlaceholder?)shape.Placeholder;
         if (placeholder is null)
         {
@@ -45,7 +46,7 @@ internal static class FontDataParser
         }
         else
         {
-            referencedShape?.FillFontData(para.Level, ref fontData);
+            referencedShape?.FillFontData(paragraph.Level, ref fontData);
         }
 
         return fontData;

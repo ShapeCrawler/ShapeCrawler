@@ -2,6 +2,7 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -51,17 +52,17 @@ public interface IParagraph
 internal sealed class SCParagraph : IParagraph
 {
     private readonly Lazy<SCBullet> bullet;
-    private readonly ResettableLazy<SCPortionCollection> portions;
+    private readonly ResetAbleLazy<SCPortionCollection> portions;
     private SCTextAlignment? alignment;
 
-    internal SCParagraph(A.Paragraph aParagraph, SCTextFrame textBox)
+    internal SCParagraph(A.Paragraph aParagraph, SCTextFrame textBox, SlideStructure slideStructure, ITextFrameContainer textFrameContainer)
     {
         this.AParagraph = aParagraph;
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.Level = this.GetIndentLevel();
         this.bullet = new Lazy<SCBullet>(this.GetBullet);
         this.ParentTextFrame = textBox;
-        this.portions = new ResettableLazy<SCPortionCollection>(() => new SCPortionCollection(this.AParagraph, this));
+        this.portions = new ResetAbleLazy<SCPortionCollection>(() => new SCPortionCollection(this.AParagraph, slideStructure, textFrameContainer, this));
     }
 
     internal event Action? TextChanged;
@@ -70,7 +71,7 @@ internal sealed class SCParagraph : IParagraph
 
     public string Text
     {
-        get => this.GetText();
+        get => this.ParseText();
         set => this.SetText(value);
     }
 
@@ -102,7 +103,7 @@ internal sealed class SCParagraph : IParagraph
     {
         foreach (var portion in this.Portions)
         {
-            portion.Font.Size = fontSize;
+            portion.Font!.Size = fontSize;
         }
     }
 
@@ -110,7 +111,7 @@ internal sealed class SCParagraph : IParagraph
     {
         foreach (var portion in this.Portions)
         {
-            portion.Text = portion.Text.Replace(oldValue, newValue);
+            portion.Text = portion.Text!.Replace(oldValue, newValue);
         }
 
         if (this.Text.Contains(oldValue))
@@ -130,14 +131,14 @@ internal sealed class SCParagraph : IParagraph
         return new SCBullet(this.AParagraph.ParagraphProperties!);
     }
 
-    private string GetText()
+    private string ParseText()
     {
         if (this.Portions.Count == 0)
         {
             return string.Empty;
         }
 
-        return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next);
+        return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next) !;
     }
 
     private int GetIndentLevel()
@@ -160,15 +161,13 @@ internal sealed class SCParagraph : IParagraph
     {
         if (!this.portions.Value.Any())
         {
-            this.Portions.Add(" ");
+            this.portions.Value.AddText(" ");
         }
 
         // To set a paragraph text we use a single portion which is the first paragraph portion.
-        var removingPortions = this.Portions.Skip(1).ToList();
-        this.Portions.Remove(removingPortions);
-
-        var basePortion = this.portions.Value.Single();
-        var portionsCore = (SCPortionCollection)this.Portions;
+        var basePortion = this.portions.Value.OfType<SCTextPortion>().First();
+        var removingPortions = this.portions.Value.Where(p => p != basePortion).ToList();
+        this.portions.Value.Remove(removingPortions);
 
 #if NETSTANDARD2_0
         var textLines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
@@ -182,15 +181,16 @@ internal sealed class SCParagraph : IParagraph
         {
             if (!string.IsNullOrEmpty(textLine))
             {
-                portionsCore.AddNewLine();
-                this.Portions.Add(textLine);
+                this.portions.Value.AddNewLine();
+                this.portions.Value.AddText(textLine);
             }
             else
             {
-                portionsCore.AddNewLine();
+                this.portions.Value.AddNewLine();
             }
         }
-
+        
+        this.portions.Reset();
         this.TextChanged?.Invoke();
     }
 

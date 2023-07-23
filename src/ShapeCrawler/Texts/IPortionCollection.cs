@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable once CheckNamespace
@@ -25,9 +28,14 @@ public interface IPortionCollection : IEnumerable<IPortion>
     IPortion this[int index] { get; }
 
     /// <summary>
-    ///     Adds portion item to collection.
+    ///     Adds text portion.
     /// </summary>
-    void Add(string newPortionText);
+    void AddText(string text);
+    
+    /// <summary>
+    /// 	Adds Line Break.
+    /// </summary>
+    void AddLineBreak();
 
     /// <summary>
     ///     Removes portion item from collection.
@@ -42,46 +50,63 @@ public interface IPortionCollection : IEnumerable<IPortion>
 
 internal sealed class SCPortionCollection : IPortionCollection
 {
-    private readonly ResettableLazy<List<SCPortion>> portions;
+    private readonly ResetAbleLazy<List<IPortion>> portions;
     private readonly A.Paragraph aParagraph;
-    private readonly SCParagraph parentParagraph;
+    private readonly SlideStructure slideStructure;
+    private readonly ITextFrameContainer textFrameContainer;
+    private readonly SCParagraph paragraph;
 
-    internal SCPortionCollection(A.Paragraph aParagraph, SCParagraph paragraph)
+    internal SCPortionCollection(
+        A.Paragraph aParagraph,  
+        SlideStructure slideStructure,
+        ITextFrameContainer textFrameContainer,
+        SCParagraph paragraph)
     {
         this.aParagraph = aParagraph;
-        this.parentParagraph = paragraph;
-        this.portions = new ResettableLazy<List<SCPortion>>(() => GetPortions(aParagraph, paragraph));
+        this.slideStructure = slideStructure;
+        this.portions = new ResetAbleLazy<List<IPortion>>(this.ParsePortions);
+        this.textFrameContainer = textFrameContainer;
+        this.paragraph = paragraph;
     }
     
     public int Count => this.portions.Value.Count;
 
     public IPortion this[int index] => this.portions.Value[index];
 
-    public void Add(string newPortionText)
+    public void AddText(string text)
     {
+        if (text.Contains(Environment.NewLine))
+        {
+            throw new SCException(
+                $"Text can not contain New Line. Use {nameof(IPortionCollection.AddLineBreak)} to add Line Break.");
+        }
+        
         var lastARunOrABreak = this.aParagraph.LastOrDefault(p => p is A.Run or A.Break);
-    
-        var lastPortion = this.portions.Value.LastOrDefault();
+
+        var textPortions = this.portions.Value.OfType<SCTextPortion>();
+        var lastPortion = textPortions.Any() ? textPortions.Last() : null;
         var aTextParent = lastPortion?.AText.Parent ?? new ARunBuilder().Build();
 
-        AddText(ref lastARunOrABreak, aTextParent, newPortionText, this.aParagraph);
+        AddText(ref lastARunOrABreak, aTextParent, text, this.aParagraph);
 
         this.portions.Reset();
     }
-    
+
+    public void AddLineBreak()
+    {
+        throw new System.NotImplementedException();
+    }
+
     public void Remove(IPortion removingPortion)
     {
-        var removingInnerPortion = (SCPortion)removingPortion;
-
-        removingInnerPortion.AText.Parent!.Remove(); // remove parent <a:r>
-        removingInnerPortion.IsRemoved = true;
+        removingPortion.Remove();
 
         this.portions.Reset();
     }
 
     public void Remove(IList<IPortion> removingPortions)
     {
-        foreach (SCPortion portion in removingPortions.Cast<SCPortion>())
+        foreach (var portion in removingPortions)
         {
             this.Remove(portion);
         }
@@ -118,29 +143,41 @@ internal sealed class SCPortionCollection : IPortionCollection
         }
     }
 
-    private static List<SCPortion> GetPortions(A.Paragraph aParagraph, SCParagraph paragraph)
+    private List<IPortion> ParsePortions()
     {
-        var aRuns = aParagraph.Elements<A.Run>();
-        if (aRuns.Any())
+        var portions = new List<IPortion>();
+        foreach (var paraChild in this.aParagraph.Elements())
         {
-            var runPortions = new List<SCPortion>(aRuns.Count());
-            foreach (var aRun in aRuns)
+            switch (paraChild)
             {
-                runPortions.Add(new SCPortion(aRun.Text!, paragraph));
+                case A.Run aRun:
+                    var runPortion = new SCTextPortion(
+                        aRun, 
+                        this.slideStructure, 
+                        this.textFrameContainer,
+                        this.paragraph,
+                        () => this.portions.Reset()); 
+                    portions.Add(runPortion);
+                    break;
+                case A.Field aField:
+                {
+                    var fieldPortion = new SCTextPortion(
+                        aField, 
+                        this.slideStructure, 
+                        this.textFrameContainer,
+                        this.paragraph,
+                        () => this.portions.Reset());
+                    portions.Add(fieldPortion);
+                    break;
+                }
+
+                case A.Break aBreak:
+                    var lineBreak = new SCLineBreak(aBreak, () => this.portions.Reset());
+                    portions.Add(lineBreak);
+                    break;
             }
-
-            return runPortions;
         }
-
-        var aField = aParagraph.GetFirstChild<A.Field>();
-        if (aField != null)
-        {
-            var aText = aField.GetFirstChild<A.Text>();
-            var newPortion = new SCPortion(aText!, paragraph, aField);
-            var fieldPortions = new List<SCPortion>(new[] { newPortion });
-            return fieldPortions;
-        }
-
-        return new List<SCPortion>();
+        
+        return portions;
     }
 }

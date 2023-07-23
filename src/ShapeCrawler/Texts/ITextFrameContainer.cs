@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using ShapeCrawler.Shapes;
 
 namespace ShapeCrawler.Texts;
 

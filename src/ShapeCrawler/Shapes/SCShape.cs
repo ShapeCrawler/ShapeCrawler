@@ -8,25 +8,27 @@ using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Shapes;
 
 internal abstract class SCShape : IShape
 {
+    internal OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf;
+    internal OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf;
+
     protected SCShape(
         OpenXmlCompositeElement pShapeTreeChild,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideStructureOf,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
         OneOf<ShapeCollection, SCGroupShape> parentShapeCollectionStructureOf)
     {
         this.PShapeTreeChild = pShapeTreeChild;
-        this.ParentSlideStructureOf = parentSlideStructureOf;
-        this.ParentShapeCollectionStructureOf = parentShapeCollectionStructureOf;
-        this.SlideStructure = parentSlideStructureOf.Match(slide => slide as SlideStructure, layout => layout, master => master);
+        this.slideOf = slideOf;
+        this.shapeCollectionOf = parentShapeCollectionStructureOf;
+        this.SlideStructure = slideOf.Match(slide => slide as SlideStructure, layout => layout, master => master);
         this.GroupShape = parentShapeCollectionStructureOf.IsT1 ? parentShapeCollectionStructureOf.AsT1 : null;
     }
 
@@ -48,9 +50,9 @@ internal abstract class SCShape : IShape
     }
 
     public abstract SCShapeType ShapeType { get; }
-    
+
     public ISlideStructure SlideStructure { get; }
-    
+
     public IPlaceholder? Placeholder => SCSlidePlaceholder.Create(this.PShapeTreeChild, this);
 
     public virtual SCGeometry GeometryType => this.GetGeometryType();
@@ -79,10 +81,6 @@ internal abstract class SCShape : IShape
         set => this.SetWidth(value);
     }
 
-    internal OneOf<ShapeCollection, SCGroupShape> ParentShapeCollectionStructureOf { get; set; }
-
-    internal OneOf<SCSlide, SCSlideLayout, SCSlideMaster> ParentSlideStructureOf { get; set; }
-    
     internal SCSlideMaster SlideMasterInternal
     {
         get
@@ -110,13 +108,13 @@ internal abstract class SCShape : IShape
     {
         return this as IAutoShape;
     }
-    
+
     internal abstract void Draw(SKCanvas canvas);
-    
+
     internal abstract string ToJson();
-    
+
     internal abstract IHtmlElement ToHtmlElement();
-    
+
     protected virtual void SetXCoordinate(int newXPx)
     {
         var pSpPr = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !;
@@ -138,7 +136,7 @@ internal abstract class SCShape : IShape
 
         this.XChanged?.Invoke(this, this.X);
     }
-    
+
     protected virtual void SetYCoordinate(int newYPx)
     {
         var pSpPr = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !;
@@ -157,18 +155,18 @@ internal abstract class SCShape : IShape
         {
             aXfrm.Offset!.Y = UnitConverter.HorizontalPixelToEmu(newYPx);
         }
-        
+
         this.YChanged?.Invoke(this, this.Y);
     }
-    
-    
+
+
     protected virtual void SetWidth(int newWPixels)
     {
         if (this.GroupShape is not null)
         {
             throw new RuntimeDefinedPropertyException("Width coordinate of grouped shape cannot be changed.");
         }
-        
+
         var pSpPr = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !;
         var aXfrm = pSpPr.Transform2D;
         if (aXfrm is null)
@@ -186,24 +184,24 @@ internal abstract class SCShape : IShape
             aXfrm.Extents!.Cx = UnitConverter.HorizontalPixelToEmu(newWPixels);
         }
     }
-    
+
     protected virtual int GetXCoordinate()
     {
         var aOffset = this.PShapeTreeChild.Descendants<A.Offset>().FirstOrDefault();
         if (aOffset == null)
         {
             var placeholder = (SCPlaceholder)this.Placeholder!;
-            var referencedShape = placeholder.ReferencedShape.Value; 
-            
+            var referencedShape = placeholder.ReferencedShape.Value;
+
             return referencedShape!.X;
         }
 
         var xEmu = aOffset.X!.Value;
         if (this.GroupShape == null)
         {
-            return UnitConverter.HorizontalEmuToPixel(xEmu);    
+            return UnitConverter.HorizontalEmuToPixel(xEmu);
         }
-        
+
         var groupedShapeX = aOffset.X!.Value;
         var groupShapeX = this.GroupShape!.ATransformGroup.Offset!.X!.Value;
         var groupShapeChildX = this.GroupShape!.ATransformGroup.ChildOffset!.X!.Value;
@@ -211,7 +209,7 @@ internal abstract class SCShape : IShape
 
         return UnitConverter.HorizontalEmuToPixel(absoluteX);
     }
-    
+
     protected virtual void SetHeight(int newHPixels)
     {
         var pSpPr = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !;
@@ -231,7 +229,7 @@ internal abstract class SCShape : IShape
             aXfrm.Extents!.Cy = UnitConverter.HorizontalPixelToEmu(newHPixels);
         }
     }
-    
+
     private void SetCustomData(string value)
     {
         string customDataElement =
@@ -242,7 +240,13 @@ internal abstract class SCShape : IShape
     private string? GetCustomData()
     {
         var pattern = @$"<{SCConstants.CustomDataElementName}>(.*)<\/{SCConstants.CustomDataElementName}>";
-        var regex = new Regex(pattern);
+
+#if NETSTANDARD2_0
+        var regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(100));
+#else
+        var regex = new Regex(pattern, RegexOptions.NonBacktracking);
+#endif
+
         var elementText = regex.Match(this.PShapeTreeChild.InnerXml).Groups[1];
         if (elementText.Value.Length == 0)
         {
@@ -263,7 +267,7 @@ internal abstract class SCShape : IShape
         var aOffset = this.PShapeTreeChild.Descendants<A.Offset>().FirstOrDefault();
         if (aOffset == null)
         {
-            var placeholder = (SCPlaceholder)this.Placeholder!; 
+            var placeholder = (SCPlaceholder)this.Placeholder!;
             return placeholder.ReferencedShape.Value!.Y;
         }
 
@@ -296,7 +300,7 @@ internal abstract class SCShape : IShape
         var aExtents = this.PShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
         if (aExtents == null)
         {
-            var placeholder = (SCPlaceholder)this.Placeholder!; 
+            var placeholder = (SCPlaceholder)this.Placeholder!;
             return placeholder.ReferencedShape.Value!.Height;
         }
 

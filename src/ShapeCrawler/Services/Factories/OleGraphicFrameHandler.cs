@@ -6,7 +6,7 @@ using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Factories;
+namespace ShapeCrawler.Services.Factories;
 
 internal sealed class OleGraphicFrameHandler : OpenXmlElementHandler
 {
@@ -14,20 +14,20 @@ internal sealed class OleGraphicFrameHandler : OpenXmlElementHandler
 
     internal override SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollection)
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf)
     {
         if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
         {
             var aGraphicData = pShapeTreeChild!.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>();
             if (aGraphicData!.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
             {
-                 var oleObject = new SCOLEObject(pGraphicFrame, slideObject, shapeCollection);
+                 var oleObject = new SCOLEObject(pGraphicFrame, slideOf, shapeCollectionOf);
 
                  return oleObject;
             }
         }
 
-        return this.Successor?.FromTreeChild(pShapeTreeChild, slideObject, shapeCollection);
+        return this.Successor?.FromTreeChild(pShapeTreeChild, slideOf, shapeCollectionOf);
     }
 }

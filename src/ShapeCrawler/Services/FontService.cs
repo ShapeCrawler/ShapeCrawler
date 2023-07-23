@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using ShapeCrawler.Constants;
+using ShapeCrawler.Shapes;
 using SkiaSharp;
 
 namespace ShapeCrawler.Services;

@@ -16,9 +16,9 @@ internal sealed class SCRoundedRectangle : SCAutoShape, IRoundedRectangle
 {
     internal SCRoundedRectangle(
         P.Shape pShape, 
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection) 
-        : base(pShape, parentSlideObject, parentShapeCollection)
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf) 
+        : base(pShape, slideOf, shapeCollectionOf)
     {
     }
 }

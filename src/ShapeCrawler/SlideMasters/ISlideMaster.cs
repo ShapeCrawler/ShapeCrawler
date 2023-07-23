@@ -47,14 +47,14 @@ public interface ISlideMaster
 
 internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
 {
-    private readonly ResettableLazy<List<SCSlideLayout>> slideLayouts;
+    private readonly ResetAbleLazy<List<SCSlideLayout>> slideLayouts;
 
     internal SCSlideMaster(SCPresentation pres, P.SlideMaster pSlideMaster, int number)
         : base(pres)
     {
         this.Presentation = pres;
         this.PSlideMaster = pSlideMaster;
-        this.slideLayouts = new ResettableLazy<List<SCSlideLayout>>(this.GetSlideLayouts);
+        this.slideLayouts = new ResetAbleLazy<List<SCSlideLayout>>(this.GetSlideLayouts);
         this.Number = number;
         
         var pSldNum = pSlideMaster.CommonSlideData!.ShapeTree!.Elements<P.Shape>().FirstOrDefault(s => s.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?.PlaceholderShape?.Type?.Value == P.PlaceholderValues.SlideNumber);

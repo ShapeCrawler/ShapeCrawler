@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using OneOf;
-using ShapeCrawler.Collections;
-using ShapeCrawler.Factories;
+using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -29,29 +29,44 @@ public interface IGroupedShapeCollection : IEnumerable<IShape>
     T GetByName<T>(string shapeName);
 }
 
-internal sealed class GroupedShapeCollection : SCLibraryCollection<IShape>, IGroupedShapeCollection
+internal sealed class GroupedShapeCollection : IReadOnlyCollection<IShape>, IGroupedShapeCollection
 {
+    private readonly List<IShape> collectionItems;
+    
     private GroupedShapeCollection(List<IShape> groupedShapes)
-        : base(groupedShapes)
     {
+        this.collectionItems = groupedShapes;
     }
 
+    public int Count => this.collectionItems.Count;
+    
     public T GetById<T>(int shapeId)
         where T : IShape
     {
-        var shape = this.CollectionItems.First(shape => shape.Id == shapeId);
+        var shape = this.collectionItems.First(shape => shape.Id == shapeId);
         return (T)shape;
     }
 
     public T GetByName<T>(string shapeName)
     {
-        var shape = this.CollectionItems.First(shape => shape.Name == shapeName);
+        var shape = this.collectionItems.First(shape => shape.Name == shapeName);
         return (T)shape;
     }
 
+    public IEnumerator<IShape> GetEnumerator()
+    {
+        return this.collectionItems.GetEnumerator();
+    }
+
+    
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return this.GetEnumerator();
+    }
+    
     internal static GroupedShapeCollection Create(
         P.GroupShape pGroupShapeParam,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
         SCGroupShape groupShape) 
     {
         var autoShapeCreator = new AutoShapeCreator();
@@ -71,11 +86,11 @@ internal sealed class GroupedShapeCollection : SCLibraryCollection<IShape>, IGro
             SCShape? shape;
             if (child is P.GroupShape pGroupShape)
             {
-                shape = new SCGroupShape(pGroupShape, parentSlideObject, groupShape);
+                shape = new SCGroupShape(pGroupShape, slideOf, groupShape);
             }
             else
             {
-                shape = autoShapeCreator.FromTreeChild(child, parentSlideObject, groupShape);
+                shape = autoShapeCreator.FromTreeChild(child, slideOf, groupShape);
                 if (shape != null)
                 {
                     shape.XChanged += groupShape.OnGroupedShapeXChanged;    
@@ -91,4 +106,6 @@ internal sealed class GroupedShapeCollection : SCLibraryCollection<IShape>, IGro
 
         return new GroupedShapeCollection(groupedShapes);
     }
+
+
 }

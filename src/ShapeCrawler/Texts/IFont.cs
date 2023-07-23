@@ -5,7 +5,9 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable once CheckNamespace
@@ -67,25 +69,28 @@ internal sealed class SCFont : IFont
     private readonly A.Text aText;
     private readonly A.FontScheme aFontScheme;
     private readonly Lazy<SCColorFormat> colorFormat;
-    private readonly ResettableLazy<A.LatinFont> latinFont;
-    private readonly ResettableLazy<int> size;
+    private readonly ResetAbleLazy<A.LatinFont> latinFont;
+    private readonly ResetAbleLazy<int> size;
+    private readonly ITextFrameContainer textFrameContainer;
+    private readonly SCParagraph paragraph;
 
-    internal SCFont(A.Text aText, SCPortion portion)
+    internal SCFont(A.Text aText, SCTextPortion portion, ITextFrameContainer textFrameContainer, SCParagraph paragraph)
     {
         this.aText = aText;
-        this.size = new ResettableLazy<int>(this.GetSize);
-        this.latinFont = new ResettableLazy<A.LatinFont>(this.GetALatinFont);
-        this.colorFormat = new Lazy<SCColorFormat>(() => new SCColorFormat(this));
+        this.paragraph = paragraph;
+        this.size = new ResetAbleLazy<int>(this.GetSize);
+        this.latinFont = new ResetAbleLazy<A.LatinFont>(this.GetALatinFont);
+        this.colorFormat = new Lazy<SCColorFormat>(() => new SCColorFormat(this, textFrameContainer, paragraph));
         this.ParentPortion = portion;
-        var parentTextBoxContainer = portion.ParentParagraph.ParentTextFrame.TextFrameContainer;
         SCShape shape;
-        if (parentTextBoxContainer is SCCell cell)
+        this.textFrameContainer = textFrameContainer;
+        if (textFrameContainer is SCCell cell)
         {
             shape = cell.SCShape;
         }
         else
         {
-            shape = (SCShape)portion.ParentParagraph.ParentTextFrame.TextFrameContainer;
+            shape = (SCShape)textFrameContainer;
         }
 
         var themeFontScheme = (ThemeFontScheme)shape.SlideMasterInternal.Theme.FontScheme; 
@@ -161,11 +166,11 @@ internal sealed class SCFont : IFont
         set => this.SetOffset(value);
     }
 
-    internal SCPortion ParentPortion { get; }
+    internal SCTextPortion ParentPortion { get; }
 
     public bool CanChange()
     {
-        var placeholder = this.ParentPortion.ParentParagraph.ParentTextFrame.TextFrameContainer.SCShape.Placeholder;
+        var placeholder = this.textFrameContainer.SCShape.Placeholder;
 
         return placeholder is null or { Type: SCPlaceholderType.Text };
     }
@@ -288,7 +293,7 @@ internal sealed class SCFont : IFont
             return aEastAsianFont;
         }
 
-        var phFontData = FontDataParser.FromPlaceholder(this.ParentPortion.ParentParagraph);
+        var phFontData = FontDataParser.FromPlaceholder(this.paragraph);
         
         return phFontData.AEastAsianFont ?? this.aFontScheme.MinorFont!.EastAsianFont!;
     }
@@ -303,7 +308,7 @@ internal sealed class SCFont : IFont
             return aLatinFont;
         }
 
-        var phFontData = FontDataParser.FromPlaceholder(this.ParentPortion.ParentParagraph);
+        var phFontData = FontDataParser.FromPlaceholder(this.paragraph);
         return phFontData.ALatinFont ?? this.aFontScheme.MinorFont!.LatinFont!;
     }
 
@@ -315,9 +320,8 @@ internal sealed class SCFont : IFont
             return fontSize.Value / 100;
         }
 
-        var paragraph = this.ParentPortion.ParentParagraph;
-        var textFrameContainer = paragraph.ParentTextFrame.TextFrameContainer;
-        var paraLevel = paragraph.Level;
+        var textFrameContainer = this.paragraph.ParentTextFrame.TextFrameContainer;
+        var paraLevel = this.paragraph.Level;
 
         if (textFrameContainer is SCShape { Placeholder: { } } shape)
         {
@@ -354,7 +358,7 @@ internal sealed class SCFont : IFont
         }
 
         FontData phFontData = new ();
-        FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
+        FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.paragraph);
         if (phFontData.IsBold is not null)
         {
             return phFontData.IsBold.Value;
@@ -377,7 +381,7 @@ internal sealed class SCFont : IFont
         }
 
         FontData phFontData = new ();
-        FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
+        FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.paragraph);
         if (phFontData.IsItalic is not null)
         {
             return phFontData.IsItalic.Value;
@@ -396,7 +400,7 @@ internal sealed class SCFont : IFont
         else
         {
             FontData phFontData = new ();
-            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.ParentPortion.ParentParagraph);
+            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.paragraph);
             if (phFontData.IsBold is not null)
             {
                 phFontData.IsBold = new BooleanValue(value);

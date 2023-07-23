@@ -1,5 +1,5 @@
-﻿using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Collections;
+﻿using System.Collections.Generic;
+using DocumentFormat.OpenXml.Packaging;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
@@ -47,7 +47,7 @@ public interface IChart : IShape
     /// <summary>
     ///     Gets collection of x-axis values.
     /// </summary>
-    SCLibraryCollection<double> XValues { get; } // TODO: should be excluded
+    List<double> XValues { get; } // TODO: should be excluded
 
     /// <summary>
     ///     Gets byte array of workbook containing chart data source.

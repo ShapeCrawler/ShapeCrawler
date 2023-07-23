@@ -74,7 +74,7 @@ internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
         { "vertTx", SCSlideLayoutType.VerticalText }
     };
 
-    private readonly ResettableLazy<ShapeCollection> shapes;
+    private readonly ResetAbleLazy<ShapeCollection> shapes;
     private readonly SCSlideMaster slideMaster;
 
     internal SCSlideLayout(SCSlideMaster slideMaster, SlideLayoutPart slideLayoutPart, int number)
@@ -82,7 +82,7 @@ internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
     {
         this.slideMaster = slideMaster;
         this.SlideLayoutPart = slideLayoutPart;
-        this.shapes = new ResettableLazy<ShapeCollection>(() =>
+        this.shapes = new ResetAbleLazy<ShapeCollection>(() =>
             new ShapeCollection(slideLayoutPart, this));
         this.Number = number;
     }

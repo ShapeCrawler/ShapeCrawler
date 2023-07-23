@@ -28,7 +28,7 @@ internal sealed class Category : ICategory
 {
     private readonly int index;
     private readonly NumericValue cachedValue;
-    private readonly ResettableLazy<List<X.Cell>>? xCells;
+    private readonly ResetAbleLazy<List<X.Cell>>? xCells;
 
     internal Category(int index, NumericValue cachedValue, Category mainCategory)
     {
@@ -43,7 +43,7 @@ internal sealed class Category : ICategory
         this.cachedValue = cachedValue;
     }
 
-    internal Category(ResettableLazy<List<X.Cell>> xCells, int index, NumericValue cachedValue)
+    internal Category(ResetAbleLazy<List<X.Cell>> xCells, int index, NumericValue cachedValue)
     {
         this.xCells = xCells;
         this.index = index;

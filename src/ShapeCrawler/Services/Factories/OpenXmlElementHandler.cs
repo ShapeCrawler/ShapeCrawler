@@ -2,7 +2,7 @@
 using OneOf;
 using ShapeCrawler.Shapes;
 
-namespace ShapeCrawler.Factories;
+namespace ShapeCrawler.Services.Factories;
 
 internal abstract class OpenXmlElementHandler
 {
@@ -10,6 +10,6 @@ internal abstract class OpenXmlElementHandler
 
     internal abstract SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollection);
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf);
 }

@@ -7,21 +7,6 @@ namespace ShapeCrawler.Extensions;
 
 internal static class RunPropertiesExtensions
 {
-    internal static void AddAHighlight(this RunProperties arPr, string hex)
-    {
-        var aHighlight = arPr.GetFirstChild<A.Highlight>();
-        aHighlight?.Remove();
-
-        var aSrgbClr = new A.RgbColorModelHex
-        {
-            Val = hex
-        };
-        aHighlight = new A.Highlight();
-        aHighlight.Append(aSrgbClr);
-
-        arPr.Append(aHighlight);
-    }
-
     internal static void AddAHighlight(this RunProperties arPr, SCColor color)
     {
         var aHighlight = arPr.GetFirstChild<A.Highlight>();
