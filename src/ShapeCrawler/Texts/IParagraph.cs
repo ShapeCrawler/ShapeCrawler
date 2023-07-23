@@ -53,8 +53,8 @@ public interface IParagraph
 internal sealed class SCParagraph : IParagraph
 {
     private readonly Lazy<SCBullet> bullet;
-    private readonly ResettableLazy<SCPortionCollection> portions;
-    private readonly SCTextAlignment? alignment;
+    private readonly ResetAbleLazy<SCPortionCollection> portions;
+    private SCTextAlignment? alignment;
 
     internal SCParagraph(A.Paragraph aParagraph, SCTextFrame textBox, SlideStructure slideStructure, ITextFrameContainer textFrameContainer)
     {
@@ -63,7 +63,7 @@ internal sealed class SCParagraph : IParagraph
         this.Level = this.GetIndentLevel();
         this.bullet = new Lazy<SCBullet>(this.GetBullet);
         this.ParentTextFrame = textBox;
-        this.portions = new ResettableLazy<SCPortionCollection>(() => new SCPortionCollection(this.AParagraph, slideStructure, textFrameContainer));
+        this.portions = new ResetAbleLazy<SCPortionCollection>(() => new SCPortionCollection(this.AParagraph, slideStructure, textFrameContainer, this));
     }
 
     internal event Action? TextChanged;
@@ -166,7 +166,7 @@ internal sealed class SCParagraph : IParagraph
         }
 
         // To set a paragraph text we use a single portion which is the first paragraph portion.
-        var basePortion = this.portions.Value.OfType<TextPortion>().First();
+        var basePortion = this.portions.Value.OfType<SCTextPortion>().First();
         var removingPortions = this.portions.Value.Where(p => p != basePortion).ToList();
         this.portions.Value.Remove(removingPortions);
 

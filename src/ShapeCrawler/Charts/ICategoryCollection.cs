@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Collections;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -28,10 +28,9 @@ public interface ICategoryCollection : IEnumerable<ICategory>
     ICategory this[int index] { get; }
 }
 
-internal sealed class CategoryCollection : SCLibraryCollection<ICategory>, ICategoryCollection
+internal sealed class CategoryCollection : IReadOnlyCollection<ICategory>, ICategoryCollection
 {
     private CategoryCollection(List<Category> categoryList)
-        : base(categoryList)
     {
     }
 
@@ -86,9 +85,9 @@ internal sealed class CategoryCollection : SCLibraryCollection<ICategory>, ICate
             }
 
             int catIndex = 0;
-            ResettableLazy<List<X.Cell>> xCells;
+            ResetAbleLazy<List<X.Cell>> xCells;
 
-            xCells = new ResettableLazy<List<X.Cell>>(() =>
+            xCells = new ResetAbleLazy<List<X.Cell>>(() =>
                 ChartReferencesParser.GetXCellsByFormula(cFormula, chart));
             foreach (C.NumericValue cachedValue in cachedValues)
             {
@@ -136,4 +135,20 @@ internal sealed class CategoryCollection : SCLibraryCollection<ICategory>, ICate
 
         return indexToCategory.Select(kvp => kvp.Value).ToList(indexToCategory.Count);
     }
+
+    public IEnumerator<ICategory> GetEnumerator()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return this.GetEnumerator();
+    }
+
+    public int Count { get; }
+
+    public ICategory this[int index] => throw new System.NotImplementedException();
+
+    int ICategoryCollection.Count => this.Count;
 }

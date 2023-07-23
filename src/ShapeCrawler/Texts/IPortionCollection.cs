@@ -50,17 +50,23 @@ public interface IPortionCollection : IEnumerable<IPortion>
 
 internal sealed class SCPortionCollection : IPortionCollection
 {
-    private readonly ResettableLazy<List<IPortion>> portions;
+    private readonly ResetAbleLazy<List<IPortion>> portions;
     private readonly A.Paragraph aParagraph;
     private readonly SlideStructure slideStructure;
-    private ITextFrameContainer textFrameContainer;
+    private readonly ITextFrameContainer textFrameContainer;
+    private readonly SCParagraph paragraph;
 
-    internal SCPortionCollection(A.Paragraph aParagraph,  SlideStructure slideStructure,ITextFrameContainer textFrameContainer)
+    internal SCPortionCollection(
+        A.Paragraph aParagraph,  
+        SlideStructure slideStructure,
+        ITextFrameContainer textFrameContainer,
+        SCParagraph paragraph)
     {
         this.aParagraph = aParagraph;
         this.slideStructure = slideStructure;
-        this.portions = new ResettableLazy<List<IPortion>>(ParsePortions);
+        this.portions = new ResetAbleLazy<List<IPortion>>(ParsePortions);
         this.textFrameContainer = textFrameContainer;
+        this.paragraph = paragraph;
     }
     
     public int Count => this.portions.Value.Count;
@@ -77,7 +83,7 @@ internal sealed class SCPortionCollection : IPortionCollection
         
         var lastARunOrABreak = this.aParagraph.LastOrDefault(p => p is A.Run or A.Break);
     
-        var lastPortion = (TextPortion?) this.portions.Value.OfType<TextPortion>().First();
+        var lastPortion = (SCTextPortion?) this.portions.Value.OfType<SCTextPortion>().First();
         var aTextParent = lastPortion?.AText.Parent ?? new ARunBuilder().Build();
 
         AddText(ref lastARunOrABreak, aTextParent, text, this.aParagraph);
@@ -144,15 +150,15 @@ internal sealed class SCPortionCollection : IPortionCollection
             switch (paraChild)
             {
                 case A.Run aRun:
-                    portions.Add(new TextPortion(aRun, this.slideStructure, this.textFrameContainer));
+                    portions.Add(new SCTextPortion(aRun, this.slideStructure, this.textFrameContainer, this.paragraph));
                     break;
                 case A.Field aField:
                 {
-                    portions.Add(new TextPortion(aField));
+                    portions.Add(new SCTextPortion(aField, this.slideStructure, this.textFrameContainer, this.paragraph));
                     break;
                 }
                 case A.Break aBreak:
-                    portions.Add(new NewLinePortion(aBreak));
+                    portions.Add(new SCLineBreak(aBreak));
                     break;
             }
         }

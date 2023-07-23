@@ -1,4 +1,4 @@
-﻿namespace ShapeCrawler;
+﻿namespace ShapeCrawler.Exceptions;
 
 internal enum ExceptionCode
 {

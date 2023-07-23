@@ -20,7 +20,7 @@ namespace ShapeCrawler;
 
 internal sealed class SCSlide : SlideStructure, ISlide
 {
-    private readonly ResettableLazy<ShapeCollection> shapes;
+    private readonly ResetAbleLazy<ShapeCollection> shapes;
     private readonly Lazy<SCImage?> backgroundImage;
     private Lazy<CustomXmlPart?> customXmlPart;
 
@@ -29,7 +29,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
     {
         this.Presentation = pres;
         this.SDKSlidePart = slidePart;
-        this.shapes = new ResettableLazy<ShapeCollection>(() => new ShapeCollection(this.SDKSlidePart, this));
+        this.shapes = new ResetAbleLazy<ShapeCollection>(() => new ShapeCollection(this.SDKSlidePart, this));
         this.backgroundImage = new Lazy<SCImage?>(() => SCImage.ForBackground(this));
         this.customXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideId = slideId;

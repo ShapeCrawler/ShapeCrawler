@@ -46,27 +46,27 @@ public interface IPortion
     void Remove();
 }
 
-internal sealed class TextPortion : IPortion
+internal sealed class SCTextPortion : IPortion
 {
-    private readonly ResettableLazy<SCFont> font;
+    private readonly ResetAbleLazy<SCFont> font;
     private readonly A.Field? aField;
     private readonly A.Run? aRun;
     private readonly SlideStructure slideStructure;
 
-    internal TextPortion(A.Field aField, SlideStructure slideStructure, ITextFrameContainer textFrameContainer, SCParagraph paragraph)
+    internal SCTextPortion(A.Field aField, SlideStructure slideStructure, ITextFrameContainer textFrameContainer, SCParagraph paragraph)
     {
         this.slideStructure = slideStructure;
         this.aField = aField;
         this.AText = aField.GetFirstChild<A.Text>()!;
-        this.font = new ResettableLazy<SCFont>(() => new SCFont(this.AText, this, textFrameContainer, paragraph));
+        this.font = new ResetAbleLazy<SCFont>(() => new SCFont(this.AText, this, textFrameContainer, paragraph));
     }
 
-    internal TextPortion(A.Run aRun, SlideStructure slideStructure, ITextFrameContainer textFrameContainer, SCParagraph paragraph)
+    internal SCTextPortion(A.Run aRun, SlideStructure slideStructure, ITextFrameContainer textFrameContainer, SCParagraph paragraph)
     {
         this.slideStructure = slideStructure;
         this.aRun = aRun;
         this.AText = aRun.Text!;
-        this.font = new ResettableLazy<SCFont>(() => new SCFont(this.AText, this, textFrameContainer, paragraph));
+        this.font = new ResetAbleLazy<SCFont>(() => new SCFont(this.AText, this, textFrameContainer, paragraph));
     }
 
     #region Public Properties
@@ -208,11 +208,11 @@ internal sealed class TextPortion : IPortion
     }
 }
 
-internal sealed class NewLinePortion : IPortion
+internal sealed class SCLineBreak : IPortion
 {
     private readonly A.Break aBreak;
 
-    internal NewLinePortion(A.Break aBreak)
+    internal SCLineBreak(A.Break aBreak)
     {
         this.aBreak = aBreak;
     }

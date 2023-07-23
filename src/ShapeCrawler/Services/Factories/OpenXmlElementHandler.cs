@@ -11,7 +11,6 @@ internal abstract class OpenXmlElementHandler
 
     internal abstract SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollection,
-        ITextFrameContainer textFrameContainer);
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf);
 }

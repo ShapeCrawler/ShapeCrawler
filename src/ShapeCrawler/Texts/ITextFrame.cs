@@ -67,8 +67,8 @@ public interface ITextFrame
 
 internal sealed class SCTextFrame : ITextFrame
 {
-    private readonly ResettableLazy<string> text;
-    private readonly ResettableLazy<ParagraphCollection> paragraphs;
+    private readonly ResetAbleLazy<string> text;
+    private readonly ResetAbleLazy<ParagraphCollection> paragraphs;
     private readonly SlideStructure slideStructure;
     private readonly ITextFrameContainer textFrameContainer;
 
@@ -80,8 +80,8 @@ internal sealed class SCTextFrame : ITextFrame
     {
         this.TextFrameContainer = frameContainer;
         this.TextBodyElement = textBodyElement;
-        this.text = new ResettableLazy<string>(this.GetText);
-        this.paragraphs = new ResettableLazy<ParagraphCollection>(this.GetParagraphs);
+        this.text = new ResetAbleLazy<string>(this.GetText);
+        this.paragraphs = new ResetAbleLazy<ParagraphCollection>(this.GetParagraphs);
         this.slideStructure = slideStructure;
         this.textFrameContainer = textFrameContainer;
     }

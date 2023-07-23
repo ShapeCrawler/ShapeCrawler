@@ -29,9 +29,8 @@ internal sealed class SCLine : SCAutoShape, ILine
     public SCLine(
         TypedOpenXmlCompositeElement pShapeTreeChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
-        ITextFrameContainer textFrameContainer)
-        : base(pShapeTreeChild, slideOf, shapeCollectionOf, textFrameContainer)
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf)
+        : base(pShapeTreeChild, slideOf, shapeCollectionOf)
     {
     }
 

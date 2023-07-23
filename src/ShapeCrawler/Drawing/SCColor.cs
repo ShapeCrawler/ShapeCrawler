@@ -31,11 +31,6 @@ public struct SCColor
     private readonly int green;
     private readonly int red;
 
-    internal SCColor(string hex) 
-        : this(ParseHexValue(hex))
-    {
-    }
-
     private SCColor(int red, int green, int blue)
         : this(red, green, blue, 255)
     {

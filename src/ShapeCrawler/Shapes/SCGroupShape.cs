@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Texts;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -13,15 +14,15 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
 {
     private readonly P.GroupShape pGroupShape;
     private readonly OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject;
-    
+
     internal SCGroupShape(
         P.GroupShape pGroupShape, 
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
-        : base(pGroupShape, parentSlideObject, parentShapeCollection)
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf)
+        : base(pGroupShape, slideOf, shapeCollectionOf)
     {
         this.pGroupShape = pGroupShape;
-        this.parentSlideObject = parentSlideObject;
+        this.parentSlideObject = slideOf;
     }
 
     public IGroupedShapeCollection Shapes => GroupedShapeCollection.Create(this.pGroupShape, this.parentSlideObject, this);

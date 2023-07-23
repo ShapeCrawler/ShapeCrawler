@@ -15,7 +15,7 @@ internal sealed class SCSlidePlaceholder : SCPlaceholder
         this.slideShape = slideSCShape;
     }
 
-    internal override ResettableLazy<SCShape?> ReferencedShape => new (this.GetReferencedShape);
+    internal override ResetAbleLazy<SCShape?> ReferencedShape => new (this.GetReferencedShape);
 
     internal static SCSlidePlaceholder? Create(OpenXmlCompositeElement pShapeTreeChild, SCShape slideSCShape)
     {

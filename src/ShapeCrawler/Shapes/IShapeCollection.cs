@@ -18,6 +18,7 @@ using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Texts;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -119,15 +120,17 @@ internal sealed class ShapeCollection : IShapeCollection
 {
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly P.ShapeTree pShapeTree;
-    private readonly ResettableLazy<List<IShape>> shapes;
+    private readonly ResetAbleLazy<List<IShape>> shapes;
     private readonly AutoShapeCreator autoShapeCreator;
+    private readonly SlideStructure slideStructure;
+    private readonly OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf;
 
     internal ShapeCollection(
-        OneOf<SlidePart, SlideLayoutPart, SlideMasterPart> parentSlidePartOf,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideStructureOf)
+        OneOf<SlidePart, SlideLayoutPart, SlideMasterPart> slidePartOf,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf)
     {
-        this.ParentSlideStructure = parentSlideStructureOf;
-
+        this.slideOf = slideOf;
+        this.slideStructure = (SlideStructure) slideOf.Value;
         var chartGrFrameHandler = new ChartGraphicFrameHandler();
         var tableGrFrameHandler = new TableGraphicFrameHandler();
         var oleGrFrameHandler = new OleGraphicFrameHandler();
@@ -139,17 +142,15 @@ internal sealed class ShapeCollection : IShapeCollection
         pictureHandler.Successor = chartGrFrameHandler;
         chartGrFrameHandler.Successor = tableGrFrameHandler;
 
-        this.pShapeTree = parentSlidePartOf.Match(
+        this.pShapeTree = slidePartOf.Match(
             slidePart => slidePart.Slide.CommonSlideData!.ShapeTree!,
             layoutPart => layoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
             masterPart => masterPart.SlideMaster.CommonSlideData!.ShapeTree!);
 
-        this.shapes = new ResettableLazy<List<IShape>>(() => this.GetShapes(this.autoShapeCreator));
+        this.shapes = new ResetAbleLazy<List<IShape>>(() => this.GetShapes(this.autoShapeCreator));
     }
 
     public int Count => this.shapes.Value.Count;
-
-    internal OneOf<SCSlide, SCSlideLayout, SCSlideMaster> ParentSlideStructure { get; }
 
     public IShape this[int index] => this.shapes.Value[index];
 
@@ -166,7 +167,7 @@ internal sealed class ShapeCollection : IShapeCollection
 
         // Clone shape tree child.
         var addingShapeClone = (TypedOpenXmlCompositeElement)addingShapeInternal.PShapeTreeChild.CloneNode(true);
-        var id = ((SlideStructure)this.ParentSlideStructure.Value).GetNextShapeId();
+        var id = this.slideStructure.GetNextShapeId();
         addingShapeClone.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
 
         var newShape = this.GetShape(this.autoShapeCreator, addingShapeClone);
@@ -228,15 +229,11 @@ internal sealed class ShapeCollection : IShapeCollection
     {
         var xEmu = UnitConverter.HorizontalPixelToEmu(xPixels);
         var yEmu = UnitConverter.VerticalPixelToEmu(yPixels);
-
-        var slideBase =
-            this.ParentSlideStructure.Match(slide => slide as SlideStructure, layout => layout, master => master);
         var mediaDataPart =
-            slideBase.PresentationInternal.SDKPresentationInternal.CreateMediaDataPart("audio/mpeg", ".mp3");
-
+            this.slideStructure.PresentationInternal.SDKPresentationInternal.CreateMediaDataPart("audio/mpeg", ".mp3");
         mp3Stream.Position = 0;
         mediaDataPart.FeedData(mp3Stream);
-        var slidePart = (SlidePart)slideBase.TypedOpenXmlPart;
+        var slidePart = (SlidePart)this.slideStructure.TypedOpenXmlPart;
         var imageStream = Assembly.GetExecutingAssembly().GetStream("audio-image.png");
 
         var audioRef = slidePart.AddAudioReferenceRelationship(mediaDataPart);
@@ -274,7 +271,7 @@ internal sealed class ShapeCollection : IShapeCollection
 
         this.shapes.Reset();
 
-        return new SCAudioShape(this.pShapeTree, this.ParentSlideStructure, this);
+        return new SCAudioShape(this.pShapeTree, this.slideOf, this);
     }
 
     public IPicture AddPicture(Stream imageStream)
@@ -299,7 +296,7 @@ internal sealed class ShapeCollection : IShapeCollection
         transform2D.Extents!.Cy = cyEmu;
 
         var pictureHandler = new PictureHandler();
-        var shape = pictureHandler.FromTreeChild(pPicture, this.ParentSlideStructure, this) !;
+        var shape = pictureHandler.FromTreeChild(pPicture, this.slideOf, this) !;
 
         this.shapes.Reset();
 
@@ -308,11 +305,8 @@ internal sealed class ShapeCollection : IShapeCollection
 
     public IChart AddBarChart(BarChartType barChartType)
     {
-        var slideStructure =
-            this.ParentSlideStructure.Match(slide => slide as SlideStructure, layout => layout, master => master);
-
         var chartFactory = new ChartGraphicFrameHandler();
-        var newPGraphicFrame = chartFactory.Create(slideStructure.TypedOpenXmlPart);
+        var newPGraphicFrame = chartFactory.Create(((SlideStructure)this.slideOf.Value).TypedOpenXmlPart);
 
         this.pShapeTree.Append(newPGraphicFrame);
 
@@ -323,16 +317,14 @@ internal sealed class ShapeCollection : IShapeCollection
     {
         var xEmu = UnitConverter.HorizontalPixelToEmu(x);
         var yEmu = UnitConverter.VerticalPixelToEmu(y);
-
-        var slideBase =
-            this.ParentSlideStructure.Match(slide => slide as SlideStructure, layout => layout, master => master);
+        
         var mediaDataPart =
-            slideBase.PresentationInternal.SDKPresentationInternal.CreateMediaDataPart("video/mp4", ".mp4");
+            this.slideStructure.PresentationInternal.SDKPresentationInternal.CreateMediaDataPart("video/mp4", ".mp4");
 
         stream.Position = 0;
         mediaDataPart.FeedData(stream);
         var imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
-        var slidePart = (SlidePart)slideBase.TypedOpenXmlPart;
+        var slidePart = (SlidePart)this.slideStructure.TypedOpenXmlPart;
         var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
         var imageStream = Assembly.GetExecutingAssembly().GetStream("video-image.bmp");
         imagePart.FeedData(imageStream);
@@ -426,14 +418,14 @@ internal sealed class ShapeCollection : IShapeCollection
 
         this.shapes.Reset();
 
-        return new SCVideoShape(this.pShapeTree, this.ParentSlideStructure, this);
+        return new SCVideoShape(this.pShapeTree, this.slideOf, this);
     }
 
     public IRectangle AddRectangle(int x, int y, int width, int height)
     {
         var newPShape = this.CreatePShape(x, y, width, height, A.ShapeTypeValues.Rectangle);
 
-        var newShape = new SCRectangle(newPShape, this.ParentSlideStructure, this);
+        var newShape = new SCRectangle(newPShape, this.slideOf, this);
         newShape.Outline.Color = "000000";
 
         newShape.Duplicated += this.OnAutoShapeAdded;
@@ -449,7 +441,7 @@ internal sealed class ShapeCollection : IShapeCollection
     {
         var newPShape = this.CreatePShape(x, y, w, h, A.ShapeTypeValues.RoundRectangle);
 
-        var newShape = new SCRoundedRectangle(newPShape, this.ParentSlideStructure, this);
+        var newShape = new SCRoundedRectangle(newPShape, this.slideOf, this);
         newShape.Outline.Color = "000000";
 
         newShape.Duplicated += this.OnAutoShapeAdded;
@@ -465,7 +457,7 @@ internal sealed class ShapeCollection : IShapeCollection
     {
         var newPConnectionShape = new ConnectionShape(xml);
 
-        var newShape = new SCLine(newPConnectionShape, this.ParentSlideStructure, this);
+        var newShape = new SCLine(newPConnectionShape, this.slideOf, this);
 
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
@@ -529,7 +521,7 @@ internal sealed class ShapeCollection : IShapeCollection
 
         var newPConnectionShape = this.CreatePConnectionShape(x, y, (int)cx, cy, flipH, flipV);
 
-        var newShape = new SCLine(newPConnectionShape, this.ParentSlideStructure, this);
+        var newShape = new SCLine(newPConnectionShape, this.slideOf, this);
         newShape.Outline.Color = "000000";
 
         newShape.Duplicated += this.OnAutoShapeAdded;
@@ -592,7 +584,7 @@ internal sealed class ShapeCollection : IShapeCollection
         graphicFrame.Append(graphic);
 
         this.pShapeTree.Append(graphicFrame);
-        var table = new SCTable(graphicFrame, this.ParentSlideStructure, this);
+        var table = new SCTable(graphicFrame, this.slideOf, this);
 
         this.shapes.Reset();
 
@@ -633,7 +625,7 @@ internal sealed class ShapeCollection : IShapeCollection
         var referencedShape = phShapes.FirstOrDefault(IsEqual);
 
         // https://answers.microsoft.com/en-us/msoffice/forum/all/placeholder-master/0d51dcec-f982-4098-b6b6-94785304607a?page=3
-        if (referencedShape == null && inputPph.Index?.Value == 4294967295 && this.ParentSlideStructure.IsT2)
+        if (referencedShape == null && inputPph.Index?.Value == 4294967295 && this.slideOf.IsT2)
         {
             var custom = phShapes.Select(sp =>
             {
@@ -831,15 +823,15 @@ internal sealed class ShapeCollection : IShapeCollection
 
         if (pShapeTreeChild is P.GroupShape pGroupShape)
         {
-            return new SCGroupShape(pGroupShape, this.ParentSlideStructure, this);
+            return new SCGroupShape(pGroupShape, this.slideOf, this);
         }
         
         if (pShapeTreeChild is P.ConnectionShape)
         {
-            return new SCLine(pShapeTreeChild, this.ParentSlideStructure, this);
+            return new SCLine(pShapeTreeChild, this.slideOf, this);
         }
         
-        shape = autoShapeCreator.FromTreeChild(pShapeTreeChild, this.ParentSlideStructure, this);
+        shape = autoShapeCreator.FromTreeChild(pShapeTreeChild, this.slideOf, this);
 
         if (shape is SCAutoShape autoShape)
         {
@@ -851,9 +843,7 @@ internal sealed class ShapeCollection : IShapeCollection
 
     private P.Picture CreatePPicture(Stream imageStream, string shapeName)
     {
-        var slideStructure =
-            this.ParentSlideStructure.Match(slide => slide as SlideStructure, layout => layout, master => master);
-        var slidePart = (TypedOpenXmlPart)slideStructure.TypedOpenXmlPart;
+        var slidePart = this.slideStructure.TypedOpenXmlPart;
         var imgPartRId = slidePart.GetNextRelationshipId();
         var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
         imageStream.Position = 0;

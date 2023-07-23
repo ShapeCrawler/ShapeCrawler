@@ -6,7 +6,6 @@ using DocumentFormat.OpenXml;
 using OneOf;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Drawing.ShapeFill;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
@@ -55,24 +54,21 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
 
     private readonly Lazy<SCShapeFill> shapeFill;
     private readonly Lazy<SCTextFrame?> textFrame;
-    private readonly ResettableLazy<Dictionary<int, FontData>> lvlToFontData;
+    private readonly ResetAbleLazy<Dictionary<int, FontData>> lvlToFontData;
     private readonly TypedOpenXmlCompositeElement pShape;
     private readonly SlideStructure slideStructure;
-    private readonly ITextFrameContainer textFrameContainer;
 
     internal SCAutoShape(
         TypedOpenXmlCompositeElement pShape,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection,
-        ITextFrameContainer textFrameContainer)
+        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
         : base(pShape, slideOf, parentShapeCollection)
     {
         this.pShape = pShape;
         this.textFrame = new Lazy<SCTextFrame?>(this.ParseTextFrame);
         this.shapeFill = new Lazy<SCShapeFill>(this.GetFill);
-        this.lvlToFontData = new ResettableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
+        this.lvlToFontData = new ResetAbleLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
         this.slideStructure = (SlideStructure)this.slideOf.Value;
-        this.textFrameContainer = textFrameContainer;
     }
     
     internal event EventHandler<NewAutoShape>? Duplicated;
@@ -97,8 +93,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
         var newAutoShape = new SCAutoShape(
             typedCompositeElement, 
             this.slideOf,
-            this.shapeCollectionOf,
-            this.textFrameContainer);
+            this.shapeCollectionOf);
 
         var duplicatedShape = new NewAutoShape(newAutoShape, typedCompositeElement);
         this.Duplicated?.Invoke(this, duplicatedShape);
@@ -151,7 +146,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
         }
 
         var baseParagraph = this.TextFrame.Paragraphs.First();
-        var popularPortion = baseParagraph.Portions.OfType<TextPortion>().GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
+        var popularPortion = baseParagraph.Portions.OfType<SCTextPortion>().GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
             .First().First();
         var font = popularPortion.Font;
 
@@ -273,7 +268,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
             return null;
         }
 
-        var newTextFrame = new SCTextFrame(this, pTextBody, this.slideStructure, this.textFrameContainer);
+        var newTextFrame = new SCTextFrame(this, pTextBody, this.slideStructure, this);
         newTextFrame.TextChanged += this.ResizeShape;
 
         return newTextFrame;

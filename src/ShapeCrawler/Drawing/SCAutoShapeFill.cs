@@ -1,5 +1,4 @@
-﻿using ShapeCrawler.Drawing.ShapeFill;
-using A = DocumentFormat.OpenXml.Drawing;
+﻿using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;

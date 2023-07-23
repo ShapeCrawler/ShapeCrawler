@@ -1,31 +1,35 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DocumentFormat.OpenXml.Office2010.PowerPoint;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents collection of section slide.
+///     Represents collection of presentation section.
 /// </summary>
-public interface ISectionSlideCollection : IEnumerable<ISlide>
+public interface ISectionCollection : IReadOnlyCollection<ISection>
 {
     /// <summary>
-    ///     Gets sections count.
+    ///     Gets section by index.
     /// </summary>
-    int Count { get; }
+    ISection this[int i] { get; }
 
     /// <summary>
-    ///     Gets section slide by index.
+    ///     Removes specified section.
     /// </summary>
-    ISlide this[int index] { get; }
+    void Remove(ISection removingSection);
+
+    /// <summary>
+    ///     Gets section by section name.
+    /// </summary>
+    ISection GetByName(string sectionName);
 }
 
 internal sealed class SCSectionCollection : ISectionCollection
 {
     private readonly List<SCSection> sections;
-    private readonly SectionList? sdkSectionList;
+    private readonly P14.SectionList? sdkSectionList;
 
     private SCSectionCollection(SCPresentation presentation, List<SCSection> sections)
     {
@@ -33,7 +37,7 @@ internal sealed class SCSectionCollection : ISectionCollection
         this.sections = sections;
     }
 
-    private SCSectionCollection(SCPresentation presentation, List<SCSection> sections, SectionList sdkSectionList)
+    private SCSectionCollection(SCPresentation presentation, List<SCSection> sections, P14.SectionList sdkSectionList)
     {
         this.Presentation = presentation;
         this.sections = sections;
@@ -83,7 +87,7 @@ internal sealed class SCSectionCollection : ISectionCollection
     {
         var sections = new List<SCSection>();
         var sdkSectionList = presentation.SDKPresentationInternal.PresentationPart!.Presentation.PresentationExtensionList
-            ?.Descendants<SectionList>().FirstOrDefault();
+            ?.Descendants<P14.SectionList>().FirstOrDefault();
 
         if (sdkSectionList == null)
         {
@@ -111,4 +115,5 @@ internal sealed class SCSectionCollection : ISectionCollection
         removing.Remove();
         this.Presentation.SDKPresentationInternal.PresentationPart!.Presentation.Save();
     }
+    
 }

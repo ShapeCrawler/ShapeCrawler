@@ -51,14 +51,14 @@ public interface ISlideCollection : IReadOnlyList<ISlide>
 internal sealed class SCSlideCollection : ISlideCollection
 {
     private readonly SCPresentation presentation;
-    private readonly ResettableLazy<List<SCSlide>> slides;
+    private readonly ResetAbleLazy<List<SCSlide>> slides;
     private PresentationPart presPart;
 
     internal SCSlideCollection(SCPresentation pres)
     {
         this.presentation = pres;
         this.presPart = pres.SDKPresentationInternal.PresentationPart!;
-        this.slides = new ResettableLazy<List<SCSlide>>(this.GetSlides);
+        this.slides = new ResetAbleLazy<List<SCSlide>>(this.GetSlides);
     }
 
     public int Count => this.slides.Value.Count;

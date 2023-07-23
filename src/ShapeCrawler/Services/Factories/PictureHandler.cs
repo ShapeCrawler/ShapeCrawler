@@ -13,9 +13,8 @@ internal sealed class PictureHandler : OpenXmlElementHandler
 {
     internal override SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideStructure,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollection,
-        ITextFrameContainer textFrameContainer)
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf)
     {
         P.Picture? pPicture;
         if (pShapeTreeChild is P.Picture treePic)
@@ -30,7 +29,7 @@ internal sealed class PictureHandler : OpenXmlElementHandler
                         .GetFirstChild<A.AudioFromFile>();
                     if (aAudioFile is not null)
                     {
-                        return new SCAudioShape(pShapeTreeChild, slideStructure, shapeCollection);
+                        return new SCAudioShape(pShapeTreeChild, slideOf, shapeCollectionOf);
                     }
 
                     break;
@@ -38,7 +37,7 @@ internal sealed class PictureHandler : OpenXmlElementHandler
 
                 case VideoFromFile:
                 {
-                    return new SCVideoShape(pShapeTreeChild, slideStructure, shapeCollection);
+                    return new SCVideoShape(pShapeTreeChild, slideOf, shapeCollectionOf);
                 }
             }
 
@@ -51,7 +50,7 @@ internal sealed class PictureHandler : OpenXmlElementHandler
 
         if (pPicture == null)
         {
-            return this.Successor?.FromTreeChild(pShapeTreeChild, slideStructure, shapeCollection);
+            return this.Successor?.FromTreeChild(pShapeTreeChild, slideOf, shapeCollectionOf);
         }
 
         var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
@@ -61,7 +60,7 @@ internal sealed class PictureHandler : OpenXmlElementHandler
             return null;
         }
 
-        var picture = new SCPicture(pPicture, slideStructure, shapeCollection, aBlip!);
+        var picture = new SCPicture(pPicture, slideOf, shapeCollectionOf, aBlip!);
 
         return picture;
     }

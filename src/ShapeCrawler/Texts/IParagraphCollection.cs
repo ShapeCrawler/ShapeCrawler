@@ -26,7 +26,7 @@ public interface IParagraphCollection : IReadOnlyList<IParagraph>
 
 internal sealed class ParagraphCollection : IParagraphCollection
 {
-    private readonly ResettableLazy<List<SCParagraph>> paragraphs;
+    private readonly ResetAbleLazy<List<SCParagraph>> paragraphs;
     private readonly SCTextFrame textFrame;
     private readonly SlideStructure slideStructure;
     private readonly ITextFrameContainer textFrameContainer;
@@ -35,7 +35,7 @@ internal sealed class ParagraphCollection : IParagraphCollection
     {
         this.textFrame = textFrame;
         this.slideStructure = slideStructure;
-        this.paragraphs = new ResettableLazy<List<SCParagraph>>(this.GetParagraphs);
+        this.paragraphs = new ResetAbleLazy<List<SCParagraph>>(this.GetParagraphs);
         this.textFrameContainer = textFrameContainer;
     }
 

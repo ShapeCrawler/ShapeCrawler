@@ -3,8 +3,7 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
 
-// ReSharper disable All
-namespace ShapeCrawler.Drawing.ShapeFill;
+namespace ShapeCrawler.Drawing;
 
 internal abstract class SCShapeFill : IShapeFill
 {

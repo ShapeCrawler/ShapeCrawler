@@ -12,16 +12,15 @@ internal sealed class AutoShapeCreator : OpenXmlElementHandler
     internal override SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideObject,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollection,
-        ITextFrameContainer textFrameContainer)
+        OneOf<ShapeCollection, SCGroupShape> shapeCollection)
     {
         if (pShapeTreeChild is P.Shape pShape)
         {
-            var autoShape = new SCAutoShape(pShape, slideObject, shapeCollection, textFrameContainer);
+            var autoShape = new SCAutoShape(pShape, slideObject, shapeCollection);
             return autoShape;
         }
 
-        return this.Successor?.FromTreeChild(pShapeTreeChild, slideObject, shapeCollection, textFrameContainer);
+        return this.Successor?.FromTreeChild(pShapeTreeChild, slideObject, shapeCollection);
     }
     
 }
