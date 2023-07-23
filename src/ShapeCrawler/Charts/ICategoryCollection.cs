@@ -30,8 +30,11 @@ public interface ICategoryCollection : IEnumerable<ICategory>
 
 internal sealed class CategoryCollection : IReadOnlyCollection<ICategory>, ICategoryCollection
 {
+    private readonly List<Category> items;
+
     private CategoryCollection(List<Category> categoryList)
     {
+        this.items = categoryList;
     }
 
     internal static CategoryCollection? Create(SCChart chart, OpenXmlElement? firstChartSeries, SCChartType chartType)
@@ -146,9 +149,7 @@ internal sealed class CategoryCollection : IReadOnlyCollection<ICategory>, ICate
         return this.GetEnumerator();
     }
 
-    public int Count { get; }
+    public int Count => this.items.Count;
 
-    public ICategory this[int index] => throw new System.NotImplementedException();
-
-    int ICategoryCollection.Count => this.Count;
+    public ICategory this[int index] => this.items[index];
 }

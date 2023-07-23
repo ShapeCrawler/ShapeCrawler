@@ -49,26 +49,40 @@ public interface IPortion
 internal sealed class SCTextPortion : IPortion
 {
     private readonly ResetAbleLazy<SCFont> font;
-    private readonly A.Field? aField;
     private readonly A.Run? aRun;
+    private readonly A.Field? aField;
     private readonly SlideStructure slideStructure;
+    
+    internal event Action? Removed;
 
-    internal SCTextPortion(A.Field aField, SlideStructure slideStructure, ITextFrameContainer textFrameContainer, SCParagraph paragraph)
+    internal SCTextPortion(
+        A.Run aRun, 
+        SlideStructure slideStructure, 
+        ITextFrameContainer textFrameContainer,
+        SCParagraph paragraph, 
+        Action onRemoveHandler)
     {
-        this.slideStructure = slideStructure;
-        this.aField = aField;
-        this.AText = aField.GetFirstChild<A.Text>()!;
-        this.font = new ResetAbleLazy<SCFont>(() => new SCFont(this.AText, this, textFrameContainer, paragraph));
-    }
-
-    internal SCTextPortion(A.Run aRun, SlideStructure slideStructure, ITextFrameContainer textFrameContainer, SCParagraph paragraph)
-    {
-        this.slideStructure = slideStructure;
         this.aRun = aRun;
+        this.slideStructure = slideStructure;
         this.AText = aRun.Text!;
         this.font = new ResetAbleLazy<SCFont>(() => new SCFont(this.AText, this, textFrameContainer, paragraph));
+        this.Removed += onRemoveHandler;
     }
 
+    internal SCTextPortion(
+        A.Field aField, 
+        SlideStructure slideStructure, 
+        ITextFrameContainer textFrameContainer, 
+        SCParagraph paragraph,
+        Action onRemoveHandler)
+    {
+        this.aField = aField;
+        this.slideStructure = slideStructure;
+        this.AText = aField.GetFirstChild<A.Text>()!;
+        this.font = new ResetAbleLazy<SCFont>(() => new SCFont(this.AText, this, textFrameContainer, paragraph));
+        this.Removed += onRemoveHandler;
+    }
+    
     #region Public Properties
 
     /// <inheritdoc/>
@@ -97,7 +111,9 @@ internal sealed class SCTextPortion : IPortion
 
     public void Remove()
     {
-        throw new NotImplementedException();
+        this.aRun?.Remove();
+        this.aField?.Remove();
+        this.Removed?.Invoke();
     }
 
     #endregion Public Properties
@@ -211,10 +227,12 @@ internal sealed class SCTextPortion : IPortion
 internal sealed class SCLineBreak : IPortion
 {
     private readonly A.Break aBreak;
-
-    internal SCLineBreak(A.Break aBreak)
+    private event Action Removed;
+    
+    internal SCLineBreak(A.Break aBreak, Action onRemovedHandler)
     {
         this.aBreak = aBreak;
+        this.Removed += onRemovedHandler;
     }
 
     public string? Text { get; set; } = Environment.NewLine;
@@ -236,6 +254,6 @@ internal sealed class SCLineBreak : IPortion
     public void Remove()
     {
         this.aBreak.Remove();
-        
+        this.Removed?.Invoke();
     }
 }

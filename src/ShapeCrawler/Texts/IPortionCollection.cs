@@ -71,7 +71,8 @@ internal sealed class SCPortionCollection : IPortionCollection
     
     public int Count => this.portions.Value.Count;
 
-    public IPortion this[int index] => this.portions.Value[index];
+    public IPortion 
+        this[int index] => this.portions.Value[index];
 
     public void AddText(string text)
     {
@@ -150,15 +151,28 @@ internal sealed class SCPortionCollection : IPortionCollection
             switch (paraChild)
             {
                 case A.Run aRun:
-                    portions.Add(new SCTextPortion(aRun, this.slideStructure, this.textFrameContainer, this.paragraph));
+                    var runPortion = new SCTextPortion(
+                        aRun, 
+                        this.slideStructure, 
+                        this.textFrameContainer,
+                        this.paragraph,
+                        () => this.portions.Reset()); 
+                    portions.Add(runPortion);
                     break;
                 case A.Field aField:
                 {
-                    portions.Add(new SCTextPortion(aField, this.slideStructure, this.textFrameContainer, this.paragraph));
+                    var fieldPortion = new SCTextPortion(
+                        aField, 
+                        this.slideStructure, 
+                        this.textFrameContainer,
+                        this.paragraph,
+                        () => this.portions.Reset());
+                    portions.Add(fieldPortion);
                     break;
                 }
                 case A.Break aBreak:
-                    portions.Add(new SCLineBreak(aBreak));
+                    var lineBreak = new SCLineBreak(aBreak, () => this.portions.Reset());
+                    portions.Add(lineBreak);
                     break;
             }
         }

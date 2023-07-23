@@ -88,7 +88,7 @@ internal class SCChart : SCShape, IChart
 
     public bool HasXValues => this.xValues.Value != null;
 
-    public IReadOnlyCollection<double> XValues
+    public List<double> XValues
     {
         get
         {

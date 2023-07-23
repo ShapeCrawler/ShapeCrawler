@@ -162,15 +162,13 @@ internal sealed class SCParagraph : IParagraph
     {
         if (!this.portions.Value.Any())
         {
-            this.Portions.AddText(" ");
+            this.portions.Value.AddText(" ");
         }
 
         // To set a paragraph text we use a single portion which is the first paragraph portion.
         var basePortion = this.portions.Value.OfType<SCTextPortion>().First();
         var removingPortions = this.portions.Value.Where(p => p != basePortion).ToList();
         this.portions.Value.Remove(removingPortions);
-
-        var portionsCore = (SCPortionCollection)this.Portions;
 
 #if NETSTANDARD2_0
         var textLines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
@@ -184,12 +182,12 @@ internal sealed class SCParagraph : IParagraph
         {
             if (!string.IsNullOrEmpty(textLine))
             {
-                portionsCore.AddNewLine();
-                portionsCore.AddText(textLine);
+                this.portions.Value.AddNewLine();
+                this.portions.Value.AddText(textLine);
             }
             else
             {
-                portionsCore.AddNewLine();
+                this.portions.Value.AddNewLine();
             }
         }
         
