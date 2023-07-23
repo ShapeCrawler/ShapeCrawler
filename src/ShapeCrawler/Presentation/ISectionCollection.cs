@@ -96,9 +96,9 @@ internal sealed class SCSectionCollection : ISectionCollection
 
         var sectionCollection = new SCSectionCollection(presentation, sections, sdkSectionList);
 
-        foreach (P14.Section sdkSection in sdkSectionList)
+        foreach (P14.Section pSection in sdkSectionList.OfType<P14.Section>())
         {
-            sections.Add(new SCSection(sectionCollection, sdkSection));
+            sections.Add(new SCSection(sectionCollection, pSection));
         }
 
         return new SCSectionCollection(presentation, sections, sdkSectionList);

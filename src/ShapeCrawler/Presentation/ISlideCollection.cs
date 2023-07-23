@@ -77,12 +77,12 @@ internal sealed class SCSlideCollection : ISlideCollection
         return this.GetEnumerator();
     }
 
-    public void Remove(ISlide removingSlide)
+    public void Remove(ISlide slide)
     {
         // TODO: slide layout and master of removed slide also should be deleted if they are unused
         var sdkPresentation = this.presPart.Presentation;
         var slideIdList = sdkPresentation.SlideIdList!;
-        var removingSlideIndex = removingSlide.Number - 1;
+        var removingSlideIndex = slide.Number - 1;
         var removingSlideId = (P.SlideId)slideIdList.ChildElements[removingSlideIndex];
         var removingSlideRelId = removingSlideId.RelationshipId!;
 
@@ -178,14 +178,14 @@ internal sealed class SCSlideCollection : ISlideCollection
         return newSlide;
     }
 
-    public void Insert(int position, ISlide outerSlide)
+    public void Insert(int position, ISlide slide)
     {
         if (position < 1 || position > this.slides.Value.Count + 1)
         {
             throw new ArgumentOutOfRangeException(nameof(position));
         }
 
-        this.Add(outerSlide);
+        this.Add(slide);
         int addedSlideIndex = this.slides.Value.Count - 1;
         this.slides.Value[addedSlideIndex].Number = position;
 
@@ -194,9 +194,9 @@ internal sealed class SCSlideCollection : ISlideCollection
         this.OnCollectionChanged();
     }
 
-    public void Add(ISlide sourceSlide)
+    public void Add(ISlide slide)
     {
-        var sourceSlideInternal = (SCSlide)sourceSlide;
+        var sourceSlideInternal = (SCSlide)slide;
         PresentationDocument sourcePresDoc;
         var tempStream = new MemoryStream();
         if (sourceSlideInternal.Presentation == this.presentation)
@@ -215,7 +215,7 @@ internal sealed class SCSlideCollection : ISlideCollection
         var sourcePresPart = sourcePresDoc.PresentationPart!;
         var destPresPart = destPresDoc.PresentationPart!;
         var destSdkPres = destPresPart.Presentation;
-        var sourceSlideIndex = sourceSlide.Number - 1;
+        var sourceSlideIndex = slide.Number - 1;
         var sourceSlideId = (P.SlideId)sourcePresPart.Presentation.SlideIdList!.ChildElements[sourceSlideIndex];
         var sourceSlidePart = (SlidePart)sourcePresPart.GetPartById(sourceSlideId.RelationshipId!);
 
@@ -288,10 +288,10 @@ internal sealed class SCSlideCollection : ISlideCollection
     {
         foreach (var slideMasterPart in sdkPresDocDest.PresentationPart!.SlideMasterParts)
         {
-            foreach (P.SlideLayoutId slideLayoutId in slideMasterPart.SlideMaster.SlideLayoutIdList!)
+            foreach (P.SlideLayoutId pSlideLayoutId in slideMasterPart.SlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>())
             {
                 masterId++;
-                slideLayoutId.Id = masterId;
+                pSlideLayoutId.Id = masterId;
             }
 
             slideMasterPart.SlideMaster.Save();
@@ -330,7 +330,7 @@ internal sealed class SCSlideCollection : ISlideCollection
     private static uint CreateId(P.SlideIdList slideIdList)
     {
         uint currentId = 0;
-        foreach (P.SlideId slideId in slideIdList)
+        foreach (P.SlideId slideId in slideIdList.OfType<P.SlideId>())
         {
             if (slideId.Id! > currentId)
             {
@@ -358,12 +358,12 @@ internal sealed class SCSlideCollection : ISlideCollection
 
             // declares a link list of slide list entries
             var slideListEntries = new LinkedList<P.SlideListEntry>();
-            foreach (P.SlideListEntry slideListEntry in customShow.SlideList.Elements())
+            foreach (P.SlideListEntry pSlideListEntry in customShow.SlideList.OfType<P.SlideListEntry>())
             {
                 // finds the slide reference to remove from the custom show
-                if (slideListEntry.Id != null && slideListEntry.Id == removingSlideRelId)
+                if (pSlideListEntry.Id != null && pSlideListEntry.Id == removingSlideRelId)
                 {
-                    slideListEntries.AddLast(slideListEntry);
+                    slideListEntries.AddLast(pSlideListEntry);
                 }
             }
 

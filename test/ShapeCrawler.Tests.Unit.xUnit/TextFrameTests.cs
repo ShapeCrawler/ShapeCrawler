@@ -158,15 +158,18 @@ namespace ShapeCrawler.Tests.Unit.xUnit
 
         [Xunit.Theory]
         [SlideShapeData("autoshape-case012.pptx", 1, "Shape 1")]
-        public void Text_Setter_should_not_throw_exception(IShape shape)
+        public void Text_Setter(IShape shape)
         {
             // Arrange
             var autoShape = (IAutoShape)shape;
             var textFrame = autoShape.TextFrame;
 
-            // Act-Assert
+            // Act
             var text = textFrame.Text;
             textFrame.Text = "some text";
+            
+            // Assert
+            textFrame.Text.Should().BeEquivalentTo("some text");
         }
         
         [Xunit.Theory]
