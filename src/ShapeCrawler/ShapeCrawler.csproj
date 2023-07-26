@@ -13,10 +13,8 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Copyright></Copyright>
     <LangVersion>11</LangVersion>
     <ApplicationIcon></ApplicationIcon>
-    <PackageReleaseNotes>Added setters for `IPresentation.SlideHeight/SlideWidth`.
-Added `IShapeCollection.Add()`.
-Fixed `ISlide.Number` setter.  
-Fixed updating height of table row.</PackageReleaseNotes>
+    <PackageReleaseNotes>- added setters for IParagraph.IndentLevel
+- added IParagraph.HeaderAndFooter.AddSlideNumber()</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RepositoryType>Git</RepositoryType>
@@ -27,7 +25,7 @@ Fixed updating height of table row.</PackageReleaseNotes>
     <AssemblyVersion>0.47.0</AssemblyVersion>
     <FileVersion>0.47.0</FileVersion>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-    <PackageVersion>0.47.0-beta.2</PackageVersion>
+    <PackageVersion>0.47.0</PackageVersion>
     <Title>ShapeCrawler</Title>
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>

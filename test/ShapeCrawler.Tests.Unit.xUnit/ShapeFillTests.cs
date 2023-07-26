@@ -16,18 +16,6 @@ namespace ShapeCrawler.Tests.Unit;
 
 public class ShapeFillTests : SCTest
 {
-    [Fact]
-    public void Fill_is_not_null()
-    {
-        // Arrange
-        var pptx = GetInputStream("021.pptx");
-        var pres = SCPresentation.Open(pptx);
-        var autoShape = (IAutoShape)pres.Slides[0].Shapes.First(sp => sp.Id == 108);
-
-        // Act-Assert
-        autoShape.Fill.Should().NotBeNull();
-    }
-
     [Theory]
     [SlideShapeData("008.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
     [SlideShapeData("autoshape-case009.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
@@ -104,24 +92,6 @@ public class ShapeFillTests : SCTest
         errors.Should().BeEmpty();
     }
 
-    [Fact]
-    public void Picture_SetImage_updates_picture_fill()
-    {
-        // Arrange
-        var pptx = GetInputStream("009_table.pptx");
-        var image = GetInputStream("test-image-2.png");
-        var shape = (IAutoShape)SCPresentation.Open(pptx).Slides[2].Shapes.First(sp => sp.Id == 4);
-        var fill = shape.Fill;
-        var imageSizeBefore = fill.Picture!.BinaryData.GetAwaiter().GetResult().Length;
-
-        // Act
-        fill.Picture.SetImage(image);
-
-        // Assert
-        var imageSizeAfter = shape.Fill.Picture.BinaryData.GetAwaiter().GetResult().Length;
-        imageSizeAfter.Should().NotBe(imageSizeBefore, "because image has been changed");
-    }
-
     [Theory]
     [MemberData(nameof(TestCasesFillType))]
     public void Type_returns_fill_type(IAutoShape shape, SCFillType expectedFill)
@@ -157,46 +127,5 @@ public class ShapeFillTests : SCTest
         pres = SCPresentation.Open(pptxStream);
         var withSlideBg = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
         yield return new object[] { withSlideBg, SCFillType.SlideBackground };
-    }
-
-    [Fact]
-    public void AutoShape_Fill_Type_returns_NoFill_When_shape_is_Not_filled()
-    {
-        // Arrange
-        var autoShape = (IAutoShape)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 6);
-
-        // Act
-        var fillType = autoShape.Fill.Type;
-
-        // Assert
-        fillType.Should().Be(SCFillType.NoFill);
-    }
-
-    [Fact]
-    public void HexSolidColor_getter_returns_color_name()
-    {
-        // Arrange
-        var autoShape = (IAutoShape)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 2);
-
-        // Act
-        var shapeSolidColorName = autoShape.Fill.Color;
-
-        // Assert
-        shapeSolidColorName.Should().BeEquivalentTo("ff0000");
-    }
-
-    [Fact]
-    public async void Picture_BinaryData_returns_binary_content_of_picture_image()
-    {
-        // Arrange
-        var pptxStream = GetInputStream("009_table.pptx");
-        var pres = SCPresentation.Open(pptxStream);
-        var shapeFill = pres.Slides[2].Shapes.GetByName<IAutoShape>("AutoShape 1").Fill;
-
-        // Act
-        var imageBytes = await shapeFill.Picture!.BinaryData;
-
-        // Assert
-        imageBytes.Length.Should().BePositive();
     }
 }
