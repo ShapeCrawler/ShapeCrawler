@@ -4,10 +4,11 @@ using System.IO;
 using System.Linq;
 using ClosedXML;
 using FluentAssertions;
+using NUnit.Framework;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
-using Xunit;
+using Assert = Xunit.Assert;
 
 // ReSharper disable TooManyChainedReferences
 // ReSharper disable TooManyDeclarations
@@ -17,8 +18,8 @@ namespace ShapeCrawler.Tests.Unit;
 [SuppressMessage("Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task")]
 public class PictureTests : SCTest
 {
-    [Fact]
-    public async void Image_BinaryData_returns_image_byte_array()
+    [Test]
+    public async Task Image_BinaryData_returns_image_byte_array()
     {
         // Arrange
         var shapePicture1 = (IPicture)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
@@ -33,8 +34,8 @@ public class PictureTests : SCTest
         shapePictureContentCase2.Should().NotBeEmpty();
     }
         
-    [Fact]
-    public async void Image_GetBytes_returns_image_byte_array_of_Layout_picture()
+    [Test]
+    public async Task Image_GetBytes_returns_image_byte_array_of_Layout_picture()
     {
         // Arrange
         var pptxStream = GetInputStream("pictures-case001.pptx");
@@ -48,7 +49,7 @@ public class PictureTests : SCTest
         picByteArray.Should().NotBeEmpty();
     }
         
-    [Fact]
+    [Test]
     public void Image_MIME_returns_MIME_type_of_image()
     {
         // Arrange
@@ -63,7 +64,7 @@ public class PictureTests : SCTest
         mimeType.Should().Be("image/png");
     }
         
-    [Fact]
+    [Test]
     public void Image_GetBytes_returns_image_byte_array_of_Master_slide_picture()
     {
         // Arrange
@@ -79,7 +80,7 @@ public class PictureTests : SCTest
         picByteArray.Should().NotBeEmpty();
     }
 
-    [Fact]
+    [Test]
     public void Image_SetImage_updates_picture_image()
     {
         // Arrange
@@ -103,7 +104,7 @@ public class PictureTests : SCTest
         lengthAfter.Should().NotBe(lengthBefore);
     }
 
-    [Fact]
+    [Test]
     public void Image_SvgContent_returns_svg_content()
     {
         // Arrange
@@ -118,7 +119,7 @@ public class PictureTests : SCTest
         svgContent.Should().NotBeEmpty();
     }
 
-    [Fact]
+    [Test]
     public void Image_SetImage_should_not_update_image_of_other_grouped_picture()
     {
         // Arrange
@@ -140,7 +141,7 @@ public class PictureTests : SCTest
         pictureContent1.SequenceEqual(pictureContent2).Should().BeFalse();
     }
         
-    [Fact]
+    [Test]
     public void Image_Name_Getter_returns_internal_image_file_name()
     {
         // Arrange
@@ -155,7 +156,7 @@ public class PictureTests : SCTest
         fileName.Should().Be("image2.png");
     }
 
-    [Fact]
+    [Test]
     public void Picture_DoNotParseStrangePicture_Test()
     {
         // TODO: Deeper learn such pictures, where content generated via a:ln
