@@ -1,7 +1,8 @@
 # Changelog  
 
-## Version 0.47.0 - Unreleased
-🍀Added setters for `IParagraph.IndentLevel`
+## Version 0.47.0 - 2023-07-26
+🍀Added setters for `IParagraph.IndentLevel`  
+🍀Added `IParagraph.HeaderAndFooter.AddSlideNumber()`
 
 ## Version 0.46.0 - 2023-07-07
 🍀Added setters for `IPresentation.SlideHeight/SlideWidth` [#522](https://github.com/ShapeCrawler/ShapeCrawler/issues/522)  
