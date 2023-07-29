@@ -2,12 +2,12 @@
 
 namespace ShapeCrawler.Shared;
 
-internal sealed class ResetAbleLazy<T>
+internal sealed class ResetableLazy<T>
 {
     private readonly Func<T> valueFactory;
     private Lazy<T> lazy;
 
-    internal ResetAbleLazy(Func<T> valueFactory)
+    internal ResetableLazy(Func<T> valueFactory)
     {
         this.valueFactory = valueFactory;
         this.lazy = new Lazy<T>(this.valueFactory);

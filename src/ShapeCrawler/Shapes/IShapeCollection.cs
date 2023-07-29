@@ -118,7 +118,7 @@ internal sealed class ShapeCollection : IShapeCollection
 {
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly P.ShapeTree pShapeTree;
-    private readonly ResetAbleLazy<List<IShape>> shapes;
+    private readonly ResetableLazy<List<IShape>> shapes;
     private readonly AutoShapeCreator autoShapeCreator;
     private readonly SlideStructure slideStructure;
     private readonly OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf;
@@ -145,7 +145,7 @@ internal sealed class ShapeCollection : IShapeCollection
             layoutPart => layoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
             masterPart => masterPart.SlideMaster.CommonSlideData!.ShapeTree!);
 
-        this.shapes = new ResetAbleLazy<List<IShape>>(() => this.GetShapes(this.autoShapeCreator));
+        this.shapes = new ResetableLazy<List<IShape>>(() => this.GetShapes(this.autoShapeCreator));
     }
 
     public int Count => this.shapes.Value.Count;

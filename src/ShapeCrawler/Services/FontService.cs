@@ -8,7 +8,7 @@ namespace ShapeCrawler.Services;
 
 internal static class FontService
 {
-    internal static int GetAdjustedFontSize(string text, IFont font, SCShape scShape)
+    internal static int GetAdjustedFontSize(string text, ITextPortionFont font, SCShape scShape)
     {
         var surface = SKSurface.Create(new SKImageInfo(scShape.Width, scShape.Height));
         var canvas = surface.Canvas;

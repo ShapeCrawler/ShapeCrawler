@@ -16,7 +16,7 @@ internal abstract class SCPlaceholder : IPlaceholder
 
     internal P.PlaceholderShape PPlaceholderShape { get; }
 
-    internal abstract ResetAbleLazy<SCShape?> ReferencedShape { get; }
+    internal abstract ResetableLazy<SCShape?> ReferencedShape { get; }
 
     #region Private Methods
 

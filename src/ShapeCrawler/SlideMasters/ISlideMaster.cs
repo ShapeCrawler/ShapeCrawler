@@ -47,20 +47,33 @@ public interface ISlideMaster
 
 internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
 {
-    private readonly ResetAbleLazy<List<SCSlideLayout>> slideLayouts;
+    private readonly ResetableLazy<List<SCSlideLayout>> slideLayouts;
 
     internal SCSlideMaster(SCPresentation pres, P.SlideMaster pSlideMaster, int number)
         : base(pres)
     {
         this.Presentation = pres;
         this.PSlideMaster = pSlideMaster;
-        this.slideLayouts = new ResetAbleLazy<List<SCSlideLayout>>(this.GetSlideLayouts);
+        this.slideLayouts = new ResetableLazy<List<SCSlideLayout>>(this.GetSlideLayouts);
         this.Number = number;
         
         var pSldNum = pSlideMaster.CommonSlideData!.ShapeTree!.Elements<P.Shape>().FirstOrDefault(s => s.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?.PlaceholderShape?.Type?.Value == P.PlaceholderValues.SlideNumber);
         if (pSldNum is not null)
         {
-            this.SlideNumber = new SCSlideNumber(pSldNum);
+            var masterFont = this.Shapes.First(shape =>
+                shape.Placeholder?.Type == SCPlaceholderType.SlideNumber).AsAutoShape()?.TextFrame!.Paragraphs[0].Portions[0].Font!;
+            var layoutPortionFonts = new List<ITextPortionFont> { masterFont };
+            foreach (var layout in this.SlideLayouts)
+            {
+                var font = layout.Shapes.FirstOrDefault(shape =>
+                    shape.Placeholder?.Type == SCPlaceholderType.SlideNumber)?.AsAutoShape()?.TextFrame!.Paragraphs[0].Portions[0].Font;
+                if (font != null)
+                {
+                    layoutPortionFonts.Add(font);
+                }
+            }
+            
+            this.SlideNumber = new SCSlideNumber(pSldNum, layoutPortionFonts);
         }
     }
 

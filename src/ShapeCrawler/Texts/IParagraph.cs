@@ -52,7 +52,7 @@ public interface IParagraph
 internal sealed class SCParagraph : IParagraph
 {
     private readonly Lazy<SCBullet> bullet;
-    private readonly ResetAbleLazy<SCPortionCollection> portions;
+    private readonly ResetableLazy<SCPortionCollection> portions;
     private SCTextAlignment? alignment;
 
     internal SCParagraph(A.Paragraph aParagraph, SCTextFrame textBox, SlideStructure slideStructure, ITextFrameContainer textFrameContainer)
@@ -62,7 +62,7 @@ internal sealed class SCParagraph : IParagraph
         this.Level = this.GetIndentLevel();
         this.bullet = new Lazy<SCBullet>(this.GetBullet);
         this.ParentTextFrame = textBox;
-        this.portions = new ResetAbleLazy<SCPortionCollection>(() => new SCPortionCollection(this.AParagraph, slideStructure, textFrameContainer, this));
+        this.portions = new ResetableLazy<SCPortionCollection>(() => new SCPortionCollection(this.AParagraph, slideStructure, textFrameContainer, this));
     }
 
     internal event Action? TextChanged;

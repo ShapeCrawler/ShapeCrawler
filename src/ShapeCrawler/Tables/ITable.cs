@@ -49,7 +49,7 @@ public interface ITable : IShape
 internal sealed class SCTable : SCShape, ITable
 {
     private readonly P.GraphicFrame pGraphicFrame;
-    private readonly ResetAbleLazy<SCRowCollection> rowCollection;
+    private readonly ResetableLazy<SCRowCollection> rowCollection;
 
     internal SCTable(
         OpenXmlCompositeElement pShapeTreeChild, 
@@ -58,7 +58,7 @@ internal sealed class SCTable : SCShape, ITable
         : base(pShapeTreeChild, parentSlideObject, parentShapeCollection)
     {
         this.rowCollection =
-            new ResetAbleLazy<SCRowCollection>(() => SCRowCollection.Create(this, (P.GraphicFrame)this.PShapeTreeChild));
+            new ResetableLazy<SCRowCollection>(() => SCRowCollection.Create(this, (P.GraphicFrame)this.PShapeTreeChild));
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeChild;
     }
     

@@ -23,7 +23,7 @@ public interface IPortion
     /// <summary>
     ///     Gets font.
     /// </summary>
-    IFont? Font { get; }
+    ITextPortionFont? Font { get; }
 
     /// <summary>
     ///     Gets or sets hypelink.
@@ -48,7 +48,7 @@ public interface IPortion
 
 internal sealed class SCTextPortion : IPortion
 {
-    private readonly ResetAbleLazy<SCFont> font;
+    private readonly ResetableLazy<SCTextPortionFont> font;
     private readonly A.Run? aRun;
     private readonly A.Field? aField;
     private readonly SlideStructure slideStructure;
@@ -64,7 +64,7 @@ internal sealed class SCTextPortion : IPortion
         this.aRun = aRun;
         this.slideStructure = slideStructure;
         this.AText = aRun.Text!;
-        this.font = new ResetAbleLazy<SCFont>(() => new SCFont(this.AText, this, textFrameContainer, paragraph));
+        this.font = new ResetableLazy<SCTextPortionFont>(() => new SCTextPortionFont(this.AText, this, textFrameContainer, paragraph));
         this.Removed += onRemoveHandler;
     }
     
@@ -78,7 +78,7 @@ internal sealed class SCTextPortion : IPortion
         this.aField = aField;
         this.slideStructure = slideStructure;
         this.AText = aField.GetFirstChild<A.Text>() !;
-        this.font = new ResetAbleLazy<SCFont>(() => new SCFont(this.AText, this, textFrameContainer, paragraph));
+        this.font = new ResetableLazy<SCTextPortionFont>(() => new SCTextPortionFont(this.AText, this, textFrameContainer, paragraph));
         this.Removed += onRemoveHandler;
     }
 
@@ -92,7 +92,7 @@ internal sealed class SCTextPortion : IPortion
     }
 
     /// <inheritdoc/>
-    public IFont Font => this.font.Value;
+    public ITextPortionFont Font => this.font.Value;
 
     public string? Hyperlink
     {
@@ -235,7 +235,7 @@ internal sealed class SCLineBreak : IPortion
 
     public string? Text { get; set; } = Environment.NewLine;
 
-    public IFont? Font { get; }
+    public ITextPortionFont? Font { get; }
 
     public string? Hyperlink
     {

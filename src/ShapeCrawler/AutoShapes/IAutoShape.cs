@@ -54,7 +54,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
 
     private readonly Lazy<SCShapeFill> shapeFill;
     private readonly Lazy<SCTextFrame?> textFrame;
-    private readonly ResetAbleLazy<Dictionary<int, FontData>> lvlToFontData;
+    private readonly ResetableLazy<Dictionary<int, FontData>> lvlToFontData;
     private readonly TypedOpenXmlCompositeElement pShape;
     private readonly SlideStructure slideStructure;
 
@@ -67,7 +67,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
         this.pShape = pShape;
         this.textFrame = new Lazy<SCTextFrame?>(this.ParseTextFrame);
         this.shapeFill = new Lazy<SCShapeFill>(this.GetFill);
-        this.lvlToFontData = new ResetAbleLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
+        this.lvlToFontData = new ResetableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
         this.slideStructure = (SlideStructure)this.slideOf.Value;
     }
     

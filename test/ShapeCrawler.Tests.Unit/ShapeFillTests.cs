@@ -80,4 +80,22 @@ public class ShapeFillTests : SCTest
         // Assert
         imageBytes.Length.Should().BePositive();
     }
+    
+    [Test]
+    public void SetColor_sets_solid()
+    {
+        throw new Exception("Soft validation says no error, but fill does not work in PowerPoint.");
+        // Arrange
+        var pres = SCPresentation.Create();
+        var slide = pres.Slides[0];
+        var shape = slide.Shapes.AddRectangle(0, 0, 100, 100);
+        
+        // Act
+        shape.Fill!.SetColor("00FF00");
+        SaveResult(pres);
+
+        // Assert
+        shape.Fill.Color.Should().Be("00FF00");
+        PptxValidator.Validate(pres);
+    }
 }

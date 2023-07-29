@@ -1,4 +1,5 @@
-﻿using ShapeCrawler.Drawing;
+﻿using System.Collections.Generic;
+using ShapeCrawler.Drawing;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -7,7 +8,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a slide number font.
 /// </summary>
-public interface ISlideNumberFont
+public interface ISlideNumberFont : IFont
 {
     /// <summary>
     ///     Gets or sets color.
@@ -18,16 +19,34 @@ public interface ISlideNumberFont
 internal class SCSlideNumberFont : ISlideNumberFont
 {
     private readonly A.DefaultRunProperties aDefaultRunProperties;
+    private readonly List<ITextPortionFont> portionFonts;
 
-    internal SCSlideNumberFont(A.DefaultRunProperties aDefaultRunProperties)
+    internal SCSlideNumberFont(A.DefaultRunProperties aDefaultRunProperties, List<ITextPortionFont> portionFonts)
     {
         this.aDefaultRunProperties = aDefaultRunProperties;
+        this.portionFonts = portionFonts;
     }
 
     public SCColor Color
     {
         get => this.ParseColor();
         set => this.UpdateColor(value);
+    }
+
+    public int Size
+    {
+        get => this.ParseSize();
+        set => this.UpdateSize(value);
+    }
+
+    private void UpdateSize(int points)
+    {
+        this.portionFonts.ForEach(pf => pf.Size = points);
+    }
+
+    private int ParseSize()
+    {
+        throw new System.NotImplementedException();
     }
 
     private void UpdateColor(SCColor color)

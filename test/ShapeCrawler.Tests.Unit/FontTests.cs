@@ -68,7 +68,7 @@ public class FontTests : SCTest
         // Arrange
         var nonPlaceholderAutoShapeCase1 =
             (IAutoShape)SCPresentation.Open(GetInputStream("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3);
-        IFont fontC1 = nonPlaceholderAutoShapeCase1.TextFrame.Paragraphs[0].Portions[0].Font;
+        ITextPortionFont fontC1 = nonPlaceholderAutoShapeCase1.TextFrame.Paragraphs[0].Portions[0].Font;
 
         // Act-Assert
         fontC1.IsBold.Should().BeTrue();
@@ -143,7 +143,7 @@ public class FontTests : SCTest
     {
         // Arrange
         IAutoShape nonPlaceholderAutoShape = (IAutoShape)SCPresentation.Open(GetInputStream("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 3);
-        IFont font = nonPlaceholderAutoShape.TextFrame.Paragraphs[0].Portions[0].Font;
+        ITextPortionFont font = nonPlaceholderAutoShape.TextFrame.Paragraphs[0].Portions[0].Font;
 
         // Act
         bool isItalicFont = font.IsItalic;

@@ -17,7 +17,7 @@ namespace ShapeCrawler.Charts;
 
 internal class SCChart : SCShape, IChart
 {
-    private readonly ResetAbleLazy<ICategoryCollection?> categories;
+    private readonly ResetableLazy<ICategoryCollection?> categories;
     private readonly Lazy<SCChartType> chartType;
     private readonly Lazy<OpenXmlElement?> firstSeries;
     private readonly P.GraphicFrame pGraphicFrame;
@@ -41,7 +41,7 @@ internal class SCChart : SCShape, IChart
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
         this.xValues = new Lazy<List<double>?>(this.GetXValues);
         this.series = new Lazy<SCSeriesCollection>(this.GetSeries);
-        this.categories = new ResetAbleLazy<ICategoryCollection?>(this.GetCategories);
+        this.categories = new ResetableLazy<ICategoryCollection?>(this.GetCategories);
         this.chartType = new Lazy<SCChartType>(this.GetChartType);
 
         var cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !

@@ -1,4 +1,5 @@
-﻿using A = DocumentFormat.OpenXml.Drawing;
+﻿using System.Collections.Generic;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable once CheckNamespace
@@ -17,10 +18,10 @@ public interface ISlideNumber
 
 internal class SCSlideNumber : ISlideNumber
 {
-    public SCSlideNumber(P.Shape pSldNum)
+    internal SCSlideNumber(P.Shape pSldNum, List<ITextPortionFont> portionFonts)
     {
         var aDefaultRunProperties = pSldNum.TextBody!.ListStyle!.Level1ParagraphProperties?.GetFirstChild<A.DefaultRunProperties>() !; 
-        this.Font = new SCSlideNumberFont(aDefaultRunProperties);
+        this.Font = new SCSlideNumberFont(aDefaultRunProperties, portionFonts);
     }
 
     public ISlideNumberFont Font { get; }

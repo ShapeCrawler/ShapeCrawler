@@ -35,7 +35,7 @@ public interface IColorFormat
 
 internal sealed class SCColorFormat : IColorFormat
 {
-    private readonly SCFont font;
+    private readonly SCTextPortionFont font;
     private readonly ITextFrameContainer textFrameContainer;
     private readonly SCSlideMaster parentSlideMaster;
     private readonly SCParagraph paragraph;
@@ -43,7 +43,7 @@ internal sealed class SCColorFormat : IColorFormat
     private string? hexColor;
     private SCColorType colorType;
 
-    internal SCColorFormat(SCFont font, ITextFrameContainer textFrameContainer, SCParagraph paragraph)
+    internal SCColorFormat(SCTextPortionFont font, ITextFrameContainer textFrameContainer, SCParagraph paragraph)
     {
         this.font = font;
         this.textFrameContainer = textFrameContainer;

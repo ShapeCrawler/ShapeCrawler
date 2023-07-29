@@ -89,8 +89,8 @@ public sealed class SCPresentation : IPresentation
     private readonly MemoryStream internalStream;
     private readonly Lazy<Dictionary<int, FontData>> paraLvlToFontData;
     private readonly Lazy<SCSlideSize> slideSize;
-    private readonly ResetAbleLazy<SCSectionCollection> sectionCollectionLazy;
-    private readonly ResetAbleLazy<SCSlideCollection> slideCollectionLazy;
+    private readonly ResetableLazy<SCSectionCollection> sectionCollectionLazy;
+    private readonly ResetableLazy<SCSlideCollection> slideCollectionLazy;
     private bool closed;
     private Stream? outerStream;
     private string? outerPath;
@@ -108,13 +108,13 @@ public sealed class SCPresentation : IPresentation
         this.ThrowIfSlidesNumberLarge();
         this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
         this.SlideMastersValue =
-            new ResetAbleLazy<SCSlideMasterCollection>(() => SCSlideMasterCollection.Create(this));
+            new ResetableLazy<SCSlideMasterCollection>(() => SCSlideMasterCollection.Create(this));
         this.paraLvlToFontData =
             new Lazy<Dictionary<int, FontData>>(() =>
                 ParseFontHeights(this.SDKPresentationInternal.PresentationPart!.Presentation));
         this.sectionCollectionLazy =
-            new ResetAbleLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
-        this.slideCollectionLazy = new ResetAbleLazy<SCSlideCollection>(() => new SCSlideCollection(this));
+            new ResetableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
+        this.slideCollectionLazy = new ResetableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
         this.HeaderAndFooter = new HeaderAndFooter(this);
     }
 
@@ -130,13 +130,13 @@ public sealed class SCPresentation : IPresentation
         this.ThrowIfSlidesNumberLarge();
         this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
         this.SlideMastersValue =
-            new ResetAbleLazy<SCSlideMasterCollection>(() => SCSlideMasterCollection.Create(this));
+            new ResetableLazy<SCSlideMasterCollection>(() => SCSlideMasterCollection.Create(this));
         this.paraLvlToFontData =
             new Lazy<Dictionary<int, FontData>>(() =>
                 ParseFontHeights(this.SDKPresentationInternal.PresentationPart!.Presentation));
         this.sectionCollectionLazy =
-            new ResetAbleLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
-        this.slideCollectionLazy = new ResetAbleLazy<SCSlideCollection>(() => new SCSlideCollection(this));
+            new ResetableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
+        this.slideCollectionLazy = new ResetableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
         this.HeaderAndFooter = new HeaderAndFooter(this);
     }
 
@@ -172,7 +172,7 @@ public sealed class SCPresentation : IPresentation
     /// <inheritdoc/>
     public IHeaderAndFooter HeaderAndFooter { get; }
 
-    internal ResetAbleLazy<SCSlideMasterCollection> SlideMastersValue { get; }
+    internal ResetableLazy<SCSlideMasterCollection> SlideMastersValue { get; }
 
     internal PresentationDocument SDKPresentationInternal { get; }
 

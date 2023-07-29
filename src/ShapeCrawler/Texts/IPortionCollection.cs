@@ -50,7 +50,7 @@ public interface IPortionCollection : IEnumerable<IPortion>
 
 internal sealed class SCPortionCollection : IPortionCollection
 {
-    private readonly ResetAbleLazy<List<IPortion>> portions;
+    private readonly ResetableLazy<List<IPortion>> portions;
     private readonly A.Paragraph aParagraph;
     private readonly SlideStructure slideStructure;
     private readonly ITextFrameContainer textFrameContainer;
@@ -64,7 +64,7 @@ internal sealed class SCPortionCollection : IPortionCollection
     {
         this.aParagraph = aParagraph;
         this.slideStructure = slideStructure;
-        this.portions = new ResetAbleLazy<List<IPortion>>(this.ParsePortions);
+        this.portions = new ResetableLazy<List<IPortion>>(this.ParsePortions);
         this.textFrameContainer = textFrameContainer;
         this.paragraph = paragraph;
     }

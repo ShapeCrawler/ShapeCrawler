@@ -102,9 +102,9 @@ internal sealed class CategoryCollection : IReadOnlyCollection<ICategory>, ICate
             }
 
             int catIndex = 0;
-            ResetAbleLazy<List<X.Cell>> xCells;
+            ResetableLazy<List<X.Cell>> xCells;
 
-            xCells = new ResetAbleLazy<List<X.Cell>>(() =>
+            xCells = new ResetableLazy<List<X.Cell>>(() =>
                 ChartReferencesParser.GetXCellsByFormula(cFormula, chart));
             foreach (C.NumericValue cachedValue in cachedValues)
             {
