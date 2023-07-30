@@ -8,18 +8,8 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a shape on a slide.
 /// </summary>
-public interface IShape
+public interface IShape : IShapeLocation
 {
-    /// <summary>
-    ///     Gets or sets x-coordinate of the upper-left corner of the shape.
-    /// </summary>
-    int X { get; set; }
-
-    /// <summary>
-    ///     Gets or sets y-coordinate of the upper-left corner of the shape in pixels.
-    /// </summary>
-    int Y { get; set; }
-
     /// <summary>
     ///     Gets or sets width of the shape in pixels.
     /// </summary>

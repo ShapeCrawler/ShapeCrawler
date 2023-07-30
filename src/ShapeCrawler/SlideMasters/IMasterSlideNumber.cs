@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -8,7 +9,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a slide number.
 /// </summary>
-public interface IMasterSlideNumber
+public interface IMasterSlideNumber : IShapeLocation
 {
     /// <summary>
     ///     Gets font.
@@ -16,13 +17,29 @@ public interface IMasterSlideNumber
     ISlideNumberFont Font { get; }
 }
 
-internal class SCMasterMasterSlideNumber : IMasterSlideNumber
+internal sealed class SCMasterSlideNumber : IMasterSlideNumber
 {
-    internal SCMasterMasterSlideNumber(P.Shape pSldNum, List<ITextPortionFont> portionFonts)
+    private readonly SCShapeLocation shapeLocation;
+
+    internal SCMasterSlideNumber(P.Shape pSldNum, List<ITextPortionFont> portionFonts)
     {
-        var aDefaultRunProperties = pSldNum.TextBody!.ListStyle!.Level1ParagraphProperties?.GetFirstChild<A.DefaultRunProperties>() !; 
+        var aDefaultRunProperties =
+            pSldNum.TextBody!.ListStyle!.Level1ParagraphProperties?.GetFirstChild<A.DefaultRunProperties>() !;
         this.Font = new SCSlideNumberFont(aDefaultRunProperties, portionFonts);
+        this.shapeLocation = new SCShapeLocation(pSldNum.ShapeProperties!.Transform2D!);
     }
 
     public ISlideNumberFont Font { get; }
+
+    public int X
+    {
+        get => this.shapeLocation.ParseX();
+        set => this.shapeLocation.UpdateX(value);
+    }
+
+    public int Y
+    {
+        get => this.shapeLocation.ParseY();
+        set => this.shapeLocation.UpdateY(value);
+    }
 }

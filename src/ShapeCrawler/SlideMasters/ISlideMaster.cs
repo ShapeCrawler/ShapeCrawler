@@ -73,7 +73,7 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
                 }
             }
             
-            this.SlideNumber = new SCMasterMasterSlideNumber(pSldNum, layoutPortionFonts);
+            this.SlideNumber = new SCMasterSlideNumber(pSldNum, layoutPortionFonts);
         }
     }
 

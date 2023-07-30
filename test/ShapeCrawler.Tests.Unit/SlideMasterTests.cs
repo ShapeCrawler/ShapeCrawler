@@ -40,4 +40,27 @@ public class SlideMasterTests : SCTest
         slideMaster = pres.SlideMasters[0];
         slideMaster.SlideNumber!.Font.Size.Should().Be(30);
     }
+    
+    [Test]
+    public void WIP()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var slideMaster = pres.SlideMasters[0];
+
+        // Add slide number
+        pres.HeaderAndFooter.AddSlideNumber();
+  
+        // Change slide number color
+        var green = SCColor.FromHex("00FF00");
+        slideMaster.SlideNumber!.Font.Color = green;
+  
+        // Change slide number size
+        slideMaster.SlideNumber!.Font.Size = 30;
+        
+        // Change slide number location
+        slideMaster.SlideNumber.X -= 400;
+
+        SaveResult(pres);
+    }
 }
