@@ -29,12 +29,12 @@ public enum SCColorType
     /// <summary>
     ///     Color from theme scheme.
     /// </summary>
-    Scheme = 4,
+    Theme = 4,
 
     /// <summary>
     ///     Operating system predefined color.
     /// </summary>
-    System = 5,
+    Standard = 5,
 
     /// <summary>
     ///     Color which is bound to one of a predefined collection of colors.

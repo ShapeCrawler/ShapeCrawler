@@ -161,7 +161,7 @@ internal sealed class SCPortionCollection : IPortionCollection
                     break;
                 case A.Field aField:
                 {
-                    var fieldPortion = new SCTextPortion(
+                    var fieldPortion = new SCFieldPortion(
                         aField, 
                         this.slideStructure, 
                         this.textFrameContainer,

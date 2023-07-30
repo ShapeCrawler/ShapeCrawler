@@ -42,7 +42,7 @@ public interface ISlideMaster
     /// <summary>
     ///     Gets slide number. Returns <see langword="null"/> if slide master does not have slide number.
     /// </summary>
-    ISlideNumber? SlideNumber { get; }
+    IMasterSlideNumber? SlideNumber { get; }
 }
 
 internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
@@ -73,7 +73,7 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
                 }
             }
             
-            this.SlideNumber = new SCSlideNumber(pSldNum, layoutPortionFonts);
+            this.SlideNumber = new SCMasterMasterSlideNumber(pSldNum, layoutPortionFonts);
         }
     }
 
@@ -85,7 +85,7 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
 
     public ITheme Theme => this.GetTheme();
 
-    public ISlideNumber? SlideNumber { get; }
+    public IMasterSlideNumber? SlideNumber { get; }
 
     public override int Number { get; set; }
 

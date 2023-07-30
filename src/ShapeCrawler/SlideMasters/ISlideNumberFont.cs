@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ShapeCrawler.Drawing;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -46,7 +47,7 @@ internal class SCSlideNumberFont : ISlideNumberFont
 
     private int ParseSize()
     {
-        throw new System.NotImplementedException();
+        return this.portionFonts.First().Size;
     }
 
     private void UpdateColor(SCColor color)

@@ -16,7 +16,7 @@ public class ColorFormatTests : SCTest
     {
         // Arrange
         var shape = (IAutoShape)SCPresentation.Open(GetInputStream("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
-        var colorFormat = shape.TextFrame!.Paragraphs[0].Portions[0].Font.ColorFormat;
+        var colorFormat = shape.TextFrame!.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
         colorFormat.ColorHex.Should().Be("FFFFFF");
@@ -27,7 +27,7 @@ public class ColorFormatTests : SCTest
     {
         // Arrange
         var titlePh = (IAutoShape)SCPresentation.Open(GetInputStream("001.pptx")).Slides[0].SlideLayout.Shapes.First(sp => sp.Id == 2);
-        var colorFormat = titlePh.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
+        var colorFormat = titlePh.TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
         colorFormat.ColorHex.Should().Be("000000");
@@ -38,7 +38,7 @@ public class ColorFormatTests : SCTest
     {
         // Arrange
         IAutoShape nonPlaceholder = (IAutoShape)SCPresentation.Open(GetInputStream("001.pptx")).SlideMasters[0].Shapes.First(sp => sp.Id == 8);
-        IColorFormat colorFormat = nonPlaceholder.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
+        IFontColor colorFormat = nonPlaceholder.TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
         colorFormat.ColorHex.Should().Be("FFFFFF");
@@ -49,7 +49,7 @@ public class ColorFormatTests : SCTest
     {
         // Arrange
         IAutoShape titlePlaceholder = (IAutoShape)SCPresentation.Open(GetInputStream("001.pptx")).SlideMasters[0].Shapes.First(sp => sp.Id == 2);
-        IColorFormat colorFormat = titlePlaceholder.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
+        IFontColor colorFormat = titlePlaceholder.TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
         colorFormat.ColorHex.Should().Be("000000");
@@ -60,7 +60,7 @@ public class ColorFormatTests : SCTest
     {
         // Arrange
         var table = (ITable)SCPresentation.Open(GetInputStream("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
-        var colorFormat = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
+        var colorFormat = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
         colorFormat.ColorHex.Should().Be("FF0000");
@@ -71,13 +71,13 @@ public class ColorFormatTests : SCTest
     {
         // Arrange
         var nonPhAutoShape = (IAutoShape)SCPresentation.Open(GetInputStream("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
-        var colorFormat = nonPhAutoShape.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
+        var colorFormat = nonPhAutoShape.TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act
         SCColorType colorType = colorFormat.ColorType;
 
         // Assert
-        colorType.Should().Be(SCColorType.Scheme);
+        colorType.Should().Be(SCColorType.Theme);
     }
 
     [Test]
@@ -85,7 +85,7 @@ public class ColorFormatTests : SCTest
     {
         // Arrange
         IAutoShape placeholder = (IAutoShape)SCPresentation.Open(GetInputStream("014.pptx")).Slides[5].Shapes.First(sp => sp.Id == 52);
-        IColorFormat colorFormat = placeholder.TextFrame.Paragraphs[0].Portions[0].Font.ColorFormat;
+        IFontColor colorFormat = placeholder.TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act
         SCColorType colorType = colorFormat.ColorType;

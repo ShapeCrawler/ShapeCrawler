@@ -62,7 +62,7 @@ public class TestElementQuery
         return autoShape.TextFrame!.Paragraphs[paragraphIndex].Portions[portionIndex];
     }
 
-    public IColorFormat GetTestColorFormat()
+    public IFontColor GetTestColorFormat()
     {
         var shapes = this.Location switch
         {
@@ -80,6 +80,6 @@ public class TestElementQuery
         var paragraphIndex = this.ParagraphIndex ?? this.ParagraphNumber - 1;
         var portionIndex = this.PortionIndex ?? this.PortionNumber - 1;
 
-        return autoShape.TextFrame!.Paragraphs[paragraphIndex].Portions[portionIndex].Font.ColorFormat;
+        return autoShape.TextFrame!.Paragraphs[paragraphIndex].Portions[portionIndex].Font.Color;
     }
 }

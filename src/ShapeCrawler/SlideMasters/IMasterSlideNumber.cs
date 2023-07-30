@@ -8,7 +8,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a slide number.
 /// </summary>
-public interface ISlideNumber
+public interface IMasterSlideNumber
 {
     /// <summary>
     ///     Gets font.
@@ -16,9 +16,9 @@ public interface ISlideNumber
     ISlideNumberFont Font { get; }
 }
 
-internal class SCSlideNumber : ISlideNumber
+internal class SCMasterMasterSlideNumber : IMasterSlideNumber
 {
-    internal SCSlideNumber(P.Shape pSldNum, List<ITextPortionFont> portionFonts)
+    internal SCMasterMasterSlideNumber(P.Shape pSldNum, List<ITextPortionFont> portionFonts)
     {
         var aDefaultRunProperties = pSldNum.TextBody!.ListStyle!.Level1ParagraphProperties?.GetFirstChild<A.DefaultRunProperties>() !; 
         this.Font = new SCSlideNumberFont(aDefaultRunProperties, portionFonts);

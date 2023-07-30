@@ -1,5 +1,9 @@
-﻿namespace ShapeCrawler;
+﻿// ReSharper disable CheckNamespace
+namespace ShapeCrawler;
 
+/// <summary>
+///    Represents a font.
+/// </summary>
 public interface IFont
 {
     /// <summary>

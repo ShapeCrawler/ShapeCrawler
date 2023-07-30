@@ -15,7 +15,7 @@ internal static class HexParser
 
         var aSchemeColor = typedElement.GetFirstChild<A.SchemeColor>() !;
         var fromScheme = GetByThemeColorScheme(aSchemeColor.Val!, slideMaster); 
-        return (SCColorType.Scheme, fromScheme);
+        return (SCColorType.Theme, fromScheme);
     }
 
     internal static (SCColorType, string)? GetWithoutScheme(TypedOpenXmlCompositeElement typedElement)
@@ -35,7 +35,7 @@ internal static class HexParser
         {
             colorHexVariant = aSysClr.LastColor!;
             {
-                return (SCColorType.System, colorHexVariant);
+                return (SCColorType.Standard, colorHexVariant);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Tests.Unit.Helpers;
 
@@ -31,13 +32,12 @@ public class SlideMasterTests : SCTest
 
         // Act
         pres.HeaderAndFooter.AddSlideNumber();
-        // slideMaster.Sli      deNumber!.Font.Size = 30;
-        SaveResult(pres);
+        slideMaster.SlideNumber!.Font.Size = 30;
 
         // Assert
-        // pres.Save();
-        // pres = SCPresentation.Open(new MemoryStream(pres.BinaryData));
-        // slideMaster = pres.SlideMasters[0];
-        // Assert.That(slideMaster.SlideNumber!.Font.Size, Is.EqualTo(30));
+        pres.Save();
+        pres = SCPresentation.Open(new MemoryStream(pres.BinaryData));
+        slideMaster = pres.SlideMasters[0];
+        slideMaster.SlideNumber!.Font.Size.Should().Be(30);
     }
 }

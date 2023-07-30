@@ -107,7 +107,7 @@ public class ColorFormatTests : SCTest
         // Arrange
         var paragraph = testCase.Param1;
         var colorHex = testCase.Param2;
-        var colorFormat = paragraph.Portions[0].Font.ColorFormat;
+        var colorFormat = paragraph.Portions[0].Font.Color;
         var expectedColor = colorHex;
 
         // Act
