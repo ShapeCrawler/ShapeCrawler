@@ -5,11 +5,11 @@ using NUnit.Framework.Internal.Builders;
 namespace ShapeCrawler.Tests.Unit.Helpers;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-public class PresentationDataAttribute : Attribute, ITestBuilder
+public class PresentationAttribute : Attribute, ITestBuilder
 {
     private readonly string pptxName;
 
-    public PresentationDataAttribute(string pptxName)
+    public PresentationAttribute(string pptxName)
     {
         this.pptxName = pptxName;
     }

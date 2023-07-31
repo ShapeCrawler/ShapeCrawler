@@ -11,7 +11,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <Copyright></Copyright>
-    <LangVersion>11</LangVersion>
+    <LangVersion>latestmajor</LangVersion>
     <ApplicationIcon></ApplicationIcon>
     <PackageReleaseNotes>- added setters for IParagraph.IndentLevel
 - added IParagraph.HeaderAndFooter.AddSlideNumber()</PackageReleaseNotes>

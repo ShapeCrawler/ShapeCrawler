@@ -13,7 +13,7 @@ public interface IAxesManager
     IAxis? ValueAxis { get; }
 }
 
-internal class SCAxesManager : IAxesManager
+internal sealed class SCAxesManager : IAxesManager
 {
     private readonly C.PlotArea cPlotArea;
 

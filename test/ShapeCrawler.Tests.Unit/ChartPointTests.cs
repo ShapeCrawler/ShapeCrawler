@@ -130,4 +130,33 @@ public class ChartPointTests : SCTest
         Assert.That(chart3.SeriesCollection.First().Points.Count(), Is.EqualTo(11));
         Assert.That(points3.Count(), Is.EqualTo(132));
     }
+    
+    [Test]
+    [TestCase("024_chart.pptx", 3, "Chart 4")]
+    [TestCase("009_table.pptx", 3, "Chart 5")]
+    [TestCase("002.pptx", 1, "Chart 8")]
+    [TestCase("021.pptx", 2, "Chart 3")]
+    [TestCase("charts-case001.pptx", 1, "chart")]
+    [TestCase("charts-case002.pptx", 1, "Chart 1")]
+    [TestCase("charts-case003.pptx", 1, "Chart 1")]
+    public void Value_Setter_updates_chart_point(string file, int slideNumber, string shapeName)
+    {
+        // Arrange
+        var pptxStream = GetInputStream(file);
+        var pres = SCPresentation.Open(pptxStream);
+        var chart = pres.Slides[--slideNumber].Shapes.GetByName<IChart>(shapeName);
+        var point = chart.SeriesCollection[0].Points[0];
+        const int newChartPointValue = 6;
+
+        // Act
+        point.Value = newChartPointValue;
+
+        // Assert
+        point.Value.Should().Be(newChartPointValue);
+
+        pres = SaveAndOpenPresentation(pres);
+        chart = pres.Slides[slideNumber].Shapes.GetByName<IChart>(shapeName);
+        point = chart.SeriesCollection[0].Points[0];
+        point.Value.Should().Be(newChartPointValue);
+    }
 }

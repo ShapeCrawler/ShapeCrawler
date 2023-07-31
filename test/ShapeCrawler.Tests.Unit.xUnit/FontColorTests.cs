@@ -8,7 +8,7 @@ using Xunit;
 
 namespace ShapeCrawler.Tests.Unit;
 
-public class ColorFormatTests : SCTest
+public class FontColorTests : SCTest
 {
     [Theory]
     [MemberData(nameof(TestCasesSetColorHex))]

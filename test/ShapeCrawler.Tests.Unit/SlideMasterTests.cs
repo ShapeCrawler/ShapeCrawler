@@ -8,8 +8,8 @@ namespace ShapeCrawler.Tests.Unit;
 public class SlideMasterTests : SCTest
 {
     [Test]
-    [PresentationData("new")]
-    [PresentationData("023.pptx")]
+    [Presentation("new")]
+    [Presentation("023.pptx")]
     public void SlideNumber_Font_Color_Setter(IPresentation pres)
     {
         // Arrange
@@ -60,7 +60,5 @@ public class SlideMasterTests : SCTest
         
         // Change slide number location
         slideMaster.SlideNumber.X -= 400;
-
-        SaveResult(pres);
     }
 }

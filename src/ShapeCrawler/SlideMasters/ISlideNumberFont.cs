@@ -17,7 +17,7 @@ public interface ISlideNumberFont : IFont
     SCColor Color { get; set; }
 }
 
-internal class SCSlideNumberFont : ISlideNumberFont
+internal sealed class SCSlideNumberFont : ISlideNumberFont
 {
     private readonly A.DefaultRunProperties aDefaultRunProperties;
     private readonly List<ITextPortionFont> portionFonts;

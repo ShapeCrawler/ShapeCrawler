@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using OneOf;
-using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;

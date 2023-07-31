@@ -1,15 +1,11 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using DocumentFormat.OpenXml.Vml.Office;
 using FluentAssertions;
 using NUnit.Framework;
-using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
-using Xunit;
 
 namespace ShapeCrawler.Tests.Unit;
 
-public class ColorFormatTests : SCTest
+public class FontColorTests : SCTest
 {
     [Test]
     public void ColorHex_Getter_returns_White_color()
@@ -92,5 +88,25 @@ public class ColorFormatTests : SCTest
 
         // Assert
         colorType.Should().Be(SCColorType.RGB);
+    }
+
+    [Test]
+    [MasterPortion("autoshape-case001.pptx", shape: "AutoShape 1", paragraphNumber: 1, portionNumber: 1)]
+    public void SetColorHex_updates_font_color(IPresentation pres, TestPortionQuery portionQuery)
+    {
+        // Arrange
+        var mStream = new MemoryStream();
+        var color = portionQuery.Get(pres).Font!.Color;
+
+        // Act
+        color.SetColorByHex("#008000");
+
+        // Assert
+        color.ColorHex.Should().Be("008000");
+
+        pres.SaveAs(mStream);
+        pres = SCPresentation.Open(mStream);
+        color = portionQuery.Get(pres).Font!.Color;
+        color.ColorHex.Should().Be("008000");
     }
 }

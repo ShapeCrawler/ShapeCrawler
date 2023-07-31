@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Factories;
 using ShapeCrawler.Services;
+using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 

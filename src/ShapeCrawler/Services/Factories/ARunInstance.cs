@@ -1,6 +1,6 @@
 ﻿using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Factories;
+namespace ShapeCrawler.Services.Factories;
 
 internal sealed class ARunBuilder
 {

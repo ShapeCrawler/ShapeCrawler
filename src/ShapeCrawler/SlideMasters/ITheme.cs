@@ -21,12 +21,10 @@ public interface ITheme
 
 internal sealed class SCTheme : ITheme
 {
-    private readonly SCSlideMaster parentMaster;
     private readonly A.Theme aTheme;
 
     internal SCTheme(SCSlideMaster parentMaster, A.Theme aTheme)
     {
-        this.parentMaster = parentMaster;
         this.aTheme = aTheme;
     }
 

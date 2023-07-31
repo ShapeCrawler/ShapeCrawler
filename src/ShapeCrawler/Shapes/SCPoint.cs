@@ -4,7 +4,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represent a point.
 /// </summary>
-public class SCPoint
+public readonly ref struct SCPoint
 {
     internal SCPoint(int x, int y)
     {
@@ -15,10 +15,10 @@ public class SCPoint
     /// <summary>
     ///     Gets or sets the X coordinate.
     /// </summary>
-    public int X { get; set; }
+    public int X { get; }
 
     /// <summary>
     ///     Gets or sets the Y coordinate.
     /// </summary>
-    public int Y { get; set; }
+    public int Y { get; }
 }

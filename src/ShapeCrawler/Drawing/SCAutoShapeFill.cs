@@ -1,4 +1,5 @@
-﻿using A = DocumentFormat.OpenXml.Drawing;
+﻿using ShapeCrawler.AutoShapes;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
@@ -23,7 +24,6 @@ internal sealed class SCAutoShapeFill : SCShapeFill
         }
         else
         {
-            this.aNoFill = this.properties.GetFirstChild<A.NoFill>();
             this.fillType = SCFillType.NoFill;
         }
     }

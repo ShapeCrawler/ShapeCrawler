@@ -18,7 +18,7 @@ public interface IAxis
     double Maximum { get; set; }
 }
 
-internal class SCAxis : IAxis
+internal sealed class SCAxis : IAxis
 {
     private const double DefaultMax = 6;
     private readonly C.Scaling cScaling;

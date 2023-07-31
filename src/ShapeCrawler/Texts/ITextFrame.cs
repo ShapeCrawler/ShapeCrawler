@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Constants;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;

@@ -6,11 +6,10 @@ using System.Reflection;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Factories;
 using ShapeCrawler.Services;
+using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -94,6 +93,8 @@ public sealed class SCPresentation : IPresentation
     private bool closed;
     private Stream? outerStream;
     private string? outerPath;
+    private static int MaxPresentationSize => 250 * 1024 * 1024;
+    private const int MaxSlidesNumber = 300;
 
     private SCPresentation(string outerPath)
     {
@@ -325,9 +326,9 @@ public sealed class SCPresentation : IPresentation
 
     private static void ThrowIfPptxSizeLarge(in long length)
     {
-        if (length > Limitations.MaxPresentationSize)
+        if (length > MaxPresentationSize)
         {
-            throw PresentationIsLargeException.FromMax(Limitations.MaxPresentationSize);
+            throw PresentationIsLargeException.FromMax(MaxPresentationSize);
         }
     }
 
@@ -390,10 +391,10 @@ public sealed class SCPresentation : IPresentation
     private void ThrowIfSlidesNumberLarge()
     {
         var nbSlides = this.SDKPresentationInternal.PresentationPart!.SlideParts.Count();
-        if (nbSlides > Limitations.MaxSlidesNumber)
+        if (nbSlides > MaxSlidesNumber)
         {
             this.Close();
-            throw SlidesMuchMoreException.FromMax(Limitations.MaxSlidesNumber);
+            throw SlidesMuchMoreException.FromMax(MaxSlidesNumber);
         }
     }
 

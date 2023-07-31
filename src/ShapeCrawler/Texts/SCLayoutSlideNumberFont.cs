@@ -1,10 +1,10 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Constants;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Factories;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
+using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;

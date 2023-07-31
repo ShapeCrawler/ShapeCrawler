@@ -2,7 +2,7 @@
 
 namespace ShapeCrawler.Exceptions;
 
-internal class SCException : Exception
+internal sealed class SCException : Exception
 {
     internal SCException()
     {

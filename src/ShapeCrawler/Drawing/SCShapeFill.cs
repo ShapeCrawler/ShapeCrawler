@@ -10,7 +10,6 @@ internal abstract class SCShapeFill : IShapeFill
     protected readonly TypedOpenXmlCompositeElement properties;
     protected BooleanValue? useBgFill;
     protected SCFillType fillType;
-    protected A.NoFill? aNoFill;
     
     private readonly SlideStructure slideObject;
     private bool isDirty;
@@ -85,7 +84,6 @@ internal abstract class SCShapeFill : IShapeFill
 
     protected virtual void InitSlideBackgroundFillOr()
     {
-        this.aNoFill = this.properties.GetFirstChild<A.NoFill>(); 
         this.fillType = SCFillType.NoFill;
     }
     

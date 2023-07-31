@@ -1,5 +1,6 @@
 ﻿using AngleSharp.Html.Dom;
 using OneOf;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 

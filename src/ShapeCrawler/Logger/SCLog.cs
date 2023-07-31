@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ShapeCrawler.Logger;
 
-internal class SCLog
+internal sealed class SCLog
 {
     internal string UserId { get; set; } = "undefined";
 

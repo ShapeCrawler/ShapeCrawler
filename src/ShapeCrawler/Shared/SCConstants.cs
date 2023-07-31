@@ -1,4 +1,4 @@
-﻿namespace ShapeCrawler.Constants;
+﻿namespace ShapeCrawler.Shared;
 
 internal static class SCConstants
 {
