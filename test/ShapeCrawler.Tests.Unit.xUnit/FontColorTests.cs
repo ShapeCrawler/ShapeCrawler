@@ -1,8 +1,5 @@
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using FluentAssertions;
-using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 
@@ -10,96 +7,6 @@ namespace ShapeCrawler.Tests.Unit;
 
 public class FontColorTests : SCTest
 {
-    [Theory]
-    [MemberData(nameof(TestCasesSetColorHex))]
-    public void SetColorHex_updates_font_color(TestElementQuery colorFormatQuery)
-    {
-        // Arrange
-        var mStream = new MemoryStream();
-        var pres = colorFormatQuery.Presentation;
-        var colorFormat = colorFormatQuery.GetTestColorFormat();
-
-        // Act
-        colorFormat.SetColorByHex("#008000");
-
-        // Assert
-        colorFormat.ColorHex.Should().Be("008000");
-
-        pres.SaveAs(mStream);
-        pres = SCPresentation.Open(mStream);
-        colorFormatQuery.Presentation = pres;
-        colorFormat = colorFormatQuery.GetTestColorFormat();
-        colorFormat.ColorHex.Should().Be("008000");
-    }
-
-    public static TheoryData<TestElementQuery> TestCasesSetColorHex
-    {
-        get
-        {
-            var testCases = new TheoryData<TestElementQuery>();
-            var pptx = GetInputStream("autoshape-case001.pptx");
-            testCases.Add(new TestElementQuery
-            {
-                Presentation = SCPresentation.Open(pptx),
-                Location = Location.SlideMaster,
-                SlideMasterNumber = 1,
-                ShapeName = "AutoShape 1",
-                ParagraphNumber = 1,
-                PortionNumber = 1
-            });
-
-            pptx = GetInputStream("020.pptx");
-            var portionQuery = new TestElementQuery
-            {
-                Presentation = SCPresentation.Open(pptx),
-                Location = Location.Slide,
-                SlideIndex = 0,
-                ShapeName = "TextBox 1",
-                ParagraphIndex = 0,
-                PortionIndex = 0
-            };
-            testCases.Add(portionQuery);
-
-            pptx = GetInputStream("001.pptx");
-            portionQuery = new TestElementQuery
-            {
-                Presentation = SCPresentation.Open(pptx),
-                Location = Location.Slide,
-                SlideIndex = 0,
-                ShapeId = 3,
-                ParagraphIndex = 0,
-                PortionIndex = 0
-            };
-            testCases.Add(portionQuery);
-
-            pptx = GetInputStream("001.pptx");
-            portionQuery = new TestElementQuery
-            {
-                Presentation = SCPresentation.Open(pptx),
-                Location = Location.Slide,
-                SlideIndex = 2,
-                ShapeId = 4,
-                ParagraphIndex = 0,
-                PortionIndex = 0
-            };
-            testCases.Add(portionQuery);
-
-            pptx = GetInputStream("001.pptx");
-            portionQuery = new TestElementQuery
-            {
-                Presentation = SCPresentation.Open(pptx),
-                Location = Location.Slide,
-                SlideIndex = 4,
-                ShapeId = 5,
-                ParagraphIndex = 0,
-                PortionIndex = 0
-            };
-            testCases.Add(portionQuery);
-
-            return testCases;
-        }
-    }
-
     [Theory]
     [MemberData(nameof(TestCasesColorGetter))]
     public void ColorHex_Getter_returns_color(TestCase<IParagraph, string> testCase)

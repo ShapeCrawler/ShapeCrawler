@@ -91,7 +91,11 @@ public class FontColorTests : SCTest
     }
 
     [Test]
-    [MasterPortion("autoshape-case001.pptx", shape: "AutoShape 1", paragraphNumber: 1, portionNumber: 1)]
+    [MasterPortion("autoshape-case001.pptx", "AutoShape 1", 1,  1)]
+    [SlidePortion("020.pptx", 1, "TextBox 1", 1,  1)]
+    [SlidePortion("001.pptx", 1, 3, 1,  1)]
+    [SlidePortion("001.pptx", 3, 4, 1,  1)]
+    [SlidePortion("001.pptx", 5, 5, 1,  1)]
     public void SetColorHex_updates_font_color(IPresentation pres, TestPortionQuery portionQuery)
     {
         // Arrange

@@ -16,7 +16,7 @@ using SkiaSharp;
 
 namespace ShapeCrawler.AutoShapes;
 
-internal sealed class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
+internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
 {
     // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi.
     // 96/72=1.4

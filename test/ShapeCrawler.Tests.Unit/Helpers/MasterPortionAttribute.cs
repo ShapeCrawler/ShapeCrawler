@@ -7,26 +7,25 @@ namespace ShapeCrawler.Tests.Unit.Helpers;
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public class MasterPortionAttribute : Attribute, ITestBuilder
 {
-    private readonly int slideNumber;
-    private readonly int shapeId;
-    private readonly object expectedResult;
     private readonly string pptxName;
+    private readonly string shapeName;
+    private readonly int paragraphNumber;
+    private readonly int portionNumber;
 
-    public MasterPortionAttribute(string pptxName, int slideNumber, int shapeId, object expectedResult)
+    public MasterPortionAttribute(string pptxName, string shapeName, int paragraphNumber, int portionNumber)
     {
         this.pptxName = pptxName;
-        this.slideNumber = slideNumber;
-        this.shapeId = shapeId;
-        this.expectedResult = expectedResult;
+        this.shapeName = shapeName;
+        this.paragraphNumber = paragraphNumber;
+        this.portionNumber = portionNumber;
     }
 
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
     {
-        var pptxStream = SCTest.GetInputStream(this.pptxName);
-        var pres = SCPresentation.Open(pptxStream);
-        var shape = pres.Slides[this.slideNumber - 1].Shapes.GetById<IShape>(this.shapeId);
+        var pres = SCPresentation.Open(SCTest.GetInputStream(this.pptxName));
+        var portionQuery = new TestMasterPortionQuery(this.shapeName, this.paragraphNumber, this.portionNumber);
 
-        var parameters = new TestCaseParameters(new[] { shape, this.expectedResult });
+        var parameters = new TestCaseParameters(new object[] { pres, portionQuery });
         
         yield return new NUnitTestCaseBuilder().BuildTestMethod(method, suite, parameters);
     }
