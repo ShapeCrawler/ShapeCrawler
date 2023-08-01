@@ -17,22 +17,20 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
     private readonly DocumentFormat.OpenXml.Drawing.FontScheme aFontScheme;
     private readonly Lazy<SCFontColor> colorFormat;
     private readonly ResetableLazy<DocumentFormat.OpenXml.Drawing.LatinFont> latinFont;
-    private readonly ResetableLazy<int> size;
+    private readonly LayoutNumberSize size;
     private readonly ITextFrameContainer textFrameContainer;
     private readonly SCParagraph paragraph;
-    private readonly DocumentFormat.OpenXml.Drawing.ListStyle aListStyle;
 
     internal SCLayoutSlideNumberFont(
-        DocumentFormat.OpenXml.Drawing.Text aText, 
+        A.Text aText, 
         IPortion portion, 
         ITextFrameContainer textFrameContainer, 
         SCParagraph paragraph,
-        DocumentFormat.OpenXml.Drawing.ListStyle aListStyle)
+        A.ListStyle aListStyle)
     {
         this.aText = aText;
         this.paragraph = paragraph;
-        this.aListStyle = aListStyle;
-        this.size = new ResetableLazy<int>(this.GetSize);
+        this.size = new LayoutNumberSize(aText, paragraph, aListStyle);
         this.latinFont = new ResetableLazy<DocumentFormat.OpenXml.Drawing.LatinFont>(this.GetALatinFont);
         this.colorFormat = new Lazy<SCFontColor>(() => new SCFontColor(this, textFrameContainer, paragraph, this.aText));
         this.ParentPortion = portion;
@@ -65,8 +63,8 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
 
     public int Size
     {
-        get => this.size.Value;
-        set => this.UpdateSize(value);
+        get => this.size.Size();
+        set => this.size.Update(value);
     }
 
     public bool IsBold
@@ -127,53 +125,6 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
         var placeholder = this.textFrameContainer.SCShape.Placeholder;
 
         return placeholder is null or { Type: SCPlaceholderType.Text };
-    }
-
-    private static bool TryFromPlaceholder(SCShape scShape, int paraLevel, out int i)
-    {
-        i = -1;
-        var placeholder = scShape.Placeholder as SCPlaceholder;
-        var referencedShape = placeholder?.ReferencedShape.Value as SCAutoShape;
-        var fontDataPlaceholder = new FontData();
-        if (referencedShape != null)
-        {
-            referencedShape.FillFontData(paraLevel, ref fontDataPlaceholder);
-            if (fontDataPlaceholder.FontSize is not null)
-            {
-                {
-                    i = fontDataPlaceholder.FontSize / 100;
-                    return true;
-                }
-            }
-        }
-
-        var slideMaster = scShape.SlideMasterInternal;
-        if (placeholder?.Type == SCPlaceholderType.Title)
-        {
-            var pTextStyles = slideMaster.PSlideMaster.TextStyles!;
-            var titleFontSize = pTextStyles.TitleStyle!.Level1ParagraphProperties!
-                .GetFirstChild<DocumentFormat.OpenXml.Drawing.DefaultRunProperties>() !.FontSize!.Value;
-            i = titleFontSize / 100;
-            return true;
-        }
-
-        if (slideMaster.TryGetFontSizeFromBody(paraLevel, out var fontSizeBody))
-        {
-            {
-                i = fontSizeBody / 100;
-                return true;
-            }
-        }
-
-        if (slideMaster.TryGetFontSizeFromOther(paraLevel, out var fontSizeOther))
-        {
-            {
-                i = fontSizeOther / 100;
-                return true;
-            }
-        }
-
-        return false;
     }
     
     private void SetOffset(int value)
@@ -264,38 +215,6 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
 
         var phFontData = FontDataParser.FromPlaceholder(this.paragraph);
         return phFontData.ALatinFont ?? this.aFontScheme.MinorFont!.LatinFont!;
-    }
-
-    private int GetSize()
-    {
-        var fontSize = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>()?.FontSize?.Value;
-        if (fontSize != null)
-        {
-            return fontSize.Value / 100;
-        }
-
-        var textFrameContainer = this.paragraph.ParentTextFrame.TextFrameContainer;
-        var paraLevel = this.paragraph.Level;
-
-        if (textFrameContainer is SCShape { Placeholder: { } } shape)
-        {
-            if (TryFromPlaceholder(shape, paraLevel, out var sizeFromPlaceholder))
-            {
-                return sizeFromPlaceholder;
-            }
-        }
-
-        var sldStructureCore = (SlideStructure)textFrameContainer.SCShape.SlideStructure;
-        var pres = sldStructureCore.PresentationInternal;
-        if (pres.ParaLvlToFontData.TryGetValue(paraLevel, out var fontData))
-        {
-            if (fontData.FontSize is not null)
-            {
-                return fontData.FontSize / 100;
-            }
-        }
-
-        return SCConstants.DefaultFontSize;
     }
 
     private bool GetBoldFlag()
@@ -408,15 +327,5 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
     {
         var aEastAsianFont = this.GetAEastAsianFont();
         aEastAsianFont.Typeface = eastAsianFont;
-    }
-
-    private void UpdateSize(int points)
-    {
-        var aLvl1pPr = this.aListStyle.Level1ParagraphProperties;
-        aLvl1pPr?.Remove();
-
-        this.aListStyle.AppendChild(
-            new A.Level1ParagraphProperties(
-                new A.DefaultRunProperties { FontSize = new Int32Value(points * 100) }));
     }
 }

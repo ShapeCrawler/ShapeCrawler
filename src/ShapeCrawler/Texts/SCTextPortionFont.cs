@@ -1,32 +1,36 @@
 ﻿using System;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
 using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
 internal sealed class SCTextPortionFont : ITextPortionFont
 {
-    private readonly DocumentFormat.OpenXml.Drawing.Text aText;
-    private readonly DocumentFormat.OpenXml.Drawing.FontScheme aFontScheme;
+    private readonly A.Text aText;
+    private readonly A.FontScheme aFontScheme;
     private readonly Lazy<SCFontColor> colorFormat;
-    private readonly ResetableLazy<DocumentFormat.OpenXml.Drawing.LatinFont> latinFont;
-    private readonly ResetableLazy<int> size;
+    private readonly ResetableLazy<A.LatinFont> latinFont;
+    private readonly TextPortionSize size;
     private readonly ITextFrameContainer textFrameContainer;
     private readonly SCParagraph paragraph;
 
-    internal SCTextPortionFont(DocumentFormat.OpenXml.Drawing.Text aText, IPortion portion, ITextFrameContainer textFrameContainer, SCParagraph paragraph)
+    internal SCTextPortionFont(
+        A.Text aText, 
+        IPortion portion,
+        ITextFrameContainer textFrameContainer, 
+        SCParagraph paragraph)
     {
         this.aText = aText;
         this.paragraph = paragraph;
-        this.size = new ResetableLazy<int>(this.GetSize);
-        this.latinFont = new ResetableLazy<DocumentFormat.OpenXml.Drawing.LatinFont>(this.GetALatinFont);
-        this.colorFormat = new Lazy<SCFontColor>(() => new SCFontColor(this, textFrameContainer, paragraph, this.aText));
+        this.size = new TextPortionSize(aText, paragraph);
+        this.latinFont = new ResetableLazy<A.LatinFont>(this.GetALatinFont);
+        this.colorFormat =
+            new Lazy<SCFontColor>(() => new SCFontColor(this, textFrameContainer, paragraph, this.aText));
         this.ParentPortion = portion;
         SCShape shape;
         this.textFrameContainer = textFrameContainer;
@@ -39,7 +43,7 @@ internal sealed class SCTextPortionFont : ITextPortionFont
             shape = (SCShape)textFrameContainer;
         }
 
-        var themeFontScheme = (ThemeFontScheme)shape.SlideMasterInternal.Theme.FontScheme; 
+        var themeFontScheme = (ThemeFontScheme)shape.SlideMasterInternal.Theme.FontScheme;
         this.aFontScheme = themeFontScheme.AFontScheme;
     }
 
@@ -57,8 +61,8 @@ internal sealed class SCTextPortionFont : ITextPortionFont
 
     public int Size
     {
-        get => this.size.Value;
-        set => this.SetFontSize(value);
+        get => this.size.Size();
+        set => this.size.Update(value);
     }
 
     public bool IsBold
@@ -75,32 +79,33 @@ internal sealed class SCTextPortionFont : ITextPortionFont
 
     public IFontColor Color => this.colorFormat.Value;
 
-    public DocumentFormat.OpenXml.Drawing.TextUnderlineValues Underline
+    public A.TextUnderlineValues Underline
     {
         get
         {
-            var aRunPr = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
-            return aRunPr?.Underline?.Value ?? DocumentFormat.OpenXml.Drawing.TextUnderlineValues.None;
+            var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+            return aRunPr?.Underline?.Value ?? A.TextUnderlineValues.None;
         }
 
         set
         {
-            var aRunPr = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
+            var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
             if (aRunPr != null)
             {
-                aRunPr.Underline = new EnumValue<DocumentFormat.OpenXml.Drawing.TextUnderlineValues>(value);
+                aRunPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
             }
             else
             {
-                var aEndParaRPr = this.aText.Parent.NextSibling<DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties>();
+                var aEndParaRPr =
+                    this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
                 if (aEndParaRPr != null)
                 {
-                    aEndParaRPr.Underline = new EnumValue<DocumentFormat.OpenXml.Drawing.TextUnderlineValues>(value);
+                    aEndParaRPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
                 }
                 else
                 {
                     var runProp = this.aText.Parent.AddRunProperties();
-                    runProp.Underline = new EnumValue<DocumentFormat.OpenXml.Drawing.TextUnderlineValues>(value);
+                    runProp.Underline = new EnumValue<A.TextUnderlineValues>(value);
                 }
             }
         }
@@ -121,56 +126,9 @@ internal sealed class SCTextPortionFont : ITextPortionFont
         return placeholder is null or { Type: SCPlaceholderType.Text };
     }
 
-    private static bool TryFromPlaceholder(SCShape scShape, int paraLevel, out int i)
-    {
-        i = -1;
-        var placeholder = scShape.Placeholder as SCPlaceholder;
-        var referencedShape = placeholder?.ReferencedShape.Value as SCAutoShape;
-        var fontDataPlaceholder = new FontData();
-        if (referencedShape != null)
-        {
-            referencedShape.FillFontData(paraLevel, ref fontDataPlaceholder);
-            if (fontDataPlaceholder.FontSize is not null)
-            {
-                {
-                    i = fontDataPlaceholder.FontSize / 100;
-                    return true;
-                }
-            }
-        }
-
-        var slideMaster = scShape.SlideMasterInternal;
-        if (placeholder?.Type == SCPlaceholderType.Title)
-        {
-            var pTextStyles = slideMaster.PSlideMaster.TextStyles!;
-            var titleFontSize = pTextStyles.TitleStyle!.Level1ParagraphProperties!
-                .GetFirstChild<DocumentFormat.OpenXml.Drawing.DefaultRunProperties>() !.FontSize!.Value;
-            i = titleFontSize / 100;
-            return true;
-        }
-
-        if (slideMaster.TryGetFontSizeFromBody(paraLevel, out var fontSizeBody))
-        {
-            {
-                i = fontSizeBody / 100;
-                return true;
-            }
-        }
-
-        if (slideMaster.TryGetFontSizeFromOther(paraLevel, out var fontSizeOther))
-        {
-            {
-                i = fontSizeOther / 100;
-                return true;
-            }
-        }
-
-        return false;
-    }
-    
     private void SetOffset(int value)
     {
-        var aRunProperties = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
         Int32Value int32Value = value * 1000;
         if (aRunProperties is not null)
         {
@@ -178,14 +136,14 @@ internal sealed class SCTextPortionFont : ITextPortionFont
         }
         else
         {
-            var aEndParaRPr = this.aText.Parent.NextSibling<DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties>();
+            var aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
             if (aEndParaRPr != null)
             {
                 aEndParaRPr.Baseline = int32Value;
             }
             else
             {
-                aRunProperties = new DocumentFormat.OpenXml.Drawing.RunProperties { Baseline = int32Value };
+                aRunProperties = new A.RunProperties { Baseline = int32Value };
                 this.aText.Parent.InsertAt(aRunProperties, 0); // append to <a:r>
             }
         }
@@ -193,14 +151,14 @@ internal sealed class SCTextPortionFont : ITextPortionFont
 
     private int GetOffsetEffect()
     {
-        var aRunProperties = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
         if (aRunProperties is not null &&
             aRunProperties.Baseline is not null)
         {
             return aRunProperties.Baseline.Value / 1000;
         }
 
-        var aEndParaRPr = this.aText.Parent.NextSibling<DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties>();
+        var aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
         if (aEndParaRPr is not null)
         {
             return aEndParaRPr.Baseline! / 1000;
@@ -218,7 +176,7 @@ internal sealed class SCTextPortionFont : ITextPortionFont
 
         return this.latinFont.Value.Typeface!;
     }
-    
+
     private string? GetEastAsianName()
     {
         var aEastAsianFont = this.GetAEastAsianFont();
@@ -230,9 +188,10 @@ internal sealed class SCTextPortionFont : ITextPortionFont
         return aEastAsianFont.Typeface!;
     }
 
-    private DocumentFormat.OpenXml.Drawing.EastAsianFont GetAEastAsianFont()
+    private A.EastAsianFont GetAEastAsianFont()
     {
-        var aEastAsianFont = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>()?.GetFirstChild<DocumentFormat.OpenXml.Drawing.EastAsianFont>();
+        var aEastAsianFont = this.aText.Parent!.GetFirstChild<A.RunProperties>()
+            ?.GetFirstChild<A.EastAsianFont>();
 
         if (aEastAsianFont != null)
         {
@@ -240,14 +199,14 @@ internal sealed class SCTextPortionFont : ITextPortionFont
         }
 
         var phFontData = FontDataParser.FromPlaceholder(this.paragraph);
-        
+
         return phFontData.AEastAsianFont ?? this.aFontScheme.MinorFont!.EastAsianFont!;
     }
-    
-    private DocumentFormat.OpenXml.Drawing.LatinFont GetALatinFont()
+
+    private A.LatinFont GetALatinFont()
     {
-        var aRunProperties = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
-        var aLatinFont = aRunProperties?.GetFirstChild<DocumentFormat.OpenXml.Drawing.LatinFont>();
+        var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+        var aLatinFont = aRunProperties?.GetFirstChild<A.LatinFont>();
 
         if (aLatinFont != null)
         {
@@ -258,41 +217,9 @@ internal sealed class SCTextPortionFont : ITextPortionFont
         return phFontData.ALatinFont ?? this.aFontScheme.MinorFont!.LatinFont!;
     }
 
-    private int GetSize()
-    {
-        var fontSize = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>()?.FontSize?.Value;
-        if (fontSize != null)
-        {
-            return fontSize.Value / 100;
-        }
-
-        var textFrameContainer = this.paragraph.ParentTextFrame.TextFrameContainer;
-        var paraLevel = this.paragraph.Level;
-
-        if (textFrameContainer is SCShape { Placeholder: { } } shape)
-        {
-            if (TryFromPlaceholder(shape, paraLevel, out var sizeFromPlaceholder))
-            {
-                return sizeFromPlaceholder;
-            }
-        }
-
-        var sldStructureCore = (SlideStructure)textFrameContainer.SCShape.SlideStructure;
-        var pres = sldStructureCore.PresentationInternal;
-        if (pres.ParaLvlToFontData.TryGetValue(paraLevel, out var fontData))
-        {
-            if (fontData.FontSize is not null)
-            {
-                return fontData.FontSize / 100;
-            }
-        }
-
-        return SCConstants.DefaultFontSize;
-    }
-
     private bool GetBoldFlag()
     {
-        var aRunProperties = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
         if (aRunProperties == null)
         {
             return false;
@@ -303,7 +230,7 @@ internal sealed class SCTextPortionFont : ITextPortionFont
             return true;
         }
 
-        FontData phFontData = new ();
+        FontData phFontData = new();
         FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.paragraph);
         if (phFontData.IsBold is not null)
         {
@@ -315,7 +242,7 @@ internal sealed class SCTextPortionFont : ITextPortionFont
 
     private bool GetItalicFlag()
     {
-        var aRunPr = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
         if (aRunPr == null)
         {
             return false;
@@ -326,7 +253,7 @@ internal sealed class SCTextPortionFont : ITextPortionFont
             return true;
         }
 
-        FontData phFontData = new ();
+        FontData phFontData = new();
         FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.paragraph);
         if (phFontData.IsItalic is not null)
         {
@@ -338,14 +265,14 @@ internal sealed class SCTextPortionFont : ITextPortionFont
 
     private void SetBoldFlag(bool value)
     {
-        var aRunPr = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
         if (aRunPr != null)
         {
             aRunPr.Bold = new BooleanValue(value);
         }
         else
         {
-            FontData phFontData = new ();
+            FontData phFontData = new();
             FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.paragraph);
             if (phFontData.IsBold is not null)
             {
@@ -353,14 +280,15 @@ internal sealed class SCTextPortionFont : ITextPortionFont
             }
             else
             {
-                var aEndParaRPr = this.aText.Parent.NextSibling<DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties>();
+                var aEndParaRPr =
+                    this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
                 if (aEndParaRPr != null)
                 {
                     aEndParaRPr.Bold = new BooleanValue(value);
                 }
                 else
                 {
-                    aRunPr = new DocumentFormat.OpenXml.Drawing.RunProperties { Bold = new BooleanValue(value) };
+                    aRunPr = new A.RunProperties { Bold = new BooleanValue(value) };
                     this.aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
                 }
             }
@@ -370,14 +298,14 @@ internal sealed class SCTextPortionFont : ITextPortionFont
     private void SetItalicFlag(bool isItalic)
     {
         var aTextParent = this.aText.Parent!;
-        var aRunPr = aTextParent.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var aRunPr = aTextParent.GetFirstChild<A.RunProperties>();
         if (aRunPr != null)
         {
             aRunPr.Italic = new BooleanValue(isItalic);
         }
         else
         {
-            var aEndParaRPr = aTextParent.NextSibling<DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties>();
+            var aEndParaRPr = aTextParent.NextSibling<A.EndParagraphRunProperties>();
             if (aEndParaRPr != null)
             {
                 aEndParaRPr.Italic = new BooleanValue(isItalic);
@@ -395,24 +323,10 @@ internal sealed class SCTextPortionFont : ITextPortionFont
         aLatinFont.Typeface = latinFont;
         this.latinFont.Reset();
     }
-    
+
     private void SetEastAsianName(string eastAsianFont)
     {
         var aEastAsianFont = this.GetAEastAsianFont();
         aEastAsianFont.Typeface = eastAsianFont;
-    }
-
-    private void SetFontSize(int newFontSize)
-    {
-        var parent = this.aText.Parent!;
-        var aRunPr = parent.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
-        if (aRunPr == null)
-        {
-            var builder = new ARunPropertiesBuilder();
-            aRunPr = builder.Build();
-            parent.InsertAt(aRunPr, 0);
-        }
-
-        aRunPr.FontSize = newFontSize * 100;
     }
 }
