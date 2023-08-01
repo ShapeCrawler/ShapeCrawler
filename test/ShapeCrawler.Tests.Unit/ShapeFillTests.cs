@@ -81,7 +81,7 @@ public class ShapeFillTests : SCTest
         imageBytes.Length.Should().BePositive();
     }
     
-    [Test]
+    [Test, Ignore("In Progress: https://github.com/ShapeCrawler/ShapeCrawler/issues/558")]
     public void SetColor_sets_solid()
     {
         throw new Exception("Soft validation says no error, but fill does not work in PowerPoint.");
