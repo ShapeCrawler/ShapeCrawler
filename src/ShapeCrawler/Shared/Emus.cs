@@ -2,9 +2,9 @@
 
 internal readonly ref struct Emus
 {
-    private readonly long emu;
     private const int HorizontalResolutionDpi = 96;
     private const int VerticalResolutionDpi = 96;
+    private readonly long emu;
 
     internal Emus(long emus)
     {

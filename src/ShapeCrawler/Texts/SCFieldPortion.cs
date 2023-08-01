@@ -28,9 +28,10 @@ internal sealed class SCFieldPortion : IPortion
             if (slideStructure is SCSlideLayout &&
                 textFrameContainer.SCShape.Placeholder?.Type == SCPlaceholderType.SlideNumber)
             {
-                var aListStyle = paragraph.AParagraph.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.ListStyle>()!;
+                var aListStyle = paragraph.AParagraph.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.ListStyle>() !;
                 return new SCLayoutSlideNumberFont(this.AText, this, textFrameContainer, paragraph, aListStyle);    
             }
+
             return new SCTextPortionFont(this.AText, this, textFrameContainer, paragraph);
         });
     }

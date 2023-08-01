@@ -1,5 +1,4 @@
 ﻿using ShapeCrawler.AutoShapes;
-using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;

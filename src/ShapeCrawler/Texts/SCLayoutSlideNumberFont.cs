@@ -417,7 +417,6 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
 
         this.aListStyle.AppendChild(
             new A.Level1ParagraphProperties(
-                new A.DefaultRunProperties { FontSize = new Int32Value(points * 100) })
-        );
+                new A.DefaultRunProperties { FontSize = new Int32Value(points * 100) }));
     }
 }

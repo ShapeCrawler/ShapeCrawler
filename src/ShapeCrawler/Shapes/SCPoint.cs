@@ -13,12 +13,12 @@ public readonly ref struct SCPoint
     }
     
     /// <summary>
-    ///     Gets or sets the X coordinate.
+    ///     Gets the X coordinate.
     /// </summary>
     public int X { get; }
 
     /// <summary>
-    ///     Gets or sets the Y coordinate.
+    ///     Gets the Y coordinate.
     /// </summary>
     public int Y { get; }
 }

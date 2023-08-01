@@ -2,9 +2,9 @@
 
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
+using OneOf;
 using ShapeCrawler.Shapes;
 using SkiaSharp;
-using OneOf;
 
 namespace ShapeCrawler;
 

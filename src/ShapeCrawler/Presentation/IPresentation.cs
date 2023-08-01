@@ -85,6 +85,7 @@ public interface IPresentation : IDisposable
 /// <inheritdoc cref="IPresentation"/>
 public sealed class SCPresentation : IPresentation
 {
+    private const int MaxSlidesNumber = 300;
     private readonly MemoryStream internalStream;
     private readonly Lazy<Dictionary<int, FontData>> paraLvlToFontData;
     private readonly Lazy<SCSlideSize> slideSize;
@@ -93,9 +94,7 @@ public sealed class SCPresentation : IPresentation
     private bool closed;
     private Stream? outerStream;
     private string? outerPath;
-    private static int MaxPresentationSize => 250 * 1024 * 1024;
-    private const int MaxSlidesNumber = 300;
-
+    
     private SCPresentation(string outerPath)
     {
         this.outerPath = outerPath;
@@ -172,7 +171,7 @@ public sealed class SCPresentation : IPresentation
 
     /// <inheritdoc/>
     public IHeaderAndFooter HeaderAndFooter { get; }
-
+    
     internal ResetableLazy<SCSlideMasterCollection> SlideMastersValue { get; }
 
     internal PresentationDocument SDKPresentationInternal { get; }
@@ -186,6 +185,8 @@ public sealed class SCPresentation : IPresentation
     internal List<ImagePart> ImageParts => this.GetImageParts();
 
     internal SCSlideCollection SlidesInternal => (SCSlideCollection)this.Slides;
+    
+    private static int MaxPresentationSize => 250 * 1024 * 1024;
 
     #region Global Statics
 
