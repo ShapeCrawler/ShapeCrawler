@@ -13,6 +13,7 @@ internal sealed class SCFieldPortion : IPortion
     private readonly A.Field aField;
     private readonly SlideStructure slideStructure;
     private readonly PortionText portionText;
+    private readonly A.Text? aText;
 
     internal SCFieldPortion(
         A.Field aField, 
@@ -22,7 +23,7 @@ internal sealed class SCFieldPortion : IPortion
         Action onRemoveHandler)
     {
         this.slideStructure = slideStructure;
-        this.AText = aField.GetFirstChild<A.Text>() !;
+        this.aText = aField.GetFirstChild<A.Text>();
         this.Removed += onRemoveHandler;
         
         this.aField = aField;
@@ -33,13 +34,13 @@ internal sealed class SCFieldPortion : IPortion
                 textFrameContainer.SCShape.Placeholder?.Type == SCPlaceholderType.SlideNumber)
             {
                 var aListStyle = paragraph.AParagraph.Parent!.GetFirstChild<A.ListStyle>() !;
-                return new SCLayoutNumberFont(this.AText, this, textFrameContainer, paragraph, aListStyle);    
+                return new SCLayoutNumberFont(this.aText!, this, textFrameContainer, paragraph, aListStyle);    
             }
 
-            return new SCTextPortionFont(this.AText, this, textFrameContainer, paragraph);
+            return new SCTextPortionFont(this.aText!, this, textFrameContainer, paragraph);
         });
         
-        this.portionText = new PortionText();
+        this.portionText = new PortionText(this.aField);
     }
 
     internal event Action? Removed;
@@ -48,7 +49,7 @@ internal sealed class SCFieldPortion : IPortion
     public string? Text
     {
         get => this.portionText.Text();
-        set => this.portionText.Update(value);
+        set => this.portionText.Update(value!);
     }
 
     /// <inheritdoc/>
@@ -67,8 +68,6 @@ internal sealed class SCFieldPortion : IPortion
         get => this.ParseTextHighlight();
         set => this.UpdateTextHighlight(value);
     }
-
-    internal A.Text AText { get; }
 
     internal bool IsRemoved { get; set; }
     
@@ -90,7 +89,7 @@ internal sealed class SCFieldPortion : IPortion
 
     private SCColor ParseTextHighlight()
     {
-        var arPr = this.AText.PreviousSibling<A.RunProperties>();
+        var arPr = this.aText!.PreviousSibling<A.RunProperties>();
 
         // Ensure RgbColorModelHex exists and his value is not null.
         if (arPr?.GetFirstChild<A.Highlight>()?.RgbColorModelHex is not A.RgbColorModelHex aSrgbClr
@@ -115,30 +114,14 @@ internal sealed class SCFieldPortion : IPortion
 
     private void UpdateTextHighlight(SCColor? color)
     {
-        var arPr = this.AText.PreviousSibling<A.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
+        var arPr = this.aText!.PreviousSibling<A.RunProperties>() ?? this.aText.Parent!.AddRunProperties();
 
         arPr.AddAHighlight((SCColor)color);
     }
 
-    private string? ParseText()
-    {
-        var portionText = this.AText?.Text;
-        return portionText;
-    }
-
-    private void SetText(string? text)
-    {
-        if (text is null)
-        {
-            throw new ArgumentNullException(nameof(text));
-        }
-        
-        this.AText.Text = text;
-    }
-
     private string? GetHyperlink()
     {
-        var runProperties = this.AText.PreviousSibling<A.RunProperties>();
+        var runProperties = this.aText!.PreviousSibling<A.RunProperties>();
         if (runProperties == null)
         {
             return null;
@@ -158,7 +141,7 @@ internal sealed class SCFieldPortion : IPortion
 
     private void SetHyperlink(string? url)
     {
-        var runProperties = this.AText.PreviousSibling<A.RunProperties>();
+        var runProperties = this.aText!.PreviousSibling<A.RunProperties>();
         if (runProperties == null)
         {
             runProperties = new A.RunProperties();

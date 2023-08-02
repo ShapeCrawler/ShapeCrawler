@@ -1,14 +1,26 @@
-﻿namespace ShapeCrawler.Texts;
+﻿using A = DocumentFormat.OpenXml.Drawing;
+
+namespace ShapeCrawler.Texts;
 
 internal class PortionText
 {
-    public string? Text()
+    private readonly A.Field aField;
+
+    internal PortionText(A.Field aField)
     {
-        throw new System.NotImplementedException();
+        this.aField = aField;
+    }
+    
+    internal string Text()
+    {
+        var aText = this.aField.GetFirstChild<A.Text>();
+        
+        return aText == null ? string.Empty : aText.Text;
     }
 
-    public void Update(string? value)
+    internal void Update(string newText)
     {
-        throw new System.NotImplementedException();
+        this.aField.GetFirstChild<A.Text>()?.Remove();
+        this.aField.AppendChild(new A.Text { Text = newText });
     }
 }
