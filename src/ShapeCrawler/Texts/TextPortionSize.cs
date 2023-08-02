@@ -52,7 +52,7 @@ internal record TextPortionSize : IFontSize
         return SCConstants.DefaultFontSize;
     }
 
-    public void Update(int value)
+    public void Update(int points)
     {
         var parent = this.aText.Parent!;
         var aRunPr = parent.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
@@ -63,7 +63,7 @@ internal record TextPortionSize : IFontSize
             parent.InsertAt(aRunPr, 0);
         }
 
-        aRunPr.FontSize = value * 100;
+        aRunPr.FontSize = points * 100;
     }
     
     private static bool TryFromPlaceholder(SCShape scShape, int paraLevel, out int i)

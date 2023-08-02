@@ -35,11 +35,11 @@ internal sealed class SCFieldPortion : IPortion
                 textFrameContainer.SCShape.Placeholder?.Type == SCPlaceholderType.SlideNumber)
             {
                 var aListStyle = paragraph.AParagraph.Parent!.GetFirstChild<A.ListStyle>() !;
-                var layoutNumberSize = new LayoutNumberSize(aText!, paragraph, aListStyle);
+                var layoutNumberSize = new LayoutNumberSize(this.aText!, paragraph, aListStyle);
                 return new SCTextPortionFont(this.aText!, textFrameContainer, paragraph, themeFontScheme, layoutNumberSize);
             }
 
-            var textPortionSize = new TextPortionSize(aText!, paragraph);
+            var textPortionSize = new TextPortionSize(this.aText!, paragraph);
             return new SCTextPortionFont(this.aText!, textFrameContainer, paragraph, themeFontScheme, textPortionSize);
         });
         

@@ -53,14 +53,14 @@ internal record LayoutNumberSize : IFontSize
         return SCConstants.DefaultFontSize;
     }
 
-    public void Update(int newPoints)
+    public void Update(int points)
     {
         var aLvl1pPr = this.aListStyle.Level1ParagraphProperties;
         aLvl1pPr?.Remove();
 
         this.aListStyle.AppendChild(
             new A.Level1ParagraphProperties(
-                new A.DefaultRunProperties { FontSize = new Int32Value(newPoints * 100) }));
+                new A.DefaultRunProperties { FontSize = new Int32Value(points * 100) }));
     }
     
     private static bool TryFromPlaceholder(SCShape scShape, int paraLevel, out int i)
