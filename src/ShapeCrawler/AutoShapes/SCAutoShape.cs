@@ -116,7 +116,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
         }
 
         var baseParagraph = this.TextFrame.Paragraphs.First();
-        var popularPortion = baseParagraph.Portions.OfType<SCTextPortion>().GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
+        var popularPortion = baseParagraph.Portions.OfType<SCRegularPortion>().GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
             .First().First();
         var font = popularPortion.Font;
 

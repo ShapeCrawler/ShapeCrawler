@@ -3,37 +3,43 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
 internal sealed class SCFieldPortion : IPortion
 {
     private readonly ResetableLazy<ITextPortionFont> font;
-    private readonly DocumentFormat.OpenXml.Drawing.Field aField;
+    private readonly A.Field aField;
     private readonly SlideStructure slideStructure;
+    private readonly PortionText portionText;
 
     internal SCFieldPortion(
-        DocumentFormat.OpenXml.Drawing.Field aField, 
+        A.Field aField, 
         SlideStructure slideStructure, 
         ITextFrameContainer textFrameContainer, 
         SCParagraph paragraph,
         Action onRemoveHandler)
     {
-        this.aField = aField;
         this.slideStructure = slideStructure;
-        this.AText = aField.GetFirstChild<DocumentFormat.OpenXml.Drawing.Text>() !;
+        this.AText = aField.GetFirstChild<A.Text>() !;
         this.Removed += onRemoveHandler;
+        
+        this.aField = aField;
+
         this.font = new ResetableLazy<ITextPortionFont>(() =>
         {
             if (slideStructure is SCSlideLayout &&
                 textFrameContainer.SCShape.Placeholder?.Type == SCPlaceholderType.SlideNumber)
             {
-                var aListStyle = paragraph.AParagraph.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.ListStyle>() !;
-                return new SCLayoutSlideNumberFont(this.AText, this, textFrameContainer, paragraph, aListStyle);    
+                var aListStyle = paragraph.AParagraph.Parent!.GetFirstChild<A.ListStyle>() !;
+                return new SCLayoutNumberFont(this.AText, this, textFrameContainer, paragraph, aListStyle);    
             }
 
             return new SCTextPortionFont(this.AText, this, textFrameContainer, paragraph);
         });
+        
+        this.portionText = new PortionText();
     }
 
     internal event Action? Removed;
@@ -41,8 +47,8 @@ internal sealed class SCFieldPortion : IPortion
     /// <inheritdoc/>
     public string? Text
     {
-        get => this.ParseText();
-        set => this.SetText(value);
+        get => this.portionText.Text();
+        set => this.portionText.Update(value);
     }
 
     /// <inheritdoc/>
@@ -58,11 +64,11 @@ internal sealed class SCFieldPortion : IPortion
 
     public SCColor? TextHighlightColor
     {
-        get => this.ParseTextHighlightColor();
-        set => this.SetTextHighlightColor(value);
+        get => this.ParseTextHighlight();
+        set => this.UpdateTextHighlight(value);
     }
 
-    internal DocumentFormat.OpenXml.Drawing.Text AText { get; }
+    internal A.Text AText { get; }
 
     internal bool IsRemoved { get; set; }
     
@@ -82,12 +88,12 @@ internal sealed class SCFieldPortion : IPortion
         return new SCField(this.aField);
     }
 
-    private SCColor ParseTextHighlightColor()
+    private SCColor ParseTextHighlight()
     {
-        var arPr = this.AText.PreviousSibling<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var arPr = this.AText.PreviousSibling<A.RunProperties>();
 
         // Ensure RgbColorModelHex exists and his value is not null.
-        if (arPr?.GetFirstChild<DocumentFormat.OpenXml.Drawing.Highlight>()?.RgbColorModelHex is not DocumentFormat.OpenXml.Drawing.RgbColorModelHex aSrgbClr
+        if (arPr?.GetFirstChild<A.Highlight>()?.RgbColorModelHex is not A.RgbColorModelHex aSrgbClr
             || aSrgbClr.Val is null)
         {
             return SCColor.Transparent;
@@ -101,15 +107,15 @@ internal sealed class SCFieldPortion : IPortion
         var color = SCColor.FromHex(hex);
 
         // Calculate alpha value if is defined in highlight node.
-        var aAlphaValue = aSrgbClr.GetFirstChild<DocumentFormat.OpenXml.Drawing.Alpha>()?.Val ?? 100000;
+        var aAlphaValue = aSrgbClr.GetFirstChild<A.Alpha>()?.Val ?? 100000;
         color.Alpha = SCColor.OPACITY / (100000 / aAlphaValue);
 
         return color;
     }
 
-    private void SetTextHighlightColor(SCColor? color)
+    private void UpdateTextHighlight(SCColor? color)
     {
-        var arPr = this.AText.PreviousSibling<DocumentFormat.OpenXml.Drawing.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
+        var arPr = this.AText.PreviousSibling<A.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
 
         arPr.AddAHighlight((SCColor)color);
     }
@@ -132,13 +138,13 @@ internal sealed class SCFieldPortion : IPortion
 
     private string? GetHyperlink()
     {
-        var runProperties = this.AText.PreviousSibling<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var runProperties = this.AText.PreviousSibling<A.RunProperties>();
         if (runProperties == null)
         {
             return null;
         }
 
-        var hyperlink = runProperties.GetFirstChild<DocumentFormat.OpenXml.Drawing.HyperlinkOnClick>();
+        var hyperlink = runProperties.GetFirstChild<A.HyperlinkOnClick>();
         if (hyperlink == null)
         {
             return null;
@@ -152,16 +158,16 @@ internal sealed class SCFieldPortion : IPortion
 
     private void SetHyperlink(string? url)
     {
-        var runProperties = this.AText.PreviousSibling<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var runProperties = this.AText.PreviousSibling<A.RunProperties>();
         if (runProperties == null)
         {
-            runProperties = new DocumentFormat.OpenXml.Drawing.RunProperties();
+            runProperties = new A.RunProperties();
         }
 
-        var hyperlink = runProperties.GetFirstChild<DocumentFormat.OpenXml.Drawing.HyperlinkOnClick>();
+        var hyperlink = runProperties.GetFirstChild<A.HyperlinkOnClick>();
         if (hyperlink == null)
         {
-            hyperlink = new DocumentFormat.OpenXml.Drawing.HyperlinkOnClick();
+            hyperlink = new A.HyperlinkOnClick();
             runProperties.Append(hyperlink);
         }
         

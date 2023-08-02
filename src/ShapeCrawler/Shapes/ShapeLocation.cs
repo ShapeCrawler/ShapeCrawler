@@ -3,11 +3,11 @@ using ShapeCrawler.Shared;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class SCShapeLocation
+internal sealed class ShapeLocation
 {
     private readonly DocumentFormat.OpenXml.Drawing.Transform2D aTransform2D;
 
-    internal SCShapeLocation(DocumentFormat.OpenXml.Drawing.Transform2D aTransform2D)
+    internal ShapeLocation(DocumentFormat.OpenXml.Drawing.Transform2D aTransform2D)
     {
         this.aTransform2D = aTransform2D;
     }

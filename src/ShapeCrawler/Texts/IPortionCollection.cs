@@ -83,7 +83,7 @@ internal sealed class SCPortionCollection : IPortionCollection
         
         var lastARunOrABreak = this.aParagraph.LastOrDefault(p => p is A.Run or A.Break);
 
-        var textPortions = this.portions.Value.OfType<SCTextPortion>();
+        var textPortions = this.portions.Value.OfType<SCRegularPortion>();
         var lastPortion = textPortions.Any() ? textPortions.Last() : null;
         var aTextParent = lastPortion?.AText.Parent ?? new ARunBuilder().Build();
 
@@ -151,7 +151,7 @@ internal sealed class SCPortionCollection : IPortionCollection
             switch (paraChild)
             {
                 case A.Run aRun:
-                    var runPortion = new SCTextPortion(
+                    var runPortion = new SCRegularPortion(
                         aRun, 
                         this.slideStructure, 
                         this.textFrameContainer,

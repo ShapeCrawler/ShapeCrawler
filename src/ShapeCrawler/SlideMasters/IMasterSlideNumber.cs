@@ -19,14 +19,14 @@ public interface IMasterSlideNumber : IShapeLocation
 
 internal sealed class SCMasterSlideNumber : IMasterSlideNumber
 {
-    private readonly SCShapeLocation shapeLocation;
+    private readonly ShapeLocation shapeLocation;
 
     internal SCMasterSlideNumber(P.Shape pSldNum, List<ITextPortionFont> portionFonts)
     {
         var aDefaultRunProperties =
             pSldNum.TextBody!.ListStyle!.Level1ParagraphProperties?.GetFirstChild<A.DefaultRunProperties>() !;
         this.Font = new SCSlideNumberFont(aDefaultRunProperties, portionFonts);
-        this.shapeLocation = new SCShapeLocation(pSldNum.ShapeProperties!.Transform2D!);
+        this.shapeLocation = new ShapeLocation(pSldNum.ShapeProperties!.Transform2D!);
     }
 
     public ISlideNumberFont Font { get; }

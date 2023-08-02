@@ -165,7 +165,7 @@ internal sealed class SCParagraph : IParagraph
         }
 
         // To set a paragraph text we use a single portion which is the first paragraph portion.
-        var basePortion = this.portions.Value.OfType<SCTextPortion>().First();
+        var basePortion = this.portions.Value.OfType<SCRegularPortion>().First();
         var removingPortions = this.portions.Value.Where(p => p != basePortion).ToList();
         this.portions.Value.Remove(removingPortions);
 

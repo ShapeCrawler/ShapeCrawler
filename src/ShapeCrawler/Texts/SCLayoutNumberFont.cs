@@ -9,17 +9,17 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
+internal sealed class SCLayoutNumberFont : ITextPortionFont
 {
-    private readonly DocumentFormat.OpenXml.Drawing.Text aText;
-    private readonly DocumentFormat.OpenXml.Drawing.FontScheme aFontScheme;
+    private readonly A.Text aText;
+    private readonly A.FontScheme aFontScheme;
     private readonly Lazy<SCFontColor> colorFormat;
-    private readonly ResetableLazy<DocumentFormat.OpenXml.Drawing.LatinFont> latinFont;
+    private readonly ResetableLazy<A.LatinFont> latinFont;
     private readonly LayoutNumberSize size;
     private readonly ITextFrameContainer textFrameContainer;
     private readonly SCParagraph paragraph;
 
-    internal SCLayoutSlideNumberFont(
+    internal SCLayoutNumberFont(
         A.Text aText, 
         IPortion portion, 
         ITextFrameContainer textFrameContainer, 
@@ -29,7 +29,7 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
         this.aText = aText;
         this.paragraph = paragraph;
         this.size = new LayoutNumberSize(aText, paragraph, aListStyle);
-        this.latinFont = new ResetableLazy<DocumentFormat.OpenXml.Drawing.LatinFont>(this.GetALatinFont);
+        this.latinFont = new ResetableLazy<A.LatinFont>(this.GetALatinFont);
         this.colorFormat = new Lazy<SCFontColor>(() => new SCFontColor(this, textFrameContainer, paragraph, this.aText));
         this.ParentPortion = portion;
         SCShape shape;
@@ -79,32 +79,32 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
 
     public IFontColor Color => this.colorFormat.Value;
 
-    public DocumentFormat.OpenXml.Drawing.TextUnderlineValues Underline
+    public A.TextUnderlineValues Underline
     {
         get
         {
-            var aRunPr = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
-            return aRunPr?.Underline?.Value ?? DocumentFormat.OpenXml.Drawing.TextUnderlineValues.None;
+            var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+            return aRunPr?.Underline?.Value ?? A.TextUnderlineValues.None;
         }
 
         set
         {
-            var aRunPr = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
+            var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
             if (aRunPr != null)
             {
-                aRunPr.Underline = new EnumValue<DocumentFormat.OpenXml.Drawing.TextUnderlineValues>(value);
+                aRunPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
             }
             else
             {
-                var aEndParaRPr = this.aText.Parent.NextSibling<DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties>();
+                var aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
                 if (aEndParaRPr != null)
                 {
-                    aEndParaRPr.Underline = new EnumValue<DocumentFormat.OpenXml.Drawing.TextUnderlineValues>(value);
+                    aEndParaRPr.Underline = new EnumValue<A.TextUnderlineValues>(value);
                 }
                 else
                 {
                     var runProp = this.aText.Parent.AddRunProperties();
-                    runProp.Underline = new EnumValue<DocumentFormat.OpenXml.Drawing.TextUnderlineValues>(value);
+                    runProp.Underline = new EnumValue<A.TextUnderlineValues>(value);
                 }
             }
         }
@@ -127,7 +127,7 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
     
     private void SetOffset(int value)
     {
-        var aRunProperties = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
         Int32Value int32Value = value * 1000;
         if (aRunProperties is not null)
         {
@@ -135,14 +135,14 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
         }
         else
         {
-            var aEndParaRPr = this.aText.Parent.NextSibling<DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties>();
+            var aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
             if (aEndParaRPr != null)
             {
                 aEndParaRPr.Baseline = int32Value;
             }
             else
             {
-                aRunProperties = new DocumentFormat.OpenXml.Drawing.RunProperties { Baseline = int32Value };
+                aRunProperties = new A.RunProperties { Baseline = int32Value };
                 this.aText.Parent.InsertAt(aRunProperties, 0); // append to <a:r>
             }
         }
@@ -150,14 +150,14 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
 
     private int GetOffsetEffect()
     {
-        var aRunProperties = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
         if (aRunProperties is not null &&
             aRunProperties.Baseline is not null)
         {
             return aRunProperties.Baseline.Value / 1000;
         }
 
-        var aEndParaRPr = this.aText.Parent.NextSibling<DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties>();
+        var aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
         if (aEndParaRPr is not null)
         {
             return aEndParaRPr.Baseline! / 1000;
@@ -187,9 +187,9 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
         return aEastAsianFont.Typeface!;
     }
 
-    private DocumentFormat.OpenXml.Drawing.EastAsianFont GetAEastAsianFont()
+    private A.EastAsianFont GetAEastAsianFont()
     {
-        var aEastAsianFont = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>()?.GetFirstChild<DocumentFormat.OpenXml.Drawing.EastAsianFont>();
+        var aEastAsianFont = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.GetFirstChild<A.EastAsianFont>();
 
         if (aEastAsianFont != null)
         {
@@ -201,10 +201,10 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
         return phFontData.AEastAsianFont ?? this.aFontScheme.MinorFont!.EastAsianFont!;
     }
     
-    private DocumentFormat.OpenXml.Drawing.LatinFont GetALatinFont()
+    private A.LatinFont GetALatinFont()
     {
-        var aRunProperties = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
-        var aLatinFont = aRunProperties?.GetFirstChild<DocumentFormat.OpenXml.Drawing.LatinFont>();
+        var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
+        var aLatinFont = aRunProperties?.GetFirstChild<A.LatinFont>();
 
         if (aLatinFont != null)
         {
@@ -217,7 +217,7 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
 
     private bool GetBoldFlag()
     {
-        var aRunProperties = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
         if (aRunProperties == null)
         {
             return false;
@@ -240,7 +240,7 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
 
     private bool GetItalicFlag()
     {
-        var aRunPr = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
         if (aRunPr == null)
         {
             return false;
@@ -263,7 +263,7 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
 
     private void SetBoldFlag(bool value)
     {
-        var aRunPr = this.aText.Parent!.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
         if (aRunPr != null)
         {
             aRunPr.Bold = new BooleanValue(value);
@@ -278,14 +278,14 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
             }
             else
             {
-                var aEndParaRPr = this.aText.Parent.NextSibling<DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties>();
+                var aEndParaRPr = this.aText.Parent.NextSibling<A.EndParagraphRunProperties>();
                 if (aEndParaRPr != null)
                 {
                     aEndParaRPr.Bold = new BooleanValue(value);
                 }
                 else
                 {
-                    aRunPr = new DocumentFormat.OpenXml.Drawing.RunProperties { Bold = new BooleanValue(value) };
+                    aRunPr = new A.RunProperties { Bold = new BooleanValue(value) };
                     this.aText.Parent.InsertAt(aRunPr, 0); // append to <a:r>
                 }
             }
@@ -295,14 +295,14 @@ internal sealed class SCLayoutSlideNumberFont : ITextPortionFont
     private void SetItalicFlag(bool isItalic)
     {
         var aTextParent = this.aText.Parent!;
-        var aRunPr = aTextParent.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var aRunPr = aTextParent.GetFirstChild<A.RunProperties>();
         if (aRunPr != null)
         {
             aRunPr.Italic = new BooleanValue(isItalic);
         }
         else
         {
-            var aEndParaRPr = aTextParent.NextSibling<DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties>();
+            var aEndParaRPr = aTextParent.NextSibling<A.EndParagraphRunProperties>();
             if (aEndParaRPr != null)
             {
                 aEndParaRPr.Italic = new BooleanValue(isItalic);

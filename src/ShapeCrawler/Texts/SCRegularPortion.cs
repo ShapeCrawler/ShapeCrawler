@@ -3,27 +3,30 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class SCTextPortion : IPortion
+internal sealed class SCRegularPortion : IPortion
 {
     private readonly ResetableLazy<SCTextPortionFont> font;
-    private readonly DocumentFormat.OpenXml.Drawing.Run aRun;
+    private readonly A.Run aRun;
     private readonly SlideStructure slideStructure;
     
-    internal SCTextPortion(
-        DocumentFormat.OpenXml.Drawing.Run aRun, 
+    internal SCRegularPortion(
+        A.Run aRun, 
         SlideStructure slideStructure, 
         ITextFrameContainer textFrameContainer,
         SCParagraph paragraph, 
         Action onRemoveHandler)
     {
-        this.aRun = aRun;
         this.slideStructure = slideStructure;
         this.AText = aRun.Text!;
-        this.font = new ResetableLazy<SCTextPortionFont>(() => new SCTextPortionFont(this.AText, this, textFrameContainer, paragraph));
         this.Removed += onRemoveHandler;
+
+        this.aRun = aRun;
+        
+        this.font = new ResetableLazy<SCTextPortionFont>(() => new SCTextPortionFont(this.AText, this, textFrameContainer, paragraph));
     }
 
     internal event Action? Removed;
@@ -48,11 +51,11 @@ internal sealed class SCTextPortion : IPortion
 
     public SCColor? TextHighlightColor
     {
-        get => this.ParseTextHighlightColor();
-        set => this.SetTextHighlightColor(value);
+        get => this.ParseTextHighlight();
+        set => this.UpdateTextHighlight(value);
     }
 
-    internal DocumentFormat.OpenXml.Drawing.Text AText { get; }
+    internal A.Text AText { get; }
 
     internal bool IsRemoved { get; set; }
     
@@ -62,12 +65,12 @@ internal sealed class SCTextPortion : IPortion
         this.Removed?.Invoke();
     }
 
-    private SCColor ParseTextHighlightColor()
+    private SCColor ParseTextHighlight()
     {
-        var arPr = this.AText.PreviousSibling<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var arPr = this.AText.PreviousSibling<A.RunProperties>();
 
         // Ensure RgbColorModelHex exists and his value is not null.
-        if (arPr?.GetFirstChild<DocumentFormat.OpenXml.Drawing.Highlight>()?.RgbColorModelHex is not DocumentFormat.OpenXml.Drawing.RgbColorModelHex aSrgbClr
+        if (arPr?.GetFirstChild<A.Highlight>()?.RgbColorModelHex is not A.RgbColorModelHex aSrgbClr
             || aSrgbClr.Val is null)
         {
             return SCColor.Transparent;
@@ -81,15 +84,15 @@ internal sealed class SCTextPortion : IPortion
         var color = SCColor.FromHex(hex);
 
         // Calculate alpha value if is defined in highlight node.
-        var aAlphaValue = aSrgbClr.GetFirstChild<DocumentFormat.OpenXml.Drawing.Alpha>()?.Val ?? 100000;
+        var aAlphaValue = aSrgbClr.GetFirstChild<A.Alpha>()?.Val ?? 100000;
         color.Alpha = SCColor.OPACITY / (100000 / aAlphaValue);
 
         return color;
     }
 
-    private void SetTextHighlightColor(SCColor? color)
+    private void UpdateTextHighlight(SCColor? color)
     {
-        var arPr = this.AText.PreviousSibling<DocumentFormat.OpenXml.Drawing.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
+        var arPr = this.AText.PreviousSibling<A.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
 
         arPr.AddAHighlight((SCColor)color);
     }
@@ -112,13 +115,13 @@ internal sealed class SCTextPortion : IPortion
 
     private string? GetHyperlink()
     {
-        var runProperties = this.AText.PreviousSibling<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var runProperties = this.AText.PreviousSibling<A.RunProperties>();
         if (runProperties == null)
         {
             return null;
         }
 
-        var hyperlink = runProperties.GetFirstChild<DocumentFormat.OpenXml.Drawing.HyperlinkOnClick>();
+        var hyperlink = runProperties.GetFirstChild<A.HyperlinkOnClick>();
         if (hyperlink == null)
         {
             return null;
@@ -132,16 +135,16 @@ internal sealed class SCTextPortion : IPortion
 
     private void SetHyperlink(string? url)
     {
-        var runProperties = this.AText.PreviousSibling<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var runProperties = this.AText.PreviousSibling<A.RunProperties>();
         if (runProperties == null)
         {
-            runProperties = new DocumentFormat.OpenXml.Drawing.RunProperties();
+            runProperties = new A.RunProperties();
         }
 
-        var hyperlink = runProperties.GetFirstChild<DocumentFormat.OpenXml.Drawing.HyperlinkOnClick>();
+        var hyperlink = runProperties.GetFirstChild<A.HyperlinkOnClick>();
         if (hyperlink == null)
         {
-            hyperlink = new DocumentFormat.OpenXml.Drawing.HyperlinkOnClick();
+            hyperlink = new A.HyperlinkOnClick();
             runProperties.Append(hyperlink);
         }
         
