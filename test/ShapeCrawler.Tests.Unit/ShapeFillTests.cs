@@ -92,7 +92,6 @@ public class ShapeFillTests : SCTest
         
         // Act
         shape.Fill!.SetColor("00FF00");
-        SaveResult(pres);
 
         // Assert
         shape.Fill.Color.Should().Be("00FF00");
