@@ -26,7 +26,9 @@ internal sealed class SCRegularPortion : IPortion
 
         this.aRun = aRun;
         
-        this.font = new ResetableLazy<SCTextPortionFont>(() => new SCTextPortionFont(this.AText, this, textFrameContainer, paragraph));
+        var themeFontScheme = (ThemeFontScheme)textFrameContainer.SCShape.SlideMasterInternal.Theme.FontScheme;
+        var textPortionSize = new TextPortionSize(this.AText, paragraph);
+        this.font = new ResetableLazy<SCTextPortionFont>(() => new SCTextPortionFont(this.AText, textFrameContainer, paragraph, themeFontScheme, textPortionSize));
     }
 
     internal event Action? Removed;

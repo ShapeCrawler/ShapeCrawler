@@ -28,16 +28,19 @@ internal sealed class SCFieldPortion : IPortion
         
         this.aField = aField;
 
+        var themeFontScheme = (ThemeFontScheme)textFrameContainer.SCShape.SlideMasterInternal.Theme.FontScheme;
         this.font = new ResetableLazy<ITextPortionFont>(() =>
         {
             if (slideStructure is SCSlideLayout &&
                 textFrameContainer.SCShape.Placeholder?.Type == SCPlaceholderType.SlideNumber)
             {
                 var aListStyle = paragraph.AParagraph.Parent!.GetFirstChild<A.ListStyle>() !;
-                return new SCLayoutNumberFont(this.aText!, this, textFrameContainer, paragraph, aListStyle);    
+                var layoutNumberSize = new LayoutNumberSize(aText!, paragraph, aListStyle);
+                return new SCTextPortionFont(this.aText!, textFrameContainer, paragraph, themeFontScheme, layoutNumberSize);
             }
 
-            return new SCTextPortionFont(this.aText!, this, textFrameContainer, paragraph);
+            var textPortionSize = new TextPortionSize(aText!, paragraph);
+            return new SCTextPortionFont(this.aText!, textFrameContainer, paragraph, themeFontScheme, textPortionSize);
         });
         
         this.portionText = new PortionText(this.aField);

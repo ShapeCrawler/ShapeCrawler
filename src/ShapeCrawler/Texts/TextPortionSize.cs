@@ -8,7 +8,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
-internal record TextPortionSize
+internal record TextPortionSize : IFontSize
 {
     private readonly A.Text aText;
     private readonly SCParagraph paragraph;
@@ -19,7 +19,7 @@ internal record TextPortionSize
         this.paragraph = paragraph;
     }
     
-    internal int Size()
+    public int Size()
     {
         var fontSize = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize
             ?.Value;
@@ -52,7 +52,7 @@ internal record TextPortionSize
         return SCConstants.DefaultFontSize;
     }
 
-    internal void Update(int value)
+    public void Update(int value)
     {
         var parent = this.aText.Parent!;
         var aRunPr = parent.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();

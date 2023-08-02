@@ -13,40 +13,34 @@ internal sealed class SCTextPortionFont : ITextPortionFont
 {
     private readonly A.Text aText;
     private readonly A.FontScheme aFontScheme;
-    private readonly Lazy<SCFontColor> colorFormat;
+    private readonly Lazy<SCFontColor> fontColor;
     private readonly ResetableLazy<A.LatinFont> latinFont;
-    private readonly TextPortionSize size;
     private readonly ITextFrameContainer textFrameContainer;
     private readonly SCParagraph paragraph;
+    private readonly IFontSize size;
 
     internal SCTextPortionFont(
         A.Text aText, 
-        IPortion portion,
         ITextFrameContainer textFrameContainer, 
-        SCParagraph paragraph)
+        SCParagraph paragraph,
+        ThemeFontScheme themeFontScheme,
+        IFontSize size)
     {
         this.aText = aText;
         this.paragraph = paragraph;
-        this.size = new TextPortionSize(aText, paragraph);
-        this.latinFont = new ResetableLazy<A.LatinFont>(this.GetALatinFont);
-        this.colorFormat =
-            new Lazy<SCFontColor>(() => new SCFontColor(this, textFrameContainer, paragraph, this.aText));
-        this.ParentPortion = portion;
-        SCShape shape;
+        this.latinFont = new ResetableLazy<A.LatinFont>(this.ParseALatinFont);
+        this.fontColor = new Lazy<SCFontColor>(() => new SCFontColor(this, textFrameContainer, paragraph, this.aText));
         this.textFrameContainer = textFrameContainer;
-        if (textFrameContainer is SCCell cell)
-        {
-            shape = cell.SCShape;
-        }
-        else
-        {
-            shape = (SCShape)textFrameContainer;
-        }
-
-        var themeFontScheme = (ThemeFontScheme)shape.SlideMasterInternal.Theme.FontScheme;
         this.aFontScheme = themeFontScheme.AFontScheme;
+        this.size = size;
     }
 
+    public int Size
+    {
+        get => this.size.Size();
+        set => this.size.Update(value);
+    }
+    
     public string? LatinName
     {
         get => this.GetLatinName();
@@ -58,13 +52,7 @@ internal sealed class SCTextPortionFont : ITextPortionFont
         get => this.GetEastAsianName();
         set => this.SetEastAsianName(value!);
     }
-
-    public int Size
-    {
-        get => this.size.Size();
-        set => this.size.Update(value);
-    }
-
+    
     public bool IsBold
     {
         get => this.GetBoldFlag();
@@ -77,7 +65,7 @@ internal sealed class SCTextPortionFont : ITextPortionFont
         set => this.SetItalicFlag(value);
     }
 
-    public IFontColor Color => this.colorFormat.Value;
+    public IFontColor Color => this.fontColor.Value;
 
     public A.TextUnderlineValues Underline
     {
@@ -116,8 +104,6 @@ internal sealed class SCTextPortionFont : ITextPortionFont
         get => this.GetOffsetEffect();
         set => this.SetOffset(value);
     }
-
-    internal IPortion ParentPortion { get; }
 
     public bool CanChange()
     {
@@ -177,7 +163,7 @@ internal sealed class SCTextPortionFont : ITextPortionFont
         return this.latinFont.Value.Typeface!;
     }
 
-    private string? GetEastAsianName()
+    private string GetEastAsianName()
     {
         var aEastAsianFont = this.GetAEastAsianFont();
         if (aEastAsianFont.Typeface == "+mj-ea")
@@ -203,7 +189,7 @@ internal sealed class SCTextPortionFont : ITextPortionFont
         return phFontData.AEastAsianFont ?? this.aFontScheme.MinorFont!.EastAsianFont!;
     }
 
-    private A.LatinFont GetALatinFont()
+    private A.LatinFont ParseALatinFont()
     {
         var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
         var aLatinFont = aRunProperties?.GetFirstChild<A.LatinFont>();

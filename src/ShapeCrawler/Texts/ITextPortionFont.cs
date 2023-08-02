@@ -4,7 +4,7 @@
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents font.
+///     Represents font of a text portion.
 /// </summary>
 public interface ITextPortionFont : IFont
 {

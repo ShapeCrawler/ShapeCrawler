@@ -8,7 +8,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
-internal class LayoutNumberSize
+internal record LayoutNumberSize : IFontSize
 {
     private readonly A.Text aText;
     private readonly SCParagraph paragraph;
@@ -21,7 +21,7 @@ internal class LayoutNumberSize
         this.aListStyle = aListStyle;
     }
     
-    internal int Size()
+    public int Size()
     {
         var fontSize = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize?.Value;
         if (fontSize != null)
@@ -53,7 +53,7 @@ internal class LayoutNumberSize
         return SCConstants.DefaultFontSize;
     }
 
-    internal void Update(int newPoints)
+    public void Update(int newPoints)
     {
         var aLvl1pPr = this.aListStyle.Level1ParagraphProperties;
         aLvl1pPr?.Remove();
