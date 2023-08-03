@@ -19,7 +19,7 @@ public class PresentationITests : SCTest
 
         // Act
         SCSettings.CanCollectLogs = false;
-        SCPresentation.Open(pptxStream);
+        new SCPresentation(pptxStream);
 
         // Assert
         var logPath = Path.Combine(Path.GetTempPath(), "sc-log.json");
@@ -34,7 +34,7 @@ public class PresentationITests : SCTest
         var pptxStream = TestHelperShared.GetStream("autoshape-case001.pptx");
 
         // Act
-        SCPresentation.Open(pptxStream);
+        new SCPresentation(pptxStream);
 
         // Assert
         File.Exists(logPath).Should().BeTrue();
@@ -55,12 +55,12 @@ public class PresentationITests : SCTest
         var savedAsFilePath = Path.GetTempFileName();
         var pptx = GetInputStream("001.pptx");
         File.WriteAllBytes(originFilePath, pptx.ToArray());
-        var pres = SCPresentation.Open(originFilePath);
+        var pres = new SCPresentation(originFilePath);
         pres.SaveAs(savedAsFilePath);
         pres.Close();
 
         // Act-Assert
-        SCPresentation.Open(originFilePath);
+        new SCPresentation(originFilePath);
         
         // Clean up
         pres.Close();
@@ -73,7 +73,7 @@ public class PresentationITests : SCTest
     {
         // Arrange
         var originalPath = GetTestPath("001.pptx");
-        var pres = SCPresentation.Open(originalPath);
+        var pres = new SCPresentation(originalPath);
         var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
         var originalText = textBox!.Text;
         var newStream = new MemoryStream();
@@ -84,7 +84,7 @@ public class PresentationITests : SCTest
 
         // Assert
         pres.Close();
-        pres = SCPresentation.Open(originalPath);
+        pres = new SCPresentation(originalPath);
         textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
         var autoShapeText = textBox!.Text;
         autoShapeText.Should().BeEquivalentTo(originalText);
@@ -99,7 +99,7 @@ public class PresentationITests : SCTest
     {
         // Arrange
         var originalFile = GetTestPath("001.pptx");
-        var pres = SCPresentation.Open(originalFile);
+        var pres = new SCPresentation(originalFile);
         var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
         var originalText = textBox!.Text;
         var newPath = Path.GetTempFileName();
@@ -110,7 +110,7 @@ public class PresentationITests : SCTest
 
         // Assert
         pres.Close();
-        pres = SCPresentation.Open(originalFile);
+        pres = new SCPresentation(originalFile);
         textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
         var autoShapeText = textBox!.Text;
         autoShapeText.Should().BeEquivalentTo(originalText);
@@ -125,7 +125,7 @@ public class PresentationITests : SCTest
     {
         // Arrange
         var originalPath = GetTestPath("001.pptx");
-        var pres = SCPresentation.Open(originalPath);
+        var pres = new SCPresentation(originalPath);
         var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
         var originalText = textBox!.Text;
         var newPath = Path.GetTempFileName();
@@ -136,7 +136,7 @@ public class PresentationITests : SCTest
 
         // Assert
         pres.Close();
-        pres = SCPresentation.Open(originalPath);
+        pres = new SCPresentation(originalPath);
         textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
         var autoShapeText = textBox!.Text; 
         autoShapeText.Should().BeEquivalentTo(originalText);

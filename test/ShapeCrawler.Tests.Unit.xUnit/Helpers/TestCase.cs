@@ -34,7 +34,7 @@ public class TestCase
             }
             
             var pptxStream = SCTest.GetInputStream(this.PresentationName);
-            this.pres = SCPresentation.Open(pptxStream);
+            this.pres = new SCPresentation(pptxStream);
 
             return this.pres;
         }
@@ -60,7 +60,7 @@ public class TestCase
     public void SetPresentation(MemoryStream stream)
     {
         stream.Seek(0, SeekOrigin.Begin);
-        this.pres = SCPresentation.Open(stream);
+        this.pres = new SCPresentation(stream);
     }
 }
 

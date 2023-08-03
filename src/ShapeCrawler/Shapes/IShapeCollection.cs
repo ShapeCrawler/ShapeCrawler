@@ -227,7 +227,7 @@ internal sealed class ShapeCollection : IShapeCollection
         var xEmu = UnitConverter.HorizontalPixelToEmu(xPixels);
         var yEmu = UnitConverter.VerticalPixelToEmu(yPixels);
         var mediaDataPart =
-            this.slideStructure.PresentationInternal.SDKPresentationInternal.CreateMediaDataPart("audio/mpeg", ".mp3");
+            this.slideStructure.PresentationInternal.SDKPresentationDocumentInternal.Value.CreateMediaDataPart("audio/mpeg", ".mp3");
         mp3Stream.Position = 0;
         mediaDataPart.FeedData(mp3Stream);
         var slidePart = (SlidePart)this.slideStructure.TypedOpenXmlPart;
@@ -316,7 +316,7 @@ internal sealed class ShapeCollection : IShapeCollection
         var yEmu = UnitConverter.VerticalPixelToEmu(y);
         
         var mediaDataPart =
-            this.slideStructure.PresentationInternal.SDKPresentationInternal.CreateMediaDataPart("video/mp4", ".mp4");
+            this.slideStructure.PresentationInternal.SDKPresentationDocumentInternal.Value.CreateMediaDataPart("video/mp4", ".mp4");
 
         stream.Position = 0;
         mediaDataPart.FeedData(stream);

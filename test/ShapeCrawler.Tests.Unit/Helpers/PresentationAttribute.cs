@@ -19,12 +19,12 @@ public class PresentationAttribute : Attribute, ITestBuilder
         IPresentation pres;
         if (this.pptxName == "new")
         {
-            pres = SCPresentation.Create();
+            pres = new SCPresentation();
         }
         else
         {
             var pptxStream = SCTest.GetInputStream(this.pptxName);
-            pres = SCPresentation.Open(pptxStream);
+            pres = new SCPresentation(pptxStream);
         }
 
         var parameters = new TestCaseParameters(new object[] { pres });

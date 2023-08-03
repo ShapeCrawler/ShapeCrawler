@@ -18,7 +18,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pptxStream = GetInputStream("audio-case001.pptx");
-        var pres = SCPresentation.Open(pptxStream);
+        var pres = new SCPresentation(pptxStream);
         var audioShape = pres.Slides[0].Shapes.GetByName<IAudioShape>("Audio 1");
 
         // Act
@@ -33,7 +33,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pptxStream = GetInputStream("audio-case001.pptx");
-        var pres = SCPresentation.Open(pptxStream);
+        var pres = new SCPresentation(pptxStream);
         var audioShape = pres.Slides[0].Shapes.GetByName<IAudioShape>("Audio 1");
 
         // Act
@@ -48,7 +48,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pptxStream = GetInputStream("video-case001.pptx");
-        var pres = SCPresentation.Open(pptxStream);
+        var pres = new SCPresentation(pptxStream);
         var videoShape = pres.Slides[0].Shapes.GetByName<IVideoShape>("Video 1");
 
         // Act
@@ -63,7 +63,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pptxStream = GetInputStream("video-case001.pptx");
-        var pres = SCPresentation.Open(pptxStream);
+        var pres = new SCPresentation(pptxStream);
         var videoShape = pres.Slides[0].Shapes.GetByName<IVideoShape>("Video 1");
 
         // Act
@@ -79,7 +79,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pptx = GetInputStream("009_table.pptx");
         var image = GetInputStream("test-image-2.png");
-        IPresentation presentation = SCPresentation.Open(pptx);
+        IPresentation presentation = new SCPresentation(pptx);
         IPicture picture5 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 5);
         IPicture picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
         int pic6LengthBefore = picture6.Image.BinaryData.GetAwaiter().GetResult().Length;
@@ -93,7 +93,7 @@ public class ShapeTests : SCTest
         pic6LengthAfter.Should().Be(pic6LengthBefore);
 
         presentation.SaveAs(modifiedPresentation);
-        presentation = SCPresentation.Open(modifiedPresentation);
+        presentation = new SCPresentation(modifiedPresentation);
         picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
         pic6LengthBefore = picture6.Image.BinaryData.GetAwaiter().GetResult().Length;
         pic6LengthAfter.Should().Be(pic6LengthBefore);
@@ -103,9 +103,9 @@ public class ShapeTests : SCTest
     public void Y_Getter_returns_y_coordinate_in_pixels()
     {
         // Arrange
-        IShape shapeCase1 = SCPresentation.Open(GetInputStream("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
-        IShape shapeCase2 = SCPresentation.Open(GetInputStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
-        IShape shapeCase3 = SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
+        IShape shapeCase1 = new SCPresentation(GetInputStream("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
+        IShape shapeCase2 = new SCPresentation(GetInputStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
+        IShape shapeCase3 = new SCPresentation(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
         float verticalResoulution = Helpers.TestHelper.VerticalResolution;
 
         // Act
@@ -124,7 +124,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pptxStream = GetInputStream("010.pptx");
-        var pres = SCPresentation.Open(pptxStream);
+        var pres = new SCPresentation(pptxStream);
         var shape = pres.SlideMasters[0].Shapes.GetByName<IShape>("Date Placeholder 3");
             
         // Act
@@ -139,7 +139,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pres = new SCPresentation(pptx);
         var parentGroupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
         var groupedShape = parentGroupShape.Shapes.GetByName<IShape>("Shape 1");
             
@@ -157,7 +157,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pres = new SCPresentation(pptx);
         var parentGroupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
         var groupedShape = parentGroupShape.Shapes.GetByName<IShape>("Shape 2");
             
@@ -174,7 +174,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pres = new SCPresentation(pptx);
         var parentGroupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
         var groupedShape = parentGroupShape.Shapes.GetByName<IShape>("Shape 1");
             
@@ -192,7 +192,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pres = new SCPresentation(pptx);
         var parentGroupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
         var groupedShape = parentGroupShape.Shapes.GetByName<IShape>("Shape 1");
             
@@ -210,10 +210,10 @@ public class ShapeTests : SCTest
     public void Width_returns_shape_width_in_pixels()
     {
         // Arrange
-        IShape shapeCase1 = SCPresentation.Open(GetInputStream("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
-        IGroupShape groupShape = (IGroupShape)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 7);
+        IShape shapeCase1 = new SCPresentation(GetInputStream("006_1 slides.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
+        IGroupShape groupShape = (IGroupShape)new SCPresentation(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 7);
         IShape shapeCase2 = groupShape.Shapes.First(sp => sp.Id == 5);
-        IShape shapeCase3 = SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
+        IShape shapeCase3 = new SCPresentation(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
 
         // Act
         int width1 = shapeCase1.Width;
@@ -231,7 +231,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pptx = GetInputStream("009_table.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pres = new SCPresentation(pptx);
         var groupShape = pres.Slides[1].Shapes.GetByName<IGroupShape>("Group 1");
         var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 2");
         
@@ -253,7 +253,7 @@ public class ShapeTests : SCTest
     public static IEnumerable<object[]> GeometryTypeTestCases()
     {
         var pptxStream = GetInputStream("021.pptx");
-        var presentation = SCPresentation.Open(pptxStream);
+        var presentation = new SCPresentation(pptxStream);
         var shapeCase1 = presentation.Slides[3].Shapes.First(sp => sp.Id == 2);
         var shapeCase2 = presentation.Slides[3].Shapes.First(sp => sp.Id == 3);
 
@@ -265,7 +265,7 @@ public class ShapeTests : SCTest
     public void Shape_IsOLEObject()
     {
         // Arrange
-        IOLEObject oleObject = SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 8) as IOLEObject;
+        IOLEObject oleObject = new SCPresentation(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 8) as IOLEObject;
 
         // Act-Assert
         oleObject.Should().NotBeNull();
@@ -275,7 +275,7 @@ public class ShapeTests : SCTest
     public void Shape_IsNotGroupShape()
     {
         // Arrange
-        IShape shape = SCPresentation.Open(GetInputStream("006_1 slides.pptx")).Slides[0].Shapes.First(x => x.Id == 3);
+        IShape shape = new SCPresentation(GetInputStream("006_1 slides.pptx")).Slides[0].Shapes.First(x => x.Id == 3);
 
         // Act-Assert
         shape.Should().NotBeOfType<IGroupShape>();
@@ -286,9 +286,9 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pptx9 = GetInputStream("009_table.pptx");
-        var pres9 = SCPresentation.Open(pptx9);
+        var pres9 = new SCPresentation(pptx9);
         var pptx11 = GetInputStream("011_dt.pptx");
-        var pres11 = SCPresentation.Open(pptx11);
+        var pres11 = new SCPresentation(pptx11);
         var shapeCase1 = pres9.Slides[4].Shapes.First(sp => sp.Id == 5);
         var shapeCase2 = pres11.Slides[0].Shapes.First(sp => sp.Id == 4);
 
@@ -301,7 +301,7 @@ public class ShapeTests : SCTest
     public void CustomData_ReturnsNull_WhenShapeHasNotCustomData()
     {
         // Arrange
-        var shape = SCPresentation.Open(GetInputStream("009_table.pptx")).Slides.First().Shapes.First();
+        var shape = new SCPresentation(GetInputStream("009_table.pptx")).Slides.First().Shapes.First();
 
         // Act
         var shapeCustomData = shape.CustomData;
@@ -316,7 +316,7 @@ public class ShapeTests : SCTest
         // Arrange
         const string customDataString = "Test custom data";
         var savedPreStream = new MemoryStream();
-        var presentation = SCPresentation.Open(GetInputStream("009_table.pptx"));
+        var presentation = new SCPresentation(GetInputStream("009_table.pptx"));
         var shape = presentation.Slides.First().Shapes.First();
 
         // Act
@@ -324,7 +324,7 @@ public class ShapeTests : SCTest
         presentation.SaveAs(savedPreStream);
 
         // Assert
-        presentation = SCPresentation.Open(savedPreStream);
+        presentation = new SCPresentation(savedPreStream);
         shape = presentation.Slides.First().Shapes.First();
         shape.CustomData.Should().Be(customDataString);
     }
@@ -333,7 +333,7 @@ public class ShapeTests : SCTest
     public void Name_ReturnsShapeNameString()
     {
         // Arrange
-        IShape shape = SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 8);
+        IShape shape = new SCPresentation(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 8);
 
         // Act
         string shapeName = shape.Name;
@@ -346,8 +346,8 @@ public class ShapeTests : SCTest
     public void Hidden_ReturnsValueIndicatingWhetherShapeIsHiddenFromTheSlide()
     {
         // Arrange
-        IShape shapeCase1 = SCPresentation.Open(GetInputStream("004.pptx")).Slides[0].Shapes[0];
-        IShape shapeCase2 = SCPresentation.Open(GetInputStream("004.pptx")).Slides[0].Shapes[1];
+        IShape shapeCase1 = new SCPresentation(GetInputStream("004.pptx")).Slides[0].Shapes[0];
+        IShape shapeCase2 = new SCPresentation(GetInputStream("004.pptx")).Slides[0].Shapes[1];
 
         // Act-Assert
         shapeCase1.Hidden.Should().BeTrue();

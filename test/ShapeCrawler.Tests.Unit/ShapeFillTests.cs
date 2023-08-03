@@ -15,7 +15,7 @@ public class ShapeFillTests : SCTest
     {
         // Arrange
         var pptx = GetInputStream("021.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pres = new SCPresentation(pptx);
         var autoShape = (IAutoShape)pres.Slides[0].Shapes.First(sp => sp.Id == 108);
 
         // Act-Assert
@@ -28,7 +28,7 @@ public class ShapeFillTests : SCTest
         // Arrange
         var pptx = GetInputStream("009_table.pptx");
         var image = GetInputStream("test-image-2.png");
-        var shape = (IAutoShape)SCPresentation.Open(pptx).Slides[2].Shapes.First(sp => sp.Id == 4);
+        var shape = (IAutoShape)new SCPresentation(pptx).Slides[2].Shapes.First(sp => sp.Id == 4);
         var fill = shape.Fill;
         var imageSizeBefore = fill.Picture!.BinaryData.GetAwaiter().GetResult().Length;
 
@@ -44,7 +44,7 @@ public class ShapeFillTests : SCTest
     public void AutoShape_Fill_Type_returns_NoFill_When_shape_is_Not_filled()
     {
         // Arrange
-        var autoShape = (IAutoShape)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 6);
+        var autoShape = (IAutoShape)new SCPresentation(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 6);
 
         // Act
         var fillType = autoShape.Fill.Type;
@@ -57,7 +57,7 @@ public class ShapeFillTests : SCTest
     public void HexSolidColor_getter_returns_color_name()
     {
         // Arrange
-        var autoShape = (IAutoShape)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 2);
+        var autoShape = (IAutoShape)new SCPresentation(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 2);
 
         // Act
         var shapeSolidColorName = autoShape.Fill.Color;
@@ -71,7 +71,7 @@ public class ShapeFillTests : SCTest
     {
         // Arrange
         var pptxStream = GetInputStream("009_table.pptx");
-        var pres = SCPresentation.Open(pptxStream);
+        var pres = new SCPresentation(pptxStream);
         var shapeFill = pres.Slides[2].Shapes.GetByName<IAutoShape>("AutoShape 1").Fill;
 
         // Act
@@ -86,7 +86,7 @@ public class ShapeFillTests : SCTest
     {
         throw new Exception("Soft validation says no error, but fill does not work in PowerPoint.");
         // Arrange
-        var pres = SCPresentation.Create();
+        var pres = new SCPresentation();
         var slide = pres.Slides[0];
         var shape = slide.Shapes.AddRectangle(0, 0, 100, 100);
         

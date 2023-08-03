@@ -85,62 +85,71 @@ public interface IPresentation : IDisposable
 public sealed class SCPresentation : IPresentation
 {
     private const int MaxSlidesNumber = 300;
-    private readonly MemoryStream internalStream;
     private readonly Lazy<Dictionary<int, FontData>> paraLvlToFontData;
     private readonly Lazy<SCSlideSize> slideSize;
-    private readonly ResetableLazy<SCSectionCollection> sectionCollectionLazy;
-    private readonly ResetableLazy<SCSlideCollection> slideCollectionLazy;
-    private bool closed;
-    private Stream? outerStream;
-    private string? outerPath;
-    
-    private SCPresentation(string outerPath)
+    private readonly ResetableLazy<SCSectionCollection> sectionCollection;
+    private readonly ResetableLazy<SCSlideCollection> slideCollection;
+
+    /// <summary>
+    ///     Creates a new presentation from specified file path.
+    /// </summary>
+    public SCPresentation(string path) : this()
     {
-        this.outerPath = outerPath;
+        this.SDKPresentationDocumentInternal =
+            new Lazy<PresentationDocument>(() => this.CreatePresDocument(path));
+    }
 
-        ThrowIfSourceInvalid(outerPath);
-        var pptxBytes = File.ReadAllBytes(outerPath);
+    /// <summary>
+    ///     Creates a new presentation from specified stream.
+    /// </summary>
+    public SCPresentation(Stream stream) : this()
+    {
+        this.SDKPresentationDocumentInternal =
+            new Lazy<PresentationDocument>(() => this.CreatePresDocument(stream));
+    }
 
-        this.internalStream = pptxBytes.ToExpandableStream();
-        this.SDKPresentationInternal = PresentationDocument.Open(this.internalStream, true);
+    /// <summary>
+    ///     Creates a new presentation.
+    /// </summary>
+    public SCPresentation()
+    {
+        this.SDKPresentationDocumentInternal = new Lazy<PresentationDocument>(this.CreateNewPresDocument);
 
-        this.ThrowIfSlidesNumberLarge();
         this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
-        this.SlideMastersValue =
+        this.SlideMasterCollection =
             new ResetableLazy<SCSlideMasterCollection>(() => SCSlideMasterCollection.Create(this));
         this.paraLvlToFontData =
             new Lazy<Dictionary<int, FontData>>(() =>
-                ParseFontHeights(this.SDKPresentationInternal.PresentationPart!.Presentation));
-        this.sectionCollectionLazy =
+                ParseFontHeights(this.SDKPresentationDocumentInternal.Value.PresentationPart!.Presentation));
+        this.sectionCollection =
             new ResetableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
-        this.slideCollectionLazy = new ResetableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
+        this.slideCollection = new ResetableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
         this.HeaderAndFooter = new HeaderAndFooter(this);
     }
 
-    private SCPresentation(Stream outerStream)
+    private PresentationDocument CreateNewPresDocument()
     {
-        this.outerStream = outerStream;
-        ThrowIfSourceInvalid(outerStream);
+        var stream = Assembly.GetExecutingAssembly()
+            .GetManifestResourceStream("ShapeCrawler.Resources.new-presentation.pptx") !;
+        var pptxStream = new MemoryStream();
+        stream.CopyTo(pptxStream);
 
-        this.internalStream = new MemoryStream();
-        outerStream.CopyTo(this.internalStream);
-        this.SDKPresentationInternal = PresentationDocument.Open(this.internalStream, true);
+        return PresentationDocument.Open(pptxStream, true);
+    }
 
-        this.ThrowIfSlidesNumberLarge();
-        this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
-        this.SlideMastersValue =
-            new ResetableLazy<SCSlideMasterCollection>(() => SCSlideMasterCollection.Create(this));
-        this.paraLvlToFontData =
-            new Lazy<Dictionary<int, FontData>>(() =>
-                ParseFontHeights(this.SDKPresentationInternal.PresentationPart!.Presentation));
-        this.sectionCollectionLazy =
-            new ResetableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
-        this.slideCollectionLazy = new ResetableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
-        this.HeaderAndFooter = new HeaderAndFooter(this);
+    private PresentationDocument CreatePresDocument(string pptxPath)
+    {
+        var pptxStream = File.ReadAllBytes(pptxPath).ToExpandableStream();
+        return CreatePresDocument(pptxStream);
+    }
+    
+    private PresentationDocument CreatePresDocument(Stream pptxStream)
+    {
+        return PresentationDocument.Open(pptxStream, true);
     }
 
     /// <inheritdoc/>
-    public ISlideCollection Slides => this.slideCollectionLazy.Value;
+    public ISlideCollection Slides => this.slideCollection.Value;
 
     /// <inheritdoc/>
     public int SlideHeight
@@ -157,23 +166,23 @@ public sealed class SCPresentation : IPresentation
     }
 
     /// <inheritdoc/>
-    public ISlideMasterCollection SlideMasters => this.SlideMastersValue.Value;
+    public ISlideMasterCollection SlideMasters => this.SlideMasterCollection.Value;
 
     /// <inheritdoc/>
     public byte[] BinaryData => this.GetByteArray();
 
     /// <inheritdoc/>
-    public ISectionCollection Sections => this.sectionCollectionLazy.Value;
+    public ISectionCollection Sections => this.sectionCollection.Value;
 
     /// <inheritdoc/>
     public PresentationDocument SDKPresentationDocument => this.GetSDKPresentation();
 
     /// <inheritdoc/>
     public IHeaderAndFooter HeaderAndFooter { get; }
-    
-    internal ResetableLazy<SCSlideMasterCollection> SlideMastersValue { get; }
 
-    internal PresentationDocument SDKPresentationInternal { get; }
+    internal ResetableLazy<SCSlideMasterCollection> SlideMasterCollection { get; }
+
+    internal Lazy<PresentationDocument> SDKPresentationDocumentInternal { get; init; }
 
     internal SCSectionCollection SectionsInternal => (SCSectionCollection)this.Sections;
 
@@ -184,94 +193,33 @@ public sealed class SCPresentation : IPresentation
     internal List<ImagePart> ImageParts => this.GetImageParts();
 
     internal SCSlideCollection SlidesInternal => (SCSlideCollection)this.Slides;
-    
+
     private static int MaxPresentationSize => 250 * 1024 * 1024;
-
-    #region Global Statics
-
-    /// <summary>
-    ///     Creates a new presentation.
-    /// </summary>
-    public static IPresentation Create()
-    {
-        SCLogger.Send();
-
-        var assembly = Assembly.GetExecutingAssembly();
-        var rStream = assembly.GetManifestResourceStream("ShapeCrawler.Resources.new-presentation.pptx") !;
-        var mStream = new MemoryStream();
-        rStream.CopyTo(mStream);
-
-        return Open(mStream);
-    }
-
-    /// <summary>
-    ///     Opens presentation path.
-    /// </summary>
-    public static IPresentation Open(string pptxPath)
-    {
-        SCLogger.Send();
-
-        return new SCPresentation(pptxPath);
-    }
-
-    /// <summary>
-    ///     Opens presentation stream.
-    /// </summary>
-    public static IPresentation Open(Stream pptxStream)
-    {
-        SCLogger.Send();
-
-        pptxStream.Position = 0;
-        return new SCPresentation(pptxStream);
-    }
-
-    #endregion Global Statics
 
     /// <inheritdoc/>
     public void Save()
     {
         this.ChartWorkbooks.ForEach(chartWorkbook => chartWorkbook.Close());
-        this.SDKPresentationInternal.Save();
-
-        if (this.outerStream != null)
-        {
-            this.SDKPresentationInternal.Clone(this.outerStream);
-        }
-        else if (this.outerPath != null)
-        {
-            var pres = this.SDKPresentationInternal.Clone(this.outerPath);
-            pres.Dispose();
-        }
+        this.SDKPresentationDocumentInternal.Value.Save();
     }
 
     /// <inheritdoc/>
     public void SaveAs(string path)
     {
-        this.outerStream = null;
-        this.outerPath = path;
-        this.Save();
+        this.SDKPresentationDocumentInternal.Value.Clone(path);
     }
 
     /// <inheritdoc/>
     public void SaveAs(Stream stream)
     {
-        this.outerPath = null;
-        this.outerStream = stream;
-        this.Save();
+        this.SDKPresentationDocumentInternal.Value.Clone(stream);
     }
 
     /// <inheritdoc/>
     public void Close()
     {
-        if (this.closed)
-        {
-            return;
-        }
-
         this.ChartWorkbooks.ForEach(cw => cw.Close());
-        this.SDKPresentationInternal.Dispose();
-
-        this.closed = true;
+        this.SDKPresentationDocumentInternal.Value.Dispose();
     }
 
     /// <summary>
@@ -281,7 +229,6 @@ public sealed class SCPresentation : IPresentation
     {
         this.Close();
     }
-
 
     private static Dictionary<int, FontData> ParseFontHeights(P.Presentation pPresentation)
     {
@@ -307,18 +254,6 @@ public sealed class SCPresentation : IPresentation
         return lvlToFontData;
     }
 
-    private static void ThrowIfSourceInvalid(string path)
-    {
-        if (!File.Exists(path))
-        {
-            throw new FileNotFoundException(nameof(path));
-        }
-
-        var fileInfo = new FileInfo(path);
-
-        ThrowIfPptxSizeLarge(fileInfo.Length);
-    }
-
     private static void ThrowIfSourceInvalid(Stream stream)
     {
         ThrowIfPptxSizeLarge(stream.Length);
@@ -336,14 +271,14 @@ public sealed class SCPresentation : IPresentation
     {
         var stream = new MemoryStream();
         this.ChartWorkbooks.ForEach(c => c.Close());
-        this.SDKPresentationInternal.Clone(stream);
+        this.SDKPresentationDocumentInternal.Value.Clone(stream);
 
         return stream.ToArray();
     }
 
     private void SetSlideHeight(int pixel)
     {
-        var pSlideSize = this.SDKPresentationInternal.PresentationPart!.Presentation.SlideSize!;
+        var pSlideSize = this.SDKPresentationDocumentInternal.Value.PresentationPart!.Presentation.SlideSize!;
         var emu = UnitConverter.VerticalPixelToEmu(pixel);
 
         pSlideSize.Cy = new Int32Value((int)emu);
@@ -351,15 +286,15 @@ public sealed class SCPresentation : IPresentation
 
     private void SetSlideWidth(int pixel)
     {
-        var pSlideSize = this.SDKPresentationInternal.PresentationPart!.Presentation.SlideSize!;
+        var pSlideSize = this.SDKPresentationDocumentInternal.Value.PresentationPart!.Presentation.SlideSize!;
         var emu = UnitConverter.VerticalPixelToEmu(pixel);
 
         pSlideSize.Cx = new Int32Value((int)emu);
     }
-    
+
     private PresentationDocument GetSDKPresentation()
     {
-        return (PresentationDocument)this.SDKPresentationInternal.Clone();
+        return (PresentationDocument)this.SDKPresentationDocumentInternal.Value.Clone();
     }
 
     private List<ImagePart> GetImageParts()
@@ -390,7 +325,7 @@ public sealed class SCPresentation : IPresentation
 
     private void ThrowIfSlidesNumberLarge()
     {
-        var nbSlides = this.SDKPresentationInternal.PresentationPart!.SlideParts.Count();
+        var nbSlides = this.SDKPresentationDocumentInternal.Value.PresentationPart!.SlideParts.Count();
         if (nbSlides > MaxSlidesNumber)
         {
             this.Close();
@@ -400,7 +335,7 @@ public sealed class SCPresentation : IPresentation
 
     private SCSlideSize GetSlideSize()
     {
-        var pSlideSize = this.SDKPresentationInternal.PresentationPart!.Presentation.SlideSize!;
+        var pSlideSize = this.SDKPresentationDocumentInternal.Value.PresentationPart!.Presentation.SlideSize!;
         var withPx = UnitConverter.HorizontalEmuToPixel(pSlideSize.Cx!.Value);
         var heightPx = UnitConverter.VerticalEmuToPixel(pSlideSize.Cy!.Value);
 

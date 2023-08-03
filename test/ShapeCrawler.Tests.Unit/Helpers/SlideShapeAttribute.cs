@@ -23,7 +23,7 @@ public class SlideShapeAttribute : Attribute, ITestBuilder
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
     {
         var pptxStream = SCTest.GetInputStream(this.pptxName);
-        var pres = SCPresentation.Open(pptxStream);
+        var pres = new SCPresentation(pptxStream);
         var shape = pres.Slides[this.slideNumber - 1].Shapes.GetById<IShape>(this.shapeId);
 
         var parameters = new TestCaseParameters(new[] { shape, this.expectedResult });

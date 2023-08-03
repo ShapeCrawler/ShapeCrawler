@@ -54,43 +54,43 @@ public class ShapeTests : SCTest
         get
         {
             var pptxStream1 = GetInputStream("021.pptx");
-            var pres1 = SCPresentation.Open(pptxStream1);
+            var pres1 = new SCPresentation(pptxStream1);
             var shape1 = pres1.Slides[3].Shapes.GetById<IShape>(2);
             var testCase1 = new TestCase<IShape, int>(1, shape1, 383);
             yield return new object[] { testCase1 };
                 
             var pptxStream2 = GetInputStream("008.pptx");
-            var pres2 = SCPresentation.Open(pptxStream2);
+            var pres2 = new SCPresentation(pptxStream2);
             var shape2 = pres2.Slides[0].Shapes.GetById<IShape>(3);
             var testCase2 = new TestCase<IShape, int>(2, shape2, 66);
             yield return new object[] { testCase2 };
                 
             var pptxStream3 = GetInputStream("006_1 slides.pptx");
-            var pres3 = SCPresentation.Open(pptxStream3);
+            var pres3 = new SCPresentation(pptxStream3);
             var shape3 = pres3.Slides[0].Shapes.GetById<IShape>(2);
             var testCase3 = new TestCase<IShape, int>(3, shape3, 160);
             yield return new object[] { testCase3 };
                 
             var pptxStream4 = GetInputStream("009_table.pptx");
-            var pres4 = SCPresentation.Open(pptxStream4);
+            var pres4 = new SCPresentation(pptxStream4);
             var shape4 = pres4.Slides[1].Shapes.GetById<IShape>(9);
             var testCase4 = new TestCase<IShape, int>(4, shape4, 73);
             yield return new object[] { testCase4 };
                 
             var pptxStream5 = GetInputStream("025_chart.pptx");
-            var pres5 = SCPresentation.Open(pptxStream5);
+            var pres5 = new SCPresentation(pptxStream5);
             var shape5 = pres5.Slides[2].Shapes.GetById<IShape>(7);
             var testCase5 = new TestCase<IShape, int>(5, shape5, 79);
             yield return new object[] { testCase5 };
                 
             var pptxStream6 = GetInputStream("018.pptx");
-            var pres6 = SCPresentation.Open(pptxStream6);
+            var pres6 = new SCPresentation(pptxStream6);
             var shape6 = pres6.Slides[0].Shapes.GetByName<IShape>("Picture Placeholder 1");
             var testCase6 = new TestCase<IShape, int>(6, shape6, 9);
             yield return new object[] { testCase6 };
                 
             var pptxStream7 = GetInputStream("009_table.pptx");
-            var pres7 = SCPresentation.Open(pptxStream7);
+            var pres7 = new SCPresentation(pptxStream7);
             var shape7 = pres7.Slides[1].Shapes.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IShape>("Shape 1");
             var testCase7 = new TestCase<IShape, int>(7, shape7, 53);
             yield return new object[] { testCase7 };
@@ -130,7 +130,7 @@ public class ShapeTests : SCTest
 
         // Assert
         pres.SaveAs(stream);
-        pres = SCPresentation.Open(stream);
+        pres = new SCPresentation(stream);
         shape = pres.Slides[slideIndex].Shapes.GetByName<IShape>(shapeName);
         shape.X.Should().Be(400);
         var errors = PptxValidator.Validate(shape.SlideStructure.Presentation);
@@ -153,7 +153,7 @@ public class ShapeTests : SCTest
 
         // Assert
         pres.SaveAs(stream);
-        pres = SCPresentation.Open(stream);
+        pres = new SCPresentation(stream);
         shape = pres.Slides[slideIndex].Shapes.GetByName<IShape>(shapeName);
         shape.Width.Should().Be(600);
         var errors = PptxValidator.Validate(shape.SlideStructure.Presentation);
@@ -168,7 +168,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pptx = GetInputStream(filename);
-        var pres = SCPresentation.Open(pptx);
+        var pres = new SCPresentation(pptx);
         var autoShape = pres.Slides[slideNumber - 1].Shapes.GetById<IAutoShape>(shapeId);
 
         // Act
@@ -202,7 +202,7 @@ public class ShapeTests : SCTest
     public static IEnumerable<object[]> GeometryTypeTestCases()
     {
         var pptxStream = GetInputStream("021.pptx");
-        var presentation = SCPresentation.Open(pptxStream);
+        var presentation = new SCPresentation(pptxStream);
         var shapeCase1 = presentation.Slides[3].Shapes.First(sp => sp.Id == 2);
         var shapeCase2 = presentation.Slides[3].Shapes.First(sp => sp.Id == 3);
 

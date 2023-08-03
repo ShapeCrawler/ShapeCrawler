@@ -106,7 +106,7 @@ public class ShapeFillTests : SCTest
     public static IEnumerable<object[]> TestCasesFillType()
     {
         var pptxStream = GetInputStream("009_table.pptx");
-        var pres = SCPresentation.Open(pptxStream);
+        var pres = new SCPresentation(pptxStream);
 
         var withNoFill = pres.Slides[1].Shapes.GetById<IAutoShape>(6);
         yield return new object[] { withNoFill, SCFillType.NoFill };
@@ -124,7 +124,7 @@ public class ShapeFillTests : SCTest
         yield return new object[] { withPattern, SCFillType.Pattern };
 
         pptxStream = GetInputStream("autoshape-case003.pptx");
-        pres = SCPresentation.Open(pptxStream);
+        pres = new SCPresentation(pptxStream);
         var withSlideBg = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
         yield return new object[] { withSlideBg, SCFillType.SlideBackground };
     }

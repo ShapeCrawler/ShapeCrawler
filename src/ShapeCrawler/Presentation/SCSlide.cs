@@ -165,7 +165,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
 
     private int GetNumber()
     {
-        var presentationPart = this.PresentationInternal.SDKPresentationInternal.PresentationPart!;
+        var presentationPart = this.PresentationInternal.SDKPresentationDocumentInternal.Value.PresentationPart!;
         var currentSlidePartId = presentationPart.GetIdOfPart(this.SDKSlidePart);
         var slideIdList =
             presentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
@@ -195,7 +195,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
             throw new ArgumentOutOfRangeException(nameof(destIndex));
         }
 
-        var presentationPart = this.PresentationInternal.SDKPresentationInternal.PresentationPart!;
+        var presentationPart = this.PresentationInternal.SDKPresentationDocumentInternal.Value.PresentationPart!;
 
         var presentation = presentationPart.Presentation;
         var slideIdList = presentation.SlideIdList!;

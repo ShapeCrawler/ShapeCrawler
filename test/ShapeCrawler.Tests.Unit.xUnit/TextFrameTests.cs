@@ -100,7 +100,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             pres.SaveAs(mStream);
             pres.Close();
 
-            testTextBoxQuery.Presentation = SCPresentation.Open(mStream);
+            testTextBoxQuery.Presentation = new SCPresentation(mStream);
             textFrame = testTextBoxQuery.GetAutoShape().TextFrame;
             textFrame.Text.Should().BeEquivalentTo(newText);
             textFrame.Paragraphs.Should().HaveCount(1);
@@ -114,7 +114,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
                 
                 var case1 = new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(GetInputStream("001.pptx")),
+                    Presentation = new SCPresentation(GetInputStream("001.pptx")),
                     SlideIndex = 0,
                     ShapeId = 3
                 };
@@ -122,7 +122,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
                 
                 var case2 = new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(GetInputStream("020.pptx")),
+                    Presentation = new SCPresentation(GetInputStream("020.pptx")),
                     SlideIndex = 2,
                     ShapeId = 8
                 };
@@ -130,7 +130,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
                 
                 var case3 = new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(GetInputStream("001.pptx")),
+                    Presentation = new SCPresentation(GetInputStream("001.pptx")),
                     SlideNumber = 2,
                     ShapeName = "Header 1",
                 };
@@ -138,7 +138,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
                 
                 var case4 = new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(GetInputStream("autoshape-case004_subtitle.pptx")),
+                    Presentation = new SCPresentation(GetInputStream("autoshape-case004_subtitle.pptx")),
                     SlideNumber = 1,
                     ShapeName = "Subtitle 1",
                 };
@@ -146,7 +146,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
                 
                 var case5 = new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(GetInputStream("autoshape-case008_text-frame.pptx")),
+                    Presentation = new SCPresentation(GetInputStream("autoshape-case008_text-frame.pptx")),
                     SlideNumber = 1,
                     ShapeName = "AutoShape 1",
                 };
@@ -245,28 +245,28 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             get
             {
                 var pptxStream1 = GetInputStream("009_table.pptx");
-                var pres1 = SCPresentation.Open(pptxStream1);
+                var pres1 = new SCPresentation(pptxStream1);
                 var autoShape1 = pres1.Slides[2].Shapes.GetById<IAutoShape>(2);
                 var textBox1 = autoShape1.TextFrame;
                 var testCase1 = new TestCase<ITextFrame, int>(1, textBox1, 1);
                 yield return new object[] { testCase1 };
 
                 var pptxStream2 = GetInputStream("020.pptx");
-                var pres2 = SCPresentation.Open(pptxStream2);
+                var pres2 = new SCPresentation(pptxStream2);
                 var autoShape2 = pres2.Slides[2].Shapes.GetById<IAutoShape>(8);
                 var textBox2 = autoShape2.TextFrame;
                 var testCase2 = new TestCase<ITextFrame, int>(2, textBox2, 2);
                 yield return new object[] { testCase2 };
 
                 var pptxStream3 = GetInputStream("009_table.pptx");
-                var pres3 = SCPresentation.Open(pptxStream3);
+                var pres3 = new SCPresentation(pptxStream3);
                 var table3 = pres3.Slides[2].Shapes.GetById<ITable>(3);
                 var textBox3 = table3.Rows[0].Cells[0].TextFrame;
                 var testCase3 = new TestCase<ITextFrame, int>(3, textBox3, 2);
                 yield return new object[] { testCase3 };
 
                 var pptxStream4 = GetInputStream("001.pptx");
-                var pres4 = SCPresentation.Open(pptxStream4);
+                var pres4 = new SCPresentation(pptxStream4);
                 var autoShape4 = pres4.Slides[1].Shapes.GetById<IAutoShape>(2);
                 var textBox4 = autoShape4.TextFrame;
                 var testCase4 = new TestCase<ITextFrame, int>(4, textBox4, 1);

@@ -34,7 +34,7 @@ public class SlidePortionAttribute : Attribute, ITestBuilder
 
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
     {
-        var pres = SCPresentation.Open(SCTest.GetInputStream(this.pptxName));
+        var pres = new SCPresentation(SCTest.GetInputStream(this.pptxName));
         var portionQuery = this.shapeName == null 
             ? new TestSlidePortionQuery(this.slideNumber, this.shapeId, this.paragraphNumber, this.portionNumber) 
             : new TestSlidePortionQuery(this.slideNumber, this.shapeName, this.paragraphNumber, this.portionNumber);

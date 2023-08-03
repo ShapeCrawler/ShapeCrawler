@@ -47,16 +47,16 @@ public class TableTests : SCTest
     public static IEnumerable<object[]> TestCasesCellIsMergedCell()
     {
         var pptx = GetInputStream("001.pptx");
-        var table1 = SCPresentation.Open(pptx).Slides[1].Shapes.GetById<ITable>(3);
+        var table1 = new SCPresentation(pptx).Slides[1].Shapes.GetById<ITable>(3);
         yield return new object[] { table1[0, 0], table1[1, 0] };
 
         var pptx2 = GetInputStream("001.pptx");
-        var pres2 = SCPresentation.Open(pptx2);
+        var pres2 = new SCPresentation(pptx2);
         var table2 = pres2.Slides[1].Shapes.GetByName<ITable>("Table 5");
         yield return new object[] { table2[1, 1], table2[2, 1] };
 
         var pptx3 = GetInputStream("001.pptx");
-        var pres3 = SCPresentation.Open(pptx3);
+        var pres3 = new SCPresentation(pptx3);
         var table3 = pres3.Slides[3].Shapes.GetById<ITable>(4);
         yield return new object[] { table3[0, 1], table3[1, 1] };
     }
@@ -67,7 +67,7 @@ public class TableTests : SCTest
     public void MergeCells_MergesSpecifiedCellsRange(int rowIdx1, int colIdx1, int rowIdx2, int colIdx2)
     {
         // Arrange
-        IPresentation presentation = SCPresentation.Open(GetInputStream("001.pptx"));
+        IPresentation presentation = new SCPresentation(GetInputStream("001.pptx"));
         ITable table = (ITable)presentation.Slides[1].Shapes.First(sp => sp.Id == 4);
         var mStream = new MemoryStream();
 
@@ -79,7 +79,7 @@ public class TableTests : SCTest
         table[rowIdx2, colIdx2].IsMergedCell.Should().BeTrue();
 
         presentation.SaveAs(mStream);
-        presentation = SCPresentation.Open(mStream);
+        presentation = new SCPresentation(mStream);
         table = (ITable)presentation.Slides[1].Shapes.First(sp => sp.Id == 4);
         table[rowIdx1, colIdx1].IsMergedCell.Should().BeTrue();
         table[rowIdx2, colIdx2].IsMergedCell.Should().BeTrue();

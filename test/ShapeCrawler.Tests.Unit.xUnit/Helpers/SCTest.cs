@@ -50,18 +50,19 @@ public abstract class SCTest
         return path;
     }
 
-    protected static IPresentation SaveAndOpenPresentation(IPresentation presentation)
+    protected static SCPresentation SaveAndOpenPresentation(IPresentation presentation)
     {
         var stream = new MemoryStream();
         presentation.SaveAs(stream);
 
-        return SCPresentation.Open(stream);
+        return new SCPresentation(stream);
     }
 
 #if DEBUG
 
     protected void SaveResult(IPresentation pres)
     {
+
         var testFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "..", "TestResults",
             TestContext.CurrentContext.Test.Name);
         Directory.CreateDirectory(testFolder);
@@ -75,7 +76,7 @@ public abstract class SCTest
     {
         var stream = GetInputStream(fileName);
 
-        return SCPresentation.Open(stream);
+        return new SCPresentation(stream);
     }
 }
 

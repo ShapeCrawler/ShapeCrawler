@@ -21,7 +21,7 @@ public class ParagraphPortionTests : SCTest
     {
         // Arrange
         var pptx = GetInputStream("009_table");
-        var pres = SCPresentation.Open(pptx);
+        var pres = new SCPresentation(pptx);
         IPortion portion = ((ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
             .TextFrame
             .Paragraphs[0].Portions[0];
@@ -38,7 +38,7 @@ public class ParagraphPortionTests : SCTest
     {
         // Arrange
         var pptxStream = GetInputStream("autoshape-case001.pptx");
-        var pres = SCPresentation.Open(pptxStream);
+        var pres = new SCPresentation(pptxStream);
         var autoShape = pres.SlideMasters[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
         var portion = autoShape.TextFrame!.Paragraphs[0].Portions[0];
 
@@ -55,7 +55,7 @@ public class ParagraphPortionTests : SCTest
     {
         // Arrange
         var pptxStream = GetInputStream(pptxFile);
-        var presentation = SCPresentation.Open(pptxStream);
+        var presentation = new SCPresentation(pptxStream);
         var autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>(shapeName);
         var portion = autoShape.TextFrame.Paragraphs[0].Portions[0];
 
@@ -65,7 +65,7 @@ public class ParagraphPortionTests : SCTest
         // Assert
         presentation.Save();
         presentation.Close();
-        presentation = SCPresentation.Open(pptxStream);
+        presentation = new SCPresentation(pptxStream);
         autoShape = presentation.Slides[0].Shapes.GetByName<IAutoShape>(shapeName);
         portion = autoShape.TextFrame.Paragraphs[0].Portions[0];
         portion.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
@@ -83,7 +83,7 @@ public class ParagraphPortionTests : SCTest
     {
         // Arrange
         var pptxStream = GetInputStream("001.pptx");
-        var presentation = SCPresentation.Open(pptxStream);
+        var presentation = new SCPresentation(pptxStream);
         var textBox3 = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
         var textBox4 = presentation.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
         var portion3 = textBox3.TextFrame.Paragraphs[0].Portions[0];
@@ -103,7 +103,7 @@ public class ParagraphPortionTests : SCTest
     {
         // Arrange
         var pptx = GetInputStream("autoshape-case001.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pres = new SCPresentation(pptx);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
         
@@ -119,7 +119,7 @@ public class ParagraphPortionTests : SCTest
     {
         // Arrange
         var pptxStream =  GetInputStream("table-case001.pptx");
-        var pres = SCPresentation.Open(pptxStream);
+        var pres = new SCPresentation(pptxStream);
         var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
         var portion = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0];
 
@@ -137,7 +137,7 @@ public class ParagraphPortionTests : SCTest
     {
         // Arrange
         var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pres = new SCPresentation(pptx);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
 
@@ -150,7 +150,7 @@ public class ParagraphPortionTests : SCTest
     {
         // Arrange
         var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pres = new SCPresentation(pptx);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
 
@@ -163,7 +163,7 @@ public class ParagraphPortionTests : SCTest
     {
         // Arrange
         var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pres = new SCPresentation(pptx);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
 
@@ -179,7 +179,7 @@ public class ParagraphPortionTests : SCTest
     {
         // Arrange
         var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pres = new SCPresentation(pptx);
         var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 4");
         var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
         var color = SCColor.FromHex("FFFF00");

@@ -57,9 +57,9 @@ internal sealed class SCSlideCollection : ISlideCollection
     internal SCSlideCollection(SCPresentation pres)
     {
         this.presentation = pres;
-        this.presPart = pres.SDKPresentationInternal.PresentationPart!;
+        this.presPart = pres.SDKPresentationDocumentInternal.Value.PresentationPart!;
         this.slides = new ResetableLazy<List<SCSlide>>(this.GetSlides);
-    }
+    } 
 
     public int Count => this.slides.Value.Count;
 
@@ -190,7 +190,7 @@ internal sealed class SCSlideCollection : ISlideCollection
         this.slides.Value[addedSlideIndex].Number = position;
 
         this.slides.Reset();
-        this.presentation.SlideMastersValue.Reset();
+        this.presentation.SlideMasterCollection.Reset();
         this.OnCollectionChanged();
     }
 
@@ -202,18 +202,18 @@ internal sealed class SCSlideCollection : ISlideCollection
         if (sourceSlideInternal.Presentation == this.presentation)
         {
             this.presentation.ChartWorkbooks.ForEach(c => c.Close());
-            sourcePresDoc = (PresentationDocument)this.presentation.SDKPresentationInternal.Clone(tempStream);
+            sourcePresDoc = (PresentationDocument)this.presentation.SDKPresentationDocumentInternal.Value.Clone(tempStream);
         }
         else
         {
             sourcePresDoc =
-                (PresentationDocument)sourceSlideInternal.PresentationInternal.SDKPresentationInternal
+                (PresentationDocument)sourceSlideInternal.PresentationInternal.SDKPresentationDocumentInternal.Value
                     .Clone(tempStream);
         }
 
-        var destPresDoc = this.presentation.SDKPresentationInternal;
+        var destPresDoc = this.presentation.SDKPresentationDocumentInternal;
         var sourcePresPart = sourcePresDoc.PresentationPart!;
-        var destPresPart = destPresDoc.PresentationPart!;
+        var destPresPart = destPresDoc.Value.PresentationPart!;
         var destSdkPres = destPresPart.Presentation;
         var sourceSlideIndex = slide.Number - 1;
         var sourceSlideId = (P.SlideId)sourcePresPart.Presentation.SlideIdList!.ChildElements[sourceSlideIndex];
@@ -223,12 +223,12 @@ internal sealed class SCSlideCollection : ISlideCollection
 
         var addedSlidePart = AddSlidePart(destPresPart, sourceSlidePart, out var addedSlideMasterPart);
 
-        AddNewSlideId(destSdkPres, destPresDoc, addedSlidePart);
-        var masterId = AddNewSlideMasterId(destSdkPres, destPresDoc, addedSlideMasterPart);
-        AdjustLayoutIds(destPresDoc, masterId);
+        AddNewSlideId(destSdkPres, destPresDoc.Value, addedSlidePart);
+        var masterId = AddNewSlideMasterId(destSdkPres, destPresDoc.Value, addedSlideMasterPart);
+        AdjustLayoutIds(destPresDoc.Value, masterId);
 
         this.slides.Reset();
-        this.presentation.SlideMastersValue.Reset();
+        this.presentation.SlideMasterCollection.Reset();
 
         this.CollectionChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -407,7 +407,7 @@ internal sealed class SCSlideCollection : ISlideCollection
 
     private List<SCSlide> GetSlides()
     {
-        this.presPart = this.presentation.SDKPresentationInternal.PresentationPart!;
+        this.presPart = this.presentation.SDKPresentationDocumentInternal.Value.PresentationPart!;
         int slidesCount = this.presPart.SlideParts.Count();
         var slides = new List<SCSlide>(slidesCount);
         var slideIds = this.presPart.Presentation.SlideIdList!.ChildElements.OfType<P.SlideId>().ToList();
