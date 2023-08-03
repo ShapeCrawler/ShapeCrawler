@@ -9,7 +9,6 @@ using ShapeCrawler.Charts;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Services;
-using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 

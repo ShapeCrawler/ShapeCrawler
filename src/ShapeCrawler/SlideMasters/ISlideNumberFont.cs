@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ShapeCrawler.Drawing;
+﻿using ShapeCrawler.Drawing;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 

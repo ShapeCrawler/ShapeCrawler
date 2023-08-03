@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Services;
-using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -59,15 +58,6 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
         this.Number = number;
         this.slideLayouts = new ResetableLazy<List<SCSlideLayout>>(this.CreateSlideLayouts);
         this.slideNumber = new Lazy<SCMasterSlideNumber?>(this.CreateSlideNumber);
-    }
-
-    private SCMasterSlideNumber? CreateSlideNumber()
-    {
-        var pSldNum = PSlideMaster.CommonSlideData!.ShapeTree!
-            .Elements<P.Shape>()
-            .FirstOrDefault(s => s.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?.PlaceholderShape?.Type?.Value == P.PlaceholderValues.SlideNumber);
-        
-        return pSldNum is null ? null : new SCMasterSlideNumber(pSldNum);
     }
 
     public IImage? Background => this.GetBackground();
@@ -153,5 +143,14 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
         }
 
         return layouts;
+    }
+    
+    private SCMasterSlideNumber? CreateSlideNumber()
+    {
+        var pSldNum = this.PSlideMaster.CommonSlideData!.ShapeTree!
+            .Elements<P.Shape>()
+            .FirstOrDefault(s => s.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?.PlaceholderShape?.Type?.Value == P.PlaceholderValues.SlideNumber);
+        
+        return pSldNum is null ? null : new SCMasterSlideNumber(pSldNum);
     }
 }
