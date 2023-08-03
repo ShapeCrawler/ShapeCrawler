@@ -55,7 +55,7 @@ internal record TextPortionSize : IFontSize
     public void Update(int points)
     {
         var parent = this.aText.Parent!;
-        var aRunPr = parent.GetFirstChild<DocumentFormat.OpenXml.Drawing.RunProperties>();
+        var aRunPr = parent.GetFirstChild<A.RunProperties>();
         if (aRunPr == null)
         {
             var builder = new ARunPropertiesBuilder();
@@ -65,7 +65,7 @@ internal record TextPortionSize : IFontSize
 
         aRunPr.FontSize = points * 100;
     }
-    
+
     private static bool TryFromPlaceholder(SCShape scShape, int paraLevel, out int i)
     {
         i = -1;
@@ -77,10 +77,8 @@ internal record TextPortionSize : IFontSize
             referencedShape.FillFontData(paraLevel, ref fontDataPlaceholder);
             if (fontDataPlaceholder.FontSize is not null)
             {
-                {
-                    i = fontDataPlaceholder.FontSize / 100;
-                    return true;
-                }
+                i = fontDataPlaceholder.FontSize / 100;
+                return true;
             }
         }
 
@@ -96,10 +94,8 @@ internal record TextPortionSize : IFontSize
 
         if (slideMaster.TryGetFontSizeFromBody(paraLevel, out var fontSizeBody))
         {
-            {
-                i = fontSizeBody / 100;
-                return true;
-            }
+            i = fontSizeBody / 100;
+            return true;
         }
 
         if (slideMaster.TryGetFontSizeFromOther(paraLevel, out var fontSizeOther))

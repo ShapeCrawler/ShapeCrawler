@@ -4,6 +4,7 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts;
 
@@ -16,33 +17,40 @@ internal sealed class SCFieldPortion : IPortion
     private readonly A.Text? aText;
 
     internal SCFieldPortion(
-        A.Field aField, 
-        SlideStructure slideStructure, 
-        ITextFrameContainer textFrameContainer, 
+        A.Field aField,
+        SlideStructure slideStructure,
+        ITextFrameContainer textFrameContainer,
         SCParagraph paragraph,
         Action onRemoveHandler)
     {
         this.slideStructure = slideStructure;
         this.aText = aField.GetFirstChild<A.Text>();
         this.Removed += onRemoveHandler;
-        
+
         this.aField = aField;
 
         var themeFontScheme = (ThemeFontScheme)textFrameContainer.SCShape.SlideMasterInternal.Theme.FontScheme;
         this.font = new ResetableLazy<ITextPortionFont>(() =>
         {
-            if (slideStructure is SCSlideLayout &&
+            if (slideStructure is SCSlideLayout layout &&
                 textFrameContainer.SCShape.Placeholder?.Type == SCPlaceholderType.SlideNumber)
             {
-                var aListStyle = paragraph.AParagraph.Parent!.GetFirstChild<A.ListStyle>() !;
-                var layoutNumberSize = new LayoutNumberSize(this.aText!, paragraph, aListStyle);
-                return new SCTextPortionFont(this.aText!, textFrameContainer, paragraph, themeFontScheme, layoutNumberSize);
+                var masterSlideNumberFont = layout.SlideMaster.SlideNumber!.Font;
+                var pTextBody = (P.TextBody)paragraph.AParagraph.Parent!;
+                var layoutNumberSize = new LayoutSlideNumberSize(pTextBody, masterSlideNumberFont);
+                var textPortionFont = new SCTextPortionFont(
+                    this.aText!,
+                    textFrameContainer,
+                    paragraph,
+                    themeFontScheme,
+                    layoutNumberSize);
+                return textPortionFont;
             }
 
             var textPortionSize = new TextPortionSize(this.aText!, paragraph);
             return new SCTextPortionFont(this.aText!, textFrameContainer, paragraph, themeFontScheme, textPortionSize);
         });
-        
+
         this.portionText = new PortionText(this.aField);
     }
 
@@ -73,7 +81,7 @@ internal sealed class SCFieldPortion : IPortion
     }
 
     internal bool IsRemoved { get; set; }
-    
+
     public void Remove()
     {
         this.aField.Remove();
@@ -135,7 +143,7 @@ internal sealed class SCFieldPortion : IPortion
         {
             return null;
         }
-        
+
         var typedOpenXmlPart = this.slideStructure.TypedOpenXmlPart;
         var hyperlinkRelationship = (HyperlinkRelationship)typedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
 
@@ -156,7 +164,7 @@ internal sealed class SCFieldPortion : IPortion
             hyperlink = new A.HyperlinkOnClick();
             runProperties.Append(hyperlink);
         }
-        
+
         var slidePart = this.slideStructure.TypedOpenXmlPart;
 
         var uri = new Uri(url!, UriKind.RelativeOrAbsolute);

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -20,12 +21,12 @@ public interface ISlideNumberFont : IFont
 internal sealed class SCSlideNumberFont : ISlideNumberFont
 {
     private readonly A.DefaultRunProperties aDefaultRunProperties;
-    private readonly List<ITextPortionFont> portionFonts;
+    private readonly MasterSlideNumberSize masterSlideNumberSize;
 
-    internal SCSlideNumberFont(A.DefaultRunProperties aDefaultRunProperties, List<ITextPortionFont> portionFonts)
+    internal SCSlideNumberFont(A.DefaultRunProperties aDefaultRunProperties)
     {
         this.aDefaultRunProperties = aDefaultRunProperties;
-        this.portionFonts = portionFonts;
+        this.masterSlideNumberSize = new MasterSlideNumberSize(aDefaultRunProperties);
     }
 
     public SCColor Color
@@ -36,18 +37,8 @@ internal sealed class SCSlideNumberFont : ISlideNumberFont
 
     public int Size
     {
-        get => this.ParseSize();
-        set => this.UpdateSize(value);
-    }
-
-    private void UpdateSize(int points)
-    {
-        this.portionFonts.ForEach(pf => pf.Size = points);
-    }
-
-    private int ParseSize()
-    {
-        return this.portionFonts.First().Size;
+        get => this.masterSlideNumberSize.Size();
+        set => this.masterSlideNumberSize.Update(value);
     }
 
     private void UpdateColor(SCColor color)

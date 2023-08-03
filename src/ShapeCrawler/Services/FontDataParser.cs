@@ -8,7 +8,7 @@ using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Services.Factories;
+namespace ShapeCrawler.Services;
 
 internal static class FontDataParser
 {

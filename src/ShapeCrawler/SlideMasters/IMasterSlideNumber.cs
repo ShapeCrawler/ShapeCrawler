@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -21,11 +22,11 @@ internal sealed class SCMasterSlideNumber : IMasterSlideNumber
 {
     private readonly ShapeLocation shapeLocation;
 
-    internal SCMasterSlideNumber(P.Shape pSldNum, List<ITextPortionFont> portionFonts)
+    internal SCMasterSlideNumber(P.Shape pSldNum)
     {
         var aDefaultRunProperties =
             pSldNum.TextBody!.ListStyle!.Level1ParagraphProperties?.GetFirstChild<A.DefaultRunProperties>() !;
-        this.Font = new SCSlideNumberFont(aDefaultRunProperties, portionFonts);
+        this.Font = new SCSlideNumberFont(aDefaultRunProperties);
         this.shapeLocation = new ShapeLocation(pSldNum.ShapeProperties!.Transform2D!);
     }
 

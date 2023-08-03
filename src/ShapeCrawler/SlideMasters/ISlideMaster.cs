@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Services;
@@ -48,33 +49,25 @@ public interface ISlideMaster
 internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
 {
     private readonly ResetableLazy<List<SCSlideLayout>> slideLayouts;
+    private readonly Lazy<SCMasterSlideNumber?> slideNumber;
 
     internal SCSlideMaster(SCPresentation pres, P.SlideMaster pSlideMaster, int number)
         : base(pres)
     {
         this.Presentation = pres;
         this.PSlideMaster = pSlideMaster;
-        this.slideLayouts = new ResetableLazy<List<SCSlideLayout>>(this.GetSlideLayouts);
         this.Number = number;
+        this.slideLayouts = new ResetableLazy<List<SCSlideLayout>>(this.CreateSlideLayouts);
+        this.slideNumber = new Lazy<SCMasterSlideNumber?>(this.CreateSlideNumber);
+    }
+
+    private SCMasterSlideNumber? CreateSlideNumber()
+    {
+        var pSldNum = PSlideMaster.CommonSlideData!.ShapeTree!
+            .Elements<P.Shape>()
+            .FirstOrDefault(s => s.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?.PlaceholderShape?.Type?.Value == P.PlaceholderValues.SlideNumber);
         
-        var pSldNum = pSlideMaster.CommonSlideData!.ShapeTree!.Elements<P.Shape>().FirstOrDefault(s => s.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?.PlaceholderShape?.Type?.Value == P.PlaceholderValues.SlideNumber);
-        if (pSldNum is not null)
-        {
-            var masterFont = this.Shapes.First(shape =>
-                shape.Placeholder?.Type == SCPlaceholderType.SlideNumber).AsAutoShape()?.TextFrame!.Paragraphs[0].Portions[0].Font!;
-            var layoutPortionFonts = new List<ITextPortionFont> { masterFont };
-            foreach (var layout in this.SlideLayouts)
-            {
-                var font = layout.Shapes.FirstOrDefault(shape =>
-                    shape.Placeholder?.Type == SCPlaceholderType.SlideNumber)?.AsAutoShape()?.TextFrame!.Paragraphs[0].Portions[0].Font;
-                if (font != null)
-                {
-                    layoutPortionFonts.Add(font);
-                }
-            }
-            
-            this.SlideNumber = new SCMasterSlideNumber(pSldNum, layoutPortionFonts);
-        }
+        return pSldNum is null ? null : new SCMasterSlideNumber(pSldNum);
     }
 
     public IImage? Background => this.GetBackground();
@@ -85,11 +78,9 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
 
     public ITheme Theme => this.GetTheme();
 
-    public IMasterSlideNumber? SlideNumber { get; }
+    public IMasterSlideNumber? SlideNumber => this.slideNumber.Value;
 
     public override int Number { get; set; }
-
-    internal P.SlideMaster PSlideMaster { get; }
 
     internal Dictionary<int, FontData> BodyParaLvlToFontData =>
         FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.BodyStyle!);
@@ -98,6 +89,8 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
         FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.TitleStyle!);
 
     internal ThemePart ThemePart => this.PSlideMaster.SlideMasterPart!.ThemePart!;
+    
+    internal P.SlideMaster PSlideMaster { get; }
 
     internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
     
@@ -124,7 +117,6 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
     {
         var pTextStyles = this.PSlideMaster.TextStyles!;
 
-        // Other
         var otherStyleLvlToFontData = FontDataParser.FromCompositeElement(pTextStyles.OtherStyle!);
         if (otherStyleLvlToFontData.ContainsKey(paragraphLvl))
         {
@@ -149,7 +141,7 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
         return new SCTheme(this, this.PSlideMaster.SlideMasterPart!.ThemePart!.Theme);
     }
     
-    private List<SCSlideLayout> GetSlideLayouts()
+    private List<SCSlideLayout> CreateSlideLayouts()
     {
         var rIdList = this.PSlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>().Select(layoutId => layoutId.RelationshipId!);
         var layouts = new List<SCSlideLayout>(rIdList.Count());
