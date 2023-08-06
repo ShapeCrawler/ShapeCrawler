@@ -34,7 +34,6 @@ public interface IFontColor
 
 internal sealed class SCFontColor : IFontColor
 {
-    private readonly ITextPortionFont font;
     private readonly ITextFrameContainer textFrameContainer;
     private readonly SCSlideMaster parentSlideMaster;
     private readonly SCParagraph paragraph;
@@ -43,9 +42,8 @@ internal sealed class SCFontColor : IFontColor
     private string? hexColor;
     private SCColorType colorType;
 
-    internal SCFontColor(ITextPortionFont font, ITextFrameContainer textFrameContainer, SCParagraph paragraph, A.Text aText)
+    internal SCFontColor(ITextFrameContainer textFrameContainer, SCParagraph paragraph, A.Text aText)
     {
-        this.font = font;
         this.textFrameContainer = textFrameContainer;
         var shape = this.textFrameContainer.SCShape;
         this.parentSlideMaster = shape.SlideMasterInternal;
@@ -128,7 +126,7 @@ internal sealed class SCFontColor : IFontColor
 
             // Presentation level
             string colorHexVariant;
-            if (this.parentSlideMaster.PresentationInternal.ParaLvlToFontData.TryGetValue(paragraphLevel, out var preFontData))
+            if (this.parentSlideMaster.PresCore.ParaLvlToFontData.TryGetValue(paragraphLevel, out var preFontData))
             {
                 colorHexVariant = this.GetHexVariantByScheme(preFontData.ASchemeColor!.Val!);
                 this.colorType = SCColorType.Theme;

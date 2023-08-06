@@ -3,7 +3,7 @@
 /// <summary>
 ///     Represents slide object.
 /// </summary>
-public interface ISlideStructure : IPresentationComponent
+public interface ISlideStructure
 {
     /// <summary>
     ///     Gets or sets slide number.

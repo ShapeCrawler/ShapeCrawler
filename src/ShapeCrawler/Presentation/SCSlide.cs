@@ -22,28 +22,30 @@ internal sealed class SCSlide : SlideStructure, ISlide
 {
     private readonly ResetableLazy<ShapeCollection> shapes;
     private readonly Lazy<SCImage?> backgroundImage;
+    private readonly Func<int> totalSlideCount;
     private Lazy<CustomXmlPart?> customXmlPart;
 
-    internal SCSlide(SCPresentation pres, SlidePart slidePart, SlideId slideId)
+    internal SCSlide(PresentationCore pres, SlidePart slidePart, SlideId slideId, Func<int> totalSlideCount)
     : base(pres)
     {
-        this.Presentation = pres;
+        this.PresCore = pres;
         this.SDKSlidePart = slidePart;
         this.shapes = new ResetableLazy<ShapeCollection>(() => new ShapeCollection(this.SDKSlidePart, this));
         this.backgroundImage = new Lazy<SCImage?>(() => SCImage.ForBackground(this));
         this.customXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideId = slideId;
+        this.totalSlideCount = totalSlideCount;
     }
 
     public ISlideLayout SlideLayout =>
-        ((SCSlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
+        ((SCSlideMasterCollection)this.PresCore.SlideMasters).GetSlideLayoutBySlide(this);
 
     public override IShapeCollection Shapes => this.shapes.Value;
 
     public override int Number
     {
         get => this.GetNumber();
-        set => this.SetNumber(value);
+        set => this.UpdateNumber(value);
     }
 
     public IImage? Background => this.backgroundImage.Value;
@@ -93,7 +95,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
 
     public void SaveAsPng(Stream stream)
     {
-        var imageInfo = new SKImageInfo(this.PresentationInternal.SlideWidth, this.PresentationInternal.SlideHeight);
+        var imageInfo = new SKImageInfo(this.PresCore.SlideWidth, this.PresCore.SlideHeight);
         var surface = SKSurface.Create(imageInfo);
         var canvas = surface.Canvas;
         canvas.Clear(SKColors.White); // TODO: #344 get real
@@ -165,7 +167,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
 
     private int GetNumber()
     {
-        var presentationPart = this.PresentationInternal.SDKPresentationDocumentInternal.Value.PresentationPart!;
+        var presentationPart = this.PresCore.SDKPresentation.PresentationPart!;
         var currentSlidePartId = presentationPart.GetIdOfPart(this.SDKSlidePart);
         var slideIdList =
             presentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
@@ -180,7 +182,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
         throw new SCException("An error occurred while parsing slide number.");
     }
 
-    private void SetNumber(int newSlideNumber)
+    private void UpdateNumber(int newSlideNumber)
     {
         if (this.Number == newSlideNumber)
         {
@@ -189,13 +191,13 @@ internal sealed class SCSlide : SlideStructure, ISlide
         
         var currentIndex = this.Number - 1;
         var destIndex = newSlideNumber - 1;
-
-        if (destIndex < 0 || currentIndex >= this.PresentationInternal.Slides.Count || destIndex == currentIndex)
+        
+        if (destIndex < 0 || currentIndex >= totalSlideCount.Invoke() || destIndex == currentIndex)
         {
             throw new ArgumentOutOfRangeException(nameof(destIndex));
         }
 
-        var presentationPart = this.PresentationInternal.SDKPresentationDocumentInternal.Value.PresentationPart!;
+        var presentationPart = this.PresCore.SDKPresentation.PresentationPart!;
 
         var presentation = presentationPart.Presentation;
         var slideIdList = presentation.SlideIdList!;

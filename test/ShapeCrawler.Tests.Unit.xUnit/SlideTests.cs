@@ -59,7 +59,7 @@ public class SlideTests : SCTest
         var bytesBefore = await backgroundImage.BinaryData.ConfigureAwait(false);
 
         // Act
-        backgroundImage.SetImage(image);
+        backgroundImage.UpdateImage(image);
 
         // Assert
         var bytesAfter = await backgroundImage.BinaryData.ConfigureAwait(false);

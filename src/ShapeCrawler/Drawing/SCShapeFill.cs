@@ -42,7 +42,7 @@ internal abstract class SCShapeFill : IShapeFill
 
         if (this.Type == SCFillType.Picture)
         {
-            this.pictureImage!.SetImage(imageStream);
+            this.pictureImage!.UpdateImage(imageStream);
         }
         else
         {

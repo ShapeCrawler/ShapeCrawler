@@ -26,7 +26,7 @@ internal sealed class SCSlideMasterCollection : ISlideMasterCollection
 {
     private readonly List<ISlideMaster> slideMasters;
 
-    private SCSlideMasterCollection(SCPresentation presentation, List<ISlideMaster> slideMasters)
+    private SCSlideMasterCollection(PresentationCore presentation, List<ISlideMaster> slideMasters)
     {
         this.Presentation = presentation;
         this.slideMasters = slideMasters;
@@ -34,7 +34,7 @@ internal sealed class SCSlideMasterCollection : ISlideMasterCollection
 
     public int Count => this.slideMasters.Count;
 
-    internal SCPresentation Presentation { get; }
+    internal PresentationCore Presentation { get; }
 
     public ISlideMaster this[int index] => this.slideMasters[index];
 
@@ -48,9 +48,9 @@ internal sealed class SCSlideMasterCollection : ISlideMasterCollection
         return this.GetEnumerator();
     }
     
-    internal static SCSlideMasterCollection Create(SCPresentation presentation)
+    internal static SCSlideMasterCollection Create(PresentationCore presentation)
     {
-        var masterParts = presentation.SDKPresentationDocumentInternal.Value.PresentationPart!.SlideMasterParts;
+        var masterParts = presentation.SDKPresentation.PresentationPart!.SlideMasterParts;
         var slideMasters = new List<ISlideMaster>(masterParts.Count());
         var number = 1;
         foreach (var slideMasterPart in masterParts)

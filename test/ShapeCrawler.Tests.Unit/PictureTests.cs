@@ -93,7 +93,7 @@ public class PictureTests : SCTest
         var lengthBefore = image.BinaryData.Result.Length;
         
         // Act
-        image.SetImage(pngStream);
+        image.UpdateImage(pngStream);
 
         // Assert
         pres.SaveAs(mStream);

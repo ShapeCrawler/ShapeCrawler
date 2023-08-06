@@ -5,18 +5,16 @@ namespace ShapeCrawler;
 
 internal abstract class SlideStructure : ISlideStructure
 {
-    protected SlideStructure(IPresentation pres)
+    protected SlideStructure(PresentationCore pres)
     {
-        this.Presentation = pres;
+        this.PresCore = pres;
     }
 
-    public IPresentation Presentation { get; protected init; }
+    public PresentationCore PresCore { get; protected init; }
     
     public abstract int Number { get; set; }
     
     public abstract IShapeCollection Shapes { get; }
-
-    internal SCPresentation PresentationInternal => (SCPresentation)this.Presentation;
 
     internal abstract TypedOpenXmlPart TypedOpenXmlPart { get; }
 

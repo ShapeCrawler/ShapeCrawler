@@ -78,7 +78,7 @@ internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
     private readonly SCSlideMaster slideMaster;
 
     internal SCSlideLayout(SCSlideMaster slideMaster, SlideLayoutPart slideLayoutPart, int number)
-        : base(slideMaster.Presentation)
+        : base(slideMaster.PresCore)
     {
         this.slideMaster = slideMaster;
         this.SlideLayoutPart = slideLayoutPart;

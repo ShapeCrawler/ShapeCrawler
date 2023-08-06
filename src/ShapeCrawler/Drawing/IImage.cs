@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ public interface IImage
     /// <summary>
     ///     Sets image with stream.
     /// </summary>
-    void SetImage(Stream stream);
+    void UpdateImage(Stream stream);
 
     /// <summary>
     ///     Sets image with byte array.
@@ -48,7 +49,7 @@ public interface IImage
 
 internal sealed class SCImage : IImage
 {
-    private readonly SCPresentation presentation;
+    private readonly PresentationCore presCore;
     private readonly StringValue blipEmbed;
     private readonly OpenXmlPart openXmlPart;
     private byte[]? bytes;
@@ -57,13 +58,12 @@ internal sealed class SCImage : IImage
         ImagePart imagePart,
         StringValue blipEmbed,
         OpenXmlPart openXmlPart,
-        SCPresentation presentation)
+        PresentationCore presCore)
     {
         this.SDKImagePart = imagePart;
         this.blipEmbed = blipEmbed;
         this.openXmlPart = openXmlPart;
-
-        this.presentation = presentation;
+        this.presCore = presCore;
         this.MIME = this.SDKImagePart.ContentType;
     }
 
@@ -75,9 +75,9 @@ internal sealed class SCImage : IImage
 
     internal ImagePart SDKImagePart { get; private set; }
 
-    public void SetImage(Stream stream)
+    public void UpdateImage(Stream stream)
     {
-        var isSharedImagePart = this.presentation.ImageParts.Count(imgPart => imgPart == this.SDKImagePart) > 1;
+        var isSharedImagePart = this.presCore.ImageParts.Count(imgPart => imgPart == this.SDKImagePart) > 1;
         if (isSharedImagePart)
         {
             var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
@@ -94,7 +94,7 @@ internal sealed class SCImage : IImage
     {
         var stream = new MemoryStream(bytes);
 
-        this.SetImage(stream);
+        this.UpdateImage(stream);
     }
 
     public void SetImage(string filePath)
@@ -108,7 +108,7 @@ internal sealed class SCImage : IImage
         var imagePart = (ImagePart)openXmlPart.GetPartById(blipEmbed!.Value!);
 
         var slideStructureCore = (SlideStructure)pictureSCShape.SlideStructure;
-        return new SCImage(imagePart, blipEmbed, openXmlPart, slideStructureCore.PresentationInternal);
+        return new SCImage(imagePart, blipEmbed, openXmlPart, slideStructureCore.PresCore);
     }
 
     internal static SCImage? ForBackground(SCSlide slide)
@@ -127,7 +127,7 @@ internal sealed class SCImage : IImage
         }
 
         var imagePart = (ImagePart)slide.SDKSlidePart.GetPartById(picReference.Value!);
-        var backgroundImage = new SCImage(imagePart, picReference, slide.SDKSlidePart, slide.PresentationInternal);
+        var backgroundImage = new SCImage(imagePart, picReference, slide.SDKSlidePart, slide.PresCore);
 
         return backgroundImage;
     }
@@ -142,7 +142,7 @@ internal sealed class SCImage : IImage
 
         var imagePart = (ImagePart)slidePart.GetPartById(picReference.Value!);
 
-        return new SCImage(imagePart, picReference, slidePart, slideObject.PresentationInternal);
+        return new SCImage(imagePart, picReference, slidePart, slideObject.PresCore);
     }
 
     private string GetName()

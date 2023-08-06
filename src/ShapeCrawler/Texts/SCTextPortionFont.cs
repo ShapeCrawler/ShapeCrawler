@@ -27,7 +27,7 @@ internal sealed class SCTextPortionFont : ITextPortionFont
         this.aText = aText;
         this.paragraph = paragraph;
         this.latinFont = new ResetableLazy<A.LatinFont>(this.ParseALatinFont);
-        this.fontColor = new Lazy<SCFontColor>(() => new SCFontColor(this, textFrameContainer, paragraph, this.aText));
+        this.fontColor = new Lazy<SCFontColor>(() => new SCFontColor(textFrameContainer, paragraph, this.aText));
         this.textFrameContainer = textFrameContainer;
         this.aFontScheme = themeFontScheme.AFontScheme;
         this.size = size;

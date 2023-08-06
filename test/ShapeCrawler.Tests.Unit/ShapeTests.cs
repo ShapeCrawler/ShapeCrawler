@@ -86,7 +86,7 @@ public class ShapeTests : SCTest
         MemoryStream modifiedPresentation = new();
 
         // Act
-        picture5.Image.SetImage(image);
+        picture5.Image.UpdateImage(image);
 
         // Assert
         int pic6LengthAfter = picture6.Image.BinaryData.GetAwaiter().GetResult().Length;

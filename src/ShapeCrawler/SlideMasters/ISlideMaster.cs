@@ -50,10 +50,10 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
     private readonly ResetableLazy<List<SCSlideLayout>> slideLayouts;
     private readonly Lazy<SCMasterSlideNumber?> slideNumber;
 
-    internal SCSlideMaster(SCPresentation pres, P.SlideMaster pSlideMaster, int number)
+    internal SCSlideMaster(PresentationCore pres, P.SlideMaster pSlideMaster, int number)
         : base(pres)
     {
-        this.Presentation = pres;
+        this.PresCore = pres;
         this.PSlideMaster = pSlideMaster;
         this.Number = number;
         this.slideLayouts = new ResetableLazy<List<SCSlideLayout>>(this.CreateSlideLayouts);
@@ -65,6 +65,7 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
     public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
     public override IShapeCollection Shapes => new ShapeCollection(this.PSlideMaster.SlideMasterPart!, this);
+    public IPresentation Presentation { get; } = null!;
 
     public ITheme Theme => this.GetTheme();
 

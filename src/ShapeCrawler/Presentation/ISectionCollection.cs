@@ -31,13 +31,13 @@ internal sealed class SCSectionCollection : ISectionCollection
     private readonly List<SCSection> sections;
     private readonly P14.SectionList? sdkSectionList;
 
-    private SCSectionCollection(SCPresentation presentation, List<SCSection> sections)
+    private SCSectionCollection(PresentationCore presentation, List<SCSection> sections)
     {
         this.Presentation = presentation;
         this.sections = sections;
     }
 
-    private SCSectionCollection(SCPresentation presentation, List<SCSection> sections, P14.SectionList sdkSectionList)
+    private SCSectionCollection(PresentationCore presentation, List<SCSection> sections, P14.SectionList sdkSectionList)
     {
         this.Presentation = presentation;
         this.sections = sections;
@@ -46,7 +46,7 @@ internal sealed class SCSectionCollection : ISectionCollection
 
     public int Count => this.sections.Count;
 
-    internal SCPresentation Presentation { get; }
+    internal PresentationCore Presentation { get; }
 
     public ISection this[int i] => this.sections[i];
 
@@ -83,10 +83,10 @@ internal sealed class SCSectionCollection : ISectionCollection
         return this.sections.First(section => section.Name == sectionName);
     }
 
-    internal static SCSectionCollection Create(SCPresentation presentation)
+    internal static SCSectionCollection Create(PresentationCore presentation)
     {
         var sections = new List<SCSection>();
-        var sdkSectionList = presentation.SDKPresentationDocumentInternal.Value.PresentationPart!.Presentation.PresentationExtensionList
+        var sdkSectionList = presentation.SDKPresentation.PresentationPart!.Presentation.PresentationExtensionList
             ?.Descendants<P14.SectionList>().FirstOrDefault();
 
         if (sdkSectionList == null)
@@ -113,7 +113,7 @@ internal sealed class SCSectionCollection : ISectionCollection
         }
 
         removing.Remove();
-        this.Presentation.SDKPresentationDocumentInternal.Value.PresentationPart!.Presentation.Save();
+        this.Presentation.SDKPresentation.PresentationPart!.Presentation.Save();
     }
     
 }

@@ -25,9 +25,9 @@ public interface IHeaderAndFooter
 
 internal sealed class HeaderAndFooter : IHeaderAndFooter
 {
-    private readonly SCPresentation presentation;
+    private readonly PresentationCore presentation;
 
-    internal HeaderAndFooter(SCPresentation presentation)
+    internal HeaderAndFooter(PresentationCore presentation)
     {
         this.presentation = presentation;
     }

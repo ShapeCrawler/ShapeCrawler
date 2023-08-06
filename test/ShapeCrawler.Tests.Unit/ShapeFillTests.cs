@@ -33,7 +33,7 @@ public class ShapeFillTests : SCTest
         var imageSizeBefore = fill.Picture!.BinaryData.GetAwaiter().GetResult().Length;
 
         // Act
-        fill.Picture.SetImage(image);
+        fill.Picture.UpdateImage(image);
 
         // Assert
         var imageSizeAfter = shape.Fill.Picture.BinaryData.GetAwaiter().GetResult().Length;

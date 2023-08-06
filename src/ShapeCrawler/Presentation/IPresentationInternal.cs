@@ -7,7 +7,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a presentation document.
 /// </summary>
-public interface IPresentation
+internal interface IPresentationInternal
 {
     /// <summary>
     ///     Gets the presentation slides.
@@ -57,10 +57,10 @@ public interface IPresentation
     /// <summary>
     ///     Saves presentation in specified file path.
     /// </summary>
-    void SaveAs(string newPath);
+    void Save(string path);
 
     /// <summary>
     ///     Saves presentation in specified stream.
     /// </summary>
-    void SaveAs(Stream stream);
+    void Save(Stream stream);
 }

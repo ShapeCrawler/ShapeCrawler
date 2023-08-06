@@ -40,7 +40,7 @@ internal record TextPortionSize : IFontSize
         }
 
         var sldStructureCore = (SlideStructure)textFrameContainer.SCShape.SlideStructure;
-        var pres = sldStructureCore.PresentationInternal;
+        var pres = sldStructureCore.PresCore;
         if (pres.ParaLvlToFontData.TryGetValue(paraLevel, out var fontData))
         {
             if (fontData.FontSize is not null)
