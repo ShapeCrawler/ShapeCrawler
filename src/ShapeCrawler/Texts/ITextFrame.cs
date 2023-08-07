@@ -69,13 +69,13 @@ internal sealed class SCTextFrame : ITextFrame
 {
     private readonly ResetableLazy<string> text;
     private readonly ResetableLazy<ParagraphCollection> paragraphs;
-    private readonly SlideStructure slideStructure;
+    private readonly ISlideStructure slideStructure;
     private readonly ITextFrameContainer textFrameContainer;
 
     internal SCTextFrame(
         ITextFrameContainer frameContainer, 
         TypedOpenXmlCompositeElement textBodyElement, 
-        SlideStructure slideStructure,
+        ISlideStructure slideStructure,
         ITextFrameContainer textFrameContainer)
     {
         this.TextFrameContainer = frameContainer;

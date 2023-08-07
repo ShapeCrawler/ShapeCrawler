@@ -11,16 +11,18 @@ internal sealed class SCRegularPortion : IPortion
 {
     private readonly ResetableLazy<SCTextPortionFont> font;
     private readonly A.Run aRun;
-    private readonly SlideStructure slideStructure;
-    
+    private readonly ISlideStructure slideStructure;
+    private readonly TypedOpenXmlPart slideTypedOpenXmlPart;
+
     internal SCRegularPortion(
         A.Run aRun, 
-        SlideStructure slideStructure, 
+        ISlideStructure slideStructure, 
         ITextFrameContainer textFrameContainer,
         SCParagraph paragraph, 
-        Action onRemoveHandler)
+        Action onRemoveHandler, TypedOpenXmlPart slideTypedOpenXmlPart)
     {
         this.slideStructure = slideStructure;
+        this.slideTypedOpenXmlPart = slideTypedOpenXmlPart;
         this.AText = aRun.Text!;
         this.Removed += onRemoveHandler;
 
@@ -129,8 +131,7 @@ internal sealed class SCRegularPortion : IPortion
             return null;
         }
         
-        var typedOpenXmlPart = this.slideStructure.TypedOpenXmlPart;
-        var hyperlinkRelationship = (HyperlinkRelationship)typedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
+        var hyperlinkRelationship = (HyperlinkRelationship)this.slideTypedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
 
         return hyperlinkRelationship.Uri.ToString();
     }
@@ -150,10 +151,8 @@ internal sealed class SCRegularPortion : IPortion
             runProperties.Append(hyperlink);
         }
         
-        var slidePart = this.slideStructure.TypedOpenXmlPart;
-
         var uri = new Uri(url!, UriKind.RelativeOrAbsolute);
-        var addedHyperlinkRelationship = slidePart.AddHyperlinkRelationship(uri, true);
+        var addedHyperlinkRelationship = this.slideTypedOpenXmlPart.AddHyperlinkRelationship(uri, true);
 
         hyperlink.Id = addedHyperlinkRelationship.Id;
     }

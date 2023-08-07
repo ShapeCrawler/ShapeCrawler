@@ -25,23 +25,23 @@ internal sealed record PresentationCore
             new ResetableLazy<SCSlideMasterCollection>(() => SCSlideMasterCollection.Create(this));
         this.paraLvlToFontData =
             new Lazy<Dictionary<int, FontData>>(() =>
-                ParseFontHeights(this.SDKPresentation!.PresentationPart!.Presentation));
+                ParseFontHeights(this.SDKPresentationDocument!.PresentationPart!.Presentation));
         this.sectionCollection =
             new ResetableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
-        this.slideCollection = new ResetableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
+        this.slideCollection = new ResetableLazy<SCSlideCollection>(() => new SCSlideCollection(this, this.ImageParts));
         this.HeaderAndFooter = new HeaderAndFooter(this);
     }
 
     internal PresentationCore(Stream stream)
     {
-        this.SDKPresentation = PresentationDocument.Open(stream, true);
+        this.SDKPresentationDocument = PresentationDocument.Open(stream, true);
         
         this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
         this.SlideMasterCollection =
             new ResetableLazy<SCSlideMasterCollection>(() => SCSlideMasterCollection.Create(this));
         this.paraLvlToFontData =
             new Lazy<Dictionary<int, FontData>>(() =>
-                ParseFontHeights(this.SDKPresentation!.PresentationPart!.Presentation));
+                ParseFontHeights(this.SDKPresentationDocument!.PresentationPart!.Presentation));
         this.sectionCollection =
             new ResetableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
         this.slideCollection = new ResetableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
@@ -71,7 +71,7 @@ internal sealed record PresentationCore
 
     internal ResetableLazy<SCSlideMasterCollection> SlideMasterCollection { get; }
 
-    internal PresentationDocument SDKPresentation { get; init; }
+    internal PresentationDocument SDKPresentationDocument { get; init; }
 
     internal SCSectionCollection SectionsInternal => (SCSectionCollection)this.Sections;
 
@@ -85,13 +85,13 @@ internal sealed record PresentationCore
 
     public void Save(string path)
     {
-        var cloned = this.SDKPresentation.Clone(path);
+        var cloned = this.SDKPresentationDocument.Clone(path);
         cloned.Dispose();
     }
 
     public void Save(Stream stream)
     {
-        this.SDKPresentation.Clone(stream);
+        this.SDKPresentationDocument.Clone(stream);
     }
 
     private static Dictionary<int, FontData> ParseFontHeights(
@@ -123,14 +123,14 @@ internal sealed record PresentationCore
     {
         var stream = new MemoryStream();
         this.ChartWorkbooks.ForEach(c => c.Close());
-        this.SDKPresentation.Clone(stream);
+        this.SDKPresentationDocument.Clone(stream);
 
         return stream.ToArray();
     }
 
     private void SetSlideHeight(int pixel)
     {
-        var pSlideSize = this.SDKPresentation.PresentationPart!.Presentation.SlideSize!;
+        var pSlideSize = this.SDKPresentationDocument.PresentationPart!.Presentation.SlideSize!;
         var emu = UnitConverter.VerticalPixelToEmu(pixel);
 
         pSlideSize.Cy = new Int32Value((int)emu);
@@ -138,7 +138,7 @@ internal sealed record PresentationCore
 
     private void SetSlideWidth(int pixel)
     {
-        var pSlideSize = this.SDKPresentation.PresentationPart!.Presentation.SlideSize!;
+        var pSlideSize = this.SDKPresentationDocument.PresentationPart!.Presentation.SlideSize!;
         var emu = UnitConverter.VerticalPixelToEmu(pixel);
 
         pSlideSize.Cx = new Int32Value((int)emu);
@@ -172,7 +172,7 @@ internal sealed record PresentationCore
 
     private SCSlideSize GetSlideSize()
     {
-        var pSlideSize = this.SDKPresentation.PresentationPart!.Presentation.SlideSize!;
+        var pSlideSize = this.SDKPresentationDocument.PresentationPart!.Presentation.SlideSize!;
         var withPx = UnitConverter.HorizontalEmuToPixel(pSlideSize.Cx!.Value);
         var heightPx = UnitConverter.VerticalEmuToPixel(pSlideSize.Cy!.Value);
 

@@ -32,7 +32,7 @@ internal sealed class SCCell : ICell, ITextFrameContainer
 {
     private readonly ResetableLazy<SCTextFrame> textFrame;
     private readonly ResetableLazy<SCShapeFill> fill;
-    private readonly SlideStructure slideStructure;
+    private readonly ISlideStructure slideStructure;
 
     internal SCCell(SCRow tableRow, A.TableCell aTableCell, int rowIndex, int columnIndex)
     {
@@ -41,7 +41,7 @@ internal sealed class SCCell : ICell, ITextFrameContainer
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
         this.textFrame = new ResetableLazy<SCTextFrame>(this.CreateTextFrame);
-        this.slideStructure = (SlideStructure)tableRow.ParentTable.SlideStructure;
+        this.slideStructure = (ISlideStructure)tableRow.ParentTable.SlideStructure;
         var framePr = aTableCell.TableCellProperties!;
         this.fill = new ResetableLazy<SCShapeFill>(() => new CellFill(this.slideStructure, framePr));
     }

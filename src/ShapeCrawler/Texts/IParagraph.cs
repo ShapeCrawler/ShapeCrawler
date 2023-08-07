@@ -55,7 +55,7 @@ internal sealed class SCParagraph : IParagraph
     private readonly ResetableLazy<SCPortionCollection> portions;
     private SCTextAlignment? alignment;
 
-    internal SCParagraph(A.Paragraph aParagraph, SCTextFrame textBox, SlideStructure slideStructure, ITextFrameContainer textFrameContainer)
+    internal SCParagraph(A.Paragraph aParagraph, SCTextFrame textBox, ISlideStructure slideStructure, ITextFrameContainer textFrameContainer)
     {
         this.AParagraph = aParagraph;
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();

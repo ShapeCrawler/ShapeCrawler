@@ -28,10 +28,10 @@ internal sealed class ParagraphCollection : IParagraphCollection
 {
     private readonly ResetableLazy<List<SCParagraph>> paragraphs;
     private readonly SCTextFrame textFrame;
-    private readonly SlideStructure slideStructure;
+    private readonly ISlideStructure slideStructure;
     private readonly ITextFrameContainer textFrameContainer;
 
-    internal ParagraphCollection(SCTextFrame textFrame, SlideStructure slideStructure, ITextFrameContainer textFrameContainer)
+    internal ParagraphCollection(SCTextFrame textFrame, ISlideStructure slideStructure, ITextFrameContainer textFrameContainer)
     {
         this.textFrame = textFrame;
         this.slideStructure = slideStructure;

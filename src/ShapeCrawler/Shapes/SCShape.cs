@@ -22,13 +22,13 @@ internal abstract class SCShape : IShape
     protected SCShape(
         OpenXmlCompositeElement pShapeTreeChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollectionStructureOf)
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf)
     {
         this.PShapeTreeChild = pShapeTreeChild;
         this.slideOf = slideOf;
-        this.shapeCollectionOf = parentShapeCollectionStructureOf;
-        this.SlideStructure = slideOf.Match(slide => slide as SlideStructure, layout => layout, master => master);
-        this.GroupShape = parentShapeCollectionStructureOf.IsT1 ? parentShapeCollectionStructureOf.AsT1 : null;
+        this.shapeCollectionOf = shapeCollectionOf;
+        this.SlideStructure = slideOf.Match(slide => slide as ISlideStructure, layout => layout, master => master);
+        this.GroupShape = shapeCollectionOf.IsT1 ? shapeCollectionOf.AsT1 : null;
     }
 
     internal event EventHandler<int>? XChanged;
@@ -51,7 +51,7 @@ internal abstract class SCShape : IShape
     public abstract SCShapeType ShapeType { get; }
 
     public ISlideStructure SlideStructure { get; }
-
+    
     public IPlaceholder? Placeholder => SCSlidePlaceholder.Create(this.PShapeTreeChild, this);
 
     public virtual SCGeometry GeometryType => this.GetGeometryType();

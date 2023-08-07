@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using OneOf;
+using ShapeCrawler.Services;
 using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -32,12 +34,52 @@ public interface IGroupedShapeCollection : IEnumerable<IShape>
 internal sealed class GroupedShapeCollection : IReadOnlyCollection<IShape>, IGroupedShapeCollection
 {
     private readonly List<IShape> collectionItems;
-    
-    private GroupedShapeCollection(List<IShape> groupedShapes)
+
+    internal GroupedShapeCollection (
+        P.GroupShape pGroupShapeParam,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
+        SCGroupShape groupShape,
+        TypedOpenXmlPart slideTypedOpenXmlPart,
+        List<ImagePart> imageParts) 
     {
+        var autoShapeCreator = new AutoShapeCreator();
+        var oleGrFrameHandler = new OleGraphicFrameHandler();
+        var pictureHandler = new PictureHandler(imageParts, slideTypedOpenXmlPart);
+        var chartGrFrameHandler = new ChartGraphicFrameHandler();
+        var tableGrFrameHandler = new TableGraphicFrameHandler();
+
+        autoShapeCreator.Successor = oleGrFrameHandler;
+        oleGrFrameHandler.Successor = pictureHandler;
+        pictureHandler.Successor = chartGrFrameHandler;
+        chartGrFrameHandler.Successor = tableGrFrameHandler;
+
+        var groupedShapes = new List<IShape>();
+        foreach (var child in pGroupShapeParam.ChildElements.OfType<OpenXmlCompositeElement>())
+        {
+            SCShape? shape;
+            if (child is P.GroupShape pGroupShape)
+            {
+                shape = new SCGroupShape(pGroupShape, slideOf, groupShape);
+            }
+            else
+            {
+                shape = autoShapeCreator.FromTreeChild(child, slideOf, groupShape, slideTypedOpenXmlPart);
+                if (shape != null)
+                {
+                    shape.XChanged += groupShape.OnGroupedShapeXChanged;    
+                    shape.YChanged += groupShape.OnGroupedShapeYChanged;    
+                }
+            }
+
+            if (shape != null)
+            {
+                groupedShapes.Add(shape);
+            }
+        }
+
         this.collectionItems = groupedShapes;
     }
-
+    
     public int Count => this.collectionItems.Count;
     
     public T GetById<T>(int shapeId)
@@ -57,55 +99,9 @@ internal sealed class GroupedShapeCollection : IReadOnlyCollection<IShape>, IGro
     {
         return this.collectionItems.GetEnumerator();
     }
-
     
     IEnumerator IEnumerable.GetEnumerator()
     {
         return this.GetEnumerator();
     }
-    
-    internal static GroupedShapeCollection Create(
-        P.GroupShape pGroupShapeParam,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        SCGroupShape groupShape) 
-    {
-        var autoShapeCreator = new AutoShapeCreator();
-        var oleGrFrameHandler = new OleGraphicFrameHandler();
-        var pictureHandler = new PictureHandler();
-        var chartGrFrameHandler = new ChartGraphicFrameHandler();
-        var tableGrFrameHandler = new TableGraphicFrameHandler();
-
-        autoShapeCreator.Successor = oleGrFrameHandler;
-        oleGrFrameHandler.Successor = pictureHandler;
-        pictureHandler.Successor = chartGrFrameHandler;
-        chartGrFrameHandler.Successor = tableGrFrameHandler;
-
-        var groupedShapes = new List<IShape>();
-        foreach (var child in pGroupShapeParam.ChildElements.OfType<OpenXmlCompositeElement>())
-        {
-            SCShape? shape;
-            if (child is P.GroupShape pGroupShape)
-            {
-                shape = new SCGroupShape(pGroupShape, slideOf, groupShape);
-            }
-            else
-            {
-                shape = autoShapeCreator.FromTreeChild(child, slideOf, groupShape);
-                if (shape != null)
-                {
-                    shape.XChanged += groupShape.OnGroupedShapeXChanged;    
-                    shape.YChanged += groupShape.OnGroupedShapeYChanged;    
-                }
-            }
-
-            if (shape != null)
-            {
-                groupedShapes.Add(shape);
-            }
-        }
-
-        return new GroupedShapeCollection(groupedShapes);
-    }
-
-
 }

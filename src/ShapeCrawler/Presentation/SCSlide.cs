@@ -18,31 +18,39 @@ using SkiaSharp;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler;
 
-internal sealed class SCSlide : SlideStructure, ISlide
+internal sealed class SCSlide : ISlide
 {
     private readonly ResetableLazy<ShapeCollection> shapes;
     private readonly Lazy<SCImage?> backgroundImage;
     private readonly Func<int> totalSlideCount;
     private Lazy<CustomXmlPart?> customXmlPart;
+    private readonly List<ImagePart> imageParts;
 
-    internal SCSlide(PresentationCore pres, SlidePart slidePart, SlideId slideId, Func<int> totalSlideCount)
-    : base(pres)
+    internal SCSlide( 
+        SlidePart slidePart, 
+        SlideId slideId, 
+        Func<int> totalSlideCount,
+        SCSlideLayout slideLayout,
+        IPresentation presentation, 
+        List<ImagePart> imageParts)
     {
-        this.PresCore = pres;
         this.SDKSlidePart = slidePart;
-        this.shapes = new ResetableLazy<ShapeCollection>(() => new ShapeCollection(this.SDKSlidePart, this));
-        this.backgroundImage = new Lazy<SCImage?>(() => SCImage.ForBackground(this));
+        this.imageParts = imageParts;
+        this.shapes = new ResetableLazy<ShapeCollection>(() => new ShapeCollection(this.SDKSlidePart, this, slidePart));
+        this.backgroundImage = new Lazy<SCImage?>(() => SCImage.ForBackground(this, this.imageParts));
         this.customXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideId = slideId;
         this.totalSlideCount = totalSlideCount;
+        this.SlideLayout = slideLayout;
+        this.Presentation = presentation;
     }
 
-    public ISlideLayout SlideLayout =>
-        ((SCSlideMasterCollection)this.PresCore.SlideMasters).GetSlideLayoutBySlide(this);
+    public ISlideLayout SlideLayout { get; }
 
-    public override IShapeCollection Shapes => this.shapes.Value;
+    public IShapeCollection Shapes => this.shapes.Value;
+    public IPresentation Presentation { get; }
 
-    public override int Number
+    public int Number
     {
         get => this.GetNumber();
         set => this.UpdateNumber(value);
@@ -62,7 +70,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
 
     internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
 
-    internal override TypedOpenXmlPart TypedOpenXmlPart => this.SDKSlidePart;
+    internal TypedOpenXmlPart TypedOpenXmlPart => this.SDKSlidePart;
 
     internal SlideId SlideId { get; }
 
@@ -197,7 +205,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
             throw new ArgumentOutOfRangeException(nameof(destIndex));
         }
 
-        var presentationPart = this.PresCore.SDKPresentation.PresentationPart!;
+        var presentationPart = this.Presentation.SDKPresentationDocument.PresentationPart!;
 
         var presentation = presentationPart.Presentation;
         var slideIdList = presentation.SlideIdList!;

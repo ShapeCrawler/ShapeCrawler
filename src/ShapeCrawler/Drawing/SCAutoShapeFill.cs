@@ -1,4 +1,6 @@
-﻿using ShapeCrawler.AutoShapes;
+﻿using System.Collections.Generic;
+using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.AutoShapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
@@ -7,10 +9,15 @@ internal sealed class SCAutoShapeFill : SCShapeFill
 {
     private readonly SCAutoShape autoShape;
 
-    internal SCAutoShapeFill(SlideStructure slideObject, P.ShapeProperties shapeProperties, SCAutoShape autoSCShape)
-        : base(slideObject, shapeProperties)
+    internal SCAutoShapeFill(
+        ISlideStructure slideStructure, 
+        P.ShapeProperties shapeProperties, 
+        SCAutoShape autoShape, 
+        TypedOpenXmlPart slideTypedOpenXmlPart,
+        List<ImagePart> imageParts)
+        : base(slideStructure, shapeProperties, slideTypedOpenXmlPart, imageParts)
     {
-        this.autoShape = autoSCShape;
+        this.autoShape = autoShape;
     }
 
     protected override void InitSlideBackgroundFillOr()

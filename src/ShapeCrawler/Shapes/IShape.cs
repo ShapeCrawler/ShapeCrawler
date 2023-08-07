@@ -59,7 +59,7 @@ public interface IShape : IShapeLocation
     ///     Gets parent Slide, SlideLayout or SlideMaster.
     /// </summary>
     ISlideStructure SlideStructure { get; }
-
+    
     /// <summary>
     ///     Returns <see cref="IAutoShape"/> if shape is an auto shape, otherwise <see langword="null"/>.
     /// </summary>

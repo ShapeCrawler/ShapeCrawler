@@ -53,11 +53,13 @@ internal sealed class SCSlideCollection : ISlideCollection
     private readonly PresentationCore presentation;
     private readonly ResetableLazy<List<SCSlide>> slides;
     private PresentationPart presPart;
+    private readonly List<ImagePart> imageParts;
 
-    internal SCSlideCollection(PresentationCore pres)
+    internal SCSlideCollection(PresentationCore pres, List<ImagePart> imageParts)
     {
         this.presentation = pres;
-        this.presPart = pres.SDKPresentation.PresentationPart!;
+        this.imageParts = imageParts;
+        this.presPart = pres.SDKPresentationDocument.PresentationPart!;
         this.slides = new ResetableLazy<List<SCSlide>>(this.GetSlides);
     } 
 
@@ -156,7 +158,7 @@ internal sealed class SCSlideCollection : ISlideCollection
         var pSlideId = new P.SlideId { Id = nextId, RelationshipId = rId };
         pSlideIdList.Append(pSlideId);
 
-        var newSlide = new SCSlide(this.presentation, slidePart, pSlideId, () =>this.slides.Value.Count);
+        var newSlide = new SCSlide(slidePart, pSlideId, () =>this.slides.Value.Count, layoutInternal, this.presentation, this.imageParts);
         this.slides.Value.Add(newSlide);
 
         return newSlide;
@@ -199,10 +201,10 @@ internal sealed class SCSlideCollection : ISlideCollection
         var sourceSlideInternal = (SCSlide)slide;
         PresentationDocument sourcePresDoc;
         var tempStream = new MemoryStream();
-        if (sourceSlideInternal.PresCore == this.presentation)
+        if (sourceSlideInternal.Presentation.SDKPresentationDocument == this.presentation.SDKPresentationDocument)
         {
             this.presentation.ChartWorkbooks.ForEach(c => c.Close());
-            sourcePresDoc = (PresentationDocument)this.presentation.SDKPresentation.Clone(tempStream);
+            sourcePresDoc = (PresentationDocument)this.presentation.SDKPresentationDocument.Clone(tempStream);
         }
         else
         {
@@ -210,7 +212,7 @@ internal sealed class SCSlideCollection : ISlideCollection
                 (PresentationDocument)sourceSlideInternal.PresCore.SDKPresentation.Clone(tempStream);
         }
 
-        var destPresDoc = this.presentation.SDKPresentation;
+        var destPresDoc = this.presentation.SDKPresentationDocument;
         var sourcePresPart = sourcePresDoc.PresentationPart!;
         var destPresPart = destPresDoc.PresentationPart!;
         var destSdkPres = destPresPart.Presentation;
@@ -406,7 +408,7 @@ internal sealed class SCSlideCollection : ISlideCollection
 
     private List<SCSlide> GetSlides()
     {
-        this.presPart = this.presentation.SDKPresentation.PresentationPart!;
+        this.presPart = this.presentation.SDKPresentationDocument.PresentationPart!;
         int slidesCount = this.presPart.SlideParts.Count();
         var slides = new List<SCSlide>(slidesCount);
         var slideIds = this.presPart.Presentation.SlideIdList!.ChildElements.OfType<P.SlideId>().ToList();

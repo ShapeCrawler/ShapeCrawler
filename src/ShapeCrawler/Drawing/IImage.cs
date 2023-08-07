@@ -49,21 +49,21 @@ public interface IImage
 
 internal sealed class SCImage : IImage
 {
-    private readonly PresentationCore presCore;
     private readonly StringValue blipEmbed;
     private readonly OpenXmlPart openXmlPart;
     private byte[]? bytes;
+    private readonly List<ImagePart> imageParts;
 
     private SCImage(
         ImagePart imagePart,
         StringValue blipEmbed,
         OpenXmlPart openXmlPart,
-        PresentationCore presCore)
+        List<ImagePart> imageParts)
     {
         this.SDKImagePart = imagePart;
         this.blipEmbed = blipEmbed;
         this.openXmlPart = openXmlPart;
-        this.presCore = presCore;
+        this.imageParts = imageParts;
         this.MIME = this.SDKImagePart.ContentType;
     }
 
@@ -77,7 +77,7 @@ internal sealed class SCImage : IImage
 
     public void UpdateImage(Stream stream)
     {
-        var isSharedImagePart = this.presCore.ImageParts.Count(imgPart => imgPart == this.SDKImagePart) > 1;
+        var isSharedImagePart = this.imageParts.Count(imgPart => imgPart == this.SDKImagePart) > 1;
         if (isSharedImagePart)
         {
             var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
@@ -103,15 +103,14 @@ internal sealed class SCImage : IImage
         this.SetImage(sourceBytes);
     }
 
-    internal static SCImage ForPicture(SCShape pictureSCShape, OpenXmlPart openXmlPart, StringValue? blipEmbed)
+    internal static SCImage ForPicture(OpenXmlPart openXmlPart, StringValue? blipEmbed, List<ImagePart> imageParts)
     {
         var imagePart = (ImagePart)openXmlPart.GetPartById(blipEmbed!.Value!);
 
-        var slideStructureCore = (SlideStructure)pictureSCShape.SlideStructure;
-        return new SCImage(imagePart, blipEmbed, openXmlPart, slideStructureCore.PresCore);
+        return new SCImage(imagePart, blipEmbed, openXmlPart, imageParts);
     }
 
-    internal static SCImage? ForBackground(SCSlide slide)
+    internal static SCImage? ForBackground(SCSlide slide, List<ImagePart> imageParts)
     {
         var pBackground = slide.SDKSlidePart.Slide.CommonSlideData!.Background;
         if (pBackground == null)
@@ -127,12 +126,12 @@ internal sealed class SCImage : IImage
         }
 
         var imagePart = (ImagePart)slide.SDKSlidePart.GetPartById(picReference.Value!);
-        var backgroundImage = new SCImage(imagePart, picReference, slide.SDKSlidePart, slide.PresCore);
+        var backgroundImage = new SCImage(imagePart, picReference, slide.SDKSlidePart, imageParts);
 
         return backgroundImage;
     }
 
-    internal static SCImage? ForAutoShapeFill(SlideStructure slideObject, TypedOpenXmlPart slidePart, A.BlipFill aBlipFill)
+    internal static SCImage? ForAutoShapeFill(TypedOpenXmlPart slidePart, A.BlipFill aBlipFill, List<ImagePart> imageParts)
     {
         var picReference = aBlipFill.Blip?.Embed;
         if (picReference == null)
@@ -142,7 +141,7 @@ internal sealed class SCImage : IImage
 
         var imagePart = (ImagePart)slidePart.GetPartById(picReference.Value!);
 
-        return new SCImage(imagePart, picReference, slidePart, slideObject.PresCore);
+        return new SCImage(imagePart, picReference, slidePart, imageParts);
     }
 
     private string GetName()

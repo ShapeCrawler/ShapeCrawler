@@ -1,5 +1,6 @@
 ﻿using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using OneOf;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
@@ -29,8 +30,9 @@ internal sealed class SCAudioShape : SCMediaShape, IAudioShape
     internal SCAudioShape(
         OpenXmlCompositeElement pShapeTreesChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf)
-            : base(pShapeTreesChild, slideOf, shapeCollectionOf)
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        TypedOpenXmlPart slideTypedOpenXmlPart)
+        : base(pShapeTreesChild, slideOf, shapeCollectionOf, slideTypedOpenXmlPart)
     {
     }
 

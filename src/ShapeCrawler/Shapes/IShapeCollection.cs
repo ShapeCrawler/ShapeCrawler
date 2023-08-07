@@ -13,6 +13,7 @@ using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
+using ShapeCrawler.Services;
 using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
@@ -119,20 +120,24 @@ internal sealed class ShapeCollection : IShapeCollection
     private readonly P.ShapeTree pShapeTree;
     private readonly ResetableLazy<List<IShape>> shapes;
     private readonly AutoShapeCreator autoShapeCreator;
-    private readonly SlideStructure slideStructure;
+    private readonly ISlideStructure slideStructure;
     private readonly OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf;
+    private TypedOpenXmlPart slideTypedOpenXmlPart;
 
     internal ShapeCollection(
         OneOf<SlidePart, SlideLayoutPart, SlideMasterPart> slidePartOf,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf)
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf, 
+        TypedOpenXmlPart slideTypedOpenXmlPart,
+        List<ImagePart> imageParts)
     {
         this.slideOf = slideOf;
-        this.slideStructure = (SlideStructure)slideOf.Value;
+        this.slideTypedOpenXmlPart = slideTypedOpenXmlPart;
+        this.slideStructure = (ISlideStructure)slideOf.Value;
         var chartGrFrameHandler = new ChartGraphicFrameHandler();
         var tableGrFrameHandler = new TableGraphicFrameHandler();
         var oleGrFrameHandler = new OleGraphicFrameHandler();
         this.autoShapeCreator = new AutoShapeCreator();
-        var pictureHandler = new PictureHandler();
+        var pictureHandler = new PictureHandler(imageParts, this.slideTypedOpenXmlPart);
 
         this.autoShapeCreator.Successor = oleGrFrameHandler;
         oleGrFrameHandler.Successor = pictureHandler;
@@ -151,6 +156,16 @@ internal sealed class ShapeCollection : IShapeCollection
 
     public IShape this[int index] => this.shapes.Value[index];
 
+    internal int GetNextShapeId()
+    {
+        if (this.shapes.Value.Any())
+        {
+            return this.shapes.Value.Select(shape => shape.Id).Prepend(0).Max() + 1;    
+        }
+
+        return 1;
+    }
+    
     public IShape Add(IShape addingShape)
     {
         // SmartArt (<p:graphicFrame /> http://schemas.openxmlformats.org/drawingml/2006/diagram) are not in the shape collection, data is referenced.
@@ -164,7 +179,7 @@ internal sealed class ShapeCollection : IShapeCollection
 
         // Clone shape tree child.
         var addingShapeClone = (TypedOpenXmlCompositeElement)addingShapeInternal.PShapeTreeChild.CloneNode(true);
-        var id = this.slideStructure.GetNextShapeId();
+        var id = this.GetNextShapeId();
         addingShapeClone.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
 
         var newShape = this.GetShape(this.autoShapeCreator, addingShapeClone);
@@ -174,7 +189,7 @@ internal sealed class ShapeCollection : IShapeCollection
             case null:
                 throw new SCException($"Cannot create an instance of type {addingShape.GetType().Name}.");
             case SCPicture pic:
-                pic.CopyParts((SlideStructure)addingShapeInternal.slideOf.Value);
+                pic.CopyParts((ISlideStructure)addingShapeInternal.slideOf.Value);
                 break;
         }
 
@@ -230,11 +245,10 @@ internal sealed class ShapeCollection : IShapeCollection
             this.slideStructure.PresCore.SDKPresentation.CreateMediaDataPart("audio/mpeg", ".mp3");
         mp3Stream.Position = 0;
         mediaDataPart.FeedData(mp3Stream);
-        var slidePart = (SlidePart)this.slideStructure.TypedOpenXmlPart;
         var imageStream = Assembly.GetExecutingAssembly().GetStream("audio-image.png");
 
-        var audioRef = slidePart.AddAudioReferenceRelationship(mediaDataPart);
-        var mediaRef = slidePart.AddMediaReferenceRelationship(mediaDataPart);
+        var audioRef = this.slideTypedOpenXmlPart.AddAudioReferenceRelationship(mediaDataPart);
+        var mediaRef = this.slideTypedOpenXmlPart.AddMediaReferenceRelationship(mediaDataPart);
 
         var audioFromFile = new A.AudioFromFile() { Link = audioRef.Id };
 
@@ -303,7 +317,7 @@ internal sealed class ShapeCollection : IShapeCollection
     public IChart AddBarChart(BarChartType barChartType)
     {
         var chartFactory = new ChartGraphicFrameHandler();
-        var newPGraphicFrame = chartFactory.Create(((SlideStructure)this.slideOf.Value).TypedOpenXmlPart);
+        var newPGraphicFrame = chartFactory.Create(this.slideTypedOpenXmlPart);
 
         this.pShapeTree.Append(newPGraphicFrame);
 
@@ -315,17 +329,16 @@ internal sealed class ShapeCollection : IShapeCollection
         var xEmu = UnitConverter.HorizontalPixelToEmu(x);
         var yEmu = UnitConverter.VerticalPixelToEmu(y);
         
-        var mediaDataPart =
-            this.slideStructure.PresCore.SDKPresentation.CreateMediaDataPart("video/mp4", ".mp4");
+        var mediaDataPart = this.slideStructure.Presentation.SDKPresentationDocument.CreateMediaDataPart("video/mp4", ".mp4");
 
         stream.Position = 0;
         mediaDataPart.FeedData(stream);
         var imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
-        var slidePart = (SlidePart)this.slideStructure.TypedOpenXmlPart;
-        var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
+        var imagePart = this.slideTypedOpenXmlPart.AddNewPart<ImagePart>("image/png", imgPartRId);
         var imageStream = Assembly.GetExecutingAssembly().GetStream("video-image.bmp");
         imagePart.FeedData(imageStream);
 
+        var slidePart = (SlidePart)this.slideTypedOpenXmlPart;
         var videoRr = slidePart.AddVideoReferenceRelationship(mediaDataPart);
         var mediaRr = slidePart.AddMediaReferenceRelationship(mediaDataPart);
 
@@ -415,7 +428,7 @@ internal sealed class ShapeCollection : IShapeCollection
 
         this.shapes.Reset();
 
-        return new SCVideoShape(this.pShapeTree, this.slideOf, this);
+        return new SCVideoShape(this.pShapeTree, this.slideOf, this, this.slideTypedOpenXmlPart);
     }
 
     public IRectangle AddRectangle(int x, int y, int width, int height)

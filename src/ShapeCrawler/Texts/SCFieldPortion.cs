@@ -12,13 +12,13 @@ internal sealed class SCFieldPortion : IPortion
 {
     private readonly ResetableLazy<ITextPortionFont> font;
     private readonly A.Field aField;
-    private readonly SlideStructure slideStructure;
+    private readonly ISlideStructure slideStructure;
     private readonly PortionText portionText;
     private readonly A.Text? aText;
 
     internal SCFieldPortion(
         A.Field aField,
-        SlideStructure slideStructure,
+        ISlideStructure slideStructure,
         ITextFrameContainer textFrameContainer,
         SCParagraph paragraph,
         Action onRemoveHandler)

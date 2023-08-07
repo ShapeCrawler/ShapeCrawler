@@ -24,7 +24,7 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
         this.parentSlideObject = slideOf;
     }
 
-    public IGroupedShapeCollection Shapes => GroupedShapeCollection.Create(this.pGroupShape, this.parentSlideObject, this);
+    public IGroupedShapeCollection Shapes => new GroupedShapeCollection(this.pGroupShape, this.parentSlideObject, this);
 
     public override SCShapeType ShapeType => SCShapeType.Group;
 

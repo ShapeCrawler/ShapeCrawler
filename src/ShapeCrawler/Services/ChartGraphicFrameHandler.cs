@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
 using OneOf;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -13,7 +14,7 @@ using C14 = DocumentFormat.OpenXml.Office2010.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
-namespace ShapeCrawler.Services.Factories;
+namespace ShapeCrawler.Services;
 
 internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 {
@@ -148,54 +149,54 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 
     internal override SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideStructure,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollection)
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        TypedOpenXmlPart slideTypedOpenXmlPart)
     {
         if (pShapeTreeChild is not P.GraphicFrame pGraphicFrame)
         {
-            return this.Successor?.FromTreeChild(pShapeTreeChild, slideStructure, shapeCollection);
+            return this.Successor?.FromTreeChild(pShapeTreeChild, slideOf, shapeCollectionOf, slideTypedOpenXmlPart);
         }
 
         var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
         if (!aGraphicData.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
         {
-            return this.Successor?.FromTreeChild(pShapeTreeChild, slideStructure, shapeCollection);
+            return this.Successor?.FromTreeChild(pShapeTreeChild, slideOf, shapeCollectionOf, slideTypedOpenXmlPart);
         }
 
-        var slideBase = slideStructure.Match(slide => slide as SlideStructure, layout => layout, master => master);
         var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
-        var chartPart = (ChartPart)slideBase.TypedOpenXmlPart.GetPartById(cChartRef.Id!);
+        var chartPart = (ChartPart)slideTypedOpenXmlPart.GetPartById(cChartRef.Id!);
         var cPlotArea = chartPart!.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
         var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
         if (cCharts.Count() > 1)
         {
-            return new SCComboChart(pGraphicFrame, slideStructure, shapeCollection);
+            return new SCComboChart(pGraphicFrame, slideOf, shapeCollectionOf);
         }
 
         var chartTypeName = cCharts.Single().LocalName;
 
         if (chartTypeName == "lineChart")
         {
-            return new SCLineChart(pGraphicFrame, slideStructure, shapeCollection);
+            return new SCLineChart(pGraphicFrame, slideOf, shapeCollectionOf);
         }
 
         if (chartTypeName == "barChart")
         {
-            return new SCBarChart(pGraphicFrame, slideStructure, shapeCollection);
+            return new SCBarChart(pGraphicFrame, slideOf, shapeCollectionOf);
         }
 
         if (chartTypeName == "pieChart")
         {
-            return new SCPieChart(pGraphicFrame, slideStructure, shapeCollection);
+            return new SCPieChart(pGraphicFrame, slideOf, shapeCollectionOf);
         }
 
         if (chartTypeName == "scatterChart")
         {
-            return new SCScatterChart(pGraphicFrame, slideStructure, shapeCollection);
+            return new SCScatterChart(pGraphicFrame, slideOf, shapeCollectionOf);
         }
 
-        return new SCChart(pGraphicFrame, slideStructure, shapeCollection);
+        return new SCChart(pGraphicFrame, slideOf, shapeCollectionOf);
     }
 
     private void GenerateChartPartContent(ChartPart chartPart)

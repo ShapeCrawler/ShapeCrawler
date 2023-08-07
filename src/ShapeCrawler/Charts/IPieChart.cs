@@ -1,4 +1,5 @@
-﻿using OneOf;
+﻿using DocumentFormat.OpenXml.Packaging;
+using OneOf;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -17,9 +18,10 @@ internal sealed class SCPieChart : SCChart, IPieChart
 {
     internal SCPieChart(
         P.GraphicFrame pGraphicFrame, 
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
-        : base(pGraphicFrame, parentSlideObject, parentShapeCollection)
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        TypedOpenXmlPart slideTypedOpenXmlPart)
+        : base(pGraphicFrame, slideOf, shapeCollectionOf, slideTypedOpenXmlPart)
     {
     }
 }

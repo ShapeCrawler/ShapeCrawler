@@ -50,7 +50,7 @@ internal sealed class SCSlideMasterCollection : ISlideMasterCollection
     
     internal static SCSlideMasterCollection Create(PresentationCore presentation)
     {
-        var masterParts = presentation.SDKPresentation.PresentationPart!.SlideMasterParts;
+        var masterParts = presentation.SDKPresentationDocument.PresentationPart!.SlideMasterParts;
         var slideMasters = new List<ISlideMaster>(masterParts.Count());
         var number = 1;
         foreach (var slideMasterPart in masterParts)

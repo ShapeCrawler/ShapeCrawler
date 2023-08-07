@@ -52,13 +52,13 @@ internal sealed class SCPortionCollection : IPortionCollection
 {
     private readonly ResetableLazy<List<IPortion>> portions;
     private readonly A.Paragraph aParagraph;
-    private readonly SlideStructure slideStructure;
+    private readonly ISlideStructure slideStructure;
     private readonly ITextFrameContainer textFrameContainer;
     private readonly SCParagraph paragraph;
 
     internal SCPortionCollection(
         A.Paragraph aParagraph,  
-        SlideStructure slideStructure,
+        ISlideStructure slideStructure,
         ITextFrameContainer textFrameContainer,
         SCParagraph paragraph)
     {

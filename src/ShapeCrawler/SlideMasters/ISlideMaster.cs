@@ -45,13 +45,12 @@ public interface ISlideMaster
     IMasterSlideNumber? SlideNumber { get; }
 }
 
-internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
+internal sealed class SCSlideMaster : ISlideStructure, ISlideMaster
 {
     private readonly ResetableLazy<List<SCSlideLayout>> slideLayouts;
     private readonly Lazy<SCMasterSlideNumber?> slideNumber;
 
     internal SCSlideMaster(PresentationCore pres, P.SlideMaster pSlideMaster, int number)
-        : base(pres)
     {
         this.PresCore = pres;
         this.PSlideMaster = pSlideMaster;
@@ -60,18 +59,21 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
         this.slideNumber = new Lazy<SCMasterSlideNumber?>(this.CreateSlideNumber);
     }
 
+    public PresentationCore PresCore { get; set; }
+
     public IImage? Background => this.GetBackground();
 
     public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
-    public override IShapeCollection Shapes => new ShapeCollection(this.PSlideMaster.SlideMasterPart!, this);
+    public IShapeCollection Shapes => new ShapeCollection(this.PSlideMaster.SlideMasterPart!, this);
+    
     public IPresentation Presentation { get; } = null!;
 
     public ITheme Theme => this.GetTheme();
 
     public IMasterSlideNumber? SlideNumber => this.slideNumber.Value;
 
-    public override int Number { get; set; }
+    public int Number { get; set; }
 
     internal Dictionary<int, FontData> BodyParaLvlToFontData =>
         FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.BodyStyle!);
@@ -85,7 +87,7 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
 
     internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
     
-    internal override TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
+    internal TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
 
     internal bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
     {

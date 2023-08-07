@@ -12,6 +12,7 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using SkiaSharp;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes;
 
@@ -25,19 +26,19 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
     private readonly Lazy<SCTextFrame?> textFrame;
     private readonly ResetableLazy<Dictionary<int, FontData>> lvlToFontData;
     private readonly TypedOpenXmlCompositeElement pShape;
-    private readonly SlideStructure slideStructure;
+    private readonly ISlideStructure slideStructure;
 
     internal SCAutoShape(
         TypedOpenXmlCompositeElement pShape,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
-        : base(pShape, slideOf, parentShapeCollection)
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf)
+        : base(pShape, slideOf, shapeCollectionOf)
     {
         this.pShape = pShape;
         this.textFrame = new Lazy<SCTextFrame?>(this.ParseTextFrame);
         this.shapeFill = new Lazy<SCShapeFill>(this.GetFill);
         this.lvlToFontData = new ResetableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
-        this.slideStructure = (SlideStructure)this.slideOf.Value;
+        this.slideStructure = (ISlideStructure)this.slideOf.Value;
     }
     
     internal event EventHandler<NewAutoShape>? Duplicated;
@@ -57,7 +58,7 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
     public virtual IAutoShape Duplicate()
     {
         var typedCompositeElement = (TypedOpenXmlCompositeElement)this.PShapeTreeChild.CloneNode(true);
-        var id = ((SlideStructure)this.slideOf.Value).GetNextShapeId();
+        var id = this.GetNextShapeId();
         typedCompositeElement.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
         var newAutoShape = new SCAutoShape(
             typedCompositeElement, 
@@ -70,6 +71,17 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
         return newAutoShape;
     }
 
+    private int GetNextShapeId()
+    {
+        var slide = (ISlideStructure)this.slideOf.Value;
+        if (slide.Shapes.Any())
+        {
+            return slide.Shapes.Select(shape => shape.Id).Prepend(0).Max() + 1;    
+        }
+
+        return 1;
+    }
+    
     #endregion Public Properties
 
     internal override void Draw(SKCanvas slideCanvas)
@@ -245,8 +257,12 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
 
     private SCShapeFill GetFill()
     {
-        var slideObject = (SlideStructure)this.SlideStructure;
-        return new SCAutoShapeFill(slideObject, this.pShape.GetFirstChild<DocumentFormat.OpenXml.Presentation.ShapeProperties>() !, this);
+        var slideObject = (ISlideStructure)this.SlideStructure;
+        return new SCAutoShapeFill(
+            slideObject, 
+            this.pShape.GetFirstChild<P.Presentation.ShapeProperties>() !, 
+            this, 
+            this.slideTypedOpenXmlPart);
     }
 
     private IShapeOutline GetOutline()

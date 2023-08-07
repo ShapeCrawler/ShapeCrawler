@@ -8,17 +8,12 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a Slide Layout.
 /// </summary>
-public interface ISlideLayout
+public interface ISlideLayout : ISlideStructure
 {
     /// <summary>
     ///     Gets parent Slide Master.
     /// </summary>
     ISlideMaster SlideMaster { get; }
-
-    /// <summary>
-    ///     Gets collection of shape.
-    /// </summary>
-    IShapeCollection Shapes { get; }
 
     /// <summary>
     ///     Gets layout type.
@@ -31,7 +26,7 @@ public interface ISlideLayout
     string Name { get; }
 }
 
-internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
+internal sealed class SCSlideLayout : ISlideLayout
 {
     private static readonly Dictionary<string, SCSlideLayoutType> TypeMapping = new()
     {
@@ -77,33 +72,36 @@ internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
     private readonly ResetableLazy<ShapeCollection> shapes;
     private readonly SCSlideMaster slideMaster;
 
-    internal SCSlideLayout(SCSlideMaster slideMaster, SlideLayoutPart slideLayoutPart, int number)
-        : base(slideMaster.PresCore)
+    internal SCSlideLayout(
+        SCSlideMaster slideMaster, 
+        SlideLayoutPart slideLayoutPart, 
+        int number,
+        IPresentation presentation)
     {
         this.slideMaster = slideMaster;
         this.SlideLayoutPart = slideLayoutPart;
         this.shapes = new ResetableLazy<ShapeCollection>(() =>
             new ShapeCollection(slideLayoutPart, this));
         this.Number = number;
+        this.Presentation = presentation;
     }
 
+    public int Number { get; set; }
+
     public string Name => this.GetName();
+
+    public IShapeCollection Shapes => this.shapes.Value;
+    public IPresentation Presentation { get; }
 
     public SCSlideLayoutType Type => this.GetLayoutType();
 
     public ISlideMaster SlideMaster => this.slideMaster;
-
-    public override int Number { get; set; }
-
-    public override IShapeCollection Shapes => this.shapes.Value;
 
     internal SlideLayoutPart SlideLayoutPart { get; }
 
     internal SCSlideMaster SlideMasterInternal => (SCSlideMaster)this.SlideMaster;
 
     internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
-
-    internal override TypedOpenXmlPart TypedOpenXmlPart => this.SlideLayoutPart;
 
     private string GetName()
     {

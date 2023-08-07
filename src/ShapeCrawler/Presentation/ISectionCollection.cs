@@ -86,7 +86,7 @@ internal sealed class SCSectionCollection : ISectionCollection
     internal static SCSectionCollection Create(PresentationCore presentation)
     {
         var sections = new List<SCSection>();
-        var sdkSectionList = presentation.SDKPresentation.PresentationPart!.Presentation.PresentationExtensionList
+        var sdkSectionList = presentation.SDKPresentationDocument.PresentationPart!.Presentation.PresentationExtensionList
             ?.Descendants<P14.SectionList>().FirstOrDefault();
 
         if (sdkSectionList == null)
@@ -113,7 +113,7 @@ internal sealed class SCSectionCollection : ISectionCollection
         }
 
         removing.Remove();
-        this.Presentation.SDKPresentation.PresentationPart!.Presentation.Save();
+        this.Presentation.SDKPresentationDocument.PresentationPart!.Presentation.Save();
     }
     
 }

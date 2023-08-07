@@ -1,5 +1,6 @@
 ﻿using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using OneOf;
 using ShapeCrawler.Media;
 using ShapeCrawler.Shapes;
@@ -28,9 +29,10 @@ internal sealed class SCVideoShape : SCMediaShape, IVideoShape
 {
     internal SCVideoShape(
         OpenXmlCompositeElement pShapeTreeChild,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
-        : base(pShapeTreeChild, parentSlideObject, parentShapeCollection)
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        TypedOpenXmlPart slideTypedOpenXmlPart)
+        : base(pShapeTreeChild, slideOf, shapeCollectionOf, slideTypedOpenXmlPart)
     {
     }
 

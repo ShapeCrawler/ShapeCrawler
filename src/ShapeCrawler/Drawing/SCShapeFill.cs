@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -11,7 +13,7 @@ internal abstract class SCShapeFill : IShapeFill
     protected BooleanValue? useBgFill;
     protected SCFillType fillType;
     
-    private readonly SlideStructure slideObject;
+    private readonly ISlideStructure slideObject;
     private bool isDirty;
     private string? hexSolidColor;
     private SCImage? pictureImage;
@@ -19,11 +21,19 @@ internal abstract class SCShapeFill : IShapeFill
     private A.GradientFill? aGradFill;
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
+    private readonly TypedOpenXmlPart slideTypedOpenXmlPart;
+    private readonly List<ImagePart> imageParts;
 
-    internal SCShapeFill(SlideStructure slideObject, TypedOpenXmlCompositeElement properties)
+    internal SCShapeFill(
+        ISlideStructure slideObject, 
+        TypedOpenXmlCompositeElement properties, 
+        TypedOpenXmlPart slideTypedOpenXmlPart, 
+        List<ImagePart> imageParts)
     {
         this.slideObject = slideObject;
         this.properties = properties;
+        this.slideTypedOpenXmlPart = slideTypedOpenXmlPart;
+        this.imageParts = imageParts;
         this.isDirty = true;
     }
 
@@ -46,7 +56,7 @@ internal abstract class SCShapeFill : IShapeFill
         }
         else
         {
-            var rId = this.slideObject.TypedOpenXmlPart.AddImagePart(imageStream);
+            var rId = this.slideTypedOpenXmlPart.AddImagePart(imageStream);
 
             var aBlipFill = new DocumentFormat.OpenXml.Drawing.BlipFill();
             var aStretch = new DocumentFormat.OpenXml.Drawing.Stretch();
@@ -143,12 +153,11 @@ internal abstract class SCShapeFill : IShapeFill
 
     private void InitPictureFillOr()
     {
-        var xmlPart = this.slideObject.TypedOpenXmlPart;
         this.aBlipFill = this.properties.GetFirstChild<DocumentFormat.OpenXml.Drawing.BlipFill>();
 
         if (this.aBlipFill is not null)
         {
-            var image = SCImage.ForAutoShapeFill(this.slideObject, xmlPart, this.aBlipFill);
+            var image = SCImage.ForAutoShapeFill(this.slideTypedOpenXmlPart, this.aBlipFill, this.imageParts);
             this.pictureImage = image;
             this.fillType = SCFillType.Picture;
         }

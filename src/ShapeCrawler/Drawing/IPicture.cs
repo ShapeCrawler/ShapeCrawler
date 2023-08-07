@@ -1,6 +1,7 @@
 ﻿// ReSharper disable CheckNamespace
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AngleSharp.Html.Dom;
@@ -36,20 +37,26 @@ internal sealed class SCPicture : SCShape, IPicture
 {
     private readonly StringValue? blipEmbed;
     private readonly A.Blip aBlip;
+    private readonly TypedOpenXmlPart slideTypedOpenXmlPart;
+    private readonly List<ImagePart> imageParts;
 
     internal SCPicture(
         P.Picture pPicture,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection,
-        A.Blip aBlip)
-        : base(pPicture, parentSlideObject, parentShapeCollection)
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        A.Blip aBlip, 
+        TypedOpenXmlPart slideTypedOpenXmlPart,
+        List<ImagePart> imageParts)
+        : base(pPicture, slideOf, shapeCollectionOf)
     {
         this.aBlip = aBlip;
+        this.slideTypedOpenXmlPart = slideTypedOpenXmlPart;
+        this.imageParts = imageParts;
         this.blipEmbed = aBlip.Embed;
     }
 
     public IImage Image =>
-        SCImage.ForPicture(this, ((SlideStructure)this.SlideStructure).TypedOpenXmlPart, this.blipEmbed);
+        SCImage.ForPicture(this.slideTypedOpenXmlPart, this.blipEmbed, imageParts);
 
     public string? SvgContent => this.GetSvgContent();
 
@@ -59,27 +66,24 @@ internal sealed class SCPicture : SCShape, IPicture
     ///     Copies all required parts from the source slide if they do not exist.
     /// </summary>
     /// <param name="sourceSlide">Source slide.</param>
-    internal void CopyParts(SlideStructure sourceSlide)
+    internal void CopyParts(ISlideStructure sourceSlide)
     {
         if (this.blipEmbed is null)
         {
             return;
         }
+        
 
-        // Get image source part
-        var sSlidePart = sourceSlide.TypedOpenXmlPart;
-
-        if (sSlidePart.GetPartById(this.blipEmbed.Value!) is not ImagePart imagePart)
+        if (this.slideTypedOpenXmlPart.GetPartById(this.blipEmbed.Value!) is not ImagePart imagePart)
         {
             return;
         }
 
         // Creates a new part in this slide with a new Id...
-        var slidePart = ((SlideStructure)this.SlideStructure).TypedOpenXmlPart;
-        var imgPartRId = slidePart.GetNextRelationshipId();
+        var imgPartRId = this.slideTypedOpenXmlPart.GetNextRelationshipId();
 
         // Adds to current slide parts and update relation id.
-        var nImagePart = slidePart.AddNewPart<ImagePart>(imagePart.ContentType, imgPartRId);
+        var nImagePart = this.slideTypedOpenXmlPart.AddNewPart<ImagePart>(imagePart.ContentType, imgPartRId);
         using var stream = imagePart.GetStream(FileMode.Open);
         stream.Position = 0;
         nImagePart.FeedData(stream);
@@ -113,9 +117,8 @@ internal sealed class SCPicture : SCShape, IPicture
 
         var svgId = svgBlipList.First().Embed!.Value!;
 
-        var slideStructureCore = (SlideStructure)this.SlideStructure;
-        var imagePart = (ImagePart)slideStructureCore.TypedOpenXmlPart.GetPartById(svgId);
-        using var svgStream = imagePart.GetStream(System.IO.FileMode.Open, System.IO.FileAccess.Read);
+        var imagePart = (ImagePart)this.slideTypedOpenXmlPart.GetPartById(svgId);
+        using var svgStream = imagePart.GetStream(FileMode.Open, FileAccess.Read);
         using var sReader = new StreamReader(svgStream);
 
         return sReader.ReadToEnd();
