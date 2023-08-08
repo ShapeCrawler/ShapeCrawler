@@ -4,9 +4,8 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using OneOf;
-using ShapeCrawler.Services;
-using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shapes;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable once CheckNamespace
@@ -33,42 +32,29 @@ public interface IGroupedShapeCollection : IEnumerable<IShape>
 
 internal sealed class GroupedShapeCollection : IReadOnlyCollection<IShape>, IGroupedShapeCollection
 {
-    private readonly List<IShape> collectionItems;
+    private readonly List<IShape?> collectionItems;
 
-    internal GroupedShapeCollection (
+    internal GroupedShapeCollection(
         P.GroupShape pGroupShapeParam,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
         SCGroupShape groupShape,
         TypedOpenXmlPart slideTypedOpenXmlPart,
-        List<ImagePart> imageParts) 
+        List<ImagePart> imageParts)
     {
-        var autoShapeCreator = new AutoShapeCreator();
-        var oleGrFrameHandler = new OleGraphicFrameHandler();
-        var pictureHandler = new PictureHandler(imageParts, slideTypedOpenXmlPart);
-        var chartGrFrameHandler = new ChartGraphicFrameHandler();
-        var tableGrFrameHandler = new TableGraphicFrameHandler();
-
-        autoShapeCreator.Successor = oleGrFrameHandler;
-        oleGrFrameHandler.Successor = pictureHandler;
-        pictureHandler.Successor = chartGrFrameHandler;
-        chartGrFrameHandler.Successor = tableGrFrameHandler;
-
-        var groupedShapes = new List<IShape>();
+        var groupedShapes = new List<IShape?>();
         foreach (var child in pGroupShapeParam.ChildElements.OfType<OpenXmlCompositeElement>())
         {
-            SCShape? shape;
+            IShape? shape = null;
             if (child is P.GroupShape pGroupShape)
             {
                 shape = new SCGroupShape(pGroupShape, slideOf, groupShape, slideTypedOpenXmlPart, imageParts);
             }
-            else
+            else if (child is P.Shape pShape)
             {
-                shape = autoShapeCreator.FromTreeChild(child, slideOf, groupShape, slideTypedOpenXmlPart);
-                if (shape != null)
-                {
-                    shape.XChanged += groupShape.OnGroupedShapeXChanged;    
-                    shape.YChanged += groupShape.OnGroupedShapeYChanged;    
-                }
+                var autoShape = new SCAutoShape(pShape, slideOf, groupShape, slideTypedOpenXmlPart);
+                autoShape.XChanged += groupShape.OnGroupedShapeXChanged;
+                autoShape.YChanged += groupShape.OnGroupedShapeYChanged;
+                shape = autoShape;
             }
 
             if (shape != null)
@@ -79,9 +65,9 @@ internal sealed class GroupedShapeCollection : IReadOnlyCollection<IShape>, IGro
 
         this.collectionItems = groupedShapes;
     }
-    
+
     public int Count => this.collectionItems.Count;
-    
+
     public T GetById<T>(int shapeId)
         where T : IShape
     {
@@ -95,11 +81,11 @@ internal sealed class GroupedShapeCollection : IReadOnlyCollection<IShape>, IGro
         return (T)shape;
     }
 
-    public IEnumerator<IShape> GetEnumerator()
+    public IEnumerator<IShape?> GetEnumerator()
     {
         return this.collectionItems.GetEnumerator();
     }
-    
+
     IEnumerator IEnumerable.GetEnumerator()
     {
         return this.GetEnumerator();
