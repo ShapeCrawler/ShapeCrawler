@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
+using System.Linq;
 
 namespace ShapeCrawler.Drawing;
 
@@ -120,6 +121,8 @@ internal abstract class SCShapeFill : IShapeFill
             {
                 // TODO: get hex color from scheme
                 var schemeColor = this.aSolidFill.SchemeColor;
+                var hex = HexParser.FromSolidFill(aSolidFill, (SCSlideMaster)this.slideObject!.Presentation!.SlideMasters![0]);
+                this.hexSolidColor = hex.Item2;
             }
 
             this.fillType = SCFillType.Solid;

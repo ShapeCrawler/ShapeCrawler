@@ -67,6 +67,19 @@ public class ShapeFillTests : SCTest
     }
 
     [Test]
+    public void ThemeColor_getter_returns_color_name()
+    {
+        // Arrange
+        var autoShape = (IAutoShape)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[3].Shapes.First(sp => sp.Name == "Rectangle 3");
+
+        // Act
+        var shapeSolidColorName = autoShape.Fill.Color;
+
+        // Assert
+        shapeSolidColorName.Should().BeEquivalentTo("FFAB40");
+    }
+
+    [Test]
     public async Task Picture_BinaryData_returns_binary_content_of_picture_image()
     {
         // Arrange
