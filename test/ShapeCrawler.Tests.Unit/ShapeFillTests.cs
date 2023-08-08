@@ -80,4 +80,19 @@ public class ShapeFillTests : SCTest
         // Assert
         imageBytes.Length.Should().BePositive();
     }
+    
+    [Test]
+    public void SetColor_sets_green_color()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var slide = pres.Slides[0];
+        var shape = slide.Shapes.AddRectangle(0, 0, 100, 100);
+        
+        // Act
+        shape.Fill!.SetColor("00FF00");
+
+        // Assert
+        PptxValidator.Validate(pres).Should().BeEmpty();
+    }
 }
