@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -45,12 +46,16 @@ internal sealed class SCRowCollection : IRowCollection
     private readonly List<SCRow> collectionItems;
     private readonly SCTable parentTable;
     private readonly A.Table aTable;
+    private readonly TypedOpenXmlPart slideTypedOpenXmlPart;
+    private readonly List<ImagePart> imageParts;
 
-    private SCRowCollection(List<SCRow> rowList, SCTable parentTable, A.Table aTable)
+    private SCRowCollection(List<SCRow> rowList, SCTable parentTable, A.Table aTable, TypedOpenXmlPart slideTypedOpenXmlPart, List<ImagePart> imageParts)
     {
         this.collectionItems = rowList;
         this.parentTable = parentTable;
         this.aTable = aTable;
+        this.slideTypedOpenXmlPart = slideTypedOpenXmlPart;
+        this.imageParts = imageParts;
     }
 
     public int Count => this.collectionItems.Count;
@@ -79,7 +84,7 @@ internal sealed class SCRowCollection : IRowCollection
     {
         var columnsCount = this.collectionItems[0].Cells.Count;
         var aTableRow = this.aTable.AddRow(columnsCount);
-        var tableRow = new SCRow(this.parentTable, aTableRow, this.collectionItems.Count);
+        var tableRow = new SCRow(this.parentTable, aTableRow, this.collectionItems.Count, this.slideTypedOpenXmlPart, this.imageParts);
         this.collectionItems.Add(tableRow);
 
         return tableRow;
@@ -95,14 +100,18 @@ internal sealed class SCRowCollection : IRowCollection
         return this.collectionItems.GetEnumerator();
     }
 
-    internal static SCRowCollection Create(SCTable table, P.GraphicFrame pGraphicFrame)
+    internal static SCRowCollection Create(
+        SCTable table, 
+        P.GraphicFrame pGraphicFrame, 
+        TypedOpenXmlPart slideTypedOpenXmlPart, 
+        List<ImagePart> imageParts)
     {
         var aTable = pGraphicFrame.GetATable();
         var aTableRows = aTable.Elements<A.TableRow>();
         var rowList = new List<SCRow>(aTableRows.Count());
         var rowIndex = 0;
-        rowList.AddRange(aTableRows.Select(aTblRow => new SCRow(table, aTblRow, rowIndex++)));
+        rowList.AddRange(aTableRows.Select(aTblRow => new SCRow(table, aTblRow, rowIndex++, slideTypedOpenXmlPart, imageParts)));
 
-        return new SCRowCollection(rowList, table, aTable);
+        return new SCRowCollection(rowList, table, aTable, slideTypedOpenXmlPart, imageParts);
     }
 }

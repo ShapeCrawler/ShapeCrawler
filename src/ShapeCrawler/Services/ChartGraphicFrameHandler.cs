@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
@@ -16,7 +17,7 @@ using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Services;
 
-internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
+internal sealed class ChartGraphicFrameHandler
 {
     private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart";
 
@@ -147,11 +148,12 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
         return graphicFrame;
     }
 
-    internal override SCShape? FromTreeChild(
+    internal SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
         OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
-        TypedOpenXmlPart slideTypedOpenXmlPart)
+        TypedOpenXmlPart slideTypedOpenXmlPart,
+        List<ChartWorkbook> chartWorkbooks)
     {
         if (pShapeTreeChild is not P.GraphicFrame pGraphicFrame)
         {
@@ -171,7 +173,7 @@ internal sealed class ChartGraphicFrameHandler : OpenXmlElementHandler
 
         if (cCharts.Count() > 1)
         {
-            return new SCComboChart(pGraphicFrame, slideOf, shapeCollectionOf);
+            return new SCComboChart(pGraphicFrame, slideOf, shapeCollectionOf, slideTypedOpenXmlPart);
         }
 
         var chartTypeName = cCharts.Single().LocalName;

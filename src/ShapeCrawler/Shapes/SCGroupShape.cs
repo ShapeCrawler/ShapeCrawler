@@ -1,5 +1,7 @@
-﻿using AngleSharp.Html.Dom;
+﻿using System.Collections.Generic;
+using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using OneOf;
 using ShapeCrawler.Shared;
 using SkiaSharp;
@@ -13,18 +15,24 @@ internal sealed class SCGroupShape : SCShape, IGroupShape
 {
     private readonly P.GroupShape pGroupShape;
     private readonly OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject;
+    private readonly TypedOpenXmlPart slideTypedOpenXmlPart;
+    private readonly List<ImagePart> imageParts;
 
     internal SCGroupShape(
         P.GroupShape pGroupShape, 
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf)
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        TypedOpenXmlPart slideTypedOpenXmlPart,
+        List<ImagePart> imageParts)
         : base(pGroupShape, slideOf, shapeCollectionOf)
     {
         this.pGroupShape = pGroupShape;
         this.parentSlideObject = slideOf;
+        this.slideTypedOpenXmlPart = slideTypedOpenXmlPart;
+        this.imageParts = imageParts;
     }
 
-    public IGroupedShapeCollection Shapes => new GroupedShapeCollection(this.pGroupShape, this.parentSlideObject, this);
+    public IGroupedShapeCollection Shapes => new GroupedShapeCollection(this.pGroupShape, this.parentSlideObject, this, this.slideTypedOpenXmlPart, this.imageParts);
 
     public override SCShapeType ShapeType => SCShapeType.Group;
 

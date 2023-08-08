@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -9,17 +10,19 @@ using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class ChartWorkbook // TODO: implement IDispose to correctly dispose _packagePartStream
+internal sealed class ChartWorkbook
 {
     private readonly SCChart chart;
     private readonly EmbeddedPackagePart embeddedPackagePart;
     private Stream? embeddedPackagePartStream;
     private bool closed;
+    private List<ChartWorkbook> chartWorkbooks;
 
-    internal ChartWorkbook(SCChart chart, EmbeddedPackagePart embeddedPackagePart)
+    internal ChartWorkbook(SCChart chart, EmbeddedPackagePart embeddedPackagePart, List<ChartWorkbook> chartWorkbooks)
     {
         this.chart = chart;
         this.embeddedPackagePart = embeddedPackagePart;
+        this.chartWorkbooks = chartWorkbooks;
         this.SpreadsheetDocument = new Lazy<SpreadsheetDocument>(this.GetSpreadsheetDocument);
     }
 
@@ -103,8 +106,7 @@ internal sealed class ChartWorkbook // TODO: implement IDispose to correctly dis
     {
         this.embeddedPackagePartStream = this.embeddedPackagePart.GetStream();
         var spreadsheetDocument = DocumentFormat.OpenXml.Packaging.SpreadsheetDocument.Open(this.embeddedPackagePartStream, true);
-        var slideStructureCore = (ISlideStructure)this.chart.SlideStructure;
-        slideStructureCore.PresCore.ChartWorkbooks.Add(this);
+        this.chartWorkbooks.Add(this);
 
         return spreadsheetDocument;
     }

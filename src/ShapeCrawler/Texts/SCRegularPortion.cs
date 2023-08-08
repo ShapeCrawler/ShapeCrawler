@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -19,7 +21,7 @@ internal sealed class SCRegularPortion : IPortion
         ISlideStructure slideStructure, 
         ITextFrameContainer textFrameContainer,
         SCParagraph paragraph, 
-        Action onRemoveHandler, TypedOpenXmlPart slideTypedOpenXmlPart)
+        Action onRemoveHandler, TypedOpenXmlPart slideTypedOpenXmlPart, Dictionary<int, FontData> paraLvlToFontData)
     {
         this.slideStructure = slideStructure;
         this.slideTypedOpenXmlPart = slideTypedOpenXmlPart;
@@ -29,8 +31,8 @@ internal sealed class SCRegularPortion : IPortion
         this.aRun = aRun;
         
         var themeFontScheme = (ThemeFontScheme)textFrameContainer.SCShape.SlideMasterInternal.Theme.FontScheme;
-        var textPortionSize = new TextPortionSize(this.AText, paragraph);
-        this.font = new ResetableLazy<SCTextPortionFont>(() => new SCTextPortionFont(this.AText, textFrameContainer, paragraph, themeFontScheme, textPortionSize));
+        var textPortionSize = new TextPortionSize(this.AText, paragraph, paraLvlToFontData);
+        this.font = new ResetableLazy<SCTextPortionFont>(() => new SCTextPortionFont(this.AText, textFrameContainer, paragraph, themeFontScheme, textPortionSize, paraLvlToFontData));
     }
 
     internal event Action? Removed;

@@ -17,15 +17,14 @@ internal sealed record PresentationCore
     private readonly ResetableLazy<SCSectionCollection> sectionCollection;
     private readonly ResetableLazy<SCSlideCollection> slideCollection;
 
-    internal PresentationCore(byte[] bytes)
-        : this(new MemoryStream(bytes))
+    internal PresentationCore(byte[] bytes) : this(new MemoryStream(bytes))
     {
         this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
         this.SlideMasterCollection =
-            new ResetableLazy<SCSlideMasterCollection>(() => SCSlideMasterCollection.Create(this));
+            new ResetableLazy<SCSlideMasterCollection>(() => SCSlideMasterCollection.Create(this.ImageParts, this.SDKPresentationDocument.PresentationPart!.SlideMasterParts, this.SDKPresentationDocument));
         this.paraLvlToFontData =
             new Lazy<Dictionary<int, FontData>>(() =>
-                ParseFontHeights(this.SDKPresentationDocument!.PresentationPart!.Presentation));
+                ParseFontHeights(this.SDKPresentationDocument.PresentationPart!.Presentation));
         this.sectionCollection =
             new ResetableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
         this.slideCollection = new ResetableLazy<SCSlideCollection>(() => new SCSlideCollection(this, this.ImageParts));
@@ -38,13 +37,13 @@ internal sealed record PresentationCore
         
         this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
         this.SlideMasterCollection =
-            new ResetableLazy<SCSlideMasterCollection>(() => SCSlideMasterCollection.Create(this));
+            new ResetableLazy<SCSlideMasterCollection>(() => SCSlideMasterCollection.Create(ImageParts, this.SDKPresentationDocument.PresentationPart!.SlideMasterParts));
         this.paraLvlToFontData =
             new Lazy<Dictionary<int, FontData>>(() =>
                 ParseFontHeights(this.SDKPresentationDocument!.PresentationPart!.Presentation));
         this.sectionCollection =
             new ResetableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
-        this.slideCollection = new ResetableLazy<SCSlideCollection>(() => new SCSlideCollection(this));
+        this.slideCollection = new ResetableLazy<SCSlideCollection>(() => new SCSlideCollection(this, this.ImageParts));
         this.HeaderAndFooter = new HeaderAndFooter(this);
     }
 

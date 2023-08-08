@@ -1,4 +1,5 @@
-﻿using ShapeCrawler.AutoShapes;
+﻿using System.Collections.Generic;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
 using ShapeCrawler.Services.Factories;
@@ -12,11 +13,13 @@ internal record TextPortionSize : IFontSize
 {
     private readonly A.Text aText;
     private readonly SCParagraph paragraph;
+    private readonly Dictionary<int, FontData> paraLvlToFontData;
 
-    internal TextPortionSize(A.Text aText, SCParagraph paragraph)
+    internal TextPortionSize(A.Text aText, SCParagraph paragraph, Dictionary<int, FontData> paraLvlToFontData)
     {
         this.aText = aText;
         this.paragraph = paragraph;
+        this.paraLvlToFontData = paraLvlToFontData;
     }
     
     public int Size()
@@ -39,9 +42,7 @@ internal record TextPortionSize : IFontSize
             }
         }
 
-        var sldStructureCore = (SlideStructure)textFrameContainer.SCShape.SlideStructure;
-        var pres = sldStructureCore.PresCore;
-        if (pres.ParaLvlToFontData.TryGetValue(paraLevel, out var fontData))
+        if (this.paraLvlToFontData.TryGetValue(paraLevel, out var fontData))
         {
             if (fontData.FontSize is not null)
             {

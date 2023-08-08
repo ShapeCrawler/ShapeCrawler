@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using OneOf;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
@@ -27,14 +28,17 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
     private readonly ResetableLazy<Dictionary<int, FontData>> lvlToFontData;
     private readonly TypedOpenXmlCompositeElement pShape;
     private readonly ISlideStructure slideStructure;
+    private readonly TypedOpenXmlPart slideTypedOpenXmlPart;
 
     internal SCAutoShape(
         TypedOpenXmlCompositeElement pShape,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf)
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf, 
+        TypedOpenXmlPart slideTypedOpenXmlPart)
         : base(pShape, slideOf, shapeCollectionOf)
     {
         this.pShape = pShape;
+        this.slideTypedOpenXmlPart = slideTypedOpenXmlPart;
         this.textFrame = new Lazy<SCTextFrame?>(this.ParseTextFrame);
         this.shapeFill = new Lazy<SCShapeFill>(this.GetFill);
         this.lvlToFontData = new ResetableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
@@ -63,7 +67,8 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
         var newAutoShape = new SCAutoShape(
             typedCompositeElement, 
             this.slideOf,
-            this.shapeCollectionOf);
+            this.shapeCollectionOf,
+            this.slideTypedOpenXmlPart);
 
         var duplicatedShape = new NewAutoShape(newAutoShape, typedCompositeElement);
         this.Duplicated?.Invoke(this, duplicatedShape);
@@ -257,10 +262,10 @@ internal class SCAutoShape : SCShape, IAutoShape, ITextFrameContainer
 
     private SCShapeFill GetFill()
     {
-        var slideObject = (ISlideStructure)this.SlideStructure;
+        var slideObject = this.SlideStructure;
         return new SCAutoShapeFill(
             slideObject, 
-            this.pShape.GetFirstChild<P.Presentation.ShapeProperties>() !, 
+            this.pShape.GetFirstChild<P.ShapeProperties>() !, 
             this, 
             this.slideTypedOpenXmlPart);
     }

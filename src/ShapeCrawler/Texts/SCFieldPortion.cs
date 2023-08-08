@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -21,7 +23,8 @@ internal sealed class SCFieldPortion : IPortion
         ISlideStructure slideStructure,
         ITextFrameContainer textFrameContainer,
         SCParagraph paragraph,
-        Action onRemoveHandler)
+        Action onRemoveHandler,
+        Dictionary<int, FontData> paraLvlToFontData)
     {
         this.slideStructure = slideStructure;
         this.aText = aField.GetFirstChild<A.Text>();
@@ -43,12 +46,13 @@ internal sealed class SCFieldPortion : IPortion
                     textFrameContainer,
                     paragraph,
                     themeFontScheme,
-                    layoutNumberSize);
+                    layoutNumberSize,
+                    paraLvlToFontData);
                 return textPortionFont;
             }
 
-            var textPortionSize = new TextPortionSize(this.aText!, paragraph);
-            return new SCTextPortionFont(this.aText!, textFrameContainer, paragraph, themeFontScheme, textPortionSize);
+            var textPortionSize = new TextPortionSize(this.aText!, paragraph, paraLvlToFontData);
+            return new SCTextPortionFont(this.aText!, textFrameContainer, paragraph, themeFontScheme, textPortionSize, paraLvlToFontData);
         });
 
         this.portionText = new PortionText(this.aField);

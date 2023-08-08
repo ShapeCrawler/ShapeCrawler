@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Services;
@@ -22,12 +23,13 @@ internal sealed class SCTextPortionFont : ITextPortionFont
         ITextFrameContainer textFrameContainer, 
         SCParagraph paragraph,
         ThemeFontScheme themeFontScheme,
-        IFontSize size)
+        IFontSize size,
+        Dictionary<int, FontData> paraLvlToFontData)
     {
         this.aText = aText;
         this.paragraph = paragraph;
         this.latinFont = new ResetableLazy<A.LatinFont>(this.ParseALatinFont);
-        this.fontColor = new Lazy<SCFontColor>(() => new SCFontColor(textFrameContainer, paragraph, this.aText));
+        this.fontColor = new Lazy<SCFontColor>(() => new SCFontColor(textFrameContainer, paragraph, this.aText, paraLvlToFontData));
         this.textFrameContainer = textFrameContainer;
         this.aFontScheme = themeFontScheme.AFontScheme;
         this.size = size;

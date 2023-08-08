@@ -25,30 +25,35 @@ internal sealed class SCSlide : ISlide
     private readonly Func<int> totalSlideCount;
     private Lazy<CustomXmlPart?> customXmlPart;
     private readonly List<ImagePart> imageParts;
+    private readonly int slideWidth;
+    private readonly int slideHeight;
 
     internal SCSlide( 
         SlidePart slidePart, 
         SlideId slideId, 
         Func<int> totalSlideCount,
         SCSlideLayout slideLayout,
-        IPresentation presentation, 
-        List<ImagePart> imageParts)
+        List<ImagePart> imageParts, 
+        int slideWidth, 
+        int slideHeight,
+        PresentationDocument sdkPresentationDocument)
     {
         this.SDKSlidePart = slidePart;
         this.imageParts = imageParts;
-        this.shapes = new ResetableLazy<ShapeCollection>(() => new ShapeCollection(this.SDKSlidePart, this, slidePart));
+        this.slideWidth = slideWidth;
+        this.slideHeight = slideHeight;
+        this.shapes = new ResetableLazy<ShapeCollection>(() => new ShapeCollection(this.SDKSlidePart, this, slidePart, imageParts, sdkPresentationDocument));
         this.backgroundImage = new Lazy<SCImage?>(() => SCImage.ForBackground(this, this.imageParts));
         this.customXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideId = slideId;
         this.totalSlideCount = totalSlideCount;
         this.SlideLayout = slideLayout;
-        this.Presentation = presentation;
+        this.SDKPresentationDocument = sdkPresentationDocument;
     }
 
     public ISlideLayout SlideLayout { get; }
 
     public IShapeCollection Shapes => this.shapes.Value;
-    public IPresentation Presentation { get; }
 
     public int Number
     {
@@ -67,6 +72,7 @@ internal sealed class SCSlide : ISlide
     public bool Hidden => this.SDKSlidePart.Slide.Show is not null && this.SDKSlidePart.Slide.Show.Value == false;
 
     public SlidePart SDKSlidePart { get; }
+    public PresentationDocument SDKPresentationDocument { get; }
 
     internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
 
@@ -103,7 +109,7 @@ internal sealed class SCSlide : ISlide
 
     public void SaveAsPng(Stream stream)
     {
-        var imageInfo = new SKImageInfo(this.PresCore.SlideWidth, this.PresCore.SlideHeight);
+        var imageInfo = new SKImageInfo(this.slideWidth, this.slideHeight);
         var surface = SKSurface.Create(imageInfo);
         var canvas = surface.Canvas;
         canvas.Clear(SKColors.White); // TODO: #344 get real

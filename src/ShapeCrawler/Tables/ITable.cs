@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using OneOf;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
@@ -53,12 +54,15 @@ internal sealed class SCTable : SCShape, ITable
 
     internal SCTable(
         OpenXmlCompositeElement pShapeTreeChild, 
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
-        : base(pShapeTreeChild, parentSlideObject, parentShapeCollection)
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        TypedOpenXmlPart slideTypedOpenXmlPart, 
+        List<ImagePart> imageParts)
+        : base(pShapeTreeChild, slideOf, shapeCollectionOf)
     {
+        var graphicFrame = (P.GraphicFrame)pShapeTreeChild;
         this.rowCollection =
-            new ResetableLazy<SCRowCollection>(() => SCRowCollection.Create(this, (P.GraphicFrame)this.PShapeTreeChild));
+            new ResetableLazy<SCRowCollection>(() => SCRowCollection.Create(this, graphicFrame, slideTypedOpenXmlPart, imageParts));
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeChild;
     }
     

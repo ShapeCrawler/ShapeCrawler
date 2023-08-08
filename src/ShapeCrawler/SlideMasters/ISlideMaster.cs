@@ -30,11 +30,6 @@ public interface ISlideMaster
     IShapeCollection Shapes { get; }
 
     /// <summary>
-    ///     Gets parent Presentation.
-    /// </summary>
-    IPresentation Presentation { get; }
-
-    /// <summary>
     ///     Gets theme.
     /// </summary>
     ITheme Theme { get; }
@@ -49,23 +44,31 @@ internal sealed class SCSlideMaster : ISlideStructure, ISlideMaster
 {
     private readonly ResetableLazy<List<SCSlideLayout>> slideLayouts;
     private readonly Lazy<SCMasterSlideNumber?> slideNumber;
+    private readonly List<ImagePart> imageParts;
+    private readonly TypedOpenXmlPart slideTypedOpenXmlPart;
+    private PresentationDocument sdkPresentationDocument;
 
-    internal SCSlideMaster(PresentationCore pres, P.SlideMaster pSlideMaster, int number)
+    internal SCSlideMaster(
+        P.SlideMaster pSlideMaster, 
+        int number, 
+        List<ImagePart> imageParts, 
+        TypedOpenXmlPart slideTypedOpenXmlPart, 
+        PresentationDocument sdkPresentationDocument)
     {
-        this.PresCore = pres;
         this.PSlideMaster = pSlideMaster;
         this.Number = number;
+        this.imageParts = imageParts;
+        this.slideTypedOpenXmlPart = slideTypedOpenXmlPart;
+        this.sdkPresentationDocument = sdkPresentationDocument;
         this.slideLayouts = new ResetableLazy<List<SCSlideLayout>>(this.CreateSlideLayouts);
         this.slideNumber = new Lazy<SCMasterSlideNumber?>(this.CreateSlideNumber);
     }
-
-    public PresentationCore PresCore { get; set; }
 
     public IImage? Background => this.GetBackground();
 
     public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
-    public IShapeCollection Shapes => new ShapeCollection(this.PSlideMaster.SlideMasterPart!, this);
+    public IShapeCollection Shapes => new ShapeCollection(this.PSlideMaster.SlideMasterPart!, this, this.slideTypedOpenXmlPart, this.imageParts, this.sdkPresentationDocument);
     
     public IPresentation Presentation { get; } = null!;
 
@@ -142,7 +145,7 @@ internal sealed class SCSlideMaster : ISlideStructure, ISlideMaster
         foreach (var rId in rIdList)
         {
             var layoutPart = (SlideLayoutPart)this.PSlideMaster.SlideMasterPart!.GetPartById(rId.Value!);
-            layouts.Add(new SCSlideLayout(this, layoutPart, number++));
+            layouts.Add(new SCSlideLayout(this, layoutPart, number++, this.imageParts, this.sdkPresentationDocument));
         }
 
         return layouts;

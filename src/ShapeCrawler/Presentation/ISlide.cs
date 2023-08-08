@@ -36,6 +36,8 @@ public interface ISlide : ISlideStructure
     /// </summary>
     SlidePart SDKSlidePart { get; }
 
+    PresentationDocument SDKPresentationDocument { get; }
+
     /// <summary>
     /// Gets a list of all textboxes on that slide, including those in tables.
     /// </summary>

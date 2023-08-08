@@ -1,4 +1,5 @@
-﻿using OneOf;
+﻿using DocumentFormat.OpenXml.Packaging;
+using OneOf;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -18,8 +19,9 @@ internal sealed class SCRoundedRectangle : SCAutoShape, IRoundedRectangle
     internal SCRoundedRectangle(
         P.Shape pShape, 
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf) 
-        : base(pShape, slideOf, shapeCollectionOf)
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        TypedOpenXmlPart slideTypedOpenXmlPart) 
+        : base(pShape, slideOf, shapeCollectionOf, slideTypedOpenXmlPart)
     {
     }
 }

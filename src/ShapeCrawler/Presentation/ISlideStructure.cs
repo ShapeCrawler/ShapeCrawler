@@ -14,6 +14,4 @@ public interface ISlideStructure
     ///     Gets collection of shapes.
     /// </summary>
     IShapeCollection Shapes { get; }
-    
-    IPresentation Presentation { get; }
 }

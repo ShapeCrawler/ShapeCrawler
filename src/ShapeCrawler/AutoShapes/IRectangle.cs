@@ -1,4 +1,5 @@
 ﻿using AngleSharp.Html.Dom;
+using DocumentFormat.OpenXml.Packaging;
 using OneOf;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Shapes;
@@ -19,8 +20,9 @@ internal sealed class SCRectangle : SCAutoShape, IRectangle
     internal SCRectangle(
         P.Shape pShape,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf)
-        : base(pShape, slideOf, shapeCollectionOf)
+        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        TypedOpenXmlPart slideTypedOpenXmlPart)
+        : base(pShape, slideOf, shapeCollectionOf, slideTypedOpenXmlPart)
     {
     }
 

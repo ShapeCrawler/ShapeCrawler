@@ -123,15 +123,18 @@ internal sealed class ShapeCollection : IShapeCollection
     private readonly ISlideStructure slideStructure;
     private readonly OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf;
     private TypedOpenXmlPart slideTypedOpenXmlPart;
+    private PresentationDocument sdkPresentationDocument;
 
     internal ShapeCollection(
         OneOf<SlidePart, SlideLayoutPart, SlideMasterPart> slidePartOf,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf, 
         TypedOpenXmlPart slideTypedOpenXmlPart,
-        List<ImagePart> imageParts)
+        List<ImagePart> imageParts, 
+        PresentationDocument sdkPresentationDocument)
     {
         this.slideOf = slideOf;
         this.slideTypedOpenXmlPart = slideTypedOpenXmlPart;
+        this.sdkPresentationDocument = sdkPresentationDocument;
         this.slideStructure = (ISlideStructure)slideOf.Value;
         var chartGrFrameHandler = new ChartGraphicFrameHandler();
         var tableGrFrameHandler = new TableGraphicFrameHandler();
@@ -241,8 +244,7 @@ internal sealed class ShapeCollection : IShapeCollection
     {
         var xEmu = UnitConverter.HorizontalPixelToEmu(xPixels);
         var yEmu = UnitConverter.VerticalPixelToEmu(yPixels);
-        var mediaDataPart =
-            this.slideStructure.PresCore.SDKPresentation.CreateMediaDataPart("audio/mpeg", ".mp3");
+        var mediaDataPart = this.sdkPresentationDocument.CreateMediaDataPart("audio/mpeg", ".mp3");
         mp3Stream.Position = 0;
         mediaDataPart.FeedData(mp3Stream);
         var imageStream = Assembly.GetExecutingAssembly().GetStream("audio-image.png");

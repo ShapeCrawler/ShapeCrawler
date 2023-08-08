@@ -76,14 +76,14 @@ internal sealed class SCSlideLayout : ISlideLayout
         SCSlideMaster slideMaster, 
         SlideLayoutPart slideLayoutPart, 
         int number,
-        IPresentation presentation)
+        List<ImagePart> imageParts, 
+        PresentationDocument presentationDocument)
     {
         this.slideMaster = slideMaster;
         this.SlideLayoutPart = slideLayoutPart;
         this.shapes = new ResetableLazy<ShapeCollection>(() =>
-            new ShapeCollection(slideLayoutPart, this));
+            new ShapeCollection(slideLayoutPart, this, slideLayoutPart, imageParts, presentationDocument));
         this.Number = number;
-        this.Presentation = presentation;
     }
 
     public int Number { get; set; }
@@ -91,7 +91,6 @@ internal sealed class SCSlideLayout : ISlideLayout
     public string Name => this.GetName();
 
     public IShapeCollection Shapes => this.shapes.Value;
-    public IPresentation Presentation { get; }
 
     public SCSlideLayoutType Type => this.GetLayoutType();
 

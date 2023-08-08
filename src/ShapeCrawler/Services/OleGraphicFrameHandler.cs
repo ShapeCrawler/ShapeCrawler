@@ -1,22 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using OneOf;
+using ShapeCrawler.Charts;
 using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Services;
 
-internal sealed class OleGraphicFrameHandler : OpenXmlElementHandler
+internal sealed class OleGraphicFrameHandler
 {
     private const string Uri = "http://schemas.openxmlformats.org/presentationml/2006/ole";
 
-    internal override SCShape? FromTreeChild(
+    internal SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
         OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
-        TypedOpenXmlPart slideTypedOpenXmlPart)
+        TypedOpenXmlPart slideTypedOpenXmlPart,
+        List<ChartWorkbook> chartWorkbooks)
     {
         if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
         {

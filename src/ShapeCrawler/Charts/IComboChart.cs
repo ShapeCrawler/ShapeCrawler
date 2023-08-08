@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using System.Collections.Generic;
+using DocumentFormat.OpenXml.Packaging;
 using OneOf;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Shapes;
@@ -20,8 +21,9 @@ internal sealed class SCComboChart : SCChart, IComboChart
         P.GraphicFrame pGraphicFrame, 
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
         OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
-        TypedOpenXmlPart slideTypedOpenXmlPart)
-        : base(pGraphicFrame, slideOf, shapeCollectionOf, slideTypedOpenXmlPart)
+        TypedOpenXmlPart slideTypedOpenXmlPart,
+        List<ChartWorkbook> chartWorkbooks)
+        : base(pGraphicFrame, slideOf, shapeCollectionOf, slideTypedOpenXmlPart, chartWorkbooks)
     {
     }
 }

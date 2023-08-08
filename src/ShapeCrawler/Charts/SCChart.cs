@@ -21,7 +21,6 @@ internal class SCChart : SCShape, IChart
     private readonly Lazy<SCChartType> chartType;
     private readonly Lazy<OpenXmlElement?> firstSeries;
     private readonly P.GraphicFrame pGraphicFrame;
-    private readonly TypedOpenXmlPart slideTypedOpenXmlPart;
     private readonly Lazy<SCSeriesCollection> series;
     private readonly Lazy<List<double>?> xValues;
     private readonly C.PlotArea cPlotArea;
@@ -36,11 +35,11 @@ internal class SCChart : SCShape, IChart
         P.GraphicFrame pGraphicFrame, 
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf, 
         OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
-        TypedOpenXmlPart slideTypedOpenXmlPart)
+        TypedOpenXmlPart slideTypedOpenXmlPart,
+        List<ChartWorkbook> chartWorkbooks)
         : base(pGraphicFrame, slideOf, shapeCollectionOf)
     {
         this.pGraphicFrame = pGraphicFrame;
-        this.slideTypedOpenXmlPart = slideTypedOpenXmlPart;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
         this.xValues = new Lazy<List<double>?>(this.GetXValues);
         this.series = new Lazy<SCSeriesCollection>(this.GetSeries);
@@ -55,7 +54,7 @@ internal class SCChart : SCShape, IChart
         this.cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
         this.cXCharts = this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
-        this.ChartWorkbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartWorkbook(this, this.ChartPart.EmbeddedPackagePart) : null;
+        this.ChartWorkbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartWorkbook(this, this.ChartPart.EmbeddedPackagePart, chartWorkbooks) : null;
     }
 
     public SCChartType Type => this.chartType.Value;

@@ -59,7 +59,7 @@ internal sealed class GroupedShapeCollection : IReadOnlyCollection<IShape>, IGro
             SCShape? shape;
             if (child is P.GroupShape pGroupShape)
             {
-                shape = new SCGroupShape(pGroupShape, slideOf, groupShape);
+                shape = new SCGroupShape(pGroupShape, slideOf, groupShape, slideTypedOpenXmlPart, imageParts);
             }
             else
             {
