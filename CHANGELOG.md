@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.47.1 - Unreleased
+🐞Fixed issue in Shape Fill [#558](https://github.com/ShapeCrawler/ShapeCrawler/issues/558)
+
 ## Version 0.47.0 - 2023-07-26
 🍀Added setters for `IParagraph.IndentLevel`  
 🍀Added `IParagraph.HeaderAndFooter.AddSlideNumber()` [#540](https://github.com/ShapeCrawler/ShapeCrawler/issues/540)
