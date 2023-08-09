@@ -63,13 +63,13 @@ internal sealed class SCSlide : SlideStructure, ISlide
 
     public SlidePart SDKSlidePart { get; }
 
+    public override ISlideMaster SlideMaster => this.SlideLayout.SlideMaster;
+
     internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
 
     internal override TypedOpenXmlPart TypedOpenXmlPart => this.SDKSlidePart;
 
     internal SlideId SlideId { get; }
-
-    public override ISlideMaster SlideMaster => this.SlideLayout.SlideMaster;
 
     public void Hide()
     {

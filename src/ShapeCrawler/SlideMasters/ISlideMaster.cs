@@ -70,6 +70,8 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
 
     public override IShapeCollection Shapes => new ShapeCollection(this.PSlideMaster.SlideMasterPart!, this);
 
+    public override ISlideMaster SlideMaster => this;
+
     public ITheme Theme => this.GetTheme();
 
     public ISlideNumber? SlideNumber { get; }
@@ -89,8 +91,6 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
     internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
     
     internal override TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
-
-    public override ISlideMaster SlideMaster => this;
 
     internal bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
     {

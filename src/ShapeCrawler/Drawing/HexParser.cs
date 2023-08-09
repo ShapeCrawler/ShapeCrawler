@@ -14,8 +14,8 @@ internal static class HexParser
             return ((SCColorType, string))colorHexVariant;
         }
 
-        var aSchemeColor = typedElement.GetFirstChild<A.SchemeColor>()!;
-        var fromScheme = GetByThemeColorScheme(aSchemeColor.Val!.InnerText!, slideMaster); 
+        var aSchemeColor = typedElement.GetFirstChild<A.SchemeColor>() !;
+        var fromScheme = GetByThemeColorScheme(aSchemeColor.Val!.InnerText!, slideMaster);
         return (SCColorType.Scheme, fromScheme);
     }
 
@@ -55,10 +55,12 @@ internal static class HexParser
     private static string? GetByThemeColorScheme(string schemeColor, SCSlideMaster slideMaster)
     {
         var hex = GetThemeColorByString(schemeColor, slideMaster);
+
         if (hex == null)
         {
             hex = GetThemeMappedColor(schemeColor, slideMaster);
         }
+
         return hex ?? null;
     }
 
@@ -66,7 +68,7 @@ internal static class HexParser
     {
         var slideMasterPColorMap = slideMaster.PSlideMaster.ColorMap;
         var targetSchemeColor = slideMasterPColorMap?.GetAttributes().FirstOrDefault(a => a.LocalName == fontSchemeColor);
-        return GetThemeColorByString(targetSchemeColor?.Value?.ToString()!, slideMaster);
+        return GetThemeColorByString(targetSchemeColor?.Value?.ToString() !, slideMaster);
     }
 
     private static string? GetThemeColorByString(string schemeColor, SCSlideMaster slideMaster)
