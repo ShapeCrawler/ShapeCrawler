@@ -625,4 +625,19 @@ public class TableTests : SCTest
         scCellCase1.Should().NotBeNull();
         scCellCase2.Should().NotBeNull();
     }
+
+    [Test]
+    public void MergeCells()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var slide = pres.Slides[0];
+        var table = slide.Shapes.AddTable(0, 0, 3, 2);
+        
+        // Act
+        table.MergeCells(table[0, 2], table[1, 2]);
+
+        // Assert
+        table[0, 1].Should().NotBeSameAs(table[1, 1]);
+    }
 }

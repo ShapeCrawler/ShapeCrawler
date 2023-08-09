@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -98,17 +97,17 @@ internal sealed class SCRow : IRow
     private List<SCCell> GetCells()
     {
         var cellList = new List<SCCell?>();
-        var aCells = this.ATableRow.Elements<A.TableCell>();
+        var aTcList = this.ATableRow.Elements<A.TableCell>();
         SCCell? addedCell = null;
 
         var columnIdx = 0;
-        foreach (var aTableCell in aCells)
+        foreach (var aTc in aTcList)
         {
-            if (aTableCell.HorizontalMerge is not null)
+            if (aTc.HorizontalMerge is not null)
             {
                 cellList.Add(addedCell);
             }
-            else if (aTableCell.VerticalMerge is not null)
+            else if (aTc.VerticalMerge is not null)
             {
                 int upRowIdx = this.index - 1;
                 SCCell upNeighborScCell = (SCCell)this.ParentTable[upRowIdx, columnIdx];
@@ -117,7 +116,7 @@ internal sealed class SCRow : IRow
             }
             else
             {
-                addedCell = new SCCell(this, aTableCell, this.index, columnIdx, this.slideTypedOpenXmlPart, this.imageParts);
+                addedCell = new SCCell(this, aTc, this.index, columnIdx);
                 cellList.Add(addedCell);
             }
 
