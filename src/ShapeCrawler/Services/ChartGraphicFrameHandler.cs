@@ -173,32 +173,32 @@ internal sealed class ChartGraphicFrameHandler
 
         if (cCharts.Count() > 1)
         {
-            return new SCComboChart(pGraphicFrame, slideOf, shapeCollectionOf, slideTypedOpenXmlPart);
+            return new SCSlideComboChart(pGraphicFrame, slideOf, shapeCollectionOf, slideTypedOpenXmlPart);
         }
 
         var chartTypeName = cCharts.Single().LocalName;
 
         if (chartTypeName == "lineChart")
         {
-            return new SCLineChart(pGraphicFrame, slideOf, shapeCollectionOf);
+            return new SCSlideLineChart(pGraphicFrame, slideOf, shapeCollectionOf);
         }
 
         if (chartTypeName == "barChart")
         {
-            return new SCBarChart(pGraphicFrame, slideOf, shapeCollectionOf);
+            return new SCSlideBarChart(pGraphicFrame, slideOf, shapeCollectionOf);
         }
 
         if (chartTypeName == "pieChart")
         {
-            return new SCPieChart(pGraphicFrame, slideOf, shapeCollectionOf);
+            return new SCSlidePieChart(pGraphicFrame, slideOf, shapeCollectionOf);
         }
 
         if (chartTypeName == "scatterChart")
         {
-            return new SCScatterChart(pGraphicFrame, slideOf, shapeCollectionOf);
+            return new SCSlideScatterChart(pGraphicFrame, slideOf, shapeCollectionOf);
         }
 
-        return new SCChart(pGraphicFrame, slideOf, shapeCollectionOf);
+        return new SCSlideChart(pGraphicFrame, slideOf, shapeCollectionOf);
     }
 
     private void GenerateChartPartContent(ChartPart chartPart)

@@ -15,9 +15,9 @@ public interface ILineChart : IChart
 {
 }
 
-internal sealed class SCLineChart : SCChart, ILineChart
+internal sealed class SCSlideLineChart : SCSlideChart, ILineChart
 {
-    internal SCLineChart(
+    internal SCSlideLineChart(
         P.GraphicFrame pGraphicFrame, 
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
         OneOf<SCSlideShapes, SCSlideGroupShape> shapeCollectionOf,

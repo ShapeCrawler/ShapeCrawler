@@ -51,7 +51,7 @@ internal sealed class CategoryCollection : IReadOnlyCollection<ICategory>, ICate
         return this.GetEnumerator();
     }
     
-    internal static CategoryCollection? Create(SCChart chart, OpenXmlElement? firstChartSeries, SCChartType chartType)
+    internal static CategoryCollection? Create(SCSlideChart slideChart, OpenXmlElement? firstChartSeries, SCChartType chartType)
     {
         if (chartType is SCChartType.BubbleChart or SCChartType.ScatterChart)
         {
@@ -105,7 +105,7 @@ internal sealed class CategoryCollection : IReadOnlyCollection<ICategory>, ICate
             ResetableLazy<List<X.Cell>> xCells;
 
             xCells = new ResetableLazy<List<X.Cell>>(() =>
-                ChartReferencesParser.GetXCellsByFormula(cFormula, chart));
+                ChartReferencesParser.GetXCellsByFormula(cFormula, slideChart));
             foreach (C.NumericValue cachedValue in cachedValues)
             {
                 categoryList.Add(new Category(xCells, catIndex++, cachedValue));

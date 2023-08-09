@@ -2,44 +2,79 @@
 
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
-using OneOf;
 using ShapeCrawler.Shapes;
 using SkiaSharp;
 
 namespace ShapeCrawler;
 
-/// <summary>
-///     Represents an OLE Object.
-/// </summary>
-public interface IOLEObject : IShape
+internal record SCSlideOLEObject : IShape
 {
-}
+    private readonly Shape shape;
 
-internal sealed class SCOLEObject : SCShape, IOLEObject
-{
-    internal SCOLEObject(
-        OpenXmlCompositeElement pShapeTreesChild, 
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
-        OneOf<SCSlideShapes, SCSlideGroupShape> parentShapeCollection)
-        : base(pShapeTreesChild, parentSlideObject, parentShapeCollection)
+    internal SCSlideOLEObject(
+        OpenXmlCompositeElement pShapeTreeChild, 
+        SCSlide slide,
+        SCSlideShapes shapes)
     {
+        this.shape = new Shape(pShapeTreeChild);
     }
 
-    public override SCGeometry GeometryType => SCGeometry.Rectangle;
+    public int X
+    {
+        get => this.shape.X(); 
+        set => this.shape.UpdateX(value);
+    }
 
-    public override SCShapeType ShapeType => SCShapeType.OLEObject;
+    public int Y
+    {
+        get => this.shape.Y(); 
+        set => this.shape.UpdateY(value);
+    }
 
-    internal override void Draw(SKCanvas canvas)
+    public int Width
+    {
+        get => this.shape.Width(); 
+        set => this.shape.UpdateWidth(value);
+    }
+
+    public int Height
+    {
+        get => this.shape.Height(); 
+        set => this.shape.UpdateHeight(value);
+    }
+    
+    public int Id => this.shape.Id();
+    
+    public string Name => this.shape.Name();
+    
+    public bool Hidden => this.shape.Hidden();
+    public IPlaceholder? Placeholder => null;
+
+    public SCGeometry GeometryType => this.shape.GeometryType();
+    public string? CustomData 
+    {
+        get => this.shape.CustomData(); 
+        set => this.shape.UpdateCustomData(value);
+    }
+
+    public SCShapeType ShapeType => SCShapeType.OLEObject;
+    public ISlideStructure SlideStructure { get; }
+    public IAutoShape? AsAutoShape()
     {
         throw new System.NotImplementedException();
     }
 
-    internal override IHtmlElement ToHtmlElement()
+    internal void Draw(SKCanvas canvas)
     {
         throw new System.NotImplementedException();
     }
 
-    internal override string ToJson()
+    internal IHtmlElement ToHtmlElement()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    internal string ToJson()
     {
         throw new System.NotImplementedException();
     }

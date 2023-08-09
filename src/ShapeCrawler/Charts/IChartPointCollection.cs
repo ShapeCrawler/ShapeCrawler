@@ -40,7 +40,7 @@ internal sealed class ChartPointCollection : IChartPointCollection
         return this.GetEnumerator();
     }
 
-    internal static ChartPointCollection Create(SCChart chart, OpenXmlElement cSerXmlElement)
+    internal static ChartPointCollection Create(SCSlideChart slideChart, OpenXmlElement cSerXmlElement)
     {
         var cVal = cSerXmlElement.GetFirstChild<Values>();
         var cNumberReference = cVal != null ? cVal.NumberReference! : cSerXmlElement.GetFirstChild<YValues>() !.NumberReference!;
@@ -78,7 +78,7 @@ internal sealed class ChartPointCollection : IChartPointCollection
         {
             foreach (var cNumericValue in cNumericValues)
             {
-                chartPoints.Add(new ChartPoint(chart, dataSheetName, pointAddresses[0], cNumericValue));
+                chartPoints.Add(new ChartPoint(slideChart, dataSheetName, pointAddresses[0], cNumericValue));
             }
         }
         else
@@ -87,7 +87,7 @@ internal sealed class ChartPointCollection : IChartPointCollection
             var quPoints = System.Math.Min(pointAddresses.Count, cNumericValues?.Count ?? 0);
             for (int i = 0; i < quPoints; i++)
             {
-                chartPoints.Add(new ChartPoint(chart, dataSheetName, pointAddresses[i], cNumericValues?[i]));
+                chartPoints.Add(new ChartPoint(slideChart, dataSheetName, pointAddresses[i], cNumericValues?[i]));
             }
         }
 

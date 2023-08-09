@@ -26,7 +26,7 @@ internal sealed class OleGraphicFrameHandler
             var aGraphicData = pShapeTreeChild!.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>();
             if (aGraphicData!.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
             {
-                var oleObject = new SCOLEObject(pGraphicFrame, slideOf, shapeCollectionOf);
+                var oleObject = new SCSlideOLEObject(pGraphicFrame, slideOf, shapeCollectionOf);
 
                 return oleObject;
             }

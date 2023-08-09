@@ -21,30 +21,30 @@ public interface IChartPoint
 internal sealed class ChartPoint : IChartPoint
 {
     private readonly string address;
-    private readonly SCChart parentChart;
+    private readonly SCSlideChart _parentSlideChart;
     private readonly string sheetName;
     private readonly C.NumericValue? cNumericValue;
     private readonly ChartWorkbook? workbook;
 
-    internal ChartPoint(SCChart parentChart, string sheetName, string address, C.NumericValue? cNumericValue)
-        : this(parentChart, sheetName, address)
+    internal ChartPoint(SCSlideChart parentSlideChart, string sheetName, string address, C.NumericValue? cNumericValue)
+        : this(parentSlideChart, sheetName, address)
     {
         this.cNumericValue = cNumericValue;
     }
 
-    private ChartPoint(SCChart chart, string sheetName, string address)
+    private ChartPoint(SCSlideChart slideChart, string sheetName, string address)
     {
-        this.parentChart = chart;
+        this._parentSlideChart = slideChart;
         this.sheetName = sheetName;
         this.address = address;
-        this.workbook = chart.ChartWorkbook;
+        this.workbook = slideChart.ChartWorkbook;
     }
 
     public double Value
     {
         get
         {
-            var context = $"Chart type:\t{this.parentChart.Type.ToString()}";
+            var context = $"Chart type:\t{this._parentSlideChart.Type.ToString()}";
             ErrorHandler.Execute(this.GetValue, context, out var result);
 
             return result;
@@ -52,7 +52,7 @@ internal sealed class ChartPoint : IChartPoint
 
         set
         {
-            var context = $"Chart type:\t{this.parentChart.Type.ToString()}";
+            var context = $"Chart type:\t{this._parentSlideChart.Type.ToString()}";
             ErrorHandler.Execute(() => this.UpdateValue(value), context);
         }
     }

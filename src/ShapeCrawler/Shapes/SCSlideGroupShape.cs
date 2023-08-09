@@ -11,7 +11,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Shapes;
 
-internal sealed class SCSlideGroupShape : SCShape, IGroupShape
+internal sealed class SCSlideGroupShape : IGroupShape
 {
     private readonly P.GroupShape pGroupShape;
     private readonly SCSlide slide;
@@ -24,7 +24,6 @@ internal sealed class SCSlideGroupShape : SCShape, IGroupShape
         SCSlideShapes shapes,
         SlidePart sdkSlidePart,
         List<ImagePart> imageParts)
-        : base(pGroupShape, slide, shapes)
     {
         this.pGroupShape = pGroupShape;
         this.slide = slide;
@@ -34,21 +33,21 @@ internal sealed class SCSlideGroupShape : SCShape, IGroupShape
 
     public IGroupedShapeCollection Shapes => new SlideGroupedShapes(this.pGroupShape, this.slide, this, this.sdkSlidePart, this.imageParts);
 
-    public override SCShapeType ShapeType => SCShapeType.Group;
+    public SCShapeType ShapeType => SCShapeType.Group;
 
     internal A.TransformGroup ATransformGroup => this.pGroupShape.GroupShapeProperties!.TransformGroup!;
 
-    internal override void Draw(SKCanvas canvas)
+    internal void Draw(SKCanvas canvas)
     {
         throw new System.NotImplementedException();
     }
 
-    internal override IHtmlElement ToHtmlElement()
+    internal IHtmlElement ToHtmlElement()
     {
         throw new System.NotImplementedException();
     }
 
-    internal override string ToJson()
+    internal string ToJson()
     {
         throw new System.NotImplementedException();
     }

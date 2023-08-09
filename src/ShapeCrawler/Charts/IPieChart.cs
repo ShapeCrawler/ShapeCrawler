@@ -15,9 +15,9 @@ public interface IPieChart : IChart
 {
 }
 
-internal sealed class SCPieChart : SCChart, IPieChart
+internal sealed class SCSlidePieChart : SCSlideChart, IPieChart
 {
-    internal SCPieChart(
+    internal SCSlidePieChart(
         P.GraphicFrame pGraphicFrame, 
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
         OneOf<SCSlideShapes, SCSlideGroupShape> shapeCollectionOf,

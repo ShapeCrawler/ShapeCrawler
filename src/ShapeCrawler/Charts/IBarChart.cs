@@ -15,9 +15,9 @@ public interface IBarChart : IChart
 {
 }
 
-internal sealed class SCBarChart : SCChart, IBarChart
+internal sealed class SCSlideBarChart : SCSlideChart, IBarChart
 {
-    internal SCBarChart(
+    internal SCSlideBarChart(
         P.GraphicFrame pGraphicFrame, 
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
         OneOf<SCSlideShapes, SCSlideGroupShape> shapeCollectionOf,

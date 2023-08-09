@@ -74,7 +74,7 @@ internal sealed class SCSlideShapes : IShapeCollection
         // Chart (<p:graphicFrame /> http://schemas.openxmlformats.org/drawingml/2006/chart) are not in the shape collection, data is referenced.
         // Object (<p:graphicFrame /> http://schemas.openxmlformats.org/presentationml/2006/ole) are not in the shape collection, data is referenced.
         // Alternate content(<mc:AlternateContent /> http://schemas.openxmlformats.org/officeDocument/2006/math"> are not in the shape collection, data is referenced.
-        if (addingShape is not SCShape addingShapeInternal || addingShape is IOLEObject || addingShape is IChart || addingShape is IAudioShape || addingShape is IVideoShape)
+        if (addingShape is not SCShape addingShapeInternal || addingShape is IOLEObject || addingShape is IChart || addingShape is IAudioShape || addingShape is IMediaShape)
         {
             throw new SCException($"{addingShape.GetType().Name} is not supported.");
         }
@@ -183,7 +183,7 @@ internal sealed class SCSlideShapes : IShapeCollection
 
         this.shapes.Reset();
 
-        return new SCSlideAudio(this.pShapeTree, this.slide, this);
+        return new SCSlideAudio(this.pShapeTree, this.slide, this, pPicture);
     }
 
     public IPicture AddPicture(Stream imageStream)
@@ -225,7 +225,7 @@ internal sealed class SCSlideShapes : IShapeCollection
         return null!;
     }
 
-    public IVideoShape AddVideo(int x, int y, Stream stream)
+    public IMediaShape AddVideo(int x, int y, Stream stream)
     {
         var xEmu = UnitConverter.HorizontalPixelToEmu(x);
         var yEmu = UnitConverter.VerticalPixelToEmu(y);
@@ -329,7 +329,7 @@ internal sealed class SCSlideShapes : IShapeCollection
 
         this.shapes.Reset();
 
-        return new SCVideoShape(this.pShapeTree, this.slideOf, this, this.slideTypedOpenXmlPart);
+        return new SCSlideMediaShape(this.pShapeTree, this.slideOf, this, this.slideTypedOpenXmlPart);
     }
 
     public IRectangle AddRectangle(int x, int y, int width, int height)

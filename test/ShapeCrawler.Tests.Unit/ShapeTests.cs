@@ -49,7 +49,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pptxStream = GetInputStream("video-case001.pptx");
         var pres = new SCPresentation(pptxStream);
-        var videoShape = pres.Slides[0].Shapes.GetByName<IVideoShape>("Video 1");
+        var videoShape = pres.Slides[0].Shapes.GetByName<IMediaShape>("Video 1");
 
         // Act
         var bytes = videoShape.BinaryData;
@@ -64,7 +64,7 @@ public class ShapeTests : SCTest
         // Arrange
         var pptxStream = GetInputStream("video-case001.pptx");
         var pres = new SCPresentation(pptxStream);
-        var videoShape = pres.Slides[0].Shapes.GetByName<IVideoShape>("Video 1");
+        var videoShape = pres.Slides[0].Shapes.GetByName<IMediaShape>("Video 1");
 
         // Act
         var mime = videoShape.MIME;

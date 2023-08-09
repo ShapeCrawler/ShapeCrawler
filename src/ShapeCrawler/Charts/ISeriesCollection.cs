@@ -55,14 +55,14 @@ internal sealed class SCSeriesCollection : ISeriesCollection
         return this.GetEnumerator();
     }
     
-    internal static SCSeriesCollection Create(SCChart slideChart, IEnumerable<OpenXmlElement> cXCharts)
+    internal static SCSeriesCollection Create(SCSlideChart slideSlideChart, IEnumerable<OpenXmlElement> cXCharts)
     {
         var seriesList = new List<ISeries>();
         foreach (var cXChart in cXCharts)
         {
             Enum.TryParse(cXChart.LocalName, true, out SCChartType seriesChartType);
             var cSerList = cXChart.ChildElements.Where(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
-            seriesList.AddRange(cSerList.Select(cSer => new SCSeries(slideChart, cSer, seriesChartType)));
+            seriesList.AddRange(cSerList.Select(cSer => new SCSeries(slideSlideChart, cSer, seriesChartType)));
         }
 
         return new SCSeriesCollection(seriesList);

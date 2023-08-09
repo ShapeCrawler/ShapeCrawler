@@ -50,7 +50,7 @@ internal sealed class PictureHandler
 
                 case VideoFromFile:
                 {
-                    return new SCVideoShape(pShapeTreeChild, slideOf, shapeCollectionOf, this.slideTypedOpenXmlPart);
+                    return new SCSlideMediaShape(pShapeTreeChild, slideOf, shapeCollectionOf, this.slideTypedOpenXmlPart);
                 }
             }
 

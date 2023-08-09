@@ -114,7 +114,7 @@ public class ShapeCollectionTests : SCTest
         IShape shape = pres.Slides[0].Shapes.First(sp => sp.Id == 8);
             
         // Act
-        bool isVideo = shape is IVideoShape;
+        bool isVideo = shape is IMediaShape;
 
         // Act-Assert
         isVideo.Should().BeTrue();
@@ -314,7 +314,7 @@ public class ShapeCollectionTests : SCTest
         presentation.Save();
         presentation.Close();
         presentation = new SCPresentation(preStream);
-        var addedVideo = presentation.Slides[1].Shapes.OfType<IVideoShape>().Last();
+        var addedVideo = presentation.Slides[1].Shapes.OfType<IMediaShape>().Last();
         addedVideo.X.Should().Be(xPxCoordinate);
         addedVideo.Y.Should().Be(yPxCoordinate);
     }

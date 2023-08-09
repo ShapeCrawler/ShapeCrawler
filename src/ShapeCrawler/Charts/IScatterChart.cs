@@ -15,9 +15,9 @@ public interface IScatterChart : IChart
 {
 }
 
-internal sealed class SCScatterChart : SCChart, IScatterChart
+internal sealed class SCSlideScatterChart : SCSlideChart, IScatterChart
 {
-    internal SCScatterChart(
+    internal SCSlideScatterChart(
         P.GraphicFrame pGraphicFrame, 
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
         OneOf<SCSlideShapes, SCSlideGroupShape> shapeCollectionOf,

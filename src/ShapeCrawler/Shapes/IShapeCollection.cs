@@ -50,7 +50,7 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     /// <param name="x">X coordinate in pixels.</param>
     /// <param name="y">Y coordinate in pixels.</param>
     /// <param name="stream">Video stream data.</param>
-    IVideoShape AddVideo(int x, int y, Stream stream);
+    IMediaShape AddVideo(int x, int y, Stream stream);
 
     /// <summary>
     ///     Adds a new Rectangle shape.

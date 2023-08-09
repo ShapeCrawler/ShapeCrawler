@@ -15,15 +15,15 @@ public interface IComboChart : IChart
 {
 }
 
-internal sealed class SCComboChart : SCChart, IComboChart
+internal sealed class SCSlideComboChart : SCSlideChart, IComboChart
 {
-    internal SCComboChart(
+    internal SCSlideComboChart(
         P.GraphicFrame pGraphicFrame, 
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
+        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slide,
         OneOf<SCSlideShapes, SCSlideGroupShape> shapeCollectionOf,
         TypedOpenXmlPart slideTypedOpenXmlPart,
         List<ChartWorkbook> chartWorkbooks)
-        : base(pGraphicFrame, slideOf, shapeCollectionOf, slideTypedOpenXmlPart, chartWorkbooks)
+        : base(pGraphicFrame, slide, shapeCollectionOf, slideTypedOpenXmlPart, chartWorkbooks)
     {
     }
 }

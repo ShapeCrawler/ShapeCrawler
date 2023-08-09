@@ -39,11 +39,11 @@ internal sealed class SCSeries : ISeries
     internal readonly OpenXmlElement CSer;
     
     private readonly Lazy<string?> name;
-    private readonly SCChart parentChart;
+    private readonly SCSlideChart _parentSlideChart;
 
-    internal SCSeries(SCChart parentChart, OpenXmlElement cSer, SCChartType seriesChartType)
+    internal SCSeries(SCSlideChart parentSlideChart, OpenXmlElement cSer, SCChartType seriesChartType)
     {
-        this.parentChart = parentChart;
+        this._parentSlideChart = parentSlideChart;
         this.CSer = cSer;
         this.name = new Lazy<string?>(this.GetNameOrDefault);
         this.Type = seriesChartType;
@@ -55,7 +55,7 @@ internal sealed class SCSeries : ISeries
     {
         get
         {
-            ErrorHandler.Execute(() => ChartPointCollection.Create(this.parentChart, this.CSer), out var result);
+            ErrorHandler.Execute(() => ChartPointCollection.Create(this._parentSlideChart, this.CSer), out var result);
             return result;
         }
     }
@@ -83,6 +83,6 @@ internal sealed class SCSeries : ISeries
             return null;
         }
 
-        return ChartReferencesParser.GetSingleString(cStringReference, this.parentChart);
+        return ChartReferencesParser.GetSingleString(cStringReference, this._parentSlideChart);
     }
 }

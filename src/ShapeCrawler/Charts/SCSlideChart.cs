@@ -15,7 +15,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
 
-internal class SCChart : SCShape, IChart
+internal class SCSlideChart : IChart
 {
     private readonly ResetableLazy<ICategoryCollection?> categories;
     private readonly Lazy<SCChartType> chartType;
@@ -31,13 +31,12 @@ internal class SCChart : SCShape, IChart
 
     private string? chartTitle;
 
-    internal SCChart(
+    internal SCSlideChart(
         P.GraphicFrame pGraphicFrame, 
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf, 
-        OneOf<SCSlideShapes, SCSlideGroupShape> shapeCollectionOf,
-        TypedOpenXmlPart slideTypedOpenXmlPart,
+        SCSlide slide, 
+        SCSlideShapes shapes,
+        SlidePart sdkSlidePart,
         List<ChartWorkbook> chartWorkbooks)
-        : base(pGraphicFrame, slideOf, shapeCollectionOf)
     {
         this.pGraphicFrame = pGraphicFrame;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
@@ -49,7 +48,7 @@ internal class SCChart : SCShape, IChart
         var cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
             .GetFirstChild<C.ChartReference>() !;
 
-        this.ChartPart = (ChartPart)slideTypedOpenXmlPart.GetPartById(cChartReference.Id!);
+        this.ChartPart = (ChartPart)sdkSlidePart.GetPartById(cChartReference.Id!);
 
         this.cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
         this.cXCharts = this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
@@ -59,7 +58,7 @@ internal class SCChart : SCShape, IChart
 
     public SCChartType Type => this.chartType.Value;
 
-    public override SCShapeType ShapeType => SCShapeType.Chart;
+    public SCShapeType ShapeType => SCShapeType.Chart;
 
     public string? Title
     {
@@ -100,7 +99,7 @@ internal class SCChart : SCShape, IChart
         }
     }
 
-    public override SCGeometry GeometryType => SCGeometry.Rectangle;
+    public SCGeometry GeometryType => SCGeometry.Rectangle;
 
     public byte[] WorkbookByteArray => this.ChartWorkbook!.BinaryData;
 
@@ -112,17 +111,17 @@ internal class SCChart : SCShape, IChart
 
     internal ChartPart ChartPart { get; private set; }
 
-    internal override void Draw(SKCanvas canvas)
+    internal void Draw(SKCanvas canvas)
     {
         throw new NotImplementedException();
     }
 
-    internal override IHtmlElement ToHtmlElement()
+    internal IHtmlElement ToHtmlElement()
     {
         throw new NotImplementedException();
     }
 
-    internal override string ToJson()
+    internal string ToJson()
     {
         throw new NotImplementedException();
     }
