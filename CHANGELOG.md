@@ -2,7 +2,7 @@
 
 ## Version 0.47.1 - Unreleased
 🐞Fixed issue in Shape Fill [#558](https://github.com/ShapeCrawler/ShapeCrawler/issues/558)  
-🐞Fixed Merging Table Cells [#564](https://github.com/ShapeCrawler/ShapeCrawler/issues/558)
+🐞Fixed Merging Table Cells [#564](https://github.com/ShapeCrawler/ShapeCrawler/issues/564)
 
 ## Version 0.47.0 - 2023-07-26
 🍀Added setters for `IParagraph.IndentLevel`  
