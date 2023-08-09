@@ -24,7 +24,15 @@ internal static class ShapePropertiesExtensions
         else
         {
             aSolidFill = new A.SolidFill();
-            pShapeProperties.Append(aSolidFill);
+            var aOutline = pShapeProperties.GetFirstChild<A.Outline>();
+            if (aOutline != null)
+            {
+                pShapeProperties.InsertBefore(aSolidFill, aOutline);
+            }
+            else
+            {
+                pShapeProperties.Append(aSolidFill);
+            }
         }
         
         var aRgbColorModelHex = new A.RgbColorModelHex
