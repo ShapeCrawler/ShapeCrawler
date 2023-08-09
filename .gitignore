@@ -343,3 +343,5 @@ ASALocalRun/
 healthchecksdb
 
 coverage/
+
+/scripts/Output/
