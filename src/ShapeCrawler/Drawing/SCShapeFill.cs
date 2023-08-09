@@ -118,7 +118,6 @@ internal abstract class SCShapeFill : IShapeFill
             }
             else
             {
-                // TODO: get hex color from scheme
                 var schemeColor = this.aSolidFill.SchemeColor;
                 var hex = HexParser.FromSolidFill(aSolidFill, (SCSlideMaster)slideObject.SlideMaster);
                 this.hexSolidColor = hex.Item2;
