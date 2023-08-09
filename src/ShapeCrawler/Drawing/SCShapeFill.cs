@@ -119,7 +119,7 @@ internal abstract class SCShapeFill : IShapeFill
             else
             {
                 var schemeColor = this.aSolidFill.SchemeColor;
-                var hex = HexParser.FromSolidFill(aSolidFill, (SCSlideMaster)slideObject.SlideMaster);
+                var hex = HexParser.FromSolidFill(this.aSolidFill, (SCSlideMaster)this.slideObject.SlideMaster);
                 this.hexSolidColor = hex.Item2;
             }
 
