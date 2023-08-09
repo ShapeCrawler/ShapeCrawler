@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 
 // ReSharper disable CheckNamespace
@@ -69,7 +70,7 @@ internal sealed class SCSlideLayout : ISlideLayout
         { "vertTx", SCSlideLayoutType.VerticalText }
     };
 
-    private readonly ResetableLazy<ShapeCollection> shapes;
+    private readonly ResetableLazy<SCSlideShapes> shapes;
     private readonly SCSlideMaster slideMaster;
 
     internal SCSlideLayout(
@@ -81,8 +82,8 @@ internal sealed class SCSlideLayout : ISlideLayout
     {
         this.slideMaster = slideMaster;
         this.SlideLayoutPart = slideLayoutPart;
-        this.shapes = new ResetableLazy<ShapeCollection>(() =>
-            new ShapeCollection(slideLayoutPart, this, slideLayoutPart, imageParts, presentationDocument));
+        this.shapes = new ResetableLazy<SCSlideShapes>(() =>
+            new SCSlideShapes(slideLayoutPart, this, slideLayoutPart, imageParts, presentationDocument));
         this.Number = number;
     }
 
@@ -100,7 +101,7 @@ internal sealed class SCSlideLayout : ISlideLayout
 
     internal SCSlideMaster SlideMasterInternal => (SCSlideMaster)this.SlideMaster;
 
-    internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
+    internal SCSlideShapes ShapesInternal => (SCSlideShapes)this.Shapes;
 
     private string GetName()
     {

@@ -25,7 +25,7 @@ internal sealed class PictureHandler
     internal SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        OneOf<SCSlideShapes, SCSlideGroupShape> shapeCollectionOf,
         TypedOpenXmlPart slideTypedOpenXmlPart,
         List<ChartWorkbook> chartWorkbooks)
     {
@@ -42,7 +42,7 @@ internal sealed class PictureHandler
                         .GetFirstChild<A.AudioFromFile>();
                     if (aAudioFile is not null)
                     {
-                        return new SCAudioShape(pShapeTreeChild, slideOf, shapeCollectionOf, slideTypedOpenXmlPart);
+                        return new SCSlideAudio(pShapeTreeChild, slideOf, shapeCollectionOf, slideTypedOpenXmlPart);
                     }
 
                     break;

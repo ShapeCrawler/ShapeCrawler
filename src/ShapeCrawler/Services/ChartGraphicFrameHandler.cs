@@ -151,7 +151,7 @@ internal sealed class ChartGraphicFrameHandler
     internal SCShape? FromTreeChild(
         OpenXmlCompositeElement pShapeTreeChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        OneOf<SCSlideShapes, SCSlideGroupShape> shapeCollectionOf,
         TypedOpenXmlPart slideTypedOpenXmlPart,
         List<ChartWorkbook> chartWorkbooks)
     {

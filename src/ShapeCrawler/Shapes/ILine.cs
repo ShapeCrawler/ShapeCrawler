@@ -30,7 +30,7 @@ internal sealed class SCLine : SCAutoShape, ILine
     public SCLine(
         TypedOpenXmlCompositeElement pShapeTreeChild,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        OneOf<SCSlideShapes, SCSlideGroupShape> shapeCollectionOf,
         TypedOpenXmlPart slideTypedOpenXmlPart)
         : base(pShapeTreeChild, slideOf, shapeCollectionOf, slideTypedOpenXmlPart)
     {

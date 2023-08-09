@@ -25,14 +25,14 @@ public interface IAudioShape : IShape
     string MIME { get; }
 }
 
-internal sealed class SCAudioShape : SCMediaShape, IAudioShape
+internal sealed class SCSlideAudio : SCMediaShape, IAudioShape
 {
-    internal SCAudioShape(
-        OpenXmlCompositeElement pShapeTreesChild,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
-        TypedOpenXmlPart slideTypedOpenXmlPart)
-        : base(pShapeTreesChild, slideOf, shapeCollectionOf, slideTypedOpenXmlPart)
+    internal SCSlideAudio(
+        OpenXmlCompositeElement pShapeTree,
+        SCSlide slide,
+        SCSlideShapes slideShapes,
+        SlidePart sdkSlidePart)
+        : base(pShapeTree, slide, slideShapes, sdkSlidePart)
     {
     }
 

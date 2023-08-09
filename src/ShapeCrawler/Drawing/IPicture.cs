@@ -43,7 +43,7 @@ internal sealed class SCPicture : SCShape, IPicture
     internal SCPicture(
         P.Picture pPicture,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        OneOf<SCSlideShapes, SCSlideGroupShape> shapeCollectionOf,
         A.Blip aBlip, 
         TypedOpenXmlPart slideTypedOpenXmlPart,
         List<ImagePart> imageParts)

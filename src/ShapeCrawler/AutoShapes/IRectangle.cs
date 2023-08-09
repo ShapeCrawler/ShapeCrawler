@@ -20,7 +20,7 @@ internal sealed class SCRectangle : SCAutoShape, IRectangle
     internal SCRectangle(
         P.Shape pShape,
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        OneOf<SCSlideShapes, SCSlideGroupShape> shapeCollectionOf,
         TypedOpenXmlPart slideTypedOpenXmlPart)
         : base(pShape, slideOf, shapeCollectionOf, slideTypedOpenXmlPart)
     {

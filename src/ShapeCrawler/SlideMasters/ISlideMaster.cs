@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Services;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -68,7 +69,7 @@ internal sealed class SCSlideMaster : ISlideStructure, ISlideMaster
 
     public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
-    public IShapeCollection Shapes => new ShapeCollection(this.PSlideMaster.SlideMasterPart!, this, this.slideTypedOpenXmlPart, this.imageParts, this.sdkPresentationDocument);
+    public IShapeCollection Shapes => new SCSlideShapes(this.PSlideMaster.SlideMasterPart!, this, this.slideTypedOpenXmlPart, this.imageParts, this.sdkPresentationDocument);
     
     public IPresentation Presentation { get; } = null!;
 
@@ -88,7 +89,7 @@ internal sealed class SCSlideMaster : ISlideStructure, ISlideMaster
     
     internal P.SlideMaster PSlideMaster { get; }
 
-    internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
+    internal SCSlideShapes ShapesInternal => (SCSlideShapes)this.Shapes;
     
     internal TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
 

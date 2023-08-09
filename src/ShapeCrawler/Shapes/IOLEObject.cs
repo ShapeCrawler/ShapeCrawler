@@ -20,7 +20,7 @@ internal sealed class SCOLEObject : SCShape, IOLEObject
     internal SCOLEObject(
         OpenXmlCompositeElement pShapeTreesChild, 
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> parentSlideObject,
-        OneOf<ShapeCollection, SCGroupShape> parentShapeCollection)
+        OneOf<SCSlideShapes, SCSlideGroupShape> parentShapeCollection)
         : base(pShapeTreesChild, parentSlideObject, parentShapeCollection)
     {
     }

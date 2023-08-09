@@ -14,49 +14,42 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using SkiaSharp;
+using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Shapes;
 
 internal sealed class SCSlideShapes : IShapeCollection
 {
     private const long DefaultTableWidthEmu = 8128000L;
-    private readonly DocumentFormat.OpenXml.Presentation.ShapeTree pShapeTree;
+    private readonly P.ShapeTree pShapeTree;
     private readonly ResetableLazy<List<IShape>> shapes;
     private readonly AutoShapeCreator autoShapeCreator;
-    private readonly ISlideStructure slideStructure;
-    private readonly OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf;
-    private TypedOpenXmlPart slideTypedOpenXmlPart;
-    private PresentationDocument sdkPresentationDocument;
+    private readonly SCSlide slide;
+    private readonly PresentationDocument sdkPresentationDocument;
+    private readonly SlidePart sdkSlidePart;
 
     internal SCSlideShapes(
-        OneOf<SlidePart, SlideLayoutPart, SlideMasterPart> slidePartOf,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf, 
-        TypedOpenXmlPart slideTypedOpenXmlPart,
+        SlidePart sdkSlidePart,
+        SCSlide slide,
         List<ImagePart> imageParts, 
         PresentationDocument sdkPresentationDocument)
     {
-        this.slideOf = slideOf;
-        this.slideTypedOpenXmlPart = slideTypedOpenXmlPart;
         this.sdkPresentationDocument = sdkPresentationDocument;
-        this.slideStructure = (ISlideStructure)slideOf.Value;
+        this.slide = slide;
         var chartGrFrameHandler = new ChartGraphicFrameHandler();
         var tableGrFrameHandler = new TableGraphicFrameHandler();
         var oleGrFrameHandler = new OleGraphicFrameHandler();
         this.autoShapeCreator = new AutoShapeCreator();
         var pictureHandler = new PictureHandler(imageParts, this.slideTypedOpenXmlPart);
-
         this.autoShapeCreator.Successor = oleGrFrameHandler;
         oleGrFrameHandler.Successor = pictureHandler;
         pictureHandler.Successor = chartGrFrameHandler;
         chartGrFrameHandler.Successor = tableGrFrameHandler;
-
-        this.pShapeTree = slidePartOf.Match(
-            slidePart => slidePart.Slide.CommonSlideData!.ShapeTree!,
-            layoutPart => layoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
-            masterPart => masterPart.SlideMaster.CommonSlideData!.ShapeTree!);
+        this.sdkSlidePart = sdkSlidePart;
+        this.pShapeTree = sdkSlidePart.Slide.CommonSlideData!.ShapeTree!;
 
         this.shapes = new ResetableLazy<List<IShape>>(() => this.GetShapes(this.autoShapeCreator));
     }
@@ -91,7 +84,7 @@ internal sealed class SCSlideShapes : IShapeCollection
         var id = this.GetNextShapeId();
         addingShapeClone.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
 
-        var newShape = this.GetShape(this.autoShapeCreator, addingShapeClone);
+        var newShape = this.CreateShape(this.autoShapeCreator, addingShapeClone);
 
         switch (newShape)
         {
@@ -155,14 +148,14 @@ internal sealed class SCSlideShapes : IShapeCollection
         mediaDataPart.FeedData(mp3Stream);
         var imageStream = Assembly.GetExecutingAssembly().GetStream("audio-image.png");
 
-        var audioRef = this.slideTypedOpenXmlPart.AddAudioReferenceRelationship(mediaDataPart);
-        var mediaRef = this.slideTypedOpenXmlPart.AddMediaReferenceRelationship(mediaDataPart);
+        var audioRef = this.sdkSlidePart.AddAudioReferenceRelationship(mediaDataPart);
+        var mediaRef = this.sdkSlidePart.AddMediaReferenceRelationship(mediaDataPart);
 
         var audioFromFile = new DocumentFormat.OpenXml.Drawing.AudioFromFile() { Link = audioRef.Id };
 
-        var appNonVisualDrawingPropsExtensionList = new DocumentFormat.OpenXml.Presentation.ApplicationNonVisualDrawingPropertiesExtensionList();
+        var appNonVisualDrawingPropsExtensionList = new P.ApplicationNonVisualDrawingPropertiesExtensionList();
 
-        var appNonVisualDrawingPropsExtension = new DocumentFormat.OpenXml.Presentation.ApplicationNonVisualDrawingPropertiesExtension
+        var appNonVisualDrawingPropsExtension = new P.ApplicationNonVisualDrawingPropertiesExtension
             { Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" };
 
         var media = new DocumentFormat.OpenXml.Office2010.PowerPoint.Media { Embed = mediaRef.Id };
@@ -190,7 +183,7 @@ internal sealed class SCSlideShapes : IShapeCollection
 
         this.shapes.Reset();
 
-        return new SCAudioShape(this.pShapeTree, this.slideOf, this);
+        return new SCSlideAudio(this.pShapeTree, this.slide, this);
     }
 
     public IPicture AddPicture(Stream imageStream)
@@ -237,7 +230,7 @@ internal sealed class SCSlideShapes : IShapeCollection
         var xEmu = UnitConverter.HorizontalPixelToEmu(x);
         var yEmu = UnitConverter.VerticalPixelToEmu(y);
         
-        var mediaDataPart = this.slideStructure.Presentation.SDKPresentationDocument.CreateMediaDataPart("video/mp4", ".mp4");
+        var mediaDataPart = this.slide.Presentation.SDKPresentationDocument.CreateMediaDataPart("video/mp4", ".mp4");
 
         stream.Position = 0;
         mediaDataPart.FeedData(stream);
@@ -726,7 +719,7 @@ internal sealed class SCSlideShapes : IShapeCollection
         var shapesValue = new List<IShape>(this.pShapeTree.Count());
         foreach (var pShapeTreeChild in this.pShapeTree.OfType<TypedOpenXmlCompositeElement>())
         {
-            var shape = this.GetShape(autoShapeCreator, pShapeTreeChild);
+            var shape = this.CreateShape(autoShapeCreator, pShapeTreeChild);
 
             if (shape != null)
             {
@@ -737,16 +730,16 @@ internal sealed class SCSlideShapes : IShapeCollection
         return shapesValue;
     }
 
-    private IShape? GetShape(AutoShapeCreator autoShapeCreator, TypedOpenXmlCompositeElement pShapeTreeChild)
+    private IShape? CreateShape(TypedOpenXmlCompositeElement pShapeTreeChild)
     {
         IShape? shape;
 
-        if (pShapeTreeChild is DocumentFormat.OpenXml.Presentation.GroupShape pGroupShape)
+        if (pShapeTreeChild is P.GroupShape pGroupShape)
         {
-            return new SCGroupShape(pGroupShape, this.slideOf, this);
+            return new SCSlideGroupShape(pGroupShape, this.slideOf, this);
         }
         
-        if (pShapeTreeChild is DocumentFormat.OpenXml.Presentation.ConnectionShape)
+        if (pShapeTreeChild is P.ConnectionShape)
         {
             return new SCLine(pShapeTreeChild, this.slideOf, this);
         }
@@ -763,7 +756,7 @@ internal sealed class SCSlideShapes : IShapeCollection
 
     private DocumentFormat.OpenXml.Presentation.Picture CreatePPicture(Stream imageStream, string shapeName)
     {
-        var slidePart = this.slideStructure.TypedOpenXmlPart;
+        var slidePart = this.slide.TypedOpenXmlPart;
         var imgPartRId = slidePart.GetNextRelationshipId();
         var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
         imageStream.Position = 0;

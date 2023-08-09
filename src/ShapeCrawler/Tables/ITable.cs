@@ -55,7 +55,7 @@ internal sealed class SCTable : SCShape, ITable
     internal SCTable(
         OpenXmlCompositeElement pShapeTreeChild, 
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        OneOf<SCSlideShapes, SCSlideGroupShape> shapeCollectionOf,
         TypedOpenXmlPart slideTypedOpenXmlPart, 
         List<ImagePart> imageParts)
         : base(pShapeTreeChild, slideOf, shapeCollectionOf)

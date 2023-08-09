@@ -4,6 +4,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using OneOf;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -14,7 +15,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents collection of grouped shapes.
 /// </summary>
-public interface IGroupedShapeCollection : IEnumerable<IShape>
+public interface IGroupedShapeCollection : IReadOnlyCollection<IShape>
 {
     /// <summary>
     ///     Get shape by identifier.
@@ -30,28 +31,28 @@ public interface IGroupedShapeCollection : IEnumerable<IShape>
     T GetByName<T>(string shapeName);
 }
 
-internal sealed class GroupedShapeCollection : IReadOnlyCollection<IShape>, IGroupedShapeCollection
+internal sealed class SlideGroupedShapes : IGroupedShapeCollection
 {
     private readonly List<IShape?> collectionItems;
 
-    internal GroupedShapeCollection(
-        P.GroupShape pGroupShapeParam,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        SCGroupShape groupShape,
-        TypedOpenXmlPart slideTypedOpenXmlPart,
+    internal SlideGroupedShapes(
+        P.GroupShape pGroupShape,
+        SCSlide slide,
+        SCSlideGroupShape groupShape,
+        SlidePart sdkSlidePart,
         List<ImagePart> imageParts)
     {
         var groupedShapes = new List<IShape?>();
-        foreach (var child in pGroupShapeParam.ChildElements.OfType<OpenXmlCompositeElement>())
+        foreach (var child in pGroupShape.ChildElements.OfType<OpenXmlCompositeElement>())
         {
             IShape? shape = null;
-            if (child is P.GroupShape pGroupShape)
+            if (child is P.GroupShape pGroupShapeItem)
             {
-                shape = new SCGroupShape(pGroupShape, slideOf, groupShape, slideTypedOpenXmlPart, imageParts);
+                shape = new SCSlideGroupShape(pGroupShapeItem, slide, groupShape, sdkSlidePart, imageParts);
             }
             else if (child is P.Shape pShape)
             {
-                var autoShape = new SCAutoShape(pShape, slideOf, groupShape, slideTypedOpenXmlPart);
+                var autoShape = new SCAutoShape(pShape, slide, groupShape, sdkSlidePart);
                 autoShape.XChanged += groupShape.OnGroupedShapeXChanged;
                 autoShape.YChanged += groupShape.OnGroupedShapeYChanged;
                 shape = autoShape;

@@ -34,7 +34,7 @@ internal class SCChart : SCShape, IChart
     internal SCChart(
         P.GraphicFrame pGraphicFrame, 
         OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf, 
-        OneOf<ShapeCollection, SCGroupShape> shapeCollectionOf,
+        OneOf<SCSlideShapes, SCSlideGroupShape> shapeCollectionOf,
         TypedOpenXmlPart slideTypedOpenXmlPart,
         List<ChartWorkbook> chartWorkbooks)
         : base(pGraphicFrame, slideOf, shapeCollectionOf)
