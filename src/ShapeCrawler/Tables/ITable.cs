@@ -304,7 +304,7 @@ internal sealed class SCTable : SCShape, ITable
             foreach (var aTc in aTableRow.Elements<A.TableCell>().Skip(leftColIndex).Take(rightColIndex - leftColIndex + 1))
             {
                 aTc.VerticalMerge = new BooleanValue(true);
-                MergeParagraphs(topRowIndex, leftColIndex, aTc);
+                this.MergeParagraphs(topRowIndex, leftColIndex, aTc);
             }
         }
     }
