@@ -290,12 +290,10 @@ internal sealed class SCTable : SCShape, ITable
     
     private void MergeVertically(int bottomIndex, int topRowIndex, List<A.TableRow> aTableRows, int leftColIndex, int rightColIndex)
     {
+        int verticalMergingCount = bottomIndex - topRowIndex + 1;
+    
         // Set row span value for the first cell in the merged cells
-        var verticalMergingCount = bottomIndex - topRowIndex + 1;
-        var rowSpanCells = aTableRows[topRowIndex].Elements<A.TableCell>()
-            .Skip(leftColIndex)
-            .Take(rightColIndex + 1);
-        foreach (var aTblCell in rowSpanCells)
+        foreach (var aTblCell in aTableRows[topRowIndex].Elements<A.TableCell>().Skip(leftColIndex).Take(rightColIndex + 1))
         {
             aTblCell.RowSpan = new Int32Value(verticalMergingCount);
         }
@@ -303,10 +301,10 @@ internal sealed class SCTable : SCShape, ITable
         // Set vertical merging flag
         foreach (var aTableRow in aTableRows.Skip(topRowIndex + 1).Take(bottomIndex - topRowIndex))
         {
-            foreach (A.TableCell aTableCell in aTableRow.Elements<A.TableCell>().Take(rightColIndex + 1))
+            foreach (var aTc in aTableRow.Elements<A.TableCell>().Skip(leftColIndex).Take(rightColIndex - leftColIndex + 1))
             {
-                aTableCell.VerticalMerge = new BooleanValue(true);
-                this.MergeParagraphs(topRowIndex, leftColIndex, aTableCell);
+                aTc.VerticalMerge = new BooleanValue(true);
+                MergeParagraphs(topRowIndex, leftColIndex, aTc);
             }
         }
     }
