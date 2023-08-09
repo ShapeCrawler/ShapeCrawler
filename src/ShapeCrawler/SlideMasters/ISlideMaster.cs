@@ -90,6 +90,8 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
     
     internal override TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
 
+    public override ISlideMaster SlideMaster => this;
+
     internal bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
     {
         var bodyParaLvlToFontData =

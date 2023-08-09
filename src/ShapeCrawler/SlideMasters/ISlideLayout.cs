@@ -91,7 +91,7 @@ internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
 
     public SCSlideLayoutType Type => this.GetLayoutType();
 
-    public ISlideMaster SlideMaster => this.slideMaster;
+    public override ISlideMaster SlideMaster => this.slideMaster;
 
     public override int Number { get; set; }
 

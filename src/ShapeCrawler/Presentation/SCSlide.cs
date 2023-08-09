@@ -35,8 +35,13 @@ internal sealed class SCSlide : SlideStructure, ISlide
         this.SlideId = slideId;
     }
 
-    public ISlideLayout SlideLayout =>
-        ((SCSlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
+    public ISlideLayout SlideLayout
+    {
+        get
+        {
+            return ((SCSlideMasterCollection)this.PresentationInternal.SlideMasters).GetSlideLayoutBySlide(this);
+        }
+    }
 
     public override IShapeCollection Shapes => this.shapes.Value;
 
@@ -64,6 +69,8 @@ internal sealed class SCSlide : SlideStructure, ISlide
 
     internal SlideId SlideId { get; }
 
+    public override ISlideMaster SlideMaster => this.SlideLayout.SlideMaster;
+
     public void Hide()
     {
         if (this.SDKSlidePart.Slide.Show is null)
@@ -82,7 +89,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
         var browsingContext = BrowsingContext.New(Configuration.Default.WithDefaultLoader().WithCss());
         var document = await browsingContext.OpenNewAsync().ConfigureAwait(false);
         var body = document.Body!;
-        
+
         foreach (var shape in this.Shapes.OfType<SCShape>())
         {
             body.AppendChild(shape.ToHtmlElement());
@@ -97,12 +104,12 @@ internal sealed class SCSlide : SlideStructure, ISlide
         var surface = SKSurface.Create(imageInfo);
         var canvas = surface.Canvas;
         canvas.Clear(SKColors.White); // TODO: #344 get real
-        
+
         foreach (var autoShape in this.Shapes.OfType<SCAutoShape>())
         {
             autoShape.Draw(canvas);
         }
-        
+
         var image = surface.Snapshot();
         var bitmap = SKBitmap.FromImage(image);
         var data = bitmap.Encode(SKEncodedImageFormat.Png, 100);
@@ -186,7 +193,7 @@ internal sealed class SCSlide : SlideStructure, ISlide
         {
             return;
         }
-        
+
         var currentIndex = this.Number - 1;
         var destIndex = newSlideNumber - 1;
 
