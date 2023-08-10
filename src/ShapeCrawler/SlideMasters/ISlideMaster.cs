@@ -28,7 +28,7 @@ public interface ISlideMaster
     /// <summary>
     ///     Gets collection of shape.
     /// </summary>
-    IShapeCollection Shapes { get; }
+    IReadOnlyShapeCollection Shapes { get; }
 
     /// <summary>
     ///     Gets theme.
@@ -69,7 +69,7 @@ internal sealed class SCSlideMaster : ISlideStructure, ISlideMaster
 
     public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
 
-    public IShapeCollection Shapes => new SCSlideShapes(this.PSlideMaster.SlideMasterPart!, this, this.slideTypedOpenXmlPart, this.imageParts, this.sdkPresentationDocument);
+    public ISlideShapeCollection Shapes => new SCSlideShapes(this.PSlideMaster.SlideMasterPart!, this, this.slideTypedOpenXmlPart, this.imageParts, this.sdkPresentationDocument);
     
     public IPresentation Presentation { get; } = null!;
 

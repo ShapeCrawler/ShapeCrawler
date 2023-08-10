@@ -21,7 +21,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class SCSlideShapes : IShapeCollection
+internal sealed class SCSlideShapes : ISlideShapeCollection
 {
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly P.ShapeTree pShapeTree;

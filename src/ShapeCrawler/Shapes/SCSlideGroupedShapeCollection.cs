@@ -3,40 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using OneOf;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Shapes;
-using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
-// ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
 
-/// <summary>
-///     Represents collection of grouped shapes.
-/// </summary>
-public interface IGroupedShapeCollection : IReadOnlyCollection<IShape>
-{
-    /// <summary>
-    ///     Get shape by identifier.
-    /// </summary>
-    /// <typeparam name="T">The type of shape.</typeparam>
-    T GetById<T>(int shapeId)
-        where T : IShape;
-
-    /// <summary>
-    ///     Get shape by name.
-    /// </summary>
-    /// <typeparam name="T">The type of shape.</typeparam>
-    T GetByName<T>(string shapeName);
-}
-
-internal sealed class SlideGroupedShapes : IGroupedShapeCollection
+internal sealed class SCSlideGroupedShapeCollection : IReadOnlyShapeCollection
 {
     private readonly List<IShape?> collectionItems;
 
-    internal SlideGroupedShapes(
-        P.GroupShape parentPGroupShape,
+    internal SCSlideGroupedShapeCollection(
+        DocumentFormat.OpenXml.Presentation.GroupShape parentPGroupShape,
         SCSlideGroupShape groupShape,
         SlidePart sdkSlidePart,
         List<ImagePart> imageParts)
@@ -45,15 +22,15 @@ internal sealed class SlideGroupedShapes : IGroupedShapeCollection
         foreach (var parentPGroupShapeChild in parentPGroupShape.ChildElements.OfType<OpenXmlCompositeElement>())
         {
             IShape? shape = null;
-            if (parentPGroupShapeChild is P.GroupShape pGroupShape)
+            if (parentPGroupShapeChild is DocumentFormat.OpenXml.Presentation.GroupShape pGroupShape)
             {
                 shape = new SCSlideGroupShape(pGroupShape, groupShape, sdkSlidePart, imageParts);
             }
-            else if (parentPGroupShapeChild is P.Shape pShape)
+            else if (parentPGroupShapeChild is DocumentFormat.OpenXml.Presentation.Shape pShape)
             {
                 // var autoShape = new SCSlideAutoShape(pShape, groupShape, sdkSlidePart, groupShape.OnGroupedShapeXChanged, groupShape.OnGroupedShapeYChanged);
                 var slideGroupedAutoShape = new SCSlideGroupedAutoShape(
-                    new SCSlideAutoShape(pShape, groupShape, sdkSlidePart),
+                    new SCSlideAutoShape(pShape, this, sdkSlidePart),
                     groupShape.OnGroupedShapeXChanged, groupShape.OnGroupedShapeYChanged);
 
                 shape = slideGroupedAutoShape;

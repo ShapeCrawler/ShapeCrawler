@@ -8,27 +8,8 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a shape collection.
 /// </summary>
-public interface IShapeCollection : IReadOnlyList<IShape>
+public interface ISlideShapeCollection : IReadOnlyShapeCollection
 {
-    /// <summary>
-    ///     Gets shape by identifier. Returns <see langword="null"/> if shape is not found.
-    /// </summary>
-    /// <typeparam name="T">The type of shape.</typeparam>
-    T? GetById<T>(int shapeId)
-        where T : IShape;
-
-    /// <summary>
-    ///     Gets shape by name. Returns <see langword="null"/> if shape is not found.
-    /// </summary>
-    /// <typeparam name="T">The type of shape.</typeparam>
-    T? GetByName<T>(string shapeName)
-        where T : IShape;
-
-    /// <summary>
-    ///     Gets shape by name. Returns <see langword="null"/> if shape is not found.
-    /// </summary>
-    IShape? GetByName(string shapeName);
-
     /// <summary>
     ///     Adds a new shape from other shape.
     /// </summary>

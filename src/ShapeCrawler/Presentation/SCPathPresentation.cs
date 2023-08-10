@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler;
 
-internal sealed record SCPathPresentation : IPresentationInternal
+internal sealed record SCPathPresentation : ISavePresentation
 {
     private readonly PresentationCore presentationCore;
     private string path;

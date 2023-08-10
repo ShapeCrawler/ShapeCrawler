@@ -91,7 +91,7 @@ internal sealed class SCSlideLayout : ISlideLayout
 
     public string Name => this.GetName();
 
-    public IShapeCollection Shapes => this.shapes.Value;
+    public ISlideShapeCollection Shapes => this.shapes.Value;
 
     public SCSlideLayoutType Type => this.GetLayoutType();
 

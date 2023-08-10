@@ -53,7 +53,7 @@ internal sealed class SCSlide : ISlide
 
     public ISlideLayout SlideLayout { get; }
 
-    public IShapeCollection Shapes => this.shapes.Value;
+    public ISlideShapeCollection Shapes => this.shapes.Value;
 
     public int Number
     {

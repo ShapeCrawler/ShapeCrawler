@@ -6,7 +6,7 @@ namespace ShapeCrawler;
 /// <inheritdoc cref="IPresentation"/>
 public sealed record SCPresentation : IPresentation
 {
-    private IPresentationInternal presentation;
+    private ISavePresentation presentation;
 
     /// <summary>
     ///     Creates presentation from specified file path.

@@ -36,9 +36,9 @@ public interface IShape : IShapeLocation
     bool Hidden { get; }
 
     /// <summary>
-    ///     Gets placeholder if shape is a placeholder, otherwise <see langword="null"/>.
+    ///     Gets placeholder.
     /// </summary>
-    IPlaceholder? Placeholder { get; }
+    IPlaceholder Placeholder { get; }
 
     /// <summary>
     ///     Gets geometry form type of the shape.
@@ -46,7 +46,7 @@ public interface IShape : IShapeLocation
     SCGeometry GeometryType { get; }
 
     /// <summary>
-    ///     Gets or sets custom data for the shape.
+    ///     Gets or sets custom data string for the shape.
     /// </summary>
     string? CustomData { get; set; }
 
@@ -56,7 +56,7 @@ public interface IShape : IShapeLocation
     SCShapeType ShapeType { get; }
     
     /// <summary>
-    ///     Returns <see cref="IAutoShape"/> if shape is an auto shape, otherwise <see langword="null"/>.
+    ///     Gets <see cref="IAutoShape"/>.    
     /// </summary>
-    IAutoShape? AsAutoShape();
+    IAutoShape AsAutoShape();
 }

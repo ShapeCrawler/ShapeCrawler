@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler;
 
-internal sealed record SCStreamPresentation : IPresentationInternal
+internal sealed record SCStreamPresentation : ISavePresentation
 {
     private readonly PresentationCore presentationCore;
     private readonly Stream stream;

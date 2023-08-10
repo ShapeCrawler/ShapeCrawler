@@ -29,16 +29,33 @@ internal sealed class SCSlideGroupShape : IGroupShape
         this.shape = new Shape(pGroupShape);
     }
 
-    public IGroupedShapeCollection Shapes => new SlideGroupedShapes(this.pGroupShape, this, this.sdkSlidePart, this.imageParts);
+    public IReadOnlyShapeCollection Shapes => new SCSlideGroupedShapeCollection(this.pGroupShape, this, this.sdkSlidePart, this.imageParts);
 
-    public int Width { get; set; }
-    public int Height { get; set; }
-    public int Id { get; }
+    public int Width
+    {
+        get =>this.shape.Width(); 
+        set => this.shape.UpdateWidth(value);
+    }
+
+    public int Height
+    {
+        get => this.shape.Height(); 
+        set => this.shape.UpdateHeight(value);
+    }
+
+    public int Id => this.shape.Id();
+    
     public string Name => this.shape.Name();
-    public bool Hidden { get; }
+    
+    public bool Hidden => this.shape.Hidden();
     public IPlaceholder? Placeholder { get; }
     public SCGeometry GeometryType { get; }
-    public string? CustomData { get; set; }
+
+    public string? CustomData
+    {
+        get => this.shape.CustomData();
+        set => this.shape.UpdateCustomData(value);
+    }
     public SCShapeType ShapeType => SCShapeType.Group;
     public IAutoShape? AsAutoShape()
     {
