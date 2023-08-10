@@ -24,6 +24,21 @@ public interface IShapeFill
     public string? Color { get; }
 
     /// <summary>
+    /// Gets the Alpha percentage of the fill color.
+    /// </summary>
+    public double? AlphaPercentage { get; }
+
+    /// <summary>
+    /// Gets the Luminance Modulation Percentage of the fill color.
+    /// </summary>
+    public double? LuminanceModulationPercentage { get; }
+    
+    /// <summary>
+    /// Gets the Luminance Offset Percentage of the fill color.
+    /// </summary>
+    public double? LuminanceOffsetPercentage { get; }
+
+    /// <summary>
     ///     Fills the shape with picture.
     /// </summary>
     void SetPicture(Stream image);
