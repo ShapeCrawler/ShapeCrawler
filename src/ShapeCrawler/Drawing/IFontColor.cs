@@ -50,7 +50,7 @@ internal sealed class SCFontColor : IFontColor
         Dictionary<int, FontData> paraLvlToFontData)
     {
         this.textFrameContainer = textFrameContainer;
-        var shape = this.textFrameContainer.SCShape;
+        var shape = this.textFrameContainer.AutoShape;
         this.parentSlideMaster = shape.SlideMasterInternal;
         this.paragraph = paragraph;
         this.aText = aText;
@@ -185,7 +185,7 @@ internal sealed class SCFontColor : IFontColor
 
     private bool TryFromPlaceholder(int paragraphLevel)
     {
-        if (this.textFrameContainer.SCShape.Placeholder is not SCPlaceholder placeholder)
+        if (this.textFrameContainer.AutoShape.Placeholder is not SCPlaceholder placeholder)
         {
             return false;
         }

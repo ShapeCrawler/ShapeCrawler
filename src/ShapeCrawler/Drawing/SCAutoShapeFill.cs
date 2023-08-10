@@ -7,12 +7,12 @@ namespace ShapeCrawler.Drawing;
 
 internal sealed class SCAutoShapeFill : SCShapeFill
 {
-    private readonly SCAutoShape autoShape;
+    private readonly SCSlideAutoShape autoShape;
 
     internal SCAutoShapeFill(
         ISlideStructure slideStructure, 
         P.ShapeProperties shapeProperties, 
-        SCAutoShape autoShape, 
+        SCSlideAutoShape autoShape, 
         TypedOpenXmlPart slideTypedOpenXmlPart,
         List<ImagePart> imageParts)
         : base(slideStructure, shapeProperties, slideTypedOpenXmlPart, imageParts)

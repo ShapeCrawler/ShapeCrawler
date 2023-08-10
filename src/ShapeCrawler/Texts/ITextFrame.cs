@@ -135,7 +135,7 @@ internal sealed class SCTextFrame : ITextFrame
     public bool CanChangeText()
     {
         var isField = this.Paragraphs.Any(paragraph => paragraph.Portions.Any(portion => portion.Field != null));
-        var isFooter = this.TextFrameContainer.SCShape.Placeholder?.Type == SCPlaceholderType.Footer;
+        var isFooter = this.TextFrameContainer.AutoShape.Placeholder?.Type == SCPlaceholderType.Footer;
 
         return !isField && !isFooter;
     }
@@ -195,7 +195,7 @@ internal sealed class SCTextFrame : ITextFrame
                 shrink?.Remove();
                 resize = new A.ShapeAutoFit();
                 aBodyPr.Append(resize);
-                var parentAutoShape = (SCAutoShape)this.TextFrameContainer.SCShape;
+                var parentAutoShape = (SCSlideAutoShape)this.TextFrameContainer.AutoShape;
                 parentAutoShape.ResizeShape();
                 break;
             }
@@ -338,7 +338,7 @@ internal sealed class SCTextFrame : ITextFrame
         var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font!.Size).OrderByDescending(x => x.Count())
             .First().First();
         var font = popularPortion.Font;
-        var shape = this.TextFrameContainer.SCShape;
+        var shape = this.TextFrameContainer.AutoShape;
 
         var fontSize = FontService.GetAdjustedFontSize(newText, font!, shape);
 

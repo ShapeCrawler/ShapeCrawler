@@ -27,9 +27,9 @@ public interface IShapeOutline
 
 internal sealed class SCShapeOutline : IShapeOutline
 {
-    private readonly SCAutoShape parentAutoShape;
+    private readonly SCSlideAutoShape parentAutoShape;
 
-    internal SCShapeOutline(SCAutoShape parentAutoSCShape)
+    internal SCShapeOutline(SCSlideAutoShape parentAutoSCShape)
     {
         this.parentAutoShape = parentAutoSCShape;
     }

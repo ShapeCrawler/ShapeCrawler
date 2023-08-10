@@ -56,11 +56,6 @@ public interface IShape : IShapeLocation
     SCShapeType ShapeType { get; }
     
     /// <summary>
-    ///     Gets parent Slide, SlideLayout or SlideMaster.
-    /// </summary>
-    ISlideStructure SlideStructure { get; }
-    
-    /// <summary>
     ///     Returns <see cref="IAutoShape"/> if shape is an auto shape, otherwise <see langword="null"/>.
     /// </summary>
     IAutoShape? AsAutoShape();

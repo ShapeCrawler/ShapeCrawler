@@ -15,7 +15,7 @@ public interface IRectangle : IAutoShape
 {
 }
 
-internal sealed class SCRectangle : SCAutoShape, IRectangle
+internal record SCRectangle : SCSlideAutoShape, IRectangle
 {
     internal SCRectangle(
         P.Shape pShape,

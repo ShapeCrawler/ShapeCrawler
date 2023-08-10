@@ -32,13 +32,13 @@ internal sealed class SCMasterSlideNumber : IMasterSlideNumber
 
     public int X
     {
-        get => this.shapeLocation.ParseX();
+        get => this.shapeLocation.X();
         set => this.shapeLocation.UpdateX(value);
     }
 
     public int Y
     {
-        get => this.shapeLocation.ParseY();
+        get => this.shapeLocation.Y();
         set => this.shapeLocation.UpdateY(value);
     }
 }

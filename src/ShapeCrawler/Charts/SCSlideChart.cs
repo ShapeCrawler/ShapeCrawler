@@ -30,6 +30,7 @@ internal class SCSlideChart : IChart
     private readonly IEnumerable<OpenXmlElement> cXCharts;
 
     private string? chartTitle;
+    private readonly Shape shape;
 
     internal SCSlideChart(
         P.GraphicFrame pGraphicFrame, 
@@ -54,11 +55,18 @@ internal class SCSlideChart : IChart
         this.cXCharts = this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
         this.ChartWorkbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartWorkbook(this, this.ChartPart.EmbeddedPackagePart, chartWorkbooks) : null;
+        this.shape = new Shape(pGraphicFrame);
+        this.SlideStructure = slide;
     }
 
     public SCChartType Type => this.chartType.Value;
 
     public SCShapeType ShapeType => SCShapeType.Chart;
+    public ISlideStructure SlideStructure { get; }
+    public IAutoShape? AsAutoShape()
+    {
+        throw new NotImplementedException();
+    }
 
     public string? Title
     {
@@ -99,7 +107,38 @@ internal class SCSlideChart : IChart
         }
     }
 
+    public int X
+    {
+        get => this.shape.X(); 
+        set => this.shape.UpdateX(value);
+    }
+
+    public int Y
+    {
+        get => this.shape.Y(); 
+        set => this.shape.UpdateY(value);
+    }
+
+    public int Width
+    {
+        get => this.shape.Width(); 
+        set => this.shape.UpdateWidth(value);
+    }
+
+    public int Height
+    {
+        get => this.shape.Height(); 
+        set => this.shape.UpdateHeight(value);
+    }
+    
+    public int Id => this.shape.Id();
+    
+    public string Name => this.shape.Name();
+    
+    public bool Hidden => this.shape.Hidden();
+    public IPlaceholder? Placeholder { get; }
     public SCGeometry GeometryType => SCGeometry.Rectangle;
+    public string? CustomData { get; set; }
 
     public byte[] WorkbookByteArray => this.ChartWorkbook!.BinaryData;
 

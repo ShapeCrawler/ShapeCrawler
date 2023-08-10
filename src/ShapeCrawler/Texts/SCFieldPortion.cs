@@ -32,11 +32,11 @@ internal sealed class SCFieldPortion : IPortion
 
         this.aField = aField;
 
-        var themeFontScheme = (ThemeFontScheme)textFrameContainer.SCShape.SlideMasterInternal.Theme.FontScheme;
+        var themeFontScheme = (ThemeFontScheme)textFrameContainer.AutoShape.SlideMasterInternal.Theme.FontScheme;
         this.font = new ResetableLazy<ITextPortionFont>(() =>
         {
             if (slideStructure is SCSlideLayout layout &&
-                textFrameContainer.SCShape.Placeholder?.Type == SCPlaceholderType.SlideNumber)
+                textFrameContainer.AutoShape.Placeholder?.Type == SCPlaceholderType.SlideNumber)
             {
                 var masterSlideNumberFont = layout.SlideMaster.SlideNumber!.Font;
                 var pTextBody = (P.TextBody)paragraph.AParagraph.Parent!;

@@ -36,26 +36,27 @@ internal sealed class SlideGroupedShapes : IGroupedShapeCollection
     private readonly List<IShape?> collectionItems;
 
     internal SlideGroupedShapes(
-        P.GroupShape pGroupShape,
-        SCSlide slide,
+        P.GroupShape parentPGroupShape,
         SCSlideGroupShape groupShape,
         SlidePart sdkSlidePart,
         List<ImagePart> imageParts)
     {
         var groupedShapes = new List<IShape?>();
-        foreach (var child in pGroupShape.ChildElements.OfType<OpenXmlCompositeElement>())
+        foreach (var parentPGroupShapeChild in parentPGroupShape.ChildElements.OfType<OpenXmlCompositeElement>())
         {
             IShape? shape = null;
-            if (child is P.GroupShape pGroupShapeItem)
+            if (parentPGroupShapeChild is P.GroupShape pGroupShape)
             {
-                shape = new SCSlideGroupShape(pGroupShapeItem, slide, groupShape, sdkSlidePart, imageParts);
+                shape = new SCSlideGroupShape(pGroupShape, groupShape, sdkSlidePart, imageParts);
             }
-            else if (child is P.Shape pShape)
+            else if (parentPGroupShapeChild is P.Shape pShape)
             {
-                var autoShape = new SCAutoShape(pShape, slide, groupShape, sdkSlidePart);
-                autoShape.XChanged += groupShape.OnGroupedShapeXChanged;
-                autoShape.YChanged += groupShape.OnGroupedShapeYChanged;
-                shape = autoShape;
+                // var autoShape = new SCSlideAutoShape(pShape, groupShape, sdkSlidePart, groupShape.OnGroupedShapeXChanged, groupShape.OnGroupedShapeYChanged);
+                var slideGroupedAutoShape = new SCSlideGroupedAutoShape(
+                    new SCSlideAutoShape(pShape, groupShape, sdkSlidePart),
+                    groupShape.OnGroupedShapeXChanged, groupShape.OnGroupedShapeYChanged);
+
+                shape = slideGroupedAutoShape;
             }
 
             if (shape != null)

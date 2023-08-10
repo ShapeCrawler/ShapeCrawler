@@ -42,7 +42,7 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     /// <param name="xPixel">The X coordinate for the left side of the shape.</param>
     /// <param name="yPixels">The Y coordinate for the left side of the shape.</param>
     /// <param name="mp3Stream">Audio stream data.</param>
-    IAudioShape AddAudio(int xPixel, int yPixels, Stream mp3Stream);
+    IMediaShape AddAudio(int xPixel, int yPixels, Stream mp3Stream);
 
     /// <summary>
     ///     Adds a new video from stream.

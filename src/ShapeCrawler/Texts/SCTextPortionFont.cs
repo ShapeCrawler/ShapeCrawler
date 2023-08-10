@@ -107,7 +107,7 @@ internal sealed class SCTextPortionFont : ITextPortionFont
 
     public bool CanChange()
     {
-        var placeholder = this.textFrameContainer.SCShape.Placeholder;
+        var placeholder = this.textFrameContainer.AutoShape.Placeholder;
 
         return placeholder is null or { Type: SCPlaceholderType.Text };
     }

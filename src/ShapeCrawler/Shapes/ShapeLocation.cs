@@ -1,34 +1,35 @@
 ﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Shared;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class ShapeLocation
+internal sealed record ShapeLocation
 {
-    private readonly DocumentFormat.OpenXml.Drawing.Transform2D aTransform2D;
+    private readonly A.Offset aOffset;
 
-    internal ShapeLocation(DocumentFormat.OpenXml.Drawing.Transform2D aTransform2D)
+    internal ShapeLocation(A.Offset aOffset)
     {
-        this.aTransform2D = aTransform2D;
+        this.aOffset = aOffset;
     }
 
-    internal int ParseX()
+    internal int X()
     {
-        return UnitConverter.HorizontalEmuToPixel(this.aTransform2D.Offset!.X!);
+        return UnitConverter.HorizontalEmuToPixel(this.aOffset.X!);
     }
 
     internal void UpdateX(int pixels)
     {
-        this.aTransform2D.Offset!.X = new Int64Value(UnitConverter.HorizontalPixelToEmu(pixels));
+        this.aOffset.X = new Int64Value(UnitConverter.HorizontalPixelToEmu(pixels));
     }
 
-    internal int ParseY()
+    internal int Y()
     {
-        return UnitConverter.VerticalEmuToPixel(this.aTransform2D.Offset!.Y!);
+        return UnitConverter.VerticalEmuToPixel(this.aOffset.Y!);
     }
 
     internal void UpdateY(int pixels)
     {
-        this.aTransform2D.Offset!.Y = new Int64Value(UnitConverter.VerticalPixelToEmu(pixels));
+        this.aOffset!.Y = new Int64Value(UnitConverter.VerticalPixelToEmu(pixels));
     }
 }

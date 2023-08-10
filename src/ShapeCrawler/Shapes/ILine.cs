@@ -25,7 +25,7 @@ public interface ILine : IAutoShape
     SCPoint EndPoint { get; }
 }
 
-internal sealed class SCLine : SCAutoShape, ILine
+internal sealed class SCLine : SCSlideAutoShape, ILine
 {
     public SCLine(
         TypedOpenXmlCompositeElement pShapeTreeChild,

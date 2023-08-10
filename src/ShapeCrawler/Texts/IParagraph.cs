@@ -228,7 +228,7 @@ internal sealed class SCParagraph : IParagraph
             return this.alignment.Value;
         }
 
-        var shape = this.ParentTextFrame.TextFrameContainer.SCShape;
+        var shape = this.ParentTextFrame.TextFrameContainer.AutoShape;
         var placeholder = shape.Placeholder;
 
         var aTextAlignmentType = this.AParagraph.ParagraphProperties?.Alignment!;

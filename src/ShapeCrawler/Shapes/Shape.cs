@@ -1,37 +1,42 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq;
+using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Shared;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Shapes;
 
 internal sealed record Shape
 {
     private readonly OpenXmlCompositeElement pShapeTreeChild;
+    private readonly ShapeLocation shapeLocation;
     private const string customDataElementName = "ctd";
 
     internal Shape(OpenXmlCompositeElement pShapeTreeChild)
     {
         this.pShapeTreeChild = pShapeTreeChild;
+        
+        var aOffset = pShapeTreeChild.Descendants<A.Offset>().First();
+        this.shapeLocation = new ShapeLocation(aOffset);
     }
     
     internal int X()
     {
-        throw new System.NotImplementedException();
+        return this.shapeLocation.X();
     }
 
     internal void UpdateX(int value)
     {
-        throw new System.NotImplementedException();
+        this.shapeLocation.UpdateX(value);
     }
 
     internal int Y()
     {
-        throw new System.NotImplementedException();
+        return this.shapeLocation.Y();
     }
 
     internal void UpdateY(int value)
     {
-        throw new System.NotImplementedException();
+        this.shapeLocation.UpdateY(value);
     }
 
     internal int Width()

@@ -2,7 +2,6 @@
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using OneOf;
 using ShapeCrawler.Shared;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -14,26 +13,37 @@ namespace ShapeCrawler.Shapes;
 internal sealed class SCSlideGroupShape : IGroupShape
 {
     private readonly P.GroupShape pGroupShape;
-    private readonly SCSlide slide;
     private readonly SlidePart sdkSlidePart;
     private readonly List<ImagePart> imageParts;
+    private readonly Shape shape;
 
     internal SCSlideGroupShape(
         P.GroupShape pGroupShape, 
-        SCSlide slide,
         SCSlideShapes shapes,
         SlidePart sdkSlidePart,
         List<ImagePart> imageParts)
     {
         this.pGroupShape = pGroupShape;
-        this.slide = slide;
         this.sdkSlidePart = sdkSlidePart;
         this.imageParts = imageParts;
+        this.shape = new Shape(pGroupShape);
     }
 
-    public IGroupedShapeCollection Shapes => new SlideGroupedShapes(this.pGroupShape, this.slide, this, this.sdkSlidePart, this.imageParts);
+    public IGroupedShapeCollection Shapes => new SlideGroupedShapes(this.pGroupShape, this, this.sdkSlidePart, this.imageParts);
 
+    public int Width { get; set; }
+    public int Height { get; set; }
+    public int Id { get; }
+    public string Name => this.shape.Name();
+    public bool Hidden { get; }
+    public IPlaceholder? Placeholder { get; }
+    public SCGeometry GeometryType { get; }
+    public string? CustomData { get; set; }
     public SCShapeType ShapeType => SCShapeType.Group;
+    public IAutoShape? AsAutoShape()
+    {
+        throw new System.NotImplementedException();
+    }
 
     internal A.TransformGroup ATransformGroup => this.pGroupShape.GroupShapeProperties!.TransformGroup!;
 
@@ -72,7 +82,7 @@ internal sealed class SCSlideGroupShape : IGroupShape
             return;
         }
 
-        var groupedShape = (SCShape)sender!;
+        var groupedShape = (IShape)sender!;
         var parentGroupRight = this.X + this.Width; 
         var groupedShapeRight = groupedShape.X + groupedShape.Width;
         if (groupedShapeRight > parentGroupRight)
@@ -104,7 +114,7 @@ internal sealed class SCSlideGroupShape : IGroupShape
             return;
         }
 
-        var groupedShape = (SCShape)sender!;
+        var groupedShape = (IShape)sender!;
         var parentGroupBottom = this.Y + this.Height;
         var groupedShapeBottom = groupedShape.Y + groupedShape.Height;
         if (groupedShapeBottom > parentGroupBottom)
@@ -116,14 +126,14 @@ internal sealed class SCSlideGroupShape : IGroupShape
         }
     }
 
-    protected override int GetXCoordinate()
+    protected int GetXCoordinate()
     {
         var aXfrm = ((P.GroupShape)this.PShapeTreeChild).GroupShapeProperties!.TransformGroup!;
 
         return UnitConverter.HorizontalEmuToPixel(aXfrm.Offset!.X!);
     }
 
-    protected override void SetXCoordinate(int xPx)
+    protected void SetXCoordinate(int xPx)
     {
         var pGrpSpPr = this.PShapeTreeChild.GetFirstChild<P.GroupShapeProperties>() !;
         var aXfrm = pGrpSpPr.TransformGroup!;
@@ -131,24 +141,27 @@ internal sealed class SCSlideGroupShape : IGroupShape
         aXfrm.ChildOffset!.X = UnitConverter.HorizontalPixelToEmu(xPx);
     }
     
-    protected override void SetYCoordinate(int yPx)
+    protected void SetYCoordinate(int yPx)
     {
         var pGrpSpPr = this.PShapeTreeChild.GetFirstChild<P.GroupShapeProperties>() !;
         var aXfrm = pGrpSpPr.TransformGroup!;
         aXfrm.Offset!.Y = UnitConverter.VerticalPixelToEmu(yPx);
     }
     
-    protected override void SetWidth(int wPx)
+    protected void SetWidth(int wPx)
     {
         var pGrpSpPr = this.PShapeTreeChild.GetFirstChild<P.GroupShapeProperties>() !;
         var aXfrm = pGrpSpPr.TransformGroup!;
         aXfrm.Extents!.Cx = UnitConverter.HorizontalPixelToEmu(wPx);
     }
     
-    protected override void SetHeight(int hPx)
+    protected void SetHeight(int hPx)
     {
         var pGrpSpPr = this.PShapeTreeChild.GetFirstChild<P.GroupShapeProperties>() !;
         var aXfrm = pGrpSpPr.TransformGroup!;
         aXfrm.Extents!.Cy = UnitConverter.VerticalPixelToEmu(hPx);
     }
+
+    public int X { get; set; }
+    public int Y { get; set; }
 }

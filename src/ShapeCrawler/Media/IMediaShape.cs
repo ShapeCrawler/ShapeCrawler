@@ -43,7 +43,7 @@ internal record SCSlideMediaShape : IMediaShape
         this.pPicture = pPicture;
         this.sdkSlidePart = sdkSlidePart;
         this.SlideStructure = slide;
-        this.shape = new Shape();
+        this.shape = new Shape(pPicture);
         this.placeholder = new Lazy<SCSlidePlaceholder?>(this.ParsePlaceholderOrNull);
     }
 

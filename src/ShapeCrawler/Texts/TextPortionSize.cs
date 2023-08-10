@@ -71,7 +71,7 @@ internal record TextPortionSize : IFontSize
     {
         i = -1;
         var placeholder = scShape.Placeholder as SCPlaceholder;
-        var referencedShape = placeholder?.ReferencedShape.Value as SCAutoShape;
+        var referencedShape = placeholder?.ReferencedShape.Value as SCSlideAutoShape;
         var fontDataPlaceholder = new FontData();
         if (referencedShape != null)
         {

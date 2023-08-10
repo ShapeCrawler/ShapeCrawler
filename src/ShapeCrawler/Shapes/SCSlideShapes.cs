@@ -74,9 +74,9 @@ internal sealed class SCSlideShapes : IShapeCollection
         // Chart (<p:graphicFrame /> http://schemas.openxmlformats.org/drawingml/2006/chart) are not in the shape collection, data is referenced.
         // Object (<p:graphicFrame /> http://schemas.openxmlformats.org/presentationml/2006/ole) are not in the shape collection, data is referenced.
         // Alternate content(<mc:AlternateContent /> http://schemas.openxmlformats.org/officeDocument/2006/math"> are not in the shape collection, data is referenced.
-        if (addingShape is not SCShape addingShapeInternal || addingShape is IOLEObject || addingShape is IChart || addingShape is IAudioShape || addingShape is IMediaShape)
+        if (addingShape is SCSlideOLEObject or IChart or IMediaShape)
         {
-            throw new SCException($"{addingShape.GetType().Name} is not supported.");
+            throw new SCException($"Adding {addingShape.GetType().Name} is not supported yet.");
         }
 
         // Clone shape tree child.
@@ -139,7 +139,7 @@ internal sealed class SCSlideShapes : IShapeCollection
         return newShape;
     }
 
-    public IAudioShape AddAudio(int xPixels, int yPixels, Stream mp3Stream)
+    public IMediaShape AddAudio(int xPixels, int yPixels, Stream mp3Stream)
     {
         var xEmu = UnitConverter.HorizontalPixelToEmu(xPixels);
         var yEmu = UnitConverter.VerticalPixelToEmu(yPixels);
@@ -183,7 +183,7 @@ internal sealed class SCSlideShapes : IShapeCollection
 
         this.shapes.Reset();
 
-        return new SCSlideAudio(this.pShapeTree, this.slide, this, pPicture);
+        return new SCSlideMediaShape(this.pShapeTree, this.slide, this, pPicture);
     }
 
     public IPicture AddPicture(Stream imageStream)
@@ -746,7 +746,7 @@ internal sealed class SCSlideShapes : IShapeCollection
         
         shape = autoShapeCreator.FromTreeChild(pShapeTreeChild, this.slideOf, this);
 
-        if (shape is SCAutoShape autoShape)
+        if (shape is SCSlideAutoShape autoShape)
         {
             autoShape.Duplicated += this.OnAutoShapeAdded;
         }
