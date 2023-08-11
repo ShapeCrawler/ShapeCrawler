@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -10,15 +9,14 @@ namespace ShapeCrawler.Drawing;
 
 internal abstract class SCShapeFill : IShapeFill
 {
-    private const double DefaultAlphaPercentage = 100;
-    private const double DefaultLuminanceModulationPercentage = 100;
-    private const double DefaultLuminanceOffsetPercentage = 0;
-
     protected readonly TypedOpenXmlCompositeElement properties;
     protected BooleanValue? useBgFill;
     protected SCFillType fillType;
     protected A.NoFill? aNoFill;
 
+    private const double DefaultAlphaPercentage = 100;
+    private const double DefaultLuminanceModulationPercentage = 100;
+    private const double DefaultLuminanceOffsetPercentage = 0;
     private readonly SlideStructure slideObject;
     private bool isDirty;
     private string? hexSolidColor;
@@ -268,8 +266,8 @@ internal abstract class SCShapeFill : IShapeFill
 
     private double GetLuminanceOffsetPercentage(TypedOpenXmlCompositeElement element)
     {
-        var lumMod = element.Elements<A.LuminanceModulation>().FirstOrDefault();
-        return lumMod?.Val?.Value / 1000d ?? SCShapeFill.DefaultLuminanceModulationPercentage;
+        var lumOff = element.Elements<A.LuminanceOffset>().FirstOrDefault();
+        return lumOff?.Val?.Value / 1000d ?? SCShapeFill.DefaultLuminanceModulationPercentage;
     }
 
     private SCImage? GetPicture()
