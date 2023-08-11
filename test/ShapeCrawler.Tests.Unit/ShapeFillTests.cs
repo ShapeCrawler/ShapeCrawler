@@ -117,7 +117,7 @@ public class ShapeFillTests : SCTest
 
         // Assert
         fill.LuminanceModulationPercentage.Should().Be(75);
-        fill.LuminanceOffsetPercentage.Should().BeNull();
+        fill.LuminanceOffsetPercentage.Should().Be(0);
     }
 
     [Test]
