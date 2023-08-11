@@ -16,6 +16,8 @@ internal abstract class SlideStructure : ISlideStructure
     
     public abstract IShapeCollection Shapes { get; }
 
+    public abstract ISlideMaster SlideMaster { get; }
+
     internal SCPresentation PresentationInternal => (SCPresentation)this.Presentation;
 
     internal abstract TypedOpenXmlPart TypedOpenXmlPart { get; }

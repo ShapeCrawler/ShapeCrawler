@@ -67,6 +67,60 @@ public class ShapeFillTests : SCTest
     }
 
     [Test]
+    public void ThemeColor_getter_returns_color_name()
+    {
+        // Arrange
+        var autoShape = (IAutoShape)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[3].Shapes.First(sp => sp.Name == "Rectangle 3");
+
+        // Act
+        var shapeSolidColorName = autoShape.Fill.Color;
+
+        // Assert
+        shapeSolidColorName.Should().BeEquivalentTo("FFAB40");
+    }
+
+    [Test]
+    public void ThemeColorWithAlpha_getter_returns_color_name()
+    {
+        // Arrange
+        var autoShape = (IAutoShape)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[3].Shapes.First(sp => sp.Name == "SolidSchemeAlpha");
+
+        // Act
+        var alpha = autoShape.Fill.AlphaPercentage;
+
+        // Assert
+        alpha.Should().Be(60);
+    }
+
+    [Test]
+    public void ThemeColorWithLuminanceLight_getter_returns_color_name()
+    {
+        // Arrange
+        var autoShape = (IAutoShape)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[3].Shapes.First(sp => sp.Name == "SolidSchemeLumLight");
+
+        // Act
+        var fill = autoShape.Fill;
+
+        // Assert
+        fill.LuminanceModulationPercentage.Should().Be(20);
+        fill.LuminanceOffsetPercentage.Should().Be(80);
+    }
+
+    [Test]
+    public void ThemeColorWithLuminanceDark_getter_returns_color_name()
+    {
+        // Arrange
+        var autoShape = (IAutoShape)SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[3].Shapes.First(sp => sp.Name == "SolidSchemeLumDark");
+
+       // Act
+        var fill = autoShape.Fill;
+
+        // Assert
+        fill.LuminanceModulationPercentage.Should().Be(75);
+        fill.LuminanceOffsetPercentage.Should().Be(0);
+    }
+
+    [Test]
     public async Task Picture_BinaryData_returns_binary_content_of_picture_image()
     {
         // Arrange

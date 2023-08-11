@@ -70,6 +70,8 @@ internal sealed class SCSlideMaster : SlideStructure, ISlideMaster
 
     public override IShapeCollection Shapes => new ShapeCollection(this.PSlideMaster.SlideMasterPart!, this);
 
+    public override ISlideMaster SlideMaster => this;
+
     public ITheme Theme => this.GetTheme();
 
     public ISlideNumber? SlideNumber { get; }
