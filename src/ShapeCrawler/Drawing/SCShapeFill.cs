@@ -267,7 +267,7 @@ internal abstract class SCShapeFill : IShapeFill
     private double GetLuminanceOffsetPercentage(TypedOpenXmlCompositeElement element)
     {
         var lumOff = element.Elements<A.LuminanceOffset>().FirstOrDefault();
-        return lumOff?.Val?.Value / 1000d ?? SCShapeFill.DefaultLuminanceModulationPercentage;
+        return lumOff?.Val?.Value / 1000d ?? SCShapeFill.DefaultLuminanceOffsetPercentage;
     }
 
     private SCImage? GetPicture()
