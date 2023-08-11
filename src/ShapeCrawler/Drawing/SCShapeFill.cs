@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Drawing;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -9,6 +10,10 @@ namespace ShapeCrawler.Drawing;
 
 internal abstract class SCShapeFill : IShapeFill
 {
+    private const double DefaultAlphaPercentage = 100;
+    private const double DefaultLuminanceModulationPercentage = 100;
+    private const double DefaultLuminanceOffsetPercentage = 0;
+
     protected readonly TypedOpenXmlCompositeElement properties;
     protected BooleanValue? useBgFill;
     protected SCFillType fillType;
@@ -30,9 +35,6 @@ internal abstract class SCShapeFill : IShapeFill
     {
         this.slideObject = slideObject;
         this.properties = properties;
-        this.alphaPercentage = 100;
-        this.luminanceModulationPercentage = 100;
-        this.luminanceOffsetPercentage = 0;
         this.isDirty = true;
     }
 
@@ -97,18 +99,21 @@ internal abstract class SCShapeFill : IShapeFill
         this.isDirty = true;
     }
 
-    public void SetAlpha(double alphaPercentage) {
+    public void SetAlpha(double alphaPercentage)
+    {
         // ToDo: Implement setting Alpha
         throw new NotImplementedException();
     }
 
-    public void SetLuminanceModulation(double luminanceModulationPercentage) {
+    public void SetLuminanceModulation(double luminanceModulationPercentage)
+    {
         // ToDo: Implement setting Luminance Modulation
         throw new NotImplementedException();
     }
 
-    
-    public void SetLuminanceOffset(double luminanceOffset) {
+
+    public void SetLuminanceOffset(double luminanceOffset)
+    {
         // ToDo: Implement setting Luminance Offset
         throw new NotImplementedException();
     }
@@ -145,21 +150,17 @@ internal abstract class SCShapeFill : IShapeFill
             {
                 var hexColor = aRgbColorModelHex.Val!.ToString();
                 this.hexSolidColor = hexColor;
-                this.alphaPercentage = this.GetAlphaPercentage(aRgbColorModelHex) ?? this.alphaPercentage;
+                this.alphaPercentage = this.GetAlphaPercentage(aRgbColorModelHex);
             }
             else
             {
                 var hex = HexParser.FromSolidFill(this.aSolidFill, (SCSlideMaster)this.slideObject.SlideMaster);
                 this.hexSolidColor = hex.Item2;
-                
-                var schemeColor = this.aSolidFill.SchemeColor !;
+
+                var schemeColor = this.aSolidFill.SchemeColor!;
                 this.alphaPercentage = this.GetAlphaPercentage(schemeColor);
-
-                var lumMod = schemeColor.Elements<A.LuminanceModulation>().FirstOrDefault();
-                this.luminanceModulationPercentage = lumMod?.Val?.Value / 1000d;
-
-                var lumOff = schemeColor.Elements<A.LuminanceOffset>().FirstOrDefault();
-                this.luminanceOffsetPercentage = lumOff?.Val?.Value / 1000d;
+                this.luminanceModulationPercentage = this.GetLuminanceModulationPercentage(schemeColor);
+                this.luminanceOffsetPercentage = this.GetLuminanceOffsetPercentage(schemeColor);
             }
 
             this.fillType = SCFillType.Solid;
@@ -253,9 +254,22 @@ internal abstract class SCShapeFill : IShapeFill
         return this.luminanceOffsetPercentage;
     }
 
-    private double? GetAlphaPercentage(TypedOpenXmlCompositeElement element) {
+    private double GetAlphaPercentage(TypedOpenXmlCompositeElement element)
+    {
         var alpha = element.Elements<A.Alpha>().FirstOrDefault();
-        return alpha?.Val?.Value / 1000d;
+        return alpha?.Val?.Value / 1000d ?? SCShapeFill.DefaultAlphaPercentage;
+    }
+
+    private double GetLuminanceModulationPercentage(TypedOpenXmlCompositeElement element)
+    {
+        var lumMod = element.Elements<A.LuminanceModulation>().FirstOrDefault();
+        return lumMod?.Val?.Value / 1000d ?? SCShapeFill.DefaultLuminanceModulationPercentage;
+    }
+
+    private double GetLuminanceOffsetPercentage(TypedOpenXmlCompositeElement element)
+    {
+        var lumMod = element.Elements<A.LuminanceModulation>().FirstOrDefault();
+        return lumMod?.Val?.Value / 1000d ?? SCShapeFill.DefaultLuminanceModulationPercentage;
     }
 
     private SCImage? GetPicture()
