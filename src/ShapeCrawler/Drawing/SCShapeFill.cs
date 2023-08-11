@@ -30,6 +30,9 @@ internal abstract class SCShapeFill : IShapeFill
     {
         this.slideObject = slideObject;
         this.properties = properties;
+        this.alphaPercentage = 100;
+        this.luminanceModulationPercentage = 100;
+        this.luminanceOffsetPercentage = 0;
         this.isDirty = true;
     }
 
@@ -142,15 +145,15 @@ internal abstract class SCShapeFill : IShapeFill
             {
                 var hexColor = aRgbColorModelHex.Val!.ToString();
                 this.hexSolidColor = hexColor;
+                this.alphaPercentage = this.GetAlphaPercentage(aRgbColorModelHex) ?? this.alphaPercentage;
             }
             else
             {
                 var hex = HexParser.FromSolidFill(this.aSolidFill, (SCSlideMaster)this.slideObject.SlideMaster);
                 this.hexSolidColor = hex.Item2;
                 
-                var schemeColor = this.aSolidFill.SchemeColor;
-                var alpha = schemeColor!.Elements<A.Alpha>().FirstOrDefault();
-                this.alphaPercentage = alpha?.Val?.Value / 1000d;
+                var schemeColor = this.aSolidFill.SchemeColor !;
+                this.alphaPercentage = this.GetAlphaPercentage(schemeColor);
 
                 var lumMod = schemeColor.Elements<A.LuminanceModulation>().FirstOrDefault();
                 this.luminanceModulationPercentage = lumMod?.Val?.Value / 1000d;
@@ -248,6 +251,11 @@ internal abstract class SCShapeFill : IShapeFill
         }
 
         return this.luminanceOffsetPercentage;
+    }
+
+    private double? GetAlphaPercentage(TypedOpenXmlCompositeElement element) {
+        var alpha = element.Elements<A.Alpha>().FirstOrDefault();
+        return alpha?.Val?.Value / 1000d;
     }
 
     private SCImage? GetPicture()
