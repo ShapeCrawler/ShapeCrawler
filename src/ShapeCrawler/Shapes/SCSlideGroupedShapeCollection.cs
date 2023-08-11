@@ -4,16 +4,16 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Shapes;
+using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.Shapes;
 
 internal sealed class SCSlideGroupedShapeCollection : IReadOnlyShapeCollection
 {
-    private readonly List<IShape?> collectionItems;
+    private readonly List<IShape> groupedShapes;
 
     internal SCSlideGroupedShapeCollection(
-        DocumentFormat.OpenXml.Presentation.GroupShape parentPGroupShape,
+        P.GroupShape parentPGroupShape,
         SCSlideGroupShape groupShape,
         SlidePart sdkSlidePart,
         List<ImagePart> imageParts)
@@ -22,11 +22,11 @@ internal sealed class SCSlideGroupedShapeCollection : IReadOnlyShapeCollection
         foreach (var parentPGroupShapeChild in parentPGroupShape.ChildElements.OfType<OpenXmlCompositeElement>())
         {
             IShape? shape = null;
-            if (parentPGroupShapeChild is DocumentFormat.OpenXml.Presentation.GroupShape pGroupShape)
+            if (parentPGroupShapeChild is P.GroupShape pGroupShape)
             {
-                shape = new SCSlideGroupShape(pGroupShape, groupShape, sdkSlidePart, imageParts);
+                shape = new SCSlideGroupShape(pGroupShape, this, sdkSlidePart, imageParts);
             }
-            else if (parentPGroupShapeChild is DocumentFormat.OpenXml.Presentation.Shape pShape)
+            else if (parentPGroupShapeChild is P.Shape pShape)
             {
                 // var autoShape = new SCSlideAutoShape(pShape, groupShape, sdkSlidePart, groupShape.OnGroupedShapeXChanged, groupShape.OnGroupedShapeYChanged);
                 var slideGroupedAutoShape = new SCSlideGroupedAutoShape(
@@ -42,27 +42,36 @@ internal sealed class SCSlideGroupedShapeCollection : IReadOnlyShapeCollection
             }
         }
 
-        this.collectionItems = groupedShapes;
+        this.groupedShapes = groupedShapes;
     }
 
-    public int Count => this.collectionItems.Count;
+    public int Count => this.groupedShapes.Count;
 
-    public T GetById<T>(int shapeId)
-        where T : IShape
+    public T GetById<T>(int shapeId) where T : IShape
     {
-        var shape = this.collectionItems.First(shape => shape.Id == shapeId);
+        var shape = this.groupedShapes.First(shape => shape.Id == shapeId);
         return (T)shape;
+    }
+
+    T IReadOnlyShapeCollection.GetByName<T>(string shapeName)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public IShape GetByName(string shapeName)
+    {
+        return this.groupedShapes.First(shape => shape.Name == shapeName);
     }
 
     public T GetByName<T>(string shapeName)
     {
-        var shape = this.collectionItems.First(shape => shape.Name == shapeName);
+        var shape = this.groupedShapes.First(shape => shape.Name == shapeName);
         return (T)shape;
     }
 
-    public IEnumerator<IShape?> GetEnumerator()
+    public IEnumerator<IShape> GetEnumerator()
     {
-        return this.collectionItems.GetEnumerator();
+        return this.groupedShapes.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

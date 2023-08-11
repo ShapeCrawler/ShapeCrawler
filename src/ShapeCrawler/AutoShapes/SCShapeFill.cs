@@ -3,18 +3,17 @@ using System.IO;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
+
+namespace ShapeCrawler.AutoShapes;
+
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Drawing;
-
-internal class SCAutoShapeFill : IShapeFill
+internal class SCShapeFill : IShapeFill
 {
     private readonly TypedOpenXmlCompositeElement properties;
     private BooleanValue? useBgFill;
-    protected SCFillType fillType;
-    
-    private readonly ISlideStructure slideObject;
+    private SCFillType fillType;
     private bool isDirty;
     private string? hexSolidColor;
     private SCImage? pictureImage;
@@ -22,10 +21,8 @@ internal class SCAutoShapeFill : IShapeFill
     private A.GradientFill? aGradFill;
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
-    private readonly TypedOpenXmlPart slideTypedOpenXmlPart;
-    private readonly List<ImagePart> imageParts;
 
-    internal SCAutoShapeFill(TypedOpenXmlCompositeElement properties)
+    internal SCShapeFill(TypedOpenXmlCompositeElement properties)
     {
         this.properties = properties;
         this.isDirty = true;
@@ -88,16 +85,7 @@ internal class SCAutoShapeFill : IShapeFill
 
     protected virtual void InitSlideBackgroundFillOr()
     {
-        var pShape = (P.Shape)this.autoShape.PShapeTreeChild;
-        this.useBgFill = pShape.UseBackgroundFill;
-        if (this.useBgFill is not null && this.useBgFill)
-        {
-            this.fillType = SCFillType.SlideBackground;
-        }
-        else
-        {
-            this.fillType = SCFillType.NoFill;
-        }
+        this.fillType = SCFillType.NoFill;
     }
     
     private SCFillType GetFillType()

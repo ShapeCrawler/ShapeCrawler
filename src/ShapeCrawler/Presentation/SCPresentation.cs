@@ -6,14 +6,14 @@ namespace ShapeCrawler;
 /// <inheritdoc cref="IPresentation"/>
 public sealed record SCPresentation : IPresentation
 {
-    private ISavePresentation presentation;
+    private ICopyablePresentation presentation;
 
     /// <summary>
     ///     Creates presentation from specified file path.
     /// </summary>
     public SCPresentation(string path)
     {
-        this.presentation = new SCPathPresentation(path);
+        this.presentation = new PathPresentation(path);
     }
 
     /// <summary>
@@ -21,7 +21,7 @@ public sealed record SCPresentation : IPresentation
     /// </summary>
     public SCPresentation(Stream stream)
     {
-        this.presentation = new SCStreamPresentation(stream);
+        this.presentation = new StreamPresentation(stream);
     }
 
     /// <summary>
@@ -29,7 +29,7 @@ public sealed record SCPresentation : IPresentation
     /// </summary>
     public SCPresentation()
     {
-        this.presentation = new SCStreamPresentation(new MemoryStream());
+        this.presentation = new StreamPresentation(new MemoryStream());
     }
 
     /// <inheritdoc />
@@ -73,14 +73,14 @@ public sealed record SCPresentation : IPresentation
     /// <inheritdoc />
     public void SaveAs(string path)
     {
-        this.presentation.Save(path);
-        this.presentation = new SCPathPresentation(path);
+        this.presentation.Copy(path);
+        this.presentation = new PathPresentation(path);
     }
 
     /// <inheritdoc />
     public void SaveAs(Stream stream)
     {
-        this.presentation.Save(stream);
-        this.presentation = new SCStreamPresentation(stream);
+        this.presentation.Copy(stream);
+        this.presentation = new StreamPresentation(stream);
     }
 }

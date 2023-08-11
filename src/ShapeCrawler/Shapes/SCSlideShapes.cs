@@ -336,7 +336,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
     {
         var newPShape = this.CreatePShape(x, y, width, height, DocumentFormat.OpenXml.Drawing.ShapeTypeValues.Rectangle);
 
-        var newShape = new SCRectangle(newPShape, this.slideOf, this);
+        var newShape = new SCSlideRectangle(newPShape, this.slideOf, this);
         newShape.Outline.Color = "000000";
 
         newShape.Duplicated += this.OnAutoShapeAdded;

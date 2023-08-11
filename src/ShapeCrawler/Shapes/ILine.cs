@@ -25,28 +25,64 @@ public interface ILine : IAutoShape
     SCPoint EndPoint { get; }
 }
 
-internal sealed class SCLine : SCSlideAutoShape, ILine
+internal sealed record SCLine : ILine
 {
-    public SCLine(
-        TypedOpenXmlCompositeElement pShapeTreeChild,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<SCSlideShapes, SCSlideGroupShape> shapeCollectionOf,
-        TypedOpenXmlPart slideTypedOpenXmlPart)
-        : base(pShapeTreeChild, slideOf, shapeCollectionOf, slideTypedOpenXmlPart)
+    private readonly Shape shape;
+
+    internal SCLine(
+        P.ConnectionShape pConnectionShape,
+        SCSlideShapes shapeCollection,
+        Shape shape)
     {
+        this.shape = shape;
     }
 
-    public override SCShapeType ShapeType => SCShapeType.Line;
+    public int Width
+    {
+        get => this.shape.Width(); 
+        set => this.shape.UpdateWidth(value);
+    }
 
-    public override ITextFrame? TextFrame => null;
+    public int Height
+    {
+        get => this.shape.Height(); 
+        set => this.shape.UpdateHeight(value);
+    }
+    
+    public int Id => this.shape.Id();
+    
+    public string Name => this.shape.Name();
+    
+    public bool Hidden => this.shape.Hidden();
+    
+    public IPlaceholder Placeholder => new SCNullPlaceholder("A line cannot be a placeholder.");
+    public SCGeometry GeometryType => SCGeometry.Line;
 
-    public override IShapeFill? Fill => null;
+    public string? CustomData
+    {
+        get => this.shape.CustomData();
+        set => this.shape.UpdateCustomData(value);
+    }
+    public SCShapeType ShapeType => SCShapeType.Line;
+    public IAutoShape AsAutoShape()
+    {
+        return this;
+    }
+
+    public ITextFrame? TextFrame => null;
+    public IAutoShape Duplicate()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public IShapeOutline Outline { get; }
+    public IShapeFill Fill => new SCNullShapeFill();
     
     public SCPoint StartPoint => this.GetStartPoint();
     
     public SCPoint EndPoint => this.GetEndPoint();
 
-    internal override void Draw(SKCanvas canvas)
+    internal void Draw(SKCanvas canvas)
     {
         throw new System.NotImplementedException();
     }
@@ -100,4 +136,7 @@ internal sealed class SCLine : SCSlideAutoShape, ILine
         
         return new SCPoint(this.Width, this.Y);
     }
+
+    public int X { get; set; }
+    public int Y { get; set; }
 }

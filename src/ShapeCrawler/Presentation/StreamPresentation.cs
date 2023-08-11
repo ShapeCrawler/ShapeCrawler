@@ -3,31 +3,32 @@ using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler;
 
-internal sealed record SCPathPresentation : ISavePresentation
+internal sealed record StreamPresentation : ICopyablePresentation
 {
     private readonly PresentationCore presentationCore;
-    private string path;
+    private readonly Stream stream;
 
-    internal SCPathPresentation(string path)
+    internal StreamPresentation(Stream userStream)
     {
-        this.path = path;
-        this.presentationCore = new PresentationCore(File.ReadAllBytes(this.path));
+        this.stream = userStream;
+        var internalStream = new MemoryStream();
+        userStream.CopyTo(internalStream);
+        this.presentationCore = new PresentationCore(internalStream);
     }
 
     public void Save()
     {
+        this.presentationCore.Save(this.stream);
+    }
+
+    public void Copy(string path)
+    {
         this.presentationCore.Save(path);
     }
 
-    public void Save(string newPath)
+    public void Copy(Stream userStream)
     {
-        this.path = newPath;
-        this.Save();
-    }
-
-    public void Save(Stream stream)
-    {
-        this.presentationCore.Save(stream);
+        this.presentationCore.Save(userStream);
     }
 
     /// <inheritdoc />
@@ -36,7 +37,7 @@ internal sealed record SCPathPresentation : ISavePresentation
     /// <inheritdoc />
     public int SlideWidth
     {
-        get => this.presentationCore.SlideWidth; 
+        get => this.presentationCore.SlideWidth;
         set => this.presentationCore.SlideWidth = value;
     }
 
@@ -46,19 +47,19 @@ internal sealed record SCPathPresentation : ISavePresentation
         get => this.presentationCore.SlideHeight;
         set => this.presentationCore.SlideHeight = value;
     }
-    
+
     /// <inheritdoc />
     public ISlideMasterCollection SlideMasters => this.presentationCore.SlideMasters;
-    
+
     /// <inheritdoc />
     public byte[] BinaryData => this.presentationCore.BinaryData;
-    
+
     /// <inheritdoc />
     public ISectionCollection Sections => this.presentationCore.Sections;
-    
+
     /// <inheritdoc />
     public PresentationDocument SDKPresentationDocument => this.presentationCore.SDKPresentationDocument;
-    
+
     /// <inheritdoc />
     public IHeaderAndFooter HeaderAndFooter => this.presentationCore.HeaderAndFooter;
 }

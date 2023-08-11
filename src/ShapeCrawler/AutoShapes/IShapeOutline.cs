@@ -27,11 +27,13 @@ public interface IShapeOutline
 
 internal sealed class SCShapeOutline : IShapeOutline
 {
-    private readonly SCSlideAutoShape parentAutoShape;
+    private readonly SCSlideAutoShape autoShape;
+    private readonly P.ShapeProperties pShapeProperties;
 
-    internal SCShapeOutline(SCSlideAutoShape parentAutoSCShape)
+    internal SCShapeOutline(SCSlideAutoShape autoShape, P.ShapeProperties pShapeProperties)
     {
-        this.parentAutoShape = parentAutoSCShape;
+        this.autoShape = autoShape;
+        this.pShapeProperties = pShapeProperties;
     }
 
     public double Weight
@@ -48,7 +50,6 @@ internal sealed class SCShapeOutline : IShapeOutline
 
     private void SetWeight(double points)
     {
-        var pShapeProperties = this.parentAutoShape.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !;
         var aOutline = pShapeProperties.GetFirstChild<A.Outline>();
         var aNoFill = aOutline?.GetFirstChild<A.NoFill>();
 
@@ -62,7 +63,7 @@ internal sealed class SCShapeOutline : IShapeOutline
     
     private void SetColor(string? hex)
     {
-        var pShapeProperties = this.parentAutoShape.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !;
+        var pShapeProperties = this.autoShape.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !;
         var aOutline = pShapeProperties.GetFirstChild<A.Outline>();
         var aNoFill = aOutline?.GetFirstChild<A.NoFill>();
 
@@ -82,7 +83,7 @@ internal sealed class SCShapeOutline : IShapeOutline
 
     private double GetWeight()
     {
-        var width = this.parentAutoShape.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !.GetFirstChild<A.Outline>()?.Width;
+        var width = this.autoShape.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !.GetFirstChild<A.Outline>()?.Width;
         if (width is null)
         {
             return 0;
@@ -95,7 +96,7 @@ internal sealed class SCShapeOutline : IShapeOutline
 
     private string? GetColor()
     {
-        var aSolidFill = this.parentAutoShape.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !
+        var aSolidFill = this.pShapeProperties
             .GetFirstChild<A.Outline>()?
             .GetFirstChild<A.SolidFill>();
         if (aSolidFill is null)
@@ -103,7 +104,7 @@ internal sealed class SCShapeOutline : IShapeOutline
             return null;
         }
 
-        var typeAndHex = HexParser.FromSolidFill(aSolidFill, this.parentAutoShape.SlideMasterInternal);
+        var typeAndHex = HexParser.FromSolidFill(aSolidFill, this.autoShape.SlideMasterInternal);
         
         return typeAndHex.Item2;
     }

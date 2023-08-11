@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using OneOf;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
@@ -17,7 +14,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes;
 
-internal record SCSlideAutoShape : IAutoShape, ITextFrameContainer
+internal sealed record SCSlideAutoShape : IAutoShape
 {
     // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi.
     // 96/72=1.4
@@ -27,30 +24,27 @@ internal record SCSlideAutoShape : IAutoShape, ITextFrameContainer
     private readonly Lazy<SCTextFrame?> textFrame;
     private readonly ResetableLazy<Dictionary<int, FontData>> lvlToFontData;
     private readonly P.Shape pShape;
-    private readonly SCSlide slide;
-    private readonly SCSlideShapes shapes;
-    private readonly SlidePart sdkSlidePart;
+    private readonly IReadOnlyShapeCollection parentShapeCollection;
     private readonly Shape shape;
 
     internal SCSlideAutoShape(
         P.Shape pShape,
-        SCSlideShapes shapes, 
-        SlidePart sdkSlidePart)
+        IReadOnlyShapeCollection parentShapeCollection)
     {
         this.pShape = pShape;
-        this.shapes = shapes;
-        this.sdkSlidePart = sdkSlidePart;
+        this.parentShapeCollection = parentShapeCollection;
         this.textFrame = new Lazy<SCTextFrame?>(this.ParseTextFrame);
         this.shapeFill = new Lazy<SCShapeFill>(this.GetFill);
         this.lvlToFontData = new ResetableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
         this.shape = new Shape(pShape);
+        this.Outline = new SCShapeOutline(this, pShape.ShapeProperties!);
     }
     
     internal event EventHandler<NewAutoShape>? Duplicated;
 
     #region Public Properties
 
-    public IShapeOutline Outline => this.GetOutline();
+    public IShapeOutline Outline { get; }
 
     public int Width
     {
@@ -70,36 +64,30 @@ internal record SCSlideAutoShape : IAutoShape, ITextFrameContainer
     public SCGeometry GeometryType { get; }
     public string? CustomData { get; set; }
     public SCShapeType ShapeType => SCShapeType.AutoShape;
-    public IAutoShape? AsAutoShape()
+    public IAutoShape AsAutoShape()
     {
-        throw new NotImplementedException();
+        return this;
     }
 
-    public virtual IShapeFill? Fill => this.shapeFill.Value;
+    public IShapeFill Fill => this.shapeFill.Value;
 
-    public SCSlideAutoShape AutoShape { get; }
-    public virtual ITextFrame? TextFrame => this.textFrame.Value;
+    public ITextFrame? TextFrame => this.textFrame.Value;
 
-    public virtual IAutoShape Duplicate()
+    public void Duplicate()
     {
+        this.parentShapeCollection.Copy(this.Id);
         var typedCompositeElement = (TypedOpenXmlCompositeElement)this.pShape.CloneNode(true);
         var id = this.GetNextShapeId();
         typedCompositeElement.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
-        var newAutoShape = new SCSlideAutoShape(
-            (P.Shape)typedCompositeElement, 
-            this.slide,
-            this.shapes,
-            this.sdkSlidePart);
+        var newAutoShape = new SCSlideAutoShape((P.Shape)typedCompositeElement, this.parentShapeCollection);
 
         var duplicatedShape = new NewAutoShape(newAutoShape, typedCompositeElement);
         this.Duplicated?.Invoke(this, duplicatedShape);
-        
-        return newAutoShape;
     }
 
     private int GetNextShapeId()
     {
-        if (this.shapes.Any())
+        if (this.parentShapeCollection.Any())
         {
             return slide.Shapes.Select(shape => shape.Id).Prepend(0).Max() + 1;    
         }
@@ -289,12 +277,7 @@ internal record SCSlideAutoShape : IAutoShape, ITextFrameContainer
             this, 
             this.sdkSlidePart);
     }
-
-    private IShapeOutline GetOutline()
-    {
-        return new SCShapeOutline(this);
-    }
-
+    
     public int X { get; set; }
     public int Y { get; set; }
 }

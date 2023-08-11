@@ -68,11 +68,10 @@ internal sealed class SCSlideMaster : ISlideStructure, ISlideMaster
     public IImage? Background => this.GetBackground();
 
     public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
+    IReadOnlyShapeCollection ISlideMaster.Shapes => this.Shapes;
 
     public ISlideShapeCollection Shapes => new SCSlideShapes(this.PSlideMaster.SlideMasterPart!, this, this.slideTypedOpenXmlPart, this.imageParts, this.sdkPresentationDocument);
     
-    public IPresentation Presentation { get; } = null!;
-
     public ITheme Theme => this.GetTheme();
 
     public IMasterSlideNumber? SlideNumber => this.slideNumber.Value;

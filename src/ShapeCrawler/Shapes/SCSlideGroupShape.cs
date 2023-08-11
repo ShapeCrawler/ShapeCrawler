@@ -19,7 +19,7 @@ internal sealed class SCSlideGroupShape : IGroupShape
 
     internal SCSlideGroupShape(
         P.GroupShape pGroupShape, 
-        SCSlideShapes shapes,
+        IReadOnlyShapeCollection shapes,
         SlidePart sdkSlidePart,
         List<ImagePart> imageParts)
     {
