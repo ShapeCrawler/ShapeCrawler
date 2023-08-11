@@ -6,7 +6,7 @@
 
 <h3 align="center"> 
 
-[![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=orange)](https://www.nuget.org/packages/ShapeCrawler) ![Nuget](https://img.shields.io/nuget/dt/ShapeCrawler?color=orange) [![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE) 
+[![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=orange)](https://www.nuget.org/packages/ShapeCrawler) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?color=orange)](https://makeapullrequest.com) ![Nuget](https://img.shields.io/nuget/dt/ShapeCrawler?color=orange) [![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE) 
 
 </h3>
 
@@ -14,45 +14,47 @@ ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoin
 
 ⚠️**Warning:** Since February, the library collects usage data to help us to improve your experience. You can opt out of telemetry. For more details, please visit [Statistics Collection](https://github.com/ShapeCrawler/ShapeCrawler#statistics-collection).
 
-## Getting Started
+## Contents
 
+- [Quick Start](#quick-start)
+- [Shapes](#shapes)
+- [More samples](#more-samples)
+- [Have questions?](#have-questions)
+- [How to contribute](#how-to-contribute)
+  - [Bug Report](#bug-report)
+  - [Code Contributing](#code-contributing)
+
+## Quick Start
 > `install-package ShapeCrawler`
 
-### Usage
-
-#### Read presentation
-
 ```c#
-// Open existing presentation
-using var pres = SCPresentation.Open("some.pptx");
-
+var pres = SCPresentation.Open("some.pptx");
 var shapeCollection = pres.Slides[0].Shapes;
 
-// Get number of shapes on slide
+// get number of shapes on slide
 var slidesCount = shapeCollection.Count;
 
-// Get text
+// get text of text box
 var autoShape = shapeCollection.GetByName<IAutoShape>("TextBox 1");
 var text = autoShape.TextFrame!.Text;
 ```
 
-#### Create presentation
+## Shapes
 
 ```c#
-// Create a new presentation
+// create a new presentation
 var pres = SCPresentation.Create();
 
 var shapeCollection = pres.Slides[0].Shapes;
 
-// Add new shape
+// add a new shape
 var addedShape = shapeCollection.AddRectangle(x: 50, y: 60, w: 100, h: 70);
 
 addedShape.TextFrame!.Text = "Hello World!";
-
-pres.SaveAs("my_pres.pptx");
+pres.Save();
 ```
 
-### More samples
+## More samples
 
 Visit the [**Wiki**](https://github.com/ShapeCrawler/ShapeCrawler/wiki/Examples) page to find more usage samples.
 
@@ -62,11 +64,14 @@ If you have a question:
 - [Join](https://github.com/ShapeCrawler/ShapeCrawler/discussions/categories/q-a) our Discussions Forum  and open a discussion;
 - You can always email the author at theadamo86@gmail.com
 
-## Contributing
-How can you contribute?
-- **Give a Star**⭐ If you find this useful, please give it a star to show your support.
-- **Bug report**. If you encounter an issue, report the bug on the [issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) page.
-- **Code contributing**. Pull Requests are welcome! Please read the [Contribution Guide](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CONTRIBUTING.md) for more details.
+## How to contribute?
+Give a star⭐ if you find this useful, please give it a star to show your support.
+
+### Bug Report
+If you encounter an issue, report the bug on the [issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) page.
+
+### Code contributing
+Pull Requests are welcome! Please read the [Contribution Guide](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CONTRIBUTING.md) for more details.
 
 
 # Changelog  
