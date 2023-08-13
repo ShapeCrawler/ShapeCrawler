@@ -4,11 +4,11 @@ using ShapeCrawler.Exceptions;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class SCLineBreak : IPortion
+internal sealed class SCParagraphLineBreak : IParagraphPortion
 {
     private readonly DocumentFormat.OpenXml.Drawing.Break aBreak;
     
-    internal SCLineBreak(DocumentFormat.OpenXml.Drawing.Break aBreak, Action onRemovedHandler)
+    internal SCParagraphLineBreak(DocumentFormat.OpenXml.Drawing.Break aBreak, Action onRemovedHandler)
     {
         this.aBreak = aBreak;
         this.Removed += onRemovedHandler;

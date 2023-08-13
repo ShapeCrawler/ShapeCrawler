@@ -5,6 +5,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 
@@ -158,7 +159,7 @@ internal sealed record PresentationCore
             {
                 switch (shape)
                 {
-                    case SCPicture slidePicture:
+                    case SCSlidePicture slidePicture:
                         imgParts.Add(((SCImage)slidePicture.Image).SDKImagePart);
                         break;
                     case IGroupShape groupShape:

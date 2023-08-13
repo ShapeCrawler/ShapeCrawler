@@ -34,8 +34,6 @@ public interface IFontColor
 
 internal sealed class SCFontColor : IFontColor
 {
-    private readonly ITextFrameContainer textFrameContainer;
-    private readonly SCSlideMaster parentSlideMaster;
     private readonly SCParagraph paragraph;
     private readonly A.Text aText;
     private bool initialized;
@@ -44,14 +42,10 @@ internal sealed class SCFontColor : IFontColor
     private readonly Dictionary<int, FontData> paraLvlToFontData;
 
     internal SCFontColor(
-        ITextFrameContainer textFrameContainer, 
         SCParagraph paragraph, 
         A.Text aText, 
         Dictionary<int, FontData> paraLvlToFontData)
     {
-        this.textFrameContainer = textFrameContainer;
-        var shape = this.textFrameContainer.AutoShape;
-        this.parentSlideMaster = shape.SlideMasterInternal;
         this.paragraph = paragraph;
         this.aText = aText;
         this.paraLvlToFontData = paraLvlToFontData;

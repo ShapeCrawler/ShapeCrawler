@@ -28,7 +28,7 @@ internal sealed class TableGraphicFrameHandler
                 return this.Successor?.FromTreeChild(pShapeTreeChild, slideOf, shapeCollectionOf, slideTypedOpenXmlPart, chartWorkbooks);
             }
 
-            var table = new SCTable(pGraphicFrame, slideOf, shapeCollectionOf, slideTypedOpenXmlPart);
+            var table = new SCSlideTable(pGraphicFrame, slideOf, shapeCollectionOf, slideTypedOpenXmlPart);
 
             return table;
         }

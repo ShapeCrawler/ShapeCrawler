@@ -11,7 +11,7 @@ namespace ShapeCrawler.Drawing;
 
 internal class SCCellFill : IShapeFill
 {
-    private readonly TypedOpenXmlCompositeElement properties;
+    private readonly TypedOpenXmlCompositeElement cellProperties;
     private BooleanValue? useBgFill;
     private SCFillType fillType;
     private bool isDirty;
@@ -22,13 +22,17 @@ internal class SCCellFill : IShapeFill
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
 
-    internal SCCellFill(TypedOpenXmlCompositeElement properties)
+    internal SCCellFill(A.TableCellProperties cellProperties)
     {
-        this.properties = properties;
+        this.cellProperties = cellProperties;
         this.isDirty = true;
     }
 
     public string? Color => this.GetHexSolidColor();
+    
+    public double AlphaPercentage { get; }
+    public double LuminanceModulationPercentage { get; }
+    public double LuminanceOffsetPercentage { get; }
 
     public IImage? Picture => this.GetPicture();
 
@@ -55,7 +59,7 @@ internal class SCCellFill : IShapeFill
             aBlipFill.Append(new A.Blip { Embed = rId });
             aBlipFill.Append(aStretch);
 
-            this.properties.Append(aBlipFill);
+            this.cellProperties.Append(aBlipFill);
 
             this.aSolidFill?.Remove();
             this.aBlipFill = null;
@@ -76,7 +80,7 @@ internal class SCCellFill : IShapeFill
             this.Initialize();
         }
 
-        this.properties.AddASolidFill(hex);
+        this.cellProperties.AddASolidFill(hex);
         
         this.useBgFill = false;
 
@@ -106,7 +110,7 @@ internal class SCCellFill : IShapeFill
 
     private void InitSolidFillOr()
     {
-        this.aSolidFill = this.properties.GetFirstChild<A.SolidFill>();
+        this.aSolidFill = this.cellProperties.GetFirstChild<A.SolidFill>();
         if (this.aSolidFill != null)
         {
             var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
@@ -131,7 +135,7 @@ internal class SCCellFill : IShapeFill
 
     private void InitGradientFillOr()
     {
-        this.aGradFill = this.properties!.GetFirstChild<A.GradientFill>();
+        this.aGradFill = this.cellProperties!.GetFirstChild<A.GradientFill>();
         if (this.aGradFill != null)
         {
             this.fillType = SCFillType.Gradient;
@@ -144,7 +148,7 @@ internal class SCCellFill : IShapeFill
 
     private void InitPictureFillOr()
     {
-        this.aBlipFill = this.properties.GetFirstChild<A.BlipFill>();
+        this.aBlipFill = this.cellProperties.GetFirstChild<A.BlipFill>();
 
         if (this.aBlipFill is not null)
         {
@@ -160,7 +164,7 @@ internal class SCCellFill : IShapeFill
 
     private void InitPatternFillOr()
     {
-        this.aPattFill = this.properties.GetFirstChild<A.PatternFill>();
+        this.aPattFill = this.cellProperties.GetFirstChild<A.PatternFill>();
         if (this.aPattFill != null)
         {
             this.fillType = SCFillType.Pattern;

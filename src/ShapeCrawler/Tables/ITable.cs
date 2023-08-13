@@ -47,32 +47,27 @@ public interface ITable : IShape
     void RemoveColumnAt(int columnIndex);
 }
 
-internal sealed class SCTable : SCShape, ITable
+internal sealed class SCSlideTable : ITable
 {
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly ResetableLazy<SCRowCollection> rowCollection;
 
-    internal SCTable(
-        OpenXmlCompositeElement pShapeTreeChild, 
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<SCSlideShapes, SCSlideGroupShape> shapeCollectionOf,
-        TypedOpenXmlPart slideTypedOpenXmlPart, 
-        List<ImagePart> imageParts)
-        : base(pShapeTreeChild, slideOf, shapeCollectionOf)
+    internal SCSlideTable(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, SCSlideShapes shapes)
     {
         var graphicFrame = (P.GraphicFrame)pShapeTreeChild;
         this.rowCollection =
-            new ResetableLazy<SCRowCollection>(() => SCRowCollection.Create(this, graphicFrame, slideTypedOpenXmlPart, imageParts));
+            new ResetableLazy<SCRowCollection>(() =>
+                SCRowCollection.Create(this, graphicFrame));
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeChild;
     }
-    
-    public override SCShapeType ShapeType => SCShapeType.Table;
+
+    public SCShapeType ShapeType => SCShapeType.Table;
 
     public IReadOnlyList<IColumn> Columns => this.GetColumnList(); // TODO: make lazy
 
     public IRowCollection Rows => this.rowCollection.Value;
 
-    public override SCGeometry GeometryType => SCGeometry.Rectangle;
+    public SCGeometry GeometryType => SCGeometry.Rectangle;
 
     private A.Table ATable => this.pGraphicFrame.GetATable();
 
@@ -82,7 +77,7 @@ internal sealed class SCTable : SCShape, ITable
     {
         var column = (SCColumn)this.Columns[columnIndex];
         column.AGridColumn.Remove();
-        
+
         var aTableRows = this.ATable.Elements<A.TableRow>();
 
         foreach (var aTableRow in aTableRows)
@@ -203,7 +198,7 @@ internal sealed class SCTable : SCShape, ITable
         // the new row is the last one in the row collection
         return this.Rows.Last();
     }
-    
+
     protected override void SetXCoordinate(int xPx)
     {
         var pXfrm = this.pGraphicFrame.Transform;
@@ -215,7 +210,7 @@ internal sealed class SCTable : SCShape, ITable
             var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.Y);
             var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
             var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
-            
+
             this.pGraphicFrame.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
         }
         else
@@ -261,7 +256,7 @@ internal sealed class SCTable : SCShape, ITable
             pXfrm.Extents!.Cx = UnitConverter.HorizontalPixelToEmu(wPx);
         }
     }
-    
+
     protected override void SetHeight(int hPx)
     {
         var pXfrm = this.pGraphicFrame.Transform;
@@ -291,13 +286,15 @@ internal sealed class SCTable : SCShape, ITable
 
         return false;
     }
-    
-    private void MergeVertically(int bottomIndex, int topRowIndex, List<A.TableRow> aTableRows, int leftColIndex, int rightColIndex)
+
+    private void MergeVertically(int bottomIndex, int topRowIndex, List<A.TableRow> aTableRows, int leftColIndex,
+        int rightColIndex)
     {
         int verticalMergingCount = bottomIndex - topRowIndex + 1;
-    
+
         // Set row span value for the first cell in the merged cells
-        foreach (var aTblCell in aTableRows[topRowIndex].Elements<A.TableCell>().Skip(leftColIndex).Take(rightColIndex + 1))
+        foreach (var aTblCell in aTableRows[topRowIndex].Elements<A.TableCell>().Skip(leftColIndex)
+                     .Take(rightColIndex + 1))
         {
             aTblCell.RowSpan = new Int32Value(verticalMergingCount);
         }
@@ -305,7 +302,8 @@ internal sealed class SCTable : SCShape, ITable
         // Set vertical merging flag
         foreach (var aTableRow in aTableRows.Skip(topRowIndex + 1).Take(bottomIndex - topRowIndex))
         {
-            foreach (var aTc in aTableRow.Elements<A.TableCell>().Skip(leftColIndex).Take(rightColIndex - leftColIndex + 1))
+            foreach (var aTc in aTableRow.Elements<A.TableCell>().Skip(leftColIndex)
+                         .Take(rightColIndex - leftColIndex + 1))
             {
                 aTc.VerticalMerge = new BooleanValue(true);
                 this.MergeParagraphs(topRowIndex, leftColIndex, aTc);
@@ -333,8 +331,9 @@ internal sealed class SCTable : SCShape, ITable
             }
         }
     }
-    
-    private void MergeHorizontal(int maxColIndex, int minColIndex, int minRowIndex, int maxRowIndex, List<A.TableRow> aTableRows)
+
+    private void MergeHorizontal(int maxColIndex, int minColIndex, int minRowIndex, int maxRowIndex,
+        List<A.TableRow> aTableRows)
     {
         int horizontalMergingCount = maxColIndex - minColIndex + 1;
         for (int rowIdx = minRowIndex; rowIdx <= maxRowIndex; rowIdx++)
@@ -352,7 +351,7 @@ internal sealed class SCTable : SCShape, ITable
             }
         }
     }
-    
+
     private IReadOnlyList<SCColumn> GetColumnList()
     {
         IEnumerable<A.GridColumn> aGridColumns = this.ATable.TableGrid!.Elements<A.GridColumn>();

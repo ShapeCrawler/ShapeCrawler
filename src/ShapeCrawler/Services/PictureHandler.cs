@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using OneOf;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -73,7 +74,7 @@ internal sealed class PictureHandler
             return null;
         }
 
-        var picture = new SCPicture(pPicture, slideOf, shapeCollectionOf, aBlip!, this.slideTypedOpenXmlPart, this.imageParts);
+        var picture = new SCSlidePicture(pPicture, slideOf, shapeCollectionOf, aBlip!, this.slideTypedOpenXmlPart, this.imageParts);
 
         return picture;
     }

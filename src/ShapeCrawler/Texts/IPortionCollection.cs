@@ -15,7 +15,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents collection of paragraph text portions.
 /// </summary>
-public interface IPortionCollection : IEnumerable<IPortion>
+public interface IPortionCollection : IEnumerable<IParagraphPortion>
 {
     /// <summary>
     ///     Gets the number of series items in the collection.
@@ -25,7 +25,7 @@ public interface IPortionCollection : IEnumerable<IPortion>
     /// <summary>
     ///     Gets the element at the specified index.
     /// </summary>
-    IPortion this[int index] { get; }
+    IParagraphPortion this[int index] { get; }
 
     /// <summary>
     ///     Adds text portion.
@@ -40,17 +40,17 @@ public interface IPortionCollection : IEnumerable<IPortion>
     /// <summary>
     ///     Removes portion item from collection.
     /// </summary>
-    void Remove(IPortion removingPortion);
+    void Remove(IParagraphPortion removingPortion);
 
     /// <summary>
     ///     Removes portion items from collection.
     /// </summary>
-    void Remove(IList<IPortion> portions);
+    void Remove(IList<IParagraphPortion> portions);
 }
 
 internal sealed class SCPortionCollection : IPortionCollection
 {
-    private readonly ResetableLazy<List<IPortion>> portions;
+    private readonly ResetableLazy<List<IParagraphPortion>> portions;
     private readonly A.Paragraph aParagraph;
     private readonly ISlideStructure slideStructure;
     private readonly ITextFrameContainer textFrameContainer;
@@ -64,14 +64,14 @@ internal sealed class SCPortionCollection : IPortionCollection
     {
         this.aParagraph = aParagraph;
         this.slideStructure = slideStructure;
-        this.portions = new ResetableLazy<List<IPortion>>(this.ParsePortions);
+        this.portions = new ResetableLazy<List<IParagraphPortion>>(this.ParsePortions);
         this.textFrameContainer = textFrameContainer;
         this.paragraph = paragraph;
     }
     
     public int Count => this.portions.Value.Count;
 
-    public IPortion this[int index] => this.portions.Value[index];
+    public IParagraphPortion this[int index] => this.portions.Value[index];
 
     public void AddText(string text)
     {
@@ -83,7 +83,7 @@ internal sealed class SCPortionCollection : IPortionCollection
         
         var lastARunOrABreak = this.aParagraph.LastOrDefault(p => p is A.Run or A.Break);
 
-        var textPortions = this.portions.Value.OfType<SCRegularPortion>();
+        var textPortions = this.portions.Value.OfType<SCParagraphTextPortion>();
         var lastPortion = textPortions.Any() ? textPortions.Last() : null;
         var aTextParent = lastPortion?.AText.Parent ?? new ARunBuilder().Build();
 
@@ -97,14 +97,14 @@ internal sealed class SCPortionCollection : IPortionCollection
         throw new System.NotImplementedException();
     }
 
-    public void Remove(IPortion removingPortion)
+    public void Remove(IParagraphPortion removingPortion)
     {
         removingPortion.Remove();
 
         this.portions.Reset();
     }
 
-    public void Remove(IList<IPortion> removingPortions)
+    public void Remove(IList<IParagraphPortion> removingPortions)
     {
         foreach (var portion in removingPortions)
         {
@@ -112,7 +112,7 @@ internal sealed class SCPortionCollection : IPortionCollection
         }
     }
 
-    public IEnumerator<IPortion> GetEnumerator()
+    public IEnumerator<IParagraphPortion> GetEnumerator()
     {
         return this.portions.Value.GetEnumerator();
     }
@@ -143,15 +143,15 @@ internal sealed class SCPortionCollection : IPortionCollection
         }
     }
 
-    private List<IPortion> ParsePortions()
+    private List<IParagraphPortion> ParsePortions()
     {
-        var portions = new List<IPortion>();
+        var portions = new List<IParagraphPortion>();
         foreach (var paraChild in this.aParagraph.Elements())
         {
             switch (paraChild)
             {
                 case A.Run aRun:
-                    var runPortion = new SCRegularPortion(
+                    var runPortion = new SCParagraphTextPortion(
                         aRun, 
                         this.slideStructure, 
                         this.textFrameContainer,
@@ -172,7 +172,7 @@ internal sealed class SCPortionCollection : IPortionCollection
                 }
 
                 case A.Break aBreak:
-                    var lineBreak = new SCLineBreak(aBreak, () => this.portions.Reset());
+                    var lineBreak = new SCParagraphLineBreak(aBreak, () => this.portions.Reset());
                     portions.Add(lineBreak);
                     break;
             }

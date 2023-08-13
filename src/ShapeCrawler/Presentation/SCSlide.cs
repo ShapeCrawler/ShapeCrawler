@@ -7,11 +7,9 @@ using AngleSharp;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Texts;
 using SkiaSharp;
 
 // ReSharper disable CheckNamespace
@@ -24,7 +22,6 @@ internal sealed class SCSlide : ISlide
     private readonly Lazy<SCImage?> backgroundImage;
     private readonly Func<int> totalSlideCount;
     private Lazy<CustomXmlPart?> customXmlPart;
-    private readonly List<ImagePart> imageParts;
     private readonly int slideWidth;
     private readonly int slideHeight;
 
@@ -33,13 +30,11 @@ internal sealed class SCSlide : ISlide
         SlideId slideId, 
         Func<int> totalSlideCount,
         SCSlideLayout slideLayout,
-        List<ImagePart> imageParts, 
         int slideWidth, 
         int slideHeight,
         PresentationDocument sdkPresentationDocument)
     {
         this.SDKSlidePart = slidePart;
-        this.imageParts = imageParts;
         this.slideWidth = slideWidth;
         this.slideHeight = slideHeight;
         this.shapes = new ResetableLazy<SCSlideShapes>(() => new SCSlideShapes(this.SDKSlidePart, this, slidePart, imageParts, sdkPresentationDocument));
@@ -73,9 +68,7 @@ internal sealed class SCSlide : ISlide
 
     public SlidePart SDKSlidePart { get; }
     public PresentationDocument SDKPresentationDocument { get; }
-
-    public override ISlideMaster SlideMaster => this.SlideLayout.SlideMaster;
-
+    
     internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
 
     internal TypedOpenXmlPart TypedOpenXmlPart => this.SDKSlidePart;

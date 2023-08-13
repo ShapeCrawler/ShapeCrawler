@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMasters;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler;
@@ -9,7 +10,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a Slide Layout.
 /// </summary>
-public interface ISlideLayout : ISlideStructure
+public interface ISlideLayout
 {
     /// <summary>
     ///     Gets parent Slide Master.
@@ -74,11 +75,9 @@ internal sealed class SCSlideLayout : ISlideLayout
     private readonly SCSlideMaster slideMaster;
 
     internal SCSlideLayout(
-        SCSlideMaster slideMaster, 
+        SCSlideLayoutCollection slideLayouts, 
         SlideLayoutPart slideLayoutPart, 
-        int number,
-        List<ImagePart> imageParts, 
-        PresentationDocument presentationDocument)
+        int number)
     {
         this.slideMaster = slideMaster;
         this.SlideLayoutPart = slideLayoutPart;
@@ -95,7 +94,7 @@ internal sealed class SCSlideLayout : ISlideLayout
 
     public SCSlideLayoutType Type => this.GetLayoutType();
 
-    public override ISlideMaster SlideMaster => this.slideMaster;
+    public ISlideMaster SlideMaster => this.slideMaster;
 
     internal SlideLayoutPart SlideLayoutPart { get; }
 

@@ -9,7 +9,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a slide.
 /// </summary>
-public interface ISlide : ISlideStructure
+public interface ISlide
 {
     /// <summary>
     ///     Gets background image if it exist, otherwise <see langword="null"/>.

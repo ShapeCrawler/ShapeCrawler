@@ -2,21 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class SCSlideGroupedShapeCollection : IReadOnlyShapeCollection
+internal sealed class SCSlideGroupedShapes : IReadOnlyShapeCollection
 {
     private readonly List<IShape> groupedShapes;
 
-    internal SCSlideGroupedShapeCollection(
-        P.GroupShape parentPGroupShape,
-        SCSlideGroupShape groupShape,
-        SlidePart sdkSlidePart,
-        List<ImagePart> imageParts)
+    internal SCSlideGroupedShapes(P.GroupShape parentPGroupShape, SCSlideGroupShape groupShape)
     {
         var groupedShapes = new List<IShape?>();
         foreach (var parentPGroupShapeChild in parentPGroupShape.ChildElements.OfType<OpenXmlCompositeElement>())

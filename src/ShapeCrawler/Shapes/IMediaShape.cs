@@ -96,8 +96,6 @@ internal record SCSlideMediaShape : IMediaShape
     
     public SCShapeType ShapeType => SCShapeType.Video;
     
-    public ISlideStructure SlideStructure { get; }
-    
     public IAutoShape? AsAutoShape()
     {
         return null;

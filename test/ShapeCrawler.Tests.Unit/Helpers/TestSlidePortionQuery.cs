@@ -24,7 +24,7 @@ public class TestSlidePortionQuery : TestPortionQuery
         this.portionNumber = portionNumber;
     }
 
-    public override IPortion Get(IPresentation pres)
+    public override IParagraphPortion Get(IPresentation pres)
     {
         var shapes = pres.Slides[this.slideNumber - 1].Shapes;
         var shape = this.shapeName == null

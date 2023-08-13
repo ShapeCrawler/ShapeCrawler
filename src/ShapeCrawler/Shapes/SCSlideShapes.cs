@@ -7,12 +7,10 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Presentation;
-using OneOf;
 using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using SkiaSharp;
@@ -25,19 +23,11 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
 {
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly P.ShapeTree pShapeTree;
-    private readonly ResetableLazy<List<IShape>> shapes;
-    private readonly AutoShapeCreator autoShapeCreator;
+    private readonly Lazy<List<IShape>> shapes;
     private readonly SCSlide slide;
-    private readonly PresentationDocument sdkPresentationDocument;
-    private readonly SlidePart sdkSlidePart;
 
-    internal SCSlideShapes(
-        SlidePart sdkSlidePart,
-        SCSlide slide,
-        List<ImagePart> imageParts, 
-        PresentationDocument sdkPresentationDocument)
+    internal SCSlideShapes(SCSlide slide)
     {
-        this.sdkPresentationDocument = sdkPresentationDocument;
         this.slide = slide;
         var chartGrFrameHandler = new ChartGraphicFrameHandler();
         var tableGrFrameHandler = new TableGraphicFrameHandler();
@@ -48,10 +38,9 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         oleGrFrameHandler.Successor = pictureHandler;
         pictureHandler.Successor = chartGrFrameHandler;
         chartGrFrameHandler.Successor = tableGrFrameHandler;
-        this.sdkSlidePart = sdkSlidePart;
         this.pShapeTree = sdkSlidePart.Slide.CommonSlideData!.ShapeTree!;
 
-        this.shapes = new ResetableLazy<List<IShape>>(() => this.GetShapes(this.autoShapeCreator));
+        this.shapes = new Lazy<List<IShape>>(this.ParseShapes);
     }
 
     public int Count => this.shapes.Value.Count;
@@ -62,12 +51,12 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
     {
         if (this.shapes.Value.Any())
         {
-            return this.shapes.Value.Select(shape => shape.Id).Prepend(0).Max() + 1;    
+            return this.shapes.Value.Select(shape => shape.Id).Prepend(0).Max() + 1;
         }
 
         return 1;
     }
-    
+
     public IShape Add(IShape addingShape)
     {
         // SmartArt (<p:graphicFrame /> http://schemas.openxmlformats.org/drawingml/2006/diagram) are not in the shape collection, data is referenced.
@@ -90,7 +79,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         {
             case null:
                 throw new SCException($"Cannot create an instance of type {addingShape.GetType().Name}.");
-            case SCPicture pic:
+            case SCSlidePicture pic:
                 pic.CopyParts((ISlideStructure)addingShapeInternal.slideOf.Value);
                 break;
         }
@@ -108,7 +97,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
             var currentShapeCollectionSuffixes = this
                 .Select(c => c.Name)
                 .Where(c => c.StartsWith(addingShape.Name, StringComparison.InvariantCulture))
-                
+
                 // Select only the suffix
                 .Select(c => c.Substring(addingShape.Name.Length))
                 .ToArray();
@@ -173,9 +162,10 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
 
         var nonVisualPictureProps = pPicture.NonVisualPictureProperties!;
         var nonVisualDrawingProps = pPicture.GetNonVisualDrawingProperties();
-        var hyperlinkOnClick = new DocumentFormat.OpenXml.Drawing.HyperlinkOnClick { Id = string.Empty, Action = "ppaction://media" };
+        var hyperlinkOnClick = new DocumentFormat.OpenXml.Drawing.HyperlinkOnClick
+            { Id = string.Empty, Action = "ppaction://media" };
         nonVisualDrawingProps.Append(hyperlinkOnClick);
-        nonVisualPictureProps.Append(new DocumentFormat.OpenXml.Presentation.NonVisualPictureDrawingProperties());
+        nonVisualPictureProps.Append(new P.NonVisualPictureDrawingProperties());
 
         var applicationNonVisualDrawingProps = nonVisualPictureProps.ApplicationNonVisualDrawingProperties!;
         applicationNonVisualDrawingProps.Append(audioFromFile);
@@ -212,7 +202,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
 
         this.shapes.Reset();
 
-        return (SCPicture)shape;
+        return (SCSlidePicture)shape;
     }
 
     public IChart AddBarChart(BarChartType barChartType)
@@ -229,7 +219,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
     {
         var xEmu = UnitConverter.HorizontalPixelToEmu(x);
         var yEmu = UnitConverter.VerticalPixelToEmu(y);
-        
+
         var mediaDataPart = this.slide.Presentation.SDKPresentationDocument.CreateMediaDataPart("video/mp4", ".mp4");
 
         stream.Position = 0;
@@ -243,16 +233,17 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         var videoRr = slidePart.AddVideoReferenceRelationship(mediaDataPart);
         var mediaRr = slidePart.AddMediaReferenceRelationship(mediaDataPart);
 
-        DocumentFormat.OpenXml.Presentation.Picture picture1 = new();
+        P.Picture picture1 = new();
 
-        DocumentFormat.OpenXml.Presentation.NonVisualPictureProperties nonVisualPictureProperties1 = new();
+        P.NonVisualPictureProperties nonVisualPictureProperties1 = new();
 
         var shapeId = (uint)this.shapes.Value.Max(sp => sp.Id) + 1;
-        DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties nonVisualDrawingProperties2 = new() { Id = shapeId, Name = $"Video{shapeId}" };
+        P.NonVisualDrawingProperties nonVisualDrawingProperties2 = new() { Id = shapeId, Name = $"Video{shapeId}" };
         var hyperlinkOnClick1 = new DocumentFormat.OpenXml.Drawing.HyperlinkOnClick()
             { Id = string.Empty, Action = "ppaction://media" };
 
-        DocumentFormat.OpenXml.Drawing.NonVisualDrawingPropertiesExtensionList nonVisualDrawingPropertiesExtensionList1 = new();
+        DocumentFormat.OpenXml.Drawing.NonVisualDrawingPropertiesExtensionList
+            nonVisualDrawingPropertiesExtensionList1 = new();
 
         DocumentFormat.OpenXml.Drawing.NonVisualDrawingPropertiesExtension nonVisualDrawingPropertiesExtension1 =
             new() { Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}" };
@@ -262,18 +253,18 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         nonVisualDrawingProperties2.Append(hyperlinkOnClick1);
         nonVisualDrawingProperties2.Append(nonVisualDrawingPropertiesExtensionList1);
 
-        DocumentFormat.OpenXml.Presentation.NonVisualPictureDrawingProperties nonVisualPictureDrawingProperties1 = new();
+        P.NonVisualPictureDrawingProperties nonVisualPictureDrawingProperties1 = new();
         var pictureLocks1 = new DocumentFormat.OpenXml.Drawing.PictureLocks() { NoChangeAspect = true };
 
         nonVisualPictureDrawingProperties1.Append(pictureLocks1);
 
-        DocumentFormat.OpenXml.Presentation.ApplicationNonVisualDrawingProperties applicationNonVisualDrawingProperties2 = new();
+        P.ApplicationNonVisualDrawingProperties applicationNonVisualDrawingProperties2 = new();
         var videoFromFile1 = new DocumentFormat.OpenXml.Drawing.VideoFromFile() { Link = videoRr.Id };
 
-        DocumentFormat.OpenXml.Presentation.ApplicationNonVisualDrawingPropertiesExtensionList
-            applicationNonVisualDrawingPropertiesExtensionList1 = new();
+        P.ApplicationNonVisualDrawingPropertiesExtensionList
+        applicationNonVisualDrawingPropertiesExtensionList1 = new();
 
-        DocumentFormat.OpenXml.Presentation.ApplicationNonVisualDrawingPropertiesExtension applicationNonVisualDrawingPropertiesExtension1 =
+        P.ApplicationNonVisualDrawingPropertiesExtension applicationNonVisualDrawingPropertiesExtension1 =
             new() { Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" };
 
         var media1 = new DocumentFormat.OpenXml.Office2010.PowerPoint.Media() { Embed = mediaRr.Id };
@@ -290,7 +281,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         nonVisualPictureProperties1.Append(nonVisualPictureDrawingProperties1);
         nonVisualPictureProperties1.Append(applicationNonVisualDrawingProperties2);
 
-        DocumentFormat.OpenXml.Presentation.BlipFill blipFill1 = new();
+        P.BlipFill blipFill1 = new();
         DocumentFormat.OpenXml.Drawing.Blip blip1 = new() { Embed = imgPartRId };
 
         DocumentFormat.OpenXml.Drawing.Stretch stretch1 = new();
@@ -301,7 +292,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         blipFill1.Append(blip1);
         blipFill1.Append(stretch1);
 
-        DocumentFormat.OpenXml.Presentation.ShapeProperties shapeProperties1 = new();
+        P.ShapeProperties shapeProperties1 = new();
 
         DocumentFormat.OpenXml.Drawing.Transform2D transform2D1 = new();
         DocumentFormat.OpenXml.Drawing.Offset offset2 = new() { X = xEmu, Y = yEmu };
@@ -310,7 +301,8 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         transform2D1.Append(offset2);
         transform2D1.Append(extents2);
 
-        DocumentFormat.OpenXml.Drawing.PresetGeometry presetGeometry1 = new() { Preset = DocumentFormat.OpenXml.Drawing.ShapeTypeValues.Rectangle };
+        DocumentFormat.OpenXml.Drawing.PresetGeometry presetGeometry1 = new()
+            { Preset = DocumentFormat.OpenXml.Drawing.ShapeTypeValues.Rectangle };
         DocumentFormat.OpenXml.Drawing.AdjustValueList adjustValueList1 = new();
 
         presetGeometry1.Append(adjustValueList1);
@@ -334,7 +326,8 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
 
     public IRectangle AddRectangle(int x, int y, int width, int height)
     {
-        var newPShape = this.CreatePShape(x, y, width, height, DocumentFormat.OpenXml.Drawing.ShapeTypeValues.Rectangle);
+        var newPShape =
+            this.CreatePShape(x, y, width, height, DocumentFormat.OpenXml.Drawing.ShapeTypeValues.Rectangle);
 
         var newShape = new SCSlideRectangle(newPShape, this.slideOf, this);
         newShape.Outline.Color = "000000";
@@ -463,14 +456,16 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
 
         var offset = new DocumentFormat.OpenXml.Drawing.Offset { X = xEmu, Y = yEmu };
         var extents = new DocumentFormat.OpenXml.Drawing.Extents { Cx = DefaultTableWidthEmu, Cy = tableHeightEmu };
-        var pTransform = new DocumentFormat.OpenXml.Presentation.Transform(offset, extents);
+        var pTransform = new P.Transform(offset, extents);
 
         var graphic = new DocumentFormat.OpenXml.Drawing.Graphic();
-        var graphicData = new DocumentFormat.OpenXml.Drawing.GraphicData { Uri = "http://schemas.openxmlformats.org/drawingml/2006/table" };
+        var graphicData = new DocumentFormat.OpenXml.Drawing.GraphicData
+            { Uri = "http://schemas.openxmlformats.org/drawingml/2006/table" };
         var aTable = new DocumentFormat.OpenXml.Drawing.Table();
 
         var tableProperties = new DocumentFormat.OpenXml.Drawing.TableProperties { FirstRow = true, BandRow = true };
-        var tableStyleId = new DocumentFormat.OpenXml.Drawing.TableStyleId { Text = "{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}" };
+        var tableStyleId = new DocumentFormat.OpenXml.Drawing.TableStyleId
+            { Text = "{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}" };
         tableProperties.Append(tableStyleId);
 
         var tableGrid = new DocumentFormat.OpenXml.Drawing.TableGrid();
@@ -495,7 +490,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         graphicFrame.Append(graphic);
 
         this.pShapeTree.Append(graphicFrame);
-        var table = new SCTable(graphicFrame, this.slideOf, this);
+        var table = new SCSlideTable(graphicFrame, this.slideOf, this);
 
         this.shapes.Reset();
 
@@ -530,7 +525,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         return this.shapes.Value.FirstOrDefault(shape => shape.Name == shapeName);
     }
 
-    public SCShape? GetReferencedShapeOrNull(DocumentFormat.OpenXml.Presentation.PlaceholderShape inputPph)
+    public SCShape? GetReferencedShapeOrNull(P.PlaceholderShape inputPph)
     {
         var phShapes = this.shapes.Value.Where(sp => sp.Placeholder != null).OfType<SCShape>();
         var referencedShape = phShapes.FirstOrDefault(IsEqual);
@@ -569,7 +564,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
                 return false;
             }
 
-            if (inputPph.Type == DocumentFormat.OpenXml.Presentation.PlaceholderValues.Body &&
+            if (inputPph.Type == P.PlaceholderValues.Body &&
                 inputPph.Index is not null && pPh.Index is not null)
             {
                 return inputPph.Index == pPh.Index;
@@ -601,12 +596,13 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         return this.GetEnumerator();
     }
 
-    private DocumentFormat.OpenXml.Presentation.Shape CreatePShape(int x, int y, int width, int height, DocumentFormat.OpenXml.Drawing.ShapeTypeValues form)
+    private P.Shape CreatePShape(int x, int y, int width, int height,
+        DocumentFormat.OpenXml.Drawing.ShapeTypeValues form)
     {
         var idAndName = this.GenerateIdAndName();
         var adjustValueList = new DocumentFormat.OpenXml.Drawing.AdjustValueList();
         var presetGeometry = new DocumentFormat.OpenXml.Drawing.PresetGeometry(adjustValueList) { Preset = form };
-        var shapeProperties = new DocumentFormat.OpenXml.Presentation.ShapeProperties();
+        var shapeProperties = new P.ShapeProperties();
         var xEmu = UnitConverter.HorizontalPixelToEmu(x);
         var yEmu = UnitConverter.VerticalPixelToEmu(y);
         var widthEmu = UnitConverter.HorizontalPixelToEmu(width);
@@ -620,26 +616,29 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         var aEndParaRPr = new DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties { Language = "en-US" };
         var aParagraph = new DocumentFormat.OpenXml.Drawing.Paragraph(aRun, aEndParaRPr);
 
-        var pShape = new DocumentFormat.OpenXml.Presentation.Shape(
-            new DocumentFormat.OpenXml.Presentation.NonVisualShapeProperties(
-                new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
-                new DocumentFormat.OpenXml.Presentation.NonVisualShapeDrawingProperties(new DocumentFormat.OpenXml.Drawing.ShapeLocks { NoGrouping = true }),
-                new DocumentFormat.OpenXml.Presentation.ApplicationNonVisualDrawingProperties()),
-            shapeProperties,
-            new DocumentFormat.OpenXml.Presentation.TextBody(
-                new DocumentFormat.OpenXml.Drawing.BodyProperties(),
-                new DocumentFormat.OpenXml.Drawing.ListStyle(),
-                aParagraph));
+        var pShape = new P.Shape(
+            new P.NonVisualShapeProperties(
+                new P.NonVisualDrawingProperties {
+            Id = (uint)idAndName.Item1, Name = idAndName.Item2
+        },
+        new P.NonVisualShapeDrawingProperties(new DocumentFormat.OpenXml.Drawing.ShapeLocks { NoGrouping = true }),
+        new P.ApplicationNonVisualDrawingProperties()),
+        shapeProperties,
+        new P.TextBody(
+            new DocumentFormat.OpenXml.Drawing.BodyProperties(),
+            new DocumentFormat.OpenXml.Drawing.ListStyle(),
+            aParagraph));
 
         return pShape;
     }
 
-    private DocumentFormat.OpenXml.Presentation.ConnectionShape CreatePConnectionShape(int xPx, int yPx, int cxPx, int cyPx, bool flipH, bool flipV)
+    private P.ConnectionShape CreatePConnectionShape(int xPx, int yPx, int cxPx, int cyPx, bool flipH, bool flipV)
     {
         var idAndName = this.GenerateIdAndName();
         var adjustValueList = new DocumentFormat.OpenXml.Drawing.AdjustValueList();
-        var presetGeometry = new DocumentFormat.OpenXml.Drawing.PresetGeometry(adjustValueList) { Preset = DocumentFormat.OpenXml.Drawing.ShapeTypeValues.Line };
-        var shapeProperties = new DocumentFormat.OpenXml.Presentation.ShapeProperties();
+        var presetGeometry = new DocumentFormat.OpenXml.Drawing.PresetGeometry(adjustValueList)
+            { Preset = DocumentFormat.OpenXml.Drawing.ShapeTypeValues.Line };
+        var shapeProperties = new P.ShapeProperties();
         var xEmu = UnitConverter.HorizontalPixelToEmu(xPx);
         var yEmu = UnitConverter.VerticalPixelToEmu(yPx);
         var cxEmu = UnitConverter.HorizontalPixelToEmu(cxPx);
@@ -649,11 +648,11 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         aXfrm.VerticalFlip = new BooleanValue(flipV);
         shapeProperties.Append(presetGeometry);
 
-        var pConnectionShape = new DocumentFormat.OpenXml.Presentation.ConnectionShape(
-            new DocumentFormat.OpenXml.Presentation.NonVisualConnectionShapeProperties(
-                new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
-                new DocumentFormat.OpenXml.Presentation.NonVisualConnectorShapeDrawingProperties(),
-                new DocumentFormat.OpenXml.Presentation.ApplicationNonVisualDrawingProperties()),
+        var pConnectionShape = new ConnectionShape(
+                new NonVisualConnectionShapeProperties(
+                    new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
+                new P.NonVisualConnectorShapeDrawingProperties(),
+                new P.ApplicationNonVisualDrawingProperties()),
             shapeProperties);
 
         return pConnectionShape;
@@ -667,12 +666,13 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
             maxId = this.shapes.Value.Max(s => s.Id);
         }
 
-        var maxOrder = Regex.Matches(string.Join(string.Empty, this.shapes.Value.Select(s => s.Name)), "\\d+", RegexOptions.None, TimeSpan.FromSeconds(100))
-            
+        var maxOrder = Regex.Matches(string.Join(string.Empty, this.shapes.Value.Select(s => s.Name)), "\\d+",
+                RegexOptions.None, TimeSpan.FromSeconds(100))
+
 #if NETSTANDARD2_0
             .Cast<Match>()
 #endif
-            
+
             .Select(m => int.Parse(m.Value))
             .DefaultIfEmpty(0)
             .Max();
@@ -714,16 +714,18 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         return $"Table {maxOrder + 1}";
     }
 
-    private List<IShape> GetShapes(AutoShapeCreator autoShapeCreator)
+    private List<IShape> ParseShapes()
     {
         var shapesValue = new List<IShape>(this.pShapeTree.Count());
         foreach (var pShapeTreeChild in this.pShapeTree.OfType<TypedOpenXmlCompositeElement>())
         {
-            var shape = this.CreateShape(autoShapeCreator, pShapeTreeChild);
-
-            if (shape != null)
+            if (pShapeTreeChild is P.GroupShape pGroupShape)
             {
-                shapesValue.Add(shape);
+                shapesValue.Add(SCSlideGroupShape(pGroupShape, this.slideOf, this));
+            }
+            else if (pShapeTreeChild is P.ConnectionShape)
+            {
+                return new SCLine(pShapeTreeChild, this.slideOf, this);
             }
         }
 
@@ -738,12 +740,12 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         {
             return new SCSlideGroupShape(pGroupShape, this.slideOf, this);
         }
-        
+
         if (pShapeTreeChild is P.ConnectionShape)
         {
             return new SCLine(pShapeTreeChild, this.slideOf, this);
         }
-        
+
         shape = autoShapeCreator.FromTreeChild(pShapeTreeChild, this.slideOf, this);
 
         if (shape is SCSlideAutoShape autoShape)
@@ -754,7 +756,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         return shape;
     }
 
-    private DocumentFormat.OpenXml.Presentation.Picture CreatePPicture(Stream imageStream, string shapeName)
+    private P.Picture CreatePPicture(Stream imageStream, string shapeName)
     {
         var slidePart = this.slide.TypedOpenXmlPart;
         var imgPartRId = slidePart.GetNextRelationshipId();
@@ -762,18 +764,21 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         imageStream.Position = 0;
         imagePart.FeedData(imageStream);
 
-        var nonVisualPictureProperties = new DocumentFormat.OpenXml.Presentation.NonVisualPictureProperties();
+        var nonVisualPictureProperties = new P.NonVisualPictureProperties();
         var shapeId = (uint)this.GenerateNextShapeId();
-        var nonVisualDrawingProperties = new DocumentFormat.OpenXml.Presentation.NonVisualDrawingProperties
-            { Id = shapeId, Name = $"{shapeName} {shapeId}" };
-        var nonVisualPictureDrawingProperties = new DocumentFormat.OpenXml.Presentation.NonVisualPictureDrawingProperties();
-        var appNonVisualDrawingProperties = new DocumentFormat.OpenXml.Presentation.ApplicationNonVisualDrawingProperties();
+        var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
+        {
+            Id = shapeId, Name = $"{shapeName} {shapeId}"
+        }
+        ;
+        var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
+        var appNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
 
         nonVisualPictureProperties.Append(nonVisualDrawingProperties);
         nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
         nonVisualPictureProperties.Append(appNonVisualDrawingProperties);
 
-        var blipFill = new DocumentFormat.OpenXml.Presentation.BlipFill();
+        var blipFill = new P.BlipFill();
         var blip = new DocumentFormat.OpenXml.Drawing.Blip { Embed = imgPartRId };
         var stretch = new DocumentFormat.OpenXml.Drawing.Stretch();
         blipFill.Append(blip);
@@ -783,12 +788,13 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
             new DocumentFormat.OpenXml.Drawing.Offset { X = 0, Y = 0 },
             new DocumentFormat.OpenXml.Drawing.Extents { Cx = 0, Cy = 0 });
 
-        var presetGeometry = new DocumentFormat.OpenXml.Drawing.PresetGeometry { Preset = DocumentFormat.OpenXml.Drawing.ShapeTypeValues.Rectangle };
-        var shapeProperties = new DocumentFormat.OpenXml.Presentation.ShapeProperties();
+        var presetGeometry = new DocumentFormat.OpenXml.Drawing.PresetGeometry
+            { Preset = DocumentFormat.OpenXml.Drawing.ShapeTypeValues.Rectangle };
+        var shapeProperties = new P.ShapeProperties();
         shapeProperties.Append(transform2D);
         shapeProperties.Append(presetGeometry);
 
-        var pPicture = new DocumentFormat.OpenXml.Presentation.Picture();
+        var pPicture = new P.Picture();
         pPicture.Append(nonVisualPictureProperties);
         pPicture.Append(blipFill);
         pPicture.Append(shapeProperties);

@@ -2,5 +2,5 @@
 
 public abstract class TestPortionQuery
 {
-    public abstract IPortion Get(IPresentation pres);
+    public abstract IParagraphPortion Get(IPresentation pres);
 }

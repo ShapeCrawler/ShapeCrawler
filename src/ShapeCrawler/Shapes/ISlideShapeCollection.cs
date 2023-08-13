@@ -36,12 +36,12 @@ public interface ISlideShapeCollection : IReadOnlyShapeCollection
     /// <summary>
     ///     Adds a new Rectangle shape.
     /// </summary>
-    IRectangle AddRectangle(int x, int y, int w, int h);
+    ISlideAutoShape AddRectangle(int x, int y, int w, int h);
 
     /// <summary>
     ///     Adds a new Rounded Rectangle shape. 
     /// </summary>
-    IRoundedRectangle AddRoundedRectangle(int x, int y, int w, int h);
+    ISlideAutoShape AddRoundedRectangle(int x, int y, int w, int h);
 
     /// <summary>
     ///     Adds a line from XML.

@@ -31,16 +31,12 @@ internal sealed class SCRow : IRow
 {
     private readonly Lazy<List<SCCell>> cells;
     private readonly int index;
-    private readonly TypedOpenXmlPart slideTypedOpenXmlPart;
-    private readonly List<ImagePart> imageParts;
 
-    internal SCRow(SCTable table, A.TableRow aTableRow, int index, TypedOpenXmlPart slideTypedOpenXmlPart, List<ImagePart> imageParts)
+    internal SCRow(SCSlideTable table, A.TableRow aTableRow, int index)
     {
         this.ParentTable = table;
         this.ATableRow = aTableRow;
         this.index = index;
-        this.slideTypedOpenXmlPart = slideTypedOpenXmlPart;
-        this.imageParts = imageParts;
         this.cells = new Lazy<List<SCCell>>(() => this.GetCells());
     }
 
@@ -52,7 +48,7 @@ internal sealed class SCRow : IRow
         set => this.SetHeight(value);
     }
 
-    internal SCTable ParentTable { get; }
+    internal SCSlideTable ParentTable { get; }
 
     internal A.TableRow ATableRow { get; }
 

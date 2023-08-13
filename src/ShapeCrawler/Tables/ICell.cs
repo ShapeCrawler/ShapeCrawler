@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using DocumentFormat.OpenXml.Packaging;
+﻿using System;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -30,11 +27,10 @@ public interface ICell
     IShapeFill Fill { get; }
 }
 
-internal sealed class SCCell : ICell, ITextFrameContainer
+internal sealed class SCCell : ICell
 {
-    private readonly ResetableLazy<SCTextFrame> textFrame;
-    private readonly ResetableLazy<SCShapeFill> shapeFill;
-    private readonly ISlideStructure slideStructure;
+    private readonly Lazy<SCTextFrame> textFrame;
+    private readonly Lazy<SCShapeFill> shapeFill;
 
     internal SCCell(
         SCRow parentTableRow,
@@ -46,10 +42,10 @@ internal sealed class SCCell : ICell, ITextFrameContainer
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
-        this.textFrame = new ResetableLazy<SCTextFrame>(this.CreateTextFrame);
-        var framePr = aTableCell.TableCellProperties!;
-        this.shapeFill = new ResetableLazy<SCShapeFill>(() =>
-            new CellFill(this.slideStructure, framePr, slideTypedOpenXmlPart, imageParts));
+        this.textFrame = new Lazy<SCTextFrame>(this.CreateTextFrame);
+        var tableCellProperties = aTableCell.TableCellProperties!;
+        this.shapeFill = new Lazy<SCShapeFill>(() =>
+            new SCCellFill(tableCellProperties));
     }
 
     public bool IsMergedCell => this.DefineWhetherCellIsMerged();

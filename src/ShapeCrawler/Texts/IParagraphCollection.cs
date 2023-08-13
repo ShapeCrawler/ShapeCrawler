@@ -24,19 +24,15 @@ public interface IParagraphCollection : IReadOnlyList<IParagraph>
     void Remove(IEnumerable<IParagraph> removeParagraphs);
 }
 
-internal sealed class ParagraphCollection : IParagraphCollection
+internal sealed class SCParagraphCollection : IParagraphCollection
 {
     private readonly ResetableLazy<List<SCParagraph>> paragraphs;
     private readonly SCTextFrame textFrame;
-    private readonly ISlideStructure slideStructure;
-    private readonly ITextFrameContainer textFrameContainer;
 
-    internal ParagraphCollection(SCTextFrame textFrame, ISlideStructure slideStructure, ITextFrameContainer textFrameContainer)
+    internal SCParagraphCollection(SCTextFrame textFrame)
     {
         this.textFrame = textFrame;
-        this.slideStructure = slideStructure;
         this.paragraphs = new ResetableLazy<List<SCParagraph>>(this.GetParagraphs);
-        this.textFrameContainer = textFrameContainer;
     }
 
     #region Public Properties

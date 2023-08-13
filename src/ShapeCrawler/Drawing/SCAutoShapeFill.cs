@@ -1,20 +1,16 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal class SCAutoShapeFill : IShapeFill
+internal record SCAutoShapeFill : IShapeFill
 {
     private readonly TypedOpenXmlCompositeElement properties;
     private BooleanValue? useBgFill;
-    protected SCFillType fillType;
-    
-    private readonly ISlideStructure slideObject;
+    private SCFillType fillType;
     private bool isDirty;
     private string? hexSolidColor;
     private SCImage? pictureImage;
@@ -22,8 +18,6 @@ internal class SCAutoShapeFill : IShapeFill
     private A.GradientFill? aGradFill;
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
-    private readonly TypedOpenXmlPart slideTypedOpenXmlPart;
-    private readonly List<ImagePart> imageParts;
 
     internal SCAutoShapeFill(TypedOpenXmlCompositeElement properties)
     {
@@ -32,6 +26,9 @@ internal class SCAutoShapeFill : IShapeFill
     }
 
     public string? Color => this.GetHexSolidColor();
+    public double AlphaPercentage { get; }
+    public double LuminanceModulationPercentage { get; }
+    public double LuminanceOffsetPercentage { get; }
 
     public IImage? Picture => this.GetPicture();
 

@@ -1,23 +1,21 @@
+using System;
 using System.IO;
+using System.Linq;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Extensions;
+using ShapeCrawler;
+using ShapeCrawler.Drawing;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-internal class SCShapeFill : IShapeFill
+internal record SCShapeFill : IShapeFill
 {
-    private readonly TypedOpenXmlCompositeElement properties;
-    private BooleanValue? useBgFill;
-    private SCFillType fillType;
-    protected readonly TypedOpenXmlCompositeElement properties;
-    protected BooleanValue? useBgFill;
-    protected SCFillType fillType;
-    protected A.NoFill? aNoFill;
-
     private const double DefaultAlphaPercentage = 100;
     private const double DefaultLuminanceModulationPercentage = 100;
     private const double DefaultLuminanceOffsetPercentage = 0;
-    private readonly SlideStructure slideObject;
+    private BooleanValue? useBgFill;
+    private readonly TypedOpenXmlCompositeElement properties;
+    private SCFillType fillType;
+    private A.NoFill? aNoFill;
     private bool isDirty;
     private string? hexSolidColor;
     private double? alphaPercentage;
@@ -37,11 +35,11 @@ internal class SCShapeFill : IShapeFill
 
     public string? Color => this.GetHexSolidColor();
 
-    public double? AlphaPercentage => this.GetAlphaPercentage();
+    public double AlphaPercentage => this.GetAlphaPercentage();
 
-    public double? LuminanceModulationPercentage => this.GetLuminanceModulationPercentage();
+    public double LuminanceModulationPercentage => this.GetLuminanceModulationPercentage();
 
-    public double? LuminanceOffsetPercentage => this.GetLuminanceOffsetPercentage();
+    public double LuminanceOffsetPercentage => this.GetLuminanceOffsetPercentage();
 
     public IImage? Picture => this.GetPicture();
 
@@ -220,7 +218,7 @@ internal class SCShapeFill : IShapeFill
         return this.hexSolidColor;
     }
 
-    private double? GetAlphaPercentage()
+    private double GetAlphaPercentage()
     {
         if (this.isDirty)
         {
@@ -230,7 +228,7 @@ internal class SCShapeFill : IShapeFill
         return this.alphaPercentage;
     }
 
-    private double? GetLuminanceModulationPercentage()
+    private double GetLuminanceModulationPercentage()
     {
         if (this.isDirty)
         {

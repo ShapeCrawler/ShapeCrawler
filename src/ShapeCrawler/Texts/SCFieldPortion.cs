@@ -10,7 +10,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class SCFieldPortion : IPortion
+internal sealed class SCFieldPortion : IParagraphPortion
 {
     private readonly ResetableLazy<ITextPortionFont> font;
     private readonly A.Field aField;

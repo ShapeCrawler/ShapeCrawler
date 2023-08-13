@@ -68,13 +68,13 @@ public interface ITextFrame
 internal sealed class SCTextFrame : ITextFrame
 {
     private readonly ResetableLazy<string> text;
-    private readonly ResetableLazy<ParagraphCollection> paragraphs;
+    private readonly ResetableLazy<SCParagraphCollection> paragraphs;
 
     internal SCTextFrame(TypedOpenXmlCompositeElement textBodyElement)
     {
         this.TextBodyElement = textBodyElement;
         this.text = new ResetableLazy<string>(this.GetText);
-        this.paragraphs = new ResetableLazy<ParagraphCollection>(this.GetParagraphs);
+        this.paragraphs = new ResetableLazy<SCParagraphCollection>(this.GetParagraphs);
     }
 
     internal event Action? TextChanged;
@@ -118,8 +118,6 @@ internal sealed class SCTextFrame : ITextFrame
     }
 
     public bool TextWrapped => this.IsTextWrapped();
-
-    internal ITextFrameContainer TextFrameContainer { get; }
 
     internal OpenXmlCompositeElement TextBodyElement { get; }
 
@@ -270,9 +268,9 @@ internal sealed class SCTextFrame : ITextFrame
         return ins is null ? SCConstants.DefaultTopAndBottomMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
 
-    private ParagraphCollection GetParagraphs()
+    private SCParagraphCollection GetParagraphs()
     {
-        return new ParagraphCollection(this, this.slideStructure, this.textFrameContainer);
+        return new SCParagraphCollection(this, this.slideStructure, this.textFrameContainer);
     }
 
     private SCAutofitType GetAutofitType()

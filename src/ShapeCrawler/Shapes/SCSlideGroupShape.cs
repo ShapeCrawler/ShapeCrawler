@@ -13,23 +13,15 @@ namespace ShapeCrawler.Shapes;
 internal sealed class SCSlideGroupShape : IGroupShape
 {
     private readonly P.GroupShape pGroupShape;
-    private readonly SlidePart sdkSlidePart;
-    private readonly List<ImagePart> imageParts;
     private readonly Shape shape;
 
-    internal SCSlideGroupShape(
-        P.GroupShape pGroupShape, 
-        IReadOnlyShapeCollection shapes,
-        SlidePart sdkSlidePart,
-        List<ImagePart> imageParts)
+    internal SCSlideGroupShape(P.GroupShape pGroupShape, IReadOnlyShapeCollection shapes)
     {
         this.pGroupShape = pGroupShape;
-        this.sdkSlidePart = sdkSlidePart;
-        this.imageParts = imageParts;
         this.shape = new Shape(pGroupShape);
     }
 
-    public IReadOnlyShapeCollection Shapes => new SCSlideGroupedShapeCollection(this.pGroupShape, this, this.sdkSlidePart, this.imageParts);
+    public IReadOnlyShapeCollection Shapes => new SCSlideGroupedShapes(this.pGroupShape, this);
 
     public int Width
     {

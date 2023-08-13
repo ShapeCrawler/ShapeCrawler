@@ -6,7 +6,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a portion of a paragraph.
 /// </summary>
-public interface IPortion
+public interface IParagraphPortion
 {
     /// <summary>
     ///     Gets or sets text.

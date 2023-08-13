@@ -58,7 +58,6 @@ internal record SCSlideOLEObject : IShape
     }
 
     public SCShapeType ShapeType => SCShapeType.OLEObject;
-    public ISlideStructure SlideStructure { get; }
     public IAutoShape? AsAutoShape()
     {
         throw new System.NotImplementedException();

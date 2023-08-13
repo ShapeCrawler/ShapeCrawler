@@ -49,7 +49,7 @@ public class TestElementQuery
         return autoShape.TextFrame.Paragraphs[paragraphIndex];
     }
 
-    public IPortion GetParagraphPortion()
+    public IParagraphPortion GetParagraphPortion()
     {
         var shapes = this.Presentation.Slides[this.SlideIndex].Shapes;
         var autoShape = this.ShapeId != null 

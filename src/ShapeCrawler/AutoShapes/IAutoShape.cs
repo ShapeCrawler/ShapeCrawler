@@ -22,9 +22,4 @@ public interface IAutoShape : IShape
     ///     Gets text frame. Returns <see langword="null"/> if the shape is not a text holder.
     /// </summary>
     ITextFrame? TextFrame { get; }
-    
-    /// <summary>
-    ///     Duplicate the shape.
-    /// </summary>
-    void Duplicate();
 }

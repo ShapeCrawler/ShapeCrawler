@@ -22,7 +22,7 @@ public class ParagraphPortionTests : SCTest
         // Arrange
         var pptx = GetInputStream("009_table");
         var pres = new SCPresentation(pptx);
-        IPortion portion = ((ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+        IParagraphPortion portion = ((ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
             .TextFrame
             .Paragraphs[0].Portions[0];
 

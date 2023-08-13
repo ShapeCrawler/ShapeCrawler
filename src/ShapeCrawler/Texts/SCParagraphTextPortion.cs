@@ -9,22 +9,15 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class SCRegularPortion : IPortion
+internal sealed class SCParagraphTextPortion : IParagraphPortion
 {
     private readonly ResetableLazy<SCTextPortionFont> font;
     private readonly A.Run aRun;
-    private readonly ISlideStructure slideStructure;
-    private readonly TypedOpenXmlPart slideTypedOpenXmlPart;
 
-    internal SCRegularPortion(
+    internal SCParagraphTextPortion(
         A.Run aRun, 
-        ISlideStructure slideStructure, 
-        ITextFrameContainer textFrameContainer,
-        SCParagraph paragraph, 
-        Action onRemoveHandler, TypedOpenXmlPart slideTypedOpenXmlPart, Dictionary<int, FontData> paraLvlToFontData)
+        Action onRemoveHandler)
     {
-        this.slideStructure = slideStructure;
-        this.slideTypedOpenXmlPart = slideTypedOpenXmlPart;
         this.AText = aRun.Text!;
         this.Removed += onRemoveHandler;
 

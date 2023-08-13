@@ -34,10 +34,7 @@ internal class SCSlideChart : IChart
 
     internal SCSlideChart(
         P.GraphicFrame pGraphicFrame, 
-        SCSlide slide, 
-        SCSlideShapes shapes,
-        SlidePart sdkSlidePart,
-        List<ChartWorkbook> chartWorkbooks)
+        SCSlideShapes shapes)
     {
         this.pGraphicFrame = pGraphicFrame;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
@@ -56,13 +53,11 @@ internal class SCSlideChart : IChart
 
         this.ChartWorkbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartWorkbook(this, this.ChartPart.EmbeddedPackagePart, chartWorkbooks) : null;
         this.shape = new Shape(pGraphicFrame);
-        this.SlideStructure = slide;
     }
 
     public SCChartType Type => this.chartType.Value;
 
     public SCShapeType ShapeType => SCShapeType.Chart;
-    public ISlideStructure SlideStructure { get; }
     public IAutoShape? AsAutoShape()
     {
         throw new NotImplementedException();

@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Factories;
 using ShapeCrawler.Services;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -40,26 +41,17 @@ public interface ISlideMaster
     IMasterSlideNumber? SlideNumber { get; }
 }
 
-internal sealed class SCSlideMaster : ISlideStructure, ISlideMaster
+internal sealed class SCSlideMaster : ISlideMaster
 {
     private readonly ResetableLazy<List<SCSlideLayout>> slideLayouts;
     private readonly Lazy<SCMasterSlideNumber?> slideNumber;
-    private readonly List<ImagePart> imageParts;
-    private readonly TypedOpenXmlPart slideTypedOpenXmlPart;
-    private PresentationDocument sdkPresentationDocument;
 
     internal SCSlideMaster(
         P.SlideMaster pSlideMaster, 
-        int number, 
-        List<ImagePart> imageParts, 
-        TypedOpenXmlPart slideTypedOpenXmlPart, 
-        PresentationDocument sdkPresentationDocument)
+        int number)
     {
         this.PSlideMaster = pSlideMaster;
         this.Number = number;
-        this.imageParts = imageParts;
-        this.slideTypedOpenXmlPart = slideTypedOpenXmlPart;
-        this.sdkPresentationDocument = sdkPresentationDocument;
         this.slideLayouts = new ResetableLazy<List<SCSlideLayout>>(this.CreateSlideLayouts);
         this.slideNumber = new Lazy<SCMasterSlideNumber?>(this.CreateSlideNumber);
     }
