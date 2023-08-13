@@ -639,4 +639,20 @@ public class TableTests : SCTest
         // Assert
         table[0, 1].Should().NotBeSameAs(table[1, 1]);
     }
+    
+    [Test]
+    public void MergeCells_merges_0x0_and_0x1_then_1x1_and_1x2_cells()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var slide = pres.Slides[0];
+        var table = slide.Shapes.AddTable(0, 0, 4, 2);
+        
+        // Act
+        table.MergeCells(table[0, 0], table[0, 1]);
+        table.MergeCells(table[1, 1], table[1, 2]);
+        
+        // Assert
+        table[1, 1].Should().BeSameAs(table[1, 2]);
+    }
 }
