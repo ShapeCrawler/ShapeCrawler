@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Factories;
 using ShapeCrawler.Services;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -113,6 +112,7 @@ internal sealed class SCSlideMaster : ISlideStructure, ISlideMaster
     {
         var pTextStyles = this.PSlideMaster.TextStyles!;
 
+        // Other
         var otherStyleLvlToFontData = FontDataParser.FromCompositeElement(pTextStyles.OtherStyle!);
         if (otherStyleLvlToFontData.ContainsKey(paragraphLvl))
         {

@@ -95,7 +95,7 @@ internal sealed class SCSlideLayout : ISlideLayout
 
     public SCSlideLayoutType Type => this.GetLayoutType();
 
-    public ISlideMaster SlideMaster => this.slideMaster;
+    public override ISlideMaster SlideMaster => this.slideMaster;
 
     internal SlideLayoutPart SlideLayoutPart { get; }
 

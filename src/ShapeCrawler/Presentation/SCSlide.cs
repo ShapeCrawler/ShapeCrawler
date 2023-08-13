@@ -7,7 +7,7 @@ using AngleSharp;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
@@ -73,6 +73,8 @@ internal sealed class SCSlide : ISlide
 
     public SlidePart SDKSlidePart { get; }
     public PresentationDocument SDKPresentationDocument { get; }
+
+    public override ISlideMaster SlideMaster => this.SlideLayout.SlideMaster;
 
     internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
 

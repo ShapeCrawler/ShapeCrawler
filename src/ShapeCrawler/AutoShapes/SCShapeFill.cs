@@ -1,11 +1,6 @@
-﻿using System.Collections.Generic;
 using System.IO;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
-
-namespace ShapeCrawler.AutoShapes;
-
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -14,8 +9,20 @@ internal class SCShapeFill : IShapeFill
     private readonly TypedOpenXmlCompositeElement properties;
     private BooleanValue? useBgFill;
     private SCFillType fillType;
+    protected readonly TypedOpenXmlCompositeElement properties;
+    protected BooleanValue? useBgFill;
+    protected SCFillType fillType;
+    protected A.NoFill? aNoFill;
+
+    private const double DefaultAlphaPercentage = 100;
+    private const double DefaultLuminanceModulationPercentage = 100;
+    private const double DefaultLuminanceOffsetPercentage = 0;
+    private readonly SlideStructure slideObject;
     private bool isDirty;
     private string? hexSolidColor;
+    private double? alphaPercentage;
+    private double? luminanceModulationPercentage;
+    private double? luminanceOffsetPercentage;
     private SCImage? pictureImage;
     private A.SolidFill? aSolidFill;
     private A.GradientFill? aGradFill;
@@ -29,6 +36,12 @@ internal class SCShapeFill : IShapeFill
     }
 
     public string? Color => this.GetHexSolidColor();
+
+    public double? AlphaPercentage => this.GetAlphaPercentage();
+
+    public double? LuminanceModulationPercentage => this.GetLuminanceModulationPercentage();
+
+    public double? LuminanceOffsetPercentage => this.GetLuminanceOffsetPercentage();
 
     public IImage? Picture => this.GetPicture();
 
@@ -83,11 +96,31 @@ internal class SCShapeFill : IShapeFill
         this.isDirty = true;
     }
 
+    public void SetAlpha(double alphaPercentage)
+    {
+        // ToDo: Implement setting Alpha
+        throw new NotImplementedException();
+    }
+
+    public void SetLuminanceModulation(double luminanceModulationPercentage)
+    {
+        // ToDo: Implement setting Luminance Modulation
+        throw new NotImplementedException();
+    }
+
+
+    public void SetLuminanceOffset(double luminanceOffset)
+    {
+        // ToDo: Implement setting Luminance Offset
+        throw new NotImplementedException();
+    }
+
     protected virtual void InitSlideBackgroundFillOr()
     {
+        this.aNoFill = this.properties.GetFirstChild<A.NoFill>();
         this.fillType = SCFillType.NoFill;
     }
-    
+
     private SCFillType GetFillType()
     {
         if (this.isDirty)
@@ -114,11 +147,17 @@ internal class SCShapeFill : IShapeFill
             {
                 var hexColor = aRgbColorModelHex.Val!.ToString();
                 this.hexSolidColor = hexColor;
+                this.alphaPercentage = this.GetAlphaPercentage(aRgbColorModelHex);
             }
             else
             {
-                // TODO: get hex color from scheme
-                var schemeColor = this.aSolidFill.SchemeColor;
+                var hex = HexParser.FromSolidFill(this.aSolidFill, (SCSlideMaster)this.slideObject.SlideMaster);
+                this.hexSolidColor = hex.Item2;
+
+                var schemeColor = this.aSolidFill.SchemeColor!;
+                this.alphaPercentage = this.GetAlphaPercentage(schemeColor);
+                this.luminanceModulationPercentage = this.GetLuminanceModulationPercentage(schemeColor);
+                this.luminanceOffsetPercentage = this.GetLuminanceOffsetPercentage(schemeColor);
             }
 
             this.fillType = SCFillType.Solid;
@@ -179,6 +218,54 @@ internal class SCShapeFill : IShapeFill
         }
 
         return this.hexSolidColor;
+    }
+
+    private double? GetAlphaPercentage()
+    {
+        if (this.isDirty)
+        {
+            this.Initialize();
+        }
+
+        return this.alphaPercentage;
+    }
+
+    private double? GetLuminanceModulationPercentage()
+    {
+        if (this.isDirty)
+        {
+            this.Initialize();
+        }
+
+        return this.luminanceModulationPercentage;
+    }
+
+    private double? GetLuminanceOffsetPercentage()
+    {
+        if (this.isDirty)
+        {
+            this.Initialize();
+        }
+
+        return this.luminanceOffsetPercentage;
+    }
+
+    private double GetAlphaPercentage(TypedOpenXmlCompositeElement element)
+    {
+        var alpha = element.Elements<A.Alpha>().FirstOrDefault();
+        return alpha?.Val?.Value / 1000d ?? SCShapeFill.DefaultAlphaPercentage;
+    }
+
+    private double GetLuminanceModulationPercentage(TypedOpenXmlCompositeElement element)
+    {
+        var lumMod = element.Elements<A.LuminanceModulation>().FirstOrDefault();
+        return lumMod?.Val?.Value / 1000d ?? SCShapeFill.DefaultLuminanceModulationPercentage;
+    }
+
+    private double GetLuminanceOffsetPercentage(TypedOpenXmlCompositeElement element)
+    {
+        var lumOff = element.Elements<A.LuminanceOffset>().FirstOrDefault();
+        return lumOff?.Val?.Value / 1000d ?? SCShapeFill.DefaultLuminanceOffsetPercentage;
     }
 
     private SCImage? GetPicture()
