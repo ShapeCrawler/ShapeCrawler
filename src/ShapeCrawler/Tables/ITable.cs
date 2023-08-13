@@ -4,6 +4,7 @@ using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using OneOf;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
@@ -92,15 +93,15 @@ internal sealed class SCTable : SCShape, ITable
     {
         var cell1 = (SCCell)inputCell1;
         var cell2 = (SCCell)inputCell2;
-        if (CannotBeMerged(cell1, cell2))
+        if (cell1 == cell2)   
         {
-            return;
+            throw new SCException("Cannot merge the same cells.");
         }
 
-        int minRowIndex = cell1.RowIndex < cell2.RowIndex ? cell1.RowIndex : cell2.RowIndex;
-        int maxRowIndex = cell1.RowIndex > cell2.RowIndex ? cell1.RowIndex : cell2.RowIndex;
-        int minColIndex = cell1.ColumnIndex < cell2.ColumnIndex ? cell1.ColumnIndex : cell2.ColumnIndex;
-        int maxColIndex = cell1.ColumnIndex > cell2.ColumnIndex ? cell1.ColumnIndex : cell2.ColumnIndex;
+        var minRowIndex = cell1.RowIndex < cell2.RowIndex ? cell1.RowIndex : cell2.RowIndex;
+        var maxRowIndex = cell1.RowIndex > cell2.RowIndex ? cell1.RowIndex : cell2.RowIndex;
+        var minColIndex = cell1.ColumnIndex < cell2.ColumnIndex ? cell1.ColumnIndex : cell2.ColumnIndex;
+        var maxColIndex = cell1.ColumnIndex > cell2.ColumnIndex ? cell1.ColumnIndex : cell2.ColumnIndex;
 
         var aTableRows = this.ATable.Elements<A.TableRow>().ToList();
         if (minColIndex != maxColIndex)
@@ -113,41 +114,9 @@ internal sealed class SCTable : SCShape, ITable
             this.MergeVertically(maxRowIndex, minRowIndex, aTableRows, minColIndex, maxColIndex);
         }
 
-        // Delete a:gridCol and a:tc elements if all columns are merged
-        for (int colIdx = 0; colIdx < this.Columns.Count;)
-        {
-            int? gridSpan = ((SCCell)this.Rows[0].Cells[colIdx]).ATableCell.GridSpan?.Value;
-            if (gridSpan > 1 && this.Rows.All(row =>
-                    ((SCCell)row.Cells[colIdx]).ATableCell.GridSpan?.Value == gridSpan))
-            {
-                int deleteColumnCount = gridSpan.Value - 1;
+        this.RemoveColumnIfNeeded(aTableRows);
 
-                // Delete a:gridCol elements
-                foreach (SCColumn column in this.Columns.Skip(colIdx + 1).Take(deleteColumnCount))
-                {
-                    column.AGridColumn.Remove();
-                    this.Columns[colIdx].Width += column.Width; // append width of deleting column to merged column
-                }
-
-                // Delete a:tc elements
-                foreach (A.TableRow aTblRow in aTableRows)
-                {
-                    IEnumerable<A.TableCell> removeCells =
-                        aTblRow.Elements<A.TableCell>().Skip(colIdx).Take(deleteColumnCount);
-                    foreach (A.TableCell aTblCell in removeCells)
-                    {
-                        aTblCell.Remove();
-                    }
-                }
-
-                colIdx += gridSpan.Value;
-                continue;
-            }
-
-            colIdx++;
-        }
-
-        // Delete a:tr if need
+        // Delete a:tr if needed
         for (var rowIdx = 0; rowIdx < this.Rows.Count;)
         {
             var rowCells = this.Rows[rowIdx].Cells.OfType<SCCell>().ToList();
@@ -172,6 +141,46 @@ internal sealed class SCTable : SCShape, ITable
         }
 
         this.rowCollection.Reset();
+    }
+
+    private void RemoveColumnIfNeeded(List<A.TableRow> aTableRows)
+    {
+        // Delete a:gridCol and a:tc elements if all columns are merged
+        for (var colIdx = 0; colIdx < this.Columns.Count;)
+        {
+            var topColumnCell = ((SCRow)this.Rows[0]).ATableRow.Elements<A.TableCell>().ToList()[colIdx];
+            var topColumnCellSpan = topColumnCell.GridSpan?.Value;
+            var nextBottomColumnCells = this.Rows.Select(row => ((SCRow)row).ATableRow.Elements<A.TableCell>().ToList()[colIdx]).ToList();
+            var sameGridSpan = nextBottomColumnCells.All(c => c.GridSpan?.Value == topColumnCellSpan);
+            if (topColumnCellSpan > 1 && sameGridSpan)
+            {
+                var deleteColumnCount = topColumnCellSpan.Value - 1;
+
+                // Delete a:gridCol elements and append width of deleting column to merged column
+                for (int i = 0; i < deleteColumnCount; i++)
+                {
+                    var column = (SCColumn)this.Columns[colIdx + 1 + i];
+                    column.AGridColumn.Remove();
+                    this.Columns[colIdx].Width += column.Width;
+                }
+
+                // Delete a:tc elements
+                foreach (var aTblRow in aTableRows)
+                {
+                    var removeCells = aTblRow.Elements<A.TableCell>().Skip(colIdx).Take(deleteColumnCount).ToList();
+                    foreach (var aTblCell in removeCells)
+                    {
+                        aTblCell.Remove();
+                    }
+                }
+
+                colIdx += topColumnCellSpan.Value;
+            }
+            else
+            {
+                colIdx++;
+            }
+        }
     }
 
     internal override void Draw(SKCanvas canvas)
