@@ -651,7 +651,6 @@ public class TableTests : SCTest
         // Act
         table.MergeCells(table[0, 0], table[0, 1]);
         table.MergeCells(table[1, 1], table[1, 2]);
-        SaveResult(pres);
         
         // Assert
         table[1, 1].Should().BeSameAs(table[1, 2]);
