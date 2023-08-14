@@ -30,19 +30,12 @@ public interface IMediaShape : IShape
 internal record SCSlideMediaShape : IMediaShape
 {
     private readonly P.Picture pPicture;
-    private readonly SlidePart sdkSlidePart;
     private readonly Shape shape;
     private readonly Lazy<SCSlidePlaceholder?> placeholder;
 
-    internal SCSlideMediaShape(
-        P.Picture pPicture,
-        SCSlide slide,
-        SCSlideShapes shapes,
-        SlidePart sdkSlidePart)
+    internal SCSlideMediaShape(P.Picture pPicture, SCSlideShapes shapes)
     {
         this.pPicture = pPicture;
-        this.sdkSlidePart = sdkSlidePart;
-        this.SlideStructure = slide;
         this.shape = new Shape(pPicture);
         this.placeholder = new Lazy<SCSlidePlaceholder?>(this.ParsePlaceholderOrNull);
     }

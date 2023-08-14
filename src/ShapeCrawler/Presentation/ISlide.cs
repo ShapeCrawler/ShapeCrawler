@@ -32,13 +32,6 @@ public interface ISlide
     ISlideLayout SlideLayout { get; }
 
     /// <summary>
-    ///     Gets instance of <see cref="DocumentFormat.OpenXml.Packaging.SlidePart"/> class of the underlying Open XML SDK.
-    /// </summary>
-    SlidePart SDKSlidePart { get; }
-
-    PresentationDocument SDKPresentationDocument { get; }
-
-    /// <summary>
     /// Gets a list of all textboxes on that slide, including those in tables.
     /// </summary>
     public IList<ITextFrame> GetAllTextFrames();

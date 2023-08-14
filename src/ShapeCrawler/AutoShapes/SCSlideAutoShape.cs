@@ -27,22 +27,18 @@ internal sealed record SCSlideAutoShape : IAutoShape
     private readonly IReadOnlyShapeCollection parentShapeCollection;
     private readonly Shape shape;
 
-    internal SCSlideAutoShape(
-        P.Shape pShape,
-        IReadOnlyShapeCollection parentShapeCollection)
+    internal SCSlideAutoShape(P.Shape pShape, IReadOnlyShapeCollection parentShapeCollection, Shape shape)
     {
         this.pShape = pShape;
         this.parentShapeCollection = parentShapeCollection;
         this.textFrame = new Lazy<SCTextFrame?>(this.ParseTextFrame);
         this.shapeFill = new Lazy<SCShapeFill>(this.GetFill);
         this.lvlToFontData = new ResetableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
-        this.shape = new Shape(pShape);
+        this.shape = shape;
         this.Outline = new SCShapeOutline(this, pShape.ShapeProperties!);
     }
     
     internal event EventHandler<NewAutoShape>? Duplicated;
-
-    #region Public Properties
 
     public IShapeOutline Outline { get; }
 
@@ -95,8 +91,6 @@ internal sealed record SCSlideAutoShape : IAutoShape
         return 1;
     }
     
-    #endregion Public Properties
-
     internal void Draw(SKCanvas slideCanvas)
     {
         var skColorOutline = SKColor.Parse(this.Outline.Color);

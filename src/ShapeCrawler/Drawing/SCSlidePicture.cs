@@ -17,21 +17,42 @@ namespace ShapeCrawler.Drawing;
 
 internal sealed class SCSlidePicture : IPicture
 {
-    private readonly StringValue? blipEmbed;
+    private readonly StringValue blipEmbed;
+    private readonly P.Picture pPicture;
+    private readonly SCSlideShapes parentShapeCollection;
     private readonly A.Blip aBlip;
+    private readonly Shape shape;
 
-    internal SCSlidePicture(P.Picture pPicture, SCSlideShapes shapeCollection, A.Blip aBlip)
+    internal SCSlidePicture(
+        P.Picture pPicture, 
+        SCSlideShapes parentShapeCollection, 
+        A.Blip aBlip,
+        Shape shape)
     {
+        this.pPicture = pPicture;
+        this.parentShapeCollection = parentShapeCollection;
         this.aBlip = aBlip;
-        this.blipEmbed = aBlip.Embed;
+        this.shape = shape;
+        this.blipEmbed = aBlip.Embed!;
     }
 
-    public IImage Image =>
-        SCImage.ForPicture(this.slideTypedOpenXmlPart, this.blipEmbed, this.imageParts);
+    public IImage Image => new SCImage(this, this.blipEmbed.Value);
 
     public string? SvgContent => this.GetSvgContent();
 
+    public int Width { get; set; }
+    public int Height { get; set; }
+    public int Id { get; }
+    public string Name { get; }
+    public bool Hidden { get; }
+    public IPlaceholder Placeholder { get; }
+    public SCGeometry GeometryType { get; }
+    public string? CustomData { get; set; }
     public SCShapeType ShapeType => SCShapeType.Picture;
+    public IAutoShape AsAutoShape()
+    {
+        throw new NotImplementedException();
+    }
 
     /// <summary>
     ///     Copies all required parts from the source slide if they do not exist.
@@ -93,4 +114,12 @@ internal sealed class SCSlidePicture : IPicture
 
         return sReader.ReadToEnd();
     }
+
+    internal SlidePart SDKSLidePart()
+    {
+        return this.parentShapeCollection.SDKSLidePart();
+    }
+
+    public int X { get; set; }
+    public int Y { get; set; }
 }

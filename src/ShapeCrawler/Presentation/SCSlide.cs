@@ -24,6 +24,7 @@ internal sealed class SCSlide : ISlide
     private Lazy<CustomXmlPart?> customXmlPart;
     private readonly int slideWidth;
     private readonly int slideHeight;
+    private readonly SlidePart sdkSlidePart;
 
     internal SCSlide( 
         SlidePart slidePart, 
@@ -34,10 +35,10 @@ internal sealed class SCSlide : ISlide
         int slideHeight,
         PresentationDocument sdkPresentationDocument)
     {
-        this.SDKSlidePart = slidePart;
+        this.sdkSlidePart = slidePart;
         this.slideWidth = slideWidth;
         this.slideHeight = slideHeight;
-        this.shapes = new ResetableLazy<SCSlideShapes>(() => new SCSlideShapes(this.SDKSlidePart, this, slidePart, imageParts, sdkPresentationDocument));
+        this.shapes = new ResetableLazy<SCSlideShapes>(() => new SCSlideShapes(this.sdkSlidePart, this, slidePart, imageParts, sdkPresentationDocument));
         this.backgroundImage = new Lazy<SCImage?>(() => SCImage.ForBackground(this, this.imageParts));
         this.customXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideId = slideId;
@@ -64,27 +65,31 @@ internal sealed class SCSlide : ISlide
         set => this.SetCustomData(value);
     }
 
-    public bool Hidden => this.SDKSlidePart.Slide.Show is not null && this.SDKSlidePart.Slide.Show.Value == false;
-
-    public SlidePart SDKSlidePart { get; }
+    public bool Hidden => this.sdkSlidePart.Slide.Show is not null && this.sdkSlidePart.Slide.Show.Value == false;
+    
     public PresentationDocument SDKPresentationDocument { get; }
     
     internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
 
-    internal TypedOpenXmlPart TypedOpenXmlPart => this.SDKSlidePart;
+    internal TypedOpenXmlPart TypedOpenXmlPart => this.sdkSlidePart;
 
     internal SlideId SlideId { get; }
 
+    internal SlidePart SDKSlidePart()
+    {
+        return this.sdkSlidePart;
+    }
+
     public void Hide()
     {
-        if (this.SDKSlidePart.Slide.Show is null)
+        if (this.sdkSlidePart.Slide.Show is null)
         {
             var showAttribute = new OpenXmlAttribute("show", string.Empty, "0");
-            this.SDKSlidePart.Slide.SetAttribute(showAttribute);
+            this.sdkSlidePart.Slide.SetAttribute(showAttribute);
         }
         else
         {
-            this.SDKSlidePart.Slide.Show = false;
+            this.sdkSlidePart.Slide.Show = false;
         }
     }
 
@@ -177,7 +182,7 @@ internal sealed class SCSlide : ISlide
     private int GetNumber()
     {
         var presentationPart = this.PresCore.SDKPresentation.PresentationPart!;
-        var currentSlidePartId = presentationPart.GetIdOfPart(this.SDKSlidePart);
+        var currentSlidePartId = presentationPart.GetIdOfPart(this.sdkSlidePart);
         var slideIdList =
             presentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
         for (int i = 0; i < slideIdList.Count; i++)
@@ -262,7 +267,7 @@ internal sealed class SCSlide : ISlide
         Stream customXmlPartStream;
         if (this.customXmlPart.Value == null)
         {
-            CustomXmlPart newSlideCustomXmlPart = this.SDKSlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
+            CustomXmlPart newSlideCustomXmlPart = this.sdkSlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
             customXmlPartStream = newSlideCustomXmlPart.GetStream();
             this.customXmlPart = new Lazy<CustomXmlPart?>(() => newSlideCustomXmlPart);
         }
@@ -277,7 +282,7 @@ internal sealed class SCSlide : ISlide
 
     private CustomXmlPart? GetSldCustomXmlPart()
     {
-        foreach (CustomXmlPart customXmlPart in this.SDKSlidePart.CustomXmlParts)
+        foreach (CustomXmlPart customXmlPart in this.sdkSlidePart.CustomXmlParts)
         {
             using var customXmlPartStream = new StreamReader(customXmlPart.GetStream());
             string customXmlPartText = customXmlPartStream.ReadToEnd();

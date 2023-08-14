@@ -4,6 +4,7 @@ using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Shapes;
 using SkiaSharp;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler;
 
@@ -11,53 +12,52 @@ internal record SCSlideOLEObject : IShape
 {
     private readonly Shape shape;
 
-    internal SCSlideOLEObject(
-        OpenXmlCompositeElement pShapeTreeChild, 
-        SCSlide slide,
-        SCSlideShapes shapes)
+    internal SCSlideOLEObject(P.GraphicFrame pGraphicFrame, SCSlideShapes shapes, Shape shape)
     {
-        this.shape = new Shape(pShapeTreeChild);
+        this.shape = shape;
     }
 
     public int X
     {
-        get => this.shape.X(); 
+        get => this.shape.X();
         set => this.shape.UpdateX(value);
     }
 
     public int Y
     {
-        get => this.shape.Y(); 
+        get => this.shape.Y();
         set => this.shape.UpdateY(value);
     }
 
     public int Width
     {
-        get => this.shape.Width(); 
+        get => this.shape.Width();
         set => this.shape.UpdateWidth(value);
     }
 
     public int Height
     {
-        get => this.shape.Height(); 
+        get => this.shape.Height();
         set => this.shape.UpdateHeight(value);
     }
-    
+
     public int Id => this.shape.Id();
-    
+
     public string Name => this.shape.Name();
-    
+
     public bool Hidden => this.shape.Hidden();
     public IPlaceholder? Placeholder => null;
 
     public SCGeometry GeometryType => this.shape.GeometryType();
-    public string? CustomData 
+
+    public string? CustomData
     {
-        get => this.shape.CustomData(); 
+        get => this.shape.CustomData();
         set => this.shape.UpdateCustomData(value);
     }
 
     public SCShapeType ShapeType => SCShapeType.OLEObject;
+
     public IAutoShape? AsAutoShape()
     {
         throw new System.NotImplementedException();

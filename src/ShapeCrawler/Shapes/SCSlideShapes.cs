@@ -24,11 +24,11 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly P.ShapeTree pShapeTree;
     private readonly Lazy<List<IShape>> shapes;
-    private readonly SCSlide slide;
+    private readonly SCSlide parentSlide;
 
-    internal SCSlideShapes(SCSlide slide)
+    internal SCSlideShapes(SCSlide parentSlide)
     {
-        this.slide = slide;
+        this.parentSlide = parentSlide;
         var chartGrFrameHandler = new ChartGraphicFrameHandler();
         var tableGrFrameHandler = new TableGraphicFrameHandler();
         var oleGrFrameHandler = new OleGraphicFrameHandler();
@@ -173,7 +173,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
 
         this.shapes.Reset();
 
-        return new SCSlideMediaShape(this.pShapeTree, this.slide, this, pPicture);
+        return new SCSlideMediaShape(this.pShapeTree, this.parentSlide, this, pPicture);
     }
 
     public IPicture AddPicture(Stream imageStream)
@@ -220,7 +220,8 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         var xEmu = UnitConverter.HorizontalPixelToEmu(x);
         var yEmu = UnitConverter.VerticalPixelToEmu(y);
 
-        var mediaDataPart = this.slide.Presentation.SDKPresentationDocument.CreateMediaDataPart("video/mp4", ".mp4");
+        var mediaDataPart =
+            this.parentSlide.Presentation.SDKPresentationDocument.CreateMediaDataPart("video/mp4", ".mp4");
 
         stream.Position = 0;
         mediaDataPart.FeedData(stream);
@@ -262,7 +263,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         var videoFromFile1 = new DocumentFormat.OpenXml.Drawing.VideoFromFile() { Link = videoRr.Id };
 
         P.ApplicationNonVisualDrawingPropertiesExtensionList
-        applicationNonVisualDrawingPropertiesExtensionList1 = new();
+            applicationNonVisualDrawingPropertiesExtensionList1 = new();
 
         P.ApplicationNonVisualDrawingPropertiesExtension applicationNonVisualDrawingPropertiesExtension1 =
             new() { Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" };
@@ -324,7 +325,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         return new SCSlideMediaShape(this.pShapeTree, this.slideOf, this, this.slideTypedOpenXmlPart);
     }
 
-    public IRectangle AddRectangle(int x, int y, int width, int height)
+    public IAutoShape AddRectangle(int x, int y, int width, int height)
     {
         var newPShape =
             this.CreatePShape(x, y, width, height, DocumentFormat.OpenXml.Drawing.ShapeTypeValues.Rectangle);
@@ -341,7 +342,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         return newShape;
     }
 
-    public IRoundedRectangle AddRoundedRectangle(int x, int y, int w, int h)
+    public IAutoShape AddRoundedRectangle(int x, int y, int w, int h)
     {
         var newPShape = this.CreatePShape(x, y, w, h, DocumentFormat.OpenXml.Drawing.ShapeTypeValues.RoundRectangle);
 
@@ -571,15 +572,15 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
             }
 
             var left = inputPph.Type;
-            if (inputPph.Type == PlaceholderValues.CenteredTitle)
+            if (inputPph.Type == P.PlaceholderValues.CenteredTitle)
             {
-                left = PlaceholderValues.Title;
+                left = P.PlaceholderValues.Title;
             }
 
             var right = pPh.Type;
-            if (pPh.Type == PlaceholderValues.CenteredTitle)
+            if (pPh.Type == P.PlaceholderValues.CenteredTitle)
             {
-                right = PlaceholderValues.Title;
+                right = P.PlaceholderValues.Title;
             }
 
             return left.Equals(right);
@@ -618,16 +619,18 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
 
         var pShape = new P.Shape(
             new P.NonVisualShapeProperties(
-                new P.NonVisualDrawingProperties {
-            Id = (uint)idAndName.Item1, Name = idAndName.Item2
-        },
-        new P.NonVisualShapeDrawingProperties(new DocumentFormat.OpenXml.Drawing.ShapeLocks { NoGrouping = true }),
-        new P.ApplicationNonVisualDrawingProperties()),
-        shapeProperties,
-        new P.TextBody(
-            new DocumentFormat.OpenXml.Drawing.BodyProperties(),
-            new DocumentFormat.OpenXml.Drawing.ListStyle(),
-            aParagraph));
+                new P.NonVisualDrawingProperties
+                {
+                    Id = (uint)idAndName.Item1, Name = idAndName.Item2
+                },
+                new P.NonVisualShapeDrawingProperties(new DocumentFormat.OpenXml.Drawing.ShapeLocks
+                    { NoGrouping = true }),
+                new P.ApplicationNonVisualDrawingProperties()),
+            shapeProperties,
+            new P.TextBody(
+                new DocumentFormat.OpenXml.Drawing.BodyProperties(),
+                new DocumentFormat.OpenXml.Drawing.ListStyle(),
+                aParagraph));
 
         return pShape;
     }
@@ -649,8 +652,8 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         shapeProperties.Append(presetGeometry);
 
         var pConnectionShape = new ConnectionShape(
-                new NonVisualConnectionShapeProperties(
-                    new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
+            new NonVisualConnectionShapeProperties(
+                new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
                 new P.NonVisualConnectorShapeDrawingProperties(),
                 new P.ApplicationNonVisualDrawingProperties()),
             shapeProperties);
@@ -721,11 +724,74 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         {
             if (pShapeTreeChild is P.GroupShape pGroupShape)
             {
-                shapesValue.Add(SCSlideGroupShape(pGroupShape, this.slideOf, this));
+                shapesValue.Add(new SCSlideGroupShape(pGroupShape, this));
             }
-            else if (pShapeTreeChild is P.ConnectionShape)
+            else if (pShapeTreeChild is P.ConnectionShape pConnectionShape)
             {
-                return new SCLine(pShapeTreeChild, this.slideOf, this);
+                shapesValue.Add(new SCLine(pConnectionShape, this, new Shape(pShapeTreeChild)));
+            }
+            else if (pShapeTreeChild is P.Shape pShape)
+            {
+                shapesValue.Add(new SCSlideAutoShape(pShape, this, new Shape(pShapeTreeChild)));
+            }
+            else if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
+            {
+                var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>();
+                if (aGraphicData!.Uri!.Value!.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
+                        StringComparison.Ordinal))
+                {
+                    shapesValue.Add(new SCSlideOLEObject(pGraphicFrame, this, new Shape(pShapeTreeChild)));
+                    continue;
+                }
+
+                var pPicture = pShapeTreeChild.Descendants<P.Picture>().FirstOrDefault();
+                if (pPicture != null)
+                {
+                    var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
+                    var blipEmbed = aBlip?.Embed;
+                    if (blipEmbed is null)
+                    {
+                        continue;
+                    }
+
+                    shapesValue.Add(new SCSlidePicture(pPicture, this, aBlip!, new Shape(pShapeTreeChild)));
+                    continue;
+                }
+            }
+            else if (pShapeTreeChild is P.Picture pPicture)
+            {
+                var element = pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!.ChildElements
+                    .FirstOrDefault();
+
+                switch (element)
+                {
+                    case A.AudioFromFile:
+                    {
+                        var aAudioFile = pPicture.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
+                            .GetFirstChild<A.AudioFromFile>();
+                        if (aAudioFile is not null)
+                        {
+                            shapesValue.Add(new SCSlideMediaShape(pPicture, this));
+                        }
+
+                        continue;
+                    }
+                    case A.VideoFromFile:
+                    {
+                        shapesValue.Add(new SCSlideMediaShape(pPicture, this));
+                        continue;
+                    }
+                }
+
+                var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
+                var blipEmbed = aBlip?.Embed;
+                if (blipEmbed is null)
+                {
+                    continue;
+                }
+
+                shapesValue.Add(new SCSlidePicture(pPicture, this, aBlip!, new Shape(pShapeTreeChild)));
+                continue;
             }
         }
 
@@ -758,7 +824,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
 
     private P.Picture CreatePPicture(Stream imageStream, string shapeName)
     {
-        var slidePart = this.slide.TypedOpenXmlPart;
+        var slidePart = this.parentSlide.TypedOpenXmlPart;
         var imgPartRId = slidePart.GetNextRelationshipId();
         var imagePart = slidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
         imageStream.Position = 0;
@@ -767,10 +833,10 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
         var shapeId = (uint)this.GenerateNextShapeId();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
-        {
-            Id = shapeId, Name = $"{shapeName} {shapeId}"
-        }
-        ;
+            {
+                Id = shapeId, Name = $"{shapeName} {shapeId}"
+            }
+            ;
         var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
         var appNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
 
@@ -802,5 +868,10 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         this.pShapeTree.Append(pPicture);
 
         return pPicture;
+    }
+
+    internal SlidePart SDKSLidePart()
+    {
+        return this.parentSlide.SDKSlidePart();
     }
 }

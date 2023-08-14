@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -49,31 +50,18 @@ public interface IImage
 
 internal sealed class SCImage : IImage
 {
-    private readonly StringValue blipEmbed;
-    private readonly OpenXmlPart openXmlPart;
-    private byte[]? bytes;
-    private readonly List<ImagePart> imageParts;
+    private readonly ImagePart sdkImagePart;
 
-    private SCImage(
-        ImagePart imagePart,
-        StringValue blipEmbed,
-        OpenXmlPart openXmlPart,
-        List<ImagePart> imageParts)
+    internal SCImage(SCSlidePicture slidePicture, string blipEmbedValue)
     {
-        this.SDKImagePart = imagePart;
-        this.blipEmbed = blipEmbed;
-        this.openXmlPart = openXmlPart;
-        this.imageParts = imageParts;
-        this.MIME = this.SDKImagePart.ContentType;
+        this.sdkImagePart = slidePicture.SDKSLidePart().GetPartById(blipEmbedValue);
     }
-
-    public string MIME { get; }
+    
+    public string MIME => this.sdkImagePart.ContentType;
 
     public Task<byte[]> BinaryData => this.GetBinaryData();
 
     public string Name => this.GetName();
-
-    internal ImagePart SDKImagePart { get; private set; }
 
     public void UpdateImage(Stream stream)
     {
@@ -101,13 +89,6 @@ internal sealed class SCImage : IImage
     {
         byte[] sourceBytes = File.ReadAllBytes(filePath);
         this.SetImage(sourceBytes);
-    }
-
-    internal static SCImage ForPicture(OpenXmlPart openXmlPart, StringValue? blipEmbed, List<ImagePart> imageParts)
-    {
-        var imagePart = (ImagePart)openXmlPart.GetPartById(blipEmbed!.Value!);
-
-        return new SCImage(imagePart, blipEmbed, openXmlPart, imageParts);
     }
 
     internal static SCImage? ForBackground(SCSlide slide, List<ImagePart> imageParts)

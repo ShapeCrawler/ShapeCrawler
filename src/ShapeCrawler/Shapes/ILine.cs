@@ -27,13 +27,17 @@ public interface ILine : IAutoShape
 
 internal sealed record SCLine : ILine
 {
+    private readonly P.ConnectionShape pConnectionShape;
+    private readonly SCSlideShapes shapeCollection;
     private readonly Shape shape;
 
     internal SCLine(
         P.ConnectionShape pConnectionShape,
-        SCSlideShapes shapeCollection,
+        SCSlideShapes parentShapeCollection,
         Shape shape)
     {
+        this.pConnectionShape = pConnectionShape;
+        this.shapeCollection = parentShapeCollection;
         this.shape = shape;
     }
 

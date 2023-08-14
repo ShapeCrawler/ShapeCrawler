@@ -8,9 +8,9 @@ namespace ShapeCrawler.Services;
 
 internal static class FontService
 {
-    internal static int GetAdjustedFontSize(string text, ITextPortionFont font, SCShape scShape)
+    internal static int GetAdjustedFontSize(string text, ITextPortionFont font, int shapeWidth, int shapeHeight)
     {
-        var surface = SKSurface.Create(new SKImageInfo(scShape.Width, scShape.Height));
+        var surface = SKSurface.Create(new SKImageInfo(shapeWidth, shapeHeight));
         var canvas = surface.Canvas;
 
         var paint = new SKPaint();
@@ -20,9 +20,9 @@ internal static class FontService
         paint.IsAntialias = true;
         const int defaultPaddingSize = 10;
         const int topBottomPadding = defaultPaddingSize * 2;
-        var wordMaxY = scShape.Height - topBottomPadding;
+        var wordMaxY = shapeHeight - topBottomPadding;
 
-        var rect = new SKRect(defaultPaddingSize, defaultPaddingSize, scShape.Width - defaultPaddingSize, scShape.Height - defaultPaddingSize);
+        var rect = new SKRect(defaultPaddingSize, defaultPaddingSize, shapeWidth - defaultPaddingSize, shapeHeight - defaultPaddingSize);
 
         var spaceWidth = paint.MeasureText(" ");
 
@@ -42,6 +42,7 @@ internal static class FontService
             else
             {
                 wordY += paint.FontSpacing;
+                wordX = rect.Left;
                 wordX = rect.Left;
 
                 if (wordY > wordMaxY)
