@@ -297,12 +297,23 @@ internal abstract class SCShape : IShape
     private double GetRotationDegrees()
     {
         var pSpPr = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !;
+
+        // this could happen in - for example - a group shape.
+        if(pSpPr is null) {
+         if(this is SCGroupShape groupShape) {
+             var rotationAngle = ((P.GroupShape)groupShape.PShapeTreeChild).GroupShapeProperties!.TransformGroup?.Rotation;
+             return UnitConverter.AngleValueToDegrees(rotationAngle ?? 0);
+         }
+
+         return 0;
+        }
+
         var aXfrm = pSpPr.Transform2D;
         
         if(aXfrm is null) {
             var placeholder = (SCPlaceholder)this.Placeholder!;
-            var reference = placeholder.ReferencedShape.Value!;
-            return reference.RotationDegrees;
+            var reference = placeholder?.ReferencedShape.Value;
+            return reference?.RotationDegrees ?? 0;
         }
 
         return UnitConverter.AngleValueToDegrees(aXfrm?.Rotation ?? 0);

@@ -377,7 +377,7 @@ public class ShapeTests : SCTest
         double rotation = shape.RotationDegrees;
 
         // Assert
-        rotation.Should().BeApproximately(325,2);
+        rotation.Should().BeApproximately(325,1);
     }
 
     [Fact()]
@@ -389,6 +389,30 @@ public class ShapeTests : SCTest
         double rotation = shape.RotationDegrees;
 
         // Assert
-        rotation.Should().BeApproximately(282,2);
+        rotation.Should().BeApproximately(282,1);
+    }
+
+     [Fact()]
+    public void RotationDegrees_Getter_returns_zero_for_group()
+    {
+        IShape shape = SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[6].Shapes.First(sp => sp.Name == "NoRotationGroup");
+
+        // Act
+        double rotation = shape.RotationDegrees;
+
+        // Assert
+        rotation.Should().Be(0);
+    }
+
+         [Fact()]
+    public void RotationDegrees_Getter_returns_degrees_for_group()
+    {
+        IShape shape = SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[6].Shapes.First(sp => sp.Name == "RotationGroup");
+
+        // Act
+        double rotation = shape.RotationDegrees;
+
+        // Assert
+        rotation.Should().BeApproximately(56,1);
     }
 }
