@@ -11,6 +11,7 @@ using NUnit.Framework;
 
 namespace ShapeCrawler.Tests.Unit;
 
+[TestFixture]
 public class ShapeTests : SCTest
 {
     [Test]
