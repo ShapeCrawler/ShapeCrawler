@@ -206,6 +206,8 @@
     <EmbeddedResource Include="Resource\autoshape\001.pptx" />
     <None Remove="Resource\autoshape\autoshape-case017_slide-number.pptx" />
     <EmbeddedResource Include="Resource\autoshape\autoshape-case017_slide-number.pptx" />
+    <None Remove="Resource\autoshape\autoshape-case018_rotation.pptx" />
+    <EmbeddedResource Include="Resource\autoshape\autoshape-case018_rotation.pptx" />
     <None Remove="Resource\test-mp3.mp3" />
     <EmbeddedResource Include="Resource\test-mp3.mp3" />
     <None Remove="Resource\039.pptx" />

@@ -81,7 +81,7 @@ internal abstract class SCShape : IShape
         set => this.SetWidth(value);
     }
 
-    public double RotationDegrees{
+    public double Rotation{
         get => this.GetRotationDegrees();
         set => this.SetRotationDegrees(value);
     }
@@ -313,7 +313,7 @@ internal abstract class SCShape : IShape
         if(aXfrm is null) {
             var placeholder = (SCPlaceholder)this.Placeholder!;
             var reference = placeholder?.ReferencedShape.Value;
-            return reference?.RotationDegrees ?? 0;
+            return reference?.Rotation ?? 0;
         }
 
         return UnitConverter.AngleValueToDegrees(aXfrm?.Rotation ?? 0);

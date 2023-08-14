@@ -33,7 +33,7 @@ public interface IShape
     /// <summary>
     /// Gets the rotation of the shape in degrees.
     /// </summary>
-    double RotationDegrees { get; }
+    double Rotation { get; }
 
     /// <summary>
     ///     Gets identifier of the shape.
