@@ -353,4 +353,42 @@ public class ShapeTests : SCTest
         shapeCase1.Hidden.Should().BeTrue();
         shapeCase2.Hidden.Should().BeFalse();
     }
+
+    [Fact()]
+    public void RotationDegrees_Getter_returns_zero_if_no_rotation()
+    {
+        // Arrange
+        IShape shape = SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[5].Shapes.First(sp => sp.Name == "NoRotationTextBox");
+
+        // Act
+        double rotation = shape.RotationDegrees;
+
+        // Assert
+        rotation.Should().Be(0);
+    }
+
+    [Fact()]
+    public void RotationDegrees_Getter_gets_angle_from_shape_directly()
+    {
+        // Arrange
+        IShape shape = SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[5].Shapes.First(sp => sp.Name == "RotationTextBox");
+
+        // Act
+        double rotation = shape.RotationDegrees;
+
+        // Assert
+        rotation.Should().BeApproximately(325,2);
+    }
+
+    [Fact()]
+    public void RotationDegrees_Getter_gets_rotation_from_placeholder()
+    {
+        IShape shape = SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[6].Shapes.First(sp => sp.Name == "VerticalTextPH");
+
+        // Act
+        double rotation = shape.RotationDegrees;
+
+        // Assert
+        rotation.Should().BeApproximately(282,2);
+    }
 }

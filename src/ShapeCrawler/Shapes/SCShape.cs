@@ -81,6 +81,11 @@ internal abstract class SCShape : IShape
         set => this.SetWidth(value);
     }
 
+    public double RotationDegrees{
+        get => this.GetRotationDegrees();
+        set => this.SetRotationDegrees(value);
+    }
+
     internal SCSlideMaster SlideMasterInternal
     {
         get
@@ -230,6 +235,11 @@ internal abstract class SCShape : IShape
         }
     }
 
+    protected virtual void SetRotationDegrees(double value)
+    {
+        throw new NotImplementedException();
+    }
+
     private void SetCustomData(string value)
     {
         string customDataElement =
@@ -283,6 +293,21 @@ internal abstract class SCShape : IShape
         return UnitConverter.VerticalEmuToPixel(yEmu);
     }
 
+
+    private double GetRotationDegrees()
+    {
+        var pSpPr = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !;
+        var aXfrm = pSpPr.Transform2D;
+        
+        if(aXfrm is null) {
+            var placeholder = (SCPlaceholder)this.Placeholder!;
+            var reference = placeholder.ReferencedShape.Value!;
+            return reference.RotationDegrees;
+        }
+
+        return UnitConverter.AngleValueToDegrees(aXfrm?.Rotation ?? 0);
+    }
+    
     private int GetWidthPixels()
     {
         var aExtents = this.PShapeTreeChild.Descendants<A.Extents>().FirstOrDefault();
