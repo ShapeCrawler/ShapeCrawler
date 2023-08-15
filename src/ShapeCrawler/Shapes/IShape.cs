@@ -31,6 +31,11 @@ public interface IShape
     int Height { get; set; }
 
     /// <summary>
+    /// Gets the rotation of the shape in degrees.
+    /// </summary>
+    double Rotation { get; }
+
+    /// <summary>
     ///     Gets identifier of the shape.
     /// </summary>
     int Id { get; }
@@ -64,7 +69,7 @@ public interface IShape
     ///     Gets shape type.
     /// </summary>
     SCShapeType ShapeType { get; }
-    
+
     /// <summary>
     ///     Gets parent Slide, SlideLayout or SlideMaster.
     /// </summary>
