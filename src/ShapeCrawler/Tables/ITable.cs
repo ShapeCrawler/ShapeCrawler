@@ -259,10 +259,13 @@ internal sealed class SCTable : SCShape, ITable
     
     private void MergeVertically(int bottomIndex, int topRowIndex, List<A.TableRow> aTableRows, int leftColIndex, int rightColIndex)
     {
-        int verticalMergingCount = bottomIndex - topRowIndex + 1;
+        var verticalMergingCount = bottomIndex - topRowIndex + 1;
     
         // Set row span value for the first cell in the merged cells
-        foreach (var aTblCell in aTableRows[topRowIndex].Elements<A.TableCell>().Skip(leftColIndex).Take(rightColIndex + 1))
+        var numMergingCells = rightColIndex == 0 ? 1 : rightColIndex;
+        var horizontalCells =
+            aTableRows[topRowIndex].Elements<A.TableCell>().Skip(leftColIndex).Take(numMergingCells);
+        foreach (var aTblCell in horizontalCells)
         {
             aTblCell.RowSpan = new Int32Value(verticalMergingCount);
         }
