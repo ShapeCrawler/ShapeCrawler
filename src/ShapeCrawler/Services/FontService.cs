@@ -43,7 +43,6 @@ internal static class FontService
             {
                 wordY += paint.FontSpacing;
                 wordX = rect.Left;
-                wordX = rect.Left;
 
                 if (wordY > wordMaxY)
                 {

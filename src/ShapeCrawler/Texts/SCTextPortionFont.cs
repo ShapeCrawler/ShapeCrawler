@@ -14,13 +14,11 @@ internal sealed class SCTextPortionFont : ITextPortionFont
     private readonly A.FontScheme aFontScheme;
     private readonly Lazy<SCFontColor> fontColor;
     private readonly ResetableLazy<A.LatinFont> latinFont;
-    private readonly ITextFrameContainer textFrameContainer;
     private readonly SCParagraph paragraph;
     private readonly IFontSize size;
 
     internal SCTextPortionFont(
         A.Text aText, 
-        ITextFrameContainer textFrameContainer, 
         SCParagraph paragraph,
         ThemeFontScheme themeFontScheme,
         IFontSize size,
@@ -29,8 +27,7 @@ internal sealed class SCTextPortionFont : ITextPortionFont
         this.aText = aText;
         this.paragraph = paragraph;
         this.latinFont = new ResetableLazy<A.LatinFont>(this.ParseALatinFont);
-        this.fontColor = new Lazy<SCFontColor>(() => new SCFontColor(textFrameContainer, paragraph, this.aText, paraLvlToFontData));
-        this.textFrameContainer = textFrameContainer;
+        this.fontColor = new Lazy<SCFontColor>(() => new SCFontColor(paragraph, this.aText, paraLvlToFontData));
         this.aFontScheme = themeFontScheme.AFontScheme;
         this.size = size;
     }

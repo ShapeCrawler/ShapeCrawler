@@ -24,7 +24,7 @@ internal sealed class SCParagraphTextPortion : IParagraphPortion
         this.aRun = aRun;
         
         var themeFontScheme = (ThemeFontScheme)textFrameContainer.AutoShape.SlideMasterInternal.Theme.FontScheme;
-        var textPortionSize = new TextPortionSize(this.AText, paragraph, paraLvlToFontData);
+        var textPortionSize = new PortionSize(this.AText, this);
         this.font = new ResetableLazy<SCTextPortionFont>(() => new SCTextPortionFont(this.AText, textFrameContainer, paragraph, themeFontScheme, textPortionSize, paraLvlToFontData));
     }
 

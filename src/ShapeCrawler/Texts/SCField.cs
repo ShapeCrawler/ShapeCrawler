@@ -10,23 +10,19 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class SCFieldPortion : IParagraphPortion
+internal sealed class SCField : IParagraphPortion
 {
     private readonly ResetableLazy<ITextPortionFont> font;
     private readonly A.Field aField;
-    private readonly ISlideStructure slideStructure;
     private readonly PortionText portionText;
     private readonly A.Text? aText;
 
-    internal SCFieldPortion(
+    internal SCField(
         A.Field aField,
-        ISlideStructure slideStructure,
-        ITextFrameContainer textFrameContainer,
-        SCParagraph paragraph,
+        SCParagraph parentParagraph,
         Action onRemoveHandler,
         Dictionary<int, FontData> paraLvlToFontData)
     {
-        this.slideStructure = slideStructure;
         this.aText = aField.GetFirstChild<A.Text>();
         this.Removed += onRemoveHandler;
 
@@ -39,20 +35,20 @@ internal sealed class SCFieldPortion : IParagraphPortion
                 textFrameContainer.AutoShape.Placeholder?.Type == SCPlaceholderType.SlideNumber)
             {
                 var masterSlideNumberFont = layout.SlideMaster.SlideNumber!.Font;
-                var pTextBody = (P.TextBody)paragraph.AParagraph.Parent!;
+                var pTextBody = (P.TextBody)parentParagraph.AParagraph.Parent!;
                 var layoutNumberSize = new LayoutSlideNumberSize(pTextBody, masterSlideNumberFont);
                 var textPortionFont = new SCTextPortionFont(
                     this.aText!,
                     textFrameContainer,
-                    paragraph,
+                    parentParagraph,
                     themeFontScheme,
                     layoutNumberSize,
                     paraLvlToFontData);
                 return textPortionFont;
             }
 
-            var textPortionSize = new TextPortionSize(this.aText!, paragraph, paraLvlToFontData);
-            return new SCTextPortionFont(this.aText!, textFrameContainer, paragraph, themeFontScheme, textPortionSize, paraLvlToFontData);
+            var textPortionSize = new PortionSize(this.aText!, this, paraLvlToFontData);
+            return new SCTextPortionFont(this.aText!, textFrameContainer, parentParagraph, themeFontScheme, textPortionSize, paraLvlToFontData);
         });
 
         this.portionText = new PortionText(this.aField);
@@ -99,7 +95,7 @@ internal sealed class SCFieldPortion : IParagraphPortion
             return null;
         }
 
-        return new SCField(this.aField);
+        return new ShapeCrawler.SCField(this.aField);
     }
 
     private SCColor ParseTextHighlight()

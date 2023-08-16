@@ -20,6 +20,21 @@ internal static class CompositeElementExtensions
             _ => throw new SCException()
         };
     }
+    
+    internal static P.NonVisualDrawingProperties GetNonVisualDrawingProperties(
+        this OpenXmlElement xmlElement)
+    {
+        // Get <p:cNvSpPr>
+        return xmlElement switch
+        {
+            P.GraphicFrame pGraphicFrame => pGraphicFrame.NonVisualGraphicFrameProperties!.NonVisualDrawingProperties!,
+            P.Shape pShape => pShape.NonVisualShapeProperties!.NonVisualDrawingProperties!,
+            P.Picture pPicture => pPicture.NonVisualPictureProperties!.NonVisualDrawingProperties!,
+            P.GroupShape pGroupShape => pGroupShape.NonVisualGroupShapeProperties!.NonVisualDrawingProperties!,
+            P.ConnectionShape pCxnSp => pCxnSp.NonVisualConnectionShapeProperties!.NonVisualDrawingProperties!,
+            _ => throw new SCException()
+        };
+    }
 
     internal static P.ApplicationNonVisualDrawingProperties GetPNvPr(this OpenXmlCompositeElement compositeElement)
     {

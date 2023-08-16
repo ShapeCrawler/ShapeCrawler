@@ -53,7 +53,7 @@ internal sealed class SCSlideTable : ITable
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly ResetableLazy<SCRowCollection> rowCollection;
 
-    internal SCSlideTable(OpenXmlCompositeElement pShapeTreeChild, SCSlide slide, SCSlideShapes shapes)
+    internal SCSlideTable(OpenXmlCompositeElement pShapeTreeChild, SCSlideShapes shapes)
     {
         var graphicFrame = (P.GraphicFrame)pShapeTreeChild;
         this.rowCollection =

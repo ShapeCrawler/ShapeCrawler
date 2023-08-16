@@ -54,7 +54,7 @@ internal sealed class SCImage : IImage
 
     internal SCImage(SCSlidePicture slidePicture, string blipEmbedValue)
     {
-        this.sdkImagePart = slidePicture.SDKSLidePart().GetPartById(blipEmbedValue);
+        this.sdkImagePart = slidePicture.SDKSlidePart().GetPartById(blipEmbedValue);
     }
     
     public string MIME => this.sdkImagePart.ContentType;

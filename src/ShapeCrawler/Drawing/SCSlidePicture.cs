@@ -15,7 +15,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class SCSlidePicture : IPicture
+internal sealed record SCSlidePicture : SCSlideShape, IPicture
 {
     private readonly StringValue blipEmbed;
     private readonly P.Picture pPicture;
@@ -24,10 +24,10 @@ internal sealed class SCSlidePicture : IPicture
     private readonly Shape shape;
 
     internal SCSlidePicture(
-        P.Picture pPicture, 
-        SCSlideShapes parentShapeCollection, 
+        P.Picture pPicture,
+        SCSlideShapes parentShapeCollection,
         A.Blip aBlip,
-        Shape shape)
+        Shape shape) : base(pPicture)
     {
         this.pPicture = pPicture;
         this.parentShapeCollection = parentShapeCollection;
@@ -36,16 +36,16 @@ internal sealed class SCSlidePicture : IPicture
         this.blipEmbed = aBlip.Embed!;
     }
 
-    public IImage Image => new SCImage(this, this.blipEmbed.Value);
+    public IImage Image => new SCImage(this, this.blipEmbed.Value!);
 
     public string? SvgContent => this.GetSvgContent();
 
     public int Width { get; set; }
     public int Height { get; set; }
-    public int Id { get; }
-    public string Name { get; }
+    public int Id => this.shape.Id();
+    public string Name => this.shape.Name();
     public bool Hidden { get; }
-    public IPlaceholder Placeholder { get; }
+    public IPlaceholder? Placeholder { get; }
     public SCGeometry GeometryType { get; }
     public string? CustomData { get; set; }
     public SCShapeType ShapeType => SCShapeType.Picture;
@@ -54,27 +54,24 @@ internal sealed class SCSlidePicture : IPicture
         throw new NotImplementedException();
     }
 
-    /// <summary>
-    ///     Copies all required parts from the source slide if they do not exist.
-    /// </summary>
-    /// <param name="sourceSlide">Source slide.</param>
-    internal void CopyParts(ISlideStructure sourceSlide)
+    internal void CopyParts()
     {
         if (this.blipEmbed is null)
         {
             return;
         }
 
-        if (this.slideTypedOpenXmlPart.GetPartById(this.blipEmbed.Value!) is not ImagePart imagePart)
+        var sdkSlidePart = this.parentShapeCollection.SDKSlidePart();
+        if (sdkSlidePart.GetPartById(this.blipEmbed.Value!) is not ImagePart imagePart)
         {
             return;
         }
 
         // Creates a new part in this slide with a new Id...
-        var imgPartRId = this.slideTypedOpenXmlPart.GetNextRelationshipId();
+        var imgPartRId = sdkSlidePart.GetNextRelationshipId();
 
         // Adds to current slide parts and update relation id.
-        var nImagePart = this.slideTypedOpenXmlPart.AddNewPart<ImagePart>(imagePart.ContentType, imgPartRId);
+        var nImagePart = sdkSlidePart.AddNewPart<ImagePart>(imagePart.ContentType, imgPartRId);
         using var stream = imagePart.GetStream(FileMode.Open);
         stream.Position = 0;
         nImagePart.FeedData(stream);
@@ -82,17 +79,17 @@ internal sealed class SCSlidePicture : IPicture
         this.blipEmbed.Value = imgPartRId;
     }
 
-    internal override void Draw(SKCanvas canvas)
+    internal void Draw(SKCanvas canvas)
     {
         throw new NotImplementedException();
     }
 
-    internal override IHtmlElement ToHtmlElement()
+    internal IHtmlElement ToHtmlElement()
     {
         throw new NotImplementedException();
     }
 
-    internal override string ToJson()
+    internal string ToJson()
     {
         throw new NotImplementedException();
     }
@@ -108,18 +105,23 @@ internal sealed class SCSlidePicture : IPicture
 
         var svgId = svgBlipList.First().Embed!.Value!;
 
-        var imagePart = (ImagePart)this.slideTypedOpenXmlPart.GetPartById(svgId);
+        var imagePart = (ImagePart)this.SDKSlidePart().GetPartById(svgId);
         using var svgStream = imagePart.GetStream(FileMode.Open, FileAccess.Read);
         using var sReader = new StreamReader(svgStream);
 
         return sReader.ReadToEnd();
     }
 
-    internal SlidePart SDKSLidePart()
+    internal SlidePart SDKSlidePart()
     {
-        return this.parentShapeCollection.SDKSLidePart();
+        return this.parentShapeCollection.SDKSlidePart();
     }
 
     public int X { get; set; }
     public int Y { get; set; }
+    
+    internal override bool Copyable()
+    {
+        return true;
+    }
 }

@@ -25,14 +25,14 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
 {
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly P.ShapeTree pShapeTree;
-    private readonly Lazy<List<IShape>> shapes;
+    private readonly ResetableLazy<List<IShape>> shapes;
     private readonly SCSlide parentSlide;
 
     internal SCSlideShapes(SCSlide parentSlide, P.ShapeTree pShapeTree)
     {
         this.parentSlide = parentSlide;
-        this.pShapeTree =  pShapeTree;
-        this.shapes = new Lazy<List<IShape>>(this.ParseShapes);
+        this.pShapeTree = pShapeTree;
+        this.shapes = new ResetableLazy<List<IShape>>(this.ParseShapes);
     }
 
     public int Count => this.shapes.Value.Count;
@@ -49,20 +49,20 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         return 1;
     }
 
-    public IShape Add(IShape addingShape)
+    public IShape Add(SCSlideShape addingShape)
     {
         // SmartArt (<p:graphicFrame /> http://schemas.openxmlformats.org/drawingml/2006/diagram) are not in the shape collection, data is referenced.
         // Chart (<p:graphicFrame /> http://schemas.openxmlformats.org/drawingml/2006/chart) are not in the shape collection, data is referenced.
         // Object (<p:graphicFrame /> http://schemas.openxmlformats.org/presentationml/2006/ole) are not in the shape collection, data is referenced.
         // Alternate content(<mc:AlternateContent /> http://schemas.openxmlformats.org/officeDocument/2006/math"> are not in the shape collection, data is referenced.
-        if (addingShape is SCSlideOLEObject or IChart or IMediaShape)
+        // if (addingShape is SCSlideOLEObject or IChart or IMediaShape)
+        if (!addingShape.Copyable())
         {
             throw new SCException($"Adding {addingShape.GetType().Name} is not supported yet.");
         }
 
         // Clone shape tree child.
-        IShapeInternal addingShapeInternal = addingShape.CloneSDKElement();
-        var addingShapeClone = (TypedOpenXmlCompositeElement)addingShapeInternal.PShapeTreeChild.CloneNode(true);
+        var addingShapeClone = addingShape.CopyUnderlyingTypedOpenXmlCompositeElement();
         var id = this.CalculateNextShapeId();
         addingShapeClone.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
 
@@ -113,7 +113,6 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
             addingShapeClone.GetNonVisualDrawingProperties().Name = addingShape.Name + " " + lastSuffix;
         }
 
-        this.shapes.Value.Add(newShape);
         this.pShapeTree.Append(addingShapeClone);
 
         this.shapes.Reset();
@@ -519,67 +518,6 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         return this.shapes.Value.FirstOrDefault(shape => shape.Name == shapeName);
     }
 
-    public SCShape? GetReferencedShapeOrNull(P.PlaceholderShape inputPph)
-    {
-        var phShapes = this.shapes.Value.Where(sp => sp.Placeholder != null).OfType<SCShape>();
-        var referencedShape = phShapes.FirstOrDefault(IsEqual);
-
-        // https://answers.microsoft.com/en-us/msoffice/forum/all/placeholder-master/0d51dcec-f982-4098-b6b6-94785304607a?page=3
-        if (referencedShape == null && inputPph.Index?.Value == 4294967295 && this.slideOf.IsT2)
-        {
-            var custom = phShapes.Select(sp =>
-            {
-                var placeholder = (SCPlaceholder?)sp.Placeholder;
-                return new
-                {
-                    shape = sp,
-                    index = placeholder?.PPlaceholderShape.Index?.Value
-                };
-            });
-
-            return custom.FirstOrDefault(x => x.index == 1)?.shape;
-        }
-
-        return referencedShape;
-
-        bool IsEqual(SCShape collectionShape)
-        {
-            var placeholder = (SCPlaceholder)collectionShape.Placeholder!;
-            var pPh = placeholder.PPlaceholderShape;
-
-            if (inputPph.Index is not null && pPh.Index is not null &&
-                inputPph.Index == pPh.Index)
-            {
-                return true;
-            }
-
-            if (inputPph.Type == null || pPh.Type == null)
-            {
-                return false;
-            }
-
-            if (inputPph.Type == P.PlaceholderValues.Body &&
-                inputPph.Index is not null && pPh.Index is not null)
-            {
-                return inputPph.Index == pPh.Index;
-            }
-
-            var left = inputPph.Type;
-            if (inputPph.Type == P.PlaceholderValues.CenteredTitle)
-            {
-                left = P.PlaceholderValues.Title;
-            }
-
-            var right = pPh.Type;
-            if (pPh.Type == P.PlaceholderValues.CenteredTitle)
-            {
-                right = P.PlaceholderValues.Title;
-            }
-
-            return left.Equals(right);
-        }
-    }
-
     public IEnumerator<IShape> GetEnumerator()
     {
         return this.shapes.Value.GetEnumerator();
@@ -786,7 +724,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
                 shapesValue.Add(new SCSlidePicture(pPicture, this, aBlip!, new Shape(pShapeTreeChild)));
                 continue;
             }
-            else if (isChartPGraphicFrame(pShapeTreeChild))
+            else if (this.IsChartPGraphicFrame(pShapeTreeChild))
             {
                 var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
                 var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
@@ -825,14 +763,33 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
 
                 shapesValue.Add(new SCSlideChart((P.GraphicFrame)pShapeTreeChild, this));
             }
+            else if (this.IsTablePGraphicFrame(pShapeTreeChild))
+            {
+                shapesValue.Add(new SCSlideTable(pShapeTreeChild, this));
+            }
         }
 
         return shapesValue;
     }
 
-    private bool isChartPGraphicFrame(TypedOpenXmlCompositeElement pShapeTreeChild)
+    private bool IsTablePGraphicFrame(TypedOpenXmlCompositeElement pShapeTreeChild)
     {
         if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
+        {
+            var graphicData = pGraphicFrame.Graphic!.GraphicData!;
+            if (graphicData.Uri!.Value!.Equals("http://schemas.openxmlformats.org/drawingml/2006/table",
+                    StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool IsChartPGraphicFrame(TypedOpenXmlCompositeElement pShapeTreeChild)
+    {
+        if (pShapeTreeChild is P.GraphicFrame)
         {
             var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
             if (aGraphicData.Uri!.Value!.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart",
@@ -917,7 +874,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         return pPicture;
     }
 
-    internal SlidePart SDKSLidePart()
+    internal SlidePart SDKSlidePart()
     {
         return this.parentSlide.SDKSlidePart();
     }

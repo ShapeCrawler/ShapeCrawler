@@ -52,20 +52,12 @@ internal sealed class SCPortionCollection : IPortionCollection
 {
     private readonly ResetableLazy<List<IParagraphPortion>> portions;
     private readonly A.Paragraph aParagraph;
-    private readonly ISlideStructure slideStructure;
-    private readonly ITextFrameContainer textFrameContainer;
     private readonly SCParagraph paragraph;
 
-    internal SCPortionCollection(
-        A.Paragraph aParagraph,  
-        ISlideStructure slideStructure,
-        ITextFrameContainer textFrameContainer,
-        SCParagraph paragraph)
+    internal SCPortionCollection(A.Paragraph aParagraph, SCParagraph paragraph)
     {
         this.aParagraph = aParagraph;
-        this.slideStructure = slideStructure;
         this.portions = new ResetableLazy<List<IParagraphPortion>>(this.ParsePortions);
-        this.textFrameContainer = textFrameContainer;
         this.paragraph = paragraph;
     }
     
@@ -161,10 +153,8 @@ internal sealed class SCPortionCollection : IPortionCollection
                     break;
                 case A.Field aField:
                 {
-                    var fieldPortion = new SCFieldPortion(
-                        aField, 
-                        this.slideStructure, 
-                        this.textFrameContainer,
+                    var fieldPortion = new Texts.SCField(
+                        aField,
                         this.paragraph,
                         () => this.portions.Reset());
                     portions.Add(fieldPortion);

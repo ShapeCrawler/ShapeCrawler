@@ -146,60 +146,7 @@ internal sealed class ChartGraphicFrameHandler
 
         return graphicFrame;
     }
-
-    internal SCShape? FromTreeChild(
-        OpenXmlCompositeElement pShapeTreeChild,
-        OneOf<SCSlide, SCSlideLayout, SCSlideMaster> slideOf,
-        OneOf<SCSlideShapes, SCSlideGroupShape> shapeCollectionOf,
-        TypedOpenXmlPart slideTypedOpenXmlPart,
-        List<ChartWorkbook> chartWorkbooks)
-    {
-        if (pShapeTreeChild is not P.GraphicFrame pGraphicFrame)
-        {
-            return this.Successor?.FromTreeChild(pShapeTreeChild, slideOf, shapeCollectionOf, slideTypedOpenXmlPart);
-        }
-
-        var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
-        if (!aGraphicData.Uri!.Value!.Equals(Uri, StringComparison.Ordinal))
-        {
-            return this.Successor?.FromTreeChild(pShapeTreeChild, slideOf, shapeCollectionOf, slideTypedOpenXmlPart);
-        }
-
-        var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
-        var chartPart = (ChartPart)slideTypedOpenXmlPart.GetPartById(cChartRef.Id!);
-        var cPlotArea = chartPart!.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
-        var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-
-        if (cCharts.Count() > 1)
-        {
-            return new SCSlideComboChart(pGraphicFrame, slideOf, shapeCollectionOf, slideTypedOpenXmlPart);
-        }
-
-        var chartTypeName = cCharts.Single().LocalName;
-
-        if (chartTypeName == "lineChart")
-        {
-            return new SCSlideLineChart(pGraphicFrame, slideOf, shapeCollectionOf);
-        }
-
-        if (chartTypeName == "barChart")
-        {
-            return new SCSlideBarChart(pGraphicFrame, slideOf, shapeCollectionOf);
-        }
-
-        if (chartTypeName == "pieChart")
-        {
-            return new SCSlidePieChart(pGraphicFrame, slideOf, shapeCollectionOf);
-        }
-
-        if (chartTypeName == "scatterChart")
-        {
-            return new SCSlideScatterChart(pGraphicFrame, slideOf, shapeCollectionOf);
-        }
-
-        return new SCSlideChart(pGraphicFrame, slideOf, shapeCollectionOf);
-    }
-
+    
     private void GenerateChartPartContent(ChartPart chartPart)
     {
         var externamDataRId = "rId3";
