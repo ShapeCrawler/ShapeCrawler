@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
@@ -16,6 +17,7 @@ using ShapeCrawler.Shared;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
+using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Shapes;
 
@@ -26,20 +28,10 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
     private readonly Lazy<List<IShape>> shapes;
     private readonly SCSlide parentSlide;
 
-    internal SCSlideShapes(SCSlide parentSlide)
+    internal SCSlideShapes(SCSlide parentSlide, P.ShapeTree pShapeTree)
     {
         this.parentSlide = parentSlide;
-        var chartGrFrameHandler = new ChartGraphicFrameHandler();
-        var tableGrFrameHandler = new TableGraphicFrameHandler();
-        var oleGrFrameHandler = new OleGraphicFrameHandler();
-        this.autoShapeCreator = new AutoShapeCreator();
-        var pictureHandler = new PictureHandler(imageParts, this.slideTypedOpenXmlPart);
-        this.autoShapeCreator.Successor = oleGrFrameHandler;
-        oleGrFrameHandler.Successor = pictureHandler;
-        pictureHandler.Successor = chartGrFrameHandler;
-        chartGrFrameHandler.Successor = tableGrFrameHandler;
-        this.pShapeTree = sdkSlidePart.Slide.CommonSlideData!.ShapeTree!;
-
+        this.pShapeTree =  pShapeTree;
         this.shapes = new Lazy<List<IShape>>(this.ParseShapes);
     }
 
@@ -47,7 +39,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
 
     public IShape this[int index] => this.shapes.Value[index];
 
-    internal int GetNextShapeId()
+    internal int CalculateNextShapeId()
     {
         if (this.shapes.Value.Any())
         {
@@ -69,8 +61,9 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         }
 
         // Clone shape tree child.
+        IShapeInternal addingShapeInternal = addingShape.CloneSDKElement();
         var addingShapeClone = (TypedOpenXmlCompositeElement)addingShapeInternal.PShapeTreeChild.CloneNode(true);
-        var id = this.GetNextShapeId();
+        var id = this.CalculateNextShapeId();
         addingShapeClone.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
 
         var newShape = this.CreateShape(this.autoShapeCreator, addingShapeClone);
@@ -793,9 +786,63 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
                 shapesValue.Add(new SCSlidePicture(pPicture, this, aBlip!, new Shape(pShapeTreeChild)));
                 continue;
             }
+            else if (isChartPGraphicFrame(pShapeTreeChild))
+            {
+                var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
+                var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
+                var sdkSlidePart = this.parentSlide.SDKSlidePart();
+                var chartPart = (ChartPart)sdkSlidePart.GetPartById(cChartRef.Id!);
+                var cPlotArea = chartPart!.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
+                var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
+
+                if (cCharts.Count() > 1)
+                {
+                    shapesValue.Add(new SCSlideChart((P.GraphicFrame)pShapeTreeChild, this));
+                    continue;
+                }
+
+                var chartTypeName = cCharts.Single().LocalName;
+
+                if (chartTypeName == "lineChart")
+                {
+                    shapesValue.Add(new SCSlideChart((P.GraphicFrame)pShapeTreeChild, this));
+                }
+
+                if (chartTypeName == "barChart")
+                {
+                    shapesValue.Add(new SCSlideChart((P.GraphicFrame)pShapeTreeChild, this));
+                }
+
+                if (chartTypeName == "pieChart")
+                {
+                    shapesValue.Add(new SCSlideChart((P.GraphicFrame)pShapeTreeChild, this));
+                }
+
+                if (chartTypeName == "scatterChart")
+                {
+                    shapesValue.Add(new SCSlideChart((P.GraphicFrame)pShapeTreeChild, this));
+                }
+
+                shapesValue.Add(new SCSlideChart((P.GraphicFrame)pShapeTreeChild, this));
+            }
         }
 
         return shapesValue;
+    }
+
+    private bool isChartPGraphicFrame(TypedOpenXmlCompositeElement pShapeTreeChild)
+    {
+        if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
+        {
+            var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
+            if (aGraphicData.Uri!.Value!.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart",
+                    StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private IShape? CreateShape(TypedOpenXmlCompositeElement pShapeTreeChild)

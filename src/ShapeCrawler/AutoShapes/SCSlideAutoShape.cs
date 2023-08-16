@@ -68,6 +68,8 @@ internal sealed record SCSlideAutoShape : IAutoShape
     public IShapeFill Fill => this.shapeFill.Value;
 
     public ITextFrame? TextFrame => this.textFrame.Value;
+    
+    public double Rotation { get; }
 
     public void Duplicate()
     {

@@ -74,6 +74,8 @@ internal sealed record SCLine : ILine
     }
 
     public ITextFrame? TextFrame => null;
+    public double Rotation { get; }
+
     public IAutoShape Duplicate()
     {
         throw new System.NotImplementedException();

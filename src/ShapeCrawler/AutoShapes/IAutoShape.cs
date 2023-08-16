@@ -22,4 +22,9 @@ public interface IAutoShape : IShape
     ///     Gets text frame. Returns <see langword="null"/> if the shape is not a text holder.
     /// </summary>
     ITextFrame? TextFrame { get; }
+    
+    /// <summary>
+    ///     Gets the rotation of the shape in degrees.
+    /// </summary>
+    double Rotation { get; }
 }

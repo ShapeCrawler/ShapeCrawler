@@ -67,6 +67,8 @@ internal sealed record SCSlideGroupedAutoShape : IAutoShape
     public IShapeOutline Outline => this.autoShape.Outline;
     public IShapeFill? Fill { get; }
     public ITextFrame? TextFrame { get; }
+    public double Rotation { get; }
+
     public IAutoShape Duplicate()
     {
         throw new NotImplementedException();

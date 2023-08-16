@@ -21,11 +21,6 @@ public interface IShape : IShapeLocation
     int Height { get; set; }
 
     /// <summary>
-    /// Gets the rotation of the shape in degrees.
-    /// </summary>
-    double Rotation { get; }
-
-    /// <summary>
     ///     Gets identifier of the shape.
     /// </summary>
     int Id { get; }
