@@ -6,6 +6,7 @@ internal static class UnitConverter
 {
     private const float HorizontalResolutionDpi = 96;
     private const float VerticalResolutionDpi = 96;
+    private const double AngleToDegrees = 1 / 60000d;
 
     internal static int HorizontalEmuToPixel(long horizontalEmus)
     {
@@ -55,5 +56,10 @@ internal static class UnitConverter
     internal static float PointToPixel(double points)
     {
         return (float)(points * 96 / 72);
+    }
+
+    internal static double AngleValueToDegrees(int angle)
+    {
+        return angle * AngleToDegrees;
     }
 }

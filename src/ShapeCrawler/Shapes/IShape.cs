@@ -21,6 +21,11 @@ public interface IShape : IShapeLocation
     int Height { get; set; }
 
     /// <summary>
+    /// Gets the rotation of the shape in degrees.
+    /// </summary>
+    double Rotation { get; }
+
+    /// <summary>
     ///     Gets identifier of the shape.
     /// </summary>
     int Id { get; }
@@ -54,7 +59,7 @@ public interface IShape : IShapeLocation
     ///     Gets shape type.
     /// </summary>
     SCShapeType ShapeType { get; }
-    
+
     /// <summary>
     ///     Gets <see cref="IAutoShape"/>.    
     /// </summary>
