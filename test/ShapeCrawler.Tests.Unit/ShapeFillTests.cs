@@ -102,8 +102,8 @@ public class ShapeFillTests : SCTest
         var fill = autoShape.Fill;
 
         // Assert
-        fill.LuminanceModulationPercentage.Should().Be(20);
-        fill.LuminanceOffsetPercentage.Should().Be(80);
+        fill.LuminanceModulation.Should().Be(20);
+        fill.LuminanceOffset.Should().Be(80);
     }
 
     [Test]
@@ -116,8 +116,8 @@ public class ShapeFillTests : SCTest
         var fill = autoShape.Fill;
 
         // Assert
-        fill.LuminanceModulationPercentage.Should().Be(75);
-        fill.LuminanceOffsetPercentage.Should().Be(0);
+        fill.LuminanceModulation.Should().Be(75);
+        fill.LuminanceOffset.Should().Be(0);
     }
 
     [Test]

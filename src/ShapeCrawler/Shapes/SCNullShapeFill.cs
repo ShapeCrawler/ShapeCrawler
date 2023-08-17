@@ -10,8 +10,8 @@ internal record SCNullShapeFill : IShapeFill
     public IImage Picture => throw new SCException(errorText);
     public string Color => throw new SCException(errorText);
     public double AlphaPercentage => throw new SCException(errorText);
-    public double LuminanceModulationPercentage => throw new SCException(errorText);
-    public double LuminanceOffsetPercentage => throw new SCException(errorText);
+    public double LuminanceModulation => throw new SCException(errorText);
+    public double LuminanceOffset => throw new SCException(errorText);
 
     public void SetPicture(Stream image)
     {

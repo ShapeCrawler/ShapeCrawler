@@ -1,4 +1,7 @@
-﻿using DocumentFormat.OpenXml;
+﻿using System.Collections.Generic;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
@@ -7,17 +10,12 @@ namespace ShapeCrawler.Shapes;
 /// </summary>
 public abstract record SCSlideShape
 {
-    private TypedOpenXmlCompositeElement pShapeTreeChild;
+    private readonly TypedOpenXmlCompositeElement pShapeTreeChild;
 
-    protected SCSlideShape(TypedOpenXmlCompositeElement pShapeTreeChild)
+    protected internal SCSlideShape(TypedOpenXmlCompositeElement pShapeTreeChild)
     {
         this.pShapeTreeChild = pShapeTreeChild;
     }
-
-    internal abstract bool Copyable();
-
-    internal OpenXmlElement CopyUnderlyingTypedOpenXmlCompositeElement()
-    {
-        return this.pShapeTreeChild.CloneNode(true);
-    }
+    
+    internal abstract void CopyTo(int id, ShapeTree targetPShapeTree, IEnumerable<string> targetExistingShapeNames, SlidePart targetSdkSlidePart);
 }

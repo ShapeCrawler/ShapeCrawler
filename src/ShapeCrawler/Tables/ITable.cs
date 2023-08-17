@@ -48,13 +48,15 @@ public interface ITable : IShape
     void RemoveColumnAt(int columnIndex);
 }
 
-internal sealed class SCSlideTable : ITable
+internal sealed class SlideTable : ITable
 {
+    private readonly Shape shape;
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly ResetableLazy<SCRowCollection> rowCollection;
 
-    internal SCSlideTable(OpenXmlCompositeElement pShapeTreeChild, SCSlideShapes shapes)
+    internal SlideTable(OpenXmlCompositeElement pShapeTreeChild, SlideShapes shapes, Shape shape)
     {
+        this.shape = shape;
         var graphicFrame = (P.GraphicFrame)pShapeTreeChild;
         this.rowCollection =
             new ResetableLazy<SCRowCollection>(() =>
@@ -63,12 +65,23 @@ internal sealed class SCSlideTable : ITable
     }
 
     public SCShapeType ShapeType => SCShapeType.Table;
+    public IAutoShape AsAutoShape()
+    {
+        throw new NotImplementedException();
+    }
 
     public IReadOnlyList<IColumn> Columns => this.GetColumnList(); // TODO: make lazy
 
     public IRowCollection Rows => this.rowCollection.Value;
 
+    public int Width { get; set; }
+    public int Height { get; set; }
+    public int Id { get; }
+    public string Name => this.shape.Name();
+    public bool Hidden { get; }
+    public IPlaceholder? Placeholder { get; }
     public SCGeometry GeometryType => SCGeometry.Rectangle;
+    public string? CustomData { get; set; }
 
     private A.Table ATable => this.pGraphicFrame.GetATable();
 
@@ -90,8 +103,8 @@ internal sealed class SCSlideTable : ITable
 
     public void MergeCells(ICell inputCell1, ICell inputCell2)
     {
-        var cell1 = (SCCell)inputCell1;
-        var cell2 = (SCCell)inputCell2;
+        var cell1 = (Cell)inputCell1;
+        var cell2 = (Cell)inputCell2;
         if (cell1 == cell2)   
         {
             throw new SCException("Cannot merge the same cells.");
@@ -118,7 +131,7 @@ internal sealed class SCSlideTable : ITable
         // Delete a:tr if needed
         for (var rowIdx = 0; rowIdx < this.Rows.Count;)
         {
-            var rowCells = this.Rows[rowIdx].Cells.OfType<SCCell>().ToList();
+            var rowCells = this.Rows[rowIdx].Cells.OfType<Cell>().ToList();
             var firstRowCell = rowCells[0];
             var rowSpan = firstRowCell.ATableCell.RowSpan?.Value;
             if (rowSpan > 1 && rowCells.All(cell => cell.ATableCell.RowSpan?.Value == rowSpan))
@@ -142,17 +155,17 @@ internal sealed class SCSlideTable : ITable
         this.rowCollection.Reset();
     }
     
-    internal override void Draw(SKCanvas canvas)
+    internal void Draw(SKCanvas canvas)
     {
         throw new NotImplementedException();
     }
 
-    internal override IHtmlElement ToHtmlElement()
+    internal IHtmlElement ToHtmlElement()
     {
         throw new NotImplementedException();
     }
 
-    internal override string ToJson()
+    internal string ToJson()
     {
         throw new NotImplementedException();
     }
@@ -168,7 +181,7 @@ internal sealed class SCSlideTable : ITable
         return this.Rows.Last();
     }
 
-    protected override void SetXCoordinate(int xPx)
+    protected void SetXCoordinate(int xPx)
     {
         var pXfrm = this.pGraphicFrame.Transform;
         if (pXfrm is null)
@@ -188,7 +201,7 @@ internal sealed class SCSlideTable : ITable
         }
     }
 
-    protected override void SetYCoordinate(int yPx)
+    protected void SetYCoordinate(int yPx)
     {
         var pXfrm = this.pGraphicFrame.Transform;
         if (pXfrm is null)
@@ -207,7 +220,7 @@ internal sealed class SCSlideTable : ITable
         }
     }
 
-    protected override void SetWidth(int wPx)
+    protected void SetWidth(int wPx)
     {
         var pXfrm = this.pGraphicFrame.Transform;
         if (pXfrm is null)
@@ -226,7 +239,7 @@ internal sealed class SCSlideTable : ITable
         }
     }
 
-    protected override void SetHeight(int hPx)
+    protected void SetHeight(int hPx)
     {
         var pXfrm = this.pGraphicFrame.Transform;
         if (pXfrm is null)
@@ -245,7 +258,7 @@ internal sealed class SCSlideTable : ITable
         }
     }
 
-    private static bool CannotBeMerged(SCCell cell1, SCCell cell2)
+    private static bool CannotBeMerged(Cell cell1, Cell cell2)
     {
         if (cell1 == cell2)
         {
@@ -282,7 +295,7 @@ internal sealed class SCSlideTable : ITable
 
     private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
     {
-        A.TextBody? mergedCellTextBody = ((SCCell)this[minRowIndex, minColIndex]).ATableCell.TextBody;
+        A.TextBody? mergedCellTextBody = ((Cell)this[minRowIndex, minColIndex]).ATableCell.TextBody;
         bool hasMoreOnePara = false;
         IEnumerable<A.Paragraph> aParagraphsWithARun =
             aTblCell.TextBody!.Elements<A.Paragraph>().Where(p => !p.IsEmpty());
@@ -369,4 +382,7 @@ internal sealed class SCSlideTable : ITable
             }
         }
     }
+
+    public int X { get; set; }
+    public int Y { get; set; }
 }

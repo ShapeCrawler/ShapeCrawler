@@ -29,18 +29,18 @@ internal record PortionSize : IFontSize
             return fontSize.Value / 100;
         }
 
-        var textFrameContainer = this.paragraph.ParentTextFrame.TextFrameContainer;
-        var paraLevel = this.paragraph.Level;
+        IShape ancestorShape = this.parentParagraphPortion.AncestorShape();
+        int ancestorParaLevel = this.parentParagraphPortion.AncestorParagraphLevel();
 
-        if (textFrameContainer is SCShape { Placeholder: { } } shape)
+        if (ancestorShape is { Placeholder: not null } shape)
         {
-            if (TryFromPlaceholder(shape, paraLevel, out var sizeFromPlaceholder))
+            if (TryFromPlaceholder(shape, ancestorParaLevel, out var sizeFromPlaceholder))
             {
                 return sizeFromPlaceholder;
             }
         }
 
-        if (this.paraLvlToFontData.TryGetValue(paraLevel, out var fontData))
+        if (this.paraLvlToFontData.TryGetValue(ancestorParaLevel, out var fontData))
         {
             if (fontData.FontSize is not null)
             {
@@ -65,11 +65,11 @@ internal record PortionSize : IFontSize
         aRunPr.FontSize = points * 100;
     }
 
-    private static bool TryFromPlaceholder(SCShape scShape, int paraLevel, out int i)
+    private static bool TryFromPlaceholder(IShape scShape, int paraLevel, out int i)
     {
         i = -1;
-        var placeholder = scShape.Placeholder as SCPlaceholder;
-        var referencedShape = placeholder?.ReferencedShape.Value as SCSlideAutoShape;
+        var placeholder = scShape.Placeholder as SCSlidePlaceholder;
+        var referencedShape = placeholder?.ReferencedShape.Value as SlideAutoShape;
         var fontDataPlaceholder = new FontData();
         if (referencedShape != null)
         {

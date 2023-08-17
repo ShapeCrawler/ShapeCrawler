@@ -28,12 +28,12 @@ public interface ILine : IAutoShape
 internal sealed record SCLine : ILine
 {
     private readonly P.ConnectionShape pConnectionShape;
-    private readonly SCSlideShapes shapeCollection;
+    private readonly SlideShapes shapeCollection;
     private readonly Shape shape;
 
     internal SCLine(
         P.ConnectionShape pConnectionShape,
-        SCSlideShapes parentShapeCollection,
+        SlideShapes parentShapeCollection,
         Shape shape)
     {
         this.pConnectionShape = pConnectionShape;

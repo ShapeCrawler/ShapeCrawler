@@ -1,14 +1,15 @@
 ﻿using System;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
 internal sealed class SCParagraphLineBreak : IParagraphPortion
 {
-    private readonly DocumentFormat.OpenXml.Drawing.Break aBreak;
+    private readonly A.Break aBreak;
     
-    internal SCParagraphLineBreak(DocumentFormat.OpenXml.Drawing.Break aBreak, Action onRemovedHandler)
+    internal SCParagraphLineBreak(A.Break aBreak, Action onRemovedHandler)
     {
         this.aBreak = aBreak;
         this.Removed += onRemovedHandler;

@@ -27,12 +27,12 @@ public interface ICell
     IShapeFill Fill { get; }
 }
 
-internal sealed class SCCell : ICell
+internal sealed class Cell : ICell
 {
     private readonly Lazy<SCTextFrame> textFrame;
-    private readonly Lazy<SCShapeFill> shapeFill;
+    private readonly Lazy<CellFill> shapeFill;
 
-    internal SCCell(
+    internal Cell(
         SCRow parentTableRow,
         A.TableCell aTableCell,
         int rowIndex,
@@ -44,8 +44,8 @@ internal sealed class SCCell : ICell
         this.ColumnIndex = columnIndex;
         this.textFrame = new Lazy<SCTextFrame>(this.CreateTextFrame);
         var tableCellProperties = aTableCell.TableCellProperties!;
-        this.shapeFill = new Lazy<SCShapeFill>(() =>
-            new SCCellFill(tableCellProperties));
+        this.shapeFill = new Lazy<CellFill>(() =>
+            new CellFill(tableCellProperties));
     }
 
     public bool IsMergedCell => this.DefineWhetherCellIsMerged();

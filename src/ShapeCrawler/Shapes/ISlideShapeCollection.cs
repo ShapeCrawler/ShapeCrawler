@@ -16,7 +16,7 @@ public interface ISlideShapeCollection : IReadOnlyShapeCollection
     /// </summary>
     /// <param name="shape">Source shape.</param>
     /// <returns>A new shape.</returns>
-    IShape Add(SCSlideShape shape);
+    void Add(SCSlideShape shape);
 
     /// <summary>
     ///     Adds a new audio from stream.
@@ -37,12 +37,12 @@ public interface ISlideShapeCollection : IReadOnlyShapeCollection
     /// <summary>
     ///     Adds a new Rectangle shape.
     /// </summary>
-    ISlideAutoShape AddRectangle(int x, int y, int w, int h);
+    void AddRectangle(int x, int y, int w, int h);
 
     /// <summary>
     ///     Adds a new Rounded Rectangle shape. 
     /// </summary>
-    ISlideAutoShape AddRoundedRectangle(int x, int y, int w, int h);
+    void AddRoundedRectangle(int x, int y, int w, int h);
 
     /// <summary>
     ///     Adds a line from XML.

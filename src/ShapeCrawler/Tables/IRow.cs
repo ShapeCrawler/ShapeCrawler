@@ -29,15 +29,15 @@ public interface IRow
 
 internal sealed class SCRow : IRow
 {
-    private readonly Lazy<List<SCCell>> cells;
+    private readonly Lazy<List<Cell>> cells;
     private readonly int index;
 
-    internal SCRow(SCSlideTable table, A.TableRow aTableRow, int index)
+    internal SCRow(SlideTable table, A.TableRow aTableRow, int index)
     {
         this.ParentTable = table;
         this.ATableRow = aTableRow;
         this.index = index;
-        this.cells = new Lazy<List<SCCell>>(() => this.GetCells());
+        this.cells = new Lazy<List<Cell>>(() => this.GetCells());
     }
 
     public IReadOnlyList<ICell> Cells => this.cells.Value;
@@ -48,7 +48,7 @@ internal sealed class SCRow : IRow
         set => this.SetHeight(value);
     }
 
-    internal SCSlideTable ParentTable { get; }
+    internal SlideTable ParentTable { get; }
 
     internal A.TableRow ATableRow { get; }
 
@@ -90,11 +90,11 @@ internal sealed class SCRow : IRow
         }
     }
     
-    private List<SCCell> GetCells()
+    private List<Cell> GetCells()
     {
-        var cellList = new List<SCCell?>();
+        var cellList = new List<Cell?>();
         var aTcList = this.ATableRow.Elements<A.TableCell>();
-        SCCell? addedCell = null;
+        Cell? addedCell = null;
 
         var columnIdx = 0;
         foreach (var aTc in aTcList)
@@ -106,13 +106,13 @@ internal sealed class SCRow : IRow
             else if (aTc.VerticalMerge is not null)
             {
                 int upRowIdx = this.index - 1;
-                SCCell upNeighborScCell = (SCCell)this.ParentTable[upRowIdx, columnIdx];
+                Cell upNeighborScCell = (Cell)this.ParentTable[upRowIdx, columnIdx];
                 cellList.Add(upNeighborScCell);
                 addedCell = upNeighborScCell;
             }
             else
             {
-                addedCell = new SCCell(this, aTc, this.index, columnIdx);
+                addedCell = new Cell(this, aTc, this.index, columnIdx);
                 cellList.Add(addedCell);
             }
 

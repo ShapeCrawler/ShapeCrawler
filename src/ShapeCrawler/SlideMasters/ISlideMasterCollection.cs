@@ -54,7 +54,7 @@ internal sealed class SCSlideMasterCollection : ISlideMasterCollection
         var number = 1;
         foreach (var slideMasterPart in masterParts)
         {
-            slideMasters.Add(new SCSlideMaster(slideMasterPart.SlideMaster, number++, imageParts, slideMasterPart, sdkPresentationDocument));
+            slideMasters.Add(new SlideMaster(slideMasterPart.SlideMaster, number++, imageParts, slideMasterPart, sdkPresentationDocument));
         }
 
         return new SCSlideMasterCollection(slideMasters);

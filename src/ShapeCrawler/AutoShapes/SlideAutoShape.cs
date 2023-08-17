@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Services;
@@ -14,28 +15,29 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes;
 
-internal sealed record SCSlideAutoShape : IAutoShape
+internal sealed record SlideAutoShape : SCSlideShape, IAutoShape
 {
     // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi.
     // 96/72=1.4
     private const double Scale = 1.4;
 
-    private readonly Lazy<SCShapeFill> shapeFill;
+    private readonly Lazy<AutoShapeFill> shapeFill;
     private readonly Lazy<SCTextFrame?> textFrame;
     private readonly ResetableLazy<Dictionary<int, FontData>> lvlToFontData;
     private readonly P.Shape pShape;
     private readonly IReadOnlyShapeCollection parentShapeCollection;
     private readonly Shape shape;
 
-    internal SCSlideAutoShape(P.Shape pShape, IReadOnlyShapeCollection parentShapeCollection, Shape shape)
+    internal SlideAutoShape(P.Shape pShape, IReadOnlyShapeCollection parentShapeCollection, Shape shape)
+        : base(pShape)
     {
         this.pShape = pShape;
         this.parentShapeCollection = parentShapeCollection;
         this.textFrame = new Lazy<SCTextFrame?>(this.ParseTextFrame);
-        this.shapeFill = new Lazy<SCShapeFill>(this.GetFill);
+        this.shapeFill = new Lazy<AutoShapeFill>(this.GetFill);
         this.lvlToFontData = new ResetableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
         this.shape = shape;
-        this.Outline = new SCShapeOutline(this, pShape.ShapeProperties!);
+        this.Outline = new ShapeOutline(this, pShape.ShapeProperties!);
     }
     
     internal event EventHandler<NewAutoShape>? Duplicated;
@@ -77,7 +79,7 @@ internal sealed record SCSlideAutoShape : IAutoShape
         var typedCompositeElement = (TypedOpenXmlCompositeElement)this.pShape.CloneNode(true);
         var id = this.GetNextShapeId();
         typedCompositeElement.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
-        var newAutoShape = new SCSlideAutoShape((P.Shape)typedCompositeElement, this.parentShapeCollection);
+        var newAutoShape = new SlideAutoShape((P.Shape)typedCompositeElement, this.parentShapeCollection);
 
         var duplicatedShape = new NewAutoShape(newAutoShape, typedCompositeElement);
         this.Duplicated?.Invoke(this, duplicatedShape);
@@ -171,7 +173,7 @@ internal sealed record SCSlideAutoShape : IAutoShape
             if (!fontData.IsFilled() && this.Placeholder != null)
             {
                 var placeholder = (SCPlaceholder)this.Placeholder;
-                var referencedMasterShape = (SCSlideAutoShape?)placeholder.ReferencedShape.Value;
+                var referencedMasterShape = (SlideAutoShape?)placeholder.ReferencedShape.Value;
                 referencedMasterShape?.FillFontData(paragraphLvl, ref fontData);
             }
 
@@ -181,7 +183,7 @@ internal sealed record SCSlideAutoShape : IAutoShape
         if (this.Placeholder != null)
         {
             var placeholder = (SCPlaceholder)this.Placeholder;
-            var referencedMasterShape = (SCSlideAutoShape?)placeholder.ReferencedShape.Value;
+            var referencedMasterShape = (SlideAutoShape?)placeholder.ReferencedShape.Value;
             if (referencedMasterShape != null)
             {
                 referencedMasterShape.FillFontData(paragraphLvl, ref fontData);
@@ -264,10 +266,10 @@ internal sealed record SCSlideAutoShape : IAutoShape
         return newTextFrame;
     }
 
-    private SCShapeFill GetFill()
+    private AutoShapeFill GetFill()
     {
         var slideObject = this.SlideStructure;
-        return new SCAutoShapeFill(
+        return new AutoShapeFill(
             slideObject, 
             this.pShape.GetFirstChild<P.ShapeProperties>() !, 
             this, 
@@ -276,4 +278,39 @@ internal sealed record SCSlideAutoShape : IAutoShape
     
     public int X { get; set; }
     public int Y { get; set; }
+
+    internal override void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames, SlidePart targetSdkSlidePart)
+    {
+        var copy = this.pShape.CloneNode(true);
+        copy.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
+        pShapeTree.AppendChild(copy);
+        var copyName = copy.GetNonVisualDrawingProperties().Name!.Value!;
+        if (existingShapeNames.Any(existingShapeName => existingShapeName == copyName))
+        {
+            var currentShapeCollectionSuffixes = existingShapeNames 
+                .Where(c => c.StartsWith(copyName, StringComparison.InvariantCulture))
+                .Select(c => c.Substring(copyName.Length))
+                .ToArray();
+
+            // We will try to check numeric suffixes only.
+            var numericSuffixes = new List<int>();
+
+            foreach (var currentSuffix in currentShapeCollectionSuffixes)
+            {
+                if (int.TryParse(currentSuffix, out var numericSuffix))
+                {
+                    numericSuffixes.Add(numericSuffix);
+                }
+            }
+
+            numericSuffixes.Sort();
+            var lastSuffix = numericSuffixes.LastOrDefault() + 1;
+            copy.GetNonVisualDrawingProperties().Name = copyName + " " + lastSuffix;
+        }
+    }
+
+    public SlideMaster SlideMaster()
+    {
+        return this.parentShapeCollection.SlideMaster();
+    }
 }

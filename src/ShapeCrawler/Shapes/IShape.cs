@@ -38,7 +38,7 @@ public interface IShape : IShapeLocation
     /// <summary>
     ///     Gets placeholder.
     /// </summary>
-    IPlaceholder Placeholder { get; }
+    IPlaceholder? Placeholder { get; }
 
     /// <summary>
     ///     Gets geometry form type of the shape.

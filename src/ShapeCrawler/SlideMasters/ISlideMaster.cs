@@ -41,12 +41,12 @@ public interface ISlideMaster
     IMasterSlideNumber? SlideNumber { get; }
 }
 
-internal sealed class SCSlideMaster : ISlideMaster
+internal sealed class SlideMaster : ISlideMaster
 {
     private readonly ResetableLazy<List<SCSlideLayout>> slideLayouts;
     private readonly Lazy<SCMasterSlideNumber?> slideNumber;
 
-    internal SCSlideMaster(
+    internal SlideMaster(
         P.SlideMaster pSlideMaster, 
         int number)
     {
@@ -61,7 +61,7 @@ internal sealed class SCSlideMaster : ISlideMaster
     public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
     IReadOnlyShapeCollection ISlideMaster.Shapes => this.Shapes;
 
-    public ISlideShapeCollection Shapes => new SCSlideShapes(this.PSlideMaster.SlideMasterPart!, this, this.slideTypedOpenXmlPart, this.imageParts, this.sdkPresentationDocument);
+    public ISlideShapeCollection Shapes => new SlideShapes(this.PSlideMaster.SlideMasterPart!, this, this.slideTypedOpenXmlPart, this.imageParts, this.sdkPresentationDocument);
     
     public ITheme Theme => this.GetTheme();
 
@@ -79,7 +79,7 @@ internal sealed class SCSlideMaster : ISlideMaster
     
     internal P.SlideMaster PSlideMaster { get; }
 
-    internal SCSlideShapes ShapesInternal => (SCSlideShapes)this.Shapes;
+    internal SlideShapes ShapesInternal => (SlideShapes)this.Shapes;
     
     internal TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
 

@@ -44,12 +44,12 @@ public interface IRowCollection : IEnumerable<IRow>
 internal sealed class SCRowCollection : IRowCollection
 {
     private readonly List<SCRow> collectionItems;
-    private readonly SCSlideTable parentTable;
+    private readonly SlideTable parentTable;
     private readonly A.Table aTable;
     private readonly TypedOpenXmlPart slideTypedOpenXmlPart;
     private readonly List<ImagePart> imageParts;
 
-    private SCRowCollection(List<SCRow> rowList, SCSlideTable parentTable, A.Table aTable, TypedOpenXmlPart slideTypedOpenXmlPart, List<ImagePart> imageParts)
+    private SCRowCollection(List<SCRow> rowList, SlideTable parentTable, A.Table aTable, TypedOpenXmlPart slideTypedOpenXmlPart, List<ImagePart> imageParts)
     {
         this.collectionItems = rowList;
         this.parentTable = parentTable;
@@ -101,7 +101,7 @@ internal sealed class SCRowCollection : IRowCollection
     }
 
     internal static SCRowCollection Create(
-        SCSlideTable table, 
+        SlideTable table, 
         P.GraphicFrame pGraphicFrame, 
         TypedOpenXmlPart slideTypedOpenXmlPart, 
         List<ImagePart> imageParts)

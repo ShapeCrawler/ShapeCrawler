@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -52,9 +49,9 @@ internal sealed class SCImage : IImage
 {
     private readonly ImagePart sdkImagePart;
 
-    internal SCImage(SCSlidePicture slidePicture, string blipEmbedValue)
+    internal SCImage(SlidePicture slidePicture, string blipEmbedValue)
     {
-        this.sdkImagePart = slidePicture.SDKSlidePart().GetPartById(blipEmbedValue);
+        this.sdkImagePart = (ImagePart)slidePicture.SDKSlidePart().GetPartById(blipEmbedValue);
     }
     
     public string MIME => this.sdkImagePart.ContentType;

@@ -10,7 +10,6 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
@@ -21,14 +20,14 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class SCSlideShapes : ISlideShapeCollection
+internal sealed class SlideShapes : ISlideShapeCollection
 {
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly P.ShapeTree pShapeTree;
     private readonly ResetableLazy<List<IShape>> shapes;
     private readonly SCSlide parentSlide;
 
-    internal SCSlideShapes(SCSlide parentSlide, P.ShapeTree pShapeTree)
+    internal SlideShapes(SCSlide parentSlide, P.ShapeTree pShapeTree)
     {
         this.parentSlide = parentSlide;
         this.pShapeTree = pShapeTree;
@@ -49,75 +48,13 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         return 1;
     }
 
-    public IShape Add(SCSlideShape addingShape)
+    public void Add(SCSlideShape addingShape)
     {
-        // SmartArt (<p:graphicFrame /> http://schemas.openxmlformats.org/drawingml/2006/diagram) are not in the shape collection, data is referenced.
-        // Chart (<p:graphicFrame /> http://schemas.openxmlformats.org/drawingml/2006/chart) are not in the shape collection, data is referenced.
-        // Object (<p:graphicFrame /> http://schemas.openxmlformats.org/presentationml/2006/ole) are not in the shape collection, data is referenced.
-        // Alternate content(<mc:AlternateContent /> http://schemas.openxmlformats.org/officeDocument/2006/math"> are not in the shape collection, data is referenced.
-        // if (addingShape is SCSlideOLEObject or IChart or IMediaShape)
-        if (!addingShape.Copyable())
-        {
-            throw new SCException($"Adding {addingShape.GetType().Name} is not supported yet.");
-        }
-
-        // Clone shape tree child.
-        var addingShapeClone = addingShape.CopyUnderlyingTypedOpenXmlCompositeElement();
         var id = this.CalculateNextShapeId();
-        addingShapeClone.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
-
-        var newShape = this.CreateShape(this.autoShapeCreator, addingShapeClone);
-
-        switch (newShape)
-        {
-            case null:
-                throw new SCException($"Cannot create an instance of type {addingShape.GetType().Name}.");
-            case SCSlidePicture pic:
-                pic.CopyParts((ISlideStructure)addingShapeInternal.slideOf.Value);
-                break;
-        }
-
-        // Creates a new suffix for the new shape.
-        var nameExists = this.Any(c => c.Name == addingShape.Name);
-
-        if (nameExists)
-        {
-            // Get last name
-            // Rectangle 1 = 1
-            // Rectangle 2 = 2
-            // ..
-            // Rectangle H = H (ignored)
-            var currentShapeCollectionSuffixes = this
-                .Select(c => c.Name)
-                .Where(c => c.StartsWith(addingShape.Name, StringComparison.InvariantCulture))
-
-                // Select only the suffix
-                .Select(c => c.Substring(addingShape.Name.Length))
-                .ToArray();
-
-            // We will try to check numeric suffixes only.
-            var numericSuffixes = new List<int>();
-
-            foreach (var currentSuffix in currentShapeCollectionSuffixes)
-            {
-                if (int.TryParse(currentSuffix, out var numericSuffix))
-                {
-                    numericSuffixes.Add(numericSuffix);
-                }
-            }
-
-            numericSuffixes.Sort();
-            var lastSuffix = numericSuffixes.LastOrDefault() + 1;
-
-            // Assign new name
-            addingShapeClone.GetNonVisualDrawingProperties().Name = addingShape.Name + " " + lastSuffix;
-        }
-
-        this.pShapeTree.Append(addingShapeClone);
+        var allShapeNames = this.Select(shape => shape.Name);
+        addingShape.CopyTo(id, this.pShapeTree, allShapeNames, this.parentSlide.SDKSlidePart());
 
         this.shapes.Reset();
-
-        return newShape;
     }
 
     public IMediaShape AddAudio(int xPixels, int yPixels, Stream mp3Stream)
@@ -194,7 +131,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
 
         this.shapes.Reset();
 
-        return (SCSlidePicture)shape;
+        return (SlidePicture)shape;
     }
 
     public IChart AddBarChart(BarChartType barChartType)
@@ -317,7 +254,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         return new SCSlideMediaShape(this.pShapeTree, this.slideOf, this, this.slideTypedOpenXmlPart);
     }
 
-    public IAutoShape AddRectangle(int x, int y, int width, int height)
+    public void AddRectangle(int x, int y, int width, int height)
     {
         var newPShape =
             this.CreatePShape(x, y, width, height, DocumentFormat.OpenXml.Drawing.ShapeTypeValues.Rectangle);
@@ -334,7 +271,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         return newShape;
     }
 
-    public IAutoShape AddRoundedRectangle(int x, int y, int w, int h)
+    public void AddRoundedRectangle(int x, int y, int w, int h)
     {
         var newPShape = this.CreatePShape(x, y, w, h, DocumentFormat.OpenXml.Drawing.ShapeTypeValues.RoundRectangle);
 
@@ -483,7 +420,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         graphicFrame.Append(graphic);
 
         this.pShapeTree.Append(graphicFrame);
-        var table = new SCSlideTable(graphicFrame, this.slideOf, this);
+        var table = new SlideTable(graphicFrame, this.slideOf, this);
 
         this.shapes.Reset();
 
@@ -663,7 +600,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
             }
             else if (pShapeTreeChild is P.Shape pShape)
             {
-                shapesValue.Add(new SCSlideAutoShape(pShape, this, new Shape(pShapeTreeChild)));
+                shapesValue.Add(new SlideAutoShape(pShape, this, new Shape(pShapeTreeChild)));
             }
             else if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
             {
@@ -685,7 +622,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
                         continue;
                     }
 
-                    shapesValue.Add(new SCSlidePicture(pPicture, this, aBlip!, new Shape(pShapeTreeChild)));
+                    shapesValue.Add(new SlidePicture(pPicture, this, aBlip!, new Shape(pShapeTreeChild)));
                     continue;
                 }
             }
@@ -721,7 +658,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
                     continue;
                 }
 
-                shapesValue.Add(new SCSlidePicture(pPicture, this, aBlip!, new Shape(pShapeTreeChild)));
+                shapesValue.Add(new SlidePicture(pPicture, this, aBlip!, new Shape(pShapeTreeChild)));
                 continue;
             }
             else if (this.IsChartPGraphicFrame(pShapeTreeChild))
@@ -765,7 +702,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
             }
             else if (this.IsTablePGraphicFrame(pShapeTreeChild))
             {
-                shapesValue.Add(new SCSlideTable(pShapeTreeChild, this));
+                shapesValue.Add(new SlideTable(pShapeTreeChild, this));
             }
         }
 
@@ -818,7 +755,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
 
         shape = autoShapeCreator.FromTreeChild(pShapeTreeChild, this.slideOf, this);
 
-        if (shape is SCSlideAutoShape autoShape)
+        if (shape is SlideAutoShape autoShape)
         {
             autoShape.Duplicated += this.OnAutoShapeAdded;
         }

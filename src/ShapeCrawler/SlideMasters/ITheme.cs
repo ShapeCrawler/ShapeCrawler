@@ -23,7 +23,7 @@ internal sealed class SCTheme : ITheme
 {
     private readonly A.Theme aTheme;
 
-    internal SCTheme(SCSlideMaster parentMaster, A.Theme aTheme)
+    internal SCTheme(SlideMaster parentMaster, A.Theme aTheme)
     {
         this.aTheme = aTheme;
     }

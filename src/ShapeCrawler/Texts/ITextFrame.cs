@@ -184,7 +184,7 @@ internal sealed class SCTextFrame : ITextFrame
                 shrink?.Remove();
                 resize = new A.ShapeAutoFit();
                 aBodyPr.Append(resize);
-                var parentAutoShape = (SCSlideAutoShape)this.TextFrameContainer.AutoShape;
+                var parentAutoShape = (SlideAutoShape)this.TextFrameContainer.AutoShape;
                 parentAutoShape.ResizeShape();
                 break;
             }

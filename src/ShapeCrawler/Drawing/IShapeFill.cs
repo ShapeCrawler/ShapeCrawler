@@ -31,12 +31,12 @@ public interface IShapeFill
     /// <summary>
     /// Gets the Luminance Modulation Percentage of the fill color.
     /// </summary>
-    public double LuminanceModulationPercentage { get; }
+    public double LuminanceModulation { get; }
     
     /// <summary>
     /// Gets the Luminance Offset Percentage of the fill color.
     /// </summary>
-    public double LuminanceOffsetPercentage { get; }
+    public double LuminanceOffset { get; }
 
     /// <summary>
     ///     Fills the shape with picture.

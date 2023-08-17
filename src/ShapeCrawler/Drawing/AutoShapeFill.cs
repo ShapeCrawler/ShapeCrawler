@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -9,9 +7,10 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal class SCCellFill : IShapeFill
+internal record AutoShapeFill : IShapeFill
 {
-    private readonly TypedOpenXmlCompositeElement cellProperties;
+    private readonly TypedOpenXmlCompositeElement properties;
+    private readonly SlideAutoShape parentSlideAutoShape;
     private BooleanValue? useBgFill;
     private SCFillType fillType;
     private bool isDirty;
@@ -22,17 +21,17 @@ internal class SCCellFill : IShapeFill
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
 
-    internal SCCellFill(A.TableCellProperties cellProperties)
+    internal AutoShapeFill(TypedOpenXmlCompositeElement properties, SlideAutoShape parentSlideAutoShape)
     {
-        this.cellProperties = cellProperties;
+        this.properties = properties;
+        this.parentSlideAutoShape = parentSlideAutoShape;
         this.isDirty = true;
     }
 
     public string? Color => this.GetHexSolidColor();
-    
     public double AlphaPercentage { get; }
-    public double LuminanceModulationPercentage { get; }
-    public double LuminanceOffsetPercentage { get; }
+    public double LuminanceModulation { get; }
+    public double LuminanceOffset { get; }
 
     public IImage? Picture => this.GetPicture();
 
@@ -53,13 +52,13 @@ internal class SCCellFill : IShapeFill
         {
             var rId = this.slideTypedOpenXmlPart.AddImagePart(imageStream);
 
-            var aBlipFill = new A.BlipFill();
-            var aStretch = new A.Stretch();
-            aStretch.Append(new A.FillRectangle());
-            aBlipFill.Append(new A.Blip { Embed = rId });
+            var aBlipFill = new DocumentFormat.OpenXml.Drawing.BlipFill();
+            var aStretch = new DocumentFormat.OpenXml.Drawing.Stretch();
+            aStretch.Append(new DocumentFormat.OpenXml.Drawing.FillRectangle());
+            aBlipFill.Append(new DocumentFormat.OpenXml.Drawing.Blip { Embed = rId });
             aBlipFill.Append(aStretch);
 
-            this.cellProperties.Append(aBlipFill);
+            this.properties.Append(aBlipFill);
 
             this.aSolidFill?.Remove();
             this.aBlipFill = null;
@@ -80,7 +79,7 @@ internal class SCCellFill : IShapeFill
             this.Initialize();
         }
 
-        this.cellProperties.AddASolidFill(hex);
+        this.properties.AddASolidFill(hex);
         
         this.useBgFill = false;
 
@@ -89,7 +88,16 @@ internal class SCCellFill : IShapeFill
 
     protected virtual void InitSlideBackgroundFillOr()
     {
-        this.fillType = SCFillType.NoFill;
+        var pShape = (P.Shape)this.autoShape.PShapeTreeChild;
+        this.useBgFill = pShape.UseBackgroundFill;
+        if (this.useBgFill is not null && this.useBgFill)
+        {
+            this.fillType = SCFillType.SlideBackground;
+        }
+        else
+        {
+            this.fillType = SCFillType.NoFill;
+        }
     }
     
     private SCFillType GetFillType()
@@ -110,7 +118,7 @@ internal class SCCellFill : IShapeFill
 
     private void InitSolidFillOr()
     {
-        this.aSolidFill = this.cellProperties.GetFirstChild<A.SolidFill>();
+        this.aSolidFill = this.properties.GetFirstChild<DocumentFormat.OpenXml.Drawing.SolidFill>();
         if (this.aSolidFill != null)
         {
             var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
@@ -135,7 +143,7 @@ internal class SCCellFill : IShapeFill
 
     private void InitGradientFillOr()
     {
-        this.aGradFill = this.cellProperties!.GetFirstChild<A.GradientFill>();
+        this.aGradFill = this.properties!.GetFirstChild<A.GradientFill>();
         if (this.aGradFill != null)
         {
             this.fillType = SCFillType.Gradient;
@@ -148,7 +156,7 @@ internal class SCCellFill : IShapeFill
 
     private void InitPictureFillOr()
     {
-        this.aBlipFill = this.cellProperties.GetFirstChild<A.BlipFill>();
+        this.aBlipFill = this.properties.GetFirstChild<DocumentFormat.OpenXml.Drawing.BlipFill>();
 
         if (this.aBlipFill is not null)
         {
@@ -164,7 +172,7 @@ internal class SCCellFill : IShapeFill
 
     private void InitPatternFillOr()
     {
-        this.aPattFill = this.cellProperties.GetFirstChild<A.PatternFill>();
+        this.aPattFill = this.properties.GetFirstChild<DocumentFormat.OpenXml.Drawing.PatternFill>();
         if (this.aPattFill != null)
         {
             this.fillType = SCFillType.Pattern;

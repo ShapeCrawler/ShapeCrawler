@@ -32,7 +32,7 @@ internal class SCSlideChart : IChart
     private string? chartTitle;
     private readonly Shape shape;
 
-    internal SCSlideChart(P.GraphicFrame pGraphicFrame, SCSlideShapes shapes)
+    internal SCSlideChart(P.GraphicFrame pGraphicFrame, SlideShapes shapes)
     {
         this.pGraphicFrame = pGraphicFrame;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);

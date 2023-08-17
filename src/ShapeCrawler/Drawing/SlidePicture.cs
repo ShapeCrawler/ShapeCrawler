@@ -15,17 +15,17 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed record SCSlidePicture : SCSlideShape, IPicture
+internal sealed record SlidePicture : SCSlideShape, IPicture
 {
     private readonly StringValue blipEmbed;
     private readonly P.Picture pPicture;
-    private readonly SCSlideShapes parentShapeCollection;
+    private readonly SlideShapes parentShapeCollection;
     private readonly A.Blip aBlip;
     private readonly Shape shape;
 
-    internal SCSlidePicture(
+    internal SlidePicture(
         P.Picture pPicture,
-        SCSlideShapes parentShapeCollection,
+        SlideShapes parentShapeCollection,
         A.Blip aBlip,
         Shape shape) : base(pPicture)
     {
@@ -49,34 +49,10 @@ internal sealed record SCSlidePicture : SCSlideShape, IPicture
     public SCGeometry GeometryType { get; }
     public string? CustomData { get; set; }
     public SCShapeType ShapeType => SCShapeType.Picture;
+
     public IAutoShape AsAutoShape()
     {
         throw new NotImplementedException();
-    }
-
-    internal void CopyParts()
-    {
-        if (this.blipEmbed is null)
-        {
-            return;
-        }
-
-        var sdkSlidePart = this.parentShapeCollection.SDKSlidePart();
-        if (sdkSlidePart.GetPartById(this.blipEmbed.Value!) is not ImagePart imagePart)
-        {
-            return;
-        }
-
-        // Creates a new part in this slide with a new Id...
-        var imgPartRId = sdkSlidePart.GetNextRelationshipId();
-
-        // Adds to current slide parts and update relation id.
-        var nImagePart = sdkSlidePart.AddNewPart<ImagePart>(imagePart.ContentType, imgPartRId);
-        using var stream = imagePart.GetStream(FileMode.Open);
-        stream.Position = 0;
-        nImagePart.FeedData(stream);
-
-        this.blipEmbed.Value = imgPartRId;
     }
 
     internal void Draw(SKCanvas canvas)
@@ -120,8 +96,48 @@ internal sealed record SCSlidePicture : SCSlideShape, IPicture
     public int X { get; set; }
     public int Y { get; set; }
     
-    internal override bool Copyable()
+    internal override void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames, SlidePart targetSdkSlidePart)
     {
-        return true;
+        var copy = this.pPicture.CloneNode(true);
+        copy.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
+        pShapeTree.AppendChild(copy);
+        var copyName = copy.GetNonVisualDrawingProperties().Name!.Value!;
+        if (existingShapeNames.Any(existingShapeName => existingShapeName == copyName))
+        {
+            var currentShapeCollectionSuffixes = existingShapeNames 
+                .Where(c => c.StartsWith(copyName, StringComparison.InvariantCulture))
+                .Select(c => c.Substring(copyName.Length))
+                .ToArray();
+
+            // We will try to check numeric suffixes only.
+            var numericSuffixes = new List<int>();
+
+            foreach (var currentSuffix in currentShapeCollectionSuffixes)
+            {
+                if (int.TryParse(currentSuffix, out var numericSuffix))
+                {
+                    numericSuffixes.Add(numericSuffix);
+                }
+            }
+
+            numericSuffixes.Sort();
+            var lastSuffix = numericSuffixes.LastOrDefault() + 1;
+            copy.GetNonVisualDrawingProperties().Name = copyName + " " + lastSuffix;
+        }
+        
+        // COPY PARTS
+        var sourceSdkSlidePart = this.parentShapeCollection.SDKSlidePart();
+        var sourceImagePart = (ImagePart)sourceSdkSlidePart.GetPartById(this.blipEmbed.Value!);
+
+        // Creates a new part in this slide with a new Id...
+        var targetImagePartRId = targetSdkSlidePart.GetNextRelationshipId();
+
+        // Adds to current slide parts and update relation id.
+        var targetImagePart = targetSdkSlidePart.AddNewPart<ImagePart>(sourceImagePart.ContentType, targetImagePartRId);
+        using var sourceImageStream = sourceImagePart.GetStream(FileMode.Open);
+        sourceImageStream.Position = 0;
+        targetImagePart.FeedData(sourceImageStream);
+
+        copy.Descendants<A.Blip>().First().Embed = targetImagePartRId;
     }
 }

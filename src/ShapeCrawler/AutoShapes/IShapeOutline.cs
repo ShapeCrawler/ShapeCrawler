@@ -25,14 +25,14 @@ public interface IShapeOutline
     string? Color { get; set; }
 }
 
-internal sealed class SCShapeOutline : IShapeOutline
+internal sealed class ShapeOutline : IShapeOutline
 {
-    private readonly SCSlideAutoShape autoShape;
+    private readonly SlideAutoShape parentAutoShape;
     private readonly P.ShapeProperties pShapeProperties;
 
-    internal SCShapeOutline(SCSlideAutoShape autoShape, P.ShapeProperties pShapeProperties)
+    internal ShapeOutline(SlideAutoShape parentAutoShape, P.ShapeProperties pShapeProperties)
     {
-        this.autoShape = autoShape;
+        this.parentAutoShape = parentAutoShape;
         this.pShapeProperties = pShapeProperties;
     }
 
@@ -63,8 +63,7 @@ internal sealed class SCShapeOutline : IShapeOutline
     
     private void SetColor(string? hex)
     {
-        var pShapeProperties = this.autoShape.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !;
-        var aOutline = pShapeProperties.GetFirstChild<A.Outline>();
+        var aOutline = this.pShapeProperties.GetFirstChild<A.Outline>();
         var aNoFill = aOutline?.GetFirstChild<A.NoFill>();
 
         if (aOutline == null || aNoFill != null)
@@ -83,7 +82,7 @@ internal sealed class SCShapeOutline : IShapeOutline
 
     private double GetWeight()
     {
-        var width = this.autoShape.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !.GetFirstChild<A.Outline>()?.Width;
+        var width = this.pShapeProperties.GetFirstChild<A.Outline>()?.Width;
         if (width is null)
         {
             return 0;
@@ -104,7 +103,7 @@ internal sealed class SCShapeOutline : IShapeOutline
             return null;
         }
 
-        var typeAndHex = HexParser.FromSolidFill(aSolidFill, this.autoShape.SlideMasterInternal);
+        var typeAndHex = HexParser.FromSolidFill(aSolidFill, this.parentAutoShape.SlideMaster());
         
         return typeAndHex.Item2;
     }
