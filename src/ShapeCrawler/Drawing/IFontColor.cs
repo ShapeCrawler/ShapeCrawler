@@ -34,21 +34,16 @@ public interface IFontColor
 
 internal sealed class SCFontColor : IFontColor
 {
-    private readonly SCParagraph paragraph;
     private readonly A.Text aText;
     private bool initialized;
     private string? hexColor;
     private SCColorType colorType;
-    private readonly Dictionary<int, FontData> paraLvlToFontData;
+    private readonly SCTextPortionFont parentFont;
 
-    internal SCFontColor(
-        SCParagraph paragraph, 
-        A.Text aText, 
-        Dictionary<int, FontData> paraLvlToFontData)
+    internal SCFontColor(SCTextPortionFont parentFont, A.Text aText)
     {
-        this.paragraph = paragraph;
+        this.parentFont = parentFont;
         this.aText = aText;
-        this.paraLvlToFontData = paraLvlToFontData;
     }
 
     public SCColorType ColorType => this.GetColorType();
@@ -97,7 +92,7 @@ internal sealed class SCFontColor : IFontColor
         var aSolidFill = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.GetASolidFill();
         if (aSolidFill != null)
         {
-            var typeAndHex = HexParser.FromSolidFill(aSolidFill, this.parentSlideMaster);
+            var typeAndHex = HexParser.FromSolidFill(aSolidFill, this.parentFont.SlideMaster());
             this.colorType = typeAndHex.Item1;
             this.hexColor = typeAndHex.Item2;
         }

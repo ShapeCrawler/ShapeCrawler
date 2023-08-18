@@ -618,8 +618,8 @@ public class TableTests : SCTest
             (ITable)new SCPresentation(GetInputStream("001.pptx")).Slides[3].Shapes.First(sp => sp.Id == 4);
 
         // Act
-        ICell scCellCase1 = tableCase1[0, 0];
-        ICell scCellCase2 = tableCase2[1, 1];
+        ITableCell scCellCase1 = tableCase1[0, 0];
+        ITableCell scCellCase2 = tableCase2[1, 1];
 
         // Assert
         scCellCase1.Should().NotBeNull();

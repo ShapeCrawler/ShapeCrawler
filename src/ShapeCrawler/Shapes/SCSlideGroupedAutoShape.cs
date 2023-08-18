@@ -5,11 +5,11 @@ namespace ShapeCrawler.Shapes;
 
 internal sealed record SCSlideGroupedAutoShape : IAutoShape
 {
-    private readonly SlideAutoShape autoShape;
+    private readonly SCSlideAutoShape autoShape;
     private event EventHandler<int> XChanged;
     private event EventHandler<int> YChanged;
 
-    internal SCSlideGroupedAutoShape(SlideAutoShape autoShape, EventHandler<int> xChangedHandler, EventHandler<int> yChangedHandler)
+    internal SCSlideGroupedAutoShape(SCSlideAutoShape autoShape, EventHandler<int> xChangedHandler, EventHandler<int> yChangedHandler)
     {
         this.autoShape = autoShape;
         this.XChanged += xChangedHandler;

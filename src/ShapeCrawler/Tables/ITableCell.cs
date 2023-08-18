@@ -1,4 +1,5 @@
 ﻿using System;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -9,7 +10,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a table cell.
 /// </summary>
-public interface ICell
+public interface ITableCell
 {
     /// <summary>
     ///     Gets text box.
@@ -27,25 +28,26 @@ public interface ICell
     IShapeFill Fill { get; }
 }
 
-internal sealed class Cell : ICell
+internal sealed record SCTableCell : ITableCell
 {
     private readonly Lazy<SCTextFrame> textFrame;
-    private readonly Lazy<CellFill> shapeFill;
+    private readonly Lazy<SCCellFill> shapeFill;
+    private readonly SCTableRow _parentTableRow;
 
-    internal Cell(
-        SCRow parentTableRow,
+    internal SCTableCell(
+        SCTableRow _parentTableRow,
         A.TableCell aTableCell,
         int rowIndex,
         int columnIndex)
     {
-        this.ParentTableRow = parentTableRow;
+        this._parentTableRow = _parentTableRow;
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
         this.textFrame = new Lazy<SCTextFrame>(this.CreateTextFrame);
         var tableCellProperties = aTableCell.TableCellProperties!;
-        this.shapeFill = new Lazy<CellFill>(() =>
-            new CellFill(tableCellProperties));
+        this.shapeFill = new Lazy<SCCellFill>(() =>
+            new SCCellFill(tableCellProperties, this));
     }
 
     public bool IsMergedCell => this.DefineWhetherCellIsMerged();
@@ -60,8 +62,6 @@ internal sealed class Cell : ICell
 
     internal int ColumnIndex { get; }
 
-    private SCRow ParentTableRow { get; }
-
     private SCTextFrame CreateTextFrame()
     {
         return new SCTextFrame(this, this.ATableCell.TextBody!, this.slideStructure, this);
@@ -73,5 +73,10 @@ internal sealed class Cell : ICell
                this.ATableCell.RowSpan is not null ||
                this.ATableCell.HorizontalMerge is not null ||
                this.ATableCell.VerticalMerge is not null;
+    }
+
+    internal SlidePart SDKSlidePart()
+    {
+        return this._parentTableRow.SDKSlidePart();
     }
 }

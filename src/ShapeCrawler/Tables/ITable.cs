@@ -35,12 +35,12 @@ public interface ITable : IShape
     /// <summary>
     ///     Gets cell by row and column indexes.
     /// </summary>
-    ICell this[int rowIndex, int columnIndex] { get; }
+    ITableCell this[int rowIndex, int columnIndex] { get; }
 
     /// <summary>
     ///     Merge neighbor cells.
     /// </summary>
-    void MergeCells(ICell cell1, ICell cell2);
+    void MergeCells(ITableCell cell1, ITableCell cell2);
 
     /// <summary>
     ///     Removes a column at specified index.
@@ -54,7 +54,7 @@ internal sealed class SlideTable : ITable
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly ResetableLazy<SCRowCollection> rowCollection;
 
-    internal SlideTable(OpenXmlCompositeElement pShapeTreeChild, SlideShapes shapes, Shape shape)
+    internal SlideTable(OpenXmlCompositeElement pShapeTreeChild, SCSlideShapes shapes, Shape shape)
     {
         this.shape = shape;
         var graphicFrame = (P.GraphicFrame)pShapeTreeChild;
@@ -85,7 +85,7 @@ internal sealed class SlideTable : ITable
 
     private A.Table ATable => this.pGraphicFrame.GetATable();
 
-    public ICell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
+    public ITableCell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
 
     public void RemoveColumnAt(int columnIndex)
     {
@@ -101,10 +101,10 @@ internal sealed class SlideTable : ITable
         }
     }
 
-    public void MergeCells(ICell inputCell1, ICell inputCell2)
+    public void MergeCells(ITableCell inputCell1, ITableCell inputCell2)
     {
-        var cell1 = (Cell)inputCell1;
-        var cell2 = (Cell)inputCell2;
+        var cell1 = (SCTableCell)inputCell1;
+        var cell2 = (SCTableCell)inputCell2;
         if (cell1 == cell2)   
         {
             throw new SCException("Cannot merge the same cells.");
@@ -131,7 +131,7 @@ internal sealed class SlideTable : ITable
         // Delete a:tr if needed
         for (var rowIdx = 0; rowIdx < this.Rows.Count;)
         {
-            var rowCells = this.Rows[rowIdx].Cells.OfType<Cell>().ToList();
+            var rowCells = this.Rows[rowIdx].Cells.OfType<SCTableCell>().ToList();
             var firstRowCell = rowCells[0];
             var rowSpan = firstRowCell.ATableCell.RowSpan?.Value;
             if (rowSpan > 1 && rowCells.All(cell => cell.ATableCell.RowSpan?.Value == rowSpan))
@@ -141,7 +141,7 @@ internal sealed class SlideTable : ITable
                 // Delete a:gridCol elements
                 foreach (var row in this.Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
                 {
-                    ((SCRow)row).ATableRow.Remove();
+                    ((SCTableRow)row).ATableRow.Remove();
                     this.Rows[rowIdx].Height += row.Height;
                 }
 
@@ -170,7 +170,7 @@ internal sealed class SlideTable : ITable
         throw new NotImplementedException();
     }
 
-    internal IRow AppendRow(A.TableRow row)
+    internal ITableRow AppendRow(A.TableRow row)
     {
         this.ATable.AppendChild(row);
 
@@ -258,7 +258,7 @@ internal sealed class SlideTable : ITable
         }
     }
 
-    private static bool CannotBeMerged(Cell cell1, Cell cell2)
+    private static bool CannotBeMerged(SCTableCell cell1, SCTableCell cell2)
     {
         if (cell1 == cell2)
         {
@@ -295,7 +295,7 @@ internal sealed class SlideTable : ITable
 
     private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
     {
-        A.TextBody? mergedCellTextBody = ((Cell)this[minRowIndex, minColIndex]).ATableCell.TextBody;
+        A.TextBody? mergedCellTextBody = ((SCTableCell)this[minRowIndex, minColIndex]).ATableCell.TextBody;
         bool hasMoreOnePara = false;
         IEnumerable<A.Paragraph> aParagraphsWithARun =
             aTblCell.TextBody!.Elements<A.Paragraph>().Where(p => !p.IsEmpty());
@@ -348,9 +348,9 @@ internal sealed class SlideTable : ITable
         // Delete a:gridCol and a:tc elements if all columns are merged
         for (var colIdx = 0; colIdx < this.Columns.Count;)
         {
-            var topColumnCell = ((SCRow)this.Rows[0]).ATableRow.Elements<A.TableCell>().ToList()[colIdx];
+            var topColumnCell = ((SCTableRow)this.Rows[0]).ATableRow.Elements<A.TableCell>().ToList()[colIdx];
             var topColumnCellSpan = topColumnCell.GridSpan?.Value;
-            var nextBottomColumnCells = this.Rows.Select(row => ((SCRow)row).ATableRow.Elements<A.TableCell>().ToList()[colIdx]).ToList();
+            var nextBottomColumnCells = this.Rows.Select(row => ((SCTableRow)row).ATableRow.Elements<A.TableCell>().ToList()[colIdx]).ToList();
             var sameGridSpan = nextBottomColumnCells.All(c => c.GridSpan?.Value == topColumnCellSpan);
             if (topColumnCellSpan > 1 && sameGridSpan)
             {

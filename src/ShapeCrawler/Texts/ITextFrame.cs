@@ -11,6 +11,7 @@ using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler;
 
@@ -67,11 +68,13 @@ public interface ITextFrame
 
 internal sealed class SCTextFrame : ITextFrame
 {
+    private readonly SCSlideAutoShape parentAutoShape;
     private readonly ResetableLazy<string> text;
     private readonly ResetableLazy<SCParagraphCollection> paragraphs;
 
-    internal SCTextFrame(TypedOpenXmlCompositeElement textBodyElement)
+    internal SCTextFrame(SCSlideAutoShape parentAutoShape, P.TextBody textBodyElement)
     {
+        this.parentAutoShape = parentAutoShape;
         this.TextBodyElement = textBodyElement;
         this.text = new ResetableLazy<string>(this.GetText);
         this.paragraphs = new ResetableLazy<SCParagraphCollection>(this.GetParagraphs);
@@ -184,7 +187,7 @@ internal sealed class SCTextFrame : ITextFrame
                 shrink?.Remove();
                 resize = new A.ShapeAutoFit();
                 aBodyPr.Append(resize);
-                var parentAutoShape = (SlideAutoShape)this.TextFrameContainer.AutoShape;
+                var parentAutoShape = (SCSlideAutoShape)this.TextFrameContainer.AutoShape;
                 parentAutoShape.ResizeShape();
                 break;
             }
@@ -351,5 +354,10 @@ internal sealed class SCTextFrame : ITextFrame
         }
 
         return sb.ToString();
+    }
+
+    internal SlideMaster SlideMaster()
+    {
+        return this.parentAutoShape.SlideMaster();
     }
 }

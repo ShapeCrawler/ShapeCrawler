@@ -13,19 +13,15 @@ internal sealed class SCParagraphTextPortion : IParagraphPortion
 {
     private readonly ResetableLazy<SCTextPortionFont> font;
     private readonly A.Run aRun;
+    private readonly SCPortions parentPortionCollection;
 
-    internal SCParagraphTextPortion(
-        A.Run aRun, 
-        Action onRemoveHandler)
+    internal SCParagraphTextPortion(A.Run aRun, SCPortions parentPortionCollection)
     {
         this.AText = aRun.Text!;
-        this.Removed += onRemoveHandler;
-
         this.aRun = aRun;
-        
-        var themeFontScheme = (ThemeFontScheme)textFrameContainer.AutoShape.SlideMasterInternal.Theme.FontScheme;
+        this.parentPortionCollection = parentPortionCollection;
         var textPortionSize = new PortionSize(this.AText, this);
-        this.font = new ResetableLazy<SCTextPortionFont>(() => new SCTextPortionFont(this.AText, textFrameContainer, paragraph, themeFontScheme, textPortionSize, paraLvlToFontData));
+        this.font = new ResetableLazy<SCTextPortionFont>(() => new SCTextPortionFont(this.AText, themeFontScheme, textPortionSize, this));
     }
 
     internal event Action? Removed;
@@ -150,5 +146,10 @@ internal sealed class SCParagraphTextPortion : IParagraphPortion
         var addedHyperlinkRelationship = this.slideTypedOpenXmlPart.AddHyperlinkRelationship(uri, true);
 
         hyperlink.Id = addedHyperlinkRelationship.Id;
+    }
+
+    internal SlideMaster SlideMaster()
+    {
+        return this.parentPortionCollection.SlideMaster();
     }
 }

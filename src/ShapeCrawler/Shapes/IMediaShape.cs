@@ -33,7 +33,7 @@ internal record SCSlideMediaShape : IMediaShape
     private readonly Shape shape;
     private readonly Lazy<SCSlidePlaceholder?> placeholder;
 
-    internal SCSlideMediaShape(P.Picture pPicture, SlideShapes shapes)
+    internal SCSlideMediaShape(P.Picture pPicture, SCSlideShapes shapes)
     {
         this.pPicture = pPicture;
         this.shape = new Shape(pPicture);

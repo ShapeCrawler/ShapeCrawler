@@ -14,22 +14,21 @@ internal sealed class SCTextPortionFont : ITextPortionFont
     private readonly A.FontScheme aFontScheme;
     private readonly Lazy<SCFontColor> fontColor;
     private readonly ResetableLazy<A.LatinFont> latinFont;
-    private readonly SCParagraph paragraph;
     private readonly IFontSize size;
+    private readonly SCParagraphTextPortion parentParagraphTextPortion;
 
     internal SCTextPortionFont(
         A.Text aText, 
-        SCParagraph paragraph,
         ThemeFontScheme themeFontScheme,
         IFontSize size,
-        Dictionary<int, FontData> paraLvlToFontData)
+        SCParagraphTextPortion parentParagraphTextPortion)
     {
         this.aText = aText;
-        this.paragraph = paragraph;
         this.latinFont = new ResetableLazy<A.LatinFont>(this.ParseALatinFont);
-        this.fontColor = new Lazy<SCFontColor>(() => new SCFontColor(paragraph, this.aText, paraLvlToFontData));
+        this.fontColor = new Lazy<SCFontColor>(() => new SCFontColor(this, this.aText));
         this.aFontScheme = themeFontScheme.AFontScheme;
         this.size = size;
+        this.parentParagraphTextPortion = parentParagraphTextPortion;
     }
 
     public int Size
@@ -311,5 +310,10 @@ internal sealed class SCTextPortionFont : ITextPortionFont
     {
         var aEastAsianFont = this.GetAEastAsianFont();
         aEastAsianFont.Typeface = eastAsianFont;
+    }
+
+    internal SlideMaster SlideMaster()
+    {
+        return this.parentParagraphTextPortion.SlideMaster();
     }
 }

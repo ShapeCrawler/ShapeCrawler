@@ -60,7 +60,7 @@ internal sealed class SCSlideCollection : ISlideCollection
         this.presentationCore = pres;
         this.imageParts = imageParts;
         this.presPart = pres.SDKPresentationDocument.PresentationPart!;
-        this.slides = new ResetableLazy<List<SCSlide>>(this.GetSlides);
+        this.slides = new ResetableLazy<List<SCSlide>>(this.ParseSlides);
     } 
 
     public int Count => this.slides.Value.Count;
@@ -411,9 +411,8 @@ internal sealed class SCSlideCollection : ISlideCollection
 
         return this.AddEmptySlide(layout);
     }
-
-
-    private List<SCSlide> GetSlides()
+    
+    private List<SCSlide> ParseSlides()
     {
         this.presPart = this.presentationCore.SDKPresentationDocument.PresentationPart!;
         int slidesCount = this.presPart.SlideParts.Count();
@@ -423,7 +422,7 @@ internal sealed class SCSlideCollection : ISlideCollection
         {
             var slideId = slideIds[slideIndex];
             var slidePart = (SlidePart)this.presPart.GetPartById(slideId.RelationshipId!);
-            var newSlide = new SCSlide(this.presentationCore, slidePart, slideId, () => slides.Count);
+            var newSlide = new SCSlide(slidePart, slideId, () => slides.Count);
             slides.Add(newSlide);
         }
 

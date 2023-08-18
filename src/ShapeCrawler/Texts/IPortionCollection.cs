@@ -48,17 +48,17 @@ public interface IPortionCollection : IEnumerable<IParagraphPortion>
     void Remove(IList<IParagraphPortion> portions);
 }
 
-internal sealed class SCPortionCollection : IPortionCollection
+internal sealed class SCPortions : IPortionCollection
 {
     private readonly ResetableLazy<List<IParagraphPortion>> portions;
     private readonly A.Paragraph aParagraph;
-    private readonly SCParagraph paragraph;
+    private readonly SCParagraph parentParagraph;
 
-    internal SCPortionCollection(A.Paragraph aParagraph, SCParagraph paragraph)
+    internal SCPortions(A.Paragraph aParagraph, SCParagraph parentParagraph)
     {
         this.aParagraph = aParagraph;
         this.portions = new ResetableLazy<List<IParagraphPortion>>(this.ParsePortions);
-        this.paragraph = paragraph;
+        this.parentParagraph = parentParagraph;
     }
     
     public int Count => this.portions.Value.Count;
@@ -144,18 +144,15 @@ internal sealed class SCPortionCollection : IPortionCollection
             {
                 case A.Run aRun:
                     var runPortion = new SCParagraphTextPortion(
-                        aRun, 
-                        this.slideStructure, 
-                        this.textFrameContainer,
-                        this.paragraph,
-                        () => this.portions.Reset()); 
+                        aRun,
+                        this); 
                     portions.Add(runPortion);
                     break;
                 case A.Field aField:
                 {
                     var fieldPortion = new Texts.SCField(
                         aField,
-                        this.paragraph,
+                        this.parentParagraph,
                         () => this.portions.Reset());
                     portions.Add(fieldPortion);
                     break;
@@ -169,5 +166,10 @@ internal sealed class SCPortionCollection : IPortionCollection
         }
         
         return portions;
+    }
+
+    internal SlideMaster SlideMaster()
+    {
+        return this.parentParagraph.SlideMaster();
     }
 }

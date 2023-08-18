@@ -13,7 +13,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a table row collection.
 /// </summary>
-public interface IRowCollection : IEnumerable<IRow>
+public interface IRowCollection : IEnumerable<ITableRow>
 {
     /// <summary>
     ///     Gets number of rows.
@@ -23,12 +23,12 @@ public interface IRowCollection : IEnumerable<IRow>
     /// <summary>
     ///     Gets row at the specified index.
     /// </summary>
-    IRow this[int index] { get; }
+    ITableRow this[int index] { get; }
 
     /// <summary>
     ///     Removes specified row from collection.
     /// </summary>
-    void Remove(IRow row);
+    void Remove(ITableRow tableRow);
 
     /// <summary>
     ///     Removes table row by index.
@@ -38,18 +38,18 @@ public interface IRowCollection : IEnumerable<IRow>
     /// <summary>
     ///     Adds a new row at the end of table.
     /// </summary>
-    IRow Add();
+    ITableRow Add();
 }
 
 internal sealed class SCRowCollection : IRowCollection
 {
-    private readonly List<SCRow> collectionItems;
+    private readonly List<SCTableRow> collectionItems;
     private readonly SlideTable parentTable;
     private readonly A.Table aTable;
     private readonly TypedOpenXmlPart slideTypedOpenXmlPart;
     private readonly List<ImagePart> imageParts;
 
-    private SCRowCollection(List<SCRow> rowList, SlideTable parentTable, A.Table aTable, TypedOpenXmlPart slideTypedOpenXmlPart, List<ImagePart> imageParts)
+    private SCRowCollection(List<SCTableRow> rowList, SlideTable parentTable, A.Table aTable, TypedOpenXmlPart slideTypedOpenXmlPart, List<ImagePart> imageParts)
     {
         this.collectionItems = rowList;
         this.parentTable = parentTable;
@@ -60,11 +60,11 @@ internal sealed class SCRowCollection : IRowCollection
 
     public int Count => this.collectionItems.Count;
 
-    public IRow this[int index] => this.collectionItems[index];
+    public ITableRow this[int index] => this.collectionItems[index];
 
-    public void Remove(IRow removingRow)
+    public void Remove(ITableRow removingTableRow)
     {
-        var removingRowInternal = (SCRow)removingRow;
+        var removingRowInternal = (SCTableRow)removingTableRow;
         removingRowInternal.ATableRow.Remove();
         this.collectionItems.Remove(removingRowInternal);
     }
@@ -80,17 +80,17 @@ internal sealed class SCRowCollection : IRowCollection
         this.Remove(innerRow);
     }
 
-    public IRow Add()
+    public ITableRow Add()
     {
         var columnsCount = this.collectionItems[0].Cells.Count;
         var aTableRow = this.aTable.AddRow(columnsCount);
-        var tableRow = new SCRow(this.parentTable, aTableRow, this.collectionItems.Count, this.slideTypedOpenXmlPart, this.imageParts);
+        var tableRow = new SCTableRow(this.parentTable, aTableRow, this.collectionItems.Count, this.slideTypedOpenXmlPart, this.imageParts);
         this.collectionItems.Add(tableRow);
 
         return tableRow;
     }
 
-    IEnumerator<IRow> IEnumerable<IRow>.GetEnumerator()
+    IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator()
     {
         return this.collectionItems.GetEnumerator();
     }
@@ -108,9 +108,9 @@ internal sealed class SCRowCollection : IRowCollection
     {
         var aTable = pGraphicFrame.GetATable();
         var aTableRows = aTable.Elements<A.TableRow>();
-        var rowList = new List<SCRow>(aTableRows.Count());
+        var rowList = new List<SCTableRow>(aTableRows.Count());
         var rowIndex = 0;
-        rowList.AddRange(aTableRows.Select(aTblRow => new SCRow(table, aTblRow, rowIndex++, slideTypedOpenXmlPart, imageParts)));
+        rowList.AddRange(aTableRows.Select(aTblRow => new SCTableRow(table, aTblRow, rowIndex++, slideTypedOpenXmlPart, imageParts)));
 
         return new SCRowCollection(rowList, table, aTable, slideTypedOpenXmlPart, imageParts);
     }

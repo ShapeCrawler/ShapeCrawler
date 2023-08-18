@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -7,10 +8,10 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal record AutoShapeFill : IShapeFill
+internal record SCAutoShapeFill : IShapeFill
 {
     private readonly TypedOpenXmlCompositeElement properties;
-    private readonly SlideAutoShape parentSlideAutoShape;
+    private readonly SCSlideAutoShape parentAutoShape;
     private BooleanValue? useBgFill;
     private SCFillType fillType;
     private bool isDirty;
@@ -21,10 +22,10 @@ internal record AutoShapeFill : IShapeFill
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
 
-    internal AutoShapeFill(TypedOpenXmlCompositeElement properties, SlideAutoShape parentSlideAutoShape)
+    internal SCAutoShapeFill(TypedOpenXmlCompositeElement properties, SCSlideAutoShape parentSlideAutoShape)
     {
         this.properties = properties;
-        this.parentSlideAutoShape = parentSlideAutoShape;
+        this.parentAutoShape = parentSlideAutoShape;
         this.isDirty = true;
     }
 
@@ -50,7 +51,8 @@ internal record AutoShapeFill : IShapeFill
         }
         else
         {
-            var rId = this.slideTypedOpenXmlPart.AddImagePart(imageStream);
+            SlidePart sdkSlidePart = this.parentAutoShape.SDKSlidePart(); 
+            var rId = sdkSlidePart.AddImagePart(imageStream);
 
             var aBlipFill = new DocumentFormat.OpenXml.Drawing.BlipFill();
             var aStretch = new DocumentFormat.OpenXml.Drawing.Stretch();

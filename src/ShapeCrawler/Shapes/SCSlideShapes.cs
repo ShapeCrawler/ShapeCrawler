@@ -10,6 +10,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
@@ -20,14 +21,14 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class SlideShapes : ISlideShapeCollection
+internal sealed class SCSlideShapes : ISlideShapeCollection
 {
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly P.ShapeTree pShapeTree;
     private readonly ResetableLazy<List<IShape>> shapes;
     private readonly SCSlide parentSlide;
 
-    internal SlideShapes(SCSlide parentSlide, P.ShapeTree pShapeTree)
+    internal SCSlideShapes(SCSlide parentSlide, P.ShapeTree pShapeTree)
     {
         this.parentSlide = parentSlide;
         this.pShapeTree = pShapeTree;
@@ -48,11 +49,23 @@ internal sealed class SlideShapes : ISlideShapeCollection
         return 1;
     }
 
-    public void Add(SCSlideShape addingShape)
+    public void Add(IShape addingShape)
     {
         var id = this.CalculateNextShapeId();
         var allShapeNames = this.Select(shape => shape.Name);
-        addingShape.CopyTo(id, this.pShapeTree, allShapeNames, this.parentSlide.SDKSlidePart());
+        
+        if (addingShape is SCSlideAutoShape slideAutoShape)
+        {
+            slideAutoShape.CopyTo(id, this.pShapeTree, allShapeNames, this.parentSlide.SDKSlidePart());    
+        }
+        else if (addingShape is SCSlidePicture slidePicture)
+        {
+            slidePicture.CopyTo(id, this.pShapeTree, allShapeNames, this.parentSlide.SDKSlidePart());    
+        }
+        else
+        {
+            throw new SCException($"Adding {addingShape.GetType().Name} is not supported.");
+        }
 
         this.shapes.Reset();
     }
@@ -131,7 +144,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
 
         this.shapes.Reset();
 
-        return (SlidePicture)shape;
+        return (SCSlidePicture)shape;
     }
 
     public IChart AddBarChart(BarChartType barChartType)
@@ -600,7 +613,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
             }
             else if (pShapeTreeChild is P.Shape pShape)
             {
-                shapesValue.Add(new SlideAutoShape(pShape, this, new Shape(pShapeTreeChild)));
+                shapesValue.Add(new SCSlideAutoShape(pShape, this, new Shape(pShapeTreeChild)));
             }
             else if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
             {
@@ -622,7 +635,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
                         continue;
                     }
 
-                    shapesValue.Add(new SlidePicture(pPicture, this, aBlip!, new Shape(pShapeTreeChild)));
+                    shapesValue.Add(new SCSlidePicture(pPicture, this, aBlip!, new Shape(pShapeTreeChild)));
                     continue;
                 }
             }
@@ -658,7 +671,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
                     continue;
                 }
 
-                shapesValue.Add(new SlidePicture(pPicture, this, aBlip!, new Shape(pShapeTreeChild)));
+                shapesValue.Add(new SCSlidePicture(pPicture, this, aBlip!, new Shape(pShapeTreeChild)));
                 continue;
             }
             else if (this.IsChartPGraphicFrame(pShapeTreeChild))
@@ -755,7 +768,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
 
         shape = autoShapeCreator.FromTreeChild(pShapeTreeChild, this.slideOf, this);
 
-        if (shape is SlideAutoShape autoShape)
+        if (shape is SCSlideAutoShape autoShape)
         {
             autoShape.Duplicated += this.OnAutoShapeAdded;
         }
@@ -814,5 +827,15 @@ internal sealed class SlideShapes : ISlideShapeCollection
     internal SlidePart SDKSlidePart()
     {
         return this.parentSlide.SDKSlidePart();
+    }
+
+    public List<ImagePart> SDKImageParts()
+    {
+        return this.parentSlide.SDKImageParts();
+    }
+
+    internal void Reset()
+    {
+        this.shapes.Reset();
     }
 }

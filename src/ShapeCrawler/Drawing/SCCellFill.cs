@@ -9,9 +9,10 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal class CellFill : IShapeFill
+internal class SCCellFill : IShapeFill
 {
     private readonly TypedOpenXmlCompositeElement cellProperties;
+    private readonly SCTableCell parentTableCell;
     private BooleanValue? useBgFill;
     private SCFillType fillType;
     private bool isDirty;
@@ -22,9 +23,10 @@ internal class CellFill : IShapeFill
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
 
-    internal CellFill(A.TableCellProperties cellProperties)
+    internal SCCellFill(A.TableCellProperties cellProperties, SCTableCell parentTableCell)
     {
         this.cellProperties = cellProperties;
+        this.parentTableCell = parentTableCell;
         this.isDirty = true;
     }
 
@@ -51,7 +53,8 @@ internal class CellFill : IShapeFill
         }
         else
         {
-            var rId = this.slideTypedOpenXmlPart.AddImagePart(imageStream);
+            SlidePart sdkSlidePart = this.parentTableCell.SDKSlidePart();
+            var rId = sdkSlidePart.AddImagePart(imageStream);
 
             var aBlipFill = new A.BlipFill();
             var aStretch = new A.Stretch();

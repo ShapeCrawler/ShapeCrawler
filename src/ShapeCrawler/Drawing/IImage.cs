@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
@@ -47,11 +48,15 @@ public interface IImage
 
 internal sealed class SCImage : IImage
 {
-    private readonly ImagePart sdkImagePart;
+    private readonly SCSlidePicture parentPicture;
+    private ImagePart sdkImagePart;
+    private readonly A.Blip aBlip;
 
-    internal SCImage(SlidePicture slidePicture, string blipEmbedValue)
+    internal SCImage(SCSlidePicture slidePicture, A.Blip aBlip)
     {
-        this.sdkImagePart = (ImagePart)slidePicture.SDKSlidePart().GetPartById(blipEmbedValue);
+        this.parentPicture = slidePicture;
+        this.aBlip = aBlip;
+        this.sdkImagePart = (ImagePart)slidePicture.SDKSlidePart().GetPartById(aBlip.Embed!.Value!);
     }
     
     public string MIME => this.sdkImagePart.ContentType;
@@ -62,17 +67,17 @@ internal sealed class SCImage : IImage
 
     public void UpdateImage(Stream stream)
     {
-        var isSharedImagePart = this.imageParts.Count(imgPart => imgPart == this.SDKImagePart) > 1;
+        var imageParts = this.parentPicture.SDKImageParts();
+        var isSharedImagePart = imageParts.Count(x=>x == this.sdkImagePart) > 1;
         if (isSharedImagePart)
         {
             var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
-            this.SDKImagePart = this.openXmlPart.AddNewPart<ImagePart>("image/png", rId);
-            this.blipEmbed.Value = rId;
+            this.sdkImagePart = this.parentPicture.SDKSlidePart().AddNewPart<ImagePart>("image/png", rId);
+            this.aBlip.Embed!.Value = rId;
         }
 
         stream.Position = 0;
-        this.SDKImagePart.FeedData(stream);
-        this.bytes = null; // to reset cache
+        this.sdkImagePart.FeedData(stream);
     }
 
     public void SetImage(byte[] bytes)

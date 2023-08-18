@@ -21,6 +21,7 @@ internal class SCSlideChart : IChart
     private readonly Lazy<SCChartType> chartType;
     private readonly Lazy<OpenXmlElement?> firstSeries;
     private readonly P.GraphicFrame pGraphicFrame;
+    private readonly SCSlideShapes parentShapeCollection;
     private readonly Lazy<SCSeriesCollection> series;
     private readonly Lazy<List<double>?> xValues;
     private readonly C.PlotArea cPlotArea;
@@ -32,9 +33,10 @@ internal class SCSlideChart : IChart
     private string? chartTitle;
     private readonly Shape shape;
 
-    internal SCSlideChart(P.GraphicFrame pGraphicFrame, SlideShapes shapes)
+    internal SCSlideChart(P.GraphicFrame pGraphicFrame, SCSlideShapes parentShapeCollection)
     {
         this.pGraphicFrame = pGraphicFrame;
+        this.parentShapeCollection = parentShapeCollection;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
         this.xValues = new Lazy<List<double>?>(this.GetXValues);
         this.series = new Lazy<SCSeriesCollection>(this.GetSeries);
@@ -43,13 +45,13 @@ internal class SCSlideChart : IChart
 
         var cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
             .GetFirstChild<C.ChartReference>() !;
-
+        var sdkSlidePart = this.parentShapeCollection.SDKSlidePart();
         this.ChartPart = (ChartPart)sdkSlidePart.GetPartById(cChartReference.Id!);
 
         this.cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
         this.cXCharts = this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
-        this.ChartWorkbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartWorkbook(this, this.ChartPart.EmbeddedPackagePart, chartWorkbooks) : null;
+        this.workbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartWorkbook(this, this.ChartPart.EmbeddedPackagePart) : null;
         this.shape = new Shape(pGraphicFrame);
     }
 
@@ -133,13 +135,13 @@ internal class SCSlideChart : IChart
     public SCGeometry GeometryType => SCGeometry.Rectangle;
     public string? CustomData { get; set; }
 
-    public byte[] WorkbookByteArray => this.ChartWorkbook!.BinaryData;
+    public byte[] WorkbookByteArray => this.workbook!.BinaryData;
 
-    public SpreadsheetDocument SDKSpreadsheetDocument => this.ChartWorkbook!.SpreadsheetDocument.Value;
+    public SpreadsheetDocument SDKSpreadsheetDocument => this.workbook!.SpreadsheetDocument.Value;
     
     public IAxesManager Axes => this.GetAxes();
 
-    internal ChartWorkbook? ChartWorkbook { get; set; }
+    internal ChartWorkbook? workbook { get; set; }
 
     internal ChartPart ChartPart { get; private set; }
 

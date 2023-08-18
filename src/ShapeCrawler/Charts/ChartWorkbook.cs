@@ -12,17 +12,15 @@ namespace ShapeCrawler.Charts;
 
 internal sealed class ChartWorkbook
 {
-    private readonly SCSlideChart _slideChart;
+    private readonly SCSlideChart slideChart;
     private readonly EmbeddedPackagePart embeddedPackagePart;
     private Stream? embeddedPackagePartStream;
     private bool closed;
-    private List<ChartWorkbook> chartWorkbooks;
 
-    internal ChartWorkbook(SCSlideChart slideChart, EmbeddedPackagePart embeddedPackagePart, List<ChartWorkbook> chartWorkbooks)
+    internal ChartWorkbook(SCSlideChart slideChart, EmbeddedPackagePart embeddedPackagePart)
     {
-        this._slideChart = slideChart;
+        this.slideChart = slideChart;
         this.embeddedPackagePart = embeddedPackagePart;
-        this.chartWorkbooks = chartWorkbooks;
         this.SpreadsheetDocument = new Lazy<SpreadsheetDocument>(this.GetSpreadsheetDocument);
     }
 

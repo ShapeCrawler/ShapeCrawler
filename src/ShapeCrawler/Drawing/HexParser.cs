@@ -1,11 +1,12 @@
-﻿using DocumentFormat.OpenXml;
+﻿using System.Linq;
+using DocumentFormat.OpenXml;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Drawing;
 
 internal static class HexParser
 {
-    internal static (SCColorType, string) FromSolidFill(TypedOpenXmlCompositeElement typedElement, SlideMaster slideMaster)
+    internal static (SCColorType, string?) FromSolidFill(TypedOpenXmlCompositeElement typedElement, SlideMaster slideMaster)
     {
         var colorHexVariant = GetWithoutScheme(typedElement);
         if (colorHexVariant is not null)

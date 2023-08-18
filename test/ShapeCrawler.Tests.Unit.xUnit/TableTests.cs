@@ -33,7 +33,7 @@ public class TableTests : SCTest
 
     [Xunit.Theory]
     [MemberData(nameof(TestCasesCellIsMergedCell))]
-    public void Row_Cell_IsMergedCell_returns_true_When_cell_is_merged_Vertically(ICell cell1, ICell cell2)
+    public void Row_Cell_IsMergedCell_returns_true_When_cell_is_merged_Vertically(ITableCell cell1, ITableCell cell2)
     {
         // Act-Assert
         cell1.IsMergedCell.Should().BeTrue();

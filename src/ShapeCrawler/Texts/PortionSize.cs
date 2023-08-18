@@ -69,7 +69,7 @@ internal record PortionSize : IFontSize
     {
         i = -1;
         var placeholder = scShape.Placeholder as SCSlidePlaceholder;
-        var referencedShape = placeholder?.ReferencedShape.Value as SlideAutoShape;
+        var referencedShape = placeholder?.ReferencedShape.Value as SCSlideAutoShape;
         var fontDataPlaceholder = new FontData();
         if (referencedShape != null)
         {

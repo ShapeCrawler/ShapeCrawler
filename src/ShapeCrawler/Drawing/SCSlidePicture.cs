@@ -15,19 +15,19 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed record SlidePicture : SCSlideShape, IPicture
+internal sealed record SCSlidePicture : IPicture
 {
     private readonly StringValue blipEmbed;
     private readonly P.Picture pPicture;
-    private readonly SlideShapes parentShapeCollection;
+    private readonly SCSlideShapes parentShapeCollection;
     private readonly A.Blip aBlip;
     private readonly Shape shape;
 
-    internal SlidePicture(
+    internal SCSlidePicture(
         P.Picture pPicture,
-        SlideShapes parentShapeCollection,
+        SCSlideShapes parentShapeCollection,
         A.Blip aBlip,
-        Shape shape) : base(pPicture)
+        Shape shape)
     {
         this.pPicture = pPicture;
         this.parentShapeCollection = parentShapeCollection;
@@ -36,7 +36,7 @@ internal sealed record SlidePicture : SCSlideShape, IPicture
         this.blipEmbed = aBlip.Embed!;
     }
 
-    public IImage Image => new SCImage(this, this.blipEmbed.Value!);
+    public IImage Image => new SCImage(this, this.aBlip);
 
     public string? SvgContent => this.GetSvgContent();
 
@@ -96,7 +96,7 @@ internal sealed record SlidePicture : SCSlideShape, IPicture
     public int X { get; set; }
     public int Y { get; set; }
     
-    internal override void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames, SlidePart targetSdkSlidePart)
+    internal void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames, SlidePart targetSdkSlidePart)
     {
         var copy = this.pPicture.CloneNode(true);
         copy.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
@@ -139,5 +139,10 @@ internal sealed record SlidePicture : SCSlideShape, IPicture
         targetImagePart.FeedData(sourceImageStream);
 
         copy.Descendants<A.Blip>().First().Embed = targetImagePartRId;
+    }
+
+    internal List<ImagePart> SDKImageParts()
+    {
+        return this.parentShapeCollection.SDKImageParts();
     }
 }

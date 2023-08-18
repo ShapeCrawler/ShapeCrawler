@@ -37,7 +37,7 @@ internal sealed class ChartPoint : IChartPoint
         this._parentSlideChart = slideChart;
         this.sheetName = sheetName;
         this.address = address;
-        this.workbook = slideChart.ChartWorkbook;
+        this.workbook = slideChart.workbook;
     }
 
     public double Value

@@ -52,17 +52,18 @@ public interface IParagraph
 internal sealed class SCParagraph : IParagraph
 {
     private readonly Lazy<SCBullet> bullet;
-    private readonly ResetableLazy<SCPortionCollection> portions;
+    private readonly ResetableLazy<SCPortions> portions;
     private SCTextAlignment? alignment;
+    private readonly SCTextFrame parentTextFrame;
 
-    internal SCParagraph(A.Paragraph aParagraph, SCTextFrame textBox)
+    internal SCParagraph(A.Paragraph aParagraph, SCTextFrame parentTextFrame)
     {
         this.AParagraph = aParagraph;
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.Level = this.GetIndentLevel();
         this.bullet = new Lazy<SCBullet>(this.GetBullet);
-        this.ParentTextFrame = textBox;
-        this.portions = new ResetableLazy<SCPortionCollection>(() => new SCPortionCollection(this.AParagraph, this));
+        this.parentTextFrame = parentTextFrame;
+        this.portions = new ResetableLazy<SCPortions>(() => new SCPortions(this.AParagraph, this));
     }
 
     internal event Action? TextChanged;
@@ -92,8 +93,6 @@ internal sealed class SCParagraph : IParagraph
     }
 
     public ISpacing Spacing => this.GetSpacing();
-
-    internal SCTextFrame ParentTextFrame { get; }
 
     internal A.Paragraph AParagraph { get; }
 
@@ -258,5 +257,10 @@ internal sealed class SCParagraph : IParagraph
         };
 
         return this.alignment.Value;
+    }
+
+    internal SlideMaster SlideMaster()
+    {
+        return this.parentTextFrame.SlideMaster();
     }
 }

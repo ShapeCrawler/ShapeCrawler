@@ -27,10 +27,10 @@ public interface IShapeOutline
 
 internal sealed class ShapeOutline : IShapeOutline
 {
-    private readonly SlideAutoShape parentAutoShape;
+    private readonly SCSlideAutoShape parentAutoShape;
     private readonly P.ShapeProperties pShapeProperties;
 
-    internal ShapeOutline(SlideAutoShape parentAutoShape, P.ShapeProperties pShapeProperties)
+    internal ShapeOutline(SCSlideAutoShape parentAutoShape, P.ShapeProperties pShapeProperties)
     {
         this.parentAutoShape = parentAutoShape;
         this.pShapeProperties = pShapeProperties;

@@ -18,33 +18,31 @@ namespace ShapeCrawler;
 
 internal sealed class SCSlide : ISlide
 {
-    private readonly ResetableLazy<SlideShapes> shapes;
+    private readonly ResetableLazy<SCSlideShapes> shapes;
     private readonly Lazy<SCImage?> backgroundImage;
-    private readonly Func<int> totalSlideCount;
     private Lazy<CustomXmlPart?> customXmlPart;
     private readonly int slideWidth;
     private readonly int slideHeight;
+    private readonly SCSlideCollection parentSlideCollection;
     private readonly SlidePart sdkSlidePart;
 
     internal SCSlide( 
         SlidePart slidePart, 
         SlideId slideId, 
-        Func<int> totalSlideCount,
         SCSlideLayout slideLayout,
         int slideWidth, 
         int slideHeight,
-        PresentationDocument sdkPresentationDocument)
+        SCSlideCollection parentSlideCollection)
     {
         this.sdkSlidePart = slidePart;
         this.slideWidth = slideWidth;
         this.slideHeight = slideHeight;
-        this.shapes = new ResetableLazy<SlideShapes>(() => new SlideShapes(this.sdkSlidePart, this, slidePart, imageParts, sdkPresentationDocument));
-        this.backgroundImage = new Lazy<SCImage?>(() => SCImage.ForBackground(this, this.imageParts));
+        this.parentSlideCollection = parentSlideCollection;
+        this.shapes = new ResetableLazy<SCSlideShapes>(() => new SCSlideShapes(this));
+        this.backgroundImage = new Lazy<SCImage?>(() => SCImage.ForBackground(this));
         this.customXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideId = slideId;
-        this.totalSlideCount = totalSlideCount;
         this.SlideLayout = slideLayout;
-        this.SDKPresentationDocument = sdkPresentationDocument;
     }
 
     public ISlideLayout SlideLayout { get; }
@@ -67,10 +65,6 @@ internal sealed class SCSlide : ISlide
 
     public bool Hidden => this.sdkSlidePart.Slide.Show is not null && this.sdkSlidePart.Slide.Show.Value == false;
     
-    public PresentationDocument SDKPresentationDocument { get; }
-    
-    internal SCSlideLayout SlideLayoutInternal => (SCSlideLayout)this.SlideLayout;
-
     internal TypedOpenXmlPart TypedOpenXmlPart => this.sdkSlidePart;
 
     internal SlideId SlideId { get; }
@@ -295,5 +289,10 @@ internal sealed class SCSlide : ISlide
         }
 
         return null;
+    }
+
+    internal List<ImagePart> SDKImageParts()
+    {
+        return this.parentSlideCollection.SDKImageParts();
     }
 }

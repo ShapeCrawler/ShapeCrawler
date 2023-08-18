@@ -4,7 +4,7 @@ namespace ShapeCrawler.AutoShapes;
 
 internal readonly struct NewAutoShape
 {
-    internal NewAutoShape(SlideAutoShape newAutoShape, TypedOpenXmlCompositeElement pShapeTreeChild)
+    internal NewAutoShape(SCSlideAutoShape newAutoShape, TypedOpenXmlCompositeElement pShapeTreeChild)
     {
         this.AutoShape = newAutoShape;
         this.PShapeTreeChild = pShapeTreeChild;
@@ -12,5 +12,5 @@ internal readonly struct NewAutoShape
     
     internal TypedOpenXmlCompositeElement PShapeTreeChild { get; }
 
-    internal SlideAutoShape AutoShape { get; }
+    internal SCSlideAutoShape AutoShape { get; }
 }

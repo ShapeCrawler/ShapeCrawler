@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using ShapeCrawler.Services.Factories;
-using ShapeCrawler.Shapes;
+﻿using System.IO;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
@@ -14,9 +11,7 @@ public interface ISlideShapeCollection : IReadOnlyShapeCollection
     /// <summary>
     ///     Adds a new shape from other shape.
     /// </summary>
-    /// <param name="shape">Source shape.</param>
-    /// <returns>A new shape.</returns>
-    void Add(SCSlideShape shape);
+    void Add(IShape shape);
 
     /// <summary>
     ///     Adds a new audio from stream.

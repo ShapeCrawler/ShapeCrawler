@@ -61,7 +61,7 @@ internal sealed class SlideMaster : ISlideMaster
     public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
     IReadOnlyShapeCollection ISlideMaster.Shapes => this.Shapes;
 
-    public ISlideShapeCollection Shapes => new SlideShapes(this.PSlideMaster.SlideMasterPart!, this, this.slideTypedOpenXmlPart, this.imageParts, this.sdkPresentationDocument);
+    public ISlideShapeCollection Shapes => new SCSlideShapes(this.PSlideMaster.SlideMasterPart!, this, this.slideTypedOpenXmlPart, this.imageParts, this.sdkPresentationDocument);
     
     public ITheme Theme => this.GetTheme();
 
@@ -79,7 +79,7 @@ internal sealed class SlideMaster : ISlideMaster
     
     internal P.SlideMaster PSlideMaster { get; }
 
-    internal SlideShapes ShapesInternal => (SlideShapes)this.Shapes;
+    internal SCSlideShapes ShapesInternal => (SCSlideShapes)this.Shapes;
     
     internal TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
 
