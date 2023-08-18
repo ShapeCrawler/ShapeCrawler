@@ -119,33 +119,7 @@ internal sealed class SCTable : SCShape, ITable
 
         this.rowCollection.Reset();
     }
-
-    private void RemoveRowIfNeeded()
-    {
-        // Delete a:tr if needed
-        for (var rowIdx = 0; rowIdx < this.Rows.Count;)
-        {
-            var allRowCells = this.Rows[rowIdx].Cells.OfType<SCCell>().ToList();
-            var firstRowCell = allRowCells[0];
-            var firstRowCellSpan = firstRowCell.ATableCell.RowSpan?.Value;
-            if (firstRowCellSpan > 1 && allRowCells.All(cell => cell.ATableCell.RowSpan?.Value == firstRowCellSpan))
-            {
-                int deleteRowsCount = firstRowCellSpan.Value - 1;
-
-                foreach (var row in this.Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
-                {
-                    ((SCRow)row).ATableRow.Remove();
-                    this.Rows[rowIdx].Height += row.Height;
-                }
-
-                rowIdx += firstRowCellSpan.Value;
-                continue;
-            }
-
-            rowIdx++;
-        }
-    }
-
+    
     internal override void Draw(SKCanvas canvas)
     {
         throw new NotImplementedException();
@@ -258,6 +232,32 @@ internal sealed class SCTable : SCShape, ITable
         }
 
         return false;
+    }
+    
+    private void RemoveRowIfNeeded()
+    {
+        // Delete a:tr if needed
+        for (var rowIdx = 0; rowIdx < this.Rows.Count;)
+        {
+            var allRowCells = this.Rows[rowIdx].Cells.OfType<SCCell>().ToList();
+            var firstRowCell = allRowCells[0];
+            var firstRowCellSpan = firstRowCell.ATableCell.RowSpan?.Value;
+            if (firstRowCellSpan > 1 && allRowCells.All(cell => cell.ATableCell.RowSpan?.Value == firstRowCellSpan))
+            {
+                int deleteRowsCount = firstRowCellSpan.Value - 1;
+
+                foreach (var row in this.Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
+                {
+                    ((SCRow)row).ATableRow.Remove();
+                    this.Rows[rowIdx].Height += row.Height;
+                }
+
+                rowIdx += firstRowCellSpan.Value;
+                continue;
+            }
+
+            rowIdx++;
+        }
     }
     
     private void MergeVertically(int bottomIndex, int topRowIndex, List<A.TableRow> aTableRows, int leftColIndex, int rightColIndex)

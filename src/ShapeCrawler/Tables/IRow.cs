@@ -26,6 +26,9 @@ public interface IRow
     /// </summary>
     IRow Clone();
 
+    /// <summary>
+    ///     Returns <see cref="A.TableRow" />.
+    /// </summary>
     A.TableRow ATableRow();
 }
 
