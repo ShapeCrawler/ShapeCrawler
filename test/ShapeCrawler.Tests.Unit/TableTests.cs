@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Tests.Unit.Helpers;
-using Xunit;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Tests.Unit;
@@ -201,7 +200,7 @@ public class TableTests : SCTest
         table.Height.Should().Be(76, "because table height was 38px.");
     }
 
-    [Fact(DisplayName = "MergeCells #1")]
+    [Test]
     public void MergeCells_Merges0x0And0x1CellsOf2x2Table()
     {
         // Arrange
@@ -225,7 +224,7 @@ public class TableTests : SCTest
         table[0, 0].TextFrame.Text.Should().Be($"id5{Environment.NewLine}Text0_1");
     }
 
-    [Fact(DisplayName = "MergeCells #2")]
+    [Test]
     public void MergeCells_Merges0x1And0x2CellsOf3x2Table()
     {
         // Arrange
@@ -252,7 +251,7 @@ public class TableTests : SCTest
         }
     }
 
-    [Fact(DisplayName = "MergeCells #3")]
+    [Test]
     public void MergeCells_Merges0x0And0x1And0x2CellsOf3x2Table()
     {
         // Arrange
@@ -276,7 +275,7 @@ public class TableTests : SCTest
         table[0, 2].IsMergedCell.Should().BeTrue();
     }
 
-    [Fact(DisplayName = "MergeCells #4")]
+    [Test]
     public void MergeCells_Merges0x0And0x1MergedCellsWith0x2CellIn3x2Table()
     {
         // Arrange
@@ -300,7 +299,7 @@ public class TableTests : SCTest
         table[0, 2].IsMergedCell.Should().BeTrue();
     }
 
-    [Fact(DisplayName = "MergeCells #5")]
+    [Test]
     public void MergeCells_merges_0x0_and_1x0_cells_of_2x2_table()
     {
         // Arrange
@@ -360,7 +359,7 @@ public class TableTests : SCTest
         table[1, 0].TextFrame.Text.Should().Be("A");
     }
 
-    [Fact(DisplayName = "MergeCells #6")]
+    [Test]
     public void MergeCells_Merges0x1And1x1CellsOf3x2Table()
     {
         // Arrange
@@ -384,7 +383,7 @@ public class TableTests : SCTest
         table[0, 0].IsMergedCell.Should().BeFalse();
     }
 
-    [Fact(DisplayName = "MergeCells #7")]
+    [Test]
     public void MergeCells_Merges0x0To1x1RangeOf3x3Table()
     {
         // Arrange
@@ -468,7 +467,7 @@ public class TableTests : SCTest
         table[0, 2].IsMergedCell.Should().BeFalse();
     }
 
-    [Fact(DisplayName = "MergeCells #8")]
+    [Test]
     public void MergeCells_converts_2X1_table_into_1X1_when_all_cells_are_merged()
     {
         // Arrange
@@ -495,12 +494,13 @@ public class TableTests : SCTest
         table.Rows[0].Cells.Should().HaveCount(1);
     }
 
-    [Fact(DisplayName = "MergeCells #9")]
+    [Test]
     public void MergeCells_converts_2X2_table_into_1X1_when_all_cells_are_merged()
     {
         // Arrange
-        var pres = SCPresentation.Open(GetInputStream("001.pptx"));
-        var table = (ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 5);
+        var pptx = GetInputStream("001.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var table = pres.Slides[2].Shapes.GetByName<ITable>("Table 5");
         var mStream = new MemoryStream();
         var mergedColumnWidth = table.Columns[0].Width + table.Columns[1].Width;
         var mergedRowHeight = table.Rows[0].Height + table.Rows[1].Height;
@@ -513,20 +513,20 @@ public class TableTests : SCTest
 
         pres.SaveAs(mStream);
         pres = SCPresentation.Open(mStream);
-        table = (ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 5);
+        table = pres.Slides[2].Shapes.GetByName<ITable>("Table 5");
         AssertTable(table, mergedColumnWidth, mergedRowHeight);
 
-        static void AssertTable(ITable tableSc, int expectedMergedColumnWidth, int expectedMergedRowHeight)
+        static void AssertTable(ITable table, int expectedMergedColumnWidth, int expectedMergedRowHeight)
         {
-            tableSc.Columns.Should().HaveCount(1);
-            tableSc.Columns[0].Width.Should().Be(expectedMergedColumnWidth);
-            tableSc.Rows.Should().HaveCount(1);
-            tableSc.Rows[0].Cells.Should().HaveCount(1);
-            tableSc.Rows[0].Height.Should().Be(expectedMergedRowHeight);
+            table.Columns.Should().HaveCount(1);
+            table.Columns[0].Width.Should().Be(expectedMergedColumnWidth);
+            table.Rows.Should().HaveCount(1);
+            table.Rows[0].Cells.Should().HaveCount(1);
+            table.Rows[0].Height.Should().Be(expectedMergedRowHeight);
         }
     }
 
-    [Fact(DisplayName = "MergeCells #10")]
+    [Test]
     public void MergeCells_merges_0x0_And_0x1_cells_in_3x1_table()
     {
         // Arrange
@@ -555,7 +555,7 @@ public class TableTests : SCTest
         }
     }
 
-    [Fact(DisplayName = "MergeCells #11")]
+    [Test]
     public void MergeCells_merges_0x1_and_0x2_cells()
     {
         // Arrange
@@ -658,7 +658,6 @@ public class TableTests : SCTest
         
         // Act
         table.MergeCells(table[0, 1], table[1, 1]);
-        pres.Save();
 
         // Assert
         var aTableRow = table.Rows[0].ATableRow();

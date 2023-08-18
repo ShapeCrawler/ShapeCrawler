@@ -115,34 +115,37 @@ internal sealed class SCTable : SCShape, ITable
         }
 
         this.RemoveColumnIfNeeded(aTableRows);
+        this.RemoveRowIfNeeded();
 
+        this.rowCollection.Reset();
+    }
+
+    private void RemoveRowIfNeeded()
+    {
         // Delete a:tr if needed
         for (var rowIdx = 0; rowIdx < this.Rows.Count;)
         {
-            var rowCells = this.Rows[rowIdx].Cells.OfType<SCCell>().ToList();
-            var firstRowCell = rowCells[0];
-            var rowSpan = firstRowCell.ATableCell.RowSpan?.Value;
-            if (rowSpan > 1 && rowCells.All(cell => cell.ATableCell.RowSpan?.Value == rowSpan))
+            var allRowCells = this.Rows[rowIdx].Cells.OfType<SCCell>().ToList();
+            var firstRowCell = allRowCells[0];
+            var firstRowCellSpan = firstRowCell.ATableCell.RowSpan?.Value;
+            if (firstRowCellSpan > 1 && allRowCells.All(cell => cell.ATableCell.RowSpan?.Value == firstRowCellSpan))
             {
-                int deleteRowsCount = rowSpan.Value - 1;
+                int deleteRowsCount = firstRowCellSpan.Value - 1;
 
-                // Delete a:gridCol elements
                 foreach (var row in this.Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
                 {
                     ((SCRow)row).ATableRow.Remove();
                     this.Rows[rowIdx].Height += row.Height;
                 }
 
-                rowIdx += rowSpan.Value;
+                rowIdx += firstRowCellSpan.Value;
                 continue;
             }
 
             rowIdx++;
         }
-
-        this.rowCollection.Reset();
     }
-    
+
     internal override void Draw(SKCanvas canvas)
     {
         throw new NotImplementedException();
@@ -262,7 +265,7 @@ internal sealed class SCTable : SCShape, ITable
         var verticalMergingCount = bottomIndex - topRowIndex + 1;
     
         // Set row span value for the first cell in the merged cells
-        var numMergingCells = rightColIndex == 0 ? 1 : rightColIndex;
+        var numMergingCells = rightColIndex - leftColIndex + 1;
         var horizontalCells =
             aTableRows[topRowIndex].Elements<A.TableCell>().Skip(leftColIndex).Take(numMergingCells);
         foreach (var aTblCell in horizontalCells)
