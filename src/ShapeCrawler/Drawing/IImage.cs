@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -53,7 +54,7 @@ internal sealed class SCImage : IImage
     private readonly OpenXmlPart openXmlPart;
     private byte[]? bytes;
 
-    private SCImage(
+    internal SCImage(
         ImagePart imagePart,
         StringValue blipEmbed,
         OpenXmlPart openXmlPart,
@@ -111,19 +112,19 @@ internal sealed class SCImage : IImage
         return new SCImage(imagePart, blipEmbed, openXmlPart, slideStructureCore.PresentationInternal);
     }
 
-    internal static SCImage? ForBackground(SCSlide slide)
+    internal static IImage ForBackground(SCSlide slide)
     {
         var pBackground = slide.SDKSlidePart.Slide.CommonSlideData!.Background;
         if (pBackground == null)
         {
-            return null;
+            return new NoBackground(slide);
         }
 
         var aBlipFill = pBackground.Descendants<A.BlipFill>().SingleOrDefault();
         var picReference = aBlipFill?.Blip?.Embed;
         if (picReference == null)
         {
-            return null;
+            return new NoBackground(slide);
         }
 
         var imagePart = (ImagePart)slide.SDKSlidePart.GetPartById(picReference.Value!);
