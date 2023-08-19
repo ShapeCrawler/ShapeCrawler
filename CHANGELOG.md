@@ -1,8 +1,10 @@
 # Changelog  
 
-## Version 0.47.1 - Unreleased
-🐞Fixed issue in Shape Fill [#558](https://github.com/ShapeCrawler/ShapeCrawler/issues/558)  
-🐞Fixed Merging Table Cells [#564](https://github.com/ShapeCrawler/ShapeCrawler/issues/564)
+## Version 0.48.0 - 2023-08-19
+🍀Added new properties: `IShapeFill.AlphaPercentage`, `IShapeFill.LuminanceModulationPercentage` and `IShapeFill.LuminanceOffsetPercentage` to the in shape filling object [#567](https://github.com/ShapeCrawler/ShapeCrawler/issues/567)   
+🍀Added a new property: `Shape.Rotation` to the shape object  
+🐞Fixed an issue with Shape Fill [#558](https://github.com/ShapeCrawler/ShapeCrawler/issues/558)  
+🐞Fixed merging of table cells [#564](https://github.com/ShapeCrawler/ShapeCrawler/issues/564)
 
 ## Version 0.47.0 - 2023-07-26
 🍀Added setters for `IParagraph.IndentLevel`  
