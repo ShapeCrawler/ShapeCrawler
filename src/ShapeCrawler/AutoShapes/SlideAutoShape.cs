@@ -15,25 +15,25 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes;
 
-internal sealed record SCSlideAutoShape : ISlideAutoShape
+internal sealed record SlideAutoShape : ISlideAutoShape
 {
     // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi.
     // 96/72=1.4
     private const double Scale = 1.4;
 
-    private readonly Lazy<SCAutoShapeFill> shapeFill;
+    private readonly Lazy<AutoShapeFill> shapeFill;
     private readonly Lazy<SCTextFrame?> textFrame;
     private readonly ResetableLazy<Dictionary<int, FontData>> lvlToFontData;
     private readonly P.Shape pShape;
     private readonly SCSlideShapes parentShapeCollection;
     private readonly Shape shape;
 
-    internal SCSlideAutoShape(P.Shape pShape, SCSlideShapes parentShapeCollection, Shape shape)
+    internal SlideAutoShape(P.Shape pShape, SCSlideShapes parentShapeCollection, Shape shape)
     {
         this.pShape = pShape;
         this.parentShapeCollection = parentShapeCollection;
         this.textFrame = new Lazy<SCTextFrame?>(this.ParseTextFrame);
-        this.shapeFill = new Lazy<SCAutoShapeFill>(this.GetFill);
+        this.shapeFill = new Lazy<AutoShapeFill>(this.GetFill);
         this.lvlToFontData = new ResetableLazy<Dictionary<int, FontData>>(this.GetLvlToFontData);
         this.shape = shape;
         this.Outline = new ShapeOutline(this, pShape.ShapeProperties!);
@@ -168,7 +168,7 @@ internal sealed record SCSlideAutoShape : ISlideAutoShape
             if (!fontData.IsFilled() && this.Placeholder != null)
             {
                 var placeholder = (SCPlaceholder)this.Placeholder;
-                var referencedMasterShape = (SCSlideAutoShape?)placeholder.ReferencedShape.Value;
+                var referencedMasterShape = (SlideAutoShape?)placeholder.ReferencedShape.Value;
                 referencedMasterShape?.FillFontData(paragraphLvl, ref fontData);
             }
 
@@ -178,7 +178,7 @@ internal sealed record SCSlideAutoShape : ISlideAutoShape
         if (this.Placeholder != null)
         {
             var placeholder = (SCPlaceholder)this.Placeholder;
-            var referencedMasterShape = (SCSlideAutoShape?)placeholder.ReferencedShape.Value;
+            var referencedMasterShape = (SlideAutoShape?)placeholder.ReferencedShape.Value;
             if (referencedMasterShape != null)
             {
                 referencedMasterShape.FillFontData(paragraphLvl, ref fontData);
@@ -249,7 +249,7 @@ internal sealed record SCSlideAutoShape : ISlideAutoShape
 
     private SCTextFrame? ParseTextFrame()
     {
-        var pTextBody = this.PShapeTreeChild.GetFirstChild<P.TextBody>();
+        var pTextBody = this.pShape.GetFirstChild<P.TextBody>();
         if (pTextBody == null)
         {
             return null;
@@ -261,14 +261,13 @@ internal sealed record SCSlideAutoShape : ISlideAutoShape
         return newTextFrame;
     }
 
-    private SCAutoShapeFill GetFill()
+    private AutoShapeFill GetFill()
     {
-        var slideObject = this.SlideStructure;
-        return new SCAutoShapeFill(
-            slideObject, 
+        var useBgFill = pShape.UseBackgroundFill;
+        return new AutoShapeFill(
             this.pShape.GetFirstChild<P.ShapeProperties>() !, 
             this, 
-            this.sdkSlidePart);
+            useBgFill);
     }
     
     public int X { get; set; }
@@ -312,5 +311,10 @@ internal sealed record SCSlideAutoShape : ISlideAutoShape
     public SlidePart SDKSlidePart()
     {
         return this.parentShapeCollection.SDKSlidePart();
+    }
+
+    internal List<ImagePart> SDKImageParts()
+    {
+        return this.parentShapeCollection.SDKImageParts();
     }
 }

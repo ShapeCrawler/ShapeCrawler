@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
@@ -119,7 +120,7 @@ internal sealed class SlideMaster : ISlideMaster
         return false;
     }
 
-    private SCImage? GetBackground()
+    private PictureImage? GetBackground()
     {
         return null;
     }

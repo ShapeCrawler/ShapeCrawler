@@ -271,16 +271,14 @@ internal sealed class SlideTable : ITable
         }
     }
     
-    private void MergeVertically(int bottomIndex, int topRowIndex, List<A.TableRow> aTableRows, int leftColIndex, int rightColIndex)
-
-    private void MergeVertically(int bottomIndex, int topRowIndex, List<A.TableRow> aTableRows, int leftColIndex,
+    private void MergeVertically(
+        int bottomIndex, 
+        int topRowIndex, 
+        List<A.TableRow> aTableRows, 
+        int leftColIndex,
         int rightColIndex)
     {
         int verticalMergingCount = bottomIndex - topRowIndex + 1;
-    
-        // Set row span value for the first cell in the merged cells
-        foreach (var aTblCell in aTableRows[topRowIndex].Elements<A.TableCell>().Skip(leftColIndex)
-                     .Take(rightColIndex + 1))
         var numMergingCells = rightColIndex - leftColIndex + 1;
         var horizontalCells =
             aTableRows[topRowIndex].Elements<A.TableCell>().Skip(leftColIndex).Take(numMergingCells);

@@ -60,7 +60,6 @@ internal sealed class SCParagraph : IParagraph
     {
         this.AParagraph = aParagraph;
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
-        this.Level = this.GetIndentLevel();
         this.bullet = new Lazy<SCBullet>(this.GetBullet);
         this.parentTextFrame = parentTextFrame;
         this.portions = new ResetableLazy<SCPortions>(() => new SCPortions(this.AParagraph, this));
@@ -95,8 +94,6 @@ internal sealed class SCParagraph : IParagraph
     public ISpacing Spacing => this.GetSpacing();
 
     internal A.Paragraph AParagraph { get; }
-
-    internal int Level { get; }
 
     public void SetFontSize(int fontSize)
     {
@@ -262,5 +259,15 @@ internal sealed class SCParagraph : IParagraph
     internal SlideMaster SlideMaster()
     {
         return this.parentTextFrame.SlideMaster();
+    }
+
+    internal int Level()
+    {
+        return this.GetIndentLevel();
+    }
+
+    internal A.ListStyle ATextBodyListStyle()
+    {
+        return this.parentTextFrame.ATextBodyListStyle();
     }
 }

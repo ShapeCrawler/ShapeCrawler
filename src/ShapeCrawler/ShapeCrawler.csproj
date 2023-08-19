@@ -11,11 +11,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <Copyright></Copyright>
-<<<<<<< HEAD
-    <LangVersion>latestmajor</LangVersion>
-=======
     <LangVersion>default</LangVersion>
->>>>>>> master
     <ApplicationIcon></ApplicationIcon>
     <PackageReleaseNotes>- added new properties: IShapeFill.AlphaPercentage, IShapeFill.LuminanceModulationPercentage and IShapeFill.LuminanceOffsetPercentage to the in shape filling object
 - added a new property: Shape.Rotation to the shape object  

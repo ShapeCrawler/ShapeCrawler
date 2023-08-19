@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -31,8 +33,8 @@ public interface ITableCell
 internal sealed record SCTableCell : ITableCell
 {
     private readonly Lazy<SCTextFrame> textFrame;
-    private readonly Lazy<SCCellFill> shapeFill;
-    private readonly SCTableRow _parentTableRow;
+    private readonly Lazy<TableCellFill> shapeFill;
+    private readonly SCTableRow parentTableRow;
 
     internal SCTableCell(
         SCTableRow _parentTableRow,
@@ -40,14 +42,14 @@ internal sealed record SCTableCell : ITableCell
         int rowIndex,
         int columnIndex)
     {
-        this._parentTableRow = _parentTableRow;
+        this.parentTableRow = _parentTableRow;
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
         this.textFrame = new Lazy<SCTextFrame>(this.CreateTextFrame);
         var tableCellProperties = aTableCell.TableCellProperties!;
-        this.shapeFill = new Lazy<SCCellFill>(() =>
-            new SCCellFill(tableCellProperties, this));
+        this.shapeFill = new Lazy<TableCellFill>(() =>
+            new TableCellFill(tableCellProperties, this));
     }
 
     public bool IsMergedCell => this.DefineWhetherCellIsMerged();
@@ -77,6 +79,11 @@ internal sealed record SCTableCell : ITableCell
 
     internal SlidePart SDKSlidePart()
     {
-        return this._parentTableRow.SDKSlidePart();
+        return this.parentTableRow.SDKSlidePart();
+    }
+
+    internal List<ImagePart> SDKImageParts()
+    {
+        return this.parentTableRow.SDKImageParts();
     }
 }

@@ -160,7 +160,7 @@ internal sealed record PresentationCore
                 switch (shape)
                 {
                     case SCSlidePicture slidePicture:
-                        imgParts.Add(((SCImage)slidePicture.Image).SDKImagePart);
+                        imgParts.Add(((PictureImage)slidePicture.Image).SDKImagePart);
                         break;
                     case IGroupShape groupShape:
                         FromShapes(groupShape.Shapes.Select(x => x));

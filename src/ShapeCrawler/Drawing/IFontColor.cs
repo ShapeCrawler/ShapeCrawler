@@ -32,15 +32,16 @@ public interface IFontColor
     void SetColorByHex(string hex);
 }
 
-internal sealed class SCFontColor : IFontColor
+internal sealed class FontColor : IFontColor
 {
     private readonly A.Text aText;
     private bool initialized;
     private string? hexColor;
     private SCColorType colorType;
-    private readonly SCTextPortionFont parentFont;
+    private readonly TextPortionFont parentFont;
+    private A.ListStyle textBodyListStyle;
 
-    internal SCFontColor(SCTextPortionFont parentFont, A.Text aText)
+    internal FontColor(TextPortionFont parentFont, A.Text aText)
     {
         this.parentFont = parentFont;
         this.aText = aText;
@@ -98,7 +99,6 @@ internal sealed class SCFontColor : IFontColor
         }
         else
         {
-            var paragraphLevel = this.paragraph.Level;
             if (this.TryFromTextBody(this.paragraph))
             {
                 return;
@@ -109,19 +109,20 @@ internal sealed class SCFontColor : IFontColor
                 return;
             }
 
-            if (this.TryFromPlaceholder(paragraphLevel))
+            int paraLevel = this.parentFont.ParagraphLevel();
+            if (this.TryFromPlaceholder(paraLevel))
             {
                 return;
             }
 
-            if (this.parentSlideMaster.BodyParaLvlToFontData.TryGetValue(paragraphLevel, out var masterBodyFontData) && this.TryFromFontData(masterBodyFontData))
+            if (this.parentSlideMaster.BodyParaLvlToFontData.TryGetValue(paraLevel, out var masterBodyFontData) && this.TryFromFontData(masterBodyFontData))
             {
                 return;
             }
 
             // Presentation level
             string colorHexVariant;
-            if (this.paraLvlToFontData.TryGetValue(paragraphLevel, out var preFontData))
+            if (this.paraLvlToFontData.TryGetValue(paraLevel, out var preFontData))
             {
                 colorHexVariant = this.GetHexVariantByScheme(preFontData.ASchemeColor!.Val!);
                 this.colorType = SCColorType.Theme;
@@ -138,8 +139,8 @@ internal sealed class SCFontColor : IFontColor
 
     private bool TryFromTextBody(SCParagraph paragraph)
     {
-        var txBodyListStyle = paragraph.ParentTextFrame.TextBodyElement.GetFirstChild<A.ListStyle>();
-        var paraLvlToFontData = FontDataParser.FromCompositeElement(txBodyListStyle!);
+        // var textBodyListStyle = paragraph.ParentTextFrame.TextBodyElement.GetFirstChild<A.ListStyle>();
+        var paraLvlToFontData = FontDataParser.FromCompositeElement(this.textBodyListStyle!);
         if (!paraLvlToFontData.TryGetValue(paragraph.Level, out var txBodyFontData))
         {
             return false;

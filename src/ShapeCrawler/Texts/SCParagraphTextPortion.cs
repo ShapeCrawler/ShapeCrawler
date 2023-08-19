@@ -11,7 +11,7 @@ namespace ShapeCrawler.Texts;
 
 internal sealed class SCParagraphTextPortion : IParagraphPortion
 {
-    private readonly ResetableLazy<SCTextPortionFont> font;
+    private readonly ResetableLazy<TextPortionFont> font;
     private readonly A.Run aRun;
     private readonly SCPortions parentPortionCollection;
 
@@ -21,7 +21,7 @@ internal sealed class SCParagraphTextPortion : IParagraphPortion
         this.aRun = aRun;
         this.parentPortionCollection = parentPortionCollection;
         var textPortionSize = new PortionSize(this.AText, this);
-        this.font = new ResetableLazy<SCTextPortionFont>(() => new SCTextPortionFont(this.AText, themeFontScheme, textPortionSize, this));
+        this.font = new ResetableLazy<TextPortionFont>(() => new TextPortionFont(this.AText, themeFontScheme, textPortionSize, this));
     }
 
     internal event Action? Removed;
@@ -151,5 +151,15 @@ internal sealed class SCParagraphTextPortion : IParagraphPortion
     internal SlideMaster SlideMaster()
     {
         return this.parentPortionCollection.SlideMaster();
+    }
+
+    internal int ParagraphLevel()
+    {
+        return this.parentPortionCollection.ParagraphLevel();
+    }
+
+    internal A.ListStyle ATextBodyListStyle()
+    {
+        return this.parentPortionCollection.ATextBodyListStyle();
     }
 }

@@ -25,7 +25,7 @@ internal sealed class SCSlideGroupedShapes : IReadOnlyShapeCollection
             {
                 // var autoShape = new SCSlideAutoShape(pShape, groupShape, sdkSlidePart, groupShape.OnGroupedShapeXChanged, groupShape.OnGroupedShapeYChanged);
                 var slideGroupedAutoShape = new SCSlideGroupedAutoShape(
-                    new SCSlideAutoShape(pShape, this, sdkSlidePart),
+                    new SlideAutoShape(pShape, this, sdkSlidePart),
                     groupShape.OnGroupedShapeXChanged, groupShape.OnGroupedShapeYChanged);
 
                 shape = slideGroupedAutoShape;

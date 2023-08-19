@@ -36,7 +36,7 @@ internal sealed record SCSlidePicture : IPicture
         this.blipEmbed = aBlip.Embed!;
     }
 
-    public IImage Image => new SCImage(this, this.aBlip);
+    public IImage Image => new PictureImage(this, this.aBlip);
 
     public string? SvgContent => this.GetSvgContent();
 

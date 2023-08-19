@@ -8,27 +8,30 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class SCTextPortionFont : ITextPortionFont
+internal sealed class TextPortionFont : ITextPortionFont
 {
     private readonly A.Text aText;
     private readonly A.FontScheme aFontScheme;
-    private readonly Lazy<SCFontColor> fontColor;
+    private readonly Lazy<FontColor> fontColor;
     private readonly ResetableLazy<A.LatinFont> latinFont;
     private readonly IFontSize size;
     private readonly SCParagraphTextPortion parentParagraphTextPortion;
 
-    internal SCTextPortionFont(
+    internal TextPortionFont(
         A.Text aText, 
         ThemeFontScheme themeFontScheme,
         IFontSize size,
         SCParagraphTextPortion parentParagraphTextPortion)
     {
+        this.parentParagraphTextPortion = parentParagraphTextPortion;
         this.aText = aText;
         this.latinFont = new ResetableLazy<A.LatinFont>(this.ParseALatinFont);
-        this.fontColor = new Lazy<SCFontColor>(() => new SCFontColor(this, this.aText));
+        
+        // var textBodyListStyle = paragraph.ParentTextFrame.TextBodyElement.GetFirstChild<A.ListStyle>();
+        A.ListStyle textBodyListStyle = this.parentParagraphTextPortion.ATextBodyListStyle();
+        this.fontColor = new Lazy<FontColor>(() => new FontColor(this, this.aText, textBodyListStyle));
         this.aFontScheme = themeFontScheme.AFontScheme;
         this.size = size;
-        this.parentParagraphTextPortion = parentParagraphTextPortion;
     }
 
     public int Size
@@ -315,5 +318,10 @@ internal sealed class SCTextPortionFont : ITextPortionFont
     internal SlideMaster SlideMaster()
     {
         return this.parentParagraphTextPortion.SlideMaster();
+    }
+
+    internal int ParagraphLevel()
+    {
+        return this.parentParagraphTextPortion.ParagraphLevel();
     }
 }

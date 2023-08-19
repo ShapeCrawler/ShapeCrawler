@@ -7,6 +7,7 @@ using AngleSharp;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
@@ -19,7 +20,7 @@ namespace ShapeCrawler;
 internal sealed class SCSlide : ISlide
 {
     private readonly ResetableLazy<SCSlideShapes> shapes;
-    private readonly Lazy<SCImage?> backgroundImage;
+    private readonly Lazy<PictureImage?> backgroundImage;
     private Lazy<CustomXmlPart?> customXmlPart;
     private readonly int slideWidth;
     private readonly int slideHeight;
@@ -39,7 +40,7 @@ internal sealed class SCSlide : ISlide
         this.slideHeight = slideHeight;
         this.parentSlideCollection = parentSlideCollection;
         this.shapes = new ResetableLazy<SCSlideShapes>(() => new SCSlideShapes(this));
-        this.backgroundImage = new Lazy<SCImage?>(() => SCImage.ForBackground(this));
+        this.backgroundImage = new Lazy<PictureImage?>(() => PictureImage.ForBackground(this));
         this.customXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideId = slideId;
         this.SlideLayout = slideLayout;

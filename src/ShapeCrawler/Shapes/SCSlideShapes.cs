@@ -54,7 +54,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
         var id = this.CalculateNextShapeId();
         var allShapeNames = this.Select(shape => shape.Name);
         
-        if (addingShape is SCSlideAutoShape slideAutoShape)
+        if (addingShape is SlideAutoShape slideAutoShape)
         {
             slideAutoShape.CopyTo(id, this.pShapeTree, allShapeNames, this.parentSlide.SDKSlidePart());    
         }
@@ -613,7 +613,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
             }
             else if (pShapeTreeChild is P.Shape pShape)
             {
-                shapesValue.Add(new SCSlideAutoShape(pShape, this, new Shape(pShapeTreeChild)));
+                shapesValue.Add(new SlideAutoShape(pShape, this, new Shape(pShapeTreeChild)));
             }
             else if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
             {
@@ -768,7 +768,7 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
 
         shape = autoShapeCreator.FromTreeChild(pShapeTreeChild, this.slideOf, this);
 
-        if (shape is SCSlideAutoShape autoShape)
+        if (shape is SlideAutoShape autoShape)
         {
             autoShape.Duplicated += this.OnAutoShapeAdded;
         }

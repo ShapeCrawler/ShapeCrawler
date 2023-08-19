@@ -9,29 +9,29 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal class SCCellFill : IShapeFill
+internal record AutoShapeFill : IShapeFill
 {
-    private readonly TypedOpenXmlCompositeElement cellProperties;
-    private readonly SCTableCell parentTableCell;
+    private readonly TypedOpenXmlCompositeElement properties;
+    private readonly SlideAutoShape parentAutoShape;
     private BooleanValue? useBgFill;
     private SCFillType fillType;
     private bool isDirty;
     private string? hexSolidColor;
-    private SCImage? pictureImage;
+    private PictureImage? pictureImage;
     private A.SolidFill? aSolidFill;
     private A.GradientFill? aGradFill;
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
 
-    internal SCCellFill(A.TableCellProperties cellProperties, SCTableCell parentTableCell)
+    internal AutoShapeFill(TypedOpenXmlCompositeElement properties, SlideAutoShape parentAutoShape, BooleanValue? useBgFill)
     {
-        this.cellProperties = cellProperties;
-        this.parentTableCell = parentTableCell;
+        this.properties = properties;
+        this.parentAutoShape = parentAutoShape;
+        this.useBgFill = useBgFill;
         this.isDirty = true;
     }
 
     public string? Color => this.GetHexSolidColor();
-    
     public double AlphaPercentage { get; }
     public double LuminanceModulation { get; }
     public double LuminanceOffset { get; }
@@ -53,16 +53,16 @@ internal class SCCellFill : IShapeFill
         }
         else
         {
-            SlidePart sdkSlidePart = this.parentTableCell.SDKSlidePart();
+            SlidePart sdkSlidePart = this.parentAutoShape.SDKSlidePart(); 
             var rId = sdkSlidePart.AddImagePart(imageStream);
 
-            var aBlipFill = new A.BlipFill();
-            var aStretch = new A.Stretch();
-            aStretch.Append(new A.FillRectangle());
-            aBlipFill.Append(new A.Blip { Embed = rId });
+            var aBlipFill = new DocumentFormat.OpenXml.Drawing.BlipFill();
+            var aStretch = new DocumentFormat.OpenXml.Drawing.Stretch();
+            aStretch.Append(new DocumentFormat.OpenXml.Drawing.FillRectangle());
+            aBlipFill.Append(new DocumentFormat.OpenXml.Drawing.Blip { Embed = rId });
             aBlipFill.Append(aStretch);
 
-            this.cellProperties.Append(aBlipFill);
+            this.properties.Append(aBlipFill);
 
             this.aSolidFill?.Remove();
             this.aBlipFill = null;
@@ -83,16 +83,23 @@ internal class SCCellFill : IShapeFill
             this.Initialize();
         }
 
-        this.cellProperties.AddASolidFill(hex);
+        this.properties.AddASolidFill(hex);
         
         this.useBgFill = false;
 
         this.isDirty = true;
     }
 
-    protected virtual void InitSlideBackgroundFillOr()
+    private void InitSlideBackgroundFillOr()
     {
-        this.fillType = SCFillType.NoFill;
+        if (this.useBgFill is not null && this.useBgFill)
+        {
+            this.fillType = SCFillType.SlideBackground;
+        }
+        else
+        {
+            this.fillType = SCFillType.NoFill;
+        }
     }
     
     private SCFillType GetFillType()
@@ -113,7 +120,7 @@ internal class SCCellFill : IShapeFill
 
     private void InitSolidFillOr()
     {
-        this.aSolidFill = this.cellProperties.GetFirstChild<A.SolidFill>();
+        this.aSolidFill = this.properties.GetFirstChild<DocumentFormat.OpenXml.Drawing.SolidFill>();
         if (this.aSolidFill != null)
         {
             var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
@@ -138,7 +145,7 @@ internal class SCCellFill : IShapeFill
 
     private void InitGradientFillOr()
     {
-        this.aGradFill = this.cellProperties!.GetFirstChild<A.GradientFill>();
+        this.aGradFill = this.properties!.GetFirstChild<A.GradientFill>();
         if (this.aGradFill != null)
         {
             this.fillType = SCFillType.Gradient;
@@ -151,11 +158,11 @@ internal class SCCellFill : IShapeFill
 
     private void InitPictureFillOr()
     {
-        this.aBlipFill = this.cellProperties.GetFirstChild<A.BlipFill>();
+        this.aBlipFill = this.properties.GetFirstChild<DocumentFormat.OpenXml.Drawing.BlipFill>();
 
         if (this.aBlipFill is not null)
         {
-            var image = SCImage.ForAutoShapeFill(this.slideTypedOpenXmlPart, this.aBlipFill, this.imageParts);
+            var image = PictureImage.ForAutoShapeFill(this.aBlipFill);
             this.pictureImage = image;
             this.fillType = SCFillType.Picture;
         }
@@ -167,7 +174,7 @@ internal class SCCellFill : IShapeFill
 
     private void InitPatternFillOr()
     {
-        this.aPattFill = this.cellProperties.GetFirstChild<A.PatternFill>();
+        this.aPattFill = this.properties.GetFirstChild<DocumentFormat.OpenXml.Drawing.PatternFill>();
         if (this.aPattFill != null)
         {
             this.fillType = SCFillType.Pattern;
@@ -188,7 +195,7 @@ internal class SCCellFill : IShapeFill
         return this.hexSolidColor;
     }
 
-    private SCImage? GetPicture()
+    private PictureImage? GetPicture()
     {
         if (this.isDirty)
         {
@@ -196,5 +203,15 @@ internal class SCCellFill : IShapeFill
         }
 
         return this.pictureImage;
+    }
+
+    internal List<ImagePart> SDKImageParts()
+    {
+        return this.parentAutoShape.SDKImageParts();
+    }
+
+    public SlidePart SDKSlidePart()
+    {
+        return this.parentAutoShape.SDKSlidePart();
     }
 }

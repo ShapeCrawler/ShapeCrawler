@@ -172,4 +172,14 @@ internal sealed class SCPortions : IPortionCollection
     {
         return this.parentParagraph.SlideMaster();
     }
+
+    internal int ParagraphLevel()
+    {
+        return this.parentParagraph.Level();
+    }
+
+    internal A.ListStyle ATextBodyListStyle()
+    {
+        return this.parentParagraph.ATextBodyListStyle();
+    }
 }

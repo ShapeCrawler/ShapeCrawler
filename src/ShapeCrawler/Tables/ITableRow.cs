@@ -37,10 +37,11 @@ internal sealed class SCTableRow : ITableRow
 {
     private readonly Lazy<List<SCTableCell>> cells;
     private readonly int index;
+    private readonly SlideTable parentTable;
 
     internal SCTableRow(SlideTable table, A.TableRow aTableRow, int index)
     {
-        this.ParentTable = table;
+        this.parentTable = table;
         this.ATableRow = aTableRow;
         this.index = index;
         this.cells = new Lazy<List<SCTableCell>>(() => this.GetCells());
@@ -54,19 +55,17 @@ internal sealed class SCTableRow : ITableRow
         set => this.SetHeight(value);
     }
 
-    internal SlideTable ParentTable { get; }
-
     internal A.TableRow ATableRow { get; }
 
     public ITableRow Clone()
     {
         var clonedRow = (A.TableRow)this.ATableRow.Clone();
-        var addedRow = this.ParentTable.AppendRow(clonedRow);
+        var addedRow = this.parentTable.AppendRow(clonedRow);
 
         return addedRow;
     }
 
-    A.TableRow IRow.ATableRow()
+    A.TableRow ITableRow.ATableRow()
     {
         return this.ATableRow;
     }
@@ -91,13 +90,13 @@ internal sealed class SCTableRow : ITableRow
         {
             var diffPoints = newPoints - currentPoints;
             var diffPixels = (int)UnitConverter.PointToPixel(diffPoints);
-            this.ParentTable.Height += diffPixels;
+            this.parentTable.Height += diffPixels;
         }
         else
         {
             var diffPoints = currentPoints - newPoints;
             var diffPixels = (int)UnitConverter.PointToPixel(diffPoints);
-            this.ParentTable.Height -= diffPixels;
+            this.parentTable.Height -= diffPixels;
         }
     }
     
@@ -117,7 +116,7 @@ internal sealed class SCTableRow : ITableRow
             else if (aTc.VerticalMerge is not null)
             {
                 int upRowIdx = this.index - 1;
-                SCTableCell upNeighborScCell = (SCTableCell)this.ParentTable[upRowIdx, columnIdx];
+                SCTableCell upNeighborScCell = (SCTableCell)this.parentTable[upRowIdx, columnIdx];
                 cellList.Add(upNeighborScCell);
                 addedCell = upNeighborScCell;
             }
@@ -136,5 +135,10 @@ internal sealed class SCTableRow : ITableRow
     internal SlidePart SDKSlidePart()
     {
         throw new NotImplementedException();
+    }
+
+    internal List<ImagePart> SDKImageParts()
+    {
+        return this.parentTable.SDKImageParts();
     }
 }

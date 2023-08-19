@@ -37,7 +37,7 @@ internal sealed class SCField : IParagraphPortion
                 var masterSlideNumberFont = layout.SlideMaster.SlideNumber!.Font;
                 var pTextBody = (P.TextBody)parentParagraph.AParagraph.Parent!;
                 var layoutNumberSize = new LayoutSlideNumberSize(pTextBody, masterSlideNumberFont);
-                var textPortionFont = new SCTextPortionFont(
+                var textPortionFont = new TextPortionFont(
                     this.aText!,
                     textFrameContainer,
                     parentParagraph,
@@ -48,7 +48,7 @@ internal sealed class SCField : IParagraphPortion
             }
 
             var textPortionSize = new PortionSize(this.aText!, this, paraLvlToFontData);
-            return new SCTextPortionFont(this.aText!, textFrameContainer, parentParagraph, themeFontScheme, textPortionSize, paraLvlToFontData);
+            return new TextPortionFont(this.aText!, textFrameContainer, parentParagraph, themeFontScheme, textPortionSize, paraLvlToFontData);
         });
 
         this.portionText = new PortionText(this.aField);
