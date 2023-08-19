@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
 using OneOf;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
@@ -127,30 +126,7 @@ internal sealed class SlideTable : ITable
         }
 
         this.RemoveColumnIfNeeded(aTableRows);
-
-        // Delete a:tr if needed
-        for (var rowIdx = 0; rowIdx < this.Rows.Count;)
-        {
-            var rowCells = this.Rows[rowIdx].Cells.OfType<SCTableCell>().ToList();
-            var firstRowCell = rowCells[0];
-            var rowSpan = firstRowCell.ATableCell.RowSpan?.Value;
-            if (rowSpan > 1 && rowCells.All(cell => cell.ATableCell.RowSpan?.Value == rowSpan))
-            {
-                int deleteRowsCount = rowSpan.Value - 1;
-
-                // Delete a:gridCol elements
-                foreach (var row in this.Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
-                {
-                    ((SCTableRow)row).ATableRow.Remove();
-                    this.Rows[rowIdx].Height += row.Height;
-                }
-
-                rowIdx += rowSpan.Value;
-                continue;
-            }
-
-            rowIdx++;
-        }
+        this.RemoveRowIfNeeded();
 
         this.rowCollection.Reset();
     }
@@ -268,15 +244,47 @@ internal sealed class SlideTable : ITable
 
         return false;
     }
+    
+    private void RemoveRowIfNeeded()
+    {
+        // Delete a:tr if needed
+        for (var rowIdx = 0; rowIdx < this.Rows.Count;)
+        {
+            var allRowCells = this.Rows[rowIdx].Cells.OfType<SCCell>().ToList();
+            var firstRowCell = allRowCells[0];
+            var firstRowCellSpan = firstRowCell.ATableCell.RowSpan?.Value;
+            if (firstRowCellSpan > 1 && allRowCells.All(cell => cell.ATableCell.RowSpan?.Value == firstRowCellSpan))
+            {
+                int deleteRowsCount = firstRowCellSpan.Value - 1;
+
+                foreach (var row in this.Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
+                {
+                    ((SCRow)row).ATableRow.Remove();
+                    this.Rows[rowIdx].Height += row.Height;
+                }
+
+                rowIdx += firstRowCellSpan.Value;
+                continue;
+            }
+
+            rowIdx++;
+        }
+    }
+    
+    private void MergeVertically(int bottomIndex, int topRowIndex, List<A.TableRow> aTableRows, int leftColIndex, int rightColIndex)
 
     private void MergeVertically(int bottomIndex, int topRowIndex, List<A.TableRow> aTableRows, int leftColIndex,
         int rightColIndex)
     {
         int verticalMergingCount = bottomIndex - topRowIndex + 1;
-
+    
         // Set row span value for the first cell in the merged cells
         foreach (var aTblCell in aTableRows[topRowIndex].Elements<A.TableCell>().Skip(leftColIndex)
                      .Take(rightColIndex + 1))
+        var numMergingCells = rightColIndex - leftColIndex + 1;
+        var horizontalCells =
+            aTableRows[topRowIndex].Elements<A.TableCell>().Skip(leftColIndex).Take(numMergingCells);
+        foreach (var aTblCell in horizontalCells)
         {
             aTblCell.RowSpan = new Int32Value(verticalMergingCount);
         }

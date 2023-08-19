@@ -26,6 +26,11 @@ public interface ITableRow
     ///     Creates a duplicate of the current row and adds this at the table end.
     /// </summary>
     ITableRow Clone();
+
+    /// <summary>
+    ///     Returns <see cref="A.TableRow" />.
+    /// </summary>
+    A.TableRow ATableRow();
 }
 
 internal sealed class SCTableRow : ITableRow
@@ -60,7 +65,12 @@ internal sealed class SCTableRow : ITableRow
 
         return addedRow;
     }
-    
+
+    A.TableRow IRow.ATableRow()
+    {
+        return this.ATableRow;
+    }
+
     private int GetHeight()
     {
         return (int)UnitConverter.EmuToPoint((int)this.ATableRow.Height!.Value);

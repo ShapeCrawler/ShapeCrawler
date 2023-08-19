@@ -11,11 +11,10 @@ using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Helpers.Attributes;
 using Xunit;
 using Xunit.Abstractions;
+using Assert = Xunit.Assert;
 
 namespace ShapeCrawler.Tests.Unit;
 
-[SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes")]
-[SuppressMessage("ReSharper", "SuggestVarOrType_BuiltInTypes")]
 [SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class TableTests : SCTest
 {
@@ -521,17 +520,17 @@ public class TableTests : SCTest
         AssertTable(table, mergedColumnWidth, mergedRowHeight);
 
         pres.SaveAs(mStream);
-        pres = new SCPresentation(mStream);
-        table = (ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 5);
+        pres = SCPresentation.Open(mStream);
+        table = pres.Slides[2].Shapes.GetByName<ITable>("Table 5");
         AssertTable(table, mergedColumnWidth, mergedRowHeight);
 
-        static void AssertTable(ITable tableSc, int expectedMergedColumnWidth, int expectedMergedRowHeight)
+        static void AssertTable(ITable table, int expectedMergedColumnWidth, int expectedMergedRowHeight)
         {
-            tableSc.Columns.Should().HaveCount(1);
-            tableSc.Columns[0].Width.Should().Be(expectedMergedColumnWidth);
-            tableSc.Rows.Should().HaveCount(1);
-            tableSc.Rows[0].Cells.Should().HaveCount(1);
-            tableSc.Rows[0].Height.Should().Be(expectedMergedRowHeight);
+            table.Columns.Should().HaveCount(1);
+            table.Columns[0].Width.Should().Be(expectedMergedColumnWidth);
+            table.Rows.Should().HaveCount(1);
+            table.Rows[0].Cells.Should().HaveCount(1);
+            table.Rows[0].Height.Should().Be(expectedMergedRowHeight);
         }
     }
 
@@ -655,5 +654,21 @@ public class TableTests : SCTest
         
         // Assert
         table[1, 1].Should().BeSameAs(table[1, 2]);
+    }
+
+    [Test]
+    public void MergeCells_merges_0x1_and_1x1()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var slide = pres.Slides[0];
+        var table = slide.Shapes.AddTable(0, 0, 4, 2);
+        
+        // Act
+        table.MergeCells(table[0, 1], table[1, 1]);
+
+        // Assert
+        var aTableRow = table.Rows[0].ATableRow();
+        aTableRow.Elements<A.TableCell>().ToList()[2].RowSpan.Should().BeNull();
     }
 }

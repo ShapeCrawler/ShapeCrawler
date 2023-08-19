@@ -11,10 +11,16 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <Copyright></Copyright>
+<<<<<<< HEAD
     <LangVersion>latestmajor</LangVersion>
+=======
+    <LangVersion>default</LangVersion>
+>>>>>>> master
     <ApplicationIcon></ApplicationIcon>
-    <PackageReleaseNotes>- added setters for IParagraph.IndentLevel
-- added IParagraph.HeaderAndFooter.AddSlideNumber()</PackageReleaseNotes>
+    <PackageReleaseNotes>- added new properties: IShapeFill.AlphaPercentage, IShapeFill.LuminanceModulationPercentage and IShapeFill.LuminanceOffsetPercentage to the in shape filling object
+- added a new property: Shape.Rotation to the shape object  
+- fixed an issue with Shape Fill
+- fixed merging of table cells</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RepositoryType>Git</RepositoryType>
@@ -22,10 +28,18 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <AssemblyVersion>0.47.0</AssemblyVersion>
-    <FileVersion>0.47.0</FileVersion>
+    <AssemblyVersion>0.48.0</AssemblyVersion>
+    <FileVersion>0.48.0</FileVersion>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-    <PackageVersion>0.47.1-beta.3</PackageVersion>
+    <PackageVersion>0.48.0</PackageVersion>
+    <LangVersion>default</LangVersion>
+    <PackageReleaseNotes>- added new properties: IShapeFill.AlphaPercentage, IShapeFill.LuminanceModulationPercentage and IShapeFill.LuminanceOffsetPercentage to the in shape filling object
+- added a new property: Shape.Rotation to the shape object  
+- fixed an issue with Shape Fill
+- fixed merging of table cells</PackageReleaseNotes>
+    <AssemblyVersion>0.48.0</AssemblyVersion>
+    <FileVersion>0.48.0</FileVersion>
+    <PackageVersion>0.48.0</PackageVersion>
     <Title>ShapeCrawler</Title>
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
