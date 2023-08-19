@@ -12,9 +12,9 @@ namespace ShapeCrawler;
 public interface ISlide : ISlideStructure
 {
     /// <summary>
-    ///     Gets background image if it exist, otherwise <see langword="null"/>.
+    ///     Gets background image.
     /// </summary>
-    IImage? Background { get; }
+    IImage Background { get; }
 
     /// <summary>
     ///     Gets or sets custom data. It returns <see langword="null"/> if custom data is not presented.

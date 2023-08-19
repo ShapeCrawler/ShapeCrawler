@@ -18,7 +18,7 @@ namespace ShapeCrawler.Tests.Unit;
 [SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class SlideTests : SCTest
 {
-    [Fact]
+    [Test]
     public void Hide_MethodHidesSlide_WhenItIsExecuted()
     {
         // Arrange
@@ -33,7 +33,7 @@ public class SlideTests : SCTest
         slide.Hidden.Should().Be(true);
     }
 
-    [Fact]
+    [Test]
     public void Hidden_GetterReturnsTrue_WhenTheSlideIsHidden()
     {
         // Arrange
@@ -48,8 +48,8 @@ public class SlideTests : SCTest
         hidden.Should().BeTrue();
     }
 
-    [Fact]
-    public async void Background_SetImage_updates_background()
+    [Test]
+    public async Task Background_SetImage_updates_background()
     {
         // Arrange
         var pptx = GetInputStream("009_table.pptx");
@@ -66,20 +66,37 @@ public class SlideTests : SCTest
         bytesAfter.Length.Should().NotBe(bytesBefore.Length);
     }
 
-    [Fact]
+    [Test]
+    public void Background_SetImage_updates_background_of_new_slide()
+    {
+        // Arrange
+        var pres = SCPresentation.Create();
+        var slide = pres.Slides.AddEmptySlide(SCSlideLayoutType.Blank);
+        var bgImage = GetInputStream("test-image-2.png");
+        
+        // Act
+        slide.Background.SetImage(bgImage);
+        
+        // Assert
+        slide.Background.Should().NotBeNull();
+    }
+
+    [Test]
     public void Background_ImageIsNull_WhenTheSlideHasNotBackground()
     {
         // Arrange
-        var slide = SCPresentation.Open(GetInputStream("009_table.pptx")).Slides[1];
+        var pptx = GetInputStream("009_table.pptx");
+        var pres = SCPresentation.Open(pptx);
+        var slide = pres.Slides[1];
 
         // Act
-        var backgroundImage = slide.Background;
+        var backgroundContent = slide.Background.BinaryData.Result;
 
         // Assert
-        backgroundImage.Should().BeNull();
+        backgroundContent.Should().BeEmpty();
     }
 
-    [Fact]
+    [Test]
     public void CustomData_ReturnsData_WhenCustomDataWasAssigned()
     {
         // Arrange
@@ -99,7 +116,7 @@ public class SlideTests : SCTest
         customData.Should().Be(customDataString);
     }
 
-    [Fact]
+    [Test]
     public void CustomData_PropertyIsNull_WhenTheSlideHasNotCustomData()
     {
         // Arrange
@@ -112,7 +129,7 @@ public class SlideTests : SCTest
         sldCustomData.Should().BeNull();
     }
 
-    [Fact]
+    [Test]
     public void Number_Setter_moves_slide_to_specified_number_position()
     {
         // Arrange
@@ -136,7 +153,7 @@ public class SlideTests : SCTest
         slide2.Number.Should().Be(2);
     }
 
-    [Fact]
+    [Test]
     public void Number_Setter()
     {
         // Arrange
@@ -150,7 +167,7 @@ public class SlideTests : SCTest
         slide.Number.Should().Be(1);
     }
 
-    [Fact]
+    [Test]
     public void GetAllTextboxes_contains_all_textboxes_withTable()
     {
         // Arrange
@@ -165,7 +182,7 @@ public class SlideTests : SCTest
         textboxes.Count.Should().Be(11);
     }
 
-    [Fact]
+    [Test]
     public void GetAllTextboxes_contains_all_textboxes_withoutTable()
     {
         // Arrange
@@ -194,7 +211,7 @@ public class SlideTests : SCTest
         slide.SaveAsPng(mStream);
     }
     
-    [Fact]
+    [Test]
     public void ToHTML_converts_slide_to_HTML()
     {
         // Arrange
