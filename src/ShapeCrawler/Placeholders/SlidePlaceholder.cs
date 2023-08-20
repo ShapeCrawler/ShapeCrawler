@@ -3,11 +3,11 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Placeholders;
 
-internal sealed class SCSlidePlaceholder : IPlaceholder
+internal sealed class SlidePlaceholder : IPlaceholder
 {
     private readonly P.PlaceholderShape pPlaceholderShape;
 
-    internal SCSlidePlaceholder(P.PlaceholderShape pPlaceholderShape)
+    internal SlidePlaceholder(P.PlaceholderShape pPlaceholderShape)
     {
         this.pPlaceholderShape = pPlaceholderShape;
     }

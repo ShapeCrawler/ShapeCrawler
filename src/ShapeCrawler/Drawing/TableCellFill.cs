@@ -48,7 +48,7 @@ internal class TableCellFill : IShapeFill
 
         if (this.Type == SCFillType.Picture)
         {
-            this.pictureImage!.UpdateImage(imageStream);
+            this.pictureImage!.Update(imageStream);
         }
         else
         {
@@ -205,5 +205,10 @@ internal class TableCellFill : IShapeFill
     internal List<ImagePart> SDKImageParts()
     {
         return this.parentTableCell.SDKImageParts();
+    }
+
+    public SlidePart SDKSlidePart()
+    {
+        return this.parentTableCell.SDKSlidePart();
     }
 }

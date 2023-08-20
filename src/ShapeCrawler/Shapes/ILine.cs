@@ -28,12 +28,12 @@ public interface ILine : IAutoShape
 internal sealed record SCLine : ILine
 {
     private readonly P.ConnectionShape pConnectionShape;
-    private readonly SCSlideShapes shapeCollection;
+    private readonly SlideShapes shapeCollection;
     private readonly Shape shape;
 
     internal SCLine(
         P.ConnectionShape pConnectionShape,
-        SCSlideShapes parentShapeCollection,
+        SlideShapes parentShapeCollection,
         Shape shape)
     {
         this.pConnectionShape = pConnectionShape;
@@ -58,8 +58,13 @@ internal sealed record SCLine : ILine
     public string Name => this.shape.Name();
     
     public bool Hidden => this.shape.Hidden();
-    
-    public IPlaceholder Placeholder => new SCNullPlaceholder("A line cannot be a placeholder.");
+
+    public bool IsPlaceholder()
+    {
+        return false; 
+    }
+
+    public IPlaceholder Placeholder => new NullPlaceholder($"A line cannot be a placeholder. Use {nameof(IShape.Placeholder)} to check if the shape is a placeholder.");
     public SCGeometry GeometryType => SCGeometry.Line;
 
     public string? CustomData
@@ -74,6 +79,11 @@ internal sealed record SCLine : ILine
     }
 
     public ITextFrame? TextFrame => null;
+    public bool IsTextHolder()
+    {
+        throw new System.NotImplementedException();
+    }
+
     public double Rotation { get; }
 
     public IAutoShape Duplicate()

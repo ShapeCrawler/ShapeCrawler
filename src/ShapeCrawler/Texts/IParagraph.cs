@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -269,5 +270,15 @@ internal sealed class SCParagraph : IParagraph
     internal A.ListStyle ATextBodyListStyle()
     {
         return this.parentTextFrame.ATextBodyListStyle();
+    }
+
+    internal PresentationCore Presentation()
+    {
+        return this.parentTextFrame.Presentation();
+    }
+
+    internal SlideAutoShape SlideAutoShape()
+    {
+        return this.parentTextFrame.AutoShape();
     }
 }

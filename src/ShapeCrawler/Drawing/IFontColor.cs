@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
@@ -39,12 +40,13 @@ internal sealed class FontColor : IFontColor
     private string? hexColor;
     private SCColorType colorType;
     private readonly TextPortionFont parentFont;
-    private A.ListStyle textBodyListStyle;
+    private readonly A.ListStyle textBodyListStyle;
 
-    internal FontColor(TextPortionFont parentFont, A.Text aText)
+    internal FontColor(TextPortionFont parentFont, A.Text aText, A.ListStyle textBodyListStyle)
     {
         this.parentFont = parentFont;
         this.aText = aText;
+        this.textBodyListStyle = textBodyListStyle;
     }
 
     public SCColorType ColorType => this.GetColorType();
@@ -99,7 +101,7 @@ internal sealed class FontColor : IFontColor
         }
         else
         {
-            if (this.TryFromTextBody(this.paragraph))
+            if (this.TryFromTextBody())
             {
                 return;
             }
@@ -115,14 +117,16 @@ internal sealed class FontColor : IFontColor
                 return;
             }
 
-            if (this.parentSlideMaster.BodyParaLvlToFontData.TryGetValue(paraLevel, out var masterBodyFontData) && this.TryFromFontData(masterBodyFontData))
+            FontData? slideMasterBodyStyleFontData = this.parentFont.SlideMaster().BodyStyleFontDataOrNullForParagraphLevel(paraLevel);
+            if (slideMasterBodyStyleFontData != null && this.TryFromFontData(slideMasterBodyStyleFontData))
             {
                 return;
             }
-
+            
+            FontData? preFontData = this.parentFont.Presentation().FontDataOrNullForParagraphLevel(paraLevel);
             // Presentation level
             string colorHexVariant;
-            if (this.paraLvlToFontData.TryGetValue(paraLevel, out var preFontData))
+            if (preFontData != null)
             {
                 colorHexVariant = this.GetHexVariantByScheme(preFontData.ASchemeColor!.Val!);
                 this.colorType = SCColorType.Theme;
@@ -137,11 +141,10 @@ internal sealed class FontColor : IFontColor
         }
     }
 
-    private bool TryFromTextBody(SCParagraph paragraph)
+    private bool TryFromTextBody()
     {
-        // var textBodyListStyle = paragraph.ParentTextFrame.TextBodyElement.GetFirstChild<A.ListStyle>();
         var paraLvlToFontData = FontDataParser.FromCompositeElement(this.textBodyListStyle!);
-        if (!paraLvlToFontData.TryGetValue(paragraph.Level, out var txBodyFontData))
+        if (!paraLvlToFontData.TryGetValue(this.parentFont.ParagraphLevel(), out var txBodyFontData))
         {
             return false;
         }
@@ -151,6 +154,7 @@ internal sealed class FontColor : IFontColor
 
     private bool TryFromShapeFontReference()
     {
+        SlideAutoShape autoShape = this.parentFont.SlideAutoShape();
         if (this.textFrameContainer is SCShape parentShape)
         {
             var parentPShape = (P.Shape)parentShape.PShapeTreeChild;
@@ -160,7 +164,7 @@ internal sealed class FontColor : IFontColor
             }
 
             var aFontReference = parentPShape.ShapeStyle.FontReference!;
-            var fontReferenceFontData = new FontData()
+            var fontReferenceFontData = new FontData
             {
                 ARgbColorModelHex = aFontReference.RgbColorModelHex,
                 ASchemeColor = aFontReference.SchemeColor,

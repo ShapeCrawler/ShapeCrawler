@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
@@ -25,10 +26,10 @@ internal sealed record SlideAutoShape : ISlideAutoShape
     private readonly Lazy<SCTextFrame?> textFrame;
     private readonly ResetableLazy<Dictionary<int, FontData>> lvlToFontData;
     private readonly P.Shape pShape;
-    private readonly SCSlideShapes parentShapeCollection;
+    private readonly SlideShapes parentShapeCollection;
     private readonly Shape shape;
 
-    internal SlideAutoShape(P.Shape pShape, SCSlideShapes parentShapeCollection, Shape shape)
+    internal SlideAutoShape(P.Shape pShape, SlideShapes parentShapeCollection, Shape shape)
     {
         this.pShape = pShape;
         this.parentShapeCollection = parentShapeCollection;
@@ -57,7 +58,24 @@ internal sealed record SlideAutoShape : ISlideAutoShape
     public int Id => this.shape.Id();
     public string Name => this.shape.Name();
     public bool Hidden { get; }
-    public IPlaceholder? Placeholder { get; }
+    public bool IsPlaceholder()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IPlaceholder Placeholder => this.PlaceholderOr();
+
+    private IPlaceholder PlaceholderOr()
+    {
+        var pPlaceholder = this.pShape.GetPNvPr().GetFirstChild<P.PlaceholderShape>();
+        if (pPlaceholder == null)
+        {
+            return new NullPlaceholder();
+        }
+
+        return new SlidePlaceholder(pPlaceholder);
+    }
+
     public SCGeometry GeometryType { get; }
     public string? CustomData { get; set; }
     public SCShapeType ShapeType => SCShapeType.AutoShape;
@@ -69,25 +87,18 @@ internal sealed record SlideAutoShape : ISlideAutoShape
     public IShapeFill Fill => this.shapeFill.Value;
 
     public ITextFrame? TextFrame => this.textFrame.Value;
-    
+
+    public bool IsTextHolder()
+    {
+        throw new NotImplementedException();
+    }
+
     public double Rotation { get; }
 
     public void Duplicate()
     {
         var pShapeCopy = this.pShape.CloneNode(true);
-        var id = this.GetNextShapeId();
-        pShapeCopy.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
-        this.parentShapeCollection.Reset();
-    }
-
-    private int GetNextShapeId()
-    {
-        if (this.parentShapeCollection.Any())
-        {
-            return slide.Shapes.Select(shape => shape.Id).Prepend(0).Max() + 1;    
-        }
-
-        return 1;
+        this.parentShapeCollection.Add(pShapeCopy);
     }
     
     internal void Draw(SKCanvas slideCanvas)
@@ -160,28 +171,26 @@ internal sealed record SlideAutoShape : ISlideAutoShape
         this.UpdateWidthIfNeed(paint, lMarginPixel, rMarginPixel);
     }
 
-    internal void FillFontData(int paragraphLvl, ref FontData fontData)
+    internal void FillFontData(int paraLevel, ref FontData fontData)
     {
-        if (this.lvlToFontData.Value.TryGetValue(paragraphLvl, out var layoutFontData))
+        if (this.lvlToFontData.Value.TryGetValue(paraLevel, out var layoutFontData))
         {
             fontData = layoutFontData;
-            if (!fontData.IsFilled() && this.Placeholder != null)
+            if (!fontData.IsFilled() && this.IsPlaceholder())
             {
-                var placeholder = (SCPlaceholder)this.Placeholder;
-                var referencedMasterShape = (SlideAutoShape?)placeholder.ReferencedShape.Value;
-                referencedMasterShape?.FillFontData(paragraphLvl, ref fontData);
+                this.layoutAutoShape.FillFontData(paraLevel, ref fontData);
             }
 
             return;
         }
 
-        if (this.Placeholder != null)
+        if (this.IsPlaceholder())
         {
             var placeholder = (SCPlaceholder)this.Placeholder;
             var referencedMasterShape = (SlideAutoShape?)placeholder.ReferencedShape.Value;
             if (referencedMasterShape != null)
             {
-                referencedMasterShape.FillFontData(paragraphLvl, ref fontData);
+                referencedMasterShape.FillFontData(paraLevel, ref fontData);
             }
         }
     }
@@ -303,7 +312,7 @@ internal sealed record SlideAutoShape : ISlideAutoShape
         }
     }
 
-    public SlideMaster SlideMaster()
+    internal SlideMaster SlideMaster()
     {
         return this.parentShapeCollection.SlideMaster();
     }
@@ -316,5 +325,10 @@ internal sealed record SlideAutoShape : ISlideAutoShape
     internal List<ImagePart> SDKImageParts()
     {
         return this.parentShapeCollection.SDKImageParts();
+    }
+
+    public PresentationCore Presentation()
+    {
+        return this.parentShapeCollection.Presentation();
     }
 }

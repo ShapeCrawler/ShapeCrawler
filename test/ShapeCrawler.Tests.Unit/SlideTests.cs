@@ -59,7 +59,7 @@ public class SlideTests : SCTest
         var bytesBefore = await backgroundImage.BinaryData.ConfigureAwait(false);
 
         // Act
-        backgroundImage.UpdateImage(image);
+        backgroundImage.Update(image);
 
         // Assert
         var bytesAfter = await backgroundImage.BinaryData.ConfigureAwait(false);
@@ -176,7 +176,7 @@ public class SlideTests : SCTest
         var slide = pres.Slides.First();
 
         // Act
-        var textboxes = slide.GetAllTextFrames();
+        var textboxes = slide.TextFrames();
 
         // Assert
         textboxes.Count.Should().Be(11);
@@ -191,7 +191,7 @@ public class SlideTests : SCTest
         var slide = pres.Slides.First();
 
         // Act
-        var textFrames = slide.GetAllTextFrames();
+        var textFrames = slide.TextFrames();
 
         // Assert
         textFrames.Count.Should().Be(4);

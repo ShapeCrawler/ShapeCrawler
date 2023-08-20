@@ -49,7 +49,7 @@ internal record AutoShapeFill : IShapeFill
 
         if (this.Type == SCFillType.Picture)
         {
-            this.pictureImage!.UpdateImage(imageStream);
+            this.pictureImage!.Update(imageStream);
         }
         else
         {

@@ -31,16 +31,16 @@ internal record SCSlideMediaShape : IMediaShape
 {
     private readonly P.Picture pPicture;
     private readonly Shape shape;
-    private readonly Lazy<SCSlidePlaceholder?> placeholder;
+    private readonly Lazy<SlidePlaceholder?> placeholder;
 
-    internal SCSlideMediaShape(P.Picture pPicture, SCSlideShapes shapes)
+    internal SCSlideMediaShape(P.Picture pPicture, SlideShapes shapes)
     {
         this.pPicture = pPicture;
         this.shape = new Shape(pPicture);
-        this.placeholder = new Lazy<SCSlidePlaceholder?>(this.ParsePlaceholderOrNull);
+        this.placeholder = new Lazy<SlidePlaceholder?>(this.ParsePlaceholderOrNull);
     }
 
-    private SCSlidePlaceholder? ParsePlaceholderOrNull()
+    private SlidePlaceholder? ParsePlaceholderOrNull()
     {
         var pPlaceholder = this.pPicture.GetPNvPr().GetFirstChild<P.PlaceholderShape>();
         if (pPlaceholder == null)
@@ -48,7 +48,7 @@ internal record SCSlideMediaShape : IMediaShape
             return null;
         }
 
-        return new SCSlidePlaceholder(pPlaceholder);
+        return new SlidePlaceholder(pPlaceholder);
     }
 
     public int X

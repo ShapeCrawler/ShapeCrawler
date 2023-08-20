@@ -1,74 +1,112 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class SlideBackgroundImage : IImage
+internal sealed class SlideBackgroundImage : ISlideBackgroundImage
 {
-    private ImagePart sdkImagePart;
-    private readonly A.Blip aBlip;
     private readonly SCSlide slide;
+    private readonly P.ShapeTree pShapeTree;
 
-    public string MIME => this.sdkImagePart.ContentType;
+    private const string NotPresentedErrorMessage =
+        $"Background image is not presented. Use {nameof(ISlideBackgroundImage.Present)} to check.";
 
-    public Task<byte[]> BinaryData => this.GetBinaryData();
+    public string MIME => this.ParseMIME();
 
-    public string Name => this.GetName();
+    public string Name => this.ParseName();
 
-    public void UpdateImage(Stream stream)
+    public void Update(Stream stream)
     {
+        A.Blip aBlip = ParseABlip();
         var imageParts = this.slide.SDKImageParts();
-        var isSharedImagePart = imageParts.Count(x=>x == this.sdkImagePart) > 1;
+        ImagePart sdkImagePart = this.SDKImagePartOrNull();
+        var isSharedImagePart = imageParts.Count(x => x == sdkImagePart) > 1;
         if (isSharedImagePart)
         {
             var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
-            this.sdkImagePart = this.slide.SDKSlidePart().AddNewPart<ImagePart>("image/png", rId);
-            this.aBlip.Embed!.Value = rId;
+            sdkImagePart = this.slide.SDKSlidePart().AddNewPart<ImagePart>("image/png", rId);
+            aBlip.Embed!.Value = rId;
         }
 
         stream.Position = 0;
-        this.sdkImagePart.FeedData(stream);
+        sdkImagePart.FeedData(stream);
     }
 
-    public void SetImage(byte[] bytes)
+    public void Update(byte[] bytes)
     {
         var stream = new MemoryStream(bytes);
 
-        this.UpdateImage(stream);
+        this.Update(stream);
     }
 
-    public void SetImage(string filePath)
+    public void Update(string filePath)
     {
         byte[] sourceBytes = File.ReadAllBytes(filePath);
-        this.SetImage(sourceBytes);
+        this.Update(sourceBytes);
     }
-
-    internal SlideBackgroundImage (SCSlide slide, A.Blip aBlip, ImagePart sdkImagePart)
+    
+    public byte[] BinaryData()
     {
-        this.slide = slide;
-        this.sdkImagePart = sdkImagePart;
-        this.aBlip = aBlip;
-    }
+        var sdkImagePart = this.SDKImagePartOrNull();
+        if (sdkImagePart == null)
+        {
+            throw new SCException(NotPresentedErrorMessage);
+        }
 
-    private string GetName()
-    {
-        return Path.GetFileName(this.sdkImagePart.Uri.ToString());
-    }
-
-    private async Task<byte[]> GetBinaryData()
-    {
-        var stream = this.sdkImagePart.GetStream();
+        var stream = sdkImagePart.GetStream();
         var bytes = new byte[stream.Length];
-        await stream.ReadAsync(bytes, 0, (int)stream.Length).ConfigureAwait(false);
+        stream.Read(bytes, 0, (int)stream.Length);
         stream.Close();
-        
+
         return bytes;
+    }
+
+    public bool Present()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal SlideBackgroundImage(SCSlide parentSlide, P.ShapeTree pShapeTree)
+    {
+        this.slide = parentSlide;
+        this.pShapeTree = pShapeTree;
+    }
+
+    private A.Blip ParseABlip()
+    {
+        throw new NotImplementedException();
+    }
+
+    private string ParseMIME()
+    {
+        var sdkImagePart = this.SDKImagePartOrNull();
+        if (sdkImagePart == null)
+        {
+            throw new SCException(
+                $"Background image is not presented. Use {nameof(ISlideBackgroundImage.Present)} to check.");
+        }
+
+        return sdkImagePart.ContentType;
+    }
+
+    private ImagePart SDKImagePartOrNull()
+    {
+        throw new NotImplementedException();
+    }
+
+    private string ParseName()
+    {
+        var sdkImagePart = this.SDKImagePartOrNull();
+        if (sdkImagePart == null)
+        {
+            throw new SCException(NotPresentedErrorMessage);
+        }
+
+        return Path.GetFileName(sdkImagePart.Uri.ToString());
     }
 }

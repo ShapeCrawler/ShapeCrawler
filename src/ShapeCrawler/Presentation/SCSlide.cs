@@ -7,11 +7,11 @@ using AngleSharp;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using ShapeCrawler.Constants;
+using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Texts;
 using SkiaSharp;
 
 // ReSharper disable CheckNamespace
@@ -20,30 +20,30 @@ namespace ShapeCrawler;
 
 internal sealed class SCSlide : ISlide
 {
-    private readonly ResetableLazy<SCSlideShapes> shapes;
-    private readonly Lazy<PictureImage?> backgroundImage;
+    private readonly ResetableLazy<SlideShapes> shapes;
+    private readonly Lazy<SlideBackgroundImage> backgroundImage;
     private Lazy<CustomXmlPart?> customXmlPart;
     private readonly int slideWidth;
     private readonly int slideHeight;
-    private readonly SCSlideCollection parentSlideCollection;
+    private readonly Slides parentSlideCollection;
     private readonly SlidePart sdkSlidePart;
 
     internal SCSlide( 
-        SlidePart slidePart, 
-        SlideId slideId, 
+        SlidePart sdkSlidePart, 
+        SlideId pSlideId, 
         SCSlideLayout slideLayout,
         int slideWidth, 
         int slideHeight,
-        SCSlideCollection parentSlideCollection)
+        Slides parentSlideCollection)
     {
-        this.sdkSlidePart = slidePart;
+        this.sdkSlidePart = sdkSlidePart;
         this.slideWidth = slideWidth;
         this.slideHeight = slideHeight;
         this.parentSlideCollection = parentSlideCollection;
-        this.shapes = new ResetableLazy<SCSlideShapes>(() => new SCSlideShapes(this));
-        this.backgroundImage = new Lazy<PictureImage?>(() => PictureImage.ForBackground(this));
+        this.shapes = new ResetableLazy<SlideShapes>(() => new SlideShapes(this, this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!));
+        this.backgroundImage = new Lazy<SlideBackgroundImage>(() => new SlideBackgroundImage(this, sdkSlidePart.Slide.CommonSlideData!.ShapeTree!));
         this.customXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
-        this.SlideId = slideId;
+        this.SlideId = pSlideId;
         this.SlideLayout = slideLayout;
     }
 
@@ -95,7 +95,7 @@ internal sealed class SCSlide : ISlide
         var document = await browsingContext.OpenNewAsync().ConfigureAwait(false);
         var body = document.Body!;
         
-        foreach (var shape in this.Shapes.OfType<SCShape>())
+        foreach (var shape in this.Shapes.OfType<SlideAutoShape>())
         {
             body.AppendChild(shape.ToHtmlElement());
         }
@@ -110,7 +110,7 @@ internal sealed class SCSlide : ISlide
         var canvas = surface.Canvas;
         canvas.Clear(SKColors.White); // TODO: #344 get real
         
-        foreach (var autoShape in this.Shapes.OfType<SCSlideAutoShape>())
+        foreach (var autoShape in this.Shapes.OfType<SlideAutoShape>())
         {
             autoShape.Draw(canvas);
         }
@@ -121,11 +121,11 @@ internal sealed class SCSlide : ISlide
         data.SaveTo(stream);
     }
 
-    public IList<ITextFrame> GetAllTextFrames()
+    public IList<ITextFrame> TextFrames()
     {
         var returnList = new List<ITextFrame>();
 
-        var frames = this.Shapes.OfType<ITextFrameContainer>()
+        var frames = this.Shapes.OfType<SlideAutoShape>()
             .Where(t => t.TextFrame != null)
             .Select(t => t.TextFrame!)
             .ToList();
@@ -296,5 +296,15 @@ internal sealed class SCSlide : ISlide
     internal List<ImagePart> SDKImageParts()
     {
         return this.parentSlideCollection.SDKImageParts();
+    }
+
+    public PresentationCore Presentation()
+    {
+        return this.parentSlideCollection.Presentation();
+    }
+
+    internal SlideMaster SlideMaster()
+    {
+        return this.parentSlideCollection.SlideMaster();
     }
 }

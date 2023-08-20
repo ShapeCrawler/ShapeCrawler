@@ -21,7 +21,7 @@ internal class SCSlideChart : IChart
     private readonly Lazy<SCChartType> chartType;
     private readonly Lazy<OpenXmlElement?> firstSeries;
     private readonly P.GraphicFrame pGraphicFrame;
-    private readonly SCSlideShapes parentShapeCollection;
+    private readonly SlideShapes parentShapeCollection;
     private readonly Lazy<SCSeriesCollection> series;
     private readonly Lazy<List<double>?> xValues;
     private readonly C.PlotArea cPlotArea;
@@ -33,7 +33,7 @@ internal class SCSlideChart : IChart
     private string? chartTitle;
     private readonly Shape shape;
 
-    internal SCSlideChart(P.GraphicFrame pGraphicFrame, SCSlideShapes parentShapeCollection)
+    internal SCSlideChart(P.GraphicFrame pGraphicFrame, SlideShapes parentShapeCollection)
     {
         this.pGraphicFrame = pGraphicFrame;
         this.parentShapeCollection = parentShapeCollection;

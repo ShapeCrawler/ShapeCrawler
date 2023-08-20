@@ -21,7 +21,13 @@ public interface IAutoShape : IShape
     /// <summary>
     ///     Gets text frame. Returns <see langword="null"/> if the shape is not a text holder.
     /// </summary>
-    ITextFrame? TextFrame { get; }
+    ITextFrame TextFrame { get; }
+
+    /// <summary>
+    ///     Gets value indicating whether the Auto Shape is text holder.
+    /// </summary>
+    /// <returns></returns>
+    bool IsTextHolder();
     
     /// <summary>
     ///     Gets the rotation of the shape in degrees.

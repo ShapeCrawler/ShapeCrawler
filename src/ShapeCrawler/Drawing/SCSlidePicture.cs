@@ -19,13 +19,13 @@ internal sealed record SCSlidePicture : IPicture
 {
     private readonly StringValue blipEmbed;
     private readonly P.Picture pPicture;
-    private readonly SCSlideShapes parentShapeCollection;
+    private readonly SlideShapes parentShapeCollection;
     private readonly A.Blip aBlip;
     private readonly Shape shape;
 
     internal SCSlidePicture(
         P.Picture pPicture,
-        SCSlideShapes parentShapeCollection,
+        SlideShapes parentShapeCollection,
         A.Blip aBlip,
         Shape shape)
     {

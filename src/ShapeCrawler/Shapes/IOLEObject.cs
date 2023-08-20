@@ -12,7 +12,7 @@ internal record SCSlideOLEObject : IShape
 {
     private readonly Shape shape;
 
-    internal SCSlideOLEObject(P.GraphicFrame pGraphicFrame, SCSlideShapes shapes, Shape shape)
+    internal SCSlideOLEObject(P.GraphicFrame pGraphicFrame, SlideShapes shapes, Shape shape)
     {
         this.shape = shape;
     }

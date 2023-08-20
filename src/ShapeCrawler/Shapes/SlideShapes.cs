@@ -21,18 +21,32 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class SCSlideShapes : ISlideShapeCollection
+internal sealed class SlideShapes : ISlideShapeCollection
 {
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly P.ShapeTree pShapeTree;
     private readonly ResetableLazy<List<IShape>> shapes;
     private readonly SCSlide parentSlide;
 
-    internal SCSlideShapes(SCSlide parentSlide, P.ShapeTree pShapeTree)
+    internal SlideShapes(SCSlide parentSlide, P.ShapeTree pShapeTree)
     {
         this.parentSlide = parentSlide;
         this.pShapeTree = pShapeTree;
         this.shapes = new ResetableLazy<List<IShape>>(this.ParseShapes);
+    }
+    
+    internal void Add(OpenXmlElement pShapeTreeChild)
+    {
+        var nextId = 1;
+        if (this.shapes.Value.Any())
+        {
+            nextId = this.shapes.Value.Select(shape => shape.Id).Prepend(0).Max() + 1;
+        }
+        
+        pShapeTreeChild.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)nextId);
+        this.pShapeTree.Append(pShapeTreeChild);
+        
+        this.shapes.Reset();
     }
 
     public int Count => this.shapes.Value.Count;
@@ -837,5 +851,15 @@ internal sealed class SCSlideShapes : ISlideShapeCollection
     internal void Reset()
     {
         this.shapes.Reset();
+    }
+
+    internal PresentationCore Presentation()
+    {
+        return this.parentSlide.Presentation();
+    }
+
+    internal SlideMaster SlideMaster()
+    {
+        return this.parentSlide.SlideMaster();
     }
 }

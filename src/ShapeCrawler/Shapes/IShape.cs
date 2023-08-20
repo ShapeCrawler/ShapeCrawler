@@ -36,9 +36,15 @@ public interface IShape : IShapeLocation
     bool Hidden { get; }
 
     /// <summary>
+    ///     Gets a value indicating whether shape is a placeholder.
+    /// </summary>
+    /// <returns></returns>
+    bool IsPlaceholder();
+    
+    /// <summary>
     ///     Gets placeholder.
     /// </summary>
-    IPlaceholder? Placeholder { get; }
+    IPlaceholder Placeholder { get; }
 
     /// <summary>
     ///     Gets geometry form type of the shape.

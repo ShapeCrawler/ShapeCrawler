@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
@@ -323,5 +324,15 @@ internal sealed class TextPortionFont : ITextPortionFont
     internal int ParagraphLevel()
     {
         return this.parentParagraphTextPortion.ParagraphLevel();
+    }
+
+    internal PresentationCore Presentation()
+    {
+        return this.parentParagraphTextPortion.Presentation();
+    }
+
+    internal SlideAutoShape SlideAutoShape()
+    {
+        return this.parentParagraphTextPortion.SlideAutoShape();
     }
 }

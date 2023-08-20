@@ -34,12 +34,14 @@ public interface ISlide
     /// <summary>
     /// Gets a list of all textboxes on that slide, including those in tables.
     /// </summary>
-    public IList<ITextFrame> GetAllTextFrames();
+    public IList<ITextFrame> TextFrames();
 
     /// <summary>
     ///     Hides slide.
     /// </summary>
     void Hide();
+    
+    int Number { get; }
 
 #if DEBUG
     

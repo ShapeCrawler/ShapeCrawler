@@ -8,68 +8,57 @@ using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler;
 
 internal sealed record PresentationCore
 {
-    private readonly Lazy<Dictionary<int, FontData>> paraLvlToFontData;
     private readonly Lazy<SCSlideSize> slideSize;
     private readonly ResetableLazy<SCSectionCollection> sectionCollection;
-    private readonly ResetableLazy<SCSlideCollection> slideCollection;
+    private readonly ResetableLazy<Slides> slides;
 
-    internal PresentationCore(byte[] bytes) : this(new MemoryStream(bytes))
+    internal PresentationCore(byte[] bytes)
+        : this(new MemoryStream(bytes))
     {
-        this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
-        this.SlideMasterCollection =
-            new ResetableLazy<SCSlideMasterCollection>(() => SCSlideMasterCollection.Create(this.ImageParts, this.SDKPresentationDocument.PresentationPart!.SlideMasterParts, this.SDKPresentationDocument));
-        this.paraLvlToFontData =
-            new Lazy<Dictionary<int, FontData>>(() =>
-                ParseFontHeights(this.SDKPresentationDocument.PresentationPart!.Presentation));
-        this.sectionCollection =
-            new ResetableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
-        this.slideCollection = new ResetableLazy<SCSlideCollection>(() => new SCSlideCollection(this, this.ImageParts));
-        this.HeaderAndFooter = new HeaderAndFooter(this);
     }
 
     internal PresentationCore(Stream stream)
     {
         this.SDKPresentationDocument = PresentationDocument.Open(stream, true);
-        
         this.slideSize = new Lazy<SCSlideSize>(this.GetSlideSize);
-        this.SlideMasterCollection =
-            new ResetableLazy<SCSlideMasterCollection>(() => SCSlideMasterCollection.Create(ImageParts, this.SDKPresentationDocument.PresentationPart!.SlideMasterParts));
-        this.paraLvlToFontData =
-            new Lazy<Dictionary<int, FontData>>(() =>
-                ParseFontHeights(this.SDKPresentationDocument!.PresentationPart!.Presentation));
+        var sdkMasterParts = this.SDKPresentationDocument.PresentationPart!.SlideMasterParts;
+        this.SlideMastersLazy =
+            new ResetableLazy<SlideMasterCollection>(() => new SlideMasterCollection(sdkMasterParts, this));
         this.sectionCollection =
             new ResetableLazy<SCSectionCollection>(() => SCSectionCollection.Create(this));
-        this.slideCollection = new ResetableLazy<SCSlideCollection>(() => new SCSlideCollection(this, this.ImageParts));
+        this.slides = new ResetableLazy<Slides>(() => new Slides(this, this.ImageParts));
         this.HeaderAndFooter = new HeaderAndFooter(this);
     }
 
-    public ISlideCollection Slides => this.slideCollection.Value;
+    public ISlideCollection Slides => this.slides.Value;
 
     public int SlideHeight
     {
         get => this.slideSize.Value.Height;
         set => this.SetSlideHeight(value);
     }
+
     public int SlideWidth
     {
         get => this.slideSize.Value.Width;
         set => this.SetSlideWidth(value);
     }
 
-    public ISlideMasterCollection SlideMasters => this.SlideMasterCollection.Value;
+    public ISlideMasterCollection SlideMasters => this.SlideMastersLazy.Value;
 
     public byte[] BinaryData => this.GetByteArray();
-    
+
     public ISectionCollection Sections => this.sectionCollection.Value;
-    
+
     public IHeaderAndFooter HeaderAndFooter { get; }
 
-    internal ResetableLazy<SCSlideMasterCollection> SlideMasterCollection { get; }
+    internal ResetableLazy<SlideMasterCollection> SlideMastersLazy { get; }
 
     internal PresentationDocument SDKPresentationDocument { get; init; }
 
@@ -77,11 +66,9 @@ internal sealed record PresentationCore
 
     internal List<ChartWorkbook> ChartWorkbooks { get; } = new();
 
-    internal Dictionary<int, FontData> ParaLvlToFontData => this.paraLvlToFontData.Value;
-
     internal List<ImagePart> ImageParts => this.GetImageParts();
 
-    internal SCSlideCollection SlidesInternal => (SCSlideCollection)this.Slides;
+    internal Slides SlidesInternal => (Slides)this.Slides;
 
     public void Save(string path)
     {
@@ -94,9 +81,9 @@ internal sealed record PresentationCore
         this.SDKPresentationDocument.Clone(stream);
     }
 
-    private static Dictionary<int, FontData> ParseFontHeights(
-        DocumentFormat.OpenXml.Presentation.Presentation pPresentation)
+    internal FontData? FontDataOrNullForParagraphLevel(int paraLevel)
     {
+        var pPresentation = this.SDKPresentationDocument.PresentationPart!.Presentation;
         var lvlToFontData = new Dictionary<int, FontData>();
 
         // from presentation default text settings
@@ -116,7 +103,12 @@ internal sealed record PresentationCore
             }
         }
 
-        return lvlToFontData;
+        if (lvlToFontData.ContainsKey(paraLevel))
+        {
+            return lvlToFontData[paraLevel];
+        }
+
+        return null;
     }
 
     private byte[] GetByteArray()
@@ -177,5 +169,10 @@ internal sealed record PresentationCore
         var heightPx = UnitConverter.VerticalEmuToPixel(pSlideSize.Cy!.Value);
 
         return new SCSlideSize(withPx, heightPx);
+    }
+
+    internal PresentationPart SDKPresentationPart()
+    {
+        return this.SDKPresentationDocument.PresentationPart!;
     }
 }

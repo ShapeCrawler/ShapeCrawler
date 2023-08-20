@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shared;
@@ -181,5 +182,15 @@ internal sealed class SCPortions : IPortionCollection
     internal A.ListStyle ATextBodyListStyle()
     {
         return this.parentParagraph.ATextBodyListStyle();
+    }
+
+    internal PresentationCore Presentation()
+    {
+        return this.parentParagraph.Presentation();
+    }
+
+    internal SlideAutoShape SlideAutoShape()
+    {
+        return this.parentParagraph.SlideAutoShape();
     }
 }

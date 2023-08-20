@@ -22,15 +22,22 @@ public interface ISlideMasterCollection : IEnumerable<ISlideMaster>
     ISlideMaster this[int index] { get; }
 }
 
-internal sealed class SCSlideMasterCollection : ISlideMasterCollection
+internal sealed class SlideMasterCollection : ISlideMasterCollection
 {
+    private readonly PresentationCore parentPresentationCore;
     private readonly List<ISlideMaster> slideMasters;
 
-    private SCSlideMasterCollection(List<ISlideMaster> slideMasters)
+    internal SlideMasterCollection (IEnumerable<SlideMasterPart> sdkMasterParts, PresentationCore parentPresentationCore)
     {
-        this.slideMasters = slideMasters;
+        this.parentPresentationCore = parentPresentationCore;
+        this.slideMasters = new List<ISlideMaster>(sdkMasterParts.Count());
+        var number = 1;
+        foreach (var sdkMasterPart in sdkMasterParts)
+        {
+            slideMasters.Add(new SlideMaster(number++, sdkMasterPart, this));
+        }
     }
-
+    
     public int Count => this.slideMasters.Count;
 
     public ISlideMaster this[int index] => this.slideMasters[index];
@@ -45,21 +52,6 @@ internal sealed class SCSlideMasterCollection : ISlideMasterCollection
         return this.GetEnumerator();
     }
     
-    internal static SCSlideMasterCollection Create(
-        List<ImagePart> imageParts,
-        IEnumerable<SlideMasterPart> masterParts,
-        PresentationDocument sdkPresentationDocument)
-    {
-        var slideMasters = new List<ISlideMaster>(masterParts.Count());
-        var number = 1;
-        foreach (var slideMasterPart in masterParts)
-        {
-            slideMasters.Add(new SlideMaster(slideMasterPart.SlideMaster, number++, imageParts, slideMasterPart, sdkPresentationDocument));
-        }
-
-        return new SCSlideMasterCollection(slideMasters);
-    }
-
     internal SCSlideLayout GetSlideLayoutBySlide(SCSlide slide)
     {
         SlideLayoutPart inputSlideLayoutPart = slide.SDKSlidePart.SlideLayoutPart!;

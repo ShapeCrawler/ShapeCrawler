@@ -62,7 +62,7 @@ internal sealed class SlideMaster : ISlideMaster
     public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
     IReadOnlyShapeCollection ISlideMaster.Shapes => this.Shapes;
 
-    public ISlideShapeCollection Shapes => new SCSlideShapes(this.PSlideMaster.SlideMasterPart!, this, this.slideTypedOpenXmlPart, this.imageParts, this.sdkPresentationDocument);
+    public ISlideShapeCollection Shapes => new SlideShapes(this.PSlideMaster.SlideMasterPart!, this, this.slideTypedOpenXmlPart, this.imageParts, this.sdkPresentationDocument);
     
     public ITheme Theme => this.GetTheme();
 
@@ -80,7 +80,7 @@ internal sealed class SlideMaster : ISlideMaster
     
     internal P.SlideMaster PSlideMaster { get; }
 
-    internal SCSlideShapes ShapesInternal => (SCSlideShapes)this.Shapes;
+    internal SlideShapes ShapesInternal => (SlideShapes)this.Shapes;
     
     internal TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
 
@@ -151,5 +151,16 @@ internal sealed class SlideMaster : ISlideMaster
             .FirstOrDefault(s => s.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?.PlaceholderShape?.Type?.Value == P.PlaceholderValues.SlideNumber);
         
         return pSldNum is null ? null : new SCMasterSlideNumber(pSldNum);
+    }
+
+    internal FontData? BodyStyleFontDataOrNullForParagraphLevel(int paraLevel)
+    {
+        var paraToFont = FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.BodyStyle!);
+        if (paraToFont.TryGetValue(paraLevel, out var fontData))
+        {
+            return fontData;
+        }
+
+        return null;
     }
 }

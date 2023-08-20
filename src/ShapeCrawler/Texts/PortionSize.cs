@@ -68,7 +68,7 @@ internal record PortionSize : IFontSize
     private static bool TryFromPlaceholder(IShape scShape, int paraLevel, out int i)
     {
         i = -1;
-        var placeholder = scShape.Placeholder as SCSlidePlaceholder;
+        var placeholder = scShape.Placeholder as SlidePlaceholder;
         var referencedShape = placeholder?.ReferencedShape.Value as SlideAutoShape;
         var fontDataPlaceholder = new FontData();
         if (referencedShape != null)

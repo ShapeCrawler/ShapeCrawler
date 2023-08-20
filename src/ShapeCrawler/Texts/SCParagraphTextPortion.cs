@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Services;
@@ -161,5 +162,15 @@ internal sealed class SCParagraphTextPortion : IParagraphPortion
     internal A.ListStyle ATextBodyListStyle()
     {
         return this.parentPortionCollection.ATextBodyListStyle();
+    }
+
+    internal PresentationCore Presentation()
+    {
+        return this.parentPortionCollection.Presentation();
+    }
+
+    internal SlideAutoShape SlideAutoShape()
+    {
+        return this.parentPortionCollection.SlideAutoShape();
     }
 }

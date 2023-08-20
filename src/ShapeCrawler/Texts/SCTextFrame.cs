@@ -292,4 +292,14 @@ internal sealed class SCTextFrame : ITextFrame
     {
         return this.pTextBody.GetFirstChild<A.ListStyle>()!;
     }
+
+    public PresentationCore Presentation()
+    {
+        return this.parentAutoShape.Presentation();
+    }
+
+    internal SlideAutoShape AutoShape()
+    {
+        return this.parentAutoShape;
+    }
 }

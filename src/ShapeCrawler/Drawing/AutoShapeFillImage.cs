@@ -16,11 +16,9 @@ internal sealed class AutoShapeFillImage : IImage
     
     public string MIME => this.sdkImagePart.ContentType;
 
-    public Task<byte[]> BinaryData => this.GetBinaryData();
-
     public string Name => this.GetName();
 
-    public void UpdateImage(Stream stream)
+    public void Update(Stream stream)
     {
         List<ImagePart> imageParts = this.parentAutoShapeFill.SDKImageParts();
         var isSharedImagePart = imageParts.Count(x=>x == this.sdkImagePart) > 1;
@@ -35,17 +33,17 @@ internal sealed class AutoShapeFillImage : IImage
         this.sdkImagePart.FeedData(stream);
     }
 
-    public void SetImage(byte[] bytes)
+    public void Update(byte[] bytes)
     {
         var stream = new MemoryStream(bytes);
 
-        this.UpdateImage(stream);
+        this.Update(stream);
     }
 
-    public void SetImage(string filePath)
+    public void Update(string filePath)
     {
         byte[] sourceBytes = File.ReadAllBytes(filePath);
-        this.SetImage(sourceBytes);
+        this.Update(sourceBytes);
     }
     
     internal AutoShapeFillImage (A.BlipFill aBlipFill, ImagePart sdkImagePart, AutoShapeFill parentAutoShapeFill)
@@ -60,11 +58,11 @@ internal sealed class AutoShapeFillImage : IImage
         return Path.GetFileName(this.sdkImagePart.Uri.ToString());
     }
 
-    private async Task<byte[]> GetBinaryData()
+    public byte[] BinaryData()
     {
         var stream = this.sdkImagePart.GetStream();
         var bytes = new byte[stream.Length];
-        await stream.ReadAsync(bytes, 0, (int)stream.Length).ConfigureAwait(false);
+        stream.Read(bytes, 0, (int)stream.Length);
         stream.Close();
         
         return bytes;
