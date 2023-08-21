@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
-using OneOf;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using SkiaSharp;
@@ -78,6 +76,8 @@ internal sealed class SlideTable : ITable
     public int Id { get; }
     public string Name => this.shape.Name();
     public bool Hidden { get; }
+    public bool IsPlaceholder() => false;
+
     public IPlaceholder? Placeholder { get; }
     public SCGeometry GeometryType => SCGeometry.Rectangle;
     public string? CustomData { get; set; }

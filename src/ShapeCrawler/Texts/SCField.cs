@@ -31,7 +31,7 @@ internal sealed class SCField : IParagraphPortion
         var themeFontScheme = (ThemeFontScheme)textFrameContainer.AutoShape.SlideMasterInternal.Theme.FontScheme;
         this.font = new ResetableLazy<ITextPortionFont>(() =>
         {
-            if (slideStructure is SCSlideLayout layout &&
+            if (slideStructure is SlideLayout layout &&
                 textFrameContainer.AutoShape.Placeholder?.Type == SCPlaceholderType.SlideNumber)
             {
                 var masterSlideNumberFont = layout.SlideMaster.SlideNumber!.Font;

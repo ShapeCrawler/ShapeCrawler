@@ -12,14 +12,14 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class SCTextFrame : ITextFrame
+internal sealed class TextFrame : ITextFrame
 {
     private readonly SlideAutoShape parentAutoShape;
     private readonly P.TextBody pTextBody;
     private readonly ResetableLazy<string> text;
     private readonly ResetableLazy<SCParagraphCollection> paragraphs;
 
-    internal SCTextFrame(SlideAutoShape parentAutoShape, P.TextBody pTextBody)
+    internal TextFrame(TextSlideAutoShape parentAutoShape, P.TextBody pTextBody)
     {
         this.parentAutoShape = parentAutoShape;
         this.pTextBody = pTextBody;

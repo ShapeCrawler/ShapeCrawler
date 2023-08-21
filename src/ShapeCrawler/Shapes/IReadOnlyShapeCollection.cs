@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using DocumentFormat.OpenXml.Packaging;
-using OneOf;
+﻿using System.Collections.Generic;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable once CheckNamespace

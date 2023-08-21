@@ -27,13 +27,13 @@ public interface IMediaShape : IShape
     string MIME { get; }
 }
 
-internal record SCSlideMediaShape : IMediaShape
+internal record SlideMediaShape : IMediaShape
 {
     private readonly P.Picture pPicture;
     private readonly Shape shape;
     private readonly Lazy<SlidePlaceholder?> placeholder;
 
-    internal SCSlideMediaShape(P.Picture pPicture, SlideShapes shapes)
+    internal SlideMediaShape(P.Picture pPicture, SlideShapes shapes)
     {
         this.pPicture = pPicture;
         this.shape = new Shape(pPicture);
@@ -83,7 +83,9 @@ internal record SCSlideMediaShape : IMediaShape
     
     public SCGeometry GeometryType => this.shape.GeometryType();
 
-    public IPlaceholder? Placeholder => this.placeholder.Value;
+    public bool IsPlaceholder() => false;
+
+    public IPlaceholder Placeholder => new NullPlaceholder();
     
     public string? CustomData { get; set; }
     

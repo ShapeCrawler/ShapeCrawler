@@ -76,7 +76,7 @@ internal sealed class Slides : ISlideCollection
         var sdkPresPart = this.parentPresentationCore.SDKPresentationPart();
         var rId = sdkPresPart.GetNextRelationshipId();
         var sdkSlidePart = sdkPresPart.AddNewSlidePart(rId);
-        var layoutInternal = (SCSlideLayout)layout;
+        var layoutInternal = (SlideLayout)layout;
         sdkSlidePart.AddPart(layoutInternal.SlideLayoutPart, "rId1");
 
         // Copy layout placeholders

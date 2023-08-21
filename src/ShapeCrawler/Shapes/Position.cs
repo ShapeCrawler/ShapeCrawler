@@ -4,11 +4,11 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed record ShapeLocation
+internal sealed record Position
 {
     private readonly A.Offset aOffset;
 
-    internal ShapeLocation(A.Offset aOffset)
+    internal Position(A.Offset aOffset)
     {
         this.aOffset = aOffset;
     }

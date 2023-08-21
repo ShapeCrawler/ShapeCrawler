@@ -6,6 +6,7 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
@@ -27,9 +28,9 @@ public interface ISlideMaster
     IReadOnlyList<ISlideLayout> SlideLayouts { get; }
 
     /// <summary>
-    ///     Gets collection of shape.
+    ///     Gets collection of master shapes.
     /// </summary>
-    IReadOnlyShapeCollection Shapes { get; }
+    IReadOnlyShapeCollection Shapes => new MasterShapes(this);
 
     /// <summary>
     ///     Gets theme.
@@ -44,81 +45,30 @@ public interface ISlideMaster
 
 internal sealed class SlideMaster : ISlideMaster
 {
-    private readonly ResetableLazy<List<SCSlideLayout>> slideLayouts;
-    private readonly Lazy<SCMasterSlideNumber?> slideNumber;
+    private readonly ResetableLazy<SlideLayouts> layouts;
+    private readonly Lazy<MasterSlideNumber?> slideNumber;
+    private readonly P.SlideMaster pSlideMaster;
 
-    internal SlideMaster(
-        P.SlideMaster pSlideMaster, 
-        int number)
+    internal SlideMaster(P.SlideMaster pSlideMaster, int number)
     {
-        this.PSlideMaster = pSlideMaster;
+        this.pSlideMaster = pSlideMaster;
         this.Number = number;
-        this.slideLayouts = new ResetableLazy<List<SCSlideLayout>>(this.CreateSlideLayouts);
-        this.slideNumber = new Lazy<SCMasterSlideNumber?>(this.CreateSlideNumber);
+        this.layouts = new ResetableLazy<SlideLayouts>(() => new SlideLayouts(this, pSlideMaster.SlideLayoutIdList!));
+        this.slideNumber = new Lazy<MasterSlideNumber?>(this.CreateSlideNumber);
     }
 
     public IImage? Background => this.GetBackground();
 
-    public IReadOnlyList<ISlideLayout> SlideLayouts => this.slideLayouts.Value;
-    IReadOnlyShapeCollection ISlideMaster.Shapes => this.Shapes;
+    public IReadOnlyList<ISlideLayout> SlideLayouts => this.layouts.Value;
+    public IReadOnlyShapeCollection Shapes => new MasterShapes(this);
 
-    public ISlideShapeCollection Shapes => new SlideShapes(this.PSlideMaster.SlideMasterPart!, this, this.slideTypedOpenXmlPart, this.imageParts, this.sdkPresentationDocument);
-    
     public ITheme Theme => this.GetTheme();
 
     public IMasterSlideNumber? SlideNumber => this.slideNumber.Value;
 
     public int Number { get; set; }
 
-    internal Dictionary<int, FontData> BodyParaLvlToFontData =>
-        FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.BodyStyle!);
-
-    internal Dictionary<int, FontData> TitleParaLvlToFontData =>
-        FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.TitleStyle!);
-
-    internal ThemePart ThemePart => this.PSlideMaster.SlideMasterPart!.ThemePart!;
-    
-    internal P.SlideMaster PSlideMaster { get; }
-
-    internal SlideShapes ShapesInternal => (SlideShapes)this.Shapes;
-    
-    internal TypedOpenXmlPart TypedOpenXmlPart => this.PSlideMaster.SlideMasterPart!;
-
-    internal bool TryGetFontSizeFromBody(int paragraphLvl, out int fontSize)
-    {
-        var bodyParaLvlToFontData =
-            FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.BodyStyle!);
-        if (bodyParaLvlToFontData.TryGetValue(paragraphLvl, out var fontData))
-        {
-            if (fontData.FontSize is not null)
-            {
-                fontSize = fontData.FontSize;
-                return true;
-            }
-        }
-
-        fontSize = -1;
-        return false;
-    }
-
-    internal bool TryGetFontSizeFromOther(int paragraphLvl, out int fontSize)
-    {
-        var pTextStyles = this.PSlideMaster.TextStyles!;
-
-        // Other
-        var otherStyleLvlToFontData = FontDataParser.FromCompositeElement(pTextStyles.OtherStyle!);
-        if (otherStyleLvlToFontData.ContainsKey(paragraphLvl))
-        {
-            if (otherStyleLvlToFontData[paragraphLvl].FontSize is not null)
-            {
-                fontSize = otherStyleLvlToFontData[paragraphLvl].FontSize!;
-                return true;
-            }
-        }
-
-        fontSize = -1;
-        return false;
-    }
+    internal ThemePart ThemePart => this.pSlideMaster.SlideMasterPart!.ThemePart!;
 
     private PictureImage? GetBackground()
     {
@@ -127,40 +77,31 @@ internal sealed class SlideMaster : ISlideMaster
     
     private ITheme GetTheme()
     {
-        return new SCTheme(this, this.PSlideMaster.SlideMasterPart!.ThemePart!.Theme);
+        return new SCTheme(this, this.pSlideMaster.SlideMasterPart!.ThemePart!.Theme);
     }
     
-    private List<SCSlideLayout> CreateSlideLayouts()
+    private MasterSlideNumber? CreateSlideNumber()
     {
-        var rIdList = this.PSlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>().Select(layoutId => layoutId.RelationshipId!);
-        var layouts = new List<SCSlideLayout>(rIdList.Count());
-        var number = 1;
-        foreach (var rId in rIdList)
-        {
-            var layoutPart = (SlideLayoutPart)this.PSlideMaster.SlideMasterPart!.GetPartById(rId.Value!);
-            layouts.Add(new SCSlideLayout(this, layoutPart, number++, this.imageParts, this.sdkPresentationDocument));
-        }
-
-        return layouts;
-    }
-    
-    private SCMasterSlideNumber? CreateSlideNumber()
-    {
-        var pSldNum = this.PSlideMaster.CommonSlideData!.ShapeTree!
+        var pSldNum = this.pSlideMaster.CommonSlideData!.ShapeTree!
             .Elements<P.Shape>()
             .FirstOrDefault(s => s.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?.PlaceholderShape?.Type?.Value == P.PlaceholderValues.SlideNumber);
         
-        return pSldNum is null ? null : new SCMasterSlideNumber(pSldNum);
+        return pSldNum is null ? null : new MasterSlideNumber(pSldNum, new Position(pSldNum.ShapeProperties!.Transform2D!.Offset!));
     }
 
     internal FontData? BodyStyleFontDataOrNullForParagraphLevel(int paraLevel)
     {
-        var paraToFont = FontDataParser.FromCompositeElement(this.PSlideMaster.TextStyles!.BodyStyle!);
+        var paraToFont = FontDataParser.FromCompositeElement(this.pSlideMaster.TextStyles!.BodyStyle!);
         if (paraToFont.TryGetValue(paraLevel, out var fontData))
         {
             return fontData;
         }
 
         return null;
+    }
+
+    internal SlideLayoutPart SDKLayoutPart(string rIdValue)
+    {
+        return (SlideLayoutPart)this.pSlideMaster.SlideMasterPart!.GetPartById(rIdValue);
     }
 }

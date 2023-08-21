@@ -1,8 +1,4 @@
-﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using OneOf;
-using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Shapes;
+﻿using ShapeCrawler.Shapes;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 

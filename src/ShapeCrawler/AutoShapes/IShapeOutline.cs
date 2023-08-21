@@ -22,33 +22,33 @@ public interface IShapeOutline
     /// <summary>
     ///     Gets or sets color in hexadecimal format. Returns <see langword="null"/> if outline is not filled.
     /// </summary>
-    string? Color { get; set; }
+    string? HexColor { get; set; }
 }
 
 internal sealed class ShapeOutline : IShapeOutline
 {
-    private readonly SlideAutoShape parentAutoShape;
+    private readonly SlideMaster slideMaster;
     private readonly P.ShapeProperties pShapeProperties;
 
-    internal ShapeOutline(SlideAutoShape parentAutoShape, P.ShapeProperties pShapeProperties)
+    internal ShapeOutline(SlideMaster slideMaster, P.ShapeProperties pShapeProperties)
     {
-        this.parentAutoShape = parentAutoShape;
+        this.slideMaster = slideMaster;
         this.pShapeProperties = pShapeProperties;
     }
 
     public double Weight
     {
-        get => this.GetWeight();
-        set => this.SetWeight(value);
+        get => this.ParseWeight();
+        set => this.UpdateWeight(value);
     }
 
-    public string? Color
+    public string? HexColor
     {
-        get => this.GetColor();
-        set => this.SetColor(value);
+        get => this.ParseHexColor();
+        set => this.UpdateHexColor(value);
     }
 
-    private void SetWeight(double points)
+    private void UpdateWeight(double points)
     {
         var aOutline = pShapeProperties.GetFirstChild<A.Outline>();
         var aNoFill = aOutline?.GetFirstChild<A.NoFill>();
@@ -61,7 +61,7 @@ internal sealed class ShapeOutline : IShapeOutline
         aOutline.Width = new Int32Value(UnitConverter.PointToEmu(points));
     }
     
-    private void SetColor(string? hex)
+    private void UpdateHexColor(string? hex)
     {
         var aOutline = this.pShapeProperties.GetFirstChild<A.Outline>();
         var aNoFill = aOutline?.GetFirstChild<A.NoFill>();
@@ -80,7 +80,7 @@ internal sealed class ShapeOutline : IShapeOutline
         aOutline.Append(aSolidFill);
     }
 
-    private double GetWeight()
+    private double ParseWeight()
     {
         var width = this.pShapeProperties.GetFirstChild<A.Outline>()?.Width;
         if (width is null)
@@ -93,7 +93,7 @@ internal sealed class ShapeOutline : IShapeOutline
         return UnitConverter.EmuToPoint(widthEmu);
     }
 
-    private string? GetColor()
+    private string? ParseHexColor()
     {
         var aSolidFill = this.pShapeProperties
             .GetFirstChild<A.Outline>()?
@@ -103,7 +103,7 @@ internal sealed class ShapeOutline : IShapeOutline
             return null;
         }
 
-        var typeAndHex = HexParser.FromSolidFill(aSolidFill, this.parentAutoShape.SlideMaster());
+        var typeAndHex = HexParser.FromSolidFill(aSolidFill, this.slideMaster);
         
         return typeAndHex.Item2;
     }

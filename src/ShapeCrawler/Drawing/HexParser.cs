@@ -6,15 +6,15 @@ namespace ShapeCrawler.Drawing;
 
 internal static class HexParser
 {
-    internal static (SCColorType, string?) FromSolidFill(TypedOpenXmlCompositeElement typedElement, SlideMaster slideMaster)
+    internal static (SCColorType, string?) FromSolidFill(A.SolidFill aSolidFill, SlideMaster slideMaster)
     {
-        var colorHexVariant = GetWithoutScheme(typedElement);
+        var colorHexVariant = GetWithoutScheme(aSolidFill);
         if (colorHexVariant is not null)
         {
             return ((SCColorType, string))colorHexVariant;
         }
 
-        var aSchemeColor = typedElement.GetFirstChild<A.SchemeColor>() !;
+        var aSchemeColor = aSolidFill.GetFirstChild<A.SchemeColor>() !;
         var fromScheme = GetByThemeColorScheme(aSchemeColor.Val!, slideMaster); 
         return (SCColorType.Theme, fromScheme);
     }

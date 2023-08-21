@@ -6,7 +6,6 @@ using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Office2019.Drawing.SVG;
 using DocumentFormat.OpenXml.Packaging;
-using OneOf;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
 using SkiaSharp;

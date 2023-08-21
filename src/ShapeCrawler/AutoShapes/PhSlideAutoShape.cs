@@ -4,13 +4,13 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes;
 
-internal sealed record PlaceholderSlideAutoShape : ISlideAutoShape
+internal sealed record PhSlideAutoShape : ISlideAutoShape
 {
     private readonly LayoutAutoShape layoutAutoShape;
     private readonly SlideAutoShape slideAutoShape;
     private readonly P.PlaceholderShape pPlaceholderShape;
 
-    internal PlaceholderSlideAutoShape(
+    internal PhSlideAutoShape(
         SlideAutoShape slideAutoShape, 
         P.PlaceholderShape pPlaceholderShape, 
         LayoutAutoShape layoutAutoShape)
@@ -24,34 +24,22 @@ internal sealed record PlaceholderSlideAutoShape : ISlideAutoShape
     public int Y { get; set; }
     public int Width { get; set; }
     public int Height { get; set; }
-    public int Id { get; }
+    public int Id => this.slideAutoShape.Id;
     public string Name => this.slideAutoShape.Name;
-    public bool Hidden { get; }
-    public bool IsPlaceholder()
-    {
-        throw new System.NotImplementedException();
-    }
+    public bool Hidden => this.slideAutoShape.Hidden;
+    public bool IsPlaceholder() => true;
 
     public IPlaceholder Placeholder => new SlidePlaceholder(this.pPlaceholderShape);
-    public SCGeometry GeometryType { get; }
+    public SCGeometry GeometryType => this.slideAutoShape.GeometryType;
     public string? CustomData { get; set; }
-    public SCShapeType ShapeType { get; }
-    public IAutoShape AsAutoShape()
-    {
-        throw new System.NotImplementedException();
-    }
+    public SCShapeType ShapeType => this.slideAutoShape.ShapeType;
+    public IAutoShape AsAutoShape() => this;
 
     public IShapeOutline Outline => this.slideAutoShape.Outline;
     public IShapeFill Fill => this.slideAutoShape.Fill;
     public ITextFrame TextFrame => this.slideAutoShape.TextFrame;
-    public bool IsTextHolder()
-    {
-        throw new System.NotImplementedException();
-    }
+    public bool IsTextHolder() => this.slideAutoShape.IsTextHolder();
 
-    public double Rotation { get; }
-    public void Duplicate()
-    {
-        throw new System.NotImplementedException();
-    }
+    public double Rotation => this.slideAutoShape.Rotation;
+    public void Duplicate() => this.slideAutoShape.Duplicate();
 }

@@ -52,7 +52,7 @@ public class ShapeOutlineTests : SCTest
         var outline = autoShape.Outline;
         
         // Act
-        var outlineColor = outline.Color;
+        var outlineColor = outline.HexColor;
         
         // Assert
         outlineColor.Should().Be(expectedColor);
@@ -67,10 +67,10 @@ public class ShapeOutlineTests : SCTest
         var outline = autoShape.Outline;
         
         // Act
-        outline.Color = "be3455";
+        outline.HexColor = "be3455";
 
         // Assert
-        outline.Color.Should().Be("be3455");
+        outline.HexColor.Should().Be("be3455");
         var errors = PptxValidator.Validate(autoShape.SlideStructure.Presentation);
         errors.Should().BeEmpty();
     }

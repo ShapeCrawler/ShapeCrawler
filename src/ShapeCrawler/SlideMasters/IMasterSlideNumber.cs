@@ -16,29 +16,29 @@ public interface IMasterSlideNumber : IShapeLocation
     ISlideNumberFont Font { get; }
 }
 
-internal sealed class SCMasterSlideNumber : IMasterSlideNumber
+internal sealed class MasterSlideNumber : IMasterSlideNumber
 {
-    private readonly ShapeLocation shapeLocation;
+    private readonly Position position;
 
-    internal SCMasterSlideNumber(P.Shape pSldNum)
+    internal MasterSlideNumber(P.Shape pSldNum, Position position)
     {
+        this.position = position;
         var aDefaultRunProperties =
             pSldNum.TextBody!.ListStyle!.Level1ParagraphProperties?.GetFirstChild<A.DefaultRunProperties>() !;
-        this.Font = new SCSlideNumberFont(aDefaultRunProperties);
-        this.shapeLocation = new ShapeLocation(pSldNum.ShapeProperties!.Transform2D!);
+        this.Font = new SlideNumberFont(aDefaultRunProperties);
     }
 
     public ISlideNumberFont Font { get; }
 
     public int X
     {
-        get => this.shapeLocation.X();
-        set => this.shapeLocation.UpdateX(value);
+        get => this.position.X();
+        set => this.position.UpdateX(value);
     }
 
     public int Y
     {
-        get => this.shapeLocation.Y();
-        set => this.shapeLocation.UpdateY(value);
+        get => this.position.Y();
+        set => this.position.UpdateY(value);
     }
 }

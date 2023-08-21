@@ -32,7 +32,7 @@ public interface ITableCell
 
 internal sealed record SCTableCell : ITableCell
 {
-    private readonly Lazy<SCTextFrame> textFrame;
+    private readonly Lazy<TextFrame> textFrame;
     private readonly Lazy<TableCellFill> shapeFill;
     private readonly SCTableRow parentTableRow;
 
@@ -46,7 +46,7 @@ internal sealed record SCTableCell : ITableCell
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
-        this.textFrame = new Lazy<SCTextFrame>(this.CreateTextFrame);
+        this.textFrame = new Lazy<TextFrame>(this.CreateTextFrame);
         var tableCellProperties = aTableCell.TableCellProperties!;
         this.shapeFill = new Lazy<TableCellFill>(() =>
             new TableCellFill(tableCellProperties, this));
@@ -64,9 +64,9 @@ internal sealed record SCTableCell : ITableCell
 
     internal int ColumnIndex { get; }
 
-    private SCTextFrame CreateTextFrame()
+    private TextFrame CreateTextFrame()
     {
-        return new SCTextFrame(this, this.ATableCell.TextBody!, this.slideStructure, this);
+        return new TextFrame(this, this.ATableCell.TextBody!, this.slideStructure, this);
     }
 
     private bool DefineWhetherCellIsMerged()

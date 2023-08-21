@@ -3,13 +3,13 @@ using ShapeCrawler.AutoShapes;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed record SCSlideGroupedAutoShape : IAutoShape
+internal sealed record SlideGroupedAutoShape : IAutoShape
 {
     private readonly SlideAutoShape autoShape;
     private event EventHandler<int> XChanged;
     private event EventHandler<int> YChanged;
 
-    internal SCSlideGroupedAutoShape(SlideAutoShape autoShape, EventHandler<int> xChangedHandler, EventHandler<int> yChangedHandler)
+    internal SlideGroupedAutoShape(SlideAutoShape autoShape, EventHandler<int> xChangedHandler, EventHandler<int> yChangedHandler)
     {
         this.autoShape = autoShape;
         this.XChanged += xChangedHandler;
@@ -55,7 +55,9 @@ internal sealed record SCSlideGroupedAutoShape : IAutoShape
     public int Id => this.autoShape.Id;
     public string Name => this.autoShape.Name;
     public bool Hidden => this.autoShape.Hidden;
-    public IPlaceholder? Placeholder { get; }
+    public bool IsPlaceholder() => this.autoShape.IsPlaceholder();
+
+    public IPlaceholder Placeholder => this.autoShape.Placeholder;
     public SCGeometry GeometryType { get; }
     public string? CustomData { get; set; }
     public SCShapeType ShapeType { get; }
@@ -67,6 +69,8 @@ internal sealed record SCSlideGroupedAutoShape : IAutoShape
     public IShapeOutline Outline => this.autoShape.Outline;
     public IShapeFill? Fill { get; }
     public ITextFrame? TextFrame { get; }
+    public bool IsTextHolder() => this.autoShape.IsTextHolder();
+
     public double Rotation { get; }
 
     public IAutoShape Duplicate()

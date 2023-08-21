@@ -16,12 +16,12 @@ public interface ISlideNumberFont : IFont
     SCColor Color { get; set; }
 }
 
-internal sealed class SCSlideNumberFont : ISlideNumberFont
+internal sealed class SlideNumberFont : ISlideNumberFont
 {
     private readonly A.DefaultRunProperties aDefaultRunProperties;
     private readonly MasterSlideNumberSize masterSlideNumberSize;
 
-    internal SCSlideNumberFont(A.DefaultRunProperties aDefaultRunProperties)
+    internal SlideNumberFont(A.DefaultRunProperties aDefaultRunProperties)
     {
         this.aDefaultRunProperties = aDefaultRunProperties;
         this.masterSlideNumberSize = new MasterSlideNumberSize(aDefaultRunProperties);

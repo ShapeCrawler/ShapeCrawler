@@ -55,9 +55,9 @@ internal sealed class SCParagraph : IParagraph
     private readonly Lazy<SCBullet> bullet;
     private readonly ResetableLazy<SCPortions> portions;
     private SCTextAlignment? alignment;
-    private readonly SCTextFrame parentTextFrame;
+    private readonly TextFrame parentTextFrame;
 
-    internal SCParagraph(A.Paragraph aParagraph, SCTextFrame parentTextFrame)
+    internal SCParagraph(A.Paragraph aParagraph, TextFrame parentTextFrame)
     {
         this.AParagraph = aParagraph;
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();

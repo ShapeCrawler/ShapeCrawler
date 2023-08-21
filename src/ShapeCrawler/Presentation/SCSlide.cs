@@ -31,7 +31,7 @@ internal sealed class SCSlide : ISlide
     internal SCSlide( 
         SlidePart sdkSlidePart, 
         SlideId pSlideId, 
-        SCSlideLayout slideLayout,
+        SlideLayout slideLayout,
         int slideWidth, 
         int slideHeight,
         Slides parentSlideCollection)

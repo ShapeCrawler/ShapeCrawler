@@ -4,7 +4,6 @@ using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using OneOf;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;

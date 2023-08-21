@@ -129,7 +129,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
 
         this.shapes.Reset();
 
-        return new SCSlideMediaShape(this.pShapeTree, this.parentSlide, this, pPicture);
+        return new SlideMediaShape(this.pShapeTree, this.parentSlide, this, pPicture);
     }
 
     public IPicture AddPicture(Stream imageStream)
@@ -278,7 +278,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
 
         this.shapes.Reset();
 
-        return new SCSlideMediaShape(this.pShapeTree, this.slideOf, this, this.slideTypedOpenXmlPart);
+        return new SlideMediaShape(this.pShapeTree, this.slideOf, this, this.slideTypedOpenXmlPart);
     }
 
     public void AddRectangle(int x, int y, int width, int height)
@@ -383,7 +383,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
         var newPConnectionShape = this.CreatePConnectionShape(x, y, (int)cx, cy, flipH, flipV);
 
         var newShape = new SCLine(newPConnectionShape, this.slideOf, this);
-        newShape.Outline.Color = "000000";
+        newShape.Outline.HexColor = "000000";
 
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
@@ -666,14 +666,14 @@ internal sealed class SlideShapes : ISlideShapeCollection
                             .GetFirstChild<A.AudioFromFile>();
                         if (aAudioFile is not null)
                         {
-                            shapesValue.Add(new SCSlideMediaShape(pPicture, this));
+                            shapesValue.Add(new SlideMediaShape(pPicture, this));
                         }
 
                         continue;
                     }
                     case A.VideoFromFile:
                     {
-                        shapesValue.Add(new SCSlideMediaShape(pPicture, this));
+                        shapesValue.Add(new SlideMediaShape(pPicture, this));
                         continue;
                     }
                 }

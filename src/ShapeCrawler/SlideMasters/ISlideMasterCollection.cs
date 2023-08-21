@@ -34,7 +34,7 @@ internal sealed class SlideMasterCollection : ISlideMasterCollection
         var number = 1;
         foreach (var sdkMasterPart in sdkMasterParts)
         {
-            slideMasters.Add(new SlideMaster(number++, sdkMasterPart, this));
+            slideMasters.Add(new SlideMaster(sdkMasterPart.SlideMaster, number++));
         }
     }
     
@@ -50,13 +50,5 @@ internal sealed class SlideMasterCollection : ISlideMasterCollection
     IEnumerator IEnumerable.GetEnumerator()
     {
         return this.GetEnumerator();
-    }
-    
-    internal SCSlideLayout GetSlideLayoutBySlide(SCSlide slide)
-    {
-        SlideLayoutPart inputSlideLayoutPart = slide.SDKSlidePart.SlideLayoutPart!;
-        IEnumerable<SCSlideLayout> allLayouts = this.slideMasters.SelectMany(sm => sm.SlideLayouts).OfType<SCSlideLayout>();
-
-        return allLayouts.First(sl => sl.SlideLayoutPart.Uri == inputSlideLayoutPart.Uri);
     }
 }

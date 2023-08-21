@@ -8,7 +8,7 @@ namespace ShapeCrawler.Shapes;
 internal sealed record Shape
 {
     private readonly OpenXmlCompositeElement pShapeTreeChild;
-    private readonly ShapeLocation shapeLocation;
+    private readonly Position position;
     private const string customDataElementName = "ctd";
 
     internal Shape(OpenXmlCompositeElement pShapeTreeChild)
@@ -16,28 +16,16 @@ internal sealed record Shape
         this.pShapeTreeChild = pShapeTreeChild;
         
         var aOffset = pShapeTreeChild.Descendants<A.Offset>().First();
-        this.shapeLocation = new ShapeLocation(aOffset);
+        this.position = new Position(aOffset);
     }
     
-    internal int X()
-    {
-        return this.shapeLocation.X();
-    }
+    internal int X() => this.position.X();
 
-    internal void UpdateX(int value)
-    {
-        this.shapeLocation.UpdateX(value);
-    }
+    internal void UpdateX(int value) => this.position.UpdateX(value);
 
-    internal int Y()
-    {
-        return this.shapeLocation.Y();
-    }
+    internal int Y() => this.position.Y();
 
-    internal void UpdateY(int value)
-    {
-        this.shapeLocation.UpdateY(value);
-    }
+    internal void UpdateY(int value) => this.position.UpdateY(value);
 
     internal int Width()
     {
