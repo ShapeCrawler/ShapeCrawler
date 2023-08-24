@@ -20,15 +20,22 @@ internal sealed record SlideAutoShape : ISlideAutoShape
     private readonly P.Shape pShape;
     private readonly Shape shape;
     private readonly Lazy<SlideAutoShapeFill> autoShapeFill;
+    private readonly SlidePart sdkSlidePart;
 
     private event Action Duplicated;
 
-    internal SlideAutoShape(P.Shape pShape, Shape shape, SlideShapeOutline outline, Action duplicatedHandler)
+    internal SlideAutoShape(
+        SlidePart sdkSlidePart, 
+        P.Shape pShape, 
+        Shape shape, 
+        SlideShapeOutline outline, 
+        Action duplicatedHandler)
     {
+        this.sdkSlidePart = sdkSlidePart;
         this.pShape = pShape;
         this.shape = shape;
-        this.autoShapeFill = new Lazy<SlideAutoShapeFill>(this.ParseFill);
         this.Outline = outline;
+        this.autoShapeFill = new Lazy<SlideAutoShapeFill>(this.ParseFill);
         this.Duplicated += duplicatedHandler;
     }
 
@@ -113,7 +120,7 @@ internal sealed record SlideAutoShape : ISlideAutoShape
     private SlideAutoShapeFill ParseFill()
     {
         var useBgFill = pShape.UseBackgroundFill;
-        return new SlideAutoShapeFill(this.pShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
+        return new SlideAutoShapeFill(this.sdkSlidePart, this.pShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
     }
 
     public int X { get; set; }

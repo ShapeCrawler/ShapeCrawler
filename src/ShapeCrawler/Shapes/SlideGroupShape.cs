@@ -40,6 +40,8 @@ internal sealed class SlideGroupShape : IGroupShape
     public string Name => this.shape.Name();
     
     public bool Hidden => this.shape.Hidden();
+    public bool IsPlaceholder() => false;
+
     public IPlaceholder? Placeholder { get; }
     public SCGeometry GeometryType { get; }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -7,23 +8,29 @@ namespace ShapeCrawler.AutoShapes;
 
 internal sealed record LayoutAutoShape : IAutoShape
 {
+    private readonly SlideLayoutPart sdkLayoutPart;
     private readonly P.Shape pShape;
     private readonly Shape shape;
-    private readonly Lazy<SlideAutoShapeFill> autoShapeFill;
+    private readonly Lazy<LayoutAutoShapeFill> autoShapeFill;
 
-    internal LayoutAutoShape(P.Shape pShape, Shape shape, LayoutShapeOutline outline)
+    internal LayoutAutoShape(
+        SlideLayoutPart sdkLayoutPart, 
+        P.Shape pShape, 
+        Shape shape, 
+        LayoutShapeOutline outline)
     {
+        this.sdkLayoutPart = sdkLayoutPart;
         this.pShape = pShape;
         this.shape = shape;
-        this.autoShapeFill = new Lazy<SlideAutoShapeFill>(this.ParseFill);
-        this.Placeholder = new NullPlaceholder();
         this.Outline = outline;
+        this.autoShapeFill = new Lazy<LayoutAutoShapeFill>(this.ParseFill);
+        this.Placeholder = new NullPlaceholder();
     }
 
-    private SlideAutoShapeFill ParseFill()
+    private LayoutAutoShapeFill ParseFill()
     {
         var useBgFill = pShape.UseBackgroundFill;
-        return new SlideAutoShapeFill(this.pShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
+        return new LayoutAutoShapeFill(this.sdkLayoutPart, this.pShape.GetFirstChild<P.ShapeProperties>() !, useBgFill!);
     }
 
     #region Shape Properties

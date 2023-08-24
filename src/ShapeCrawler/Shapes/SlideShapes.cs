@@ -72,7 +72,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
         {
             slideAutoShape.CopyTo(id, this.pShapeTree, allShapeNames, this.parentSlide.SDKSlidePart());    
         }
-        else if (addingShape is SCSlidePicture slidePicture)
+        else if (addingShape is SlidePicture slidePicture)
         {
             slidePicture.CopyTo(id, this.pShapeTree, allShapeNames, this.parentSlide.SDKSlidePart());    
         }
@@ -156,7 +156,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
 
         this.shapes.Reset();
 
-        return (SCSlidePicture)shape;
+        return (SlidePicture)shape;
     }
 
     public IChart AddBarChart(BarChartType barChartType)
@@ -647,7 +647,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
                         continue;
                     }
 
-                    shapesValue.Add(new SCSlidePicture(pPicture, this, aBlip!, new Shape(pShapeTreeChild)));
+                    shapesValue.Add(new SlidePicture(pPicture, this, aBlip!, new Shape(pShapeTreeChild)));
                     continue;
                 }
             }
@@ -683,7 +683,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
                     continue;
                 }
 
-                shapesValue.Add(new SCSlidePicture(pPicture, this, aBlip!, new Shape(pShapeTreeChild)));
+                shapesValue.Add(new SlidePicture(pPicture, this, aBlip!, new Shape(pShapeTreeChild)));
                 continue;
             }
             else if (this.IsChartPGraphicFrame(pShapeTreeChild))

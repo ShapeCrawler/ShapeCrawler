@@ -14,7 +14,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed record SCSlidePicture : IPicture
+internal sealed record SlidePicture : IPicture
 {
     private readonly StringValue blipEmbed;
     private readonly P.Picture pPicture;
@@ -22,7 +22,7 @@ internal sealed record SCSlidePicture : IPicture
     private readonly A.Blip aBlip;
     private readonly Shape shape;
 
-    internal SCSlidePicture(
+    internal SlidePicture(
         P.Picture pPicture,
         SlideShapes parentShapeCollection,
         A.Blip aBlip,
@@ -44,6 +44,11 @@ internal sealed record SCSlidePicture : IPicture
     public int Id => this.shape.Id();
     public string Name => this.shape.Name();
     public bool Hidden { get; }
+    public bool IsPlaceholder()
+    {
+        throw new NotImplementedException();
+    }
+
     public IPlaceholder? Placeholder { get; }
     public SCGeometry GeometryType { get; }
     public string? CustomData { get; set; }

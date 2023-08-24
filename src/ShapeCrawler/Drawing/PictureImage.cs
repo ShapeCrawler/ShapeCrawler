@@ -8,11 +8,11 @@ namespace ShapeCrawler.Drawing;
 
 internal sealed class PictureImage : IImage
 {
-    private readonly SCSlidePicture parentPicture;
+    private readonly SlidePicture parentPicture;
     private ImagePart sdkImagePart;
     private readonly A.Blip aBlip;
 
-    internal PictureImage(SCSlidePicture slidePicture, A.Blip aBlip)
+    internal PictureImage(SlidePicture slidePicture, A.Blip aBlip)
     {
         this.parentPicture = slidePicture;
         this.aBlip = aBlip;

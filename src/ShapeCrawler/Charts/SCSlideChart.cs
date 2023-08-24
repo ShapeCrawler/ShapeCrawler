@@ -130,6 +130,11 @@ internal class SCSlideChart : IChart
     public string Name => this.shape.Name();
     
     public bool Hidden => this.shape.Hidden();
+    public bool IsPlaceholder()
+    {
+        throw new NotImplementedException();
+    }
+
     public IPlaceholder? Placeholder { get; }
     public SCGeometry GeometryType => SCGeometry.Rectangle;
     public string? CustomData { get; set; }

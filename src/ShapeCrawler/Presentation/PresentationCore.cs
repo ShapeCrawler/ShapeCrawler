@@ -151,7 +151,7 @@ internal sealed record PresentationCore
             {
                 switch (shape)
                 {
-                    case SCSlidePicture slidePicture:
+                    case SlidePicture slidePicture:
                         imgParts.Add(((PictureImage)slidePicture.Image).SDKImagePart);
                         break;
                     case IGroupShape groupShape:
