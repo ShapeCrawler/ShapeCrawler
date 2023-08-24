@@ -24,15 +24,13 @@ public interface IParagraphCollection : IReadOnlyList<IParagraph>
     void Remove(IEnumerable<IParagraph> removeParagraphs);
 }
 
-internal sealed class SCParagraphCollection : IParagraphCollection
+internal sealed class Paragraphs : IParagraphCollection
 {
-    private readonly ResetableLazy<List<SCParagraph>> paragraphs;
-    private readonly TextFrame textFrame;
+    private readonly ResetableLazy<List<Paragraph>> paragraphs;
 
-    internal SCParagraphCollection(TextFrame textFrame)
+    internal Paragraphs()
     {
-        this.textFrame = textFrame;
-        this.paragraphs = new ResetableLazy<List<SCParagraph>>(this.GetParagraphs);
+        this.paragraphs = new ResetableLazy<List<Paragraph>>(this.ParseParagraphs);
     }
 
     #region Public Properties
@@ -60,7 +58,7 @@ internal sealed class SCParagraphCollection : IParagraphCollection
         newAParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         lastAParagraph.InsertAfterSelf(newAParagraph);
 
-        var newParagraph = new SCParagraph(newAParagraph, this.textFrame, this.slideStructure,this.textFrameContainer)
+        var newParagraph = new Paragraph(newAParagraph)
         {
             Text = string.Empty
         };
@@ -72,7 +70,7 @@ internal sealed class SCParagraphCollection : IParagraphCollection
 
     public void Remove(IEnumerable<IParagraph> removeParagraphs)
     {
-        foreach (var paragraph in removeParagraphs.Cast<SCParagraph>())
+        foreach (var paragraph in removeParagraphs.Cast<Paragraph>())
         {
             paragraph.AParagraph.Remove();
             paragraph.IsRemoved = true;
@@ -81,17 +79,17 @@ internal sealed class SCParagraphCollection : IParagraphCollection
         this.paragraphs.Reset();
     }
 
-    private List<SCParagraph> GetParagraphs()
+    private List<Paragraph> ParseParagraphs()
     {
         if (this.textFrame.TextBodyElement == null)
         {
-            return new List<SCParagraph>(0);
+            return new List<Paragraph>(0);
         }
 
-        var paraList = new List<SCParagraph>();
+        var paraList = new List<Paragraph>();
         foreach (var aPara in this.textFrame.TextBodyElement.Elements<A.Paragraph>())
         {
-            var para = new SCParagraph(aPara, this.textFrame, this.slideStructure, this.textFrameContainer);
+            var para = new Paragraph(aPara, this.textFrame, this.slideStructure, this.textFrameContainer);
             para.TextChanged += this.textFrame.OnParagraphTextChanged;
             paraList.Add(para);
         }

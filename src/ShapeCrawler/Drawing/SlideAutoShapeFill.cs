@@ -9,10 +9,9 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal record AutoShapeFill : IShapeFill
+internal record SlideAutoShapeFill : IShapeFill
 {
     private readonly TypedOpenXmlCompositeElement properties;
-    private readonly SlideAutoShape parentAutoShape;
     private BooleanValue? useBgFill;
     private SCFillType fillType;
     private bool isDirty;
@@ -22,11 +21,12 @@ internal record AutoShapeFill : IShapeFill
     private A.GradientFill? aGradFill;
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
+    private readonly SlidePart sdkSlidePart;
 
-    internal AutoShapeFill(TypedOpenXmlCompositeElement properties, SlideAutoShape parentAutoShape, BooleanValue? useBgFill)
+    internal SlideAutoShapeFill(SlidePart sdkSlidePart, TypedOpenXmlCompositeElement properties, BooleanValue? useBgFill)
     {
+        this.sdkSlidePart = sdkSlidePart;
         this.properties = properties;
-        this.parentAutoShape = parentAutoShape;
         this.useBgFill = useBgFill;
         this.isDirty = true;
     }
@@ -53,7 +53,6 @@ internal record AutoShapeFill : IShapeFill
         }
         else
         {
-            SlidePart sdkSlidePart = this.parentAutoShape.SDKSlidePart(); 
             var rId = sdkSlidePart.AddImagePart(imageStream);
 
             var aBlipFill = new DocumentFormat.OpenXml.Drawing.BlipFill();

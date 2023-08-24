@@ -21,10 +21,10 @@ public interface ISpacing
 
 internal sealed class SCSpacing : ISpacing
 {
-    private readonly SCParagraph paragraph;
+    private readonly Paragraph paragraph;
     private readonly A.Paragraph aParagraph;
 
-    public SCSpacing(SCParagraph paragraph, A.Paragraph aParagraph)
+    public SCSpacing(Paragraph paragraph, A.Paragraph aParagraph)
     {
         this.paragraph = paragraph;
         this.aParagraph = aParagraph;

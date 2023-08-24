@@ -1,4 +1,5 @@
-﻿using ShapeCrawler.Shapes;
+﻿using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Shapes;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -21,20 +22,22 @@ public interface ILine : IAutoShape
     SCPoint EndPoint { get; }
 }
 
-internal sealed record SCLine : ILine
+internal sealed record SlideLine : ILine
 {
     private readonly P.ConnectionShape pConnectionShape;
     private readonly SlideShapes shapeCollection;
     private readonly Shape shape;
 
-    internal SCLine(
+    internal SlideLine(
         P.ConnectionShape pConnectionShape,
         SlideShapes parentShapeCollection,
-        Shape shape)
+        Shape shape,
+        SlideShapeOutline shapeOutline)
     {
         this.pConnectionShape = pConnectionShape;
         this.shapeCollection = parentShapeCollection;
         this.shape = shape;
+        this.Outline = shapeOutline;
     }
 
     public int Width
@@ -55,10 +58,7 @@ internal sealed record SCLine : ILine
     
     public bool Hidden => this.shape.Hidden();
 
-    public bool IsPlaceholder()
-    {
-        return false; 
-    }
+    public bool IsPlaceholder() => false;
 
     public IPlaceholder Placeholder => new NullPlaceholder($"A line cannot be a placeholder. Use {nameof(IShape.Placeholder)} to check if the shape is a placeholder.");
     public SCGeometry GeometryType => SCGeometry.Line;
@@ -69,16 +69,10 @@ internal sealed record SCLine : ILine
         set => this.shape.UpdateCustomData(value);
     }
     public SCShapeType ShapeType => SCShapeType.Line;
-    public IAutoShape AsAutoShape()
-    {
-        return this;
-    }
+    public IAutoShape AsAutoShape() => this;
 
-    public ITextFrame? TextFrame => null;
-    public bool IsTextHolder()
-    {
-        throw new System.NotImplementedException();
-    }
+    public ITextFrame TextFrame => new NullTextFrame();
+    public bool IsTextHolder() => false;
 
     public double Rotation { get; }
 
@@ -90,20 +84,21 @@ internal sealed record SCLine : ILine
     public IShapeOutline Outline { get; }
     public IShapeFill Fill => new SCNullShapeFill();
     
-    public SCPoint StartPoint => this.GetStartPoint();
+    public SCPoint StartPoint => this.ParseStartPoint();
     
-    public SCPoint EndPoint => this.GetEndPoint();
+    public SCPoint EndPoint => this.ParseEndPoint();
 
     internal void Draw(SKCanvas canvas)
     {
         throw new System.NotImplementedException();
     }
 
-    private SCPoint GetStartPoint()
+    private SCPoint ParseStartPoint()
     {
-        var horizontalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !.Transform2D!.HorizontalFlip?.Value;
+        var aTransform2D = this.pConnectionShape.GetFirstChild<P.ShapeProperties>() !.Transform2D!;
+        var horizontalFlip = aTransform2D.HorizontalFlip?.Value;
         var flipH = horizontalFlip != null && horizontalFlip.Value;
-        var verticalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !.Transform2D!.VerticalFlip?.Value;
+        var verticalFlip =  aTransform2D.VerticalFlip?.Value;
         var flipV = verticalFlip != null && verticalFlip.Value;
 
         if (flipH && (this.Height == 0 || flipV))
@@ -119,11 +114,12 @@ internal sealed record SCLine : ILine
         return new SCPoint(this.X, this.Y);
     }
     
-    private SCPoint GetEndPoint()
+    private SCPoint ParseEndPoint()
     {
-        var horizontalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !.Transform2D!.HorizontalFlip?.Value;
+        var aTransform2D = this.pConnectionShape.GetFirstChild<P.ShapeProperties>() !.Transform2D!;
+        var horizontalFlip = aTransform2D.HorizontalFlip?.Value;
         var flipH = horizontalFlip != null && horizontalFlip.Value;
-        var verticalFlip = this.PShapeTreeChild.GetFirstChild<P.ShapeProperties>() !.Transform2D!.VerticalFlip?.Value;
+        var verticalFlip = aTransform2D.VerticalFlip?.Value;
         var flipV = verticalFlip != null && verticalFlip.Value;
 
         if(this.Width == 0)

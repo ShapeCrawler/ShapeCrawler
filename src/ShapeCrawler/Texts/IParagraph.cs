@@ -50,19 +50,24 @@ public interface IParagraph
     void ReplaceText(string oldValue, string newValue);
 }
 
-internal sealed class SCParagraph : IParagraph
+internal sealed class Paragraph : IParagraph
 {
     private readonly Lazy<SCBullet> bullet;
     private readonly ResetableLazy<SCPortions> portions;
     private SCTextAlignment? alignment;
-    private readonly TextFrame parentTextFrame;
+    private readonly AParagraphWrap aParagraphWrap;
 
-    internal SCParagraph(A.Paragraph aParagraph, TextFrame parentTextFrame)
+    internal Paragraph(A.Paragraph aParagraph)
+        : this(aParagraph, new AParagraphWrap(aParagraph))
+    {
+    }
+
+    internal Paragraph(A.Paragraph aParagraph, AParagraphWrap aParagraphWrap)
     {
         this.AParagraph = aParagraph;
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.bullet = new Lazy<SCBullet>(this.GetBullet);
-        this.parentTextFrame = parentTextFrame;
+        this.aParagraphWrap = aParagraphWrap;
         this.portions = new ResetableLazy<SCPortions>(() => new SCPortions(this.AParagraph, this));
     }
 
@@ -82,14 +87,14 @@ internal sealed class SCParagraph : IParagraph
 
     public SCTextAlignment Alignment
     {
-        get => this.GetAlignment();
+        get => this.ParseAlignment();
         set => this.SetAlignment(value);
     }
 
     public int IndentLevel
     {
-        get => this.GetIndentLevel();
-        set => this.SetIndentLevel(value);
+        get => this.aParagraphWrap.IndentLevel();
+        set => this.aParagraphWrap.UpdateIndentLevel(value);
     }
 
     public ISpacing Spacing => this.GetSpacing();
@@ -117,7 +122,6 @@ internal sealed class SCParagraph : IParagraph
         }
     }
 
-
     private ISpacing GetSpacing()
     {
         return new SCSpacing(this, this.AParagraph);
@@ -136,22 +140,6 @@ internal sealed class SCParagraph : IParagraph
         }
 
         return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next) !;
-    }
-
-    private int GetIndentLevel()
-    {
-        var level = this.AParagraph.ParagraphProperties!.Level;
-        if (level is null)
-        {
-            return 1; // it is default indent level
-        }
-
-        return level + 1;
-    }
-
-    private void SetIndentLevel(int value)
-    {
-        this.AParagraph.ParagraphProperties!.Level = new Int32Value(value - 1);
     }
 
     private void SetText(string text)
@@ -186,7 +174,7 @@ internal sealed class SCParagraph : IParagraph
                 this.portions.Value.AddNewLine();
             }
         }
-        
+
         this.portions.Reset();
         this.TextChanged?.Invoke();
     }
@@ -218,31 +206,16 @@ internal sealed class SCParagraph : IParagraph
         this.alignment = alignmentValue;
     }
 
-    private SCTextAlignment GetAlignment()
+    private SCTextAlignment ParseAlignment()
     {
         if (this.alignment.HasValue)
         {
             return this.alignment.Value;
         }
 
-        var shape = this.ParentTextFrame.TextFrameContainer.AutoShape;
-        var placeholder = shape.Placeholder;
-
         var aTextAlignmentType = this.AParagraph.ParagraphProperties?.Alignment!;
         if (aTextAlignmentType == null)
         {
-            if (placeholder is { Type: SCPlaceholderType.Title })
-            {
-                this.alignment = SCTextAlignment.Left;
-                return this.alignment.Value;
-            }
-
-            if (placeholder is { Type: SCPlaceholderType.CenteredTitle })
-            {
-                this.alignment = SCTextAlignment.Center;
-                return this.alignment.Value;
-            }
-
             return SCTextAlignment.Left;
         }
 
@@ -255,30 +228,5 @@ internal sealed class SCParagraph : IParagraph
         };
 
         return this.alignment.Value;
-    }
-
-    internal SlideMaster SlideMaster()
-    {
-        return this.parentTextFrame.SlideMaster();
-    }
-
-    internal int Level()
-    {
-        return this.GetIndentLevel();
-    }
-
-    internal A.ListStyle ATextBodyListStyle()
-    {
-        return this.parentTextFrame.ATextBodyListStyle();
-    }
-
-    internal PresentationCore Presentation()
-    {
-        return this.parentTextFrame.Presentation();
-    }
-
-    internal SlideAutoShape SlideAutoShape()
-    {
-        return this.parentTextFrame.AutoShape();
     }
 }

@@ -17,35 +17,35 @@ namespace ShapeCrawler.AutoShapes;
 
 internal sealed record SlideAutoShape : ISlideAutoShape
 {
-    private readonly Lazy<AutoShapeFill> shapeFill;
     private readonly P.Shape pShape;
-    private readonly SlideShapes parentShapeCollection;
     private readonly Shape shape;
+    private readonly Lazy<SlideAutoShapeFill> autoShapeFill;
 
-    internal SlideAutoShape(P.Shape pShape, SlideShapes parentShapeCollection, Shape shape)
+    private event Action Duplicated;
+
+    internal SlideAutoShape(P.Shape pShape, Shape shape, SlideShapeOutline outline, Action duplicatedHandler)
     {
         this.pShape = pShape;
-        this.parentShapeCollection = parentShapeCollection;
-        this.shapeFill = new Lazy<AutoShapeFill>(this.ParseFill);
         this.shape = shape;
-        this.Outline = new ShapeOutline(this, pShape.ShapeProperties!);
+        this.autoShapeFill = new Lazy<SlideAutoShapeFill>(this.ParseFill);
+        this.Outline = outline;
+        this.Duplicated += duplicatedHandler;
     }
-    
-    internal event EventHandler<NewAutoShape>? Duplicated;
 
     public IShapeOutline Outline { get; }
 
     public int Width
     {
-        get => this.shape.Width(); 
+        get => this.shape.Width();
         set => this.shape.UpdateWidth(value);
     }
 
     public int Height
     {
-        get => this.shape.Height(); 
+        get => this.shape.Height();
         set => this.shape.UpdateHeight(value);
     }
+
     public int Id => this.shape.Id();
     public string Name => this.shape.Name();
     public bool Hidden { get; }
@@ -56,12 +56,9 @@ internal sealed record SlideAutoShape : ISlideAutoShape
     public SCGeometry GeometryType { get; }
     public string? CustomData { get; set; }
     public SCShapeType ShapeType => SCShapeType.AutoShape;
-    public IAutoShape AsAutoShape()
-    {
-        return this;
-    }
+    public IAutoShape AsAutoShape() => this;
 
-    public IShapeFill Fill => this.shapeFill.Value;
+    public IShapeFill Fill => this.autoShapeFill.Value;
 
     public ITextFrame TextFrame => new NullTextFrame();
 
@@ -71,10 +68,13 @@ internal sealed record SlideAutoShape : ISlideAutoShape
 
     public void Duplicate()
     {
-        var pShapeCopy = this.pShape.CloneNode(true);
-        this.parentShapeCollection.Add(pShapeCopy);
+        var pShapeTree = (P.ShapeTree)pShape.Parent!;
+        var autoShapes = new SlideAutoShapes(pShapeTree);
+        autoShapes.Add(this.pShape);
+
+        this.Duplicated.Invoke();
     }
-    
+
     internal void Draw(SKCanvas slideCanvas)
     {
         var skColorOutline = SKColor.Parse(this.Outline.HexColor);
@@ -110,19 +110,17 @@ internal sealed record SlideAutoShape : ISlideAutoShape
         throw new NotImplementedException();
     }
 
-    private AutoShapeFill ParseFill()
+    private SlideAutoShapeFill ParseFill()
     {
         var useBgFill = pShape.UseBackgroundFill;
-        return new AutoShapeFill(
-            this.pShape.GetFirstChild<P.ShapeProperties>() !, 
-            this, 
-            useBgFill);
+        return new SlideAutoShapeFill(this.pShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
     }
-    
+
     public int X { get; set; }
     public int Y { get; set; }
 
-    internal void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames, SlidePart targetSdkSlidePart)
+    internal void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames,
+        SlidePart targetSdkSlidePart)
     {
         var copy = this.pShape.CloneNode(true);
         copy.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
@@ -130,7 +128,7 @@ internal sealed record SlideAutoShape : ISlideAutoShape
         var copyName = copy.GetNonVisualDrawingProperties().Name!.Value!;
         if (existingShapeNames.Any(existingShapeName => existingShapeName == copyName))
         {
-            var currentShapeCollectionSuffixes = existingShapeNames 
+            var currentShapeCollectionSuffixes = existingShapeNames
                 .Where(c => c.StartsWith(copyName, StringComparison.InvariantCulture))
                 .Select(c => c.Substring(copyName.Length))
                 .ToArray();
@@ -150,25 +148,5 @@ internal sealed record SlideAutoShape : ISlideAutoShape
             var lastSuffix = numericSuffixes.LastOrDefault() + 1;
             copy.GetNonVisualDrawingProperties().Name = copyName + " " + lastSuffix;
         }
-    }
-
-    internal SlideMaster SlideMaster()
-    {
-        return this.parentShapeCollection.SlideMaster();
-    }
-
-    public SlidePart SDKSlidePart()
-    {
-        return this.parentShapeCollection.SDKSlidePart();
-    }
-
-    internal List<ImagePart> SDKImageParts()
-    {
-        return this.parentShapeCollection.SDKImageParts();
-    }
-
-    public PresentationCore Presentation()
-    {
-        return this.parentShapeCollection.Presentation();
     }
 }

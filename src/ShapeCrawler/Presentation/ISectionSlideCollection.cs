@@ -24,7 +24,7 @@ public interface ISectionSlideCollection : IEnumerable<ISlide>
 internal sealed class SCSectionSlideCollection : ISectionSlideCollection
 {
     private readonly SCSection parentSection;
-    private List<SCSlide> sectionSlides;
+    private List<Slide> sectionSlides;
 
     public SCSectionSlideCollection(SCSection parentSection)
     {
@@ -32,7 +32,7 @@ internal sealed class SCSectionSlideCollection : ISectionSlideCollection
         var slides = parentSection.Sections.Presentation.SlidesInternal;
         slides.CollectionChanged += this.OnPresSlideCollectionChanged;
 
-        this.sectionSlides = new List<SCSlide>();
+        this.sectionSlides = new List<Slide>();
         this.Initialize();
     }
 
@@ -57,7 +57,7 @@ internal sealed class SCSectionSlideCollection : ISectionSlideCollection
 
     private void Initialize()
     {
-        this.sectionSlides = new List<SCSlide>();
+        this.sectionSlides = new List<Slide>();
         foreach (var sectionSlideIdListEntry in this.parentSection.SDKSection.Descendants<SectionSlideIdListEntry>())
         {
             var slide = this.parentSection.Sections.Presentation.SlidesInternal.GetBySlideId(sectionSlideIdListEntry.Id!);

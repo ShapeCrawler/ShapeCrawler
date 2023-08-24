@@ -26,9 +26,9 @@ internal sealed class SlideShapes : ISlideShapeCollection
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly P.ShapeTree pShapeTree;
     private readonly ResetableLazy<List<IShape>> shapes;
-    private readonly SCSlide parentSlide;
+    private readonly Slide parentSlide;
 
-    internal SlideShapes(SCSlide parentSlide, P.ShapeTree pShapeTree)
+    internal SlideShapes(Slide parentSlide, P.ShapeTree pShapeTree)
     {
         this.parentSlide = parentSlide;
         this.pShapeTree = pShapeTree;
@@ -84,7 +84,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
         this.shapes.Reset();
     }
 
-    public IMediaShape AddAudio(int xPixels, int yPixels, Stream mp3Stream)
+    public void AddAudio(int xPixels, int yPixels, Stream mp3Stream)
     {
         var xEmu = UnitConverter.HorizontalPixelToEmu(xPixels);
         var yEmu = UnitConverter.VerticalPixelToEmu(yPixels);
@@ -128,8 +128,6 @@ internal sealed class SlideShapes : ISlideShapeCollection
         applicationNonVisualDrawingProps.Append(appNonVisualDrawingPropsExtensionList);
 
         this.shapes.Reset();
-
-        return new SlideMediaShape(this.pShapeTree, this.parentSlide, this, pPicture);
     }
 
     public IPicture AddPicture(Stream imageStream)
@@ -318,7 +316,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
     {
         var newPConnectionShape = new ConnectionShape(xml);
 
-        var newShape = new SCLine(newPConnectionShape, this.slideOf, this);
+        var newShape = new SlideLine(newPConnectionShape, this.slideOf, this);
 
         newShape.Duplicated += this.OnAutoShapeAdded;
         this.shapes.Value.Add(newShape);
@@ -382,7 +380,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
 
         var newPConnectionShape = this.CreatePConnectionShape(x, y, (int)cx, cy, flipH, flipV);
 
-        var newShape = new SCLine(newPConnectionShape, this.slideOf, this);
+        var newShape = new SlideLine(newPConnectionShape, this.slideOf, this);
         newShape.Outline.HexColor = "000000";
 
         newShape.Duplicated += this.OnAutoShapeAdded;
@@ -619,11 +617,11 @@ internal sealed class SlideShapes : ISlideShapeCollection
         {
             if (pShapeTreeChild is P.GroupShape pGroupShape)
             {
-                shapesValue.Add(new SCSlideGroupShape(pGroupShape, this));
+                shapesValue.Add(new SlideGroupShape(pGroupShape, this));
             }
             else if (pShapeTreeChild is P.ConnectionShape pConnectionShape)
             {
-                shapesValue.Add(new SCLine(pConnectionShape, this, new Shape(pShapeTreeChild)));
+                shapesValue.Add(new SlideLine(pConnectionShape, this, new Shape(pShapeTreeChild)));
             }
             else if (pShapeTreeChild is P.Shape pShape)
             {
@@ -635,7 +633,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
                 if (aGraphicData!.Uri!.Value!.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
                         StringComparison.Ordinal))
                 {
-                    shapesValue.Add(new SCSlideOLEObject(pGraphicFrame, this, new Shape(pShapeTreeChild)));
+                    shapesValue.Add(new SlideOLEObject(pGraphicFrame, this, new Shape(pShapeTreeChild)));
                     continue;
                 }
 
@@ -772,12 +770,12 @@ internal sealed class SlideShapes : ISlideShapeCollection
 
         if (pShapeTreeChild is P.GroupShape pGroupShape)
         {
-            return new SCSlideGroupShape(pGroupShape, this.slideOf, this);
+            return new SlideGroupShape(pGroupShape, this.slideOf, this);
         }
 
         if (pShapeTreeChild is P.ConnectionShape)
         {
-            return new SCLine(pShapeTreeChild, this.slideOf, this);
+            return new SlideLine(pShapeTreeChild, this.slideOf, this);
         }
 
         shape = autoShapeCreator.FromTreeChild(pShapeTreeChild, this.slideOf, this);

@@ -14,12 +14,12 @@ namespace ShapeCrawler;
 internal sealed class Slides : ISlideCollection
 {
     private readonly PresentationCore parentPresentationCore;
-    private readonly ResetableLazy<List<SCSlide>> slides;
+    private readonly ResetableLazy<List<Slide>> slides;
 
     internal Slides(PresentationCore parentPresentationCore)
     {
         this.parentPresentationCore = parentPresentationCore;
-        this.slides = new ResetableLazy<List<SCSlide>>(this.ParseSlides);
+        this.slides = new ResetableLazy<List<Slide>>(this.ParseSlides);
     } 
 
     public int Count => this.slides.Value.Count;
@@ -119,7 +119,7 @@ internal sealed class Slides : ISlideCollection
         var pSlideId = new P.SlideId { Id = nextId, RelationshipId = rId };
         pSlideIdList.Append(pSlideId);
 
-        var newSlide = new SCSlide(
+        var newSlide = new Slide(
             sdkSlidePart, 
             pSlideId, 
             layoutInternal,
@@ -165,7 +165,7 @@ internal sealed class Slides : ISlideCollection
 
     public void Add(ISlide slide)
     {
-        var sourceSlideInternal = (SCSlide)slide;
+        var sourceSlideInternal = (Slide)slide;
         PresentationDocument sourcePresDoc;
         var tempStream = new MemoryStream();
         if (slide.SDKPresentationDocument == this.parentPresentationCore.SDKPresentationDocument)
@@ -200,7 +200,7 @@ internal sealed class Slides : ISlideCollection
         this.CollectionChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    internal SCSlide GetBySlideId(string slideId)
+    internal Slide GetBySlideId(string slideId)
     {
         return this.slides.Value.First(scSlide => scSlide.SlideId.Id == slideId);
     }
@@ -371,17 +371,17 @@ internal sealed class Slides : ISlideCollection
         return this.AddEmptySlide(layout);
     }
     
-    private List<SCSlide> ParseSlides()
+    private List<Slide> ParseSlides()
     {
         this.presPart = this.parentPresentationCore.SDKPresentationDocument.PresentationPart!;
         int slidesCount = this.presPart.SlideParts.Count();
-        var slides = new List<SCSlide>(slidesCount);
+        var slides = new List<Slide>(slidesCount);
         var slideIds = this.presPart.Presentation.SlideIdList!.ChildElements.OfType<P.SlideId>().ToList();
         for (var slideIndex = 0; slideIndex < slidesCount; slideIndex++)
         {
             var slideId = slideIds[slideIndex];
             var slidePart = (SlidePart)this.presPart.GetPartById(slideId.RelationshipId!);
-            var newSlide = new SCSlide(slidePart, slideId, () => slides.Count);
+            var newSlide = new Slide(slidePart, slideId, () => slides.Count);
             slides.Add(newSlide);
         }
 

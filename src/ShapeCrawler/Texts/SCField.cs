@@ -19,7 +19,7 @@ internal sealed class SCField : IParagraphPortion
 
     internal SCField(
         A.Field aField,
-        SCParagraph parentParagraph,
+        Paragraph parentParagraph,
         Action onRemoveHandler,
         Dictionary<int, FontData> paraLvlToFontData)
     {

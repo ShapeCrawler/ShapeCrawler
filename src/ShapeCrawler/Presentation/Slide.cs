@@ -18,7 +18,7 @@ using SkiaSharp;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler;
 
-internal sealed class SCSlide : ISlide
+internal sealed class Slide : ISlide
 {
     private readonly ResetableLazy<SlideShapes> shapes;
     private readonly Lazy<SlideBackgroundImage> backgroundImage;
@@ -28,7 +28,7 @@ internal sealed class SCSlide : ISlide
     private readonly Slides parentSlideCollection;
     private readonly SlidePart sdkSlidePart;
 
-    internal SCSlide( 
+    internal Slide( 
         SlidePart sdkSlidePart, 
         SlideId pSlideId, 
         SlideLayout slideLayout,

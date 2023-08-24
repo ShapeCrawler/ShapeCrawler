@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Placeholders;
 using ShapeCrawler.Services;
-using ShapeCrawler.Shapes;
-using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -33,18 +32,18 @@ public interface IFontColor
     void SetColorByHex(string hex);
 }
 
-internal sealed class FontColor : IFontColor
+internal sealed class SlideFontColor : IFontColor
 {
     private readonly A.Text aText;
     private bool initialized;
     private string? hexColor;
     private SCColorType colorType;
-    private readonly TextPortionFont parentFont;
+    private readonly SlidePart sdkSlidePart;
     private readonly A.ListStyle textBodyListStyle;
 
-    internal FontColor(TextPortionFont parentFont, A.Text aText, A.ListStyle textBodyListStyle)
+    internal SlideFontColor(SlidePart sdkSlidePart, A.Text aText, A.ListStyle textBodyListStyle)
     {
-        this.parentFont = parentFont;
+        this.sdkSlidePart = sdkSlidePart;
         this.aText = aText;
         this.textBodyListStyle = textBodyListStyle;
     }
@@ -95,7 +94,7 @@ internal sealed class FontColor : IFontColor
         var aSolidFill = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.GetASolidFill();
         if (aSolidFill != null)
         {
-            var typeAndHex = HexParser.FromSolidFill(aSolidFill, this.parentFont.SlideMaster());
+            var typeAndHex = HexParser.FromSolidFill(aSolidFill, this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster);
             this.colorType = typeAndHex.Item1;
             this.hexColor = typeAndHex.Item2;
         }
@@ -111,6 +110,7 @@ internal sealed class FontColor : IFontColor
                 return;
             }
 
+            this.aText.Ancestors<A.Paragraph>().First().TryGetFontData(out var fontData);
             int paraLevel = this.parentFont.ParagraphLevel();
             if (this.TryFromPlaceholder(paraLevel))
             {

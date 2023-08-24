@@ -27,7 +27,7 @@ internal sealed record TextSlideAutoShape : ISlideAutoShape
 
     private TextFrame ParseTextFrame()
     {
-        var newTextFrame = new TextFrame(this, pTextBody);
+        var newTextFrame = new TextFrame(pTextBody, this.ResizeShape);
         newTextFrame.TextChanged += this.ResizeShape;
 
         return newTextFrame;

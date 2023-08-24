@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.AutoShapes;
@@ -13,7 +14,7 @@ internal sealed class TextPortionFont : ITextPortionFont
 {
     private readonly A.Text aText;
     private readonly A.FontScheme aFontScheme;
-    private readonly Lazy<FontColor> fontColor;
+    private readonly Lazy<SlideFontColor> fontColor;
     private readonly ResetableLazy<A.LatinFont> latinFont;
     private readonly IFontSize size;
     private readonly SCParagraphTextPortion parentParagraphTextPortion;
@@ -28,9 +29,8 @@ internal sealed class TextPortionFont : ITextPortionFont
         this.aText = aText;
         this.latinFont = new ResetableLazy<A.LatinFont>(this.ParseALatinFont);
         
-        // var textBodyListStyle = paragraph.ParentTextFrame.TextBodyElement.GetFirstChild<A.ListStyle>();
         A.ListStyle textBodyListStyle = this.parentParagraphTextPortion.ATextBodyListStyle();
-        this.fontColor = new Lazy<FontColor>(() => new FontColor(this, this.aText, textBodyListStyle));
+        this.fontColor = new Lazy<SlideFontColor>(() => new SlideFontColor(this.aText, textBodyListStyle));
         this.aFontScheme = themeFontScheme.AFontScheme;
         this.size = size;
     }

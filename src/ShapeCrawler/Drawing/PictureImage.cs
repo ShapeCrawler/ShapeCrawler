@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Packaging;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Drawing;
 
@@ -10,9 +10,9 @@ internal sealed class PictureImage : IImage
 {
     private readonly SCSlidePicture parentPicture;
     private ImagePart sdkImagePart;
-    private readonly DocumentFormat.OpenXml.Drawing.Blip aBlip;
+    private readonly A.Blip aBlip;
 
-    internal PictureImage(SCSlidePicture slidePicture, DocumentFormat.OpenXml.Drawing.Blip aBlip)
+    internal PictureImage(SCSlidePicture slidePicture, A.Blip aBlip)
     {
         this.parentPicture = slidePicture;
         this.aBlip = aBlip;

@@ -30,14 +30,14 @@ public interface IMediaShape : IShape
 internal record SlideMediaShape : IMediaShape
 {
     private readonly P.Picture pPicture;
+    private readonly SlideShapes parentShapeCollection;
     private readonly Shape shape;
-    private readonly Lazy<SlidePlaceholder?> placeholder;
 
-    internal SlideMediaShape(P.Picture pPicture, SlideShapes shapes)
+    internal SlideMediaShape(P.Picture pPicture, SlideShapes parentShapeCollection, Shape shape)
     {
         this.pPicture = pPicture;
-        this.shape = new Shape(pPicture);
-        this.placeholder = new Lazy<SlidePlaceholder?>(this.ParsePlaceholderOrNull);
+        this.parentShapeCollection = parentShapeCollection;
+        this.shape = shape;
     }
 
     private SlidePlaceholder? ParsePlaceholderOrNull()
@@ -116,7 +116,7 @@ internal record SlideMediaShape : IMediaShape
     private byte[] ParseBinaryData()
     {
         var p14Media = this.pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!.Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();
-        var relationship = this.sdkSlidePart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
+        var relationship = this.parentShapeCollection.SDKSlidePart().DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
         var stream = relationship.DataPart.GetStream();
         var bytes = stream.ToArray();
         stream.Close();
@@ -129,7 +129,7 @@ internal record SlideMediaShape : IMediaShape
     private string ParseMIME()
     {
         var p14Media = this.pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!.Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();
-        var relationship = this.sdkSlidePart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
+        var relationship = this.parentShapeCollection.SDKSlidePart().DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
 
         return relationship.DataPart.ContentType;
     }

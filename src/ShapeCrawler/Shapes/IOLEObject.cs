@@ -8,11 +8,11 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler;
 
-internal record SCSlideOLEObject : IShape
+internal record SlideOLEObject : IShape
 {
     private readonly Shape shape;
 
-    internal SCSlideOLEObject(P.GraphicFrame pGraphicFrame, SlideShapes shapes, Shape shape)
+    internal SlideOLEObject(P.GraphicFrame pGraphicFrame, SlideShapes shapes, Shape shape)
     {
         this.shape = shape;
     }
@@ -46,7 +46,9 @@ internal record SCSlideOLEObject : IShape
     public string Name => this.shape.Name();
 
     public bool Hidden => this.shape.Hidden();
-    public IPlaceholder? Placeholder => null;
+    public bool IsPlaceholder() => false;
+
+    public IPlaceholder Placeholder => new NullPlaceholder();
 
     public SCGeometry GeometryType => this.shape.GeometryType();
 

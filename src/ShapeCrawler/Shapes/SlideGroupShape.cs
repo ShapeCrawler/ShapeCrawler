@@ -10,18 +10,18 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.Shapes;
 
-internal sealed class SCSlideGroupShape : IGroupShape
+internal sealed class SlideGroupShape : IGroupShape
 {
     private readonly P.GroupShape pGroupShape;
     private readonly Shape shape;
 
-    internal SCSlideGroupShape(P.GroupShape pGroupShape, IReadOnlyShapeCollection shapes)
+    internal SlideGroupShape(P.GroupShape pGroupShape, IReadOnlyShapeCollection shapes)
     {
         this.pGroupShape = pGroupShape;
         this.shape = new Shape(pGroupShape);
     }
 
-    public IReadOnlyShapeCollection Shapes => new SCSlideGroupedShapes(this.pGroupShape, this);
+    public IReadOnlyShapeCollection Shapes => new SlideGroupedShapes(this.pGroupShape, this);
 
     public int Width
     {

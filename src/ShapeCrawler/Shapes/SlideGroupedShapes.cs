@@ -7,11 +7,11 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class SCSlideGroupedShapes : IReadOnlyShapeCollection
+internal sealed class SlideGroupedShapes : IReadOnlyShapeCollection
 {
     private readonly List<IShape> groupedShapes;
 
-    internal SCSlideGroupedShapes(P.GroupShape parentPGroupShape, SCSlideGroupShape groupShape)
+    internal SlideGroupedShapes(P.GroupShape parentPGroupShape, SlideGroupShape groupShape)
     {
         var groupedShapes = new List<IShape?>();
         foreach (var parentPGroupShapeChild in parentPGroupShape.ChildElements.OfType<OpenXmlCompositeElement>())
@@ -19,16 +19,17 @@ internal sealed class SCSlideGroupedShapes : IReadOnlyShapeCollection
             IShape? shape = null;
             if (parentPGroupShapeChild is P.GroupShape pGroupShape)
             {
-                shape = new SCSlideGroupShape(pGroupShape, this, sdkSlidePart, imageParts);
+                shape = new SlideGroupShape(pGroupShape, this);
             }
             else if (parentPGroupShapeChild is P.Shape pShape)
             {
-                // var autoShape = new SCSlideAutoShape(pShape, groupShape, sdkSlidePart, groupShape.OnGroupedShapeXChanged, groupShape.OnGroupedShapeYChanged);
-                var slideGroupedAutoShape = new SlideGroupedAutoShape(
-                    new SlideAutoShape(pShape, this, sdkSlidePart),
-                    groupShape.OnGroupedShapeXChanged, groupShape.OnGroupedShapeYChanged);
+                var groupedAutoShape = new SlideGroupedAutoShape(
+                    new SlideAutoShape(pShape, this),
+                    groupShape.OnGroupedShapeXChanged,
+                    groupShape.OnGroupedShapeYChanged
+                );
 
-                shape = slideGroupedAutoShape;
+                shape = groupedAutoShape;
             }
 
             if (shape != null)

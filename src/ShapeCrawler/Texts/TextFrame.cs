@@ -14,17 +14,18 @@ namespace ShapeCrawler.Texts;
 
 internal sealed class TextFrame : ITextFrame
 {
-    private readonly SlideAutoShape parentAutoShape;
     private readonly P.TextBody pTextBody;
     private readonly ResetableLazy<string> text;
-    private readonly ResetableLazy<SCParagraphCollection> paragraphs;
+    private readonly ResetableLazy<Paragraphs> paragraphs;
+    
+    private event Action changed;
 
-    internal TextFrame(TextSlideAutoShape parentAutoShape, P.TextBody pTextBody)
+    internal TextFrame(P.TextBody pTextBody, Action changedHandler)
     {
-        this.parentAutoShape = parentAutoShape;
         this.pTextBody = pTextBody;
+        this.changed += changedHandler;
         this.text = new ResetableLazy<string>(this.GetText);
-        this.paragraphs = new ResetableLazy<SCParagraphCollection>(this.GetParagraphs);
+        this.paragraphs = new ResetableLazy<Paragraphs>(this.GetParagraphs);
     }
 
     internal event Action? TextChanged;
@@ -124,7 +125,7 @@ internal sealed class TextFrame : ITextFrame
                 shrink?.Remove();
                 resize = new A.ShapeAutoFit();
                 aBodyPr.Append(resize);
-                this.parentAutoShape.ResizeShape();
+                this.changed.Invoke();
                 break;
             }
 
@@ -207,9 +208,9 @@ internal sealed class TextFrame : ITextFrame
         return ins is null ? SCConstants.DefaultTopAndBottomMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
 
-    private SCParagraphCollection GetParagraphs()
+    private Paragraphs GetParagraphs()
     {
-        return new SCParagraphCollection(this);
+        return new Paragraphs(TextBodyElement.Elements<A.Paragraph>());
     }
 
     private SCAutofitType GetAutofitType()
@@ -261,7 +262,7 @@ internal sealed class TextFrame : ITextFrame
         int shapeHeight = this.parentAutoShape.Height;
         var fontSize = FontService.GetAdjustedFontSize(newText, font!, shapeWidth, shapeHeight);
 
-        var paragraphInternal = (SCParagraph)baseParagraph;
+        var paragraphInternal = (Paragraph)baseParagraph;
         paragraphInternal.SetFontSize(fontSize);
     }
 

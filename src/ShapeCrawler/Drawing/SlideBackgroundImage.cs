@@ -10,7 +10,7 @@ namespace ShapeCrawler.Drawing;
 
 internal sealed class SlideBackgroundImage : ISlideBackgroundImage
 {
-    private readonly SCSlide slide;
+    private readonly Slide slide;
     private readonly P.ShapeTree pShapeTree;
 
     private const string NotPresentedErrorMessage =
@@ -71,7 +71,7 @@ internal sealed class SlideBackgroundImage : ISlideBackgroundImage
         throw new NotImplementedException();
     }
 
-    internal SlideBackgroundImage(SCSlide parentSlide, P.ShapeTree pShapeTree)
+    internal SlideBackgroundImage(Slide parentSlide, P.ShapeTree pShapeTree)
     {
         this.slide = parentSlide;
         this.pShapeTree = pShapeTree;

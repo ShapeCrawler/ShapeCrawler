@@ -19,7 +19,7 @@ public interface ISlideShapeCollection : IReadOnlyShapeCollection
     /// <param name="xPixel">The X coordinate for the left side of the shape.</param>
     /// <param name="yPixels">The Y coordinate for the left side of the shape.</param>
     /// <param name="mp3Stream">Audio stream data.</param>
-    IMediaShape AddAudio(int xPixel, int yPixels, Stream mp3Stream);
+    void AddAudio(int xPixel, int yPixels, Stream mp3Stream);
 
     /// <summary>
     ///     Adds a new video from stream.
@@ -27,7 +27,7 @@ public interface ISlideShapeCollection : IReadOnlyShapeCollection
     /// <param name="x">X coordinate in pixels.</param>
     /// <param name="y">Y coordinate in pixels.</param>
     /// <param name="stream">Video stream data.</param>
-    IMediaShape AddVideo(int x, int y, Stream stream);
+    void AddVideo(int x, int y, Stream stream);
 
     /// <summary>
     ///     Adds a new Rectangle shape.
@@ -43,17 +43,17 @@ public interface ISlideShapeCollection : IReadOnlyShapeCollection
     ///     Adds a line from XML.
     /// </summary>
     /// <param name="xml">Content of p:cxnSp Open XML element.</param>
-    ILine AddLine(string xml);
+    void AddLine(string xml);
 
     /// <summary>
     ///     Adds a new line.
     /// </summary>
-    ILine AddLine(int startPointX, int startPointY, int endPointX, int endPointY);
+    void AddLine(int startPointX, int startPointY, int endPointX, int endPointY);
 
     /// <summary>
     ///     Adds a new table.
     /// </summary>
-    ITable AddTable(int x, int y, int columnsCount, int rowsCount);
+    void AddTable(int x, int y, int columnsCount, int rowsCount);
 
     /// <summary>
     ///     Removes specified shape.
@@ -63,10 +63,10 @@ public interface ISlideShapeCollection : IReadOnlyShapeCollection
     /// <summary>
     ///     Adds picture.
     /// </summary>
-    IPicture AddPicture(Stream imageStream);
+    void AddPicture(Stream imageStream);
 
     /// <summary>
     ///     Adds Bar chart.
     /// </summary>
-    IChart AddBarChart(BarChartType barChartType);
+    void AddBarChart(BarChartType barChartType);
 }

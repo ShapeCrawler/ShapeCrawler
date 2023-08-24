@@ -53,9 +53,9 @@ internal sealed class SCPortions : IPortionCollection
 {
     private readonly ResetableLazy<List<IParagraphPortion>> portions;
     private readonly A.Paragraph aParagraph;
-    private readonly SCParagraph parentParagraph;
+    private readonly Paragraph parentParagraph;
 
-    internal SCPortions(A.Paragraph aParagraph, SCParagraph parentParagraph)
+    internal SCPortions(A.Paragraph aParagraph, Paragraph parentParagraph)
     {
         this.aParagraph = aParagraph;
         this.portions = new ResetableLazy<List<IParagraphPortion>>(this.ParsePortions);
