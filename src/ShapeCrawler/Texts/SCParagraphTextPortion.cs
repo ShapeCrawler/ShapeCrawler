@@ -21,7 +21,7 @@ internal sealed class SCParagraphTextPortion : IParagraphPortion
         this.AText = aRun.Text!;
         this.aRun = aRun;
         this.parentPortionCollection = parentPortionCollection;
-        var textPortionSize = new PortionSize(this.AText, this);
+        var textPortionSize = new PortionFontSize(this.AText, this);
         this.font = new ResetableLazy<TextPortionFont>(() => new TextPortionFont(this.AText, themeFontScheme, textPortionSize, this));
     }
 

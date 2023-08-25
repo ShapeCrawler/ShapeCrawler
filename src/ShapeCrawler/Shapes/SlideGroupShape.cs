@@ -15,13 +15,13 @@ internal sealed class SlideGroupShape : IGroupShape
     private readonly P.GroupShape pGroupShape;
     private readonly Shape shape;
 
-    internal SlideGroupShape(P.GroupShape pGroupShape, IReadOnlyShapeCollection shapes)
+    internal SlideGroupShape(P.GroupShape pGroupShape)
     {
         this.pGroupShape = pGroupShape;
         this.shape = new Shape(pGroupShape);
     }
 
-    public IReadOnlyShapeCollection Shapes => new SlideGroupedShapes(this.pGroupShape, this);
+    public IReadOnlyShapeCollection Shapes => new SlideGroupedShapes(this.pGroupShape);
 
     public int Width
     {

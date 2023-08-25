@@ -3,13 +3,13 @@ using ShapeCrawler.AutoShapes;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed record SlideGroupedAutoShape : IAutoShape
+internal sealed record GroupedSlideAutoShape : IAutoShape
 {
     private readonly SlideAutoShape autoShape;
     private event EventHandler<int> XChanged;
     private event EventHandler<int> YChanged;
 
-    internal SlideGroupedAutoShape(SlideAutoShape autoShape, EventHandler<int> xChangedHandler, EventHandler<int> yChangedHandler)
+    internal GroupedSlideAutoShape(SlideAutoShape autoShape, EventHandler<int> xChangedHandler, EventHandler<int> yChangedHandler)
     {
         this.autoShape = autoShape;
         this.XChanged += xChangedHandler;

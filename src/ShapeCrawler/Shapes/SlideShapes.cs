@@ -130,7 +130,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
         this.shapes.Reset();
     }
 
-    public IPicture AddPicture(Stream imageStream)
+    public void AddPicture(Stream imageStream)
     {
         imageStream.Position = 0;
         var imageCopy = new MemoryStream();
@@ -159,7 +159,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
         return (SlidePicture)shape;
     }
 
-    public IChart AddBarChart(BarChartType barChartType)
+    public void AddBarChart(BarChartType barChartType)
     {
         var chartFactory = new ChartGraphicFrameHandler();
         var newPGraphicFrame = chartFactory.Create(this.slideTypedOpenXmlPart);
@@ -169,7 +169,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
         return null!;
     }
 
-    public IMediaShape AddVideo(int x, int y, Stream stream)
+    public void AddVideo(int x, int y, Stream stream)
     {
         var xEmu = UnitConverter.HorizontalPixelToEmu(x);
         var yEmu = UnitConverter.VerticalPixelToEmu(y);
@@ -312,7 +312,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
         return newShape;
     }
 
-    public ILine AddLine(string xml)
+    public void AddLine(string xml)
     {
         var newPConnectionShape = new ConnectionShape(xml);
 
@@ -327,7 +327,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
         return newShape;
     }
 
-    public ILine AddLine(int startPointX, int startPointY, int endPointX, int endPointY)
+    public void AddLine(int startPointX, int startPointY, int endPointX, int endPointY)
     {
         var deltaY = endPointY - startPointY;
         var cx = endPointX;
@@ -392,7 +392,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
         return newShape;
     }
 
-    public ITable AddTable(int xPx, int yPx, int columns, int rows)
+    public void AddTable(int xPx, int yPx, int columns, int rows)
     {
         var shapeName = this.GenerateNextTableName();
         var shapeId = this.GenerateNextShapeId();

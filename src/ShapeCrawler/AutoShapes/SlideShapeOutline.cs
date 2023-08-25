@@ -3,15 +3,16 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
+using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler;
+namespace ShapeCrawler.AutoShapes;
 
 internal sealed class SlideShapeOutline : IShapeOutline
 {
-    private readonly DocumentFormat.OpenXml.Presentation.ShapeProperties pShapeProperties;
+    private readonly P.ShapeProperties pShapeProperties;
     private readonly SlidePart sdkSlidePart;
 
-    internal SlideShapeOutline(DocumentFormat.OpenXml.Presentation.ShapeProperties pShapeProperties, SlidePart sdkSlidePart)
+    internal SlideShapeOutline(SlidePart sdkSlidePart, P.ShapeProperties pShapeProperties)
     {
         this.pShapeProperties = pShapeProperties;
         this.sdkSlidePart = sdkSlidePart;

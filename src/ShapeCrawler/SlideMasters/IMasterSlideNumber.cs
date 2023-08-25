@@ -8,7 +8,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a slide number.
 /// </summary>
-public interface IMasterSlideNumber : IShapeLocation
+public interface IMasterSlideNumber : IShapePosition
 {
     /// <summary>
     ///     Gets font.

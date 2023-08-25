@@ -4,7 +4,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents location of a shape.
 /// </summary>
-public interface IShapeLocation
+public interface IShapePosition
 {
     /// <summary>
     ///     Gets or sets x-coordinate of the upper-left corner of the shape.

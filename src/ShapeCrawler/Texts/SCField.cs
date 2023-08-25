@@ -47,7 +47,7 @@ internal sealed class SCField : IParagraphPortion
                 return textPortionFont;
             }
 
-            var textPortionSize = new PortionSize(this.aText!, this, paraLvlToFontData);
+            var textPortionSize = new PortionFontSize(this.aText!, this, paraLvlToFontData);
             return new TextPortionFont(this.aText!, textFrameContainer, parentParagraph, themeFontScheme, textPortionSize, paraLvlToFontData);
         });
 

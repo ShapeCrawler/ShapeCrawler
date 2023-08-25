@@ -25,11 +25,25 @@ internal sealed record SlideAutoShape : ISlideAutoShape
     private event Action Duplicated;
 
     internal SlideAutoShape(
-        SlidePart sdkSlidePart, 
-        P.Shape pShape, 
-        Shape shape, 
-        SlideShapeOutline outline, 
-        Action duplicatedHandler)
+        SlidePart sdkSlidePart,
+        P.Shape pShape,
+        Action duplicatedHandler) :
+        this(
+            sdkSlidePart,
+            pShape,
+            duplicatedHandler,
+            new Shape(pShape),
+            new SlideShapeOutline(sdkSlidePart, pShape.ShapeProperties!)
+        )
+    {
+    }
+
+    private SlideAutoShape(
+        SlidePart sdkSlidePart,
+        P.Shape pShape,
+        Action duplicatedHandler,
+        Shape shape,
+        SlideShapeOutline outline)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.pShape = pShape;

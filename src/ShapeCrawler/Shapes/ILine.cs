@@ -25,17 +25,14 @@ public interface ILine : IAutoShape
 internal sealed record SlideLine : ILine
 {
     private readonly P.ConnectionShape pConnectionShape;
-    private readonly SlideShapes shapeCollection;
     private readonly Shape shape;
 
     internal SlideLine(
         P.ConnectionShape pConnectionShape,
-        SlideShapes parentShapeCollection,
         Shape shape,
         SlideShapeOutline shapeOutline)
     {
         this.pConnectionShape = pConnectionShape;
-        this.shapeCollection = parentShapeCollection;
         this.shape = shape;
         this.Outline = shapeOutline;
     }
@@ -75,11 +72,6 @@ internal sealed record SlideLine : ILine
     public bool IsTextHolder() => false;
 
     public double Rotation { get; }
-
-    public IAutoShape Duplicate()
-    {
-        throw new System.NotImplementedException();
-    }
 
     public IShapeOutline Outline { get; }
     public IShapeFill Fill => new SCNullShapeFill();

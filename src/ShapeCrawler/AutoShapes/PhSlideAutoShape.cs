@@ -4,6 +4,9 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes;
 
+/// <summary>
+///     The placeholder AutoShape on a slide. 
+/// </summary>
 internal sealed record PhSlideAutoShape : ISlideAutoShape
 {
     private readonly LayoutAutoShape layoutAutoShape;

@@ -9,12 +9,12 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
-internal record PortionSize : IFontSize
+internal record PortionFontSize : IFontSize
 {
     private readonly A.Text aText;
     private readonly IParagraphPortion parentParagraphPortion;
 
-    internal PortionSize(A.Text aText, IParagraphPortion parentParagraphPortion)
+    internal PortionFontSize(A.Text aText, IParagraphPortion parentParagraphPortion)
     {
         this.aText = aText;
         this.parentParagraphPortion = parentParagraphPortion;

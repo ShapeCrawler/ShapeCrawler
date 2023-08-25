@@ -8,7 +8,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a shape on a slide.
 /// </summary>
-public interface IShape : IShapeLocation
+public interface IShape : IShapePosition
 {
     /// <summary>
     ///     Gets or sets width of the shape in pixels.

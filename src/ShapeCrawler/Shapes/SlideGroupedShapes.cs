@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -9,22 +11,32 @@ namespace ShapeCrawler.Shapes;
 
 internal sealed class SlideGroupedShapes : IReadOnlyShapeCollection
 {
-    private readonly List<IShape> groupedShapes;
+    private readonly SlidePart sdkSlidePart;
+    private readonly IEnumerable<OpenXmlCompositeElement> pGroupElements;
+    private readonly Lazy<List<IShape>> groupedShapes;
 
-    internal SlideGroupedShapes(P.GroupShape parentPGroupShape, SlideGroupShape groupShape)
+    internal SlideGroupedShapes(SlidePart sdkSlidePart, IEnumerable<OpenXmlCompositeElement> pGroupElements)
     {
-        var groupedShapes = new List<IShape?>();
-        foreach (var parentPGroupShapeChild in parentPGroupShape.ChildElements.OfType<OpenXmlCompositeElement>())
+        this.sdkSlidePart = sdkSlidePart;
+        this.pGroupElements = pGroupElements;
+        this.groupedShapes = new Lazy<List<IShape>>(this.ParseGroupedShapes);
+    }
+
+    private List<IShape> ParseGroupedShapes()
+    {
+        var groupedShapes = new List<IShape>();
+        foreach (var pGroupElement in pGroupElements)
         {
             IShape? shape = null;
-            if (parentPGroupShapeChild is P.GroupShape pGroupShape)
+            if (pGroupElement is P.GroupShape pGroupShape)
             {
-                shape = new SlideGroupShape(pGroupShape, this);
+                shape = new SlideGroupShape(pGroupShape);
             }
-            else if (parentPGroupShapeChild is P.Shape pShape)
+            else if (pGroupElement is P.Shape pShape)
             {
-                var groupedAutoShape = new SlideGroupedAutoShape(
-                    new SlideAutoShape(pShape, this),
+                var slideAutoShape = new SlideAutoShape(this.sdkSlidePart, pShape); 
+                var groupedAutoShape = new GroupedSlideAutoShape(
+                    slideAutoShape,
                     groupShape.OnGroupedShapeXChanged,
                     groupShape.OnGroupedShapeYChanged
                 );
@@ -38,7 +50,7 @@ internal sealed class SlideGroupedShapes : IReadOnlyShapeCollection
             }
         }
 
-        this.groupedShapes = groupedShapes;
+        return groupedShapes;
     }
 
     public int Count => this.groupedShapes.Count;
