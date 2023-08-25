@@ -36,4 +36,9 @@ public interface ISlideCollection : IReadOnlyList<ISlide>
     /// <param name="position">Position at which specified slide will be inserted.</param>
     /// <param name="slide">The slide to insert.</param>
     void Insert(int position, ISlide slide);
+    
+    /// <summary>
+    ///     Shape collection.
+    /// </summary>
+    ISlideShapeCollection Shapes { get; }
 }

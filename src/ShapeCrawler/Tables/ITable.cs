@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
@@ -45,23 +46,29 @@ public interface ITable : IShape
     void RemoveColumnAt(int columnIndex);
 }
 
-internal sealed class SlideTable : ITable
+internal sealed record SlideTable : IRemoveable, ITable
 {
+    private readonly SlidePart sdkSlidePart;
     private readonly Shape shape;
     private readonly P.GraphicFrame pGraphicFrame;
-    private readonly ResetableLazy<SCRowCollection> rowCollection;
+    private readonly ResetableLazy<SlideTableRows> rowCollection;
 
-    internal SlideTable(OpenXmlCompositeElement pShapeTreeChild, SlideShapes shapes, Shape shape)
+    internal SlideTable(SlidePart sdkSlidePart, OpenXmlCompositeElement pShapeTreeElement)
+        : this(sdkSlidePart, pShapeTreeElement, new Shape(pShapeTreeElement))
     {
+    }
+
+    private SlideTable(SlidePart sdkSlidePart, OpenXmlCompositeElement pShapeTreeElement, Shape shape)
+    {
+        this.sdkSlidePart = sdkSlidePart;
         this.shape = shape;
-        var graphicFrame = (P.GraphicFrame)pShapeTreeChild;
-        this.rowCollection =
-            new ResetableLazy<SCRowCollection>(() =>
-                SCRowCollection.Create(this, graphicFrame));
-        this.pGraphicFrame = (P.GraphicFrame)pShapeTreeChild;
+        var graphicFrame = (P.GraphicFrame)pShapeTreeElement;
+        this.rowCollection = new ResetableLazy<SlideTableRows>(() => new SlideTableRows(this.sdkSlidePart, graphicFrame));
+        this.pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
     }
 
     public SCShapeType ShapeType => SCShapeType.Table;
+
     public IAutoShape AsAutoShape()
     {
         throw new NotImplementedException();
@@ -102,9 +109,9 @@ internal sealed class SlideTable : ITable
 
     public void MergeCells(ITableCell inputCell1, ITableCell inputCell2)
     {
-        var cell1 = (SCTableCell)inputCell1;
-        var cell2 = (SCTableCell)inputCell2;
-        if (cell1 == cell2)   
+        var cell1 = (TableCell)inputCell1;
+        var cell2 = (TableCell)inputCell2;
+        if (cell1 == cell2)
         {
             throw new SCException("Cannot merge the same cells.");
         }
@@ -130,7 +137,7 @@ internal sealed class SlideTable : ITable
 
         this.rowCollection.Reset();
     }
-    
+
     internal void Draw(SKCanvas canvas)
     {
         throw new NotImplementedException();
@@ -157,84 +164,7 @@ internal sealed class SlideTable : ITable
         return this.Rows.Last();
     }
 
-    protected void SetXCoordinate(int xPx)
-    {
-        var pXfrm = this.pGraphicFrame.Transform;
-        if (pXfrm is null)
-        {
-            var placeholder = (SCPlaceholder)this.Placeholder!;
-            var referencedShape = placeholder.ReferencedShape.Value;
-            var xEmu = UnitConverter.HorizontalPixelToEmu(xPx);
-            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.Y);
-            var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
-            var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
-
-            this.pGraphicFrame.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
-        }
-        else
-        {
-            pXfrm.Offset!.X = UnitConverter.HorizontalPixelToEmu(xPx);
-        }
-    }
-
-    protected void SetYCoordinate(int yPx)
-    {
-        var pXfrm = this.pGraphicFrame.Transform;
-        if (pXfrm is null)
-        {
-            var placeholder = (SCPlaceholder)this.Placeholder!;
-            var referencedShape = placeholder.ReferencedShape.Value!;
-            var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.X);
-            var yEmu = UnitConverter.HorizontalPixelToEmu(yPx);
-            var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
-            var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
-            this.pGraphicFrame.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
-        }
-        else
-        {
-            pXfrm.Offset!.Y = UnitConverter.HorizontalPixelToEmu(yPx);
-        }
-    }
-
-    protected void SetWidth(int wPx)
-    {
-        var pXfrm = this.pGraphicFrame.Transform;
-        if (pXfrm is null)
-        {
-            var placeholder = (SCPlaceholder)this.Placeholder!;
-            var referencedShape = placeholder.ReferencedShape.Value;
-            var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.X);
-            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.Y);
-            var wEmu = UnitConverter.VerticalPixelToEmu(wPx);
-            var hEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Height);
-            this.pGraphicFrame.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
-        }
-        else
-        {
-            pXfrm.Extents!.Cx = UnitConverter.HorizontalPixelToEmu(wPx);
-        }
-    }
-
-    protected void SetHeight(int hPx)
-    {
-        var pXfrm = this.pGraphicFrame.Transform;
-        if (pXfrm is null)
-        {
-            var placeholder = (SCPlaceholder)this.Placeholder!;
-            var referencedShape = placeholder.ReferencedShape.Value;
-            var xEmu = UnitConverter.HorizontalPixelToEmu(referencedShape!.X);
-            var yEmu = UnitConverter.HorizontalPixelToEmu(referencedShape.Y);
-            var wEmu = UnitConverter.VerticalPixelToEmu(referencedShape.Width);
-            var hEmu = UnitConverter.VerticalPixelToEmu(hPx);
-            this.pGraphicFrame.AddAXfrm(xEmu, yEmu, wEmu, hEmu);
-        }
-        else
-        {
-            pXfrm.Extents!.Cy = UnitConverter.HorizontalPixelToEmu(hPx);
-        }
-    }
-
-    private static bool CannotBeMerged(SCTableCell cell1, SCTableCell cell2)
+    private static bool CannotBeMerged(TableCell cell1, TableCell cell2)
     {
         if (cell1 == cell2)
         {
@@ -244,13 +174,13 @@ internal sealed class SlideTable : ITable
 
         return false;
     }
-    
+
     private void RemoveRowIfNeeded()
     {
         // Delete a:tr if needed
         for (var rowIdx = 0; rowIdx < this.Rows.Count;)
         {
-            var allRowCells = this.Rows[rowIdx].Cells.OfType<SCCell>().ToList();
+            var allRowCells = this.Rows[rowIdx].Cells.OfType<TableCell>().ToList();
             var firstRowCell = allRowCells[0];
             var firstRowCellSpan = firstRowCell.ATableCell.RowSpan?.Value;
             if (firstRowCellSpan > 1 && allRowCells.All(cell => cell.ATableCell.RowSpan?.Value == firstRowCellSpan))
@@ -259,7 +189,7 @@ internal sealed class SlideTable : ITable
 
                 foreach (var row in this.Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
                 {
-                    ((SCRow)row).ATableRow.Remove();
+                    ((SlideTableRow)row).ATableRow.Remove();
                     this.Rows[rowIdx].Height += row.Height;
                 }
 
@@ -270,11 +200,11 @@ internal sealed class SlideTable : ITable
             rowIdx++;
         }
     }
-    
+
     private void MergeVertically(
-        int bottomIndex, 
-        int topRowIndex, 
-        List<A.TableRow> aTableRows, 
+        int bottomIndex,
+        int topRowIndex,
+        List<A.TableRow> aTableRows,
         int leftColIndex,
         int rightColIndex)
     {
@@ -301,7 +231,7 @@ internal sealed class SlideTable : ITable
 
     private void MergeParagraphs(int minRowIndex, int minColIndex, A.TableCell aTblCell)
     {
-        A.TextBody? mergedCellTextBody = ((SCTableCell)this[minRowIndex, minColIndex]).ATableCell.TextBody;
+        A.TextBody? mergedCellTextBody = ((TableCell)this[minRowIndex, minColIndex]).ATableCell.TextBody;
         bool hasMoreOnePara = false;
         IEnumerable<A.Paragraph> aParagraphsWithARun =
             aTblCell.TextBody!.Elements<A.Paragraph>().Where(p => !p.IsEmpty());
@@ -348,15 +278,16 @@ internal sealed class SlideTable : ITable
 
         return columnList;
     }
-    
+
     private void RemoveColumnIfNeeded(List<A.TableRow> aTableRows)
     {
         // Delete a:gridCol and a:tc elements if all columns are merged
         for (var colIdx = 0; colIdx < this.Columns.Count;)
         {
-            var topColumnCell = ((SCTableRow)this.Rows[0]).ATableRow.Elements<A.TableCell>().ToList()[colIdx];
+            var topColumnCell = ((SlideTableRow)this.Rows[0]).ATableRow.Elements<A.TableCell>().ToList()[colIdx];
             var topColumnCellSpan = topColumnCell.GridSpan?.Value;
-            var nextBottomColumnCells = this.Rows.Select(row => ((SCTableRow)row).ATableRow.Elements<A.TableCell>().ToList()[colIdx]).ToList();
+            var nextBottomColumnCells = this.Rows
+                .Select(row => ((SlideTableRow)row).ATableRow.Elements<A.TableCell>().ToList()[colIdx]).ToList();
             var sameGridSpan = nextBottomColumnCells.All(c => c.GridSpan?.Value == topColumnCellSpan);
             if (topColumnCellSpan > 1 && sameGridSpan)
             {

@@ -1,31 +1,29 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Fonts;
 using ShapeCrawler.Services;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Drawing;
+namespace ShapeCrawler.Fonts;
 
-internal sealed record PSlideMasterWrap
+internal sealed record ParagraphLevelFonts
 {
-    private readonly P.SlideMaster pSlideMaster;
+    private readonly OpenXmlCompositeElement sdkCompositeElement;
 
-    internal PSlideMasterWrap(P.SlideMaster pSlideMaster)
+    internal ParagraphLevelFonts(OpenXmlCompositeElement sdkCompositeElement)
     {
-        this.pSlideMaster = pSlideMaster;
+        this.sdkCompositeElement = sdkCompositeElement;
     }
 
-    internal ParagraphLevelFont? BodyStyleParagraphLevelFontOrNull(int paragraphLvlParam)
+    internal ParagraphLevelFont? FontOrNull(int paraLevelParam)
     {
         // Get <a:lvlXpPr> elements, eg. <a:lvl1pPr>, <a:lvl2pPr>
-        var lvlParagraphPropertyList = this.pSlideMaster.TextStyles!.BodyStyle!.Elements()
+        var lvlParagraphPropertyList = this.sdkCompositeElement.Elements()
             .Where(e => e.LocalName.StartsWith("lvl", StringComparison.Ordinal));
 
-        foreach (OpenXmlElement textPr in lvlParagraphPropertyList)
+        foreach (var textPr in lvlParagraphPropertyList)
         {
             var aDefRPr = textPr.GetFirstChild<A.DefaultRunProperties>();
 
@@ -83,25 +81,25 @@ internal sealed record PSlideMasterWrap
             var level =
                 localName.Slice(3,
                     1); // the fourth character contains level number, eg. "lvl1pPr -> 1, lvl2pPr -> 2, etc."
-            var paragraphLvl =
+            var paraLevel =
                 int.Parse(level, System.Globalization.NumberStyles.Number,
                     System.Globalization.CultureInfo.CurrentCulture);
 #endif
-            var fontData = new ParagraphLevelFont
+            if (paraLevel == paraLevelParam)
             {
-                FontSize = fontSize,
-                ALatinFont = aLatinFont,
-                IsBold = isBold,
-                IsItalic = isItalic,
-                ARgbColorModelHex = aRgbColorModelHex,
-                ASchemeColor = aSchemeColor,
-                ASystemColor = aSystemColor,
-                APresetColor = aPresetColor
-            };
+                var paraLevelFont = new ParagraphLevelFont
+                {
+                    FontSize = fontSize,
+                    ALatinFont = aLatinFont,
+                    IsBold = isBold,
+                    IsItalic = isItalic,
+                    ARgbColorModelHex = aRgbColorModelHex,
+                    ASchemeColor = aSchemeColor,
+                    ASystemColor = aSystemColor,
+                    APresetColor = aPresetColor
+                };
 
-            if (paragraphLvl == paragraphLvlParam)
-            {
-                return fontData;
+                return paraLevelFont;
             }
         }
 

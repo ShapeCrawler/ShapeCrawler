@@ -11,7 +11,7 @@ namespace ShapeCrawler.Drawing;
 internal class TableCellFill : IShapeFill
 {
     private readonly TypedOpenXmlCompositeElement cellProperties;
-    private readonly SCTableCell parentTableCell;
+    private readonly TableCell parentTableCell;
     private BooleanValue? useBgFill;
     private SCFillType fillType;
     private bool isDirty;
@@ -22,7 +22,7 @@ internal class TableCellFill : IShapeFill
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
 
-    internal TableCellFill(A.TableCellProperties cellProperties, SCTableCell parentTableCell)
+    internal TableCellFill(A.TableCellProperties cellProperties, TableCell parentTableCell)
     {
         this.cellProperties = cellProperties;
         this.parentTableCell = parentTableCell;

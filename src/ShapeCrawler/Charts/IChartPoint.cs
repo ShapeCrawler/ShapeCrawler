@@ -21,18 +21,18 @@ public interface IChartPoint
 internal sealed class ChartPoint : IChartPoint
 {
     private readonly string address;
-    private readonly SCSlideChart _parentSlideChart;
+    private readonly SlideChart _parentSlideChart;
     private readonly string sheetName;
     private readonly C.NumericValue? cNumericValue;
     private readonly ChartWorkbook? workbook;
 
-    internal ChartPoint(SCSlideChart parentSlideChart, string sheetName, string address, C.NumericValue? cNumericValue)
+    internal ChartPoint(SlideChart parentSlideChart, string sheetName, string address, C.NumericValue? cNumericValue)
         : this(parentSlideChart, sheetName, address)
     {
         this.cNumericValue = cNumericValue;
     }
 
-    private ChartPoint(SCSlideChart slideChart, string sheetName, string address)
+    private ChartPoint(SlideChart slideChart, string sheetName, string address)
     {
         this._parentSlideChart = slideChart;
         this.sheetName = sheetName;

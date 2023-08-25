@@ -12,5 +12,5 @@ internal static class ExceptionMessages
         $"The Series does not have a name. Use {nameof(SCSeries.HasName)} to check whether series has a name.";
 
     internal static string NotXValues =>
-        $"This chart type has not {nameof(SCSlideChart.XValues)} property. You can check it via {nameof(SCSlideChart.HasXValues)} property.";
+        $"This chart type has not {nameof(SlideChart.XValues)} property. You can check it via {nameof(SlideChart.HasXValues)} property.";
 }

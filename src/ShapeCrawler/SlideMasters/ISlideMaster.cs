@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Fonts;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
@@ -70,7 +71,7 @@ internal sealed class SlideMaster : ISlideMaster
 
     internal ThemePart ThemePart => this.pSlideMaster.SlideMasterPart!.ThemePart!;
 
-    private PictureImage? GetBackground()
+    private SlidePictureImage? GetBackground()
     {
         return null;
     }
@@ -89,7 +90,7 @@ internal sealed class SlideMaster : ISlideMaster
         return pSldNum is null ? null : new MasterSlideNumber(pSldNum, new Position(pSldNum.ShapeProperties!.Transform2D!.Offset!));
     }
 
-    internal FontData? BodyStyleFontDataOrNullForParagraphLevel(int paraLevel)
+    internal ParagraphLevelFont? BodyStyleFontDataOrNullForParagraphLevel(int paraLevel)
     {
         var paraToFont = FontDataParser.FromCompositeElement(this.pSlideMaster.TextStyles!.BodyStyle!);
         if (paraToFont.TryGetValue(paraLevel, out var fontData))

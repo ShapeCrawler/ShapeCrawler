@@ -5,11 +5,11 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class SCParagraphLineBreak : IParagraphPortion
+internal sealed class ParagraphLineBreak : IParagraphPortion
 {
     private readonly A.Break aBreak;
     
-    internal SCParagraphLineBreak(A.Break aBreak, Action onRemovedHandler)
+    internal ParagraphLineBreak(A.Break aBreak, Action onRemovedHandler)
     {
         this.aBreak = aBreak;
         this.Removed += onRemovedHandler;
@@ -26,8 +26,6 @@ internal sealed class SCParagraphLineBreak : IParagraphPortion
         get => null; 
         set => throw new SCException("New Line portion does not support hyperlink.");
     }
-
-    public IField? Field { get; }
 
     public SCColor? TextHighlightColor
     {

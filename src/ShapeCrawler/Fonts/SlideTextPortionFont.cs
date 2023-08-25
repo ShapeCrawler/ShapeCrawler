@@ -1,39 +1,49 @@
-﻿
-using System;
-using System.Collections.Generic;
+﻿using System;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.AutoShapes;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Texts;
+namespace ShapeCrawler.Fonts;
 
-internal sealed class TextPortionFont : ITextPortionFont
+internal sealed class SlideTextPortionFont : ITextPortionFont
 {
     private readonly A.Text aText;
-    private readonly A.FontScheme aFontScheme;
     private readonly Lazy<SlideFontColor> fontColor;
     private readonly ResetableLazy<A.LatinFont> latinFont;
     private readonly IFontSize size;
-    private readonly SCParagraphTextPortion parentParagraphTextPortion;
+    private readonly ThemeFontScheme themeFontScheme;
+    private readonly SlidePart sdkSlidePart;
 
-    internal TextPortionFont(
-        A.Text aText, 
-        ThemeFontScheme themeFontScheme,
-        IFontSize size,
-        SCParagraphTextPortion parentParagraphTextPortion)
+    internal SlideTextPortionFont(
+        SlidePart sdkSlidePart,
+        A.Text aText,
+        IFontSize size)
+        : this(
+            sdkSlidePart,
+            aText,
+            size,
+            new ThemeFontScheme(sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+                .FontScheme!)
+        )
     {
-        this.parentParagraphTextPortion = parentParagraphTextPortion;
+    }
+
+    private SlideTextPortionFont(
+        SlidePart sdkSlidePart,
+        A.Text aText,
+        IFontSize size,
+        ThemeFontScheme themeFontScheme)
+    {
+        this.sdkSlidePart = sdkSlidePart;
         this.aText = aText;
         this.latinFont = new ResetableLazy<A.LatinFont>(this.ParseALatinFont);
-        
-        A.ListStyle textBodyListStyle = this.parentParagraphTextPortion.ATextBodyListStyle();
-        this.fontColor = new Lazy<SlideFontColor>(() => new SlideFontColor(this.aText, textBodyListStyle));
-        this.aFontScheme = themeFontScheme.AFontScheme;
+        this.fontColor = new Lazy<SlideFontColor>(() => new SlideFontColor(this.sdkSlidePart, this.aText));
         this.size = size;
+        this.themeFontScheme = themeFontScheme;
     }
 
     public int Size
@@ -41,19 +51,19 @@ internal sealed class TextPortionFont : ITextPortionFont
         get => this.size.Size();
         set => this.size.Update(value);
     }
-    
+
     public string? LatinName
     {
-        get => this.GetLatinName();
+        get => this.ParseLatinName();
         set => this.SetLatinName(value!);
     }
 
     public string? EastAsianName
     {
-        get => this.GetEastAsianName();
+        get => this.ParseEastAsianName();
         set => this.SetEastAsianName(value!);
     }
-    
+
     public bool IsBold
     {
         get => this.GetBoldFlag();
@@ -106,13 +116,6 @@ internal sealed class TextPortionFont : ITextPortionFont
         set => this.SetOffset(value);
     }
 
-    public bool CanChange()
-    {
-        var placeholder = this.textFrameContainer.AutoShape.Placeholder;
-
-        return placeholder is null or { Type: SCPlaceholderType.Text };
-    }
-
     private void SetOffset(int value)
     {
         var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
@@ -154,22 +157,22 @@ internal sealed class TextPortionFont : ITextPortionFont
         return 0;
     }
 
-    private string GetLatinName()
+    private string ParseLatinName()
     {
         if (this.latinFont.Value.Typeface == "+mj-lt")
         {
-            return this.aFontScheme.MajorFont!.LatinFont!.Typeface!;
+            return this.themeFontScheme.MajorFontLatinFont();
         }
 
         return this.latinFont.Value.Typeface!;
     }
 
-    private string GetEastAsianName()
+    private string ParseEastAsianName()
     {
         var aEastAsianFont = this.GetAEastAsianFont();
         if (aEastAsianFont.Typeface == "+mj-ea")
         {
-            return this.aFontScheme.MajorFont!.EastAsianFont!.Typeface!;
+            return this.themeFontScheme.MajorFontEastAsianFont();
         }
 
         return aEastAsianFont.Typeface!;
@@ -185,9 +188,7 @@ internal sealed class TextPortionFont : ITextPortionFont
             return aEastAsianFont;
         }
 
-        var phFontData = FontDataParser.FromPlaceholder(this.paragraph);
-
-        return phFontData.AEastAsianFont ?? this.aFontScheme.MinorFont!.EastAsianFont!;
+        throw new Exception("TODO: implement");
     }
 
     private A.LatinFont ParseALatinFont()
@@ -200,8 +201,7 @@ internal sealed class TextPortionFont : ITextPortionFont
             return aLatinFont;
         }
 
-        var phFontData = FontDataParser.FromPlaceholder(this.paragraph);
-        return phFontData.ALatinFont ?? this.aFontScheme.MinorFont!.LatinFont!;
+        throw new Exception("TODO: implement");
     }
 
     private bool GetBoldFlag()
@@ -217,11 +217,10 @@ internal sealed class TextPortionFont : ITextPortionFont
             return true;
         }
 
-        FontData phFontData = new();
-        FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.paragraph);
-        if (phFontData.IsBold is not null)
+        ParagraphLevelFont phParagraphLevelFont = new();
+        if (phParagraphLevelFont.IsBold is not null)
         {
-            return phFontData.IsBold.Value;
+            return phParagraphLevelFont.IsBold.Value;
         }
 
         return false;
@@ -240,11 +239,10 @@ internal sealed class TextPortionFont : ITextPortionFont
             return true;
         }
 
-        FontData phFontData = new();
-        FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.paragraph);
-        if (phFontData.IsItalic is not null)
+        ParagraphLevelFont phParagraphLevelFont = new();
+        if (phParagraphLevelFont.IsItalic is not null)
         {
-            return phFontData.IsItalic.Value;
+            return phParagraphLevelFont.IsItalic.Value;
         }
 
         return false;
@@ -259,11 +257,10 @@ internal sealed class TextPortionFont : ITextPortionFont
         }
         else
         {
-            FontData phFontData = new();
-            FontDataParser.GetFontDataFromPlaceholder(ref phFontData, this.paragraph);
-            if (phFontData.IsBold is not null)
+            ParagraphLevelFont phParagraphLevelFont = new();
+            if (phParagraphLevelFont.IsBold is not null)
             {
-                phFontData.IsBold = new BooleanValue(value);
+                phParagraphLevelFont.IsBold = new BooleanValue(value);
             }
             else
             {
@@ -315,25 +312,5 @@ internal sealed class TextPortionFont : ITextPortionFont
     {
         var aEastAsianFont = this.GetAEastAsianFont();
         aEastAsianFont.Typeface = eastAsianFont;
-    }
-
-    internal SlideMaster SlideMaster()
-    {
-        return this.parentParagraphTextPortion.SlideMaster();
-    }
-
-    internal int ParagraphLevel()
-    {
-        return this.parentParagraphTextPortion.ParagraphLevel();
-    }
-
-    internal PresentationCore Presentation()
-    {
-        return this.parentParagraphTextPortion.Presentation();
-    }
-
-    internal SlideAutoShape SlideAutoShape()
-    {
-        return this.parentParagraphTextPortion.SlideAutoShape();
     }
 }

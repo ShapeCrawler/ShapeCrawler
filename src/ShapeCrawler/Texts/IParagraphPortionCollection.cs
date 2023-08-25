@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Services.Factories;
@@ -16,7 +17,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents collection of paragraph text portions.
 /// </summary>
-public interface IPortionCollection : IEnumerable<IParagraphPortion>
+public interface IParagraphPortionCollection : IEnumerable<IParagraphPortion>
 {
     /// <summary>
     ///     Gets the number of series items in the collection.
@@ -49,17 +50,17 @@ public interface IPortionCollection : IEnumerable<IParagraphPortion>
     void Remove(IList<IParagraphPortion> portions);
 }
 
-internal sealed class SCPortions : IPortionCollection
+internal sealed class SlideParagraphPortions : IParagraphPortionCollection
 {
     private readonly ResetableLazy<List<IParagraphPortion>> portions;
+    private readonly SlidePart sdkSlidePart;
     private readonly A.Paragraph aParagraph;
-    private readonly Paragraph parentParagraph;
 
-    internal SCPortions(A.Paragraph aParagraph, Paragraph parentParagraph)
+    internal SlideParagraphPortions(SlidePart sdkSlidePart, A.Paragraph aParagraph)
     {
+        this.sdkSlidePart = sdkSlidePart;
         this.aParagraph = aParagraph;
         this.portions = new ResetableLazy<List<IParagraphPortion>>(this.ParsePortions);
-        this.parentParagraph = parentParagraph;
     }
     
     public int Count => this.portions.Value.Count;
@@ -71,12 +72,12 @@ internal sealed class SCPortions : IPortionCollection
         if (text.Contains(Environment.NewLine))
         {
             throw new SCException(
-                $"Text can not contain New Line. Use {nameof(IPortionCollection.AddLineBreak)} to add Line Break.");
+                $"Text can not contain New Line. Use {nameof(IParagraphPortionCollection.AddLineBreak)} to add Line Break.");
         }
         
         var lastARunOrABreak = this.aParagraph.LastOrDefault(p => p is A.Run or A.Break);
 
-        var textPortions = this.portions.Value.OfType<SCParagraphTextPortion>();
+        var textPortions = this.portions.Value.OfType<TextParagraphPortion>();
         var lastPortion = textPortions.Any() ? textPortions.Last() : null;
         var aTextParent = lastPortion?.AText.Parent ?? new ARunBuilder().Build();
 
@@ -144,53 +145,25 @@ internal sealed class SCPortions : IPortionCollection
             switch (paraChild)
             {
                 case A.Run aRun:
-                    var runPortion = new SCParagraphTextPortion(
+                    var runPortion = new TextParagraphPortion(
                         aRun,
                         this); 
                     portions.Add(runPortion);
                     break;
                 case A.Field aField:
                 {
-                    var fieldPortion = new Texts.SCField(
-                        aField,
-                        this.parentParagraph,
-                        () => this.portions.Reset());
+                    var fieldPortion = new SlideField(this.sdkSlidePart, aField);
                     portions.Add(fieldPortion);
                     break;
                 }
 
                 case A.Break aBreak:
-                    var lineBreak = new SCParagraphLineBreak(aBreak, () => this.portions.Reset());
+                    var lineBreak = new ParagraphLineBreak(aBreak, () => this.portions.Reset());
                     portions.Add(lineBreak);
                     break;
             }
         }
         
         return portions;
-    }
-
-    internal SlideMaster SlideMaster()
-    {
-        return this.parentParagraph.SlideMaster();
-    }
-
-    internal int ParagraphLevel()
-    {
-        return this.parentParagraph.Level();
-    }
-
-    internal A.ListStyle ATextBodyListStyle()
-    {
-        return this.parentParagraph.ATextBodyListStyle();
-    }
-
-    internal PresentationCore Presentation()
-    {
-        return this.parentParagraph.Presentation();
-    }
-
-    internal SlideAutoShape SlideAutoShape()
-    {
-        return this.parentParagraph.SlideAutoShape();
     }
 }

@@ -12,7 +12,7 @@ namespace ShapeCrawler.Charts;
 
 internal static class ChartReferencesParser
 {
-    internal static IEnumerable<double> GetNumbersFromCacheOrWorkbook(C.NumberReference numberReference, SCSlideChart slideSlideChart)
+    internal static IEnumerable<double> GetNumbersFromCacheOrWorkbook(C.NumberReference numberReference, SlideChart slideSlideChart)
     {
         if (numberReference.NumberingCache != null)
         {
@@ -41,7 +41,7 @@ internal static class ChartReferencesParser
         return pointValues;
     }
 
-    internal static string GetSingleString(C.StringReference stringReference, SCSlideChart slideSlideChart)
+    internal static string GetSingleString(C.StringReference stringReference, SlideChart slideSlideChart)
     {
         string fromCache = stringReference.StringCache?.GetFirstChild<C.StringPoint>() !.Single().InnerText!;
         if (fromCache != null)
@@ -57,7 +57,7 @@ internal static class ChartReferencesParser
     /// <summary>
     ///     Gets cell values.
     /// </summary>
-    internal static List<X.Cell> GetXCellsByFormula(C.Formula cFormula, SCSlideChart slideChart)
+    internal static List<X.Cell> GetXCellsByFormula(C.Formula cFormula, SlideChart slideChart)
     {
         var normalizedFormula = cFormula.Text.Replace("'", string.Empty).Replace("$", string.Empty); // eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5
         var chartSheetName = Regex.Match(normalizedFormula, @".+(?=\!)").Value; // eg: Sheet1!A2:A5 -> Sheet1

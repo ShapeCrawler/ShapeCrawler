@@ -14,7 +14,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
 
-internal class SCSlideChart : IChart
+internal sealed record SlideChart : IRemoveable, IChart
 {
     private readonly ResetableLazy<ICategoryCollection?> categories;
     private readonly Lazy<SCChartType> chartType;
@@ -32,7 +32,7 @@ internal class SCSlideChart : IChart
     private string? chartTitle;
     private readonly Shape shape;
 
-    internal SCSlideChart(P.GraphicFrame pGraphicFrame, SlideShapes parentShapeCollection)
+    internal SlideChart(P.GraphicFrame pGraphicFrame, SlideShapes parentShapeCollection)
     {
         this.pGraphicFrame = pGraphicFrame;
         this.parentShapeCollection = parentShapeCollection;
@@ -262,5 +262,10 @@ internal class SCSlideChart : IChart
     {
         return this.cXCharts.First().ChildElements
             .FirstOrDefault(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
+    }
+
+    internal override void Remove()
+    {
+        this.pGraphicFrame.Remove();
     }
 }

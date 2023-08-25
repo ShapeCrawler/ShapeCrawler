@@ -39,9 +39,9 @@ internal sealed class SCSeries : ISeries
     internal readonly OpenXmlElement CSer;
     
     private readonly Lazy<string?> name;
-    private readonly SCSlideChart _parentSlideChart;
+    private readonly SlideChart _parentSlideChart;
 
-    internal SCSeries(SCSlideChart parentSlideChart, OpenXmlElement cSer, SCChartType seriesChartType)
+    internal SCSeries(SlideChart parentSlideChart, OpenXmlElement cSer, SCChartType seriesChartType)
     {
         this._parentSlideChart = parentSlideChart;
         this.CSer = cSer;

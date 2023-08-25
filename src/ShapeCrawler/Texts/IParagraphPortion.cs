@@ -24,11 +24,6 @@ public interface IParagraphPortion
     string? Hyperlink { get; set; }
 
     /// <summary>
-    ///     Gets field.
-    /// </summary>
-    IField? Field { get; }
-
-    /// <summary>
     ///     Gets or sets Text Highlight Color. Null if not set. 
     /// </summary>
     SCColor? TextHighlightColor { get; set; }

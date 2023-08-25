@@ -4,25 +4,26 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Fonts;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class SCParagraphTextPortion : IParagraphPortion
+internal sealed class TextParagraphPortion : IParagraphPortion
 {
-    private readonly ResetableLazy<TextPortionFont> font;
+    private readonly ResetableLazy<SlideTextPortionFont> font;
     private readonly A.Run aRun;
-    private readonly SCPortions parentPortionCollection;
+    private readonly SlideParagraphPortions parentPortionCollection;
 
-    internal SCParagraphTextPortion(A.Run aRun, SCPortions parentPortionCollection)
+    internal TextParagraphPortion(A.Run aRun, SlideParagraphPortions parentPortionCollection)
     {
         this.AText = aRun.Text!;
         this.aRun = aRun;
         this.parentPortionCollection = parentPortionCollection;
         var textPortionSize = new PortionFontSize(this.AText, this);
-        this.font = new ResetableLazy<TextPortionFont>(() => new TextPortionFont(this.AText, themeFontScheme, textPortionSize, this));
+        this.font = new ResetableLazy<SlideTextPortionFont>(() => new SlideTextPortionFont(this.AText, themeFontScheme, textPortionSize, this));
     }
 
     internal event Action? Removed;

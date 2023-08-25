@@ -12,12 +12,12 @@ namespace ShapeCrawler.Charts;
 
 internal sealed class ChartWorkbook
 {
-    private readonly SCSlideChart slideChart;
+    private readonly SlideChart slideChart;
     private readonly EmbeddedPackagePart embeddedPackagePart;
     private Stream? embeddedPackagePartStream;
     private bool closed;
 
-    internal ChartWorkbook(SCSlideChart slideChart, EmbeddedPackagePart embeddedPackagePart)
+    internal ChartWorkbook(SlideChart slideChart, EmbeddedPackagePart embeddedPackagePart)
     {
         this.slideChart = slideChart;
         this.embeddedPackagePart = embeddedPackagePart;

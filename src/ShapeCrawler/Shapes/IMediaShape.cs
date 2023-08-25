@@ -27,16 +27,21 @@ public interface IMediaShape : IShape
     string MIME { get; }
 }
 
-internal record SlideMediaShape : IMediaShape
+internal record SlideMediaShape : IMediaShape, IRemoveable
 {
+    private readonly SlidePart sdkSlidePart;
     private readonly P.Picture pPicture;
-    private readonly SlideShapes parentShapeCollection;
     private readonly Shape shape;
 
-    internal SlideMediaShape(P.Picture pPicture, SlideShapes parentShapeCollection, Shape shape)
+    internal SlideMediaShape(SlidePart sdkSlidePart, P.Picture pPicture)
+        : this(sdkSlidePart, pPicture, new Shape(pPicture))
     {
+    }
+
+    private SlideMediaShape(SlidePart sdkSlidePart, P.Picture pPicture, Shape shape)
+    {
+        this.sdkSlidePart = sdkSlidePart;
         this.pPicture = pPicture;
-        this.parentShapeCollection = parentShapeCollection;
         this.shape = shape;
     }
 
@@ -53,44 +58,44 @@ internal record SlideMediaShape : IMediaShape
 
     public int X
     {
-        get => this.shape.X(); 
+        get => this.shape.X();
         set => this.shape.UpdateX(value);
     }
 
     public int Y
     {
-        get => this.shape.Y(); 
+        get => this.shape.Y();
         set => this.shape.UpdateY(value);
     }
 
     public int Width
     {
-        get => this.shape.Width(); 
+        get => this.shape.Width();
         set => this.shape.UpdateWidth(value);
     }
 
     public int Height
     {
-        get => this.shape.Height(); 
+        get => this.shape.Height();
         set => this.shape.UpdateHeight(value);
     }
-    
+
     public int Id => this.shape.Id();
-    
+
     public string Name => this.shape.Name();
-    
+
     public bool Hidden => this.shape.Hidden();
-    
+
     public SCGeometry GeometryType => this.shape.GeometryType();
 
     public bool IsPlaceholder() => false;
 
     public IPlaceholder Placeholder => new NullPlaceholder();
-    
+
     public string? CustomData { get; set; }
-    
+
     public SCShapeType ShapeType => SCShapeType.Video;
-    
+
     public IAutoShape? AsAutoShape()
     {
         return null;
@@ -110,13 +115,14 @@ internal record SlideMediaShape : IMediaShape
     {
         throw new System.NotImplementedException();
     }
-    
+
     public byte[] BinaryData => ParseBinaryData();
 
     private byte[] ParseBinaryData()
     {
-        var p14Media = this.pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!.Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();
-        var relationship = this.parentShapeCollection.SDKSlidePart().DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
+        var p14Media = this.pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!
+            .Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();
+        var relationship = this.sdkSlidePart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
         var stream = relationship.DataPart.GetStream();
         var bytes = stream.ToArray();
         stream.Close();
@@ -128,9 +134,15 @@ internal record SlideMediaShape : IMediaShape
 
     private string ParseMIME()
     {
-        var p14Media = this.pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!.Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();
-        var relationship = this.parentShapeCollection.SDKSlidePart().DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
+        var p14Media = this.pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!
+            .Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();
+        var relationship = this.sdkSlidePart.DataPartReferenceRelationships.First(r => r.Id == p14Media.Embed!.Value);
 
         return relationship.DataPart.ContentType;
+    }
+
+    void IRemoveable.Remove()
+    {
+        this.pPicture.Remove();
     }
 }

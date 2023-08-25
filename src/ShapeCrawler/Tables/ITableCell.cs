@@ -30,23 +30,17 @@ public interface ITableCell
     IShapeFill Fill { get; }
 }
 
-internal sealed record SCTableCell : ITableCell
+internal sealed record TableCell : ITableCell
 {
     private readonly Lazy<TextFrame> textFrame;
     private readonly Lazy<TableCellFill> shapeFill;
-    private readonly SCTableRow parentTableRow;
 
-    internal SCTableCell(
-        SCTableRow _parentTableRow,
-        A.TableCell aTableCell,
-        int rowIndex,
-        int columnIndex)
+    internal TableCell(A.TableCell aTableCell, int rowIndex, int columnIndex)
     {
-        this.parentTableRow = _parentTableRow;
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
-        this.textFrame = new Lazy<TextFrame>(this.CreateTextFrame);
+        this.textFrame = new Lazy<TextFrame>(()=> new TextFrame(this.ATableCell.TextBody!));
         var tableCellProperties = aTableCell.TableCellProperties!;
         this.shapeFill = new Lazy<TableCellFill>(() =>
             new TableCellFill(tableCellProperties, this));
@@ -64,26 +58,11 @@ internal sealed record SCTableCell : ITableCell
 
     internal int ColumnIndex { get; }
 
-    private TextFrame CreateTextFrame()
-    {
-        return new TextFrame(this, this.ATableCell.TextBody!, this.slideStructure, this);
-    }
-
     private bool DefineWhetherCellIsMerged()
     {
         return this.ATableCell.GridSpan is not null ||
                this.ATableCell.RowSpan is not null ||
                this.ATableCell.HorizontalMerge is not null ||
                this.ATableCell.VerticalMerge is not null;
-    }
-
-    internal SlidePart SDKSlidePart()
-    {
-        return this.parentTableRow.SDKSlidePart();
-    }
-
-    internal List<ImagePart> SDKImageParts()
-    {
-        return this.parentTableRow.SDKImageParts();
     }
 }

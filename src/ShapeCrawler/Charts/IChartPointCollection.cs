@@ -40,7 +40,7 @@ internal sealed class ChartPointCollection : IChartPointCollection
         return this.GetEnumerator();
     }
 
-    internal static ChartPointCollection Create(SCSlideChart slideChart, OpenXmlElement cSerXmlElement)
+    internal static ChartPointCollection Create(SlideChart slideChart, OpenXmlElement cSerXmlElement)
     {
         var cVal = cSerXmlElement.GetFirstChild<Values>();
         var cNumberReference = cVal != null ? cVal.NumberReference! : cSerXmlElement.GetFirstChild<YValues>() !.NumberReference!;

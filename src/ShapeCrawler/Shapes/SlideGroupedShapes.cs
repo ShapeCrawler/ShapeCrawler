@@ -25,21 +25,17 @@ internal sealed class SlideGroupedShapes : IReadOnlyShapeCollection
     private List<IShape> ParseGroupedShapes()
     {
         var groupedShapes = new List<IShape>();
-        foreach (var pGroupElement in pGroupElements)
+        foreach (var pGroupShapeElement in pGroupElements)
         {
             IShape? shape = null;
-            if (pGroupElement is P.GroupShape pGroupShape)
+            if (pGroupShapeElement is P.GroupShape pGroupShape)
             {
-                shape = new SlideGroupShape(pGroupShape);
+                shape = new SlideGroupShape(this.sdkSlidePart, pGroupShape);
             }
-            else if (pGroupElement is P.Shape pShape)
+            else if (pGroupShapeElement is P.Shape pShape)
             {
                 var slideAutoShape = new SlideAutoShape(this.sdkSlidePart, pShape); 
-                var groupedAutoShape = new GroupedSlideAutoShape(
-                    slideAutoShape,
-                    groupShape.OnGroupedShapeXChanged,
-                    groupShape.OnGroupedShapeYChanged
-                );
+                var groupedAutoShape = new GroupedSlideAutoShape(slideAutoShape);
 
                 shape = groupedAutoShape;
             }
@@ -53,11 +49,11 @@ internal sealed class SlideGroupedShapes : IReadOnlyShapeCollection
         return groupedShapes;
     }
 
-    public int Count => this.groupedShapes.Count;
+    public int Count => this.groupedShapes.Value.Count;
 
     public T GetById<T>(int shapeId) where T : IShape
     {
-        var shape = this.groupedShapes.First(shape => shape.Id == shapeId);
+        var shape = this.groupedShapes.Value.First(shape => shape.Id == shapeId);
         return (T)shape;
     }
 
@@ -68,18 +64,18 @@ internal sealed class SlideGroupedShapes : IReadOnlyShapeCollection
 
     public IShape GetByName(string shapeName)
     {
-        return this.groupedShapes.First(shape => shape.Name == shapeName);
+        return this.groupedShapes.Value.First(shape => shape.Name == shapeName);
     }
 
     public T GetByName<T>(string shapeName)
     {
-        var shape = this.groupedShapes.First(shape => shape.Name == shapeName);
+        var shape = this.groupedShapes.Value.First(shape => shape.Name == shapeName);
         return (T)shape;
     }
 
     public IEnumerator<IShape> GetEnumerator()
     {
-        return this.groupedShapes.GetEnumerator();
+        return this.groupedShapes.Value.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

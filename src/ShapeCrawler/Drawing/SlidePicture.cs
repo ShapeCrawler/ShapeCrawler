@@ -14,28 +14,30 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed record SlidePicture : IPicture
+internal sealed record SlidePicture : IRemoveable, IPicture
 {
     private readonly StringValue blipEmbed;
     private readonly P.Picture pPicture;
-    private readonly SlideShapes parentShapeCollection;
     private readonly A.Blip aBlip;
     private readonly Shape shape;
+    private readonly SlidePart sdkSlidePart;
 
-    internal SlidePicture(
-        P.Picture pPicture,
-        SlideShapes parentShapeCollection,
-        A.Blip aBlip,
-        Shape shape)
+    internal SlidePicture(SlidePart sdkSlidePart, P.Picture pPicture, A.Blip aBlip)
+        : this(sdkSlidePart, pPicture, aBlip, new Shape(pPicture), new SlidePictureImage(sdkSlidePart, aBlip))
     {
+    }
+
+    private SlidePicture(SlidePart sdkSlidePart, P.Picture pPicture, A.Blip aBlip, Shape shape, IImage image)
+    {
+        this.sdkSlidePart = sdkSlidePart;
         this.pPicture = pPicture;
-        this.parentShapeCollection = parentShapeCollection;
         this.aBlip = aBlip;
         this.shape = shape;
+        this.Image = image;
         this.blipEmbed = aBlip.Embed!;
     }
 
-    public IImage Image => new PictureImage(this, this.aBlip);
+    public IImage Image { get; }
 
     public string? SvgContent => this.GetSvgContent();
 
@@ -44,6 +46,7 @@ internal sealed record SlidePicture : IPicture
     public int Id => this.shape.Id();
     public string Name => this.shape.Name();
     public bool Hidden { get; }
+
     public bool IsPlaceholder()
     {
         throw new NotImplementedException();
@@ -85,22 +88,18 @@ internal sealed record SlidePicture : IPicture
 
         var svgId = svgBlipList.First().Embed!.Value!;
 
-        var imagePart = (ImagePart)this.SDKSlidePart().GetPartById(svgId);
+        var imagePart = (ImagePart)this.sdkSlidePart.GetPartById(svgId);
         using var svgStream = imagePart.GetStream(FileMode.Open, FileAccess.Read);
         using var sReader = new StreamReader(svgStream);
 
         return sReader.ReadToEnd();
     }
 
-    internal SlidePart SDKSlidePart()
-    {
-        return this.parentShapeCollection.SDKSlidePart();
-    }
-
     public int X { get; set; }
     public int Y { get; set; }
-    
-    internal void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames, SlidePart targetSdkSlidePart)
+
+    internal void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames,
+        SlidePart targetSdkSlidePart)
     {
         var copy = this.pPicture.CloneNode(true);
         copy.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
@@ -108,7 +107,7 @@ internal sealed record SlidePicture : IPicture
         var copyName = copy.GetNonVisualDrawingProperties().Name!.Value!;
         if (existingShapeNames.Any(existingShapeName => existingShapeName == copyName))
         {
-            var currentShapeCollectionSuffixes = existingShapeNames 
+            var currentShapeCollectionSuffixes = existingShapeNames
                 .Where(c => c.StartsWith(copyName, StringComparison.InvariantCulture))
                 .Select(c => c.Substring(copyName.Length))
                 .ToArray();
@@ -128,9 +127,9 @@ internal sealed record SlidePicture : IPicture
             var lastSuffix = numericSuffixes.LastOrDefault() + 1;
             copy.GetNonVisualDrawingProperties().Name = copyName + " " + lastSuffix;
         }
-        
+
         // COPY PARTS
-        var sourceSdkSlidePart = this.parentShapeCollection.SDKSlidePart();
+        var sourceSdkSlidePart = this.sdkSlidePart;
         var sourceImagePart = (ImagePart)sourceSdkSlidePart.GetPartById(this.blipEmbed.Value!);
 
         // Creates a new part in this slide with a new Id...
@@ -145,8 +144,8 @@ internal sealed record SlidePicture : IPicture
         copy.Descendants<A.Blip>().First().Embed = targetImagePartRId;
     }
 
-    internal List<ImagePart> SDKImageParts()
+    internal override void Remove()
     {
-        return this.parentShapeCollection.SDKImageParts();
+        this.pPicture.Remove();
     }
 }

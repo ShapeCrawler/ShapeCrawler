@@ -15,54 +15,42 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes;
 
-internal sealed record SlideAutoShape : IAutoShape, IRemoveable
+internal sealed record RootSlideAutoShape : ISlideAutoShape
 {
     private readonly P.Shape pShape;
-    private readonly Shape shape;
-    private readonly Lazy<SlideAutoShapeFill> autoShapeFill;
+    private readonly IAutoShape autoShape;
     private readonly SlidePart sdkSlidePart;
 
-    internal SlideAutoShape(
-        SlidePart sdkSlidePart,
-        P.Shape pShape) :
-        this(
-            sdkSlidePart,
-            pShape,
-            new Shape(pShape),
-            new SlideShapeOutline(sdkSlidePart, pShape.ShapeProperties!)
-        )
-    {
-    }
+    private event Action Duplicated;
 
-    private SlideAutoShape(
+    private RootSlideAutoShape(
         SlidePart sdkSlidePart,
         P.Shape pShape,
-        Shape shape,
-        SlideShapeOutline outline)
+        Action duplicatedHandler,
+        IAutoShape autoShape)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.pShape = pShape;
-        this.shape = shape;
-        this.Outline = outline;
-        this.autoShapeFill = new Lazy<SlideAutoShapeFill>(this.ParseFill);
+        this.autoShape = autoShape;
+        this.Duplicated += duplicatedHandler;
     }
 
-    public IShapeOutline Outline { get; }
+    public IShapeOutline Outline => this.autoShape.Outline;
 
     public int Width
     {
-        get => this.shape.Width();
-        set => this.shape.UpdateWidth(value);
+        get => this.autoShape.Width;
+        set => this.autoShape.Width = value;
     }
 
     public int Height
     {
-        get => this.shape.Height();
-        set => this.shape.UpdateHeight(value);
+        get => this.autoShape.Height;
+        set => this.autoShape.Height = value;
     }
 
-    public int Id => this.shape.Id();
-    public string Name => this.shape.Name();
+    public int Id => this.autoShape.Id;
+    public string Name => this.autoShape.Name;
     public bool Hidden { get; }
     public bool IsPlaceholder() => false;
 
@@ -73,13 +61,22 @@ internal sealed record SlideAutoShape : IAutoShape, IRemoveable
     public SCShapeType ShapeType => SCShapeType.AutoShape;
     public IAutoShape AsAutoShape() => this;
 
-    public IShapeFill Fill => this.autoShapeFill.Value;
+    public IShapeFill Fill => this.autoShape.Fill;
 
     public ITextFrame TextFrame => new NullTextFrame();
 
     public bool IsTextHolder() => false;
 
     public double Rotation { get; }
+
+    public void Duplicate()
+    {
+        var pShapeTree = (P.ShapeTree)pShape.Parent!;
+        var autoShapes = new SlideAutoShapes(pShapeTree);
+        autoShapes.Add(this.pShape);
+
+        this.Duplicated.Invoke();
+    }
 
     internal void Draw(SKCanvas slideCanvas)
     {
@@ -154,10 +151,5 @@ internal sealed record SlideAutoShape : IAutoShape, IRemoveable
             var lastSuffix = numericSuffixes.LastOrDefault() + 1;
             copy.GetNonVisualDrawingProperties().Name = copyName + " " + lastSuffix;
         }
-    }
-
-    void IRemoveable.Remove()
-    {
-        this.pShape.Remove();
     }
 }

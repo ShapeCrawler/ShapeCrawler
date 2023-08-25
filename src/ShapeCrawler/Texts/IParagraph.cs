@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
@@ -22,7 +23,7 @@ public interface IParagraph
     /// <summary>
     ///     Gets collection of paragraph portions.
     /// </summary>
-    IPortionCollection Portions { get; }
+    IParagraphPortionCollection Portions { get; }
 
     /// <summary>
     ///     Gets paragraph bullet if bullet exist, otherwise <see langword="null"/>.
@@ -50,25 +51,27 @@ public interface IParagraph
     void ReplaceText(string oldValue, string newValue);
 }
 
-internal sealed class Paragraph : IParagraph
+internal sealed class SlideParagraph : IParagraph
 {
     private readonly Lazy<SCBullet> bullet;
-    private readonly ResetableLazy<SCPortions> portions;
+    private readonly ResetableLazy<SlideParagraphPortions> portions;
     private SCTextAlignment? alignment;
+    private readonly SlidePart sdkSlidePart;
     private readonly AParagraphWrap aParagraphWrap;
 
-    internal Paragraph(A.Paragraph aParagraph)
-        : this(aParagraph, new AParagraphWrap(aParagraph))
+    internal SlideParagraph(SlidePart sdkSlidePart, A.Paragraph aParagraph)
+        : this(sdkSlidePart, aParagraph, new AParagraphWrap(aParagraph))
     {
     }
 
-    internal Paragraph(A.Paragraph aParagraph, AParagraphWrap aParagraphWrap)
+    private SlideParagraph(SlidePart sdkSlidePart, A.Paragraph aParagraph, AParagraphWrap aParagraphWrap)
     {
+        this.sdkSlidePart = sdkSlidePart;
         this.AParagraph = aParagraph;
+        this.aParagraphWrap = aParagraphWrap;
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.bullet = new Lazy<SCBullet>(this.GetBullet);
-        this.aParagraphWrap = aParagraphWrap;
-        this.portions = new ResetableLazy<SCPortions>(() => new SCPortions(this.AParagraph, this));
+        this.portions = new ResetableLazy<SlideParagraphPortions>(() => new SlideParagraphPortions(this.sdkSlidePart,this.AParagraph));
     }
 
     internal event Action? TextChanged;
@@ -81,7 +84,7 @@ internal sealed class Paragraph : IParagraph
         set => this.SetText(value);
     }
 
-    public IPortionCollection Portions => this.portions.Value;
+    public IParagraphPortionCollection Portions => this.portions.Value;
 
     public SCBullet Bullet => this.bullet.Value;
 
@@ -150,7 +153,7 @@ internal sealed class Paragraph : IParagraph
         }
 
         // To set a paragraph text we use a single portion which is the first paragraph portion.
-        var basePortion = this.portions.Value.OfType<SCParagraphTextPortion>().First();
+        var basePortion = this.portions.Value.OfType<TextParagraphPortion>().First();
         var removingPortions = this.portions.Value.Where(p => p != basePortion).ToList();
         this.portions.Value.Remove(removingPortions);
 

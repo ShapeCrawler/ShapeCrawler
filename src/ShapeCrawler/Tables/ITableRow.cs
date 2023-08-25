@@ -33,18 +33,16 @@ public interface ITableRow
     A.TableRow ATableRow();
 }
 
-internal sealed class SCTableRow : ITableRow
+internal sealed record SlideTableRow : ITableRow
 {
-    private readonly Lazy<List<SCTableCell>> cells;
+    private readonly Lazy<List<TableCell>> cells;
     private readonly int index;
-    private readonly SlideTable parentTable;
 
-    internal SCTableRow(SlideTable table, A.TableRow aTableRow, int index)
+    internal SlideTableRow(SlidePart sdkSlidePart, A.TableRow aTableRow, int index)
     {
-        this.parentTable = table;
         this.ATableRow = aTableRow;
         this.index = index;
-        this.cells = new Lazy<List<SCTableCell>>(() => this.GetCells());
+        this.cells = new Lazy<List<TableCell>>(() => this.GetCells());
     }
 
     public IReadOnlyList<ITableCell> Cells => this.cells.Value;
@@ -100,11 +98,11 @@ internal sealed class SCTableRow : ITableRow
         }
     }
     
-    private List<SCTableCell> GetCells()
+    private List<TableCell> GetCells()
     {
-        var cellList = new List<SCTableCell?>();
+        var cellList = new List<TableCell?>();
         var aTcList = this.ATableRow.Elements<A.TableCell>();
-        SCTableCell? addedCell = null;
+        TableCell? addedCell = null;
 
         var columnIdx = 0;
         foreach (var aTc in aTcList)
@@ -116,13 +114,13 @@ internal sealed class SCTableRow : ITableRow
             else if (aTc.VerticalMerge is not null)
             {
                 int upRowIdx = this.index - 1;
-                SCTableCell upNeighborScCell = (SCTableCell)this.parentTable[upRowIdx, columnIdx];
-                cellList.Add(upNeighborScCell);
-                addedCell = upNeighborScCell;
+                TableCell upNeighborCell = (TableCell)this.parentTable[upRowIdx, columnIdx];
+                cellList.Add(upNeighborCell);
+                addedCell = upNeighborCell;
             }
             else
             {
-                addedCell = new SCTableCell(this, aTc, this.index, columnIdx);
+                addedCell = new TableCell( aTc, this.index, columnIdx);
                 cellList.Add(addedCell);
             }
 
@@ -130,15 +128,5 @@ internal sealed class SCTableRow : ITableRow
         }
 
         return cellList!;
-    }
-
-    internal SlidePart SDKSlidePart()
-    {
-        throw new NotImplementedException();
-    }
-
-    internal List<ImagePart> SDKImageParts()
-    {
-        return this.parentTable.SDKImageParts();
     }
 }

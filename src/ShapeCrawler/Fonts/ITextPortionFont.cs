@@ -42,9 +42,4 @@ public interface ITextPortionFont : IFont
     ///     Gets font color formatting.
     /// </summary>
     IFontColor Color { get; }
-
-    /// <summary>
-    ///     Gets value indicating whether font can be changed.
-    /// </summary>
-    bool CanChange();
 }

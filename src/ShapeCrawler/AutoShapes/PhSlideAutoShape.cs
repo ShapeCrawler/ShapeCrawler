@@ -7,7 +7,7 @@ namespace ShapeCrawler.AutoShapes;
 /// <summary>
 ///     The placeholder AutoShape on a slide. 
 /// </summary>
-internal sealed record PhSlideAutoShape : ISlideAutoShape
+internal sealed record PhSlideAutoShape : IAutoShape
 {
     private readonly LayoutAutoShape layoutAutoShape;
     private readonly SlideAutoShape slideAutoShape;
@@ -44,5 +44,4 @@ internal sealed record PhSlideAutoShape : ISlideAutoShape
     public bool IsTextHolder() => this.slideAutoShape.IsTextHolder();
 
     public double Rotation => this.slideAutoShape.Rotation;
-    public void Duplicate() => this.slideAutoShape.Duplicate();
 }

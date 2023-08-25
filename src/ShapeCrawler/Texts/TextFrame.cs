@@ -12,20 +12,17 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class TextFrame : ITextFrame
+internal sealed record TextFrame : ITextFrame
 {
-    private readonly P.TextBody pTextBody;
+    private readonly TypedOpenXmlCompositeElement textBody;
     private readonly ResetableLazy<string> text;
     private readonly ResetableLazy<Paragraphs> paragraphs;
     
-    private event Action changed;
-
-    internal TextFrame(P.TextBody pTextBody, Action changedHandler)
+    internal TextFrame(TypedOpenXmlCompositeElement textBody)
     {
-        this.pTextBody = pTextBody;
-        this.changed += changedHandler;
+        this.textBody = textBody;
         this.text = new ResetableLazy<string>(this.GetText);
-        this.paragraphs = new ResetableLazy<Paragraphs>(this.GetParagraphs);
+        this.paragraphs = new ResetableLazy<Paragraphs>(() => new Paragraphs(this.textBody.Elements<A.Paragraph>()));
     }
 
     internal event Action? TextChanged;
@@ -35,7 +32,7 @@ internal sealed class TextFrame : ITextFrame
     public string Text
     {
         get => this.text.Value;
-        set => this.SetText(value);
+        set => this.UpdateText(value);
     }
 
     public SCAutofitType AutofitType
@@ -100,7 +97,7 @@ internal sealed class TextFrame : ITextFrame
             return;
         }
 
-        var aBodyPr = this.pTextBody.GetFirstChild<A.BodyProperties>() !;
+        var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>() !;
         var dontAutofit = aBodyPr.GetFirstChild<A.NoAutoFit>();
         var shrink = aBodyPr.GetFirstChild<A.NormalAutoFit>();
         var resize = aBodyPr.GetFirstChild<A.ShapeAutoFit>();
@@ -125,7 +122,6 @@ internal sealed class TextFrame : ITextFrame
                 shrink?.Remove();
                 resize = new A.ShapeAutoFit();
                 aBodyPr.Append(resize);
-                this.changed.Invoke();
                 break;
             }
 
@@ -136,49 +132,49 @@ internal sealed class TextFrame : ITextFrame
 
     private double GetLeftMargin()
     {
-        var bodyProperties = this.pTextBody.GetFirstChild<A.BodyProperties>() !;
+        var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.LeftInset;
         return ins is null ? SCConstants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
     
     private double GetRightMargin()
     {
-        var bodyProperties = this.pTextBody.GetFirstChild<A.BodyProperties>() !;
+        var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.RightInset;
         return ins is null ? SCConstants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
 
     private void SetLeftMargin(double centimetre)
     {
-        var bodyProperties = this.pTextBody.GetFirstChild<A.BodyProperties>() !;
+        var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
         var emu = UnitConverter.CentimeterToEmu(centimetre);
         bodyProperties.LeftInset = new Int32Value((int)emu);
     }
 
     private void SetRightMargin(double centimetre)
     {
-        var bodyProperties = this.pTextBody.GetFirstChild<A.BodyProperties>() !;
+        var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
         var emu = UnitConverter.CentimeterToEmu(centimetre);
         bodyProperties.RightInset = new Int32Value((int)emu);
     }
     
     private void SetTopMargin(double centimetre)
     {
-        var bodyProperties = this.pTextBody.GetFirstChild<A.BodyProperties>() !;
+        var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
         var emu = UnitConverter.CentimeterToEmu(centimetre);
         bodyProperties.TopInset = new Int32Value((int)emu);
     }
 
     private void SetBottomMargin(double centimetre)
     {
-        var bodyProperties = this.pTextBody.GetFirstChild<A.BodyProperties>() !;
+        var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
         var emu = UnitConverter.CentimeterToEmu(centimetre);
         bodyProperties.BottomInset = new Int32Value((int)emu);
     }
 
     private bool IsTextWrapped()
     {
-        var aBodyPr = this.pTextBody.GetFirstChild<A.BodyProperties>() !;
+        var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>() !;
         var wrap = aBodyPr.GetAttributes().FirstOrDefault(a => a.LocalName == "wrap");
 
         if (wrap == null)
@@ -196,26 +192,21 @@ internal sealed class TextFrame : ITextFrame
 
     private double GetTopMargin()
     {
-        var bodyProperties = this.pTextBody.GetFirstChild<A.BodyProperties>() !;
+        var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.TopInset;
         return ins is null ? SCConstants.DefaultTopAndBottomMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
 
     private double GetBottomMargin()
     {
-        var bodyProperties = this.pTextBody.GetFirstChild<A.BodyProperties>() !;
+        var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.BottomInset;
         return ins is null ? SCConstants.DefaultTopAndBottomMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
 
-    private Paragraphs GetParagraphs()
-    {
-        return new Paragraphs(TextBodyElement.Elements<A.Paragraph>());
-    }
-
     private SCAutofitType GetAutofitType()
     {
-        var aBodyPr = this.pTextBody.GetFirstChild<A.BodyProperties>();
+        var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>();
         if (aBodyPr!.GetFirstChild<A.NormalAutoFit>() != null)
         {
             return SCAutofitType.Shrink;
@@ -229,7 +220,7 @@ internal sealed class TextFrame : ITextFrame
         return SCAutofitType.None;
     }
 
-    private void SetText(string newText)
+    private void UpdateText(string newText)
     {
         var baseParagraph = this.Paragraphs.FirstOrDefault(p => p.Portions.Any());
         if (baseParagraph == null)
@@ -262,7 +253,7 @@ internal sealed class TextFrame : ITextFrame
         int shapeHeight = this.parentAutoShape.Height;
         var fontSize = FontService.GetAdjustedFontSize(newText, font!, shapeWidth, shapeHeight);
 
-        var paragraphInternal = (Paragraph)baseParagraph;
+        var paragraphInternal = (SlideParagraph)baseParagraph;
         paragraphInternal.SetFontSize(fontSize);
     }
 
@@ -282,25 +273,5 @@ internal sealed class TextFrame : ITextFrame
         }
 
         return sb.ToString();
-    }
-
-    internal SlideMaster SlideMaster()
-    {
-        return this.parentAutoShape.SlideMaster();
-    }
-
-    internal A.ListStyle ATextBodyListStyle()
-    {
-        return this.pTextBody.GetFirstChild<A.ListStyle>()!;
-    }
-
-    public PresentationCore Presentation()
-    {
-        return this.parentAutoShape.Presentation();
-    }
-
-    internal SlideAutoShape AutoShape()
-    {
-        return this.parentAutoShape;
     }
 }

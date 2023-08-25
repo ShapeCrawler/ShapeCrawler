@@ -1,9 +1,9 @@
 ﻿using DocumentFormat.OpenXml;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Services;
+namespace ShapeCrawler.Fonts;
 
-internal sealed class FontData
+internal record struct ParagraphLevelFont
 {
     internal A.SystemColor? ASystemColor { get; set; }
 

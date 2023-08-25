@@ -57,13 +57,11 @@ public class PresentationITests : SCTest
         File.WriteAllBytes(originFilePath, pptx.ToArray());
         var pres = new SCPresentation(originFilePath);
         pres.SaveAs(savedAsFilePath);
-        pres.Close();
 
         // Act-Assert
         new SCPresentation(originFilePath);
         
         // Clean up
-        pres.Close();
         File.Delete(originFilePath);
         File.Delete(savedAsFilePath);
     }

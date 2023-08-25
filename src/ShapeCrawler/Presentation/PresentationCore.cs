@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Fonts;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -81,10 +82,10 @@ internal sealed record PresentationCore
         this.SDKPresentationDocument.Clone(stream);
     }
 
-    internal FontData? FontDataOrNullForParagraphLevel(int paraLevel)
+    internal ParagraphLevelFont? FontDataOrNullForParagraphLevel(int paraLevel)
     {
         var pPresentation = this.SDKPresentationDocument.PresentationPart!.Presentation;
-        var lvlToFontData = new Dictionary<int, FontData>();
+        var lvlToFontData = new Dictionary<int, ParagraphLevelFont>();
 
         // from presentation default text settings
         if (pPresentation.DefaultTextStyle != null)
@@ -152,7 +153,7 @@ internal sealed record PresentationCore
                 switch (shape)
                 {
                     case SlidePicture slidePicture:
-                        imgParts.Add(((PictureImage)slidePicture.Image).SDKImagePart);
+                        imgParts.Add(((SlidePictureImage)slidePicture.Image).SDKImagePart);
                         break;
                     case IGroupShape groupShape:
                         FromShapes(groupShape.Shapes.Select(x => x));

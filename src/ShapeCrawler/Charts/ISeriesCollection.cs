@@ -55,7 +55,7 @@ internal sealed class SCSeriesCollection : ISeriesCollection
         return this.GetEnumerator();
     }
     
-    internal static SCSeriesCollection Create(SCSlideChart slideSlideChart, IEnumerable<OpenXmlElement> cXCharts)
+    internal static SCSeriesCollection Create(SlideChart slideSlideChart, IEnumerable<OpenXmlElement> cXCharts)
     {
         var seriesList = new List<ISeries>();
         foreach (var cXChart in cXCharts)

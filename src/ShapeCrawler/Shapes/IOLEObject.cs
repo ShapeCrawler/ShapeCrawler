@@ -2,18 +2,28 @@
 
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler;
 
-internal record SlideOLEObject : IShape
+internal record SlideOLEObject : IShape, IRemoveable
 {
+    private readonly SlidePart sdkSlidePart;
+    private readonly P.GraphicFrame pGraphicFrame;
     private readonly Shape shape;
 
-    internal SlideOLEObject(P.GraphicFrame pGraphicFrame, SlideShapes shapes, Shape shape)
+    internal SlideOLEObject(SlidePart sdkSlidePart, P.GraphicFrame pGraphicFrame)
+        : this(sdkSlidePart, pGraphicFrame, new Shape(pGraphicFrame))
     {
+    }
+
+    private SlideOLEObject(SlidePart sdkSlidePart, P.GraphicFrame pGraphicFrame, Shape shape)
+    {
+        this.sdkSlidePart = sdkSlidePart;
+        this.pGraphicFrame = pGraphicFrame;
         this.shape = shape;
     }
 
@@ -78,5 +88,10 @@ internal record SlideOLEObject : IShape
     internal string ToJson()
     {
         throw new System.NotImplementedException();
+    }
+
+    void IRemoveable.Remove()
+    {
+        this.pGraphicFrame.Remove();
     }
 }

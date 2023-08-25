@@ -2,7 +2,6 @@
 using System.IO;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -16,7 +15,7 @@ internal record SlideAutoShapeFill : IShapeFill
     private SCFillType fillType;
     private bool isDirty;
     private string? hexSolidColor;
-    private PictureImage? pictureImage;
+    private SlidePictureImage? pictureImage;
     private A.SolidFill? aSolidFill;
     private A.GradientFill? aGradFill;
     private A.PatternFill? aPattFill;
@@ -55,10 +54,10 @@ internal record SlideAutoShapeFill : IShapeFill
         {
             var rId = sdkSlidePart.AddImagePart(imageStream);
 
-            var aBlipFill = new DocumentFormat.OpenXml.Drawing.BlipFill();
-            var aStretch = new DocumentFormat.OpenXml.Drawing.Stretch();
-            aStretch.Append(new DocumentFormat.OpenXml.Drawing.FillRectangle());
-            aBlipFill.Append(new DocumentFormat.OpenXml.Drawing.Blip { Embed = rId });
+            var aBlipFill = new A.BlipFill();
+            var aStretch = new A.Stretch();
+            aStretch.Append(new A.FillRectangle());
+            aBlipFill.Append(new A.Blip { Embed = rId });
             aBlipFill.Append(aStretch);
 
             this.properties.Append(aBlipFill);
@@ -119,7 +118,7 @@ internal record SlideAutoShapeFill : IShapeFill
 
     private void InitSolidFillOr()
     {
-        this.aSolidFill = this.properties.GetFirstChild<DocumentFormat.OpenXml.Drawing.SolidFill>();
+        this.aSolidFill = this.properties.GetFirstChild<A.SolidFill>();
         if (this.aSolidFill != null)
         {
             var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
@@ -157,11 +156,11 @@ internal record SlideAutoShapeFill : IShapeFill
 
     private void InitPictureFillOr()
     {
-        this.aBlipFill = this.properties.GetFirstChild<DocumentFormat.OpenXml.Drawing.BlipFill>();
+        this.aBlipFill = this.properties.GetFirstChild<A.BlipFill>();
 
         if (this.aBlipFill is not null)
         {
-            var image = PictureImage.ForAutoShapeFill(this.aBlipFill);
+            var image = new SlidePictureImage(this.sdkSlidePart, this.aBlipFill.Blip!);
             this.pictureImage = image;
             this.fillType = SCFillType.Picture;
         }
@@ -173,7 +172,7 @@ internal record SlideAutoShapeFill : IShapeFill
 
     private void InitPatternFillOr()
     {
-        this.aPattFill = this.properties.GetFirstChild<DocumentFormat.OpenXml.Drawing.PatternFill>();
+        this.aPattFill = this.properties.GetFirstChild<A.PatternFill>();
         if (this.aPattFill != null)
         {
             this.fillType = SCFillType.Pattern;
@@ -194,7 +193,7 @@ internal record SlideAutoShapeFill : IShapeFill
         return this.hexSolidColor;
     }
 
-    private PictureImage? GetPicture()
+    private SlidePictureImage? GetPicture()
     {
         if (this.isDirty)
         {
@@ -202,15 +201,5 @@ internal record SlideAutoShapeFill : IShapeFill
         }
 
         return this.pictureImage;
-    }
-
-    internal List<ImagePart> SDKImageParts()
-    {
-        return this.parentAutoShape.SDKImageParts();
-    }
-
-    public SlidePart SDKSlidePart()
-    {
-        return this.parentAutoShape.SDKSlidePart();
     }
 }

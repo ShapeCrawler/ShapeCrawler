@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Fonts;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -10,45 +11,24 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class SCField : IParagraphPortion
+internal sealed class SlideField : IParagraphPortion
 {
     private readonly ResetableLazy<ITextPortionFont> font;
     private readonly A.Field aField;
     private readonly PortionText portionText;
     private readonly A.Text? aText;
+    private readonly SlidePart sdkSlidePart;
 
-    internal SCField(
-        A.Field aField,
-        Paragraph parentParagraph,
-        Action onRemoveHandler,
-        Dictionary<int, FontData> paraLvlToFontData)
+    internal SlideField(SlidePart sdkSlidePart, A.Field aField)
     {
+        this.sdkSlidePart = sdkSlidePart;
         this.aText = aField.GetFirstChild<A.Text>();
-        this.Removed += onRemoveHandler;
-
         this.aField = aField;
 
-        var themeFontScheme = (ThemeFontScheme)textFrameContainer.AutoShape.SlideMasterInternal.Theme.FontScheme;
         this.font = new ResetableLazy<ITextPortionFont>(() =>
         {
-            if (slideStructure is SlideLayout layout &&
-                textFrameContainer.AutoShape.Placeholder?.Type == SCPlaceholderType.SlideNumber)
-            {
-                var masterSlideNumberFont = layout.SlideMaster.SlideNumber!.Font;
-                var pTextBody = (P.TextBody)parentParagraph.AParagraph.Parent!;
-                var layoutNumberSize = new LayoutSlideNumberSize(pTextBody, masterSlideNumberFont);
-                var textPortionFont = new TextPortionFont(
-                    this.aText!,
-                    textFrameContainer,
-                    parentParagraph,
-                    themeFontScheme,
-                    layoutNumberSize,
-                    paraLvlToFontData);
-                return textPortionFont;
-            }
-
-            var textPortionSize = new PortionFontSize(this.aText!, this, paraLvlToFontData);
-            return new TextPortionFont(this.aText!, textFrameContainer, parentParagraph, themeFontScheme, textPortionSize, paraLvlToFontData);
+            var textPortionSize = new PortionFontSize(this.aText!);
+            return new SlideTextPortionFont(sdkSlidePart, this.aText!, textPortionSize);
         });
 
         this.portionText = new PortionText(this.aField);
@@ -72,8 +52,6 @@ internal sealed class SCField : IParagraphPortion
         set => this.SetHyperlink(value);
     }
 
-    public IField? Field => this.GetField();
-
     public SCColor? TextHighlightColor
     {
         get => this.ParseTextHighlight();
@@ -86,16 +64,6 @@ internal sealed class SCField : IParagraphPortion
     {
         this.aField.Remove();
         this.Removed?.Invoke();
-    }
-
-    private IField? GetField()
-    {
-        if (this.aField is null)
-        {
-            return null;
-        }
-
-        return new ShapeCrawler.SCField(this.aField);
     }
 
     private SCColor ParseTextHighlight()
@@ -144,8 +112,7 @@ internal sealed class SCField : IParagraphPortion
             return null;
         }
 
-        var typedOpenXmlPart = this.slideStructure.TypedOpenXmlPart;
-        var hyperlinkRelationship = (HyperlinkRelationship)typedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
+        var hyperlinkRelationship = (HyperlinkRelationship)this.sdkSlidePart.GetReferenceRelationship(hyperlink.Id!);
 
         return hyperlinkRelationship.Uri.ToString();
     }
@@ -165,10 +132,8 @@ internal sealed class SCField : IParagraphPortion
             runProperties.Append(hyperlink);
         }
 
-        var slidePart = this.slideStructure.TypedOpenXmlPart;
-
         var uri = new Uri(url!, UriKind.RelativeOrAbsolute);
-        var addedHyperlinkRelationship = slidePart.AddHyperlinkRelationship(uri, true);
+        var addedHyperlinkRelationship = sdkSlidePart.AddHyperlinkRelationship(uri, true);
 
         hyperlink.Id = addedHyperlinkRelationship.Id;
     }

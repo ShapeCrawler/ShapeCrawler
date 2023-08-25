@@ -51,7 +51,7 @@ internal sealed class CategoryCollection : IReadOnlyCollection<ICategory>, ICate
         return this.GetEnumerator();
     }
     
-    internal static CategoryCollection? Create(SCSlideChart slideChart, OpenXmlElement? firstChartSeries, SCChartType chartType)
+    internal static CategoryCollection? Create(SlideChart slideChart, OpenXmlElement? firstChartSeries, SCChartType chartType)
     {
         if (chartType is SCChartType.BubbleChart or SCChartType.ScatterChart)
         {

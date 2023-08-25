@@ -6,17 +6,17 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class PictureImage : IImage
+internal sealed class SlidePictureImage : IImage
 {
-    private readonly SlidePicture parentPicture;
     private ImagePart sdkImagePart;
+    private readonly SlidePart sdkSlidePart;
     private readonly A.Blip aBlip;
 
-    internal PictureImage(SlidePicture slidePicture, A.Blip aBlip)
+    internal SlidePictureImage(SlidePart sdkSlidePart, A.Blip aBlip)
     {
-        this.parentPicture = slidePicture;
+        this.sdkSlidePart = sdkSlidePart;
         this.aBlip = aBlip;
-        this.sdkImagePart = (ImagePart)slidePicture.SDKSlidePart().GetPartById(aBlip.Embed!.Value!);
+        this.sdkImagePart = (ImagePart)sdkSlidePart.GetPartById(aBlip.Embed!.Value!);
     }
     
     public string MIME => this.sdkImagePart.ContentType;
@@ -25,12 +25,12 @@ internal sealed class PictureImage : IImage
 
     public void Update(Stream stream)
     {
-        var imageParts = this.parentPicture.SDKImageParts();
+        var imageParts = this.sdkSlidePart.ImageParts;
         var isSharedImagePart = imageParts.Count(x=>x == this.sdkImagePart) > 1;
         if (isSharedImagePart)
         {
             var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
-            this.sdkImagePart = this.parentPicture.SDKSlidePart().AddNewPart<ImagePart>("image/png", rId);
+            this.sdkImagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", rId);
             this.aBlip.Embed!.Value = rId;
         }
 

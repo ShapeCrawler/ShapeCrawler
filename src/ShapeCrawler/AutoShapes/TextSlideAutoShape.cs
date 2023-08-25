@@ -8,9 +8,12 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.AutoShapes;
 
+/// <summary>
+///     A text AutoShape on a slide.
+/// </summary>
 internal sealed record TextSlideAutoShape : ISlideAutoShape
 {
-    private readonly SlideAutoShape autoShape;
+    private readonly ISlideAutoShape slideAutoShape;
     private readonly P.TextBody pTextBody;
     private readonly Lazy<TextFrame> textFrame;
     
@@ -18,16 +21,16 @@ internal sealed record TextSlideAutoShape : ISlideAutoShape
     // 96/72=1.4
     private const double Scale = 1.4;
 
-    internal TextSlideAutoShape(SlideAutoShape autoShape, P.TextBody pTextBody)
+    internal TextSlideAutoShape(ISlideAutoShape slideAutoShape, P.TextBody pTextBody)
     {
-        this.autoShape = autoShape;
+        this.slideAutoShape = slideAutoShape;
         this.pTextBody = pTextBody;
         this.textFrame = new Lazy<TextFrame>(this.ParseTextFrame);
     }
 
     private TextFrame ParseTextFrame()
     {
-        var newTextFrame = new TextFrame(pTextBody, this.ResizeShape);
+        var newTextFrame = new TextFrame(pTextBody);
         newTextFrame.TextChanged += this.ResizeShape;
 
         return newTextFrame;
@@ -41,7 +44,7 @@ internal sealed record TextSlideAutoShape : ISlideAutoShape
         }
 
         var baseParagraph = this.TextFrame.Paragraphs.First();
-        var popularPortion = baseParagraph.Portions.OfType<SCParagraphTextPortion>().GroupBy(p => p.Font.Size)
+        var popularPortion = baseParagraph.Portions.OfType<TextParagraphPortion>().GroupBy(p => p.Font.Size)
             .OrderByDescending(x => x.Count())
             .First().First();
         var font = popularPortion.Font;
@@ -110,31 +113,24 @@ internal sealed record TextSlideAutoShape : ISlideAutoShape
 
     public ITextFrame TextFrame => this.textFrame.Value;
     
-    #region AutoShape Properties
-
+    #region Slide AutoShape Properties
     public int X { get; set; }
     public int Y { get; set; }
     public int Width { get; set; }
     public int Height { get; set; }
-    public int Id => this.autoShape.Id;
-    public string Name => this.autoShape.Name;
+    public int Id => this.slideAutoShape.Id;
+    public string Name => this.slideAutoShape.Name;
     public bool Hidden => this.Hidden;
-
-    public bool IsPlaceholder() => this.autoShape.IsPlaceholder();
-
-    public IPlaceholder Placeholder => this.autoShape.Placeholder;
+    public bool IsPlaceholder() => this.slideAutoShape.IsPlaceholder();
+    public IPlaceholder Placeholder => this.slideAutoShape.Placeholder;
     public SCGeometry GeometryType { get; }
     public string? CustomData { get; set; }
     public SCShapeType ShapeType { get; }
-
     public IAutoShape AsAutoShape() => this;
-
-    public IShapeOutline Outline => this.autoShape.Outline;
-    public IShapeFill Fill => this.autoShape.Fill;
+    public IShapeOutline Outline => this.slideAutoShape.Outline;
+    public IShapeFill Fill => this.slideAutoShape.Fill;
     public bool IsTextHolder() => true;
-
     public double Rotation { get; }
-    public void Duplicate() => this.autoShape.Duplicate();
-
-    #endregion AutoShape Properties
+    public void Duplicate() => this.slideAutoShape.Duplicate();
+    #endregion Slide AutoShape Properties
 }
