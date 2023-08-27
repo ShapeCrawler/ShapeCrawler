@@ -7,6 +7,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideShape;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -20,7 +21,6 @@ internal sealed record SlideChart : IRemoveable, IChart
     private readonly Lazy<SCChartType> chartType;
     private readonly Lazy<OpenXmlElement?> firstSeries;
     private readonly P.GraphicFrame pGraphicFrame;
-    private readonly SlideShapes parentShapeCollection;
     private readonly Lazy<SCSeriesCollection> series;
     private readonly Lazy<List<double>?> xValues;
     private readonly C.PlotArea cPlotArea;
@@ -32,10 +32,9 @@ internal sealed record SlideChart : IRemoveable, IChart
     private string? chartTitle;
     private readonly Shape shape;
 
-    internal SlideChart(P.GraphicFrame pGraphicFrame, SlideShapes parentShapeCollection)
+    internal SlideChart(SlicersPart sdkSlidePart, P.GraphicFrame pGraphicFrame)
     {
         this.pGraphicFrame = pGraphicFrame;
-        this.parentShapeCollection = parentShapeCollection;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
         this.xValues = new Lazy<List<double>?>(this.GetXValues);
         this.series = new Lazy<SCSeriesCollection>(this.GetSeries);
@@ -44,13 +43,12 @@ internal sealed record SlideChart : IRemoveable, IChart
 
         var cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
             .GetFirstChild<C.ChartReference>() !;
-        var sdkSlidePart = this.parentShapeCollection.SDKSlidePart();
         this.ChartPart = (ChartPart)sdkSlidePart.GetPartById(cChartReference.Id!);
 
         this.cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
         this.cXCharts = this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
-        this.workbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartWorkbook(this, this.ChartPart.EmbeddedPackagePart) : null;
+        this.workbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartSpreadsheet(this.ChartPart.EmbeddedPackagePart) : null;
         this.shape = new Shape(pGraphicFrame);
     }
 
@@ -145,7 +143,7 @@ internal sealed record SlideChart : IRemoveable, IChart
     
     public IAxesManager Axes => this.GetAxes();
 
-    internal ChartWorkbook? workbook { get; set; }
+    internal ChartSpreadsheet? workbook { get; set; }
 
     internal ChartPart ChartPart { get; private set; }
 
@@ -264,7 +262,7 @@ internal sealed record SlideChart : IRemoveable, IChart
             .FirstOrDefault(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
     }
 
-    internal override void Remove()
+    public void Remove()
     {
         this.pGraphicFrame.Remove();
     }

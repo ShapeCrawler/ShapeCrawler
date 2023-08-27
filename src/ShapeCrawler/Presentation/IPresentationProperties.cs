@@ -38,11 +38,6 @@ public interface IPresentationProperties
     ISectionCollection Sections { get; }
 
     /// <summary>
-    ///     Gets copy of instance of <see cref="DocumentFormat.OpenXml.Packaging.PresentationDocument"/> class.
-    /// </summary>
-    PresentationDocument SDKPresentationDocument { get; }
-
-    /// <summary>
     ///     Gets Header and Footer manager.
     /// </summary>
     IHeaderAndFooter HeaderAndFooter { get; }

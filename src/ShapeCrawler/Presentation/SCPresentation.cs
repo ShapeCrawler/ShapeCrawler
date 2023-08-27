@@ -57,10 +57,7 @@ public sealed record SCPresentation : IPresentation
     
     /// <inheritdoc />
     public ISectionCollection Sections => this.presentation.Sections;
-    
-    /// <inheritdoc />
-    public PresentationDocument SDKPresentationDocument => this.presentation.SDKPresentationDocument;
-    
+   
     /// <inheritdoc />
     public IHeaderAndFooter HeaderAndFooter => this.presentation.HeaderAndFooter;
     

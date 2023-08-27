@@ -2,7 +2,6 @@ using System.Collections.Generic;
 #if DEBUG
 using System.Threading.Tasks;
 #endif
-using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler;
 
@@ -32,7 +31,7 @@ public interface ISlide
     ISlideLayout SlideLayout { get; }
 
     /// <summary>
-    /// Gets a list of all textboxes on that slide, including those in tables.
+    ///     List of all textboxes on that slide.
     /// </summary>
     public IList<ITextFrame> TextFrames();
 
@@ -41,7 +40,12 @@ public interface ISlide
     /// </summary>
     void Hide();
     
-    int Number { get; }
+    int Number { get; set; }
+    
+    /// <summary>
+    ///     Gets shape collection.
+    /// </summary>
+    ISlideShapeCollection Shapes { get; }
 
 #if DEBUG
     

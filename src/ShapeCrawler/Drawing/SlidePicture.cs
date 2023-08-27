@@ -14,7 +14,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed record SlidePicture : IRemoveable, IPicture
+internal sealed record SlidePicture : IPicture, IRemoveable 
 {
     private readonly StringValue blipEmbed;
     private readonly P.Picture pPicture;
@@ -144,7 +144,7 @@ internal sealed record SlidePicture : IRemoveable, IPicture
         copy.Descendants<A.Blip>().First().Embed = targetImagePartRId;
     }
 
-    internal override void Remove()
+    public void Remove()
     {
         this.pPicture.Remove();
     }

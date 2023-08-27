@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Wrappers;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler;
@@ -25,7 +28,7 @@ public interface ITableRow
     /// <summary>
     ///     Creates a duplicate of the current row and adds this at the table end.
     /// </summary>
-    ITableRow Clone();
+    void Duplicate();
 
     /// <summary>
     ///     Returns <see cref="A.TableRow" />.
@@ -33,14 +36,16 @@ public interface ITableRow
     A.TableRow ATableRow();
 }
 
-internal sealed record SlideTableRow : ITableRow
+internal sealed class SlideTableRow : ITableRow
 {
     private readonly Lazy<List<TableCell>> cells;
+    private readonly SlidePart sdkSlidePart;
     private readonly int index;
 
     internal SlideTableRow(SlidePart sdkSlidePart, A.TableRow aTableRow, int index)
     {
         this.ATableRow = aTableRow;
+        this.sdkSlidePart = sdkSlidePart;
         this.index = index;
         this.cells = new Lazy<List<TableCell>>(() => this.GetCells());
     }
@@ -50,17 +55,15 @@ internal sealed record SlideTableRow : ITableRow
     public int Height
     {
         get => this.GetHeight();
-        set => this.SetHeight(value);
+        set => this.UpdateHeight(value);
     }
 
     internal A.TableRow ATableRow { get; }
 
-    public ITableRow Clone()
+    public void Duplicate()
     {
-        var clonedRow = (A.TableRow)this.ATableRow.Clone();
-        var addedRow = this.parentTable.AppendRow(clonedRow);
-
-        return addedRow;
+        var rowCopy = (A.TableRow)this.ATableRow.Clone();
+        this.ATableRow.Parent!.Append(rowCopy);
     }
 
     A.TableRow ITableRow.ATableRow()
@@ -73,7 +76,7 @@ internal sealed record SlideTableRow : ITableRow
         return (int)UnitConverter.EmuToPoint((int)this.ATableRow.Height!.Value);
     }
     
-    private void SetHeight(int newPoints)
+    private void UpdateHeight(int newPoints)
     {
         var currentPoints = this.GetHeight();
         if (currentPoints == newPoints)
@@ -84,17 +87,19 @@ internal sealed record SlideTableRow : ITableRow
         var newEmu = UnitConverter.PointToEmu(newPoints);
         this.ATableRow.Height!.Value = newEmu;
 
+        var pGraphicalFrame = new SDKATypedOpenXmlCompositeElementWrap(ATableRow).FirstAncestor<P.GraphicFrame>();
+        var parentTable = new SlideTable(this.sdkSlidePart, pGraphicalFrame);
         if (newPoints > currentPoints)
         {
             var diffPoints = newPoints - currentPoints;
             var diffPixels = (int)UnitConverter.PointToPixel(diffPoints);
-            this.parentTable.Height += diffPixels;
+            parentTable.Height += diffPixels;
         }
         else
         {
             var diffPoints = currentPoints - newPoints;
             var diffPixels = (int)UnitConverter.PointToPixel(diffPoints);
-            this.parentTable.Height -= diffPixels;
+            parentTable.Height -= diffPixels;
         }
     }
     
@@ -113,14 +118,16 @@ internal sealed record SlideTableRow : ITableRow
             }
             else if (aTc.VerticalMerge is not null)
             {
+                var pGraphicalFrame = new SDKATypedOpenXmlCompositeElementWrap(ATableRow).FirstAncestor<P.GraphicFrame>();
+                var parentTable = new SlideTable(this.sdkSlidePart, pGraphicalFrame);
                 int upRowIdx = this.index - 1;
-                TableCell upNeighborCell = (TableCell)this.parentTable[upRowIdx, columnIdx];
+                var upNeighborCell = (TableCell)parentTable[upRowIdx, columnIdx];
                 cellList.Add(upNeighborCell);
                 addedCell = upNeighborCell;
             }
             else
             {
-                addedCell = new TableCell( aTc, this.index, columnIdx);
+                addedCell = new TableCell(this.sdkSlidePart,aTc, this.index, columnIdx);
                 cellList.Add(addedCell);
             }
 

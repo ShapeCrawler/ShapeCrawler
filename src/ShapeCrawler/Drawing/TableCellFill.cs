@@ -10,6 +10,7 @@ namespace ShapeCrawler.Drawing;
 
 internal class TableCellFill : IShapeFill
 {
+    private readonly SlidePart sdkSlidePart;
     private readonly TypedOpenXmlCompositeElement cellProperties;
     private readonly TableCell parentTableCell;
     private BooleanValue? useBgFill;
@@ -22,8 +23,9 @@ internal class TableCellFill : IShapeFill
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
 
-    internal TableCellFill(A.TableCellProperties cellProperties, TableCell parentTableCell)
+    internal TableCellFill(SlidePart sdkSlidePart, A.TableCellProperties cellProperties, TableCell parentTableCell)
     {
+        this.sdkSlidePart = sdkSlidePart;
         this.cellProperties = cellProperties;
         this.parentTableCell = parentTableCell;
         this.isDirty = true;
@@ -52,8 +54,7 @@ internal class TableCellFill : IShapeFill
         }
         else
         {
-            SlidePart sdkSlidePart = this.parentTableCell.SDKSlidePart();
-            var rId = sdkSlidePart.AddImagePart(imageStream);
+            var rId = this.sdkSlidePart.AddImagePart(imageStream);
 
             var aBlipFill = new A.BlipFill();
             var aStretch = new A.Stretch();
@@ -157,7 +158,7 @@ internal class TableCellFill : IShapeFill
             var blipEmbedValue = aBlipFill.Blip?.Embed?.Value;
             if (blipEmbedValue != null)
             {
-                var imagePart = (ImagePart)this.parentTableCell.SDKSlidePart().GetPartById(blipEmbedValue);
+                var imagePart = (ImagePart)this.sdkSlidePart.GetPartById(blipEmbedValue);
                 var image = new CellFillImage(this.aBlipFill, imagePart, this);
                 this.pictureImage = image;
                 this.fillType = SCFillType.Picture;
@@ -200,15 +201,5 @@ internal class TableCellFill : IShapeFill
         }
 
         return this.pictureImage;
-    }
-
-    internal List<ImagePart> SDKImageParts()
-    {
-        return this.parentTableCell.SDKImageParts();
-    }
-
-    public SlidePart SDKSlidePart()
-    {
-        return this.parentTableCell.SDKSlidePart();
     }
 }

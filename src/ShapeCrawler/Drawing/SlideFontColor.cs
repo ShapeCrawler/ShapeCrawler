@@ -7,6 +7,7 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
 using ShapeCrawler.Services;
 using ShapeCrawler.Texts;
+using ShapeCrawler.Wrappers;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Drawing;
@@ -96,9 +97,9 @@ internal sealed class SlideFontColor : IFontColor
             }
             
             var pSlideMasterWrap =
-                new PSlideMasterWrap(pSlideMaster);
+                new SDKPSlideMasterWrap(pSlideMaster);
             ParagraphLevelFont? masterBodyStyleParaLevelFont = pSlideMasterWrap.BodyStyleParagraphLevelFontOrNull(paraLevel);
-            if (masterBodyStyleParaLevelFont != null && this.TryFromFontData(masterBodyStyleParaLevelFont))
+            if (this.TryFromFontData(masterBodyStyleParaLevelFont))
             {
                 return;
             }
@@ -205,37 +206,42 @@ internal sealed class SlideFontColor : IFontColor
         return false;
     }
 
-    private bool TryFromFontData(ParagraphLevelFont paragraphLevelFont)
+    private bool TryFromFontData(ParagraphLevelFont? paragraphLevelFont)
     {
-        string colorHexVariant;
-        if (paragraphLevelFont.ARgbColorModelHex != null)
+        if (!paragraphLevelFont.HasValue)
         {
-            colorHexVariant = paragraphLevelFont.ARgbColorModelHex.Val!;
+            return false;
+        }
+        
+        string colorHexVariant;
+        if (paragraphLevelFont.Value.ARgbColorModelHex != null)
+        {
+            colorHexVariant = paragraphLevelFont.Value.ARgbColorModelHex.Val!;
             this.colorType = SCColorType.RGB;
             this.hexColor = colorHexVariant;
             return true;
         }
 
-        if (paragraphLevelFont.ASchemeColor != null)
+        if (paragraphLevelFont.Value.ASchemeColor != null)
         {
-            colorHexVariant = this.HexColorByScheme(paragraphLevelFont.ASchemeColor.Val!);
+            colorHexVariant = this.HexColorByScheme(paragraphLevelFont.Value.ASchemeColor.Val!);
             this.colorType = SCColorType.Theme;
             this.hexColor = colorHexVariant;
             return true;
         }
 
-        if (paragraphLevelFont.ASystemColor != null)
+        if (paragraphLevelFont.Value.ASystemColor != null)
         {
-            colorHexVariant = paragraphLevelFont.ASystemColor.LastColor!;
+            colorHexVariant = paragraphLevelFont.Value.ASystemColor.LastColor!;
             this.colorType = SCColorType.Standard;
             this.hexColor = colorHexVariant;
             return true;
         }
 
-        if (paragraphLevelFont.APresetColor != null)
+        if (paragraphLevelFont.Value.APresetColor != null)
         {
             this.colorType = SCColorType.Preset;
-            var coloName = paragraphLevelFont.APresetColor.Val!.Value.ToString();
+            var coloName = paragraphLevelFont.Value.APresetColor.Val!.Value.ToString();
             this.hexColor = SCColorTranslator.HexFromName(coloName);
             return true;
         }

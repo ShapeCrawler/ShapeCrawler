@@ -2,10 +2,12 @@
 using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Wrappers;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -14,15 +16,17 @@ namespace ShapeCrawler.Texts;
 
 internal sealed record TextFrame : ITextFrame
 {
+    private readonly SlidePart sdkSlidePart;
     private readonly TypedOpenXmlCompositeElement textBody;
     private readonly ResetableLazy<string> text;
     private readonly ResetableLazy<Paragraphs> paragraphs;
     
-    internal TextFrame(TypedOpenXmlCompositeElement textBody)
+    internal TextFrame(SlidePart sdkSlidePart,TypedOpenXmlCompositeElement textBody)
     {
+        this.sdkSlidePart = sdkSlidePart;
         this.textBody = textBody;
         this.text = new ResetableLazy<string>(this.GetText);
-        this.paragraphs = new ResetableLazy<Paragraphs>(() => new Paragraphs(this.textBody.Elements<A.Paragraph>()));
+        this.paragraphs = new ResetableLazy<Paragraphs>(() => new Paragraphs(sdkSlidePart, this.textBody.Elements<A.Paragraph>()));
     }
 
     internal event Action? TextChanged;
@@ -249,9 +253,9 @@ internal sealed record TextFrame : ITextFrame
             .First().First();
         var font = popularPortion.Font;
 
-        int shapeWidth = this.parentAutoShape.Width;
-        int shapeHeight = this.parentAutoShape.Height;
-        var fontSize = FontService.GetAdjustedFontSize(newText, font!, shapeWidth, shapeHeight);
+        var sdkPresDocument = new SDKSlidePartWrap(sdkSlidePart).SDKPresentationDocument();
+        var slideSize = new SlideSize(sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
+        var fontSize = FontService.GetAdjustedFontSize(newText, font!, slideSize.Width(), slideSize.Height());
 
         var paragraphInternal = (SlideParagraph)baseParagraph;
         paragraphInternal.SetFontSize(fontSize);

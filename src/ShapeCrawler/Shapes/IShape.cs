@@ -6,7 +6,7 @@ using ShapeCrawler.Shapes;
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents a shape on a slide.
+///     Represents a shape.
 /// </summary>
 public interface IShape : IPosition
 {

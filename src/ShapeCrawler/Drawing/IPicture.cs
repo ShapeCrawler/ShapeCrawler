@@ -3,7 +3,7 @@
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represents a picture shape on a slide.
+///     Represents a picture shape.
 /// </summary>
 public interface IPicture : IShape
 {

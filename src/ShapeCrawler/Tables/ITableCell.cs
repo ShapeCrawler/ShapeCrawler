@@ -35,12 +35,12 @@ internal sealed record TableCell : ITableCell
     private readonly Lazy<TextFrame> textFrame;
     private readonly Lazy<TableCellFill> shapeFill;
 
-    internal TableCell(A.TableCell aTableCell, int rowIndex, int columnIndex)
+    internal TableCell(SlidePart sdkSlidePart, A.TableCell aTableCell, int rowIndex, int columnIndex)
     {
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
-        this.textFrame = new Lazy<TextFrame>(()=> new TextFrame(this.ATableCell.TextBody!));
+        this.textFrame = new Lazy<TextFrame>(()=> new TextFrame(sdkSlidePart, this.ATableCell.TextBody!));
         var tableCellProperties = aTableCell.TableCellProperties!;
         this.shapeFill = new Lazy<TableCellFill>(() =>
             new TableCellFill(tableCellProperties, this));

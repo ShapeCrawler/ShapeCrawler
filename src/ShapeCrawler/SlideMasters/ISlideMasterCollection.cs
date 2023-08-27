@@ -24,17 +24,15 @@ public interface ISlideMasterCollection : IEnumerable<ISlideMaster>
 
 internal sealed class SlideMasterCollection : ISlideMasterCollection
 {
-    private readonly PresentationCore parentPresentationCore;
     private readonly List<ISlideMaster> slideMasters;
 
-    internal SlideMasterCollection (IEnumerable<SlideMasterPart> sdkMasterParts, PresentationCore parentPresentationCore)
+    internal SlideMasterCollection (IEnumerable<SlideMasterPart> sdkMasterParts)
     {
-        this.parentPresentationCore = parentPresentationCore;
         this.slideMasters = new List<ISlideMaster>(sdkMasterParts.Count());
         var number = 1;
         foreach (var sdkMasterPart in sdkMasterParts)
         {
-            slideMasters.Add(new SlideMaster(sdkMasterPart.SlideMaster, number++));
+            slideMasters.Add(new SlideMaster(sdkMasterPart, number++));
         }
     }
     

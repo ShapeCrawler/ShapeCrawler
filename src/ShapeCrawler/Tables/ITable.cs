@@ -322,4 +322,8 @@ internal sealed record SlideTable : IRemoveable, ITable
 
     public int X { get; set; }
     public int Y { get; set; }
+    public void Remove()
+    {
+        throw new NotImplementedException();
+    }
 }

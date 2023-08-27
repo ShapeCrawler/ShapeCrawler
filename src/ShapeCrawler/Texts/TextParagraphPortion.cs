@@ -14,16 +14,16 @@ namespace ShapeCrawler.Texts;
 internal sealed class TextParagraphPortion : IParagraphPortion
 {
     private readonly ResetableLazy<SlideTextPortionFont> font;
+    private readonly SlidePart sdkSlidePart;
     private readonly A.Run aRun;
-    private readonly SlideParagraphPortions parentPortionCollection;
 
-    internal TextParagraphPortion(A.Run aRun, SlideParagraphPortions parentPortionCollection)
+    internal TextParagraphPortion(SlidePart sdkSlidePart, A.Run aRun)
     {
         this.AText = aRun.Text!;
+        this.sdkSlidePart = sdkSlidePart;
         this.aRun = aRun;
-        this.parentPortionCollection = parentPortionCollection;
-        var textPortionSize = new PortionFontSize(this.AText, this);
-        this.font = new ResetableLazy<SlideTextPortionFont>(() => new SlideTextPortionFont(this.AText, themeFontScheme, textPortionSize, this));
+        var textPortionSize = new PortionFontSize(this.AText);
+        this.font = new ResetableLazy<SlideTextPortionFont>(() => new SlideTextPortionFont(sdkSlidePart,this.AText, textPortionSize));
     }
 
     internal event Action? Removed;
@@ -43,8 +43,6 @@ internal sealed class TextParagraphPortion : IParagraphPortion
         get => this.GetHyperlink();
         set => this.SetHyperlink(value);
     }
-
-    public IField? Field { get; }
 
     public SCColor? TextHighlightColor
     {
@@ -124,7 +122,7 @@ internal sealed class TextParagraphPortion : IParagraphPortion
             return null;
         }
         
-        var hyperlinkRelationship = (HyperlinkRelationship)this.slideTypedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
+        var hyperlinkRelationship = (HyperlinkRelationship)this.sdkSlidePart.GetReferenceRelationship(hyperlink.Id!);
 
         return hyperlinkRelationship.Uri.ToString();
     }
@@ -145,33 +143,8 @@ internal sealed class TextParagraphPortion : IParagraphPortion
         }
         
         var uri = new Uri(url!, UriKind.RelativeOrAbsolute);
-        var addedHyperlinkRelationship = this.slideTypedOpenXmlPart.AddHyperlinkRelationship(uri, true);
+        var addedHyperlinkRelationship = this.sdkSlidePart.AddHyperlinkRelationship(uri, true);
 
         hyperlink.Id = addedHyperlinkRelationship.Id;
-    }
-
-    internal SlideMaster SlideMaster()
-    {
-        return this.parentPortionCollection.SlideMaster();
-    }
-
-    internal int ParagraphLevel()
-    {
-        return this.parentPortionCollection.ParagraphLevel();
-    }
-
-    internal A.ListStyle ATextBodyListStyle()
-    {
-        return this.parentPortionCollection.ATextBodyListStyle();
-    }
-
-    internal PresentationCore Presentation()
-    {
-        return this.parentPortionCollection.Presentation();
-    }
-
-    internal SlideAutoShape SlideAutoShape()
-    {
-        return this.parentPortionCollection.SlideAutoShape();
     }
 }

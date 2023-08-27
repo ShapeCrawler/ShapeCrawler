@@ -1,20 +1,18 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
-using ShapeCrawler.Services;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Drawing;
+namespace ShapeCrawler.Wrappers;
 
-internal sealed record PSlideMasterWrap
+internal sealed record SDKPSlideMasterWrap
 {
     private readonly P.SlideMaster pSlideMaster;
 
-    internal PSlideMasterWrap(P.SlideMaster pSlideMaster)
+    internal SDKPSlideMasterWrap(P.SlideMaster pSlideMaster)
     {
         this.pSlideMaster = pSlideMaster;
     }

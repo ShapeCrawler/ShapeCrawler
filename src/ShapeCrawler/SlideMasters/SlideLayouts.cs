@@ -9,47 +9,38 @@ namespace ShapeCrawler.SlideMasters;
 
 internal sealed record SlideLayouts : IReadOnlyList<ISlideLayout>
 {
-    private readonly SlideMaster parentSlideMaster;
-    private readonly P.SlideLayoutIdList slideLayoutIdList;
-    private readonly Lazy<List<SlideLayout>> layoutsLazy;
+    private readonly SlideMasterPart sdkSlideMasterPart;
 
-    internal SlideLayouts(SlideMaster parentSlideMaster, P.SlideLayoutIdList slideLayoutIdList)
+    internal SlideLayouts(SlideMasterPart sdkSlideMasterPart)
     {
-        this.parentSlideMaster = parentSlideMaster;
-        this.slideLayoutIdList = slideLayoutIdList;
-        this.layoutsLazy = new Lazy<List<SlideLayout>>(this.ParseSlideLayouts());
+        this.sdkSlideMasterPart = sdkSlideMasterPart;
     }
     
-    private List<SlideLayout> ParseSlideLayouts()
+    private List<ISlideLayout> LayoutList()
     {
-        var rIdList = this.slideLayoutIdList.OfType<P.SlideLayoutId>().Select(layoutId => layoutId.RelationshipId!);
-        var layouts = new List<SlideLayout>(rIdList.Count());
+        var rIdList = this.sdkSlideMasterPart.SlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>().Select(layoutId => layoutId.RelationshipId!);
+        var layouts = new List<ISlideLayout>(rIdList.Count());
         var number = 1;
         foreach (var rId in rIdList)
         {
-            SlideLayoutPart sdkLayoutPart = this.parentSlideMaster.SDKLayoutPart(rId.Value!);
-            layouts.Add(new SlideLayout(this, sdkLayoutPart, number++));
+            var sdkLayoutPart = (SlideLayoutPart)this.sdkSlideMasterPart.GetPartById(rId.Value!);
+            layouts.Add(new SlideLayout(sdkLayoutPart));
         }
-
+    
         return layouts;
     }
-    
-    internal SlideMaster SlideMaster()
-    {
-        return this.parentSlideMaster;
-    }
 
+    public int Count => this.LayoutList().Count;
+
+    public ISlideLayout this[int index] => this.LayoutList()[index];
+    
     public IEnumerator<ISlideLayout> GetEnumerator()
     {
-        throw new System.NotImplementedException();
+        return this.LayoutList().GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
         return this.GetEnumerator();
     }
-
-    public int Count { get; }
-
-    public ISlideLayout this[int index] => this.layoutsLazy.Value[index];
 }

@@ -13,15 +13,16 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Services;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.SlideShape;
 
-internal sealed class SlideShapes : ISlideShapeCollection
+internal sealed record SlideShapes : ISlideShapeCollection
 {
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly SlidePart sdkSlidePart;
@@ -35,7 +36,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
         this.shapes = new ResetableLazy<List<IShape>>(this.ParseShapes);
     }
 
-    internal void Add(OpenXmlElement pShapeTreeChild)
+    internal void Add(OpenXmlElement pShapeTreeElement)
     {
         var nextId = 1;
         if (this.shapes.Value.Any())
@@ -43,8 +44,8 @@ internal sealed class SlideShapes : ISlideShapeCollection
             nextId = this.shapes.Value.Select(shape => shape.Id).Prepend(0).Max() + 1;
         }
 
-        pShapeTreeChild.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)nextId);
-        this.pShapeTree.Append(pShapeTreeChild);
+        pShapeTreeElement.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)nextId);
+        this.pShapeTree.Append(pShapeTreeElement);
 
         this.shapes.Reset();
     }
@@ -669,7 +670,7 @@ internal sealed class SlideShapes : ISlideShapeCollection
             {
                 var aGraphicData = pShapeTreeElement.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
                 var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
-                var chartPart = (ChartPart)sdkSlidePart.GetPartById(cChartRef.Id!);
+                var chartPart = (ChartPart)this.sdkSlidePart.GetPartById(cChartRef.Id!);
                 var cPlotArea = chartPart!.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
                 var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 

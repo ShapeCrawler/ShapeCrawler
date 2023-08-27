@@ -145,9 +145,7 @@ internal sealed class SlideParagraphPortions : IParagraphPortionCollection
             switch (paraChild)
             {
                 case A.Run aRun:
-                    var runPortion = new TextParagraphPortion(
-                        aRun,
-                        this); 
+                    var runPortion = new TextParagraphPortion(this.sdkSlidePart, aRun); 
                     portions.Add(runPortion);
                     break;
                 case A.Field aField:

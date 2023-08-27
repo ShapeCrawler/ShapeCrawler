@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
@@ -13,6 +14,7 @@ namespace ShapeCrawler.AutoShapes;
 /// </summary>
 internal sealed record TextSlideAutoShape : ISlideAutoShape
 {
+    private readonly SlidePart sdkSlidePart;
     private readonly ISlideAutoShape slideAutoShape;
     private readonly P.TextBody pTextBody;
     private readonly Lazy<TextFrame> textFrame;
@@ -21,8 +23,9 @@ internal sealed record TextSlideAutoShape : ISlideAutoShape
     // 96/72=1.4
     private const double Scale = 1.4;
 
-    internal TextSlideAutoShape(ISlideAutoShape slideAutoShape, P.TextBody pTextBody)
+    internal TextSlideAutoShape(SlidePart sdkSlidePart, ISlideAutoShape slideAutoShape, P.TextBody pTextBody)
     {
+        this.sdkSlidePart = sdkSlidePart;
         this.slideAutoShape = slideAutoShape;
         this.pTextBody = pTextBody;
         this.textFrame = new Lazy<TextFrame>(this.ParseTextFrame);
@@ -30,7 +33,7 @@ internal sealed record TextSlideAutoShape : ISlideAutoShape
 
     private TextFrame ParseTextFrame()
     {
-        var newTextFrame = new TextFrame(pTextBody);
+        var newTextFrame = new TextFrame(this.sdkSlidePart, pTextBody);
         newTextFrame.TextChanged += this.ResizeShape;
 
         return newTextFrame;

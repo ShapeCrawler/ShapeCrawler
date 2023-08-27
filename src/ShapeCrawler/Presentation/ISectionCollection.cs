@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Exceptions;
+using ShapeCrawler.Shapes;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler;
@@ -13,7 +16,7 @@ public interface ISectionCollection : IReadOnlyCollection<ISection>
     /// <summary>
     ///     Gets section by index.
     /// </summary>
-    ISection this[int i] { get; }
+    ISection this[int index] { get; }
 
     /// <summary>
     ///     Removes specified section.
@@ -26,94 +29,58 @@ public interface ISectionCollection : IReadOnlyCollection<ISection>
     ISection GetByName(string sectionName);
 }
 
-internal sealed class SCSectionCollection : ISectionCollection
+internal sealed class Sections : ISectionCollection
 {
-    private readonly List<SCSection> sections;
-    private readonly P14.SectionList? sdkSectionList;
-
-    private SCSectionCollection(PresentationCore presentation, List<SCSection> sections)
+    private readonly PresentationDocument sdkPresDocument;
+    
+    internal Sections (PresentationDocument sdkPresDocument)
     {
-        this.Presentation = presentation;
-        this.sections = sections;
+        this.sdkPresDocument = sdkPresDocument;
     }
 
-    private SCSectionCollection(PresentationCore presentation, List<SCSection> sections, P14.SectionList sdkSectionList)
+    public int Count => this.SectionList().Count;
+
+    private List<Section> SectionList()
     {
-        this.Presentation = presentation;
-        this.sections = sections;
-        this.sdkSectionList = sdkSectionList;
+        var p14SectionList = this.sdkPresDocument.PresentationPart!.Presentation.PresentationExtensionList
+            ?.Descendants<P14.SectionList>().FirstOrDefault();
+        return p14SectionList == null 
+            ? new List<Section>(0) 
+            : p14SectionList.OfType<P14.Section>().Select(p14Section => new Section(this.sdkPresDocument, p14Section)).ToList();
     }
 
-    public int Count => this.sections.Count;
-
-    internal PresentationCore Presentation { get; }
-
-    public ISection this[int i] => this.sections[i];
+    public ISection this[int index] => this.SectionList()[index];
 
     public IEnumerator<ISection> GetEnumerator()
     {
-        return this.sections.GetEnumerator();
+        return this.SectionList().GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-        return this.sections.GetEnumerator();
+        return this.GetEnumerator();
     }
 
     public void Remove(ISection removingSection)
     {
-        if (this.sdkSectionList == null || this.Count == 0)
+        if (removingSection is not IRemoveable removeable)
         {
-            return;
+            throw new SCException("Section cannot be removed.");
         }
+        
+        var total = this.Count;
+        removeable.Remove();
 
-        var sectionInternal = (SCSection)removingSection;
-        sectionInternal.SDKSection.Remove();
-
-        if (this.sections.Count == 1)
+        if (total == 1)
         {
-            this.sdkSectionList.Remove();
+            this.sdkPresDocument.PresentationPart!.Presentation.PresentationExtensionList
+                ?.Descendants<P14.SectionList>().First()
+                .Remove();
         }
-
-        this.sections.Remove(sectionInternal);
     }
 
     public ISection GetByName(string sectionName)
     {
-        return this.sections.First(section => section.Name == sectionName);
+        return this.SectionList().First(section => section.Name == sectionName);
     }
-
-    internal static SCSectionCollection Create(PresentationCore presentation)
-    {
-        var sections = new List<SCSection>();
-        var sdkSectionList = presentation.SDKPresentationDocument.PresentationPart!.Presentation.PresentationExtensionList
-            ?.Descendants<P14.SectionList>().FirstOrDefault();
-
-        if (sdkSectionList == null)
-        {
-            return new SCSectionCollection(presentation, sections);
-        }
-
-        var sectionCollection = new SCSectionCollection(presentation, sections, sdkSectionList);
-
-        foreach (P14.Section pSection in sdkSectionList.OfType<P14.Section>())
-        {
-            sections.Add(new SCSection(sectionCollection, pSection));
-        }
-
-        return new SCSectionCollection(presentation, sections, sdkSectionList);
-    }
-
-    internal void RemoveSldId(string id)
-    {
-        var removing = this.sdkSectionList?.Descendants<P14.SectionSlideIdListEntry>().FirstOrDefault(s => s.Id == id);
-        if (removing == null)
-        {
-            return;
-        }
-
-        removing.Remove();
-        this.Presentation.SDKPresentationDocument.PresentationPart!.Presentation.Save();
-    }
-    
 }

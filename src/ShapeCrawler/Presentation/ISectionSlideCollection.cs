@@ -1,67 +1,45 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DocumentFormat.OpenXml.Office2010.PowerPoint;
+using DocumentFormat.OpenXml.Packaging;
+using P = DocumentFormat.OpenXml.Presentation;
+using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler;
 
-/// <summary>
-///     Represents collection of section slide.
-/// </summary>
-public interface ISectionSlideCollection : IEnumerable<ISlide>
+internal sealed class SectionSlides : IReadOnlyList<ISlide>
 {
-    /// <summary>
-    ///     Gets sections count.
-    /// </summary>
-    int Count { get; }
+    private readonly PresentationDocument sdkPresDocument;
+    private readonly IEnumerable<SectionSlideIdListEntry> p14SectionSlideIdListEntryList;
 
-    /// <summary>
-    ///     Gets section slide by index.
-    /// </summary>
-    ISlide this[int index] { get; }
-}
-
-internal sealed class SCSectionSlideCollection : ISectionSlideCollection
-{
-    private readonly SCSection parentSection;
-    private List<Slide> sectionSlides;
-
-    public SCSectionSlideCollection(SCSection parentSection)
+    internal SectionSlides(
+        PresentationDocument sdkPresDocument,
+        IEnumerable<P14.SectionSlideIdListEntry> p14SectionSlideIdListEntryList)
     {
-        this.parentSection = parentSection;
-        var slides = parentSection.Sections.Presentation.SlidesInternal;
-        slides.CollectionChanged += this.OnPresSlideCollectionChanged;
-
-        this.sectionSlides = new List<Slide>();
-        this.Initialize();
+        this.sdkPresDocument = sdkPresDocument;
+        this.p14SectionSlideIdListEntryList = p14SectionSlideIdListEntryList;
     }
 
-    public int Count => this.sectionSlides.Count;
+    public int Count => this.ReadOnlySlides().Count;
 
-    public ISlide this[int index] => this.sectionSlides[index];
+    public ISlide this[int index] => this.ReadOnlySlides()[index];
 
-    public IEnumerator<ISlide> GetEnumerator()
+    public IEnumerator<ISlide> GetEnumerator() => this.ReadOnlySlides().GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+    
+    private ReadOnlySlides ReadOnlySlides()
     {
-        return this.sectionSlides.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return this.GetEnumerator();
-    }
-
-    private void OnPresSlideCollectionChanged(object? sender, EventArgs e)
-    {
-        this.Initialize();
-    }
-
-    private void Initialize()
-    {
-        this.sectionSlides = new List<Slide>();
-        foreach (var sectionSlideIdListEntry in this.parentSection.SDKSection.Descendants<SectionSlideIdListEntry>())
+        var sdkSlideParts = new List<SlidePart>();
+        var idToRId = this.sdkPresDocument.PresentationPart!.Presentation.SlideIdList!.ChildElements.OfType<P.SlideId>().ToDictionary(x=>x.Id, x=>x.RelationshipId);
+        foreach (var p14SectionSlideIdListEntry in this.p14SectionSlideIdListEntryList)
         {
-            var slide = this.parentSection.Sections.Presentation.SlidesInternal.GetBySlideId(sectionSlideIdListEntry.Id!);
-            this.sectionSlides.Add(slide);
+            var rId = idToRId[p14SectionSlideIdListEntry.Id]!.Value!;
+            var slidePart = (SlidePart)this.sdkPresDocument.PresentationPart!.GetPartById(rId);
+            sdkSlideParts.Add(slidePart);
         }
+
+        return new ReadOnlySlides(sdkSlideParts);
     }
 }

@@ -48,13 +48,13 @@ internal sealed class SlideMaster : ISlideMaster
 {
     private readonly ResetableLazy<SlideLayouts> layouts;
     private readonly Lazy<MasterSlideNumber?> slideNumber;
-    private readonly P.SlideMaster pSlideMaster;
+    private readonly SlideMasterPart sdkSlideMasterPart;
 
-    internal SlideMaster(P.SlideMaster pSlideMaster, int number)
+    internal SlideMaster(SlideMasterPart sdkSlideMasterPart, int number)
     {
-        this.pSlideMaster = pSlideMaster;
+        this.sdkSlideMasterPart = sdkSlideMasterPart;
         this.Number = number;
-        this.layouts = new ResetableLazy<SlideLayouts>(() => new SlideLayouts(this, pSlideMaster.SlideLayoutIdList!));
+        this.layouts = new ResetableLazy<SlideLayouts>(() => new SlideLayouts(this.sdkSlideMasterPart));
         this.slideNumber = new Lazy<MasterSlideNumber?>(this.CreateSlideNumber);
     }
 
@@ -69,8 +69,6 @@ internal sealed class SlideMaster : ISlideMaster
 
     public int Number { get; set; }
 
-    internal ThemePart ThemePart => this.pSlideMaster.SlideMasterPart!.ThemePart!;
-
     private SlidePictureImage? GetBackground()
     {
         return null;
@@ -78,31 +76,15 @@ internal sealed class SlideMaster : ISlideMaster
     
     private ITheme GetTheme()
     {
-        return new SCTheme(this, this.pSlideMaster.SlideMasterPart!.ThemePart!.Theme);
+        return new SCTheme(this, this.sdkSlideMasterPart.ThemePart!.Theme);
     }
     
     private MasterSlideNumber? CreateSlideNumber()
     {
-        var pSldNum = this.pSlideMaster.CommonSlideData!.ShapeTree!
+        var pSldNum = this.sdkSlideMasterPart.SlideMaster.CommonSlideData!.ShapeTree!
             .Elements<P.Shape>()
             .FirstOrDefault(s => s.NonVisualShapeProperties?.ApplicationNonVisualDrawingProperties?.PlaceholderShape?.Type?.Value == P.PlaceholderValues.SlideNumber);
         
         return pSldNum is null ? null : new MasterSlideNumber(pSldNum, new Position(pSldNum.ShapeProperties!.Transform2D!.Offset!));
-    }
-
-    internal ParagraphLevelFont? BodyStyleFontDataOrNullForParagraphLevel(int paraLevel)
-    {
-        var paraToFont = FontDataParser.FromCompositeElement(this.pSlideMaster.TextStyles!.BodyStyle!);
-        if (paraToFont.TryGetValue(paraLevel, out var fontData))
-        {
-            return fontData;
-        }
-
-        return null;
-    }
-
-    internal SlideLayoutPart SDKLayoutPart(string rIdValue)
-    {
-        return (SlideLayoutPart)this.pSlideMaster.SlideMasterPart!.GetPartById(rIdValue);
     }
 }

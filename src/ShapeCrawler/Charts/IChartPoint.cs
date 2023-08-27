@@ -24,7 +24,7 @@ internal sealed class ChartPoint : IChartPoint
     private readonly SlideChart _parentSlideChart;
     private readonly string sheetName;
     private readonly C.NumericValue? cNumericValue;
-    private readonly ChartWorkbook? workbook;
+    private readonly ChartSpreadsheet? workbook;
 
     internal ChartPoint(SlideChart parentSlideChart, string sheetName, string address, C.NumericValue? cNumericValue)
         : this(parentSlideChart, sheetName, address)

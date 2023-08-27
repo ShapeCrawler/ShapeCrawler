@@ -17,6 +17,9 @@ internal sealed class ResetableLazy<T>
 
     internal void Reset()
     {
-        this.lazy = new Lazy<T>(this.valueFactory);
+        if (this.lazy.IsValueCreated)
+        {
+            this.lazy = new Lazy<T>(this.valueFactory);
+        }
     }
 }

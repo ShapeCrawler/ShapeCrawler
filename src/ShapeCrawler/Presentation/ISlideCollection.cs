@@ -17,13 +17,13 @@ public interface ISlideCollection : IReadOnlyList<ISlide>
     ///     Adds a new slide based on the existing layout.
     /// </summary>
     /// <returns>A new slide.</returns>
-    ISlide AddEmptySlide(ISlideLayout layout);
+    void AddEmptySlide(ISlideLayout layout);
 
     /// <summary>
     ///     Adds a new slide based on the predefined layout type.
     /// </summary>
     /// <returns>A new slide.</returns>
-    ISlide AddEmptySlide(SCSlideLayoutType layoutType);
+    void AddEmptySlide(SCSlideLayoutType layoutType);
 
     /// <summary>
     ///     Adds specified slide.
@@ -36,9 +36,4 @@ public interface ISlideCollection : IReadOnlyList<ISlide>
     /// <param name="position">Position at which specified slide will be inserted.</param>
     /// <param name="slide">The slide to insert.</param>
     void Insert(int position, ISlide slide);
-    
-    /// <summary>
-    ///     Shape collection.
-    /// </summary>
-    ISlideShapeCollection Shapes { get; }
 }

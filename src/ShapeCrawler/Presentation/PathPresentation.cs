@@ -57,8 +57,5 @@ internal sealed record PathPresentation : ICopyablePresentation
     public ISectionCollection Sections => this.presentationCore.Sections;
     
     /// <inheritdoc />
-    public PresentationDocument SDKPresentationDocument => this.presentationCore.SDKPresentationDocument;
-    
-    /// <inheritdoc />
     public IHeaderAndFooter HeaderAndFooter => this.presentationCore.HeaderAndFooter;
 }

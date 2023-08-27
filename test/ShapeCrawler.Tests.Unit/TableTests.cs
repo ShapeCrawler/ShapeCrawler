@@ -185,7 +185,7 @@ public class TableTests : SCTest
         var row = targetTable.Rows.Last();
 
         // Act
-        row.Clone();
+        row.Duplicate();
 
         // Assert
         var rowCountAfter = targetTable.Rows.Count;

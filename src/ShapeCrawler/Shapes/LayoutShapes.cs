@@ -5,16 +5,9 @@ namespace ShapeCrawler.Shapes;
 
 internal sealed record LayoutShapes : IReadOnlyShapeCollection
 {
-    private readonly SlideLayout parentLayout;
 
-    internal LayoutShapes(SlideLayout parentLayout)
+    internal LayoutShapes()
     {
-        this.parentLayout = parentLayout;
-    }
-    
-    internal SlideMaster SlideMaster()
-    {
-        return this.parentLayout.SlideMaster();
     }
 
     public IEnumerator<IShape> GetEnumerator()

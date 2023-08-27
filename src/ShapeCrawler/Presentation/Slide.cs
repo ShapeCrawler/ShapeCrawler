@@ -12,6 +12,7 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideShape;
 using SkiaSharp;
 
 // ReSharper disable CheckNamespace
@@ -23,25 +24,21 @@ internal sealed class Slide : ISlide
     private readonly ResetableLazy<SlideShapes> shapes;
     private readonly Lazy<SlideBackgroundImage> backgroundImage;
     private Lazy<CustomXmlPart?> customXmlPart;
-    private readonly int slideWidth;
-    private readonly int slideHeight;
-    private readonly Slides parentSlideCollection;
     private readonly SlidePart sdkSlidePart;
+    private readonly SlideSize slideSize;
 
-    internal Slide( 
-        SlidePart sdkSlidePart, 
-        SlideId pSlideId, 
-        SlideLayout slideLayout,
-        int slideWidth, 
-        int slideHeight,
-        Slides parentSlideCollection)
+    internal Slide(
+        SlidePart sdkSlidePart,
+        SlideId pSlideId,
+        ISlideLayout slideLayout,
+        SlideSize slideSize)
     {
         this.sdkSlidePart = sdkSlidePart;
-        this.slideWidth = slideWidth;
-        this.slideHeight = slideHeight;
-        this.parentSlideCollection = parentSlideCollection;
-        this.shapes = new ResetableLazy<SlideShapes>(() => new SlideShapes(this, this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!));
-        this.backgroundImage = new Lazy<SlideBackgroundImage>(() => new SlideBackgroundImage(this, sdkSlidePart.Slide.CommonSlideData!.ShapeTree!));
+        this.slideSize = slideSize;
+        this.shapes = new ResetableLazy<SlideShapes>(() =>
+            new SlideShapes(this.sdkSlidePart, this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!));
+        this.backgroundImage = new Lazy<SlideBackgroundImage>(() =>
+            new SlideBackgroundImage(this, sdkSlidePart.Slide.CommonSlideData!.ShapeTree!));
         this.customXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideId = pSlideId;
         this.SlideLayout = slideLayout;
@@ -53,7 +50,7 @@ internal sealed class Slide : ISlide
 
     public int Number
     {
-        get => this.GetNumber();
+        get => this.ParseNumber();
         set => this.UpdateNumber(value);
     }
 
@@ -66,15 +63,8 @@ internal sealed class Slide : ISlide
     }
 
     public bool Hidden => this.sdkSlidePart.Slide.Show is not null && this.sdkSlidePart.Slide.Show.Value == false;
-    
-    internal TypedOpenXmlPart TypedOpenXmlPart => this.sdkSlidePart;
 
     internal SlideId SlideId { get; }
-
-    internal SlidePart SDKSlidePart()
-    {
-        return this.sdkSlidePart;
-    }
 
     public void Hide()
     {
@@ -94,7 +84,7 @@ internal sealed class Slide : ISlide
         var browsingContext = BrowsingContext.New(Configuration.Default.WithDefaultLoader().WithCss());
         var document = await browsingContext.OpenNewAsync().ConfigureAwait(false);
         var body = document.Body!;
-        
+
         foreach (var shape in this.Shapes.OfType<SlideAutoShape>())
         {
             body.AppendChild(shape.ToHtmlElement());
@@ -105,16 +95,16 @@ internal sealed class Slide : ISlide
 
     public void SaveAsPng(Stream stream)
     {
-        var imageInfo = new SKImageInfo(this.slideWidth, this.slideHeight);
+        var imageInfo = new SKImageInfo(this.slideSize.Width(), this.slideSize.Height());
         var surface = SKSurface.Create(imageInfo);
         var canvas = surface.Canvas;
         canvas.Clear(SKColors.White); // TODO: #344 get real
-        
+
         foreach (var autoShape in this.Shapes.OfType<SlideAutoShape>())
         {
             autoShape.Draw(canvas);
         }
-        
+
         var image = surface.Snapshot();
         var bitmap = SKBitmap.FromImage(image);
         var data = bitmap.Encode(SKEncodedImageFormat.Png, 100);
@@ -165,9 +155,9 @@ internal sealed class Slide : ISlide
                     this.AddAllTextboxesInGroupToList((IGroupShape)shape, textBoxes);
                     break;
                 case SCShapeType.AutoShape:
-                    if (shape is ITextFrameContainer)
+                    if (shape is TextSlideAutoShape textSlideAutoShape)
                     {
-                        textBoxes.Add(((ITextFrameContainer)shape).TextFrame!);
+                        textBoxes.Add(textSlideAutoShape.TextFrame);
                     }
 
                     break;
@@ -175,9 +165,10 @@ internal sealed class Slide : ISlide
         }
     }
 
-    private int GetNumber()
+    private int ParseNumber()
     {
-        var presentationPart = this.PresCore.SDKPresentation.PresentationPart!;
+        var sdkPresentationDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
+        var presentationPart = sdkPresentationDocument.PresentationPart!;
         var currentSlidePartId = presentationPart.GetIdOfPart(this.sdkSlidePart);
         var slideIdList =
             presentationPart.Presentation.SlideIdList!.ChildElements.OfType<SlideId>().ToList();
@@ -198,16 +189,17 @@ internal sealed class Slide : ISlide
         {
             return;
         }
-        
+
         var currentIndex = this.Number - 1;
         var destIndex = newSlideNumber - 1;
-        
-        if (destIndex < 0 || currentIndex >= totalSlideCount.Invoke() || destIndex == currentIndex)
+        var sdkPresentationDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
+        if (destIndex < 0 || currentIndex >= sdkPresentationDocument.PresentationPart!.SlideParts.Count() ||
+            destIndex == currentIndex)
         {
             throw new ArgumentOutOfRangeException(nameof(destIndex));
         }
 
-        var presentationPart = this.Presentation.SDKPresentationDocument.PresentationPart!;
+        var presentationPart = sdkPresentationDocument.PresentationPart!;
 
         var presentation = presentationPart.Presentation;
         var slideIdList = presentation.SlideIdList!;
@@ -283,8 +275,8 @@ internal sealed class Slide : ISlide
             using var customXmlPartStream = new StreamReader(customXmlPart.GetStream());
             string customXmlPartText = customXmlPartStream.ReadToEnd();
             if (customXmlPartText.StartsWith(
-                SCConstants.CustomDataElementName,
-                StringComparison.CurrentCulture))
+                    SCConstants.CustomDataElementName,
+                    StringComparison.CurrentCulture))
             {
                 return customXmlPart;
             }
@@ -293,18 +285,8 @@ internal sealed class Slide : ISlide
         return null;
     }
 
-    internal List<ImagePart> SDKImageParts()
+    internal PresentationDocument SDKPresentationDocument()
     {
-        return this.parentSlideCollection.SDKImageParts();
-    }
-
-    public PresentationCore Presentation()
-    {
-        return this.parentSlideCollection.Presentation();
-    }
-
-    internal SlideMaster SlideMaster()
-    {
-        return this.parentSlideCollection.SlideMaster();
+        return (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
     }
 }

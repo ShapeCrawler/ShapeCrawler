@@ -30,6 +30,9 @@ public interface ISlideLayout
 
 internal sealed class SlideLayout : ISlideLayout
 {
+    private readonly ResetableLazy<LayoutShapes> shapes;
+    private readonly SlideLayoutPart sdkLayoutPart;
+    
     private static readonly Dictionary<string, SCSlideLayoutType> TypeMapping = new()
     {
         // https://c-rex.net/samples/ooxml/e1/Part4/OOXML_P4_DOCX_ST_SlideLayoutType_topic_ID0EKTIIB.html
@@ -71,22 +74,11 @@ internal sealed class SlideLayout : ISlideLayout
         { "vertTx", SCSlideLayoutType.VerticalText }
     };
 
-    private readonly ResetableLazy<LayoutShapes> shapes;
-    private readonly SlideLayouts parentLayoutCollection;
-    private readonly SlideLayoutPart sdkLayoutPart;
-
-    internal SlideLayout(
-        SlideLayouts parentLayoutCollection, 
-        SlideLayoutPart sdkLayoutPart, 
-        int number)
+    internal SlideLayout(SlideLayoutPart sdkLayoutPart)
     {
-        this.parentLayoutCollection = parentLayoutCollection;
         this.sdkLayoutPart = sdkLayoutPart;
-        this.Number = number;
-        this.shapes = new ResetableLazy<LayoutShapes>(() => new LayoutShapes(this));
+        this.shapes = new ResetableLazy<LayoutShapes>(() => new LayoutShapes());
     }
-
-    public int Number { get; set; }
 
     public string Name => this.GetName();
 
@@ -104,8 +96,8 @@ internal sealed class SlideLayout : ISlideLayout
         return TypeMapping[this.sdkLayoutPart.SlideLayout.Type!];
     }
 
-    internal SlideMaster SlideMaster()
+    internal SlideLayoutPart SDKSlideLayoutPart()
     {
-        return this.parentLayoutCollection.SlideMaster();
+        return this.sdkLayoutPart;
     }
 }
