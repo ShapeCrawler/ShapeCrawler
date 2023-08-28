@@ -676,7 +676,7 @@ internal sealed record SlideShapes : ISlideShapeCollection
 
                 if (cCharts.Count() > 1)
                 {
-                    shapesValue.Add(new SlideChart((P.GraphicFrame)pShapeTreeElement, this));
+                    shapesValue.Add(new SlideChart(this.sdkSlidePart, (P.GraphicFrame)pShapeTreeElement));
                     continue;
                 }
 
@@ -684,25 +684,25 @@ internal sealed record SlideShapes : ISlideShapeCollection
 
                 if (chartTypeName == "lineChart")
                 {
-                    shapesValue.Add(new SlideChart((P.GraphicFrame)pShapeTreeElement, this));
+                    shapesValue.Add(new SlideChart(this.sdkSlidePart,(P.GraphicFrame)pShapeTreeElement));
                 }
 
                 if (chartTypeName == "barChart")
                 {
-                    shapesValue.Add(new SlideChart((P.GraphicFrame)pShapeTreeElement, this));
+                    shapesValue.Add(new SlideChart(this.sdkSlidePart,(P.GraphicFrame)pShapeTreeElement));
                 }
 
                 if (chartTypeName == "pieChart")
                 {
-                    shapesValue.Add(new SlideChart((P.GraphicFrame)pShapeTreeElement, this));
+                    shapesValue.Add(new SlideChart(this.sdkSlidePart,(P.GraphicFrame)pShapeTreeElement));
                 }
 
                 if (chartTypeName == "scatterChart")
                 {
-                    shapesValue.Add(new SlideChart((P.GraphicFrame)pShapeTreeElement, this));
+                    shapesValue.Add(new SlideChart(this.sdkSlidePart,(P.GraphicFrame)pShapeTreeElement));
                 }
 
-                var chart = new SlideChart((P.GraphicFrame)pShapeTreeElement, this);
+                var chart = new SlideChart(this.sdkSlidePart,(P.GraphicFrame)pShapeTreeElement);
                 shapesValue.Add(chart);
             }
             else if (this.IsTablePGraphicFrame(pShapeTreeElement))

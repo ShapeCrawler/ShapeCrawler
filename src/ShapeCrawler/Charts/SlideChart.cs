@@ -32,7 +32,7 @@ internal sealed record SlideChart : IRemoveable, IChart
     private string? chartTitle;
     private readonly Shape shape;
 
-    internal SlideChart(SlicersPart sdkSlidePart, P.GraphicFrame pGraphicFrame)
+    internal SlideChart(SlidePart sdkSlidePart, P.GraphicFrame pGraphicFrame)
     {
         this.pGraphicFrame = pGraphicFrame;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);

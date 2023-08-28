@@ -12,7 +12,6 @@ internal class TableCellFill : IShapeFill
 {
     private readonly SlidePart sdkSlidePart;
     private readonly TypedOpenXmlCompositeElement cellProperties;
-    private readonly TableCell parentTableCell;
     private BooleanValue? useBgFill;
     private SCFillType fillType;
     private bool isDirty;
@@ -23,11 +22,10 @@ internal class TableCellFill : IShapeFill
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
 
-    internal TableCellFill(SlidePart sdkSlidePart, A.TableCellProperties cellProperties, TableCell parentTableCell)
+    internal TableCellFill(SlidePart sdkSlidePart, A.TableCellProperties cellProperties)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.cellProperties = cellProperties;
-        this.parentTableCell = parentTableCell;
         this.isDirty = true;
     }
 
@@ -159,7 +157,7 @@ internal class TableCellFill : IShapeFill
             if (blipEmbedValue != null)
             {
                 var imagePart = (ImagePart)this.sdkSlidePart.GetPartById(blipEmbedValue);
-                var image = new CellFillImage(this.aBlipFill, imagePart, this);
+                var image = new CellFillImage(this.sdkSlidePart, this.aBlipFill, imagePart);
                 this.pictureImage = image;
                 this.fillType = SCFillType.Picture;
             }

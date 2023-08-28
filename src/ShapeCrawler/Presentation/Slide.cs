@@ -38,7 +38,7 @@ internal sealed class Slide : ISlide
         this.shapes = new ResetableLazy<SlideShapes>(() =>
             new SlideShapes(this.sdkSlidePart, this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!));
         this.backgroundImage = new Lazy<SlideBackgroundImage>(() =>
-            new SlideBackgroundImage(this, sdkSlidePart.Slide.CommonSlideData!.ShapeTree!));
+            new SlideBackgroundImage(sdkSlidePart));
         this.customXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideId = pSlideId;
         this.SlideLayout = slideLayout;

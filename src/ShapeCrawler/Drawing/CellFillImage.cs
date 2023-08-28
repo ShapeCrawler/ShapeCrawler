@@ -10,9 +10,16 @@ namespace ShapeCrawler.Drawing;
 
 internal sealed class CellFillImage : IImage
 {
+    private readonly SlidePart sdkSlidePart;
     private ImagePart sdkImagePart;
-    private readonly TableCellFill parentTableCellFill;
     private readonly A.Blip aBlip;
+
+    internal CellFillImage(SlidePart sdkSlidePart, A.BlipFill aBlipFill, ImagePart sdkImagePart)
+    {
+        this.sdkSlidePart = sdkSlidePart;
+        this.aBlip = aBlipFill.Blip!;
+        this.sdkImagePart = sdkImagePart;
+    }
 
     public string MIME => this.sdkImagePart.ContentType;
 
@@ -20,12 +27,11 @@ internal sealed class CellFillImage : IImage
 
     public void Update(Stream stream)
     {
-        List<ImagePart> imageParts = this.parentTableCellFill.SDKImageParts();
-        var isSharedImagePart = imageParts.Count(x => x == this.sdkImagePart) > 1;
+        var isSharedImagePart = this.sdkSlidePart.ImageParts.Count(x => x == this.sdkImagePart) > 1;
         if (isSharedImagePart)
         {
             var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
-            this.sdkImagePart = this.parentTableCellFill.SDKSlidePart().AddNewPart<ImagePart>("image/png", rId);
+            this.sdkImagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", rId);
             this.aBlip.Embed!.Value = rId;
         }
 
@@ -44,13 +50,6 @@ internal sealed class CellFillImage : IImage
     {
         byte[] sourceBytes = File.ReadAllBytes(filePath);
         this.Update(sourceBytes);
-    }
-
-    internal CellFillImage(A.BlipFill aBlipFill, ImagePart sdkImagePart, TableCellFill parentTableCellFill)
-    {
-        this.aBlip = aBlipFill.Blip!;
-        this.sdkImagePart = sdkImagePart;
-        this.parentTableCellFill = parentTableCellFill;
     }
 
     private string GetName()

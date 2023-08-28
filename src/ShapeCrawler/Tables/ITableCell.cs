@@ -32,25 +32,21 @@ public interface ITableCell
 
 internal sealed record TableCell : ITableCell
 {
-    private readonly Lazy<TextFrame> textFrame;
-    private readonly Lazy<TableCellFill> shapeFill;
-
     internal TableCell(SlidePart sdkSlidePart, A.TableCell aTableCell, int rowIndex, int columnIndex)
     {
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
-        this.textFrame = new Lazy<TextFrame>(()=> new TextFrame(sdkSlidePart, this.ATableCell.TextBody!));
+        this.TextFrame = new TextFrame(sdkSlidePart, this.ATableCell.TextBody!);
         var tableCellProperties = aTableCell.TableCellProperties!;
-        this.shapeFill = new Lazy<TableCellFill>(() =>
-            new TableCellFill(tableCellProperties, this));
+        this.Fill = new TableCellFill(sdkSlidePart, tableCellProperties);
     }
 
     public bool IsMergedCell => this.DefineWhetherCellIsMerged();
 
-    public IShapeFill Fill => this.shapeFill.Value;
+    public IShapeFill Fill { get; }
 
-    public ITextFrame TextFrame => this.textFrame.Value;
+    public ITextFrame TextFrame { get; }
 
     internal A.TableCell ATableCell { get; init; }
 

@@ -10,11 +10,14 @@ namespace ShapeCrawler.Drawing;
 
 internal sealed class SlideBackgroundImage : ISlideBackgroundImage
 {
-    private readonly Slide slide;
-    private readonly P.ShapeTree pShapeTree;
-
+    private readonly SlidePart sdkSlidePart;
     private const string NotPresentedErrorMessage =
         $"Background image is not presented. Use {nameof(ISlideBackgroundImage.Present)} to check.";
+    
+    internal SlideBackgroundImage(SlidePart sdkSlidePart)
+    {
+        this.sdkSlidePart = sdkSlidePart;
+    }
 
     public string MIME => this.ParseMIME();
 
@@ -22,14 +25,14 @@ internal sealed class SlideBackgroundImage : ISlideBackgroundImage
 
     public void Update(Stream stream)
     {
-        A.Blip aBlip = ParseABlip();
-        var imageParts = this.slide.SDKImageParts();
-        ImagePart sdkImagePart = this.SDKImagePartOrNull();
+        var aBlip = ParseABlip();
+        var imageParts = this.sdkSlidePart.ImageParts;
+        var sdkImagePart = this.SDKImagePartOrNull();
         var isSharedImagePart = imageParts.Count(x => x == sdkImagePart) > 1;
         if (isSharedImagePart)
         {
             var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
-            sdkImagePart = this.slide.SDKSlidePart().AddNewPart<ImagePart>("image/png", rId);
+            sdkImagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", rId);
             aBlip.Embed!.Value = rId;
         }
 
@@ -69,12 +72,6 @@ internal sealed class SlideBackgroundImage : ISlideBackgroundImage
     public bool Present()
     {
         throw new NotImplementedException();
-    }
-
-    internal SlideBackgroundImage(Slide parentSlide, P.ShapeTree pShapeTree)
-    {
-        this.slide = parentSlide;
-        this.pShapeTree = pShapeTree;
     }
 
     private A.Blip ParseABlip()

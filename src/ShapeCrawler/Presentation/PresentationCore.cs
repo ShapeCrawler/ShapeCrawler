@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using DocumentFormat.OpenXml;
+﻿using System.IO;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Charts;
-using ShapeCrawler.Drawing;
-using ShapeCrawler.Fonts;
-using ShapeCrawler.Services;
-using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler;

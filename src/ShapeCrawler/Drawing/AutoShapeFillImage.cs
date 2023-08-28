@@ -10,9 +10,16 @@ namespace ShapeCrawler.Drawing;
 
 internal sealed class AutoShapeFillImage : IImage
 {
+    private readonly SlidePart sdkSlidePart;
     private ImagePart sdkImagePart;
-    private readonly SlideAutoShapeFill parentSlideAutoShapeFill;
     private readonly A.Blip aBlip;
+
+    internal AutoShapeFillImage(SlidePart sdkSlidePart, A.BlipFill aBlipFill, ImagePart sdkImagePart)
+    {
+        this.sdkSlidePart = sdkSlidePart;
+        this.aBlip = aBlipFill.Blip!;
+        this.sdkImagePart = sdkImagePart;
+    }
     
     public string MIME => this.sdkImagePart.ContentType;
 
@@ -20,12 +27,11 @@ internal sealed class AutoShapeFillImage : IImage
 
     public void Update(Stream stream)
     {
-        List<ImagePart> imageParts = this.parentSlideAutoShapeFill.SDKImageParts();
-        var isSharedImagePart = imageParts.Count(x=>x == this.sdkImagePart) > 1;
+        var isSharedImagePart = this.sdkSlidePart.ImageParts.Count(x=>x == this.sdkImagePart) > 1;
         if (isSharedImagePart)
         {
             var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
-            this.sdkImagePart = this.parentSlideAutoShapeFill.SDKSlidePart().AddNewPart<ImagePart>("image/png", rId);
+            this.sdkImagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", rId);
             this.aBlip.Embed!.Value = rId;
         }
 
@@ -44,13 +50,6 @@ internal sealed class AutoShapeFillImage : IImage
     {
         byte[] sourceBytes = File.ReadAllBytes(filePath);
         this.Update(sourceBytes);
-    }
-    
-    internal AutoShapeFillImage (A.BlipFill aBlipFill, ImagePart sdkImagePart, SlideAutoShapeFill parentSlideAutoShapeFill)
-    {
-        this.aBlip = aBlipFill.Blip!;
-        this.sdkImagePart = sdkImagePart;
-        this.parentSlideAutoShapeFill = parentSlideAutoShapeFill;
     }
 
     private string GetName()

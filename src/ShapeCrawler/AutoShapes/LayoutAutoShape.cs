@@ -13,11 +13,7 @@ internal sealed record LayoutAutoShape : IAutoShape
     private readonly Shape shape;
     private readonly Lazy<LayoutAutoShapeFill> autoShapeFill;
 
-    internal LayoutAutoShape(
-        SlideLayoutPart sdkLayoutPart, 
-        P.Shape pShape, 
-        Shape shape, 
-        LayoutShapeOutline outline)
+    internal LayoutAutoShape(SlideLayoutPart sdkLayoutPart, P.Shape pShape, Shape shape, LayoutShapeOutline outline)
     {
         this.sdkLayoutPart = sdkLayoutPart;
         this.pShape = pShape;

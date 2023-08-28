@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
+using ShapeCrawler.Wrappers;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -57,18 +58,18 @@ internal sealed class SlideParagraph : IParagraph
     private readonly ResetableLazy<SlideParagraphPortions> portions;
     private SCTextAlignment? alignment;
     private readonly SlidePart sdkSlidePart;
-    private readonly AParagraphWrap aParagraphWrap;
+    private readonly SDKAParagraphWrap sdkaParagraphWrap;
 
     internal SlideParagraph(SlidePart sdkSlidePart, A.Paragraph aParagraph)
-        : this(sdkSlidePart, aParagraph, new AParagraphWrap(aParagraph))
+        : this(sdkSlidePart, aParagraph, new SDKAParagraphWrap(aParagraph))
     {
     }
 
-    private SlideParagraph(SlidePart sdkSlidePart, A.Paragraph aParagraph, AParagraphWrap aParagraphWrap)
+    private SlideParagraph(SlidePart sdkSlidePart, A.Paragraph aParagraph, SDKAParagraphWrap sdkaParagraphWrap)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.AParagraph = aParagraph;
-        this.aParagraphWrap = aParagraphWrap;
+        this.sdkaParagraphWrap = sdkaParagraphWrap;
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.bullet = new Lazy<SCBullet>(this.GetBullet);
         this.portions = new ResetableLazy<SlideParagraphPortions>(() => new SlideParagraphPortions(this.sdkSlidePart,this.AParagraph));
@@ -96,8 +97,8 @@ internal sealed class SlideParagraph : IParagraph
 
     public int IndentLevel
     {
-        get => this.aParagraphWrap.IndentLevel();
-        set => this.aParagraphWrap.UpdateIndentLevel(value);
+        get => this.sdkaParagraphWrap.IndentLevel();
+        set => this.sdkaParagraphWrap.UpdateIndentLevel(value);
     }
 
     public ISpacing Spacing => this.GetSpacing();
