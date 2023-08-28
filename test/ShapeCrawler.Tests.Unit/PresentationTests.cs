@@ -18,24 +18,6 @@ namespace ShapeCrawler.Tests.Unit;
 public class PresentationTests : SCTest
 {
     [Test]
-    public void Close_should_not_throw_ObjectDisposedException()
-    {
-        // Arrange
-        var pptx = GetInputStream("025_chart.pptx");
-        var pres = new SCPresentation(pptx);
-        var chart = pres.Slides[0].Shapes.GetById<IPieChart>(7);
-        chart.Categories[0].Name = "new name";
-        var mStream = new MemoryStream();
-        pres.SaveAs(mStream);
-
-        // Act
-        Action act = () => pres.Close();
-
-        // Assert
-        act.Should().NotThrow<ObjectDisposedException>();
-    }
-
-    [Test]
     public void Create_creates_a_new_presentation()
     {
         // Act

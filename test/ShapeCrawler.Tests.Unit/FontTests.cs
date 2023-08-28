@@ -21,7 +21,8 @@ public class FontTests : SCTest
         // Arrange
         var pres = new SCPresentation();
         var slide = pres.Slides[0];
-        var rectangle = slide.Shapes.AddRectangle(10, 10, 10, 10);
+        slide.Shapes.AddRectangle(10, 10, 10, 10);
+        var rectangle = (IAutoShape)slide.Shapes.Last();
         var font = rectangle.TextFrame!.Paragraphs[0].Portions[0].Font;
 
         // Act

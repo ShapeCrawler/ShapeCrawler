@@ -20,8 +20,10 @@ public class ParagraphTests : SCTest
     {
         // Act
         var pres = new SCPresentation();
-        var addedShape = pres.Slides[0].Shapes.AddRectangle(100,100, 500, 100);
-        var paragraph = addedShape.TextFrame!.Paragraphs.Add();
+        pres.Slides[0].Shapes.AddRectangle(100,100, 500, 100);
+        var addedShape = (IAutoShape)pres.Slides[0].Shapes.Last();
+        addedShape.TextFrame!.Paragraphs.Add();
+        var paragraph = addedShape.TextFrame.Paragraphs.Last();
         paragraph.Text = "Test";
         
         // Act
@@ -79,7 +81,8 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pres = new SCPresentation();
-        var table = pres.Slides[0].Shapes.AddTable(10, 10, 2, 2);
+        pres.Slides[0].Shapes.AddTable(10, 10, 2, 2);
+        var table = (ITable)pres.Slides[0].Shapes.Last();
         var cellTextFrame = table.Rows[0].Cells[0].TextFrame;
         cellTextFrame.Text = "some-text";
         var paragraph = cellTextFrame.Paragraphs[0];
@@ -152,8 +155,9 @@ public class ParagraphTests : SCTest
         // Arrange
         var pres = new SCPresentation();
         var slide = pres.Slides[0];
-        var shape = slide.Shapes.AddRectangle(10, 10, 10, 10);
-        var paragraph = shape.TextFrame!.Paragraphs[0];
+        slide.Shapes.AddRectangle(10, 10, 10, 10);
+        var addedShape = (IAutoShape)slide.Shapes.Last();
+        var paragraph = addedShape.TextFrame!.Paragraphs[0];
 
         // Act
         paragraph.Text = "test";
@@ -238,7 +242,8 @@ public class ParagraphTests : SCTest
         var pptx = GetInputStream("autoshape-case001.pptx");
         var pres = new SCPresentation(pptx);
         var shape = pres.SlideMasters[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
-        var paragraph = shape.TextFrame!.Paragraphs.Add();
+        shape.TextFrame!.Paragraphs.Add();
+        var paragraph = shape.TextFrame.Paragraphs.Last();
         var expectedPortionCount = paragraph.Portions.Count + 1;
         
         // Act

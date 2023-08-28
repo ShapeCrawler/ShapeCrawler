@@ -152,8 +152,8 @@ public class ChartTests : SCTest
     public void CategoryName_GetterReturnsChartCategoryName()
     {
         // Arrange
-        IBarChart chartCase1 = (IBarChart)new SCPresentation(GetInputStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
-        IPieChart chartCase3 = (IPieChart)new SCPresentation(GetInputStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
+        IChart chartCase1 = (IChart)new SCPresentation(GetInputStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
+        IChart chartCase3 = (IChart)new SCPresentation(GetInputStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
 
         // Act-Assert
         chartCase1.Categories[0].Name.Should().BeEquivalentTo("Dresses");
@@ -167,7 +167,7 @@ public class ChartTests : SCTest
     public void Category_Name_Getter_returns_category_name_for_chart_from_collection_of_Combination_chart()
     {
         // Arrange
-        var comboChart = (IComboChart)new SCPresentation(GetInputStream("021.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
+        var comboChart = (IChart)new SCPresentation(GetInputStream("021.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
 
         // Act-Assert
         comboChart.Categories[0].Name.Should().BeEquivalentTo("2015");
@@ -177,7 +177,7 @@ public class ChartTests : SCTest
     public void CategoryName_GetterReturnsChartCategoryName_OfMultiCategoryChart()
     {
         // Arrange
-        var chartCase1 = (IBarChart)new SCPresentation(GetInputStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
+        var chartCase1 = (IChart)new SCPresentation(GetInputStream("025_chart.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
 
         // Act-Assert
         chartCase1.Categories[0].MainCategory.Name.Should().BeEquivalentTo("Clothing");
@@ -189,7 +189,7 @@ public class ChartTests : SCTest
         // Arrange
         var pres = new SCPresentation(GetInputStream("025_chart.pptx"));
         MemoryStream mStream = new();
-        IPieChart pieChart4 = (IPieChart)pres.Slides[0].Shapes.First(sp => sp.Id == 7);
+        var pieChart4 = (IChart)pres.Slides[0].Shapes.First(sp => sp.Id == 7);
         const string newCategoryName = "Category 1_new";
 
         // Act
@@ -199,7 +199,7 @@ public class ChartTests : SCTest
         pieChart4.Categories[0].Name.Should().Be(newCategoryName);
         pres.SaveAs(mStream);
         pres = new SCPresentation(mStream);
-        pieChart4 = (IPieChart)pres.Slides[0].Shapes.First(sp => sp.Id == 7);
+        pieChart4 = (IChart)pres.Slides[0].Shapes.First(sp => sp.Id == 7);
         pieChart4.Categories[0].Name.Should().Be(newCategoryName);
     }
 
@@ -208,7 +208,7 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres = new SCPresentation(GetInputStream("025_chart.pptx"));
-        var lineChart = pres.Slides[3].Shapes.GetById<ILineChart>(13);
+        var lineChart = pres.Slides[3].Shapes.GetById<IChart>(13);
         const string newName = "Category 1_new";
         var category = lineChart.Categories[0]; 
 
@@ -228,7 +228,7 @@ public class ChartTests : SCTest
         // Arrange
         Stream preStream = TestFiles.Presentations.pre025_byteArray.ToResizeableStream();
         IPresentation presentation = new SCPresentation(preStream);
-        IBarChart barChart = (IBarChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
+        var barChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
         const string newCategoryName = "Clothing_new";
 
         // Act
@@ -239,7 +239,7 @@ public class ChartTests : SCTest
 
         presentation.Save();
         presentation = new SCPresentation(preStream);
-        barChart = (IBarChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
+        barChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
         barChart.Categories[0].Name.Should().Be(newCategoryName);
     }
 

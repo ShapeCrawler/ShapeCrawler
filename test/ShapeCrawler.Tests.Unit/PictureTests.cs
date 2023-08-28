@@ -26,8 +26,8 @@ public class PictureTests : SCTest
         var shapePicture2 = (IPicture)new SCPresentation(GetInputStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
 
         // Act
-        var shapePictureContentCase1 = await shapePicture1.Image.BinaryData.ConfigureAwait(false);
-        var shapePictureContentCase2 = await shapePicture2.Image.BinaryData.ConfigureAwait(false);
+        var shapePictureContentCase1 = shapePicture1.Image.BinaryData();
+        var shapePictureContentCase2 =  shapePicture2.Image.BinaryData();
 
         // Assert
         shapePictureContentCase1.Should().NotBeEmpty();
@@ -43,7 +43,7 @@ public class PictureTests : SCTest
         var pictureShape = presentation.Slides[0].SlideLayout.Shapes.GetByName<IPicture>("Picture 7");
             
         // Act
-        var picByteArray = await pictureShape.Image.BinaryData;
+        var picByteArray = pictureShape.Image.BinaryData();
             
         // Assert
         picByteArray.Should().NotBeEmpty();
@@ -74,7 +74,7 @@ public class PictureTests : SCTest
         var pictureShape = slideMaster.Shapes.GetByName<IPicture>("Picture 9");
             
         // Act
-        var picByteArray = pictureShape.Image.BinaryData.Result;
+        var picByteArray = pictureShape.Image.BinaryData();
             
         // Assert
         picByteArray.Should().NotBeEmpty();
@@ -90,16 +90,16 @@ public class PictureTests : SCTest
         var mStream = new MemoryStream();
         var picture = pres.Slides[1].Shapes.GetByName<IPicture>("Picture 1");
         var image = picture.Image!; 
-        var lengthBefore = image.BinaryData.Result.Length;
+        var lengthBefore = image.BinaryData().Length;
         
         // Act
-        image.UpdateImage(pngStream);
+        image.Update(pngStream);
 
         // Assert
         pres.SaveAs(mStream);
         pres = new SCPresentation(mStream);
         picture = pres.Slides[1].Shapes.GetByName<IPicture>("Picture 1");
-        var lengthAfter = picture.Image!.BinaryData.Result.Length;
+        var lengthAfter = picture.Image!.BinaryData().Length;
 
         lengthAfter.Should().NotBe(lengthBefore);
     }
@@ -109,7 +109,7 @@ public class PictureTests : SCTest
     {
         // Arrange
         var pptxStream = GetInputStream("pictures-case002.pptx");
-        using var pres = new SCPresentation(pptxStream);
+        var pres = new SCPresentation(pptxStream);
         var picture = pres.Slides[0].Shapes.GetByName<IPicture>("Picture 1");
 
         // Act
@@ -132,12 +132,12 @@ public class PictureTests : SCTest
         var stream = new MemoryStream();
 
         // Act
-        groupedPicture1.Image.SetImage(image);
+        groupedPicture1.Image.Update(image);
 
         // Assert
         pres.SaveAs(stream);
-        var pictureContent1 = groupedPicture1.Image.BinaryData.GetAwaiter().GetResult(); 
-        var pictureContent2 =  groupedPicture2.Image.BinaryData.GetAwaiter().GetResult();
+        var pictureContent1 = groupedPicture1.Image.BinaryData();
+        var pictureContent2 = groupedPicture2.Image.BinaryData();
         pictureContent1.SequenceEqual(pictureContent2).Should().BeFalse();
     }
         
