@@ -28,8 +28,8 @@ public class TestSlidePortionQuery : TestPortionQuery
     {
         var shapes = pres.Slides[this.slideNumber - 1].Shapes;
         var shape = this.shapeName == null
-            ? shapes.GetById<IAutoShape>(this.shapeId)
-            : shapes.GetByName<IAutoShape>(this.shapeName);
+            ? shapes.GetById<IShape>(this.shapeId)
+            : shapes.GetByName<IShape>(this.shapeName);
 
         return shape.TextFrame!.Paragraphs[this.paragraphNumber - 1].Portions[this.portionNumber - 1];
     }

@@ -22,7 +22,7 @@ namespace ShapeCrawler;
 internal sealed class Slide : ISlide
 {
     private readonly ResetableLazy<SlideShapes> shapes;
-    private readonly Lazy<SlideBackgroundImage> backgroundImage;
+    private readonly Lazy<SlideBgImage> backgroundImage;
     private Lazy<CustomXmlPart?> customXmlPart;
     private readonly SlidePart sdkSlidePart;
     private readonly SlideSize slideSize;
@@ -37,8 +37,8 @@ internal sealed class Slide : ISlide
         this.slideSize = slideSize;
         this.shapes = new ResetableLazy<SlideShapes>(() =>
             new SlideShapes(this.sdkSlidePart, this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!));
-        this.backgroundImage = new Lazy<SlideBackgroundImage>(() =>
-            new SlideBackgroundImage(sdkSlidePart));
+        this.backgroundImage = new Lazy<SlideBgImage>(() =>
+            new SlideBgImage(sdkSlidePart));
         this.customXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideId = pSlideId;
         this.SlideLayout = slideLayout;
@@ -85,7 +85,7 @@ internal sealed class Slide : ISlide
         var document = await browsingContext.OpenNewAsync().ConfigureAwait(false);
         var body = document.Body!;
 
-        foreach (var shape in this.Shapes.OfType<SlideAutoShape>())
+        foreach (var shape in this.Shapes.OfType<SlideShape.SlideShape>())
         {
             body.AppendChild(shape.ToHtmlElement());
         }
@@ -100,7 +100,7 @@ internal sealed class Slide : ISlide
         var canvas = surface.Canvas;
         canvas.Clear(SKColors.White); // TODO: #344 get real
 
-        foreach (var autoShape in this.Shapes.OfType<SlideAutoShape>())
+        foreach (var autoShape in this.Shapes.OfType<SlideShape.SlideShape>())
         {
             autoShape.Draw(canvas);
         }
@@ -115,7 +115,7 @@ internal sealed class Slide : ISlide
     {
         var returnList = new List<ITextFrame>();
 
-        var frames = this.Shapes.OfType<SlideAutoShape>()
+        var frames = this.Shapes.OfType<SlideShape.SlideShape>()
             .Where(t => t.TextFrame != null)
             .Select(t => t.TextFrame!)
             .ToList();
@@ -155,7 +155,7 @@ internal sealed class Slide : ISlide
                     this.AddAllTextboxesInGroupToList((IGroupShape)shape, textBoxes);
                     break;
                 case SCShapeType.AutoShape:
-                    if (shape is TextSlideAutoShape textSlideAutoShape)
+                    if (shape is TextSlideShape textSlideAutoShape)
                     {
                         textBoxes.Add(textSlideAutoShape.TextFrame);
                     }

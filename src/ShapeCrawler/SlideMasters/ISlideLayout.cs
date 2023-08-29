@@ -21,18 +21,20 @@ public interface ISlideLayout
     ///     Gets layout name.
     /// </summary>
     string Name { get; }
-    
+
     /// <summary>
     ///     Gets layout shape collection.
     /// </summary>
     IReadOnlyShapeCollection Shapes { get; }
+
+    ISlideMaster SlideMaster { get; }
 }
 
 internal sealed class SlideLayout : ISlideLayout
 {
     private readonly ResetableLazy<LayoutShapes> shapes;
     private readonly SlideLayoutPart sdkLayoutPart;
-    
+
     private static readonly Dictionary<string, SCSlideLayoutType> TypeMapping = new()
     {
         // https://c-rex.net/samples/ooxml/e1/Part4/OOXML_P4_DOCX_ST_SlideLayoutType_topic_ID0EKTIIB.html
@@ -75,14 +77,21 @@ internal sealed class SlideLayout : ISlideLayout
     };
 
     internal SlideLayout(SlideLayoutPart sdkLayoutPart)
+        : this(sdkLayoutPart, new SlideMaster(sdkLayoutPart.SlideMasterPart!))
+    {
+    }
+
+    private SlideLayout(SlideLayoutPart sdkLayoutPart, ISlideMaster slideMaster)
     {
         this.sdkLayoutPart = sdkLayoutPart;
+        this.SlideMaster = slideMaster;
         this.shapes = new ResetableLazy<LayoutShapes>(() => new LayoutShapes());
     }
 
     public string Name => this.GetName();
 
     public IReadOnlyShapeCollection Shapes => this.shapes.Value;
+    public ISlideMaster SlideMaster { get; }
 
     public SCSlideLayoutType Type => this.GetLayoutType();
 

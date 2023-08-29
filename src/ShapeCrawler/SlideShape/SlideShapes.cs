@@ -69,7 +69,7 @@ internal sealed record SlideShapes : ISlideShapeCollection
         var id = this.CalculateNextShapeId();
         var allShapeNames = this.Select(shape => shape.Name);
 
-        if (addingShape is SlideAutoShape slideAutoShape)
+        if (addingShape is SlideShape slideAutoShape)
         {
             slideAutoShape.CopyTo(id, this.pShapeTree, allShapeNames, this.sdkSlidePart);
         }
@@ -599,7 +599,7 @@ internal sealed record SlideShapes : ISlideShapeCollection
             }
             else if (pShapeTreeElement is P.Shape pShape)
             {
-                var autoShape = new SlideAutoShape(this.sdkSlidePart, pShape);
+                var autoShape = new SlideShape(this.sdkSlidePart, pShape);
                 shapesValue.Add(autoShape);
             }
             else if (pShapeTreeElement is P.GraphicFrame pGraphicFrame)

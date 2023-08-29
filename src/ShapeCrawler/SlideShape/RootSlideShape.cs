@@ -4,78 +4,72 @@ using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using SkiaSharp;
-using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.AutoShapes;
+namespace ShapeCrawler.SlideShape;
 
-internal sealed record RootSlideAutoShape : ISlideAutoShape
+internal sealed record RootSlideShape : ISlideShape
 {
-    private readonly P.Shape pShape;
-    private readonly IAutoShape autoShape;
+    private readonly P.Shape sdkPShape;
+    private readonly IShape slideShape;
     private readonly SlidePart sdkSlidePart;
 
-    private event Action Duplicated;
-
-    private RootSlideAutoShape(
+    private RootSlideShape(
         SlidePart sdkSlidePart,
-        P.Shape pShape,
-        Action duplicatedHandler,
-        IAutoShape autoShape)
+        P.Shape sdkPShape,
+        IShape slideShape)
     {
         this.sdkSlidePart = sdkSlidePart;
-        this.pShape = pShape;
-        this.autoShape = autoShape;
-        this.Duplicated += duplicatedHandler;
+        this.sdkPShape = sdkPShape;
+        this.slideShape = slideShape;
     }
 
-    public IShapeOutline Outline => this.autoShape.Outline;
+    public bool HasOutline => this.slideShape.HasOutline;
+    public IShapeOutline Outline => this.slideShape.Outline;
 
     public int Width
     {
-        get => this.autoShape.Width;
-        set => this.autoShape.Width = value;
+        get => this.slideShape.Width;
+        set => this.slideShape.Width = value;
     }
 
     public int Height
     {
-        get => this.autoShape.Height;
-        set => this.autoShape.Height = value;
+        get => this.slideShape.Height;
+        set => this.slideShape.Height = value;
     }
 
-    public int Id => this.autoShape.Id;
-    public string Name => this.autoShape.Name;
+    public int Id => this.slideShape.Id;
+    public string Name => this.slideShape.Name;
     public bool Hidden { get; }
-    public bool IsPlaceholder() => false;
+
+    public bool IsPlaceholder => false;
 
     public IPlaceholder Placeholder => new NullPlaceholder();
 
     public SCGeometry GeometryType { get; }
     public string? CustomData { get; set; }
     public SCShapeType ShapeType => SCShapeType.AutoShape;
-    public IAutoShape AsAutoShape() => this;
+    public IShapeFill Fill => this.slideShape.Fill;
 
-    public IShapeFill Fill => this.autoShape.Fill;
+    public bool IsTextHolder => false;
 
     public ITextFrame TextFrame => new NullTextFrame();
-
-    public bool IsTextHolder() => false;
 
     public double Rotation { get; }
 
     public void Duplicate()
     {
-        var pShapeTree = (P.ShapeTree)pShape.Parent!;
+        var pShapeTree = (P.ShapeTree)this.sdkPShape.Parent!;
         var autoShapes = new SlideAutoShapes(pShapeTree);
-        autoShapes.Add(this.pShape);
-
-        this.Duplicated.Invoke();
+        autoShapes.Add(this.sdkPShape);
     }
 
     internal void Draw(SKCanvas slideCanvas)
@@ -113,10 +107,10 @@ internal sealed record RootSlideAutoShape : ISlideAutoShape
         throw new NotImplementedException();
     }
 
-    private SlideAutoShapeFill ParseFill()
+    private SlideShapeFill ParseFill()
     {
-        var useBgFill = pShape.UseBackgroundFill;
-        return new SlideAutoShapeFill(this.sdkSlidePart, this.pShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
+        var useBgFill = this.sdkPShape.UseBackgroundFill;
+        return new SlideShapeFill(this.sdkSlidePart, this.sdkPShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
     }
 
     public int X { get; set; }
@@ -125,7 +119,7 @@ internal sealed record RootSlideAutoShape : ISlideAutoShape
     internal void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames,
         SlidePart targetSdkSlidePart)
     {
-        var copy = this.pShape.CloneNode(true);
+        var copy = this.sdkPShape.CloneNode(true);
         copy.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
         pShapeTree.AppendChild(copy);
         var copyName = copy.GetNonVisualDrawingProperties().Name!.Value!;

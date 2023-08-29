@@ -1,39 +1,40 @@
 ﻿using System;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.AutoShapes;
+namespace ShapeCrawler.SlideShape;
 
 /// <summary>
 ///     A text AutoShape on a slide.
 /// </summary>
-internal sealed record TextSlideAutoShape : ISlideAutoShape
+internal sealed record TextSlideShape : ISlideShape
 {
     private readonly SlidePart sdkSlidePart;
-    private readonly ISlideAutoShape slideAutoShape;
-    private readonly P.TextBody pTextBody;
+    private readonly ISlideShape slideShape;
+    private readonly P.TextBody sdkPTextBody;
     private readonly Lazy<TextFrame> textFrame;
-    
+
     // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi.
     // 96/72=1.4
     private const double Scale = 1.4;
 
-    internal TextSlideAutoShape(SlidePart sdkSlidePart, ISlideAutoShape slideAutoShape, P.TextBody pTextBody)
+    internal TextSlideShape(SlidePart sdkSlidePart, ISlideShape slideShape, P.TextBody sdkPTextBody)
     {
         this.sdkSlidePart = sdkSlidePart;
-        this.slideAutoShape = slideAutoShape;
-        this.pTextBody = pTextBody;
+        this.slideShape = slideShape;
+        this.sdkPTextBody = sdkPTextBody;
         this.textFrame = new Lazy<TextFrame>(this.ParseTextFrame);
     }
 
     private TextFrame ParseTextFrame()
     {
-        var newTextFrame = new TextFrame(this.sdkSlidePart, pTextBody);
+        var newTextFrame = new TextFrame(this.sdkSlidePart, this.sdkPTextBody);
         newTextFrame.TextChanged += this.ResizeShape;
 
         return newTextFrame;
@@ -114,26 +115,30 @@ internal sealed record TextSlideAutoShape : ISlideAutoShape
         }
     }
 
+    public bool IsTextHolder => true;
+
     public ITextFrame TextFrame => this.textFrame.Value;
     
-    #region Slide AutoShape Properties
+    #region Slide Properties
     public int X { get; set; }
     public int Y { get; set; }
     public int Width { get; set; }
     public int Height { get; set; }
-    public int Id => this.slideAutoShape.Id;
-    public string Name => this.slideAutoShape.Name;
+    public int Id => this.slideShape.Id;
+    public string Name => this.slideShape.Name;
     public bool Hidden => this.Hidden;
-    public bool IsPlaceholder() => this.slideAutoShape.IsPlaceholder();
-    public IPlaceholder Placeholder => this.slideAutoShape.Placeholder;
+
+    public bool IsPlaceholder => false;
+
+    public IPlaceholder Placeholder => throw new SCException(
+        $"Text shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} property to check if the shape is a placeholder.");
     public SCGeometry GeometryType { get; }
     public string? CustomData { get; set; }
     public SCShapeType ShapeType { get; }
-    public IAutoShape AsAutoShape() => this;
-    public IShapeOutline Outline => this.slideAutoShape.Outline;
-    public IShapeFill Fill => this.slideAutoShape.Fill;
-    public bool IsTextHolder() => true;
+    public bool HasOutline { get; }
+    public IShapeOutline Outline => this.slideShape.Outline;
+    public IShapeFill Fill => this.slideShape.Fill;
     public double Rotation { get; }
-    public void Duplicate() => this.slideAutoShape.Duplicate();
-    #endregion Slide AutoShape Properties
+    public void Duplicate() => this.slideShape.Duplicate();
+    #endregion Slide Properties
 }

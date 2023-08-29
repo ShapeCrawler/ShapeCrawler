@@ -8,7 +8,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal record SlideAutoShapeFill : IShapeFill
+internal record SlideShapeFill : IShapeFill
 {
     private readonly TypedOpenXmlCompositeElement properties;
     private BooleanValue? useBgFill;
@@ -22,7 +22,7 @@ internal record SlideAutoShapeFill : IShapeFill
     private A.BlipFill? aBlipFill;
     private readonly SlidePart sdkSlidePart;
 
-    internal SlideAutoShapeFill(SlidePart sdkSlidePart, TypedOpenXmlCompositeElement properties, BooleanValue? useBgFill)
+    internal SlideShapeFill(SlidePart sdkSlidePart, TypedOpenXmlCompositeElement properties, BooleanValue? useBgFill)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.properties = properties;

@@ -34,13 +34,4 @@ public static class TestHelper
     public static readonly float HorizontalResolution;
 
     public static readonly float VerticalResolution;
-    
-    public static void ThrowIfPresentationInvalid(IPresentation pres)
-    {
-        var errors = PptxValidator.Validate(pres);
-        if (errors.Any())
-        {
-            throw new AssertionException($"Presentation is invalid: {string.Join(", ", errors)}");
-        }
-    }
 }

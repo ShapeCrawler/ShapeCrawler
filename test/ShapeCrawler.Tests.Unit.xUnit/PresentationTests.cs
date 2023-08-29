@@ -21,7 +21,7 @@ public class PresentationTests : SCTest
     public void Slides_Remove_removes_slide(string file, int expectedSlidesCount)
     {
         // Arrange
-        var pptx = GetInputStream(file);
+        var pptx = StreamOf(file);
         var pres = new SCPresentation(pptx);
         var removingSlide = pres.Slides[0];
         var mStream = new MemoryStream();

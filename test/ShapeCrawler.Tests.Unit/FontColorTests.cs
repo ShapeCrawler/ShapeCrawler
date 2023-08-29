@@ -11,7 +11,7 @@ public class FontColorTests : SCTest
     public void ColorHex_Getter_returns_White_color()
     {
         // Arrange
-        var shape = (IAutoShape)new SCPresentation(GetInputStream("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
+        var shape = (IShape)new SCPresentation(StreamOf("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
         var colorFormat = shape.TextFrame!.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
@@ -22,7 +22,7 @@ public class FontColorTests : SCTest
     public void ColorHex_Getter_returns_color_of_SlideLayout_Placeholder()
     {
         // Arrange
-        var titlePh = (IAutoShape)new SCPresentation(GetInputStream("001.pptx")).Slides[0].SlideLayout.Shapes.First(sp => sp.Id == 2);
+        var titlePh = (IShape)new SCPresentation(StreamOf("001.pptx")).Slides[0].SlideLayout.Shapes.First(sp => sp.Id == 2);
         var colorFormat = titlePh.TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
@@ -33,7 +33,7 @@ public class FontColorTests : SCTest
     public void ColorHex_Getter_returns_color_of_SlideMaster_Non_Placeholder()
     {
         // Arrange
-        IAutoShape nonPlaceholder = (IAutoShape)new SCPresentation(GetInputStream("001.pptx")).SlideMasters[0].Shapes.First(sp => sp.Id == 8);
+        IShape nonPlaceholder = (IShape)new SCPresentation(StreamOf("001.pptx")).SlideMasters[0].Shapes.First(sp => sp.Id == 8);
         IFontColor colorFormat = nonPlaceholder.TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
@@ -44,7 +44,7 @@ public class FontColorTests : SCTest
     public void ColorHex_Getter_returns_color_of_Title_SlideMaster_Placeholder()
     {
         // Arrange
-        IAutoShape titlePlaceholder = (IAutoShape)new SCPresentation(GetInputStream("001.pptx")).SlideMasters[0].Shapes.First(sp => sp.Id == 2);
+        IShape titlePlaceholder = (IShape)new SCPresentation(StreamOf("001.pptx")).SlideMasters[0].Shapes.First(sp => sp.Id == 2);
         IFontColor colorFormat = titlePlaceholder.TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
@@ -55,7 +55,7 @@ public class FontColorTests : SCTest
     public void ColorHex_Getter_returns_color_of_Table_Cell_on_Slide()
     {
         // Arrange
-        var table = (ITable)new SCPresentation(GetInputStream("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
+        var table = (ITable)new SCPresentation(StreamOf("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
         var colorFormat = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
@@ -66,7 +66,7 @@ public class FontColorTests : SCTest
     public void ColorType_ReturnsSchemeColorType_WhenFontColorIsTakenFromThemeScheme()
     {
         // Arrange
-        var nonPhAutoShape = (IAutoShape)new SCPresentation(GetInputStream("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
+        var nonPhAutoShape = (IShape)new SCPresentation(StreamOf("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 2);
         var colorFormat = nonPhAutoShape.TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act
@@ -80,7 +80,7 @@ public class FontColorTests : SCTest
     public void ColorType_ReturnsSchemeColorType_WhenFontColorIsSetAsRGB()
     {
         // Arrange
-        IAutoShape placeholder = (IAutoShape)new SCPresentation(GetInputStream("014.pptx")).Slides[5].Shapes.First(sp => sp.Id == 52);
+        IShape placeholder = (IShape)new SCPresentation(StreamOf("014.pptx")).Slides[5].Shapes.First(sp => sp.Id == 52);
         IFontColor colorFormat = placeholder.TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act

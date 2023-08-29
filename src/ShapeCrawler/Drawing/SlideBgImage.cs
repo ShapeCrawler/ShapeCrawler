@@ -8,13 +8,13 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class SlideBackgroundImage : ISlideBackgroundImage
+internal sealed class SlideBgImage : ISlideBgImage
 {
     private readonly SlidePart sdkSlidePart;
     private const string NotPresentedErrorMessage =
-        $"Background image is not presented. Use {nameof(ISlideBackgroundImage.Present)} to check.";
+        $"Background image is not presented. Use {nameof(ISlideBgImage.Present)} to check.";
     
-    internal SlideBackgroundImage(SlidePart sdkSlidePart)
+    internal SlideBgImage(SlidePart sdkSlidePart)
     {
         this.sdkSlidePart = sdkSlidePart;
     }
@@ -85,7 +85,7 @@ internal sealed class SlideBackgroundImage : ISlideBackgroundImage
         if (sdkImagePart == null)
         {
             throw new SCException(
-                $"Background image is not presented. Use {nameof(ISlideBackgroundImage.Present)} to check.");
+                $"Background image is not presented. Use {nameof(ISlideBgImage.Present)} to check.");
         }
 
         return sdkImagePart.ContentType;

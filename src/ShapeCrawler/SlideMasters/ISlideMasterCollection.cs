@@ -32,7 +32,7 @@ internal sealed class SlideMasterCollection : ISlideMasterCollection
         var number = 1;
         foreach (var sdkMasterPart in sdkMasterParts)
         {
-            slideMasters.Add(new SlideMaster(sdkMasterPart, number++));
+            slideMasters.Add(new SlideMaster(sdkMasterPart));
         }
     }
     

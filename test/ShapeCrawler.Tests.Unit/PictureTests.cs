@@ -22,8 +22,8 @@ public class PictureTests : SCTest
     public async Task Image_BinaryData_returns_image_byte_array()
     {
         // Arrange
-        var shapePicture1 = (IPicture)new SCPresentation(GetInputStream("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
-        var shapePicture2 = (IPicture)new SCPresentation(GetInputStream("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
+        var shapePicture1 = (IPicture)new SCPresentation(StreamOf("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 3);
+        var shapePicture2 = (IPicture)new SCPresentation(StreamOf("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
 
         // Act
         var shapePictureContentCase1 = shapePicture1.Image.BinaryData();
@@ -38,7 +38,7 @@ public class PictureTests : SCTest
     public async Task Image_GetBytes_returns_image_byte_array_of_Layout_picture()
     {
         // Arrange
-        var pptxStream = GetInputStream("pictures-case001.pptx");
+        var pptxStream = StreamOf("pictures-case001.pptx");
         var presentation = new SCPresentation(pptxStream);
         var pictureShape = presentation.Slides[0].SlideLayout.Shapes.GetByName<IPicture>("Picture 7");
             
@@ -53,7 +53,7 @@ public class PictureTests : SCTest
     public void Image_MIME_returns_MIME_type_of_image()
     {
         // Arrange
-        var pptxStream = GetInputStream("pictures-case001.pptx");
+        var pptxStream = StreamOf("pictures-case001.pptx");
         var presentation = new SCPresentation(pptxStream);
         var image = presentation.Slides[0].SlideLayout.Shapes.GetByName<IPicture>("Picture 7").Image;
             
@@ -68,7 +68,7 @@ public class PictureTests : SCTest
     public void Image_GetBytes_returns_image_byte_array_of_Master_slide_picture()
     {
         // Arrange
-        var pptxStream = GetInputStream("pictures-case001.pptx");
+        var pptxStream = StreamOf("pictures-case001.pptx");
         var presentation = new SCPresentation(pptxStream);
         var slideMaster = presentation.SlideMasters[0];
         var pictureShape = slideMaster.Shapes.GetByName<IPicture>("Picture 9");
@@ -84,8 +84,8 @@ public class PictureTests : SCTest
     public void Image_SetImage_updates_picture_image()
     {
         // Arrange
-        var pptx = GetInputStream("009_table");
-        var pngStream = GetInputStream("test-image-2.png");
+        var pptx = StreamOf("009_table");
+        var pngStream = StreamOf("test-image-2.png");
         var pres = new SCPresentation(pptx);
         var mStream = new MemoryStream();
         var picture = pres.Slides[1].Shapes.GetByName<IPicture>("Picture 1");
@@ -108,7 +108,7 @@ public class PictureTests : SCTest
     public void Image_SvgContent_returns_svg_content()
     {
         // Arrange
-        var pptxStream = GetInputStream("pictures-case002.pptx");
+        var pptxStream = StreamOf("pictures-case002.pptx");
         var pres = new SCPresentation(pptxStream);
         var picture = pres.Slides[0].Shapes.GetByName<IPicture>("Picture 1");
 
@@ -123,7 +123,7 @@ public class PictureTests : SCTest
     public void Image_SetImage_should_not_update_image_of_other_grouped_picture()
     {
         // Arrange
-        var pptx = GetInputStream("pictures-case001.pptx");
+        var pptx = StreamOf("pictures-case001.pptx");
         var image = GetTestBytes("test-image-2.png");
         var pres = new SCPresentation(pptx);
         var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1");
@@ -145,7 +145,7 @@ public class PictureTests : SCTest
     public void Image_Name_Getter_returns_internal_image_file_name()
     {
         // Arrange
-        var pptxStream = GetInputStream("pictures-case001.pptx");
+        var pptxStream = StreamOf("pictures-case001.pptx");
         var pres = new SCPresentation(pptxStream);
         var pictureImage = pres.Slides[0].Shapes.GetByName<IPicture>("Picture 3").Image;
             
@@ -161,7 +161,7 @@ public class PictureTests : SCTest
     {
         // TODO: Deeper learn such pictures, where content generated via a:ln
         // Arrange
-        var pre = new SCPresentation(GetInputStream("019.pptx"));
+        var pre = new SCPresentation(StreamOf("019.pptx"));
 
         // Act - Assert
         Assert.ThrowsAny<Exception>(() => pre.Slides[1].Shapes.Single(x => x.Id == 47));

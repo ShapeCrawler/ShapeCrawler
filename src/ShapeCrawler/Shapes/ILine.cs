@@ -10,7 +10,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a line shape.
 /// </summary>
-public interface ILine : IAutoShape
+public interface ILine : IShape
 {
     /// <summary>
     ///    Gets the start point of the line.
@@ -65,7 +65,7 @@ internal sealed record SlideLine : ILine, IRemoveable
 
     public bool Hidden => this.shape.Hidden();
 
-    public bool IsPlaceholder() => false;
+    public bool IsPlaceholder => false;
 
     public IPlaceholder Placeholder =>
         new NullPlaceholder(
@@ -80,13 +80,13 @@ internal sealed record SlideLine : ILine, IRemoveable
     }
 
     public SCShapeType ShapeType => SCShapeType.Line;
-    public IAutoShape AsAutoShape() => this;
 
+    public bool IsTextHolder => false;
     public ITextFrame TextFrame => new NullTextFrame();
-    public bool IsTextHolder() => false;
 
     public double Rotation { get; }
 
+    public bool HasOutline => true;
     public IShapeOutline Outline { get; }
     public IShapeFill Fill => new SCNullShapeFill();
 

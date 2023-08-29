@@ -1,17 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using ShapeCrawler.Drawing;
-using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
-using ShapeCrawler.Tests.Unit.Helpers.Attributes;
-using Xunit;
-using Xunit.Abstractions;
-using Assert = Xunit.Assert;
+using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Tests.Unit;
 
@@ -23,7 +14,7 @@ public class TableTests : SCTest
     {
         // Arrange
         var ms = new MemoryStream();
-        var pptx = GetInputStream("table-case001.pptx");
+        var pptx = StreamOf("table-case001.pptx");
         var pres = new SCPresentation(pptx);
         var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
         var expectedColumnsCount = table.Columns.Count - 1;
@@ -37,14 +28,14 @@ public class TableTests : SCTest
         pres = new SCPresentation(ms);
         table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
         table.Columns.Should().HaveCount(expectedColumnsCount);
-        PptxValidator.Validate(pres);
+        pres.Validate();
     }
     
     [Test]
     public void Rows_RemoveAt_removes_row_with_specified_index()
     {
         // Arrange
-        var pptx = GetInputStream("009_table.pptx");
+        var pptx = StreamOf("009_table.pptx");
         var pres = new SCPresentation(pptx);
         var table = (ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 3);
         int originRowsCount = table.Rows.Count;
@@ -64,7 +55,7 @@ public class TableTests : SCTest
     public void Rows_Add_adds_row()
     {
         // Arrange
-        var pptx = GetInputStream("table-case001.pptx");
+        var pptx = StreamOf("table-case001.pptx");
         var pres = new SCPresentation(pptx);
         var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
 
@@ -73,15 +64,14 @@ public class TableTests : SCTest
 
         // Assert
         table.Rows.Should().HaveCount(2);
-        var errors = PptxValidator.Validate(pres);
-        errors.Should().BeEmpty();
+        pres.Validate();
     }
 
     [Test]
     public void Row_Cells_Count_returns_number_of_cells_in_the_row()
     {
         // Arrange
-        var pptx = GetInputStream("009_table.pptx");
+        var pptx = StreamOf("009_table.pptx");
         var table = (ITable)new SCPresentation(pptx).Slides[2].Shapes
             .First(sp => sp.Id == 3);
 
@@ -96,7 +86,7 @@ public class TableTests : SCTest
     public void Row_Height_Getter_returns_row_height_in_points()
     {
         // Arrange
-        var pptx = GetInputStream("001.pptx");
+        var pptx = StreamOf("001.pptx");
         var pres = new SCPresentation(pptx);
         var table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 3);
 
@@ -111,7 +101,7 @@ public class TableTests : SCTest
     public void ColumnsCount_ReturnsNumberOfColumnsInTheTable()
     {
         // Arrange
-        ITable table = (ITable)new SCPresentation(GetInputStream("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
+        ITable table = (ITable)new SCPresentation(StreamOf("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
 
         // Act
         int columnsCount = table.Columns.Count;
@@ -124,7 +114,7 @@ public class TableTests : SCTest
     public void Column_Width_Getter_returns_width_of_column_in_pixels()
     {
         // Arrange
-        var table = (ITable)new SCPresentation(GetInputStream("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
+        var table = (ITable)new SCPresentation(StreamOf("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
 
         // Act
         var columnWidth = table.Columns[0].Width;
@@ -137,7 +127,7 @@ public class TableTests : SCTest
     public void Column_Width_Setter_sets_width_of_column()
     {
         // Arrange
-        var pres = new SCPresentation(GetInputStream("001.pptx"));
+        var pres = new SCPresentation(StreamOf("001.pptx"));
         var table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 3);
         const int newColumnWidth = 427;
         var mStream = new MemoryStream();
@@ -158,7 +148,7 @@ public class TableTests : SCTest
     public void Row_Cell_IsMergedCell_returns_True_When_cell_is_merged()
     {
         // Arrange
-        var pptx = GetInputStream("001.pptx");
+        var pptx = StreamOf("001.pptx");
         var pres = new SCPresentation(pptx);
         var row = pres.Slides[1].Shapes.GetByName<ITable>("Table 4").Rows[1];
         var cell1X0 = row.Cells[0];
@@ -178,7 +168,7 @@ public class TableTests : SCTest
     public void Row_Clone_cloning_row_increases_row_count_by_one()
     {
         // Arrange
-        var pptx = GetInputStream("tables-case001.pptx");
+        var pptx = StreamOf("tables-case001.pptx");
         var pres = new SCPresentation(pptx);
         var targetTable = pres.Slides.First().Shapes.OfType<ITable>().FirstOrDefault();
         var rowCountBefore = targetTable.Rows.Count;
@@ -196,7 +186,7 @@ public class TableTests : SCTest
     public void Row_Height_Setter_sets_height_of_table_row_in_points()
     {
         // Arrange
-        var pptx = GetInputStream("table-case001.pptx");
+        var pptx = StreamOf("table-case001.pptx");
         var pres = new SCPresentation(pptx);
         var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
         var row = table.Rows[0];
@@ -213,7 +203,7 @@ public class TableTests : SCTest
     public void MergeCells_Merges0x0And0x1CellsOf2x2Table()
     {
         // Arrange
-        IPresentation presentation = new SCPresentation(GetInputStream("001.pptx"));
+        IPresentation presentation = new SCPresentation(StreamOf("001.pptx"));
         ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 5);
         var mStream = new MemoryStream();
 
@@ -237,7 +227,7 @@ public class TableTests : SCTest
     public void MergeCells_Merges0x1And0x2CellsOf3x2Table()
     {
         // Arrange
-        IPresentation presentation = new SCPresentation(GetInputStream("001.pptx"));
+        IPresentation presentation = new SCPresentation(StreamOf("001.pptx"));
         ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
         var mStream = new MemoryStream();
 
@@ -264,7 +254,7 @@ public class TableTests : SCTest
     public void MergeCells_Merges0x0And0x1And0x2CellsOf3x2Table()
     {
         // Arrange
-        IPresentation presentation = new SCPresentation(GetInputStream("001.pptx"));
+        IPresentation presentation = new SCPresentation(StreamOf("001.pptx"));
         ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
         var mStream = new MemoryStream();
 
@@ -288,7 +278,7 @@ public class TableTests : SCTest
     public void MergeCells_Merges0x0And0x1MergedCellsWith0x2CellIn3x2Table()
     {
         // Arrange
-        IPresentation presentation = new SCPresentation(GetInputStream("001.pptx"));
+        IPresentation presentation = new SCPresentation(StreamOf("001.pptx"));
         ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 7);
         var mStream = new MemoryStream();
 
@@ -312,7 +302,7 @@ public class TableTests : SCTest
     public void MergeCells_merges_0x0_and_1x0_cells_of_2x2_table()
     {
         // Arrange
-        var pptx = GetInputStream("001.pptx");
+        var pptx = StreamOf("001.pptx");
         var pres = new SCPresentation(pptx);
         var table = pres.Slides[2].Shapes.GetById<ITable>(5);
         var mStream = new MemoryStream();
@@ -341,7 +331,7 @@ public class TableTests : SCTest
     public void MergeCells_merges_cells()
     {
         // Arrange
-        var pptx = GetInputStream("001.pptx");
+        var pptx = StreamOf("001.pptx");
         var pres = new SCPresentation(pptx);
         var table = pres.Slides[2].Shapes.GetById<ITable>(5);
 
@@ -357,7 +347,8 @@ public class TableTests : SCTest
     {
         // Arrange
         var pres = new SCPresentation();
-        var table = pres.Slides[0].Shapes.AddTable(10, 10, 3, 4);
+        pres.Slides[0].Shapes.AddTable(10, 10, 3, 4);
+        var table = (ITable)pres.Slides[0].Shapes.Last();
         table[1, 0].TextFrame.Text = "A";
         table[3, 0].TextFrame.Text = "B";
 
@@ -372,7 +363,7 @@ public class TableTests : SCTest
     public void MergeCells_Merges0x1And1x1CellsOf3x2Table()
     {
         // Arrange
-        IPresentation presentation = new SCPresentation(GetInputStream("001.pptx"));
+        IPresentation presentation = new SCPresentation(StreamOf("001.pptx"));
         ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 3);
         var mStream = new MemoryStream();
 
@@ -396,7 +387,7 @@ public class TableTests : SCTest
     public void MergeCells_Merges0x0To1x1RangeOf3x3Table()
     {
         // Arrange
-        IPresentation presentation = new SCPresentation(GetInputStream("001.pptx"));
+        IPresentation presentation = new SCPresentation(StreamOf("001.pptx"));
         ITable table = (ITable)presentation.Slides[2].Shapes.First(sp => sp.Id == 10);
         var mStream = new MemoryStream();
 
@@ -424,7 +415,7 @@ public class TableTests : SCTest
     public void MergeCells_MergesMergedCellWithNonMergedCell()
     {
         // Arrange
-        IPresentation presentation = new SCPresentation(GetInputStream("001.pptx"));
+        IPresentation presentation = new SCPresentation(StreamOf("001.pptx"));
         ITable table = (ITable)presentation.Slides[1].Shapes.First(sp => sp.Id == 5);
         var mStream = new MemoryStream();
 
@@ -450,7 +441,7 @@ public class TableTests : SCTest
     public void MergeCells_MergesTwoMergedCells()
     {
         // Arrange
-        IPresentation presentation = new SCPresentation(GetInputStream("001.pptx"));
+        IPresentation presentation = new SCPresentation(StreamOf("001.pptx"));
         ITable table = (ITable)presentation.Slides[3].Shapes.First(sp => sp.Id == 2);
         var mStream = new MemoryStream();
 
@@ -480,7 +471,7 @@ public class TableTests : SCTest
     public void MergeCells_converts_2X1_table_into_1X1_when_all_cells_are_merged()
     {
         // Arrange
-        var pres = new SCPresentation(GetInputStream("001.pptx"));
+        var pres = new SCPresentation(StreamOf("001.pptx"));
         var table = (ITable)pres.Slides[3].Shapes.First(sp => sp.Id == 3);
         var mStream = new MemoryStream();
         var totalColWidth = table.Columns[0].Width + table.Columns[1].Width;
@@ -507,7 +498,7 @@ public class TableTests : SCTest
     public void MergeCells_converts_2X2_table_into_1X1_when_all_cells_are_merged()
     {
         // Arrange
-        var pres = new SCPresentation(GetInputStream("001.pptx"));
+        var pres = new SCPresentation(StreamOf("001.pptx"));
         var table = (ITable)pres.Slides[2].Shapes.First(sp => sp.Id == 5);
         var mStream = new MemoryStream();
         var mergedColumnWidth = table.Columns[0].Width + table.Columns[1].Width;
@@ -520,7 +511,7 @@ public class TableTests : SCTest
         AssertTable(table, mergedColumnWidth, mergedRowHeight);
 
         pres.SaveAs(mStream);
-        pres = SCPresentation.Open(mStream);
+        pres = new SCPresentation(mStream);
         table = pres.Slides[2].Shapes.GetByName<ITable>("Table 5");
         AssertTable(table, mergedColumnWidth, mergedRowHeight);
 
@@ -538,7 +529,7 @@ public class TableTests : SCTest
     public void MergeCells_merges_0x0_And_0x1_cells_in_3x1_table()
     {
         // Arrange
-        var presentation = new SCPresentation(GetInputStream("001.pptx"));
+        var presentation = new SCPresentation(StreamOf("001.pptx"));
         var table = (ITable)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
         var mStream = new MemoryStream();
         var mergedColumnWidth = table.Columns[0].Width + table.Columns[1].Width;
@@ -567,7 +558,7 @@ public class TableTests : SCTest
     public void MergeCells_merges_0x1_and_0x2_cells()
     {
         // Arrange
-        var pptx = GetInputStream("001.pptx");
+        var pptx = StreamOf("001.pptx");
         var pres = new SCPresentation(pptx);
         var table = pres.Slides[3].Shapes.GetById<ITable>(6);
         var mStream = new MemoryStream();
@@ -596,7 +587,7 @@ public class TableTests : SCTest
     public void MergeCells_updates_columns_count()
     {
         // Arrange
-        var pptx = GetInputStream("001.pptx");
+        var pptx = StreamOf("001.pptx");
         var pres = new SCPresentation(pptx);
         var table = pres.Slides[3].Shapes.GetById<ITable>(6);
 
@@ -612,9 +603,9 @@ public class TableTests : SCTest
     {
         // Arrange
         ITable tableCase1 =
-            (ITable)new SCPresentation(GetInputStream("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
+            (ITable)new SCPresentation(StreamOf("001.pptx")).Slides[1].Shapes.First(sp => sp.Id == 4);
         ITable tableCase2 =
-            (ITable)new SCPresentation(GetInputStream("001.pptx")).Slides[3].Shapes.First(sp => sp.Id == 4);
+            (ITable)new SCPresentation(StreamOf("001.pptx")).Slides[3].Shapes.First(sp => sp.Id == 4);
 
         // Act
         ITableCell scCellCase1 = tableCase1[0, 0];
@@ -629,9 +620,10 @@ public class TableTests : SCTest
     public void MergeCells()
     {
         // Arrange
-        var pres = SCPresentation.Create();
+        var pres = new SCPresentation();
         var slide = pres.Slides[0];
-        var table = slide.Shapes.AddTable(0, 0, 3, 2);
+        slide.Shapes.AddTable(0, 0, 3, 2);
+        var table = slide.Shapes.Last() as ITable;
         
         // Act
         table.MergeCells(table[0, 2], table[1, 2]);
@@ -644,9 +636,10 @@ public class TableTests : SCTest
     public void MergeCells_merges_0x0_and_0x1_then_1x1_and_1x2_cells()
     {
         // Arrange
-        var pres = SCPresentation.Create();
+        var pres = new SCPresentation();
         var slide = pres.Slides[0];
-        var table = slide.Shapes.AddTable(0, 0, 4, 2);
+        slide.Shapes.AddTable(0, 0, 4, 2);
+        var table = slide.Shapes.Last() as ITable;
         
         // Act
         table.MergeCells(table[0, 0], table[0, 1]);
@@ -660,9 +653,10 @@ public class TableTests : SCTest
     public void MergeCells_merges_0x1_and_1x1()
     {
         // Arrange
-        var pres = SCPresentation.Create();
+        var pres = new SCPresentation();
         var slide = pres.Slides[0];
-        var table = slide.Shapes.AddTable(0, 0, 4, 2);
+        slide.Shapes.AddTable(0, 0, 4, 2);
+        var table = slide.Shapes.Last() as ITable;
         
         // Act
         table.MergeCells(table[0, 1], table[1, 1]);

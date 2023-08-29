@@ -36,4 +36,6 @@ internal sealed record MasterShapes : IReadOnlyShapeCollection
     {
         throw new NotImplementedException();
     }
+
+    public IShape this[int index] => throw new NotImplementedException();
 }

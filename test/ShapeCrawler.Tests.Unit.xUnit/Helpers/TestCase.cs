@@ -33,22 +33,22 @@ public class TestCase
                 return this.pres;
             }
             
-            var pptxStream = SCTest.GetInputStream(this.PresentationName);
+            var pptxStream = SCTest.StreamOf(this.PresentationName);
             this.pres = new SCPresentation(pptxStream);
 
             return this.pres;
         }
     }
 
-    public IAutoShape AutoShape
+    public IShape AutoShape
     {
         get
         {
             var slide = this.Presentation.Slides[this.SlideNumber - 1];
 
             var autoShape = this.ShapeName == null
-                ? slide.Shapes.GetById<IAutoShape>(this.ShapeId)
-                : slide.Shapes.GetByName<IAutoShape>(this.ShapeName);
+                ? slide.Shapes.GetById<IShape>(this.ShapeId)
+                : slide.Shapes.GetByName(this.ShapeName);
 
             return autoShape;          
         }

@@ -4,49 +4,51 @@ using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using SkiaSharp;
-using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
+using Shape = ShapeCrawler.Shapes.Shape;
 
-namespace ShapeCrawler.AutoShapes;
+namespace ShapeCrawler.SlideShape;
 
-internal sealed record SlideAutoShape : IAutoShape, IRemoveable
+internal sealed record SlideShape : IShape, IRemoveable
 {
-    private readonly P.Shape pShape;
+    private readonly P.Shape sdkPShape;
     private readonly Shape shape;
-    private readonly Lazy<SlideAutoShapeFill> autoShapeFill;
+    private readonly Lazy<SlideShapeFill> autoShapeFill;
     private readonly SlidePart sdkSlidePart;
 
-    internal SlideAutoShape(
+    internal SlideShape(
         SlidePart sdkSlidePart,
-        P.Shape pShape) :
+        P.Shape sdkPShape) :
         this(
             sdkSlidePart,
-            pShape,
-            new Shape(pShape),
-            new SlideShapeOutline(sdkSlidePart, pShape.ShapeProperties!)
+            sdkPShape,
+            new Shape(sdkPShape),
+            new SlideShapeOutline(sdkSlidePart, sdkPShape.ShapeProperties!)
         )
     {
     }
 
-    private SlideAutoShape(
+    private SlideShape(
         SlidePart sdkSlidePart,
-        P.Shape pShape,
+        P.Shape sdkPShape,
         Shape shape,
         SlideShapeOutline outline)
     {
         this.sdkSlidePart = sdkSlidePart;
-        this.pShape = pShape;
+        this.sdkPShape = sdkPShape;
         this.shape = shape;
         this.Outline = outline;
-        this.autoShapeFill = new Lazy<SlideAutoShapeFill>(this.ParseFill);
+        this.autoShapeFill = new Lazy<SlideShapeFill>(this.ParseFill);
     }
 
+    public bool HasOutline => true;
     public IShapeOutline Outline { get; }
 
     public int Width
@@ -64,20 +66,19 @@ internal sealed record SlideAutoShape : IAutoShape, IRemoveable
     public int Id => this.shape.Id();
     public string Name => this.shape.Name();
     public bool Hidden { get; }
-    public bool IsPlaceholder() => false;
+
+    public bool IsPlaceholder => false;
 
     public IPlaceholder Placeholder => new NullPlaceholder();
 
     public SCGeometry GeometryType { get; }
     public string? CustomData { get; set; }
     public SCShapeType ShapeType => SCShapeType.AutoShape;
-    public IAutoShape AsAutoShape() => this;
-
     public IShapeFill Fill => this.autoShapeFill.Value;
 
-    public ITextFrame TextFrame => new NullTextFrame();
+    public bool IsTextHolder => false;
 
-    public bool IsTextHolder() => false;
+    public ITextFrame TextFrame => new NullTextFrame();
 
     public double Rotation { get; }
 
@@ -116,10 +117,10 @@ internal sealed record SlideAutoShape : IAutoShape, IRemoveable
         throw new NotImplementedException();
     }
 
-    private SlideAutoShapeFill ParseFill()
+    private SlideShapeFill ParseFill()
     {
-        var useBgFill = pShape.UseBackgroundFill;
-        return new SlideAutoShapeFill(this.sdkSlidePart, this.pShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
+        var useBgFill = this.sdkPShape.UseBackgroundFill;
+        return new SlideShapeFill(this.sdkSlidePart, this.sdkPShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
     }
 
     public int X { get; set; }
@@ -128,7 +129,7 @@ internal sealed record SlideAutoShape : IAutoShape, IRemoveable
     internal void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames,
         SlidePart targetSdkSlidePart)
     {
-        var copy = this.pShape.CloneNode(true);
+        var copy = this.sdkPShape.CloneNode(true);
         copy.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
         pShapeTree.AppendChild(copy);
         var copyName = copy.GetNonVisualDrawingProperties().Name!.Value!;
@@ -158,6 +159,6 @@ internal sealed record SlideAutoShape : IAutoShape, IRemoveable
 
     void IRemoveable.Remove()
     {
-        this.pShape.Remove();
+        this.sdkPShape.Remove();
     }
 }

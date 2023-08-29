@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.AutoShapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.SlideShape;
 
 internal sealed class SlideGroupedShapes : IReadOnlyShapeCollection
 {
@@ -25,7 +24,7 @@ internal sealed class SlideGroupedShapes : IReadOnlyShapeCollection
     private List<IShape> ParseGroupedShapes()
     {
         var groupedShapes = new List<IShape>();
-        foreach (var pGroupShapeElement in pGroupElements)
+        foreach (var pGroupShapeElement in this.pGroupElements)
         {
             IShape? shape = null;
             if (pGroupShapeElement is P.GroupShape pGroupShape)
@@ -34,8 +33,8 @@ internal sealed class SlideGroupedShapes : IReadOnlyShapeCollection
             }
             else if (pGroupShapeElement is P.Shape pShape)
             {
-                var slideAutoShape = new SlideAutoShape(this.sdkSlidePart, pShape); 
-                var groupedAutoShape = new GroupedSlideAutoShape(slideAutoShape);
+                var slideAutoShape = new SlideShape(this.sdkSlidePart, pShape); 
+                var groupedAutoShape = new GroupedSlideShape(slideAutoShape);
 
                 shape = groupedAutoShape;
             }
@@ -82,4 +81,6 @@ internal sealed class SlideGroupedShapes : IReadOnlyShapeCollection
     {
         return this.GetEnumerator();
     }
+
+    public IShape this[int index] => throw new NotImplementedException();
 }

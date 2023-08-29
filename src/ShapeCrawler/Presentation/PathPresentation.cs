@@ -1,23 +1,20 @@
 ﻿using System.IO;
-using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler;
 
-internal sealed record PathPresentation : ICopyablePresentation
+internal sealed record PathPresentation : IValidateable
 {
-    private readonly PresentationCore presentationCore;
+    private readonly Presentation presentation;
     private string path;
 
     internal PathPresentation(string path)
     {
         this.path = path;
-        this.presentationCore = new PresentationCore(File.ReadAllBytes(this.path));
+        this.presentation = new Presentation(File.ReadAllBytes(this.path));
     }
 
-    public void Save()
-    {
-        this.presentationCore.Save(path);
-    }
+    public void Save() => this.presentation.Save(path);
+    void IValidateable.Validate() => this.presentation.Validate();
 
     public void Copy(string newPath)
     {
@@ -25,37 +22,23 @@ internal sealed record PathPresentation : ICopyablePresentation
         this.Save();
     }
 
-    public void Copy(Stream stream)
-    {
-        this.presentationCore.Save(stream);
-    }
+    public void Copy(Stream stream) => this.presentation.Save(stream);
+    public ISlideCollection Slides => this.presentation.Slides;
 
-    /// <inheritdoc />
-    public ISlideCollection Slides => this.presentationCore.Slides;
-
-    /// <inheritdoc />
     public int SlideWidth
     {
-        get => this.presentationCore.SlideWidth; 
-        set => this.presentationCore.SlideWidth = value;
+        get => this.presentation.SlideWidth;
+        set => this.presentation.SlideWidth = value;
     }
 
-    /// <inheritdoc />
     public int SlideHeight
     {
-        get => this.presentationCore.SlideHeight;
-        set => this.presentationCore.SlideHeight = value;
+        get => this.presentation.SlideHeight;
+        set => this.presentation.SlideHeight = value;
     }
-    
-    /// <inheritdoc />
-    public ISlideMasterCollection SlideMasters => this.presentationCore.SlideMasters;
-    
-    /// <inheritdoc />
-    public byte[] BinaryData => this.presentationCore.BinaryData;
-    
-    /// <inheritdoc />
-    public ISectionCollection Sections => this.presentationCore.Sections;
-    
-    /// <inheritdoc />
-    public IHeaderAndFooter HeaderAndFooter => this.presentationCore.HeaderAndFooter;
+
+    public ISlideMasterCollection SlideMasters => this.presentation.SlideMasters;
+    public byte[] BinaryData => this.presentation.BinaryData;
+    public ISectionCollection Sections => this.presentation.Sections;
+    public IHeaderAndFooter HeaderAndFooter => this.presentation.HeaderAndFooter;
 }

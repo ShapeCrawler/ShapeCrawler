@@ -25,7 +25,7 @@ public class TestElementQuery
     public int? SlideNumber { get; set; }
 
 
-    public IAutoShape GetAutoShape()
+    public IShape GetAutoShape()
     {
         var slideIndex = 0;
         if (this.SlideNumber != null)
@@ -38,14 +38,14 @@ public class TestElementQuery
         }
             
         var shapes = this.Presentation.Slides[slideIndex].Shapes;
-        return this.ShapeName != null ? shapes.GetByName<IAutoShape>(this.ShapeName) : shapes.GetById<IAutoShape>(this.ShapeId!.Value);
+        return this.ShapeName != null ? shapes.GetByName<IShape>(this.ShapeName) : shapes.GetById<IShape>(this.ShapeId!.Value);
     }
         
     public IParagraph GetParagraph()
     {
         var paragraphIndex = this.ParagraphIndex ?? this.ParagraphNumber - 1;
         var autoShape = Presentation.Slides[SlideIndex]
-            .Shapes.First(sp => sp.Id == ShapeId) as IAutoShape;
+            .Shapes.First(sp => sp.Id == ShapeId) as IShape;
         return autoShape.TextFrame.Paragraphs[paragraphIndex];
     }
 
@@ -53,8 +53,8 @@ public class TestElementQuery
     {
         var shapes = this.Presentation.Slides[this.SlideIndex].Shapes;
         var autoShape = this.ShapeId != null 
-            ? shapes.GetById<IAutoShape>(this.ShapeId.Value) 
-            : shapes.GetByName<IAutoShape>(this.ShapeName);
+            ? shapes.GetById<IShape>(this.ShapeId.Value) 
+            : shapes.GetByName<IShape>(this.ShapeName);
 
         var paragraphIndex = this.ParagraphIndex ?? this.ParagraphNumber - 1;
         var portionIndex = this.PortionIndex ?? this.PortionNumber - 1;
@@ -74,8 +74,8 @@ public class TestElementQuery
         };
 
         var autoShape = this.ShapeId != null 
-            ? shapes.GetById<IAutoShape>(this.ShapeId.Value) 
-            : shapes.GetByName<IAutoShape>(this.ShapeName);
+            ? shapes.GetById<IShape>(this.ShapeId.Value) 
+            : shapes.GetByName<IShape>(this.ShapeName);
             
         var paragraphIndex = this.ParagraphIndex ?? this.ParagraphNumber - 1;
         var portionIndex = this.PortionIndex ?? this.PortionNumber - 1;

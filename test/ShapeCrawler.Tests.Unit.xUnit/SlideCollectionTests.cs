@@ -19,9 +19,9 @@ public class SlideCollectionTests : SCTest
     public void Count_returns_one_When_presentation_contains_one_slide()
     {
         // Act
-        var pptx17 = GetInputStream("017.pptx");
+        var pptx17 = StreamOf("017.pptx");
         var pres17 = new SCPresentation(pptx17);        
-        var pptx16 = GetInputStream("016.pptx");
+        var pptx16 = StreamOf("016.pptx");
         var pres16 = new SCPresentation(pptx16);
         var numberSlidesCase1 = pres17.Slides.Count;
         var numberSlidesCase2 = pres16.Slides.Count;
@@ -35,8 +35,8 @@ public class SlideCollectionTests : SCTest
     public void Add_adds_external_slide()
     {
         // Arrange
-        var sourceSlide = new SCPresentation(GetInputStream("001.pptx")).Slides[0];
-        var pptx = GetInputStream("002.pptx");
+        var sourceSlide = new SCPresentation(StreamOf("001.pptx")).Slides[0];
+        var pptx = StreamOf("002.pptx");
         var destPre = new SCPresentation(pptx);
         var originSlidesCount = destPre.Slides.Count;
         var expectedSlidesCount = ++originSlidesCount;
@@ -57,7 +57,7 @@ public class SlideCollectionTests : SCTest
     public void Add_adds_slide_from_the_Same_presentation()
     {
         // Arrange
-        var pptxStream = GetInputStream("charts-case003.pptx");
+        var pptxStream = StreamOf("charts-case003.pptx");
         var pres = new SCPresentation(pptxStream);
         var expectedSlidesCount = pres.Slides.Count + 1;
         var slideCollection = pres.Slides;
@@ -91,31 +91,32 @@ public class SlideCollectionTests : SCTest
     public void Add_add_adds_New_slide()
     {
         // Arrange
-        var pptx = GetInputStream("autoshape-grouping.pptx");
+        var pptx = StreamOf("autoshape-grouping.pptx");
         var pres = new SCPresentation(pptx);
         var layout = pres.SlideMasters[0].SlideLayouts[0]; 
         var slides = pres.Slides;
 
         // Act
-        var addedSlide = slides.AddEmptySlide(layout);
+        slides.AddEmptySlide(layout);
 
         // Assert
+        var addedSlide = slides.Last();
         addedSlide.Should().NotBeNull();
-        var errors = PptxValidator.Validate(pres);
-        errors.Should().BeEmpty();
+        pres.Validate();
     }
 
     [Fact]
     public void AddEmptySlide_adds_slide_from_layout()
     {
         // Arrange
-        var pres = new SCPresentation(GetInputStream("017.pptx"));
+        var pres = new SCPresentation(StreamOf("017.pptx"));
         var titleAndContentLayout = pres.SlideMasters[0].SlideLayouts[0];
 
         // Act
-        var addedSlide = pres.Slides.AddEmptySlide(SCSlideLayoutType.Title);
+        pres.Slides.AddEmptySlide(SCSlideLayoutType.Title);
 
         // Assert
+        var addedSlide = pres.Slides.Last();
         titleAndContentLayout.Type.Should().Be(SCSlideLayoutType.Title);
         addedSlide.Should().NotBeNull();
         titleAndContentLayout.Shapes.Select(s => s.Name).Should().BeSubsetOf(addedSlide.Shapes.Select(s => s.Name));
@@ -125,11 +126,11 @@ public class SlideCollectionTests : SCTest
     public void Slides_Insert_inserts_slide_at_the_specified_position()
     {
         // Arrange
-        var pptx = GetInputStream("001.pptx");
+        var pptx = StreamOf("001.pptx");
         var sourceSlide = new SCPresentation(pptx).Slides[0];
         var sourceSlideId = Guid.NewGuid().ToString();
         sourceSlide.CustomData = sourceSlideId;
-        pptx = GetInputStream("002.pptx");
+        pptx = StreamOf("002.pptx");
         var destPre = new SCPresentation(pptx);
 
         // Act
@@ -144,7 +145,7 @@ public class SlideCollectionTests : SCTest
     public void Slides_Remove_removes_slide(string file, int expectedSlidesCount)
     {
         // Arrange
-        var pptx = GetInputStream(file);
+        var pptx = StreamOf(file);
         var pres = new SCPresentation(pptx);
         var removingSlide = pres.Slides[0];
         var mStream = new MemoryStream();
@@ -170,7 +171,7 @@ public class SlideCollectionTests : SCTest
     public void Slides_Remove_removes_slide_from_section()
     {
         // Arrange
-        var pptxStream = GetInputStream("autoshape-case017_slide-number.pptx");
+        var pptxStream = StreamOf("autoshape-case017_slide-number.pptx");
         var pres = new SCPresentation(pptxStream);
         var sectionSlides = pres.Sections[0].Slides;
         var removingSlide = sectionSlides[0];

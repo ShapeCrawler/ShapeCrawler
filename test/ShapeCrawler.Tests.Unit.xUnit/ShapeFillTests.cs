@@ -24,77 +24,22 @@ public class ShapeFillTests : SCTest
     public void SetPicture_updates_fill_with_specified_picture_image_When_shape_is_Not_filled(IShape shape)
     {
         // Arrange
-        var autoShape = (IAutoShape)shape;
+        var autoShape = (IShape)shape;
         var fill = autoShape.Fill;
-        var imageStream = GetInputStream("test-image-1.png");
+        var imageStream = StreamOf("test-image-1.png");
 
         // Act
         fill.SetPicture(imageStream);
 
         // Assert
-        var pictureBytes = fill.Picture!.BinaryData.Result;
+        var pictureBytes = fill.Picture!.BinaryData();
         var imageBytes = imageStream.ToArray();
         pictureBytes.SequenceEqual(imageBytes).Should().BeTrue();
     }
 
     [Theory]
-    [SlideShapeData("autoshape-case005_text-frame.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
-    [SlideShapeData("autoshape-case005_text-frame.pptx", slideNumber: 1, shapeName: "AutoShape 2")]
-    [SlideShapeData("autoshape-grouping.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
-    public void SetColor_sets_solid_color(IShape shape)
-    {
-        // Arrange
-        var autoShape = (IAutoShape)shape;
-        var shapeFill = autoShape.Fill;
-
-        // Act
-        shapeFill.SetColor("32a852");
-
-        // Assert
-        shapeFill.Color.Should().Be("32a852");
-        var errors = PptxValidator.Validate(shape.SlideStructure.Presentation);
-        errors.Should().BeEmpty();
-    }
-
-    [Theory]
-    [SlideShapeData("table-case001.pptx", slideNumber: 1, shapeName: "Table 1")]
-    public void SetColor_sets_solid_color_as_fill_of_Table_Cell(IShape shape)
-    {
-        // Arrange
-        var table = (ITable)shape;
-        var shapeFill = table[0, 0].Fill;
-
-        // Act
-        shapeFill.SetColor("32a852");
-
-        // Assert
-        shapeFill.Color.Should().Be("32a852");
-        var errors = PptxValidator.Validate(shape.SlideStructure.Presentation);
-        errors.Should().BeEmpty();
-    }
-    
-    [Theory]
-    [SlideShapeData("009_table.pptx", slideNumber: 2, shapeName: "AutoShape 2")]
-    public void SetColor_sets_solid_color_After_picture(IShape shape)
-    {
-        // Arrange
-        var autoShape = (IAutoShape)shape;
-        var shapeFill = autoShape.Fill;
-        var imageStream = GetInputStream("test-image-1.png");
-
-        // Act
-        shapeFill.SetPicture(imageStream);
-        shapeFill.SetColor("32a852");
-        
-        // Assert
-        shapeFill.Color.Should().Be("32a852");
-        var errors = PptxValidator.Validate(shape.SlideStructure.Presentation);
-        errors.Should().BeEmpty();
-    }
-
-    [Theory]
     [MemberData(nameof(TestCasesFillType))]
-    public void Type_returns_fill_type(IAutoShape shape, SCFillType expectedFill)
+    public void Type_returns_fill_type(IShape shape, SCFillType expectedFill)
     {
         // Act
         var fillType = shape.Fill.Type;
@@ -105,27 +50,27 @@ public class ShapeFillTests : SCTest
 
     public static IEnumerable<object[]> TestCasesFillType()
     {
-        var pptxStream = GetInputStream("009_table.pptx");
+        var pptxStream = StreamOf("009_table.pptx");
         var pres = new SCPresentation(pptxStream);
 
-        var withNoFill = pres.Slides[1].Shapes.GetById<IAutoShape>(6);
+        var withNoFill = pres.Slides[1].Shapes.GetById<IShape>(6);
         yield return new object[] { withNoFill, SCFillType.NoFill };
 
-        var withSolid = pres.Slides[1].Shapes.GetById<IAutoShape>(2);
+        var withSolid = pres.Slides[1].Shapes.GetById<IShape>(2);
         yield return new object[] { withSolid, SCFillType.Solid };
 
-        var withGradient = pres.Slides[1].Shapes.GetByName<IAutoShape>("AutoShape 1");
+        var withGradient = pres.Slides[1].Shapes.GetByName<IShape>("AutoShape 1");
         yield return new object[] { withGradient, SCFillType.Gradient };
 
-        var withPicture = pres.Slides[2].Shapes.GetById<IAutoShape>(4);
+        var withPicture = pres.Slides[2].Shapes.GetById<IShape>(4);
         yield return new object[] { withPicture, SCFillType.Picture };
 
-        var withPattern = pres.Slides[1].Shapes.GetByName<IAutoShape>("AutoShape 2");
+        var withPattern = pres.Slides[1].Shapes.GetByName<IShape>("AutoShape 2");
         yield return new object[] { withPattern, SCFillType.Pattern };
 
-        pptxStream = GetInputStream("autoshape-case003.pptx");
+        pptxStream = StreamOf("autoshape-case003.pptx");
         pres = new SCPresentation(pptxStream);
-        var withSlideBg = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
+        var withSlideBg = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 1");
         yield return new object[] { withSlideBg, SCFillType.SlideBackground };
     }
 }

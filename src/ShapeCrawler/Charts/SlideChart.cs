@@ -4,10 +4,11 @@ using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
-using ShapeCrawler.SlideShape;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -50,15 +51,23 @@ internal sealed record SlideChart : IRemoveable, IChart
 
         this.workbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartSpreadsheet(this.ChartPart.EmbeddedPackagePart) : null;
         this.shape = new Shape(pGraphicFrame);
+        this.Outline = new SlideShapeOutline(sdkSlidePart, pGraphicFrame.Descendants<P.ShapeProperties>().First());
+        this.Fill = new SlideShapeFill(sdkSlidePart, pGraphicFrame.Descendants<P.ShapeProperties>().First(), false);
     }
 
     public SCChartType Type => this.chartType.Value;
 
     public SCShapeType ShapeType => SCShapeType.Chart;
-    public IAutoShape? AsAutoShape()
-    {
-        throw new NotImplementedException();
-    }
+
+    public bool HasOutline => true;
+    public IShapeOutline Outline { get; }
+    public IShapeFill Fill { get; }
+
+    public bool IsTextHolder => false;
+
+    public ITextFrame TextFrame => throw new SCException(
+        $"Chart cannot be a text holder. Use {nameof(IShape.IsTextHolder)} property to check if the shape is a text holder.");
+    public double Rotation { get; }
 
     public string? Title
     {
@@ -128,12 +137,10 @@ internal sealed record SlideChart : IRemoveable, IChart
     public string Name => this.shape.Name();
     
     public bool Hidden => this.shape.Hidden();
-    public bool IsPlaceholder()
-    {
-        throw new NotImplementedException();
-    }
 
-    public IPlaceholder? Placeholder { get; }
+    public bool IsPlaceholder => false;
+
+    public IPlaceholder Placeholder => throw new SCException($"The Chart is not a placeholder. Use {nameof(IShape.IsPlaceholder)} to check if the shape is a placeholder.");
     public SCGeometry GeometryType => SCGeometry.Rectangle;
     public string? CustomData { get; set; }
 

@@ -31,7 +31,7 @@ public class SlideParagraphDataAttribute : DataAttribute
         var pptxStream = TestHelper.GetStream(this.pptxFile);
         var pres = new SCPresentation(pptxStream);
         var slide = pres.Slides[this.slideNumber - 1];
-        var shape = slide.Shapes.GetByName<IAutoShape>(this.shapeName);
+        var shape = slide.Shapes.GetByName(this.shapeName);
         var paragraph = shape.TextFrame!.Paragraphs[this.paraNumber - 1];
 
         yield return new[] { paragraph, this.expectedResult };

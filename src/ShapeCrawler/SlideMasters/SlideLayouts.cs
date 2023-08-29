@@ -24,6 +24,7 @@ internal sealed record SlideLayouts : IReadOnlyList<ISlideLayout>
         foreach (var rId in rIdList)
         {
             var sdkLayoutPart = (SlideLayoutPart)this.sdkSlideMasterPart.GetPartById(rId.Value!);
+            var slideMaster = new SlideMaster(this.sdkSlideMasterPart);
             layouts.Add(new SlideLayout(sdkLayoutPart));
         }
     

@@ -35,4 +35,6 @@ internal sealed record LayoutShapes : IReadOnlyShapeCollection
     {
         throw new System.NotImplementedException();
     }
+
+    public IShape this[int index] => throw new System.NotImplementedException();
 }

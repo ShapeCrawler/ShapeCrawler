@@ -2,6 +2,9 @@
 using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Drawing;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
@@ -43,17 +46,8 @@ internal record SlideMediaShape : IMediaShape, IRemoveable
         this.sdkSlidePart = sdkSlidePart;
         this.pPicture = pPicture;
         this.shape = shape;
-    }
-
-    private SlidePlaceholder? ParsePlaceholderOrNull()
-    {
-        var pPlaceholder = this.pPicture.GetPNvPr().GetFirstChild<P.PlaceholderShape>();
-        if (pPlaceholder == null)
-        {
-            return null;
-        }
-
-        return new SlidePlaceholder(pPlaceholder);
+        this.Outline = new SlideShapeOutline(sdkSlidePart, pPicture.ShapeProperties!);
+        this.Fill = new SlideShapeFill(sdkSlidePart, pPicture.ShapeProperties!, false);
     }
 
     public int X
@@ -88,18 +82,23 @@ internal record SlideMediaShape : IMediaShape, IRemoveable
 
     public SCGeometry GeometryType => this.shape.GeometryType();
 
-    public bool IsPlaceholder() => false;
+    public bool IsPlaceholder => false;
 
     public IPlaceholder Placeholder => new NullPlaceholder();
 
     public string? CustomData { get; set; }
 
     public SCShapeType ShapeType => SCShapeType.Video;
+    public bool HasOutline => true;
+    public IShapeOutline Outline { get; }
+    public IShapeFill Fill { get; }
 
-    public IAutoShape? AsAutoShape()
-    {
-        return null;
-    }
+    public bool IsTextHolder => false;
+
+    public ITextFrame TextFrame =>
+        throw new SCException(
+            $"The media shape is not a text holder. Use {nameof(IShape.IsTextHolder)} property to check if the shape is a text holder.");
+    public double Rotation { get; }
 
     internal void Draw(SKCanvas canvas)
     {

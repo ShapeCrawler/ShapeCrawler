@@ -21,7 +21,7 @@ public class ParagraphTests : SCTest
         // Act
         var pres = new SCPresentation();
         pres.Slides[0].Shapes.AddRectangle(100,100, 500, 100);
-        var addedShape = (IAutoShape)pres.Slides[0].Shapes.Last();
+        var addedShape = (IShape)pres.Slides[0].Shapes.Last();
         addedShape.TextFrame!.Paragraphs.Add();
         var paragraph = addedShape.TextFrame.Paragraphs.Last();
         paragraph.Text = "Test";
@@ -37,11 +37,11 @@ public class ParagraphTests : SCTest
     public void Bullet_FontName_Getter_returns_font_name()
     {
         // Arrange
-        var pptx = GetInputStream("002.pptx");
+        var pptx = StreamOf("002.pptx");
         var pres = new SCPresentation(pptx);
         var shapes = pres.Slides[1].Shapes;
-        var shape3Pr1Bullet = ((IAutoShape)shapes.First(x => x.Id == 3)).TextFrame.Paragraphs[0].Bullet;
-        var shape4Pr2Bullet = ((IAutoShape)shapes.First(x => x.Id == 4)).TextFrame.Paragraphs[1].Bullet;
+        var shape3Pr1Bullet = ((IShape)shapes.First(x => x.Id == 3)).TextFrame.Paragraphs[0].Bullet;
+        var shape4Pr2Bullet = ((IShape)shapes.First(x => x.Id == 4)).TextFrame.Paragraphs[1].Bullet;
 
         // Act
         var shape3BulletFontName = shape3Pr1Bullet.FontName;
@@ -56,14 +56,14 @@ public class ParagraphTests : SCTest
     public void Bullet_Type_Getter_returns_bullet_type()
     {
         // Arrange
-        var pptx = GetInputStream("002.pptx");
+        var pptx = StreamOf("002.pptx");
         var pres = new SCPresentation(pptx);
         var shapeList = pres.Slides[1].Shapes;
         var shape4 = shapeList.First(x => x.Id == 4);
         var shape5 = shapeList.First(x => x.Id == 5);
-        var shape4Pr2Bullet = ((IAutoShape)shape4).TextFrame.Paragraphs[1].Bullet;
-        var shape5Pr1Bullet = ((IAutoShape)shape5).TextFrame.Paragraphs[0].Bullet;
-        var shape5Pr2Bullet = ((IAutoShape)shape5).TextFrame.Paragraphs[1].Bullet;
+        var shape4Pr2Bullet = ((IShape)shape4).TextFrame.Paragraphs[1].Bullet;
+        var shape5Pr1Bullet = ((IShape)shape5).TextFrame.Paragraphs[0].Bullet;
+        var shape5Pr2Bullet = ((IShape)shape5).TextFrame.Paragraphs[1].Bullet;
 
         // Act
         var shape5Pr1BulletType = shape5Pr1Bullet.Type;
@@ -92,17 +92,16 @@ public class ParagraphTests : SCTest
         
         // Assert
         paragraph.Alignment.Should().Be(SCTextAlignment.Center);
-        var errors = PptxValidator.Validate(pres);
-        errors.Should().BeEmpty();
+        pres.Validate();
     }
 
     [Test]
     public void Paragraph_Bullet_Type_Getter_returns_None_value_When_paragraph_doesnt_have_bullet()
     {
         // Arrange
-        var pptx = GetInputStream("001.pptx");
+        var pptx = StreamOf("001.pptx");
         var pres = new SCPresentation(pptx);
-        var autoShape = pres.Slides[0].Shapes.GetById<IAutoShape>(2);
+        var autoShape = pres.Slides[0].Shapes.GetById<IShape>(2);
         var bullet = autoShape.TextFrame.Paragraphs[0].Bullet;
 
         // Act
@@ -116,10 +115,10 @@ public class ParagraphTests : SCTest
     public void Paragraph_BulletColorHexAndCharAndSizeProperties_ReturnCorrectValues()
     {
         // Arrange
-        var pres2 = new SCPresentation(GetInputStream("002.pptx"));
+        var pres2 = new SCPresentation(StreamOf("002.pptx"));
         var shapeList = pres2.Slides[1].Shapes;
         var shape4 = shapeList.First(x => x.Id == 4);
-        var shape4Pr2Bullet = ((IAutoShape)shape4).TextFrame.Paragraphs[1].Bullet;
+        var shape4Pr2Bullet = ((IShape)shape4).TextFrame.Paragraphs[1].Bullet;
 
         // Act
         var bulletColorHex = shape4Pr2Bullet.ColorHex;
@@ -136,9 +135,9 @@ public class ParagraphTests : SCTest
     public void Paragraph_Text_Setter_updates_paragraph_text_and_resize_shape()
     {
         // Arrange
-        var pptxStream = GetInputStream("autoshape-case003.pptx");
+        var pptxStream = StreamOf("autoshape-case003.pptx");
         var pres = new SCPresentation(pptxStream);
-        var shape = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 4");
+        var shape = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 4");
         var paragraph = shape.TextFrame.Paragraphs[0];
             
         // Act
@@ -156,7 +155,7 @@ public class ParagraphTests : SCTest
         var pres = new SCPresentation();
         var slide = pres.Slides[0];
         slide.Shapes.AddRectangle(10, 10, 10, 10);
-        var addedShape = (IAutoShape)slide.Shapes.Last();
+        var addedShape = (IShape)slide.Shapes.Last();
         var paragraph = addedShape.TextFrame!.Paragraphs[0];
 
         // Act
@@ -164,8 +163,7 @@ public class ParagraphTests : SCTest
 
         // Assert
         paragraph.Text.Should().Be("test");
-        var errors = PptxValidator.Validate(slide.Presentation);
-        errors.Should().BeEmpty();
+        pres.Validate();
     }
     
     [Test]
@@ -174,7 +172,7 @@ public class ParagraphTests : SCTest
         // Arrange
         var pptx = TestHelper.GetStream("autoshape-case003.pptx");
         var pres = new SCPresentation(pptx);
-        var shape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IAutoShape>("Shape 1");
+        var shape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IShape>("Shape 1");
         var paragraph = shape.TextFrame!.Paragraphs[0];
         
         // Act
@@ -183,15 +181,15 @@ public class ParagraphTests : SCTest
         
         // Assert
         paragraph.Text.Should().BeEquivalentTo($"Safety{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");
-        TestHelper.ThrowIfPresentationInvalid(pres);
+        pres.Validate();
     }
     
     [Test]
     public void Paragraph_Text_Getter_returns_paragraph_text()
     {
         // Arrange
-        var textBox1 = ((IAutoShape)new SCPresentation(GetInputStream("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 37)).TextFrame;
-        var textBox2 = ((ITable)new SCPresentation(GetInputStream("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+        var textBox1 = ((IShape)new SCPresentation(StreamOf("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 37)).TextFrame;
+        var textBox2 = ((ITable)new SCPresentation(StreamOf("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
             .TextFrame;
 
         // Act
@@ -209,24 +207,23 @@ public class ParagraphTests : SCTest
     public void ReplaceText_finds_and_replaces_text()
     {
         // Arrange
-        var pptxStream = GetInputStream("autoshape-case003.pptx");
+        var pptxStream = StreamOf("autoshape-case003.pptx");
         var pres = new SCPresentation(pptxStream);
-        var paragraph = pres.Slides[0].Shapes.GetByName<IAutoShape>("AutoShape 3").TextFrame!.Paragraphs[0];
+        var paragraph = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 3").TextFrame!.Paragraphs[0];
             
         // Act
         paragraph.ReplaceText("Some text", "Some text2");
 
         // Assert
         paragraph.Text.Should().BeEquivalentTo("Some text2");
-        var errors = PptxValidator.Validate(pres);
-        errors.Should().BeEmpty();
+        pres.Validate();
     }
 
     [Test]
     public void Paragraph_Portions_counter_returns_number_of_text_portions_in_the_paragraph()
     {
         // Arrange
-        var textFrame = new SCPresentation(GetInputStream("009_table.pptx")).Slides[2].Shapes.GetById<IAutoShape>(2).TextFrame;
+        var textFrame = new SCPresentation(StreamOf("009_table.pptx")).Slides[2].Shapes.GetById<IShape>(2).TextFrame;
 
         // Act
         var portions = textFrame.Paragraphs[0].Portions;
@@ -239,9 +236,9 @@ public class ParagraphTests : SCTest
     public void Portions_Add()
     {
         // Arrange
-        var pptx = GetInputStream("autoshape-case001.pptx");
+        var pptx = StreamOf("autoshape-case001.pptx");
         var pres = new SCPresentation(pptx);
-        var shape = pres.SlideMasters[0].Shapes.GetByName<IAutoShape>("AutoShape 1");
+        var shape = pres.SlideMasters[0].Shapes.GetByName<IShape>("AutoShape 1");
         shape.TextFrame!.Paragraphs.Add();
         var paragraph = shape.TextFrame.Paragraphs.Last();
         var expectedPortionCount = paragraph.Portions.Count + 1;

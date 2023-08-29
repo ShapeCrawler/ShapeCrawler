@@ -39,7 +39,7 @@ public interface IShape : IPosition
     ///     Gets a value indicating whether shape is a placeholder.
     /// </summary>
     /// <returns></returns>
-    bool IsPlaceholder();
+    bool IsPlaceholder { get; }
     
     /// <summary>
     ///     Gets placeholder.
@@ -60,9 +60,35 @@ public interface IShape : IPosition
     ///     Gets shape type.
     /// </summary>
     SCShapeType ShapeType { get; }
-
+    
     /// <summary>
-    ///     Gets <see cref="IAutoShape"/>.    
+    ///     Gets value indicating whether the shape has outline formatting.
     /// </summary>
-    IAutoShape AsAutoShape();
+    bool HasOutline { get; }
+    
+    /// <summary>
+    ///     Gets shape outline.
+    /// </summary>
+    IShapeOutline Outline { get; }
+ 
+    /// <summary>
+    ///     Gets shape fill. Returns <see langword="null"/> if the shape can not be filled, for example, a line.
+    /// </summary>
+    IShapeFill Fill { get; }
+    
+    /// <summary>
+    ///     Gets value indicating whether the AutoShape is a text holder.
+    /// </summary>
+    /// <returns></returns>
+    bool IsTextHolder { get; }
+    
+    /// <summary>
+    ///     Gets text frame. Returns <see langword="null"/> if the shape is not a text holder.
+    /// </summary>
+    ITextFrame TextFrame { get; }
+    
+    /// <summary>
+    ///     Gets the rotation of the shape in degrees.
+    /// </summary>
+    double Rotation { get; }
 }

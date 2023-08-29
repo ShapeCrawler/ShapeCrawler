@@ -23,7 +23,7 @@ public class FontTests : SCTest
     public void LatinName_Getter_returns_font_for_Latin_characters(IShape shape, string expectedFontName)
     {
         // Arrange
-        var autoShape = (IAutoShape)shape;
+        var autoShape = shape;
         var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
 
         // Act
@@ -38,7 +38,7 @@ public class FontTests : SCTest
     public void EastAsianName_Getter_returns_font_for_East_Asian_characters(IShape shape, string expectedFontName)
     {
         // Arrange
-        var autoShape = (IAutoShape)shape;
+        var autoShape =  shape;
         var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
 
         // Act
@@ -50,28 +50,11 @@ public class FontTests : SCTest
     
     [Theory]
     [SlideShapeData("001.pptx", 1, "TextBox 3")]
-    public void EastAsianName_Setter_sets_font_for_the_east_asian_characters(IShape shape)
-    {
-        // Arrange
-        var autoShape = (IAutoShape)shape;
-        var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
-
-        // Act
-        font.EastAsianName = "SimSun";
-
-        // Assert
-        font.EastAsianName.Should().Be("SimSun");
-        var errors = PptxValidator.Validate(shape.SlideStructure.Presentation);
-        errors.Should().BeEmpty();
-    }
-    
-    [Theory]
-    [SlideShapeData("001.pptx", 1, "TextBox 3")]
     [SlideShapeData("001.pptx", 3, "Text Placeholder 3")]
     public void LatinName_Setter_sets_font_for_the_latin_characters(IShape shape)
     {
         // Arrange
-        var autoShape = (IAutoShape)shape;
+        var autoShape =  shape;
         var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
 
         // Act
@@ -100,7 +83,7 @@ public class FontTests : SCTest
     public void Size_Getter_returns_font_size(IShape shape, int expectedSize)
     {
         // Arrange
-        var autoShape = (IAutoShape)shape;
+        var autoShape =  shape;
         var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
         
         // Act
@@ -160,8 +143,7 @@ public class FontTests : SCTest
         font.Size = newSize;
 
         // Assert
-        var errors = PptxValidator.Validate(pres);
-        errors.Should().BeEmpty();
+        ((SCPresentation)pres).Validate();
         pres.SaveAs(mStream);
         testCase.SetPresentation(mStream);
         font = testCase.AutoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
@@ -191,23 +173,6 @@ public class FontTests : SCTest
             yield return new object[] { testCase3 };
         }
     }
-
-    [Theory]
-    [SlideShapeData("#1", "001.pptx", 1, "TextBox 3")]
-    [SlideShapeData("#2", "026.pptx", 1, "AutoShape 1")]
-    [SlideShapeData("#3", "autoshape-case016.pptx", 1, "Text Placeholder 1")]
-    public void CanChange_returns_true(string displayName, IShape shape)
-    {
-        // Arrange
-        var autoShape = (IAutoShape)shape;
-        var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
-
-        // Act
-        var canChange = font.CanChange();
-
-        // Assert
-        canChange.Should().BeTrue();
-    }
     
     [Theory]
     [MemberData(nameof(TestCasesIsBold))]
@@ -234,14 +199,14 @@ public class FontTests : SCTest
     public static IEnumerable<object[]> TestCasesIsBold()
     {
         TestElementQuery portionRequestCase1 = new();
-        portionRequestCase1.Presentation = new SCPresentation(GetInputStream("020.pptx"));
+        portionRequestCase1.Presentation = new SCPresentation(StreamOf("020.pptx"));
         portionRequestCase1.SlideIndex = 2;
         portionRequestCase1.ShapeId = 7;
         portionRequestCase1.ParagraphIndex = 0;
         portionRequestCase1.PortionIndex = 0;
 
         TestElementQuery portionRequestCase2 = new();
-        portionRequestCase2.Presentation = new SCPresentation(GetInputStream("026.pptx"));
+        portionRequestCase2.Presentation = new SCPresentation(StreamOf("026.pptx"));
         portionRequestCase2.SlideIndex = 0;
         portionRequestCase2.ShapeId = 128;
         portionRequestCase2.ParagraphIndex = 0;

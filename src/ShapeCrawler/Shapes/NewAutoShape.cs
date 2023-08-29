@@ -4,13 +4,13 @@ namespace ShapeCrawler.AutoShapes;
 
 internal readonly struct NewAutoShape
 {
-    internal NewAutoShape(SlideAutoShape newAutoShape, TypedOpenXmlCompositeElement pShapeTreeChild)
+    internal NewAutoShape(SlideShape.SlideShape newShape, TypedOpenXmlCompositeElement pShapeTreeChild)
     {
-        this.AutoShape = newAutoShape;
+        this.Shape = newShape;
         this.PShapeTreeChild = pShapeTreeChild;
     }
     
     internal TypedOpenXmlCompositeElement PShapeTreeChild { get; }
 
-    internal SlideAutoShape AutoShape { get; }
+    internal SlideShape.SlideShape Shape { get; }
 }

@@ -8,7 +8,7 @@ internal sealed record SDKPPresentationWrap
 {
     private readonly P.Presentation pPresentation;
 
-    internal SDKPPresentationWrap(Presentation pPresentation)
+    internal SDKPPresentationWrap(P.Presentation pPresentation)
     {
         this.pPresentation = pPresentation;
     }

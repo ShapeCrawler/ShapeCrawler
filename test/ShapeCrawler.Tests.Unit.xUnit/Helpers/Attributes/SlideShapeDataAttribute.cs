@@ -45,7 +45,7 @@ public class SlideShapeDataAttribute : DataAttribute
 
     public override IEnumerable<object[]> GetData(MethodInfo testMethod)
     {
-        var pptxStream = SCTest.GetInputStream(this.pptxFile);
+        var pptxStream = SCTest.StreamOf(this.pptxFile);
         var pres = new SCPresentation(pptxStream);
         var slide = pres.Slides[this.slideNumber - 1];
         var shape = this.shapeName != null

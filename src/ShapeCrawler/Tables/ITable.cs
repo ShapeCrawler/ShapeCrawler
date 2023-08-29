@@ -4,6 +4,7 @@ using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
@@ -53,26 +54,31 @@ internal sealed record SlideTable : IRemoveable, ITable
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly ResetableLazy<SlideTableRows> rowCollection;
 
-    internal SlideTable(SlidePart sdkSlidePart, OpenXmlCompositeElement pShapeTreeElement)
-        : this(sdkSlidePart, pShapeTreeElement, new Shape(pShapeTreeElement))
+    internal SlideTable(SlidePart sdkSlidePart, OpenXmlCompositeElement sdkPShapeTreeElement)
+        : this(sdkSlidePart, sdkPShapeTreeElement, new Shape(sdkPShapeTreeElement))
     {
     }
 
-    private SlideTable(SlidePart sdkSlidePart, OpenXmlCompositeElement pShapeTreeElement, Shape shape)
+    private SlideTable(SlidePart sdkSlidePart, OpenXmlCompositeElement sdkPShapeTreeElement, Shape shape)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.shape = shape;
-        var graphicFrame = (P.GraphicFrame)pShapeTreeElement;
+        var graphicFrame = (P.GraphicFrame)sdkPShapeTreeElement;
         this.rowCollection = new ResetableLazy<SlideTableRows>(() => new SlideTableRows(this.sdkSlidePart, graphicFrame));
-        this.pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
+        this.pGraphicFrame = (P.GraphicFrame)sdkPShapeTreeElement;
+        this.Fill = new SlideShapeFill(sdkSlidePart, sdkPShapeTreeElement.Descendants<P.ShapeProperties>().First(), false);
     }
 
     public SCShapeType ShapeType => SCShapeType.Table;
+    public bool HasOutline => false;
+    public IShapeOutline Outline => throw new SCException($"Table cannot have outline formatting. Use {nameof(IShape.HasOutline)} property to check if the shape has outline formmating.");
+    public IShapeFill Fill { get; }
+    public bool IsTextHolder => false;
 
-    public IAutoShape AsAutoShape()
-    {
-        throw new NotImplementedException();
-    }
+    public ITextFrame TextFrame =>
+        throw new SCException(
+            $"Table cannot be a text holder. Use {nameof(IShape.IsTextHolder)} property to check if the shape is a text holder.");
+    public double Rotation { get; }
 
     public IReadOnlyList<IColumn> Columns => this.GetColumnList(); // TODO: make lazy
 
@@ -83,9 +89,9 @@ internal sealed record SlideTable : IRemoveable, ITable
     public int Id { get; }
     public string Name => this.shape.Name();
     public bool Hidden { get; }
-    public bool IsPlaceholder() => false;
 
-    public IPlaceholder? Placeholder { get; }
+    public bool IsPlaceholder => false;
+    public IPlaceholder Placeholder => throw new SCException($"Table is not a placeholder. Use {nameof(IShape.IsPlaceholder)} method to check it.");
     public SCGeometry GeometryType => SCGeometry.Rectangle;
     public string? CustomData { get; set; }
 
@@ -151,17 +157,6 @@ internal sealed record SlideTable : IRemoveable, ITable
     internal string ToJson()
     {
         throw new NotImplementedException();
-    }
-
-    internal ITableRow AppendRow(A.TableRow row)
-    {
-        this.ATable.AppendChild(row);
-
-        // reset row collection so this.Rows will include the recently added row
-        this.rowCollection.Reset();
-
-        // the new row is the last one in the row collection
-        return this.Rows.Last();
     }
 
     private static bool CannotBeMerged(TableCell cell1, TableCell cell2)

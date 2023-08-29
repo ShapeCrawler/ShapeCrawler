@@ -4,7 +4,7 @@ namespace ShapeCrawler.AutoShapes;
 
 internal sealed record NullTextFrame : ITextFrame
 {
-    private const string Error = $"The AutoShape is not a text holder. Use {nameof(IAutoShape.IsTextHolder)} property to check if a AutoShape is a text holder.";
+    private const string Error = $"The AutoShape is not a text holder. Use {nameof(IShape.IsTextHolder)} property to check if a AutoShape is a text holder.";
 
     public IParagraphCollection Paragraphs => throw new SCException(Error);
 

@@ -22,7 +22,7 @@ public class MasterPortionAttribute : Attribute, ITestBuilder
 
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
     {
-        var pres = new SCPresentation(SCTest.GetInputStream(this.pptxName));
+        var pres = new SCPresentation(SCTest.StreamOf(this.pptxName));
         var portionQuery = new TestMasterPortionQuery(this.shapeName, this.paragraphNumber, this.portionNumber);
 
         var parameters = new TestCaseParameters(new object[] { pres, portionQuery });

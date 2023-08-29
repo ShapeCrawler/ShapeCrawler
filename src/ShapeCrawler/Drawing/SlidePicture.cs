@@ -6,6 +6,8 @@ using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Office2019.Drawing.SVG;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
 using SkiaSharp;
@@ -17,24 +19,26 @@ namespace ShapeCrawler.Drawing;
 internal sealed record SlidePicture : IPicture, IRemoveable 
 {
     private readonly StringValue blipEmbed;
-    private readonly P.Picture pPicture;
-    private readonly A.Blip aBlip;
+    private readonly P.Picture sdkPPicture;
+    private readonly A.Blip sdkABlip;
     private readonly Shape shape;
     private readonly SlidePart sdkSlidePart;
 
-    internal SlidePicture(SlidePart sdkSlidePart, P.Picture pPicture, A.Blip aBlip)
-        : this(sdkSlidePart, pPicture, aBlip, new Shape(pPicture), new SlidePictureImage(sdkSlidePart, aBlip))
+    internal SlidePicture(SlidePart sdkSlidePart, P.Picture sdkPPicture, A.Blip sdkABlip)
+        : this(sdkSlidePart, sdkPPicture, sdkABlip, new Shape(sdkPPicture), new SlidePictureImage(sdkSlidePart, sdkABlip))
     {
     }
 
-    private SlidePicture(SlidePart sdkSlidePart, P.Picture pPicture, A.Blip aBlip, Shape shape, IImage image)
+    private SlidePicture(SlidePart sdkSlidePart, P.Picture sdkPPicture, A.Blip sdkABlip, Shape shape, IImage image)
     {
         this.sdkSlidePart = sdkSlidePart;
-        this.pPicture = pPicture;
-        this.aBlip = aBlip;
+        this.sdkPPicture = sdkPPicture;
+        this.sdkABlip = sdkABlip;
         this.shape = shape;
         this.Image = image;
-        this.blipEmbed = aBlip.Embed!;
+        this.blipEmbed = sdkABlip.Embed!;
+        this.Outline = new SlideShapeOutline(sdkSlidePart, sdkPPicture.ShapeProperties!);
+        this.Fill = new SlideShapeFill(sdkSlidePart, sdkPPicture.ShapeProperties!, false);
     }
 
     public IImage Image { get; }
@@ -46,21 +50,20 @@ internal sealed record SlidePicture : IPicture, IRemoveable
     public int Id => this.shape.Id();
     public string Name => this.shape.Name();
     public bool Hidden { get; }
+    public bool IsPlaceholder => false;
 
-    public bool IsPlaceholder()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IPlaceholder? Placeholder { get; }
+    public IPlaceholder Placeholder => throw new SCException(
+        $"The Picture shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} to check if the shape is a placeholder.");
     public SCGeometry GeometryType { get; }
     public string? CustomData { get; set; }
     public SCShapeType ShapeType => SCShapeType.Picture;
+    public bool HasOutline => true;
+    public IShapeOutline Outline { get; }
+    public IShapeFill Fill { get; }
+    public bool IsTextHolder { get; }
 
-    public IAutoShape AsAutoShape()
-    {
-        throw new NotImplementedException();
-    }
+    public ITextFrame TextFrame => throw new SCException($"The Picture shape is not a text holder. Use {nameof(IShape.IsTextHolder)} method to check it.");
+    public double Rotation { get; }
 
     internal void Draw(SKCanvas canvas)
     {
@@ -79,7 +82,7 @@ internal sealed record SlidePicture : IPicture, IRemoveable
 
     private string? GetSvgContent()
     {
-        var bel = this.aBlip.GetFirstChild<A.BlipExtensionList>();
+        var bel = this.sdkABlip.GetFirstChild<A.BlipExtensionList>();
         var svgBlipList = bel?.Descendants<SVGBlip>();
         if (svgBlipList == null)
         {
@@ -101,7 +104,7 @@ internal sealed record SlidePicture : IPicture, IRemoveable
     internal void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames,
         SlidePart targetSdkSlidePart)
     {
-        var copy = this.pPicture.CloneNode(true);
+        var copy = this.sdkPPicture.CloneNode(true);
         copy.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
         pShapeTree.AppendChild(copy);
         var copyName = copy.GetNonVisualDrawingProperties().Name!.Value!;
@@ -146,6 +149,6 @@ internal sealed record SlidePicture : IPicture, IRemoveable
 
     public void Remove()
     {
-        this.pPicture.Remove();
+        this.sdkPPicture.Remove();
     }
 }

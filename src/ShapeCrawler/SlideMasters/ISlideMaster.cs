@@ -50,10 +50,9 @@ internal sealed class SlideMaster : ISlideMaster
     private readonly Lazy<MasterSlideNumber?> slideNumber;
     private readonly SlideMasterPart sdkSlideMasterPart;
 
-    internal SlideMaster(SlideMasterPart sdkSlideMasterPart, int number)
+    internal SlideMaster(SlideMasterPart sdkSlideMasterPart)
     {
         this.sdkSlideMasterPart = sdkSlideMasterPart;
-        this.Number = number;
         this.layouts = new ResetableLazy<SlideLayouts>(() => new SlideLayouts(this.sdkSlideMasterPart));
         this.slideNumber = new Lazy<MasterSlideNumber?>(this.CreateSlideNumber);
     }
