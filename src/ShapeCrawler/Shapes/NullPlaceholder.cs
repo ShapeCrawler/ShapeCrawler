@@ -7,7 +7,7 @@ internal class NullPlaceholder : IPlaceholder
     private readonly string error;
 
     internal NullPlaceholder()
-        : this($"Shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} property to check if shape is a placeholder.")
+        : this($"The shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} property to check if shape is a placeholder.")
     {
     }
 

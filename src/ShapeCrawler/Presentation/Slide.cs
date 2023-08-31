@@ -21,32 +21,30 @@ namespace ShapeCrawler;
 
 internal sealed class Slide : ISlide
 {
-    private readonly ResetableLazy<SlideShapes> shapes;
     private readonly Lazy<SlideBgImage> backgroundImage;
-    private Lazy<CustomXmlPart?> customXmlPart;
+    private Lazy<CustomXmlPart?> sdkCustomXmlPart;
     private readonly SlidePart sdkSlidePart;
     private readonly SlideSize slideSize;
 
     internal Slide(
         SlidePart sdkSlidePart,
-        SlideId pSlideId,
+        SlideId sdkPSlideId,
         ISlideLayout slideLayout,
         SlideSize slideSize)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.slideSize = slideSize;
-        this.shapes = new ResetableLazy<SlideShapes>(() =>
-            new SlideShapes(this.sdkSlidePart, this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!));
         this.backgroundImage = new Lazy<SlideBgImage>(() =>
             new SlideBgImage(sdkSlidePart));
-        this.customXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
-        this.SlideId = pSlideId;
+        this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
+        this.SlideId = sdkPSlideId;
         this.SlideLayout = slideLayout;
+        this.Shapes = new SlideShapes(this.sdkSlidePart, this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!);
     }
 
     public ISlideLayout SlideLayout { get; }
 
-    public ISlideShapeCollection Shapes => this.shapes.Value;
+    public ISlideShapeCollection Shapes { get; }
 
     public int Number
     {
@@ -62,7 +60,7 @@ internal sealed class Slide : ISlide
         set => this.SetCustomData(value);
     }
 
-    public bool Hidden => this.sdkSlidePart.Slide.Show is not null && this.sdkSlidePart.Slide.Show.Value == false;
+    public bool Hidden() => this.sdkSlidePart.Slide.Show is not null && this.sdkSlidePart.Slide.Show.Value == false;
 
     internal SlideId SlideId { get; }
 
@@ -155,7 +153,7 @@ internal sealed class Slide : ISlide
                     this.AddAllTextboxesInGroupToList((IGroupShape)shape, textBoxes);
                     break;
                 case SCShapeType.AutoShape:
-                    if (shape is TextSlideShape textSlideAutoShape)
+                    if (shape is TextRootSlideShape textSlideAutoShape)
                     {
                         textBoxes.Add(textSlideAutoShape.TextFrame);
                     }
@@ -235,12 +233,12 @@ internal sealed class Slide : ISlide
 
     private string? GetCustomData()
     {
-        if (this.customXmlPart.Value == null)
+        if (this.sdkCustomXmlPart.Value == null)
         {
             return null;
         }
 
-        var customXmlPartStream = this.customXmlPart.Value.GetStream();
+        var customXmlPartStream = this.sdkCustomXmlPart.Value.GetStream();
         using var customXmlStreamReader = new StreamReader(customXmlPartStream);
         var raw = customXmlStreamReader.ReadToEnd();
 #if NET7_0
@@ -253,15 +251,15 @@ internal sealed class Slide : ISlide
     private void SetCustomData(string? value)
     {
         Stream customXmlPartStream;
-        if (this.customXmlPart.Value == null)
+        if (this.sdkCustomXmlPart.Value == null)
         {
             CustomXmlPart newSlideCustomXmlPart = this.sdkSlidePart.AddCustomXmlPart(CustomXmlPartType.CustomXml);
             customXmlPartStream = newSlideCustomXmlPart.GetStream();
-            this.customXmlPart = new Lazy<CustomXmlPart?>(() => newSlideCustomXmlPart);
+            this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(() => newSlideCustomXmlPart);
         }
         else
         {
-            customXmlPartStream = this.customXmlPart.Value.GetStream();
+            customXmlPartStream = this.sdkCustomXmlPart.Value.GetStream();
         }
 
         using var customXmlStreamReader = new StreamWriter(customXmlPartStream);

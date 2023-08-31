@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Reflection;
+using ShapeCrawler.Shared;
 
 namespace ShapeCrawler;
 
@@ -28,7 +30,9 @@ public sealed record SCPresentation : IPresentation
     /// </summary>
     public SCPresentation()
     {
-        this.validateable = new StreamPresentation(new MemoryStream());
+        var assets = new Assets(Assembly.GetExecutingAssembly());
+        var mStream = assets.StreamOf("new-presentation.pptx");
+        this.validateable = new StreamPresentation(mStream);
     }
 
     /// <inheritdoc />

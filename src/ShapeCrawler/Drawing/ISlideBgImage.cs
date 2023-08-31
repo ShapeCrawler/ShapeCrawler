@@ -5,5 +5,9 @@
 /// </summary>
 public interface ISlideBgImage : IImage
 {
+    /// <summary>
+    ///     Presents whether the background image is presented.
+    /// </summary>
+    /// <returns></returns>
     bool Present();
 }

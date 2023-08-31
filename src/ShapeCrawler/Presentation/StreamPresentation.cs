@@ -11,6 +11,7 @@ internal sealed record StreamPresentation : IValidateable
     {
         this.userStream = userStream;
         var internalStream = new MemoryStream();
+        this.userStream.Position = 0;
         userStream.CopyTo(internalStream);
         this.presentation = new Presentation(internalStream);
     }

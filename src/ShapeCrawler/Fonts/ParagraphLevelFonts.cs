@@ -53,7 +53,7 @@ internal sealed record ParagraphLevelFonts
             A.PresetColor? aPresetColor;
 
             // Try get color from <a:solidFill>
-            var aSolidFill = aDefRPr?.GetASolidFill();
+            var aSolidFill = aDefRPr?.SDKASolidFill();
             if (aSolidFill != null)
             {
                 aRgbColorModelHex = aSolidFill.RgbColorModelHex!;

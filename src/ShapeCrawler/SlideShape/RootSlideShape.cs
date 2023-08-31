@@ -15,39 +15,39 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.SlideShape;
 
-internal sealed record RootSlideShape : ISlideShape
+internal sealed record RootSlideShape : IRootSlideShape
 {
     private readonly P.Shape sdkPShape;
-    private readonly IShape slideShape;
+    private readonly IShape shape;
     private readonly SlidePart sdkSlidePart;
 
-    private RootSlideShape(
+    internal RootSlideShape(
         SlidePart sdkSlidePart,
         P.Shape sdkPShape,
-        IShape slideShape)
+        IShape shape)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.sdkPShape = sdkPShape;
-        this.slideShape = slideShape;
+        this.shape = shape;
     }
 
-    public bool HasOutline => this.slideShape.HasOutline;
-    public IShapeOutline Outline => this.slideShape.Outline;
+    public bool HasOutline => this.shape.HasOutline;
+    public IShapeOutline Outline => this.shape.Outline;
 
     public int Width
     {
-        get => this.slideShape.Width;
-        set => this.slideShape.Width = value;
+        get => this.shape.Width;
+        set => this.shape.Width = value;
     }
 
     public int Height
     {
-        get => this.slideShape.Height;
-        set => this.slideShape.Height = value;
+        get => this.shape.Height;
+        set => this.shape.Height = value;
     }
 
-    public int Id => this.slideShape.Id;
-    public string Name => this.slideShape.Name;
+    public int Id => this.shape.Id;
+    public string Name => this.shape.Name;
     public bool Hidden { get; }
 
     public bool IsPlaceholder => false;
@@ -57,7 +57,7 @@ internal sealed record RootSlideShape : ISlideShape
     public SCGeometry GeometryType { get; }
     public string? CustomData { get; set; }
     public SCShapeType ShapeType => SCShapeType.AutoShape;
-    public IShapeFill Fill => this.slideShape.Fill;
+    public IShapeFill Fill => this.shape.Fill;
 
     public bool IsTextHolder => false;
 

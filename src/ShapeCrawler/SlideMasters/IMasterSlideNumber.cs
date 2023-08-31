@@ -20,11 +20,16 @@ internal sealed class MasterSlideNumber : IMasterSlideNumber
 {
     private readonly Position position;
 
-    internal MasterSlideNumber(P.Shape pSldNum, Position position)
+    internal MasterSlideNumber(P.Shape sdkPShape)
+    :this(sdkPShape, new Position(sdkPShape))
+    {
+    }
+    
+    private MasterSlideNumber(P.Shape sdkPShape, Position position)
     {
         this.position = position;
         var aDefaultRunProperties =
-            pSldNum.TextBody!.ListStyle!.Level1ParagraphProperties?.GetFirstChild<A.DefaultRunProperties>() !;
+            sdkPShape.TextBody!.ListStyle!.Level1ParagraphProperties?.GetFirstChild<A.DefaultRunProperties>() !;
         this.Font = new SlideNumberFont(aDefaultRunProperties);
     }
 

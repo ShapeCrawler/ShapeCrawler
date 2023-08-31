@@ -8,6 +8,9 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
+/// <summary>
+///     Slide background image.
+/// </summary>
 internal sealed class SlideBgImage : ISlideBgImage
 {
     private readonly SlidePart sdkSlidePart;

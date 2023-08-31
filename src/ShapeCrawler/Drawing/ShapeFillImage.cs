@@ -8,26 +8,26 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class AutoShapeFillImage : IImage
+internal sealed class ShapeFillImage : IImage
 {
     private readonly SlidePart sdkSlidePart;
     private ImagePart sdkImagePart;
     private readonly A.Blip aBlip;
 
-    internal AutoShapeFillImage(SlidePart sdkSlidePart, A.BlipFill aBlipFill, ImagePart sdkImagePart)
+    internal ShapeFillImage(SlidePart sdkSlidePart, A.BlipFill aBlipFill, ImagePart sdkImagePart)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.aBlip = aBlipFill.Blip!;
         this.sdkImagePart = sdkImagePart;
     }
-    
+
     public string MIME => this.sdkImagePart.ContentType;
 
     public string Name => this.GetName();
 
     public void Update(Stream stream)
     {
-        var isSharedImagePart = this.sdkSlidePart.ImageParts.Count(x=>x == this.sdkImagePart) > 1;
+        var isSharedImagePart = this.sdkSlidePart.ImageParts.Count(x => x == this.sdkImagePart) > 1;
         if (isSharedImagePart)
         {
             var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
@@ -63,7 +63,7 @@ internal sealed class AutoShapeFillImage : IImage
         var bytes = new byte[stream.Length];
         stream.Read(bytes, 0, (int)stream.Length);
         stream.Close();
-        
+
         return bytes;
     }
 }

@@ -6,7 +6,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents interface of AutoShape.
 /// </summary>
-public interface ISlideShape : IShape
+public interface IRootSlideShape : IShape
 {     
     /// <summary>
     ///     Duplicate the shape.

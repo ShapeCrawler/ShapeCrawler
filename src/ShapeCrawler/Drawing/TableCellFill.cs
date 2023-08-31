@@ -11,21 +11,21 @@ namespace ShapeCrawler.Drawing;
 internal class TableCellFill : IShapeFill
 {
     private readonly SlidePart sdkSlidePart;
-    private readonly TypedOpenXmlCompositeElement cellProperties;
+    private readonly A.TableCellProperties sdkATableCellProperties;
     private BooleanValue? useBgFill;
     private SCFillType fillType;
     private bool isDirty;
     private string? hexSolidColor;
-    private CellFillImage? pictureImage;
-    private A.SolidFill? aSolidFill;
-    private A.GradientFill? aGradFill;
-    private A.PatternFill? aPattFill;
-    private A.BlipFill? aBlipFill;
+    private ShapeFillImage? pictureImage;
+    private A.SolidFill? sdkASolidFill;
+    private A.GradientFill? sdkAGradFill;
+    private A.PatternFill? sdkAPattFill;
+    private A.BlipFill? sdkABlipFill;
 
-    internal TableCellFill(SlidePart sdkSlidePart, A.TableCellProperties cellProperties)
+    internal TableCellFill(SlidePart sdkSlidePart, A.TableCellProperties sdkATableCellProperties)
     {
         this.sdkSlidePart = sdkSlidePart;
-        this.cellProperties = cellProperties;
+        this.sdkATableCellProperties = sdkATableCellProperties;
         this.isDirty = true;
     }
 
@@ -60,14 +60,14 @@ internal class TableCellFill : IShapeFill
             aBlipFill.Append(new A.Blip { Embed = rId });
             aBlipFill.Append(aStretch);
 
-            this.cellProperties.Append(aBlipFill);
+            this.sdkATableCellProperties.Append(aBlipFill);
 
-            this.aSolidFill?.Remove();
-            this.aBlipFill = null;
-            this.aGradFill?.Remove();
-            this.aGradFill = null;
-            this.aPattFill?.Remove();
-            this.aPattFill = null;
+            this.sdkASolidFill?.Remove();
+            this.sdkABlipFill = null;
+            this.sdkAGradFill?.Remove();
+            this.sdkAGradFill = null;
+            this.sdkAPattFill?.Remove();
+            this.sdkAPattFill = null;
             this.useBgFill = false;
         }
 
@@ -81,7 +81,7 @@ internal class TableCellFill : IShapeFill
             this.Initialize();
         }
 
-        this.cellProperties.AddASolidFill(hex);
+        this.sdkATableCellProperties.AddASolidFill(hex);
         
         this.useBgFill = false;
 
@@ -111,10 +111,10 @@ internal class TableCellFill : IShapeFill
 
     private void InitSolidFillOr()
     {
-        this.aSolidFill = this.cellProperties.GetFirstChild<A.SolidFill>();
-        if (this.aSolidFill != null)
+        this.sdkASolidFill = this.sdkATableCellProperties.GetFirstChild<A.SolidFill>();
+        if (this.sdkASolidFill != null)
         {
-            var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
+            var aRgbColorModelHex = this.sdkASolidFill.RgbColorModelHex;
             if (aRgbColorModelHex != null)
             {
                 var hexColor = aRgbColorModelHex.Val!.ToString();
@@ -123,7 +123,7 @@ internal class TableCellFill : IShapeFill
             else
             {
                 // TODO: get hex color from scheme
-                var schemeColor = this.aSolidFill.SchemeColor;
+                var schemeColor = this.sdkASolidFill.SchemeColor;
             }
 
             this.fillType = SCFillType.Solid;
@@ -136,8 +136,8 @@ internal class TableCellFill : IShapeFill
 
     private void InitGradientFillOr()
     {
-        this.aGradFill = this.cellProperties!.GetFirstChild<A.GradientFill>();
-        if (this.aGradFill != null)
+        this.sdkAGradFill = this.sdkATableCellProperties!.GetFirstChild<A.GradientFill>();
+        if (this.sdkAGradFill != null)
         {
             this.fillType = SCFillType.Gradient;
         }
@@ -149,15 +149,15 @@ internal class TableCellFill : IShapeFill
 
     private void InitPictureFillOr()
     {
-        this.aBlipFill = this.cellProperties.GetFirstChild<A.BlipFill>();
+        this.sdkABlipFill = this.sdkATableCellProperties.GetFirstChild<A.BlipFill>();
 
-        if (this.aBlipFill is not null)
+        if (this.sdkABlipFill is not null)
         {
-            var blipEmbedValue = aBlipFill.Blip?.Embed?.Value;
+            var blipEmbedValue = this.sdkABlipFill.Blip?.Embed?.Value;
             if (blipEmbedValue != null)
             {
                 var imagePart = (ImagePart)this.sdkSlidePart.GetPartById(blipEmbedValue);
-                var image = new CellFillImage(this.sdkSlidePart, this.aBlipFill, imagePart);
+                var image = new ShapeFillImage(this.sdkSlidePart, this.sdkABlipFill, imagePart);
                 this.pictureImage = image;
                 this.fillType = SCFillType.Picture;
             }
@@ -170,8 +170,8 @@ internal class TableCellFill : IShapeFill
 
     private void InitPatternFillOr()
     {
-        this.aPattFill = this.cellProperties.GetFirstChild<A.PatternFill>();
-        if (this.aPattFill != null)
+        this.sdkAPattFill = this.sdkATableCellProperties.GetFirstChild<A.PatternFill>();
+        if (this.sdkAPattFill != null)
         {
             this.fillType = SCFillType.Pattern;
         }
@@ -191,7 +191,7 @@ internal class TableCellFill : IShapeFill
         return this.hexSolidColor;
     }
 
-    private CellFillImage? GetPicture()
+    private ShapeFillImage? GetPicture()
     {
         if (this.isDirty)
         {

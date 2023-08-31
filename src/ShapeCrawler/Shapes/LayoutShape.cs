@@ -12,7 +12,7 @@ internal sealed record LayoutShape : IShape
     private readonly SlideLayoutPart sdkLayoutPart;
     private readonly P.Shape pShape;
     private readonly Shape shape;
-    private readonly Lazy<LayoutAutoShapeFill> autoShapeFill;
+    private readonly Lazy<LayoutShapeFill> autoShapeFill;
 
     internal LayoutShape(SlideLayoutPart sdkLayoutPart, P.Shape pShape, Shape shape, LayoutShapeOutline outline)
     {
@@ -20,13 +20,13 @@ internal sealed record LayoutShape : IShape
         this.pShape = pShape;
         this.shape = shape;
         this.Outline = outline;
-        this.autoShapeFill = new Lazy<LayoutAutoShapeFill>(this.ParseFill);
+        this.autoShapeFill = new Lazy<LayoutShapeFill>(this.ParseFill);
     }
 
-    private LayoutAutoShapeFill ParseFill()
+    private LayoutShapeFill ParseFill()
     {
         var useBgFill = this.pShape.UseBackgroundFill;
-        return new LayoutAutoShapeFill(this.sdkLayoutPart, this.pShape.GetFirstChild<P.ShapeProperties>() !, useBgFill!);
+        return new LayoutShapeFill(this.sdkLayoutPart, this.pShape.GetFirstChild<P.ShapeProperties>() !, useBgFill!);
     }
 
     #region Shape Properties

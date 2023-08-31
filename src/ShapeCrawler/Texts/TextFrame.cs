@@ -242,9 +242,6 @@ internal sealed record TextFrame : ITextFrame
         {
             this.ShrinkText(newText, baseParagraph);
         }
-
-        this.text.Reset();
-        this.TextChanged?.Invoke();
     }
 
     private void ShrinkText(string newText, IParagraph baseParagraph)

@@ -13,10 +13,10 @@ namespace ShapeCrawler.SlideShape;
 /// <summary>
 ///     A text AutoShape on a slide.
 /// </summary>
-internal sealed record TextSlideShape : ISlideShape
+internal sealed record TextRootSlideShape : IRootSlideShape
 {
     private readonly SlidePart sdkSlidePart;
-    private readonly ISlideShape slideShape;
+    private readonly IRootSlideShape rootSlideShape;
     private readonly P.TextBody sdkPTextBody;
     private readonly Lazy<TextFrame> textFrame;
 
@@ -24,10 +24,10 @@ internal sealed record TextSlideShape : ISlideShape
     // 96/72=1.4
     private const double Scale = 1.4;
 
-    internal TextSlideShape(SlidePart sdkSlidePart, ISlideShape slideShape, P.TextBody sdkPTextBody)
+    internal TextRootSlideShape(SlidePart sdkSlidePart, IRootSlideShape rootSlideShape, P.TextBody sdkPTextBody)
     {
         this.sdkSlidePart = sdkSlidePart;
-        this.slideShape = slideShape;
+        this.rootSlideShape = rootSlideShape;
         this.sdkPTextBody = sdkPTextBody;
         this.textFrame = new Lazy<TextFrame>(this.ParseTextFrame);
     }
@@ -124,8 +124,8 @@ internal sealed record TextSlideShape : ISlideShape
     public int Y { get; set; }
     public int Width { get; set; }
     public int Height { get; set; }
-    public int Id => this.slideShape.Id;
-    public string Name => this.slideShape.Name;
+    public int Id => this.rootSlideShape.Id;
+    public string Name => this.rootSlideShape.Name;
     public bool Hidden => this.Hidden;
 
     public bool IsPlaceholder => false;
@@ -136,9 +136,9 @@ internal sealed record TextSlideShape : ISlideShape
     public string? CustomData { get; set; }
     public SCShapeType ShapeType { get; }
     public bool HasOutline { get; }
-    public IShapeOutline Outline => this.slideShape.Outline;
-    public IShapeFill Fill => this.slideShape.Fill;
+    public IShapeOutline Outline => this.rootSlideShape.Outline;
+    public IShapeFill Fill => this.rootSlideShape.Fill;
     public double Rotation { get; }
-    public void Duplicate() => this.slideShape.Duplicate();
+    public void Duplicate() => this.rootSlideShape.Duplicate();
     #endregion Slide Properties
 }

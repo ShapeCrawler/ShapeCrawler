@@ -6,13 +6,13 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed record LayoutAutoShapeFill : IShapeFill
+internal sealed record LayoutShapeFill : IShapeFill
 {
     private readonly SlideLayoutPart sdkLayoutPart;
     private readonly P.ShapeProperties pShapeProperties;
     private readonly BooleanValue useBgFill;
 
-    internal LayoutAutoShapeFill(SlideLayoutPart sdkLayoutPart, P.ShapeProperties pShapeProperties, BooleanValue useBgFill)
+    internal LayoutShapeFill(SlideLayoutPart sdkLayoutPart, P.ShapeProperties pShapeProperties, BooleanValue useBgFill)
     {
         this.sdkLayoutPart = sdkLayoutPart;
         this.pShapeProperties = pShapeProperties;

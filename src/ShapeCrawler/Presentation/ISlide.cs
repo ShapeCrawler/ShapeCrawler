@@ -23,7 +23,7 @@ public interface ISlide
     /// <summary>
     ///     Gets a value indicating whether the slide is hidden.
     /// </summary>
-    bool Hidden { get; }
+    bool Hidden();
 
     /// <summary>
     ///     Gets referenced Slide Layout.
@@ -48,7 +48,6 @@ public interface ISlide
     ISlideShapeCollection Shapes { get; }
 
 #if DEBUG
-    
     Task<string> ToHtml();
     
     /// <summary>

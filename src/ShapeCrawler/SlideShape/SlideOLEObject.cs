@@ -79,7 +79,8 @@ internal record SlideOLEObject : IShape, IRemoveable
     public IShapeFill Fill { get; }
     public bool IsTextHolder => false;
 
-    public ITextFrame TextFrame => throw new SCException($"The OLE object cannot contain text. Use {nameof(IShape.IsTextHolder)} method to check if the shape is a text holder.");
+    public ITextFrame TextFrame => throw new SCException(
+        $"The OLE object cannot contain text. Use {nameof(IShape.IsTextHolder)} method to check if the shape is a text holder.");
     public double Rotation { get; }
 
     internal void Draw(SKCanvas canvas)

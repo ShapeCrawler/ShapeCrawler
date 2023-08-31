@@ -28,18 +28,6 @@ internal sealed class ChartSpreadsheet
 
     internal Lazy<SpreadsheetDocument> SpreadsheetDocument { get; }
 
-    internal void Close()
-    {
-        if (this.closed)
-        {
-            return;
-        }
-
-        this.SpreadsheetDocument.Value.Dispose();
-        this.embeddedPackagePartStream?.Close();
-        this.closed = true;
-    }
-
     internal X.Cell GetXCell(string sheetName, string cellAddress)
     {
         var chartSheet = this.WorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);

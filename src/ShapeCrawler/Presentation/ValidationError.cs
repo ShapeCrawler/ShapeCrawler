@@ -1,6 +1,6 @@
 ﻿namespace ShapeCrawler;
 
-internal sealed class ValidationError
+internal sealed record ValidationError
 {
     internal ValidationError(string description, string path)
     {

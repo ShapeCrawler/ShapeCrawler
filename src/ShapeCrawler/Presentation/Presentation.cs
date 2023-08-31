@@ -21,6 +21,7 @@ internal sealed record Presentation
 
     internal Presentation(Stream stream)
     {
+        stream.Position = 0;
         this.sdkPresDocument = PresentationDocument.Open(stream, true);
         var sdkMasterParts = this.sdkPresDocument.PresentationPart!.SlideMasterParts;
         this.SlideMasters = new SlideMasterCollection(sdkMasterParts);

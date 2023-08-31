@@ -37,7 +37,7 @@ internal sealed record SDKSlidePartWrap
             : null;
     }
 
-    public string ThemeHexColor(A.SchemeColorValues themeColor)
+    internal string ThemeColorHex(A.SchemeColorValues themeColor)
     {
         var aColorScheme = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
             .ColorScheme!;
@@ -80,7 +80,7 @@ internal sealed record SDKSlidePartWrap
         };
     }
 
-    internal string GetThemeMappedColor(A.SchemeColorValues themeColor)
+    private string GetThemeMappedColor(A.SchemeColorValues themeColor)
     {
         var pColorMap = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.ColorMap!;
         if (themeColor == A.SchemeColorValues.Text1)

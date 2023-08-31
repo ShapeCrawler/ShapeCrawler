@@ -30,7 +30,7 @@ public class SlideTests : SCTest
         slide.Hide();
 
         // Assert
-        slide.Hidden.Should().Be(true);
+        slide.Hidden().Should().Be(true);
     }
 
     [Test]
@@ -42,7 +42,7 @@ public class SlideTests : SCTest
         ISlide slideEx = pres.Slides[2];
 
         // Act
-        bool hidden = slideEx.Hidden;
+        bool hidden = slideEx.Hidden();
 
         // Assert
         hidden.Should().BeTrue();

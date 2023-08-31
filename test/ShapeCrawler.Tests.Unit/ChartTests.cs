@@ -226,9 +226,9 @@ public class ChartTests : SCTest
     public void CategoryName_SetterChangeName_OfSecondaryCategoryInMultiCategoryBarChart()
     {
         // Arrange
-        Stream preStream = TestFiles.Presentations.pre025_byteArray.ToResizeableStream();
-        IPresentation presentation = new SCPresentation(preStream);
-        var barChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
+        var pptxStream = StreamOf("025_chart.pptx");
+        var pres = new SCPresentation(pptxStream);
+        var barChart = (IChart)pres.Slides[0].Shapes.First(sp => sp.Id == 4);
         const string newCategoryName = "Clothing_new";
 
         // Act
@@ -237,9 +237,9 @@ public class ChartTests : SCTest
         // Assert
         barChart.Categories[0].Name.Should().Be(newCategoryName);
 
-        presentation.Save();
-        presentation = new SCPresentation(preStream);
-        barChart = (IChart)presentation.Slides[0].Shapes.First(sp => sp.Id == 4);
+        pres.Save();
+        pres = new SCPresentation(pptxStream);
+        barChart = (IChart)pres.Slides[0].Shapes.First(sp => sp.Id == 4);
         barChart.Categories[0].Name.Should().Be(newCategoryName);
     }
 

@@ -8,39 +8,55 @@ namespace ShapeCrawler.Tests.Unit.Helpers;
 public class SlidePortionAttribute : Attribute, ITestBuilder
 {
     private readonly string pptxName;
-    private readonly int slideNumber;
-    private readonly string shapeName;
+    private readonly int slide;
     private readonly int shapeId;
-    private readonly int paragraphNumber;
-    private readonly int portionNumber;
+    private readonly int paragraph;
+    private readonly int portion;
+    private readonly string testName;
+    private readonly object expectedResult;
 
-    public SlidePortionAttribute(string pptxName, int slideNumber, string shapeName, int paragraphNumber, int portionNumber)
+    public SlidePortionAttribute(
+        string testName,
+        string pptxName,
+        int slide,
+        int shapeId,
+        int paragraph,
+        int portion,
+        object expectedResult)
+        : this(pptxName, slide, shapeId, paragraph, portion, expectedResult)
     {
-        this.pptxName = pptxName;
-        this.slideNumber = slideNumber;
-        this.shapeName = shapeName;
-        this.paragraphNumber = paragraphNumber;
-        this.portionNumber = portionNumber;
+        this.testName = testName;
     }
-    
-    public SlidePortionAttribute(string pptxName, int slideNumber, int shapeId, int paragraphNumber, int portionNumber)
+
+    public SlidePortionAttribute(
+        string pptxName,
+        int slide,
+        int shapeId,
+        int paragraph,
+        int portion,
+        object expectedResult)
     {
         this.pptxName = pptxName;
-        this.slideNumber = slideNumber;
+        this.slide = slide;
         this.shapeId = shapeId;
-        this.paragraphNumber = paragraphNumber;
-        this.portionNumber = portionNumber;
+        this.paragraph = paragraph;
+        this.portion = portion;
+        this.expectedResult = expectedResult;
     }
 
     public IEnumerable<TestMethod> BuildFrom(IMethodInfo method, Test suite)
     {
         var pres = new SCPresentation(SCTest.StreamOf(this.pptxName));
-        var portionQuery = this.shapeName == null 
-            ? new TestSlidePortionQuery(this.slideNumber, this.shapeId, this.paragraphNumber, this.portionNumber) 
-            : new TestSlidePortionQuery(this.slideNumber, this.shapeName, this.paragraphNumber, this.portionNumber);
+        var portion = pres.Slides[this.slide - 1].Shapes.GetById<IShape>(this.shapeId).TextFrame
+            .Paragraphs[this.paragraph - 1].Portions[this.portion - 1];
 
-        var parameters = new TestCaseParameters(new object[] { pres, portionQuery });
-        
+        var parameters = new TestCaseParameters(new[] { portion, this.expectedResult });
+
+        if (!string.IsNullOrEmpty(this.testName))
+        {
+            parameters.TestName = this.testName;
+        }
+
         yield return new NUnitTestCaseBuilder().BuildTestMethod(method, suite, parameters);
     }
 }

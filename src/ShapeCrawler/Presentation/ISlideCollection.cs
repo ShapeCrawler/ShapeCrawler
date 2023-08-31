@@ -16,7 +16,6 @@ public interface ISlideCollection : IReadOnlyList<ISlide>
     /// <summary>
     ///     Adds a new slide based on the existing layout.
     /// </summary>
-    /// <returns>A new slide.</returns>
     void AddEmptySlide(ISlideLayout layout);
 
     /// <summary>

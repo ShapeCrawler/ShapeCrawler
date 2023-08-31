@@ -46,7 +46,7 @@ internal static class HexParser
         {
             var coloName = aPresetColor.Val!.Value.ToString();
             {
-                return (SCColorType.Preset, SCColorTranslator.HexFromName(coloName));
+                return (SCColorType.Preset, ColorTranslator.HexFromName(coloName));
             }
         }
 

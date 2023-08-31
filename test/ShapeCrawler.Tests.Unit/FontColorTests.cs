@@ -92,10 +92,10 @@ public class FontColorTests : SCTest
 
     [Test]
     [MasterPortion("autoshape-case001.pptx", "AutoShape 1", 1,  1)]
-    [SlidePortion("020.pptx", 1, "TextBox 1", 1,  1)]
-    [SlidePortion("001.pptx", 1, 3, 1,  1)]
-    [SlidePortion("001.pptx", 3, 4, 1,  1)]
-    [SlidePortion("001.pptx", 5, 5, 1,  1)]
+    [SlideQueryPortion("020.pptx", 1, "TextBox 1", 1,  1)]
+    [SlideQueryPortion("001.pptx", 1, 3, 1,  1)]
+    [SlideQueryPortion("001.pptx", 3, 4, 1,  1)]
+    [SlideQueryPortion("001.pptx", 5, 5, 1,  1)]
     public void SetColorHex_updates_font_color(IPresentation pres, TestPortionQuery portionQuery)
     {
         // Arrange
@@ -112,5 +112,37 @@ public class FontColorTests : SCTest
         pres = new SCPresentation(mStream);
         color = portionQuery.Get(pres).Font!.Color;
         color.ColorHex.Should().Be("008000");
+    }
+    
+    [Test]
+    // [SlidePortion("Test Case #1", "020.pptx", slide: 1, shapeId: 2, paragraph: 1, portion: 1, expectedResult: "000000")]
+    // [SlidePortion("Test Case #2", "020.pptx", slide: 1, shapeId: 3, paragraph: 1, portion: 1, expectedResult: "000000")]
+    // [SlidePortion("Test Case #3", "020.pptx", slide: 3, shapeId: 8, paragraph: 2, portion: 1, expectedResult: "FFFF00")]
+    // [SlidePortion("Test Case #4", "001.pptx", slide: 1, shapeId: 4, paragraph: 1, portion: 1, expectedResult: "000000")]
+    // [SlidePortion("Test Case #5", "002.pptx", slide: 2, shapeId: 3, paragraph: 1, portion: 1, expectedResult: "000000")]
+    // [SlidePortion("Test Case #6", "026.pptx", slide: 1, shapeId: 128, paragraph: 1, portion: 1, expectedResult: "000000")]
+    // [SlidePortion("Test Case #7", "autoshape-case017_slide-number.pptx", slide: 1, shapeId: 5, paragraph: 1, portion: 1, expectedResult: "000000")]
+    // [SlidePortion("Test Case #8", "031.pptx", slide: 1, shapeId: 44, paragraph: 1, portion: 1, expectedResult: "000000")]
+    // [SlidePortion("Test Case #9", "033.pptx", slide: 1, shapeId: 3, paragraph: 1, portion: 1, expectedResult: "000000")]
+    // [SlidePortion("Test Case #10", "038.pptx", slide: 1, shapeId: 102, paragraph: 1, portion: 1, expectedResult: "000000")]
+    // [SlidePortion("Test Case #11", "001.pptx", slide: 3, shapeId: 4, paragraph: 1, portion: 1, expectedResult: "000000")]
+    // [SlidePortion("Test Case #12", "001.pptx", slide: 5, shapeId: 5, paragraph: 1, portion: 1, expectedResult: "000000")]
+    // [SlidePortion("Test Case #13", "034.pptx", slide: 1, shapeId: 2, paragraph: 1, portion: 1, expectedResult: "000000")]
+    // [SlidePortion("Test Case #14", "035.pptx", slide: 1, shapeId: 9, paragraph: 1, portion: 1, expectedResult: "000000")]
+    // [SlidePortion("Test Case #15", "036.pptx", slide: 1, shapeId: 6146, paragraph: 1, portion: 1, expectedResult: "404040")]
+    // [SlidePortion("Test Case #16", "037.pptx", slide: 1, shapeId: 7, paragraph: 1, portion: 1, expectedResult: "1A1A1A")]
+    [SlidePortion("Test Case #17", "014.pptx", slide: 1, shapeId: 61, paragraph: 1, portion: 1, expectedResult: "595959")]
+    // [SlidePortion("Test Case #18", "014.pptx", slide: 6, shapeId: 52, paragraph: 1, portion: 1, expectedResult: "FFFFFF")]
+    // [SlidePortion("Test Case #19", "032.pptx", slide: 1, shapeId: 10242, paragraph: 1, portion: 1, expectedResult: "0070C0")]
+    public void ColorHex_Getter_returns_color_hex(IParagraphPortion portion, string expectedColorHex)
+    {
+        // Arrange
+        var fontColor = portion.Font!.Color;
+
+        // Act
+        var colorHex = fontColor.ColorHex;
+
+        // Assert
+        colorHex.Should().Be(expectedColorHex);
     }
 }

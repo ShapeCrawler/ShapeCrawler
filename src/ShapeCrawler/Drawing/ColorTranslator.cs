@@ -5,11 +5,11 @@ using SkiaSharp;
 
 namespace ShapeCrawler.Drawing;
 
-internal static class SCColorTranslator
+internal static class ColorTranslator
 {
     private static readonly FieldInfo[] FieldInfoList;
 
-    static SCColorTranslator()
+    static ColorTranslator()
     {
         FieldInfoList = typeof(SKColors).GetFields(BindingFlags.Static | BindingFlags.Public);
     }
