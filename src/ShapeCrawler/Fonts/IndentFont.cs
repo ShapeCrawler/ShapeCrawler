@@ -3,7 +3,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Fonts;
 
-internal record struct ParagraphLevelFont
+internal record struct IndentFont
 {
     internal A.SystemColor? ASystemColor { get; set; }
 

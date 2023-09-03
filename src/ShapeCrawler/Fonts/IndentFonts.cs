@@ -1,26 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Services;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Fonts;
 
-internal sealed record ParagraphLevelFonts
+internal sealed record IndentFonts
 {
-    private readonly OpenXmlCompositeElement sdkCompositeElement;
+    private readonly OpenXmlCompositeElement sdkXmlCompositeElement;
 
-    internal ParagraphLevelFonts(OpenXmlCompositeElement sdkCompositeElement)
+    internal IndentFonts(OpenXmlCompositeElement sdkXmlCompositeElement)
     {
-        this.sdkCompositeElement = sdkCompositeElement;
+        this.sdkXmlCompositeElement = sdkXmlCompositeElement;
     }
 
-    internal ParagraphLevelFont? FontOrNull(int paraLevelParam)
+    internal IndentFont? FontOrNull(int indentLevelFor)
     {
         // Get <a:lvlXpPr> elements, eg. <a:lvl1pPr>, <a:lvl2pPr>
-        var lvlParagraphPropertyList = this.sdkCompositeElement.Elements()
+        var lvlParagraphPropertyList = this.sdkXmlCompositeElement.Elements()
             .Where(e => e.LocalName.StartsWith("lvl", StringComparison.Ordinal));
 
         foreach (var textPr in lvlParagraphPropertyList)
@@ -81,13 +80,13 @@ internal sealed record ParagraphLevelFonts
             var level =
                 localName.Slice(3,
                     1); // the fourth character contains level number, eg. "lvl1pPr -> 1, lvl2pPr -> 2, etc."
-            var paraLevel =
+            var indentLevel =
                 int.Parse(level, System.Globalization.NumberStyles.Number,
                     System.Globalization.CultureInfo.CurrentCulture);
 #endif
-            if (paraLevel == paraLevelParam)
+            if (indentLevel == indentLevelFor)
             {
-                var paraLevelFont = new ParagraphLevelFont
+                var indentFont = new IndentFont
                 {
                     FontSize = fontSize,
                     ALatinFont = aLatinFont,
@@ -99,10 +98,25 @@ internal sealed record ParagraphLevelFonts
                     APresetColor = aPresetColor
                 };
 
-                return paraLevelFont;
+                return indentFont;
             }
         }
 
+        if (indentLevelFor == 1 && this.sdkXmlCompositeElement.Parent is P.TextBody pTextBody)
+        {
+            var endParaRunPrFs = pTextBody.GetFirstChild<A.Paragraph>() !
+                .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
+            if (endParaRunPrFs is not null)
+            {
+                var indentFont = new IndentFont
+                {
+                    FontSize = endParaRunPrFs
+                };
+                
+                return indentFont;
+            }
+        }
+        
         return null;
     }
 }

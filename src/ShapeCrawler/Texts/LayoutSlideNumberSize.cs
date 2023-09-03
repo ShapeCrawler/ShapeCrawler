@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
+using ShapeCrawler.Fonts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 

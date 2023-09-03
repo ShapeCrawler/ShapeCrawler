@@ -47,9 +47,7 @@ internal sealed record Presentation
 
     public ISlideMasterCollection SlideMasters { get; }
 
-    public byte[] BinaryData => this.GetByteArray();
-
-    public ISectionCollection Sections { get; }
+    public ISections Sections { get; }
 
     public IHeaderAndFooter HeaderAndFooter { get; }
 
@@ -64,7 +62,7 @@ internal sealed record Presentation
         this.sdkPresDocument.Clone(stream);
     }
 
-    private byte[] GetByteArray()
+    public byte[] AsByteArray()
     {
         var stream = new MemoryStream();
         this.sdkPresDocument.Clone(stream);

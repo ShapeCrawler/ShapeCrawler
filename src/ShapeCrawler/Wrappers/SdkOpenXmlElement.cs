@@ -3,11 +3,14 @@ using DocumentFormat.OpenXml;
 
 namespace ShapeCrawler.Wrappers;
 
-internal sealed record SDKOpenXmlElementWrap
+/// <summary>
+///     Wrapper for <see cref="DocumentFormat.OpenXml.OpenXmlElement"/>.
+/// </summary>
+internal sealed record SdkOpenXmlElement
 {
     private readonly OpenXmlElement openXmlElement;
 
-    internal SDKOpenXmlElementWrap(OpenXmlElement openXmlElement)
+    internal SdkOpenXmlElement(OpenXmlElement openXmlElement)
     {
         this.openXmlElement = openXmlElement;
     }

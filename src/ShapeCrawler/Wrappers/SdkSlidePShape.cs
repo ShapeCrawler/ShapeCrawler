@@ -1,13 +1,15 @@
+using ShapeCrawler.Drawing;
+using ShapeCrawler.Extensions;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Wrappers;
 
-internal sealed class SDKPShapeWrap
+internal sealed class SdkSlidePShape
 {
     private readonly P.Shape sdkPShape;
-    private readonly SDKSlidePartWrap sdkSlidePartWrap;
+    private readonly SdkSlidePart sdkSlidePartWrap;
 
-    internal SDKPShapeWrap(SDKSlidePartWrap sdkSlidePartWrap, P.Shape sdkPShape)
+    internal SdkSlidePShape(SdkSlidePart sdkSlidePartWrap, P.Shape sdkPShape)
     {
         this.sdkPShape = sdkPShape;
         this.sdkSlidePartWrap = sdkSlidePartWrap;
@@ -31,14 +33,11 @@ internal sealed class SDKPShapeWrap
             return this.sdkSlidePartWrap.ThemeColorHex(sdkAFontReference.SchemeColor.Val!);
         }
 
-        // var aFontReference = sdkPShape.ShapeStyle.FontReference!;
-        // var fontReferenceFontData = new ParagraphLevelFont
-        // {
-        //     ARgbColorModelHex = aFontReference.RgbColorModelHex,
-        //     ASchemeColor = aFontReference.SchemeColor,
-        //     APresetColor = aFontReference.PresetColor
-        // };
-        // return this.TryFromParaLevelFont(fontReferenceFontData);
+        if (sdkAFontReference.PresetColor != null)
+        {
+            var coloName = sdkAFontReference.PresetColor.Val!.Value.ToString();
+            return ColorTranslator.HexFromName(coloName);
+        }
 
         return null;
     }

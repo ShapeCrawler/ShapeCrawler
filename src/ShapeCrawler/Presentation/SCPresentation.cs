@@ -56,10 +56,10 @@ public sealed record SCPresentation : IPresentation
     public ISlideMasterCollection SlideMasters => this.validateable.SlideMasters;
     
     /// <inheritdoc />
-    public byte[] BinaryData => this.validateable.BinaryData;
+    public byte[] AsByteArray() => this.validateable.AsByteArray();
     
     /// <inheritdoc />
-    public ISectionCollection Sections => this.validateable.Sections;
+    public ISections Sections => this.validateable.Sections;
    
     /// <inheritdoc />
     public IHeaderAndFooter HeaderAndFooter => this.validateable.HeaderAndFooter;

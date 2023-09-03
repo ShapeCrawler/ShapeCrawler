@@ -37,7 +37,7 @@ internal sealed class SlideFontColor : IFontColor
         aSolidFill.Append(rgbColorModelHex);
         aRunProperties.Append(aSolidFill);
     }
-    
+
     private string ParseColorHex()
     {
         var sdkPSlideMaster = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster;
@@ -48,42 +48,46 @@ internal sealed class SlideFontColor : IFontColor
             return typeAndColor.Item2!;
         }
 
-        // TryFromTextBody()
-        var aParagraph1 = new SDKOpenXmlElementWrap(this.aText).FirstAncestor<A.Paragraph>();
-        var paraLevel1 = new SDKAParagraphWrap(aParagraph1).IndentLevel();
-        var pTextBody = new SDKOpenXmlElementWrap(aParagraph1).FirstAncestor<P.TextBody>();
-        var textBodyStyleFont = new ParagraphLevelFonts(pTextBody.GetFirstChild<A.ListStyle>()!).FontOrNull(paraLevel1);
+        // From TextBody
+        var aParagraph = new SdkOpenXmlElement(this.aText).FirstAncestor<A.Paragraph>();
+        var indentLevel = new SdkAParagraphWrap(aParagraph).IndentLevel();
+        var pTextBody = new SdkOpenXmlElement(aParagraph).FirstAncestor<P.TextBody>();
+        var textBodyStyleFont = new IndentFonts(pTextBody.GetFirstChild<A.ListStyle>()!).FontOrNull(indentLevel);
         if (textBodyStyleFont.HasValue)
         {
-            if(this.TryFromParaLevelFont(textBodyStyleFont, out var response))
+            if (this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
             {
-                return response.colorHex!;
+                return textBodyColor.colorHex!;
             }
         }
 
-        // TryFromShapeFontReference()
-        var sdkPShape = new SDKOpenXmlElementWrap(this.aText).FirstAncestor<P.Shape>();
-        var sdkPShapeWrap = new SDKPShapeWrap(sdkPShape);
-        string? shapeFontColorHex = sdkPShapeWrap.FontColorHexOrNull();
+        // From Shape
+        var pShape = new SdkOpenXmlElement(this.aText).FirstAncestor<P.Shape>();
+        var sdkSlidePShapeWrap = new SdkSlidePShape(new SdkSlidePart(this.sdkSlidePart), pShape);
+        string? shapeFontColorHex = sdkSlidePShapeWrap.FontColorHexOrNull();
         if (shapeFontColorHex != null)
         {
             return shapeFontColorHex;
         }
         
-        var aParagraph = new SDKOpenXmlElementWrap(this.aText).FirstAncestor<A.Paragraph>();
-        var paraLevel = new SDKAParagraphWrap(aParagraph).IndentLevel();
+        // From Referenced Layout Shape
+        var sdkSlidePartWrap = new SdkSlidePart(this.sdkSlidePart);
+        string? referencedShapeFontColorHex = sdkSlidePartWrap.ReferencedShapeColorOrNull(pShape, indentLevel);
+        if (referencedShapeFontColorHex != null)
+        {
+            return referencedShapeFontColorHex;
+        }
 
         var pSlideMasterWrap =
-            new SDKPSlideMasterWrap(sdkPSlideMaster);
-        ParagraphLevelFont? masterBodyStyleParaLevelFont = pSlideMasterWrap.BodyStyleFontOrNull(paraLevel);
-        if (this.TryFromParaLevelFont(masterBodyStyleParaLevelFont))
+            new SdkPSlideMasterWrap(sdkPSlideMaster);
+        var masterIndentFont = pSlideMasterWrap.BodyStyleFontOrNull(indentLevel);
+        if (this.TryFromIndentFont(masterIndentFont, out var masterColor))
         {
-            return;
+            return masterColor.colorHex!;
         }
 
         // Presentation level
-        var sdkSlidePartWrap = new SDKSlidePartWrap(this.sdkSlidePart);
-        ParagraphLevelFont? presParaLevelFont = sdkSlidePartWrap.PresentationFontOrThemeFontOrNull(paraLevel);
+        IndentFont? presParaLevelFont = sdkSlidePartWrap.PresentationFontOrThemeFontOrNull(indentLevel);
         string colorHex;
         if (presParaLevelFont.HasValue)
         {
@@ -96,74 +100,68 @@ internal sealed class SlideFontColor : IFontColor
         return colorHex;
     }
 
-    private bool TryFromTextBody()
+    private SCColorType ParseColorType()
     {
-        var aParagraph = new SDKOpenXmlElementWrap(this.aText).FirstAncestor<A.Paragraph>();
-        var paraLevel = new SDKAParagraphWrap(aParagraph).IndentLevel();
-        var pTextBody = new SDKOpenXmlElementWrap(aParagraph).FirstAncestor<P.TextBody>();
-        var textBodyStyleFont = new ParagraphLevelFonts(pTextBody.GetFirstChild<A.ListStyle>()!).FontOrNull(paraLevel);
+        var sdkPSlideMaster = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster;
+        var sdkASolidFill = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.SDKASolidFill();
+        if (sdkASolidFill != null)
+        {
+            var typeAndColor = HexParser.FromSolidFill(sdkASolidFill, sdkPSlideMaster);
+            return typeAndColor.Item1;
+        }
 
+        // TryFromTextBody()
+        var aParagraph = new SdkOpenXmlElement(this.aText).FirstAncestor<A.Paragraph>();
+        var paraLevel = new SdkAParagraphWrap(aParagraph).IndentLevel();
+        var pTextBody = new SdkOpenXmlElement(aParagraph).FirstAncestor<P.TextBody>();
+        var textBodyStyleFont = new IndentFonts(pTextBody.GetFirstChild<A.ListStyle>()!).FontOrNull(paraLevel);
         if (textBodyStyleFont.HasValue)
         {
-            return this.TryFromParaLevelFont(textBodyStyleFont);
+            if (this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
+            {
+                return textBodyColor.colorType;
+            }
         }
 
-        return false;
+        return SCColorType.NotDefined;
     }
 
-    private bool TryFromShapeFontReference()
+    private bool TryFromIndentFont(
+        IndentFont? indentFont,
+        out (SCColorType colorType, string? colorHex) response)
     {
-        var parentSDKPShape = new SDKOpenXmlElementWrap(this.aText).FirstAncestor<P.Shape>();
-        if (parentSDKPShape.ShapeStyle == null)
-        {
-            return false;
-        }
-
-        var aFontReference = parentSDKPShape.ShapeStyle.FontReference!;
-        var fontReferenceFontData = new ParagraphLevelFont
-        {
-            ARgbColorModelHex = aFontReference.RgbColorModelHex,
-            ASchemeColor = aFontReference.SchemeColor,
-            APresetColor = aFontReference.PresetColor
-        };
-
-        return this.TryFromParaLevelFont(fontReferenceFontData);
-    }
-
-    private bool TryFromParaLevelFont(ParagraphLevelFont? paraLevelFont, out (SCColorType colorType, string? colorHex) response)
-    {
-        if (!paraLevelFont.HasValue)
+        if (!indentFont.HasValue)
         {
             response = (SCColorType.NotDefined, null);
             return false;
         }
 
         string colorHexVariant;
-        if (paraLevelFont.Value.ARgbColorModelHex != null)
+        if (indentFont.Value.ARgbColorModelHex != null)
         {
-            colorHexVariant = paraLevelFont.Value.ARgbColorModelHex.Val!;
+            colorHexVariant = indentFont.Value.ARgbColorModelHex.Val!;
             response = (SCColorType.RGB, colorHexVariant);
             return true;
         }
 
-        if (paraLevelFont.Value.ASchemeColor != null)
+        if (indentFont.Value.ASchemeColor != null)
         {
-            var sdkSlidePartWrap = new SDKSlidePartWrap(this.sdkSlidePart);
-            colorHexVariant = sdkSlidePartWrap.ThemeColorHex(paraLevelFont.Value.ASchemeColor.Val!);
+            var sdkSlidePartWrap = new SdkSlidePart(this.sdkSlidePart);
+            colorHexVariant = sdkSlidePartWrap.ThemeColorHex(indentFont.Value.ASchemeColor.Val!);
             response = (SCColorType.Theme, colorHexVariant);
             return true;
         }
 
-        if (paraLevelFont.Value.ASystemColor != null)
+        if (indentFont.Value.ASystemColor != null)
         {
-            colorHexVariant = paraLevelFont.Value.ASystemColor.LastColor!;
+            colorHexVariant = indentFont.Value.ASystemColor.LastColor!;
             response = (SCColorType.Standard, colorHexVariant);
             return true;
         }
 
-        if (paraLevelFont.Value.APresetColor != null)
+        if (indentFont.Value.APresetColor != null)
         {
-            var coloName = paraLevelFont.Value.APresetColor.Val!.Value.ToString();
+            var coloName = indentFont.Value.APresetColor.Val!.Value.ToString();
             response = (SCColorType.Preset, ColorTranslator.HexFromName(coloName));
             return true;
         }

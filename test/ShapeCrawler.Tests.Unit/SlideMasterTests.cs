@@ -36,7 +36,7 @@ public class SlideMasterTests : SCTest
 
         // Assert
         pres.Save();
-        pres = new SCPresentation(new MemoryStream(pres.BinaryData));
+        pres = new SCPresentation(new MemoryStream(pres.AsByteArray()));
         slideMaster = pres.SlideMasters[0];
         slideMaster.SlideNumber!.Font.Size.Should().Be(30);
     }

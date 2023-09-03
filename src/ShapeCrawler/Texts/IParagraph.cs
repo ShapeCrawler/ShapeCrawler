@@ -58,18 +58,18 @@ internal sealed class SlideParagraph : IParagraph
     private readonly ResetableLazy<SlideParagraphPortions> portions;
     private SCTextAlignment? alignment;
     private readonly SlidePart sdkSlidePart;
-    private readonly SDKAParagraphWrap sdkaParagraphWrap;
+    private readonly SdkAParagraphWrap sdkAParagraphWrap;
 
     internal SlideParagraph(SlidePart sdkSlidePart, A.Paragraph aParagraph)
-        : this(sdkSlidePart, aParagraph, new SDKAParagraphWrap(aParagraph))
+        : this(sdkSlidePart, aParagraph, new SdkAParagraphWrap(aParagraph))
     {
     }
 
-    private SlideParagraph(SlidePart sdkSlidePart, A.Paragraph aParagraph, SDKAParagraphWrap sdkaParagraphWrap)
+    private SlideParagraph(SlidePart sdkSlidePart, A.Paragraph aParagraph, SdkAParagraphWrap sdkAParagraphWrap)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.AParagraph = aParagraph;
-        this.sdkaParagraphWrap = sdkaParagraphWrap;
+        this.sdkAParagraphWrap = sdkAParagraphWrap;
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.bullet = new Lazy<SCBullet>(this.GetBullet);
         this.portions = new ResetableLazy<SlideParagraphPortions>(() => new SlideParagraphPortions(this.sdkSlidePart,this.AParagraph));
@@ -97,8 +97,8 @@ internal sealed class SlideParagraph : IParagraph
 
     public int IndentLevel
     {
-        get => this.sdkaParagraphWrap.IndentLevel();
-        set => this.sdkaParagraphWrap.UpdateIndentLevel(value);
+        get => this.sdkAParagraphWrap.IndentLevel();
+        set => this.sdkAParagraphWrap.UpdateIndentLevel(value);
     }
 
     public ISpacing Spacing => this.GetSpacing();

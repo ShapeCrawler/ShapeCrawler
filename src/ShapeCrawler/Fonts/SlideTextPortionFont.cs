@@ -217,10 +217,10 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
             return true;
         }
 
-        ParagraphLevelFont phParagraphLevelFont = new();
-        if (phParagraphLevelFont.IsBold is not null)
+        IndentFont phIndentFont = new();
+        if (phIndentFont.IsBold is not null)
         {
-            return phParagraphLevelFont.IsBold.Value;
+            return phIndentFont.IsBold.Value;
         }
 
         return false;
@@ -239,10 +239,10 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
             return true;
         }
 
-        ParagraphLevelFont phParagraphLevelFont = new();
-        if (phParagraphLevelFont.IsItalic is not null)
+        IndentFont phIndentFont = new();
+        if (phIndentFont.IsItalic is not null)
         {
-            return phParagraphLevelFont.IsItalic.Value;
+            return phIndentFont.IsItalic.Value;
         }
 
         return false;
@@ -257,10 +257,10 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
         }
         else
         {
-            ParagraphLevelFont phParagraphLevelFont = new();
-            if (phParagraphLevelFont.IsBold is not null)
+            IndentFont phIndentFont = new();
+            if (phIndentFont.IsBold is not null)
             {
-                phParagraphLevelFont.IsBold = new BooleanValue(value);
+                phIndentFont.IsBold = new BooleanValue(value);
             }
             else
             {

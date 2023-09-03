@@ -38,7 +38,7 @@ internal sealed record PathPresentation : IValidateable
     }
 
     public ISlideMasterCollection SlideMasters => this.presentation.SlideMasters;
-    public byte[] BinaryData => this.presentation.BinaryData;
-    public ISectionCollection Sections => this.presentation.Sections;
+    public byte[] AsByteArray() => this.presentation.AsByteArray();
+    public ISections Sections => this.presentation.Sections;
     public IHeaderAndFooter HeaderAndFooter => this.presentation.HeaderAndFooter;
 }

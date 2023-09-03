@@ -30,12 +30,12 @@ public interface IPresentationProperties
     /// <summary>
     ///     Gets a presentation byte array.
     /// </summary>
-    byte[] BinaryData { get; }
+    byte[] AsByteArray();
 
     /// <summary>
     ///     Gets section collection.
     /// </summary>
-    ISectionCollection Sections { get; }
+    ISections Sections { get; }
 
     /// <summary>
     ///     Gets Header and Footer manager.

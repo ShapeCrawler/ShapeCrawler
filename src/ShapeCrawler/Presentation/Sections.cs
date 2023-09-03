@@ -8,28 +8,7 @@ using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler;
 
-/// <summary>
-///     Represents collection of presentation section.
-/// </summary>
-public interface ISectionCollection : IReadOnlyCollection<ISection>
-{
-    /// <summary>
-    ///     Gets section by index.
-    /// </summary>
-    ISection this[int index] { get; }
-
-    /// <summary>
-    ///     Removes specified section.
-    /// </summary>
-    void Remove(ISection removingSection);
-
-    /// <summary>
-    ///     Gets section by section name.
-    /// </summary>
-    ISection GetByName(string sectionName);
-}
-
-internal sealed class Sections : ISectionCollection
+internal sealed class Sections : ISections
 {
     private readonly PresentationDocument sdkPresDocument;
     

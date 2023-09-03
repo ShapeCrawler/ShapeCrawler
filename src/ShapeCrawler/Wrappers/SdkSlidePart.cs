@@ -1,29 +1,35 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using System.Collections.Generic;
+using System.Linq;
+using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Fonts;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Wrappers;
 
-internal sealed record SDKSlidePartWrap
+internal sealed record SdkSlidePart
 {
     private readonly SlidePart sdkSlidePart;
 
-    internal SDKSlidePartWrap(SlidePart sdkSlidePart)
+    internal SdkSlidePart(SlidePart sdkSlidePart)
     {
         this.sdkSlidePart = sdkSlidePart;
     }
+
+    #region APIs
 
     internal PresentationDocument SDKPresentationDocument()
     {
         return (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
     }
 
-    internal ParagraphLevelFont? PresentationFontOrThemeFontOrNull(int paraLevel)
+    internal IndentFont? PresentationFontOrThemeFontOrNull(int paraLevel)
     {
         var pDefaultTextStyle = this.SDKPresentationDocument().PresentationPart!.Presentation.DefaultTextStyle;
         if (pDefaultTextStyle != null)
         {
-            var pDefaultTextStyleFont = new ParagraphLevelFonts(pDefaultTextStyle).FontOrNull(paraLevel);
+            var pDefaultTextStyleFont = new IndentFonts(pDefaultTextStyle).FontOrNull(paraLevel);
             if (pDefaultTextStyleFont != null)
             {
                 return pDefaultTextStyleFont;
@@ -33,7 +39,7 @@ internal sealed record SDKSlidePartWrap
         var aTextDefault = this.SDKPresentationDocument().PresentationPart!.ThemePart?.Theme.ObjectDefaults!
             .TextDefault;
         return aTextDefault != null
-            ? new ParagraphLevelFonts(aTextDefault).FontOrNull(paraLevel)
+            ? new IndentFonts(aTextDefault).FontOrNull(paraLevel)
             : null;
     }
 
@@ -80,6 +86,194 @@ internal sealed record SDKSlidePartWrap
         };
     }
 
+    /// <summary>
+    ///     Color hexadecimal representation from Referenced Layout or Master Shape for specified Slide Shape.
+    /// </summary>
+    internal string? ReferencedShapeColorOrNull(P.Shape slidePShape, int indentLevel)
+    {
+        var referencedLayoutPShape = this.ReferencedLayoutPShapeOf(slidePShape);
+        var indentFont = new IndentFonts(referencedLayoutPShape!.TextBody!.ListStyle!).FontOrNull(indentLevel);
+        if (this.HexFromName(indentFont, out var layoutShapeColor))
+        {
+            return layoutShapeColor;
+        }
+
+        var referencedMasterPShape = this.ReferencedMasterPShapeOf(referencedLayoutPShape);
+        indentFont = new IndentFonts(referencedMasterPShape!.TextBody!.ListStyle!).FontOrNull(indentLevel);
+        if (this.HexFromName(indentFont, out var masterShapeColor))
+        {
+            return masterShapeColor;
+        }
+
+        return null;
+    }
+
+    private bool HexFromName(IndentFont? indentFont, out string? referencedShapeColorOrNull)
+    {
+        if (indentFont == null)
+        {
+            {
+                referencedShapeColorOrNull = null;
+                return true;
+            }
+        }
+
+        if (indentFont.Value.ARgbColorModelHex != null)
+        {
+            {
+                referencedShapeColorOrNull = indentFont.Value.ARgbColorModelHex.Val!.Value;
+                return true;
+            }
+        }
+
+        if (indentFont.Value.ASchemeColor != null)
+        {
+            {
+                referencedShapeColorOrNull = this.ThemeColorHex(indentFont.Value.ASchemeColor.Val!.Value);
+                return true;
+            }
+        }
+
+        if (indentFont.Value.ASystemColor != null)
+        {
+            {
+                referencedShapeColorOrNull = indentFont.Value.ASystemColor.LastColor!;
+                return true;
+            }
+        }
+
+        if (indentFont.Value.APresetColor != null)
+        {
+            var coloName = indentFont.Value.APresetColor.Val!.Value.ToString();
+            {
+                referencedShapeColorOrNull = ColorTranslator.HexFromName(coloName);
+                return true;
+            }
+        }
+
+        referencedShapeColorOrNull = null;
+        return false;
+    }
+
+    /// <summary>
+    ///     Tries to get referenced Placeholder Shape located on Slide Layout. Returns <c>NULL</c> if such shape is not found.
+    /// </summary>
+    private P.Shape? ReferencedLayoutPShapeOf(P.Shape slidePShape)
+    {
+        var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+            .GetFirstChild<P.PlaceholderShape>();
+        if (slidePh == null)
+        {
+            return null;
+        }
+
+        var layoutPShapes =
+            this.sdkSlidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!.Elements<P.Shape>();
+
+        if (ReferencedPShape(layoutPShapes, slidePh, out var shape))
+        {
+            return shape;
+        }
+
+        return null;
+    }
+
+    private P.Shape? ReferencedMasterPShapeOf(P.Shape layoutPShape)
+    {
+        var layoutPh = layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+            .GetFirstChild<P.PlaceholderShape>();
+        if (layoutPh == null)
+        {
+            return null;
+        }
+
+        var masterPShapes =
+            this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.CommonSlideData!.ShapeTree!
+                .Elements<P.Shape>();
+
+        if (ReferencedPShape(masterPShapes, layoutPh, out var referencedPShape))
+        {
+            return referencedPShape;
+        }
+
+        // https://answers.microsoft.com/en-us/msoffice/forum/all/placeholder-master/0d51dcec-f982-4098-b6b6-94785304607a?page=3
+        if (layoutPh.Index?.Value == 4294967295)
+        {
+            return masterPShapes.FirstOrDefault(x => x.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+                .GetFirstChild<P.PlaceholderShape>()?.Index?.Value == 1);
+        }
+
+        return null;
+    }
+
+    private static bool ReferencedPShape(IEnumerable<P.Shape> layoutPShapes, P.PlaceholderShape slidePh,
+        out P.Shape? shape)
+    {
+        foreach (var layoutPShape in layoutPShapes)
+        {
+            var layoutPh = layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+                .GetFirstChild<P.PlaceholderShape>();
+            if (layoutPh == null)
+            {
+                continue;
+            }
+
+            if (slidePh.Index is not null && layoutPh.Index is not null &&
+                slidePh.Index == layoutPh.Index)
+            {
+                {
+                    shape = layoutPShape;
+                    return true;
+                }
+            }
+
+            if (slidePh.Type == null || layoutPh.Type == null)
+            {
+                {
+                    shape = layoutPShape;
+                    return true;
+                }
+            }
+
+            if (slidePh.Type == P.PlaceholderValues.Body &&
+                slidePh.Index is not null && layoutPh.Index is not null)
+            {
+                if (slidePh.Index == layoutPh.Index)
+                {
+                    {
+                        shape = layoutPShape;
+                        return true;
+                    }
+                }
+            }
+
+            var slidePhType = slidePh.Type;
+            if (slidePh.Type == P.PlaceholderValues.CenteredTitle)
+            {
+                slidePhType = P.PlaceholderValues.Title;
+            }
+
+            var layoutPhType = layoutPh.Type;
+            if (layoutPh.Type == P.PlaceholderValues.CenteredTitle)
+            {
+                layoutPhType = P.PlaceholderValues.Title;
+            }
+
+            if (slidePhType.Equals(layoutPhType))
+            {
+                {
+                    shape = layoutPShape;
+                    return true;
+                }
+            }
+        }
+
+        shape = null;
+        return false;
+    }
+
+    #endregion APIs
+
     private string GetThemeMappedColor(A.SchemeColorValues themeColor)
     {
         var pColorMap = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.ColorMap!;
@@ -103,7 +297,8 @@ internal sealed record SDKSlidePartWrap
 
     private string GetThemeColorByString(string fontSchemeColor)
     {
-        var aColorScheme = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!.ColorScheme!;
+        var aColorScheme = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+            .ColorScheme!;
         return fontSchemeColor switch
         {
             "dk1" => aColorScheme.Dark1Color!.RgbColorModelHex != null

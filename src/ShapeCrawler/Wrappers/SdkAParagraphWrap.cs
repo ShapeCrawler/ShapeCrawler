@@ -3,11 +3,11 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Wrappers;
 
-internal sealed record SDKAParagraphWrap
+internal sealed record SdkAParagraphWrap
 {
     private readonly A.Paragraph aParagraph;
 
-    internal SDKAParagraphWrap(A.Paragraph aParagraph)
+    internal SdkAParagraphWrap(A.Paragraph aParagraph)
     {
         this.aParagraph = aParagraph;
     }

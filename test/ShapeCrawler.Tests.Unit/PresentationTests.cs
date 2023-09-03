@@ -322,7 +322,7 @@ public class PresentationTests : SCTest
 
         // Act
         chart.SeriesCollection[0].Points[0].Value = 1;
-        var binaryData = pres.BinaryData;
+        var binaryData = pres.AsByteArray();
         
         // Assert
         binaryData.Should().NotBeNull();

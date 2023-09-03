@@ -126,7 +126,7 @@ internal sealed record TextRootSlideShape : IRootSlideShape
     public int Height { get; set; }
     public int Id => this.rootSlideShape.Id;
     public string Name => this.rootSlideShape.Name;
-    public bool Hidden => this.Hidden;
+    public bool Hidden => this.rootSlideShape.Hidden;
 
     public bool IsPlaceholder => false;
 
