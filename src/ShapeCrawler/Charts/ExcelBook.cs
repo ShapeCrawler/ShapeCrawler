@@ -10,15 +10,14 @@ using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class ChartSpreadsheet
+internal sealed class ExcelBook
 {
-    private readonly EmbeddedPackagePart embeddedPackagePart;
+    private readonly EmbeddedPackagePart sdkEmbeddedPackagePart;
     private Stream? embeddedPackagePartStream;
-    private bool closed;
 
-    internal ChartSpreadsheet(EmbeddedPackagePart embeddedPackagePart)
+    internal ExcelBook(EmbeddedPackagePart sdkEmbeddedPackagePart)
     {
-        this.embeddedPackagePart = embeddedPackagePart;
+        this.sdkEmbeddedPackagePart = sdkEmbeddedPackagePart;
         this.SpreadsheetDocument = new Lazy<SpreadsheetDocument>(this.GetSpreadsheetDocument);
     }
 
@@ -88,7 +87,7 @@ internal sealed class ChartSpreadsheet
 
     private SpreadsheetDocument GetSpreadsheetDocument()
     {
-        this.embeddedPackagePartStream = this.embeddedPackagePart.GetStream();
+        this.embeddedPackagePartStream = this.sdkEmbeddedPackagePart.GetStream();
         var spreadsheetDocument = DocumentFormat.OpenXml.Packaging.SpreadsheetDocument.Open(this.embeddedPackagePartStream, true);
 
         return spreadsheetDocument;

@@ -139,6 +139,9 @@ internal sealed record TextRootSlideShape : IRootSlideShape
     public IShapeOutline Outline => this.rootSlideShape.Outline;
     public IShapeFill Fill => this.rootSlideShape.Fill;
     public double Rotation { get; }
+    public ITable AsTable() => throw new SCException(
+        $"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
+
     public void Duplicate() => this.rootSlideShape.Duplicate();
     #endregion Slide Properties
 }

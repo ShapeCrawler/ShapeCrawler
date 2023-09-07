@@ -70,14 +70,14 @@ public sealed record SCPresentation : IPresentation
     /// <inheritdoc />
     public void SaveAs(string path)
     {
-        this.validateable.Copy(path);
+        this.validateable.CopyTo(path);
         this.validateable = new PathPresentation(path);
     }
 
     /// <inheritdoc />
     public void SaveAs(Stream stream)
     {
-        this.validateable.Copy(stream);
+        this.validateable.CopyTo(stream);
         this.validateable = new StreamPresentation(stream);
     }
 

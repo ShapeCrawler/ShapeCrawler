@@ -22,11 +22,13 @@ public class FontColorTests : SCTest
     public void ColorHex_Getter_returns_color_of_SlideLayout_Placeholder()
     {
         // Arrange
-        var titlePh = (IShape)new SCPresentation(StreamOf("001.pptx")).Slides[0].SlideLayout.Shapes.First(sp => sp.Id == 2);
-        var colorFormat = titlePh.TextFrame.Paragraphs[0].Portions[0].Font.Color;
+        var pptx = StreamOf("001.pptx");
+        var pres = new SCPresentation(pptx);
+        var titlePlaceholder = pres.Slides[0].SlideLayout.Shapes.GetById<IShape>(2);
+        var fontColor = titlePlaceholder.TextFrame.Paragraphs[0].Portions[0].Font!.Color;
 
         // Act-Assert
-        colorFormat.ColorHex.Should().Be("000000");
+        fontColor.ColorHex.Should().Be("000000");
     }
 
     [Test]
@@ -115,25 +117,25 @@ public class FontColorTests : SCTest
     }
     
     [Test]
-    // [SlidePortion("Test Case #1", "020.pptx", slide: 1, shapeId: 2, paragraph: 1, portion: 1, expectedResult: "000000")]
-    // [SlidePortion("Test Case #2", "020.pptx", slide: 1, shapeId: 3, paragraph: 1, portion: 1, expectedResult: "000000")]
-    // [SlidePortion("Test Case #3", "020.pptx", slide: 3, shapeId: 8, paragraph: 2, portion: 1, expectedResult: "FFFF00")]
-    // [SlidePortion("Test Case #4", "001.pptx", slide: 1, shapeId: 4, paragraph: 1, portion: 1, expectedResult: "000000")]
-    // [SlidePortion("Test Case #5", "002.pptx", slide: 2, shapeId: 3, paragraph: 1, portion: 1, expectedResult: "000000")]
-    // [SlidePortion("Test Case #6", "026.pptx", slide: 1, shapeId: 128, paragraph: 1, portion: 1, expectedResult: "000000")]
-    // [SlidePortion("Test Case #7", "autoshape-case017_slide-number.pptx", slide: 1, shapeId: 5, paragraph: 1, portion: 1, expectedResult: "000000")]
-    // [SlidePortion("Test Case #8", "031.pptx", slide: 1, shapeId: 44, paragraph: 1, portion: 1, expectedResult: "000000")]
-    // [SlidePortion("Test Case #9", "033.pptx", slide: 1, shapeId: 3, paragraph: 1, portion: 1, expectedResult: "000000")]
-    // [SlidePortion("Test Case #10", "038.pptx", slide: 1, shapeId: 102, paragraph: 1, portion: 1, expectedResult: "000000")]
-    // [SlidePortion("Test Case #11", "001.pptx", slide: 3, shapeId: 4, paragraph: 1, portion: 1, expectedResult: "000000")]
-    // [SlidePortion("Test Case #12", "001.pptx", slide: 5, shapeId: 5, paragraph: 1, portion: 1, expectedResult: "000000")]
-    // [SlidePortion("Test Case #13", "034.pptx", slide: 1, shapeId: 2, paragraph: 1, portion: 1, expectedResult: "000000")]
-    // [SlidePortion("Test Case #14", "035.pptx", slide: 1, shapeId: 9, paragraph: 1, portion: 1, expectedResult: "000000")]
-    // [SlidePortion("Test Case #15", "036.pptx", slide: 1, shapeId: 6146, paragraph: 1, portion: 1, expectedResult: "404040")]
-    // [SlidePortion("Test Case #16", "037.pptx", slide: 1, shapeId: 7, paragraph: 1, portion: 1, expectedResult: "1A1A1A")]
+    [SlidePortion("Test Case #1", "020.pptx", slide: 1, shapeId: 2, paragraph: 1, portion: 1, expectedResult: "000000")]
+    [SlidePortion("Test Case #2", "020.pptx", slide: 1, shapeId: 3, paragraph: 1, portion: 1, expectedResult: "000000")]
+    [SlidePortion("Test Case #3", "020.pptx", slide: 3, shapeId: 8, paragraph: 2, portion: 1, expectedResult: "FFFF00")]
+    [SlidePortion("Test Case #4", "001.pptx", slide: 1, shapeId: 4, paragraph: 1, portion: 1, expectedResult: "000000")]
+    [SlidePortion("Test Case #5", "002.pptx", slide: 2, shapeId: 3, paragraph: 1, portion: 1, expectedResult: "000000")]
+    [SlidePortion("Test Case #6", "026.pptx", slide: 1, shapeId: 128, paragraph: 1, portion: 1, expectedResult: "000000")]
+    [SlidePortion("Test Case #7", "autoshape-case017_slide-number.pptx", slide: 1, shapeId: 5, paragraph: 1, portion: 1, expectedResult: "000000")]
+    [SlidePortion("Test Case #8", "031.pptx", slide: 1, shapeId: 44, paragraph: 1, portion: 1, expectedResult: "000000")]
+    [SlidePortion("Test Case #9", "033.pptx", slide: 1, shapeId: 3, paragraph: 1, portion: 1, expectedResult: "000000")]
+    [SlidePortion("Test Case #10", "038.pptx", slide: 1, shapeId: 102, paragraph: 1, portion: 1, expectedResult: "000000")]
+    [SlidePortion("Test Case #11", "001.pptx", slide: 3, shapeId: 4, paragraph: 1, portion: 1, expectedResult: "000000")]
+    [SlidePortion("Test Case #12", "001.pptx", slide: 5, shapeId: 5, paragraph: 1, portion: 1, expectedResult: "000000")]
+    [SlidePortion("Test Case #13", "034.pptx", slide: 1, shapeId: 2, paragraph: 1, portion: 1, expectedResult: "000000")]
+    [SlidePortion("Test Case #14", "035.pptx", slide: 1, shapeId: 9, paragraph: 1, portion: 1, expectedResult: "000000")]
+    [SlidePortion("Test Case #15", "036.pptx", slide: 1, shapeId: 6146, paragraph: 1, portion: 1, expectedResult: "404040")]
+    [SlidePortion("Test Case #16", "037.pptx", slide: 1, shapeId: 7, paragraph: 1, portion: 1, expectedResult: "1A1A1A")]
     [SlidePortion("Test Case #17", "014.pptx", slide: 1, shapeId: 61, paragraph: 1, portion: 1, expectedResult: "595959")]
-    // [SlidePortion("Test Case #18", "014.pptx", slide: 6, shapeId: 52, paragraph: 1, portion: 1, expectedResult: "FFFFFF")]
-    // [SlidePortion("Test Case #19", "032.pptx", slide: 1, shapeId: 10242, paragraph: 1, portion: 1, expectedResult: "0070C0")]
+    [SlidePortion("Test Case #18", "014.pptx", slide: 6, shapeId: 52, paragraph: 1, portion: 1, expectedResult: "FFFFFF")]
+    [SlidePortion("Test Case #19", "032.pptx", slide: 1, shapeId: 10242, paragraph: 1, portion: 1, expectedResult: "0070C0")]
     public void ColorHex_Getter_returns_color_hex(IParagraphPortion portion, string expectedColorHex)
     {
         // Arrange

@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
@@ -81,6 +82,10 @@ internal sealed record SlideShape : IShape, IRemoveable
     public ITextFrame TextFrame => new NullTextFrame();
 
     public double Rotation { get; }
+
+    public ITable AsTable() =>
+        throw new SCException(
+            $"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
 
     internal void Draw(SKCanvas slideCanvas)
     {

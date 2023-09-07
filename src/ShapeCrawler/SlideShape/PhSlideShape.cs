@@ -1,4 +1,5 @@
-﻿using ShapeCrawler.Placeholders;
+﻿using ShapeCrawler.Exceptions;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -42,4 +43,7 @@ internal sealed record PhSlideShape : IShape
     public ITextFrame TextFrame => this.slideShape.TextFrame;
 
     public double Rotation => this.slideShape.Rotation;
+
+    public ITable AsTable() =>
+        throw new SCException($"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
 }

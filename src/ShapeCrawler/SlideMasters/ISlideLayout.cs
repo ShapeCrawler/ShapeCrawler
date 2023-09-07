@@ -32,7 +32,6 @@ public interface ISlideLayout
 
 internal sealed class SlideLayout : ISlideLayout
 {
-    private readonly ResetableLazy<LayoutShapes> shapes;
     private readonly SlideLayoutPart sdkLayoutPart;
 
     private static readonly Dictionary<string, SCSlideLayoutType> TypeMapping = new()
@@ -85,12 +84,13 @@ internal sealed class SlideLayout : ISlideLayout
     {
         this.sdkLayoutPart = sdkLayoutPart;
         this.SlideMaster = slideMaster;
-        this.shapes = new ResetableLazy<LayoutShapes>(() => new LayoutShapes());
+        this.Shapes = new LayoutShapes(this.sdkLayoutPart);
     }
 
     public string Name => this.GetName();
 
-    public IReadOnlyShapeCollection Shapes => this.shapes.Value;
+    public IReadOnlyShapeCollection Shapes { get; }
+
     public ISlideMaster SlideMaster { get; }
 
     public SCSlideLayoutType Type => this.GetLayoutType();

@@ -4,7 +4,6 @@ using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
@@ -22,7 +21,6 @@ internal sealed record SlideChart : IRemoveable, IChart
     private readonly Lazy<SCChartType> chartType;
     private readonly Lazy<OpenXmlElement?> firstSeries;
     private readonly P.GraphicFrame pGraphicFrame;
-    private readonly Lazy<SCSeriesCollection> series;
     private readonly Lazy<List<double>?> xValues;
     private readonly C.PlotArea cPlotArea;
 
@@ -38,21 +36,22 @@ internal sealed record SlideChart : IRemoveable, IChart
         this.pGraphicFrame = pGraphicFrame;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
         this.xValues = new Lazy<List<double>?>(this.GetXValues);
-        this.series = new Lazy<SCSeriesCollection>(this.GetSeries);
         this.categories = new ResetableLazy<ICategoryCollection?>(this.GetCategories);
         this.chartType = new Lazy<SCChartType>(this.GetChartType);
 
         var cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
             .GetFirstChild<C.ChartReference>() !;
-        this.ChartPart = (ChartPart)sdkSlidePart.GetPartById(cChartReference.Id!);
+        this.SdkChartPart = (ChartPart)sdkSlidePart.GetPartById(cChartReference.Id!);
 
-        this.cPlotArea = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+        this.cPlotArea = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
         this.cXCharts = this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
-        this.workbook = this.ChartPart.EmbeddedPackagePart != null ? new ChartSpreadsheet(this.ChartPart.EmbeddedPackagePart) : null;
+        this.workbook = this.SdkChartPart.EmbeddedPackagePart != null ? new ExcelBook(this.SdkChartPart.EmbeddedPackagePart) : null;
         this.shape = new Shape(pGraphicFrame);
-        this.Outline = new SlideShapeOutline(sdkSlidePart, pGraphicFrame.Descendants<P.ShapeProperties>().First());
-        this.Fill = new SlideShapeFill(sdkSlidePart, pGraphicFrame.Descendants<P.ShapeProperties>().First(), false);
+        var pShapeProperties = this.SdkChartPart.ChartSpace.GetFirstChild<P.ShapeProperties>()!;
+        this.Outline = new SlideShapeOutline(sdkSlidePart,  pShapeProperties);
+        this.Fill = new SlideShapeFill(sdkSlidePart, pShapeProperties, false);
+        this.SeriesList = new SeriesList(this.SdkChartPart, this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }
 
     public SCChartType Type => this.chartType.Value;
@@ -68,6 +67,8 @@ internal sealed record SlideChart : IRemoveable, IChart
     public ITextFrame TextFrame => throw new SCException(
         $"Chart cannot be a text holder. Use {nameof(IShape.IsTextHolder)} property to check if the shape is a text holder.");
     public double Rotation { get; }
+    public ITable AsTable() => throw new SCException(
+        $"Chart cannot be a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
 
     public string? Title
     {
@@ -89,7 +90,7 @@ internal sealed record SlideChart : IRemoveable, IChart
 
     public bool HasCategories => this.categories.Value != null;
 
-    public ISeriesCollection SeriesCollection => this.series.Value;
+    public ISeriesList SeriesList { get; }
 
     public ICategoryCollection? Categories => this.categories.Value;
 
@@ -150,9 +151,9 @@ internal sealed record SlideChart : IRemoveable, IChart
     
     public IAxesManager Axes => this.GetAxes();
 
-    internal ChartSpreadsheet? workbook { get; set; }
+    internal ExcelBook? workbook { get; set; }
 
-    internal ChartPart ChartPart { get; private set; }
+    internal ChartPart SdkChartPart { get; private set; }
 
     internal void Draw(SKCanvas canvas)
     {
@@ -192,14 +193,9 @@ internal sealed record SlideChart : IRemoveable, IChart
         return CategoryCollection.Create(this, this.firstSeries.Value, this.Type);
     }
 
-    private SCSeriesCollection GetSeries()
-    {
-        return SCSeriesCollection.Create(this, this.cXCharts);
-    }
-
     private string? GetTitleOrDefault()
     {
-        var cTitle = this.ChartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
+        var cTitle = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
         if (cTitle == null)
         {
             // chart has not title
@@ -223,7 +219,7 @@ internal sealed record SlideChart : IRemoveable, IChart
         // However, it can have store multiple series data in the spreadsheet.
         if (this.Type == SCChartType.PieChart)
         {
-            return ((SCSeriesCollection)this.SeriesCollection).First().Name;
+            return ((SeriesList)this.SeriesList).First().Name;
         }
 
         return null;

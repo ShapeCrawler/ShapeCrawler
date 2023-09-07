@@ -31,38 +31,35 @@ internal sealed record Presentation
         this.slideSize = new SlideSize(this.sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
     }
 
-    public ISlideCollection Slides { get; }
+    internal ISlideCollection Slides { get; }
 
-    public int SlideHeight
+    internal int SlideHeight
     {
         get => this.slideSize.Height();
         set => this.slideSize.UpdateHeight(value);
     }
 
-    public int SlideWidth
+    internal int SlideWidth
     {
         get => this.slideSize.Width();
         set => this.slideSize.UpdateWidth(value);
     }
 
-    public ISlideMasterCollection SlideMasters { get; }
+    internal ISlideMasterCollection SlideMasters { get; }
 
-    public ISections Sections { get; }
+    internal ISections Sections { get; }
 
-    public IHeaderAndFooter HeaderAndFooter { get; }
+    internal IHeaderAndFooter HeaderAndFooter { get; }
 
-    public void Save(string path)
+    internal void CopyTo(string path)
     {
         var cloned = this.sdkPresDocument.Clone(path);
         cloned.Dispose();
     }
 
-    public void Save(Stream stream)
-    {
-        this.sdkPresDocument.Clone(stream);
-    }
+    internal void CopyTo(Stream stream) => this.sdkPresDocument.Clone(stream);
 
-    public byte[] AsByteArray()
+    internal byte[] AsByteArray()
     {
         var stream = new MemoryStream();
         this.sdkPresDocument.Clone(stream);

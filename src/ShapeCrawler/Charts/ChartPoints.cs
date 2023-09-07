@@ -10,45 +10,21 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
 
-/// <summary>
-///     Represents collection of chart points.
-/// </summary>
-public interface IChartPointCollection : IReadOnlyList<IChartPoint>
-{
-}
-
-internal sealed class ChartPointCollection : IChartPointCollection
+internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
 {
     private readonly List<ChartPoint> chartPoints;
 
-    private ChartPointCollection(List<ChartPoint> points)
-    {
-        this.chartPoints = points;
-    }
-
-    public int Count => this.chartPoints.Count;
-
-    public IChartPoint this[int index] => this.chartPoints[index];
-
-    public IEnumerator<IChartPoint> GetEnumerator()
-    {
-        return this.chartPoints.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return this.GetEnumerator();
-    }
-
-    internal static ChartPointCollection Create(SlideChart slideChart, OpenXmlElement cSerXmlElement)
+    internal ChartPoints(OpenXmlElement cSerXmlElement)
     {
         var cVal = cSerXmlElement.GetFirstChild<Values>();
-        var cNumberReference = cVal != null ? cVal.NumberReference! : cSerXmlElement.GetFirstChild<YValues>() !.NumberReference!;
+        var cNumberReference =
+            cVal != null ? cVal.NumberReference! : cSerXmlElement.GetFirstChild<YValues>() !.NumberReference!;
 
         // Get addresses
         var cFormula = cNumberReference.Formula!;
         var normalizedFormula = cFormula.Text.Replace("$", string.Empty).Replace("'", string.Empty);
-        var dataSheetName = Regex.Match(normalizedFormula, @"(?<=\(*)[\p{L} 0-9]+?(?=!)").Value; // eg: Sheet1!A2:A5 -> Sheet1
+        var dataSheetName =
+            Regex.Match(normalizedFormula, @"(?<=\(*)[\p{L} 0-9]+?(?=!)").Value; // eg: Sheet1!A2:A5 -> Sheet1
         var addressMatches = Regex.Matches(normalizedFormula, @"[A-Z]\d+(:[A-Z]\d+)*"); // eg: Sheet1!A2:A5 -> A2:A5
         var pointAddresses = new List<string>();
         foreach (Match match in addressMatches)
@@ -78,7 +54,7 @@ internal sealed class ChartPointCollection : IChartPointCollection
         {
             foreach (var cNumericValue in cNumericValues)
             {
-                chartPoints.Add(new ChartPoint(slideChart, dataSheetName, pointAddresses[0], cNumericValue));
+                chartPoints.Add(new ChartPoint(cNumericValue));
             }
         }
         else
@@ -87,10 +63,18 @@ internal sealed class ChartPointCollection : IChartPointCollection
             var quPoints = System.Math.Min(pointAddresses.Count, cNumericValues?.Count ?? 0);
             for (int i = 0; i < quPoints; i++)
             {
-                chartPoints.Add(new ChartPoint(slideChart, dataSheetName, pointAddresses[i], cNumericValues?[i]));
+                chartPoints.Add(new ChartPoint(cNumericValues?[i]!));
             }
         }
 
-        return new ChartPointCollection(chartPoints);
+        this.chartPoints = chartPoints;
     }
+
+    public int Count => this.chartPoints.Count;
+
+    public IChartPoint this[int index] => this.chartPoints[index];
+
+    public IEnumerator<IChartPoint> GetEnumerator() => this.chartPoints.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 }

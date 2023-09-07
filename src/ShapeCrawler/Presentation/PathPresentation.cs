@@ -13,16 +13,16 @@ internal sealed record PathPresentation : IValidateable
         this.presentation = new Presentation(File.ReadAllBytes(this.path));
     }
 
-    public void Save() => this.presentation.Save(path);
+    public void Save() => this.presentation.CopyTo(path);
     void IValidateable.Validate() => this.presentation.Validate();
 
-    public void Copy(string newPath)
+    public void CopyTo(string newPath)
     {
         this.path = newPath;
         this.Save();
     }
 
-    public void Copy(Stream stream) => this.presentation.Save(stream);
+    public void CopyTo(Stream stream) => this.presentation.CopyTo(stream);
     public ISlideCollection Slides => this.presentation.Slides;
 
     public int SlideWidth

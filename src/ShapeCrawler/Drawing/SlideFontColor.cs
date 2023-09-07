@@ -72,11 +72,13 @@ internal sealed class SlideFontColor : IFontColor
         
         // From Referenced Layout Shape
         var sdkSlidePartWrap = new SdkSlidePart(this.sdkSlidePart);
-        string? referencedShapeFontColorHex = sdkSlidePartWrap.ReferencedShapeColorOrNull(pShape, indentLevel);
-        if (referencedShapeFontColorHex != null)
+        var refShapeFontColorHex = sdkSlidePartWrap.ReferencedShapeColorOrNull(pShape, indentLevel);
+        if (refShapeFontColorHex != null)
         {
-            return referencedShapeFontColorHex;
+            return refShapeFontColorHex;
         }
+        
+        // From Common Placeholder
 
         var pSlideMasterWrap =
             new SdkPSlideMasterWrap(sdkPSlideMaster);

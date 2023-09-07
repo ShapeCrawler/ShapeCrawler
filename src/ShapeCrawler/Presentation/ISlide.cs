@@ -45,7 +45,7 @@ public interface ISlide
     /// <summary>
     ///     Gets shape collection.
     /// </summary>
-    ISlideShapeCollection Shapes { get; }
+    ISlideShapes Shapes { get; }
 
 #if DEBUG
     Task<string> ToHtml();

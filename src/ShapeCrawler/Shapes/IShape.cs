@@ -91,4 +91,17 @@ public interface IShape : IPosition
     ///     Gets the rotation of the shape in degrees.
     /// </summary>
     double Rotation { get; }
+
+    /// <summary>
+    ///     Gets the table if the shape is a table. Use <see cref="IShape.ShapeType"/> property to check if the shape is a table.
+    /// </summary>
+    /// <returns></returns>
+    ITable AsTable();
+    
+    /// <summary>
+    ///     Gets the media shape which is an audio or video.
+    ///     Use <see cref="IShape.ShapeType"/> property to check if the shape is an <see cref="SCShapeType.Audio"/> or <see cref="SCShapeType.Video"/>.
+    /// </summary>
+    /// <returns></returns>
+    IMediaShape AsMedia();
 }

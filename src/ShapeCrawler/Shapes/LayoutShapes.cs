@@ -1,13 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Shapes;
 
 internal sealed record LayoutShapes : IReadOnlyShapeCollection
 {
+    private readonly SlideLayoutPart sdkSlideLayoutPart;
 
-    internal LayoutShapes()
+    internal LayoutShapes(SlideLayoutPart sdkSlideLayoutPart)
     {
+        this.sdkSlideLayoutPart = sdkSlideLayoutPart;
     }
 
     public IEnumerator<IShape> GetEnumerator()
@@ -20,7 +23,13 @@ internal sealed record LayoutShapes : IReadOnlyShapeCollection
         return this.GetEnumerator();
     }
 
-    public int Count { get; }
+    public int Count => this.ShapeList().Count;
+
+    private List<IShape> ShapeList()
+    {
+        throw new System.NotImplementedException();
+    }
+
     public T GetById<T>(int shapeId) where T : IShape
     {
         throw new System.NotImplementedException();
@@ -36,5 +45,5 @@ internal sealed record LayoutShapes : IReadOnlyShapeCollection
         throw new System.NotImplementedException();
     }
 
-    public IShape this[int index] => throw new System.NotImplementedException();
+    public IShape this[int index] => this.ShapeList()[index];
 }

@@ -1,8 +1,11 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Exceptions;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
+using X = DocumentFormat.OpenXml.Spreadsheet;
 
 // ReSharper disable PossibleMultipleEnumeration
 // ReSharper disable once CheckNamespace
@@ -26,7 +29,7 @@ public interface ISeries
     /// <summary>
     ///     Gets collection of chart points.
     /// </summary>
-    IChartPointCollection Points { get; }
+    IReadOnlyList<IChartPoint> Points { get; }
 
     /// <summary>
     ///     Gets a value indicating whether chart has name.
@@ -34,55 +37,37 @@ public interface ISeries
     bool HasName { get; }
 }
 
-internal sealed class SCSeries : ISeries
+internal sealed class Series : ISeries
 {
-    internal readonly OpenXmlElement CSer;
-    
-    private readonly Lazy<string?> name;
-    private readonly SlideChart _parentSlideChart;
+    private readonly ChartPart sdkChartPart;
+    private readonly OpenXmlElement cSer;
 
-    internal SCSeries(SlideChart parentSlideChart, OpenXmlElement cSer, SCChartType seriesChartType)
+    internal Series(ChartPart sdkChartPart, OpenXmlElement cSer, SCChartType type)
     {
-        this._parentSlideChart = parentSlideChart;
-        this.CSer = cSer;
-        this.name = new Lazy<string?>(this.GetNameOrDefault);
-        this.Type = seriesChartType;
+        this.sdkChartPart = sdkChartPart;
+        this.cSer = cSer;
+        this.Type = type;
+        this.Points = new ChartPoints(this.cSer);
     }
 
     public SCChartType Type { get; }
 
-    public IChartPointCollection Points
+    public IReadOnlyList<IChartPoint> Points { get; }
+
+    public bool HasName => this.cSer.GetFirstChild<C.SeriesText>()?.StringReference != null;
+
+    public string Name => this.ParseName();
+
+    private string ParseName()
     {
-        get
+        var cStrRef = this.cSer.GetFirstChild<C.SeriesText>()?.StringReference;
+        if (cStrRef == null)
         {
-            ErrorHandler.Execute(() => ChartPointCollection.Create(this._parentSlideChart, this.CSer), out var result);
-            return result;
-        }
-    }
-
-    public bool HasName => this.name.Value != null;
-
-    public string Name
-    {
-        get
-        {
-            if (this.name.Value == null)
-            {
-                throw new NotSupportedException(ExceptionMessages.SeriesHasNotName);
-            }
-
-            return this.name.Value;
-        }
-    }
-
-    private string? GetNameOrDefault()
-    {
-        var cStringReference = this.CSer.GetFirstChild<C.SeriesText>()?.StringReference;
-        if (cStringReference == null)
-        {
-            return null;
+            throw new SCException($"Series does not have name. Use {nameof(this.HasName)} property to check if series has name.");
         }
 
-        return ChartReferencesParser.GetSingleString(cStringReference, this._parentSlideChart);
+        var fromCache = cStrRef.StringCache?.GetFirstChild<C.StringPoint>() !.Single().InnerText;
+        
+        return fromCache ?? new ExcelCells(this.sdkChartPart, cStrRef.Formula!).ContentCellAt(0);
     }
 }

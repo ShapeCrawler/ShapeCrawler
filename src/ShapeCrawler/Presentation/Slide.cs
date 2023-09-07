@@ -39,12 +39,12 @@ internal sealed class Slide : ISlide
         this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideId = sdkPSlideId;
         this.SlideLayout = slideLayout;
-        this.Shapes = new SlideShapes(this.sdkSlidePart, this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!);
+        this.Shapes = new SlideShapes(this.sdkSlidePart);
     }
 
     public ISlideLayout SlideLayout { get; }
 
-    public ISlideShapeCollection Shapes { get; }
+    public ISlideShapes Shapes { get; }
 
     public int Number
     {

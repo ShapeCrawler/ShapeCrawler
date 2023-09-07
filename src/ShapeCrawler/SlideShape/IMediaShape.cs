@@ -99,6 +99,7 @@ internal record SlideMediaShape : IMediaShape, IRemoveable
         throw new SCException(
             $"The media shape is not a text holder. Use {nameof(IShape.IsTextHolder)} property to check if the shape is a text holder.");
     public double Rotation { get; }
+    public ITable AsTable() => throw new SCException($"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
 
     internal void Draw(SKCanvas canvas)
     {

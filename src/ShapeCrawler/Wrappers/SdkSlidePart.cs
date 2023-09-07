@@ -87,22 +87,149 @@ internal sealed record SdkSlidePart
     }
 
     /// <summary>
-    ///     Color hexadecimal representation from Referenced Layout or Master Shape for specified Slide Shape.
+    ///     Color's hexadecimal representation from Referenced Layout or Master Shape for specified Slide Shape.
     /// </summary>
     internal string? ReferencedShapeColorOrNull(P.Shape slidePShape, int indentLevel)
     {
-        var referencedLayoutPShape = this.ReferencedLayoutPShapeOf(slidePShape);
-        var indentFont = new IndentFonts(referencedLayoutPShape!.TextBody!.ListStyle!).FontOrNull(indentLevel);
-        if (this.HexFromName(indentFont, out var layoutShapeColor))
+        var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+            .GetFirstChild<P.PlaceholderShape>();
+        if (slidePh == null)
         {
-            return layoutShapeColor;
+            return null;
+        }
+        
+        var refLayoutPShapeOfSlide = this.ReferencedLayoutPShapeOf(slidePShape);
+        if (refLayoutPShapeOfSlide == null)
+        {
+            var refMasterPShapeOfSlide = this.ReferencedMasterPShapeOf(slidePShape);
+            var masterFontsOfSlide = new IndentFonts(refMasterPShapeOfSlide!.TextBody!.ListStyle!);
+            var masterIndentFontOfSlide = masterFontsOfSlide.FontOrNull(indentLevel);
+            if (this.HexFromName(masterIndentFontOfSlide, out var masterColorOfSlide))
+            {
+                return masterColorOfSlide;
+            }
+
+            return null;
         }
 
-        var referencedMasterPShape = this.ReferencedMasterPShapeOf(referencedLayoutPShape);
-        indentFont = new IndentFonts(referencedMasterPShape!.TextBody!.ListStyle!).FontOrNull(indentLevel);
-        if (this.HexFromName(indentFont, out var masterShapeColor))
+        var layoutFontsOfSlide = new IndentFonts(refLayoutPShapeOfSlide.TextBody!.ListStyle!);
+        var layoutIndentFontOfSlide = layoutFontsOfSlide.FontOrNull(indentLevel);
+        if (layoutIndentFontOfSlide != null && this.HexFromName(layoutIndentFontOfSlide, out var layoutColorOfSlide))
         {
-            return masterShapeColor;
+            return layoutColorOfSlide;
+        }
+
+        var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOf(refLayoutPShapeOfSlide);
+        var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout!.TextBody!.ListStyle!);
+        var masterIndentFontOfLayout = masterFontsOfLayout.FontOrNull(indentLevel);
+        if (masterIndentFontOfLayout != null && this.HexFromName(masterIndentFontOfLayout, out var masterColorOfLayout))
+        {
+            return masterColorOfLayout;
+        }
+
+        if (slidePh.Type?.Value == P.PlaceholderValues.Title)
+        {
+            var masterTitleFonts = new IndentFonts(this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
+                .TitleStyle!);
+            var masterTitleFont = masterTitleFonts.FontOrNull(indentLevel);
+            if (this.HexFromName(masterTitleFont, out var masterTitleColor))
+            {
+                return masterTitleColor;
+            }
+        }
+        else if (slidePh.Type?.Value == P.PlaceholderValues.Body)
+        {
+            var masterBodyFonts = new IndentFonts(this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
+                .BodyStyle!);
+            var masterBodyFont = masterBodyFonts.FontOrNull(indentLevel);
+            if (this.HexFromName(masterBodyFont, out var masterTitleColor))
+            {
+                return masterTitleColor;
+            }
+        }
+
+        return null;
+    }
+
+    #endregion APIs
+
+    private string GetThemeMappedColor(A.SchemeColorValues themeColor)
+    {
+        var pColorMap = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.ColorMap!;
+        if (themeColor == A.SchemeColorValues.Text1)
+        {
+            return this.GetThemeColorByString(pColorMap.Text1!.ToString() !);
+        }
+
+        if (themeColor == A.SchemeColorValues.Text2)
+        {
+            return this.GetThemeColorByString(pColorMap.Text2!.ToString() !);
+        }
+
+        if (themeColor == A.SchemeColorValues.Background1)
+        {
+            return this.GetThemeColorByString(pColorMap.Background1!.ToString() !);
+        }
+
+        return this.GetThemeColorByString(pColorMap.Background2!.ToString() !);
+    }
+
+    private string GetThemeColorByString(string fontSchemeColor)
+    {
+        var aColorScheme = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+            .ColorScheme!;
+        return fontSchemeColor switch
+        {
+            "dk1" => aColorScheme.Dark1Color!.RgbColorModelHex != null
+                ? aColorScheme.Dark1Color.RgbColorModelHex!.Val!.Value!
+                : aColorScheme.Dark1Color.SystemColor!.LastColor!.Value!,
+            "lt1" => aColorScheme.Light1Color!.RgbColorModelHex != null
+                ? aColorScheme.Light1Color.RgbColorModelHex.Val!.Value!
+                : aColorScheme.Light1Color.SystemColor!.LastColor!.Value!,
+            "dk2" => aColorScheme.Dark2Color!.RgbColorModelHex != null
+                ? aColorScheme.Dark2Color.RgbColorModelHex.Val!.Value!
+                : aColorScheme.Dark2Color.SystemColor!.LastColor!.Value!,
+            "lt2" => aColorScheme.Light2Color!.RgbColorModelHex != null
+                ? aColorScheme.Light2Color.RgbColorModelHex.Val!.Value!
+                : aColorScheme.Light2Color.SystemColor!.LastColor!.Value!,
+            "accent1" => aColorScheme.Accent1Color!.RgbColorModelHex != null
+                ? aColorScheme.Accent1Color.RgbColorModelHex.Val!.Value!
+                : aColorScheme.Accent1Color.SystemColor!.LastColor!.Value!,
+            "accent2" => aColorScheme.Accent2Color!.RgbColorModelHex != null
+                ? aColorScheme.Accent2Color.RgbColorModelHex.Val!.Value!
+                : aColorScheme.Accent2Color.SystemColor!.LastColor!.Value!,
+            "accent3" => aColorScheme.Accent3Color!.RgbColorModelHex != null
+                ? aColorScheme.Accent3Color.RgbColorModelHex.Val!.Value!
+                : aColorScheme.Accent3Color.SystemColor!.LastColor!.Value!,
+            "accent4" => aColorScheme.Accent4Color!.RgbColorModelHex != null
+                ? aColorScheme.Accent4Color.RgbColorModelHex.Val!.Value!
+                : aColorScheme.Accent4Color.SystemColor!.LastColor!.Value!,
+            "accent5" => aColorScheme.Accent5Color!.RgbColorModelHex != null
+                ? aColorScheme.Accent5Color.RgbColorModelHex.Val!.Value!
+                : aColorScheme.Accent5Color.SystemColor!.LastColor!.Value!,
+            "accent6" => aColorScheme.Accent6Color!.RgbColorModelHex != null
+                ? aColorScheme.Accent6Color.RgbColorModelHex.Val!.Value!
+                : aColorScheme.Accent6Color.SystemColor!.LastColor!.Value!,
+            _ => aColorScheme.Hyperlink!.RgbColorModelHex != null
+                ? aColorScheme.Hyperlink.RgbColorModelHex.Val!.Value!
+                : aColorScheme.Hyperlink.SystemColor!.LastColor!.Value!
+        };
+    }
+    
+    /// <summary>
+    ///     Tries to get referenced Placeholder Shape located on Slide Layout. Returns <c>NULL</c> if such shape is not found.
+    /// </summary>
+    private P.Shape? ReferencedLayoutPShapeOf(P.Shape slidePShape)
+    {
+        var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+            .GetFirstChild<P.PlaceholderShape>()!;
+
+        var layoutPShapes =
+            this.sdkSlidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!.Elements<P.Shape>();
+
+        if (ReferencedPShape(layoutPShapes, slidePh, out var shape))
+        {
+            return shape;
         }
 
         return null;
@@ -153,29 +280,6 @@ internal sealed record SdkSlidePart
 
         referencedShapeColorOrNull = null;
         return false;
-    }
-
-    /// <summary>
-    ///     Tries to get referenced Placeholder Shape located on Slide Layout. Returns <c>NULL</c> if such shape is not found.
-    /// </summary>
-    private P.Shape? ReferencedLayoutPShapeOf(P.Shape slidePShape)
-    {
-        var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-            .GetFirstChild<P.PlaceholderShape>();
-        if (slidePh == null)
-        {
-            return null;
-        }
-
-        var layoutPShapes =
-            this.sdkSlidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!.Elements<P.Shape>();
-
-        if (ReferencedPShape(layoutPShapes, slidePh, out var shape))
-        {
-            return shape;
-        }
-
-        return null;
     }
 
     private P.Shape? ReferencedMasterPShapeOf(P.Shape layoutPShape)
@@ -270,70 +374,5 @@ internal sealed record SdkSlidePart
 
         shape = null;
         return false;
-    }
-
-    #endregion APIs
-
-    private string GetThemeMappedColor(A.SchemeColorValues themeColor)
-    {
-        var pColorMap = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.ColorMap!;
-        if (themeColor == A.SchemeColorValues.Text1)
-        {
-            return this.GetThemeColorByString(pColorMap.Text1!.ToString() !);
-        }
-
-        if (themeColor == A.SchemeColorValues.Text2)
-        {
-            return this.GetThemeColorByString(pColorMap.Text2!.ToString() !);
-        }
-
-        if (themeColor == A.SchemeColorValues.Background1)
-        {
-            return this.GetThemeColorByString(pColorMap.Background1!.ToString() !);
-        }
-
-        return this.GetThemeColorByString(pColorMap.Background2!.ToString() !);
-    }
-
-    private string GetThemeColorByString(string fontSchemeColor)
-    {
-        var aColorScheme = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
-            .ColorScheme!;
-        return fontSchemeColor switch
-        {
-            "dk1" => aColorScheme.Dark1Color!.RgbColorModelHex != null
-                ? aColorScheme.Dark1Color.RgbColorModelHex!.Val!.Value!
-                : aColorScheme.Dark1Color.SystemColor!.LastColor!.Value!,
-            "lt1" => aColorScheme.Light1Color!.RgbColorModelHex != null
-                ? aColorScheme.Light1Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Light1Color.SystemColor!.LastColor!.Value!,
-            "dk2" => aColorScheme.Dark2Color!.RgbColorModelHex != null
-                ? aColorScheme.Dark2Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Dark2Color.SystemColor!.LastColor!.Value!,
-            "lt2" => aColorScheme.Light2Color!.RgbColorModelHex != null
-                ? aColorScheme.Light2Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Light2Color.SystemColor!.LastColor!.Value!,
-            "accent1" => aColorScheme.Accent1Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent1Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent1Color.SystemColor!.LastColor!.Value!,
-            "accent2" => aColorScheme.Accent2Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent2Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent2Color.SystemColor!.LastColor!.Value!,
-            "accent3" => aColorScheme.Accent3Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent3Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent3Color.SystemColor!.LastColor!.Value!,
-            "accent4" => aColorScheme.Accent4Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent4Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent4Color.SystemColor!.LastColor!.Value!,
-            "accent5" => aColorScheme.Accent5Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent5Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent5Color.SystemColor!.LastColor!.Value!,
-            "accent6" => aColorScheme.Accent6Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent6Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent6Color.SystemColor!.LastColor!.Value!,
-            _ => aColorScheme.Hyperlink!.RgbColorModelHex != null
-                ? aColorScheme.Hyperlink.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Hyperlink.SystemColor!.LastColor!.Value!
-        };
     }
 }

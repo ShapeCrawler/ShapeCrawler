@@ -16,10 +16,10 @@ internal sealed record StreamPresentation : IValidateable
         this.presentation = new Presentation(internalStream);
     }
 
-    public void Save() => this.presentation.Save(this.userStream);
+    public void Save() => this.presentation.CopyTo(this.userStream);
     void IValidateable.Validate() => this.presentation.Validate();
-    public void Copy(string path) => this.presentation.Save(path);
-    public void Copy(Stream userStream) => this.presentation.Save(userStream);
+    public void CopyTo(string path) => this.presentation.CopyTo(path);
+    public void CopyTo(Stream stream) => this.presentation.CopyTo(stream);
     public ISlideCollection Slides => this.presentation.Slides;
     public int SlideWidth
     {

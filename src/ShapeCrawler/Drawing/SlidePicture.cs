@@ -64,6 +64,7 @@ internal sealed record SlidePicture : IPicture, IRemoveable
 
     public ITextFrame TextFrame => throw new SCException($"The Picture shape is not a text holder. Use {nameof(IShape.IsTextHolder)} method to check it.");
     public double Rotation { get; }
+    public ITable AsTable() => throw new SCException($"The Picture shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
 
     internal void Draw(SKCanvas canvas)
     {

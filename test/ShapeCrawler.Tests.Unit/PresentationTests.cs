@@ -321,7 +321,7 @@ public class PresentationTests : SCTest
         var chart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
 
         // Act
-        chart.SeriesCollection[0].Points[0].Value = 1;
+        chart.SeriesList[0].Points[0].Value = 1;
         var binaryData = pres.AsByteArray();
         
         // Assert

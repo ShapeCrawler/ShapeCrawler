@@ -45,6 +45,8 @@ public interface ITable : IShape
     ///     Removes a column at specified index.
     /// </summary>
     void RemoveColumnAt(int columnIndex);
+
+    void UpdateFill(string colorHex);
 }
 
 internal sealed record SlideTable : IRemoveable, ITable
@@ -54,31 +56,34 @@ internal sealed record SlideTable : IRemoveable, ITable
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly ResetableLazy<SlideTableRows> rowCollection;
 
-    internal SlideTable(SlidePart sdkSlidePart, OpenXmlCompositeElement sdkPShapeTreeElement)
-        : this(sdkSlidePart, sdkPShapeTreeElement, new Shape(sdkPShapeTreeElement))
+    internal SlideTable(SlidePart sdkSlidePart, OpenXmlCompositeElement pShapeTreeElement)
+        : this(sdkSlidePart, pShapeTreeElement, new Shape(pShapeTreeElement))
     {
     }
 
-    private SlideTable(SlidePart sdkSlidePart, OpenXmlCompositeElement sdkPShapeTreeElement, Shape shape)
+    private SlideTable(SlidePart sdkSlidePart, OpenXmlCompositeElement pShapeTreeElement, Shape shape)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.shape = shape;
-        var graphicFrame = (P.GraphicFrame)sdkPShapeTreeElement;
+        var graphicFrame = (P.GraphicFrame)pShapeTreeElement;
         this.rowCollection = new ResetableLazy<SlideTableRows>(() => new SlideTableRows(this.sdkSlidePart, graphicFrame));
-        this.pGraphicFrame = (P.GraphicFrame)sdkPShapeTreeElement;
-        this.Fill = new SlideShapeFill(sdkSlidePart, sdkPShapeTreeElement.Descendants<P.ShapeProperties>().First(), false);
+        this.pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
     }
 
     public SCShapeType ShapeType => SCShapeType.Table;
     public bool HasOutline => false;
-    public IShapeOutline Outline => throw new SCException($"Table cannot have outline formatting. Use {nameof(IShape.HasOutline)} property to check if the shape has outline formmating.");
-    public IShapeFill Fill { get; }
+    public IShapeOutline Outline => throw new SCException($"Table cannot have outline formatting. Use {nameof(IShape.HasOutline)} property to check if the shape has outline formatting.");
+
+    public IShapeFill Fill =>
+        throw new SCException(
+            $"You can only update table fill using {nameof(ITable.UpdateFill)}. Use {nameof(ITableCell.Fill)} property to get fill of a certain table cell.");
     public bool IsTextHolder => false;
 
     public ITextFrame TextFrame =>
         throw new SCException(
             $"Table cannot be a text holder. Use {nameof(IShape.IsTextHolder)} property to check if the shape is a text holder.");
     public double Rotation { get; }
+    public ITable AsTable() => this;
 
     public IReadOnlyList<IColumn> Columns => this.GetColumnList(); // TODO: make lazy
 
@@ -111,6 +116,11 @@ internal sealed record SlideTable : IRemoveable, ITable
             var aTableCell = aTableRow.Elements<A.TableCell>().ElementAt(columnIndex);
             aTableCell.Remove();
         }
+    }
+
+    public void UpdateFill(string colorHex)
+    {
+        throw new NotImplementedException();
     }
 
     public void MergeCells(ITableCell inputCell1, ITableCell inputCell2)

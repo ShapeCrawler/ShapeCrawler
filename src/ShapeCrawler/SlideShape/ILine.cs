@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.AutoShapes;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -85,6 +86,7 @@ internal sealed record SlideLine : ILine, IRemoveable
     public ITextFrame TextFrame => new NullTextFrame();
 
     public double Rotation { get; }
+    public ITable AsTable() => throw new SCException($"The Line shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
 
     public bool HasOutline => true;
     public IShapeOutline Outline { get; }
