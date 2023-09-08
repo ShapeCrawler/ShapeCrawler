@@ -3,7 +3,7 @@
 /// <summary>
 ///     Represents MIME type.
 /// </summary>
-public enum SCMIMEType
+public enum SCAudioType
 {
     /// <summary>
     ///    MP3 audio.

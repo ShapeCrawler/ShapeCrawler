@@ -67,7 +67,7 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     /// <summary>
     ///     Adds a new audio from stream.
     /// </summary>
-    IAudioShape AddAudio(int xPixel, int yPixels, Stream audioStream, SCMIMEType type);
+    IAudioShape AddAudio(int xPixel, int yPixels, Stream audioStream, SCAudioType type);
 
     /// <summary>
     ///     Adds a new video from stream.
@@ -230,19 +230,19 @@ internal sealed class ShapeCollection : IShapeCollection
     
     public IAudioShape AddAudio(int xPixels, int yPixels, Stream audioStream)
     {
-        return this.AddAudio(xPixels, yPixels, audioStream, SCMIMEType.MP3);
+        return this.AddAudio(xPixels, yPixels, audioStream, SCAudioType.MP3);
     }
     
-    public IAudioShape AddAudio(int xPixels, int yPixels, Stream audioStream, SCMIMEType type)
+    public IAudioShape AddAudio(int xPixels, int yPixels, Stream audioStream, SCAudioType type)
     {
         string? contentType = null;
         string? extension = null;
-        if (type == SCMIMEType.MP3)
+        if (type == SCAudioType.MP3)
         {
             contentType = "audio/mpeg";
             extension = ".mp3";
         }
-        else if(type == SCMIMEType.WAVE)
+        else if(type == SCAudioType.WAVE)
         {
             contentType = "audio/wav";
             extension = ".wav";
