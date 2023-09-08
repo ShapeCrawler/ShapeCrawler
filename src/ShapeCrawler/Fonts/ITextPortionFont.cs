@@ -14,9 +14,9 @@ public interface ITextPortionFont : IFont
     string? LatinName { get; set; }
     
     /// <summary>
-    ///     Gets or sets font for the East Asian characters. Returns <see langword="null"/> if the East Asian font is not present.
+    ///     Gets or sets font for the East Asian characters.
     /// </summary>
-    string? EastAsianName { get; set; }
+    string EastAsianName { get; set; }
 
     /// <summary>
     ///     Gets or sets a value indicating whether font width is bold.

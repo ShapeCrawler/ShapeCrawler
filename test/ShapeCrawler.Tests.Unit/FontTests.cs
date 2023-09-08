@@ -233,8 +233,7 @@ public class FontTests : SCTest
     public void EastAsianName_Setter_sets_font_for_the_east_asian_characters(string file, int slideNumber, string shapeName)
     {
         // Arrange
-        var pptx = StreamOf(file);
-        var pres = new SCPresentation(pptx);
+        var pres = new SCPresentation(StreamOf(file));
         var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
         var font = shape.TextFrame.Paragraphs[0].Portions[0].Font;
 

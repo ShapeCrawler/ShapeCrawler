@@ -89,18 +89,16 @@ public class ChartPointTests : SCTest
     public void Value_Setter_updates_chart_point_in_Embedded_excel_workbook()
     {
         // Arrange
-        var pptxStream = StreamOf("024_chart.pptx");
-        var pres = new SCPresentation(pptxStream);
+        var pres = new SCPresentation(StreamOf("024_chart.pptx"));
         var chart = pres.Slides[2].Shapes.GetById<IChart>(5);
         var point = chart.SeriesList[0].Points[0];
-        const int newChartPointValue = 6;
 
         // Act
-        point.Value = newChartPointValue;
+        point.Value = 6;
 
         // Assert
         var pointCellValue = GetWorksheetCellValue<double>(chart.WorkbookByteArray, "B2");
-        pointCellValue.Should().Be(newChartPointValue);
+        pointCellValue.Should().Be(6);
     }
 
     [Test]

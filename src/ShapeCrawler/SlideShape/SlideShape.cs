@@ -19,31 +19,31 @@ namespace ShapeCrawler.SlideShape;
 
 internal sealed record SlideShape : IShape, IRemoveable
 {
-    private readonly P.Shape sdkPShape;
+    private readonly P.Shape pShape;
     private readonly Shape shape;
     private readonly Lazy<SlideShapeFill> autoShapeFill;
     private readonly SlidePart sdkSlidePart;
 
     internal SlideShape(
         SlidePart sdkSlidePart,
-        P.Shape sdkPShape) :
+        P.Shape pShape) :
         this(
             sdkSlidePart,
-            sdkPShape,
-            new Shape(sdkPShape),
-            new SlideShapeOutline(sdkSlidePart, sdkPShape.ShapeProperties!)
+            pShape,
+            new Shape(pShape),
+            new SlideShapeOutline(sdkSlidePart, pShape.ShapeProperties!)
         )
     {
     }
 
     private SlideShape(
         SlidePart sdkSlidePart,
-        P.Shape sdkPShape,
+        P.Shape pShape,
         Shape shape,
         SlideShapeOutline outline)
     {
         this.sdkSlidePart = sdkSlidePart;
-        this.sdkPShape = sdkPShape;
+        this.pShape = pShape;
         this.shape = shape;
         this.Outline = outline;
         this.autoShapeFill = new Lazy<SlideShapeFill>(this.ParseFill);
@@ -87,6 +87,10 @@ internal sealed record SlideShape : IShape, IRemoveable
         throw new SCException(
             $"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
 
+    public IMediaShape AsMedia() =>
+        throw new SCException(
+            $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
+
     internal void Draw(SKCanvas slideCanvas)
     {
         var skColorOutline = SKColor.Parse(this.Outline.HexColor);
@@ -124,8 +128,8 @@ internal sealed record SlideShape : IShape, IRemoveable
 
     private SlideShapeFill ParseFill()
     {
-        var useBgFill = this.sdkPShape.UseBackgroundFill;
-        return new SlideShapeFill(this.sdkSlidePart, this.sdkPShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
+        var useBgFill = this.pShape.UseBackgroundFill;
+        return new SlideShapeFill(this.sdkSlidePart, this.pShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
     }
 
     public int X { get; set; }
@@ -134,7 +138,7 @@ internal sealed record SlideShape : IShape, IRemoveable
     internal void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames,
         SlidePart targetSdkSlidePart)
     {
-        var copy = this.sdkPShape.CloneNode(true);
+        var copy = this.pShape.CloneNode(true);
         copy.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
         pShapeTree.AppendChild(copy);
         var copyName = copy.GetNonVisualDrawingProperties().Name!.Value!;
@@ -164,6 +168,6 @@ internal sealed record SlideShape : IShape, IRemoveable
 
     void IRemoveable.Remove()
     {
-        this.sdkPShape.Remove();
+        this.pShape.Remove();
     }
 }

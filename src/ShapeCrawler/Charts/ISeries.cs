@@ -47,7 +47,7 @@ internal sealed class Series : ISeries
         this.sdkChartPart = sdkChartPart;
         this.cSer = cSer;
         this.Type = type;
-        this.Points = new ChartPoints(this.cSer);
+        this.Points = new ChartPoints(this.sdkChartPart, this.cSer);
     }
 
     public SCChartType Type { get; }

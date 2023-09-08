@@ -16,7 +16,7 @@ public class ShapeTests : SCTest
         var audioShape = pres.Slides[0].Shapes.GetByName<IMediaShape>("Audio 1");
 
         // Act
-        var bytes = audioShape.BinaryData;
+        var bytes = audioShape.AsByteArray();
 
         // Assert
         bytes.Should().NotBeEmpty();
@@ -46,7 +46,7 @@ public class ShapeTests : SCTest
         var videoShape = pres.Slides[0].Shapes.GetByName<IMediaShape>("Video 1");
 
         // Act
-        var bytes = videoShape.BinaryData;
+        var bytes = videoShape.AsByteArray();
 
         // Assert
         bytes.Should().NotBeEmpty();

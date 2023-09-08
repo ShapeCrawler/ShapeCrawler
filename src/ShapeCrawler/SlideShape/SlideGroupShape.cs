@@ -67,6 +67,9 @@ internal sealed record SlideGroupShape : IGroupShape, IRemoveable
     public ITextFrame TextFrame => throw new SCException($"Group Shape cannot be a text holder. Use {nameof(IShape.IsTextHolder)} property to check if the shape is a text holder.");
     public double Rotation { get; }
     public ITable AsTable() => throw new SCException($"The Group Shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
+    public IMediaShape AsMedia() =>
+        throw new SCException(
+            $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
 
     internal void Draw(SKCanvas canvas)
     {

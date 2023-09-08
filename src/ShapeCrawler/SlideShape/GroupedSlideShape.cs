@@ -65,6 +65,9 @@ internal sealed record GroupedSlideShape : IShape
 
     public double Rotation { get; }
     public ITable AsTable() => throw new SCException($"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
+    public IMediaShape AsMedia() =>
+        throw new SCException(
+            $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
 
     #endregion Properties
 }

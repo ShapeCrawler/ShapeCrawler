@@ -69,6 +69,9 @@ internal sealed record SlideChart : IRemoveable, IChart
     public double Rotation { get; }
     public ITable AsTable() => throw new SCException(
         $"Chart cannot be a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
+    public IMediaShape AsMedia() =>
+        throw new SCException(
+            $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
 
     public string? Title
     {

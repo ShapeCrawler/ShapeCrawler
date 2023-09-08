@@ -84,6 +84,9 @@ internal sealed record SlideTable : IRemoveable, ITable
             $"Table cannot be a text holder. Use {nameof(IShape.IsTextHolder)} property to check if the shape is a text holder.");
     public double Rotation { get; }
     public ITable AsTable() => this;
+    public IMediaShape AsMedia() =>
+        throw new SCException(
+            $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
 
     public IReadOnlyList<IColumn> Columns => this.GetColumnList(); // TODO: make lazy
 
@@ -91,7 +94,7 @@ internal sealed record SlideTable : IRemoveable, ITable
 
     public int Width { get; set; }
     public int Height { get; set; }
-    public int Id { get; }
+    public int Id => this.shape.Id();
     public string Name => this.shape.Name();
     public bool Hidden { get; }
 

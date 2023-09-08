@@ -4,11 +4,11 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Wrappers;
 
-internal sealed record SdkPSlideMasterWrap
+internal sealed record SdkPSlideMaster
 {
     private readonly P.SlideMaster pSlideMaster;
 
-    internal SdkPSlideMasterWrap(P.SlideMaster pSlideMaster)
+    internal SdkPSlideMaster(P.SlideMaster pSlideMaster)
     {
         this.pSlideMaster = pSlideMaster;
     }

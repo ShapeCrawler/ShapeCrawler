@@ -22,7 +22,7 @@ public interface IMediaShape : IShape
     /// <summary>
     ///     Gets bytes of video content.
     /// </summary>
-    public byte[] BinaryData { get; }
+    public byte[] AsByteArray();
 
     /// <summary>
     ///     Gets MIME type.
@@ -101,6 +101,8 @@ internal record SlideMediaShape : IMediaShape, IRemoveable
     public double Rotation { get; }
     public ITable AsTable() => throw new SCException($"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
 
+    public IMediaShape AsMedia() => this;
+
     internal void Draw(SKCanvas canvas)
     {
         throw new System.NotImplementedException();
@@ -116,9 +118,7 @@ internal record SlideMediaShape : IMediaShape, IRemoveable
         throw new System.NotImplementedException();
     }
 
-    public byte[] BinaryData => ParseBinaryData();
-
-    private byte[] ParseBinaryData()
+    public byte[] AsByteArray()
     {
         var p14Media = this.pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!
             .Descendants<DocumentFormat.OpenXml.Office2010.PowerPoint.Media>().Single();

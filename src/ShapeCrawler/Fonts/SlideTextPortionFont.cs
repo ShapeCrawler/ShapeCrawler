@@ -5,6 +5,7 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
+using ShapeCrawler.Wrappers;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Fonts;
@@ -17,6 +18,7 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
     private readonly IFontSize size;
     private readonly ThemeFontScheme themeFontScheme;
     private readonly SlidePart sdkSlidePart;
+    private readonly SdkSlideAText sdkAText;
 
     internal SlideTextPortionFont(
         SlidePart sdkSlidePart,
@@ -44,6 +46,7 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
         this.fontColor = new Lazy<SlideFontColor>(() => new SlideFontColor(this.sdkSlidePart, this.aText));
         this.size = size;
         this.themeFontScheme = themeFontScheme;
+        this.sdkAText = new SdkSlideAText(sdkSlidePart, aText);
     }
 
     public int Size
@@ -58,10 +61,10 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
         set => this.SetLatinName(value!);
     }
 
-    public string? EastAsianName
+    public string EastAsianName
     {
-        get => this.ParseEastAsianName();
-        set => this.SetEastAsianName(value!);
+        get => this.sdkAText.EastAsianName();
+        set => this.sdkAText.UpdateEastAsianName(value);
     }
 
     public bool IsBold
@@ -161,7 +164,7 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
     {
         if (this.latinFont.Value.Typeface == "+mj-lt")
         {
-            return this.themeFontScheme.MajorFontLatinFont();
+            return this.themeFontScheme.MajorLatinFont();
         }
 
         return this.latinFont.Value.Typeface!;
@@ -169,16 +172,16 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
 
     private string ParseEastAsianName()
     {
-        var aEastAsianFont = this.GetAEastAsianFont();
+        var aEastAsianFont = this.AEastAsianFont();
         if (aEastAsianFont.Typeface == "+mj-ea")
         {
-            return this.themeFontScheme.MajorFontEastAsianFont();
+            return this.themeFontScheme.MajorEastAsianFont();
         }
 
         return aEastAsianFont.Typeface!;
     }
 
-    private A.EastAsianFont GetAEastAsianFont()
+    private A.EastAsianFont AEastAsianFont()
     {
         var aEastAsianFont = this.aText.Parent!.GetFirstChild<A.RunProperties>()
             ?.GetFirstChild<A.EastAsianFont>();
@@ -308,9 +311,9 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
         this.latinFont.Reset();
     }
 
-    private void SetEastAsianName(string eastAsianFont)
+    private void UpdateEastAsianName(string eastAsianFont)
     {
-        var aEastAsianFont = this.GetAEastAsianFont();
+        var aEastAsianFont = this.AEastAsianFont();
         aEastAsianFont.Typeface = eastAsianFont;
     }
 }

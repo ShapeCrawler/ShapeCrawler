@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
@@ -12,10 +13,13 @@ namespace ShapeCrawler;
 
 internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
 {
+    private readonly ChartPart sdkChartPart;
     private readonly List<ChartPoint> chartPoints;
 
-    internal ChartPoints(OpenXmlElement cSerXmlElement)
+    internal ChartPoints(ChartPart sdkChartPart, OpenXmlElement cSerXmlElement)
     {
+        this.sdkChartPart = sdkChartPart;
+        
         var cVal = cSerXmlElement.GetFirstChild<Values>();
         var cNumberReference =
             cVal != null ? cVal.NumberReference! : cSerXmlElement.GetFirstChild<YValues>() !.NumberReference!;
@@ -54,7 +58,7 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         {
             foreach (var cNumericValue in cNumericValues)
             {
-                chartPoints.Add(new ChartPoint(cNumericValue));
+                chartPoints.Add(new ChartPoint(this.sdkChartPart, cNumericValue, dataSheetName, pointAddresses[0]));
             }
         }
         else
@@ -63,7 +67,7 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
             var quPoints = System.Math.Min(pointAddresses.Count, cNumericValues?.Count ?? 0);
             for (int i = 0; i < quPoints; i++)
             {
-                chartPoints.Add(new ChartPoint(cNumericValues?[i]!));
+                chartPoints.Add(new ChartPoint(this.sdkChartPart, cNumericValues?[i]!, dataSheetName, pointAddresses[i]));
             }
         }
 

@@ -8,46 +8,42 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Wrappers;
 
-internal sealed record SdkSlidePart
+internal sealed record PresentationColor
 {
     private readonly SlidePart sdkSlidePart;
 
-    internal SdkSlidePart(SlidePart sdkSlidePart)
+    internal PresentationColor(SlidePart sdkSlidePart)
     {
         this.sdkSlidePart = sdkSlidePart;
     }
 
     #region APIs
 
-    internal PresentationDocument SDKPresentationDocument()
+    internal IndentFont? PresentationFontOrThemeFontOrNull(int indentLevel)
     {
-        return (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
-    }
-
-    internal IndentFont? PresentationFontOrThemeFontOrNull(int paraLevel)
-    {
-        var pDefaultTextStyle = this.SDKPresentationDocument().PresentationPart!.Presentation.DefaultTextStyle;
+        var sdkPresDoc = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
+        var pDefaultTextStyle = sdkPresDoc.PresentationPart!.Presentation.DefaultTextStyle;
         if (pDefaultTextStyle != null)
         {
-            var pDefaultTextStyleFont = new IndentFonts(pDefaultTextStyle).FontOrNull(paraLevel);
+            var pDefaultTextStyleFont = new IndentFonts(pDefaultTextStyle).FontOrNull(indentLevel);
             if (pDefaultTextStyleFont != null)
             {
                 return pDefaultTextStyleFont;
             }
         }
 
-        var aTextDefault = this.SDKPresentationDocument().PresentationPart!.ThemePart?.Theme.ObjectDefaults!
+        var aTextDefault = sdkPresDoc.PresentationPart!.ThemePart?.Theme.ObjectDefaults!
             .TextDefault;
         return aTextDefault != null
-            ? new IndentFonts(aTextDefault).FontOrNull(paraLevel)
+            ? new IndentFonts(aTextDefault).FontOrNull(indentLevel)
             : null;
     }
 
-    internal string ThemeColorHex(A.SchemeColorValues themeColor)
+    internal string ThemeColorHex(A.SchemeColorValues aSchemeColorValue)
     {
         var aColorScheme = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
             .ColorScheme!;
-        return themeColor switch
+        return aSchemeColorValue switch
         {
             A.SchemeColorValues.Dark1 => aColorScheme.Dark1Color!.RgbColorModelHex != null
                 ? aColorScheme.Dark1Color.RgbColorModelHex!.Val!.Value!
@@ -82,14 +78,14 @@ internal sealed record SdkSlidePart
             A.SchemeColorValues.Hyperlink => aColorScheme.Hyperlink!.RgbColorModelHex != null
                 ? aColorScheme.Hyperlink.RgbColorModelHex.Val!.Value!
                 : aColorScheme.Hyperlink.SystemColor!.LastColor!.Value!,
-            _ => this.GetThemeMappedColor(themeColor)
+            _ => this.GetThemeMappedColor(aSchemeColorValue)
         };
     }
 
     /// <summary>
     ///     Color's hexadecimal representation from Referenced Layout or Master Shape for specified Slide Shape.
     /// </summary>
-    internal string? ReferencedShapeColorOrNull(P.Shape slidePShape, int indentLevel)
+    internal string? ReferencedShapeColorHexOrNull(P.Shape slidePShape, int indentLevel)
     {
         var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();

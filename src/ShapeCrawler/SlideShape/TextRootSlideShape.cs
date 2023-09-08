@@ -142,6 +142,10 @@ internal sealed record TextRootSlideShape : IRootSlideShape
     public ITable AsTable() => throw new SCException(
         $"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
 
+    public IMediaShape AsMedia() =>
+        throw new SCException(
+            $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
+
     public void Duplicate() => this.rootSlideShape.Duplicate();
     #endregion Slide Properties
 }

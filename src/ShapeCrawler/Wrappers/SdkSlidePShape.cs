@@ -7,12 +7,12 @@ namespace ShapeCrawler.Wrappers;
 internal sealed class SdkSlidePShape
 {
     private readonly P.Shape sdkPShape;
-    private readonly SdkSlidePart sdkSlidePartWrap;
+    private readonly PresentationColor presentationColorWrap;
 
-    internal SdkSlidePShape(SdkSlidePart sdkSlidePartWrap, P.Shape sdkPShape)
+    internal SdkSlidePShape(PresentationColor presentationColorWrap, P.Shape sdkPShape)
     {
         this.sdkPShape = sdkPShape;
-        this.sdkSlidePartWrap = sdkSlidePartWrap;
+        this.presentationColorWrap = presentationColorWrap;
     }
 
     internal string? FontColorHexOrNull()
@@ -30,7 +30,7 @@ internal sealed class SdkSlidePShape
 
         if (sdkAFontReference.SchemeColor != null)
         {
-            return this.sdkSlidePartWrap.ThemeColorHex(sdkAFontReference.SchemeColor.Val!);
+            return this.presentationColorWrap.ThemeColorHex(sdkAFontReference.SchemeColor.Val!);
         }
 
         if (sdkAFontReference.PresetColor != null)

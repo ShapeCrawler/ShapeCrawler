@@ -83,7 +83,9 @@ internal record SlideOLEObject : IShape, IRemoveable
         $"The OLE object cannot contain text. Use {nameof(IShape.IsTextHolder)} method to check if the shape is a text holder.");
     public double Rotation { get; }
     public ITable AsTable() => throw new SCException($"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
-
+    public IMediaShape AsMedia() =>
+        throw new SCException(
+            $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
     internal void Draw(SKCanvas canvas)
     {
         throw new System.NotImplementedException();

@@ -250,7 +250,7 @@ internal sealed record TextFrame : ITextFrame
             .First().First();
         var font = popularPortion.Font;
 
-        var sdkPresDocument = new SdkSlidePart(sdkSlidePart).SDKPresentationDocument();
+        var sdkPresDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
         var slideSize = new SlideSize(sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
         var fontSize = FontService.GetAdjustedFontSize(newText, font!, slideSize.Width(), slideSize.Height());
 

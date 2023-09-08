@@ -7,19 +7,21 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Fonts;
 
-internal sealed record IndentFonts
+internal sealed class IndentFonts
 {
-    private readonly OpenXmlCompositeElement sdkXmlCompositeElement;
+    private readonly OpenXmlCompositeElement sdkOpenXmlCompositeElement;
 
-    internal IndentFonts(OpenXmlCompositeElement sdkXmlCompositeElement)
+    internal IndentFonts(OpenXmlCompositeElement sdkOpenXmlCompositeElement)
     {
-        this.sdkXmlCompositeElement = sdkXmlCompositeElement;
+        this.sdkOpenXmlCompositeElement = sdkOpenXmlCompositeElement;
     }
+
+    #region APIs
 
     internal IndentFont? FontOrNull(int indentLevelFor)
     {
         // Get <a:lvlXpPr> elements, eg. <a:lvl1pPr>, <a:lvl2pPr>
-        var lvlParagraphPropertyList = this.sdkXmlCompositeElement.Elements()
+        var lvlParagraphPropertyList = this.sdkOpenXmlCompositeElement.Elements()
             .Where(e => e.LocalName.StartsWith("lvl", StringComparison.Ordinal));
 
         foreach (var textPr in lvlParagraphPropertyList)
@@ -102,7 +104,7 @@ internal sealed record IndentFonts
             }
         }
 
-        if (indentLevelFor == 1 && this.sdkXmlCompositeElement.Parent is P.TextBody pTextBody)
+        if (indentLevelFor == 1 && this.sdkOpenXmlCompositeElement.Parent is P.TextBody pTextBody)
         {
             var endParaRunPrFs = pTextBody.GetFirstChild<A.Paragraph>() !
                 .GetFirstChild<A.EndParagraphRunProperties>()?.FontSize;
@@ -119,4 +121,37 @@ internal sealed record IndentFonts
         
         return null;
     }
+    
+    internal SCColorType? ColorType(int indentLevel)
+    {
+        var indentFont = this.FontOrNull(indentLevel);
+        if (indentFont is null)
+        {
+            return null;
+        }
+        
+        if (indentFont.Value.ARgbColorModelHex != null)
+        {
+            return SCColorType.RGB;
+        }
+        
+        if (indentFont.Value.ASchemeColor != null)
+        {
+            return SCColorType.Theme;
+        }
+        
+        if (indentFont.Value.ASystemColor != null)
+        {
+            return SCColorType.Standard;
+        }
+        
+        if (indentFont.Value.APresetColor != null)
+        {
+            return SCColorType.Preset;
+        }
+        
+        return null;
+    }
+    
+    #endregion APIs
 }
