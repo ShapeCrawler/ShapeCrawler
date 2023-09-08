@@ -61,8 +61,13 @@ public interface IShapeCollection : IReadOnlyList<IShape>
     /// </summary>
     /// <param name="xPixel">The X coordinate for the left side of the shape.</param>
     /// <param name="yPixels">The Y coordinate for the left side of the shape.</param>
-    /// <param name="mp3Stream">Audio stream data.</param>
-    IAudioShape AddAudio(int xPixel, int yPixels, Stream mp3Stream);
+    /// <param name="audioStream">Audio stream data.</param>
+    IAudioShape AddAudio(int xPixel, int yPixels, Stream audioStream);
+    
+    /// <summary>
+    ///     Adds a new audio from stream.
+    /// </summary>
+    IAudioShape AddAudio(int xPixel, int yPixels, Stream audioStream, SCAudioType type);
 
     /// <summary>
     ///     Adds a new video from stream.
@@ -222,15 +227,37 @@ internal sealed class ShapeCollection : IShapeCollection
 
         return newShape;
     }
-
-    public IAudioShape AddAudio(int xPixels, int yPixels, Stream mp3Stream)
+    
+    public IAudioShape AddAudio(int xPixels, int yPixels, Stream audioStream)
     {
+        return this.AddAudio(xPixels, yPixels, audioStream, SCAudioType.MP3);
+    }
+    
+    public IAudioShape AddAudio(int xPixels, int yPixels, Stream audioStream, SCAudioType type)
+    {
+        string? contentType = null;
+        string? extension = null;
+        if (type == SCAudioType.MP3)
+        {
+            contentType = "audio/mpeg";
+            extension = ".mp3";
+        }
+        else if(type == SCAudioType.WAVE)
+        {
+            contentType = "audio/wav";
+            extension = ".wav";
+        }
+        else
+        {
+            throw new SCException("Unsupported audio type.");
+        }
+        
         var xEmu = UnitConverter.HorizontalPixelToEmu(xPixels);
         var yEmu = UnitConverter.VerticalPixelToEmu(yPixels);
         var mediaDataPart =
-            this.slideStructure.PresentationInternal.SDKPresentationInternal.CreateMediaDataPart("audio/mpeg", ".mp3");
-        mp3Stream.Position = 0;
-        mediaDataPart.FeedData(mp3Stream);
+            this.slideStructure.PresentationInternal.SDKPresentationInternal.CreateMediaDataPart(contentType, extension);
+        audioStream.Position = 0;
+        mediaDataPart.FeedData(audioStream);
         var slidePart = (SlidePart)this.slideStructure.TypedOpenXmlPart;
         var imageStream = Assembly.GetExecutingAssembly().GetStream("audio-image.png");
 

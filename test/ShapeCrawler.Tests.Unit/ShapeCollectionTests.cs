@@ -3,6 +3,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Shared;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Helpers.Attributes;
@@ -294,6 +295,23 @@ public class ShapeCollectionTests : SCTest
         // Assert
         addedAudio.X.Should().Be(xPxCoordinate);
         addedAudio.Y.Should().Be(yPxCoordinate);
+    }
+    
+    [Test]
+    public void AddAudio_adds_Audio_shape_WIP()
+    {
+        // Arrange
+        var pptx = GetInputStream("001.pptx");
+        var wav = GetInputStream("test-wav.wav");
+        var pres = SCPresentation.Open(pptx);
+        var shapes = pres.Slides[1].Shapes;
+
+        // Act
+        shapes.AddAudio(300, 100, wav, SCAudioType.WAVE);
+        
+        // Assert
+        var addedAudio = pres.Slides[1].Shapes.OfType<IAudioShape>().Last();
+        addedAudio.X.Should().Be(300);
     }
 
     [Test]
