@@ -212,6 +212,8 @@
     <EmbeddedResource Include="Resource\test-mp3.mp3" />
     <None Remove="Resource\039.pptx" />
     <EmbeddedResource Include="Resource\039.pptx" />
+    <None Remove="Resource\test-wav.wav" />
+    <EmbeddedResource Include="Resource\test-wav.wav" />
   </ItemGroup>
 
   <ItemGroup>
