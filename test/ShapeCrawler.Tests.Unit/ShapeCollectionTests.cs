@@ -274,7 +274,7 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void AddAudio_adds_Audio_shape()
+    public void AddAudio_adds_audio_shape_with_MP3_content()
     {
         // Arrange
         var pptx = StreamOf("001.pptx");
@@ -297,19 +297,18 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    public void AddAudio_adds_Audio_shape_WIP()
+    public void AddAudio_adds_audio_shape_with_WAVE_content()
     {
         // Arrange
-        var pptx = GetInputStream("001.pptx");
-        var wav = GetInputStream("test-wav.wav");
-        var pres = SCPresentation.Open(pptx);
+        var wav = StreamOf("test-wav.wav");
+        var pres = new SCPresentation(StreamOf("001.pptx"));
         var shapes = pres.Slides[1].Shapes;
 
         // Act
         shapes.AddAudio(300, 100, wav, SCAudioType.WAVE);
         
         // Assert
-        var addedAudio = pres.Slides[1].Shapes.OfType<IAudioShape>().Last();
+        var addedAudio = pres.Slides[1].Shapes.OfType<IMediaShape>().Last();
         addedAudio.X.Should().Be(300);
     }
 

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using ShapeCrawler.Shared;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
@@ -14,12 +15,14 @@ public interface ISlideShapes : IReadOnlyShapeCollection
     void Add(IShape shape);
 
     /// <summary>
-    ///     Adds a new audio from stream.
+    ///     Adds a new audio shape.
     /// </summary>
-    /// <param name="xPixel">The X coordinate for the left side of the shape.</param>
-    /// <param name="yPixels">The Y coordinate for the left side of the shape.</param>
-    /// <param name="mp3Stream">Audio stream data.</param>
-    void AddAudio(int xPixel, int yPixels, Stream mp3Stream);
+    void AddAudio(int xPixel, int yPixels, Stream content);
+    
+    /// <summary>
+    ///     Adds a new audio shape.
+    /// </summary>
+    void AddAudio(int xPixel, int yPixels, Stream content, SCAudioType type);
 
     /// <summary>
     ///     Adds a new video from stream.

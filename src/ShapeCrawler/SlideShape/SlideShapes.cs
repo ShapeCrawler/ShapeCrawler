@@ -56,14 +56,14 @@ internal sealed record SlideShapes : ISlideShapes
         }
     }
 
-    public void AddAudio(int xPixels, int yPixels, Stream mp3Stream)
+    public void AddAudio(int xPixels, int yPixels, Stream content)
     {
         var xEmu = UnitConverter.HorizontalPixelToEmu(xPixels);
         var yEmu = UnitConverter.VerticalPixelToEmu(yPixels);
         var sdkPresentationDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
         var mediaDataPart = sdkPresentationDocument.CreateMediaDataPart("audio/mpeg", ".mp3");
-        mp3Stream.Position = 0;
-        mediaDataPart.FeedData(mp3Stream);
+        content.Position = 0;
+        mediaDataPart.FeedData(content);
         var imageStream = Assembly.GetExecutingAssembly().GetStream("audio-image.png");
 
         var audioRef = this.sdkSlidePart.AddAudioReferenceRelationship(mediaDataPart);
@@ -99,6 +99,11 @@ internal sealed record SlideShapes : ISlideShapes
         var applicationNonVisualDrawingProps = nonVisualPictureProps.ApplicationNonVisualDrawingProperties!;
         applicationNonVisualDrawingProps.Append(audioFromFile);
         applicationNonVisualDrawingProps.Append(appNonVisualDrawingPropsExtensionList);
+    }
+
+    public void AddAudio(int xPixel, int yPixels, Stream content, SCAudioType type)
+    {
+        throw new NotImplementedException();
     }
 
     public void AddPicture(Stream imageStream)
