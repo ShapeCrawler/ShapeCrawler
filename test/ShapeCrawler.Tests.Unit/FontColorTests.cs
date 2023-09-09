@@ -15,7 +15,7 @@ public class FontColorTests : SCTest
         var colorFormat = shape.TextFrame!.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
-        colorFormat.ColorHex.Should().Be("FFFFFF");
+        colorFormat.Hex.Should().Be("FFFFFF");
     }
 
     [Test]
@@ -27,7 +27,7 @@ public class FontColorTests : SCTest
         var fontColor = titlePlaceholder.TextFrame.Paragraphs[0].Portions[0].Font!.Color;
 
         // Act-Assert
-        fontColor.ColorHex.Should().Be("000000");
+        fontColor.Hex.Should().Be("000000");
     }
 
     [Test]
@@ -38,7 +38,7 @@ public class FontColorTests : SCTest
         IFontColor colorFormat = nonPlaceholder.TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
-        colorFormat.ColorHex.Should().Be("FFFFFF");
+        colorFormat.Hex.Should().Be("FFFFFF");
     }
 
     [Test]
@@ -49,7 +49,7 @@ public class FontColorTests : SCTest
         IFontColor colorFormat = titlePlaceholder.TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
-        colorFormat.ColorHex.Should().Be("000000");
+        colorFormat.Hex.Should().Be("000000");
     }
 
     [Test]
@@ -61,7 +61,7 @@ public class FontColorTests : SCTest
         var fontColor = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert
-        fontColor.ColorHex.Should().Be("FF0000");
+        fontColor.Hex.Should().Be("FF0000");
     }
 
     [Test]
@@ -73,7 +73,7 @@ public class FontColorTests : SCTest
         var fontColor = nonPhAutoShape.TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act
-        var colorType = fontColor.ColorType;
+        var colorType = fontColor.Type;
 
         // Assert
         colorType.Should().Be(SCColorType.Theme);
@@ -88,7 +88,7 @@ public class FontColorTests : SCTest
         var fontColor = placeholder.TextFrame.Paragraphs[0].Portions[0].Font.Color;
 
         // Act
-        var colorType = fontColor.ColorType;
+        var colorType = fontColor.Type;
 
         // Assert
         colorType.Should().Be(SCColorType.RGB);
@@ -106,15 +106,15 @@ public class FontColorTests : SCTest
         var color = portionQuery.Get(pres).Font!.Color;
 
         // Act
-        color.SetColorByHex("#008000");
+        color.Update("#008000");
 
         // Assert
-        color.ColorHex.Should().Be("008000");
+        color.Hex.Should().Be("008000");
 
         pres.SaveAs(mStream);
         pres = new SCPresentation(mStream);
         color = portionQuery.Get(pres).Font!.Color;
-        color.ColorHex.Should().Be("008000");
+        color.Hex.Should().Be("008000");
     }
     
     [Test]
@@ -126,15 +126,15 @@ public class FontColorTests : SCTest
         var color = portionQuery.Get(pres).Font!.Color;
 
         // Act
-        color.SetColorByHex("#008000");
+        color.Update("#008000");
 
         // Assert
-        color.ColorHex.Should().Be("008000");
+        color.Hex.Should().Be("008000");
 
         pres.SaveAs(mStream);
         pres = new SCPresentation(mStream);
         color = portionQuery.Get(pres).Font!.Color;
-        color.ColorHex.Should().Be("008000");
+        color.Hex.Should().Be("008000");
     }
     
     [Test]
@@ -163,7 +163,7 @@ public class FontColorTests : SCTest
         var fontColor = portion.Font!.Color;
 
         // Act
-        var colorHex = fontColor.ColorHex;
+        var colorHex = fontColor.Hex;
 
         // Assert
         colorHex.Should().Be(expectedColorHex);

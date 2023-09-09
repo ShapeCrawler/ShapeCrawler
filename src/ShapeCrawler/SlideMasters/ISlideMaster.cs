@@ -31,7 +31,7 @@ public interface ISlideMaster
     /// <summary>
     ///     Gets collection of master shapes.
     /// </summary>
-    IReadOnlyShapeCollection Shapes => new MasterShapes(this);
+    IReadOnlyShapes Shapes => new MasterShapes(this);
 
     /// <summary>
     ///     Gets theme.
@@ -60,7 +60,7 @@ internal sealed class SlideMaster : ISlideMaster
     public IImage? Background => this.GetBackground();
 
     public IReadOnlyList<ISlideLayout> SlideLayouts => this.layouts.Value;
-    public IReadOnlyShapeCollection Shapes => new MasterShapes(this);
+    public IReadOnlyShapes Shapes => new MasterShapes(this);
 
     public ITheme Theme => this.GetTheme();
 

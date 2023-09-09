@@ -23,8 +23,5 @@ internal sealed record SdkAParagraph
         return level + 1;
     }
     
-    internal void UpdateIndentLevel(int level)
-    {
-        this.aParagraph.ParagraphProperties!.Level = new Int32Value(level - 1);
-    }
+    internal void UpdateIndentLevel(int level) => this.aParagraph.ParagraphProperties!.Level = new Int32Value(level - 1);
 }

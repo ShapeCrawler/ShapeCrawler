@@ -1,4 +1,5 @@
 // ReSharper disable InconsistentNaming
+// ReSharper disable CheckNamespace
 namespace ShapeCrawler;
 
 /// <summary>

@@ -11,7 +11,7 @@ internal record struct IndentFont
 
     internal A.LatinFont? ALatinFont { get; set; }
 
-    internal BooleanValue? IsBold { get; set; }
+    internal bool? IsBold { get; set; }
 
     internal BooleanValue? IsItalic { get; set; }
 

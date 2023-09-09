@@ -28,7 +28,7 @@ internal sealed record SlideGroupShape : IGroupShape, IRemoveable
         this.Fill = new SlideShapeFill(sdkSlidePart, sdkPGroupShape.Descendants<P.ShapeProperties>().First(), false);
     }
 
-    public IReadOnlyShapeCollection Shapes { get; }
+    public IReadOnlyShapes Shapes { get; }
 
     public int Width
     {

@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Colors;
 using ShapeCrawler.Fonts;
 using ShapeCrawler.Wrappers;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Drawing;
+namespace ShapeCrawler.Shapes;
 
 internal sealed class ReferencedShape
 {
@@ -97,7 +98,7 @@ internal sealed class ReferencedShape
 
         return null;
     }
-    
+
     internal SCColorType? ColorTypeOrNull()
     {
         var aParagraph = new SdkOpenXmlElement(this.aText).FirstAncestor<A.Paragraph>();
@@ -134,6 +135,47 @@ internal sealed class ReferencedShape
         return null;
     }
 
+    internal bool? FontBoldFlagOrNull()
+    {
+        var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
+        var indentLevel = new SdkAParagraph(aParagraph).IndentLevel();
+        var slidePShape = this.aText.Ancestors<P.Shape>().First();
+        var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+            .GetFirstChild<P.PlaceholderShape>();
+        if (slidePh == null)
+        {
+            return null;
+        }
+
+        var refLayoutPShapeOfSlide = this.ReferencedLayoutPShapeOf(slidePShape);
+        if (refLayoutPShapeOfSlide == null)
+        {
+            var refMasterPShape = this.ReferencedMasterPShapeOf(slidePShape);
+            var fonts = new IndentFonts(refMasterPShape!.TextBody!.ListStyle!);
+
+            return fonts.BoldFlag(indentLevel);
+        }
+
+        var layoutFonts = new IndentFonts(refLayoutPShapeOfSlide.TextBody!.ListStyle!);
+        var layoutIndentColorType = layoutFonts.FontOrNull(indentLevel);
+        if (layoutIndentColorType.HasValue)
+        {
+            return layoutIndentColorType.Value.IsBold;
+        }
+
+        var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOf(refLayoutPShapeOfSlide);
+        var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout!.TextBody!.ListStyle!);
+        var masterOfLayoutIndentColorType = masterFontsOfLayout.FontOrNull(indentLevel);
+        if (masterOfLayoutIndentColorType.HasValue)
+        {
+            return masterOfLayoutIndentColorType.Value.IsBold;
+        }
+
+        return null;
+    }
+
+    #endregion APIs
+
     /// <summary>
     ///     Tries to get color type from Referenced Master Placeholder of Slide Shape.
     /// </summary>
@@ -142,11 +184,9 @@ internal sealed class ReferencedShape
         var refMasterPShape = this.ReferencedMasterPShapeOf(slidePShape);
         var fonts = new IndentFonts(refMasterPShape!.TextBody!.ListStyle!);
         var colorType = fonts.ColorType(indentLevel);
-        
+
         return colorType;
     }
-
-    #endregion APIs
 
     /// <summary>
     ///     Tries to get referenced Placeholder Shape located on Slide Layout.
@@ -242,8 +282,10 @@ internal sealed class ReferencedShape
         return null;
     }
 
-    private static bool ReferencedPShape(IEnumerable<P.Shape> layoutPShapes, P.PlaceholderShape slidePh,
-        out P.Shape? shape)
+    private static bool ReferencedPShape(
+        IEnumerable<P.Shape> layoutPShapes, 
+        P.PlaceholderShape slidePh,
+        out P.Shape? referencedShape)
     {
         foreach (var layoutPShape in layoutPShapes)
         {
@@ -257,18 +299,14 @@ internal sealed class ReferencedShape
             if (slidePh.Index is not null && layoutPh.Index is not null &&
                 slidePh.Index == layoutPh.Index)
             {
-                {
-                    shape = layoutPShape;
-                    return true;
-                }
+                referencedShape = layoutPShape;
+                return true;
             }
 
             if (slidePh.Type == null || layoutPh.Type == null)
             {
-                {
-                    shape = layoutPShape;
-                    return true;
-                }
+                referencedShape = layoutPShape;
+                return true;
             }
 
             if (slidePh.Type == P.PlaceholderValues.Body &&
@@ -276,35 +314,23 @@ internal sealed class ReferencedShape
             {
                 if (slidePh.Index == layoutPh.Index)
                 {
-                    {
-                        shape = layoutPShape;
-                        return true;
-                    }
-                }
-            }
-
-            var slidePhType = slidePh.Type;
-            if (slidePh.Type == P.PlaceholderValues.CenteredTitle)
-            {
-                slidePhType = P.PlaceholderValues.Title;
-            }
-
-            var layoutPhType = layoutPh.Type;
-            if (layoutPh.Type == P.PlaceholderValues.CenteredTitle)
-            {
-                layoutPhType = P.PlaceholderValues.Title;
-            }
-
-            if (slidePhType.Equals(layoutPhType))
-            {
-                {
-                    shape = layoutPShape;
+                    referencedShape = layoutPShape;
                     return true;
                 }
             }
         }
+        
 
-        shape = null;
+        var byType = layoutPShapes.FirstOrDefault(layoutPShape =>
+            layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+                .GetFirstChild<P.PlaceholderShape>()?.Type == slidePh.Type);
+        if (byType != null)
+        {
+            referencedShape = byType;
+            return true;
+        }
+
+        referencedShape = null;
         return false;
     }
 }

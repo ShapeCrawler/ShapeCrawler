@@ -17,7 +17,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents collection of paragraph text portions.
 /// </summary>
-public interface IParagraphPortionCollection : IEnumerable<IParagraphPortion>
+public interface IParagraphPortions : IEnumerable<IParagraphPortion>
 {
     /// <summary>
     ///     Gets the number of series items in the collection.
@@ -50,9 +50,8 @@ public interface IParagraphPortionCollection : IEnumerable<IParagraphPortion>
     void Remove(IList<IParagraphPortion> portions);
 }
 
-internal sealed class SlideParagraphPortions : IParagraphPortionCollection
+internal sealed class SlideParagraphPortions : IParagraphPortions
 {
-    private readonly ResetableLazy<List<IParagraphPortion>> portions;
     private readonly SlidePart sdkSlidePart;
     private readonly A.Paragraph aParagraph;
 
@@ -60,30 +59,27 @@ internal sealed class SlideParagraphPortions : IParagraphPortionCollection
     {
         this.sdkSlidePart = sdkSlidePart;
         this.aParagraph = aParagraph;
-        this.portions = new ResetableLazy<List<IParagraphPortion>>(this.ParsePortions);
     }
     
-    public int Count => this.portions.Value.Count;
+    public int Count => this.Portions().Count;
 
-    public IParagraphPortion this[int index] => this.portions.Value[index];
+    public IParagraphPortion this[int index] => this.Portions()[index];
 
     public void AddText(string text)
     {
         if (text.Contains(Environment.NewLine))
         {
             throw new SCException(
-                $"Text can not contain New Line. Use {nameof(IParagraphPortionCollection.AddLineBreak)} to add Line Break.");
+                $"Text can not contain New Line. Use {nameof(IParagraphPortions.AddLineBreak)} to add Line Break.");
         }
         
         var lastARunOrABreak = this.aParagraph.LastOrDefault(p => p is A.Run or A.Break);
 
-        var textPortions = this.portions.Value.OfType<TextParagraphPortion>();
+        var textPortions = this.Portions().OfType<TextParagraphPortion>();
         var lastPortion = textPortions.Any() ? textPortions.Last() : null;
         var aTextParent = lastPortion?.AText.Parent ?? new ARunBuilder().Build();
 
         AddText(ref lastARunOrABreak, aTextParent, text, this.aParagraph);
-
-        this.portions.Reset();
     }
 
     public void AddLineBreak()
@@ -94,8 +90,6 @@ internal sealed class SlideParagraphPortions : IParagraphPortionCollection
     public void Remove(IParagraphPortion removingPortion)
     {
         removingPortion.Remove();
-
-        this.portions.Reset();
     }
 
     public void Remove(IList<IParagraphPortion> removingPortions)
@@ -106,15 +100,9 @@ internal sealed class SlideParagraphPortions : IParagraphPortionCollection
         }
     }
 
-    public IEnumerator<IParagraphPortion> GetEnumerator()
-    {
-        return this.portions.Value.GetEnumerator();
-    }
+    public IEnumerator<IParagraphPortion> GetEnumerator() => this.Portions().GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return this.GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
     
     internal void AddNewLine()
     {
@@ -137,7 +125,7 @@ internal sealed class SlideParagraphPortions : IParagraphPortionCollection
         }
     }
 
-    private List<IParagraphPortion> ParsePortions()
+    private List<IParagraphPortion> Portions()
     {
         var portions = new List<IParagraphPortion>();
         foreach (var paraChild in this.aParagraph.Elements())
@@ -156,7 +144,7 @@ internal sealed class SlideParagraphPortions : IParagraphPortionCollection
                 }
 
                 case A.Break aBreak:
-                    var lineBreak = new ParagraphLineBreak(aBreak, () => this.portions.Reset());
+                    var lineBreak = new ParagraphLineBreak(aBreak);
                     portions.Add(lineBreak);
                     break;
             }

@@ -8,7 +8,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.SlideShape;
 
-internal sealed class SlideGroupedShapes : IReadOnlyShapeCollection
+internal sealed class SlideGroupedShapes : IReadOnlyShapes
 {
     private readonly SlidePart sdkSlidePart;
     private readonly IEnumerable<OpenXmlCompositeElement> pGroupElements;
@@ -56,7 +56,7 @@ internal sealed class SlideGroupedShapes : IReadOnlyShapeCollection
         return (T)shape;
     }
 
-    T IReadOnlyShapeCollection.GetByName<T>(string shapeName)
+    T IReadOnlyShapes.GetByName<T>(string shapeName)
     {
         throw new System.NotImplementedException();
     }

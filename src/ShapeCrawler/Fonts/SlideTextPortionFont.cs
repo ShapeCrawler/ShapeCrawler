@@ -3,6 +3,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using ShapeCrawler.Wrappers;
@@ -49,6 +50,8 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
         this.sdkAText = new SdkSlideAText(sdkSlidePart, aText);
     }
 
+    #region Public APIs
+    
     public int Size
     {
         get => this.size.Size();
@@ -69,8 +72,8 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
 
     public bool IsBold
     {
-        get => this.GetBoldFlag();
-        set => this.SetBoldFlag(value);
+        get => this.ParseBoldFlag();
+        set => this.UpdateBoldFlag(value);
     }
 
     public bool IsItalic
@@ -118,6 +121,8 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
         get => this.GetOffsetEffect();
         set => this.SetOffset(value);
     }
+    
+    #endregion Public APIs
 
     private void SetOffset(int value)
     {
@@ -207,7 +212,7 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
         throw new Exception("TODO: implement");
     }
 
-    private bool GetBoldFlag()
+    private bool ParseBoldFlag()
     {
         var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
         if (aRunProperties == null)
@@ -220,10 +225,10 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
             return true;
         }
 
-        IndentFont phIndentFont = new();
-        if (phIndentFont.IsBold is not null)
+        bool? isFontBold = new ReferencedShape(this.sdkSlidePart, this.aText).FontBoldFlagOrNull();
+        if (isFontBold.HasValue)
         {
-            return phIndentFont.IsBold.Value;
+            return isFontBold.Value;
         }
 
         return false;
@@ -251,7 +256,7 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
         return false;
     }
 
-    private void SetBoldFlag(bool value)
+    private void UpdateBoldFlag(bool value)
     {
         var aRunPr = this.aText.Parent!.GetFirstChild<A.RunProperties>();
         if (aRunPr != null)

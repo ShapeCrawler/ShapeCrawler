@@ -1,11 +1,15 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Colors;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Wrappers;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Drawing;
+// ReSharper disable once CheckNamespace
+namespace ShapeCrawler;
 
 internal sealed class SlideFontColor : IFontColor
 {
@@ -20,11 +24,11 @@ internal sealed class SlideFontColor : IFontColor
 
     #region Public APIs
     
-    public SCColorType ColorType => this.ParseColorType();
+    public SCColorType Type => this.ParseType();
 
-    public string ColorHex => this.ParseColorHex();
+    public string Hex => this.ParseHex();
 
-    public void SetColorByHex(string hex)
+    public void Update(string hex)
     {
         var aTextContainer = this.aText.Parent!;
         var aRunProperties = aTextContainer.GetFirstChild<A.RunProperties>() ?? aTextContainer.AddRunProperties();
@@ -42,7 +46,7 @@ internal sealed class SlideFontColor : IFontColor
     
     #endregion Public APIs
 
-    private string ParseColorHex()
+    private string ParseHex()
     {
         var sdkPSlideMaster = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster;
         var sdkASolidFill = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.SDKASolidFill();
@@ -67,8 +71,8 @@ internal sealed class SlideFontColor : IFontColor
 
         // From Shape
         var pShape = new SdkOpenXmlElement(this.aText).FirstAncestor<P.Shape>();
-        var sdkSlidePShapeWrap = new SdkSlidePShape(new PresentationColor(this.sdkSlidePart), pShape);
-        string? shapeFontColorHex = sdkSlidePShapeWrap.FontColorHexOrNull();
+        var sdkSlidePShapeWrap = new ShapeColor(new PresentationColor(this.sdkSlidePart), pShape);
+        string? shapeFontColorHex = sdkSlidePShapeWrap.HexOrNull();
         if (shapeFontColorHex != null)
         {
             return shapeFontColorHex;
@@ -105,7 +109,7 @@ internal sealed class SlideFontColor : IFontColor
         return colorHex;
     }
 
-    private SCColorType ParseColorType()
+    private SCColorType ParseType()
     {
         var aSolidFill = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.SDKASolidFill();
         if (aSolidFill != null)
@@ -126,6 +130,15 @@ internal sealed class SlideFontColor : IFontColor
             {
                 return textBodyColor.colorType;
             }
+        }
+        
+        // From Shape
+        // var pShape = new SdkOpenXmlElement(this.aText).FirstAncestor<P.Shape>();
+        var shapeColor = new ShapeColor(this.sdkSlidePart, this.aText);
+        SCColorType? type = shapeColor.TypeOrNull();
+        if (type.HasValue)
+        {
+            return (SCColorType)type;
         }
         
         // From Referenced Shape

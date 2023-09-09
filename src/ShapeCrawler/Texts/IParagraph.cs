@@ -24,7 +24,7 @@ public interface IParagraph
     /// <summary>
     ///     Gets collection of paragraph portions.
     /// </summary>
-    IParagraphPortionCollection Portions { get; }
+    IParagraphPortions Portions { get; }
 
     /// <summary>
     ///     Gets paragraph bullet if bullet exist, otherwise <see langword="null"/>.
@@ -85,7 +85,7 @@ internal sealed class SlideParagraph : IParagraph
         set => this.SetText(value);
     }
 
-    public IParagraphPortionCollection Portions => this.portions.Value;
+    public IParagraphPortions Portions => this.portions.Value;
 
     public SCBullet Bullet => this.bullet.Value;
 
@@ -128,7 +128,7 @@ internal sealed class SlideParagraph : IParagraph
 
     private ISpacing GetSpacing()
     {
-        return new SCSpacing(this, this.AParagraph);
+        return new Spacing(this, this.AParagraph);
     }
 
     private SCBullet GetBullet()

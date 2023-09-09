@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ShapeCrawler.SlideMasters;
 
-internal sealed record MasterShapes : IReadOnlyShapeCollection
+internal sealed record MasterShapes : IReadOnlyShapes
 {
     public MasterShapes(ISlideMaster parentSlideMaster)
     {

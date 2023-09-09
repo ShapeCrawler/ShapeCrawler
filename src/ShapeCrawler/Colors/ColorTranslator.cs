@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using SkiaSharp;
 
-namespace ShapeCrawler.Drawing;
+namespace ShapeCrawler.Colors;
 
 internal static class ColorTranslator
 {

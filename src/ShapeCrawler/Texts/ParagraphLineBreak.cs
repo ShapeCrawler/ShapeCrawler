@@ -9,13 +9,10 @@ internal sealed class ParagraphLineBreak : IParagraphPortion
 {
     private readonly A.Break aBreak;
     
-    internal ParagraphLineBreak(A.Break aBreak, Action onRemovedHandler)
+    internal ParagraphLineBreak(A.Break aBreak)
     {
         this.aBreak = aBreak;
-        this.Removed += onRemovedHandler;
     }
-    
-    private event Action Removed;
 
     public string? Text { get; set; } = Environment.NewLine;
 
@@ -36,6 +33,5 @@ internal sealed class ParagraphLineBreak : IParagraphPortion
     public void Remove()
     {
         this.aBreak.Remove();
-        this.Removed?.Invoke();
     }
 }

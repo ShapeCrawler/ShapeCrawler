@@ -4,7 +4,7 @@ using DocumentFormat.OpenXml.Packaging;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed record LayoutShapes : IReadOnlyShapeCollection
+internal sealed record LayoutShapes : IReadOnlyShapes
 {
     private readonly SlideLayoutPart sdkSlideLayoutPart;
 

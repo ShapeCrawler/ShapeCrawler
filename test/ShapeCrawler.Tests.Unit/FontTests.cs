@@ -22,7 +22,8 @@ public class FontTests : SCTest
         var pres = new SCPresentation();
         var slide = pres.Slides[0];
         slide.Shapes.AddRectangle(10, 10, 10, 10);
-        var rectangle = (IShape)slide.Shapes.Last();
+        var rectangle = slide.Shapes.Last();
+        rectangle.TextFrame.Paragraphs[0].Portions.AddText("test");
         var font = rectangle.TextFrame!.Paragraphs[0].Portions[0].Font;
 
         // Act
@@ -78,11 +79,12 @@ public class FontTests : SCTest
     public void IsBold_GetterReturnsTrue_WhenFontOfPlaceholderTextIsBold()
     {
         // Arrange
-        IShape placeholderAutoShape = (IShape)new SCPresentation(StreamOf("020.pptx")).Slides[1].Shapes.First(sp => sp.Id == 6);
-        IParagraphPortion portion = placeholderAutoShape.TextFrame.Paragraphs[0].Portions[0];
+        var pres = new SCPresentation(StreamOf("020.pptx"));
+        var placeholderAutoShape = pres.Slides[1].Shapes.GetById<IShape>(6);
+        var portion = placeholderAutoShape.TextFrame.Paragraphs[0].Portions[0];
 
         // Act
-        bool isBold = portion.Font.IsBold;
+        var isBold = portion.Font.IsBold;
 
         // Assert
         isBold.Should().BeTrue();

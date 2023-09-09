@@ -26,65 +26,7 @@ internal sealed class ExcelBook
     internal byte[] BinaryData => this.GetByteArray();
 
     internal Lazy<SpreadsheetDocument> SpreadsheetDocument { get; }
-
-    internal X.Cell GetXCell(string sheetName, string cellAddress)
-    {
-        var chartSheet = this.WorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
-        var worksheetPart = (WorksheetPart)this.WorkbookPart.GetPartById(chartSheet.Id!);
-        var sheetXCells = worksheetPart.Worksheet.Descendants<X.Cell>();
-
-        return sheetXCells.First(xCell => xCell.CellReference == cellAddress);
-    }
-
-    internal void UpdateCell(string sheetName, string cellReference, double value)
-    {
-        var xCell = this.GetXCellOrDefault(sheetName, cellReference);
-        if (xCell != null)
-        {
-            xCell.DataType = new EnumValue<X.CellValues>(X.CellValues.Number);
-            xCell.CellValue = new X.CellValue(value);
-        }
-        else
-        {
-            var chartSheet = this.WorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
-            var worksheetPart = (WorksheetPart)this.WorkbookPart.GetPartById(chartSheet.Id!);
-            var worksheet = worksheetPart.Worksheet;
-            var sheetData = worksheet.Elements<X.SheetData>().First();
-            var rowNumberStr = Regex.Match(cellReference, @"\d+").Value;
-            var rowNumber = int.Parse(rowNumberStr, NumberStyles.Number, NumberFormatInfo.InvariantInfo);
-
-            var row = sheetData.Elements<X.Row>().First(r => r.RowIndex! == rowNumber);
-            var newXCell = new X.Cell
-            {
-                CellReference = cellReference
-            };
-            newXCell.DataType = new EnumValue<X.CellValues>(X.CellValues.Number);
-            newXCell.CellValue = new X.CellValue(value);
-
-            // Cells must be in sequential order according to CellReference. Determine where to insert the new cell.
-            X.Cell? refCell = null;
-            foreach (var cell in row.Elements<X.Cell>())
-            {
-                if (string.Compare(cell.CellReference!.Value, cellReference, true, CultureInfo.InvariantCulture) > 0)
-                {
-                    refCell = cell;
-                    break;
-                }
-            }
-
-            row.InsertBefore(newXCell, refCell);
-        }
-    }
-
-    private X.Cell? GetXCellOrDefault(string sheetName, string cellAddress)
-    {
-        var chartSheet = this.WorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
-        var worksheetPart = (WorksheetPart)this.WorkbookPart.GetPartById(chartSheet.Id!);
-        var sheetXCells = worksheetPart.Worksheet.Descendants<X.Cell>();
-
-        return sheetXCells.FirstOrDefault(xCell => xCell.CellReference == cellAddress);
-    }
-
+    
     private SpreadsheetDocument GetSpreadsheetDocument()
     {
         this.embeddedPackagePartStream = this.sdkEmbeddedPackagePart.GetStream();

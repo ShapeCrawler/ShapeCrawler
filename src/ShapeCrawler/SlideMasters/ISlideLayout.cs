@@ -25,7 +25,7 @@ public interface ISlideLayout
     /// <summary>
     ///     Gets layout shape collection.
     /// </summary>
-    IReadOnlyShapeCollection Shapes { get; }
+    IReadOnlyShapes Shapes { get; }
 
     ISlideMaster SlideMaster { get; }
 }
@@ -89,7 +89,7 @@ internal sealed class SlideLayout : ISlideLayout
 
     public string Name => this.GetName();
 
-    public IReadOnlyShapeCollection Shapes { get; }
+    public IReadOnlyShapes Shapes { get; }
 
     public ISlideMaster SlideMaster { get; }
 

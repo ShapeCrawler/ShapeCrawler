@@ -11,15 +11,15 @@ public interface IFontColor
     /// <summary>
     ///     Gets color type.
     /// </summary>
-    SCColorType ColorType { get; }
+    SCColorType Type { get; }
 
     /// <summary>
     ///     Gets color hexadecimal representation.
     /// </summary>
-    string ColorHex { get; }
+    string Hex { get; }
 
     /// <summary>
-    ///     Sets solid color by its hexadecimal representation.
+    ///     Updates color with specified hexadecimal representation.
     /// </summary>
-    void SetColorByHex(string hex);
+    void Update(string hex);
 }

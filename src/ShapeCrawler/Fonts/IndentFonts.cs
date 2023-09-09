@@ -153,5 +153,13 @@ internal sealed class IndentFonts
         return null;
     }
     
+    
+    internal bool? BoldFlag(int indentLevel)
+    {
+        var indentFont = this.FontOrNull(indentLevel);
+        
+        return indentFont?.IsBold;
+    }
+    
     #endregion APIs
 }

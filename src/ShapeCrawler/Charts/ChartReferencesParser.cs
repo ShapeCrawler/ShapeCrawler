@@ -40,20 +40,7 @@ internal static class ChartReferencesParser
 
         return pointValues;
     }
-
-    internal static string GetSingleString(C.StringReference stringReference, SlideChart slideSlideChart)
-    {
-        string fromCache = stringReference.StringCache?.GetFirstChild<C.StringPoint>() !.Single().InnerText!;
-        if (fromCache != null)
-        {
-            return fromCache;
-        }
-
-        List<X.Cell> xCell = GetXCellsByFormula(stringReference.Formula!, slideSlideChart);
-
-        return xCell.Single().InnerText;
-    }
-
+    
     /// <summary>
     ///     Gets cell values.
     /// </summary>

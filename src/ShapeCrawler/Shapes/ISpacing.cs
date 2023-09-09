@@ -19,12 +19,12 @@ public interface ISpacing
     double? LineSpacingPoints { get; }
 }
 
-internal sealed class SCSpacing : ISpacing
+internal sealed class Spacing : ISpacing
 {
     private readonly SlideParagraph paragraph;
     private readonly A.Paragraph aParagraph;
 
-    public SCSpacing(SlideParagraph paragraph, A.Paragraph aParagraph)
+    public Spacing(SlideParagraph paragraph, A.Paragraph aParagraph)
     {
         this.paragraph = paragraph;
         this.aParagraph = aParagraph;

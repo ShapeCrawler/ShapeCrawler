@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace ShapeCrawler.Drawing;
+// ReSharper disable once CheckNamespace
+namespace ShapeCrawler;
 
 /// <summary>
 ///     Color.
