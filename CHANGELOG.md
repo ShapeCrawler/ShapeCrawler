@@ -1,7 +1,7 @@
 # Changelog  
 
-## Version 0.49.0 - Unreleased
-🍀Added new `enum SCAudioType` to be able to add audio shape with different types [#579](https://github.com/ShapeCrawler/ShapeCrawler/issues/579)  
+## Version 0.49.0 - 2023-09-12
+🍀Added new `SCAudioType` to be able to add audio shape with different types [#579](https://github.com/ShapeCrawler/ShapeCrawler/issues/579)  
 🐞Fixed an issue with Slide Background updating [#577](https://github.com/ShapeCrawler/ShapeCrawler/issues/577)  
 
 ## Version 0.48.0 - 2023-08-19
