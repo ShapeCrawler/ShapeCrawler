@@ -135,8 +135,7 @@ public class ParagraphTests : SCTest
     public void Paragraph_Text_Setter_updates_paragraph_text_and_resize_shape()
     {
         // Arrange
-        var pptxStream = StreamOf("autoshape-case003.pptx");
-        var pres = new SCPresentation(pptxStream);
+        var pres = new SCPresentation(StreamOf("autoshape-case003.pptx"));
         var shape = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 4");
         var paragraph = shape.TextFrame.Paragraphs[0];
             

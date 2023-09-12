@@ -10,7 +10,7 @@ internal sealed record ShapeSize
 {
     private readonly Lazy<A.Extents> aExtents;
 
-    internal ShapeSize(OpenXmlCompositeElement sdkPShapeTreeElement)
+    internal ShapeSize(OpenXmlElement sdkPShapeTreeElement)
     {
         this.aExtents = new Lazy<A.Extents>(() => sdkPShapeTreeElement.Descendants<A.Extents>().First());
     }

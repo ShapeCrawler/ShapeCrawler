@@ -17,24 +17,83 @@ internal sealed record TextRootSlideShape : IRootSlideShape
 {
     private readonly SlidePart sdkSlidePart;
     private readonly IRootSlideShape rootSlideShape;
-    private readonly P.TextBody sdkPTextBody;
+    private readonly P.TextBody pTextBody;
     private readonly Lazy<TextFrame> textFrame;
 
     // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi.
     // 96/72=1.4
     private const double Scale = 1.4;
 
-    internal TextRootSlideShape(SlidePart sdkSlidePart, IRootSlideShape rootSlideShape, P.TextBody sdkPTextBody)
+    internal TextRootSlideShape(SlidePart sdkSlidePart, IRootSlideShape rootSlideShape, P.TextBody pTextBody)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.rootSlideShape = rootSlideShape;
-        this.sdkPTextBody = sdkPTextBody;
+        this.pTextBody = pTextBody;
         this.textFrame = new Lazy<TextFrame>(this.ParseTextFrame);
     }
 
-    private TextFrame ParseTextFrame()
+    public bool IsTextHolder => true;
+
+    public ITextFrame TextFrame => this.textFrame.Value;
+    
+    #region Slide Properties
+
+    public int X
     {
-        var newTextFrame = new TextFrame(this.sdkSlidePart, this.sdkPTextBody);
+        get => this.rootSlideShape.X; 
+        set => this.rootSlideShape.X = value;
+    }
+    public int Y 
+    { 
+        get => this.rootSlideShape.Y;
+        set => this.rootSlideShape.Y = value;
+    }
+
+    public int Width
+    {
+        get => this.rootSlideShape.Width; 
+        set => this.rootSlideShape.Width = value;
+    }
+
+    public int Height
+    {
+        get => this.rootSlideShape.Height; 
+        set => this.rootSlideShape.Height = value;
+    }
+    public int Id => this.rootSlideShape.Id;
+    public string Name => this.rootSlideShape.Name;
+    public bool Hidden => this.rootSlideShape.Hidden;
+
+    public bool IsPlaceholder => false;
+
+    public IPlaceholder Placeholder => throw new SCException(
+        $"Text shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} property to check if the shape is a placeholder.");
+    public SCGeometry GeometryType => this.rootSlideShape.GeometryType;
+
+    public string? CustomData
+    {
+        get => this.rootSlideShape.CustomData; 
+        set => this.rootSlideShape.CustomData = value;
+    }
+    public SCShapeType ShapeType => this.rootSlideShape.ShapeType;
+    public bool HasOutline => this.rootSlideShape.HasOutline;
+    public IShapeOutline Outline => this.rootSlideShape.Outline;
+    public IShapeFill Fill => this.rootSlideShape.Fill;
+    public double Rotation => this.rootSlideShape.Rotation;
+    public ITable AsTable() => throw new SCException(
+        $"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
+
+    public IMediaShape AsMedia() =>
+        throw new SCException(
+            $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
+
+    public void Duplicate() => this.rootSlideShape.Duplicate();
+    
+    #endregion Slide Properties
+    
+        private TextFrame ParseTextFrame()
+    {
+        var newTextFrame = new TextFrame(this.sdkSlidePart, this.pTextBody);
         newTextFrame.TextChanged += this.ResizeShape;
 
         return newTextFrame;
@@ -48,7 +107,7 @@ internal sealed record TextRootSlideShape : IRootSlideShape
         }
 
         var baseParagraph = this.TextFrame.Paragraphs.First();
-        var popularPortion = baseParagraph.Portions.OfType<TextParagraphPortion>().GroupBy(p => p.Font.Size)
+        var popularPortion = baseParagraph.Portions.OfType<SlideTextParagraphPortion>().GroupBy(p => p.Font.Size)
             .OrderByDescending(x => x.Count())
             .First().First();
         var font = popularPortion.Font;
@@ -114,38 +173,4 @@ internal sealed record TextRootSlideShape : IRootSlideShape
             this.Width = (int)(widthInPixels * Scale) + lMarginPixel + rMarginPixel;
         }
     }
-
-    public bool IsTextHolder => true;
-
-    public ITextFrame TextFrame => this.textFrame.Value;
-    
-    #region Slide Properties
-    public int X { get; set; }
-    public int Y { get; set; }
-    public int Width { get; set; }
-    public int Height { get; set; }
-    public int Id => this.rootSlideShape.Id;
-    public string Name => this.rootSlideShape.Name;
-    public bool Hidden => this.rootSlideShape.Hidden;
-
-    public bool IsPlaceholder => false;
-
-    public IPlaceholder Placeholder => throw new SCException(
-        $"Text shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} property to check if the shape is a placeholder.");
-    public SCGeometry GeometryType { get; }
-    public string? CustomData { get; set; }
-    public SCShapeType ShapeType { get; }
-    public bool HasOutline { get; }
-    public IShapeOutline Outline => this.rootSlideShape.Outline;
-    public IShapeFill Fill => this.rootSlideShape.Fill;
-    public double Rotation { get; }
-    public ITable AsTable() => throw new SCException(
-        $"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
-
-    public IMediaShape AsMedia() =>
-        throw new SCException(
-            $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
-
-    public void Duplicate() => this.rootSlideShape.Duplicate();
-    #endregion Slide Properties
 }

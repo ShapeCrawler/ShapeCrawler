@@ -10,7 +10,7 @@ internal sealed record Position
 {
     private readonly Lazy<A.Offset> aOffset;
 
-    internal Position(OpenXmlCompositeElement pShapeTreeElement)
+    internal Position(OpenXmlElement pShapeTreeElement)
     {
         this.aOffset = new Lazy<A.Offset>(() => pShapeTreeElement.Descendants<A.Offset>().First());
     }

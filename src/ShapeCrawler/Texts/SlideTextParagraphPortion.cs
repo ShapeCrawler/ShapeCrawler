@@ -11,13 +11,13 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class TextParagraphPortion : IParagraphPortion
+internal sealed class SlideTextParagraphPortion : IParagraphPortion
 {
     private readonly ResetableLazy<SlideTextPortionFont> font;
     private readonly SlidePart sdkSlidePart;
     private readonly A.Run aRun;
 
-    internal TextParagraphPortion(SlidePart sdkSlidePart, A.Run aRun)
+    internal SlideTextParagraphPortion(SlidePart sdkSlidePart, A.Run aRun)
     {
         this.AText = aRun.Text!;
         this.sdkSlidePart = sdkSlidePart;

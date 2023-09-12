@@ -75,7 +75,7 @@ internal sealed class SlideParagraphPortions : IParagraphPortions
         
         var lastARunOrABreak = this.aParagraph.LastOrDefault(p => p is A.Run or A.Break);
 
-        var textPortions = this.Portions().OfType<TextParagraphPortion>();
+        var textPortions = this.Portions().OfType<SlideTextParagraphPortion>();
         var lastPortion = textPortions.Any() ? textPortions.Last() : null;
         var aTextParent = lastPortion?.AText.Parent ?? new ARunBuilder().Build();
 
@@ -133,7 +133,7 @@ internal sealed class SlideParagraphPortions : IParagraphPortions
             switch (paraChild)
             {
                 case A.Run aRun:
-                    var runPortion = new TextParagraphPortion(this.sdkSlidePart, aRun); 
+                    var runPortion = new SlideTextParagraphPortion(this.sdkSlidePart, aRun); 
                     portions.Add(runPortion);
                     break;
                 case A.Field aField:

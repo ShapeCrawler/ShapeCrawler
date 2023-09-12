@@ -8,12 +8,12 @@ namespace ShapeCrawler.Shapes;
 
 internal sealed record Shape
 {
-    private readonly OpenXmlCompositeElement sdkPShapeTreeElement;
+    private readonly OpenXmlElement sdkPShapeTreeElement;
     private readonly Position position;
     private readonly ShapeSize size;
     private const string customDataElementName = "ctd";
 
-    internal Shape(OpenXmlCompositeElement sdkPShapeTreeElement)
+    internal Shape(OpenXmlElement sdkPShapeTreeElement)
     {
         this.sdkPShapeTreeElement = sdkPShapeTreeElement;
         this.position = new Position(this.sdkPShapeTreeElement);
