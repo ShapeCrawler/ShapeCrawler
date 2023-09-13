@@ -258,7 +258,7 @@ internal sealed class SlideParagraph : IParagraph
         // We should raise the shape up by the amount which is half of the increased offset.
         // PowerPoint does the same thing.
         var yOffset = (requiredHeight - currentBlockHeight) / 2;
-        shape.UpdateY((int)yOffset);
+        shape.UpdateY((int)(shape.Y() - yOffset));
     }
 
     private void SetAlignment(SCTextAlignment alignmentValue)

@@ -17,7 +17,7 @@ internal sealed record ShapeSize
 
     internal int Height() => UnitConverter.VerticalEmuToPixel(this.aExtents.Value.Cy!);
 
-    internal void UpdateHeight(int heightPixels) => this.aExtents.Value.Cx = UnitConverter.VerticalPixelToEmu(heightPixels);
+    internal void UpdateHeight(int heightPixels) => this.aExtents.Value.Cy = UnitConverter.VerticalPixelToEmu(heightPixels);
     internal int Width() => UnitConverter.HorizontalEmuToPixel(this.aExtents.Value.Cx!);
 
     internal void UpdateWidth(int widthPixels) => this.aExtents.Value.Cx = UnitConverter.HorizontalPixelToEmu(widthPixels);

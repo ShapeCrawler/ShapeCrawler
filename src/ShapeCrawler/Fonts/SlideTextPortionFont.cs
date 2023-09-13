@@ -15,7 +15,6 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
 {
     private readonly A.Text aText;
     private readonly Lazy<SlideFontColor> fontColor;
-    private readonly ResetableLazy<A.LatinFont> latinFont;
     private readonly IFontSize size;
     private readonly ThemeFontScheme themeFontScheme;
     private readonly SlidePart sdkSlidePart;
@@ -43,7 +42,6 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
     {
         this.sdkSlidePart = sdkSlidePart;
         this.aText = aText;
-        this.latinFont = new ResetableLazy<A.LatinFont>(this.ParseALatinFont);
         this.fontColor = new Lazy<SlideFontColor>(() => new SlideFontColor(this.sdkSlidePart, this.aText));
         this.size = size;
         this.themeFontScheme = themeFontScheme;
@@ -61,7 +59,7 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
     public string? LatinName
     {
         get => this.ParseLatinName();
-        set => this.SetLatinName(value!);
+        set => this.UpdateLatinName(value!);
     }
 
     public string EastAsianName
@@ -167,12 +165,12 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
 
     private string ParseLatinName()
     {
-        if (this.latinFont.Value.Typeface == "+mj-lt")
+        if (this.ALatinFont().Typeface == "+mj-lt")
         {
             return this.themeFontScheme.MajorLatinFont();
         }
 
-        return this.latinFont.Value.Typeface!;
+        return this.ALatinFont().Typeface!;
     }
 
     private string ParseEastAsianName()
@@ -199,7 +197,7 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
         throw new Exception("TODO: implement");
     }
 
-    private A.LatinFont ParseALatinFont()
+    private A.LatinFont ALatinFont()
     {
         var aRunProperties = this.aText.Parent!.GetFirstChild<A.RunProperties>();
         var aLatinFont = aRunProperties?.GetFirstChild<A.LatinFont>();
@@ -209,7 +207,13 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
             return aLatinFont;
         }
 
-        throw new Exception("TODO: implement");
+        aLatinFont = new ReferencedShape(this.sdkSlidePart, this.aText).ALatinFontOrNull();
+        if (aLatinFont != null)
+        {
+            return aLatinFont;
+        }
+        
+        return new ThemeFontScheme(this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!.FontScheme!).MinorLatinFont();
     }
 
     private bool ParseBoldFlag()
@@ -309,16 +313,5 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
         }
     }
 
-    private void SetLatinName(string latinFont)
-    {
-        var aLatinFont = this.latinFont.Value;
-        aLatinFont.Typeface = latinFont;
-        this.latinFont.Reset();
-    }
-
-    private void UpdateEastAsianName(string eastAsianFont)
-    {
-        var aEastAsianFont = this.AEastAsianFont();
-        aEastAsianFont.Typeface = eastAsianFont;
-    }
+    private void UpdateLatinName(string latinFont) => this.ALatinFont().Typeface = latinFont;
 }

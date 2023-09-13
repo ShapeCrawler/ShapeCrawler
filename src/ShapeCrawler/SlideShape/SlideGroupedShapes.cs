@@ -56,10 +56,7 @@ internal sealed class SlideGroupedShapes : IReadOnlyShapes
         return (T)shape;
     }
 
-    T IReadOnlyShapes.GetByName<T>(string shapeName)
-    {
-        throw new System.NotImplementedException();
-    }
+    T IReadOnlyShapes.GetByName<T>(string shapeName) => (T)this.groupedShapes.Value.First(shape => shape.Name == shapeName);
 
     public IShape GetByName(string shapeName)
     {

@@ -144,7 +144,7 @@ public class ParagraphTests : SCTest
 
         // Assert
         shape.Height.Should().Be(46);
-        shape.Y.Should().Be(148);
+        shape.Y.Should().Be(147);
     }
 
     [Test]
@@ -169,14 +169,12 @@ public class ParagraphTests : SCTest
     public void Text_Setter_sets_paragraph_text_for_grouped_shape()
     {
         // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case003.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new SCPresentation(StreamOf("autoshape-case003.pptx"));
         var shape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IShape>("Shape 1");
-        var paragraph = shape.TextFrame!.Paragraphs[0];
+        var paragraph = shape.TextFrame.Paragraphs[0];
         
         // Act
         paragraph.Text = $"Safety{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}";
-        // SaveResult(pres);
         
         // Assert
         paragraph.Text.Should().BeEquivalentTo($"Safety{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}");

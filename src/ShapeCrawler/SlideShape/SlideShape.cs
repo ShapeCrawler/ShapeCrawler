@@ -132,8 +132,17 @@ internal sealed record SlideShape : IShape, IRemoveable
         return new SlideShapeFill(this.sdkSlidePart, this.pShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
     }
 
-    public int X { get; set; }
-    public int Y { get; set; }
+    public int X
+    {
+        get => this.shape.X();
+        set => this.shape.UpdateX(value);
+    }
+
+    public int Y
+    {
+        get => this.shape.Y();
+        set => this.shape.UpdateY(value);
+    }
 
     internal void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames,
         SlidePart targetSdkSlidePart)

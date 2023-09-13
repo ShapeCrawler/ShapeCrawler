@@ -68,6 +68,8 @@ internal sealed class ThemeFontScheme : IThemeFontScheme
     
     internal string MinorEastAsianFont() => this.aFontScheme.MinorFont!.EastAsianFont!.Typeface!;
     
+    internal A.LatinFont MinorLatinFont() => this.aFontScheme.MinorFont!.LatinFont!;
+    
     internal void UpdateMinorEastAsianFont(string eastAsianFont) => this.aFontScheme.MinorFont!.EastAsianFont!.Typeface = eastAsianFont;
 
     private string GetHeadLatinFont() => this.aFontScheme.MajorFont!.LatinFont!.Typeface!.Value!;

@@ -18,17 +18,17 @@ namespace ShapeCrawler.SlideShape;
 
 internal sealed record RootSlideShape : IRootSlideShape
 {
-    private readonly P.Shape sdkPShape;
+    private readonly P.Shape pShape;
     private readonly IShape shape;
     private readonly SlidePart sdkSlidePart;
 
     internal RootSlideShape(
         SlidePart sdkSlidePart,
-        P.Shape sdkPShape,
+        P.Shape pShape,
         IShape shape)
     {
         this.sdkSlidePart = sdkSlidePart;
-        this.sdkPShape = sdkPShape;
+        this.pShape = pShape;
         this.shape = shape;
     }
 
@@ -74,9 +74,9 @@ internal sealed record RootSlideShape : IRootSlideShape
 
     public void Duplicate()
     {
-        var pShapeTree = (P.ShapeTree)this.sdkPShape.Parent!;
+        var pShapeTree = (P.ShapeTree)this.pShape.Parent!;
         var autoShapes = new SlideAutoShapes(pShapeTree);
-        autoShapes.Add(this.sdkPShape);
+        autoShapes.Add(this.pShape);
     }
 
     internal void Draw(SKCanvas slideCanvas)
@@ -116,17 +116,26 @@ internal sealed record RootSlideShape : IRootSlideShape
 
     private SlideShapeFill ParseFill()
     {
-        var useBgFill = this.sdkPShape.UseBackgroundFill;
-        return new SlideShapeFill(this.sdkSlidePart, this.sdkPShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
+        var useBgFill = this.pShape.UseBackgroundFill;
+        return new SlideShapeFill(this.sdkSlidePart, this.pShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
     }
 
-    public int X { get; set; }
-    public int Y { get; set; }
+    public int X
+    {
+        get => this.shape.X; 
+        set => this.shape.X = value;
+    }
+
+    public int Y
+    {
+        get => this.shape.Y; 
+        set => this.shape.Y = value;
+    }
 
     internal void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames,
         SlidePart targetSdkSlidePart)
     {
-        var copy = this.sdkPShape.CloneNode(true);
+        var copy = this.pShape.CloneNode(true);
         copy.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
         pShapeTree.AppendChild(copy);
         var copyName = copy.GetNonVisualDrawingProperties().Name!.Value!;

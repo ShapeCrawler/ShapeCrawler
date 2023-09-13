@@ -153,7 +153,7 @@ internal sealed class ReferencedShape
             var refMasterPShape = this.ReferencedMasterPShapeOf(slidePShape);
             var fonts = new IndentFonts(refMasterPShape!.TextBody!.ListStyle!);
 
-            return fonts.BoldFlag(indentLevel);
+            return fonts.BoldFlagOrNull(indentLevel);
         }
 
         var layoutFonts = new IndentFonts(refLayoutPShapeOfSlide.TextBody!.ListStyle!);
@@ -169,6 +169,45 @@ internal sealed class ReferencedShape
         if (masterOfLayoutIndentColorType.HasValue)
         {
             return masterOfLayoutIndentColorType.Value.IsBold;
+        }
+
+        return null;
+    }
+    
+    internal A.LatinFont? ALatinFontOrNull()
+    {
+        var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
+        var indentLevel = new SdkAParagraph(aParagraph).IndentLevel();
+        var slidePShape = this.aText.Ancestors<P.Shape>().First();
+        var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+            .GetFirstChild<P.PlaceholderShape>();
+        if (slidePh == null)
+        {
+            return null;
+        }
+
+        var refLayoutPShapeOfSlide = this.ReferencedLayoutPShapeOf(slidePShape);
+        if (refLayoutPShapeOfSlide == null)
+        {
+            var refMasterPShape = this.ReferencedMasterPShapeOf(slidePShape);
+            var fonts = new IndentFonts(refMasterPShape!.TextBody!.ListStyle!);
+
+            return fonts.ALatinFontOrNull(indentLevel);
+        }
+
+        var layoutFonts = new IndentFonts(refLayoutPShapeOfSlide.TextBody!.ListStyle!);
+        var layoutIndentColorType = layoutFonts.FontOrNull(indentLevel);
+        if (layoutIndentColorType.HasValue)
+        {
+            return layoutIndentColorType.Value.ALatinFont;
+        }
+
+        var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOf(refLayoutPShapeOfSlide);
+        var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout!.TextBody!.ListStyle!);
+        var masterOfLayoutIndentColorType = masterFontsOfLayout.FontOrNull(indentLevel);
+        if (masterOfLayoutIndentColorType.HasValue)
+        {
+            return masterOfLayoutIndentColorType.Value.ALatinFont;
         }
 
         return null;
@@ -333,4 +372,5 @@ internal sealed class ReferencedShape
         referencedShape = null;
         return false;
     }
+    
 }

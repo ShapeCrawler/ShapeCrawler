@@ -114,14 +114,14 @@ internal sealed class IndentFonts
                 {
                     FontSize = endParaRunPrFs
                 };
-                
+
                 return indentFont;
             }
         }
-        
+
         return null;
     }
-    
+
     internal SCColorType? ColorType(int indentLevel)
     {
         var indentFont = this.FontOrNull(indentLevel);
@@ -129,37 +129,44 @@ internal sealed class IndentFonts
         {
             return null;
         }
-        
+
         if (indentFont.Value.ARgbColorModelHex != null)
         {
             return SCColorType.RGB;
         }
-        
+
         if (indentFont.Value.ASchemeColor != null)
         {
             return SCColorType.Theme;
         }
-        
+
         if (indentFont.Value.ASystemColor != null)
         {
             return SCColorType.Standard;
         }
-        
+
         if (indentFont.Value.APresetColor != null)
         {
             return SCColorType.Preset;
         }
-        
+
         return null;
     }
-    
-    
-    internal bool? BoldFlag(int indentLevel)
+
+
+    internal bool? BoldFlagOrNull(int indentLevel)
     {
         var indentFont = this.FontOrNull(indentLevel);
-        
+
         return indentFont?.IsBold;
     }
-    
+
+    internal A.LatinFont? ALatinFontOrNull(int indentLevel)
+    {
+        var indentFont = this.FontOrNull(indentLevel);
+
+        return indentFont?.ALatinFont;
+    }
+
     #endregion APIs
 }
