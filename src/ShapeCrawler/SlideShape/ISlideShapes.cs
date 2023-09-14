@@ -17,12 +17,16 @@ public interface ISlideShapes : IReadOnlyShapes
     /// <summary>
     ///     Adds a new audio shape.
     /// </summary>
-    void AddAudio(int xPixel, int yPixels, Stream content);
+    void AddAudio(int x, int y, Stream audio);
     
     /// <summary>
     ///     Adds a new audio shape.
     /// </summary>
-    void AddAudio(int xPixel, int yPixels, Stream content, SCAudioType type);
+    /// <param name="x">X coordinate in pixels.</param>
+    /// <param name="y">Y coordinate in pixels.</param>
+    /// <param name="audio">Audio stream.</param>
+    /// <param name="type">Audio type.</param>
+    void AddAudio(int x, int y, Stream audio, SCAudioType type);
 
     /// <summary>
     ///     Adds a new video from stream.
@@ -35,12 +39,12 @@ public interface ISlideShapes : IReadOnlyShapes
     /// <summary>
     ///     Adds a new Rectangle shape.
     /// </summary>
-    void AddRectangle(int x, int y, int w, int h);
+    void AddRectangle(int x, int y, int width, int height);
 
     /// <summary>
     ///     Adds a new Rounded Rectangle shape. 
     /// </summary>
-    void AddRoundedRectangle(int x, int y, int w, int h);
+    void AddRoundedRectangle(int x, int y, int width, int height);
 
     /// <summary>
     ///     Adds a line from XML.

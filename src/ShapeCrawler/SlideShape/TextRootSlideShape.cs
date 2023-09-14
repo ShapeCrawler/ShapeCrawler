@@ -9,7 +9,7 @@ namespace ShapeCrawler.SlideShape;
 /// <summary>
 ///     Text Shape located on the slide.
 /// </summary>
-internal sealed record TextRootSlideShape : IRootSlideShape
+internal sealed class TextRootSlideShape : IRootSlideShape
 {
     private readonly IRootSlideShape rootSlideShape;
 
@@ -18,8 +18,12 @@ internal sealed record TextRootSlideShape : IRootSlideShape
         this.rootSlideShape = rootSlideShape;
         this.TextFrame = new TextFrame(sdkSlidePart, pTextBody);
     }
+    
+    public bool IsTextHolder => true;
 
-    #region Root Slide Shape
+    public ITextFrame TextFrame { get; }
+    
+    #region RootSlideShape
 
     public int X
     {
@@ -64,23 +68,15 @@ internal sealed record TextRootSlideShape : IRootSlideShape
     public double Rotation => this.rootSlideShape.Rotation;
 
     public void Duplicate() => this.rootSlideShape.Duplicate();
-
-    #endregion Root Slide Shape
-    
-    public bool IsTextHolder => true;
-
-    public ITextFrame TextFrame { get; }
     
     public ITable AsTable() => throw new SCException(
         $"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
 
-    public IMediaShape AsMedia() =>
-        throw new SCException(
-            $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
+    public IMediaShape AsMedia() => this.rootSlideShape.AsMedia();
 
-    public bool IsPlaceholder => false;
+    public bool IsPlaceholder => this.rootSlideShape.IsPlaceholder;
 
-    public IPlaceholder Placeholder => throw new SCException(
-        $"Text shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} property to check if the shape is a placeholder.");
-    
+    public IPlaceholder Placeholder => this.rootSlideShape.Placeholder;
+
+    #endregion RootSlideShape
 }

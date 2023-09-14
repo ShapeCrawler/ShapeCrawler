@@ -71,7 +71,7 @@ public class PictureTests : SCTest
         var pptxStream = StreamOf("pictures-case001.pptx");
         var presentation = new SCPresentation(pptxStream);
         var slideMaster = presentation.SlideMasters[0];
-        var pictureShape = slideMaster.Shapes.GetByName<IPicture>("Picture 9");
+      var pictureShape = slideMaster.Shapes.GetByName<IPicture>("Picture 9");
             
         // Act
         var picByteArray = pictureShape.Image.BinaryData();

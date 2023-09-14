@@ -56,14 +56,14 @@ internal sealed record SlideShapes : ISlideShapes
         }
     }
 
-    public void AddAudio(int xPixels, int yPixels, Stream content)
+    public void AddAudio(int x, int y, Stream audio)
     {
-        var xEmu = UnitConverter.HorizontalPixelToEmu(xPixels);
-        var yEmu = UnitConverter.VerticalPixelToEmu(yPixels);
+        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
+        var yEmu = UnitConverter.VerticalPixelToEmu(y);
         var sdkPresentationDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
         var mediaDataPart = sdkPresentationDocument.CreateMediaDataPart("audio/mpeg", ".mp3");
-        content.Position = 0;
-        mediaDataPart.FeedData(content);
+        audio.Position = 0;
+        mediaDataPart.FeedData(audio);
         var imageStream = Assembly.GetExecutingAssembly().GetStream("audio-image.png");
 
         var audioRef = this.sdkSlidePart.AddAudioReferenceRelationship(mediaDataPart);
@@ -101,7 +101,7 @@ internal sealed record SlideShapes : ISlideShapes
         applicationNonVisualDrawingProps.Append(appNonVisualDrawingPropsExtensionList);
     }
 
-    public void AddAudio(int xPixel, int yPixels, Stream content, SCAudioType type)
+    public void AddAudio(int x, int y, Stream audio, SCAudioType type)
     {
         throw new NotImplementedException();
     }
@@ -550,15 +550,15 @@ internal sealed record SlideShapes : ISlideShapes
                 var line = new SlideLine(this.sdkSlidePart, pConnectionShape);
                 shapeList.Add(line);
             }
-            else if (pShapeTreeElement is P.Shape sdkPShape)
+            else if (pShapeTreeElement is P.Shape pShape)
             {
                 var rtSlideShape = new RootSlideShape(
                     this.sdkSlidePart, 
-                    sdkPShape, 
-                    new SlideShape(this.sdkSlidePart, sdkPShape));
-                if (sdkPShape.TextBody is not null)
+                    pShape, 
+                    new SlideShape(this.sdkSlidePart, pShape));
+                if (pShape.TextBody is not null)
                 {
-                    var textAutoShape = new TextRootSlideShape(this.sdkSlidePart, rtSlideShape, sdkPShape.TextBody);
+                    var textAutoShape = new TextRootSlideShape(this.sdkSlidePart, rtSlideShape, pShape.TextBody);
                     shapeList.Add(textAutoShape);
                 }
                 else

@@ -17,11 +17,10 @@ using Shape = ShapeCrawler.Shapes.Shape;
 
 namespace ShapeCrawler.SlideShape;
 
-internal sealed record SlideShape : IShape, IRemoveable
+internal sealed class SlideShape : IShape, IRemoveable
 {
     private readonly P.Shape pShape;
     private readonly Shape shape;
-    private readonly Lazy<SlideShapeFill> autoShapeFill;
     private readonly SlidePart sdkSlidePart;
 
     internal SlideShape(
@@ -46,43 +45,20 @@ internal sealed record SlideShape : IShape, IRemoveable
         this.pShape = pShape;
         this.shape = shape;
         this.Outline = outline;
-        this.autoShapeFill = new Lazy<SlideShapeFill>(this.ParseFill);
     }
 
     public bool HasOutline => true;
     public IShapeOutline Outline { get; }
-
-    public int Width
-    {
-        get => this.shape.Width();
-        set => this.shape.UpdateWidth(value);
-    }
-
-    public int Height
-    {
-        get => this.shape.Height();
-        set => this.shape.UpdateHeight(value);
-    }
-
-    public int Id => this.shape.Id();
-    public string Name => this.shape.Name();
-    public bool Hidden { get; }
-
-    public bool IsPlaceholder => false;
-
-    public IPlaceholder Placeholder => new NullPlaceholder();
-
-    public SCGeometry GeometryType { get; }
-    public string? CustomData { get; set; }
+    
     public SCShapeType ShapeType => SCShapeType.AutoShape;
-    public IShapeFill Fill => this.autoShapeFill.Value;
+    public IShapeFill Fill => this.ParseFill();
 
+    public double Rotation { get; }
+    
     public bool IsTextHolder => false;
 
     public ITextFrame TextFrame => new NullTextFrame();
-
-    public double Rotation { get; }
-
+    
     public ITable AsTable() =>
         throw new SCException(
             $"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
@@ -90,7 +66,11 @@ internal sealed record SlideShape : IShape, IRemoveable
     public IMediaShape AsMedia() =>
         throw new SCException(
             $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
+    
+    public bool IsPlaceholder => false;
 
+    public IPlaceholder Placeholder => new NullPlaceholder();
+    
     internal void Draw(SKCanvas slideCanvas)
     {
         var skColorOutline = SKColor.Parse(this.Outline.HexColor);
@@ -126,12 +106,32 @@ internal sealed record SlideShape : IShape, IRemoveable
         throw new NotImplementedException();
     }
 
-    private SlideShapeFill ParseFill()
+    #region Shape
+    
+    public int Width
     {
-        var useBgFill = this.pShape.UseBackgroundFill;
-        return new SlideShapeFill(this.sdkSlidePart, this.pShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
+        get => this.shape.Width();
+        set => this.shape.UpdateWidth(value);
     }
 
+    public int Height
+    {
+        get => this.shape.Height();
+        set => this.shape.UpdateHeight(value);
+    }
+
+    public int Id => this.shape.Id();
+    public string Name => this.shape.Name();
+    public bool Hidden => this.shape.Hidden();
+
+    public SCGeometry GeometryType => this.shape.GeometryType();
+
+    public string? CustomData
+    {
+        get => this.shape.CustomData(); 
+        set => this.shape.UpdateCustomData(value!);
+    }
+    
     public int X
     {
         get => this.shape.X();
@@ -142,6 +142,14 @@ internal sealed record SlideShape : IShape, IRemoveable
     {
         get => this.shape.Y();
         set => this.shape.UpdateY(value);
+    }
+    
+    #endregion Shape
+    
+    private SlideShapeFill ParseFill()
+    {
+        var useBgFill = this.pShape.UseBackgroundFill;
+        return new SlideShapeFill(this.sdkSlidePart, this.pShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
     }
 
     internal void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames,

@@ -23,7 +23,7 @@ public class SlideMasterTests : SCTest
         var pptx = StreamOf("001.pptx");
         var pres = new SCPresentation(pptx);
         ISlideMaster slideMaster = pres.SlideMasters[0];
-        IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
+       IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
 
         // Act
         int shapeXCoordinate = shape.X;

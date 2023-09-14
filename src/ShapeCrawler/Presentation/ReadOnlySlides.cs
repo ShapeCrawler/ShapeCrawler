@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Extensions;
-using ShapeCrawler.Shared;
-using ShapeCrawler.SlideShape;
 using P = DocumentFormat.OpenXml.Presentation;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
@@ -26,18 +20,17 @@ internal sealed record ReadOnlySlides : IReadOnlyList<ISlide>
 
     public ISlide this[int index] => this.SlideList()[index];
 
-    public IEnumerator<ISlide> GetEnumerator()
-    {
-        return this.SlideList().GetEnumerator();
-    }
+    public IEnumerator<ISlide> GetEnumerator()=>this.SlideList().GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return this.GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator()=> this.GetEnumerator();
     
     private List<Slide> SlideList()
     {
+        if (!this.sdkSlideParts.Any())
+        {
+            return new List<Slide>(0);
+        }
+        
         var sdkPresDocument = (PresentationDocument)this.sdkSlideParts.First().OpenXmlPackage;
         var sdkPresPart = sdkPresDocument.PresentationPart!;
         int slidesCount = this.sdkSlideParts.Count();

@@ -6,18 +6,18 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed record Shape
+internal sealed class Shape
 {
-    private readonly OpenXmlElement sdkPShapeTreeElement;
+    private readonly OpenXmlElement pShapeTreeElement;
     private readonly Position position;
     private readonly ShapeSize size;
     private const string customDataElementName = "ctd";
 
-    internal Shape(OpenXmlElement sdkPShapeTreeElement)
+    internal Shape(OpenXmlElement pShapeTreeElement)
     {
-        this.sdkPShapeTreeElement = sdkPShapeTreeElement;
-        this.position = new Position(this.sdkPShapeTreeElement);
-        this.size = new ShapeSize(sdkPShapeTreeElement);
+        this.pShapeTreeElement = pShapeTreeElement;
+        this.position = new Position(this.pShapeTreeElement);
+        this.size = new ShapeSize(pShapeTreeElement);
     }
     
     internal int X() => this.position.X();
@@ -36,23 +36,20 @@ internal sealed record Shape
 
     internal void UpdateHeight(int pixels) => this.size.UpdateHeight(pixels);
 
-    internal int Id() => (int)this.sdkPShapeTreeElement.GetNonVisualDrawingProperties().Id!.Value!;
+    internal int Id() => (int)this.pShapeTreeElement.GetNonVisualDrawingProperties().Id!.Value!;
 
-    internal string Name() => this.sdkPShapeTreeElement.GetNonVisualDrawingProperties().Name!.Value!;
+    internal string Name() => this.pShapeTreeElement.GetNonVisualDrawingProperties().Name!.Value!;
 
     internal bool Hidden()
     {
-        var parsedHiddenValue = this.sdkPShapeTreeElement.GetNonVisualDrawingProperties().Hidden?.Value;
+        var parsedHiddenValue = this.pShapeTreeElement.GetNonVisualDrawingProperties().Hidden?.Value;
         
         return parsedHiddenValue is true;
     }
 
-    internal SCGeometry GeometryType()
-    {
-        throw new System.NotImplementedException();
-    }
+    internal SCGeometry GeometryType() => SCGeometry.Rectangle;
 
-    public string? CustomData()
+    internal string? CustomData()
     {
         const string pattern = @$"<{customDataElementName}>(.*)<\/{customDataElementName}>";
 
@@ -62,7 +59,7 @@ internal sealed record Shape
         var regex = new Regex(pattern, RegexOptions.NonBacktracking);
 #endif
 
-        var elementText = regex.Match(this.sdkPShapeTreeElement.InnerXml).Groups[1];
+        var elementText = regex.Match(this.pShapeTreeElement.InnerXml).Groups[1];
         if (elementText.Value.Length == 0)
         {
             return null;
@@ -71,10 +68,10 @@ internal sealed record Shape
         return elementText.Value;
     }
 
-    public void UpdateCustomData(string? value)
+    internal void UpdateCustomData(string? value)
     {
         var customDataElement =
             $@"<{customDataElementName}>{value}</{customDataElementName}>";
-        this.sdkPShapeTreeElement.InnerXml += customDataElement;
+        this.pShapeTreeElement.InnerXml += customDataElement;
     }
 }

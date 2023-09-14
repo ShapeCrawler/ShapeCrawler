@@ -25,8 +25,10 @@ internal sealed class SlidePictureImage : IImage
 
     public void Update(Stream stream)
     {
-        var imageParts = this.sdkSlidePart.ImageParts;
-        var isSharedImagePart = imageParts.Count(x=>x == this.sdkImagePart) > 1;
+        var sdkPresDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
+        var presSdkSlideParts = sdkPresDocument.PresentationPart!.SlideParts;
+        var allABlip = presSdkSlideParts.SelectMany(x => x.Slide.CommonSlideData!.ShapeTree!.Descendants<A.Blip>());
+        var isSharedImagePart = allABlip.Count(x => x.Embed!.Value == this.aBlip.Embed!.Value) > 1;
         if (isSharedImagePart)
         {
             var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
