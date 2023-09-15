@@ -52,19 +52,19 @@ public interface ITable : IShape
 internal sealed record SlideTable : IRemoveable, ITable
 {
     private readonly SlidePart sdkSlidePart;
-    private readonly Shape shape;
+    private readonly SimpleShape simpleShape;
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly ResetableLazy<SlideTableRows> rowCollection;
 
     internal SlideTable(SlidePart sdkSlidePart, OpenXmlCompositeElement pShapeTreeElement)
-        : this(sdkSlidePart, pShapeTreeElement, new Shape(pShapeTreeElement))
+        : this(sdkSlidePart, pShapeTreeElement, new SimpleShape(pShapeTreeElement))
     {
     }
 
-    private SlideTable(SlidePart sdkSlidePart, OpenXmlCompositeElement pShapeTreeElement, Shape shape)
+    private SlideTable(SlidePart sdkSlidePart, OpenXmlCompositeElement pShapeTreeElement, SimpleShape simpleShape)
     {
         this.sdkSlidePart = sdkSlidePart;
-        this.shape = shape;
+        this.simpleShape = simpleShape;
         var graphicFrame = (P.GraphicFrame)pShapeTreeElement;
         this.rowCollection = new ResetableLazy<SlideTableRows>(() => new SlideTableRows(this.sdkSlidePart, graphicFrame));
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
@@ -94,8 +94,8 @@ internal sealed record SlideTable : IRemoveable, ITable
 
     public int Width { get; set; }
     public int Height { get; set; }
-    public int Id => this.shape.Id();
-    public string Name => this.shape.Name();
+    public int Id => this.simpleShape.Id();
+    public string Name => this.simpleShape.Name();
     public bool Hidden { get; }
 
     public bool IsPlaceholder => false;

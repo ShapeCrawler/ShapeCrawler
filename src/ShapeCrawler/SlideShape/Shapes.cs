@@ -5,24 +5,24 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.AutoShapes;
+namespace ShapeCrawler.SlideShape;
 
-internal sealed record SlideAutoShapes
+internal sealed class Shapes
 {
     private readonly P.ShapeTree pShapeTree;
 
-    internal SlideAutoShapes(P.ShapeTree pShapeTree)
+    internal Shapes(P.ShapeTree pShapeTree)
     {
         this.pShapeTree = pShapeTree;
     }
 
     internal void Add(P.Shape pShape)
     {
-        var id = pShapeTree.Descendants<P.NonVisualDrawingProperties>().Select(s => s.Id!.Value).Max() + 1;
-        var existingShapeNames = pShapeTree.Descendants<P.NonVisualDrawingProperties>().Select(s => s.Name!.Value!);
+        var id = this.pShapeTree.Descendants<P.NonVisualDrawingProperties>().Select(s => s.Id!.Value).Max() + 1;
+        var existingShapeNames = this.pShapeTree.Descendants<P.NonVisualDrawingProperties>().Select(s => s.Name!.Value!);
         var pShapeCopy = pShape.CloneNode(true);
         pShapeCopy.GetNonVisualDrawingProperties().Id = new UInt32Value(id);
-        pShapeTree.AppendChild(pShapeCopy);
+        this.pShapeTree.AppendChild(pShapeCopy);
         var copyName = pShapeCopy.GetNonVisualDrawingProperties().Name!.Value!;
         if (existingShapeNames.Any(existingShapeName => existingShapeName == copyName))
         {

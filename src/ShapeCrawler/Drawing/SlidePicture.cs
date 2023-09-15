@@ -6,7 +6,6 @@ using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Office2019.Drawing.SVG;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
@@ -16,29 +15,32 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed record SlidePicture : IPicture, IRemoveable 
+internal sealed class SlidePicture : IPicture, IRemoveable, ICopyableShape 
 {
     private readonly StringValue blipEmbed;
-    private readonly P.Picture sdkPPicture;
-    private readonly A.Blip sdkABlip;
-    private readonly Shape shape;
+    private readonly P.Picture pPicture;
+    private readonly A.Blip aBlip;
+    private readonly SimpleShape simpleShape;
     private readonly SlidePart sdkSlidePart;
 
-    internal SlidePicture(SlidePart sdkSlidePart, P.Picture sdkPPicture, A.Blip sdkABlip)
-        : this(sdkSlidePart, sdkPPicture, sdkABlip, new Shape(sdkPPicture), new SlidePictureImage(sdkSlidePart, sdkABlip))
+    internal SlidePicture(
+        SlidePart sdkSlidePart, 
+        P.Picture pPicture, 
+        A.Blip aBlip)
+        : this(sdkSlidePart, pPicture, aBlip, new SimpleShape(pPicture), new SlidePictureImage(sdkSlidePart, aBlip))
     {
     }
 
-    private SlidePicture(SlidePart sdkSlidePart, P.Picture sdkPPicture, A.Blip sdkABlip, Shape shape, IImage image)
+    private SlidePicture(SlidePart sdkSlidePart, P.Picture pPicture, A.Blip aBlip, SimpleShape simpleShape, IImage image)
     {
         this.sdkSlidePart = sdkSlidePart;
-        this.sdkPPicture = sdkPPicture;
-        this.sdkABlip = sdkABlip;
-        this.shape = shape;
+        this.pPicture = pPicture;
+        this.aBlip = aBlip;
+        this.simpleShape = simpleShape;
         this.Image = image;
-        this.blipEmbed = sdkABlip.Embed!;
-        this.Outline = new SlideShapeOutline(sdkSlidePart, sdkPPicture.ShapeProperties!);
-        this.Fill = new SlideShapeFill(sdkSlidePart, sdkPPicture.ShapeProperties!, false);
+        this.blipEmbed = aBlip.Embed!;
+        this.Outline = new SlideShapeOutline(sdkSlidePart, pPicture.ShapeProperties!);
+        this.Fill = new SlideShapeFill(sdkSlidePart, pPicture.ShapeProperties!, false);
     }
 
     public IImage Image { get; }
@@ -47,8 +49,8 @@ internal sealed record SlidePicture : IPicture, IRemoveable
 
     public int Width { get; set; }
     public int Height { get; set; }
-    public int Id => this.shape.Id();
-    public string Name => this.shape.Name();
+    public int Id => this.simpleShape.Id();
+    public string Name => this.simpleShape.Name();
     public bool Hidden { get; }
     public bool IsPlaceholder => false;
 
@@ -86,7 +88,7 @@ internal sealed record SlidePicture : IPicture, IRemoveable
 
     private string? GetSvgContent()
     {
-        var bel = this.sdkABlip.GetFirstChild<A.BlipExtensionList>();
+        var bel = this.aBlip.GetFirstChild<A.BlipExtensionList>();
         var svgBlipList = bel?.Descendants<SVGBlip>();
         if (svgBlipList == null)
         {
@@ -105,10 +107,13 @@ internal sealed record SlidePicture : IPicture, IRemoveable
     public int X { get; set; }
     public int Y { get; set; }
 
-    internal void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames,
+    void ICopyableShape.CopyTo(
+        int id, 
+        P.ShapeTree pShapeTree, 
+        IEnumerable<string> existingShapeNames,
         SlidePart targetSdkSlidePart)
     {
-        var copy = this.sdkPPicture.CloneNode(true);
+        var copy = this.pPicture.CloneNode(true);
         copy.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
         pShapeTree.AppendChild(copy);
         var copyName = copy.GetNonVisualDrawingProperties().Name!.Value!;
@@ -153,6 +158,6 @@ internal sealed record SlidePicture : IPicture, IRemoveable
 
     public void Remove()
     {
-        this.sdkPPicture.Remove();
+        this.pPicture.Remove();
     }
 }

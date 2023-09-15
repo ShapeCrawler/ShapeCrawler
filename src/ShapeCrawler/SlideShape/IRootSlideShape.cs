@@ -1,12 +1,11 @@
-﻿
+﻿using ShapeCrawler.Drawing;
 
-// ReSharper disable once CheckNamespace
-namespace ShapeCrawler;
+namespace ShapeCrawler.SlideShape;
 
 /// <summary>
 ///     Represents interface of AutoShape.
 /// </summary>
-public interface IRootSlideShape : IShape
+internal interface IRootSlideShape : IShape, ICopyableShape
 {     
     /// <summary>
     ///     Duplicate the shape.

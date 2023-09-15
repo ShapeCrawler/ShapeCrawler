@@ -4,73 +4,58 @@ using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
-using Shape = ShapeCrawler.Shapes.Shape;
 
 namespace ShapeCrawler.SlideShape;
 
-internal sealed class SlideShape : IShape, IRemoveable
+internal sealed class SlideAutoShapeWithFill : IShape, IRemoveable
 {
     private readonly P.Shape pShape;
-    private readonly Shape shape;
+    private readonly SlideAutoShape slideAutoShape;
     private readonly SlidePart sdkSlidePart;
 
-    internal SlideShape(
-        SlidePart sdkSlidePart,
-        P.Shape pShape) :
-        this(
+    internal SlideAutoShapeWithFill(SlidePart sdkSlidePart, P.Shape pShape)
+        : this(
             sdkSlidePart,
             pShape,
-            new Shape(pShape),
-            new SlideShapeOutline(sdkSlidePart, pShape.ShapeProperties!)
+            new SlideAutoShape(sdkSlidePart, pShape),
+            new SlideShapeFill(sdkSlidePart, pShape.GetFirstChild<P.ShapeProperties>() !, pShape.UseBackgroundFill)
         )
     {
     }
 
-    private SlideShape(
+    private SlideAutoShapeWithFill(
         SlidePart sdkSlidePart,
         P.Shape pShape,
-        Shape shape,
-        SlideShapeOutline outline)
+        SlideAutoShape slideAutoShape,
+        IShapeFill fill)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.pShape = pShape;
-        this.shape = shape;
-        this.Outline = outline;
+        this.slideAutoShape = slideAutoShape;
+        this.Fill = fill;
     }
 
+    public IShapeFill Fill { get; }
+    
     public bool HasOutline => true;
-    public IShapeOutline Outline { get; }
-    
+    public IShapeOutline Outline => this.slideAutoShape.Outline;
+    public bool HasFill => this.slideAutoShape.HasFill;
     public SCShapeType ShapeType => SCShapeType.AutoShape;
-    public IShapeFill Fill => this.ParseFill();
+    public double Rotation => this.slideAutoShape.Rotation;
+    public bool IsTextHolder => this.slideAutoShape.IsTextHolder;
+    public ITextFrame TextFrame => this.slideAutoShape.TextFrame;
+    public ITable AsTable() => this.slideAutoShape.AsTable();
+    public IMediaShape AsMedia() => this.slideAutoShape.AsMedia();
+    public bool IsPlaceholder => this.slideAutoShape.IsPlaceholder;
+    public IPlaceholder Placeholder => this.slideAutoShape.Placeholder;
 
-    public double Rotation { get; }
-    
-    public bool IsTextHolder => false;
-
-    public ITextFrame TextFrame => new NullTextFrame();
-    
-    public ITable AsTable() =>
-        throw new SCException(
-            $"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
-
-    public IMediaShape AsMedia() =>
-        throw new SCException(
-            $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
-    
-    public bool IsPlaceholder => false;
-
-    public IPlaceholder Placeholder => new NullPlaceholder();
-    
     internal void Draw(SKCanvas slideCanvas)
     {
         var skColorOutline = SKColor.Parse(this.Outline.HexColor);
@@ -96,63 +81,49 @@ internal sealed class SlideShape : IShape, IRemoveable
         }
     }
 
-    internal string ToJson()
-    {
-        throw new NotImplementedException();
-    }
-
-    internal IHtmlElement ToHtmlElement()
-    {
-        throw new NotImplementedException();
-    }
-
     #region Shape
-    
+
     public int Width
     {
-        get => this.shape.Width();
-        set => this.shape.UpdateWidth(value);
+        get => this.slideAutoShape.Width;
+        set => this.slideAutoShape.Width = value;
     }
 
     public int Height
     {
-        get => this.shape.Height();
-        set => this.shape.UpdateHeight(value);
+        get => this.slideAutoShape.Height;
+        set => this.slideAutoShape.Height = value;
     }
 
-    public int Id => this.shape.Id();
-    public string Name => this.shape.Name();
-    public bool Hidden => this.shape.Hidden();
-
-    public SCGeometry GeometryType => this.shape.GeometryType();
+    public int Id => this.slideAutoShape.Id;
+    public string Name => this.slideAutoShape.Name;
+    public bool Hidden => this.slideAutoShape.Hidden;
+    public SCGeometry GeometryType => this.slideAutoShape.GeometryType;
 
     public string? CustomData
     {
-        get => this.shape.CustomData(); 
-        set => this.shape.UpdateCustomData(value!);
+        get => this.slideAutoShape.CustomData;
+        set => this.slideAutoShape.CustomData = value;
     }
-    
+
     public int X
     {
-        get => this.shape.X();
-        set => this.shape.UpdateX(value);
+        get => this.slideAutoShape.X;
+        set => this.slideAutoShape.X = value;
     }
 
     public int Y
     {
-        get => this.shape.Y();
-        set => this.shape.UpdateY(value);
-    }
-    
-    #endregion Shape
-    
-    private SlideShapeFill ParseFill()
-    {
-        var useBgFill = this.pShape.UseBackgroundFill;
-        return new SlideShapeFill(this.sdkSlidePart, this.pShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
+        get => this.slideAutoShape.Y;
+        set => this.slideAutoShape.Y = value;
     }
 
-    internal void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames,
+    #endregion Shape
+
+    internal void CopyTo(
+        int id,
+        P.ShapeTree pShapeTree,
+        IEnumerable<string> existingShapeNames,
         SlidePart targetSdkSlidePart)
     {
         var copy = this.pShape.CloneNode(true);

@@ -4,9 +4,6 @@ using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Drawing;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
@@ -16,68 +13,50 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.SlideShape;
 
-internal sealed record RootSlideShape : IRootSlideShape
+internal sealed class SlideAutoShape : IShape, IRemoveable
 {
     private readonly P.Shape pShape;
-    private readonly IShape shape;
+    private readonly SimpleShape simpleShape;
     private readonly SlidePart sdkSlidePart;
 
-    internal RootSlideShape(
+    internal SlideAutoShape(
+        SlidePart sdkSlidePart,
+        P.Shape pShape) :
+        this(
+            sdkSlidePart,
+            pShape,
+            new SimpleShape(pShape),
+            new SlideShapeOutline(sdkSlidePart, pShape.ShapeProperties!)
+        )
+    {
+    }
+
+    private SlideAutoShape(
         SlidePart sdkSlidePart,
         P.Shape pShape,
-        IShape shape)
+        SimpleShape simpleShape,
+        SlideShapeOutline outline)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.pShape = pShape;
-        this.shape = shape;
+        this.simpleShape = simpleShape;
+        this.Outline = outline;
     }
 
-    public bool HasOutline => this.shape.HasOutline;
-    public IShapeOutline Outline => this.shape.Outline;
-
-    public int Width
-    {
-        get => this.shape.Width;
-        set => this.shape.Width = value;
-    }
-
-    public int Height
-    {
-        get => this.shape.Height;
-        set => this.shape.Height = value;
-    }
-
-    public int Id => this.shape.Id;
-    public string Name => this.shape.Name;
-    public bool Hidden { get; }
-
-    public bool IsPlaceholder => false;
-
-    public IPlaceholder Placeholder => new NullPlaceholder();
-
-    public SCGeometry GeometryType { get; }
-    public string? CustomData { get; set; }
+    public bool HasOutline => true;
+    public IShapeOutline Outline { get; }
+    public bool HasFill => this.simpleShape.HasFill;
     public SCShapeType ShapeType => SCShapeType.AutoShape;
-    public IShapeFill Fill => this.shape.Fill;
+    public IShapeFill Fill => this.simpleShape.Fill;
+    public double Rotation => this.simpleShape.Rotation;
+    public bool IsTextHolder => this.simpleShape.IsTextHolder;
+    public ITextFrame TextFrame => this.simpleShape.TextFrame;
 
-    public bool IsTextHolder => false;
+    public ITable AsTable() => this.simpleShape.AsTable();
 
-    public ITextFrame TextFrame => new NullTextFrame();
-
-    public double Rotation { get; }
-    public ITable AsTable() => throw new SCException(
-        $"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
-
-    public IMediaShape AsMedia() =>
-        throw new SCException(
-            $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
-
-    public void Duplicate()
-    {
-        var pShapeTree = (P.ShapeTree)this.pShape.Parent!;
-        var autoShapes = new SlideAutoShapes(pShapeTree);
-        autoShapes.Add(this.pShape);
-    }
+    public IMediaShape AsMedia() => this.simpleShape.AsMedia();
+    public bool IsPlaceholder => this.simpleShape.IsPlaceholder;
+    public IPlaceholder Placeholder => this.simpleShape.Placeholder;
 
     internal void Draw(SKCanvas slideCanvas)
     {
@@ -103,36 +82,52 @@ internal sealed record RootSlideShape : IRootSlideShape
             textFrame.Draw(slideCanvas, left, this.Y);
         }
     }
+    
+    internal IHtmlElement ToHtmlElement() => throw new NotImplementedException();
 
-    internal string ToJson()
+    #region Shape
+
+    public int Width
     {
-        throw new NotImplementedException();
+        get => this.simpleShape.Width;
+        set => this.simpleShape.Width = value;
     }
 
-    internal IHtmlElement ToHtmlElement()
+    public int Height
     {
-        throw new NotImplementedException();
+        get => this.simpleShape.Height;
+        set => this.simpleShape.Height = value;
     }
 
-    private SlideShapeFill ParseFill()
+    public int Id => this.simpleShape.Id;
+    public string Name => this.simpleShape.Name;
+    public bool Hidden => this.simpleShape.Hidden;
+    public SCGeometry GeometryType => this.simpleShape.GeometryType;
+
+    public string? CustomData
     {
-        var useBgFill = this.pShape.UseBackgroundFill;
-        return new SlideShapeFill(this.sdkSlidePart, this.pShape.GetFirstChild<P.ShapeProperties>() !, useBgFill);
+        get => this.simpleShape.ParseCustomData();
+        set => this.simpleShape.UpdateCustomData(value!);
     }
 
     public int X
     {
-        get => this.shape.X; 
-        set => this.shape.X = value;
+        get => this.simpleShape.X;
+        set => this.simpleShape.X = value;
     }
 
     public int Y
     {
-        get => this.shape.Y; 
-        set => this.shape.Y = value;
+        get => this.simpleShape.Y;
+        set => this.simpleShape.Y = value;
     }
 
-    internal void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames,
+    #endregion Shape
+
+    internal void CopyTo(
+        int id, 
+        P.ShapeTree pShapeTree, 
+        IEnumerable<string> existingShapeNames,
         SlidePart targetSdkSlidePart)
     {
         var copy = this.pShape.CloneNode(true);
@@ -161,5 +156,10 @@ internal sealed record RootSlideShape : IRootSlideShape
             var lastSuffix = numericSuffixes.LastOrDefault() + 1;
             copy.GetNonVisualDrawingProperties().Name = copyName + " " + lastSuffix;
         }
+    }
+
+    void IRemoveable.Remove()
+    {
+        this.pShape.Remove();
     }
 }

@@ -1,4 +1,6 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using System.Collections.Generic;
+using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Texts;
@@ -24,7 +26,12 @@ internal sealed class TextRootSlideShape : IRootSlideShape
     public ITextFrame TextFrame { get; }
     
     #region RootSlideShape
-
+    
+    void ICopyableShape.CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> allShapes, SlidePart targetSdkSlidePart)
+    {
+        this.rootSlideShape.CopyTo(id, pShapeTree, allShapes, targetSdkSlidePart);
+    }
+    
     public int X
     {
         get => this.rootSlideShape.X;

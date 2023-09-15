@@ -42,13 +42,9 @@ internal sealed record SlideShapes : ISlideShapes
         var id = this.CalculateNextShapeId();
         var allShapeNames = this.Select(shape => shape.Name);
 
-        if (addingShape is SlideShape slideAutoShape)
+        if (addingShape is ICopyableShape copyable)
         {
-            slideAutoShape.CopyTo(id, pShapeTree, allShapeNames, this.sdkSlidePart);
-        }
-        else if (addingShape is SlidePicture slidePicture)
-        {
-            slidePicture.CopyTo(id, pShapeTree, allShapeNames, this.sdkSlidePart);
+            copyable.CopyTo(id, pShapeTree, allShapeNames, this.sdkSlidePart);
         }
         else
         {
@@ -552,10 +548,10 @@ internal sealed record SlideShapes : ISlideShapes
             }
             else if (pShapeTreeElement is P.Shape pShape)
             {
-                var rtSlideShape = new RootSlideShape(
+                var rtSlideShape = new RootSlideAutoShape(
                     this.sdkSlidePart, 
                     pShape, 
-                    new SlideShape(this.sdkSlidePart, pShape));
+                    new SlideAutoShape(this.sdkSlidePart, pShape));
                 if (pShape.TextBody is not null)
                 {
                     var textAutoShape = new TextRootSlideShape(this.sdkSlidePart, rtSlideShape, pShape.TextBody);

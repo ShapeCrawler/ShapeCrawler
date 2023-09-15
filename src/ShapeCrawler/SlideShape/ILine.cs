@@ -24,15 +24,15 @@ public interface ILine : IShape
     SCPoint EndPoint { get; }
 }
 
-internal sealed record SlideLine : ILine, IRemoveable
+internal sealed class SlideLine : ILine, IRemoveable
 {
     private readonly P.ConnectionShape pConnectionShape;
-    private readonly Shape shape;
+    private readonly SimpleShape simpleShape;
 
     internal SlideLine(SlidePart sdkSlidePart, P.ConnectionShape pConnectionShape)
         : this(
             pConnectionShape,
-            new Shape(pConnectionShape),
+            new SimpleShape(pConnectionShape),
             new SlideShapeOutline(sdkSlidePart, pConnectionShape.ShapeProperties!)
         )
     {
@@ -40,124 +40,128 @@ internal sealed record SlideLine : ILine, IRemoveable
 
     private SlideLine(
         P.ConnectionShape pConnectionShape,
-        Shape shape,
+        SimpleShape simpleShape,
         SlideShapeOutline shapeOutline)
     {
         this.pConnectionShape = pConnectionShape;
-        this.shape = shape;
+        this.simpleShape = simpleShape;
         this.Outline = shapeOutline;
     }
 
+    public SCShapeType ShapeType => SCShapeType.Line;
+    public bool HasOutline => true;
+    public IShapeOutline Outline { get; }
+    public SCGeometry GeometryType => SCGeometry.Line;
+    public SCPoint StartPoint
+    {
+        get
+        {
+            var aTransform2D = this.pConnectionShape.GetFirstChild<P.ShapeProperties>() !.Transform2D!;
+            var horizontalFlip = aTransform2D.HorizontalFlip?.Value;
+            var flipH = horizontalFlip != null && horizontalFlip.Value;
+            var verticalFlip = aTransform2D.VerticalFlip?.Value;
+            var flipV = verticalFlip != null && verticalFlip.Value;
+
+            if (flipH && (this.Height == 0 || flipV))
+            {
+                return new SCPoint(this.X, this.Y);
+            }
+
+            if (flipH)
+            {
+                return new SCPoint(this.X + this.Width, this.Y);
+            }
+
+            return new SCPoint(this.X, this.Y);
+        }
+    }
+    
+    public SCPoint EndPoint
+    {
+        get
+        {
+            var aTransform2D = this.pConnectionShape.GetFirstChild<P.ShapeProperties>() !.Transform2D!;
+            var horizontalFlip = aTransform2D.HorizontalFlip?.Value;
+            var flipH = horizontalFlip != null && horizontalFlip.Value;
+            var verticalFlip = aTransform2D.VerticalFlip?.Value;
+            var flipV = verticalFlip != null && verticalFlip.Value;
+
+            if (this.Width == 0)
+            {
+                return new SCPoint(this.X, this.Height);
+            }
+
+            if (flipH && this.Height == 0)
+            {
+                return new SCPoint(this.X - this.Width, this.Y);
+            }
+
+            if (flipV)
+            {
+                return new SCPoint(this.Width, this.Height);
+            }
+
+            if (flipH)
+            {
+                return new SCPoint(this.X, this.Height);
+            }
+
+            return new SCPoint(this.Width, this.Y);
+
+        }
+    }
+    
+    #region SimpleShape
+
+    public bool IsTextHolder => this.simpleShape.IsTextHolder;
+    public ITextFrame TextFrame => this.simpleShape.TextFrame;
+    public double Rotation => this.simpleShape.Rotation;
+    public ITable AsTable() => this.simpleShape.AsTable();
+    public IMediaShape AsMedia() => this.simpleShape.AsMedia();
+    public bool HasFill => this.simpleShape.HasFill;
+    public IShapeFill Fill => this.simpleShape.Fill;
+
     public int Width
     {
-        get => this.shape.Width();
-        set => this.shape.UpdateWidth(value);
+        get => this.simpleShape.Width;
+        set => this.simpleShape.Width = value;
     }
 
     public int Height
     {
-        get => this.shape.Height();
-        set => this.shape.UpdateHeight(value);
+        get => this.simpleShape.Height;
+        set => this.simpleShape.Height = value;
     }
 
-    public int Id => this.shape.Id();
+    public int Id => this.simpleShape.Id;
 
-    public string Name => this.shape.Name();
+    public string Name => this.simpleShape.Name;
 
-    public bool Hidden => this.shape.Hidden();
+    public bool Hidden => this.simpleShape.Hidden;
 
-    public bool IsPlaceholder => false;
+    public bool IsPlaceholder => this.simpleShape.IsPlaceholder;
 
-    public IPlaceholder Placeholder =>
-        new NullPlaceholder(
-            $"A line cannot be a placeholder. Use {nameof(IShape.Placeholder)} to check if the shape is a placeholder.");
+    public int X
+    {
+        get => this.simpleShape.X;
+        set => this.simpleShape.X = value;
+    }
 
-    public SCGeometry GeometryType => SCGeometry.Line;
+    public int Y
+    {
+        get => this.simpleShape.Y;
+        set => this.simpleShape.Y = value;
+    }
+
+    public IPlaceholder Placeholder => this.simpleShape.Placeholder;
 
     public string? CustomData
     {
-        get => this.shape.CustomData();
-        set => this.shape.UpdateCustomData(value);
+        get => this.simpleShape.CustomData;
+        set => this.simpleShape.CustomData = value;
     }
 
-    public SCShapeType ShapeType => SCShapeType.Line;
-
-    public bool IsTextHolder => false;
-    public ITextFrame TextFrame => new NullTextFrame();
-
-    public double Rotation { get; }
-    public ITable AsTable() => throw new SCException($"The Line shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
-    public IMediaShape AsMedia() =>
-        throw new SCException(
-            $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
-
-    public bool HasOutline => true;
-    public IShapeOutline Outline { get; }
-    public IShapeFill Fill => new SCNullShapeFill();
-
-    public SCPoint StartPoint => this.ParseStartPoint();
-
-    public SCPoint EndPoint => this.ParseEndPoint();
-
-    internal void Draw(SKCanvas canvas)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    private SCPoint ParseStartPoint()
-    {
-        var aTransform2D = this.pConnectionShape.GetFirstChild<P.ShapeProperties>() !.Transform2D!;
-        var horizontalFlip = aTransform2D.HorizontalFlip?.Value;
-        var flipH = horizontalFlip != null && horizontalFlip.Value;
-        var verticalFlip = aTransform2D.VerticalFlip?.Value;
-        var flipV = verticalFlip != null && verticalFlip.Value;
-
-        if (flipH && (this.Height == 0 || flipV))
-        {
-            return new SCPoint(this.X, this.Y);
-        }
-
-        if (flipH)
-        {
-            return new SCPoint(this.X + this.Width, this.Y);
-        }
-
-        return new SCPoint(this.X, this.Y);
-    }
-
-    private SCPoint ParseEndPoint()
-    {
-        var aTransform2D = this.pConnectionShape.GetFirstChild<P.ShapeProperties>() !.Transform2D!;
-        var horizontalFlip = aTransform2D.HorizontalFlip?.Value;
-        var flipH = horizontalFlip != null && horizontalFlip.Value;
-        var verticalFlip = aTransform2D.VerticalFlip?.Value;
-        var flipV = verticalFlip != null && verticalFlip.Value;
-
-        if (this.Width == 0)
-        {
-            return new SCPoint(this.X, this.Height);
-        }
-
-        if (flipH && this.Height == 0)
-        {
-            return new SCPoint(this.X - this.Width, this.Y);
-        }
-
-        if (flipV)
-        {
-            return new SCPoint(this.Width, this.Height);
-        }
-
-        if (flipH)
-        {
-            return new SCPoint(this.X, this.Height);
-        }
-
-        return new SCPoint(this.Width, this.Y);
-    }
-
-    public int X { get; set; }
-    public int Y { get; set; }
+    #endregion SimpleShape
     
     void IRemoveable.Remove()
     {

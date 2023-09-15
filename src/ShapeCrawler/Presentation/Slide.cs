@@ -83,7 +83,7 @@ internal sealed class Slide : ISlide
         var document = await browsingContext.OpenNewAsync().ConfigureAwait(false);
         var body = document.Body!;
 
-        foreach (var shape in this.Shapes.OfType<SlideShape.SlideShape>())
+        foreach (var shape in this.Shapes.OfType<SlideShape.SlideAutoShape>())
         {
             body.AppendChild(shape.ToHtmlElement());
         }
@@ -98,7 +98,7 @@ internal sealed class Slide : ISlide
         var canvas = surface.Canvas;
         canvas.Clear(SKColors.White); // TODO: #344 get real
 
-        foreach (var autoShape in this.Shapes.OfType<SlideShape.SlideShape>())
+        foreach (var autoShape in this.Shapes.OfType<SlideShape.SlideAutoShape>())
         {
             autoShape.Draw(canvas);
         }
@@ -113,7 +113,7 @@ internal sealed class Slide : ISlide
     {
         var returnList = new List<ITextFrame>();
 
-        var frames = this.Shapes.OfType<SlideShape.SlideShape>()
+        var frames = this.Shapes.OfType<SlideShape.SlideAutoShape>()
             .Where(t => t.TextFrame != null)
             .Select(t => t.TextFrame!)
             .ToList();

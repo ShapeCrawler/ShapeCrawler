@@ -182,7 +182,7 @@ internal sealed class SlideParagraph : IParagraph
         // Resize
         var pTextBody = (P.TextBody)this.AParagraph.Parent!;
         var textFrame = new TextFrame(this.sdkSlidePart, pTextBody);
-        var shape = new Shape(pTextBody.Parent!);
+        var shape = new SimpleShape(pTextBody.Parent!);
         if (textFrame.AutofitType != SCAutofitType.Resize)
         {
             return;
@@ -216,7 +216,7 @@ internal sealed class SlideParagraph : IParagraph
         this.UpdateWidthIfNeed(paint, lMarginPixel, rMarginPixel, textFrame, shape);
     }
     
-    private void UpdateWidthIfNeed(SKPaint paint, int lMarginPixel, int rMarginPixel, TextFrame textFrame, Shape shape)
+    private void UpdateWidthIfNeed(SKPaint paint, int lMarginPixel, int rMarginPixel, TextFrame textFrame, SimpleShape simpleShape)
     {
         if (!textFrame.TextWrapped)
         {
@@ -230,7 +230,7 @@ internal sealed class SlideParagraph : IParagraph
             // 96/72=1.4
             const double Scale = 1.4;
             var newWidth = (int)(widthInPixels * Scale) + lMarginPixel + rMarginPixel;
-            shape.UpdateWidth(newWidth);
+            simpleShape.UpdateWidth(newWidth);
         }
     }
     
@@ -241,7 +241,7 @@ internal sealed class SlideParagraph : IParagraph
         int tMarginPixel,
         int bMarginPixel,
         int currentBlockHeight,
-        Shape shape)
+        SimpleShape simpleShape)
     {
         var requiredRowsCount = textWidth / currentBlockWidth;
         var integerPart = (int)requiredRowsCount;
@@ -253,12 +253,12 @@ internal sealed class SlideParagraph : IParagraph
 
         var requiredHeight = (integerPart * textHeight) + tMarginPixel + bMarginPixel;
         var newHeight = (int)requiredHeight + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
-        shape.UpdateHeight(newHeight);
+        simpleShape.UpdateHeight(newHeight);
 
         // We should raise the shape up by the amount which is half of the increased offset.
         // PowerPoint does the same thing.
         var yOffset = (requiredHeight - currentBlockHeight) / 2;
-        shape.UpdateY((int)(shape.Y() - yOffset));
+        simpleShape.UpdateY((int)(simpleShape.Y() - yOffset));
     }
 
     private void SetAlignment(SCTextAlignment alignmentValue)

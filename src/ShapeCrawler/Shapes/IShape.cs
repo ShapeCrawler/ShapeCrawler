@@ -72,6 +72,11 @@ public interface IShape : IPosition
     IShapeOutline Outline { get; }
  
     /// <summary>
+    ///     Gets value indicating whether the shape has fill.
+    /// </summary>
+    bool HasFill { get; }
+    
+    /// <summary>
     ///     Gets shape fill. Returns <see langword="null"/> if the shape can not be filled, for example, a line.
     /// </summary>
     IShapeFill Fill { get; }

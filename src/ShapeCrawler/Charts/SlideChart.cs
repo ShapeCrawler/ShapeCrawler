@@ -15,7 +15,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed record SlideChart : IRemoveable, IChart
+internal sealed class SlideChart : IRemoveable, IChart
 {
     private readonly ResetableLazy<ICategoryCollection?> categories;
     private readonly Lazy<SCChartType> chartType;
@@ -23,13 +23,13 @@ internal sealed record SlideChart : IRemoveable, IChart
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly Lazy<List<double>?> xValues;
     private readonly C.PlotArea cPlotArea;
+    private readonly SimpleShape simpleShape;
 
     // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
     // then collection contains only single item.
     private readonly IEnumerable<OpenXmlElement> cXCharts;
 
     private string? chartTitle;
-    private readonly Shape shape;
 
     internal SlideChart(SlidePart sdkSlidePart, P.GraphicFrame pGraphicFrame)
     {
@@ -47,7 +47,7 @@ internal sealed record SlideChart : IRemoveable, IChart
         this.cXCharts = this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
         this.workbook = this.SdkChartPart.EmbeddedPackagePart != null ? new ExcelBook(this.SdkChartPart.EmbeddedPackagePart) : null;
-        this.shape = new Shape(pGraphicFrame);
+        this.simpleShape = new SimpleShape(pGraphicFrame);
         var pShapeProperties = this.SdkChartPart.ChartSpace.GetFirstChild<P.ShapeProperties>()!;
         this.Outline = new SlideShapeOutline(sdkSlidePart,  pShapeProperties);
         this.Fill = new SlideShapeFill(sdkSlidePart, pShapeProperties, false);
@@ -60,6 +60,7 @@ internal sealed record SlideChart : IRemoveable, IChart
 
     public bool HasOutline => true;
     public IShapeOutline Outline { get; }
+    public bool HasFill { get; }
     public IShapeFill Fill { get; }
 
     public bool IsTextHolder => false;
@@ -114,33 +115,33 @@ internal sealed record SlideChart : IRemoveable, IChart
 
     public int X
     {
-        get => this.shape.X(); 
-        set => this.shape.UpdateX(value);
+        get => this.simpleShape.X(); 
+        set => this.simpleShape.UpdateX(value);
     }
 
     public int Y
     {
-        get => this.shape.Y(); 
-        set => this.shape.UpdateY(value);
+        get => this.simpleShape.Y(); 
+        set => this.simpleShape.UpdateY(value);
     }
 
     public int Width
     {
-        get => this.shape.Width(); 
-        set => this.shape.UpdateWidth(value);
+        get => this.simpleShape.Width(); 
+        set => this.simpleShape.UpdateWidth(value);
     }
 
     public int Height
     {
-        get => this.shape.Height(); 
-        set => this.shape.UpdateHeight(value);
+        get => this.simpleShape.Height(); 
+        set => this.simpleShape.UpdateHeight(value);
     }
     
-    public int Id => this.shape.Id();
+    public int Id => this.simpleShape.Id();
     
-    public string Name => this.shape.Name();
+    public string Name => this.simpleShape.Name();
     
-    public bool Hidden => this.shape.Hidden();
+    public bool Hidden => this.simpleShape.Hidden();
 
     public bool IsPlaceholder => false;
 

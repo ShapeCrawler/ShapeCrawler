@@ -24,32 +24,30 @@ public class ShapeCollectionTests : SCTest
     public void Add_adds_shape()
     {
         // Arrange
-        var pptx = StreamOf("053_add_shapes.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new SCPresentation(StreamOf("053_add_shapes.pptx"));
         var copyingShape = pres.Slides[0].Shapes.GetByName("TextBox")!;
-        var shapeCollection = pres.Slides[1].Shapes;
+        var shapes = pres.Slides[1].Shapes;
 
         // Act
-        shapeCollection.Add(copyingShape);
+        shapes.Add(copyingShape);
 
         // Assert
-        shapeCollection.GetByName("TextBox 2").Should().NotBeNull();
+        shapes.GetByName("TextBox 2").Should().NotBeNull();
     }
 
     [Test]
     public void Add_adds_table()
     {
         // Arrange
-        var pptx = StreamOf("053_add_shapes.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new SCPresentation(StreamOf("053_add_shapes.pptx"));
         var copyingShape = pres.Slides[0].Shapes.GetByName("Table 1")!;
-        var shapeCollection = pres.Slides[1].Shapes;
+        var shapes = pres.Slides[1].Shapes;
 
         // Act
-        shapeCollection.Add(copyingShape);
+        shapes.Add(copyingShape);
 
         // Assert
-        var addedShape = shapeCollection.Last();
+        var addedShape = shapes.Last();
         addedShape.Should().BeAssignableTo<ITable>();
     }
 

@@ -9,7 +9,6 @@ using ShapeCrawler.Shapes;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
-using Shape = ShapeCrawler.Shapes.Shape;
 
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.SlideShape;
@@ -17,12 +16,12 @@ namespace ShapeCrawler.SlideShape;
 internal sealed class SlideGroupShape : IGroupShape, IRemoveable
 {
     private readonly P.GroupShape pGroupShape;
-    private readonly Shape shape;
+    private readonly SimpleShape simpleShape;
 
     internal SlideGroupShape(SlidePart sdkSlidePart, P.GroupShape pGroupShape)
     {
         this.pGroupShape = pGroupShape;
-        this.shape = new Shape(pGroupShape);
+        this.simpleShape = new SimpleShape(pGroupShape);
         this.Shapes = new SlideGroupedShapes(sdkSlidePart, pGroupShape.Elements<OpenXmlCompositeElement>());
         this.Outline = new SlideShapeOutline(sdkSlidePart, pGroupShape.Descendants<P.ShapeProperties>().First());
         this.Fill = new SlideShapeFill(sdkSlidePart, pGroupShape.Descendants<P.ShapeProperties>().First(), false);
@@ -34,32 +33,32 @@ internal sealed class SlideGroupShape : IGroupShape, IRemoveable
 
     public int Width
     {
-        get => this.shape.Width();
-        set => this.shape.UpdateWidth(value);
+        get => this.simpleShape.Width();
+        set => this.simpleShape.UpdateWidth(value);
     }
 
     public int Height
     {
-        get => this.shape.Height();
-        set => this.shape.UpdateHeight(value);
+        get => this.simpleShape.Height();
+        set => this.simpleShape.UpdateHeight(value);
     }
 
-    public int Id => this.shape.Id();
+    public int Id => this.simpleShape.Id();
 
-    public string Name => this.shape.Name();
+    public string Name => this.simpleShape.Name();
 
-    public bool Hidden => this.shape.Hidden();
+    public bool Hidden => this.simpleShape.Hidden();
 
     public int X
     {
-        get => this.shape.X();
-        set => this.shape.UpdateX(value);
+        get => this.simpleShape.X();
+        set => this.simpleShape.UpdateX(value);
     }
 
     public int Y
     {
-        get => this.shape.Y();
-        set => this.shape.UpdateY(value);
+        get => this.simpleShape.Y();
+        set => this.simpleShape.UpdateY(value);
     }
 
     #endregion Shape
@@ -73,8 +72,8 @@ internal sealed class SlideGroupShape : IGroupShape, IRemoveable
 
     public string? CustomData
     {
-        get => this.shape.CustomData();
-        set => this.shape.UpdateCustomData(value);
+        get => this.simpleShape.ParseCustomData();
+        set => this.simpleShape.UpdateCustomData(value);
     }
 
     public SCShapeType ShapeType => SCShapeType.Group;
