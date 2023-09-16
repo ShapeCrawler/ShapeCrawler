@@ -31,7 +31,7 @@ internal sealed record Presentation
         this.slideSize = new SlideSize(this.sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
     }
 
-    internal ISlideCollection Slides { get; }
+    internal ISlides Slides { get; }
 
     internal int SlideHeight
     {

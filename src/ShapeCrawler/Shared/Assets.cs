@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace ShapeCrawler.Shared;
 
-internal sealed class Assets
+internal readonly record struct Assets
 {
     private readonly Assembly assembly;
 
@@ -22,8 +22,5 @@ internal sealed class Assets
         return asset;
     }
 
-    internal string StringOf(string file)
-    {
-        return new StreamReader(this.StreamOf(file)).ReadToEnd();
-    }
+    internal string StringOf(string file) => new StreamReader(this.StreamOf(file)).ReadToEnd();
 }

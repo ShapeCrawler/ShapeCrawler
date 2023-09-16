@@ -13,7 +13,7 @@ using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler;
 
-internal sealed record Slides : ISlideCollection
+internal sealed record Slides : ISlides
 {
     private readonly IEnumerable<SlidePart> sdkSlideParts;
     private readonly ReadOnlySlides readOnlySlides;

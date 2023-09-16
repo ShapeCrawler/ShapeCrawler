@@ -23,7 +23,7 @@ internal sealed record PathPresentation : IValidateable
     }
 
     public void CopyTo(Stream stream) => this.presentation.CopyTo(stream);
-    public ISlideCollection Slides => this.presentation.Slides;
+    public ISlides Slides => this.presentation.Slides;
 
     public int SlideWidth
     {

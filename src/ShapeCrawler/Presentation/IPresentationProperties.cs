@@ -10,7 +10,7 @@ public interface IPresentationProperties
     /// <summary>
     ///     Gets the presentation slides.
     /// </summary>
-    ISlideCollection Slides { get; }
+    ISlides Slides { get; }
 
     /// <summary>
     ///     Gets or sets presentation slides width in pixels.

@@ -31,12 +31,12 @@ public sealed record SCPresentation : IPresentation
     public SCPresentation()
     {
         var assets = new Assets(Assembly.GetExecutingAssembly());
-        var mStream = assets.StreamOf("new-presentation.pptx");
-        this.validateable = new StreamPresentation(mStream);
+        var stream = assets.StreamOf("new-presentation.pptx");
+        this.validateable = new StreamPresentation(stream);
     }
 
     /// <inheritdoc />
-    public ISlideCollection Slides => this.validateable.Slides;
+    public ISlides Slides => this.validateable.Slides;
 
     /// <inheritdoc />
     public int SlideWidth

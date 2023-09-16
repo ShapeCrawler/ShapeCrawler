@@ -20,7 +20,7 @@ internal sealed record StreamPresentation : IValidateable
     void IValidateable.Validate() => this.presentation.Validate();
     public void CopyTo(string path) => this.presentation.CopyTo(path);
     public void CopyTo(Stream stream) => this.presentation.CopyTo(stream);
-    public ISlideCollection Slides => this.presentation.Slides;
+    public ISlides Slides => this.presentation.Slides;
     public int SlideWidth
     {
         get => this.presentation.SlideWidth;

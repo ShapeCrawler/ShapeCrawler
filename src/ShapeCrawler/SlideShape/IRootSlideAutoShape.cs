@@ -1,9 +1,7 @@
-﻿using ShapeCrawler.Drawing;
-
-namespace ShapeCrawler.SlideShape;
+﻿namespace ShapeCrawler.SlideShape;
 
 /// <summary>
-///     Represents interface of AutoShape.
+///     Root (non-grouped) Auto Shape.
 /// </summary>
 internal interface IRootSlideAutoShape : IShape
 {     
