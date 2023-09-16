@@ -62,6 +62,8 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <EmbeddedResource Include="Resources\new-presentation.pptx" />
     <None Remove="Resources\new-rectangle.xml" />
     <EmbeddedResource Include="Resources\new-rectangle.xml" />
+    <None Remove="Resources\new-line.xml" />
+    <EmbeddedResource Include="Resources\new-line.xml" />
   </ItemGroup>
 
   <ItemGroup>

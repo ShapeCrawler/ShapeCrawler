@@ -109,7 +109,7 @@ internal sealed class SlideParagraph : IParagraph
     {
         foreach (var portion in this.Portions)
         {
-            portion.Font!.Size = fontSize;
+            portion.Font.Size = fontSize;
         }
     }
 
@@ -182,7 +182,6 @@ internal sealed class SlideParagraph : IParagraph
         // Resize
         var pTextBody = (P.TextBody)this.AParagraph.Parent!;
         var textFrame = new TextFrame(this.sdkSlidePart, pTextBody);
-        var shape = new SimpleShape(pTextBody.Parent!);
         if (textFrame.AutofitType != SCAutofitType.Resize)
         {
             return;
@@ -209,14 +208,15 @@ internal sealed class SlideParagraph : IParagraph
         paint.MeasureText(text, ref textRect);
         var textWidth = textRect.Width;
         var textHeight = paint.TextSize;
-        var currentBlockWidth = shape.Width() - lMarginPixel - rMarginPixel;
-        var currentBlockHeight = shape.Height() - tMarginPixel - bMarginPixel;
+        var shapeSize = new ShapeSize(pTextBody.Parent!);
+        var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
+        var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
 
-        this.UpdateHeight(textWidth, currentBlockWidth, textHeight, tMarginPixel, bMarginPixel, currentBlockHeight, shape);
-        this.UpdateWidthIfNeed(paint, lMarginPixel, rMarginPixel, textFrame, shape);
+        this.UpdateHeight(textWidth, currentBlockWidth, textHeight, tMarginPixel, bMarginPixel, currentBlockHeight, pTextBody.Parent!);
+        this.UpdateWidthIfNeed(paint, lMarginPixel, rMarginPixel, textFrame, pTextBody.Parent!);
     }
     
-    private void UpdateWidthIfNeed(SKPaint paint, int lMarginPixel, int rMarginPixel, TextFrame textFrame, SimpleShape simpleShape)
+    private void UpdateWidthIfNeed(SKPaint paint, int lMarginPixel, int rMarginPixel, TextFrame textFrame, OpenXmlElement parent)
     {
         if (!textFrame.TextWrapped)
         {
@@ -230,7 +230,7 @@ internal sealed class SlideParagraph : IParagraph
             // 96/72=1.4
             const double Scale = 1.4;
             var newWidth = (int)(widthInPixels * Scale) + lMarginPixel + rMarginPixel;
-            simpleShape.UpdateWidth(newWidth);
+            new ShapeSize(parent).UpdateWidth(newWidth);
         }
     }
     
@@ -241,7 +241,7 @@ internal sealed class SlideParagraph : IParagraph
         int tMarginPixel,
         int bMarginPixel,
         int currentBlockHeight,
-        SimpleShape simpleShape)
+        OpenXmlElement parent)
     {
         var requiredRowsCount = textWidth / currentBlockWidth;
         var integerPart = (int)requiredRowsCount;
@@ -253,12 +253,14 @@ internal sealed class SlideParagraph : IParagraph
 
         var requiredHeight = (integerPart * textHeight) + tMarginPixel + bMarginPixel;
         var newHeight = (int)requiredHeight + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
-        simpleShape.UpdateHeight(newHeight);
+        var position = new Position(parent);
+        var size = new ShapeSize(parent);
+        size.UpdateHeight(newHeight);
 
         // We should raise the shape up by the amount which is half of the increased offset.
         // PowerPoint does the same thing.
         var yOffset = (requiredHeight - currentBlockHeight) / 2;
-        simpleShape.UpdateY((int)(simpleShape.Y() - yOffset));
+        position.UpdateY((int)(position.Y() - yOffset));
     }
 
     private void SetAlignment(SCTextAlignment alignmentValue)

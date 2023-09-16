@@ -43,7 +43,7 @@ internal sealed class SlideGroupedShapes : IReadOnlyShapes
                 shape = new SlideAutoShape(this.sdkSlidePart, pShape);
                 if (pShape.TextBody is not null)
                 {
-                    shape = new TextSlideShape(this.sdkSlidePart, shape, pShape.TextBody);
+                    shape = new TextSlideShape(this.sdkSlidePart, pShape);
                 }
             }
             else if (pGroupShapeElement is P.Picture pPicture)

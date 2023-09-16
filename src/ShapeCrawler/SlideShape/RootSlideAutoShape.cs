@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AngleSharp.Html.Dom;
-using DocumentFormat.OpenXml;
+﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Drawing;
-using ShapeCrawler.Exceptions;
-using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
@@ -16,77 +8,21 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.SlideShape;
 
-internal sealed class RootSlideAutoShape : IRootSlideShape
+internal sealed class RootSlideAutoShape : IRootSlideAutoShape
 {
+    private readonly SlideAutoShape slideAutoShape;
     private readonly SlidePart sdkSlidePart;
-    private readonly IShape shape;
     private readonly P.Shape pShape;
 
     internal RootSlideAutoShape(
         SlidePart sdkSlidePart,
         P.Shape pShape,
-        IShape shape)
+        SlideAutoShape slideAutoShape)
     {
         this.sdkSlidePart = sdkSlidePart;
-        this.shape = shape;
+        this.slideAutoShape = slideAutoShape;
         this.pShape = pShape;
     }
-
-    #region Shape
-
-    public bool HasOutline => this.shape.HasOutline;
-    public IShapeOutline Outline => this.shape.Outline;
-    public bool HasFill => this.shape.HasFill;
-
-    public int Width
-    {
-        get => this.shape.Width;
-        set => this.shape.Width = value;
-    }
-
-    public int Height
-    {
-        get => this.shape.Height;
-        set => this.shape.Height = value;
-    }
-
-    public int Id => this.shape.Id;
-    public string Name => this.shape.Name;
-    public bool Hidden => this.shape.Hidden;
-    public SCGeometry GeometryType => this.shape.GeometryType;
-    public IShapeFill Fill => this.shape.Fill;
-    public bool IsPlaceholder => this.shape.IsPlaceholder;
-    public IPlaceholder Placeholder => this.shape.Placeholder;
-
-    public string? CustomData
-    {
-        get => this.shape.CustomData;
-        set => this.shape.CustomData = value;
-    }
-
-    public SCShapeType ShapeType => this.shape.ShapeType;
-
-    public bool IsTextHolder => this.shape.IsTextHolder;
-
-    public ITextFrame TextFrame => this.shape.TextFrame;
-
-    public double Rotation => this.shape.Rotation;
-    public ITable AsTable() => this.shape.AsTable();
-    public IMediaShape AsMedia() => this.shape.AsMedia();
-
-    public int X
-    {
-        get => this.shape.X;
-        set => this.shape.X = value;
-    }
-
-    public int Y
-    {
-        get => this.shape.Y;
-        set => this.shape.Y = value;
-    }
-
-    #endregion Shape
 
     public void Duplicate()
     {
@@ -94,41 +30,7 @@ internal sealed class RootSlideAutoShape : IRootSlideShape
         var autoShapes = new Shapes(pShapeTree);
         autoShapes.Add(this.pShape);
     }
-
-    void ICopyableShape.CopyTo(
-        int id,
-        P.ShapeTree pShapeTree,
-        IEnumerable<string> existingShapeNames,
-        SlidePart targetSdkSlidePart)
-    {
-        var copy = this.pShape.CloneNode(true);
-        copy.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
-        pShapeTree.AppendChild(copy);
-        var copyName = copy.GetNonVisualDrawingProperties().Name!.Value!;
-        if (existingShapeNames.Any(existingShapeName => existingShapeName == copyName))
-        {
-            var currentShapeCollectionSuffixes = existingShapeNames
-                .Where(c => c.StartsWith(copyName, StringComparison.InvariantCulture))
-                .Select(c => c.Substring(copyName.Length))
-                .ToArray();
-
-            // We will try to check numeric suffixes only.
-            var numericSuffixes = new List<int>();
-
-            foreach (var currentSuffix in currentShapeCollectionSuffixes)
-            {
-                if (int.TryParse(currentSuffix, out var numericSuffix))
-                {
-                    numericSuffixes.Add(numericSuffix);
-                }
-            }
-
-            numericSuffixes.Sort();
-            var lastSuffix = numericSuffixes.LastOrDefault() + 1;
-            copy.GetNonVisualDrawingProperties().Name = copyName + " " + lastSuffix;
-        }
-    }
-
+    
     internal void Draw(SKCanvas slideCanvas)
     {
         var skColorOutline = SKColor.Parse(this.Outline.HexColor);
@@ -153,4 +55,65 @@ internal sealed class RootSlideAutoShape : IRootSlideShape
             textFrame.Draw(slideCanvas, left, this.Y);
         }
     }
+
+    #region ICopyableShape
+
+    public bool HasOutline => this.slideAutoShape.HasOutline;
+    public IShapeOutline Outline => this.slideAutoShape.Outline;
+    public bool HasFill => this.slideAutoShape.HasFill;
+
+    public int Width
+    {
+        get => this.slideAutoShape.Width;
+        set => this.slideAutoShape.Width = value;
+    }
+
+    public int Height
+    {
+        get => this.slideAutoShape.Height;
+        set => this.slideAutoShape.Height = value;
+    }
+
+    public int Id => this.slideAutoShape.Id;
+    public string Name => this.slideAutoShape.Name;
+    public bool Hidden => this.slideAutoShape.Hidden;
+    public SCGeometry GeometryType => this.slideAutoShape.GeometryType;
+    public IShapeFill Fill => this.slideAutoShape.Fill;
+    public bool IsPlaceholder => this.slideAutoShape.IsPlaceholder;
+    public IPlaceholder Placeholder => this.slideAutoShape.Placeholder;
+
+    public string? CustomData
+    {
+        get => this.slideAutoShape.CustomData;
+        set => this.slideAutoShape.CustomData = value;
+    }
+
+    public SCShapeType ShapeType => this.slideAutoShape.ShapeType;
+
+    public bool IsTextHolder => this.slideAutoShape.IsTextHolder;
+
+    public ITextFrame TextFrame => this.slideAutoShape.TextFrame;
+
+    public double Rotation => this.slideAutoShape.Rotation;
+    public ITable AsTable() => this.slideAutoShape.AsTable();
+    public IMediaShape AsMedia() => this.slideAutoShape.AsMedia();
+    public void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames, SlidePart targetSdkSlidePart)
+    {
+        this.slideAutoShape.CopyTo(id, pShapeTree, existingShapeNames, targetSdkSlidePart);
+    }
+
+    public int X
+    {
+        get => this.slideAutoShape.X;
+        set => this.slideAutoShape.X = value;
+    }
+
+    public int Y
+    {
+        get => this.slideAutoShape.Y;
+        set => this.slideAutoShape.Y = value;
+    }
+
+    
+    #endregion ICopyableShape
 }

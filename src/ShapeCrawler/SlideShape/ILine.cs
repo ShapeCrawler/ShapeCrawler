@@ -24,15 +24,13 @@ public interface ILine : IShape
     SCPoint EndPoint { get; }
 }
 
-internal sealed class SlideLine : ILine, IRemoveable
+internal sealed class SlideLine : Shape, ILine, IRemoveable
 {
     private readonly P.ConnectionShape pConnectionShape;
-    private readonly SimpleShape simpleShape;
 
     internal SlideLine(SlidePart sdkSlidePart, P.ConnectionShape pConnectionShape)
         : this(
             pConnectionShape,
-            new SimpleShape(pConnectionShape),
             new SlideShapeOutline(sdkSlidePart, pConnectionShape.ShapeProperties!)
         )
     {
@@ -40,18 +38,18 @@ internal sealed class SlideLine : ILine, IRemoveable
 
     private SlideLine(
         P.ConnectionShape pConnectionShape,
-        SimpleShape simpleShape,
         SlideShapeOutline shapeOutline)
+        : base(pConnectionShape)
     {
         this.pConnectionShape = pConnectionShape;
-        this.simpleShape = simpleShape;
         this.Outline = shapeOutline;
     }
 
-    public SCShapeType ShapeType => SCShapeType.Line;
-    public bool HasOutline => true;
-    public IShapeOutline Outline { get; }
-    public SCGeometry GeometryType => SCGeometry.Line;
+    public override SCShapeType ShapeType => SCShapeType.Line;
+    public override bool HasOutline => true;
+    public override IShapeOutline Outline { get; }
+    public override SCGeometry GeometryType => SCGeometry.Line;
+
     public SCPoint StartPoint
     {
         get
@@ -75,7 +73,7 @@ internal sealed class SlideLine : ILine, IRemoveable
             return new SCPoint(this.X, this.Y);
         }
     }
-    
+
     public SCPoint EndPoint
     {
         get
@@ -107,62 +105,9 @@ internal sealed class SlideLine : ILine, IRemoveable
             }
 
             return new SCPoint(this.Width, this.Y);
-
         }
     }
-    
-    #region SimpleShape
 
-    public bool IsTextHolder => this.simpleShape.IsTextHolder;
-    public ITextFrame TextFrame => this.simpleShape.TextFrame;
-    public double Rotation => this.simpleShape.Rotation;
-    public ITable AsTable() => this.simpleShape.AsTable();
-    public IMediaShape AsMedia() => this.simpleShape.AsMedia();
-    public bool HasFill => this.simpleShape.HasFill;
-    public IShapeFill Fill => this.simpleShape.Fill;
-
-    public int Width
-    {
-        get => this.simpleShape.Width;
-        set => this.simpleShape.Width = value;
-    }
-
-    public int Height
-    {
-        get => this.simpleShape.Height;
-        set => this.simpleShape.Height = value;
-    }
-
-    public int Id => this.simpleShape.Id;
-
-    public string Name => this.simpleShape.Name;
-
-    public bool Hidden => this.simpleShape.Hidden;
-
-    public bool IsPlaceholder => this.simpleShape.IsPlaceholder;
-
-    public int X
-    {
-        get => this.simpleShape.X;
-        set => this.simpleShape.X = value;
-    }
-
-    public int Y
-    {
-        get => this.simpleShape.Y;
-        set => this.simpleShape.Y = value;
-    }
-
-    public IPlaceholder Placeholder => this.simpleShape.Placeholder;
-
-    public string? CustomData
-    {
-        get => this.simpleShape.CustomData;
-        set => this.simpleShape.CustomData = value;
-    }
-
-    #endregion SimpleShape
-    
     void IRemoveable.Remove()
     {
         this.pConnectionShape.Remove();

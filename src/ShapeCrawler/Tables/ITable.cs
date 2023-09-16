@@ -49,59 +49,26 @@ public interface ITable : IShape
     void UpdateFill(string colorHex);
 }
 
-internal sealed record SlideTable : IRemoveable, ITable
+internal sealed class SlideTable : CopyableShape, ITable, IRemoveable 
 {
     private readonly SlidePart sdkSlidePart;
-    private readonly SimpleShape simpleShape;
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly ResetableLazy<SlideTableRows> rowCollection;
 
     internal SlideTable(SlidePart sdkSlidePart, OpenXmlCompositeElement pShapeTreeElement)
-        : this(sdkSlidePart, pShapeTreeElement, new SimpleShape(pShapeTreeElement))
-    {
-    }
-
-    private SlideTable(SlidePart sdkSlidePart, OpenXmlCompositeElement pShapeTreeElement, SimpleShape simpleShape)
+        : base(pShapeTreeElement)
     {
         this.sdkSlidePart = sdkSlidePart;
-        this.simpleShape = simpleShape;
         var graphicFrame = (P.GraphicFrame)pShapeTreeElement;
-        this.rowCollection = new ResetableLazy<SlideTableRows>(() => new SlideTableRows(this.sdkSlidePart, graphicFrame));
+        this.rowCollection =
+            new ResetableLazy<SlideTableRows>(() => new SlideTableRows(this.sdkSlidePart, graphicFrame));
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
     }
 
-    public SCShapeType ShapeType => SCShapeType.Table;
-    public bool HasOutline => false;
-    public IShapeOutline Outline => throw new SCException($"Table cannot have outline formatting. Use {nameof(IShape.HasOutline)} property to check if the shape has outline formatting.");
-
-    public IShapeFill Fill =>
-        throw new SCException(
-            $"You can only update table fill using {nameof(ITable.UpdateFill)}. Use {nameof(ITableCell.Fill)} property to get fill of a certain table cell.");
-    public bool IsTextHolder => false;
-
-    public ITextFrame TextFrame =>
-        throw new SCException(
-            $"Table cannot be a text holder. Use {nameof(IShape.IsTextHolder)} property to check if the shape is a text holder.");
-    public double Rotation { get; }
-    public ITable AsTable() => this;
-    public IMediaShape AsMedia() =>
-        throw new SCException(
-            $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
-
+    public override SCShapeType ShapeType => SCShapeType.Table;
     public IReadOnlyList<IColumn> Columns => this.GetColumnList(); // TODO: make lazy
-
     public IRowCollection Rows => this.rowCollection.Value;
-
-    public int Width { get; set; }
-    public int Height { get; set; }
-    public int Id => this.simpleShape.Id();
-    public string Name => this.simpleShape.Name();
-    public bool Hidden { get; }
-
-    public bool IsPlaceholder => false;
-    public IPlaceholder Placeholder => throw new SCException($"Table is not a placeholder. Use {nameof(IShape.IsPlaceholder)} method to check it.");
-    public SCGeometry GeometryType => SCGeometry.Rectangle;
-    public string? CustomData { get; set; }
+    public override SCGeometry GeometryType => SCGeometry.Rectangle;
 
     private A.Table ATable => this.pGraphicFrame.GetATable();
 
@@ -328,8 +295,6 @@ internal sealed record SlideTable : IRemoveable, ITable
         }
     }
 
-    public int X { get; set; }
-    public int Y { get; set; }
     public void Remove()
     {
         throw new NotImplementedException();

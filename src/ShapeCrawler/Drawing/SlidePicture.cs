@@ -2,41 +2,37 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Office2019.Drawing.SVG;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
-using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class SlidePicture : IPicture, IRemoveable, ICopyableShape 
+internal sealed class SlidePicture : CopyableShape, IPicture, IRemoveable 
 {
     private readonly StringValue blipEmbed;
     private readonly P.Picture pPicture;
     private readonly A.Blip aBlip;
-    private readonly SimpleShape simpleShape;
     private readonly SlidePart sdkSlidePart;
 
     internal SlidePicture(
         SlidePart sdkSlidePart, 
         P.Picture pPicture, 
         A.Blip aBlip)
-        : this(sdkSlidePart, pPicture, aBlip, new SimpleShape(pPicture), new SlidePictureImage(sdkSlidePart, aBlip))
+        : this(sdkSlidePart, pPicture, aBlip, new SlidePictureImage(sdkSlidePart, aBlip))
     {
     }
 
-    private SlidePicture(SlidePart sdkSlidePart, P.Picture pPicture, A.Blip aBlip, SimpleShape simpleShape, IImage image)
+    private SlidePicture(SlidePart sdkSlidePart, P.Picture pPicture, A.Blip aBlip, IImage image)
+    :base(pPicture)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.pPicture = pPicture;
         this.aBlip = aBlip;
-        this.simpleShape = simpleShape;
         this.Image = image;
         this.blipEmbed = aBlip.Embed!;
         this.Outline = new SlideShapeOutline(sdkSlidePart, pPicture.ShapeProperties!);
@@ -44,47 +40,14 @@ internal sealed class SlidePicture : IPicture, IRemoveable, ICopyableShape
     }
 
     public IImage Image { get; }
-
     public string? SvgContent => this.GetSvgContent();
+    public override SCGeometry GeometryType => SCGeometry.Rectangle;
+    public override SCShapeType ShapeType => SCShapeType.Picture;
+    public override bool HasOutline => true;
+    public override IShapeOutline Outline { get; }
 
-    public int Width { get; set; }
-    public int Height { get; set; }
-    public int Id => this.simpleShape.Id();
-    public string Name => this.simpleShape.Name();
-    public bool Hidden { get; }
-    public bool IsPlaceholder => false;
-
-    public IPlaceholder Placeholder => throw new SCException(
-        $"The Picture shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} to check if the shape is a placeholder.");
-    public SCGeometry GeometryType { get; }
-    public string? CustomData { get; set; }
-    public SCShapeType ShapeType => SCShapeType.Picture;
-    public bool HasOutline => true;
-    public IShapeOutline Outline { get; }
-    public IShapeFill Fill { get; }
-    public bool IsTextHolder { get; }
-
-    public ITextFrame TextFrame => throw new SCException($"The Picture shape is not a text holder. Use {nameof(IShape.IsTextHolder)} method to check it.");
-    public double Rotation { get; }
-    public ITable AsTable() => throw new SCException($"The Picture shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
-    public IMediaShape AsMedia() =>
-        throw new SCException(
-            $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
-
-    internal void Draw(SKCanvas canvas)
-    {
-        throw new NotImplementedException();
-    }
-
-    internal IHtmlElement ToHtmlElement()
-    {
-        throw new NotImplementedException();
-    }
-
-    internal string ToJson()
-    {
-        throw new NotImplementedException();
-    }
+    public override bool HasFill => true;
+    public override IShapeFill Fill { get; }
 
     private string? GetSvgContent()
     {
@@ -104,41 +67,14 @@ internal sealed class SlidePicture : IPicture, IRemoveable, ICopyableShape
         return sReader.ReadToEnd();
     }
 
-    public int X { get; set; }
-    public int Y { get; set; }
-
-    void ICopyableShape.CopyTo(
-        int id, 
-        P.ShapeTree pShapeTree, 
-        IEnumerable<string> existingShapeNames,
-        SlidePart targetSdkSlidePart)
+    public void Remove()
     {
-        var copy = this.pPicture.CloneNode(true);
-        copy.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
-        pShapeTree.AppendChild(copy);
-        var copyName = copy.GetNonVisualDrawingProperties().Name!.Value!;
-        if (existingShapeNames.Any(existingShapeName => existingShapeName == copyName))
-        {
-            var currentShapeCollectionSuffixes = existingShapeNames
-                .Where(c => c.StartsWith(copyName, StringComparison.InvariantCulture))
-                .Select(c => c.Substring(copyName.Length))
-                .ToArray();
+        this.pPicture.Remove();
+    }
 
-            // We will try to check numeric suffixes only.
-            var numericSuffixes = new List<int>();
-
-            foreach (var currentSuffix in currentShapeCollectionSuffixes)
-            {
-                if (int.TryParse(currentSuffix, out var numericSuffix))
-                {
-                    numericSuffixes.Add(numericSuffix);
-                }
-            }
-
-            numericSuffixes.Sort();
-            var lastSuffix = numericSuffixes.LastOrDefault() + 1;
-            copy.GetNonVisualDrawingProperties().Name = copyName + " " + lastSuffix;
-        }
+    internal override void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames, SlidePart targetSdkSlidePart)
+    {
+        base.CopyTo(id, pShapeTree, existingShapeNames, targetSdkSlidePart);
 
         // COPY PARTS
         var sourceSdkSlidePart = this.sdkSlidePart;
@@ -153,11 +89,7 @@ internal sealed class SlidePicture : IPicture, IRemoveable, ICopyableShape
         sourceImageStream.Position = 0;
         targetImagePart.FeedData(sourceImageStream);
 
+        var copy = this.pShapeTreeElement.CloneNode(true);
         copy.Descendants<A.Blip>().First().Embed = targetImagePartRId;
-    }
-
-    public void Remove()
-    {
-        this.pPicture.Remove();
     }
 }

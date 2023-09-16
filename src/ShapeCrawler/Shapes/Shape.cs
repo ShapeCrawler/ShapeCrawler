@@ -7,21 +7,22 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class SimpleShape : IShape
+internal abstract class Shape : IShape
 {
-    private readonly OpenXmlElement pShapeTreeElement;
     private readonly Position position;
     private readonly ShapeSize size;
     private const string customDataElementName = "ctd";
+    
+    protected readonly OpenXmlElement pShapeTreeElement;
 
-    internal SimpleShape(OpenXmlElement pShapeTreeElement)
+    internal Shape(OpenXmlElement pShapeTreeElement)
     {
         this.pShapeTreeElement = pShapeTreeElement;
-        this.position = new Position(this.pShapeTreeElement);
+        this.position = new Position(pShapeTreeElement);
         this.size = new ShapeSize(pShapeTreeElement);
     }
 
-    internal string? ParseCustomData()
+    private string? ParseCustomData()
     {
         const string pattern = @$"<{customDataElementName}>(.*)<\/{customDataElementName}>";
 
@@ -84,10 +85,12 @@ internal sealed class SimpleShape : IShape
         }
     }
 
-    public bool IsPlaceholder => false;
-    public IPlaceholder Placeholder => throw new SCException($"The shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} property to check if shape is a placeholder.");
+    public virtual bool IsPlaceholder => false;
 
-    public SCGeometry GeometryType => SCGeometry.Rectangle;
+    public virtual IPlaceholder Placeholder => throw new SCException(
+        $"The shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} property to check if shape is a placeholder.");
+
+    public virtual SCGeometry GeometryType => SCGeometry.Rectangle;
 
     public string? CustomData
     {
@@ -95,17 +98,29 @@ internal sealed class SimpleShape : IShape
         set => this.UpdateCustomData(value);
     }
 
-    public SCShapeType ShapeType => SCShapeType.AutoShape;
-    public bool HasOutline => false;
-    public IShapeOutline Outline => throw new SCException($"Shape does not have outline. Use {nameof(IShape.HasOutline)} property to check if the shape has outline.");
-    public bool HasFill => false;
-    public IShapeFill Fill => throw new SCException($"Shape does not have fill. Use {nameof(IShape.HasFill)} property to check if the shape has fill.");
-    public bool IsTextHolder => false;
-    public ITextFrame TextFrame => throw new SCException($"The shape is not a text holder. Use {nameof(IShape.IsTextHolder)} method to check it.");
-    public double Rotation => throw new NotImplementedException();
-    public ITable AsTable() => throw new SCException($"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
+    public abstract SCShapeType ShapeType { get; }
+    public virtual bool HasOutline => false;
 
-    public IMediaShape AsMedia() =>
+    public virtual IShapeOutline Outline => throw new SCException(
+        $"Shape does not have outline. Use {nameof(IShape.HasOutline)} property to check if the shape has outline.");
+
+    public virtual bool HasFill => false;
+
+    public virtual IShapeFill Fill =>
+        throw new SCException(
+            $"Shape does not have fill. Use {nameof(IShape.HasFill)} property to check if the shape has fill.");
+
+    public virtual bool IsTextHolder => false;
+
+    public virtual ITextFrame TextFrame =>
+        throw new SCException($"The shape is not a text holder. Use {nameof(IShape.IsTextHolder)} method to check it.");
+
+    public double Rotation => throw new NotImplementedException();
+
+    public virtual ITable AsTable() => throw new SCException(
+        $"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
+
+    public virtual IMediaShape AsMedia() =>
         throw new SCException(
             $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media (audio, video, etc.");
 }

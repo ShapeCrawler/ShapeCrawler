@@ -6,7 +6,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed record ShapeSize
+internal sealed class ShapeSize
 {
     private readonly Lazy<A.Extents> aExtents;
 

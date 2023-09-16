@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using AngleSharp.Html.Dom;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Extensions;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
@@ -13,50 +11,28 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.SlideShape;
 
-internal sealed class SlideAutoShape : IShape, IRemoveable
+internal sealed class SlideAutoShape : CopyableShape, IShape, IRemoveable
 {
     private readonly P.Shape pShape;
-    private readonly SimpleShape simpleShape;
     private readonly SlidePart sdkSlidePart;
 
     internal SlideAutoShape(
         SlidePart sdkSlidePart,
-        P.Shape pShape) :
-        this(
-            sdkSlidePart,
-            pShape,
-            new SimpleShape(pShape),
-            new SlideShapeOutline(sdkSlidePart, pShape.ShapeProperties!)
-        )
-    {
-    }
-
-    private SlideAutoShape(
-        SlidePart sdkSlidePart,
-        P.Shape pShape,
-        SimpleShape simpleShape,
-        SlideShapeOutline outline)
+        P.Shape pShape)
+        : base(pShape)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.pShape = pShape;
-        this.simpleShape = simpleShape;
-        this.Outline = outline;
+        this.Outline = new SlideShapeOutline(sdkSlidePart, pShape.Descendants<P.ShapeProperties>().First());
+        ;
+        this.Fill = new SlideShapeFill(sdkSlidePart, pShape.Descendants<P.ShapeProperties>().First(), false);
     }
 
-    public bool HasOutline => true;
-    public IShapeOutline Outline { get; }
-    public bool HasFill => this.simpleShape.HasFill;
-    public SCShapeType ShapeType => SCShapeType.AutoShape;
-    public IShapeFill Fill => this.simpleShape.Fill;
-    public double Rotation => this.simpleShape.Rotation;
-    public bool IsTextHolder => this.simpleShape.IsTextHolder;
-    public ITextFrame TextFrame => this.simpleShape.TextFrame;
-
-    public ITable AsTable() => this.simpleShape.AsTable();
-
-    public IMediaShape AsMedia() => this.simpleShape.AsMedia();
-    public bool IsPlaceholder => this.simpleShape.IsPlaceholder;
-    public IPlaceholder Placeholder => this.simpleShape.Placeholder;
+    public override bool HasOutline => true;
+    public override IShapeOutline Outline { get; }
+    public override bool HasFill => true;
+    public override IShapeFill Fill { get; }
+    public override SCShapeType ShapeType => SCShapeType.AutoShape;
 
     internal void Draw(SKCanvas slideCanvas)
     {
@@ -82,84 +58,8 @@ internal sealed class SlideAutoShape : IShape, IRemoveable
             textFrame.Draw(slideCanvas, left, this.Y);
         }
     }
-    
+
     internal IHtmlElement ToHtmlElement() => throw new NotImplementedException();
-
-    #region Shape
-
-    public int Width
-    {
-        get => this.simpleShape.Width;
-        set => this.simpleShape.Width = value;
-    }
-
-    public int Height
-    {
-        get => this.simpleShape.Height;
-        set => this.simpleShape.Height = value;
-    }
-
-    public int Id => this.simpleShape.Id;
-    public string Name => this.simpleShape.Name;
-    public bool Hidden => this.simpleShape.Hidden;
-    public SCGeometry GeometryType => this.simpleShape.GeometryType;
-
-    public string? CustomData
-    {
-        get => this.simpleShape.ParseCustomData();
-        set => this.simpleShape.UpdateCustomData(value!);
-    }
-
-    public int X
-    {
-        get => this.simpleShape.X;
-        set => this.simpleShape.X = value;
-    }
-
-    public int Y
-    {
-        get => this.simpleShape.Y;
-        set => this.simpleShape.Y = value;
-    }
-
-    #endregion Shape
-
-    internal void CopyTo(
-        int id, 
-        P.ShapeTree pShapeTree, 
-        IEnumerable<string> existingShapeNames,
-        SlidePart targetSdkSlidePart)
-    {
-        var copy = this.pShape.CloneNode(true);
-        copy.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
-        pShapeTree.AppendChild(copy);
-        var copyName = copy.GetNonVisualDrawingProperties().Name!.Value!;
-        if (existingShapeNames.Any(existingShapeName => existingShapeName == copyName))
-        {
-            var currentShapeCollectionSuffixes = existingShapeNames
-                .Where(c => c.StartsWith(copyName, StringComparison.InvariantCulture))
-                .Select(c => c.Substring(copyName.Length))
-                .ToArray();
-
-            // We will try to check numeric suffixes only.
-            var numericSuffixes = new List<int>();
-
-            foreach (var currentSuffix in currentShapeCollectionSuffixes)
-            {
-                if (int.TryParse(currentSuffix, out var numericSuffix))
-                {
-                    numericSuffixes.Add(numericSuffix);
-                }
-            }
-
-            numericSuffixes.Sort();
-            var lastSuffix = numericSuffixes.LastOrDefault() + 1;
-            copy.GetNonVisualDrawingProperties().Name = copyName + " " + lastSuffix;
-        }
-    }
-
-    void IRemoveable.Remove()
-    {
-        this.pShape.Remove();
-    }
+    
+    void IRemoveable.Remove() => this.pShape.Remove();
 }

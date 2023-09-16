@@ -15,7 +15,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class SlideChart : IRemoveable, IChart
+internal sealed class SlideChart : Shape, IRemoveable, IChart
 {
     private readonly ResetableLazy<ICategoryCollection?> categories;
     private readonly Lazy<SCChartType> chartType;
@@ -23,7 +23,6 @@ internal sealed class SlideChart : IRemoveable, IChart
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly Lazy<List<double>?> xValues;
     private readonly C.PlotArea cPlotArea;
-    private readonly SimpleShape simpleShape;
 
     // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
     // then collection contains only single item.
@@ -32,6 +31,7 @@ internal sealed class SlideChart : IRemoveable, IChart
     private string? chartTitle;
 
     internal SlideChart(SlidePart sdkSlidePart, P.GraphicFrame pGraphicFrame)
+        : base(pGraphicFrame)
     {
         this.pGraphicFrame = pGraphicFrame;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
@@ -46,33 +46,21 @@ internal sealed class SlideChart : IRemoveable, IChart
         this.cPlotArea = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
         this.cXCharts = this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
 
-        this.workbook = this.SdkChartPart.EmbeddedPackagePart != null ? new ExcelBook(this.SdkChartPart.EmbeddedPackagePart) : null;
-        this.simpleShape = new SimpleShape(pGraphicFrame);
+        this.workbook = this.SdkChartPart.EmbeddedPackagePart != null
+            ? new ExcelBook(this.SdkChartPart.EmbeddedPackagePart)
+            : null;
         var pShapeProperties = this.SdkChartPart.ChartSpace.GetFirstChild<P.ShapeProperties>()!;
-        this.Outline = new SlideShapeOutline(sdkSlidePart,  pShapeProperties);
+        this.Outline = new SlideShapeOutline(sdkSlidePart, pShapeProperties);
         this.Fill = new SlideShapeFill(sdkSlidePart, pShapeProperties, false);
-        this.SeriesList = new SeriesList(this.SdkChartPart, this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
+        this.SeriesList = new SeriesList(this.SdkChartPart,
+            this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }
 
     public SCChartType Type => this.chartType.Value;
 
-    public SCShapeType ShapeType => SCShapeType.Chart;
-
-    public bool HasOutline => true;
-    public IShapeOutline Outline { get; }
-    public bool HasFill { get; }
-    public IShapeFill Fill { get; }
-
-    public bool IsTextHolder => false;
-
-    public ITextFrame TextFrame => throw new SCException(
-        $"Chart cannot be a text holder. Use {nameof(IShape.IsTextHolder)} property to check if the shape is a text holder.");
-    public double Rotation { get; }
-    public ITable AsTable() => throw new SCException(
-        $"Chart cannot be a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
-    public IMediaShape AsMedia() =>
-        throw new SCException(
-            $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media.");
+    public override SCShapeType ShapeType => SCShapeType.Chart;
+    public override IShapeOutline Outline { get; }
+    public override IShapeFill Fill { get; }
 
     public string? Title
     {
@@ -112,68 +100,13 @@ internal sealed class SlideChart : IRemoveable, IChart
             return this.xValues.Value;
         }
     }
-
-    public int X
-    {
-        get => this.simpleShape.X(); 
-        set => this.simpleShape.UpdateX(value);
-    }
-
-    public int Y
-    {
-        get => this.simpleShape.Y(); 
-        set => this.simpleShape.UpdateY(value);
-    }
-
-    public int Width
-    {
-        get => this.simpleShape.Width(); 
-        set => this.simpleShape.UpdateWidth(value);
-    }
-
-    public int Height
-    {
-        get => this.simpleShape.Height(); 
-        set => this.simpleShape.UpdateHeight(value);
-    }
-    
-    public int Id => this.simpleShape.Id();
-    
-    public string Name => this.simpleShape.Name();
-    
-    public bool Hidden => this.simpleShape.Hidden();
-
-    public bool IsPlaceholder => false;
-
-    public IPlaceholder Placeholder => throw new SCException($"The Chart is not a placeholder. Use {nameof(IShape.IsPlaceholder)} to check if the shape is a placeholder.");
-    public SCGeometry GeometryType => SCGeometry.Rectangle;
-    public string? CustomData { get; set; }
-
+    public override SCGeometry GeometryType => SCGeometry.Rectangle;
     public byte[] WorkbookByteArray => this.workbook!.BinaryData;
-
     public SpreadsheetDocument SDKSpreadsheetDocument => this.workbook!.SpreadsheetDocument.Value;
-    
     public IAxesManager Axes => this.GetAxes();
-
     internal ExcelBook? workbook { get; set; }
-
     internal ChartPart SdkChartPart { get; private set; }
-
-    internal void Draw(SKCanvas canvas)
-    {
-        throw new NotImplementedException();
-    }
-
-    internal IHtmlElement ToHtmlElement()
-    {
-        throw new NotImplementedException();
-    }
-
-    internal string ToJson()
-    {
-        throw new NotImplementedException();
-    }
-
+    
     private SCChartType GetChartType()
     {
         if (this.cXCharts.Count() > 1)
@@ -186,7 +119,7 @@ internal sealed class SlideChart : IRemoveable, IChart
 
         return enumChartType;
     }
-    
+
     private IAxesManager GetAxes()
     {
         return new SCAxesManager(this.cPlotArea);

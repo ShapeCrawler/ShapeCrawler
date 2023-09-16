@@ -42,7 +42,7 @@ internal sealed record SlideShapes : ISlideShapes
         var id = this.CalculateNextShapeId();
         var allShapeNames = this.Select(shape => shape.Name);
 
-        if (addingShape is ICopyableShape copyable)
+        if (addingShape is CopyableShape copyable)
         {
             copyable.CopyTo(id, pShapeTree, allShapeNames, this.sdkSlidePart);
         }
@@ -261,6 +261,10 @@ internal sealed record SlideShapes : ISlideShapes
 
     public void AddLine(int startPointX, int startPointY, int endPointX, int endPointY)
     {
+        var xml = new Assets(Assembly.GetExecutingAssembly()).StringOf("new-line.xml");
+        var pConnectionShape = new P.ConnectionShape(xml);
+        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(pConnectionShape);
+        
         var deltaY = endPointY - startPointY;
         var cx = endPointX;
 
@@ -309,11 +313,21 @@ internal sealed record SlideShapes : ISlideShapes
         {
             flipH = true;
         }
-
-        var newPConnectionShape = this.CreatePConnectionShape(x, y, cx, cy, flipH, flipV);
-        throw new Exception("TODO: Add Outline: newShape.Outline.Color = 000000");
-
-        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(newPConnectionShape);
+        
+        var idAndName = this.GenerateIdAndName();
+        pConnectionShape.NonVisualConnectionShapeProperties!.NonVisualDrawingProperties!.Id = (uint)idAndName.Item1;
+        
+        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
+        var yEmu = UnitConverter.VerticalPixelToEmu(y);
+        var cxEmu = UnitConverter.HorizontalPixelToEmu(cx);
+        var cyEmu = UnitConverter.VerticalPixelToEmu(cy);
+        var aXfrm = pConnectionShape.ShapeProperties!.Transform2D!;
+        aXfrm.Offset!.X = xEmu;
+        aXfrm.Offset!.Y = yEmu;
+        aXfrm.Extents!.Cx = cxEmu;
+        aXfrm.Extents!.Cy = cyEmu;
+        aXfrm.HorizontalFlip = new BooleanValue(flipH);
+        aXfrm.VerticalFlip = new BooleanValue(flipV);
     }
 
     public void AddTable(int xPx, int yPx, int columns, int rows)
@@ -454,33 +468,7 @@ internal sealed record SlideShapes : ISlideShapes
 
         return pShape;
     }
-
-    private P.ConnectionShape CreatePConnectionShape(int xPx, int yPx, int cxPx, int cyPx, bool flipH, bool flipV)
-    {
-        var idAndName = this.GenerateIdAndName();
-        var adjustValueList = new A.AdjustValueList();
-        var presetGeometry = new A.PresetGeometry(adjustValueList)
-            { Preset = A.ShapeTypeValues.Line };
-        var shapeProperties = new P.ShapeProperties();
-        var xEmu = UnitConverter.HorizontalPixelToEmu(xPx);
-        var yEmu = UnitConverter.VerticalPixelToEmu(yPx);
-        var cxEmu = UnitConverter.HorizontalPixelToEmu(cxPx);
-        var cyEmu = UnitConverter.VerticalPixelToEmu(cyPx);
-        var aXfrm = shapeProperties.AddAXfrm(xEmu, yEmu, cxEmu, cyEmu);
-        aXfrm.HorizontalFlip = new BooleanValue(flipH);
-        aXfrm.VerticalFlip = new BooleanValue(flipV);
-        shapeProperties.Append(presetGeometry);
-
-        var pConnectionShape = new P.ConnectionShape(
-            new P.NonVisualConnectionShapeProperties(
-                new P.NonVisualDrawingProperties { Id = (uint)idAndName.Item1, Name = idAndName.Item2 },
-                new P.NonVisualConnectorShapeDrawingProperties(),
-                new P.ApplicationNonVisualDrawingProperties()),
-            shapeProperties);
-
-        return pConnectionShape;
-    }
-
+    
     private (int, string) GenerateIdAndName()
     {
         var maxId = 0;
@@ -554,7 +542,7 @@ internal sealed record SlideShapes : ISlideShapes
                     new SlideAutoShape(this.sdkSlidePart, pShape));
                 if (pShape.TextBody is not null)
                 {
-                    var textAutoShape = new TextRootSlideShape(this.sdkSlidePart, rtSlideShape, pShape.TextBody);
+                    var textAutoShape = new TextRootSlideAutoShape(this.sdkSlidePart, rtSlideShape, pShape.TextBody);
                     shapeList.Add(textAutoShape);
                 }
                 else
