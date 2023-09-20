@@ -2,11 +2,11 @@
 namespace ShapeCrawler;
 
 /// <summary>
-///     Represent a point.
+///     Represents a point.
 /// </summary>
-public readonly ref struct SCPoint
+public readonly ref struct Point
 {
-    internal SCPoint(int x, int y)
+    internal Point(int x, int y)
     {
         this.X = x;
         this.Y = y;

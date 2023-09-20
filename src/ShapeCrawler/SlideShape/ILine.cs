@@ -16,12 +16,12 @@ public interface ILine : IShape
     /// <summary>
     ///    Gets the start point of the line.
     /// </summary>
-    SCPoint StartPoint { get; }
+    Point StartPoint { get; }
 
     /// <summary>
     ///     Gets the end point of the line.
     /// </summary>
-    SCPoint EndPoint { get; }
+    Point EndPoint { get; }
 }
 
 internal sealed class SlideLine : Shape, ILine, IRemoveable
@@ -50,7 +50,7 @@ internal sealed class SlideLine : Shape, ILine, IRemoveable
     public override IShapeOutline Outline { get; }
     public override SCGeometry GeometryType => SCGeometry.Line;
 
-    public SCPoint StartPoint
+    public Point StartPoint
     {
         get
         {
@@ -62,19 +62,19 @@ internal sealed class SlideLine : Shape, ILine, IRemoveable
 
             if (flipH && (this.Height == 0 || flipV))
             {
-                return new SCPoint(this.X, this.Y);
+                return new Point(this.X, this.Y);
             }
 
             if (flipH)
             {
-                return new SCPoint(this.X + this.Width, this.Y);
+                return new Point(this.X + this.Width, this.Y);
             }
 
-            return new SCPoint(this.X, this.Y);
+            return new Point(this.X, this.Y);
         }
     }
 
-    public SCPoint EndPoint
+    public Point EndPoint
     {
         get
         {
@@ -86,25 +86,25 @@ internal sealed class SlideLine : Shape, ILine, IRemoveable
 
             if (this.Width == 0)
             {
-                return new SCPoint(this.X, this.Height);
+                return new Point(this.X, this.Height);
             }
 
             if (flipH && this.Height == 0)
             {
-                return new SCPoint(this.X - this.Width, this.Y);
+                return new Point(this.X - this.Width, this.Y);
             }
 
             if (flipV)
             {
-                return new SCPoint(this.Width, this.Height);
+                return new Point(this.Width, this.Height);
             }
 
             if (flipH)
             {
-                return new SCPoint(this.X, this.Height);
+                return new Point(this.X, this.Height);
             }
 
-            return new SCPoint(this.Width, this.Y);
+            return new Point(this.Width, this.Y);
         }
     }
 
