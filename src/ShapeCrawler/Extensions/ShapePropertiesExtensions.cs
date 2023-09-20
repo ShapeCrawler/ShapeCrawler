@@ -43,7 +43,7 @@ internal static class ShapePropertiesExtensions
         aSolidFill.Append(aRgbColorModelHex);
     }
 
-    internal static A.Outline AddAOutline(this P.ShapeProperties pSpPr)
+    internal static A.Outline AddAOutline(this TypedOpenXmlCompositeElement pSpPr)
     {
         var aOutline = pSpPr.GetFirstChild<A.Outline>();
         aOutline?.Remove();
@@ -54,30 +54,5 @@ internal static class ShapePropertiesExtensions
         pSpPr.Append(aOutlineNew);
 
         return aOutlineNew;
-    }
-    
-    internal static A.Transform2D AddAXfrm(this P.ShapeProperties pSpPr, long xEmu, long yEmu, long wEmu, long hEmu)
-    {
-        var aXfrm = pSpPr.Transform2D;
-        aXfrm?.Remove();
-        
-        aXfrm = new A.Transform2D();
-        pSpPr.Append(aXfrm);
-
-        var aOff = new A.Offset
-        {
-            X = xEmu,
-            Y = yEmu
-        };
-        aXfrm.Append(aOff);
-        
-        var aExt = new A.Extents
-        {
-            Cx = wEmu,
-            Cy = hEmu
-        };
-        aXfrm.Append(aExt);
-
-        return aXfrm;
     }
 }

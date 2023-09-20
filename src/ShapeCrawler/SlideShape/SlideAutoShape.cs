@@ -3,10 +3,12 @@ using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using SkiaSharp;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.SlideShape;
@@ -24,7 +26,6 @@ internal sealed class SlideAutoShape : CopyableShape, IShape, IRemoveable
         this.sdkSlidePart = sdkSlidePart;
         this.pShape = pShape;
         this.Outline = new SlideShapeOutline(sdkSlidePart, pShape.Descendants<P.ShapeProperties>().First());
-        ;
         this.Fill = new SlideShapeFill(sdkSlidePart, pShape.Descendants<P.ShapeProperties>().First(), false);
     }
 
@@ -33,6 +34,24 @@ internal sealed class SlideAutoShape : CopyableShape, IShape, IRemoveable
     public override bool HasFill => true;
     public override IShapeFill Fill { get; }
     public override SCShapeType ShapeType => SCShapeType.AutoShape;
+
+    public override SCGeometry GeometryType
+    {
+        get
+        {
+            var spPr = this.pShapeTreeElement.Descendants<P.ShapeProperties>().First();
+            var aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
+            
+            if (aPresetGeometry == null) // Placeholder can have transform on the slide, without having geometry
+            {
+                return SCGeometry.Custom;
+            }
+
+            var name = aPresetGeometry.Preset!.Value.ToString();
+            Enum.TryParse(name, true, out SCGeometry geometryType);
+            return geometryType;
+        }
+    }
 
     internal void Draw(SKCanvas slideCanvas)
     {
@@ -60,6 +79,6 @@ internal sealed class SlideAutoShape : CopyableShape, IShape, IRemoveable
     }
 
     internal IHtmlElement ToHtmlElement() => throw new NotImplementedException();
-    
+
     void IRemoveable.Remove() => this.pShape.Remove();
 }

@@ -3,18 +3,19 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
+using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
 internal sealed class SlideShapeOutline : IShapeOutline
 {
-    private readonly P.ShapeProperties pShapeProperties;
+    private readonly TypedOpenXmlCompositeElement sdkTypedOpenXmlCompositeElement;
     private readonly SlidePart sdkSlidePart;
 
-    internal SlideShapeOutline(SlidePart sdkSlidePart, P.ShapeProperties pShapeProperties)
+    internal SlideShapeOutline(SlidePart sdkSlidePart, TypedOpenXmlCompositeElement sdkTypedOpenXmlCompositeElement)
     {
-        this.pShapeProperties = pShapeProperties;
+        this.sdkTypedOpenXmlCompositeElement = sdkTypedOpenXmlCompositeElement;
         this.sdkSlidePart = sdkSlidePart;
     }
 
@@ -32,12 +33,12 @@ internal sealed class SlideShapeOutline : IShapeOutline
 
     private void UpdateWeight(double points)
     {
-        var aOutline = this.pShapeProperties.GetFirstChild<DocumentFormat.OpenXml.Drawing.Outline>();
-        var aNoFill = aOutline?.GetFirstChild<DocumentFormat.OpenXml.Drawing.NoFill>();
+        var aOutline = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.Outline>();
+        var aNoFill = aOutline?.GetFirstChild<A.NoFill>();
 
         if (aOutline == null || aNoFill != null)
         {
-            aOutline = this.pShapeProperties.AddAOutline();
+            aOutline = this.sdkTypedOpenXmlCompositeElement.AddAOutline();
         }
 
         aOutline.Width = new Int32Value(UnitConverter.PointToEmu(points));
@@ -45,26 +46,26 @@ internal sealed class SlideShapeOutline : IShapeOutline
     
     private void UpdateHexColor(string? hex)
     {
-        var aOutline = this.pShapeProperties.GetFirstChild<DocumentFormat.OpenXml.Drawing.Outline>();
-        var aNoFill = aOutline?.GetFirstChild<DocumentFormat.OpenXml.Drawing.NoFill>();
+        var aOutline = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.Outline>();
+        var aNoFill = aOutline?.GetFirstChild<A.NoFill>();
 
         if (aOutline == null || aNoFill != null)
         {
-            aOutline = this.pShapeProperties.AddAOutline();
+            aOutline = this.sdkTypedOpenXmlCompositeElement.AddAOutline();
         }
 
-        var aSolidFill = aOutline.GetFirstChild<DocumentFormat.OpenXml.Drawing.SolidFill>();
+        var aSolidFill = aOutline.GetFirstChild<A.SolidFill>();
         aNoFill?.Remove();
         aSolidFill?.Remove();
 
-        var aSrgbColor = new DocumentFormat.OpenXml.Drawing.RgbColorModelHex { Val = hex };
-        aSolidFill = new DocumentFormat.OpenXml.Drawing.SolidFill(aSrgbColor);
+        var aSrgbColor = new A.RgbColorModelHex { Val = hex };
+        aSolidFill = new A.SolidFill(aSrgbColor);
         aOutline.Append(aSolidFill);
     }
 
     private double ParseWeight()
     {
-        var width = this.pShapeProperties.GetFirstChild<DocumentFormat.OpenXml.Drawing.Outline>()?.Width;
+        var width = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.Outline>()?.Width;
         if (width is null)
         {
             return 0;
@@ -77,15 +78,16 @@ internal sealed class SlideShapeOutline : IShapeOutline
 
     private string? ParseHexColor()
     {
-        var aSolidFill = this.pShapeProperties
-            .GetFirstChild<DocumentFormat.OpenXml.Drawing.Outline>()?
-            .GetFirstChild<DocumentFormat.OpenXml.Drawing.SolidFill>();
+        var aSolidFill = this.sdkTypedOpenXmlCompositeElement
+            .GetFirstChild<A.Outline>()?
+            .GetFirstChild<A.SolidFill>();
         if (aSolidFill is null)
         {
-            return null;
+            var defaultBlackHex = "000000";
+            return defaultBlackHex;
         }
 
-        var typeAndHex = HexParser.FromSolidFill(aSolidFill, this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster!);
+        var typeAndHex = HexParser.FromSolidFill(aSolidFill, this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster);
         
         return typeAndHex.Item2;
     }

@@ -61,9 +61,9 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides.First().Shapes;
 
         // Assert
+        Assert.Single(shapes.Where(sp => sp.ShapeType == SCShapeType.Chart));
         Assert.Single(shapes.Where(sp => sp is IPicture));
         Assert.Single(shapes.Where(sp => sp is ITable));
-        Assert.Single(shapes.Where(sp => sp is IChart));
         Assert.Single(shapes.Where(sp => sp is IGroupShape));
     }
 
@@ -92,7 +92,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         isMediaShape.Should().BeTrue();
     }
-        
+
     [Test]
     public void Contains_Connection_shape()
     {
@@ -101,9 +101,10 @@ public class ShapeCollectionTests : SCTest
         var shapesCollection = presentation.Slides[0].Shapes;
 
         // Act-Assert
-        Assert.Contains(shapesCollection, shape => shape.Id == 10 && shape is ILine && shape.GeometryType == SCGeometry.Line);
+        Assert.Contains(shapesCollection,
+            shape => shape.Id == 10 && shape is ILine && shape.GeometryType == SCGeometry.Line);
     }
-        
+
     [Test]
     public void Contains_Video_shape()
     {
@@ -111,7 +112,7 @@ public class ShapeCollectionTests : SCTest
         var pptx = StreamOf("040_video.pptx");
         var pres = new SCPresentation(pptx);
         IShape shape = pres.Slides[0].Shapes.First(sp => sp.Id == 8);
-            
+
         // Act
         bool isVideo = shape is IMediaShape;
 
@@ -126,7 +127,7 @@ public class ShapeCollectionTests : SCTest
         var pres = new SCPresentation();
         var xml = TestHelperShared.GetString("line-shape.xml");
         var shapes = pres.Slides[0].Shapes;
-        
+
         // Act
         shapes.AddLine(xml);
 
@@ -145,7 +146,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapes.AddLine(startPointX: 10, startPointY: 10, endPointX: 20, endPointY: 5);
-        
+
         // Assert
         var addedLine = (ILine)shapes.Last();
         shapes.Should().ContainSingle();
@@ -156,7 +157,7 @@ public class ShapeCollectionTests : SCTest
         addedLine.EndPoint.Y.Should().Be(5);
         pres.Validate();
     }
-    
+
     [Test]
     public void AddLine_adds_line_Up_Up()
     {
@@ -166,7 +167,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapes.AddLine(startPointX: 10, startPointY: 10, endPointX: 10, endPointY: 5);
-        
+
         // Assert
         var addedLine = (ILine)shapes.Last();
         addedLine.StartPoint.X.Should().Be(10);
@@ -175,7 +176,7 @@ public class ShapeCollectionTests : SCTest
         addedLine.EndPoint.Y.Should().Be(5);
         pres.Validate();
     }
-    
+
     [Test]
     public void AddLine_adds_line_Left_Up()
     {
@@ -185,7 +186,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapes.AddLine(startPointX: 100, startPointY: 50, endPointX: 40, endPointY: 20);
-        
+
         // Assert
         var addedLine = (ILine)shapes.Last();
         addedLine.StartPoint.X.Should().Be(100);
@@ -194,7 +195,7 @@ public class ShapeCollectionTests : SCTest
         addedLine.EndPoint.Y.Should().Be(20);
         pres.Validate();
     }
-    
+
     [Test]
     public void AddLine_adds_line_Left_Down()
     {
@@ -204,7 +205,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapes.AddLine(startPointX: 50, startPointY: 10, endPointX: 40, endPointY: 20);
-        
+
         // Assert
         var addedLine = (ILine)shapes.Last();
         addedLine.StartPoint.X.Should().Be(50);
@@ -213,7 +214,7 @@ public class ShapeCollectionTests : SCTest
         addedLine.EndPoint.Y.Should().Be(20);
         pres.Validate();
     }
-    
+
     [Test]
     public void AddLine_adds_line_Right_Right()
     {
@@ -223,7 +224,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapes.AddLine(startPointX: 50, startPointY: 60, endPointX: 100, endPointY: 60);
-        
+
         // Assert
         var line = (ILine)shapes.Last();
         line.StartPoint.X.Should().Be(50);
@@ -232,7 +233,7 @@ public class ShapeCollectionTests : SCTest
         line.EndPoint.Y.Should().Be(60);
         pres.Validate();
     }
-    
+
     [Test]
     public void AddLine_adds_line()
     {
@@ -242,7 +243,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapes.AddLine(startPointX: 50, startPointY: 60, endPointX: 100, endPointY: 60);
-        
+
         // Assert
         shapes.Should().ContainSingle();
         var line = (ILine)shapes.Last();
@@ -261,7 +262,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapes.AddLine(startPointX: 100, startPointY: 50, endPointX: 80, endPointY: 50);
-        
+
         // Assert
         var line = (ILine)shapes.Last();
         line.StartPoint.X.Should().Be(100);
@@ -293,7 +294,7 @@ public class ShapeCollectionTests : SCTest
         addedAudio.X.Should().Be(xPxCoordinate);
         addedAudio.Y.Should().Be(yPxCoordinate);
     }
-    
+
     [Test]
     public void AddAudio_adds_audio_shape_with_WAVE_content()
     {
@@ -304,7 +305,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapes.AddAudio(300, 100, wav, SCAudioType.WAVE);
-        
+
         // Assert
         var addedAudio = pres.Slides[1].Shapes.OfType<IMediaShape>().Last();
         addedAudio.X.Should().Be(300);
@@ -337,7 +338,7 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new SCPresentation();
-        
+
         // Act
         pres.Slides[0].Shapes.AddBarChart(BarChartType.ClusteredBar);
 
@@ -346,7 +347,7 @@ public class ShapeCollectionTests : SCTest
         barChart.Should().NotBeNull();
         pres.Validate();
     }
-    
+
     [Test]
     public void AddPicture_adds_picture()
     {
@@ -369,16 +370,15 @@ public class ShapeCollectionTests : SCTest
     public void AddRectangle_adds_rectangle_with_valid_id_and_name()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-case011_save-as-png.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new SCPresentation(StreamOf("autoshape-case011_save-as-png.pptx"));
         var shapes = pres.Slides[0].Shapes;
-            
+
         // Act
-        shapes.AddRectangle( 50, 60, 100, 70);
+        shapes.AddRectangle(50, 60, 100, 70);
 
         // Assert
         var autoShape = shapes.Last();
-        autoShape.Name.Should().Be("AutoShape 4");
+        autoShape.Name.Should().Be("Rectangle");
         autoShape.Id.Should().Be(7);
         pres.Validate();
     }
@@ -389,7 +389,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new SCPresentation();
         var shapes = pres.Slides[0].Shapes;
-            
+
         // Act
         shapes.AddRectangle(50, 60, 100, 70);
 
@@ -404,7 +404,7 @@ public class ShapeCollectionTests : SCTest
         rectangle.Outline.HexColor.Should().Be("000000");
         pres.Validate();
     }
-    
+
     [Test]
     public void AddRoundedRectangle_adds_Rounded_Rectangle()
     {
@@ -412,14 +412,14 @@ public class ShapeCollectionTests : SCTest
         var pptx = StreamOf("autoshape-grouping.pptx");
         var pres = new SCPresentation(pptx);
         var shapes = pres.Slides[0].Shapes;
-            
+
         // Act
         shapes.AddRoundedRectangle(50, 60, 100, 70);
 
         // Assert
         var roundedRectangle = shapes.Last();
         roundedRectangle.GeometryType.Should().Be(SCGeometry.RoundRectangle);
-        roundedRectangle.Name.Should().Be("AutoShape 8");
+        roundedRectangle.Name.Should().Be("Rectangle: Rounded Corners");
         roundedRectangle.Outline.HexColor.Should().Be("000000");
         pres.Validate();
     }
@@ -430,7 +430,7 @@ public class ShapeCollectionTests : SCTest
         // Arrange
         var pres = new SCPresentation();
         var shapes = pres.Slides[0].Shapes;
-        
+
         // Act
         shapes.AddTable(x: 50, y: 60, columnsCount: 3, rowsCount: 2);
 

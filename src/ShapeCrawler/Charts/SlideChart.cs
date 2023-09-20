@@ -49,7 +49,7 @@ internal sealed class SlideChart : Shape, IRemoveable, IChart
         this.workbook = this.SdkChartPart.EmbeddedPackagePart != null
             ? new ExcelBook(this.SdkChartPart.EmbeddedPackagePart)
             : null;
-        var pShapeProperties = this.SdkChartPart.ChartSpace.GetFirstChild<P.ShapeProperties>()!;
+        var pShapeProperties = this.SdkChartPart.ChartSpace.GetFirstChild<C.ShapeProperties>()!;
         this.Outline = new SlideShapeOutline(sdkSlidePart, pShapeProperties);
         this.Fill = new SlideShapeFill(sdkSlidePart, pShapeProperties, false);
         this.SeriesList = new SeriesList(this.SdkChartPart,

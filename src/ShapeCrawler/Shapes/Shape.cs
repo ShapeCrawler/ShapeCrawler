@@ -11,6 +11,7 @@ internal abstract class Shape : IShape
 {
     private readonly Position position;
     private readonly ShapeSize size;
+    private readonly ShapeId shapeId;
     private const string customDataElementName = "ctd";
     
     protected readonly OpenXmlElement pShapeTreeElement;
@@ -20,6 +21,7 @@ internal abstract class Shape : IShape
         this.pShapeTreeElement = pShapeTreeElement;
         this.position = new Position(pShapeTreeElement);
         this.size = new ShapeSize(pShapeTreeElement);
+        this.shapeId = new ShapeId(pShapeTreeElement);
     }
 
     private string? ParseCustomData()
@@ -68,11 +70,11 @@ internal abstract class Shape : IShape
 
     public int Height
     {
-        get => this.size.Width();
+        get => this.size.Height();
         set => this.size.UpdateWidth(value);
     }
 
-    public int Id => (int)this.pShapeTreeElement.GetNonVisualDrawingProperties().Id!.Value!;
+    public int Id => this.shapeId.Value();
 
     public string Name => this.pShapeTreeElement.GetNonVisualDrawingProperties().Name!.Value!;
 

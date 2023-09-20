@@ -42,7 +42,7 @@ public interface ISlideShapes : IReadOnlyShapes
     void AddRectangle(int x, int y, int width, int height);
 
     /// <summary>
-    ///     Adds a new Rounded Rectangle shape. 
+    ///     Adds a new Rectangle: Rounded Corners. 
     /// </summary>
     void AddRoundedRectangle(int x, int y, int width, int height);
 
