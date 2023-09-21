@@ -1,24 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Shared;
-using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class SlideChart : Shape, IRemoveable, IChart
+internal sealed class SlideChart : Shape, IChart, IRemoveable
 {
-    private readonly ResetableLazy<ICategoryCollection?> categories;
-    private readonly Lazy<SCChartType> chartType;
+    private readonly SCChartType chartType;
     private readonly Lazy<OpenXmlElement?> firstSeries;
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly Lazy<List<double>?> xValues;
@@ -36,9 +32,6 @@ internal sealed class SlideChart : Shape, IRemoveable, IChart
         this.pGraphicFrame = pGraphicFrame;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
         this.xValues = new Lazy<List<double>?>(this.GetXValues);
-        this.categories = new ResetableLazy<ICategoryCollection?>(this.GetCategories);
-        this.chartType = new Lazy<SCChartType>(this.GetChartType);
-
         var cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
             .GetFirstChild<C.ChartReference>() !;
         this.SdkChartPart = (ChartPart)sdkSlidePart.GetPartById(cChartReference.Id!);
@@ -56,7 +49,21 @@ internal sealed class SlideChart : Shape, IRemoveable, IChart
             this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }
 
-    public SCChartType Type => this.chartType.Value;
+    public SCChartType Type
+    {
+        get
+        {
+            if (this.cXCharts.Count() > 1)
+            {
+                return SCChartType.Combination;
+            }
+
+            var chartName = this.cXCharts.Single().LocalName;
+            Enum.TryParse(chartName, true, out SCChartType enumChartType);
+
+            return enumChartType;
+        }
+    }
 
     public override SCShapeType ShapeType => SCShapeType.Chart;
     public override IShapeOutline Outline { get; }
@@ -80,12 +87,9 @@ internal sealed class SlideChart : Shape, IRemoveable, IChart
         }
     }
 
-    public bool HasCategories => this.categories.Value != null;
-
+    public bool HasCategories => false;
+    public IReadOnlyCollection<ICategory> Categories => throw new SCException($"Chart does not have categories. Use {nameof(IChart.HasCategories)} property to check if chart categories are available.");
     public ISeriesList SeriesList { get; }
-
-    public ICategoryCollection? Categories => this.categories.Value;
-
     public bool HasXValues => this.xValues.Value != null;
 
     public List<double> XValues
@@ -106,28 +110,10 @@ internal sealed class SlideChart : Shape, IRemoveable, IChart
     public IAxesManager Axes => this.GetAxes();
     internal ExcelBook? workbook { get; set; }
     internal ChartPart SdkChartPart { get; private set; }
-    
-    private SCChartType GetChartType()
-    {
-        if (this.cXCharts.Count() > 1)
-        {
-            return SCChartType.Combination;
-        }
-
-        var chartName = this.cXCharts.Single().LocalName;
-        Enum.TryParse(chartName, true, out SCChartType enumChartType);
-
-        return enumChartType;
-    }
 
     private IAxesManager GetAxes()
     {
         return new SCAxesManager(this.cPlotArea);
-    }
-
-    private ICategoryCollection? GetCategories()
-    {
-        return CategoryCollection.Create(this, this.firstSeries.Value, this.Type);
     }
 
     private string? GetTitleOrDefault()

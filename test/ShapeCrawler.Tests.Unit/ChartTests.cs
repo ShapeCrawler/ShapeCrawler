@@ -188,19 +188,18 @@ public class ChartTests : SCTest
     {
         // Arrange
         var pres = new SCPresentation(StreamOf("025_chart.pptx"));
-        MemoryStream mStream = new();
-        var pieChart4 = (IChart)pres.Slides[0].Shapes.First(sp => sp.Id == 7);
-        const string newCategoryName = "Category 1_new";
+        var mStream = new MemoryStream();
+        var pieChart = pres.Slides[0].Shapes.GetById<IChart>(7);
 
         // Act
-        pieChart4.Categories[0].Name = newCategoryName;
+        pieChart.Categories[0].Name = "Category 1_new";
 
         // Assert
-        pieChart4.Categories[0].Name.Should().Be(newCategoryName);
+        pieChart.Categories[0].Name.Should().Be("Category 1_new");
         pres.SaveAs(mStream);
         pres = new SCPresentation(mStream);
-        pieChart4 = (IChart)pres.Slides[0].Shapes.First(sp => sp.Id == 7);
-        pieChart4.Categories[0].Name.Should().Be(newCategoryName);
+        pieChart = pres.Slides[0].Shapes.GetById<IChart>(7);
+        pieChart.Categories[0].Name.Should().Be("Category 1_new");
     }
 
     [Test]

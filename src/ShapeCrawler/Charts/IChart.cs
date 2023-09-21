@@ -15,24 +15,24 @@ public interface IChart : IShape
     SCChartType Type { get; }
 
     /// <summary>
-    ///     Gets chart title if chart has it, otherwise <see langword="null"/>.
-    /// </summary>
-    string? Title { get; }
-
-    /// <summary>
     ///     Gets a value indicating whether the chart has a title.
     /// </summary>
     public bool HasTitle { get; }
+    
+    /// <summary>
+    ///     Gets chart title.
+    /// </summary>
+    string Title { get; }
 
     /// <summary>
-    ///     Gets a value indicating whether the chart type has categories.
+    ///     Gets a value indicating whether the chart has categories.
     /// </summary>
     bool HasCategories { get; }
 
     /// <summary>
-    ///     Gets collection of categories. Returns <see langword="null"/> if chart type has no categories.
+    ///     Gets collection of categories.
     /// </summary>
-    public ICategoryCollection? Categories { get; }
+    public IReadOnlyCollection<ICategory> Categories { get; }
 
     /// <summary>
     ///     Gets collection of data series.

@@ -12,54 +12,24 @@ using X = DocumentFormat.OpenXml.Spreadsheet;
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
 
-/// <summary>
-///     Represents a chart category collection.
-/// </summary>
-public interface ICategoryCollection : IEnumerable<ICategory>
+internal sealed class Categories : IReadOnlyCollection<ICategory>
 {
-    /// <summary>
-    ///     Gets number of categories.
-    /// </summary>
-    int Count { get; }
+    private readonly OpenXmlElement firstChartSeries;
 
-    /// <summary>
-    ///     Gets category by specified index.
-    /// </summary>
-    ICategory this[int index] { get; }
-}
-
-internal sealed class CategoryCollection : IReadOnlyCollection<ICategory>, ICategoryCollection
-{
-    private readonly List<Category> items;
-
-    private CategoryCollection(List<Category> categoryList)
+    internal Categories(OpenXmlElement firstChartSeries)
     {
-        this.items = categoryList;
+        this.firstChartSeries = firstChartSeries;
     }
 
-    public int Count => this.items.Count;
+    public int Count => this.CategoryList().Count;
+    public ICategory this[int index] => this.CategoryList()[index];
+    public IEnumerator<ICategory> GetEnumerator() => this.CategoryList().GetEnumerator();
 
-    public ICategory this[int index] => this.items[index];
+    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    public IEnumerator<ICategory> GetEnumerator()
+    private List<ICategory> CategoryList()
     {
-        return this.items.GetEnumerator();
-    }
-        
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return this.GetEnumerator();
-    }
-    
-    internal static CategoryCollection? Create(SlideChart slideChart, OpenXmlElement? firstChartSeries, SCChartType chartType)
-    {
-        if (chartType is SCChartType.BubbleChart or SCChartType.ScatterChart)
-        {
-            // Bubble and Scatter charts do not have categories
-            return null;
-        }
-
-        var categoryList = new List<Category>();
+        var categoryList = new List<ICategory>();
 
         // Get category data from the first series.
         //  Actually, it can be any series since all chart series contain the same categories.
@@ -77,9 +47,9 @@ internal sealed class CategoryCollection : IReadOnlyCollection<ICategory>, ICate
         //          </c:strCache>
         //      </c:strRef>
         //  </c:cat>
-        C.CategoryAxisData cCatAxisData = (C.CategoryAxisData)firstChartSeries!.First(x => x is C.CategoryAxisData);
+        var cCatAxisData = (C.CategoryAxisData)firstChartSeries!.First(x => x is C.CategoryAxisData);
 
-        C.MultiLevelStringReference? cMultiLvlStringRef = cCatAxisData.MultiLevelStringReference;
+        var cMultiLvlStringRef = cCatAxisData.MultiLevelStringReference;
         if (cMultiLvlStringRef != null)
         {
             categoryList = GetMultiCategories(cMultiLvlStringRef);
@@ -88,8 +58,8 @@ internal sealed class CategoryCollection : IReadOnlyCollection<ICategory>, ICate
         {
             C.Formula cFormula;
             IEnumerable<C.NumericValue> cachedValues; // C.NumericValue (<c:v>) can store string value
-            C.NumberReference? cNumReference = cCatAxisData.NumberReference;
-            C.StringReference cStrReference = cCatAxisData.StringReference!;
+            var cNumReference = cCatAxisData.NumberReference;
+            var cStrReference = cCatAxisData.StringReference!;
             if (cNumReference is not null)
             {
                 cFormula = cNumReference.Formula!;
@@ -102,20 +72,17 @@ internal sealed class CategoryCollection : IReadOnlyCollection<ICategory>, ICate
             }
 
             int catIndex = 0;
-            ResetableLazy<List<X.Cell>> xCells;
-
-            xCells = new ResetableLazy<List<X.Cell>>(() =>
-                ChartReferencesParser.GetXCellsByFormula(cFormula, slideChart));
+            
             foreach (C.NumericValue cachedValue in cachedValues)
             {
-                categoryList.Add(new Category(xCells, catIndex++, cachedValue));
+                categoryList.Add(new Category(cFormula, catIndex++, cachedValue));
             }
         }
 
-        return new CategoryCollection(categoryList);
+        return categoryList;
     }
 
-    private static List<Category> GetMultiCategories(C.MultiLevelStringReference multiLevelStrRef)
+    private static List<ICategory> GetMultiCategories(C.MultiLevelStringReference multiLevelStrRef)
     {
         var indexToCategory = new List<KeyValuePair<uint, Category>>();
         IEnumerable<C.Level> topDownLevels = multiLevelStrRef.MultiLevelStringCache!.Elements<C.Level>().Reverse();
