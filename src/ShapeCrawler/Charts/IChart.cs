@@ -32,7 +32,7 @@ public interface IChart : IShape
     /// <summary>
     ///     Gets collection of categories.
     /// </summary>
-    public IReadOnlyCollection<ICategory> Categories { get; }
+    public IReadOnlyList<ICategory> Categories { get; }
 
     /// <summary>
     ///     Gets collection of data series.
@@ -50,14 +50,9 @@ public interface IChart : IShape
     List<double> XValues { get; } // TODO: should be excluded
 
     /// <summary>
-    ///     Gets byte array of workbook containing chart data source.
+    ///     Gets byte array of excel book containing chart data source.
     /// </summary>
-    byte[] WorkbookByteArray { get; }
-
-    /// <summary>
-    ///     Gets instance of <see cref="SpreadsheetDocument"/> of Open XML SDK.
-    /// </summary>
-    SpreadsheetDocument SDKSpreadsheetDocument { get; }
+    byte[] ExcelBookByteArray();
 
     /// <summary>
     ///     Gets chart axes manager.

@@ -215,7 +215,7 @@ public class ChartTests : SCTest
         category.Name = newName;
 
         // Assert
-        var mStream = new MemoryStream(lineChart.WorkbookByteArray);
+        var mStream = new MemoryStream(lineChart.ExcelBookByteArray());
         var workbook = new XLWorkbook(mStream);
         var cellValue = workbook.Worksheets.First().Cell("A2").Value.ToString();
         cellValue.Should().BeEquivalentTo(newName);
@@ -305,21 +305,6 @@ public class ChartTests : SCTest
 
         // Act-Assert
         chart.GeometryType.Should().Be(SCGeometry.Rectangle);
-    }
-        
-    [Test]
-    public void SDKSpreadsheetDocument_return_underlying_SpreadsheetDocument()
-    {
-        // Arrange
-        var pptxStream = StreamOf("charts-case003.pptx");
-        var pres = new SCPresentation(pptxStream);
-        var chart = pres.Slides[0].Shapes.GetByName<IChart>("Chart 1");
-            
-        // Act
-        var spreadSheetDocument = chart.SDKSpreadsheetDocument;
-            
-        // Assert
-        spreadSheetDocument.Should().NotBeNull();
     }
 
     [Test]

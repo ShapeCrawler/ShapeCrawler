@@ -4,20 +4,20 @@ using System.Linq;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class CellsRangeParser
+internal readonly record struct ExcelCellsRange
 {
-    private readonly string cellRange;
+    private readonly string range;
     private readonly LinkedList<string> tempList = new ();
 
     #region Constructors
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="CellsRangeParser"/> class.
+    ///     Initializes a new instance of the <see cref="ExcelCellsRange"/> class.
     /// </summary>
-    /// <param name="cellRange">Cells range (i.e. "A2:A5").</param>
-    internal CellsRangeParser(string cellRange)
+    /// <param name="range">Cells range (eg. "A2:A5").</param>
+    internal ExcelCellsRange(string range)
     {
-        this.cellRange = cellRange;
+        this.range = range;
     }
 
     #endregion Constructors
@@ -26,50 +26,50 @@ internal sealed class CellsRangeParser
     ///     Gets collection of the cell's addresses like ['B10','B11','B12'].
     /// </summary>
     /// <remarks>input="B10:B12", output=['B10','B11','B12'].</remarks>
-    internal List<string> GetCellAddresses()
+    internal List<string> Addresses()
     {
-        this.ParseLetter();
+        this.Letter();
 
         return this.tempList.ToList();
     }
 
     #region Private Methods
 
-    private void ParseLetter(int startIndex = 0)
+    private void Letter(int startIndex = 0)
     {
-        var letterCharacters = this.cellRange.Substring(startIndex).TakeWhile(char.IsLetter);
+        var letterCharacters = this.range.Substring(startIndex).TakeWhile(char.IsLetter);
         var letterStr = string.Concat(letterCharacters);
         var nextStart = startIndex + letterCharacters.Count();
 
-        this.ParseDigit(letterStr, nextStart);
+        this.Digit(letterStr, nextStart);
     }
 
-    private void ParseDigit(string letterPart, int startIndex)
+    private void Digit(string letterPart, int startIndex)
     {
-        int digitInt = this.GetDigit(startIndex);
+        int digitInt = this.Digit(startIndex);
         this.tempList.AddLast(letterPart + digitInt); // e.g. 'B'+'10' -> B10
 
         int endIndex = startIndex + digitInt.ToString(CultureInfo.CurrentCulture).Length;
-        if (endIndex >= this.cellRange.Length)
+        if (endIndex >= this.range.Length)
         {
             return;
         }
 
         var nextStart = endIndex + letterPart.Length + 1; // skip separator and letter lengths
-        if (this.cellRange[endIndex] == ':')
+        if (this.range[endIndex] == ':')
         {
-            this.ParseLetterAfterColon(letterPart, digitInt, nextStart);
+            this.LetterAfterColon(letterPart, digitInt, nextStart);
         }
 
-        if (this.cellRange[endIndex] == ',')
+        if (this.range[endIndex] == ',')
         {
-            this.ParseLetter(nextStart);
+            this.Letter(nextStart);
         }
     }
 
-    private void ParseLetterAfterColon(string letterPart, int digitPart, int startIndex)
+    private void LetterAfterColon(string letterPart, int digitPart, int startIndex)
     {
-        var digitInt = this.GetDigit(startIndex);
+        var digitInt = this.Digit(startIndex);
         for (var nextDigitInt = digitPart + 1; nextDigitInt <= digitInt; nextDigitInt++)
         {
             this.tempList.AddLast(letterPart + nextDigitInt);
@@ -78,15 +78,15 @@ internal sealed class CellsRangeParser
         var nextStart =
             startIndex + digitInt.ToString(CultureInfo.CurrentCulture).Length +
             1; // skip last digit and separator characters
-        if (nextStart < this.cellRange.Length)
+        if (nextStart < this.range.Length)
         {
-            this.ParseLetter(nextStart);
+            this.Letter(nextStart);
         }
     }
 
-    private int GetDigit(int startIndex)
+    private int Digit(int startIndex)
     {
-        var digitChars = this.cellRange.Substring(startIndex).TakeWhile(char.IsDigit);
+        var digitChars = this.range.Substring(startIndex).TakeWhile(char.IsDigit);
         return int.Parse(string.Concat(digitChars), CultureInfo.CurrentCulture);
     }
 

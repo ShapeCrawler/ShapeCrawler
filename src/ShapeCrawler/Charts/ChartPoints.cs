@@ -26,21 +26,22 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
 
         // Get addresses
         var cFormula = cNumberReference.Formula!;
+        
         var normalizedFormula = cFormula.Text.Replace("$", string.Empty).Replace("'", string.Empty);
-        var dataSheetName =
+        var sheetName =
             Regex.Match(normalizedFormula, @"(?<=\(*)[\p{L} 0-9]+?(?=!)").Value; // eg: Sheet1!A2:A5 -> Sheet1
         var addressMatches = Regex.Matches(normalizedFormula, @"[A-Z]\d+(:[A-Z]\d+)*"); // eg: Sheet1!A2:A5 -> A2:A5
-        var pointAddresses = new List<string>();
+        var addresses = new List<string>();
         foreach (Match match in addressMatches)
         {
             if (match.Value.Contains(':'))
             {
-                var rangePointAddresses = new CellsRangeParser(match.Value).GetCellAddresses();
-                pointAddresses.AddRange(rangePointAddresses);
+                var rangePointAddresses = new ExcelCellsRange(match.Value).Addresses();
+                addresses.AddRange(rangePointAddresses);
             }
             else
             {
-                pointAddresses.Add(match.Value);
+                addresses.Add(match.Value);
             }
         }
 
@@ -52,22 +53,22 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         }
 
         // Generate points
-        var chartPoints = new List<ChartPoint>(pointAddresses.Count);
+        var chartPoints = new List<ChartPoint>(addresses.Count);
 
-        if (pointAddresses.Count == 1 && cNumericValues?.Count > 1)
+        if (addresses.Count == 1 && cNumericValues?.Count > 1)
         {
             foreach (var cNumericValue in cNumericValues)
             {
-                chartPoints.Add(new ChartPoint(this.sdkChartPart, cNumericValue, dataSheetName, pointAddresses[0]));
+                chartPoints.Add(new ChartPoint(this.sdkChartPart, cNumericValue, sheetName, addresses[0]));
             }
         }
         else
         {
             // Empty cells of range don't have the corresponding C.NumericValue.
-            var quPoints = System.Math.Min(pointAddresses.Count, cNumericValues?.Count ?? 0);
+            var quPoints = System.Math.Min(addresses.Count, cNumericValues?.Count ?? 0);
             for (int i = 0; i < quPoints; i++)
             {
-                chartPoints.Add(new ChartPoint(this.sdkChartPart, cNumericValues?[i]!, dataSheetName, pointAddresses[i]));
+                chartPoints.Add(new ChartPoint(this.sdkChartPart, cNumericValues?[i]!, sheetName, addresses[i]));
             }
         }
 

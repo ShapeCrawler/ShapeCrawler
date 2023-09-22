@@ -565,11 +565,16 @@ internal sealed record SlideShapes : ISlideShapes
                     var chartPart = (ChartPart)this.sdkSlidePart.GetPartById(cChartRef.Id!);
                     var cPlotArea = chartPart!.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
                     var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-
+                    var cChartReference = pShapeTreeElement.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
+                        .GetFirstChild<C.ChartReference>() !;
+                    var sdkChartPart = (ChartPart)sdkSlidePart.GetPartById(cChartReference.Id!);
+                    
                     if (cCharts.Count() > 1)
                     {
                         // Combination chart
-                        shapeList.Add(new SlideChart(this.sdkSlidePart, (P.GraphicFrame)pShapeTreeElement));
+
+                        var combinationChart = new SlideChart(this.sdkSlidePart, (P.GraphicFrame)pShapeTreeElement, sdkChartPart);
+                        shapeList.Add(combinationChart);
                         continue;
                     }
 
@@ -577,29 +582,35 @@ internal sealed record SlideShapes : ISlideShapes
 
                     if (chartTypeName == "lineChart")
                     {
-                        shapeList.Add(new SlideChart(this.sdkSlidePart,(P.GraphicFrame)pShapeTreeElement));
+                        var lineChart = new SlideChart(this.sdkSlidePart, (P.GraphicFrame)pShapeTreeElement,
+                            sdkChartPart);
+                        shapeList.Add(lineChart);
                         continue;
                     }
 
                     if (chartTypeName == "barChart")
                     {
-                        shapeList.Add(new SlideChart(this.sdkSlidePart,(P.GraphicFrame)pShapeTreeElement));
+                        var barChart = new SlideChart(this.sdkSlidePart, (P.GraphicFrame)pShapeTreeElement, sdkChartPart);
+                        shapeList.Add(barChart);
                         continue;
                     }
 
                     if (chartTypeName == "pieChart")
                     {
-                        shapeList.Add(new SlideChart(this.sdkSlidePart,(P.GraphicFrame)pShapeTreeElement));
+                        var pieChart = new SlideChart(this.sdkSlidePart, (P.GraphicFrame)pShapeTreeElement, sdkChartPart);
+                        shapeList.Add(pieChart);
                         continue;
                     }
 
                     if (chartTypeName == "scatterChart")
                     {
-                        shapeList.Add(new SlideChart(this.sdkSlidePart,(P.GraphicFrame)pShapeTreeElement));
+                        var scatterChart = new SlideChart(this.sdkSlidePart, (P.GraphicFrame)pShapeTreeElement,
+                            sdkChartPart);
+                        shapeList.Add(scatterChart);
                         continue;
                     }
 
-                    var chart = new SlideChart(this.sdkSlidePart,(P.GraphicFrame)pShapeTreeElement);
+                    var chart = new SlideChart(this.sdkSlidePart,(P.GraphicFrame)pShapeTreeElement, sdkChartPart);
                     shapeList.Add(chart);
                 }
                 else if (this.IsTablePGraphicFrame(pShapeTreeElement))

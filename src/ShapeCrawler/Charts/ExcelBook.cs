@@ -1,45 +1,61 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using C = DocumentFormat.OpenXml.Drawing.Charts;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class ExcelBook
+internal readonly record struct ExcelBook
 {
-    private readonly EmbeddedPackagePart sdkEmbeddedPackagePart;
-    private Stream? embeddedPackagePartStream;
+    private readonly ChartPart sdkChartPart;
 
-    internal ExcelBook(EmbeddedPackagePart sdkEmbeddedPackagePart)
+    internal ExcelBook(ChartPart sdkChartPart)
     {
-        this.sdkEmbeddedPackagePart = sdkEmbeddedPackagePart;
-        this.SpreadsheetDocument = new Lazy<SpreadsheetDocument>(this.GetSpreadsheetDocument);
+        this.sdkChartPart = sdkChartPart;
     }
 
-    internal WorkbookPart WorkbookPart => this.SpreadsheetDocument.Value.WorkbookPart!;
+    internal ExcelSheet Sheet(string sheetName) => new(this.sdkChartPart, sheetName);
 
-    internal byte[] BinaryData => this.GetByteArray();
+    internal List<double> FormulaValues(C.Formula cFormula)
+    {
+        var normalizedFormula = cFormula.Text.Replace("'", string.Empty).Replace("$", string.Empty); // eg: Sheet1!$A$2:$A$5 -> Sheet1!A2:A5
+        var sheetName = Regex.Match(normalizedFormula, @".+(?=\!)").Value; // eg: Sheet1!A2:A5 -> Sheet1
+        var cellsRange = Regex.Match(normalizedFormula, @"(?<=\!).+").Value; // eg: Sheet1!A2:A5 -> A2:A5
 
-    internal Lazy<SpreadsheetDocument> SpreadsheetDocument { get; }
+        var stream = this.sdkChartPart.EmbeddedPackagePart!.GetStream();
+        var sdkWorkbookPart = SpreadsheetDocument.Open(stream, false).WorkbookPart!; 
+        var sdkSheet = sdkWorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
+        var sdkWorksheetPart = (WorksheetPart)sdkWorkbookPart.GetPartById(sdkSheet.Id!);
+        var sheetXCells = sdkWorksheetPart.Worksheet.Descendants<X.Cell>();
+
+        var addresses = new ExcelCellsRange(cellsRange).Addresses();
+        var rangeXCells = new List<X.Cell>(addresses.Count);
+        foreach (var address in addresses)
+        {
+            var xCell = sheetXCells.First(xCell => xCell.CellReference == address);
+            rangeXCells.Add(xCell);
+        }
+        
+        var pointValues = new List<double>(rangeXCells.Count);
+        foreach (var xCell in rangeXCells)
+        {
+            var cellValue = xCell.InnerText.Length == 0 ? 0 : double.Parse(xCell.InnerText, CultureInfo.InvariantCulture.NumberFormat);
+            pointValues.Add(cellValue);
+        }
+
+        return pointValues;
+    }
     
-    private SpreadsheetDocument GetSpreadsheetDocument()
+    internal byte[] AsByteArray()
     {
-        this.embeddedPackagePartStream = this.sdkEmbeddedPackagePart.GetStream();
-        var spreadsheetDocument = DocumentFormat.OpenXml.Packaging.SpreadsheetDocument.Open(this.embeddedPackagePartStream, true);
-
-        return spreadsheetDocument;
-    }
-
-    private byte[] GetByteArray()
-    {
+        var stream = this.sdkChartPart.EmbeddedPackagePart!.GetStream();
         var mStream = new MemoryStream();
-        this.SpreadsheetDocument.Value.Clone(mStream);
-
+        stream.CopyTo(mStream);
+        
         return mStream.ToArray();
     }
 }

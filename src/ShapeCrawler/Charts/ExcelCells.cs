@@ -31,7 +31,7 @@ internal sealed class ExcelCells
         var sdkWorksheetPart = (WorksheetPart)workbookPart.GetPartById(chartXSheet.Id!);
         var xCells = sdkWorksheetPart.Worksheet.Descendants<X.Cell>();
 
-        var rangeCellAddresses = new CellsRangeParser(cellsRange).GetCellAddresses();
+        var rangeCellAddresses = new ExcelCellsRange(cellsRange).Addresses();
         var rangeXCells = new List<X.Cell>(rangeCellAddresses.Count);
         foreach (var address in rangeCellAddresses)
         {

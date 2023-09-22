@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -17,7 +18,7 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
     private readonly SCChartType chartType;
     private readonly Lazy<OpenXmlElement?> firstSeries;
     private readonly P.GraphicFrame pGraphicFrame;
-    private readonly Lazy<List<double>?> xValues;
+    private readonly ChartPart sdkChartPart;
     private readonly C.PlotArea cPlotArea;
 
     // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
@@ -26,26 +27,19 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
 
     private string? chartTitle;
 
-    internal SlideChart(SlidePart sdkSlidePart, P.GraphicFrame pGraphicFrame)
+    internal SlideChart(SlidePart sdkSlidePart, P.GraphicFrame pGraphicFrame, ChartPart sdkChartPart)
         : base(pGraphicFrame)
     {
         this.pGraphicFrame = pGraphicFrame;
+        this.sdkChartPart = sdkChartPart;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
-        this.xValues = new Lazy<List<double>?>(this.GetXValues);
-        var cChartReference = this.pGraphicFrame.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
-            .GetFirstChild<C.ChartReference>() !;
-        this.SdkChartPart = (ChartPart)sdkSlidePart.GetPartById(cChartReference.Id!);
-
-        this.cPlotArea = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+        this.cPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
         this.cXCharts = this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-
-        this.workbook = this.SdkChartPart.EmbeddedPackagePart != null
-            ? new ExcelBook(this.SdkChartPart.EmbeddedPackagePart)
-            : null;
-        var pShapeProperties = this.SdkChartPart.ChartSpace.GetFirstChild<C.ShapeProperties>()!;
+        
+        var pShapeProperties = sdkChartPart.ChartSpace.GetFirstChild<C.ShapeProperties>()!;
         this.Outline = new SlideShapeOutline(sdkSlidePart, pShapeProperties);
         this.Fill = new SlideShapeFill(sdkSlidePart, pShapeProperties, false);
-        this.SeriesList = new SeriesList(this.SdkChartPart,
+        this.SeriesList = new SeriesList(sdkChartPart,
             this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }
 
@@ -69,15 +63,6 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
     public override IShapeOutline Outline { get; }
     public override IShapeFill Fill { get; }
 
-    public string? Title
-    {
-        get
-        {
-            this.chartTitle = this.GetTitleOrDefault();
-            return this.chartTitle;
-        }
-    }
-
     public bool HasTitle
     {
         get
@@ -86,31 +71,35 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
             return this.chartTitle != null;
         }
     }
-
+    public string? Title
+    {
+        get
+        {
+            this.chartTitle = this.GetTitleOrDefault();
+            return this.chartTitle;
+        }
+    }
     public bool HasCategories => false;
-    public IReadOnlyCollection<ICategory> Categories => throw new SCException($"Chart does not have categories. Use {nameof(IChart.HasCategories)} property to check if chart categories are available.");
+    public IReadOnlyList<ICategory> Categories => throw new SCException($"Chart does not have categories. Use {nameof(IChart.HasCategories)} property to check if chart categories are available.");
     public ISeriesList SeriesList { get; }
-    public bool HasXValues => this.xValues.Value != null;
+    public bool HasXValues => this.ParseXValues() != null;
 
     public List<double> XValues
     {
         get
         {
-            if (this.xValues.Value == null)
+            if (this.ParseXValues() == null)
             {
                 throw new NotSupportedException(ExceptionMessages.NotXValues);
             }
 
-            return this.xValues.Value;
+            return this.ParseXValues()!;
         }
     }
     public override SCGeometry GeometryType => SCGeometry.Rectangle;
-    public byte[] WorkbookByteArray => this.workbook!.BinaryData;
-    public SpreadsheetDocument SDKSpreadsheetDocument => this.workbook!.SpreadsheetDocument.Value;
+    public byte[] ExcelBookByteArray() => new ExcelBook(this.sdkChartPart).AsByteArray();
     public IAxesManager Axes => this.GetAxes();
     internal ExcelBook? workbook { get; set; }
-    internal ChartPart SdkChartPart { get; private set; }
-
     private IAxesManager GetAxes()
     {
         return new SCAxesManager(this.cPlotArea);
@@ -118,7 +107,7 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
 
     private string? GetTitleOrDefault()
     {
-        var cTitle = this.SdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
+        var cTitle = this.sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
         if (cTitle == null)
         {
             // chart has not title
@@ -168,18 +157,31 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
         return false;
     }
 
-    private List<double>? GetXValues()
+    private List<double>? ParseXValues()
     {
-        var sdkXValues = this.firstSeries.Value?.GetFirstChild<C.XValues>();
-        if (sdkXValues?.NumberReference == null)
+        var cXValues = this.firstSeries.Value?.GetFirstChild<C.XValues>();
+        if (cXValues?.NumberReference == null)
         {
             return null;
         }
 
-        IEnumerable<double> points =
-            ChartReferencesParser.GetNumbersFromCacheOrWorkbook(sdkXValues.NumberReference, this);
+        if (cXValues.NumberReference.NumberingCache != null)
+        {
+            // From cache
+            var cNumericValues = cXValues.NumberReference.NumberingCache.Descendants<C.NumericValue>();
+            var cachedPointValues = new List<double>(cNumericValues.Count());
+            foreach (var numericValue in cNumericValues)
+            {
+                var number = double.Parse(numericValue.InnerText, CultureInfo.InvariantCulture.NumberFormat);
+                var roundNumber = Math.Round(number, 1);
+                cachedPointValues.Add(roundNumber);
+            }
 
-        return points.ToList();
+            return cachedPointValues;
+        }
+
+        // From Spreadsheet
+        return new ExcelBook(this.sdkChartPart).FormulaValues(cXValues.NumberReference.Formula!);
     }
 
     private OpenXmlElement? GetFirstSeries()
