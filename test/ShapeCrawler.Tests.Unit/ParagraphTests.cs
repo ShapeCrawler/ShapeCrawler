@@ -71,9 +71,9 @@ public class ParagraphTests : SCTest
         var shape4Pr2BulletType = shape4Pr2Bullet.Type;
 
         // Assert
-        shape5Pr1BulletType.Should().Be(SCBulletType.Numbered);
-        shape5Pr2BulletType.Should().Be(SCBulletType.Picture);
-        shape4Pr2BulletType.Should().Be(SCBulletType.Character);
+        shape5Pr1BulletType.Should().Be(BulletType.Numbered);
+        shape5Pr2BulletType.Should().Be(BulletType.Picture);
+        shape4Pr2BulletType.Should().Be(BulletType.Character);
     }
 
     [Test]
@@ -88,10 +88,10 @@ public class ParagraphTests : SCTest
         var paragraph = cellTextFrame.Paragraphs[0];
         
         // Act
-        paragraph.Alignment = SCTextAlignment.Center;
+        paragraph.Alignment = TextAlignment.Center;
         
         // Assert
-        paragraph.Alignment.Should().Be(SCTextAlignment.Center);
+        paragraph.Alignment.Should().Be(TextAlignment.Center);
         pres.Validate();
     }
 
@@ -108,7 +108,7 @@ public class ParagraphTests : SCTest
         var bulletType = bullet.Type;
 
         // Assert
-        bulletType.Should().Be(SCBulletType.None);
+        bulletType.Should().Be(BulletType.None);
     }
 
     [Test]

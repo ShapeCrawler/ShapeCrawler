@@ -8,20 +8,20 @@ namespace ShapeCrawler.Drawing;
 
 internal static class HexParser
 {
-    internal static (SCColorType, string?) FromSolidFill(A.SolidFill aSolidFill, P.SlideMaster pSlideMaster)
+    internal static (ColorType, string?) FromSolidFill(A.SolidFill aSolidFill, P.SlideMaster pSlideMaster)
     {
         var colorHexVariant = GetWithoutScheme(aSolidFill);
         if (colorHexVariant is not null)
         {
-            return ((SCColorType, string))colorHexVariant;
+            return ((ColorType, string))colorHexVariant;
         }
 
         var aSchemeColor = aSolidFill.GetFirstChild<A.SchemeColor>() !;
         var fromScheme = GetByThemeColorScheme(aSchemeColor.Val!, pSlideMaster); 
-        return (SCColorType.Theme, fromScheme);
+        return (ColorType.Theme, fromScheme);
     }
 
-    internal static (SCColorType, string)? GetWithoutScheme(TypedOpenXmlCompositeElement typedElement)
+    internal static (ColorType, string)? GetWithoutScheme(TypedOpenXmlCompositeElement typedElement)
     {
         var aSrgbClr = typedElement.GetFirstChild<A.RgbColorModelHex>();
         string colorHexVariant;
@@ -29,7 +29,7 @@ internal static class HexParser
         {
             colorHexVariant = aSrgbClr.Val!;
             {
-                return (SCColorType.RGB, colorHexVariant);
+                return (ColorType.RGB, colorHexVariant);
             }
         }
 
@@ -38,7 +38,7 @@ internal static class HexParser
         {
             colorHexVariant = aSysClr.LastColor!;
             {
-                return (SCColorType.Standard, colorHexVariant);
+                return (ColorType.Standard, colorHexVariant);
             }
         }
 
@@ -47,7 +47,7 @@ internal static class HexParser
         {
             var coloName = aPresetColor.Val!.Value.ToString();
             {
-                return (SCColorType.Preset, ColorTranslator.HexFromName(coloName));
+                return (ColorType.Preset, ColorTranslator.HexFromName(coloName));
             }
         }
 

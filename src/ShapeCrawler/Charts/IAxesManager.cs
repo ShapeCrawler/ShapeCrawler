@@ -13,11 +13,11 @@ public interface IAxesManager
     IAxis? ValueAxis { get; }
 }
 
-internal sealed class SCAxesManager : IAxesManager
+internal sealed class AxesManager : IAxesManager
 {
     private readonly C.PlotArea cPlotArea;
 
-    internal SCAxesManager(C.PlotArea cPlotArea)
+    internal AxesManager(C.PlotArea cPlotArea)
     {
         this.cPlotArea = cPlotArea;
     }
@@ -27,6 +27,6 @@ internal sealed class SCAxesManager : IAxesManager
     private IAxis? GetValueAxis()
     {
         var cValueAxis = this.cPlotArea.GetFirstChild<C.ValueAxis>();
-        return cValueAxis == null ? null : new SCAxis(cValueAxis.Scaling!);
+        return cValueAxis == null ? null : new Axis(cValueAxis.Scaling!);
     }
 }

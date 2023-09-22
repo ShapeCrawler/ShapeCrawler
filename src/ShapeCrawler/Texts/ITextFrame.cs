@@ -22,7 +22,7 @@ public interface ITextFrame
     /// <summary>
     ///     Gets or sets Autofit type.
     /// </summary>
-    SCAutofitType AutofitType { get; set; }
+    AutofitType AutofitType { get; set; }
 
     /// <summary>
     ///     Gets or sets left margin of text frame in centimeters.

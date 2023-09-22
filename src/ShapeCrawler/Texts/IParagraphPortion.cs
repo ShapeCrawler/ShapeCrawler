@@ -26,7 +26,7 @@ public interface IParagraphPortion
     /// <summary>
     ///     Gets or sets Text Highlight Color. Null if not set. 
     /// </summary>
-    SCColor? TextHighlightColor { get; set; }
+    Color? TextHighlightColor { get; set; }
 
     /// <summary>
     /// 	Removes portion from paragraph.

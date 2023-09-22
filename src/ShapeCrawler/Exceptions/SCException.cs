@@ -13,18 +13,8 @@ internal class SCException : Exception
     {
     }
 
-    internal SCException(string message, int errorCode)
-        : base(message)
-    {
-    }
-
     internal SCException(string message, ExceptionCode exceptionCode)
         : base(message)
-    {
-    }
-
-    internal SCException(string message, Exception innerException)
-        : base(message, innerException)
     {
     }
 }

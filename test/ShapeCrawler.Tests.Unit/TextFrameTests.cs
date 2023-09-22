@@ -141,7 +141,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var textFrame = shape.TextFrame!;
 
             // Act
-            textFrame.AutofitType = SCAutofitType.Resize;
+            textFrame.AutofitType = AutofitType.Resize;
 
             // Assert
             shape.Width.Should().Be(107);
@@ -158,7 +158,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var textFrame = shape.TextFrame!;
 
             // Act
-            textFrame.AutofitType = SCAutofitType.Resize;
+            textFrame.AutofitType = AutofitType.Resize;
 
             // Assert
             shape.Height.Should().Be(35);
@@ -178,7 +178,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var autofitType = textBox.AutofitType;
 
             // Assert
-            autofitType.Should().Be(SCAutofitType.Shrink);
+            autofitType.Should().Be(AutofitType.Shrink);
         }
 
         [Test]
@@ -275,10 +275,10 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var textFrame = autoShape.TextFrame!;
 
             // Act
-            textFrame.AutofitType = SCAutofitType.Resize;
+            textFrame.AutofitType = AutofitType.Resize;
 
             // Assert
-            textFrame.AutofitType.Should().Be(SCAutofitType.Resize);
+            textFrame.AutofitType.Should().Be(AutofitType.Resize);
             pres.Validate();
         }
     }

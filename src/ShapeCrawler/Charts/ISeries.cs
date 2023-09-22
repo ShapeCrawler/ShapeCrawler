@@ -3,6 +3,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Excel;
 using ShapeCrawler.Exceptions;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using X = DocumentFormat.OpenXml.Spreadsheet;
@@ -24,7 +25,7 @@ public interface ISeries
     /// <summary>
     ///     Gets chart type.
     /// </summary>
-    SCChartType Type { get; }
+    ChartType Type { get; }
 
     /// <summary>
     ///     Gets collection of chart points.
@@ -42,7 +43,7 @@ internal sealed class Series : ISeries
     private readonly ChartPart sdkChartPart;
     private readonly OpenXmlElement cSer;
 
-    internal Series(ChartPart sdkChartPart, OpenXmlElement cSer, SCChartType type)
+    internal Series(ChartPart sdkChartPart, OpenXmlElement cSer, ChartType type)
     {
         this.sdkChartPart = sdkChartPart;
         this.cSer = cSer;
@@ -50,7 +51,7 @@ internal sealed class Series : ISeries
         this.Points = new ChartPoints(this.sdkChartPart, this.cSer);
     }
 
-    public SCChartType Type { get; }
+    public ChartType Type { get; }
 
     public IReadOnlyList<IChartPoint> Points { get; }
 

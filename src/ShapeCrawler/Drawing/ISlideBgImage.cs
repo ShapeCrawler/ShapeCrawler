@@ -1,4 +1,4 @@
-﻿namespace ShapeCrawler;
+﻿namespace ShapeCrawler.Drawing;
 
 /// <summary>
 ///     Represents a slide background image.

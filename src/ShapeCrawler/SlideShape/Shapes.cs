@@ -21,9 +21,9 @@ internal sealed class Shapes
         var id = this.pShapeTree.Descendants<P.NonVisualDrawingProperties>().Select(s => s.Id!.Value).Max() + 1;
         var existingShapeNames = this.pShapeTree.Descendants<P.NonVisualDrawingProperties>().Select(s => s.Name!.Value!);
         var pShapeCopy = pShape.CloneNode(true);
-        pShapeCopy.GetNonVisualDrawingProperties().Id = new UInt32Value(id);
+        pShapeCopy.NonVisualDrawingProperties().Id = new UInt32Value(id);
         this.pShapeTree.AppendChild(pShapeCopy);
-        var copyName = pShapeCopy.GetNonVisualDrawingProperties().Name!.Value!;
+        var copyName = pShapeCopy.NonVisualDrawingProperties().Name!.Value!;
         if (existingShapeNames.Any(existingShapeName => existingShapeName == copyName))
         {
             var currentShapeCollectionSuffixes = existingShapeNames
@@ -44,7 +44,7 @@ internal sealed class Shapes
 
             numericSuffixes.Sort();
             var lastSuffix = numericSuffixes.LastOrDefault() + 1;
-            pShapeCopy.GetNonVisualDrawingProperties().Name = copyName + " " + lastSuffix;
+            pShapeCopy.NonVisualDrawingProperties().Name = copyName + " " + lastSuffix;
         }
     }
 }

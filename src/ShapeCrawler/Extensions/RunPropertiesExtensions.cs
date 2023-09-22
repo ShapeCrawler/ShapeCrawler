@@ -7,7 +7,7 @@ namespace ShapeCrawler.Extensions;
 
 internal static class RunPropertiesExtensions
 {
-    internal static void AddAHighlight(this RunProperties arPr, SCColor color)
+    internal static void AddAHighlight(this RunProperties arPr, Color color)
     {
         var aHighlight = arPr.GetFirstChild<A.Highlight>();
         aHighlight?.Remove();
@@ -23,7 +23,7 @@ internal static class RunPropertiesExtensions
         arPr.Append(aHighlight);
     }
 
-    internal static A.RgbColorModelHex ToRgbColorModelHex(this SCColor color)
+    private static A.RgbColorModelHex ToRgbColorModelHex(this Color color)
     {
         // Initialize color model.
         var model = new A.RgbColorModelHex
@@ -41,7 +41,7 @@ internal static class RunPropertiesExtensions
         // Creates a alpha node...
         var alpha = new A.Alpha
         {
-            Val = (Int32Value)(100000f * (color.Alpha / SCColor.OPACITY))
+            Val = (Int32Value)(100000f * (color.Alpha / Color.OPACITY))
         };
 
         model.AddChild(alpha);

@@ -32,12 +32,12 @@ public interface IParagraph
     /// <summary>
     ///     Gets paragraph bullet if bullet exist, otherwise <see langword="null"/>.
     /// </summary>
-    SCBullet Bullet { get; }
+    Bullet Bullet { get; }
 
     /// <summary>
     ///     Gets or sets the text alignment.
     /// </summary>
-    SCTextAlignment Alignment { get; set; }
+    TextAlignment Alignment { get; set; }
 
     /// <summary>
     ///     Gets or sets paragraph's indent level.
@@ -57,8 +57,8 @@ public interface IParagraph
 
 internal sealed class SlideParagraph : IParagraph
 {
-    private readonly Lazy<SCBullet> bullet;
-    private SCTextAlignment? alignment;
+    private readonly Lazy<Bullet> bullet;
+    private TextAlignment? alignment;
     private readonly SlidePart sdkSlidePart;
     private readonly SdkAParagraph sdkAParagraph;
 
@@ -73,7 +73,7 @@ internal sealed class SlideParagraph : IParagraph
         this.AParagraph = aParagraph;
         this.sdkAParagraph = sdkAParagraph;
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
-        this.bullet = new Lazy<SCBullet>(this.GetBullet);
+        this.bullet = new Lazy<Bullet>(this.GetBullet);
         this.Portions = new SlideParagraphPortions(this.sdkSlidePart,this.AParagraph); 
     }
 
@@ -87,9 +87,9 @@ internal sealed class SlideParagraph : IParagraph
 
     public IParagraphPortions Portions { get; }
 
-    public SCBullet Bullet => this.bullet.Value;
+    public Bullet Bullet => this.bullet.Value;
 
-    public SCTextAlignment Alignment
+    public TextAlignment Alignment
     {
         get => this.ParseAlignment();
         set => this.SetAlignment(value);
@@ -128,7 +128,7 @@ internal sealed class SlideParagraph : IParagraph
 
     private ISpacing GetSpacing() => new Spacing(this, this.AParagraph);
 
-    private SCBullet GetBullet()=> new SCBullet(this.AParagraph.ParagraphProperties!);
+    private Bullet GetBullet()=> new Bullet(this.AParagraph.ParagraphProperties!);
 
     private string ParseText()
     {
@@ -182,7 +182,7 @@ internal sealed class SlideParagraph : IParagraph
         // Resize
         var pTextBody = (P.TextBody)this.AParagraph.Parent!;
         var textFrame = new TextFrame(this.sdkSlidePart, pTextBody);
-        if (textFrame.AutofitType != SCAutofitType.Resize)
+        if (textFrame.AutofitType != AutofitType.Resize)
         {
             return;
         }
@@ -263,14 +263,14 @@ internal sealed class SlideParagraph : IParagraph
         position.UpdateY((int)(position.Y() - yOffset));
     }
 
-    private void SetAlignment(SCTextAlignment alignmentValue)
+    private void SetAlignment(TextAlignment alignmentValue)
     {
         var aTextAlignmentTypeValue = alignmentValue switch
         {
-            SCTextAlignment.Left => A.TextAlignmentTypeValues.Left,
-            SCTextAlignment.Center => A.TextAlignmentTypeValues.Center,
-            SCTextAlignment.Right => A.TextAlignmentTypeValues.Right,
-            SCTextAlignment.Justify => A.TextAlignmentTypeValues.Justified,
+            TextAlignment.Left => A.TextAlignmentTypeValues.Left,
+            TextAlignment.Center => A.TextAlignmentTypeValues.Center,
+            TextAlignment.Right => A.TextAlignmentTypeValues.Right,
+            TextAlignment.Justify => A.TextAlignmentTypeValues.Justified,
             _ => throw new ArgumentOutOfRangeException(nameof(alignmentValue))
         };
 
@@ -290,7 +290,7 @@ internal sealed class SlideParagraph : IParagraph
         this.alignment = alignmentValue;
     }
 
-    private SCTextAlignment ParseAlignment()
+    private TextAlignment ParseAlignment()
     {
         if (this.alignment.HasValue)
         {
@@ -300,15 +300,15 @@ internal sealed class SlideParagraph : IParagraph
         var aTextAlignmentType = this.AParagraph.ParagraphProperties?.Alignment!;
         if (aTextAlignmentType == null)
         {
-            return SCTextAlignment.Left;
+            return TextAlignment.Left;
         }
 
         this.alignment = aTextAlignmentType.Value switch
         {
-            A.TextAlignmentTypeValues.Center => SCTextAlignment.Center,
-            A.TextAlignmentTypeValues.Right => SCTextAlignment.Right,
-            A.TextAlignmentTypeValues.Justified => SCTextAlignment.Justify,
-            _ => SCTextAlignment.Left
+            A.TextAlignmentTypeValues.Center => TextAlignment.Center,
+            A.TextAlignmentTypeValues.Right => TextAlignment.Right,
+            A.TextAlignmentTypeValues.Justified => TextAlignment.Justify,
+            _ => TextAlignment.Left
         };
 
         return this.alignment.Value;

@@ -99,7 +99,7 @@ internal sealed class ReferencedShape
         return null;
     }
 
-    internal SCColorType? ColorTypeOrNull()
+    internal ColorType? ColorTypeOrNull()
     {
         var aParagraph = new SdkOpenXmlElement(this.aText).FirstAncestor<A.Paragraph>();
         var indentLevel = new SdkAParagraph(aParagraph).IndentLevel();
@@ -218,7 +218,7 @@ internal sealed class ReferencedShape
     /// <summary>
     ///     Tries to get color type from Referenced Master Placeholder of Slide Shape.
     /// </summary>
-    private SCColorType? MasterOfSlideIndentColorType(P.Shape slidePShape, int indentLevel)
+    private ColorType? MasterOfSlideIndentColorType(P.Shape slidePShape, int indentLevel)
     {
         var refMasterPShape = this.ReferencedMasterPShapeOf(slidePShape);
         var fonts = new IndentFonts(refMasterPShape!.TextBody!.ListStyle!);

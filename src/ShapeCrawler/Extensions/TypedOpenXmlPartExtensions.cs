@@ -9,7 +9,7 @@ namespace ShapeCrawler.Extensions;
 
 internal static class TypedOpenXmlPartExtensions
 {
-    internal static string GetNextRelationshipId(this TypedOpenXmlPart typedOpenXmlPart)
+    internal static string NextRelationshipId(this TypedOpenXmlPart typedOpenXmlPart)
     {
         var idNums = new List<long>();
         var relationships = typedOpenXmlPart.ExternalRelationships.Select(r => r.Id)
@@ -37,7 +37,7 @@ internal static class TypedOpenXmlPartExtensions
     
     internal static string AddImagePart(this TypedOpenXmlPart typedOpenXmlPart, Stream stream)
     {
-        var rId = typedOpenXmlPart.GetNextRelationshipId();
+        var rId = typedOpenXmlPart.NextRelationshipId();
         
         var imagePart = typedOpenXmlPart.AddNewPart<ImagePart>("image/png", rId);
         stream.Position = 0;

@@ -23,10 +23,9 @@ internal sealed class SlideTextParagraphPortion : IParagraphPortion
         this.sdkSlidePart = sdkSlidePart;
         this.aRun = aRun;
         var textPortionSize = new PortionFontSize(this.AText);
-        this.font = new ResetableLazy<SlideTextPortionFont>(() => new SlideTextPortionFont(sdkSlidePart,this.AText, textPortionSize));
+        this.font = new ResetableLazy<SlideTextPortionFont>(() =>
+            new SlideTextPortionFont(sdkSlidePart, this.AText, textPortionSize));
     }
-
-    internal event Action? Removed;
 
     /// <inheritdoc/>
     public string? Text
@@ -44,7 +43,7 @@ internal sealed class SlideTextParagraphPortion : IParagraphPortion
         set => this.SetHyperlink(value);
     }
 
-    public SCColor? TextHighlightColor
+    public Color? TextHighlightColor
     {
         get => this.ParseTextHighlight();
         set => this.UpdateTextHighlight(value);
@@ -52,15 +51,9 @@ internal sealed class SlideTextParagraphPortion : IParagraphPortion
 
     internal A.Text AText { get; }
 
-    internal bool IsRemoved { get; set; }
-    
-    public void Remove()
-    {
-        this.aRun.Remove();
-        this.Removed?.Invoke();
-    }
+    public void Remove() => this.aRun.Remove();
 
-    private SCColor ParseTextHighlight()
+    private Color ParseTextHighlight()
     {
         var arPr = this.AText.PreviousSibling<A.RunProperties>();
 
@@ -68,7 +61,7 @@ internal sealed class SlideTextParagraphPortion : IParagraphPortion
         if (arPr?.GetFirstChild<A.Highlight>()?.RgbColorModelHex is not A.RgbColorModelHex aSrgbClr
             || aSrgbClr.Val is null)
         {
-            return SCColor.Transparent;
+            return Color.Transparent;
         }
 
         // Gets node value.
@@ -76,20 +69,20 @@ internal sealed class SlideTextParagraphPortion : IParagraphPortion
         var hex = aSrgbClr.Val.ToString() !;
 
         // Check if color value is valid, we are expecting values as "000000".
-        var color = SCColor.FromHex(hex);
+        var color = Color.FromHex(hex);
 
         // Calculate alpha value if is defined in highlight node.
         var aAlphaValue = aSrgbClr.GetFirstChild<A.Alpha>()?.Val ?? 100000;
-        color.Alpha = SCColor.OPACITY / (100000 / aAlphaValue);
+        color.Alpha = Color.OPACITY / (100000 / aAlphaValue);
 
         return color;
     }
 
-    private void UpdateTextHighlight(SCColor? color)
+    private void UpdateTextHighlight(Color? color)
     {
         var arPr = this.AText.PreviousSibling<A.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
 
-        arPr.AddAHighlight((SCColor)color);
+        arPr.AddAHighlight((Color)color);
     }
 
     private string? ParseText()
@@ -104,7 +97,7 @@ internal sealed class SlideTextParagraphPortion : IParagraphPortion
         {
             throw new ArgumentNullException(nameof(text));
         }
-        
+
         this.AText.Text = text;
     }
 
@@ -121,7 +114,7 @@ internal sealed class SlideTextParagraphPortion : IParagraphPortion
         {
             return null;
         }
-        
+
         var hyperlinkRelationship = (HyperlinkRelationship)this.sdkSlidePart.GetReferenceRelationship(hyperlink.Id!);
 
         return hyperlinkRelationship.Uri.ToString();
@@ -141,7 +134,7 @@ internal sealed class SlideTextParagraphPortion : IParagraphPortion
             hyperlink = new A.HyperlinkOnClick();
             runProperties.Append(hyperlink);
         }
-        
+
         var uri = new Uri(url!, UriKind.RelativeOrAbsolute);
         var addedHyperlinkRelationship = this.sdkSlidePart.AddHyperlinkRelationship(uri, true);
 

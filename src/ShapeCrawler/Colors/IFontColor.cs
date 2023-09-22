@@ -11,7 +11,7 @@ public interface IFontColor
     /// <summary>
     ///     Gets color type.
     /// </summary>
-    SCColorType Type { get; }
+    ColorType Type { get; }
 
     /// <summary>
     ///     Gets color hexadecimal representation.

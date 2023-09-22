@@ -11,7 +11,7 @@ internal record SlideShapeFill : IShapeFill
 {
     private readonly TypedOpenXmlCompositeElement properties;
     private BooleanValue? useBgFill;
-    private SCFillType fillType;
+    private FillType fillType;
     private bool isDirty;
     private string? hexSolidColor;
     private SlidePictureImage? pictureImage;
@@ -36,7 +36,7 @@ internal record SlideShapeFill : IShapeFill
 
     public IImage? Picture => this.GetPicture();
 
-    public SCFillType Type => this.GetFillType();
+    public FillType Type => this.GetFillType();
 
     public void SetPicture(Stream imageStream)
     {
@@ -45,7 +45,7 @@ internal record SlideShapeFill : IShapeFill
             this.Initialize();
         }
 
-        if (this.Type == SCFillType.Picture)
+        if (this.Type == FillType.Picture)
         {
             this.pictureImage!.Update(imageStream);
         }
@@ -91,15 +91,15 @@ internal record SlideShapeFill : IShapeFill
     {
         if (this.useBgFill is not null && this.useBgFill)
         {
-            this.fillType = SCFillType.SlideBackground;
+            this.fillType = FillType.SlideBackground;
         }
         else
         {
-            this.fillType = SCFillType.NoFill;
+            this.fillType = FillType.NoFill;
         }
     }
     
-    private SCFillType GetFillType()
+    private FillType GetFillType()
     {
         if (this.isDirty)
         {
@@ -132,7 +132,7 @@ internal record SlideShapeFill : IShapeFill
                 var schemeColor = this.aSolidFill.SchemeColor;
             }
 
-            this.fillType = SCFillType.Solid;
+            this.fillType = FillType.Solid;
         }
         else
         {
@@ -145,7 +145,7 @@ internal record SlideShapeFill : IShapeFill
         this.aGradFill = this.properties!.GetFirstChild<A.GradientFill>();
         if (this.aGradFill != null)
         {
-            this.fillType = SCFillType.Gradient;
+            this.fillType = FillType.Gradient;
         }
         else
         {
@@ -161,7 +161,7 @@ internal record SlideShapeFill : IShapeFill
         {
             var image = new SlidePictureImage(this.sdkSlidePart, this.aBlipFill.Blip!);
             this.pictureImage = image;
-            this.fillType = SCFillType.Picture;
+            this.fillType = FillType.Picture;
         }
         else
         {
@@ -174,7 +174,7 @@ internal record SlideShapeFill : IShapeFill
         this.aPattFill = this.properties.GetFirstChild<A.PatternFill>();
         if (this.aPattFill != null)
         {
-            this.fillType = SCFillType.Pattern;
+            this.fillType = FillType.Pattern;
         }
         else
         {

@@ -65,12 +65,12 @@ internal sealed class SlideTable : CopyableShape, ITable, IRemoveable
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
     }
 
-    public override SCShapeType ShapeType => SCShapeType.Table;
+    public override ShapeType ShapeType => ShapeType.Table;
     public IReadOnlyList<IColumn> Columns => this.GetColumnList(); // TODO: make lazy
     public IRowCollection Rows => this.rowCollection.Value;
-    public override SCGeometry GeometryType => SCGeometry.Rectangle;
+    public override Geometry GeometryType => Geometry.Rectangle;
 
-    private A.Table ATable => this.pGraphicFrame.GetATable();
+    private A.Table ATable => this.pGraphicFrame.ATable();
 
     public ITableCell this[int rowIndex, int columnIndex] => this.Rows[rowIndex].Cells[columnIndex];
 

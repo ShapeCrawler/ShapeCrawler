@@ -11,18 +11,18 @@ namespace ShapeCrawler.Tests.Unit;
 public class ShapeTests : SCTest
 {
     [Theory]
-    [SlideShapeData("021.pptx", 4, 2, SCPlaceholderType.Footer)]
-    [SlideShapeData("008.pptx", 1, 3, SCPlaceholderType.DateAndTime)]
-    [SlideShapeData("019.pptx", 1, 2, SCPlaceholderType.SlideNumber)]
-    [SlideShapeData("013.pptx", 1, 281, SCPlaceholderType.Content)]
-    [SlideShapeData("autoshape-case016.pptx", 1, "Content Placeholder 1", SCPlaceholderType.Content)]
-    [SlideShapeData("autoshape-case016.pptx", 1, "Text Placeholder 1", SCPlaceholderType.Text)]
-    [SlideShapeData("autoshape-case016.pptx", 1, "Picture Placeholder 1", SCPlaceholderType.Picture)]
-    [SlideShapeData("autoshape-case016.pptx", 1, "Table Placeholder 1", SCPlaceholderType.Table)]
-    [SlideShapeData("autoshape-case016.pptx", 1, "SmartArt Placeholder 1", SCPlaceholderType.SmartArt)]
-    [SlideShapeData("autoshape-case016.pptx", 1, "Media Placeholder 1", SCPlaceholderType.Media)]
-    [SlideShapeData("autoshape-case016.pptx", 1, "Online Image Placeholder 1", SCPlaceholderType.OnlineImage)]
-    public void PlaceholderType_returns_placeholder_type(IShape shape, SCPlaceholderType expectedType)
+    [SlideShapeData("021.pptx", 4, 2, PlaceholderType.Footer)]
+    [SlideShapeData("008.pptx", 1, 3, PlaceholderType.DateAndTime)]
+    [SlideShapeData("019.pptx", 1, 2, PlaceholderType.SlideNumber)]
+    [SlideShapeData("013.pptx", 1, 281, PlaceholderType.Content)]
+    [SlideShapeData("autoshape-case016.pptx", 1, "Content Placeholder 1", PlaceholderType.Content)]
+    [SlideShapeData("autoshape-case016.pptx", 1, "Text Placeholder 1", PlaceholderType.Text)]
+    [SlideShapeData("autoshape-case016.pptx", 1, "Picture Placeholder 1", PlaceholderType.Picture)]
+    [SlideShapeData("autoshape-case016.pptx", 1, "Table Placeholder 1", PlaceholderType.Table)]
+    [SlideShapeData("autoshape-case016.pptx", 1, "SmartArt Placeholder 1", PlaceholderType.SmartArt)]
+    [SlideShapeData("autoshape-case016.pptx", 1, "Media Placeholder 1", PlaceholderType.Media)]
+    [SlideShapeData("autoshape-case016.pptx", 1, "Online Image Placeholder 1", PlaceholderType.OnlineImage)]
+    public void PlaceholderType_returns_placeholder_type(IShape shape, PlaceholderType expectedType)
     {
         // Act
         var placeholderType = shape.Placeholder!.Type;
@@ -127,7 +127,7 @@ public class ShapeTests : SCTest
 
     [Theory]
     [MemberData(nameof(GeometryTypeTestCases))]
-    public void GeometryType_returns_shape_geometry_type(IShape shape, SCGeometry expectedGeometryType)
+    public void GeometryType_returns_shape_geometry_type(IShape shape, Geometry expectedGeometryType)
     {
         // Assert
         shape.GeometryType.Should().Be(expectedGeometryType);
@@ -140,7 +140,7 @@ public class ShapeTests : SCTest
         var shapeCase1 = presentation.Slides[3].Shapes.First(sp => sp.Id == 2);
         var shapeCase2 = presentation.Slides[3].Shapes.First(sp => sp.Id == 3);
 
-        yield return new object[] { shapeCase1, SCGeometry.Rectangle };
-        yield return new object[] { shapeCase2, SCGeometry.Ellipse };
+        yield return new object[] { shapeCase1, Geometry.Rectangle };
+        yield return new object[] { shapeCase2, Geometry.Ellipse };
     }
 }

@@ -39,7 +39,7 @@ internal sealed record TextFrame : ITextFrame
         set => this.UpdateText(value);
     }
 
-    public SCAutofitType AutofitType
+    public AutofitType AutofitType
     {
         get => this.GetAutofitType();
         set => this.SetAutofitType(value);
@@ -93,7 +93,7 @@ internal sealed record TextFrame : ITextFrame
         slideCanvas.DrawText(this.Text, x, y, paint);
     }
 
-    private void SetAutofitType(SCAutofitType newType)
+    private void SetAutofitType(AutofitType newType)
     {
         var currentType = this.AutofitType;
         if (currentType == newType)
@@ -108,19 +108,19 @@ internal sealed record TextFrame : ITextFrame
 
         switch (newType)
         {
-            case SCAutofitType.None:
+            case AutofitType.None:
                 shrink?.Remove();
                 resize?.Remove();
                 dontAutofit = new A.NoAutoFit();
                 aBodyPr.Append(dontAutofit);
                 break;
-            case SCAutofitType.Shrink:
+            case AutofitType.Shrink:
                 dontAutofit?.Remove();
                 resize?.Remove();
                 shrink = new A.NormalAutoFit();
                 aBodyPr.Append(shrink);
                 break;
-            case SCAutofitType.Resize:
+            case AutofitType.Resize:
             {
                 dontAutofit?.Remove();
                 shrink?.Remove();
@@ -138,14 +138,14 @@ internal sealed record TextFrame : ITextFrame
     {
         var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.LeftInset;
-        return ins is null ? SCConstants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(ins.Value);
+        return ins is null ? Constants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
     
     private double GetRightMargin()
     {
         var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.RightInset;
-        return ins is null ? SCConstants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(ins.Value);
+        return ins is null ? Constants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
 
     private void SetLeftMargin(double centimetre)
@@ -198,30 +198,30 @@ internal sealed record TextFrame : ITextFrame
     {
         var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.TopInset;
-        return ins is null ? SCConstants.DefaultTopAndBottomMargin : UnitConverter.EmuToCentimeter(ins.Value);
+        return ins is null ? Constants.DefaultTopAndBottomMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
 
     private double GetBottomMargin()
     {
         var bodyProperties = this.textBody.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.BottomInset;
-        return ins is null ? SCConstants.DefaultTopAndBottomMargin : UnitConverter.EmuToCentimeter(ins.Value);
+        return ins is null ? Constants.DefaultTopAndBottomMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
 
-    private SCAutofitType GetAutofitType()
+    private AutofitType GetAutofitType()
     {
         var aBodyPr = this.textBody.GetFirstChild<A.BodyProperties>();
         if (aBodyPr!.GetFirstChild<A.NormalAutoFit>() != null)
         {
-            return SCAutofitType.Shrink;
+            return AutofitType.Shrink;
         }
 
         if (aBodyPr.GetFirstChild<A.ShapeAutoFit>() != null)
         {
-            return SCAutofitType.Resize;
+            return AutofitType.Resize;
         }
 
-        return SCAutofitType.None;
+        return AutofitType.None;
     }
 
     private void UpdateText(string newText)
@@ -238,7 +238,7 @@ internal sealed record TextFrame : ITextFrame
 
         baseParagraph.Text = newText;
 
-        if (this.AutofitType == SCAutofitType.Shrink)
+        if (this.AutofitType == AutofitType.Shrink)
         {
             this.ShrinkText(newText, baseParagraph);
         }

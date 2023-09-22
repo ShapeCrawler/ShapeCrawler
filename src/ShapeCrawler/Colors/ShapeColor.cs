@@ -52,7 +52,7 @@ internal sealed class ShapeColor
         return null;
     }
 
-    internal SCColorType? TypeOrNull()
+    internal ColorType? TypeOrNull()
     {
         if (this.pShape.ShapeStyle == null)
         {
@@ -62,17 +62,17 @@ internal sealed class ShapeColor
         var aFontReference = this.pShape.ShapeStyle.FontReference!;
         if (aFontReference.RgbColorModelHex != null)
         {
-            return SCColorType.RGB;
+            return ColorType.RGB;
         }
         
         if (aFontReference.SchemeColor != null)
         {
-            return SCColorType.Theme;
+            return ColorType.Theme;
         }
         
         if (aFontReference.PresetColor != null)
         {
-            return SCColorType.Preset;
+            return ColorType.Preset;
         }
         
         return null;

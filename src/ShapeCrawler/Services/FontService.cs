@@ -46,7 +46,7 @@ internal static class FontService
 
                 if (wordY > wordMaxY)
                 {
-                    if (paint.TextSize == SCConstants.MinReduceFontSize)
+                    if (paint.TextSize == Constants.MinReduceFontSize)
                     {
                         break;
                     }

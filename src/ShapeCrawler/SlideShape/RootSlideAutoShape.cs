@@ -43,7 +43,7 @@ internal sealed class RootSlideAutoShape : IRootSlideAutoShape
             Style = SKPaintStyle.Stroke
         };
 
-        if (this.GeometryType == SCGeometry.Rectangle)
+        if (this.GeometryType == Geometry.Rectangle)
         {
             float left = this.X;
             float top = this.Y;
@@ -77,7 +77,7 @@ internal sealed class RootSlideAutoShape : IRootSlideAutoShape
     public int Id => this.slideAutoShape.Id;
     public string Name => this.slideAutoShape.Name;
     public bool Hidden => this.slideAutoShape.Hidden;
-    public SCGeometry GeometryType => this.slideAutoShape.GeometryType;
+    public Geometry GeometryType => this.slideAutoShape.GeometryType;
     public IShapeFill Fill => this.slideAutoShape.Fill;
     public bool IsPlaceholder => this.slideAutoShape.IsPlaceholder;
     public IPlaceholder Placeholder => this.slideAutoShape.Placeholder;
@@ -88,7 +88,7 @@ internal sealed class RootSlideAutoShape : IRootSlideAutoShape
         set => this.slideAutoShape.CustomData = value;
     }
 
-    public SCShapeType ShapeType => this.slideAutoShape.ShapeType;
+    public ShapeType ShapeType => this.slideAutoShape.ShapeType;
 
     public bool IsTextHolder => this.slideAutoShape.IsTextHolder;
 

@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Excel;
 using ShapeCrawler.Exceptions;
 
 namespace ShapeCrawler.Charts;

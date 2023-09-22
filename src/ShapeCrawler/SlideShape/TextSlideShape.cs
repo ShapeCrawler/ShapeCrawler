@@ -13,7 +13,7 @@ internal sealed class TextSlideShape : Shape
         this.TextFrame = new TextFrame(sdkSlidePart, pShape.TextBody!);
     }
 
-    public override SCShapeType ShapeType { get; }
+    public override ShapeType ShapeType { get; }
     public override bool IsTextHolder => true;
     public override ITextFrame TextFrame { get; }
 }

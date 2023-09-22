@@ -26,7 +26,7 @@ public interface ISlideShapes : IReadOnlyShapes
     /// <param name="y">Y coordinate in pixels.</param>
     /// <param name="audio">Audio stream.</param>
     /// <param name="type">Audio type.</param>
-    void AddAudio(int x, int y, Stream audio, SCAudioType type);
+    void AddAudio(int x, int y, Stream audio, AudioType type);
 
     /// <summary>
     ///     Adds a new video from stream.

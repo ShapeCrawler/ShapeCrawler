@@ -13,7 +13,7 @@ internal class TableCellFill : IShapeFill
     private readonly SlidePart sdkSlidePart;
     private readonly A.TableCellProperties sdkATableCellProperties;
     private BooleanValue? useBgFill;
-    private SCFillType fillType;
+    private FillType fillType;
     private bool isDirty;
     private string? hexSolidColor;
     private ShapeFillImage? pictureImage;
@@ -37,7 +37,7 @@ internal class TableCellFill : IShapeFill
 
     public IImage? Picture => this.GetPicture();
 
-    public SCFillType Type => this.GetFillType();
+    public FillType Type => this.GetFillType();
 
     public void SetPicture(Stream imageStream)
     {
@@ -46,7 +46,7 @@ internal class TableCellFill : IShapeFill
             this.Initialize();
         }
 
-        if (this.Type == SCFillType.Picture)
+        if (this.Type == FillType.Picture)
         {
             this.pictureImage!.Update(imageStream);
         }
@@ -90,10 +90,10 @@ internal class TableCellFill : IShapeFill
 
     private void InitSlideBackgroundFillOr()
     {
-        this.fillType = SCFillType.NoFill;
+        this.fillType = FillType.NoFill;
     }
     
-    private SCFillType GetFillType()
+    private FillType GetFillType()
     {
         if (this.isDirty)
         {
@@ -126,7 +126,7 @@ internal class TableCellFill : IShapeFill
                 var schemeColor = this.sdkASolidFill.SchemeColor;
             }
 
-            this.fillType = SCFillType.Solid;
+            this.fillType = FillType.Solid;
         }
         else
         {
@@ -139,7 +139,7 @@ internal class TableCellFill : IShapeFill
         this.sdkAGradFill = this.sdkATableCellProperties!.GetFirstChild<A.GradientFill>();
         if (this.sdkAGradFill != null)
         {
-            this.fillType = SCFillType.Gradient;
+            this.fillType = FillType.Gradient;
         }
         else
         {
@@ -159,7 +159,7 @@ internal class TableCellFill : IShapeFill
                 var imagePart = (ImagePart)this.sdkSlidePart.GetPartById(blipEmbedValue);
                 var image = new ShapeFillImage(this.sdkSlidePart, this.sdkABlipFill, imagePart);
                 this.pictureImage = image;
-                this.fillType = SCFillType.Picture;
+                this.fillType = FillType.Picture;
             }
         }
         else
@@ -173,7 +173,7 @@ internal class TableCellFill : IShapeFill
         this.sdkAPattFill = this.sdkATableCellProperties.GetFirstChild<A.PatternFill>();
         if (this.sdkAPattFill != null)
         {
-            this.fillType = SCFillType.Pattern;
+            this.fillType = FillType.Pattern;
         }
         else
         {

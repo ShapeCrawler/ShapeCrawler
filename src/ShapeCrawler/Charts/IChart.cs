@@ -12,7 +12,7 @@ public interface IChart : IShape
     /// <summary>
     ///     Gets chart type.
     /// </summary>
-    SCChartType Type { get; }
+    ChartType Type { get; }
 
     /// <summary>
     ///     Gets a value indicating whether the chart has a title.

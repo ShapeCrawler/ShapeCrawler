@@ -21,7 +21,7 @@ internal class SlideOLEObject : Shape, IShape, IRemoveable
         this.Fill = new SlideShapeFill(sdkSlidePart, pGraphicFrame.Descendants<P.ShapeProperties>().First(), false);
     }
 
-    public override SCShapeType ShapeType => SCShapeType.OLEObject;
+    public override ShapeType ShapeType => ShapeType.OLEObject;
     public override bool HasOutline => true;
     public override IShapeOutline Outline { get; }
     public override bool HasFill => true;

@@ -45,10 +45,10 @@ internal sealed class SlideLine : Shape, ILine, IRemoveable
         this.Outline = shapeOutline;
     }
 
-    public override SCShapeType ShapeType => SCShapeType.Line;
+    public override ShapeType ShapeType => ShapeType.Line;
     public override bool HasOutline => true;
     public override IShapeOutline Outline { get; }
-    public override SCGeometry GeometryType => SCGeometry.Line;
+    public override Geometry GeometryType => Geometry.Line;
 
     public Point StartPoint
     {

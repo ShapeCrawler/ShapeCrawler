@@ -76,13 +76,13 @@ internal abstract class Shape : IShape
 
     public int Id => this.shapeId.Value();
 
-    public string Name => this.pShapeTreeElement.GetNonVisualDrawingProperties().Name!.Value!;
+    public string Name => this.pShapeTreeElement.NonVisualDrawingProperties().Name!.Value!;
 
     public bool Hidden
     {
         get
         {
-            var parsedHiddenValue = this.pShapeTreeElement.GetNonVisualDrawingProperties().Hidden?.Value;
+            var parsedHiddenValue = this.pShapeTreeElement.NonVisualDrawingProperties().Hidden?.Value;
             return parsedHiddenValue is true;
         }
     }
@@ -92,7 +92,7 @@ internal abstract class Shape : IShape
     public virtual IPlaceholder Placeholder => throw new SCException(
         $"The shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} property to check if shape is a placeholder.");
 
-    public virtual SCGeometry GeometryType => SCGeometry.Rectangle;
+    public virtual Geometry GeometryType => Geometry.Rectangle;
 
     public string? CustomData
     {
@@ -100,7 +100,7 @@ internal abstract class Shape : IShape
         set => this.UpdateCustomData(value);
     }
 
-    public abstract SCShapeType ShapeType { get; }
+    public abstract ShapeType ShapeType { get; }
     public virtual bool HasOutline => false;
 
     public virtual IShapeOutline Outline => throw new SCException(

@@ -52,7 +52,7 @@ internal sealed class SlideField : IParagraphPortion
         set => this.SetHyperlink(value);
     }
 
-    public SCColor? TextHighlightColor
+    public Color? TextHighlightColor
     {
         get => this.ParseTextHighlight();
         set => this.UpdateTextHighlight(value);
@@ -66,7 +66,7 @@ internal sealed class SlideField : IParagraphPortion
         this.Removed?.Invoke();
     }
 
-    private SCColor ParseTextHighlight()
+    private Color ParseTextHighlight()
     {
         var arPr = this.aText!.PreviousSibling<A.RunProperties>();
 
@@ -74,7 +74,7 @@ internal sealed class SlideField : IParagraphPortion
         if (arPr?.GetFirstChild<A.Highlight>()?.RgbColorModelHex is not A.RgbColorModelHex aSrgbClr
             || aSrgbClr.Val is null)
         {
-            return SCColor.Transparent;
+            return Color.Transparent;
         }
 
         // Gets node value.
@@ -82,20 +82,20 @@ internal sealed class SlideField : IParagraphPortion
         var hex = aSrgbClr.Val.ToString() !;
 
         // Check if color value is valid, we are expecting values as "000000".
-        var color = SCColor.FromHex(hex);
+        var color = Color.FromHex(hex);
 
         // Calculate alpha value if is defined in highlight node.
         var aAlphaValue = aSrgbClr.GetFirstChild<A.Alpha>()?.Val ?? 100000;
-        color.Alpha = SCColor.OPACITY / (100000 / aAlphaValue);
+        color.Alpha = Color.OPACITY / (100000 / aAlphaValue);
 
         return color;
     }
 
-    private void UpdateTextHighlight(SCColor? color)
+    private void UpdateTextHighlight(Color? color)
     {
         var arPr = this.aText!.PreviousSibling<A.RunProperties>() ?? this.aText.Parent!.AddRunProperties();
 
-        arPr.AddAHighlight((SCColor)color);
+        arPr.AddAHighlight((Color)color);
     }
 
     private string? GetHyperlink()

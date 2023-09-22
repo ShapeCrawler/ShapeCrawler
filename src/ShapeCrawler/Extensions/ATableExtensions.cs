@@ -7,7 +7,7 @@ internal static class ATableExtensions
 {
     internal static A.TableRow AddRow(this A.Table aTable, int columnsCount)
     {
-        var row = new A.TableRow { Height = SCConstants.DefaultRowHeightEmu };
+        var row = new A.TableRow { Height = Constants.DefaultRowHeightEmu };
         for (var i = 0; i < columnsCount; i++)
         {
             var tableCell = new A.TableCell();

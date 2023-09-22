@@ -5,6 +5,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Excel;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -15,7 +16,7 @@ namespace ShapeCrawler.Charts;
 
 internal sealed class SlideChart : Shape, IChart, IRemoveable
 {
-    private readonly SCChartType chartType;
+    private readonly ChartType chartType;
     private readonly Lazy<OpenXmlElement?> firstSeries;
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly ChartPart sdkChartPart;
@@ -43,23 +44,23 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
             this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }
 
-    public SCChartType Type
+    public ChartType Type
     {
         get
         {
             if (this.cXCharts.Count() > 1)
             {
-                return SCChartType.Combination;
+                return ChartType.Combination;
             }
 
             var chartName = this.cXCharts.Single().LocalName;
-            Enum.TryParse(chartName, true, out SCChartType enumChartType);
+            Enum.TryParse(chartName, true, out ChartType enumChartType);
 
             return enumChartType;
         }
     }
 
-    public override SCShapeType ShapeType => SCShapeType.Chart;
+    public override ShapeType ShapeType => ShapeType.Chart;
     public override IShapeOutline Outline { get; }
     public override IShapeFill Fill { get; }
 
@@ -96,13 +97,13 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
             return this.ParseXValues()!;
         }
     }
-    public override SCGeometry GeometryType => SCGeometry.Rectangle;
+    public override Geometry GeometryType => Geometry.Rectangle;
     public byte[] ExcelBookByteArray() => new ExcelBook(this.sdkChartPart).AsByteArray();
     public IAxesManager Axes => this.GetAxes();
     internal ExcelBook? workbook { get; set; }
     private IAxesManager GetAxes()
     {
-        return new SCAxesManager(this.cPlotArea);
+        return new AxesManager(this.cPlotArea);
     }
 
     private string? GetTitleOrDefault()
@@ -129,7 +130,7 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
 
         // PieChart uses only one series for view.
         // However, it can have store multiple series data in the spreadsheet.
-        if (this.Type == SCChartType.PieChart)
+        if (this.Type == ChartType.PieChart)
         {
             return ((SeriesList)this.SeriesList).First().Name;
         }
@@ -140,7 +141,7 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
     private bool TryGetStaticTitle(C.ChartText chartText, out string? staticTitle)
     {
         staticTitle = null;
-        if (this.Type == SCChartType.Combination)
+        if (this.Type == ChartType.Combination)
         {
             staticTitle = chartText.RichText!.Descendants<A.Text>().Select(t => t.Text)
                 .Aggregate((t1, t2) => t1 + t2);
@@ -167,7 +168,6 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
 
         if (cXValues.NumberReference.NumberingCache != null)
         {
-            // From cache
             var cNumericValues = cXValues.NumberReference.NumberingCache.Descendants<C.NumericValue>();
             var cachedPointValues = new List<double>(cNumericValues.Count());
             foreach (var numericValue in cNumericValues)
@@ -180,8 +180,7 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
             return cachedPointValues;
         }
 
-        // From Spreadsheet
-        return new ExcelBook(this.sdkChartPart).FormulaValues(cXValues.NumberReference.Formula!);
+        return new ExcelBook(this.sdkChartPart).FormulaValues(cXValues.NumberReference.Formula!.Text);
     }
 
     private OpenXmlElement? GetFirstSeries()
@@ -190,8 +189,5 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
             .FirstOrDefault(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
     }
 
-    public void Remove()
-    {
-        this.pGraphicFrame.Remove();
-    }
+    public void Remove() => this.pGraphicFrame.Remove();
 }

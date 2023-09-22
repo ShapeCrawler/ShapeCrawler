@@ -19,7 +19,7 @@ internal sealed record LayoutShapeFill : IShapeFill
         this.useBgFill = useBgFill;
     }
 
-    public SCFillType Type { get; }
+    public FillType Type { get; }
     public IImage? Picture { get; }
     public string? Color { get; }
     public double AlphaPercentage { get; }

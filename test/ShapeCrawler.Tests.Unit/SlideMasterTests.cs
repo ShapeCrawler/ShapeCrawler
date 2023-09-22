@@ -14,7 +14,7 @@ public class SlideMasterTests : SCTest
     {
         // Arrange
         var slideMaster = pres.SlideMasters[0];
-        var green = SCColor.FromHex("00FF00");
+        var green = Color.FromHex("00FF00");
 
         // Act
         slideMaster.SlideNumber!.Font.Color = green;

@@ -13,7 +13,7 @@ public interface ISlideNumberFont : IFont
     /// <summary>
     ///     Gets or sets color.
     /// </summary>
-    SCColor Color { get; set; }
+    Color Color { get; set; }
 }
 
 internal sealed class SlideNumberFont : ISlideNumberFont
@@ -27,7 +27,7 @@ internal sealed class SlideNumberFont : ISlideNumberFont
         this.masterSlideNumberSize = new MasterSlideNumberSize(aDefaultRunProperties);
     }
 
-    public SCColor Color
+    public Color Color
     {
         get => this.ParseColor();
         set => this.UpdateColor(value);
@@ -39,7 +39,7 @@ internal sealed class SlideNumberFont : ISlideNumberFont
         set => this.masterSlideNumberSize.Update(value);
     }
 
-    private void UpdateColor(SCColor color)
+    private void UpdateColor(Color color)
     {
         var solidFill = this.aDefaultRunProperties.GetFirstChild<A.SolidFill>();
         solidFill?.Remove();
@@ -50,10 +50,10 @@ internal sealed class SlideNumberFont : ISlideNumberFont
         this.aDefaultRunProperties.Append(solidFill);
     }
 
-    private SCColor ParseColor()
+    private Color ParseColor()
     {
         var hex = this.aDefaultRunProperties.GetFirstChild<A.SolidFill>() !.RgbColorModelHex!.Val!.Value!;
 
-        return SCColor.FromHex(hex);
+        return Color.FromHex(hex);
     }
 }

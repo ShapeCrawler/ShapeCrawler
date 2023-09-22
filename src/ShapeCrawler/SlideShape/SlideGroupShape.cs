@@ -24,8 +24,8 @@ internal sealed class SlideGroupShape : Shape, IGroupShape, IRemoveable
     }
 
     public IReadOnlyShapes Shapes { get; }
-    public override SCGeometry GeometryType => SCGeometry.Rectangle;
-    public override SCShapeType ShapeType => SCShapeType.Group;
+    public override Geometry GeometryType => Geometry.Rectangle;
+    public override ShapeType ShapeType => ShapeType.Group;
     public override bool HasOutline => true;
     public override IShapeOutline Outline { get; }
     public override bool HasFill => true;

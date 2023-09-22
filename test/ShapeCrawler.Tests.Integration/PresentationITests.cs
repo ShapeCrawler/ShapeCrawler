@@ -40,7 +40,7 @@ public class PresentationITests : SCTest
         // Assert
         File.Exists(logPath).Should().BeTrue();
         var json = File.OpenRead(logPath);
-        var log = JsonSerializer.Deserialize<SCLog>(json)!;
+        var log = JsonSerializer.Deserialize<Log>(json)!;
         var sendDate = (DateTime)log.SentDate;
         sendDate.Day.Should().Be(DateTime.UtcNow.Day);
         

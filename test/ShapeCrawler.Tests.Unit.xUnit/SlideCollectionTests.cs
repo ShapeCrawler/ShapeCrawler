@@ -113,11 +113,11 @@ public class SlideCollectionTests : SCTest
         var titleAndContentLayout = pres.SlideMasters[0].SlideLayouts[0];
 
         // Act
-        pres.Slides.AddEmptySlide(SCSlideLayoutType.Title);
+        pres.Slides.AddEmptySlide(SlideLayoutType.Title);
 
         // Assert
         var addedSlide = pres.Slides.Last();
-        titleAndContentLayout.Type.Should().Be(SCSlideLayoutType.Title);
+        titleAndContentLayout.Type.Should().Be(SlideLayoutType.Title);
         addedSlide.Should().NotBeNull();
         titleAndContentLayout.Shapes.Select(s => s.Name).Should().BeSubsetOf(addedSlide.Shapes.Select(s => s.Name));
     }

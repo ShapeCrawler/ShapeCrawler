@@ -24,7 +24,7 @@ internal sealed class ParagraphLineBreak : IParagraphPortion
         set => throw new SCException("New Line portion does not support hyperlink.");
     }
 
-    public SCColor? TextHighlightColor
+    public Color? TextHighlightColor
     {
         get => null; 
         set => throw new SCException("New Line portion does not support text highlight color.");

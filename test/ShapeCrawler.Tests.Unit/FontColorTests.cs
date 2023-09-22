@@ -76,7 +76,7 @@ public class FontColorTests : SCTest
         var colorType = fontColor.Type;
 
         // Assert
-        colorType.Should().Be(SCColorType.Theme);
+        colorType.Should().Be(ColorType.Theme);
     }
 
     [Test]
@@ -91,7 +91,7 @@ public class FontColorTests : SCTest
         var colorType = fontColor.Type;
 
         // Assert
-        colorType.Should().Be(SCColorType.RGB);
+        colorType.Should().Be(ColorType.RGB);
     }
 
     [Test]

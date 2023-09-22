@@ -308,7 +308,8 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
             }
             else
             {
-                aTextParent.AddRunProperties(isItalic);
+                aRunPr = new A.RunProperties { Italic = new BooleanValue(isItalic) };
+                aTextParent.InsertAt(aRunPr, 0);
             }
         }
     }

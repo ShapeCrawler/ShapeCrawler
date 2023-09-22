@@ -46,13 +46,11 @@ internal sealed class SlideTableRows : IRowCollection
     private readonly SlidePart sdkSlidePart;
     private readonly List<SlideTableRow> rows;
     private readonly A.Table aTable;
-    private readonly P.GraphicFrame pGraphicFrame;
 
     internal SlideTableRows (SlidePart sdkSlidePart, P.GraphicFrame pGraphicFrame)
     {
         this.sdkSlidePart = sdkSlidePart;
-        this.pGraphicFrame = pGraphicFrame;
-        var aTable = pGraphicFrame.GetATable();
+        var aTable = pGraphicFrame.ATable();
         var aTableRows = aTable.Elements<A.TableRow>();
         var rowList = new List<SlideTableRow>(aTableRows.Count());
         var rowIndex = 0;

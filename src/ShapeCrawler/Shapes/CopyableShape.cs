@@ -22,9 +22,9 @@ internal abstract class CopyableShape : Shape
         SlidePart targetSdkSlidePart)
     {
         var copy = this.pShapeTreeElement.CloneNode(true);
-        copy.GetNonVisualDrawingProperties().Id = new UInt32Value((uint)id);
+        copy.NonVisualDrawingProperties().Id = new UInt32Value((uint)id);
         pShapeTree.AppendChild(copy);
-        var copyName = copy.GetNonVisualDrawingProperties().Name!.Value!;
+        var copyName = copy.NonVisualDrawingProperties().Name!.Value!;
         if (existingShapeNames.Any(existingShapeName => existingShapeName == copyName))
         {
             var currentShapeCollectionSuffixes = existingShapeNames
@@ -45,7 +45,7 @@ internal abstract class CopyableShape : Shape
 
             numericSuffixes.Sort();
             var lastSuffix = numericSuffixes.LastOrDefault() + 1;
-            copy.GetNonVisualDrawingProperties().Name = copyName + " " + lastSuffix;
+            copy.NonVisualDrawingProperties().Name = copyName + " " + lastSuffix;
         }
     }
 }

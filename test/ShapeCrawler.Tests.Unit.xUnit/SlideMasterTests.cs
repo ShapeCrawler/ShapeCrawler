@@ -79,12 +79,12 @@ public class SlideMasterTests : SCTest
         IShape masterAutoShapeCase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
 
         // Act
-        SCPlaceholderType? shapePlaceholderTypeCase1 = masterAutoShapeCase1.Placeholder?.Type;
-        SCPlaceholderType? shapePlaceholderTypeCase2 = masterAutoShapeCase2.Placeholder?.Type;
-        SCPlaceholderType? shapePlaceholderTypeCase3 = masterAutoShapeCase3.Placeholder?.Type;
+        PlaceholderType? shapePlaceholderTypeCase1 = masterAutoShapeCase1.Placeholder?.Type;
+        PlaceholderType? shapePlaceholderTypeCase2 = masterAutoShapeCase2.Placeholder?.Type;
+        PlaceholderType? shapePlaceholderTypeCase3 = masterAutoShapeCase3.Placeholder?.Type;
 
         // Assert
-        shapePlaceholderTypeCase1.Should().Be(SCPlaceholderType.Title);
+        shapePlaceholderTypeCase1.Should().Be(PlaceholderType.Title);
         shapePlaceholderTypeCase2.Should().BeNull();
         shapePlaceholderTypeCase3.Should().BeNull();
     }
@@ -100,12 +100,12 @@ public class SlideMasterTests : SCTest
         IShape shapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
 
         // Act
-        SCGeometry geometryTypeCase1 = shapeCase1.GeometryType;
-        SCGeometry geometryTypeCase2 = shapeCase2.GeometryType;
+        Geometry geometryTypeCase1 = shapeCase1.GeometryType;
+        Geometry geometryTypeCase2 = shapeCase2.GeometryType;
 
         // Assert
-        geometryTypeCase1.Should().Be(SCGeometry.Rectangle);
-        geometryTypeCase2.Should().Be(SCGeometry.Custom);
+        geometryTypeCase1.Should().Be(Geometry.Rectangle);
+        geometryTypeCase2.Should().Be(Geometry.Custom);
     }
 
     [Fact]

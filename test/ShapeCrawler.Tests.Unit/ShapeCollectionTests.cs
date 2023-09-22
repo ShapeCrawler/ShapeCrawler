@@ -61,7 +61,7 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides.First().Shapes;
 
         // Assert
-        Assert.Single(shapes.Where(sp => sp.ShapeType == SCShapeType.Chart));
+        Assert.Single(shapes.Where(sp => sp.ShapeType == ShapeType.Chart));
         Assert.Single(shapes.Where(sp => sp is IPicture));
         Assert.Single(shapes.Where(sp => sp is ITable));
         Assert.Single(shapes.Where(sp => sp is IGroupShape));
@@ -102,7 +102,7 @@ public class ShapeCollectionTests : SCTest
 
         // Act-Assert
         Assert.Contains(shapesCollection,
-            shape => shape.Id == 10 && shape is ILine && shape.GeometryType == SCGeometry.Line);
+            shape => shape.Id == 10 && shape is ILine && shape.GeometryType == Geometry.Line);
     }
 
     [Test]
@@ -150,7 +150,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         var addedLine = (ILine)shapes.Last();
         shapes.Should().ContainSingle();
-        addedLine.ShapeType.Should().Be(SCShapeType.Line);
+        addedLine.ShapeType.Should().Be(ShapeType.Line);
         addedLine.StartPoint.X.Should().Be(10);
         addedLine.StartPoint.Y.Should().Be(10);
         addedLine.EndPoint.X.Should().Be(20);
@@ -247,7 +247,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         shapes.Should().ContainSingle();
         var line = (ILine)shapes.Last();
-        line.ShapeType.Should().Be(SCShapeType.Line);
+        line.ShapeType.Should().Be(ShapeType.Line);
         line.X.Should().Be(50);
         line.Y.Should().Be(60);
         pres.Validate();
@@ -304,7 +304,7 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides[1].Shapes;
 
         // Act
-        shapes.AddAudio(300, 100, wav, SCAudioType.WAVE);
+        shapes.AddAudio(300, 100, wav, AudioType.WAVE);
 
         // Assert
         var addedAudio = pres.Slides[1].Shapes.OfType<IMediaShape>().Last();
@@ -362,7 +362,7 @@ public class ShapeCollectionTests : SCTest
         // Assert
         shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
-        picture.ShapeType.Should().Be(SCShapeType.Picture);
+        picture.ShapeType.Should().Be(ShapeType.Picture);
         pres.Validate();
     }
 
@@ -395,7 +395,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         var rectangle = shapes.Last();
-        rectangle.GeometryType.Should().Be(SCGeometry.Rectangle);
+        rectangle.GeometryType.Should().Be(Geometry.Rectangle);
         rectangle.X.Should().Be(50);
         rectangle.Y.Should().Be(60);
         rectangle.Width.Should().Be(100);
@@ -418,7 +418,7 @@ public class ShapeCollectionTests : SCTest
 
         // Assert
         var roundedRectangle = shapes.Last();
-        roundedRectangle.GeometryType.Should().Be(SCGeometry.RoundRectangle);
+        roundedRectangle.GeometryType.Should().Be(Geometry.RoundRectangle);
         roundedRectangle.Name.Should().Be("Rectangle: Rounded Corners");
         roundedRectangle.Outline.HexColor.Should().Be("000000");
         pres.Validate();

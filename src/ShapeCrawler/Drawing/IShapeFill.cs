@@ -11,7 +11,7 @@ public interface IShapeFill
     /// <summary>
     ///     Gets fill type.
     /// </summary>
-    public SCFillType Type { get; }
+    public FillType Type { get; }
 
     /// <summary>
     ///     Gets picture image if it is picture fill, otherwise <see langword="null"/>.

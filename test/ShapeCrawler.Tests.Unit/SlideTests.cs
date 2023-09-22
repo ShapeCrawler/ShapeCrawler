@@ -71,7 +71,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pres = new SCPresentation();
-        pres.Slides.AddEmptySlide(SCSlideLayoutType.Blank);
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var slide = pres.Slides[0];
         var bgImage = StreamOf("test-image-2.png");
         

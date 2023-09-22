@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Excel;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -124,6 +125,6 @@ internal sealed class Categories : IReadOnlyCollection<ICategory>
             indexToCategory = nextIndexToCategory;
         }
 
-        return indexToCategory.Select(kvp => kvp.Value).ToList(indexToCategory.Count);
+        return indexToCategory.Select(kvp => kvp.Value).ToList();
     }
 }

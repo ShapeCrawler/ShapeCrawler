@@ -23,7 +23,7 @@ internal record PortionFontSize : IFontSize
             return fontSize.Value / 100;
         }
 
-        return SCConstants.DefaultFontSize;
+        return Constants.DefaultFontSize;
     }
 
     public void Update(int points)

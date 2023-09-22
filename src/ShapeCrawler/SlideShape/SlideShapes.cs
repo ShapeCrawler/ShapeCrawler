@@ -60,7 +60,7 @@ internal sealed record SlideShapes : ISlideShapes
         var mediaDataPart = sdkPresentationDocument.CreateMediaDataPart("audio/mpeg", ".mp3");
         audio.Position = 0;
         mediaDataPart.FeedData(audio);
-        var imageStream = Assembly.GetExecutingAssembly().GetStream("audio-image.png");
+        var imageStream = new Assets(Assembly.GetExecutingAssembly()).StreamOf("audio-image.png");
 
         var audioRef = this.sdkSlidePart.AddAudioReferenceRelationship(mediaDataPart);
         var mediaRef = this.sdkSlidePart.AddMediaReferenceRelationship(mediaDataPart);
@@ -86,7 +86,7 @@ internal sealed record SlideShapes : ISlideShapes
         transform2D.Extents!.Cy = 609600L;
 
         var nonVisualPictureProps = pPicture.NonVisualPictureProperties!;
-        var nonVisualDrawingProps = pPicture.GetNonVisualDrawingProperties();
+        var nonVisualDrawingProps = pPicture.NonVisualDrawingProperties();
         var hyperlinkOnClick = new A.HyperlinkOnClick
             { Id = string.Empty, Action = "ppaction://media" };
         nonVisualDrawingProps.Append(hyperlinkOnClick);
@@ -97,7 +97,7 @@ internal sealed record SlideShapes : ISlideShapes
         applicationNonVisualDrawingProps.Append(appNonVisualDrawingPropsExtensionList);
     }
 
-    public void AddAudio(int x, int y, Stream audio, SCAudioType type)
+    public void AddAudio(int x, int y, Stream audio, AudioType type)
     {
         throw new NotImplementedException();
     }
@@ -144,7 +144,7 @@ internal sealed record SlideShapes : ISlideShapes
         mediaDataPart.FeedData(stream);
         var imgPartRId = $"rId{Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 5)}";
         var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
-        var imageStream = Assembly.GetExecutingAssembly().GetStream("video-image.bmp");
+        var imageStream = new Assets(Assembly.GetExecutingAssembly()).StreamOf("video-image.bmp");
         imagePart.FeedData(imageStream);
         var videoRr = this.sdkSlidePart.AddVideoReferenceRelationship(mediaDataPart);
         var mediaRr = this.sdkSlidePart.AddMediaReferenceRelationship(mediaDataPart);
@@ -356,7 +356,7 @@ internal sealed record SlideShapes : ISlideShapes
         var shapeId = this.GenerateNextShapeId();
         var xEmu = UnitConverter.HorizontalPixelToEmu(xPx);
         var yEmu = UnitConverter.VerticalPixelToEmu(yPx);
-        var tableHeightEmu = SCConstants.DefaultRowHeightEmu * rows;
+        var tableHeightEmu = Constants.DefaultRowHeightEmu * rows;
 
         var graphicFrame = new P.GraphicFrame();
         var nonVisualGraphicFrameProperties = new P.NonVisualGraphicFrameProperties();
@@ -694,7 +694,7 @@ internal sealed record SlideShapes : ISlideShapes
 
     private P.Picture CreatePPicture(Stream imageStream, string shapeName)
     {
-        var imgPartRId = this.sdkSlidePart.GetNextRelationshipId();
+        var imgPartRId = this.sdkSlidePart.NextRelationshipId();
         var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
         imageStream.Position = 0;
         imagePart.FeedData(imageStream);

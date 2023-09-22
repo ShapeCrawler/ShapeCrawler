@@ -236,9 +236,9 @@ public class ShapeTests : SCTest
         height.Should().Be(68);
     }
 
-    [TestCase(2, SCGeometry.Rectangle)]
-    [TestCase(3, SCGeometry.Ellipse)]
-    public void GeometryType_returns_shape_geometry_type(int shapeId, SCGeometry expectedGeometryType)
+    [TestCase(2, Geometry.Rectangle)]
+    [TestCase(3, Geometry.Ellipse)]
+    public void GeometryType_returns_shape_geometry_type(int shapeId, Geometry expectedGeometryType)
     {
         // Arrange
         var presentation = new SCPresentation(StreamOf("021.pptx"));

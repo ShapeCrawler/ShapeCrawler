@@ -55,7 +55,7 @@ internal sealed class TextRootSlideAutoShape : IRootSlideAutoShape
     public string Name => this.rootSlideAutoShape.Name;
     public bool Hidden => this.rootSlideAutoShape.Hidden;
 
-    public SCGeometry GeometryType => this.rootSlideAutoShape.GeometryType;
+    public Geometry GeometryType => this.rootSlideAutoShape.GeometryType;
 
     public string? CustomData
     {
@@ -63,7 +63,7 @@ internal sealed class TextRootSlideAutoShape : IRootSlideAutoShape
         set => this.rootSlideAutoShape.CustomData = value;
     }
 
-    public SCShapeType ShapeType => this.rootSlideAutoShape.ShapeType;
+    public ShapeType ShapeType => this.rootSlideAutoShape.ShapeType;
     public bool HasOutline => this.rootSlideAutoShape.HasOutline;
     public IShapeOutline Outline => this.rootSlideAutoShape.Outline;
     public bool HasFill { get; }

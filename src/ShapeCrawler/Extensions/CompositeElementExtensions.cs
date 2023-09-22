@@ -6,7 +6,7 @@ namespace ShapeCrawler.Extensions;
 
 internal static class CompositeElementExtensions
 {
-    internal static P.NonVisualDrawingProperties GetNonVisualDrawingProperties(
+    internal static P.NonVisualDrawingProperties NonVisualDrawingProperties(
         this OpenXmlCompositeElement compositeElement)
     {
         // Get <p:cNvSpPr>
@@ -21,7 +21,7 @@ internal static class CompositeElementExtensions
         };
     }
     
-    internal static P.NonVisualDrawingProperties GetNonVisualDrawingProperties(
+    internal static P.NonVisualDrawingProperties NonVisualDrawingProperties(
         this OpenXmlElement xmlElement)
     {
         // Get <p:cNvSpPr>
@@ -32,20 +32,6 @@ internal static class CompositeElementExtensions
             P.Picture pPicture => pPicture.NonVisualPictureProperties!.NonVisualDrawingProperties!,
             P.GroupShape pGroupShape => pGroupShape.NonVisualGroupShapeProperties!.NonVisualDrawingProperties!,
             P.ConnectionShape pCxnSp => pCxnSp.NonVisualConnectionShapeProperties!.NonVisualDrawingProperties!,
-            _ => throw new SCException()
-        };
-    }
-
-    internal static P.ApplicationNonVisualDrawingProperties GetPNvPr(this OpenXmlCompositeElement compositeElement)
-    {
-        return compositeElement switch
-        {
-            P.GraphicFrame pGraphicFrame => pGraphicFrame.NonVisualGraphicFrameProperties!
-                .ApplicationNonVisualDrawingProperties!,
-            P.Shape pShape => pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!,
-            P.Picture pPicture => pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!,
-            P.ConnectionShape pCxnSp => pCxnSp.NonVisualConnectionShapeProperties!.ApplicationNonVisualDrawingProperties!,
-            P.GroupShape pGroupShape => pGroupShape.NonVisualGroupShapeProperties!.ApplicationNonVisualDrawingProperties!,
             _ => throw new SCException()
         };
     }

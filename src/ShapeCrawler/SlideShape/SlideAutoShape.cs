@@ -33,9 +33,9 @@ internal sealed class SlideAutoShape : CopyableShape, IShape, IRemoveable
     public override IShapeOutline Outline { get; }
     public override bool HasFill => true;
     public override IShapeFill Fill { get; }
-    public override SCShapeType ShapeType => SCShapeType.AutoShape;
+    public override ShapeType ShapeType => ShapeType.AutoShape;
 
-    public override SCGeometry GeometryType
+    public override Geometry GeometryType
     {
         get
         {
@@ -44,11 +44,11 @@ internal sealed class SlideAutoShape : CopyableShape, IShape, IRemoveable
             
             if (aPresetGeometry == null) // Placeholder can have transform on the slide, without having geometry
             {
-                return SCGeometry.Custom;
+                return Geometry.Custom;
             }
 
             var name = aPresetGeometry.Preset!.Value.ToString();
-            Enum.TryParse(name, true, out SCGeometry geometryType);
+            Enum.TryParse(name, true, out Geometry geometryType);
             return geometryType;
         }
     }
@@ -65,7 +65,7 @@ internal sealed class SlideAutoShape : CopyableShape, IShape, IRemoveable
             Style = SKPaintStyle.Stroke
         };
 
-        if (this.GeometryType == SCGeometry.Rectangle)
+        if (this.GeometryType == Geometry.Rectangle)
         {
             float left = this.X;
             float top = this.Y;

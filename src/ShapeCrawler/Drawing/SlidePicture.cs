@@ -41,8 +41,8 @@ internal sealed class SlidePicture : CopyableShape, IPicture, IRemoveable
 
     public IImage Image { get; }
     public string? SvgContent => this.GetSvgContent();
-    public override SCGeometry GeometryType => SCGeometry.Rectangle;
-    public override SCShapeType ShapeType => SCShapeType.Picture;
+    public override Geometry GeometryType => Geometry.Rectangle;
+    public override ShapeType ShapeType => ShapeType.Picture;
     public override bool HasOutline => true;
     public override IShapeOutline Outline { get; }
 
@@ -81,7 +81,7 @@ internal sealed class SlidePicture : CopyableShape, IPicture, IRemoveable
         var sourceImagePart = (ImagePart)sourceSdkSlidePart.GetPartById(this.blipEmbed.Value!);
 
         // Creates a new part in this slide with a new Id...
-        var targetImagePartRId = targetSdkSlidePart.GetNextRelationshipId();
+        var targetImagePartRId = targetSdkSlidePart.NextRelationshipId();
 
         // Adds to current slide parts and update relation id.
         var targetImagePart = targetSdkSlidePart.AddNewPart<ImagePart>(sourceImagePart.ContentType, targetImagePartRId);

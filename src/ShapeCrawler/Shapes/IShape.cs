@@ -49,7 +49,7 @@ public interface IShape : IPosition
     /// <summary>
     ///     Gets geometry form type of the shape.
     /// </summary>
-    SCGeometry GeometryType { get; }
+    Geometry GeometryType { get; }
 
     /// <summary>
     ///     Gets or sets custom data string for the shape.
@@ -59,7 +59,7 @@ public interface IShape : IPosition
     /// <summary>
     ///     Gets shape type.
     /// </summary>
-    SCShapeType ShapeType { get; }
+    ShapeType ShapeType { get; }
     
     /// <summary>
     ///     Gets value indicating whether the shape has outline formatting.
@@ -105,7 +105,7 @@ public interface IShape : IPosition
     
     /// <summary>
     ///     Gets the media shape which is an audio or video.
-    ///     Use <see cref="IShape.ShapeType"/> property to check if the shape is an <see cref="SCShapeType.Audio"/> or <see cref="SCShapeType.Video"/>.
+    ///     Use <see cref="IShape.ShapeType"/> property to check if the shape is an <see cref="Shapes.ShapeType.Audio"/> or <see cref="Shapes.ShapeType.Video"/>.
     /// </summary>
     /// <returns></returns>
     IMediaShape AsMedia();

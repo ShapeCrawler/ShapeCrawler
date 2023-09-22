@@ -24,7 +24,7 @@ internal sealed class SlideFontColor : IFontColor
 
     #region Public APIs
     
-    public SCColorType Type => this.ParseType();
+    public ColorType Type => this.ParseType();
 
     public string Hex => this.ParseHex();
 
@@ -109,7 +109,7 @@ internal sealed class SlideFontColor : IFontColor
         return colorHex;
     }
 
-    private SCColorType ParseType()
+    private ColorType ParseType()
     {
         var aSolidFill = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.SDKASolidFill();
         if (aSolidFill != null)
@@ -135,29 +135,29 @@ internal sealed class SlideFontColor : IFontColor
         // From Shape
         // var pShape = new SdkOpenXmlElement(this.aText).FirstAncestor<P.Shape>();
         var shapeColor = new ShapeColor(this.sdkSlidePart, this.aText);
-        SCColorType? type = shapeColor.TypeOrNull();
+        ColorType? type = shapeColor.TypeOrNull();
         if (type.HasValue)
         {
-            return (SCColorType)type;
+            return (ColorType)type;
         }
         
         // From Referenced Shape
-        SCColorType? refShapeColorType = new ReferencedShape(this.sdkSlidePart, this.aText).ColorTypeOrNull();
+        ColorType? refShapeColorType = new ReferencedShape(this.sdkSlidePart, this.aText).ColorTypeOrNull();
         if (refShapeColorType.HasValue)
         {
-            return (SCColorType)refShapeColorType;
+            return (ColorType)refShapeColorType;
         }
 
-        return SCColorType.NotDefined;
+        return ColorType.NotDefined;
     }
 
     private bool TryFromIndentFont(
         IndentFont? indentFont,
-        out (SCColorType colorType, string? colorHex) response)
+        out (ColorType colorType, string? colorHex) response)
     {
         if (!indentFont.HasValue)
         {
-            response = (SCColorType.NotDefined, null);
+            response = (ColorType.NotDefined, null);
             return false;
         }
 
@@ -165,7 +165,7 @@ internal sealed class SlideFontColor : IFontColor
         if (indentFont.Value.ARgbColorModelHex != null)
         {
             colorHexVariant = indentFont.Value.ARgbColorModelHex.Val!;
-            response = (SCColorType.RGB, colorHexVariant);
+            response = (ColorType.RGB, colorHexVariant);
             return true;
         }
 
@@ -173,25 +173,25 @@ internal sealed class SlideFontColor : IFontColor
         {
             var sdkSlidePartWrap = new PresentationColor(this.sdkSlidePart);
             colorHexVariant = sdkSlidePartWrap.ThemeColorHex(indentFont.Value.ASchemeColor.Val!);
-            response = (SCColorType.Theme, colorHexVariant);
+            response = (ColorType.Theme, colorHexVariant);
             return true;
         }
 
         if (indentFont.Value.ASystemColor != null)
         {
             colorHexVariant = indentFont.Value.ASystemColor.LastColor!;
-            response = (SCColorType.Standard, colorHexVariant);
+            response = (ColorType.Standard, colorHexVariant);
             return true;
         }
 
         if (indentFont.Value.APresetColor != null)
         {
             var coloName = indentFont.Value.APresetColor.Val!.Value.ToString();
-            response = (SCColorType.Preset, ColorTranslator.HexFromName(coloName));
+            response = (ColorType.Preset, ColorTranslator.HexFromName(coloName));
             return true;
         }
 
-        response = (SCColorType.NotDefined, null);
+        response = (ColorType.NotDefined, null);
         return false;
     }
 }

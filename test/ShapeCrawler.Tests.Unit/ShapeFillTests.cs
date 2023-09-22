@@ -50,7 +50,7 @@ public class ShapeFillTests : SCTest
         var fillType = autoShape.Fill.Type;
 
         // Assert
-        fillType.Should().Be(SCFillType.NoFill);
+        fillType.Should().Be(FillType.NoFill);
     }
 
     [Test]

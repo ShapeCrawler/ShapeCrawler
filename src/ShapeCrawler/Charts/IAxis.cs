@@ -1,4 +1,5 @@
-﻿namespace ShapeCrawler;
+﻿// ReSharper disable once CheckNamespace
+namespace ShapeCrawler;
 
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 
@@ -18,12 +19,12 @@ public interface IAxis
     double Maximum { get; set; }
 }
 
-internal sealed class SCAxis : IAxis
+internal sealed class Axis : IAxis
 {
     private const double DefaultMax = 6;
     private readonly C.Scaling cScaling;
 
-    public SCAxis(C.Scaling cScaling)
+    internal Axis(C.Scaling cScaling)
     {
         this.cScaling = cScaling;
     }
@@ -31,23 +32,13 @@ internal sealed class SCAxis : IAxis
     public double Minimum
     {
         get => this.GetMinimum();
-        set => this.SetMinimum(value);
+        set => this.cScaling.MinAxisValue = new C.MinAxisValue { Val = value };
     }
 
     public double Maximum
     {
         get => this.GetMaximum();
-        set => this.SetMaximum(value);
-    }
-
-    private void SetMaximum(double value)
-    {
-        this.cScaling.MaxAxisValue = new C.MaxAxisValue { Val = value };
-    }
-
-    private void SetMinimum(double value)
-    {
-        this.cScaling.MinAxisValue = new C.MinAxisValue { Val = value };
+        set => this.cScaling.MaxAxisValue = new C.MaxAxisValue { Val = value };
     }
 
     private double GetMinimum()
