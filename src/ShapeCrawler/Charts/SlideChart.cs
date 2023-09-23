@@ -28,15 +28,20 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
 
     private string? chartTitle;
 
-    internal SlideChart(SlidePart sdkSlidePart, P.GraphicFrame pGraphicFrame, ChartPart sdkChartPart)
+    internal SlideChart(
+        SlidePart sdkSlidePart, 
+        ChartPart sdkChartPart, 
+        P.GraphicFrame pGraphicFrame,
+        IReadOnlyList<ICategory> categories
+        )
         : base(pGraphicFrame)
     {
-        this.pGraphicFrame = pGraphicFrame;
         this.sdkChartPart = sdkChartPart;
+        this.pGraphicFrame = pGraphicFrame;
+        this.Categories = categories;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
         this.cPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
         this.cXCharts = this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-        
         var pShapeProperties = sdkChartPart.ChartSpace.GetFirstChild<C.ShapeProperties>()!;
         this.Outline = new SlideShapeOutline(sdkSlidePart, pShapeProperties);
         this.Fill = new SlideShapeFill(sdkSlidePart, pShapeProperties, false);
@@ -81,7 +86,7 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
         }
     }
     public bool HasCategories => false;
-    public IReadOnlyList<ICategory> Categories => throw new SCException($"Chart does not have categories. Use {nameof(IChart.HasCategories)} property to check if chart categories are available.");
+    public IReadOnlyList<ICategory> Categories { get; }
     public ISeriesList SeriesList { get; }
     public bool HasXValues => this.ParseXValues() != null;
 

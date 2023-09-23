@@ -108,7 +108,7 @@ public class FontTests : SCTest
     public void IsBold_GetterReturnsFalse_WhenFontOfPlaceholderTextIsNotBold()
     {
         // Arrange
-        var placeholderAutoShape = (IShape)new SCPresentation(StreamOf("020.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
+        var placeholderAutoShape = new SCPresentation(StreamOf("020.pptx")).Slides[2].Shapes.First(sp => sp.Id == 7);
         var portion = placeholderAutoShape.TextFrame.Paragraphs[0].Portions[0];
 
         // Act

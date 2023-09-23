@@ -23,8 +23,50 @@ internal sealed class SlideFontColor : IFontColor
     }
 
     #region Public APIs
-    
-    public ColorType Type => this.ParseType();
+
+    public ColorType Type
+    {
+        get
+        {
+            var aSolidFill = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.SDKASolidFill();
+            if (aSolidFill != null)
+            {
+                var sdkPSlideMaster = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster;
+                var typeAndColor = HexParser.FromSolidFill(aSolidFill, sdkPSlideMaster);
+                return typeAndColor.Item1;
+            }
+
+            // TryFromTextBody()
+            var aParagraph = new SdkOpenXmlElement(this.aText).FirstAncestor<A.Paragraph>();
+            var paraLevel = new SdkAParagraph(aParagraph).IndentLevel();
+            var pTextBody = new SdkOpenXmlElement(aParagraph).FirstAncestor<P.TextBody>();
+            var textBodyStyleFont = new IndentFonts(pTextBody.GetFirstChild<A.ListStyle>()!).FontOrNull(paraLevel);
+            if (textBodyStyleFont.HasValue)
+            {
+                if (this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
+                {
+                    return textBodyColor.colorType;
+                }
+            }
+
+            // From Shape
+            var shapeColor = new ShapeColor(this.sdkSlidePart, this.aText);
+            ColorType? type = shapeColor.TypeOrNull();
+            if (type.HasValue)
+            {
+                return (ColorType)type;
+            }
+
+            // From Referenced Shape
+            var refShapeColorType = new ReferencedShape(this.sdkSlidePart, this.aText).ColorTypeOrNull();
+            if (refShapeColorType.HasValue)
+            {
+                return (ColorType)refShapeColorType;
+            }
+
+            return ColorType.NotDefined;
+        }
+    }
 
     public string Hex => this.ParseHex();
 
@@ -43,7 +85,7 @@ internal sealed class SlideFontColor : IFontColor
         aSolidFill.Append(rgbColorModelHex);
         aRunProperties.Append(aSolidFill);
     }
-    
+
     #endregion Public APIs
 
     private string ParseHex()
@@ -77,14 +119,14 @@ internal sealed class SlideFontColor : IFontColor
         {
             return shapeFontColorHex;
         }
-        
+
         // From Referenced Shape
         var refShapeFontColorHex = new ReferencedShape(this.sdkSlidePart, this.aText).ColorHexOrNull();
         if (refShapeFontColorHex != null)
         {
             return refShapeFontColorHex;
         }
-        
+
         // From Common Placeholder
         var pSlideMasterWrap =
             new SdkPSlideMaster(sdkPSlideMaster);
@@ -107,48 +149,6 @@ internal sealed class SlideFontColor : IFontColor
         // Get default
         colorHex = presColor.ThemeColorHex(A.SchemeColorValues.Text1);
         return colorHex;
-    }
-
-    private ColorType ParseType()
-    {
-        var aSolidFill = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.SDKASolidFill();
-        if (aSolidFill != null)
-        {
-            var sdkPSlideMaster = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster;
-            var typeAndColor = HexParser.FromSolidFill(aSolidFill, sdkPSlideMaster);
-            return typeAndColor.Item1;
-        }
-
-        // TryFromTextBody()
-        var aParagraph = new SdkOpenXmlElement(this.aText).FirstAncestor<A.Paragraph>();
-        var paraLevel = new SdkAParagraph(aParagraph).IndentLevel();
-        var pTextBody = new SdkOpenXmlElement(aParagraph).FirstAncestor<P.TextBody>();
-        var textBodyStyleFont = new IndentFonts(pTextBody.GetFirstChild<A.ListStyle>()!).FontOrNull(paraLevel);
-        if (textBodyStyleFont.HasValue)
-        {
-            if (this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))
-            {
-                return textBodyColor.colorType;
-            }
-        }
-        
-        // From Shape
-        // var pShape = new SdkOpenXmlElement(this.aText).FirstAncestor<P.Shape>();
-        var shapeColor = new ShapeColor(this.sdkSlidePart, this.aText);
-        ColorType? type = shapeColor.TypeOrNull();
-        if (type.HasValue)
-        {
-            return (ColorType)type;
-        }
-        
-        // From Referenced Shape
-        ColorType? refShapeColorType = new ReferencedShape(this.sdkSlidePart, this.aText).ColorTypeOrNull();
-        if (refShapeColorType.HasValue)
-        {
-            return (ColorType)refShapeColorType;
-        }
-
-        return ColorType.NotDefined;
     }
 
     private bool TryFromIndentFont(

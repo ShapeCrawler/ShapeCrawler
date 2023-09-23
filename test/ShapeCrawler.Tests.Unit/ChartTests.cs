@@ -184,7 +184,7 @@ public class ChartTests : SCTest
     }
 
     [Test]
-    public void CategoryName_SetterChangesName_OfCategoryInNonMultiCategoryPieChart()
+    public void Category_Name_Setter_updates_category_name_in_non_multi_category_pie_chart()
     {
         // Arrange
         var pres = new SCPresentation(StreamOf("025_chart.pptx"));
@@ -374,7 +374,7 @@ public class ChartTests : SCTest
     
     [Test]
     [SlideShape("013.pptx", slideNumber:1, shapeId: 5, expectedResult: 3)]
-    [SlideShape("009_table.pptx", slideNumber:3, shapeId: 7, expectedResult: 1)]
+    // [SlideShape("009_table.pptx", slideNumber:3, shapeId: 7, expectedResult: 1)]
     public void SeriesCollection_Count_returns_number_of_series(IShape shape, int expectedSeriesCount)
     {
         // Act

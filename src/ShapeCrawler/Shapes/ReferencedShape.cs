@@ -66,11 +66,14 @@ internal sealed class ReferencedShape
         }
 
         var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOf(refLayoutPShapeOfSlide);
-        var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout!.TextBody!.ListStyle!);
-        var masterIndentFontOfLayout = masterFontsOfLayout.FontOrNull(indentLevel);
-        if (masterIndentFontOfLayout != null && this.HexFromName(masterIndentFontOfLayout, out var masterColorOfLayout))
+        if(refMasterPShapeOfLayout != null)
         {
-            return masterColorOfLayout;
+            var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout.TextBody!.ListStyle!);
+            var masterIndentFontOfLayout = masterFontsOfLayout.FontOrNull(indentLevel);
+            if (masterIndentFontOfLayout != null && this.HexFromName(masterIndentFontOfLayout, out var masterColorOfLayout))
+            {
+                return masterColorOfLayout;
+            }
         }
 
         if (slidePh.Type?.Value == P.PlaceholderValues.Title)
@@ -164,6 +167,10 @@ internal sealed class ReferencedShape
         }
 
         var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOf(refLayoutPShapeOfSlide);
+        if(refMasterPShapeOfLayout == null)
+        {
+            return null;
+        }
         var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout!.TextBody!.ListStyle!);
         var masterOfLayoutIndentColorType = masterFontsOfLayout.FontOrNull(indentLevel);
         if (masterOfLayoutIndentColorType.HasValue)
@@ -221,7 +228,12 @@ internal sealed class ReferencedShape
     private ColorType? MasterOfSlideIndentColorType(P.Shape slidePShape, int indentLevel)
     {
         var refMasterPShape = this.ReferencedMasterPShapeOf(slidePShape);
-        var fonts = new IndentFonts(refMasterPShape!.TextBody!.ListStyle!);
+        if(refMasterPShape == null)
+        {
+            return null;
+        }
+        
+        var fonts = new IndentFonts(refMasterPShape.TextBody!.ListStyle!);
         var colorType = fonts.ColorType(indentLevel);
 
         return colorType;
@@ -356,6 +368,12 @@ internal sealed class ReferencedShape
                     referencedShape = layoutPShape;
                     return true;
                 }
+            }
+
+            if (slidePh.Type == P.PlaceholderValues.Title && layoutPh.Type == P.PlaceholderValues.Title)
+            {
+                referencedShape = layoutPShape;
+                return true;
             }
         }
         

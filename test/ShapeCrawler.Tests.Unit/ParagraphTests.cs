@@ -233,8 +233,7 @@ public class ParagraphTests : SCTest
     public void Portions_Add()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-case001.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new SCPresentation(StreamOf("autoshape-case001.pptx"));
         var shape = pres.SlideMasters[0].Shapes.GetByName<IShape>("AutoShape 1");
         shape.TextFrame!.Paragraphs.Add();
         var paragraph = shape.TextFrame.Paragraphs.Last();

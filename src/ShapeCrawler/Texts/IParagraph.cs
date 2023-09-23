@@ -148,9 +148,6 @@ internal sealed class SlideParagraph : IParagraph
         }
 
         // To set a paragraph text we use a single portion which is the first paragraph portion.
-        // var basePortion = this.Portions.OfType<TextParagraphPortion>().First();
-        // var removingPortions = this.Portions.Where(p => p != basePortion).ToList();
-        // this.Portions.Remove(removingPortions);
         var baseARun = this.AParagraph.GetFirstChild<A.Run>()!;
         foreach (var removingRun in this.AParagraph.OfType<A.Run>().Where(run => run != baseARun))
         {
@@ -180,8 +177,8 @@ internal sealed class SlideParagraph : IParagraph
         }
         
         // Resize
-        var pTextBody = (P.TextBody)this.AParagraph.Parent!;
-        var textFrame = new TextFrame(this.sdkSlidePart, pTextBody);
+        var sdkTextBody = this.AParagraph.Parent!;
+        var textFrame = new TextFrame(this.sdkSlidePart, sdkTextBody);
         if (textFrame.AutofitType != AutofitType.Resize)
         {
             return;
@@ -208,12 +205,12 @@ internal sealed class SlideParagraph : IParagraph
         paint.MeasureText(text, ref textRect);
         var textWidth = textRect.Width;
         var textHeight = paint.TextSize;
-        var shapeSize = new ShapeSize(pTextBody.Parent!);
+        var shapeSize = new ShapeSize(sdkTextBody.Parent!);
         var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
         var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
 
-        this.UpdateHeight(textWidth, currentBlockWidth, textHeight, tMarginPixel, bMarginPixel, currentBlockHeight, pTextBody.Parent!);
-        this.UpdateWidthIfNeed(paint, lMarginPixel, rMarginPixel, textFrame, pTextBody.Parent!);
+        this.UpdateHeight(textWidth, currentBlockWidth, textHeight, tMarginPixel, bMarginPixel, currentBlockHeight, sdkTextBody.Parent!);
+        this.UpdateWidthIfNeed(paint, lMarginPixel, rMarginPixel, textFrame, sdkTextBody.Parent!);
     }
     
     private void UpdateWidthIfNeed(SKPaint paint, int lMarginPixel, int rMarginPixel, TextFrame textFrame, OpenXmlElement parent)

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -6,8 +7,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Excel;
-using ShapeCrawler.Extensions;
-using ShapeCrawler.Shared;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
@@ -15,14 +14,14 @@ using X = DocumentFormat.OpenXml.Spreadsheet;
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
 
-internal sealed class Categories : IReadOnlyCollection<ICategory>
+internal sealed class Categories : IReadOnlyList<ICategory>
 {
-    private readonly OpenXmlElement firstChartSeries;
+    private readonly IEnumerable<OpenXmlElement> cCharts;
     private readonly ChartPart sdkChartPart;
 
-    internal Categories(ChartPart sdkChartPart, OpenXmlElement firstChartSeries)
+    internal Categories(ChartPart sdkChartPart, IEnumerable<OpenXmlElement> cCharts)
     {
-        this.firstChartSeries = firstChartSeries;
+        this.cCharts = cCharts;
         this.sdkChartPart = sdkChartPart;
     }
 
@@ -35,24 +34,9 @@ internal sealed class Categories : IReadOnlyCollection<ICategory>
     private List<ICategory> CategoryList()
     {
         var categoryList = new List<ICategory>();
-
-        // Get category data from the first series.
-        //  Actually, it can be any series since all chart series contain the same categories.
-        //  <c:cat>
-        //      <c:strRef>
-        //          <c:f>Sheet1!$A$2:$A$3</c:f>
-        //          <c:strCache>
-        //              <c:ptCount val="2"/>
-        //              <c:pt idx="0">
-        //                  <c:v>Category 1</c:v>
-        //              </c:pt>
-        //              <c:pt idx="1">
-        //                  <c:v>Category 2</c:v>
-        //              </c:pt>
-        //          </c:strCache>
-        //      </c:strRef>
-        //  </c:cat>
-        var cCatAxisData = (C.CategoryAxisData)firstChartSeries.First(x => x is C.CategoryAxisData);
+        var firstSeries = this.cCharts.First().ChildElements
+            .First(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
+        var cCatAxisData = (C.CategoryAxisData)firstSeries.First(x => x is C.CategoryAxisData);
 
         var cMultiLvlStringRef = cCatAxisData.MultiLevelStringReference;
         if (cMultiLvlStringRef != null)

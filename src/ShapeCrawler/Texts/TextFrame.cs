@@ -17,11 +17,11 @@ namespace ShapeCrawler.Texts;
 internal sealed record TextFrame : ITextFrame
 {
     private readonly SlidePart sdkSlidePart;
-    private readonly TypedOpenXmlCompositeElement textBody;
+    private readonly OpenXmlElement textBody;
     private readonly ResetableLazy<string> text;
     private readonly ResetableLazy<Paragraphs> paragraphs;
     
-    internal TextFrame(SlidePart sdkSlidePart,TypedOpenXmlCompositeElement textBody)
+    internal TextFrame(SlidePart sdkSlidePart, OpenXmlElement textBody)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.textBody = textBody;
