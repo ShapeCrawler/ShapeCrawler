@@ -68,7 +68,7 @@ internal sealed class Series : ISeries
         }
 
         var fromCache = cStrRef.StringCache?.GetFirstChild<C.StringPoint>() !.Single().InnerText;
-        
-        return fromCache ?? new ExcelCells(this.sdkChartPart, cStrRef.Formula!).ContentCellAt(0);
+
+        return fromCache ?? new ExcelBook(this.sdkChartPart).FormulaValues(cStrRef.Formula!.Text)[0].ToString();
     }
 }

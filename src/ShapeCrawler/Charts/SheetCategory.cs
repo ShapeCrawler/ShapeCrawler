@@ -8,15 +8,15 @@ namespace ShapeCrawler.Charts;
 internal sealed class SheetCategory : ICategory
 {
     private readonly ChartPart sdkChartPart;
-    private readonly string sheet;
-    private readonly string address;
+    private readonly string sheetName;
+    private readonly string cellAddress;
     private readonly NumericValue cachedValue;
 
-    internal SheetCategory(ChartPart sdkChartPart, string sheet, string address, NumericValue cachedValue)
+    internal SheetCategory(ChartPart sdkChartPart, string sheetName, string cellAddress, NumericValue cachedValue)
     {
         this.sdkChartPart = sdkChartPart;
-        this.sheet = sheet;
-        this.address = address;
+        this.sheetName = sheetName;
+        this.cellAddress = cellAddress;
         this.cachedValue = cachedValue;
     }
 
@@ -29,7 +29,7 @@ internal sealed class SheetCategory : ICategory
         set
         {
             this.cachedValue.Text = value;
-            new ExcelBook(this.sdkChartPart).Sheet(this.sheet).UpdateCell(this.address, value);
+            new ExcelBook(this.sdkChartPart).Sheet(this.sheetName).UpdateCell(this.cellAddress, value);
         }
     }
 }

@@ -29,8 +29,6 @@ internal sealed record TextFrame : ITextFrame
         this.paragraphs = new ResetableLazy<Paragraphs>(() => new Paragraphs(sdkSlidePart, this.textBody.Elements<A.Paragraph>()));
     }
 
-    internal event Action? TextChanged;
-
     public IParagraphCollection Paragraphs => this.paragraphs.Value;
 
     public string Text
@@ -71,18 +69,12 @@ internal sealed record TextFrame : ITextFrame
 
     public bool TextWrapped => this.IsTextWrapped();
 
-    internal void OnParagraphTextChanged()
-    {
-        this.text.Reset();
-        this.TextChanged?.Invoke();
-    }
-
     internal void Draw(SKCanvas slideCanvas, float shapeX, float shapeY)
     {
         using var paint = new SKPaint();
         paint.Color = SKColors.Black;
         var firstPortion = this.paragraphs.Value.First().Portions.First();
-        paint.TextSize = firstPortion.Font!.Size;
+        paint.TextSize = firstPortion.Font.Size;
         var typeFace = SKTypeface.FromFamilyName(firstPortion.Font.LatinName); 
         paint.Typeface = typeFace;
         float leftMarginPx = UnitConverter.CentimeterToPixel(this.LeftMargin);

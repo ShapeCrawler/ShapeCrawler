@@ -23,7 +23,7 @@ internal sealed class ShapeFillImage : IImage
 
     public string MIME => this.sdkImagePart.ContentType;
 
-    public string Name => this.GetName();
+    public string Name => Path.GetFileName(this.sdkImagePart.Uri.ToString());
 
     public void Update(Stream stream)
     {
@@ -46,15 +46,10 @@ internal sealed class ShapeFillImage : IImage
         this.Update(stream);
     }
 
-    public void Update(string filePath)
+    public void Update(string file)
     {
-        byte[] sourceBytes = File.ReadAllBytes(filePath);
+        byte[] sourceBytes = File.ReadAllBytes(file);
         this.Update(sourceBytes);
-    }
-
-    private string GetName()
-    {
-        return Path.GetFileName(this.sdkImagePart.Uri.ToString());
     }
 
     public byte[] BinaryData()

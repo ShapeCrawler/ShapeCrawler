@@ -38,5 +38,5 @@ public interface IImage
     /// <summary>
     ///     Sets image by specified file path.
     /// </summary>
-    void Update(string filePath);
+    void Update(string file);
 }

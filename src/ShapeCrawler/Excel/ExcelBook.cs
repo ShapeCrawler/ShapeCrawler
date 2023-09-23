@@ -27,7 +27,8 @@ internal readonly record struct ExcelBook
         var cellsRange = Regex.Match(normalizedFormula, @"(?<=\!).+").Value; // eg: Sheet1!A2:A5 -> A2:A5
 
         var stream = this.sdkChartPart.EmbeddedPackagePart!.GetStream();
-        var sdkWorkbookPart = SpreadsheetDocument.Open(stream, false).WorkbookPart!; 
+        var sdkSpreadsheetDocument = SpreadsheetDocument.Open(stream, false);
+        var sdkWorkbookPart = sdkSpreadsheetDocument.WorkbookPart!; 
         var sdkSheet = sdkWorkbookPart.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == sheetName);
         var sdkWorksheetPart = (WorksheetPart)sdkWorkbookPart.GetPartById(sdkSheet.Id!);
         var sheetXCells = sdkWorksheetPart.Worksheet.Descendants<X.Cell>();
@@ -47,6 +48,9 @@ internal readonly record struct ExcelBook
             pointValues.Add(cellValue);
         }
 
+        sdkSpreadsheetDocument.Dispose();
+        stream.Close();
+        
         return pointValues;
     }
     

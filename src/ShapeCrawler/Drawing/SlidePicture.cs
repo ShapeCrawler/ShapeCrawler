@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
@@ -12,7 +11,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class SlidePicture : CopyableShape, IPicture, IRemoveable 
+internal sealed class SlidePicture : CopyableShape, IPicture, IRemoveable
 {
     private readonly StringValue blipEmbed;
     private readonly P.Picture pPicture;
@@ -20,15 +19,15 @@ internal sealed class SlidePicture : CopyableShape, IPicture, IRemoveable
     private readonly SlidePart sdkSlidePart;
 
     internal SlidePicture(
-        SlidePart sdkSlidePart, 
-        P.Picture pPicture, 
+        SlidePart sdkSlidePart,
+        P.Picture pPicture,
         A.Blip aBlip)
         : this(sdkSlidePart, pPicture, aBlip, new SlidePictureImage(sdkSlidePart, aBlip))
     {
     }
 
     private SlidePicture(SlidePart sdkSlidePart, P.Picture pPicture, A.Blip aBlip, IImage image)
-    :base(pPicture)
+        : base(pPicture)
     {
         this.sdkSlidePart = sdkSlidePart;
         this.pPicture = pPicture;
@@ -72,7 +71,8 @@ internal sealed class SlidePicture : CopyableShape, IPicture, IRemoveable
         this.pPicture.Remove();
     }
 
-    internal override void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames, SlidePart targetSdkSlidePart)
+    internal override void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames,
+        SlidePart targetSdkSlidePart)
     {
         base.CopyTo(id, pShapeTree, existingShapeNames, targetSdkSlidePart);
 

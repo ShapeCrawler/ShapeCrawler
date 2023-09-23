@@ -58,8 +58,6 @@ internal sealed class SlideField : IParagraphPortion
         set => this.UpdateTextHighlight(value);
     }
 
-    internal bool IsRemoved { get; set; }
-
     public void Remove()
     {
         this.aField.Remove();

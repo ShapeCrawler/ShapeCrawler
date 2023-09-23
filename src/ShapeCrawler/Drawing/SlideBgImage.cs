@@ -50,9 +50,9 @@ internal sealed class SlideBgImage : ISlideBgImage
         this.Update(stream);
     }
 
-    public void Update(string filePath)
+    public void Update(string file)
     {
-        byte[] sourceBytes = File.ReadAllBytes(filePath);
+        byte[] sourceBytes = File.ReadAllBytes(file);
         this.Update(sourceBytes);
     }
     
