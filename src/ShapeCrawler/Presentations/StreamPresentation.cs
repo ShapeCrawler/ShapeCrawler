@@ -34,5 +34,5 @@ internal sealed class StreamPresentation : IValidateable
     public ISlideMasterCollection SlideMasters => this.presentation.SlideMasters;
     public byte[] AsByteArray() => this.presentation.AsByteArray();
     public ISections Sections => this.presentation.Sections;
-    public IHeaderAndFooter HeaderAndFooter => this.presentation.HeaderAndFooter;
+    public IFooter Footer => this.presentation.Footer;
 }

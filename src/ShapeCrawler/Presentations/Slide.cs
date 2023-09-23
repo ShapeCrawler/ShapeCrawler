@@ -28,7 +28,6 @@ internal sealed class Slide : ISlide
 
     internal Slide(
         SlidePart sdkSlidePart,
-        SlideId sdkPSlideId,
         ISlideLayout slideLayout,
         SlideSize slideSize)
     {
@@ -37,7 +36,6 @@ internal sealed class Slide : ISlide
         this.backgroundImage = new Lazy<SlideBgImage>(() =>
             new SlideBgImage(sdkSlidePart));
         this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
-        this.SlideId = sdkPSlideId;
         this.SlideLayout = slideLayout;
         this.Shapes = new SlideShapes(this.sdkSlidePart);
     }
@@ -61,8 +59,6 @@ internal sealed class Slide : ISlide
     }
 
     public bool Hidden() => this.sdkSlidePart.Slide.Show is not null && this.sdkSlidePart.Slide.Show.Value == false;
-
-    internal SlideId SlideId { get; }
 
     public void Hide()
     {

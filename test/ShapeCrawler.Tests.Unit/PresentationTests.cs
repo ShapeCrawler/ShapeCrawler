@@ -335,10 +335,10 @@ public class PresentationTests : SCTest
         var pres = new SCPresentation();
         
         // Act
-        pres.HeaderAndFooter.AddSlideNumber();
+        pres.Footer.AddSlideNumber();
 
         // Assert
-        pres.HeaderAndFooter.SlideNumberAdded().Should().BeTrue();
+        pres.Footer.SlideNumberAdded().Should().BeTrue();
     }
     
     [Test]
@@ -346,13 +346,13 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pres = new SCPresentation();
-        pres.HeaderAndFooter.AddSlideNumber();
+        pres.Footer.AddSlideNumber();
         
         // Act
-        pres.HeaderAndFooter.RemoveSlideNumber();
+        pres.Footer.RemoveSlideNumber();
         
         // Assert
-        pres.HeaderAndFooter.SlideNumberAdded().Should().BeFalse();
+        pres.Footer.SlideNumberAdded().Should().BeFalse();
     }
     
     [Test]
@@ -362,6 +362,6 @@ public class PresentationTests : SCTest
         var pres = new SCPresentation();
         
         // Act-Assert
-        pres.HeaderAndFooter.SlideNumberAdded().Should().BeFalse();
+        pres.Footer.SlideNumberAdded().Should().BeFalse();
     }
 }

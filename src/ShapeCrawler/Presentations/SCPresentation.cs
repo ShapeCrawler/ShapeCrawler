@@ -62,7 +62,7 @@ public sealed class SCPresentation : IPresentation
     public ISections Sections => this.validateable.Sections;
    
     /// <inheritdoc />
-    public IHeaderAndFooter HeaderAndFooter => this.validateable.HeaderAndFooter;
+    public IFooter Footer => this.validateable.Footer;
     
     /// <inheritdoc />
     public void Save() => this.validateable.Save();

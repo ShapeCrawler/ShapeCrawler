@@ -31,7 +31,7 @@ public class SlideMasterTests : SCTest
         var slideMaster = pres.SlideMasters[0];
 
         // Act
-        pres.HeaderAndFooter.AddSlideNumber();
+        pres.Footer.AddSlideNumber();
         slideMaster.SlideNumber!.Font.Size = 30;
 
         // Assert

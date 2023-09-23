@@ -5,7 +5,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents Header and Footer manager.
 /// </summary>
-public interface IHeaderAndFooter
+public interface IFooter
 {
     /// <summary>
     ///     Gets a value indicating whether slide number is visible.
@@ -23,16 +23,16 @@ public interface IHeaderAndFooter
     void RemoveSlideNumber();
 }
 
-internal sealed class HeaderAndFooter : IHeaderAndFooter
+internal sealed class Footer : IFooter
 {
     private readonly Presentation presentation;
 
-    internal HeaderAndFooter(Presentation presentation)
+    internal Footer(Presentation presentation)
     {
         this.presentation = presentation;
     }
 
-    public bool SlideNumberAdded()
+    public bool SlideNumberAdded() 
     {
         return this.presentation.Slides.Any(slide =>
             slide.Shapes.Any(shape => shape.Placeholder?.Type == PlaceholderType.SlideNumber));

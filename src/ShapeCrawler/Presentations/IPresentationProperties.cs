@@ -40,7 +40,7 @@ public interface IPresentationProperties
     /// <summary>
     ///     Gets Header and Footer manager.
     /// </summary>
-    IHeaderAndFooter HeaderAndFooter { get; }
+    IFooter Footer { get; }
 
     /// <summary>
     ///     Saves presentation.

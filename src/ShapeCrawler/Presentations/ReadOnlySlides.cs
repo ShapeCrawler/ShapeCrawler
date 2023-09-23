@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
@@ -42,7 +43,7 @@ internal sealed record ReadOnlySlides : IReadOnlyList<ISlide>
             var sdkSlidePart = (SlidePart)sdkPresPart.GetPartById(pSlideId.RelationshipId!);
             var layout = new SlideLayout(sdkSlidePart.SlideLayoutPart!);
             var slideSize = new SlideSize(sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
-            var newSlide = new Slide(sdkSlidePart, pSlideId, layout, slideSize);
+            var newSlide = new Slide(sdkSlidePart, layout, slideSize);
             slides.Add(newSlide);
         }
 

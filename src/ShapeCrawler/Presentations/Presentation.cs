@@ -27,7 +27,7 @@ internal sealed record Presentation
         this.SlideMasters = new SlideMasterCollection(sdkMasterParts);
         this.Sections = new Sections(this.sdkPresDocument);
         this.Slides = new Slides(this.sdkPresDocument.PresentationPart!.SlideParts);
-        this.HeaderAndFooter = new HeaderAndFooter(this);
+        this.Footer = new Footer(this);
         this.slideSize = new SlideSize(this.sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
     }
 
@@ -49,7 +49,7 @@ internal sealed record Presentation
 
     internal ISections Sections { get; }
 
-    internal IHeaderAndFooter HeaderAndFooter { get; }
+    internal IFooter Footer { get; }
 
     internal void CopyTo(string path)
     {
