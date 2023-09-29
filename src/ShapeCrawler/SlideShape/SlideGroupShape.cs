@@ -10,7 +10,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.SlideShape;
 
-internal sealed class SlideGroupShape : Shape, IGroupShape, IRemoveable
+internal sealed class SlideGroupShape : Shape, IGroupShape
 {
     private readonly P.GroupShape pGroupShape;
 
@@ -30,5 +30,6 @@ internal sealed class SlideGroupShape : Shape, IGroupShape, IRemoveable
     public override IShapeOutline Outline { get; }
     public override bool HasFill => true;
     public override IShapeFill Fill { get; }
-    void  IRemoveable.Remove() => this.pGroupShape.Remove();
+    public override bool Removeable => true;
+    public override void Remove()=> this.pGroupShape.Remove();
 }

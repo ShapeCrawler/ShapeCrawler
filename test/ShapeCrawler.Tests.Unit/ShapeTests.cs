@@ -400,4 +400,21 @@ public class ShapeTests : SCTest
         shape.Width.Should().Be(600);
         pres.Validate();
     }
+    
+    
+    [Test]
+    public void Remove_removes_shape()
+    {
+        // Arrange
+        var pres = new SCPresentation(StreamOf("autoshape-grouping.pptx"));
+        var shape = pres.Slides[0].Shapes.GetByName("TextBox 3");
+
+        // Act
+        shape.Remove();
+
+        // Assert
+        var act = () => pres.Slides[0].Shapes.GetByName("TextBox 3");
+        act.Should().Throw<Exception>();
+        pres.Validate();
+    }
 }

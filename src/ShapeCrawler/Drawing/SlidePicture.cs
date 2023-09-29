@@ -11,7 +11,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class SlidePicture : CopyableShape, IPicture, IRemoveable
+internal sealed class SlidePicture : CopyableShape, IPicture
 {
     private readonly StringValue blipEmbed;
     private readonly P.Picture pPicture;
@@ -66,12 +66,13 @@ internal sealed class SlidePicture : CopyableShape, IPicture, IRemoveable
         return sReader.ReadToEnd();
     }
 
-    public void Remove()
-    {
-        this.pPicture.Remove();
-    }
+    public override bool Removeable => true;
+    public override void Remove() =>this.pPicture.Remove();
 
-    internal override void CopyTo(int id, P.ShapeTree pShapeTree, IEnumerable<string> existingShapeNames,
+    internal override void CopyTo(
+        int id, 
+        P.ShapeTree pShapeTree, 
+        IEnumerable<string> existingShapeNames,
         SlidePart targetSdkSlidePart)
     {
         base.CopyTo(id, pShapeTree, existingShapeNames, targetSdkSlidePart);

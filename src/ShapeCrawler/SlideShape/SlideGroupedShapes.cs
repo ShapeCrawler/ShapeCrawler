@@ -4,6 +4,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.SlideShape;
@@ -40,10 +41,13 @@ internal sealed class SlideGroupedShapes : IReadOnlyShapes
             }
             else if (pGroupShapeElement is P.Shape pShape)
             {
-                shape = new SlideAutoShape(this.sdkSlidePart, pShape);
                 if (pShape.TextBody is not null)
                 {
-                    shape = new TextSlideShape(this.sdkSlidePart, pShape);
+                    shape = new SlideAutoShape(this.sdkSlidePart, pShape, new TextFrame(this.sdkSlidePart, pShape.TextBody));
+                }
+                else
+                {
+                    shape = new SlideAutoShape(this.sdkSlidePart, pShape);
                 }
             }
             else if (pGroupShapeElement is P.Picture pPicture)

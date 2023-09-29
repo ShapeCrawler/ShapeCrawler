@@ -70,8 +70,7 @@ public class ShapeFillTests : SCTest
     public void ThemeColor_getter_returns_color_name()
     {
         // Arrange
-        var pptx = StreamOf("009_table.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new SCPresentation(StreamOf("009_table.pptx"));
         var autoShape =  pres.Slides[3].Shapes.First(sp => sp.Name == "Rectangle 3");
 
         // Act

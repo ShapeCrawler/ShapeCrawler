@@ -149,9 +149,9 @@ internal sealed class Slide : ISlide
                     this.AddAllTextboxesInGroupToList((IGroupShape)shape, textBoxes);
                     break;
                 case ShapeType.AutoShape:
-                    if (shape is TextRootSlideAutoShape textSlideAutoShape)
+                    if (shape.IsTextHolder)
                     {
-                        textBoxes.Add(textSlideAutoShape.TextFrame);
+                        textBoxes.Add(shape.TextFrame);
                     }
 
                     break;

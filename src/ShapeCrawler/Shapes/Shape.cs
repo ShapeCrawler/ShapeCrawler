@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Shapes;
@@ -13,7 +14,7 @@ internal abstract class Shape : IShape
     private readonly ShapeSize size;
     private readonly ShapeId shapeId;
     private const string customDataElementName = "ctd";
-    
+
     protected readonly OpenXmlElement pShapeTreeElement;
 
     internal Shape(OpenXmlElement pShapeTreeElement)
@@ -22,32 +23,6 @@ internal abstract class Shape : IShape
         this.position = new Position(pShapeTreeElement);
         this.size = new ShapeSize(pShapeTreeElement);
         this.shapeId = new ShapeId(pShapeTreeElement);
-    }
-
-    private string? ParseCustomData()
-    {
-        const string pattern = @$"<{customDataElementName}>(.*)<\/{customDataElementName}>";
-
-#if NETSTANDARD2_0
-        var regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(100));
-#else
-        var regex = new Regex(pattern, RegexOptions.NonBacktracking);
-#endif
-
-        var elementText = regex.Match(this.pShapeTreeElement.InnerXml).Groups[1];
-        if (elementText.Value.Length == 0)
-        {
-            return null;
-        }
-
-        return elementText.Value;
-    }
-
-    internal void UpdateCustomData(string? value)
-    {
-        var customDataElement =
-            $@"<{customDataElementName}>{value}</{customDataElementName}>";
-        this.pShapeTreeElement.InnerXml += customDataElement;
     }
 
     public int X
@@ -96,8 +71,30 @@ internal abstract class Shape : IShape
 
     public string? CustomData
     {
-        get => this.ParseCustomData();
-        set => this.UpdateCustomData(value);
+        get
+        {
+            const string pattern = @$"<{customDataElementName}>(.*)<\/{customDataElementName}>";
+
+#if NETSTANDARD2_0
+        var regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(100));
+#else
+            var regex = new Regex(pattern, RegexOptions.NonBacktracking);
+#endif
+
+            var elementText = regex.Match(this.pShapeTreeElement.InnerXml).Groups[1];
+            if (elementText.Value.Length == 0)
+            {
+                return null;
+            }
+
+            return elementText.Value;
+        }
+        set
+        {
+            var customDataElement =
+                $@"<{customDataElementName}>{value}</{customDataElementName}>";
+            this.pShapeTreeElement.InnerXml += customDataElement;
+        }
     }
 
     public abstract ShapeType ShapeType { get; }
@@ -112,10 +109,9 @@ internal abstract class Shape : IShape
         throw new SCException(
             $"Shape does not have fill. Use {nameof(IShape.HasFill)} property to check if the shape has fill.");
 
-    public virtual bool IsTextHolder => false;
+    public bool IsTextHolder { get; protected init; }
 
-    public virtual ITextFrame TextFrame =>
-        throw new SCException($"The shape is not a text holder. Use {nameof(IShape.IsTextHolder)} method to check it.");
+    public ITextFrame TextFrame { get; protected init; } = new NullTextFrame();
 
     public double Rotation => throw new NotImplementedException();
 
@@ -125,4 +121,10 @@ internal abstract class Shape : IShape
     public virtual IMediaShape AsMedia() =>
         throw new SCException(
             $"The shape is not a media shape. Use {nameof(IShape.ShapeType)} property to check if the shape is a media (audio, video, etc.");
+
+    public virtual bool Removeable => false;
+
+    public virtual void Remove() =>
+        throw new Exception(
+            $"The shape is not removeable. Use {nameof(IShape.Removeable)} property to check if the shape is removeable.");
 }

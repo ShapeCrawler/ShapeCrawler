@@ -443,22 +443,4 @@ public class ShapeCollectionTests : SCTest
         table.Columns[0].Width.Should().Be(284);
         pres.Validate();
     }
-
-    [Test]
-    public void Remove_removes_shape()
-    {
-        // Arrange
-        var pptx = StreamOf("autoshape-grouping.pptx");
-        var pres = new SCPresentation(pptx);
-        var shapeCollection = pres.Slides[0].Shapes;
-        var shape = shapeCollection.GetByName("TextBox 3")!;
-
-        // Act
-        shapeCollection.Remove(shape);
-
-        // Assert
-        shape = shapeCollection.GetByName("TextBox 3");
-        shape.Should().BeNull();
-        pres.Validate();
-    }
 }

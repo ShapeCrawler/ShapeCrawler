@@ -13,10 +13,20 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.SlideShape;
 
-internal sealed class SlideAutoShape : CopyableShape, IShape, IRemoveable
+internal sealed class SlideAutoShape : CopyableShape, IShape
 {
     private readonly P.Shape pShape;
     private readonly SlidePart sdkSlidePart;
+
+    internal SlideAutoShape(
+        SlidePart sdkSlidePart,
+        P.Shape pShape,
+        TextFrame textFrame)
+        : this(sdkSlidePart, pShape)
+    {
+        this.IsTextHolder = true;
+        this.TextFrame = textFrame;
+    }
 
     internal SlideAutoShape(
         SlidePart sdkSlidePart,
@@ -41,7 +51,7 @@ internal sealed class SlideAutoShape : CopyableShape, IShape, IRemoveable
         {
             var spPr = this.pShapeTreeElement.Descendants<P.ShapeProperties>().First();
             var aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
-            
+
             if (aPresetGeometry == null) // Placeholder can have transform on the slide, without having geometry
             {
                 return Geometry.Custom;
@@ -80,5 +90,6 @@ internal sealed class SlideAutoShape : CopyableShape, IShape, IRemoveable
 
     internal IHtmlElement ToHtmlElement() => throw new NotImplementedException();
 
-    void IRemoveable.Remove() => this.pShape.Remove();
+    public override bool Removeable => true;
+    public override void Remove() => this.pShape.Remove();
 }

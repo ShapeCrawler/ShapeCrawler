@@ -14,13 +14,13 @@ public class AutoShapeTests : SCTest
         var pres = new SCPresentation();
         var shapes = pres.Slides[0].Shapes;
         shapes.AddRectangle(10, 20, 30, 40);
-        var rtSlideShape = (IRootSlideAutoShape)shapes.Single();
+        var rtSlideShape = (IDuplicateableShape)shapes.Single();
 
         // Act
         rtSlideShape.Duplicate();
 
         // Assert
-        var autoShapeCopy = (IRootSlideAutoShape)shapes.Last(); 
+        var autoShapeCopy = (IDuplicateableShape)shapes.Last(); 
         shapes.Should().HaveCount(2);
         autoShapeCopy.Id.Should().Be(2, "because it is the second shape in the collection");
     }

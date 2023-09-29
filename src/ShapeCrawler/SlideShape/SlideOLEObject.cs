@@ -7,7 +7,7 @@ using Shape = ShapeCrawler.Shapes.Shape;
 
 namespace ShapeCrawler.SlideShape;
 
-internal class SlideOLEObject : Shape, IShape, IRemoveable
+internal class SlideOLEObject : Shape, IShape
 {
     private readonly SlidePart sdkSlidePart;
     private readonly P.GraphicFrame pGraphicFrame;
@@ -26,5 +26,6 @@ internal class SlideOLEObject : Shape, IShape, IRemoveable
     public override IShapeOutline Outline { get; }
     public override bool HasFill => true;
     public override IShapeFill Fill { get; }
-    void IRemoveable.Remove() => this.pGraphicFrame.Remove();
+    public override bool Removeable => true;
+    public override void Remove() => this.pGraphicFrame.Remove();
 }

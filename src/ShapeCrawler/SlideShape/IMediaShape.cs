@@ -28,7 +28,7 @@ public interface IMediaShape : IShape
     string MIME { get; }
 }
 
-internal class SlideMediaShape : Shape, IMediaShape, IRemoveable
+internal class SlideMediaShape : Shape, IMediaShape
 {
     private readonly SlidePart sdkSlidePart;
     private readonly P.Picture pPicture;
@@ -72,5 +72,6 @@ internal class SlideMediaShape : Shape, IMediaShape, IRemoveable
         return ms.ToArray();
     }
     
-    void IRemoveable.Remove() => this.pPicture.Remove();
+    public override bool Removeable => true;
+    public override void Remove()=> this.pPicture.Remove();
 }

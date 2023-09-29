@@ -24,7 +24,7 @@ public interface ILine : IShape
     Point EndPoint { get; }
 }
 
-internal sealed class SlideLine : Shape, ILine, IRemoveable
+internal sealed class SlideLine : Shape, ILine
 {
     private readonly P.ConnectionShape pConnectionShape;
 
@@ -108,8 +108,6 @@ internal sealed class SlideLine : Shape, ILine, IRemoveable
         }
     }
 
-    void IRemoveable.Remove()
-    {
-        this.pConnectionShape.Remove();
-    }
+    public override bool Removeable => true;
+    public override void Remove() => this.pConnectionShape.Remove();
 }

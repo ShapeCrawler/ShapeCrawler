@@ -15,6 +15,7 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
+using ShapeCrawler.Texts;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -22,7 +23,7 @@ using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace ShapeCrawler.SlideShape;
 
-internal sealed record SlideShapes : ISlideShapes
+internal sealed class SlideShapes : ISlideShapes
 {
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly SlidePart sdkSlidePart;
@@ -54,10 +55,31 @@ internal sealed record SlideShapes : ISlideShapes
 
     public void AddAudio(int x, int y, Stream audio)
     {
+        this.AddAudio(x, y, audio, AudioType.MP3);
+    }
+    
+    public void AddAudio(int x, int y, Stream audio, AudioType type)
+    {
+        string? contentType;
+        string? extension;
+        switch (type)
+        {
+            case AudioType.MP3:
+                contentType = "audio/mpeg";
+                extension = ".mp3";
+                break;
+            case AudioType.WAVE:
+                contentType = "audio/wav";
+                extension = ".wav";
+                break;
+            default:
+                throw new SCException("Unsupported audio type.");
+        }
+        
         var xEmu = UnitConverter.HorizontalPixelToEmu(x);
         var yEmu = UnitConverter.VerticalPixelToEmu(y);
         var sdkPresentationDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
-        var mediaDataPart = sdkPresentationDocument.CreateMediaDataPart("audio/mpeg", ".mp3");
+        var mediaDataPart = sdkPresentationDocument.CreateMediaDataPart(contentType, extension);
         audio.Position = 0;
         mediaDataPart.FeedData(audio);
         var imageStream = new Assets(Assembly.GetExecutingAssembly()).StreamOf("audio-image.png");
@@ -96,12 +118,7 @@ internal sealed record SlideShapes : ISlideShapes
         applicationNonVisualDrawingProps.Append(audioFromFile);
         applicationNonVisualDrawingProps.Append(appNonVisualDrawingPropsExtensionList);
     }
-
-    public void AddAudio(int x, int y, Stream audio, AudioType type)
-    {
-        throw new NotImplementedException();
-    }
-
+    
     public void AddPicture(Stream imageStream)
     {
         imageStream.Position = 0;
@@ -518,18 +535,34 @@ internal sealed record SlideShapes : ISlideShapes
             }
             else if (pShapeTreeElement is P.Shape pShape)
             {
-                var rtSlideShape = new RootSlideAutoShape(
-                    this.sdkSlidePart,
-                    pShape,
-                    new SlideAutoShape(this.sdkSlidePart, pShape));
                 if (pShape.TextBody is not null)
                 {
-                    var textAutoShape = new TextRootSlideAutoShape(this.sdkSlidePart, rtSlideShape, pShape.TextBody);
-                    shapeList.Add(textAutoShape);
+                    shapeList.Add(
+                        new DuplicateableShape(
+                            this.sdkSlidePart,
+                            pShape,
+                            new SlideAutoShape(
+                                this.sdkSlidePart,
+                                pShape,
+                                new TextFrame(
+                                    this.sdkSlidePart, pShape.TextBody
+                                )
+                            )
+                        )
+                    );
                 }
                 else
                 {
-                    shapeList.Add(rtSlideShape);
+                    shapeList.Add(
+                        new DuplicateableShape(
+                            this.sdkSlidePart,
+                            pShape,
+                            new SlideAutoShape(
+                                this.sdkSlidePart,
+                                pShape
+                            )
+                        )
+                    );
                 }
             }
             else if (pShapeTreeElement is P.GraphicFrame pGraphicFrame)
@@ -565,9 +598,9 @@ internal sealed record SlideShapes : ISlideShapes
                     var sdkChartPart = (ChartPart)this.sdkSlidePart.GetPartById(cChartRef.Id!);
                     var cPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
                     var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-                        pShapeTreeElement.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
-                            .GetFirstChild<C.ChartReference>();
-                    pGraphicFrame = (P.GraphicFrame)pShapeTreeElement; 
+                    pShapeTreeElement.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
+                        .GetFirstChild<C.ChartReference>();
+                    pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
                     if (cCharts.Count() > 1)
                     {
                         // Combination chart
@@ -582,7 +615,7 @@ internal sealed record SlideShapes : ISlideShapes
                     }
 
                     var chartType = cCharts.Single().LocalName;
-                    
+
                     if (chartType is "lineChart" or "barChart" or "pieChart")
                     {
                         var lineChart = new SlideChart(
@@ -594,7 +627,7 @@ internal sealed record SlideShapes : ISlideShapes
                         shapeList.Add(lineChart);
                         continue;
                     }
-                    
+
                     if (chartType is "scatterChart" or "bubbleChart")
                     {
                         var scatterChart = new SlideChart(

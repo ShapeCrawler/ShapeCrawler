@@ -14,7 +14,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class SlideChart : Shape, IChart, IRemoveable
+internal sealed class SlideChart : Shape, IChart
 {
     private readonly ChartType chartType;
     private readonly Lazy<OpenXmlElement?> firstSeries;
@@ -105,7 +105,9 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
     public override Geometry GeometryType => Geometry.Rectangle;
     public byte[] ExcelBookByteArray() => new ExcelBook(this.sdkChartPart).AsByteArray();
     public IAxesManager Axes => this.GetAxes();
-    internal ExcelBook? workbook { get; set; }
+    public override bool Removeable => true;
+    public override void Remove() => this.pGraphicFrame.Remove();
+    
     private IAxesManager GetAxes()
     {
         return new AxesManager(this.cPlotArea);
@@ -193,6 +195,4 @@ internal sealed class SlideChart : Shape, IChart, IRemoveable
         return this.cXCharts.First().ChildElements
             .FirstOrDefault(e => e.LocalName.Equals("ser", StringComparison.Ordinal));
     }
-
-    public void Remove() => this.pGraphicFrame.Remove();
 }

@@ -49,7 +49,7 @@ public interface ITable : IShape
     void UpdateFill(string colorHex);
 }
 
-internal sealed class SlideTable : CopyableShape, ITable, IRemoveable 
+internal sealed class SlideTable : CopyableShape, ITable 
 {
     private readonly SlidePart sdkSlidePart;
     private readonly P.GraphicFrame pGraphicFrame;
@@ -294,9 +294,7 @@ internal sealed class SlideTable : CopyableShape, ITable, IRemoveable
             }
         }
     }
-
-    public void Remove()
-    {
-        throw new NotImplementedException();
-    }
+    
+    public override bool Removeable => true;
+    public override void Remove() => this.pGraphicFrame.Remove();
 }

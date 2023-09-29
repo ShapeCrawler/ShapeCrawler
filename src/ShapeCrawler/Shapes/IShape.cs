@@ -88,7 +88,7 @@ public interface IShape : IPosition
     bool IsTextHolder { get; }
     
     /// <summary>
-    ///     Gets text frame. Returns <see langword="null"/> if the shape is not a text holder.
+    ///     Text Frame.
     /// </summary>
     ITextFrame TextFrame { get; }
     
@@ -109,4 +109,14 @@ public interface IShape : IPosition
     /// </summary>
     /// <returns></returns>
     IMediaShape AsMedia();
+
+    /// <summary>
+    ///     Gets value indicating whether the shape can be removed.
+    /// </summary>
+    bool Removeable { get; }
+    
+    /// <summary>
+    ///     Removes the shape from the slide.
+    /// </summary>
+    void Remove();
 }
