@@ -2,7 +2,6 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;

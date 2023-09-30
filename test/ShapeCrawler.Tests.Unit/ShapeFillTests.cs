@@ -67,27 +67,28 @@ public class ShapeFillTests : SCTest
     }
 
     [Test]
-    public void ThemeColor_getter_returns_color_name()
+    public void Color_Getter_returns_color_hex()
     {
         // Arrange
         var pres = new SCPresentation(StreamOf("009_table.pptx"));
-        var autoShape =  pres.Slides[3].Shapes.First(sp => sp.Name == "Rectangle 3");
+        var shapeFill =  pres.Slides[3].Shapes.First(sp => sp.Name == "Rectangle 3").Fill;
 
         // Act
-        var shapeSolidColorName = autoShape.Fill.Color;
+        var colorHex = shapeFill.Color;
 
         // Assert
-        shapeSolidColorName.Should().BeEquivalentTo("FFAB40");
+        colorHex.Should().BeEquivalentTo("FFAB40");
     }
 
     [Test]
     public void ThemeColorWithAlpha_getter_returns_color_name()
     {
         // Arrange
-        var autoShape =  new SCPresentation(StreamOf("009_table.pptx")).Slides[3].Shapes.First(sp => sp.Name == "SolidSchemeAlpha");
+        var pres = new SCPresentation(StreamOf("009_table.pptx"));
+        var shape = pres.Slides[3].Shapes.First(sp => sp.Name == "SolidSchemeAlpha");
 
         // Act
-        var alpha = autoShape.Fill.AlphaPercentage;
+        var alpha = shape.Fill.AlphaPercentage;
 
         // Assert
         alpha.Should().Be(60);

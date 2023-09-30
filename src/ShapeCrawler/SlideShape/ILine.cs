@@ -1,8 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.AutoShapes;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
-using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace

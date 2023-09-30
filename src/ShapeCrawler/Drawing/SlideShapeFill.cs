@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
@@ -12,7 +13,6 @@ internal record SlideShapeFill : IShapeFill
     private readonly TypedOpenXmlCompositeElement properties;
     private BooleanValue? useBgFill;
     private FillType fillType;
-    private bool isDirty;
     private string? hexSolidColor;
     private SlidePictureImage? pictureImage;
     private A.SolidFill? aSolidFill;
@@ -26,10 +26,53 @@ internal record SlideShapeFill : IShapeFill
         this.sdkSlidePart = sdkSlidePart;
         this.properties = properties;
         this.useBgFill = useBgFill;
-        this.isDirty = true;
     }
 
-    public string? Color => this.GetHexSolidColor();
+    public string? Color
+    {
+        get
+        {
+            this.aSolidFill = this.properties.GetFirstChild<A.SolidFill>();
+            if (this.aSolidFill != null)
+            {
+                var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
+                if (aRgbColorModelHex != null)
+                {
+                    return aRgbColorModelHex.Val!.ToString();
+                }
+                
+                return this.ColorHexOrNullOf(this.aSolidFill.SchemeColor!.Val!);
+            }
+
+            return null;
+        }
+    }
+
+    private string? ColorHexOrNullOf(string schemeColor)
+    {
+        var aColorScheme = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!.ColorScheme!;
+        var aColor2Type = aColorScheme.Elements<A.Color2Type>().FirstOrDefault(c => c.LocalName == schemeColor);
+        var hex = aColor2Type?.RgbColorModelHex?.Val?.Value ?? aColor2Type?.SystemColor?.LastColor?.Value;
+        
+        if (hex != null)
+        {
+            return hex;
+        }
+
+        if (hex == null)
+        {
+            // GetThemeMappedColor
+            var pColorMap = this.sdkSlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.ColorMap;
+            var targetSchemeColor = pColorMap?.GetAttributes().FirstOrDefault(a => a.LocalName == schemeColor)!;
+
+            var attrValue = targetSchemeColor!.Value;
+            aColor2Type = aColorScheme.Elements<A.Color2Type>().FirstOrDefault(c => c.LocalName == attrValue.Value);
+            return aColor2Type?.RgbColorModelHex?.Val?.Value ?? aColor2Type?.SystemColor?.LastColor?.Value;
+        }
+
+        return null;
+    }
+
     public double AlphaPercentage { get; }
     public double LuminanceModulation { get; }
     public double LuminanceOffset { get; }
@@ -38,20 +81,17 @@ internal record SlideShapeFill : IShapeFill
 
     public FillType Type => this.GetFillType();
 
-    public void SetPicture(Stream imageStream)
+    public void SetPicture(Stream image)
     {
-        if (this.isDirty)
-        {
-            this.Initialize();
-        }
+        this.Initialize();
 
         if (this.Type == FillType.Picture)
         {
-            this.pictureImage!.Update(imageStream);
+            this.pictureImage!.Update(image);
         }
         else
         {
-            var rId = sdkSlidePart.AddImagePart(imageStream);
+            var rId = sdkSlidePart.AddImagePart(image);
 
             var aBlipFill = new A.BlipFill();
             var aStretch = new A.Stretch();
@@ -69,22 +109,13 @@ internal record SlideShapeFill : IShapeFill
             this.aPattFill = null;
             this.useBgFill = false;
         }
-
-        this.isDirty = true;
     }
 
     public void SetColor(string hex)
     {
-        if (this.isDirty)
-        {
-            this.Initialize();
-        }
-
+        this.Initialize();
         this.properties.AddASolidFill(hex);
-        
         this.useBgFill = false;
-
-        this.isDirty = true;
     }
 
     private void InitSlideBackgroundFillOr()
@@ -98,21 +129,16 @@ internal record SlideShapeFill : IShapeFill
             this.fillType = FillType.NoFill;
         }
     }
-    
+
     private FillType GetFillType()
     {
-        if (this.isDirty)
-        {
-            this.Initialize();
-        }
-
+        this.Initialize();
         return this.fillType;
     }
 
     private void Initialize()
     {
         this.InitSolidFillOr();
-        this.isDirty = false;
     }
 
     private void InitSolidFillOr()
@@ -184,20 +210,14 @@ internal record SlideShapeFill : IShapeFill
 
     private string? GetHexSolidColor()
     {
-        if (this.isDirty)
-        {
-            this.Initialize();
-        }
+        this.Initialize();
 
         return this.hexSolidColor;
     }
 
     private SlidePictureImage? GetPicture()
     {
-        if (this.isDirty)
-        {
-            this.Initialize();
-        }
+        this.Initialize();
 
         return this.pictureImage;
     }

@@ -7,7 +7,6 @@ using AngleSharp;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;

@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.AutoShapes;
 using ShapeCrawler.Charts;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;

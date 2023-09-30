@@ -63,6 +63,7 @@ internal sealed class DuplicateableShape : CopyableShape, IDuplicateableShape
     public override bool HasOutline => this.shape.HasOutline;
     public override IShapeOutline Outline => this.shape.Outline;
     public override bool HasFill => this.shape.HasFill;
+    public override IShapeFill Fill => this.shape.Fill;
 
     #endregion Shape
 }

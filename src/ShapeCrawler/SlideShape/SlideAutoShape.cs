@@ -3,7 +3,6 @@ using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
@@ -13,7 +12,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.SlideShape;
 
-internal sealed class SlideAutoShape : CopyableShape, IShape
+internal sealed class SlideAutoShape : CopyableShape
 {
     private readonly P.Shape pShape;
     private readonly SlidePart sdkSlidePart;

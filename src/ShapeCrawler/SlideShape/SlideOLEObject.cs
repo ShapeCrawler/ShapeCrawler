@@ -7,7 +7,7 @@ using Shape = ShapeCrawler.Shapes.Shape;
 
 namespace ShapeCrawler.SlideShape;
 
-internal class SlideOLEObject : Shape, IShape
+internal class SlideOLEObject : Shape
 {
     private readonly SlidePart sdkSlidePart;
     private readonly P.GraphicFrame pGraphicFrame;
