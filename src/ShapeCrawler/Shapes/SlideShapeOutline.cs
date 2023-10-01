@@ -10,13 +10,13 @@ namespace ShapeCrawler.Shapes;
 
 internal sealed class SlideShapeOutline : IShapeOutline
 {
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly TypedOpenXmlCompositeElement sdkTypedOpenXmlCompositeElement;
-    private readonly SlidePart sdkSlidePart;
 
-    internal SlideShapeOutline(SlidePart sdkSlidePart, TypedOpenXmlCompositeElement sdkTypedOpenXmlCompositeElement)
+    internal SlideShapeOutline(TypedOpenXmlPart sdkTypedOpenXmlPart, TypedOpenXmlCompositeElement sdkTypedOpenXmlCompositeElement)
     {
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.sdkTypedOpenXmlCompositeElement = sdkTypedOpenXmlCompositeElement;
-        this.sdkSlidePart = sdkSlidePart;
     }
 
     public double Weight
@@ -87,7 +87,13 @@ internal sealed class SlideShapeOutline : IShapeOutline
             return defaultBlackHex;
         }
 
-        var typeAndHex = HexParser.FromSolidFill(aSolidFill, this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster);
+        var pSlideMaster = this.sdkTypedOpenXmlPart switch
+        {
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster,
+            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster,
+            _ => ((SlideMasterPart)this.sdkTypedOpenXmlPart).SlideMaster
+        };
+        var typeAndHex = HexParser.FromSolidFill(aSolidFill, pSlideMaster);
         
         return typeAndHex.Item2;
     }

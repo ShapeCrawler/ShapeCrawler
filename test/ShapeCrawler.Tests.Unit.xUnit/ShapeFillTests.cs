@@ -51,7 +51,7 @@ public class ShapeFillTests : SCTest
     public static IEnumerable<object[]> TestCasesFillType()
     {
         var pptxStream = StreamOf("009_table.pptx");
-        var pres = new SCPresentation(pptxStream);
+        var pres = new Presentation(pptxStream);
 
         var withNoFill = pres.Slides[1].Shapes.GetById<IShape>(6);
         yield return new object[] { withNoFill, FillType.NoFill };
@@ -69,7 +69,7 @@ public class ShapeFillTests : SCTest
         yield return new object[] { withPattern, FillType.Pattern };
 
         pptxStream = StreamOf("autoshape-case003.pptx");
-        pres = new SCPresentation(pptxStream);
+        pres = new Presentation(pptxStream);
         var withSlideBg = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 1");
         yield return new object[] { withSlideBg, FillType.SlideBackground };
     }

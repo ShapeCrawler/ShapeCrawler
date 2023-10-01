@@ -7,20 +7,20 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class SlideTextParagraphPortion : IParagraphPortion
+internal sealed class TextParagraphPortion : IParagraphPortion
 {
-    private readonly ResetableLazy<SlideTextPortionFont> font;
-    private readonly SlidePart sdkSlidePart;
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly ResetableLazy<TextPortionFont> font;
     private readonly A.Run aRun;
 
-    internal SlideTextParagraphPortion(SlidePart sdkSlidePart, A.Run aRun)
+    internal TextParagraphPortion(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Run aRun)
     {
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.AText = aRun.Text!;
-        this.sdkSlidePart = sdkSlidePart;
         this.aRun = aRun;
         var textPortionSize = new PortionFontSize(this.AText);
-        this.font = new ResetableLazy<SlideTextPortionFont>(() =>
-            new SlideTextPortionFont(sdkSlidePart, this.AText, textPortionSize));
+        this.font = new ResetableLazy<TextPortionFont>(() =>
+            new TextPortionFont(this.sdkTypedOpenXmlPart, this.AText, textPortionSize));
     }
 
     /// <inheritdoc/>
@@ -111,7 +111,7 @@ internal sealed class SlideTextParagraphPortion : IParagraphPortion
             return null;
         }
 
-        var hyperlinkRelationship = (HyperlinkRelationship)this.sdkSlidePart.GetReferenceRelationship(hyperlink.Id!);
+        var hyperlinkRelationship = (HyperlinkRelationship)this.sdkTypedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
 
         return hyperlinkRelationship.Uri.ToString();
     }
@@ -132,7 +132,7 @@ internal sealed class SlideTextParagraphPortion : IParagraphPortion
         }
 
         var uri = new Uri(url!, UriKind.RelativeOrAbsolute);
-        var addedHyperlinkRelationship = this.sdkSlidePart.AddHyperlinkRelationship(uri, true);
+        var addedHyperlinkRelationship = this.sdkTypedOpenXmlPart.AddHyperlinkRelationship(uri, true);
 
         hyperlink.Id = addedHyperlinkRelationship.Id;
     }

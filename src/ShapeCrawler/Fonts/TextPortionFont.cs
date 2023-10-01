@@ -11,45 +11,44 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Fonts;
 
-internal sealed class SlideTextPortionFont : ITextPortionFont
+internal sealed class TextPortionFont : ITextPortionFont
 {
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Text aText;
-    private readonly Lazy<SlideFontColor> fontColor;
+    private readonly Lazy<FontColor> fontColor;
     private readonly IFontSize size;
     private readonly ThemeFontScheme themeFontScheme;
-    private readonly SlidePart sdkSlidePart;
     private readonly SdkSlideAText sdkAText;
 
-    internal SlideTextPortionFont(
-        SlidePart sdkSlidePart,
+    internal TextPortionFont(
+        TypedOpenXmlPart sdkTypedOpenXmlPart,
         A.Text aText,
         IFontSize size)
         : this(
-            sdkSlidePart,
+            sdkTypedOpenXmlPart,
             aText,
             size,
-            new ThemeFontScheme(sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
-                .FontScheme!)
+            new ThemeFontScheme(sdkTypedOpenXmlPart)
         )
     {
     }
 
-    private SlideTextPortionFont(
-        SlidePart sdkSlidePart,
+    private TextPortionFont(
+        TypedOpenXmlPart sdkTypedOpenXmlPart,
         A.Text aText,
         IFontSize size,
         ThemeFontScheme themeFontScheme)
     {
-        this.sdkSlidePart = sdkSlidePart;
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aText = aText;
-        this.fontColor = new Lazy<SlideFontColor>(() => new SlideFontColor(this.sdkSlidePart, this.aText));
+        this.fontColor = new Lazy<FontColor>(() => new FontColor(sdkTypedOpenXmlPart, this.aText));
         this.size = size;
         this.themeFontScheme = themeFontScheme;
-        this.sdkAText = new SdkSlideAText(sdkSlidePart, aText);
+        this.sdkAText = new SdkSlideAText(sdkTypedOpenXmlPart, aText);
     }
 
     #region Public APIs
-    
+
     public int Size
     {
         get => this.size.Size();
@@ -119,7 +118,7 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
         get => this.GetOffsetEffect();
         set => this.SetOffset(value);
     }
-    
+
     #endregion Public APIs
 
     private void SetOffset(int value)
@@ -207,13 +206,14 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
             return aLatinFont;
         }
 
-        aLatinFont = new ReferencedShape(this.sdkSlidePart, this.aText).ALatinFontOrNull();
+        aLatinFont = new ReferencedIndent(this.sdkSlidePart, this.aText).ALatinFontOrNull();
         if (aLatinFont != null)
         {
             return aLatinFont;
         }
-        
-        return new ThemeFontScheme(this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!.FontScheme!).MinorLatinFont();
+
+        return new ThemeFontScheme(this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+            .FontScheme!).MinorLatinFont();
     }
 
     private bool ParseBoldFlag()
@@ -229,7 +229,7 @@ internal sealed class SlideTextPortionFont : ITextPortionFont
             return true;
         }
 
-        bool? isFontBold = new ReferencedShape(this.sdkSlidePart, this.aText).FontBoldFlagOrNull();
+        bool? isFontBold = new ReferencedIndent(this.sdkSlidePart, this.aText).FontBoldFlagOrNull();
         if (isFontBold.HasValue)
         {
             return isFontBold.Value;

@@ -5,12 +5,12 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 internal sealed class SdkSlideAText
 {
-    private readonly SlidePart sdkSlidePart;
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Text aText;
 
-    internal SdkSlideAText(SlidePart sdkSlidePart, A.Text aText)
+    internal SdkSlideAText(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
     {
-        this.sdkSlidePart = sdkSlidePart;
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aText = aText;
     }
 
@@ -21,14 +21,14 @@ internal sealed class SdkSlideAText
         {
             if (aEastAsianFont.Typeface == "+mj-ea")
             {
-                var themeFontScheme = new ThemeFontScheme(this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!.FontScheme!);
+                var themeFontScheme = new ThemeFontScheme(this.sdkTypedOpenXmlPart);
                 return themeFontScheme.MajorEastAsianFont();
             }
 
             return aEastAsianFont.Typeface!;
         }
         
-        return new ThemeFontScheme(this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!.FontScheme!).MinorEastAsianFont();
+        return new ThemeFontScheme(this.sdkTypedOpenXmlPart).MinorEastAsianFont();
     }
 
     internal void UpdateEastAsianName(string eastAsianFont)
@@ -40,6 +40,6 @@ internal sealed class SdkSlideAText
             return;
         }
         
-        new ThemeFontScheme(this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!.FontScheme!).UpdateMinorEastAsianFont(eastAsianFont);
+        new ThemeFontScheme(this.sdkTypedOpenXmlPart).UpdateMinorEastAsianFont(eastAsianFont);
     }
 }

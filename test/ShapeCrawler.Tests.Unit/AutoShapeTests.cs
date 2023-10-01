@@ -11,7 +11,7 @@ public class AutoShapeTests : SCTest
     public void Duplicate_duplicates_AutoShape()
     {
         // Arrange
-        var pres = new SCPresentation();
+        var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
         shapes.AddRectangle(10, 20, 30, 40);
         var rtSlideShape = (IDuplicateableShape)shapes.Single();

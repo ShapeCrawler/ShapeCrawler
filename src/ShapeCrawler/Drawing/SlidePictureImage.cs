@@ -8,15 +8,15 @@ namespace ShapeCrawler.Drawing;
 
 internal sealed class SlidePictureImage : IImage
 {
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private ImagePart sdkImagePart;
-    private readonly SlidePart sdkSlidePart;
     private readonly A.Blip aBlip;
 
-    internal SlidePictureImage(SlidePart sdkSlidePart, A.Blip aBlip)
+    internal SlidePictureImage(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Blip aBlip)
     {
-        this.sdkSlidePart = sdkSlidePart;
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aBlip = aBlip;
-        this.sdkImagePart = (ImagePart)sdkSlidePart.GetPartById(aBlip.Embed!.Value!);
+        this.sdkImagePart = (ImagePart)this.sdkTypedOpenXmlPart.GetPartById(aBlip.Embed!.Value!);
     }
     
     public string MIME => this.sdkImagePart.ContentType;
@@ -25,14 +25,14 @@ internal sealed class SlidePictureImage : IImage
 
     public void Update(Stream stream)
     {
-        var sdkPresDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
+        var sdkPresDocument = (PresentationDocument)this.sdkTypedOpenXmlPart.OpenXmlPackage;
         var presSdkSlideParts = sdkPresDocument.PresentationPart!.SlideParts;
         var allABlip = presSdkSlideParts.SelectMany(x => x.Slide.CommonSlideData!.ShapeTree!.Descendants<A.Blip>());
         var isSharedImagePart = allABlip.Count(x => x.Embed!.Value == this.aBlip.Embed!.Value) > 1;
         if (isSharedImagePart)
         {
             var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
-            this.sdkImagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", rId);
+            this.sdkImagePart = this.sdkTypedOpenXmlPart.AddNewPart<ImagePart>("image/png", rId);
             this.aBlip.Embed!.Value = rId;
         }
 

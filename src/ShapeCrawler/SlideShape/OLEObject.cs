@@ -7,18 +7,16 @@ using Shape = ShapeCrawler.Shapes.Shape;
 
 namespace ShapeCrawler.SlideShape;
 
-internal class SlideOLEObject : Shape
+internal class OLEObject : Shape
 {
-    private readonly SlidePart sdkSlidePart;
     private readonly P.GraphicFrame pGraphicFrame;
 
-    internal SlideOLEObject(SlidePart sdkSlidePart, P.GraphicFrame pGraphicFrame)
-        : base(pGraphicFrame)
+    internal OLEObject(TypedOpenXmlPart sdkTypedOpenXmlPart, P.GraphicFrame pGraphicFrame)
+        : base(sdkTypedOpenXmlPart, pGraphicFrame)
     {
-        this.sdkSlidePart = sdkSlidePart;
         this.pGraphicFrame = pGraphicFrame;
-        this.Outline = new SlideShapeOutline(sdkSlidePart, pGraphicFrame.Descendants<P.ShapeProperties>().First());
-        this.Fill = new SlideShapeFill(sdkSlidePart, pGraphicFrame.Descendants<P.ShapeProperties>().First(), false);
+        this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pGraphicFrame.Descendants<P.ShapeProperties>().First());
+        this.Fill = new SlideShapeFill(sdkTypedOpenXmlPart, pGraphicFrame.Descendants<P.ShapeProperties>().First(), false);
     }
 
     public override ShapeType ShapeType => ShapeType.OLEObject;

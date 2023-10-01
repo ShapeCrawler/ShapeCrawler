@@ -39,13 +39,13 @@ public interface ITableRow
 internal sealed class SlideTableRow : ITableRow
 {
     private readonly Lazy<List<TableCell>> cells;
-    private readonly SlidePart sdkSlidePart;
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly int index;
 
-    internal SlideTableRow(SlidePart sdkSlidePart, A.TableRow aTableRow, int index)
+    internal SlideTableRow(TypedOpenXmlPart sdkTypedOpenXmlPart, A.TableRow aTableRow, int index)
     {
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.ATableRow = aTableRow;
-        this.sdkSlidePart = sdkSlidePart;
         this.index = index;
         this.cells = new Lazy<List<TableCell>>(() => this.GetCells());
     }
@@ -88,7 +88,7 @@ internal sealed class SlideTableRow : ITableRow
         this.ATableRow.Height!.Value = newEmu;
 
         var pGraphicalFrame = new SdkOpenXmlElement(ATableRow).FirstAncestor<P.GraphicFrame>();
-        var parentTable = new SlideTable(this.sdkSlidePart, pGraphicalFrame);
+        var parentTable = new Table(this.sdkTypedOpenXmlPart, pGraphicalFrame);
         if (newPoints > currentPoints)
         {
             var diffPoints = newPoints - currentPoints;
@@ -119,7 +119,7 @@ internal sealed class SlideTableRow : ITableRow
             else if (aTc.VerticalMerge is not null)
             {
                 var pGraphicalFrame = new SdkOpenXmlElement(ATableRow).FirstAncestor<P.GraphicFrame>();
-                var parentTable = new SlideTable(this.sdkSlidePart, pGraphicalFrame);
+                var parentTable = new Table(this.sdkTypedOpenXmlPart, pGraphicalFrame);
                 int upRowIdx = this.index - 1;
                 var upNeighborCell = (TableCell)parentTable[upRowIdx, columnIdx];
                 cellList.Add(upNeighborCell);
@@ -127,7 +127,7 @@ internal sealed class SlideTableRow : ITableRow
             }
             else
             {
-                addedCell = new TableCell(this.sdkSlidePart,aTc, this.index, columnIdx);
+                addedCell = new TableCell(this.sdkTypedOpenXmlPart, aTc, this.index, columnIdx);
                 cellList.Add(addedCell);
             }
 

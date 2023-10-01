@@ -27,7 +27,7 @@ public class SlideMasterTests : SCTest
     public void SlideNumber_Font_Size_Setter()
     {
         // Arrange
-        var pres = new SCPresentation();
+        var pres = new Presentation();
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -36,7 +36,7 @@ public class SlideMasterTests : SCTest
 
         // Assert
         pres.Save();
-        pres = new SCPresentation(new MemoryStream(pres.AsByteArray()));
+        pres = new Presentation(new MemoryStream(pres.AsByteArray()));
         slideMaster = pres.SlideMasters[0];
         slideMaster.SlideNumber!.Font.Size.Should().Be(30);
     }

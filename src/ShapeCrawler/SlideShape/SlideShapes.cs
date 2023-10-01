@@ -540,7 +540,7 @@ internal sealed class SlideShapes : ISlideShapes
                         new DuplicateableShape(
                             this.sdkSlidePart,
                             pShape,
-                            new SlideAutoShape(
+                            new AutoShape(
                                 this.sdkSlidePart,
                                 pShape,
                                 new TextFrame(
@@ -556,7 +556,7 @@ internal sealed class SlideShapes : ISlideShapes
                         new DuplicateableShape(
                             this.sdkSlidePart,
                             pShape,
-                            new SlideAutoShape(
+                            new AutoShape(
                                 this.sdkSlidePart,
                                 pShape
                             )
@@ -570,7 +570,7 @@ internal sealed class SlideShapes : ISlideShapes
                 if (aGraphicData!.Uri!.Value!.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
                         StringComparison.Ordinal))
                 {
-                    var oleObject = new SlideOLEObject(this.sdkSlidePart, pGraphicFrame);
+                    var oleObject = new OLEObject(this.sdkSlidePart, pGraphicFrame);
                     shapeList.Add(oleObject);
                     continue;
                 }
@@ -649,7 +649,7 @@ internal sealed class SlideShapes : ISlideShapes
                 }
                 else if (this.IsTablePGraphicFrame(pShapeTreeElement))
                 {
-                    var table = new SlideTable(this.sdkSlidePart, pShapeTreeElement);
+                    var table = new Table(this.sdkSlidePart, pShapeTreeElement);
                     shapeList.Add(table);
                 }
             }
@@ -666,7 +666,7 @@ internal sealed class SlideShapes : ISlideShapes
                             .GetFirstChild<A.AudioFromFile>();
                         if (aAudioFile is not null)
                         {
-                            var mediaShape = new SlideMediaShape(this.sdkSlidePart, pPicture);
+                            var mediaShape = new MediaShape(this.sdkSlidePart, pPicture);
                             shapeList.Add(mediaShape);
                         }
 
@@ -674,7 +674,7 @@ internal sealed class SlideShapes : ISlideShapes
                     }
                     case A.VideoFromFile:
                     {
-                        var mediaShape = new SlideMediaShape(this.sdkSlidePart, pPicture);
+                        var mediaShape = new MediaShape(this.sdkSlidePart, pPicture);
                         shapeList.Add(mediaShape);
                         continue;
                     }

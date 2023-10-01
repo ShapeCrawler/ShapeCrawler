@@ -25,18 +25,20 @@ internal sealed class SlideLine : Shape, ILine
 {
     private readonly P.ConnectionShape pConnectionShape;
 
-    internal SlideLine(SlidePart sdkSlidePart, P.ConnectionShape pConnectionShape)
+    internal SlideLine(TypedOpenXmlPart sdkTypedOpenXmlPart, P.ConnectionShape pConnectionShape)
         : this(
+            sdkTypedOpenXmlPart,
             pConnectionShape,
-            new SlideShapeOutline(sdkSlidePart, pConnectionShape.ShapeProperties!)
+            new SlideShapeOutline(sdkTypedOpenXmlPart, pConnectionShape.ShapeProperties!)
         )
     {
     }
 
     private SlideLine(
+        TypedOpenXmlPart sdkTypedOpenXmlPart,
         P.ConnectionShape pConnectionShape,
         SlideShapeOutline shapeOutline)
-        : base(pConnectionShape)
+        : base(sdkTypedOpenXmlPart, pConnectionShape)
     {
         this.pConnectionShape = pConnectionShape;
         this.Outline = shapeOutline;

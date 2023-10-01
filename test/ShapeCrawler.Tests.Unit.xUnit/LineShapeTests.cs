@@ -11,7 +11,7 @@ public class LineShapeTests : SCTest
     public void StartPoint_returns_start_point_coordinates()
     {
         // Arrange
-        var pres = new SCPresentation();
+        var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
         shapes.AddLine(startPointX: 50, startPointY: 60, endPointX: 100, endPointY: 60);
         var line = (ILine)shapes[0];

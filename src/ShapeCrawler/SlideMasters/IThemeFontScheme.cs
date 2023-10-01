@@ -1,4 +1,5 @@
-﻿using A = DocumentFormat.OpenXml.Drawing;
+﻿using DocumentFormat.OpenXml.Packaging;
+using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler;
@@ -33,9 +34,16 @@ internal sealed class ThemeFontScheme : IThemeFontScheme
 {
     private readonly A.FontScheme aFontScheme;
 
-    internal ThemeFontScheme(A.FontScheme aFontScheme)
+    internal ThemeFontScheme(TypedOpenXmlPart sdkTypedOpenXmlPart)
     {
-        this.aFontScheme = aFontScheme;
+        this.aFontScheme = sdkTypedOpenXmlPart switch
+        {
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+                .FontScheme!,
+            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+                .FontScheme!,
+            _ => ((SlideMasterPart)sdkTypedOpenXmlPart).ThemePart!.Theme.ThemeElements!.FontScheme!
+        };
     }
 
     public string HeadLatinFont
@@ -65,12 +73,13 @@ internal sealed class ThemeFontScheme : IThemeFontScheme
     internal string MajorLatinFont() => this.aFontScheme.MajorFont!.LatinFont!.Typeface!;
 
     internal string MajorEastAsianFont() => this.aFontScheme.MajorFont!.EastAsianFont!.Typeface!;
-    
+
     internal string MinorEastAsianFont() => this.aFontScheme.MinorFont!.EastAsianFont!.Typeface!;
-    
+
     internal A.LatinFont MinorLatinFont() => this.aFontScheme.MinorFont!.LatinFont!;
-    
-    internal void UpdateMinorEastAsianFont(string eastAsianFont) => this.aFontScheme.MinorFont!.EastAsianFont!.Typeface = eastAsianFont;
+
+    internal void UpdateMinorEastAsianFont(string eastAsianFont) =>
+        this.aFontScheme.MinorFont!.EastAsianFont!.Typeface = eastAsianFont;
 
     private string GetHeadLatinFont() => this.aFontScheme.MajorFont!.LatinFont!.Typeface!.Value!;
 

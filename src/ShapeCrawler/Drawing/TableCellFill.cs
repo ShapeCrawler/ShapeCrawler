@@ -10,7 +10,7 @@ namespace ShapeCrawler.Drawing;
 
 internal class TableCellFill : IShapeFill
 {
-    private readonly SlidePart sdkSlidePart;
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.TableCellProperties sdkATableCellProperties;
     private BooleanValue? useBgFill;
     private FillType fillType;
@@ -22,16 +22,16 @@ internal class TableCellFill : IShapeFill
     private A.PatternFill? sdkAPattFill;
     private A.BlipFill? sdkABlipFill;
 
-    internal TableCellFill(SlidePart sdkSlidePart, A.TableCellProperties sdkATableCellProperties)
+    internal TableCellFill(TypedOpenXmlPart sdkTypedOpenXmlPart, A.TableCellProperties sdkATableCellProperties)
     {
-        this.sdkSlidePart = sdkSlidePart;
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.sdkATableCellProperties = sdkATableCellProperties;
         this.isDirty = true;
     }
 
     public string? Color => this.GetHexSolidColor();
     
-    public double AlphaPercentage { get; }
+    public double Alpha { get; }
     public double LuminanceModulation { get; }
     public double LuminanceOffset { get; }
 
@@ -52,7 +52,7 @@ internal class TableCellFill : IShapeFill
         }
         else
         {
-            var rId = this.sdkSlidePart.AddImagePart(imageStream);
+            var rId = this.sdkTypedOpenXmlPart.AddImagePart(imageStream);
 
             var aBlipFill = new A.BlipFill();
             var aStretch = new A.Stretch();
@@ -156,8 +156,8 @@ internal class TableCellFill : IShapeFill
             var blipEmbedValue = this.sdkABlipFill.Blip?.Embed?.Value;
             if (blipEmbedValue != null)
             {
-                var imagePart = (ImagePart)this.sdkSlidePart.GetPartById(blipEmbedValue);
-                var image = new ShapeFillImage(this.sdkSlidePart, this.sdkABlipFill, imagePart);
+                var imagePart = (ImagePart)this.sdkTypedOpenXmlPart.GetPartById(blipEmbedValue);
+                var image = new ShapeFillImage(this.sdkTypedOpenXmlPart, this.sdkABlipFill, imagePart);
                 this.pictureImage = image;
                 this.fillType = FillType.Picture;
             }

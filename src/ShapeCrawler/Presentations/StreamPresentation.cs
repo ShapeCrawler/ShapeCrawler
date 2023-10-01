@@ -4,7 +4,7 @@ namespace ShapeCrawler;
 
 internal sealed class StreamPresentation : IValidateable
 {
-    private readonly Presentation presentation;
+    private readonly PresentationCore presentationCore;
     private readonly Stream userStream;
 
     internal StreamPresentation(Stream userStream)
@@ -13,26 +13,26 @@ internal sealed class StreamPresentation : IValidateable
         var internalStream = new MemoryStream();
         this.userStream.Position = 0;
         userStream.CopyTo(internalStream);
-        this.presentation = new Presentation(internalStream);
+        this.presentationCore = new PresentationCore(internalStream);
     }
 
-    public void Save() => this.presentation.CopyTo(this.userStream);
-    void IValidateable.Validate() => this.presentation.Validate();
-    public void CopyTo(string path) => this.presentation.CopyTo(path);
-    public void CopyTo(Stream stream) => this.presentation.CopyTo(stream);
-    public ISlides Slides => this.presentation.Slides;
+    public void Save() => this.presentationCore.CopyTo(this.userStream);
+    void IValidateable.Validate() => this.presentationCore.Validate();
+    public void CopyTo(string path) => this.presentationCore.CopyTo(path);
+    public void CopyTo(Stream stream) => this.presentationCore.CopyTo(stream);
+    public ISlides Slides => this.presentationCore.Slides;
     public int SlideWidth
     {
-        get => this.presentation.SlideWidth;
-        set => this.presentation.SlideWidth = value;
+        get => this.presentationCore.SlideWidth;
+        set => this.presentationCore.SlideWidth = value;
     }
     public int SlideHeight
     {
-        get => this.presentation.SlideHeight;
-        set => this.presentation.SlideHeight = value;
+        get => this.presentationCore.SlideHeight;
+        set => this.presentationCore.SlideHeight = value;
     }
-    public ISlideMasterCollection SlideMasters => this.presentation.SlideMasters;
-    public byte[] AsByteArray() => this.presentation.AsByteArray();
-    public ISections Sections => this.presentation.Sections;
-    public IFooter Footer => this.presentation.Footer;
+    public ISlideMasterCollection SlideMasters => this.presentationCore.SlideMasters;
+    public byte[] AsByteArray() => this.presentationCore.AsByteArray();
+    public ISections Sections => this.presentationCore.Sections;
+    public IFooter Footer => this.presentationCore.Footer;
 }

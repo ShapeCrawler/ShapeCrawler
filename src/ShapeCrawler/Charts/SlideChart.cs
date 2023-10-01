@@ -34,7 +34,7 @@ internal sealed class SlideChart : Shape, IChart
         P.GraphicFrame pGraphicFrame,
         IReadOnlyList<ICategory> categories
         )
-        : base(pGraphicFrame)
+        : base(sdkSlidePart,pGraphicFrame)
     {
         this.sdkChartPart = sdkChartPart;
         this.pGraphicFrame = pGraphicFrame;

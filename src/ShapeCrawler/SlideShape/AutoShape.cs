@@ -12,30 +12,28 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.SlideShape;
 
-internal sealed class SlideAutoShape : CopyableShape
+internal sealed class AutoShape : CopyableShape
 {
     private readonly P.Shape pShape;
-    private readonly SlidePart sdkSlidePart;
 
-    internal SlideAutoShape(
-        SlidePart sdkSlidePart,
+    internal AutoShape(
+        TypedOpenXmlPart sdkTypedOpenXmlPart,
         P.Shape pShape,
         TextFrame textFrame)
-        : this(sdkSlidePart, pShape)
+        : this(sdkTypedOpenXmlPart, pShape)
     {
         this.IsTextHolder = true;
         this.TextFrame = textFrame;
     }
 
-    internal SlideAutoShape(
-        SlidePart sdkSlidePart,
+    internal AutoShape(
+        TypedOpenXmlPart sdkTypedOpenXmlPart,
         P.Shape pShape)
-        : base(pShape)
+        : base(sdkTypedOpenXmlPart, pShape)
     {
-        this.sdkSlidePart = sdkSlidePart;
         this.pShape = pShape;
-        this.Outline = new SlideShapeOutline(sdkSlidePart, pShape.Descendants<P.ShapeProperties>().First());
-        this.Fill = new SlideShapeFill(sdkSlidePart, pShape.Descendants<P.ShapeProperties>().First(), false);
+        this.Outline = new SlideShapeOutline(this.sdkTypedOpenXmlPart, pShape.Descendants<P.ShapeProperties>().First());
+        this.Fill = new SlideShapeFill(this.sdkTypedOpenXmlPart, pShape.Descendants<P.ShapeProperties>().First(), false);
     }
 
     public override bool HasOutline => true;

@@ -3,7 +3,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Wrappers;
 
-internal sealed record SdkAParagraph
+internal readonly record struct SdkAParagraph
 {
     private readonly A.Paragraph aParagraph;
 

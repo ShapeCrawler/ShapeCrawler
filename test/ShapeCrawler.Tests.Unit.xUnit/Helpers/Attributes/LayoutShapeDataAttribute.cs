@@ -26,7 +26,7 @@ public class LayoutShapeDataAttribute : DataAttribute
         var pptxStream = new MemoryStream();
         stream.CopyTo(pptxStream);
         pptxStream.Position = 0;
-        var pres = new SCPresentation(pptxStream);
+        var pres = new Presentation(pptxStream);
         var layout = pres.SlideMasters[0].SlideLayouts[this.slideNumber - 1];
         var shape = layout.Shapes.GetByName<IShape>(this.shapeName);
 

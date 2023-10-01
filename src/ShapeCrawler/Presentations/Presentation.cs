@@ -1,114 +1,88 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Validation;
-using ShapeCrawler.Exceptions;
-using P = DocumentFormat.OpenXml.Presentation;
+﻿using System.IO;
+using System.Reflection;
+using ShapeCrawler.Shared;
 
 namespace ShapeCrawler;
 
-internal sealed record Presentation
+/// <inheritdoc cref="IPresentation"/>
+public sealed class Presentation : IPresentation
 {
-    private readonly PresentationDocument sdkPresDocument;
-    private readonly SlideSize slideSize;
-
-    internal Presentation(byte[] bytes)
-        : this(new MemoryStream(bytes))
+    private IValidateable validateable;
+    
+    /// <summary>
+    ///     Creates presentation from specified file path.
+    /// </summary>
+    public Presentation(string path)
     {
+        this.validateable = new PathPresentation(path);
     }
 
-    internal Presentation(Stream stream)
+    /// <summary>
+    ///     Creates presentation from specified stream.
+    /// </summary>
+    public Presentation(Stream stream)
     {
-        stream.Position = 0;
-        this.sdkPresDocument = PresentationDocument.Open(stream, true);
-        var sdkMasterParts = this.sdkPresDocument.PresentationPart!.SlideMasterParts;
-        this.SlideMasters = new SlideMasterCollection(sdkMasterParts);
-        this.Sections = new Sections(this.sdkPresDocument);
-        this.Slides = new Slides(this.sdkPresDocument.PresentationPart!.SlideParts);
-        this.Footer = new Footer(this);
-        this.slideSize = new SlideSize(this.sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
+        this.validateable = new StreamPresentation(stream);
     }
 
-    internal ISlides Slides { get; }
-
-    internal int SlideHeight
+    /// <summary>
+    ///     Creates a new presentation.
+    /// </summary>
+    public Presentation()
     {
-        get => this.slideSize.Height();
-        set => this.slideSize.UpdateHeight(value);
+        var assets = new Assets(Assembly.GetExecutingAssembly());
+        var stream = assets.StreamOf("new-presentation.pptx");
+        this.validateable = new StreamPresentation(stream);
     }
 
-    internal int SlideWidth
+    /// <inheritdoc />
+    public ISlides Slides => this.validateable.Slides;
+
+    /// <inheritdoc />
+    public int SlideWidth
     {
-        get => this.slideSize.Width();
-        set => this.slideSize.UpdateWidth(value);
+        get => this.validateable.SlideWidth; 
+        set => this.validateable.SlideWidth = value;
     }
 
-    internal ISlideMasterCollection SlideMasters { get; }
-
-    internal ISections Sections { get; }
-
-    internal IFooter Footer { get; }
-
-    internal void CopyTo(string path)
+    /// <inheritdoc />
+    public int SlideHeight
     {
-        var cloned = this.sdkPresDocument.Clone(path);
-        cloned.Dispose();
+        get => this.validateable.SlideHeight;
+        set => this.validateable.SlideHeight = value;
+    }
+    
+    /// <inheritdoc />
+    public ISlideMasterCollection SlideMasters => this.validateable.SlideMasters;
+    
+    /// <inheritdoc />
+    public byte[] AsByteArray() => this.validateable.AsByteArray();
+    
+    /// <inheritdoc />
+    public ISections Sections => this.validateable.Sections;
+   
+    /// <inheritdoc />
+    public IFooter Footer => this.validateable.Footer;
+    
+    /// <inheritdoc />
+    public void Save() => this.validateable.Save();
+
+    /// <inheritdoc />
+    public void SaveAs(string path)
+    {
+        this.validateable.CopyTo(path);
+        this.validateable = new PathPresentation(path);
     }
 
-    internal void CopyTo(Stream stream) => this.sdkPresDocument.Clone(stream);
-
-    internal byte[] AsByteArray()
+    /// <inheritdoc />
+    public void SaveAs(Stream stream)
     {
-        var stream = new MemoryStream();
-        this.sdkPresDocument.Clone(stream);
-
-        return stream.ToArray();
+        this.validateable.CopyTo(stream);
+        this.validateable = new StreamPresentation(stream);
     }
 
     internal void Validate()
     {
-        var nonCritical = new List<ValidationError>
-        {
-            new(
-                "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/chart:showDLblsOverMax'.",
-                "/c:chartSpace[1]/c:chart[1]"),
-            new("/c:chartSpace[1]/c:chart[1]/c:extLst[1]/c:ext[1]", "/c:chartSpace[1]/c:chart[1]"),
-            new(
-                "The element has invalid child element 'http://schemas.microsoft.com/office/drawing/2017/03/chart:dataDisplayOptions16'. List of possible elements expected: <http://schemas.microsoft.com/office/drawing/2017/03/chart:dispNaAsBlank>.",
-                "/c:chartSpace[1]/c:chart[1]/c:extLst[1]/c:ext[1]"),
-            new(
-                "The 'uri' attribute is not declared.",
-                "/c:chartSpace[1]/c:chart[1]/c:extLst[1]/c:ext[1]"),
-            new(
-                "The 'mod' attribute is not declared.",
-                "/p:sldLayout[1]/p:extLst[1]"),
-            new(
-                "The 'mod' attribute is not declared.",
-                "/p:sldMaster[1]/p:extLst[1]"),
-            new(
-                "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:pPr'.",
-                "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]/p:txBody[1]/a:p[1]")
-        };
-
-        var validator = new OpenXmlValidator(FileFormatVersions.Microsoft365);
-        var errors = validator.Validate(this.sdkPresDocument);
-
-        var removing = new List<ValidationErrorInfo>();
-        foreach (var error in errors)
-        {
-            if (nonCritical.Any(x => x.Description == error.Description && x.Path == error.Path?.XPath))
-            {
-                removing.Add(error);
-            }
-        }
-
-        errors = errors.Except(removing).DistinctBy(x => new { x.Description, x.Path?.XPath }).ToList();
-
-        if (errors.Any())
-        {
-            throw new SCException("Presentation is invalid. See the Errors property for details.");
-        }
+        this.validateable.Validate();
     }
 }

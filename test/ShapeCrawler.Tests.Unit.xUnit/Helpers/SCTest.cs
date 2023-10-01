@@ -50,12 +50,12 @@ public abstract class SCTest
         return path;
     }
 
-    protected static SCPresentation SaveAndOpenPresentation(IPresentation presentation)
+    protected static Presentation SaveAndOpenPresentation(IPresentation presentation)
     {
         var stream = new MemoryStream();
         presentation.SaveAs(stream);
 
-        return new SCPresentation(stream);
+        return new Presentation(stream);
     }
 
 #if DEBUG
@@ -76,7 +76,7 @@ public abstract class SCTest
     {
         var stream = StreamOf(fileName);
 
-        return new SCPresentation(stream);
+        return new Presentation(stream);
     }
 }
 

@@ -24,17 +24,17 @@ public interface IShapeFill
     public string? Color { get; }
 
     /// <summary>
-    /// Gets the Alpha percentage of the fill color.
+    ///     Gets the opacity level of fill color in percentages.
     /// </summary>
-    public double AlphaPercentage { get; }
+    public double Alpha { get; }
 
     /// <summary>
-    /// Gets the Luminance Modulation Percentage of the fill color.
+    ///     Gets the Luminance Modulation of fill color in percentages.
     /// </summary>
     public double LuminanceModulation { get; }
     
     /// <summary>
-    /// Gets the Luminance Offset Percentage of the fill color.
+    ///     Gets the Luminance Offset of fill color in percentages.
     /// </summary>
     public double LuminanceOffset { get; }
 

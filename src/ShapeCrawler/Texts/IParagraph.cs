@@ -54,26 +54,26 @@ public interface IParagraph
     void ReplaceText(string oldValue, string newValue);
 }
 
-internal sealed class SlideParagraph : IParagraph
+internal sealed class Paragraph : IParagraph
 {
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly Lazy<Bullet> bullet;
     private TextAlignment? alignment;
-    private readonly SlidePart sdkSlidePart;
     private readonly SdkAParagraph sdkAParagraph;
 
-    internal SlideParagraph(SlidePart sdkSlidePart, A.Paragraph aParagraph)
-        : this(sdkSlidePart, aParagraph, new SdkAParagraph(aParagraph))
+    internal Paragraph(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
+        : this(sdkTypedOpenXmlPart, aParagraph, new SdkAParagraph(aParagraph))
     {
     }
 
-    private SlideParagraph(SlidePart sdkSlidePart, A.Paragraph aParagraph, SdkAParagraph sdkAParagraph)
+    private Paragraph(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph, SdkAParagraph sdkAParagraph)
     {
-        this.sdkSlidePart = sdkSlidePart;
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.AParagraph = aParagraph;
         this.sdkAParagraph = sdkAParagraph;
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.bullet = new Lazy<Bullet>(this.GetBullet);
-        this.Portions = new SlideParagraphPortions(this.sdkSlidePart,this.AParagraph); 
+        this.Portions = new ParagraphPortions(sdkTypedOpenXmlPart,this.AParagraph); 
     }
 
     public bool IsRemoved { get; set; }
@@ -159,19 +159,19 @@ internal sealed class SlideParagraph : IParagraph
         var textLines = text.Split(Environment.NewLine);
 #endif
 
-        var basePortion = new SlideTextParagraphPortion(this.sdkSlidePart, baseARun);
+        var basePortion = new TextParagraphPortion(this.sdkSlidePart, baseARun);
         basePortion.Text = textLines.First();
 
         foreach (var textLine in textLines.Skip(1))
         {
             if (!string.IsNullOrEmpty(textLine))
             {
-                ((SlideParagraphPortions)this.Portions).AddNewLine();
+                ((ParagraphPortions)this.Portions).AddNewLine();
                 this.Portions.AddText(textLine);
             }
             else
             {
-                ((SlideParagraphPortions)this.Portions).AddNewLine();
+                ((ParagraphPortions)this.Portions).AddNewLine();
             }
         }
         
@@ -184,7 +184,7 @@ internal sealed class SlideParagraph : IParagraph
         }
 
         var baseParagraph = textFrame.Paragraphs.First();
-        var popularPortion = baseParagraph.Portions.OfType<SlideTextParagraphPortion>().GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
+        var popularPortion = baseParagraph.Portions.OfType<TextParagraphPortion>().GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
             .First().First();
         var font = popularPortion.Font;
 

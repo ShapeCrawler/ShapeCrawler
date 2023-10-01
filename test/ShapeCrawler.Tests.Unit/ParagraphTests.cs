@@ -19,7 +19,7 @@ public class ParagraphTests : SCTest
     public void IndentLevel_Setter_sets_indent_level()
     {
         // Act
-        var pres = new SCPresentation();
+        var pres = new Presentation();
         pres.Slides[0].Shapes.AddRectangle(100,100, 500, 100);
         var addedShape = (IShape)pres.Slides[0].Shapes.Last();
         addedShape.TextFrame!.Paragraphs.Add();
@@ -38,7 +38,7 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("002.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var shapes = pres.Slides[1].Shapes;
         var shape3Pr1Bullet = ((IShape)shapes.First(x => x.Id == 3)).TextFrame.Paragraphs[0].Bullet;
         var shape4Pr2Bullet = ((IShape)shapes.First(x => x.Id == 4)).TextFrame.Paragraphs[1].Bullet;
@@ -57,7 +57,7 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("002.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var shapeList = pres.Slides[1].Shapes;
         var shape4 = shapeList.First(x => x.Id == 4);
         var shape5 = shapeList.First(x => x.Id == 5);
@@ -80,7 +80,7 @@ public class ParagraphTests : SCTest
     public void Alignment_Setter_updates_text_alignment_of_table_Cell()
     {
         // Arrange
-        var pres = new SCPresentation();
+        var pres = new Presentation();
         pres.Slides[0].Shapes.AddTable(10, 10, 2, 2);
         var table = (ITable)pres.Slides[0].Shapes.Last();
         var cellTextFrame = table.Rows[0].Cells[0].TextFrame;
@@ -100,7 +100,7 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("001.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var autoShape = pres.Slides[0].Shapes.GetById<IShape>(2);
         var bullet = autoShape.TextFrame.Paragraphs[0].Bullet;
 
@@ -115,7 +115,7 @@ public class ParagraphTests : SCTest
     public void Paragraph_BulletColorHexAndCharAndSizeProperties_ReturnCorrectValues()
     {
         // Arrange
-        var pres2 = new SCPresentation(StreamOf("002.pptx"));
+        var pres2 = new Presentation(StreamOf("002.pptx"));
         var shapeList = pres2.Slides[1].Shapes;
         var shape4 = shapeList.First(x => x.Id == 4);
         var shape4Pr2Bullet = ((IShape)shape4).TextFrame.Paragraphs[1].Bullet;
@@ -135,7 +135,7 @@ public class ParagraphTests : SCTest
     public void Paragraph_Text_Setter_updates_paragraph_text_and_resize_shape()
     {
         // Arrange
-        var pres = new SCPresentation(StreamOf("autoshape-case003.pptx"));
+        var pres = new Presentation(StreamOf("autoshape-case003.pptx"));
         var shape = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 4");
         var paragraph = shape.TextFrame.Paragraphs[0];
             
@@ -151,7 +151,7 @@ public class ParagraphTests : SCTest
     public void Text_Setter_sets_paragraph_text_in_New_Presentation()
     {
         // Arrange
-        var pres = new SCPresentation();
+        var pres = new Presentation();
         var slide = pres.Slides[0];
         slide.Shapes.AddRectangle(10, 10, 10, 10);
         var addedShape = (IShape)slide.Shapes.Last();
@@ -169,7 +169,7 @@ public class ParagraphTests : SCTest
     public void Text_Setter_sets_paragraph_text_for_grouped_shape()
     {
         // Arrange
-        var pres = new SCPresentation(StreamOf("autoshape-case003.pptx"));
+        var pres = new Presentation(StreamOf("autoshape-case003.pptx"));
         var shape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IShape>("Shape 1");
         var paragraph = shape.TextFrame.Paragraphs[0];
         
@@ -185,8 +185,8 @@ public class ParagraphTests : SCTest
     public void Paragraph_Text_Getter_returns_paragraph_text()
     {
         // Arrange
-        var textBox1 = ((IShape)new SCPresentation(StreamOf("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 37)).TextFrame;
-        var textBox2 = ((ITable)new SCPresentation(StreamOf("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
+        var textBox1 = ((IShape)new Presentation(StreamOf("008.pptx")).Slides[0].Shapes.First(sp => sp.Id == 37)).TextFrame;
+        var textBox2 = ((ITable)new Presentation(StreamOf("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3)).Rows[0].Cells[0]
             .TextFrame;
 
         // Act
@@ -205,7 +205,7 @@ public class ParagraphTests : SCTest
     {
         // Arrange
         var pptxStream = StreamOf("autoshape-case003.pptx");
-        var pres = new SCPresentation(pptxStream);
+        var pres = new Presentation(pptxStream);
         var paragraph = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 3").TextFrame!.Paragraphs[0];
             
         // Act
@@ -220,7 +220,7 @@ public class ParagraphTests : SCTest
     public void Paragraph_Portions_counter_returns_number_of_text_portions_in_the_paragraph()
     {
         // Arrange
-        var textFrame = new SCPresentation(StreamOf("009_table.pptx")).Slides[2].Shapes.GetById<IShape>(2).TextFrame;
+        var textFrame = new Presentation(StreamOf("009_table.pptx")).Slides[2].Shapes.GetById<IShape>(2).TextFrame;
 
         // Act
         var portions = textFrame.Paragraphs[0].Portions;
@@ -233,7 +233,7 @@ public class ParagraphTests : SCTest
     public void Portions_Add()
     {
         // Arrange
-        var pres = new SCPresentation(StreamOf("autoshape-case001.pptx"));
+        var pres = new Presentation(StreamOf("autoshape-case001.pptx"));
         var shape = pres.SlideMasters[0].Shapes.GetByName<IShape>("AutoShape 1");
         shape.TextFrame!.Paragraphs.Add();
         var paragraph = shape.TextFrame.Paragraphs.Last();

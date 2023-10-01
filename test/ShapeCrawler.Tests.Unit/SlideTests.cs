@@ -23,7 +23,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("001.pptx");
-        var pre = new SCPresentation(pptx);
+        var pre = new Presentation(pptx);
         var slide = pre.Slides.First();
 
         // Act
@@ -38,7 +38,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("002.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         ISlide slideEx = pres.Slides[2];
 
         // Act
@@ -53,7 +53,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("009_table.pptx");
-        var pre = new SCPresentation(pptx);
+        var pre = new Presentation(pptx);
         var backgroundImage = pre.Slides[0].Background;
         var image = StreamOf("test-image-2.png");
         var bytesBefore =  backgroundImage.BinaryData();
@@ -70,7 +70,7 @@ public class SlideTests : SCTest
     public void Background_SetImage_updates_background_of_new_slide()
     {
         // Arrange
-        var pres = new SCPresentation();
+        var pres = new Presentation();
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var slide = pres.Slides[0];
         var bgImage = StreamOf("test-image-2.png");
@@ -87,7 +87,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("009_table.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var slide = pres.Slides[1];
 
         // Act
@@ -102,7 +102,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         const string customDataString = "Test custom data";
-        var originPre = new SCPresentation(StreamOf("001.pptx"));
+        var originPre = new Presentation(StreamOf("001.pptx"));
         var slide = originPre.Slides.First();
 
         // Act
@@ -110,7 +110,7 @@ public class SlideTests : SCTest
 
         var savedPreStream = new MemoryStream();
         originPre.SaveAs(savedPreStream);
-        var savedPre = new SCPresentation(savedPreStream);
+        var savedPre = new Presentation(savedPreStream);
         var customData = savedPre.Slides.First().CustomData;
 
         // Assert
@@ -121,7 +121,7 @@ public class SlideTests : SCTest
     public void CustomData_PropertyIsNull_WhenTheSlideHasNotCustomData()
     {
         // Arrange
-        var slide = new SCPresentation(StreamOf("001.pptx")).Slides.First();
+        var slide = new Presentation(StreamOf("001.pptx")).Slides.First();
 
         // Act
         var sldCustomData = slide.CustomData;
@@ -135,7 +135,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pptxStream = StreamOf("001.pptx");
-        var pres = new SCPresentation(pptxStream);
+        var pres = new Presentation(pptxStream);
         var slide1 = pres.Slides[0];
         var slide2 = pres.Slides[1];
         slide1.CustomData = "old-number-1";
@@ -148,7 +148,7 @@ public class SlideTests : SCTest
         slide2.Number.Should().Be(1, "because the first slide was inserted to its position.");
 
         pres.Save();
-        pres = new SCPresentation(pptxStream);
+        pres = new Presentation(pptxStream);
         slide2 = pres.Slides.First(s => s.CustomData == "old-number-1");
         slide2.Number.Should().Be(2);
     }
@@ -157,7 +157,7 @@ public class SlideTests : SCTest
     public void Number_Setter()
     {
         // Arrange
-        var pres = new SCPresentation();
+        var pres = new Presentation();
         var slide = pres.Slides[0];
 
         // Act
@@ -172,7 +172,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("039.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var slide = pres.Slides.First();
 
         // Act
@@ -187,7 +187,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("011_dt.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var slide = pres.Slides.First();
 
         // Act
@@ -203,7 +203,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pptxStream = StreamOf("autoshape-case011_save-as-png.pptx");
-        var pres = new SCPresentation(pptxStream);
+        var pres = new Presentation(pptxStream);
         var slide = pres.Slides[0];
         var mStream = new MemoryStream();
         
@@ -216,7 +216,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         var pptx = TestHelper.GetStream("autoshape-case011_save-as-png.pptx");
-        var pre = new SCPresentation(pptx);
+        var pre = new Presentation(pptx);
         var slide = pre.Slides[0];
 
         // Act

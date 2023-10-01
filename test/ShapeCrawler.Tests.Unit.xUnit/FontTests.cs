@@ -143,7 +143,7 @@ public class FontTests : SCTest
         font.Size = newSize;
 
         // Assert
-        ((SCPresentation)pres).Validate();
+        ((Presentation)pres).Validate();
         pres.SaveAs(mStream);
         testCase.SetPresentation(mStream);
         font = testCase.AutoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
@@ -190,7 +190,7 @@ public class FontTests : SCTest
         font.IsBold.Should().BeTrue();
 
         pres.SaveAs(stream);
-        pres = new SCPresentation(stream);
+        pres = new Presentation(stream);
         portionQuery.Presentation = pres;
         font = portionQuery.GetParagraphPortion().Font;
         font.IsBold.Should().BeTrue();
@@ -199,14 +199,14 @@ public class FontTests : SCTest
     public static IEnumerable<object[]> TestCasesIsBold()
     {
         TestElementQuery portionRequestCase1 = new();
-        portionRequestCase1.Presentation = new SCPresentation(StreamOf("020.pptx"));
+        portionRequestCase1.Presentation = new Presentation(StreamOf("020.pptx"));
         portionRequestCase1.SlideIndex = 2;
         portionRequestCase1.ShapeId = 7;
         portionRequestCase1.ParagraphIndex = 0;
         portionRequestCase1.PortionIndex = 0;
 
         TestElementQuery portionRequestCase2 = new();
-        portionRequestCase2.Presentation = new SCPresentation(StreamOf("026.pptx"));
+        portionRequestCase2.Presentation = new Presentation(StreamOf("026.pptx"));
         portionRequestCase2.SlideIndex = 0;
         portionRequestCase2.ShapeId = 128;
         portionRequestCase2.ParagraphIndex = 0;

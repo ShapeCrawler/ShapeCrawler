@@ -43,18 +43,18 @@ public interface IRowCollection : IEnumerable<ITableRow>
 
 internal sealed class SlideTableRows : IRowCollection
 {
-    private readonly SlidePart sdkSlidePart;
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly List<SlideTableRow> rows;
     private readonly A.Table aTable;
 
-    internal SlideTableRows (SlidePart sdkSlidePart, P.GraphicFrame pGraphicFrame)
+    internal SlideTableRows(TypedOpenXmlPart sdkTypedOpenXmlPart, P.GraphicFrame pGraphicFrame)
     {
-        this.sdkSlidePart = sdkSlidePart;
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         var aTable = pGraphicFrame.ATable();
         var aTableRows = aTable.Elements<A.TableRow>();
         var rowList = new List<SlideTableRow>(aTableRows.Count());
         var rowIndex = 0;
-        rowList.AddRange(aTableRows.Select(aTblRow => new SlideTableRow(this.sdkSlidePart, aTblRow, rowIndex++)));
+        rowList.AddRange(aTableRows.Select(aTblRow => new SlideTableRow(sdkTypedOpenXmlPart, aTblRow, rowIndex++)));
 
         this.rows = rowList;
         this.aTable = aTable;
@@ -86,17 +86,10 @@ internal sealed class SlideTableRows : IRowCollection
     {
         var columnsCount = this.rows[0].Cells.Count;
         var aTableRow = this.aTable.AddRow(columnsCount);
-        var tableRow = new SlideTableRow(this.sdkSlidePart, aTableRow, this.rows.Count);
+        var tableRow = new SlideTableRow(this.sdkTypedOpenXmlPart, aTableRow, this.rows.Count);
         this.rows.Add(tableRow);
     }
 
-    IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator()
-    {
-        return this.rows.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return this.rows.GetEnumerator();
-    }
+    IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator() => this.rows.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => this.rows.GetEnumerator();
 }

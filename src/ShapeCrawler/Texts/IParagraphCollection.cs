@@ -28,14 +28,14 @@ public interface IParagraphCollection : IReadOnlyList<IParagraph>
 internal sealed class Paragraphs : IParagraphCollection
 {
     private readonly IEnumerable<A.Paragraph> aParagraphs;
-    private readonly ResetableLazy<List<SlideParagraph>> paragraphs;
-    private readonly SlidePart sdkSlidePart;
+    private readonly ResetableLazy<List<Paragraph>> paragraphs;
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
 
-    internal Paragraphs(SlidePart sdkSlidePart, IEnumerable<A.Paragraph> aParagraphs)
+    internal Paragraphs(TypedOpenXmlPart sdkTypedOpenXmlPart, IEnumerable<A.Paragraph> aParagraphs)
     {
-        this.sdkSlidePart = sdkSlidePart;
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aParagraphs = aParagraphs;
-        this.paragraphs = new ResetableLazy<List<SlideParagraph>>(this.ParseParagraphs);
+        this.paragraphs = new ResetableLazy<List<Paragraph>>(this.ParseParagraphs);
     }
 
     #region Public Properties
@@ -68,7 +68,7 @@ internal sealed class Paragraphs : IParagraphCollection
 
     public void Remove(IEnumerable<IParagraph> removeParagraphs)
     {
-        foreach (var paragraph in removeParagraphs.Cast<SlideParagraph>())
+        foreach (var paragraph in removeParagraphs.Cast<Paragraph>())
         {
             paragraph.AParagraph.Remove();
             paragraph.IsRemoved = true;
@@ -77,17 +77,17 @@ internal sealed class Paragraphs : IParagraphCollection
         this.paragraphs.Reset();
     }
 
-    private List<SlideParagraph> ParseParagraphs()
+    private List<Paragraph> ParseParagraphs()
     {
         if (!this.aParagraphs.Any())
         {
-            return new List<SlideParagraph>(0);
+            return new List<Paragraph>(0);
         }
 
-        var paraList = new List<SlideParagraph>();
+        var paraList = new List<Paragraph>();
         foreach (var aPara in this.aParagraphs)
         {
-            var para = new SlideParagraph(this.sdkSlidePart, aPara);
+            var para = new Paragraph(this.sdkTypedOpenXmlPart, aPara);
             paraList.Add(para);
         }
 

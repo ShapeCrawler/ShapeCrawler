@@ -15,7 +15,7 @@ public class ShapeFillTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("021.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var autoShape = pres.Slides[0].Shapes.First(sp => sp.Id == 108);
 
         // Act-Assert
@@ -28,7 +28,7 @@ public class ShapeFillTests : SCTest
         // Arrange
         var pptx = StreamOf("009_table.pptx");
         var image = StreamOf("test-image-2.png");
-        var shape =  new SCPresentation(pptx).Slides[2].Shapes.First(sp => sp.Id == 4);
+        var shape = new Presentation(pptx).Slides[2].Shapes.First(sp => sp.Id == 4);
         var fill = shape.Fill;
         var imageSizeBefore = fill.Picture!.BinaryData().Length;
 
@@ -44,7 +44,7 @@ public class ShapeFillTests : SCTest
     public void AutoShape_Fill_Type_returns_NoFill_When_shape_is_Not_filled()
     {
         // Arrange
-        var autoShape =  new SCPresentation(StreamOf("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 6);
+        var autoShape = new Presentation(StreamOf("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 6);
 
         // Act
         var fillType = autoShape.Fill.Type;
@@ -57,7 +57,7 @@ public class ShapeFillTests : SCTest
     public void HexSolidColor_getter_returns_color_name()
     {
         // Arrange
-        var autoShape =  new SCPresentation(StreamOf("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 2);
+        var autoShape = new Presentation(StreamOf("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 2);
 
         // Act
         var shapeSolidColorName = autoShape.Fill.Color;
@@ -70,8 +70,8 @@ public class ShapeFillTests : SCTest
     public void Color_Getter_returns_color_hex()
     {
         // Arrange
-        var pres = new SCPresentation(StreamOf("009_table.pptx"));
-        var shapeFill =  pres.Slides[3].Shapes.First(sp => sp.Name == "Rectangle 3").Fill;
+        var pres = new Presentation(StreamOf("009_table.pptx"));
+        var shapeFill = pres.Slides[3].Shapes.First(sp => sp.Name == "Rectangle 3").Fill;
 
         // Act
         var colorHex = shapeFill.Color;
@@ -81,14 +81,14 @@ public class ShapeFillTests : SCTest
     }
 
     [Test]
-    public void ThemeColorWithAlpha_getter_returns_color_name()
+    public void Alpha_returns_opacity_level_of_fill_color_in_percentages()
     {
         // Arrange
-        var pres = new SCPresentation(StreamOf("009_table.pptx"));
-        var shape = pres.Slides[3].Shapes.First(sp => sp.Name == "SolidSchemeAlpha");
+        var pres = new Presentation(StreamOf("009_table.pptx"));
+        var shapeFill = pres.Slides[3].Shapes.First(sp => sp.Name == "SolidSchemeAlpha").Fill;
 
         // Act
-        var alpha = shape.Fill.AlphaPercentage;
+        var alpha = shapeFill.Alpha;
 
         // Assert
         alpha.Should().Be(60);
@@ -98,7 +98,8 @@ public class ShapeFillTests : SCTest
     public void ThemeColorWithLuminanceLight_getter_returns_color_name()
     {
         // Arrange
-        var autoShape =  new SCPresentation(StreamOf("009_table.pptx")).Slides[3].Shapes.First(sp => sp.Name == "SolidSchemeLumLight");
+        var autoShape = new Presentation(StreamOf("009_table.pptx")).Slides[3].Shapes
+            .First(sp => sp.Name == "SolidSchemeLumLight");
 
         // Act
         var fill = autoShape.Fill;
@@ -109,17 +110,15 @@ public class ShapeFillTests : SCTest
     }
 
     [Test]
-    public void ThemeColorWithLuminanceDark_getter_returns_color_name()
+    public void Luminance_properties()
     {
         // Arrange
-        var autoShape =  new SCPresentation(StreamOf("009_table.pptx")).Slides[3].Shapes.First(sp => sp.Name == "SolidSchemeLumDark");
+        var pres = new Presentation(StreamOf("009_table.pptx"));
+        var shapeFill = pres.Slides[3].Shapes.First(sp => sp.Name == "SolidSchemeLumDark").Fill;
 
-       // Act
-        var fill = autoShape.Fill;
-
-        // Assert
-        fill.LuminanceModulation.Should().Be(75);
-        fill.LuminanceOffset.Should().Be(0);
+        // Act-Assert
+        shapeFill.LuminanceModulation.Should().Be(75);
+        shapeFill.LuminanceOffset.Should().Be(0);
     }
 
     [Test]
@@ -127,7 +126,7 @@ public class ShapeFillTests : SCTest
     {
         // Arrange
         var pptxStream = StreamOf("009_table.pptx");
-        var pres = new SCPresentation(pptxStream);
+        var pres = new Presentation(pptxStream);
         var shapeFill = pres.Slides[2].Shapes.GetByName("AutoShape 1").Fill;
 
         // Act
@@ -136,23 +135,23 @@ public class ShapeFillTests : SCTest
         // Assert
         imageBytes.Length.Should().BePositive();
     }
-    
+
     [Test]
     public void SetColor_sets_green_color()
     {
         // Arrange
-        var pres = new SCPresentation();
+        var pres = new Presentation();
         var slide = pres.Slides[0];
         slide.Shapes.AddRectangle(0, 0, 100, 100);
         var shape = slide.Shapes.Last();
-        
+
         // Act
         shape.Fill!.SetColor("00FF00");
 
         // Assert
         pres.Validate();
     }
-    
+
     [Test]
     [TestCase("autoshape-case005_text-frame.pptx", 1, "AutoShape 1")]
     [TestCase("autoshape-case005_text-frame.pptx", 1, "AutoShape 2")]
@@ -160,7 +159,7 @@ public class ShapeFillTests : SCTest
     public void SetColor_sets_solid_color(string file, int slideNumber, string shapeName)
     {
         // Arrange
-        var pres = new SCPresentation(StreamOf(file));
+        var pres = new Presentation(StreamOf(file));
         var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
         var shapeFill = shape.Fill;
 
@@ -171,14 +170,14 @@ public class ShapeFillTests : SCTest
         shapeFill.Color.Should().Be("32a852");
         pres.Validate();
     }
-    
+
     [Theory]
     // [SlideShapeData("table-case001.pptx", slideNumber: 1, shapeName: "Table 1")]
     [TestCase("table-case001.pptx", 1, "Table 1")]
     public void SetColor_sets_solid_color_as_fill_of_Table_Cell(string file, int slideNumber, string shapeName)
     {
         // Arrange
-        var pres = new SCPresentation(StreamOf(file));
+        var pres = new Presentation(StreamOf(file));
         var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
         var table = (ITable)shape;
         var shapeFill = table[0, 0].Fill;
@@ -190,13 +189,13 @@ public class ShapeFillTests : SCTest
         shapeFill.Color.Should().Be("32a852");
         pres.Validate();
     }
-    
+
     [Test]
     [TestCase("009_table.pptx", 2, "AutoShape 2")]
     public void SetColor_sets_solid_color_After_picture(string file, int slideNumber, string shapeName)
     {
         // Arrange
-        var pres = new SCPresentation(StreamOf(file));
+        var pres = new Presentation(StreamOf(file));
         var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
         var shapeFill = shape.Fill;
         var imageStream = StreamOf("test-image-1.png");
@@ -204,7 +203,7 @@ public class ShapeFillTests : SCTest
         // Act
         shapeFill.SetPicture(imageStream);
         shapeFill.SetColor("32a852");
-        
+
         // Assert
         shapeFill.Color.Should().Be("32a852");
         pres.Validate();

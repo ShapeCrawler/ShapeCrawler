@@ -21,7 +21,7 @@ public class SlideMasterTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("001.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         ISlideMaster slideMaster = pres.SlideMasters[0];
        IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
 
@@ -39,7 +39,7 @@ public class SlideMasterTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("001.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         ISlideMaster slideMaster = pres.SlideMasters[0];
         IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
         float horizontalResolution = Helpers.TestHelper.HorizontalResolution;
@@ -59,7 +59,7 @@ public class SlideMasterTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("autoshape-case011_save-as-png.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -73,7 +73,7 @@ public class SlideMasterTests : SCTest
     public void AutoShapePlaceholderType_ReturnsPlaceholderType()
     {
         // Arrange
-        ISlideMaster slideMaster = new SCPresentation(StreamOf("001.pptx")).SlideMasters[0];
+        ISlideMaster slideMaster = new Presentation(StreamOf("001.pptx")).SlideMasters[0];
         IShape masterAutoShapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
         IShape masterAutoShapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
         IShape masterAutoShapeCase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
@@ -94,7 +94,7 @@ public class SlideMasterTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("001.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         ISlideMaster slideMaster = pres.SlideMasters[0];
         IShape shapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
         IShape shapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
@@ -112,7 +112,7 @@ public class SlideMasterTests : SCTest
     public void AutoShapeTextBoxText_ReturnsText_WhenTheSlideMasterAutoShapesTextBoxIsNotEmpty()
     {
         // Arrange
-        ISlideMaster slideMaster = new SCPresentation(StreamOf("001.pptx")).SlideMasters[0];
+        ISlideMaster slideMaster = new Presentation(StreamOf("001.pptx")).SlideMasters[0];
         IShape autoShape = (IShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
         // Act-Assert
@@ -124,7 +124,7 @@ public class SlideMasterTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("autoshape-grouping.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -139,7 +139,7 @@ public class SlideMasterTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("autoshape-grouping.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -154,7 +154,7 @@ public class SlideMasterTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("autoshape-grouping.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -169,7 +169,7 @@ public class SlideMasterTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("autoshape-grouping.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -185,7 +185,7 @@ public class SlideMasterTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("autoshape-grouping.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -200,7 +200,7 @@ public class SlideMasterTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("autoshape-grouping.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -215,7 +215,7 @@ public class SlideMasterTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("autoshape-grouping.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -230,7 +230,7 @@ public class SlideMasterTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("autoshape-grouping.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -245,7 +245,7 @@ public class SlideMasterTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("autoshape-grouping.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -282,7 +282,7 @@ public class SlideMasterTests : SCTest
     {
         // Arrange
         var pptx = StreamOf("autoshape-grouping.pptx");
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act

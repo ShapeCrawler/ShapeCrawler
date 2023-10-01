@@ -11,12 +11,12 @@ namespace ShapeCrawler.SlideShape;
 
 internal sealed class SlideGroupedShapes : IReadOnlyShapes
 {
-    private readonly SlidePart sdkSlidePart;
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly IEnumerable<OpenXmlCompositeElement> pGroupElements;
 
-    internal SlideGroupedShapes(SlidePart sdkSlidePart, IEnumerable<OpenXmlCompositeElement> pGroupElements)
+    internal SlideGroupedShapes(TypedOpenXmlPart sdkTypedOpenXmlPart, IEnumerable<OpenXmlCompositeElement> pGroupElements)
     {
-        this.sdkSlidePart = sdkSlidePart;
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.pGroupElements = pGroupElements;
     }
 
@@ -37,17 +37,17 @@ internal sealed class SlideGroupedShapes : IReadOnlyShapes
             IShape? shape = null;
             if (pGroupShapeElement is P.GroupShape pGroupShape)
             {
-                shape = new SlideGroupShape(this.sdkSlidePart, pGroupShape);
+                shape = new SlideGroupShape(this.sdkTypedOpenXmlPart, pGroupShape);
             }
             else if (pGroupShapeElement is P.Shape pShape)
             {
                 if (pShape.TextBody is not null)
                 {
-                    shape = new SlideAutoShape(this.sdkSlidePart, pShape, new TextFrame(this.sdkSlidePart, pShape.TextBody));
+                    shape = new AutoShape(this.sdkTypedOpenXmlPart, pShape, new TextFrame(this.sdkTypedOpenXmlPart, pShape.TextBody));
                 }
                 else
                 {
-                    shape = new SlideAutoShape(this.sdkSlidePart, pShape);
+                    shape = new AutoShape(this.sdkTypedOpenXmlPart, pShape);
                 }
             }
             else if (pGroupShapeElement is P.Picture pPicture)
@@ -56,7 +56,7 @@ internal sealed class SlideGroupedShapes : IReadOnlyShapes
                 var blipEmbed = aBlip?.Embed;
                 if (blipEmbed is not null)
                 {
-                    shape = new SlidePicture(this.sdkSlidePart, pPicture, aBlip!);
+                    shape = new SlidePicture(this.sdkTypedOpenXmlPart, pPicture, aBlip!);
                 }
             }
 

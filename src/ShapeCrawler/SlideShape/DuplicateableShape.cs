@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
@@ -11,16 +10,14 @@ namespace ShapeCrawler.SlideShape;
 internal sealed class DuplicateableShape : CopyableShape, IDuplicateableShape
 {
     private readonly IShape shape;
-    private readonly SlidePart sdkSlidePart;
     private readonly P.Shape pShape;
 
     internal DuplicateableShape(
-        SlidePart sdkSlidePart,
+        TypedOpenXmlPart sdkTypedOpenXmlPart,
         P.Shape pShape,
         IShape shape)
-        : base(pShape)
+        : base(sdkTypedOpenXmlPart, pShape)
     {
-        this.sdkSlidePart = sdkSlidePart;
         this.shape = shape;
         this.pShape = pShape;
     }

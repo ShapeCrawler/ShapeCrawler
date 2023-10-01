@@ -22,7 +22,7 @@ public class PresentationTests : SCTest
     {
         // Arrange
         var pptx = StreamOf(file);
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var removingSlide = pres.Slides[0];
         var mStream = new MemoryStream();
 
@@ -33,7 +33,7 @@ public class PresentationTests : SCTest
         pres.Slides.Should().HaveCount(expectedSlidesCount);
 
         pres.SaveAs(mStream);
-        pres = new SCPresentation(mStream);
+        pres = new Presentation(mStream);
         pres.Slides.Should().HaveCount(expectedSlidesCount);
     }
     

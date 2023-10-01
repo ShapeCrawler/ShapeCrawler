@@ -32,14 +32,14 @@ public interface ITableCell
 
 internal sealed record TableCell : ITableCell
 {
-    internal TableCell(SlidePart sdkSlidePart, A.TableCell aTableCell, int rowIndex, int columnIndex)
+    internal TableCell(TypedOpenXmlPart sdkTypedOpenXmlPart, A.TableCell aTableCell, int rowIndex, int columnIndex)
     {
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
-        this.TextFrame = new TextFrame(sdkSlidePart, this.ATableCell.TextBody!);
+        this.TextFrame = new TextFrame(sdkTypedOpenXmlPart, this.ATableCell.TextBody!);
         var tableCellProperties = aTableCell.TableCellProperties!;
-        this.Fill = new TableCellFill(sdkSlidePart, tableCellProperties);
+        this.Fill = new TableCellFill(sdkTypedOpenXmlPart, tableCellProperties);
     }
 
     public bool IsMergedCell => this.DefineWhetherCellIsMerged();

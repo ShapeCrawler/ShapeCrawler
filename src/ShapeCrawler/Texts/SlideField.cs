@@ -28,7 +28,7 @@ internal sealed class SlideField : IParagraphPortion
         this.font = new ResetableLazy<ITextPortionFont>(() =>
         {
             var textPortionSize = new PortionFontSize(this.aText!);
-            return new SlideTextPortionFont(sdkSlidePart, this.aText!, textPortionSize);
+            return new TextPortionFont(sdkSlidePart, this.aText!, textPortionSize);
         });
 
         this.portionText = new PortionText(this.aField);

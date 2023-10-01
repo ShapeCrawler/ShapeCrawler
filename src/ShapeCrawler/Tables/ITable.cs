@@ -49,19 +49,17 @@ public interface ITable : IShape
     void UpdateFill(string colorHex);
 }
 
-internal sealed class SlideTable : CopyableShape, ITable 
+internal sealed class Table : CopyableShape, ITable 
 {
-    private readonly SlidePart sdkSlidePart;
     private readonly P.GraphicFrame pGraphicFrame;
     private readonly ResetableLazy<SlideTableRows> rowCollection;
 
-    internal SlideTable(SlidePart sdkSlidePart, OpenXmlCompositeElement pShapeTreeElement)
-        : base(pShapeTreeElement)
+    internal Table(TypedOpenXmlPart sdkTypedOpenXmlPart, OpenXmlCompositeElement pShapeTreeElement)
+        : base(sdkTypedOpenXmlPart, pShapeTreeElement)
     {
-        this.sdkSlidePart = sdkSlidePart;
         var graphicFrame = (P.GraphicFrame)pShapeTreeElement;
         this.rowCollection =
-            new ResetableLazy<SlideTableRows>(() => new SlideTableRows(this.sdkSlidePart, graphicFrame));
+            new ResetableLazy<SlideTableRows>(() => new SlideTableRows(sdkTypedOpenXmlPart, graphicFrame));
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
     }
 

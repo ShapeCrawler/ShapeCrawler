@@ -48,14 +48,14 @@ public interface IParagraphPortions : IEnumerable<IParagraphPortion>
     void Remove(IList<IParagraphPortion> portions);
 }
 
-internal sealed class SlideParagraphPortions : IParagraphPortions
+internal sealed class ParagraphPortions : IParagraphPortions
 {
-    private readonly SlidePart sdkSlidePart;
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Paragraph aParagraph;
 
-    internal SlideParagraphPortions(SlidePart sdkSlidePart, A.Paragraph aParagraph)
+    internal ParagraphPortions(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
     {
-        this.sdkSlidePart = sdkSlidePart;
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aParagraph = aParagraph;
     }
     
@@ -73,7 +73,7 @@ internal sealed class SlideParagraphPortions : IParagraphPortions
         
         var lastARunOrABreak = this.aParagraph.LastOrDefault(p => p is A.Run or A.Break);
 
-        var textPortions = this.Portions().OfType<SlideTextParagraphPortion>();
+        var textPortions = this.Portions().OfType<TextParagraphPortion>();
         var lastPortion = textPortions.Any() ? textPortions.Last() : null;
         var aTextParent = lastPortion?.AText.Parent ?? new ARunBuilder().Build();
 
@@ -131,12 +131,12 @@ internal sealed class SlideParagraphPortions : IParagraphPortions
             switch (paraChild)
             {
                 case A.Run aRun:
-                    var runPortion = new SlideTextParagraphPortion(this.sdkSlidePart, aRun); 
+                    var runPortion = new TextParagraphPortion(this.sdkTypedOpenXmlPart, aRun); 
                     portions.Add(runPortion);
                     break;
                 case A.Field aField:
                 {
-                    var fieldPortion = new SlideField(this.sdkSlidePart, aField);
+                    var fieldPortion = new SlideField(this.sdkTypedOpenXmlPart, aField);
                     portions.Add(fieldPortion);
                     break;
                 }

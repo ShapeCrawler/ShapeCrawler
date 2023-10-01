@@ -21,10 +21,10 @@ public interface ISpacing
 
 internal sealed class Spacing : ISpacing
 {
-    private readonly SlideParagraph paragraph;
+    private readonly Paragraph paragraph;
     private readonly A.Paragraph aParagraph;
 
-    public Spacing(SlideParagraph paragraph, A.Paragraph aParagraph)
+    public Spacing(Paragraph paragraph, A.Paragraph aParagraph)
     {
         this.paragraph = paragraph;
         this.aParagraph = aParagraph;

@@ -14,13 +14,13 @@ internal sealed class SlideGroupShape : Shape, IGroupShape
 {
     private readonly P.GroupShape pGroupShape;
 
-    internal SlideGroupShape(SlidePart sdkSlidePart, P.GroupShape pGroupShape)
-        : base(pGroupShape)
+    internal SlideGroupShape(TypedOpenXmlPart sdkTypedOpenXmlPart, P.GroupShape pGroupShape)
+        : base(sdkTypedOpenXmlPart, pGroupShape)
     {
         this.pGroupShape = pGroupShape;
-        this.Shapes = new SlideGroupedShapes(sdkSlidePart, pGroupShape.Elements<OpenXmlCompositeElement>());
-        this.Outline = new SlideShapeOutline(sdkSlidePart, pGroupShape.Descendants<P.ShapeProperties>().First());
-        this.Fill = new SlideShapeFill(sdkSlidePart, pGroupShape.Descendants<P.ShapeProperties>().First(), false);
+        this.Shapes = new SlideGroupedShapes(sdkTypedOpenXmlPart, pGroupShape.Elements<OpenXmlCompositeElement>());
+        this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pGroupShape.Descendants<P.ShapeProperties>().First());
+        this.Fill = new SlideShapeFill(sdkTypedOpenXmlPart, pGroupShape.Descendants<P.ShapeProperties>().First(), false);
     }
 
     public IReadOnlyShapes Shapes { get; }

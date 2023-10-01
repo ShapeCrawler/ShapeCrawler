@@ -51,43 +51,43 @@ public class ShapeTests : SCTest
         get
         {
             var pptxStream1 = StreamOf("021.pptx");
-            var pres1 = new SCPresentation(pptxStream1);
+            var pres1 = new Presentation(pptxStream1);
             var shape1 = pres1.Slides[3].Shapes.GetById<IShape>(2);
             var testCase1 = new TestCase<IShape, int>(1, shape1, 383);
             yield return new object[] { testCase1 };
                 
             var pptxStream2 = StreamOf("008.pptx");
-            var pres2 = new SCPresentation(pptxStream2);
+            var pres2 = new Presentation(pptxStream2);
             var shape2 = pres2.Slides[0].Shapes.GetById<IShape>(3);
             var testCase2 = new TestCase<IShape, int>(2, shape2, 66);
             yield return new object[] { testCase2 };
                 
             var pptxStream3 = StreamOf("006_1 slides.pptx");
-            var pres3 = new SCPresentation(pptxStream3);
+            var pres3 = new Presentation(pptxStream3);
             var shape3 = pres3.Slides[0].Shapes.GetById<IShape>(2);
             var testCase3 = new TestCase<IShape, int>(3, shape3, 160);
             yield return new object[] { testCase3 };
                 
             var pptxStream4 = StreamOf("009_table.pptx");
-            var pres4 = new SCPresentation(pptxStream4);
+            var pres4 = new Presentation(pptxStream4);
             var shape4 = pres4.Slides[1].Shapes.GetById<IShape>(9);
             var testCase4 = new TestCase<IShape, int>(4, shape4, 73);
             yield return new object[] { testCase4 };
                 
             var pptxStream5 = StreamOf("025_chart.pptx");
-            var pres5 = new SCPresentation(pptxStream5);
+            var pres5 = new Presentation(pptxStream5);
             var shape5 = pres5.Slides[2].Shapes.GetById<IShape>(7);
             var testCase5 = new TestCase<IShape, int>(5, shape5, 79);
             yield return new object[] { testCase5 };
                 
             var pptxStream6 = StreamOf("018.pptx");
-            var pres6 = new SCPresentation(pptxStream6);
+            var pres6 = new Presentation(pptxStream6);
             var shape6 = pres6.Slides[0].Shapes.GetByName<IShape>("Picture Placeholder 1");
             var testCase6 = new TestCase<IShape, int>(6, shape6, 9);
             yield return new object[] { testCase6 };
                 
             var pptxStream7 = StreamOf("009_table.pptx");
-            var pres7 = new SCPresentation(pptxStream7);
+            var pres7 = new Presentation(pptxStream7);
             var shape7 = pres7.Slides[1].Shapes.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IShape>("Shape 1");
             var testCase7 = new TestCase<IShape, int>(7, shape7, 53);
             yield return new object[] { testCase7 };
@@ -102,7 +102,7 @@ public class ShapeTests : SCTest
     {
         // Arrange
         var pptx = StreamOf(filename);
-        var pres = new SCPresentation(pptx);
+        var pres = new Presentation(pptx);
         var autoShape = pres.Slides[slideNumber - 1].Shapes.GetById<IShape>(shapeId);
 
         // Act
@@ -136,7 +136,7 @@ public class ShapeTests : SCTest
     public static IEnumerable<object[]> GeometryTypeTestCases()
     {
         var pptxStream = StreamOf("021.pptx");
-        var presentation = new SCPresentation(pptxStream);
+        var presentation = new Presentation(pptxStream);
         var shapeCase1 = presentation.Slides[3].Shapes.First(sp => sp.Id == 2);
         var shapeCase2 = presentation.Slides[3].Shapes.First(sp => sp.Id == 3);
 

@@ -16,26 +16,24 @@ internal sealed class SlidePicture : CopyableShape, IPicture
     private readonly StringValue blipEmbed;
     private readonly P.Picture pPicture;
     private readonly A.Blip aBlip;
-    private readonly SlidePart sdkSlidePart;
 
     internal SlidePicture(
-        SlidePart sdkSlidePart,
+        TypedOpenXmlPart sdkTypedOpenXmlPart,
         P.Picture pPicture,
         A.Blip aBlip)
-        : this(sdkSlidePart, pPicture, aBlip, new SlidePictureImage(sdkSlidePart, aBlip))
+        : this(sdkTypedOpenXmlPart, pPicture, aBlip, new SlidePictureImage(sdkTypedOpenXmlPart, aBlip))
     {
     }
 
-    private SlidePicture(SlidePart sdkSlidePart, P.Picture pPicture, A.Blip aBlip, IImage image)
-        : base(pPicture)
+    private SlidePicture(TypedOpenXmlPart sdkTypedOpenXmlPart, P.Picture pPicture, A.Blip aBlip, IImage image)
+        : base(sdkTypedOpenXmlPart, pPicture)
     {
-        this.sdkSlidePart = sdkSlidePart;
         this.pPicture = pPicture;
         this.aBlip = aBlip;
         this.Image = image;
         this.blipEmbed = aBlip.Embed!;
-        this.Outline = new SlideShapeOutline(sdkSlidePart, pPicture.ShapeProperties!);
-        this.Fill = new SlideShapeFill(sdkSlidePart, pPicture.ShapeProperties!, false);
+        this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pPicture.ShapeProperties!);
+        this.Fill = new SlideShapeFill(sdkTypedOpenXmlPart, pPicture.ShapeProperties!, false);
     }
 
     public IImage Image { get; }
@@ -59,7 +57,7 @@ internal sealed class SlidePicture : CopyableShape, IPicture
 
         var svgId = svgBlipList.First().Embed!.Value!;
 
-        var imagePart = (ImagePart)this.sdkSlidePart.GetPartById(svgId);
+        var imagePart = (ImagePart)this.sdkTypedOpenXmlPart.GetPartById(svgId);
         using var svgStream = imagePart.GetStream(FileMode.Open, FileAccess.Read);
         using var sReader = new StreamReader(svgStream);
 
@@ -78,7 +76,7 @@ internal sealed class SlidePicture : CopyableShape, IPicture
         base.CopyTo(id, pShapeTree, existingShapeNames, targetSdkSlidePart);
 
         // COPY PARTS
-        var sourceSdkSlidePart = this.sdkSlidePart;
+        var sourceSdkSlidePart = this.sdkTypedOpenXmlPart;
         var sourceImagePart = (ImagePart)sourceSdkSlidePart.GetPartById(this.blipEmbed.Value!);
 
         // Creates a new part in this slide with a new Id...

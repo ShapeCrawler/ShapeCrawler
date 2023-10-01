@@ -13,17 +13,17 @@ namespace ShapeCrawler.Texts;
 
 internal sealed record TextFrame : ITextFrame
 {
-    private readonly SlidePart sdkSlidePart;
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly OpenXmlElement textBody;
     private readonly ResetableLazy<string> text;
     private readonly ResetableLazy<Paragraphs> paragraphs;
     
-    internal TextFrame(SlidePart sdkSlidePart, OpenXmlElement textBody)
+    internal TextFrame(TypedOpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement textBody)
     {
-        this.sdkSlidePart = sdkSlidePart;
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.textBody = textBody;
         this.text = new ResetableLazy<string>(this.GetText);
-        this.paragraphs = new ResetableLazy<Paragraphs>(() => new Paragraphs(sdkSlidePart, this.textBody.Elements<A.Paragraph>()));
+        this.paragraphs = new ResetableLazy<Paragraphs>(() => new Paragraphs(this.sdkTypedOpenXmlPart, this.textBody.Elements<A.Paragraph>()));
     }
 
     public IParagraphCollection Paragraphs => this.paragraphs.Value;
@@ -239,11 +239,11 @@ internal sealed record TextFrame : ITextFrame
             .First().First();
         var font = popularPortion.Font;
 
-        var sdkPresDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
+        var sdkPresDocument = (PresentationDocument)this.sdkTypedOpenXmlPart.OpenXmlPackage;
         var slideSize = new SlideSize(sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
         var fontSize = FontService.GetAdjustedFontSize(newText, font!, slideSize.Width(), slideSize.Height());
 
-        var paragraphInternal = (SlideParagraph)baseParagraph;
+        var paragraphInternal = (Paragraph)baseParagraph;
         paragraphInternal.SetFontSize(fontSize);
     }
 

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Shapes;
 
@@ -15,10 +16,12 @@ internal abstract class Shape : IShape
     private readonly ShapeId shapeId;
     private const string customDataElementName = "ctd";
 
+    protected readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     protected readonly OpenXmlElement pShapeTreeElement;
 
-    internal Shape(OpenXmlElement pShapeTreeElement)
+    internal Shape(TypedOpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement pShapeTreeElement)
     {
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.pShapeTreeElement = pShapeTreeElement;
         this.position = new Position(pShapeTreeElement);
         this.size = new ShapeSize(pShapeTreeElement);
@@ -113,7 +116,21 @@ internal abstract class Shape : IShape
 
     public ITextFrame TextFrame { get; protected init; } = new NullTextFrame();
 
-    public double Rotation => throw new NotImplementedException();
+    public double Rotation
+    {
+        get
+        {
+            var pSpPr = this.pShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
+            var aTransform2D = pSpPr.Transform2D;
+            if (aTransform2D != null)
+            {
+                aTransform2D = new ReferencedPShape(this.sdkTypedOpenXmlPart, this.pShapeTreeElement).ATransform2D();  
+            }
+            
+            var angle = pSpPr.Transform2D!.Rotation!.Value; // rotation angle in 1/60,000th of a degree
+            return angle / 60000d;
+        }
+    }
 
     public virtual ITable AsTable() => throw new SCException(
         $"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");

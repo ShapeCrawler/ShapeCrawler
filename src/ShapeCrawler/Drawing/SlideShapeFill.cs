@@ -13,17 +13,16 @@ internal record SlideShapeFill : IShapeFill
     private readonly TypedOpenXmlCompositeElement properties;
     private BooleanValue? useBgFill;
     private FillType fillType;
-    private string? hexSolidColor;
     private SlidePictureImage? pictureImage;
     private A.SolidFill? aSolidFill;
     private A.GradientFill? aGradFill;
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
-    private readonly SlidePart sdkSlidePart;
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
 
-    internal SlideShapeFill(SlidePart sdkSlidePart, TypedOpenXmlCompositeElement properties, BooleanValue? useBgFill)
+    internal SlideShapeFill(TypedOpenXmlPart sdkTypedOpenXmlPart, TypedOpenXmlCompositeElement properties, BooleanValue? useBgFill)
     {
-        this.sdkSlidePart = sdkSlidePart;
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.properties = properties;
         this.useBgFill = useBgFill;
     }
@@ -40,7 +39,7 @@ internal record SlideShapeFill : IShapeFill
                 {
                     return aRgbColorModelHex.Val!.ToString();
                 }
-                
+
                 return this.ColorHexOrNullOf(this.aSolidFill.SchemeColor!.Val!);
             }
 
@@ -50,10 +49,18 @@ internal record SlideShapeFill : IShapeFill
 
     private string? ColorHexOrNullOf(string schemeColor)
     {
-        var aColorScheme = this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!.ColorScheme!;
+        var aColorScheme = this.sdkTypedOpenXmlPart switch
+        {
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+                .ColorScheme!,
+            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
+                .ColorScheme!,
+            _ => ((SlideMasterPart)this.sdkTypedOpenXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
+        };
+
         var aColor2Type = aColorScheme.Elements<A.Color2Type>().FirstOrDefault(c => c.LocalName == schemeColor);
         var hex = aColor2Type?.RgbColorModelHex?.Val?.Value ?? aColor2Type?.SystemColor?.LastColor?.Value;
-        
+
         if (hex != null)
         {
             return hex;
@@ -62,7 +69,13 @@ internal record SlideShapeFill : IShapeFill
         if (hex == null)
         {
             // GetThemeMappedColor
-            var pColorMap = this.sdkSlidePart.SlideLayoutPart.SlideMasterPart.SlideMaster.ColorMap;
+            var pColorMap = this.sdkTypedOpenXmlPart switch
+            {
+                SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.ColorMap,
+                SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster.ColorMap,
+                _ => ((SlideMasterPart)this.sdkTypedOpenXmlPart).SlideMaster.ColorMap
+            };
+            
             var targetSchemeColor = pColorMap?.GetAttributes().FirstOrDefault(a => a.LocalName == schemeColor)!;
 
             var attrValue = targetSchemeColor!.Value;
@@ -73,9 +86,76 @@ internal record SlideShapeFill : IShapeFill
         return null;
     }
 
-    public double AlphaPercentage { get; }
-    public double LuminanceModulation { get; }
-    public double LuminanceOffset { get; }
+    public double Alpha
+    {
+        get
+        {
+            const int defaultAlphaPercentages = 100;
+            this.aSolidFill = this.properties.GetFirstChild<A.SolidFill>();
+            if (this.aSolidFill != null)
+            {
+                var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
+                if (aRgbColorModelHex != null)
+                {
+                    var alpha = aRgbColorModelHex.Elements<A.Alpha>().FirstOrDefault();
+                    return alpha?.Val?.Value / 1000d ?? defaultAlphaPercentages;
+                }
+                
+                var schemeColor = this.aSolidFill.SchemeColor!;
+                var schemeAlpha = schemeColor.Elements<A.Alpha>().FirstOrDefault();
+                return schemeAlpha?.Val?.Value / 1000d ?? defaultAlphaPercentages;
+            }
+
+            return defaultAlphaPercentages;
+        }
+    }
+
+    public double LuminanceModulation
+    {
+        get
+        {
+            const double luminanceModulation = 100;
+            this.aSolidFill = this.properties.GetFirstChild<A.SolidFill>();
+            if (this.aSolidFill != null)
+            {
+                var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
+                if (aRgbColorModelHex != null)
+                {
+                    return luminanceModulation;
+                }
+                
+                var schemeColor = this.aSolidFill.SchemeColor!;
+                var schemeAlpha = schemeColor.Elements<A.LuminanceModulation>().FirstOrDefault();
+                return schemeAlpha?.Val?.Value / 1000d ?? luminanceModulation;
+            }
+
+            return luminanceModulation;
+        }
+    }
+
+    public double LuminanceOffset
+    {
+        get
+        {
+            const double defaultValue = 0;
+            this.aSolidFill = this.properties.GetFirstChild<A.SolidFill>();
+            if (this.aSolidFill != null)
+            {
+                var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
+                if (aRgbColorModelHex != null)
+                {
+                    return defaultValue;
+                }
+                
+                var schemeColor = this.aSolidFill.SchemeColor!;
+                var schemeAlpha = schemeColor.Elements<A.LuminanceOffset>().FirstOrDefault();
+                return schemeAlpha?.Val?.Value / 1000d ?? defaultValue;
+            }
+
+            return defaultValue;
+
+        }
+    }
 
     public IImage? Picture => this.GetPicture();
 
@@ -91,7 +171,7 @@ internal record SlideShapeFill : IShapeFill
         }
         else
         {
-            var rId = sdkSlidePart.AddImagePart(image);
+            var rId = this.sdkTypedOpenXmlPart.AddImagePart(image);
 
             var aBlipFill = new A.BlipFill();
             var aStretch = new A.Stretch();
@@ -150,7 +230,6 @@ internal record SlideShapeFill : IShapeFill
             if (aRgbColorModelHex != null)
             {
                 var hexColor = aRgbColorModelHex.Val!.ToString();
-                this.hexSolidColor = hexColor;
             }
             else
             {
@@ -185,7 +264,7 @@ internal record SlideShapeFill : IShapeFill
 
         if (this.aBlipFill is not null)
         {
-            var image = new SlidePictureImage(this.sdkSlidePart, this.aBlipFill.Blip!);
+            var image = new SlidePictureImage(this.sdkTypedOpenXmlPart, this.aBlipFill.Blip!);
             this.pictureImage = image;
             this.fillType = FillType.Picture;
         }
@@ -207,14 +286,7 @@ internal record SlideShapeFill : IShapeFill
             this.InitSlideBackgroundFillOr();
         }
     }
-
-    private string? GetHexSolidColor()
-    {
-        this.Initialize();
-
-        return this.hexSolidColor;
-    }
-
+    
     private SlidePictureImage? GetPicture()
     {
         this.Initialize();
