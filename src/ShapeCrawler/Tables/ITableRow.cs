@@ -87,7 +87,7 @@ internal sealed class SlideTableRow : ITableRow
         var newEmu = UnitConverter.PointToEmu(newPoints);
         this.ATableRow.Height!.Value = newEmu;
 
-        var pGraphicalFrame = new SdkOpenXmlElement(ATableRow).FirstAncestor<P.GraphicFrame>();
+        var pGraphicalFrame = ATableRow.Ancestors<P.GraphicFrame>().First();
         var parentTable = new Table(this.sdkTypedOpenXmlPart, pGraphicalFrame);
         if (newPoints > currentPoints)
         {
@@ -118,7 +118,7 @@ internal sealed class SlideTableRow : ITableRow
             }
             else if (aTc.VerticalMerge is not null)
             {
-                var pGraphicalFrame = new SdkOpenXmlElement(ATableRow).FirstAncestor<P.GraphicFrame>();
+                var pGraphicalFrame = ATableRow.Ancestors<P.GraphicFrame>().First();
                 var parentTable = new Table(this.sdkTypedOpenXmlPart, pGraphicalFrame);
                 int upRowIdx = this.index - 1;
                 var upNeighborCell = (TableCell)parentTable[upRowIdx, columnIdx];

@@ -12,8 +12,8 @@ internal sealed class ShapeColor
 
     #region Constructors
 
-    internal ShapeColor(SlidePart sdkSlidePart, A.Text aText)
-        : this(new PresentationColor(sdkSlidePart), aText.Ancestors<P.Shape>().First())
+    internal ShapeColor(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
+        : this(new PresentationColor(sdkTypedOpenXmlPart), aText.Ancestors<P.Shape>().First())
     {
     }
 

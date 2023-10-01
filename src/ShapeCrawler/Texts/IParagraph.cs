@@ -59,18 +59,18 @@ internal sealed class Paragraph : IParagraph
     private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly Lazy<Bullet> bullet;
     private TextAlignment? alignment;
-    private readonly SdkAParagraph sdkAParagraph;
+    private readonly AParagraphWrap aParagraphWrap;
 
     internal Paragraph(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
-        : this(sdkTypedOpenXmlPart, aParagraph, new SdkAParagraph(aParagraph))
+        : this(sdkTypedOpenXmlPart, aParagraph, new AParagraphWrap(aParagraph))
     {
     }
 
-    private Paragraph(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph, SdkAParagraph sdkAParagraph)
+    private Paragraph(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph, AParagraphWrap aParagraphWrap)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.AParagraph = aParagraph;
-        this.sdkAParagraph = sdkAParagraph;
+        this.aParagraphWrap = aParagraphWrap;
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.bullet = new Lazy<Bullet>(this.GetBullet);
         this.Portions = new ParagraphPortions(sdkTypedOpenXmlPart,this.AParagraph); 
@@ -96,8 +96,8 @@ internal sealed class Paragraph : IParagraph
 
     public int IndentLevel
     {
-        get => this.sdkAParagraph.IndentLevel();
-        set => this.sdkAParagraph.UpdateIndentLevel(value);
+        get => this.aParagraphWrap.IndentLevel();
+        set => this.aParagraphWrap.UpdateIndentLevel(value);
     }
 
     public ISpacing Spacing => this.GetSpacing();
@@ -159,7 +159,7 @@ internal sealed class Paragraph : IParagraph
         var textLines = text.Split(Environment.NewLine);
 #endif
 
-        var basePortion = new TextParagraphPortion(this.sdkSlidePart, baseARun);
+        var basePortion = new TextParagraphPortion(this.sdkTypedOpenXmlPart, baseARun);
         basePortion.Text = textLines.First();
 
         foreach (var textLine in textLines.Skip(1))
@@ -177,7 +177,7 @@ internal sealed class Paragraph : IParagraph
         
         // Resize
         var sdkTextBody = this.AParagraph.Parent!;
-        var textFrame = new TextFrame(this.sdkSlidePart, sdkTextBody);
+        var textFrame = new TextFrame(this.sdkTypedOpenXmlPart, sdkTextBody);
         if (textFrame.AutofitType != AutofitType.Resize)
         {
             return;

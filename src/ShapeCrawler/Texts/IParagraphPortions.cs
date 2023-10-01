@@ -136,7 +136,7 @@ internal sealed class ParagraphPortions : IParagraphPortions
                     break;
                 case A.Field aField:
                 {
-                    var fieldPortion = new SlideField(this.sdkTypedOpenXmlPart, aField);
+                    var fieldPortion = new Field(this.sdkTypedOpenXmlPart, aField);
                     portions.Add(fieldPortion);
                     break;
                 }

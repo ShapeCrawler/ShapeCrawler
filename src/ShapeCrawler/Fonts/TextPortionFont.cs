@@ -206,14 +206,13 @@ internal sealed class TextPortionFont : ITextPortionFont
             return aLatinFont;
         }
 
-        aLatinFont = new ReferencedIndent(this.sdkSlidePart, this.aText).ALatinFontOrNull();
+        aLatinFont = new ReferencedIndent(this.sdkTypedOpenXmlPart, this.aText).ALatinFontOrNull();
         if (aLatinFont != null)
         {
             return aLatinFont;
         }
 
-        return new ThemeFontScheme(this.sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
-            .FontScheme!).MinorLatinFont();
+        return new ThemeFontScheme(this.sdkTypedOpenXmlPart).MinorLatinFont();
     }
 
     private bool ParseBoldFlag()
@@ -229,7 +228,7 @@ internal sealed class TextPortionFont : ITextPortionFont
             return true;
         }
 
-        bool? isFontBold = new ReferencedIndent(this.sdkSlidePart, this.aText).FontBoldFlagOrNull();
+        bool? isFontBold = new ReferencedIndent(this.sdkTypedOpenXmlPart, this.aText).FontBoldFlagOrNull();
         if (isFontBold.HasValue)
         {
             return isFontBold.Value;

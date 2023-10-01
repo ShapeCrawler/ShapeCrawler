@@ -11,30 +11,28 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed class SlideField : IParagraphPortion
+internal sealed class Field : IParagraphPortion
 {
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly ResetableLazy<ITextPortionFont> font;
     private readonly A.Field aField;
     private readonly PortionText portionText;
     private readonly A.Text? aText;
-    private readonly SlidePart sdkSlidePart;
 
-    internal SlideField(SlidePart sdkSlidePart, A.Field aField)
+    internal Field(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Field aField)
     {
-        this.sdkSlidePart = sdkSlidePart;
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aText = aField.GetFirstChild<A.Text>();
         this.aField = aField;
 
         this.font = new ResetableLazy<ITextPortionFont>(() =>
         {
             var textPortionSize = new PortionFontSize(this.aText!);
-            return new TextPortionFont(sdkSlidePart, this.aText!, textPortionSize);
+            return new TextPortionFont(sdkTypedOpenXmlPart, this.aText!, textPortionSize);
         });
 
         this.portionText = new PortionText(this.aField);
     }
-
-    internal event Action? Removed;
 
     /// <inheritdoc/>
     public string? Text
@@ -58,11 +56,7 @@ internal sealed class SlideField : IParagraphPortion
         set => this.UpdateTextHighlight(value);
     }
 
-    public void Remove()
-    {
-        this.aField.Remove();
-        this.Removed?.Invoke();
-    }
+    public void Remove() => this.aField.Remove();
 
     private Color ParseTextHighlight()
     {
@@ -110,7 +104,7 @@ internal sealed class SlideField : IParagraphPortion
             return null;
         }
 
-        var hyperlinkRelationship = (HyperlinkRelationship)this.sdkSlidePart.GetReferenceRelationship(hyperlink.Id!);
+        var hyperlinkRelationship = (HyperlinkRelationship)this.sdkTypedOpenXmlPart.GetReferenceRelationship(hyperlink.Id!);
 
         return hyperlinkRelationship.Uri.ToString();
     }
@@ -131,7 +125,7 @@ internal sealed class SlideField : IParagraphPortion
         }
 
         var uri = new Uri(url!, UriKind.RelativeOrAbsolute);
-        var addedHyperlinkRelationship = sdkSlidePart.AddHyperlinkRelationship(uri, true);
+        var addedHyperlinkRelationship = this.sdkTypedOpenXmlPart.AddHyperlinkRelationship(uri, true);
 
         hyperlink.Id = addedHyperlinkRelationship.Id;
     }

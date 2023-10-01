@@ -1,4 +1,7 @@
 ﻿// ReSharper disable once CheckNamespace
+
+using DocumentFormat.OpenXml.Packaging;
+
 namespace ShapeCrawler;
 
 using A = DocumentFormat.OpenXml.Drawing;
@@ -19,24 +22,21 @@ public interface ITheme
     IThemeColorScheme ColorScheme { get; }
 }
 
-internal sealed class SCTheme : ITheme
+internal sealed class Theme : ITheme
 {
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Theme aTheme;
 
-    internal SCTheme(SlideMaster parentMaster, A.Theme aTheme)
+    internal Theme(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Theme aTheme)
     {
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aTheme = aTheme;
     }
 
-    public IThemeFontScheme FontScheme => this.GetFontSetting();
+    public IThemeFontScheme FontScheme => new ThemeFontScheme(this.sdkTypedOpenXmlPart);
 
     public IThemeColorScheme ColorScheme => this.GetColorScheme();
 
-    private IThemeFontScheme GetFontSetting()
-    {
-        return new ThemeFontScheme(this.aTheme.ThemeElements!.FontScheme!);
-    }
-    
     private IThemeColorScheme GetColorScheme()
     {
         return new ThemeColorScheme(this.aTheme.ThemeElements!.ColorScheme!);
