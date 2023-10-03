@@ -10,6 +10,7 @@ using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.ShapesCollection;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideShape;
 using SkiaSharp;
@@ -36,12 +37,12 @@ internal sealed class Slide : ISlide
             new SlideBgImage(sdkSlidePart));
         this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideLayout = slideLayout;
-        this.Shapes = new SlideShapes(this.sdkSlidePart);
+        this.Shapes = new SlideShapeList(this.sdkSlidePart, new ShapeList(sdkSlidePart));
     }
 
     public ISlideLayout SlideLayout { get; }
 
-    public ISlideShapes Shapes { get; }
+    public ISlideShapeList Shapes { get; }
 
     public int Number
     {

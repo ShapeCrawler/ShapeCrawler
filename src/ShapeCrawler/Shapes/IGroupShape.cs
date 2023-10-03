@@ -9,5 +9,5 @@ public interface IGroupShape : IShape
     /// <summary>
     ///     Gets the collection of grouped shapes.
     /// </summary>
-    IReadOnlyShapes Shapes { get; }
+    IShapeList Shapes { get; }
 }

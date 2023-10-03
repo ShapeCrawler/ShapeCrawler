@@ -7,20 +7,20 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents collection of grouped shapes.
 /// </summary>
-public interface IReadOnlyShapes : IReadOnlyList<IShape>
+public interface IShapeList : IReadOnlyList<IShape>
 {
     /// <summary>
     ///     Gets shape by identifier.
     /// </summary>
-    T GetById<T>(int shapeId) where T : IShape;
+    T GetById<T>(int id) where T : IShape;
 
     /// <summary>
     ///     Gets shape by name.
     /// </summary>
-    T GetByName<T>(string shapeName) where T : IShape;
+    T GetByName<T>(string name) where T : IShape;
 
     /// <summary>
     ///     Gets shape by name.
     /// </summary>
-    IShape GetByName(string shapeName);
+    IShape GetByName(string name);
 }

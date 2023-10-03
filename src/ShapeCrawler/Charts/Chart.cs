@@ -14,7 +14,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Charts;
 
-internal sealed class SlideChart : Shape, IChart
+internal sealed class Chart : Shape, IChart
 {
     private readonly ChartType chartType;
     private readonly Lazy<OpenXmlElement?> firstSeries;
@@ -28,13 +28,13 @@ internal sealed class SlideChart : Shape, IChart
 
     private string? chartTitle;
 
-    internal SlideChart(
-        SlidePart sdkSlidePart, 
+    internal Chart(
+        TypedOpenXmlPart sdkTypedOpenXmlPart, 
         ChartPart sdkChartPart, 
         P.GraphicFrame pGraphicFrame,
         IReadOnlyList<ICategory> categories
         )
-        : base(sdkSlidePart,pGraphicFrame)
+        : base(sdkTypedOpenXmlPart,pGraphicFrame)
     {
         this.sdkChartPart = sdkChartPart;
         this.pGraphicFrame = pGraphicFrame;
@@ -43,8 +43,8 @@ internal sealed class SlideChart : Shape, IChart
         this.cPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
         this.cXCharts = this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
         var pShapeProperties = sdkChartPart.ChartSpace.GetFirstChild<C.ShapeProperties>()!;
-        this.Outline = new SlideShapeOutline(sdkSlidePart, pShapeProperties);
-        this.Fill = new SlideShapeFill(sdkSlidePart, pShapeProperties, false);
+        this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pShapeProperties);
+        this.Fill = new SlideShapeFill(sdkTypedOpenXmlPart, pShapeProperties, false);
         this.SeriesList = new SeriesList(sdkChartPart,
             this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }

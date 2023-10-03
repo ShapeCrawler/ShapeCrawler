@@ -5,22 +5,22 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Extensions;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.SlideShape;
+namespace ShapeCrawler.Wrappers;
 
-internal sealed class Shapes
+internal readonly ref struct PShapeTreeWrap
 {
     private readonly P.ShapeTree pShapeTree;
 
-    internal Shapes(P.ShapeTree pShapeTree)
+    internal PShapeTreeWrap(P.ShapeTree pShapeTree)
     {
         this.pShapeTree = pShapeTree;
     }
 
-    internal void Add(P.Shape pShape)
+    internal void Add(OpenXmlElement sdkOpenXmlElement)
     {
         var id = this.pShapeTree.Descendants<P.NonVisualDrawingProperties>().Select(s => s.Id!.Value).Max() + 1;
         var existingShapeNames = this.pShapeTree.Descendants<P.NonVisualDrawingProperties>().Select(s => s.Name!.Value!);
-        var pShapeCopy = pShape.CloneNode(true);
+        var pShapeCopy = sdkOpenXmlElement.CloneNode(true);
         pShapeCopy.NonVisualDrawingProperties().Id = new UInt32Value(id);
         this.pShapeTree.AppendChild(pShapeCopy);
         var copyName = pShapeCopy.NonVisualDrawingProperties().Name!.Value!;

@@ -1,4 +1,4 @@
-﻿namespace ShapeCrawler;
+﻿namespace ShapeCrawler.Placeholders;
 
 /// <summary>
 ///     Placeholder types.

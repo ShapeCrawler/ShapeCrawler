@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Shared;
-using ShapeCrawler.SlideMasters;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler;
@@ -25,7 +23,7 @@ public interface ISlideLayout
     /// <summary>
     ///     Gets layout shape collection.
     /// </summary>
-    IReadOnlyShapes Shapes { get; }
+    IShapeList Shapes { get; }
 
     ISlideMaster SlideMaster { get; }
 }
@@ -33,7 +31,6 @@ public interface ISlideLayout
 internal sealed class SlideLayout : ISlideLayout
 {
     private readonly SlideLayoutPart sdkLayoutPart;
-
     private static readonly Dictionary<string, SlideLayoutType> TypeMapping = new()
     {
         // https://c-rex.net/samples/ooxml/e1/Part4/OOXML_P4_DOCX_ST_SlideLayoutType_topic_ID0EKTIIB.html
@@ -84,29 +81,12 @@ internal sealed class SlideLayout : ISlideLayout
     {
         this.sdkLayoutPart = sdkLayoutPart;
         this.SlideMaster = slideMaster;
-        this.Shapes = new LayoutShapes(this.sdkLayoutPart);
+        this.Shapes = new ShapeList(this.sdkLayoutPart);
     }
 
-    public string Name => this.GetName();
-
-    public IReadOnlyShapes Shapes { get; }
-
+    public string Name => this.sdkLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
+    public IShapeList Shapes { get; }
     public ISlideMaster SlideMaster { get; }
-
-    public SlideLayoutType Type => this.GetLayoutType();
-
-    private string GetName()
-    {
-        return this.sdkLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
-    }
-
-    private SlideLayoutType GetLayoutType()
-    {
-        return TypeMapping[this.sdkLayoutPart.SlideLayout.Type!];
-    }
-
-    internal SlideLayoutPart SDKSlideLayoutPart()
-    {
-        return this.sdkLayoutPart;
-    }
+    public SlideLayoutType Type => TypeMapping[this.sdkLayoutPart.SlideLayout.Type!];
+    internal SlideLayoutPart SDKSlideLayoutPart() => this.sdkLayoutPart;
 }

@@ -11,13 +11,6 @@ internal readonly ref struct Emus
         this.emu = emus;
     }
 
-    internal int AsHorizontalPixels()
-    {
-        return (int)(this.emu * HorizontalResolutionDpi / 914400);
-    }
-    
-    internal int AsVerticalPixels()
-    {
-        return (int)(this.emu * VerticalResolutionDpi / 914400);
-    }
+    internal int AsHorizontalPixels() => (int)(this.emu * HorizontalResolutionDpi / 914400);
+    internal int AsVerticalPixels() => (int)(this.emu * VerticalResolutionDpi / 914400);
 }

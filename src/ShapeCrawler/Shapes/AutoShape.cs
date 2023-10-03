@@ -4,6 +4,7 @@ using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.ShapesCollection;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using SkiaSharp;

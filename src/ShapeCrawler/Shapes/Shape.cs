@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Positions;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -23,12 +24,12 @@ internal abstract class Shape : IShape
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.pShapeTreeElement = pShapeTreeElement;
-        this.position = new Position(pShapeTreeElement);
+        this.position = new Position(sdkTypedOpenXmlPart, pShapeTreeElement);
         this.size = new ShapeSize(pShapeTreeElement);
         this.shapeId = new ShapeId(pShapeTreeElement);
     }
 
-    public int X
+    public virtual int X
     {
         get => this.position.X();
         set => this.position.UpdateX(value);

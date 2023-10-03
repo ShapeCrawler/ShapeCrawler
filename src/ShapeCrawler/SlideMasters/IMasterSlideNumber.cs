@@ -1,4 +1,6 @@
-﻿using ShapeCrawler.Shapes;
+﻿using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Positions;
+using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -20,11 +22,11 @@ internal sealed class MasterSlideNumber : IMasterSlideNumber
 {
     private readonly Position position;
 
-    internal MasterSlideNumber(P.Shape sdkPShape)
-    :this(sdkPShape, new Position(sdkPShape))
+    internal MasterSlideNumber(TypedOpenXmlPart sdkTypedOpenXmlPart, P.Shape sdkPShape)
+        : this(sdkPShape, new Position(sdkTypedOpenXmlPart, sdkPShape))
     {
     }
-    
+
     private MasterSlideNumber(P.Shape sdkPShape, Position position)
     {
         this.position = position;

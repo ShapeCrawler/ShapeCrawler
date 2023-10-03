@@ -3,28 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Drawing;
+using ShapeCrawler.ShapesCollection;
+using ShapeCrawler.SlideShape;
 using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
+using Picture = ShapeCrawler.Drawing.Picture;
 
-namespace ShapeCrawler.SlideShape;
+namespace ShapeCrawler.Shapes;
 
-internal sealed class SlideGroupedShapes : IReadOnlyShapes
+internal sealed class GroupedShapeList : IShapeList
 {
     private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly IEnumerable<OpenXmlCompositeElement> pGroupElements;
 
-    internal SlideGroupedShapes(TypedOpenXmlPart sdkTypedOpenXmlPart, IEnumerable<OpenXmlCompositeElement> pGroupElements)
+    internal GroupedShapeList(TypedOpenXmlPart sdkTypedOpenXmlPart,
+        IEnumerable<OpenXmlCompositeElement> pGroupElements)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.pGroupElements = pGroupElements;
     }
 
     public int Count => this.GroupedShapes().Count;
-    public T GetById<T>(int shapeId) where T : IShape => (T)this.GroupedShapes().First(shape => shape.Id == shapeId);
-    T IReadOnlyShapes.GetByName<T>(string shapeName) => (T)this.GroupedShapes().First(shape => shape.Name == shapeName);
-    public IShape GetByName(string shapeName) => this.GroupedShapes().First(shape => shape.Name == shapeName);
-    public T GetByName<T>(string shapeName) => (T)this.GroupedShapes().First(shape => shape.Name == shapeName);
+    public T GetById<T>(int id) where T : IShape => (T)this.GroupedShapes().First(shape => shape.Id == id);
+    T IShapeList.GetByName<T>(string name) => (T)this.GroupedShapes().First(shape => shape.Name == name);
+    public IShape GetByName(string name) => this.GroupedShapes().First(shape => shape.Name == name);
+    public T GetByName<T>(string name) => (T)this.GroupedShapes().First(shape => shape.Name == name);
     public IEnumerator<IShape> GetEnumerator() => this.GroupedShapes().GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
     public IShape this[int index] => this.GroupedShapes()[index];
@@ -37,17 +40,26 @@ internal sealed class SlideGroupedShapes : IReadOnlyShapes
             IShape? shape = null;
             if (pGroupShapeElement is P.GroupShape pGroupShape)
             {
-                shape = new SlideGroupShape(this.sdkTypedOpenXmlPart, pGroupShape);
+                shape = new GroupShape(this.sdkTypedOpenXmlPart, pGroupShape);
             }
             else if (pGroupShapeElement is P.Shape pShape)
             {
                 if (pShape.TextBody is not null)
                 {
-                    shape = new AutoShape(this.sdkTypedOpenXmlPart, pShape, new TextFrame(this.sdkTypedOpenXmlPart, pShape.TextBody));
+                    shape = new GroupedShape(
+                        this.sdkTypedOpenXmlPart,
+                        pShape,
+                        new AutoShape(this.sdkTypedOpenXmlPart, pShape,
+                            new TextFrame(this.sdkTypedOpenXmlPart, pShape.TextBody))
+                    );
                 }
                 else
                 {
-                    shape = new AutoShape(this.sdkTypedOpenXmlPart, pShape);
+                    shape = new GroupedShape(
+                        this.sdkTypedOpenXmlPart,
+                        pShape,
+                        new AutoShape(this.sdkTypedOpenXmlPart, pShape)
+                    );
                 }
             }
             else if (pGroupShapeElement is P.Picture pPicture)
@@ -56,7 +68,7 @@ internal sealed class SlideGroupedShapes : IReadOnlyShapes
                 var blipEmbed = aBlip?.Embed;
                 if (blipEmbed is not null)
                 {
-                    shape = new SlidePicture(this.sdkTypedOpenXmlPart, pPicture, aBlip!);
+                    shape = new Picture(this.sdkTypedOpenXmlPart, pPicture, aBlip!);
                 }
             }
 

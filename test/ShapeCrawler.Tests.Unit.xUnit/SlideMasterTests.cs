@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml.Presentation;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;

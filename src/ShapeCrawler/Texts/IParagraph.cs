@@ -2,6 +2,7 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Positions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
@@ -249,7 +250,7 @@ internal sealed class Paragraph : IParagraph
 
         var requiredHeight = (integerPart * textHeight) + tMarginPixel + bMarginPixel;
         var newHeight = (int)requiredHeight + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
-        var position = new Position(parent);
+        var position = new Position(this.sdkTypedOpenXmlPart, parent);
         var size = new ShapeSize(parent);
         size.UpdateHeight(newHeight);
 

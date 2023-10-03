@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ShapeCrawler.Exceptions;
 
-namespace ShapeCrawler.SlideShape;
+namespace ShapeCrawler.Charts;
 
 internal class NullCategories : IReadOnlyList<ICategory>
 {

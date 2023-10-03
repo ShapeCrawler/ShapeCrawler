@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using ShapeCrawler.Shared;
 
 // ReSharper disable once CheckNamespace
@@ -7,7 +8,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a shape collection.
 /// </summary>
-public interface ISlideShapes : IReadOnlyShapes
+public interface ISlideShapeList : IShapeList
 {
     /// <summary>
     ///     Adds a new shape from other shape.

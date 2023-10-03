@@ -7,7 +7,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Fonts;
 
-internal sealed class IndentFonts
+internal readonly record struct IndentFonts
 {
     private readonly OpenXmlCompositeElement sdkOpenXmlCompositeElement;
 

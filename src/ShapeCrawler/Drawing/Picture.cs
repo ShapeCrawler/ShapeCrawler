@@ -6,18 +6,19 @@ using DocumentFormat.OpenXml.Office2019.Drawing.SVG;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.ShapesCollection;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
-internal sealed class SlidePicture : CopyableShape, IPicture
+internal sealed class Picture : CopyableShape, IPicture
 {
     private readonly StringValue blipEmbed;
     private readonly P.Picture pPicture;
     private readonly A.Blip aBlip;
 
-    internal SlidePicture(
+    internal Picture(
         TypedOpenXmlPart sdkTypedOpenXmlPart,
         P.Picture pPicture,
         A.Blip aBlip)
@@ -25,7 +26,7 @@ internal sealed class SlidePicture : CopyableShape, IPicture
     {
     }
 
-    private SlidePicture(TypedOpenXmlPart sdkTypedOpenXmlPart, P.Picture pPicture, A.Blip aBlip, IImage image)
+    private Picture(TypedOpenXmlPart sdkTypedOpenXmlPart, P.Picture pPicture, A.Blip aBlip, IImage image)
         : base(sdkTypedOpenXmlPart, pPicture)
     {
         this.pPicture = pPicture;
@@ -70,20 +71,19 @@ internal sealed class SlidePicture : CopyableShape, IPicture
     internal override void CopyTo(
         int id, 
         P.ShapeTree pShapeTree, 
-        IEnumerable<string> existingShapeNames,
-        SlidePart targetSdkSlidePart)
+        IEnumerable<string> existingShapeNames)
     {
-        base.CopyTo(id, pShapeTree, existingShapeNames, targetSdkSlidePart);
+        base.CopyTo(id, pShapeTree, existingShapeNames);
 
         // COPY PARTS
         var sourceSdkSlidePart = this.sdkTypedOpenXmlPart;
         var sourceImagePart = (ImagePart)sourceSdkSlidePart.GetPartById(this.blipEmbed.Value!);
 
         // Creates a new part in this slide with a new Id...
-        var targetImagePartRId = targetSdkSlidePart.NextRelationshipId();
+        var targetImagePartRId = this.sdkTypedOpenXmlPart.NextRelationshipId();
 
         // Adds to current slide parts and update relation id.
-        var targetImagePart = targetSdkSlidePart.AddNewPart<ImagePart>(sourceImagePart.ContentType, targetImagePartRId);
+        var targetImagePart = this.sdkTypedOpenXmlPart.AddNewPart<ImagePart>(sourceImagePart.ContentType, targetImagePartRId);
         using var sourceImageStream = sourceImagePart.GetStream(FileMode.Open);
         sourceImageStream.Position = 0;
         targetImagePart.FeedData(sourceImageStream);

@@ -7,34 +7,28 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Charts;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Services;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Texts;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
-using C = DocumentFormat.OpenXml.Drawing.Charts;
+using Position = ShapeCrawler.Positions.Position;
 
-namespace ShapeCrawler.SlideShape;
+namespace ShapeCrawler.Shapes;
 
-internal sealed class SlideShapes : ISlideShapes
+internal sealed class SlideShapeList : ISlideShapeList
 {
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly SlidePart sdkSlidePart;
+    private readonly IShapeList shapeList;
 
-    internal SlideShapes(SlidePart sdkSlidePart)
+    internal SlideShapeList(SlidePart sdkSlidePart, IShapeList shapeList)
     {
         this.sdkSlidePart = sdkSlidePart;
+        this.shapeList = shapeList;
     }
-
-    public int Count => this.ShapeList().Count;
-
-    public IShape this[int index] => this.ShapeList()[index];
 
     public void Add(IShape addingShape)
     {
@@ -44,7 +38,7 @@ internal sealed class SlideShapes : ISlideShapes
 
         if (addingShape is CopyableShape copyable)
         {
-            copyable.CopyTo(id, pShapeTree, allShapeNames, this.sdkSlidePart);
+            copyable.CopyTo(id, pShapeTree, allShapeNames);
         }
         else
         {
@@ -52,11 +46,8 @@ internal sealed class SlideShapes : ISlideShapes
         }
     }
 
-    public void AddAudio(int x, int y, Stream audio)
-    {
-        this.AddAudio(x, y, audio, AudioType.MP3);
-    }
-    
+    public void AddAudio(int x, int y, Stream audio) => this.AddAudio(x, y, audio, AudioType.MP3);
+
     public void AddAudio(int x, int y, Stream audio, AudioType type)
     {
         string? contentType;
@@ -74,7 +65,7 @@ internal sealed class SlideShapes : ISlideShapes
             default:
                 throw new SCException("Unsupported audio type.");
         }
-        
+
         var xEmu = UnitConverter.HorizontalPixelToEmu(x);
         var yEmu = UnitConverter.VerticalPixelToEmu(y);
         var sdkPresentationDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
@@ -117,7 +108,7 @@ internal sealed class SlideShapes : ISlideShapes
         applicationNonVisualDrawingProps.Append(audioFromFile);
         applicationNonVisualDrawingProps.Append(appNonVisualDrawingPropsExtensionList);
     }
-    
+
     public void AddPicture(Stream imageStream)
     {
         imageStream.Position = 0;
@@ -150,11 +141,11 @@ internal sealed class SlideShapes : ISlideShapes
 
     public void AddVideo(int x, int y, Stream stream)
     {
-        var sdkPresentationDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
+        var sdkPresDocument = (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
         var xEmu = UnitConverter.HorizontalPixelToEmu(x);
         var yEmu = UnitConverter.VerticalPixelToEmu(y);
 
-        var mediaDataPart = sdkPresentationDocument.CreateMediaDataPart("video/mp4", ".mp4");
+        var mediaDataPart = sdkPresDocument.CreateMediaDataPart("video/mp4", ".mp4");
 
         stream.Position = 0;
         mediaDataPart.FeedData(stream);
@@ -169,7 +160,7 @@ internal sealed class SlideShapes : ISlideShapes
 
         P.NonVisualPictureProperties nonVisualPictureProperties1 = new();
 
-        var shapeId = (uint)this.ShapeList().Max(sp => sp.Id) + 1;
+        var shapeId = (uint)this.shapeList.Max(sp => sp.Id) + 1;
         P.NonVisualDrawingProperties nonVisualDrawingProperties2 = new() { Id = shapeId, Name = $"Video{shapeId}" };
         var hyperlinkOnClick1 = new A.HyperlinkOnClick()
             { Id = string.Empty, Action = "ppaction://media" };
@@ -257,7 +248,7 @@ internal sealed class SlideShapes : ISlideShapes
         var xml = new Assets(Assembly.GetExecutingAssembly()).StringOf("new-rectangle.xml");
         var sdkPShape = new P.Shape(xml);
 
-        var position = new Position(sdkPShape);
+        var position = new Position(this.sdkSlidePart, sdkPShape);
         position.UpdateX(x);
         position.UpdateY(y);
 
@@ -275,7 +266,7 @@ internal sealed class SlideShapes : ISlideShapes
         var xml = new Assets(Assembly.GetExecutingAssembly()).StringOf("new-rectangle-rounded-corners.xml");
         var sdkPShape = new P.Shape(xml);
 
-        var position = new Position(sdkPShape);
+        var position = new Position(this.sdkSlidePart, sdkPShape);
         position.UpdateX(x);
         position.UpdateY(y);
 
@@ -369,14 +360,13 @@ internal sealed class SlideShapes : ISlideShapes
     public void AddTable(int xPx, int yPx, int columns, int rows)
     {
         var shapeName = this.GenerateNextTableName();
-        var shapeId = this.GenerateNextShapeId();
         var xEmu = UnitConverter.HorizontalPixelToEmu(xPx);
         var yEmu = UnitConverter.VerticalPixelToEmu(yPx);
         var tableHeightEmu = Constants.DefaultRowHeightEmu * rows;
 
         var graphicFrame = new P.GraphicFrame();
         var nonVisualGraphicFrameProperties = new P.NonVisualGraphicFrameProperties();
-        var nonVisualDrawingProperties = new P.NonVisualDrawingProperties { Id = (uint)shapeId, Name = shapeName };
+        var nonVisualDrawingProperties = new P.NonVisualDrawingProperties { Id = (uint)this.NextShapeId(), Name = shapeName };
         var nonVisualGraphicFrameDrawingProperties = new P.NonVisualGraphicFrameDrawingProperties();
         var applicationNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
         nonVisualGraphicFrameProperties.Append(nonVisualDrawingProperties);
@@ -423,8 +413,7 @@ internal sealed class SlideShapes : ISlideShapes
 
     public void Remove(IShape shape)
     {
-        var shapes = this.ShapeList();
-        if (shapes.Any(x => x != shape))
+        if (this.shapeList.Any(x => x != shape))
         {
             throw new SCException("Shape is not found.");
         }
@@ -436,41 +425,19 @@ internal sealed class SlideShapes : ISlideShapes
 
         throw new SCException("Shape is not cannot be removed.");
     }
+    public int Count => this.shapeList.Count;
+    public IShape this[int index] => this.shapeList[index];
+    public T GetById<T>(int id) where T : IShape => this.shapeList.GetById<T>(id);
+    public T GetByName<T>(string name) where T : IShape => this.shapeList.GetByName<T>(name);
+    public IShape GetByName(string name) => this.shapeList.GetByName(name);
+    public IEnumerator<IShape> GetEnumerator() => this.shapeList.GetEnumerator();
 
-    public T? GetById<T>(int shapeId)
-        where T : IShape
-    {
-        var shape = this.ShapeList().FirstOrDefault(shape => shape.Id == shapeId);
-        return (T?)shape;
-    }
-
-    public T? GetByName<T>(string shapeName)
-        where T : IShape
-    {
-        var shape = this.GetByName(shapeName);
-
-        return (T?)shape;
-    }
-
-    public IShape GetByName(string shapeName)
-    {
-        return this.ShapeList().First(shape => shape.Name == shapeName);
-    }
-
-    public IEnumerator<IShape> GetEnumerator()
-    {
-        return this.ShapeList().GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return this.GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     private (int, string) GenerateIdAndName()
     {
         var maxId = 0;
-        var shapes = this.ShapeList();
+        var shapes = this.shapeList;
         if (shapes.Any())
         {
             maxId = shapes.Max(s => s.Id);
@@ -490,15 +457,10 @@ internal sealed class SlideShapes : ISlideShapes
         return (maxId + 1, $"AutoShape {maxOrder + 1}");
     }
 
-    private int GenerateNextShapeId()
-    {
-        return this.ShapeList().Select(shape => shape.Id).Prepend(0).Max() + 1;
-    }
-
     private string GenerateNextTableName()
     {
         var maxOrder = 0;
-        foreach (var shape in this.ShapeList())
+        foreach (var shape in this.shapeList)
         {
             var matchOrder = Regex.Match(shape.Name, "(?!Table )\\d+", RegexOptions.None, TimeSpan.FromSeconds(100));
             if (!matchOrder.Success)
@@ -516,215 +478,6 @@ internal sealed class SlideShapes : ISlideShapes
         return $"Table {maxOrder + 1}";
     }
 
-    private List<IShape> ShapeList()
-    {
-        var pShapeTree = this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!;
-        var shapeList = new List<IShape>(pShapeTree.Count());
-        foreach (var pShapeTreeElement in pShapeTree.OfType<TypedOpenXmlCompositeElement>())
-        {
-            if (pShapeTreeElement is P.GroupShape pGroupShape)
-            {
-                var groupShape = new SlideGroupShape(this.sdkSlidePart, pGroupShape);
-                shapeList.Add(groupShape);
-            }
-            else if (pShapeTreeElement is P.ConnectionShape pConnectionShape)
-            {
-                var line = new SlideLine(this.sdkSlidePart, pConnectionShape);
-                shapeList.Add(line);
-            }
-            else if (pShapeTreeElement is P.Shape pShape)
-            {
-                if (pShape.TextBody is not null)
-                {
-                    shapeList.Add(
-                        new DuplicateableShape(
-                            this.sdkSlidePart,
-                            pShape,
-                            new AutoShape(
-                                this.sdkSlidePart,
-                                pShape,
-                                new TextFrame(
-                                    this.sdkSlidePart, pShape.TextBody
-                                )
-                            )
-                        )
-                    );
-                }
-                else
-                {
-                    shapeList.Add(
-                        new DuplicateableShape(
-                            this.sdkSlidePart,
-                            pShape,
-                            new AutoShape(
-                                this.sdkSlidePart,
-                                pShape
-                            )
-                        )
-                    );
-                }
-            }
-            else if (pShapeTreeElement is P.GraphicFrame pGraphicFrame)
-            {
-                var aGraphicData = pShapeTreeElement.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>();
-                if (aGraphicData!.Uri!.Value!.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
-                        StringComparison.Ordinal))
-                {
-                    var oleObject = new OLEObject(this.sdkSlidePart, pGraphicFrame);
-                    shapeList.Add(oleObject);
-                    continue;
-                }
-
-                var pPicture = pShapeTreeElement.Descendants<P.Picture>().FirstOrDefault();
-                if (pPicture != null)
-                {
-                    var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
-                    var blipEmbed = aBlip?.Embed;
-                    if (blipEmbed is null)
-                    {
-                        continue;
-                    }
-
-                    var picture = new SlidePicture(this.sdkSlidePart, pPicture, aBlip!);
-                    shapeList.Add(picture);
-                    continue;
-                }
-
-                if (this.IsChartPGraphicFrame(pShapeTreeElement))
-                {
-                    aGraphicData = pShapeTreeElement.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
-                    var cChartRef = aGraphicData.GetFirstChild<C.ChartReference>() !;
-                    var sdkChartPart = (ChartPart)this.sdkSlidePart.GetPartById(cChartRef.Id!);
-                    var cPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea;
-                    var cCharts = cPlotArea!.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-                    pShapeTreeElement.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !
-                        .GetFirstChild<C.ChartReference>();
-                    pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
-                    if (cCharts.Count() > 1)
-                    {
-                        // Combination chart
-                        var combinationChart = new SlideChart(
-                            this.sdkSlidePart,
-                            sdkChartPart,
-                            pGraphicFrame,
-                            new Categories(sdkChartPart, cCharts)
-                        );
-                        shapeList.Add(combinationChart);
-                        continue;
-                    }
-
-                    var chartType = cCharts.Single().LocalName;
-
-                    if (chartType is "lineChart" or "barChart" or "pieChart")
-                    {
-                        var lineChart = new SlideChart(
-                            this.sdkSlidePart,
-                            sdkChartPart,
-                            pGraphicFrame,
-                            new Categories(sdkChartPart, cCharts)
-                        );
-                        shapeList.Add(lineChart);
-                        continue;
-                    }
-
-                    if (chartType is "scatterChart" or "bubbleChart")
-                    {
-                        var scatterChart = new SlideChart(
-                            this.sdkSlidePart,
-                            sdkChartPart,
-                            pGraphicFrame,
-                            new NullCategories()
-                        );
-                        shapeList.Add(scatterChart);
-                        continue;
-                    }
-
-                    var chart = new SlideChart(
-                        this.sdkSlidePart,
-                        sdkChartPart,
-                        pGraphicFrame,
-                        new Categories(sdkChartPart, cCharts)
-                    );
-                    shapeList.Add(chart);
-                }
-                else if (this.IsTablePGraphicFrame(pShapeTreeElement))
-                {
-                    var table = new Table(this.sdkSlidePart, pShapeTreeElement);
-                    shapeList.Add(table);
-                }
-            }
-            else if (pShapeTreeElement is P.Picture pPicture)
-            {
-                var element = pPicture.NonVisualPictureProperties!.ApplicationNonVisualDrawingProperties!.ChildElements
-                    .FirstOrDefault();
-
-                switch (element)
-                {
-                    case A.AudioFromFile:
-                    {
-                        var aAudioFile = pPicture.NonVisualPictureProperties.ApplicationNonVisualDrawingProperties
-                            .GetFirstChild<A.AudioFromFile>();
-                        if (aAudioFile is not null)
-                        {
-                            var mediaShape = new MediaShape(this.sdkSlidePart, pPicture);
-                            shapeList.Add(mediaShape);
-                        }
-
-                        continue;
-                    }
-                    case A.VideoFromFile:
-                    {
-                        var mediaShape = new MediaShape(this.sdkSlidePart, pPicture);
-                        shapeList.Add(mediaShape);
-                        continue;
-                    }
-                }
-
-                var aBlip = pPicture.GetFirstChild<P.BlipFill>()?.Blip;
-                var blipEmbed = aBlip?.Embed;
-                if (blipEmbed is null)
-                {
-                    continue;
-                }
-
-                var picture = new SlidePicture(this.sdkSlidePart, pPicture, aBlip!);
-                shapeList.Add(picture);
-            }
-        }
-
-        return shapeList;
-    }
-
-    private bool IsTablePGraphicFrame(TypedOpenXmlCompositeElement pShapeTreeChild)
-    {
-        if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
-        {
-            var graphicData = pGraphicFrame.Graphic!.GraphicData!;
-            if (graphicData.Uri!.Value!.Equals("http://schemas.openxmlformats.org/drawingml/2006/table",
-                    StringComparison.Ordinal))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private bool IsChartPGraphicFrame(TypedOpenXmlCompositeElement pShapeTreeChild)
-    {
-        if (pShapeTreeChild is P.GraphicFrame)
-        {
-            var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
-            if (aGraphicData.Uri!.Value!.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart",
-                    StringComparison.Ordinal))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private P.Picture CreatePPicture(Stream imageStream, string shapeName)
     {
         var imgPartRId = this.sdkSlidePart.NextRelationshipId();
@@ -733,12 +486,11 @@ internal sealed class SlideShapes : ISlideShapes
         imagePart.FeedData(imageStream);
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
-        var shapeId = (uint)this.GenerateNextShapeId();
+        var shapeId = (uint)this.NextShapeId();
         var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
-            {
-                Id = shapeId, Name = $"{shapeName} {shapeId}"
-            }
-            ;
+        {
+            Id = shapeId, Name = $"{shapeName} {shapeId}"
+        };
         var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
         var appNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
 
@@ -774,10 +526,9 @@ internal sealed class SlideShapes : ISlideShapes
 
     private int NextShapeId()
     {
-        var shapes = this.ShapeList();
-        if (shapes.Any())
+        if (this.shapeList.Any())
         {
-            return shapes.Select(shape => shape.Id).Prepend(0).Max() + 1;
+            return this.shapeList.Select(shape => shape.Id).Prepend(0).Max() + 1;
         }
 
         return 1;
