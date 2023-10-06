@@ -3,12 +3,12 @@ using DocumentFormat.OpenXml.Packaging;
 namespace ShapeCrawler.Wrappers;
 using A = DocumentFormat.OpenXml.Drawing;
 
-internal sealed class SdkSlideAText
+internal sealed class ATextWrap
 {
     private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Text aText;
 
-    internal SdkSlideAText(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
+    internal ATextWrap(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aText = aText;

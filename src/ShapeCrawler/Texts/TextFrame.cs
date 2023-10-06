@@ -3,7 +3,9 @@ using System.Linq;
 using System.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Positions;
 using ShapeCrawler.Services;
+using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shared;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -11,7 +13,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts;
 
-internal sealed record TextFrame : ITextFrame
+internal sealed class TextFrame : ITextFrame
 {
     private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly OpenXmlElement textBody;
@@ -37,7 +39,7 @@ internal sealed record TextFrame : ITextFrame
     public AutofitType AutofitType
     {
         get => this.GetAutofitType();
-        set => this.SetAutofitType(value);
+        set => this.UpdateAutofitType(value);
     }
 
     public double LeftMargin
@@ -82,7 +84,7 @@ internal sealed record TextFrame : ITextFrame
         slideCanvas.DrawText(this.Text, x, y, paint);
     }
 
-    private void SetAutofitType(AutofitType newType)
+    private void UpdateAutofitType(AutofitType newType)
     {
         var currentType = this.AutofitType;
         if (currentType == newType)
@@ -115,6 +117,7 @@ internal sealed record TextFrame : ITextFrame
                 shrink?.Remove();
                 resize = new A.ShapeAutoFit();
                 aBodyPr.Append(resize);
+                this.ResizeParentShape();
                 break;
             }
 
@@ -263,5 +266,87 @@ internal sealed record TextFrame : ITextFrame
         }
 
         return sb.ToString();
+    }
+
+    public void ResizeParentShape()
+    {
+        if (this.AutofitType != AutofitType.Resize)
+        {
+            return;
+        }
+
+        var baseParagraph = this.Paragraphs.First();
+        var popularPortion = baseParagraph.Portions.OfType<TextParagraphPortion>().GroupBy(p => p.Font.Size).OrderByDescending(x => x.Count())
+            .First().First();
+        var font = popularPortion.Font;
+
+        var paint = new SKPaint();
+        var fontSize = font.Size;
+        paint.TextSize = fontSize;
+        paint.Typeface = SKTypeface.FromFamilyName(font.LatinName);
+        paint.IsAntialias = true;
+
+        var lMarginPixel = UnitConverter.CentimeterToPixel(this.LeftMargin);
+        var rMarginPixel = UnitConverter.CentimeterToPixel(this.RightMargin);
+        var tMarginPixel = UnitConverter.CentimeterToPixel(this.TopMargin);
+        var bMarginPixel = UnitConverter.CentimeterToPixel(this.BottomMargin);
+
+        var textRect = default(SKRect);
+        paint.MeasureText(text.Value, ref textRect);
+        var textWidth = textRect.Width;
+        var textHeight = paint.TextSize;
+        var shapeSize = new ShapeSize(this.textBody.Ancestors<P.Shape>().First());
+        var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
+        var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
+
+        this.UpdateShapeHeight(textWidth, currentBlockWidth, textHeight, tMarginPixel, bMarginPixel, currentBlockHeight, this.textBody.Parent!);
+        this.UpdateShapeWidthIfNeeded(paint, lMarginPixel, rMarginPixel, this, this.textBody.Parent!);
+    }
+    
+    private void UpdateShapeWidthIfNeeded(SKPaint paint, int lMarginPixel, int rMarginPixel, TextFrame textFrame, OpenXmlElement parent)
+    {
+        if (!textFrame.TextWrapped)
+        {
+            var longerText = textFrame.Paragraphs
+                .Select(x => new { x.Text, x.Text.Length })
+                .OrderByDescending(x => x.Length)
+                .First().Text;
+            var paraTextRect = default(SKRect);
+            var widthInPixels = paint.MeasureText(longerText, ref paraTextRect);
+            // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi.
+            // 96/72=1.4
+            const double Scale = 1.4;
+            var newWidth = (int)(widthInPixels * Scale) + lMarginPixel + rMarginPixel;
+            new ShapeSize(parent).UpdateWidth(newWidth);
+        }
+    }
+    
+    private void UpdateShapeHeight(
+        float textWidth,
+        int currentBlockWidth,
+        float textHeight,
+        int tMarginPixel,
+        int bMarginPixel,
+        int currentBlockHeight,
+        OpenXmlElement parent)
+    {
+        var requiredRowsCount = textWidth / currentBlockWidth;
+        var integerPart = (int)requiredRowsCount;
+        var fractionalPart = requiredRowsCount - integerPart;
+        if (fractionalPart > 0)
+        {
+            integerPart++;
+        }
+
+        var requiredHeight = (integerPart * textHeight) + tMarginPixel + bMarginPixel;
+        var newHeight = (int)requiredHeight + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
+        var position = new Position(this.sdkTypedOpenXmlPart, parent);
+        var size = new ShapeSize(parent);
+        size.UpdateHeight(newHeight);
+
+        // We should raise the shape up by the amount which is half of the increased offset.
+        // PowerPoint does the same thing.
+        var yOffset = (requiredHeight - currentBlockHeight) / 2;
+        position.UpdateY((int)(position.Y() - yOffset));
     }
 }

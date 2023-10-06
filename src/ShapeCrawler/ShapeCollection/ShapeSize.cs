@@ -4,7 +4,7 @@ using DocumentFormat.OpenXml;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.ShapeCollection;
 
 internal sealed class ShapeSize
 {

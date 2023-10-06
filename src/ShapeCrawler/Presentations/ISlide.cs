@@ -47,6 +47,8 @@ public interface ISlide
     /// </summary>
     ISlideShapes Shapes { get; }
     
+    IShape ShapeWithName(string autoshape);
+    
     ITable TableWithName(string table);
 
 #if DEBUG

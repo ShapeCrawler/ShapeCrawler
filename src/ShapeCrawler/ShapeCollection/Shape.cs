@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Positions;
+using ShapeCrawler.ShapeCollection;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -50,7 +51,7 @@ internal abstract class Shape : IShape
     public int Height
     {
         get => this.size.Height();
-        set => this.size.UpdateWidth(value);
+        set => this.size.UpdateHeight(value);
     }
 
     public int Id => this.shapeId.Value();

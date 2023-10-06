@@ -9,6 +9,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideShape;
@@ -71,6 +72,8 @@ internal sealed class Slide : ISlide
             this.sdkSlidePart.Slide.Show = false;
         }
     }
+
+    public IShape ShapeWithName(string shape) => this.Shapes.GetByName<IShape>(shape);
 
     public ITable TableWithName(string table) => this.Shapes.GetByName<ITable>(table);
 

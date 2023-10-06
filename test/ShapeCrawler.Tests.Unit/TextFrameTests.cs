@@ -135,9 +135,8 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         public void AutofitType_Setter_resizes_width()
         {
             // Arrange
-            var pptxStream = StreamOf("autoshape-case003.pptx");
-            var pres = new Presentation(pptxStream);
-            var shape = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 6");
+            var pres = new Presentation(StreamOf("autoshape-case003.pptx"));
+            var shape = pres.Slides[0].ShapeWithName("AutoShape 6");
             var textFrame = shape.TextFrame!;
 
             // Act

@@ -186,9 +186,8 @@ public class TableTests : SCTest
     public void Row_Height_Setter_sets_height_of_table_row_in_points()
     {
         // Arrange
-        var pptx = StreamOf("table-case001.pptx");
-        var pres = new Presentation(pptx);
-        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        var pres = new Presentation(StreamOf("table-case001.pptx"));
+        var table = pres.Slides[0].TableWithName("Table 1");
         var row = table.Rows[0];
 
         // Act
