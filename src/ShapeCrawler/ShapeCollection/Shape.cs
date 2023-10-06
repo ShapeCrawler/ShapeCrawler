@@ -35,7 +35,7 @@ internal abstract class Shape : IShape
         set => this.position.UpdateX(value);
     }
 
-    public int Y
+    public virtual int Y
     {
         get => this.position.Y();
         set => this.position.UpdateY(value);
@@ -113,9 +113,8 @@ internal abstract class Shape : IShape
         throw new SCException(
             $"Shape does not have fill. Use {nameof(IShape.HasFill)} property to check if the shape has fill.");
 
-    public bool IsTextHolder { get; protected init; }
-
-    public ITextFrame TextFrame { get; protected init; } = new NullTextFrame();
+    public virtual bool IsTextHolder { get; protected init; }
+    public virtual ITextFrame TextFrame { get; protected init; } = new NullTextFrame();
 
     public double Rotation
     {

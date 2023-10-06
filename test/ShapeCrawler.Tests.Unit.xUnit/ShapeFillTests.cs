@@ -32,7 +32,7 @@ public class ShapeFillTests : SCTest
         fill.SetPicture(imageStream);
 
         // Assert
-        var pictureBytes = fill.Picture!.BinaryData();
+        var pictureBytes = fill.Picture!.AsByteArray();
         var imageBytes = imageStream.ToArray();
         pictureBytes.SequenceEqual(imageBytes).Should().BeTrue();
     }

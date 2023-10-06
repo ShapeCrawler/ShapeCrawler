@@ -2,10 +2,12 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
+using Shape = ShapeCrawler.Shapes.Shape;
 
 // ReSharper disable PossibleMultipleEnumeration
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.ShapeCollection;
 
 internal sealed class GroupShape : Shape, IGroupShape
 {
@@ -15,12 +17,12 @@ internal sealed class GroupShape : Shape, IGroupShape
         : base(sdkTypedOpenXmlPart, pGroupShape)
     {
         this.pGroupShape = pGroupShape;
-        this.Shapes = new GroupedShapeList(sdkTypedOpenXmlPart, pGroupShape.Elements<OpenXmlCompositeElement>());
+        this.Shapes = new GroupedShapes(sdkTypedOpenXmlPart, pGroupShape.Elements<OpenXmlCompositeElement>());
         this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pGroupShape.Descendants<P.ShapeProperties>().First());
         this.Fill = new SlideShapeFill(sdkTypedOpenXmlPart, pGroupShape.Descendants<P.ShapeProperties>().First(), false);
     }
 
-    public IShapeList Shapes { get; }
+    public IShapes Shapes { get; }
     public override Geometry GeometryType => Geometry.Rectangle;
     public override ShapeType ShapeType => ShapeType.Group;
     public override bool HasOutline => true;

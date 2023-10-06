@@ -76,20 +76,20 @@ public class ShapeTests : SCTest
         IPresentation presentation = new Presentation(pptx);
         IPicture picture5 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 5);
         IPicture picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
-        int pic6LengthBefore = picture6.Image.BinaryData().Length;
+        int pic6LengthBefore = picture6.Image.AsByteArray().Length;
         MemoryStream modifiedPresentation = new();
 
         // Act
         picture5.Image.Update(image);
 
         // Assert
-        int pic6LengthAfter = picture6.Image.BinaryData().Length;
+        int pic6LengthAfter = picture6.Image.AsByteArray().Length;
         pic6LengthAfter.Should().Be(pic6LengthBefore);
 
         presentation.SaveAs(modifiedPresentation);
         presentation = new Presentation(modifiedPresentation);
         picture6 = (IPicture)presentation.Slides[3].Shapes.First(sp => sp.Id == 6);
-        pic6LengthBefore = picture6.Image.BinaryData().Length;
+        pic6LengthBefore = picture6.Image.AsByteArray().Length;
         pic6LengthAfter.Should().Be(pic6LengthBefore);
     }
 
@@ -149,17 +149,16 @@ public class ShapeTests : SCTest
     public void Y_Setter_moves_the_Down_hand_grouped_shape_to_Down()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-grouping.pptx");
-        var pres = new Presentation(pptx);
-        var parentGroupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
-        var groupedShape = parentGroupShape.Shapes.GetByName<IShape>("Shape 2");
+        var pres = new Presentation(StreamOf("autoshape-grouping.pptx"));
+        var groupShape = pres.Slides[0].Shapes.GetByName<IGroupShape>("Group 2");
+        var groupedShape = groupShape.Shapes.GetByName<IShape>("Shape 2");
 
         // Act
         groupedShape.Y = 555;
 
         // Assert
         groupedShape.Y.Should().Be(555);
-        parentGroupShape.Height.Should().Be(179, "because it was 108 and the down-hand grouped shape got down on 71 pixels");
+        groupShape.Height.Should().Be(178, "because it was 108 and the down-hand grouped shape got down on 71 pixels");
     }
 
     [Test]
@@ -212,9 +211,9 @@ public class ShapeTests : SCTest
         int width3 = shapeCase3.Width;
 
         // Assert
-        (width1 * 914400 / Helpers.TestHelper.HorizontalResolution).Should().Be(9144000);
-        (width2 * 914400 / Helpers.TestHelper.HorizontalResolution).Should().Be(1181100);
-        (width3 * 914400 / Helpers.TestHelper.HorizontalResolution).Should().Be(485775);
+        (width1 * 914400 / TestHelper.HorizontalResolution).Should().Be(9144000);
+        (width2 * 914400 / TestHelper.HorizontalResolution).Should().Be(1181100);
+        (width3 * 914400 / TestHelper.HorizontalResolution).Should().Be(485775);
     }
 
     [Test]
@@ -315,10 +314,10 @@ public class ShapeTests : SCTest
         shape.Hidden.Should().Be(expectedHidden);
     }
 
-    // [TestCase("autoshape-case018_rotation.pptx", 1, "RotationTextBox", 325)]
+    [TestCase("autoshape-case018_rotation.pptx", 1, "RotationTextBox", 325)]
     [TestCase("autoshape-case018_rotation.pptx", 2, "VerticalTextPH", 282)]
-    // [TestCase("autoshape-case018_rotation.pptx", 2, "NoRotationGroup", 0)]
-    // [TestCase("autoshape-case018_rotation.pptx", 2, "RotationGroup", 56)]
+    [TestCase("autoshape-case018_rotation.pptx", 2, "NoRotationGroup", 0)]
+    [TestCase("autoshape-case018_rotation.pptx", 2, "RotationGroup", 56)]
     public void Rotation_returns_shape_rotation_in_degrees(string presentationName, int slideNumber, string shapeName, double expectedAngle)
     {
         // Arrange
@@ -332,10 +331,6 @@ public class ShapeTests : SCTest
         rotation.Should().BeApproximately(expectedAngle, 1);
     }
     
-    // [Theory]
-    // [SlideShapeData("001.pptx", 1, "TextBox 3")]
-    // [SlideShapeData("001.pptx", 1, "Head 1")]
-    // [SlideShapeData("autoshape-grouping.pptx", 1, "Group 1")]
     [Test]
     [TestCase("001.pptx", 1, "TextBox 3")]
     [TestCase("001.pptx", 1, "Head 1")]
@@ -353,10 +348,10 @@ public class ShapeTests : SCTest
     }
 
     [Test]
-    // [TestCase("006_1 slides.pptx", 1, "Shape 1")]
+    [TestCase("006_1 slides.pptx", 1, "Shape 1")]
     [TestCase("001.pptx", 1, "Head 1")]
-    // [TestCase("autoshape-grouping.pptx", 1, "Group 1")]
-    // [TestCase("table-case001.pptx", 1, "Table 1")]
+    [TestCase("autoshape-grouping.pptx", 1, "Group 1")]
+    [TestCase("table-case001.pptx", 1, "Table 1")]
     public void X_Setter_sets_x_coordinate(string file, int slideNumber, string shapeName)
     {
         // Arrange

@@ -3,36 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.ShapesCollection;
-using ShapeCrawler.SlideShape;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.Texts;
+using GroupShape = ShapeCrawler.ShapeCollection.GroupShape;
 using P = DocumentFormat.OpenXml.Presentation;
 using Picture = ShapeCrawler.Drawing.Picture;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.ShapeCollection;
 
-internal sealed class GroupedShapeList : IShapeList
+internal sealed class GroupedShapes : IShapes
 {
     private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly IEnumerable<OpenXmlCompositeElement> pGroupElements;
 
-    internal GroupedShapeList(TypedOpenXmlPart sdkTypedOpenXmlPart,
+    internal GroupedShapes(TypedOpenXmlPart sdkTypedOpenXmlPart,
         IEnumerable<OpenXmlCompositeElement> pGroupElements)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.pGroupElements = pGroupElements;
     }
 
-    public int Count => this.GroupedShapes().Count;
-    public T GetById<T>(int id) where T : IShape => (T)this.GroupedShapes().First(shape => shape.Id == id);
-    T IShapeList.GetByName<T>(string name) => (T)this.GroupedShapes().First(shape => shape.Name == name);
-    public IShape GetByName(string name) => this.GroupedShapes().First(shape => shape.Name == name);
-    public T GetByName<T>(string name) => (T)this.GroupedShapes().First(shape => shape.Name == name);
-    public IEnumerator<IShape> GetEnumerator() => this.GroupedShapes().GetEnumerator();
+    public int Count => this.GroupedShapesCore().Count;
+    public T GetById<T>(int id) where T : IShape => (T)this.GroupedShapesCore().First(shape => shape.Id == id);
+    T IShapes.GetByName<T>(string name) => (T)this.GroupedShapesCore().First(shape => shape.Name == name);
+    public IShape GetByName(string name) => this.GroupedShapesCore().First(shape => shape.Name == name);
+    public T GetByName<T>(string name) => (T)this.GroupedShapesCore().First(shape => shape.Name == name);
+    public IEnumerator<IShape> GetEnumerator() => this.GroupedShapesCore().GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-    public IShape this[int index] => this.GroupedShapes()[index];
+    public IShape this[int index] => this.GroupedShapesCore()[index];
 
-    private List<IShape> GroupedShapes()
+    private List<IShape> GroupedShapesCore()
     {
         var groupedShapes = new List<IShape>();
         foreach (var pGroupShapeElement in this.pGroupElements)

@@ -23,7 +23,7 @@ public interface ISlideLayout
     /// <summary>
     ///     Gets layout shape collection.
     /// </summary>
-    IShapeList Shapes { get; }
+    IShapes Shapes { get; }
 
     ISlideMaster SlideMaster { get; }
 }
@@ -81,11 +81,11 @@ internal sealed class SlideLayout : ISlideLayout
     {
         this.sdkLayoutPart = sdkLayoutPart;
         this.SlideMaster = slideMaster;
-        this.Shapes = new ShapeList(this.sdkLayoutPart);
+        this.Shapes = new ShapeCollection.Shapes(this.sdkLayoutPart);
     }
 
     public string Name => this.sdkLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
-    public IShapeList Shapes { get; }
+    public IShapes Shapes { get; }
     public ISlideMaster SlideMaster { get; }
     public SlideLayoutType Type => TypeMapping[this.sdkLayoutPart.SlideLayout.Type!];
     internal SlideLayoutPart SDKSlideLayoutPart() => this.sdkLayoutPart;

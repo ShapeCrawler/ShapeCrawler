@@ -7,8 +7,8 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.ShapesCollection;
 using ShapeCrawler.Shared;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -30,7 +30,7 @@ public interface ITable : IShape
     /// <summary>
     ///     Gets table rows.
     /// </summary>
-    IRowCollection Rows { get; }
+    ITableRows Rows { get; }
 
     /// <summary>
     ///     Gets cell by row and column indexes.
@@ -53,20 +53,18 @@ public interface ITable : IShape
 internal sealed class Table : CopyableShape, ITable 
 {
     private readonly P.GraphicFrame pGraphicFrame;
-    private readonly ResetableLazy<SlideTableRows> rowCollection;
 
     internal Table(TypedOpenXmlPart sdkTypedOpenXmlPart, OpenXmlCompositeElement pShapeTreeElement)
         : base(sdkTypedOpenXmlPart, pShapeTreeElement)
     {
-        var graphicFrame = (P.GraphicFrame)pShapeTreeElement;
-        this.rowCollection =
-            new ResetableLazy<SlideTableRows>(() => new SlideTableRows(sdkTypedOpenXmlPart, graphicFrame));
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;
+        this.Rows = new TableRows(sdkTypedOpenXmlPart, this.pGraphicFrame);
     }
 
     public override ShapeType ShapeType => ShapeType.Table;
     public IReadOnlyList<IColumn> Columns => this.GetColumnList(); // TODO: make lazy
-    public IRowCollection Rows => this.rowCollection.Value;
+    public ITableRows Rows { get; }
+
     public override Geometry GeometryType => Geometry.Rectangle;
 
     private A.Table ATable => this.pGraphicFrame.ATable();
@@ -116,11 +114,9 @@ internal sealed class Table : CopyableShape, ITable
         {
             this.MergeVertically(maxRowIndex, minRowIndex, aTableRows, minColIndex, maxColIndex);
         }
-
+        
         this.RemoveColumnIfNeeded(aTableRows);
         this.RemoveRowIfNeeded();
-
-        this.rowCollection.Reset();
     }
 
     internal void Draw(SKCanvas canvas)
@@ -163,7 +159,7 @@ internal sealed class Table : CopyableShape, ITable
 
                 foreach (var row in this.Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
                 {
-                    ((SlideTableRow)row).ATableRow.Remove();
+                    ((TableRow)row).ATableRow.Remove();
                     this.Rows[rowIdx].Height += row.Height;
                 }
 
@@ -224,7 +220,11 @@ internal sealed class Table : CopyableShape, ITable
         }
     }
 
-    private void MergeHorizontal(int maxColIndex, int minColIndex, int minRowIndex, int maxRowIndex,
+    private void MergeHorizontal(
+        int maxColIndex, 
+        int minColIndex, 
+        int minRowIndex, 
+        int maxRowIndex,
         List<A.TableRow> aTableRows)
     {
         int horizontalMergingCount = maxColIndex - minColIndex + 1;
@@ -258,10 +258,10 @@ internal sealed class Table : CopyableShape, ITable
         // Delete a:gridCol and a:tc elements if all columns are merged
         for (var colIdx = 0; colIdx < this.Columns.Count;)
         {
-            var topColumnCell = ((SlideTableRow)this.Rows[0]).ATableRow.Elements<A.TableCell>().ToList()[colIdx];
+            var topColumnCell = ((TableRow)this.Rows[0]).ATableRow.Elements<A.TableCell>().ToList()[colIdx];
             var topColumnCellSpan = topColumnCell.GridSpan?.Value;
             var nextBottomColumnCells = this.Rows
-                .Select(row => ((SlideTableRow)row).ATableRow.Elements<A.TableCell>().ToList()[colIdx]).ToList();
+                .Select(row => ((TableRow)row).ATableRow.Elements<A.TableCell>().ToList()[colIdx]).ToList();
             var sameGridSpan = nextBottomColumnCells.All(c => c.GridSpan?.Value == topColumnCellSpan);
             if (topColumnCellSpan > 1 && sameGridSpan)
             {

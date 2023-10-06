@@ -3,8 +3,9 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Wrappers;
 using P = DocumentFormat.OpenXml.Presentation;
+using Shape = ShapeCrawler.Shapes.Shape;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.ShapeCollection;
 
 internal abstract class CopyableShape : Shape
 {

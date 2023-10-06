@@ -81,46 +81,51 @@ internal readonly ref struct ReferencedPShape
         throw new Exception("An error occurred while getting referenced master shape.");
     }
 
-    private static P.Shape? PShapeOrNullOf(IEnumerable<P.Shape> pShapes, P.PlaceholderShape pPlaceholderShape)
+    private static P.Shape? PShapeOrNullOf(IEnumerable<P.Shape> pShapes, P.PlaceholderShape pPlaceholderShapeFor)
     {
         foreach (var pShape in pShapes)
         {
-            var layoutPh = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+            var pPlaceholderMatching = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
                 .GetFirstChild<P.PlaceholderShape>();
-            if (layoutPh == null)
+            if (pPlaceholderMatching == null)
             {
                 continue;
             }
 
-            if (pPlaceholderShape.Index is not null && layoutPh.Index is not null &&
-                pPlaceholderShape.Index == layoutPh.Index)
+            if (pPlaceholderShapeFor.Index is not null && pPlaceholderMatching.Index is not null &&
+                pPlaceholderShapeFor.Index == pPlaceholderMatching.Index)
             {
                 return pShape;
             }
 
-            if (pPlaceholderShape.Type == null || layoutPh.Type == null)
+            if (pPlaceholderShapeFor.Type == null || pPlaceholderMatching.Type == null)
             {
                 return pShape;
             }
 
-            if (pPlaceholderShape.Type == P.PlaceholderValues.Body &&
-                pPlaceholderShape.Index is not null && layoutPh.Index is not null)
+            if (pPlaceholderShapeFor.Type == P.PlaceholderValues.Body &&
+                pPlaceholderShapeFor.Index is not null && pPlaceholderMatching.Index is not null)
             {
-                if (pPlaceholderShape.Index == layoutPh.Index)
+                if (pPlaceholderShapeFor.Index == pPlaceholderMatching.Index)
                 {
                     return pShape;
                 }
             }
 
-            if (pPlaceholderShape.Type == P.PlaceholderValues.Title && layoutPh.Type == P.PlaceholderValues.Title)
+            if (pPlaceholderShapeFor.Type == P.PlaceholderValues.Title && pPlaceholderMatching.Type == P.PlaceholderValues.Title)
+            {
+                return pShape;
+            }
+            
+            if(pPlaceholderShapeFor.Type == P.PlaceholderValues.CenteredTitle && pPlaceholderMatching.Type == P.PlaceholderValues.CenteredTitle)
             {
                 return pShape;
             }
         }
 
-        var byType = pShapes.FirstOrDefault(layoutPShape =>
-            layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-                .GetFirstChild<P.PlaceholderShape>()?.Type == pPlaceholderShape.Type);
+        var byType = pShapes.FirstOrDefault(x =>
+            x.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+                .GetFirstChild<P.PlaceholderShape>()?.Type == pPlaceholderShapeFor.Type);
         if (byType != null)
         {
             return byType;

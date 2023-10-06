@@ -52,17 +52,16 @@ public class SlideTests : SCTest
     public void Background_SetImage_updates_background()
     {
         // Arrange
-        var pptx = StreamOf("009_table.pptx");
-        var pre = new Presentation(pptx);
+        var pre = new Presentation(StreamOf("009_table.pptx"));
         var backgroundImage = pre.Slides[0].Background;
         var image = StreamOf("test-image-2.png");
-        var bytesBefore =  backgroundImage.BinaryData();
+        var bytesBefore = backgroundImage.AsByteArray();
 
         // Act
         backgroundImage.Update(image);
 
         // Assert
-        var bytesAfter = backgroundImage.BinaryData();
+        var bytesAfter = backgroundImage.AsByteArray();
         bytesAfter.Length.Should().NotBe(bytesBefore.Length);
     }
 
@@ -74,27 +73,26 @@ public class SlideTests : SCTest
         pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
         var slide = pres.Slides[0];
         var bgImage = StreamOf("test-image-2.png");
-        
+
         // Act
         slide.Background.Update(bgImage);
-        
+
         // Assert
         slide.Background.Should().NotBeNull();
     }
 
     [Test]
-    public void Background_ImageIsNull_WhenTheSlideHasNotBackground()
+    public void Background_AsByteArray_throws_exception_slide_doesnt_have_background()
     {
         // Arrange
-        var pptx = StreamOf("009_table.pptx");
-        var pres = new Presentation(pptx);
+        var pres = new Presentation(StreamOf("009_table.pptx"));
         var slide = pres.Slides[1];
 
         // Act
-        var backgroundContent = slide.Background.BinaryData();
+        var act = () => slide.Background.AsByteArray();
 
         // Assert
-        backgroundContent.Should().BeEmpty();
+        act.Should().Throw<Exception>();
     }
 
     [Test]
@@ -183,11 +181,10 @@ public class SlideTests : SCTest
     }
 
     [Test]
-    public void GetAllTextboxes_contains_all_textboxes_withoutTable()
+    public void TextFrames_returns_list_of_all_text_frames_on_that_slide()
     {
         // Arrange
-        var pptx = StreamOf("011_dt.pptx");
-        var pres = new Presentation(pptx);
+        var pres = new Presentation(StreamOf("011_dt.pptx"));
         var slide = pres.Slides.First();
 
         // Act
@@ -206,11 +203,11 @@ public class SlideTests : SCTest
         var pres = new Presentation(pptxStream);
         var slide = pres.Slides[0];
         var mStream = new MemoryStream();
-        
+
         // Act
         slide.SaveAsPng(mStream);
     }
-    
+
     [Test]
     public void ToHTML_converts_slide_to_HTML()
     {

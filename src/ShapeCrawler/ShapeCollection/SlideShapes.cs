@@ -10,6 +10,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Services;
+using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shared;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -18,16 +19,16 @@ using Position = ShapeCrawler.Positions.Position;
 
 namespace ShapeCrawler.Shapes;
 
-internal sealed class SlideShapeList : ISlideShapeList
+internal sealed class SlideShapes : ISlideShapes
 {
     private const long DefaultTableWidthEmu = 8128000L;
     private readonly SlidePart sdkSlidePart;
-    private readonly IShapeList shapeList;
+    private readonly IShapes shapes;
 
-    internal SlideShapeList(SlidePart sdkSlidePart, IShapeList shapeList)
+    internal SlideShapes(SlidePart sdkSlidePart, IShapes shapes)
     {
         this.sdkSlidePart = sdkSlidePart;
-        this.shapeList = shapeList;
+        this.shapes = shapes;
     }
 
     public void Add(IShape addingShape)
@@ -160,7 +161,7 @@ internal sealed class SlideShapeList : ISlideShapeList
 
         P.NonVisualPictureProperties nonVisualPictureProperties1 = new();
 
-        var shapeId = (uint)this.shapeList.Max(sp => sp.Id) + 1;
+        var shapeId = (uint)this.shapes.Max(sp => sp.Id) + 1;
         P.NonVisualDrawingProperties nonVisualDrawingProperties2 = new() { Id = shapeId, Name = $"Video{shapeId}" };
         var hyperlinkOnClick1 = new A.HyperlinkOnClick()
             { Id = string.Empty, Action = "ppaction://media" };
@@ -413,7 +414,7 @@ internal sealed class SlideShapeList : ISlideShapeList
 
     public void Remove(IShape shape)
     {
-        if (this.shapeList.Any(x => x != shape))
+        if (this.shapes.Any(x => x != shape))
         {
             throw new SCException("Shape is not found.");
         }
@@ -425,19 +426,19 @@ internal sealed class SlideShapeList : ISlideShapeList
 
         throw new SCException("Shape is not cannot be removed.");
     }
-    public int Count => this.shapeList.Count;
-    public IShape this[int index] => this.shapeList[index];
-    public T GetById<T>(int id) where T : IShape => this.shapeList.GetById<T>(id);
-    public T GetByName<T>(string name) where T : IShape => this.shapeList.GetByName<T>(name);
-    public IShape GetByName(string name) => this.shapeList.GetByName(name);
-    public IEnumerator<IShape> GetEnumerator() => this.shapeList.GetEnumerator();
+    public int Count => this.shapes.Count;
+    public IShape this[int index] => this.shapes[index];
+    public T GetById<T>(int id) where T : IShape => this.shapes.GetById<T>(id);
+    public T GetByName<T>(string name) where T : IShape => this.shapes.GetByName<T>(name);
+    public IShape GetByName(string name) => this.shapes.GetByName(name);
+    public IEnumerator<IShape> GetEnumerator() => this.shapes.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     private (int, string) GenerateIdAndName()
     {
         var maxId = 0;
-        var shapes = this.shapeList;
+        var shapes = this.shapes;
         if (shapes.Any())
         {
             maxId = shapes.Max(s => s.Id);
@@ -460,7 +461,7 @@ internal sealed class SlideShapeList : ISlideShapeList
     private string GenerateNextTableName()
     {
         var maxOrder = 0;
-        foreach (var shape in this.shapeList)
+        foreach (var shape in this.shapes)
         {
             var matchOrder = Regex.Match(shape.Name, "(?!Table )\\d+", RegexOptions.None, TimeSpan.FromSeconds(100));
             if (!matchOrder.Success)
@@ -526,9 +527,9 @@ internal sealed class SlideShapeList : ISlideShapeList
 
     private int NextShapeId()
     {
-        if (this.shapeList.Any())
+        if (this.shapes.Any())
         {
-            return this.shapeList.Select(shape => shape.Id).Prepend(0).Max() + 1;
+            return this.shapes.Select(shape => shape.Id).Prepend(0).Max() + 1;
         }
 
         return 1;

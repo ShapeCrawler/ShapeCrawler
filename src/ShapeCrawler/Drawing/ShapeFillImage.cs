@@ -52,7 +52,7 @@ internal sealed class ShapeFillImage : IImage
         this.Update(sourceBytes);
     }
 
-    public byte[] BinaryData()
+    public byte[] AsByteArray()
     {
         var stream = this.sdkImagePart.GetStream();
         var bytes = new byte[stream.Length];

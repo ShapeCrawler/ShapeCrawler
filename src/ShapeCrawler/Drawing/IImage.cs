@@ -23,7 +23,7 @@ public interface IImage
     /// <summary>
     ///     Gets binary content.
     /// </summary>
-    byte[] BinaryData();
+    byte[] AsByteArray();
 
     /// <summary>
     ///     Sets image with stream.

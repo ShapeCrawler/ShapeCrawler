@@ -10,7 +10,6 @@ using DocumentFormat.OpenXml.Presentation;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.ShapesCollection;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideShape;
 using SkiaSharp;
@@ -37,12 +36,12 @@ internal sealed class Slide : ISlide
             new SlideBgImage(sdkSlidePart));
         this.sdkCustomXmlPart = new Lazy<CustomXmlPart?>(this.GetSldCustomXmlPart);
         this.SlideLayout = slideLayout;
-        this.Shapes = new SlideShapeList(this.sdkSlidePart, new ShapeList(sdkSlidePart));
+        this.Shapes = new SlideShapes(this.sdkSlidePart, new ShapeCollection.Shapes(sdkSlidePart));
     }
 
     public ISlideLayout SlideLayout { get; }
 
-    public ISlideShapeList Shapes { get; }
+    public ISlideShapes Shapes { get; }
 
     public int Number
     {
@@ -73,13 +72,15 @@ internal sealed class Slide : ISlide
         }
     }
 
+    public ITable TableWithName(string table) => this.Shapes.GetByName<ITable>(table);
+
     public async Task<string> ToHtml()
     {
         var browsingContext = BrowsingContext.New(Configuration.Default.WithDefaultLoader().WithCss());
         var document = await browsingContext.OpenNewAsync().ConfigureAwait(false);
         var body = document.Body!;
 
-        foreach (var shape in this.Shapes.OfType<SlideShape.AutoShape>())
+        foreach (var shape in this.Shapes.OfType<AutoShape>())
         {
             body.AppendChild(shape.ToHtmlElement());
         }
@@ -94,7 +95,7 @@ internal sealed class Slide : ISlide
         var canvas = surface.Canvas;
         canvas.Clear(SKColors.White); // TODO: #344 get real
 
-        foreach (var autoShape in this.Shapes.OfType<SlideShape.AutoShape>())
+        foreach (var autoShape in this.Shapes.OfType<AutoShape>())
         {
             autoShape.Draw(canvas);
         }
@@ -109,9 +110,9 @@ internal sealed class Slide : ISlide
     {
         var returnList = new List<ITextFrame>();
 
-        var frames = this.Shapes.OfType<SlideShape.AutoShape>()
-            .Where(t => t.TextFrame != null)
-            .Select(t => t.TextFrame!)
+        var frames = this.Shapes
+            .Where(x => x.IsTextHolder)
+            .Select(t => t.TextFrame)
             .ToList();
         returnList.AddRange(frames);
 

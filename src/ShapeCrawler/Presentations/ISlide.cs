@@ -31,7 +31,7 @@ public interface ISlide
     ISlideLayout SlideLayout { get; }
 
     /// <summary>
-    ///     List of all textboxes on that slide.
+    ///     List of all text frames on that slide.
     /// </summary>
     public IList<ITextFrame> TextFrames();
 
@@ -45,7 +45,9 @@ public interface ISlide
     /// <summary>
     ///     Gets shape collection.
     /// </summary>
-    ISlideShapeList Shapes { get; }
+    ISlideShapes Shapes { get; }
+    
+    ITable TableWithName(string table);
 
 #if DEBUG
     Task<string> ToHtml();

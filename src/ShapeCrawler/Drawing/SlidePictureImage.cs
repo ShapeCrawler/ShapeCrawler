@@ -58,7 +58,7 @@ internal sealed class SlidePictureImage : IImage
         return Path.GetFileName(this.sdkImagePart.Uri.ToString());
     }
 
-    public byte[] BinaryData()
+    public byte[] AsByteArray()
     {
         var stream = this.sdkImagePart.GetStream();
         var bytes = new byte[stream.Length];

@@ -5,34 +5,36 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
+using ShapeCrawler.Shapes;
 using ShapeCrawler.SlideShape;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
 using Chart = ShapeCrawler.Charts.Chart;
+using GroupShape = ShapeCrawler.ShapeCollection.GroupShape;
 using Picture = ShapeCrawler.Drawing.Picture;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.ShapeCollection;
 
-internal sealed class ShapeList : IShapeList
+internal sealed class Shapes : IShapes
 {
     private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
 
-    internal ShapeList(TypedOpenXmlPart sdkTypedOpenXmlPart)
+    internal Shapes(TypedOpenXmlPart sdkTypedOpenXmlPart)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
     }
 
-    public int Count => this.Shapes().Count;
-    public IShape this[int index] => this.Shapes()[index];
-    public T GetById<T>(int id) where T : IShape => (T)this.Shapes().First(shape => shape.Id == id);
+    public int Count => this.ShapesCore().Count;
+    public IShape this[int index] => this.ShapesCore()[index];
+    public T GetById<T>(int id) where T : IShape => (T)this.ShapesCore().First(shape => shape.Id == id);
     public T GetByName<T>(string name) where T : IShape => (T)this.GetByName(name);
-    public IShape GetByName(string name) => this.Shapes().First(shape => shape.Name == name);
-    public IEnumerator<IShape> GetEnumerator() => this.Shapes().GetEnumerator();
+    public IShape GetByName(string name) => this.ShapesCore().First(shape => shape.Name == name);
+    public IEnumerator<IShape> GetEnumerator() => this.ShapesCore().GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-    private List<IShape> Shapes()
+    private List<IShape> ShapesCore()
     {
         var pShapeTree = this.sdkTypedOpenXmlPart switch
         {
@@ -58,7 +60,7 @@ internal sealed class ShapeList : IShapeList
                 if (pShape.TextBody is not null)
                 {
                     shapeList.Add(
-                        new DuplicateableShape(
+                        new RootShape(
                             this.sdkTypedOpenXmlPart,
                             pShape,
                             new AutoShape(
@@ -74,7 +76,7 @@ internal sealed class ShapeList : IShapeList
                 else
                 {
                     shapeList.Add(
-                        new DuplicateableShape(
+                        new RootShape(
                             this.sdkTypedOpenXmlPart,
                             pShape,
                             new AutoShape(

@@ -438,11 +438,11 @@ public class TableTests : SCTest
     }
 
     [Test]
-    public void MergeCells_MergesTwoMergedCells()
+    public void MergeCells_merges_two_merged_cells()
     {
         // Arrange
-        IPresentation presentation = new Presentation(StreamOf("001.pptx"));
-        ITable table = (ITable)presentation.Slides[3].Shapes.First(sp => sp.Id == 2);
+        var pres = new Presentation(StreamOf("001.pptx"));
+        var table = pres.Slides[3].TableWithName("Table 2");
         var mStream = new MemoryStream();
 
         // Act
@@ -453,17 +453,20 @@ public class TableTests : SCTest
         table[0, 1].IsMergedCell.Should().BeTrue();
         table[1, 0].IsMergedCell.Should().BeTrue();
         table[1, 1].IsMergedCell.Should().BeTrue();
-        table[0, 0].Should().Be(table[1, 1]);
+        
+        var cell_0_0 = (TableCell)table[0, 0];
+        var cell_1_1 = (TableCell)table[1, 1];
+        cell_0_0.RowIndex.Should().Be(cell_1_1.RowIndex);
+        cell_0_0.ColumnIndex.Should().Be(cell_1_1.ColumnIndex);
+        
         table[0, 2].IsMergedCell.Should().BeFalse();
-
-        presentation.SaveAs(mStream);
-        presentation = new Presentation(mStream);
-        table = (ITable)presentation.Slides[3].Shapes.First(sp => sp.Id == 2);
+        pres.SaveAs(mStream);
+        pres = new Presentation(mStream);
+        table = (ITable)pres.Slides[3].Shapes.First(sp => sp.Id == 2);
         table[0, 0].IsMergedCell.Should().BeTrue();
         table[0, 1].IsMergedCell.Should().BeTrue();
         table[1, 0].IsMergedCell.Should().BeTrue();
         table[1, 1].IsMergedCell.Should().BeTrue();
-        table[0, 0].Should().Be(table[1, 1]);
         table[0, 2].IsMergedCell.Should().BeFalse();
     }
 

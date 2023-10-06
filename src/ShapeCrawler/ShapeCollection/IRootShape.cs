@@ -3,7 +3,7 @@
 /// <summary>
 ///     Root (non-grouped) Auto Shape.
 /// </summary>
-internal interface IDuplicateableShape : IShape
+internal interface IRootShape : IShape
 {     
     /// <summary>
     ///     Duplicate the shape.

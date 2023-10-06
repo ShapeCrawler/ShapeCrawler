@@ -23,12 +23,11 @@ internal sealed class SlideBgImage : ISlideBgImage
     }
 
     public string MIME => this.ParseMIME();
-
     public string Name => this.ParseName();
 
     public void Update(Stream stream)
     {
-        var aBlip = ParseABlip();
+        var aBlip = this.ABlip();
         var imageParts = this.sdkSlidePart.ImageParts;
         var sdkImagePart = this.SDKImagePartOrNull();
         var isSharedImagePart = imageParts.Count(x => x == sdkImagePart) > 1;
@@ -40,7 +39,7 @@ internal sealed class SlideBgImage : ISlideBgImage
         }
 
         stream.Position = 0;
-        sdkImagePart.FeedData(stream);
+        sdkImagePart!.FeedData(stream);
     }
 
     public void Update(byte[] bytes)
@@ -56,7 +55,7 @@ internal sealed class SlideBgImage : ISlideBgImage
         this.Update(sourceBytes);
     }
     
-    public byte[] BinaryData()
+    public byte[] AsByteArray()
     {
         var sdkImagePart = this.SDKImagePartOrNull();
         if (sdkImagePart == null)
@@ -77,9 +76,24 @@ internal sealed class SlideBgImage : ISlideBgImage
         throw new NotImplementedException();
     }
 
-    private A.Blip ParseABlip()
+    private A.Blip ABlip()
     {
-        throw new NotImplementedException();
+        var pBg = this.sdkSlidePart.Slide.CommonSlideData!.Background!;
+        if (pBg != null)
+        {
+            return pBg.BackgroundProperties!.Descendants<A.Blip>().First();    
+        }
+        
+        var rId = $"rId-{Guid.NewGuid().ToString("N").Substring(0, 5)}";
+        var aBlip = new A.Blip { Embed = rId };
+        var pBackground = new P.Background(
+            new P.BackgroundProperties(
+                new A.BlipFill(aBlip)
+                )
+            );
+        this.sdkSlidePart.Slide.CommonSlideData!.InsertAt(pBackground, 0);
+        this.sdkSlidePart.AddNewPart<ImagePart>("image/png", rId);
+        return aBlip;
     }
 
     private string ParseMIME()
@@ -94,9 +108,17 @@ internal sealed class SlideBgImage : ISlideBgImage
         return sdkImagePart.ContentType;
     }
 
-    private ImagePart SDKImagePartOrNull()
+    private ImagePart? SDKImagePartOrNull()
     {
-        throw new NotImplementedException();
+        var pBg = this.sdkSlidePart.Slide.CommonSlideData!.Background;
+        if (pBg == null)
+        {
+            return null;
+        }
+        
+        var aBlip = pBg.BackgroundProperties!.Descendants<A.Blip>().First();
+
+        return (ImagePart)this.sdkSlidePart.GetPartById(aBlip.Embed!.Value!);
     }
 
     private string ParseName()

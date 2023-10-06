@@ -26,8 +26,8 @@ public class PictureTests : SCTest
         var shapePicture2 = (IPicture)new Presentation(StreamOf("018.pptx")).Slides[0].Shapes.First(sp => sp.Id == 7);
 
         // Act
-        var shapePictureContentCase1 = shapePicture1.Image.BinaryData();
-        var shapePictureContentCase2 =  shapePicture2.Image.BinaryData();
+        var shapePictureContentCase1 = shapePicture1.Image.AsByteArray();
+        var shapePictureContentCase2 =  shapePicture2.Image.AsByteArray();
 
         // Assert
         shapePictureContentCase1.Should().NotBeEmpty();
@@ -43,7 +43,7 @@ public class PictureTests : SCTest
         var pictureShape = presentation.Slides[0].SlideLayout.Shapes.GetByName<IPicture>("Picture 7");
             
         // Act
-        var picByteArray = pictureShape.Image.BinaryData();
+        var picByteArray = pictureShape.Image.AsByteArray();
             
         // Assert
         picByteArray.Should().NotBeEmpty();
@@ -74,7 +74,7 @@ public class PictureTests : SCTest
       var pictureShape = slideMaster.Shapes.GetByName<IPicture>("Picture 9");
             
         // Act
-        var picByteArray = pictureShape.Image.BinaryData();
+        var picByteArray = pictureShape.Image.AsByteArray();
             
         // Assert
         picByteArray.Should().NotBeEmpty();
@@ -90,7 +90,7 @@ public class PictureTests : SCTest
         var mStream = new MemoryStream();
         var picture = pres.Slides[1].Shapes.GetByName<IPicture>("Picture 1");
         var image = picture.Image!; 
-        var lengthBefore = image.BinaryData().Length;
+        var lengthBefore = image.AsByteArray().Length;
         
         // Act
         image.Update(pngStream);
@@ -99,7 +99,7 @@ public class PictureTests : SCTest
         pres.SaveAs(mStream);
         pres = new Presentation(mStream);
         picture = pres.Slides[1].Shapes.GetByName<IPicture>("Picture 1");
-        var lengthAfter = picture.Image!.BinaryData().Length;
+        var lengthAfter = picture.Image!.AsByteArray().Length;
 
         lengthAfter.Should().NotBe(lengthBefore);
     }
@@ -136,8 +136,8 @@ public class PictureTests : SCTest
 
         // Assert
         pres.SaveAs(stream);
-        var pictureContent1 = groupedPicture1.Image.BinaryData();
-        var pictureContent2 = groupedPicture2.Image.BinaryData();
+        var pictureContent1 = groupedPicture1.Image.AsByteArray();
+        var pictureContent2 = groupedPicture2.Image.AsByteArray();
         pictureContent1.SequenceEqual(pictureContent2).Should().BeFalse();
     }
         

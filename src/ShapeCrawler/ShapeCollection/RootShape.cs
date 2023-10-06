@@ -1,20 +1,20 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.ShapesCollection;
 using ShapeCrawler.Shared;
+using ShapeCrawler.SlideShape;
 using ShapeCrawler.Texts;
 using ShapeCrawler.Wrappers;
 using SkiaSharp;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.SlideShape;
+namespace ShapeCrawler.ShapeCollection;
 
-internal sealed class DuplicateableShape : CopyableShape, IDuplicateableShape
+internal sealed class RootShape : CopyableShape, IRootShape
 {
     private readonly IShape decoratedShape;
     private readonly P.Shape pShape;
 
-    internal DuplicateableShape(
+    internal RootShape(
         TypedOpenXmlPart sdkTypedOpenXmlPart,
         P.Shape pShape,
         IShape decoratedShape)
@@ -56,13 +56,15 @@ internal sealed class DuplicateableShape : CopyableShape, IDuplicateableShape
         }
     }
 
-    #region Shape
+    #region Decorated Shape
 
     public override ShapeType ShapeType => this.decoratedShape.ShapeType;
     public override bool HasOutline => this.decoratedShape.HasOutline;
     public override IShapeOutline Outline => this.decoratedShape.Outline;
     public override bool HasFill => this.decoratedShape.HasFill;
     public override IShapeFill Fill => this.decoratedShape.Fill;
+    public override bool IsTextHolder => this.decoratedShape.IsTextHolder;
+    public override ITextFrame TextFrame => this.decoratedShape.TextFrame;
 
-    #endregion Shape
+    #endregion Decorated Shape
 }

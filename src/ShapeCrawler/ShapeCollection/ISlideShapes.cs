@@ -8,7 +8,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a shape collection.
 /// </summary>
-public interface ISlideShapeList : IShapeList
+public interface ISlideShapes : IShapes
 {
     /// <summary>
     ///     Adds a new shape from other shape.

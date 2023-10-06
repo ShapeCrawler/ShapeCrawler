@@ -30,13 +30,13 @@ public class ShapeFillTests : SCTest
         var image = StreamOf("test-image-2.png");
         var shape = new Presentation(pptx).Slides[2].Shapes.First(sp => sp.Id == 4);
         var fill = shape.Fill;
-        var imageSizeBefore = fill.Picture!.BinaryData().Length;
+        var imageSizeBefore = fill.Picture!.AsByteArray().Length;
 
         // Act
         fill.Picture.Update(image);
 
         // Assert
-        var imageSizeAfter = shape.Fill.Picture.BinaryData().Length;
+        var imageSizeAfter = shape.Fill.Picture.AsByteArray().Length;
         imageSizeAfter.Should().NotBe(imageSizeBefore, "because image has been changed");
     }
 
@@ -130,7 +130,7 @@ public class ShapeFillTests : SCTest
         var shapeFill = pres.Slides[2].Shapes.GetByName("AutoShape 1").Fill;
 
         // Act
-        var imageBytes = shapeFill.Picture!.BinaryData();
+        var imageBytes = shapeFill.Picture!.AsByteArray();
 
         // Assert
         imageBytes.Length.Should().BePositive();

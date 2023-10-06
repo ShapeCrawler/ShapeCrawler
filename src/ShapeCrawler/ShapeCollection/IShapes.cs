@@ -7,7 +7,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents collection of grouped shapes.
 /// </summary>
-public interface IShapeList : IReadOnlyList<IShape>
+public interface IShapes : IReadOnlyList<IShape>
 {
     /// <summary>
     ///     Gets shape by identifier.

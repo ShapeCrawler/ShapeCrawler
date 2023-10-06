@@ -30,7 +30,7 @@ public interface ITableCell
     IShapeFill Fill { get; }
 }
 
-internal sealed record TableCell : ITableCell
+internal sealed class TableCell : ITableCell
 {
     internal TableCell(TypedOpenXmlPart sdkTypedOpenXmlPart, A.TableCell aTableCell, int rowIndex, int columnIndex)
     {
@@ -38,27 +38,22 @@ internal sealed record TableCell : ITableCell
         this.RowIndex = rowIndex;
         this.ColumnIndex = columnIndex;
         this.TextFrame = new TextFrame(sdkTypedOpenXmlPart, this.ATableCell.TextBody!);
-        var tableCellProperties = aTableCell.TableCellProperties!;
-        this.Fill = new TableCellFill(sdkTypedOpenXmlPart, tableCellProperties);
+        var aTcPr = aTableCell.TableCellProperties!;
+        this.Fill = new TableCellFill(sdkTypedOpenXmlPart, aTcPr);
     }
 
-    public bool IsMergedCell => this.DefineWhetherCellIsMerged();
+    public bool IsMergedCell => this.ATableCell.GridSpan is not null ||
+                                this.ATableCell.RowSpan is not null ||
+                                this.ATableCell.HorizontalMerge is not null ||
+                                this.ATableCell.VerticalMerge is not null;
 
     public IShapeFill Fill { get; }
 
     public ITextFrame TextFrame { get; }
 
-    internal A.TableCell ATableCell { get; init; }
+    internal A.TableCell ATableCell { get; }
 
     internal int RowIndex { get; }
 
     internal int ColumnIndex { get; }
-
-    private bool DefineWhetherCellIsMerged()
-    {
-        return this.ATableCell.GridSpan is not null ||
-               this.ATableCell.RowSpan is not null ||
-               this.ATableCell.HorizontalMerge is not null ||
-               this.ATableCell.VerticalMerge is not null;
-    }
 }

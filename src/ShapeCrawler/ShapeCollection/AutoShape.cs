@@ -3,15 +3,14 @@ using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Shapes;
-using ShapeCrawler.ShapesCollection;
+using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.SlideShape;
+namespace ShapeCrawler.Shapes;
 
 internal sealed class AutoShape : CopyableShape
 {
