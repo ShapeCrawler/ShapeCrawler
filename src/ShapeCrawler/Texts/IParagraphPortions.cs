@@ -31,7 +31,7 @@ public interface IParagraphPortions : IEnumerable<IParagraphPortion>
     ///     Adds text portion.
     /// </summary>
     void AddText(string text);
-    
+
     /// <summary>
     /// 	Adds Line Break.
     /// </summary>
@@ -58,9 +58,8 @@ internal sealed class ParagraphPortions : IParagraphPortions
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aParagraph = aParagraph;
     }
-    
-    public int Count => this.Portions().Count;
 
+    public int Count => this.Portions().Count;
     public IParagraphPortion this[int index] => this.Portions()[index];
 
     public void AddText(string text)
@@ -70,7 +69,7 @@ internal sealed class ParagraphPortions : IParagraphPortions
             throw new SCException(
                 $"Text can not contain New Line. Use {nameof(IParagraphPortions.AddLineBreak)} to add Line Break.");
         }
-        
+
         var lastARunOrABreak = this.aParagraph.LastOrDefault(p => p is A.Run or A.Break);
 
         var textPortions = this.Portions().OfType<TextParagraphPortion>();
@@ -99,16 +98,16 @@ internal sealed class ParagraphPortions : IParagraphPortions
     }
 
     public IEnumerator<IParagraphPortion> GetEnumerator() => this.Portions().GetEnumerator();
-
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-    
+
     internal void AddNewLine()
     {
         var lastARunOrABreak = this.aParagraph.Last();
         lastARunOrABreak.InsertAfterSelf(new A.Break());
     }
 
-    private static void AddText(ref OpenXmlElement? lastElement, OpenXmlElement aTextParent, string text, A.Paragraph aParagraph)
+    private static void AddText(ref OpenXmlElement? lastElement, OpenXmlElement aTextParent, string text,
+        A.Paragraph aParagraph)
     {
         var newARun = (A.Run)aTextParent.CloneNode(true);
         newARun.Text!.Text = text;
@@ -126,12 +125,12 @@ internal sealed class ParagraphPortions : IParagraphPortions
     private List<IParagraphPortion> Portions()
     {
         var portions = new List<IParagraphPortion>();
-        foreach (var paraChild in this.aParagraph.Elements())
+        foreach (var aParagraphElement in this.aParagraph.Elements())
         {
-            switch (paraChild)
+            switch (aParagraphElement)
             {
                 case A.Run aRun:
-                    var runPortion = new TextParagraphPortion(this.sdkTypedOpenXmlPart, aRun); 
+                    var runPortion = new TextParagraphPortion(this.sdkTypedOpenXmlPart, aRun);
                     portions.Add(runPortion);
                     break;
                 case A.Field aField:
@@ -140,14 +139,13 @@ internal sealed class ParagraphPortions : IParagraphPortions
                     portions.Add(fieldPortion);
                     break;
                 }
-
                 case A.Break aBreak:
                     var lineBreak = new ParagraphLineBreak(aBreak);
                     portions.Add(lineBreak);
                     break;
             }
         }
-        
+
         return portions;
     }
 }

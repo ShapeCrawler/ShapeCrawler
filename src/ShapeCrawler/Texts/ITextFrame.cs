@@ -12,7 +12,7 @@ public interface ITextFrame
     /// <summary>
     ///     Gets collection of paragraphs.
     /// </summary>
-    IParagraphCollection Paragraphs { get; }
+    IParagraphs Paragraphs { get; }
 
     /// <summary>
     ///     Gets or sets text.

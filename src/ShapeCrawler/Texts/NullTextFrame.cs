@@ -5,7 +5,7 @@ namespace ShapeCrawler.Shapes;
 internal class NullTextFrame : ITextFrame
 {
     private const string error = $"The shape is not a text holder. Use {nameof(IShape.IsTextHolder)} method to check it.";
-    public IParagraphCollection Paragraphs => throw new Exception(error);
+    public IParagraphs Paragraphs => throw new Exception(error);
 
     public string Text
     {

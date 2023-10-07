@@ -49,6 +49,8 @@ public interface IParagraph
     ///     Finds and replaces text.
     /// </summary>
     void ReplaceText(string oldValue, string newValue);
+
+    void Remove();
 }
 
 internal sealed class Paragraph : IParagraph
@@ -70,7 +72,7 @@ internal sealed class Paragraph : IParagraph
         this.aParagraphWrap = aParagraphWrap;
         this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
         this.bullet = new Lazy<Bullet>(this.GetBullet);
-        this.Portions = new ParagraphPortions(sdkTypedOpenXmlPart,this.AParagraph); 
+        this.Portions = new ParagraphPortions(sdkTypedOpenXmlPart, this.AParagraph);
     }
 
     public bool IsRemoved { get; set; }
@@ -98,7 +100,6 @@ internal sealed class Paragraph : IParagraph
     }
 
     public ISpacing Spacing => this.GetSpacing();
-
     internal A.Paragraph AParagraph { get; }
 
     public void SetFontSize(int fontSize)
@@ -122,9 +123,10 @@ internal sealed class Paragraph : IParagraph
         }
     }
 
+    public void Remove() => this.AParagraph.Remove();
     private ISpacing GetSpacing() => new Spacing(this, this.AParagraph);
 
-    private Bullet GetBullet()=> new Bullet(this.AParagraph.ParagraphProperties!);
+    private Bullet GetBullet() => new Bullet(this.AParagraph.ParagraphProperties!);
 
     private string ParseText()
     {
@@ -171,13 +173,13 @@ internal sealed class Paragraph : IParagraph
                 ((ParagraphPortions)this.Portions).AddNewLine();
             }
         }
-        
+
         // Resize
         var sdkTextBody = this.AParagraph.Parent!;
         var textFrame = new TextFrame(this.sdkTypedOpenXmlPart, sdkTextBody);
         textFrame.ResizeParentShape();
     }
-    
+
     private void SetAlignment(TextAlignment alignmentValue)
     {
         var aTextAlignmentTypeValue = alignmentValue switch

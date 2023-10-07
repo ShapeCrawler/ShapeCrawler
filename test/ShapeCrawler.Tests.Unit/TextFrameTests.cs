@@ -63,18 +63,21 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             // Arrange
             var pptx = StreamOf("autoshape-case005_text-frame.pptx");
             var pres = new Presentation(pptx);
-            var textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 1").TextFrame;
+            var textFrame = pres.Slides[0].ShapeWithName("TextBox 1").TextFrame;
             var modifiedPres = new MemoryStream();
 
             // Act
-            textFrame.Text = textFrame.Text.Replace("{{replace_this}}", "confirm this");
-            textFrame.Text = textFrame.Text.Replace("{{replace_that}}", "confirm that");
+            var newText = textFrame.Text.Replace("{{replace_this}}", "confirm this");
+            textFrame.Text = newText;
+            newText = textFrame.Text.Replace("{{replace_that}}", "confirm that");
+            textFrame.Text = newText;
 
             // Assert
             pres.SaveAs(modifiedPres);
             pres = new Presentation(modifiedPres);
             textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 1").TextFrame;
-            textFrame.Text.Should().ContainAll("confirm this", "confirm that");
+            textFrame.Text.Should().Contain("confirm this");
+            textFrame.Text.Should().Contain("confirm that");
         }
 
         [Test]
