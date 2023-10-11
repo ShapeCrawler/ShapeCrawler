@@ -208,17 +208,17 @@ public class ChartTests : SCTest
         // Arrange
         var pres = new Presentation(StreamOf("025_chart.pptx"));
         var lineChart = pres.Slides[3].Shapes.GetById<IChart>(13);
-        const string newName = "Category 1_new";
         var category = lineChart.Categories[0]; 
 
         // Act
-        category.Name = newName;
+        category.Name = "Category 1_new";
+        SaveResult(pres);
 
         // Assert
-        var mStream = new MemoryStream(lineChart.ExcelBookByteArray());
+        var mStream = new MemoryStream(lineChart.BookByteArray());
         var workbook = new XLWorkbook(mStream);
         var cellValue = workbook.Worksheets.First().Cell("A2").Value.ToString();
-        cellValue.Should().BeEquivalentTo(newName);
+        cellValue.Should().BeEquivalentTo("Category 1_new");
     }
 
     [Test, Ignore("On Hold")]

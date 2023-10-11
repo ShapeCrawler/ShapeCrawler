@@ -1,4 +1,4 @@
-﻿namespace ShapeCrawler.SlideShape;
+﻿namespace ShapeCrawler.ShapeCollection;
 
 /// <summary>
 ///     Root (non-grouped) Auto Shape.

@@ -150,12 +150,12 @@ internal sealed class Table : CopyableShape, ITable
         // Delete a:tr if needed
         for (var rowIdx = 0; rowIdx < this.Rows.Count;)
         {
-            var allRowCells = this.Rows[rowIdx].Cells.OfType<TableCell>().ToList();
-            var firstRowCell = allRowCells[0];
-            var firstRowCellSpan = firstRowCell.ATableCell.RowSpan?.Value;
-            if (firstRowCellSpan > 1 && allRowCells.All(cell => cell.ATableCell.RowSpan?.Value == firstRowCellSpan))
+            var cells = this.Rows[rowIdx].Cells.OfType<TableCell>().ToList();
+            var firstCell = cells[0];
+            var firstCellSpan = firstCell.ATableCell.RowSpan?.Value;
+            if (firstCellSpan > 1 && cells.All(cell => cell.ATableCell.RowSpan?.Value == firstCellSpan))
             {
-                int deleteRowsCount = firstRowCellSpan.Value - 1;
+                int deleteRowsCount = firstCellSpan.Value - 1;
 
                 foreach (var row in this.Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
                 {
@@ -163,7 +163,7 @@ internal sealed class Table : CopyableShape, ITable
                     this.Rows[rowIdx].Height += row.Height;
                 }
 
-                rowIdx += firstRowCellSpan.Value;
+                rowIdx += firstCellSpan.Value;
                 continue;
             }
 
@@ -278,7 +278,7 @@ internal sealed class Table : CopyableShape, ITable
                 // Delete a:tc elements
                 foreach (var aTblRow in aTableRows)
                 {
-                    var removeCells = aTblRow.Elements<A.TableCell>().Skip(colIdx).Take(deleteColumnCount).ToList();
+                    var removeCells = aTblRow.Elements<A.TableCell>().Skip(colIdx+1).Take(deleteColumnCount).ToList();
                     foreach (var aTblCell in removeCells)
                     {
                         aTblCell.Remove();

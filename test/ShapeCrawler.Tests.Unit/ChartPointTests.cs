@@ -97,7 +97,7 @@ public class ChartPointTests : SCTest
         point.Value = 6;
 
         // Assert
-        var pointCellValue = GetWorksheetCellValue<double>(chart.ExcelBookByteArray(), "B2");
+        var pointCellValue = GetWorksheetCellValue<double>(chart.BookByteArray(), "B2");
         pointCellValue.Should().Be(6);
     }
 

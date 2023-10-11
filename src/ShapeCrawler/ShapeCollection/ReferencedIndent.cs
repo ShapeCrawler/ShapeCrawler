@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Colors;
@@ -7,7 +8,7 @@ using ShapeCrawler.Wrappers;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.ShapeCollection;
 
 internal readonly record struct ReferencedIndent
 {
@@ -36,40 +37,44 @@ internal readonly record struct ReferencedIndent
     {
         if (this.sdkTypedOpenXmlPart is SlidePart)
         {
-            return SlideColorHexOrNull();
+            return this.SlideColorHexOrNull();
         }
-        
-        return LayoutColorHexOrNull();
+        else if (this.sdkTypedOpenXmlPart is SlideLayoutPart)
+        {
+            return this.LayoutColorHexOrNull();
+        }
+
+        throw new Exception();
     }
 
     internal ColorType? ColorTypeOrNull()
     {
         if (this.sdkTypedOpenXmlPart is SlidePart)
         {
-            return SlideColorTypeOrNull();
+            return this.SlideColorTypeOrNull();
         }
-        
-        return LayoutColorTypeOrNull();
+
+        return this.LayoutColorTypeOrNull();
     }
 
     internal bool? FontBoldFlagOrNull()
     {
         if (this.sdkTypedOpenXmlPart is SlidePart)
         {
-            return SlideFontBoldFlagOrNull();
+            return this.SlideFontBoldFlagOrNull();
         }
-        
-        return LayoutFontBoldFlagOrNull();
+
+        return this.LayoutFontBoldFlagOrNull();
     }
 
     internal A.LatinFont? ALatinFontOrNull()
     {
         if (this.sdkTypedOpenXmlPart is SlidePart)
         {
-            return SlideALatinFontOrNull();
+            return this.SlideALatinFontOrNull();
         }
-        
-        return LayoutALatinFontOrNull();
+
+        return this.LayoutALatinFontOrNull();
     }
 
     #endregion APIs
@@ -189,6 +194,12 @@ internal readonly record struct ReferencedIndent
                 referencedShape = layoutPShape;
                 return true;
             }
+            
+            if (slidePh.Type == P.PlaceholderValues.CenteredTitle && layoutPh.Type == P.PlaceholderValues.CenteredTitle)
+            {
+                referencedShape = layoutPShape;
+                return true;
+            }
         }
 
         var byType = layoutPShapes.FirstOrDefault(layoutPShape =>
@@ -240,10 +251,64 @@ internal readonly record struct ReferencedIndent
         referencedShapeColorOrNull = null;
         return false;
     }
-    
-        private string? LayoutColorHexOrNull()
+
+    private string? LayoutColorHexOrNull()
     {
-        throw new System.NotImplementedException();
+        var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
+        var indentLevel = new AParagraphWrap(aParagraph).IndentLevel();
+        var pShape = this.aText.Ancestors<P.Shape>().First();
+        var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+            .GetFirstChild<P.PlaceholderShape>();
+        if (pPlaceholderShape == null)
+        {
+            return null;
+        }
+
+        var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOf(pShape);
+        if (refMasterPShapeOfLayout != null)
+        {
+            var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout.TextBody!.ListStyle!);
+            var masterIndentFontOfLayout = masterFontsOfLayout.FontOrNull(indentLevel);
+            if (masterIndentFontOfLayout != null
+                && this.HexFromName(masterIndentFontOfLayout, out var masterColorOfLayout))
+            {
+                return masterColorOfLayout;
+            }
+        }
+
+        if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Title)
+        {
+            var pTitleStyle = this.sdkTypedOpenXmlPart switch
+            {
+                SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
+                    .TitleStyle!,
+                _ => ((SlideLayoutPart)this.sdkTypedOpenXmlPart).SlideMasterPart!.SlideMaster.TextStyles!
+                    .TitleStyle!
+            };
+            var masterTitleFonts = new IndentFonts(pTitleStyle);
+            var masterTitleFont = masterTitleFonts.FontOrNull(indentLevel);
+            if (this.HexFromName(masterTitleFont, out var masterTitleColor))
+            {
+                return masterTitleColor;
+            }
+        }
+        else if (pPlaceholderShape.Type?.Value == P.PlaceholderValues.Body)
+        {
+            var pBodyStyle = this.sdkTypedOpenXmlPart switch
+            {
+                SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!
+                    .BodyStyle!,
+                _ => ((SlideLayoutPart)this.sdkTypedOpenXmlPart).SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!
+            };
+            var masterBodyFonts = new IndentFonts(pBodyStyle);
+            var masterBodyFont = masterBodyFonts.FontOrNull(indentLevel);
+            if (this.HexFromName(masterBodyFont, out var masterTitleColor))
+            {
+                return masterTitleColor;
+            }
+        }
+
+        return null;
     }
 
     private string? SlideColorHexOrNull()
@@ -257,11 +322,16 @@ internal readonly record struct ReferencedIndent
         {
             return null;
         }
-        
+
         var refLayoutPShapeOfSlide = this.ReferencedLayoutPShapeOf(pShape);
         if (refLayoutPShapeOfSlide == null)
         {
             var refMasterPShapeOfSlide = this.ReferencedMasterPShapeOf(pShape);
+            if (refMasterPShapeOfSlide == null)
+            {
+                return null;
+            }
+
             var masterFontsOfSlide = new IndentFonts(refMasterPShapeOfSlide!.TextBody!.ListStyle!);
             var masterIndentFontOfSlide = masterFontsOfSlide.FontOrNull(indentLevel);
             if (this.HexFromName(masterIndentFontOfSlide, out var masterColorOfSlide))
@@ -325,7 +395,7 @@ internal readonly record struct ReferencedIndent
 
         return null;
     }
-    
+
     private ColorType? LayoutColorTypeOrNull()
     {
         throw new System.NotImplementedException();
@@ -366,7 +436,7 @@ internal readonly record struct ReferencedIndent
 
         return null;
     }
-    
+
     private bool? LayoutFontBoldFlagOrNull()
     {
         throw new System.NotImplementedException();
@@ -415,7 +485,7 @@ internal readonly record struct ReferencedIndent
 
         return null;
     }
-    
+
     private A.LatinFont LayoutALatinFontOrNull()
     {
         throw new System.NotImplementedException();

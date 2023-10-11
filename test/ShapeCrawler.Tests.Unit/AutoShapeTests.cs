@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.SlideShape;
 using ShapeCrawler.Tests.Unit.Helpers;
 

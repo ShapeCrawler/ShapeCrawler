@@ -409,8 +409,7 @@ public class ShapeCollectionTests : SCTest
     public void AddRoundedRectangle_adds_Rounded_Rectangle()
     {
         // Arrange
-        var pptx = StreamOf("autoshape-grouping.pptx");
-        var pres = new Presentation(pptx);
+        var pres = new Presentation(StreamOf("autoshape-grouping.pptx"));
         var shapes = pres.Slides[0].Shapes;
 
         // Act

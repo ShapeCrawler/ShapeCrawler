@@ -52,16 +52,17 @@ internal sealed class TableRow : ITableRow
     {
         get
         {
-            var cellList = new List<TableCell?>();
+            var cells = new List<TableCell?>();
             var aTcList = this.ATableRow.Elements<A.TableCell>();
             TableCell? addedCell = null;
 
             var columnIdx = 0;
             foreach (var aTc in aTcList)
             {
-                if (aTc.HorizontalMerge is not null)
+                var mergedWithPreviousHorizontal = aTc.HorizontalMerge is not null; 
+                if (mergedWithPreviousHorizontal)
                 {
-                    cellList.Add(addedCell);
+                    cells.Add(addedCell);
                 }
                 else if (aTc.VerticalMerge is not null)
                 {
@@ -69,19 +70,19 @@ internal sealed class TableRow : ITableRow
                     var table = new Table(this.sdkTypedOpenXmlPart, pGraphicFrame);
                     var upRowIdx = this.index - 1;
                     var upNeighborCell = (TableCell)table[upRowIdx, columnIdx];
-                    cellList.Add(upNeighborCell);
+                    cells.Add(upNeighborCell);
                     addedCell = upNeighborCell;
                 }
                 else
                 {
                     addedCell = new TableCell(this.sdkTypedOpenXmlPart, aTc, this.index, columnIdx);
-                    cellList.Add(addedCell);
+                    cells.Add(addedCell);
                 }
 
                 columnIdx++;
             }
 
-            return cellList!;
+            return cells!;
         }
     }
 

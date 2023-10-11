@@ -4,7 +4,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
-using Shape = ShapeCrawler.Shapes.Shape;
+using Shape = ShapeCrawler.ShapeCollection.Shape;
 
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.ShapeCollection;
@@ -19,7 +19,8 @@ internal sealed class GroupShape : Shape, IGroupShape
         this.pGroupShape = pGroupShape;
         this.Shapes = new GroupedShapes(sdkTypedOpenXmlPart, pGroupShape.Elements<OpenXmlCompositeElement>());
         this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pGroupShape.Descendants<P.ShapeProperties>().First());
-        this.Fill = new SlideShapeFill(sdkTypedOpenXmlPart, pGroupShape.Descendants<P.ShapeProperties>().First(), false);
+        this.Fill = new SlideShapeFill(sdkTypedOpenXmlPart, pGroupShape.Descendants<P.ShapeProperties>().First(),
+            false);
     }
 
     public IShapes Shapes { get; }
@@ -30,5 +31,15 @@ internal sealed class GroupShape : Shape, IGroupShape
     public override bool HasFill => true;
     public override IShapeFill Fill { get; }
     public override bool Removeable => true;
-    public override void Remove()=> this.pGroupShape.Remove();
+    public override void Remove() => this.pGroupShape.Remove();
+
+    public override double Rotation
+    {
+        get
+        {
+            var aTransformGroup = this.pGroupShape.GroupShapeProperties!.TransformGroup!;
+            var rotation = aTransformGroup.Rotation?.Value ?? 0;
+            return rotation / 60000d;
+        }
+    }
 }

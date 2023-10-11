@@ -68,6 +68,7 @@ internal sealed class TextFrame : ITextFrame
             {
                 this.ShrinkText(value, paragraphWithPortion);
             }
+            this.ResizeParentShape();
         }
     }
 
@@ -76,10 +77,6 @@ internal sealed class TextFrame : ITextFrame
         get
         {
             var aBodyPr = this.sdkTextBody.GetFirstChild<A.BodyProperties>();
-            // if (aBodyPr == null)
-            // {
-            //     return AutofitType.None;
-            // }
 
             if (aBodyPr!.GetFirstChild<A.NormalAutoFit>() != null)
             {
@@ -260,9 +257,9 @@ internal sealed class TextFrame : ITextFrame
             .First().First();
         var font = popularPortion.Font;
 
-        var sdkPresDocument = (PresentationDocument)this.sdkTypedOpenXmlPart.OpenXmlPackage;
-        var slideSize = new SlideSize(sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
-        var fontSize = FontService.GetAdjustedFontSize(newText, font!, slideSize.Width(), slideSize.Height());
+        var parent = this.sdkTextBody.Parent!;
+        var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, parent);
+        var fontSize = FontService.GetAdjustedFontSize(newText, font, shapeSize.Width(), shapeSize.Height());
 
         var paragraphInternal = (Paragraph)baseParagraph;
         paragraphInternal.SetFontSize(fontSize);
@@ -296,7 +293,7 @@ internal sealed class TextFrame : ITextFrame
         paint.MeasureText(this.Text, ref textRect);
         var textWidth = textRect.Width;
         var textHeight = paint.TextSize;
-        var shapeSize = new ShapeSize(this.sdkTextBody.Ancestors<P.Shape>().First());
+        var shapeSize = new ShapeSize( this.sdkTypedOpenXmlPart,this.sdkTextBody.Ancestors<P.Shape>().First());
         var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
         var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
 
@@ -320,7 +317,7 @@ internal sealed class TextFrame : ITextFrame
             // 96/72=1.4
             const double Scale = 1.4;
             var newWidth = (int)(widthInPixels * Scale) + lMarginPixel + rMarginPixel;
-            new ShapeSize(parent).UpdateWidth(newWidth);
+            new ShapeSize(this.sdkTypedOpenXmlPart, parent).UpdateWidth(newWidth);
         }
     }
 
@@ -344,7 +341,7 @@ internal sealed class TextFrame : ITextFrame
         var requiredHeight = (integerPart * textHeight) + tMarginPixel + bMarginPixel;
         var newHeight = (int)requiredHeight + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
         var position = new Position(this.sdkTypedOpenXmlPart, parent);
-        var size = new ShapeSize(parent);
+        var size = new ShapeSize(this.sdkTypedOpenXmlPart, parent);
         size.UpdateHeight(newHeight);
 
         // We should raise the shape up by the amount which is half of the increased offset.

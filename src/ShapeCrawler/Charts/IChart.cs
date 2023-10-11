@@ -52,7 +52,7 @@ public interface IChart : IShape
     /// <summary>
     ///     Gets byte array of excel book containing chart data source.
     /// </summary>
-    byte[] ExcelBookByteArray();
+    byte[] BookByteArray();
 
     /// <summary>
     ///     Gets chart axes manager.

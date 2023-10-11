@@ -1,11 +1,10 @@
 ﻿using ShapeCrawler.Services.Factories;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 namespace ShapeCrawler.Fonts;
 
-internal record PortionFontSize : IFontSize
+internal class PortionFontSize : IFontSize
 {
     private readonly A.Text aText;
 
@@ -14,7 +13,7 @@ internal record PortionFontSize : IFontSize
         this.aText = aText;
     }
     
-    public int Size()
+    int IFontSize.Size()
     {
         var fontSize = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize
             ?.Value;
@@ -26,7 +25,7 @@ internal record PortionFontSize : IFontSize
         return Constants.DefaultFontSize;
     }
 
-    public void Update(int points)
+    void IFontSize.Update(int points)
     {
         var parent = this.aText.Parent!;
         var aRunPr = parent.GetFirstChild<A.RunProperties>();

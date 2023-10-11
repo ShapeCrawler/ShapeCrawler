@@ -61,8 +61,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         public void Text_Setter_can_update_content_multiple_times()
         {
             // Arrange
-            var pptx = StreamOf("autoshape-case005_text-frame.pptx");
-            var pres = new Presentation(pptx);
+            var pres = new Presentation(StreamOf("autoshape-case005_text-frame.pptx"));
             var textFrame = pres.Slides[0].ShapeWithName("TextBox 1").TextFrame;
             var modifiedPres = new MemoryStream();
 
@@ -84,11 +83,8 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         public void Text_Setter_updates_text_box_content_and_Reduces_font_size_When_text_is_Overflow()
         {
             // Arrange
-            var pptxStream = StreamOf("001.pptx");
-            var pres = new Presentation(pptxStream);
-            var textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 8");
-            var textFrame = textBox.TextFrame;
-            var fontSizeBefore = textFrame.Paragraphs[0].Portions[0].Font.Size;
+            var pres = new Presentation(StreamOf("001.pptx"));
+            var textFrame = pres.Slides[0].ShapeWithName("TextBox 8").TextFrame;
             var newText = "Shrink text on overflow";
 
             // Act
@@ -103,9 +99,8 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         public void Text_Setter_resizes_shape_to_fit_text()
         {
             // Arrange
-            var pptxStream = StreamOf("autoshape-case003.pptx");
-            var pres = new Presentation(pptxStream);
-            var shape = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 4");
+            var pres = new Presentation(StreamOf("autoshape-case003.pptx"));
+            var shape = pres.Slides[0].ShapeWithName("AutoShape 4");
             var textFrame = shape.TextFrame;
 
             // Act
@@ -113,7 +108,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
 
             // Assert
             shape.Height.Should().Be(46);
-            shape.Y.Should().Be(152);
+            shape.Y.Should().Be(151);
             pres.Validate();
         }
         

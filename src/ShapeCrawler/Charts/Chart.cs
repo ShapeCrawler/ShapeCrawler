@@ -7,6 +7,7 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Excel;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shapes;
 using A = DocumentFormat.OpenXml.Drawing;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
@@ -103,7 +104,7 @@ internal sealed class Chart : Shape, IChart
         }
     }
     public override Geometry GeometryType => Geometry.Rectangle;
-    public byte[] ExcelBookByteArray() => new ExcelBook(this.sdkChartPart).AsByteArray();
+    public byte[] BookByteArray() => new ExcelBook(this.sdkChartPart).AsByteArray();
     public IAxesManager Axes => this.GetAxes();
     public override bool Removeable => true;
     public override void Remove() => this.pGraphicFrame.Remove();

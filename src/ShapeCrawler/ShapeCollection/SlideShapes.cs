@@ -253,7 +253,7 @@ internal sealed class SlideShapes : ISlideShapes
         position.UpdateX(x);
         position.UpdateY(y);
 
-        var size = new ShapeSize(sdkPShape);
+        var size = new ShapeSize(this.sdkSlidePart, sdkPShape);
         size.UpdateWidth(width);
         size.UpdateHeight(height);
 
@@ -271,7 +271,7 @@ internal sealed class SlideShapes : ISlideShapes
         position.UpdateX(x);
         position.UpdateY(y);
 
-        var size = new ShapeSize(sdkPShape);
+        var size = new ShapeSize(this.sdkSlidePart, sdkPShape);
         size.UpdateWidth(width);
         size.UpdateHeight(height);
 

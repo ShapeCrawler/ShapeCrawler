@@ -80,7 +80,47 @@ internal sealed class Paragraph : IParagraph
     public string Text
     {
         get => this.ParseText();
-        set => this.UpdateText(value);
+        set
+        {
+            if (!this.Portions.Any())
+            {
+                this.Portions.AddText(" ");
+            }
+
+            // To set a paragraph text we use a single portion which is the first paragraph portion.
+            var baseARun = this.AParagraph.GetFirstChild<A.Run>()!;
+            foreach (var removingRun in this.AParagraph.OfType<A.Run>().Where(run => run != baseARun))
+            {
+                removingRun.Remove();
+            }
+
+#if NETSTANDARD2_0
+        var textLines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+#else
+            var textLines = value.Split(Environment.NewLine);
+#endif
+
+            var basePortion = new TextParagraphPortion(this.sdkTypedOpenXmlPart, baseARun);
+            basePortion.Text = textLines.First();
+
+            foreach (var textLine in textLines.Skip(1))
+            {
+                if (!string.IsNullOrEmpty(textLine))
+                {
+                    ((ParagraphPortions)this.Portions).AddNewLine();
+                    this.Portions.AddText(textLine);
+                }
+                else
+                {
+                    ((ParagraphPortions)this.Portions).AddNewLine();
+                }
+            }
+
+            // Resize
+            var sdkTextBody = this.AParagraph.Parent!;
+            var textFrame = new TextFrame(this.sdkTypedOpenXmlPart, sdkTextBody);
+            textFrame.ResizeParentShape();
+        }
     }
 
     public IParagraphPortions Portions { get; }
@@ -136,48 +176,6 @@ internal sealed class Paragraph : IParagraph
         }
 
         return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next) !;
-    }
-
-    private void UpdateText(string text)
-    {
-        if (!this.Portions.Any())
-        {
-            this.Portions.AddText(" ");
-        }
-
-        // To set a paragraph text we use a single portion which is the first paragraph portion.
-        var baseARun = this.AParagraph.GetFirstChild<A.Run>()!;
-        foreach (var removingRun in this.AParagraph.OfType<A.Run>().Where(run => run != baseARun))
-        {
-            removingRun.Remove();
-        }
-
-#if NETSTANDARD2_0
-        var textLines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-#else
-        var textLines = text.Split(Environment.NewLine);
-#endif
-
-        var basePortion = new TextParagraphPortion(this.sdkTypedOpenXmlPart, baseARun);
-        basePortion.Text = textLines.First();
-
-        foreach (var textLine in textLines.Skip(1))
-        {
-            if (!string.IsNullOrEmpty(textLine))
-            {
-                ((ParagraphPortions)this.Portions).AddNewLine();
-                this.Portions.AddText(textLine);
-            }
-            else
-            {
-                ((ParagraphPortions)this.Portions).AddNewLine();
-            }
-        }
-
-        // Resize
-        var sdkTextBody = this.AParagraph.Parent!;
-        var textFrame = new TextFrame(this.sdkTypedOpenXmlPart, sdkTextBody);
-        textFrame.ResizeParentShape();
     }
 
     private void SetAlignment(TextAlignment alignmentValue)

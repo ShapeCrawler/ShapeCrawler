@@ -66,5 +66,7 @@ internal sealed class RootShape : CopyableShape, IRootShape
     public override bool IsTextHolder => this.decoratedShape.IsTextHolder;
     public override ITextFrame TextFrame => this.decoratedShape.TextFrame;
 
+    public override Geometry GeometryType => this.decoratedShape.GeometryType;
+
     #endregion Decorated Shape
 }

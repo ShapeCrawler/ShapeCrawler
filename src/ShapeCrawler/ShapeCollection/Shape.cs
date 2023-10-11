@@ -4,12 +4,11 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
-using ShapeCrawler.Positions;
-using ShapeCrawler.ShapeCollection;
-using A = DocumentFormat.OpenXml.Drawing;
+using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
+using Position = ShapeCrawler.Positions.Position;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.ShapeCollection;
 
 internal abstract class Shape : IShape
 {
@@ -26,7 +25,7 @@ internal abstract class Shape : IShape
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.pShapeTreeElement = pShapeTreeElement;
         this.position = new Position(sdkTypedOpenXmlPart, pShapeTreeElement);
-        this.size = new ShapeSize(pShapeTreeElement);
+        this.size = new ShapeSize(this.sdkTypedOpenXmlPart, pShapeTreeElement);
         this.shapeId = new ShapeId(pShapeTreeElement);
     }
 
@@ -117,15 +116,15 @@ internal abstract class Shape : IShape
     public virtual bool IsTextHolder { get; protected init; }
     public virtual ITextFrame TextFrame { get; protected init; } = new NullTextFrame();
 
-    public double Rotation
+    public virtual double Rotation
     {
         get
         {
             var pSpPr = this.pShapeTreeElement.GetFirstChild<P.ShapeProperties>() !;
             var aTransform2D = pSpPr.Transform2D;
-            if (aTransform2D != null)
+            if (aTransform2D == null)
             {
-                aTransform2D = new ReferencedPShape(this.sdkTypedOpenXmlPart, this.pShapeTreeElement).ATransform2D();  
+                aTransform2D = new ReferencedPShape(this.sdkTypedOpenXmlPart, this.pShapeTreeElement).ATransform2D();
             }
             
             var angle = pSpPr.Transform2D!.Rotation!.Value; // rotation angle in 1/60,000th of a degree
@@ -142,7 +141,5 @@ internal abstract class Shape : IShape
 
     public virtual bool Removeable => false;
 
-    public virtual void Remove() =>
-        throw new Exception(
-            $"The shape is not removeable. Use {nameof(IShape.Removeable)} property to check if the shape is removeable.");
+    public virtual void Remove() => this.pShapeTreeElement.Remove();
 }

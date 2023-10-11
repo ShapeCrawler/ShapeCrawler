@@ -20,6 +20,11 @@ internal record ExcelSheet
 
     internal void UpdateCell(string address, string value)
     {
+        this.UpdateCell(address, value, X.CellValues.Number);
+    }
+    
+    internal void UpdateCell(string address, string value, X.CellValues type)
+    {
         var stream = this.sdkChartPart.EmbeddedPackagePart!.GetStream();
         var sdkSpreadsheetDocument = SpreadsheetDocument.Open(stream, true);
         var xSheet = sdkSpreadsheetDocument.WorkbookPart!.Workbook.Sheets!.Elements<X.Sheet>().First(xSheet => xSheet.Name == this.sheetName);
@@ -29,7 +34,7 @@ internal record ExcelSheet
         
         if (xCell != null)
         {
-            xCell.DataType = new EnumValue<X.CellValues>(X.CellValues.Number);
+            xCell.DataType = new EnumValue<X.CellValues>(type);
             xCell.CellValue = new X.CellValue(value);
         }
         else
@@ -43,7 +48,7 @@ internal record ExcelSheet
             {
                 CellReference = address
             };
-            newXCell.DataType = new EnumValue<X.CellValues>(X.CellValues.Number);
+            newXCell.DataType = new EnumValue<X.CellValues>(type);
             newXCell.CellValue = new X.CellValue(value);
 
             // Cells must be in sequential order according to CellReference. Determine where to insert the new cell.

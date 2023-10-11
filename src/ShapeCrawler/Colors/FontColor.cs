@@ -4,6 +4,7 @@ using ShapeCrawler.Colors;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
+using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Wrappers;
 using A = DocumentFormat.OpenXml.Drawing;

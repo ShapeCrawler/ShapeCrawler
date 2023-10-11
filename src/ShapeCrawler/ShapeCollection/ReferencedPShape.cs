@@ -6,7 +6,7 @@ using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.ShapeCollection;
 
 internal readonly ref struct ReferencedPShape
 {
@@ -39,7 +39,11 @@ internal readonly ref struct ReferencedPShape
     private P.Shape? LayoutPShapeOrNullOf(P.Shape pShape)
     {
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-            .GetFirstChild<P.PlaceholderShape>()!;
+            .GetFirstChild<P.PlaceholderShape>();
+        if (pPlaceholderShape == null)
+        {
+            return null;
+        }
         var sdkSlidePart = (SlidePart)this.sdkTypedOpenXmlPart;
         var layoutPShapes =
             sdkSlidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!.Elements<P.Shape>();

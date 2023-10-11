@@ -3,11 +3,11 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
-using Shape = ShapeCrawler.Shapes.Shape;
+using Shape = ShapeCrawler.ShapeCollection.Shape;
 
 namespace ShapeCrawler.SlideShape;
 
-internal class OLEObject : Shape
+internal class OLEObject : ShapeCollection.Shape
 {
     private readonly P.GraphicFrame pGraphicFrame;
 

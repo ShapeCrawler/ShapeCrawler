@@ -161,7 +161,11 @@ public class TableTests : SCTest
         // Act-Assert
         isMerged1.Should().BeTrue();
         isMerged2.Should().BeTrue();
-        cell1X0.Should().BeSameAs(cell1X1);
+        
+        var cell1 = (TableCell) cell1X0;
+        var cell2 = (TableCell)cell1X1;
+        cell1.RowIndex.Should().Be(cell2.RowIndex);
+        cell1.ColumnIndex.Should().Be(cell2.ColumnIndex);
     }
 
     [Test]
@@ -424,7 +428,12 @@ public class TableTests : SCTest
         // Assert
         table[1, 1].IsMergedCell.Should().BeTrue();
         table[1, 2].IsMergedCell.Should().BeTrue();
-        table[1, 1].Should().Be(table[1, 2]);
+        
+        var cell1 = (TableCell) table[1, 1];
+        var cell2 = (TableCell)table[1, 2];
+        cell1.RowIndex.Should().Be(cell2.RowIndex);
+        cell1.ColumnIndex.Should().Be(cell2.ColumnIndex);
+        
         table[3, 2].IsMergedCell.Should().BeFalse();
 
         presentation.SaveAs(mStream);
@@ -432,7 +441,12 @@ public class TableTests : SCTest
         table = (ITable)presentation.Slides[1].Shapes.First(sp => sp.Id == 5);
         table[1, 1].IsMergedCell.Should().BeTrue();
         table[1, 2].IsMergedCell.Should().BeTrue();
-        table[1, 1].Should().Be(table[1, 2]);
+        
+        cell1 = (TableCell) table[1, 1];
+        cell2 = (TableCell)table[1, 2];
+        cell1.RowIndex.Should().Be(cell2.RowIndex);
+        cell1.ColumnIndex.Should().Be(cell2.ColumnIndex);
+        
         table[3, 2].IsMergedCell.Should().BeFalse();
     }
 
@@ -648,7 +662,10 @@ public class TableTests : SCTest
         table.MergeCells(table[1, 1], table[1, 2]);
         
         // Assert
-        table[1, 1].Should().BeSameAs(table[1, 2]);
+        var cell1 = (TableCell) table[1, 1];
+        var cell2 = (TableCell)table[1, 2];
+        cell1.RowIndex.Should().Be(cell2.RowIndex);
+        cell1.ColumnIndex.Should().Be(cell2.ColumnIndex);
     }
 
     [Test]
