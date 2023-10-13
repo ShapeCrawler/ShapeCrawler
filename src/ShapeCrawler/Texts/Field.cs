@@ -27,7 +27,7 @@ internal sealed class Field : IParagraphPortion
 
         this.font = new ResetableLazy<ITextPortionFont>(() =>
         {
-            var textPortionSize = new PortionFontSize(this.aText!);
+            var textPortionSize = new PortionFontSize(sdkTypedOpenXmlPart, this.aText!);
             return new TextPortionFont(sdkTypedOpenXmlPart, this.aText!, textPortionSize);
         });
 

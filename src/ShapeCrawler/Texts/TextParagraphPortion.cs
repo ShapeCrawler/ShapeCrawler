@@ -18,7 +18,7 @@ internal sealed class TextParagraphPortion : IParagraphPortion
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.AText = aRun.Text!;
         this.aRun = aRun;
-        var textPortionSize = new PortionFontSize(this.AText);
+        var textPortionSize = new PortionFontSize(sdkTypedOpenXmlPart, this.AText);
         this.font = new ResetableLazy<TextPortionFont>(() =>
             new TextPortionFont(this.sdkTypedOpenXmlPart, this.AText, textPortionSize));
     }

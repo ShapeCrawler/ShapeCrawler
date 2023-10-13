@@ -153,7 +153,6 @@ internal readonly record struct IndentFonts
         return null;
     }
 
-
     internal bool? BoldFlagOrNull(int indentLevel)
     {
         var indentFont = this.FontOrNull(indentLevel);

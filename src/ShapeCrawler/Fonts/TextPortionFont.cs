@@ -58,7 +58,15 @@ internal sealed class TextPortionFont : ITextPortionFont
 
     public string? LatinName
     {
-        get => this.ParseLatinName();
+        get
+        {
+            if (this.ALatinFont().Typeface == "+mj-lt")
+            {
+                return this.themeFontScheme.MajorLatinFont();
+            }
+
+            return this.ALatinFont().Typeface!;
+        }
         set => this.UpdateLatinName(value!);
     }
 
@@ -161,16 +169,6 @@ internal sealed class TextPortionFont : ITextPortionFont
         }
 
         return 0;
-    }
-
-    private string ParseLatinName()
-    {
-        if (this.ALatinFont().Typeface == "+mj-lt")
-        {
-            return this.themeFontScheme.MajorLatinFont();
-        }
-
-        return this.ALatinFont().Typeface!;
     }
 
     private string ParseEastAsianName()
