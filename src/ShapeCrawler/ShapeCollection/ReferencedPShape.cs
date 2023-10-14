@@ -4,6 +4,7 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Exceptions;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.ShapeCollection;
@@ -22,12 +23,12 @@ internal readonly ref struct ReferencedPShape
     internal Transform2D ATransform2D()
     {
         var pShape = (P.Shape)this.pShapeTreeElement;
-        if (this.sdkTypedOpenXmlPart is SlidePart)
+        if (this.sdkTypedOpenXmlPart is SlidePart sdkSlidePart)
         {
-            var layoutPShape = this.LayoutPShapeOrNullOf(pShape);
-            if (layoutPShape != null)
+            var layoutPShape = this.LayoutPShapeOrNullOf(pShape, sdkSlidePart);
+            if (layoutPShape != null && layoutPShape.ShapeProperties!.Transform2D != null)
             {
-                return layoutPShape.ShapeProperties!.Transform2D!;
+                return layoutPShape.ShapeProperties.Transform2D;
             }
 
             return this.MasterPShapeOf(pShape).ShapeProperties!.Transform2D!;
@@ -36,7 +37,7 @@ internal readonly ref struct ReferencedPShape
         return this.MasterPShapeOf(pShape).ShapeProperties!.Transform2D!;
     }
 
-    private P.Shape? LayoutPShapeOrNullOf(P.Shape pShape)
+    private P.Shape? LayoutPShapeOrNullOf(P.Shape pShape, SlidePart sdkSlidePart)
     {
         var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
@@ -44,7 +45,7 @@ internal readonly ref struct ReferencedPShape
         {
             return null;
         }
-        var sdkSlidePart = (SlidePart)this.sdkTypedOpenXmlPart;
+        
         var layoutPShapes =
             sdkSlidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!.Elements<P.Shape>();
 
@@ -82,46 +83,51 @@ internal readonly ref struct ReferencedPShape
                 .GetFirstChild<P.PlaceholderShape>()?.Index?.Value == 1)!;
         }
 
-        throw new Exception("An error occurred while getting referenced master shape.");
+        throw new SCException("An error occurred while getting referenced master shape.");
     }
 
-    private static P.Shape? PShapeOrNullOf(IEnumerable<P.Shape> pShapes, P.PlaceholderShape pPlaceholderShapeFor)
+    private static P.Shape? PShapeOrNullOf(IEnumerable<P.Shape> pShapes, P.PlaceholderShape source)
     {
         foreach (var pShape in pShapes)
         {
-            var pPlaceholderMatching = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+            var target = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
                 .GetFirstChild<P.PlaceholderShape>();
-            if (pPlaceholderMatching == null)
+            if (target == null)
             {
                 continue;
             }
 
-            if (pPlaceholderShapeFor.Index is not null && pPlaceholderMatching.Index is not null &&
-                pPlaceholderShapeFor.Index == pPlaceholderMatching.Index)
+            if (source.Index is not null && target.Index is not null &&
+                source.Index == target.Index)
             {
                 return pShape;
             }
 
-            if (pPlaceholderShapeFor.Type == null || pPlaceholderMatching.Type == null)
+            if (source.Type == null || target.Type == null)
             {
-                return pShape;
+                continue;
             }
 
-            if (pPlaceholderShapeFor.Type == P.PlaceholderValues.Body &&
-                pPlaceholderShapeFor.Index is not null && pPlaceholderMatching.Index is not null)
+            if (source.Type == P.PlaceholderValues.Body &&
+                source.Index is not null && target.Index is not null)
             {
-                if (pPlaceholderShapeFor.Index == pPlaceholderMatching.Index)
+                if (source.Index == target.Index)
                 {
                     return pShape;
                 }
             }
 
-            if (pPlaceholderShapeFor.Type == P.PlaceholderValues.Title && pPlaceholderMatching.Type == P.PlaceholderValues.Title)
+            if (source.Type == P.PlaceholderValues.Title && target.Type == P.PlaceholderValues.Title)
             {
                 return pShape;
             }
             
-            if(pPlaceholderShapeFor.Type == P.PlaceholderValues.CenteredTitle && pPlaceholderMatching.Type == P.PlaceholderValues.CenteredTitle)
+            if(source.Type == P.PlaceholderValues.CenteredTitle && target.Type == P.PlaceholderValues.CenteredTitle)
+            {
+                return pShape;
+            }
+
+            if (source.Type != null && target.Type != null && source.Type.Equals(target.Type))
             {
                 return pShape;
             }
@@ -129,7 +135,7 @@ internal readonly ref struct ReferencedPShape
 
         var byType = pShapes.FirstOrDefault(x =>
             x.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-                .GetFirstChild<P.PlaceholderShape>()?.Type == pPlaceholderShapeFor.Type);
+                .GetFirstChild<P.PlaceholderShape>()?.Type == source.Type);
         if (byType != null)
         {
             return byType;

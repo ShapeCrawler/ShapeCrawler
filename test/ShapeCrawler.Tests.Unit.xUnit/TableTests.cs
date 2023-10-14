@@ -38,7 +38,10 @@ public class TableTests : SCTest
         // Act-Assert
         cell1.IsMergedCell.Should().BeTrue();
         cell2.IsMergedCell.Should().BeTrue();
-        cell1.Should().Be(cell2);
+        var internalCell1 = (TableCell) cell1;
+        var internalCell2 = (TableCell) cell2;
+        internalCell1.RowIndex.Should().Be(internalCell2.RowIndex);
+        internalCell1.ColumnIndex.Should().Be(internalCell2.ColumnIndex);
     }
 
     public static IEnumerable<object[]> TestCasesCellIsMergedCell()
