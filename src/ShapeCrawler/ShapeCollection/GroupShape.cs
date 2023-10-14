@@ -19,8 +19,7 @@ internal sealed class GroupShape : Shape, IGroupShape
         this.pGroupShape = pGroupShape;
         this.Shapes = new GroupedShapes(sdkTypedOpenXmlPart, pGroupShape.Elements<OpenXmlCompositeElement>());
         this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pGroupShape.Descendants<P.ShapeProperties>().First());
-        this.Fill = new SlideShapeFill(sdkTypedOpenXmlPart, pGroupShape.Descendants<P.ShapeProperties>().First(),
-            false);
+        this.Fill = new ShapeFill(sdkTypedOpenXmlPart, pGroupShape.Descendants<P.ShapeProperties>().First());
     }
 
     public IShapes Shapes { get; }

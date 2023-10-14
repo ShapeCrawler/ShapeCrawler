@@ -45,7 +45,7 @@ internal sealed class Chart : Shape, IChart
         this.cXCharts = this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
         var pShapeProperties = sdkChartPart.ChartSpace.GetFirstChild<C.ShapeProperties>()!;
         this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pShapeProperties);
-        this.Fill = new SlideShapeFill(sdkTypedOpenXmlPart, pShapeProperties, false);
+        this.Fill = new ShapeFill(sdkTypedOpenXmlPart, pShapeProperties);
         this.SeriesList = new SeriesList(sdkChartPart,
             this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }

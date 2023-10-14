@@ -38,7 +38,7 @@ internal class MediaShape : Shape, IMediaShape
     {
         this.pPicture = pPicture;
         this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pPicture.ShapeProperties!);
-        this.Fill = new SlideShapeFill(sdkTypedOpenXmlPart, pPicture.ShapeProperties!, false);
+        this.Fill = new ShapeFill(sdkTypedOpenXmlPart, pPicture.ShapeProperties!);
     }
 
     public override ShapeType ShapeType => ShapeType.Video;

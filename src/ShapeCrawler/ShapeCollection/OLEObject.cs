@@ -16,7 +16,7 @@ internal class OLEObject : ShapeCollection.Shape
     {
         this.pGraphicFrame = pGraphicFrame;
         this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pGraphicFrame.Descendants<P.ShapeProperties>().First());
-        this.Fill = new SlideShapeFill(sdkTypedOpenXmlPart, pGraphicFrame.Descendants<P.ShapeProperties>().First(), false);
+        this.Fill = new ShapeFill(sdkTypedOpenXmlPart, pGraphicFrame.Descendants<P.ShapeProperties>().First());
     }
 
     public override ShapeType ShapeType => ShapeType.OLEObject;

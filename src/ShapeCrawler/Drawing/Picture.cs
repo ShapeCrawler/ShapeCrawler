@@ -34,7 +34,7 @@ internal sealed class Picture : CopyableShape, IPicture
         this.Image = image;
         this.blipEmbed = aBlip.Embed!;
         this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pPicture.ShapeProperties!);
-        this.Fill = new SlideShapeFill(sdkTypedOpenXmlPart, pPicture.ShapeProperties!, false);
+        this.Fill = new ShapeFill(sdkTypedOpenXmlPart, pPicture.ShapeProperties!);
     }
 
     public IImage Image { get; }
