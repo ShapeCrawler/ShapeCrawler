@@ -131,6 +131,12 @@ internal readonly ref struct ReferencedPShape
             {
                 return pShape;
             }
+            
+            if(source.Type != null && source.Type == P.PlaceholderValues.Title 
+                                   && target.Type != null && target.Type == P.PlaceholderValues.CenteredTitle)
+            {
+                return pShape;
+            }
         }
 
         var byType = pShapes.FirstOrDefault(x =>

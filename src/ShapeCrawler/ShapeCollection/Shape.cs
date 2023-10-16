@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
 using Position = ShapeCrawler.Positions.Position;
@@ -66,10 +68,54 @@ internal abstract class Shape : IShape
         }
     }
 
-    public virtual bool IsPlaceholder => false;
+    public bool IsPlaceholder => this.pShapeTreeElement.Descendants<P.PlaceholderShape>().Any();
 
-    public virtual IPlaceholder Placeholder => throw new SCException(
-        $"The shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} property to check if shape is a placeholder.");
+    public PlaceholderType PlaceholderType
+    {
+        get
+        {
+            var pPlaceholderShape = this.pShapeTreeElement.Descendants<P.PlaceholderShape>().FirstOrDefault();
+            if (pPlaceholderShape == null)
+            {
+                throw new SCException(
+                    $"The shape is not a placeholder. Use {nameof(IShape.IsPlaceholder)} property to check if shape is a placeholder.");
+            }
+            
+            var pPlaceholderValue = pPlaceholderShape.Type;
+            if (pPlaceholderValue == null)
+            {
+                return PlaceholderType.Content;
+            }
+
+            if (pPlaceholderValue == P.PlaceholderValues.Title)
+            {
+                return PlaceholderType.Title;
+            }
+
+            if (pPlaceholderValue == P.PlaceholderValues.CenteredTitle)
+            {
+                return PlaceholderType.CenteredTitle;
+            }
+
+            if (pPlaceholderValue == P.PlaceholderValues.Body)
+            {
+                return PlaceholderType.Text;
+            }
+
+            if (pPlaceholderValue == P.PlaceholderValues.Diagram)
+            {
+                return PlaceholderType.SmartArt;
+            }
+
+            if (pPlaceholderValue == P.PlaceholderValues.ClipArt)
+            {
+                return PlaceholderType.OnlineImage;
+            }
+        
+            return (PlaceholderType)Enum.Parse(typeof(PlaceholderType), pPlaceholderValue.Value.ToString());
+        }
+    } 
+        
 
     public virtual Geometry GeometryType => Geometry.Rectangle;
 

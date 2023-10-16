@@ -90,7 +90,7 @@ internal readonly record struct IndentFonts
             {
                 var indentFont = new IndentFont
                 {
-                    FontSize = fontSize,
+                    Size = fontSize,
                     ALatinFont = aLatinFont,
                     IsBold = isBold,
                     IsItalic = isItalic,
@@ -112,7 +112,7 @@ internal readonly record struct IndentFonts
             {
                 var indentFont = new IndentFont
                 {
-                    FontSize = endParaRunPrFs
+                    Size = endParaRunPrFs
                 };
 
                 return indentFont;

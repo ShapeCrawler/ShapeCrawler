@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -111,7 +112,7 @@ internal sealed class GroupedShape : IShape
     public string Name => this.decoratedShape.Name;
     public bool Hidden => this.decoratedShape.Hidden;
     public bool IsPlaceholder => this.decoratedShape.IsPlaceholder;
-    public IPlaceholder Placeholder => this.decoratedShape.Placeholder;
+    public PlaceholderType PlaceholderType => this.decoratedShape.PlaceholderType;
     public Geometry GeometryType => this.decoratedShape.GeometryType;
 
     public string? CustomData

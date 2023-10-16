@@ -38,10 +38,10 @@ public class FontTests : SCTest
     public void Size_Getter_returns_font_size_of_non_first_portion()
     {
         // Arrange
-        var pptx15 = StreamOf("015.pptx");
-        var pres15 = new Presentation(pptx15);
-        var font1 = pres15.Slides[0].Shapes.GetById<IShape>(5).TextFrame!.Paragraphs[0].Portions[2].Font;
-        var font2 = new Presentation(StreamOf("009_table.pptx")).Slides[2].Shapes.GetById<IShape>(2).TextFrame!.Paragraphs[0].Portions[1].Font;
+        var pres1 = new Presentation(StreamOf("015.pptx"));
+        var font1 = pres1.Slides[0].Shapes.GetById<IShape>(5).TextFrame!.Paragraphs[0].Portions[2].Font;
+        var pres2 = new Presentation(StreamOf("009_table.pptx"));
+        var font2 = pres2.Slides[2].Shapes.GetById<IShape>(2).TextFrame!.Paragraphs[0].Portions[1].Font;
 
         // Act
         var fontSize1 = font1.Size;

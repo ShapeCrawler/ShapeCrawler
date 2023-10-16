@@ -40,7 +40,7 @@ internal class PortionFontSize : IFontSize
         var indentFont = indentFonts.FontOrNull(indentLevel);
         if (indentFont != null)
         {
-            return indentFont.Value.FontSize!.Value / 100;
+            return indentFont.Value.Size!.Value / 100;
         }
         
         return Constants.DefaultFontSize;

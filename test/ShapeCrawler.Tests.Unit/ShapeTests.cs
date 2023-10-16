@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using ShapeCrawler.Tests.Unit.Helpers;
 using NUnit.Framework;
+using ShapeCrawler.Placeholders;
+using ShapeCrawler.Tests.Unit.Helpers.Attributes;
 
 namespace ShapeCrawler.Tests.Unit;
 
@@ -392,7 +394,6 @@ public class ShapeTests : SCTest
         pres.Validate();
     }
     
-    
     [Test]
     public void Remove_removes_shape()
     {
@@ -407,5 +408,26 @@ public class ShapeTests : SCTest
         var act = () => pres.Slides[0].Shapes.GetByName("TextBox 3");
         act.Should().Throw<Exception>();
         pres.Validate();
+    }
+    
+    [Test]
+    [SlideShape("021.pptx", slideNumber: 4, shapeId: 2, expectedResult: PlaceholderType.Footer)]
+    [SlideShape("008.pptx", 1, 3, PlaceholderType.DateAndTime)]
+    [SlideShape("019.pptx", 1, 2, PlaceholderType.SlideNumber)]
+    [SlideShape("013.pptx", 1, 281, PlaceholderType.Content)]
+    [SlideShape("autoshape-case016.pptx", 1, "Content Placeholder 1", PlaceholderType.Content)]
+    [SlideShape("autoshape-case016.pptx", 1, "Text Placeholder 1", PlaceholderType.Text)]
+    [SlideShape("autoshape-case016.pptx", 1, "Picture Placeholder 1", PlaceholderType.Picture)]
+    [SlideShape("autoshape-case016.pptx", 1, "Table Placeholder 1", PlaceholderType.Table)]
+    [SlideShape("autoshape-case016.pptx", 1, "SmartArt Placeholder 1", PlaceholderType.SmartArt)]
+    [SlideShape("autoshape-case016.pptx", 1, "Media Placeholder 1", PlaceholderType.Media)]
+    [SlideShape("autoshape-case016.pptx", 1, "Online Image Placeholder 1", PlaceholderType.OnlineImage)]
+    public void PlaceholderType_returns_placeholder_type(IShape shape, PlaceholderType expectedType)
+    {
+        // Act
+        var placeholderType = shape.PlaceholderType;
+
+        // Assert
+        placeholderType.Should().Be(expectedType);
     }
 }

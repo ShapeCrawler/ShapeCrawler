@@ -7,7 +7,7 @@ internal record struct IndentFont
 {
     internal A.SystemColor? ASystemColor { get; set; }
 
-    internal Int32Value? FontSize { get; set; }
+    internal Int32Value? Size { get; set; }
 
     internal A.LatinFont? ALatinFont { get; set; }
 
@@ -25,7 +25,7 @@ internal record struct IndentFont
 
     internal bool IsFilled()
     {
-        return this.FontSize is not null
+        return this.Size is not null
                && this.ALatinFont is not null
                && this.AEastAsianFont is not null
                && this.IsBold is not null

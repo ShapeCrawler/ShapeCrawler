@@ -278,5 +278,20 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             textFrame.AutofitType.Should().Be(AutofitType.Resize);
             pres.Validate();
         }
+        
+        [Test]
+        [SlideShape("autoshape-case013.pptx", 1, "AutoShape 1")]
+        public void Text_Setter_sets_long_text(IShape shape)
+        {
+            // Arrange
+            var textFrame = shape.TextFrame;
+
+            // Act
+            var text = textFrame.Text;
+            textFrame.Text = "Some sentence. Some sentence";
+            
+            // Assert
+            shape.Height.Should().Be(88);
+        }
     }
 }

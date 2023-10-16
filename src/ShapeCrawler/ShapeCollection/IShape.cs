@@ -1,5 +1,6 @@
 ﻿// ReSharper disable once CheckNamespace
 
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Wrappers;
 
@@ -43,9 +44,9 @@ public interface IShape : IPosition
     bool IsPlaceholder { get; }
     
     /// <summary>
-    ///     Gets placeholder.
+    ///     Gets placeholder type if the is a placeholder.
     /// </summary>
-    IPlaceholder Placeholder { get; }
+    PlaceholderType PlaceholderType { get; }
 
     /// <summary>
     ///     Gets geometry form type of the shape.

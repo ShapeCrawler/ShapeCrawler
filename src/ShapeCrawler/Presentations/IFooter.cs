@@ -36,7 +36,7 @@ internal sealed class Footer : IFooter
     public bool SlideNumberAdded() 
     {
         return this.presentationCore.Slides.Any(slide =>
-            slide.Shapes.Any(shape => shape.Placeholder?.Type == PlaceholderType.SlideNumber));
+            slide.Shapes.Any(shape => shape.PlaceholderType == PlaceholderType.SlideNumber));
     }
 
     public void AddSlideNumber()
@@ -50,7 +50,7 @@ internal sealed class Footer : IFooter
         {
             var slideNumberPlaceholder =
                 slide.SlideLayout.Shapes.FirstOrDefault(shape =>
-                    shape.Placeholder?.Type == PlaceholderType.SlideNumber);
+                    shape.PlaceholderType == PlaceholderType.SlideNumber);
             if (slideNumberPlaceholder != null)
             {
                 slide.Shapes.Add(slideNumberPlaceholder);
@@ -69,7 +69,7 @@ internal sealed class Footer : IFooter
         {
             var slideNumberPlaceholder =
                 slide.Shapes.FirstOrDefault(shape =>
-                    shape.Placeholder?.Type == PlaceholderType.SlideNumber);
+                    shape.PlaceholderType == PlaceholderType.SlideNumber);
             if (slideNumberPlaceholder != null)
             {
                 slide.Shapes.Remove(slideNumberPlaceholder);

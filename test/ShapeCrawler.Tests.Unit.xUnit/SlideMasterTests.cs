@@ -80,9 +80,9 @@ public class SlideMasterTests : SCTest
         IShape masterAutoShapeCase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
 
         // Act
-        PlaceholderType? shapePlaceholderTypeCase1 = masterAutoShapeCase1.Placeholder?.Type;
-        PlaceholderType? shapePlaceholderTypeCase2 = masterAutoShapeCase2.Placeholder?.Type;
-        PlaceholderType? shapePlaceholderTypeCase3 = masterAutoShapeCase3.Placeholder?.Type;
+        PlaceholderType? shapePlaceholderTypeCase1 = masterAutoShapeCase1.PlaceholderType;
+        PlaceholderType? shapePlaceholderTypeCase2 = masterAutoShapeCase2.PlaceholderType;
+        PlaceholderType? shapePlaceholderTypeCase3 = masterAutoShapeCase3.PlaceholderType;
 
         // Assert
         shapePlaceholderTypeCase1.Should().Be(PlaceholderType.Title);

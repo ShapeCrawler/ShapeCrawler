@@ -12,27 +12,6 @@ namespace ShapeCrawler.Tests.Unit;
 public class ShapeTests : SCTest
 {
     [Theory]
-    [SlideShapeData("021.pptx", 4, 2, PlaceholderType.Footer)]
-    [SlideShapeData("008.pptx", 1, 3, PlaceholderType.DateAndTime)]
-    [SlideShapeData("019.pptx", 1, 2, PlaceholderType.SlideNumber)]
-    [SlideShapeData("013.pptx", 1, 281, PlaceholderType.Content)]
-    [SlideShapeData("autoshape-case016.pptx", 1, "Content Placeholder 1", PlaceholderType.Content)]
-    [SlideShapeData("autoshape-case016.pptx", 1, "Text Placeholder 1", PlaceholderType.Text)]
-    [SlideShapeData("autoshape-case016.pptx", 1, "Picture Placeholder 1", PlaceholderType.Picture)]
-    [SlideShapeData("autoshape-case016.pptx", 1, "Table Placeholder 1", PlaceholderType.Table)]
-    [SlideShapeData("autoshape-case016.pptx", 1, "SmartArt Placeholder 1", PlaceholderType.SmartArt)]
-    [SlideShapeData("autoshape-case016.pptx", 1, "Media Placeholder 1", PlaceholderType.Media)]
-    [SlideShapeData("autoshape-case016.pptx", 1, "Online Image Placeholder 1", PlaceholderType.OnlineImage)]
-    public void PlaceholderType_returns_placeholder_type(IShape shape, PlaceholderType expectedType)
-    {
-        // Act
-        var placeholderType = shape.Placeholder!.Type;
-
-        // Assert
-        placeholderType.Should().Be(expectedType);
-    }
-
-    [Theory]
     [MemberData(nameof(TestCasesXGetter))]
     public void X_Getter_returns_x_coordinate_in_pixels(TestCase<IShape, int> testCase)
     {
@@ -98,16 +77,18 @@ public class ShapeTests : SCTest
     [Theory]
     [InlineData("050_title-placeholder.pptx", 1, 2, 777)]
     [InlineData("051_title-placeholder.pptx", 1, 3074, 864)]
-    public void Width_returns_width_of_Title_placeholder(string filename, int slideNumber, int shapeId,
+    public void Width_returns_width_of_Title_placeholder(
+        string filename, 
+        int slideNumber, 
+        int shapeId,
         int expectedWidth)
     {
         // Arrange
-        var pptx = StreamOf(filename);
-        var pres = new Presentation(pptx);
-        var autoShape = pres.Slides[slideNumber - 1].Shapes.GetById<IShape>(shapeId);
+        var pres = new Presentation(StreamOf(filename));
+        var shape = pres.Slides[slideNumber - 1].Shapes.GetById<IShape>(shapeId);
 
         // Act
-        var shapeWidth = autoShape.Width;
+        var shapeWidth = shape.Width;
 
         // Assert
         shapeWidth.Should().Be(expectedWidth);

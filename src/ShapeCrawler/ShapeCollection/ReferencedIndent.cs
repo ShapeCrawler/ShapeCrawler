@@ -510,17 +510,27 @@ internal readonly record struct ReferencedIndent
         {
             var refMasterPShape = this.ReferencedMasterPShapeOrNullOf(slidePShape);
             var fonts = new IndentFonts(refMasterPShape!.TextBody!.ListStyle!);
+            var font = fonts.FontOrNull(indentLevel);
+            if (font.HasValue)
+            {
+                return (int)font.Value.Size!;
+            }
 
-            return (int)fonts.FontOrNull(indentLevel)!.Value.FontSize!;
+            return null;
         }
 
         var layoutFonts = new IndentFonts(refLayoutPShapeOfSlide.TextBody!.ListStyle!);
         var layoutIndentFont = layoutFonts.FontOrNull(indentLevel);
-        if (layoutIndentFont.HasValue && layoutIndentFont.Value.FontSize?.Value != null)
+        if (layoutIndentFont.HasValue && layoutIndentFont.Value.Size?.Value != null)
         {
-            return (int)layoutIndentFont.Value.FontSize!;
+            return (int)layoutIndentFont.Value.Size!;
         }
 
+        return this.MasterFontSizeOrNull(refLayoutPShapeOfSlide, indentLevel);
+    }
+
+    private int? MasterFontSizeOrNull(P.Shape refLayoutPShapeOfSlide, int indentLevel)
+    {
         var refMasterPShapeOfLayout = this.ReferencedMasterPShapeOrNullOf(refLayoutPShapeOfSlide);
         if (refMasterPShapeOfLayout == null)
         {
@@ -531,7 +541,7 @@ internal readonly record struct ReferencedIndent
         var masterOfLayoutIndentColorType = masterFontsOfLayout.FontOrNull(indentLevel);
         if (masterOfLayoutIndentColorType.HasValue)
         {
-            return (int)masterOfLayoutIndentColorType.Value.FontSize!;
+            return (int)masterOfLayoutIndentColorType.Value.Size!;
         }
 
         return null;
