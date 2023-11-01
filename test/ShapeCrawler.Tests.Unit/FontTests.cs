@@ -56,11 +56,12 @@ public class FontTests : SCTest
     public void Size_Getter_returns_Font_Size_of_Non_Placeholder_Table()
     {
         // Arrange
-        var table = (ITable)new Presentation(StreamOf("009_table.pptx")).Slides[2].Shapes.First(sp => sp.Id == 3);
-        var cellPortion = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0];
+        var pres = new Presentation(StreamOf("009_table.pptx"));
+        var table = pres.Slides[2].Shapes.GetById<ITable>(3);
+        var portion = table.Rows[0].Cells[0].TextFrame.Paragraphs[0].Portions[0];
 
         // Act-Assert
-        cellPortion.Font.Size.Should().Be(18);
+        portion.Font.Size.Should().Be(18);
     }
 
     [Test]

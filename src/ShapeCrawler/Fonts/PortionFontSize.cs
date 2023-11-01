@@ -36,6 +36,29 @@ internal class PortionFontSize : IFontSize
 
         var indentLevel = new AParagraphWrap(this.aText.Ancestors<A.Paragraph>().First()).IndentLevel();
         var sdkSlidePart = (SlidePart)this.sdkTypedOpenXmlPart;
+        
+        var pPresentation = ((PresentationDocument)sdkSlidePart.OpenXmlPackage).PresentationPart!.Presentation;
+        if (pPresentation.DefaultTextStyle != null)
+        {
+            var defaultTextStyleFonts = new IndentFonts(pPresentation.DefaultTextStyle);
+            var defaultTextStyleFont = defaultTextStyleFonts.FontOrNull(indentLevel);
+            if (defaultTextStyleFont.HasValue && defaultTextStyleFont.Value.Size != null)
+            {
+                return defaultTextStyleFont.Value.Size!.Value / 100;
+            }    
+        }
+
+        var aTextDefault = pPresentation.PresentationPart!.ThemePart!.Theme.ObjectDefaults!.TextDefault;
+        if (aTextDefault is not null)
+        {
+            var listStyleFonts = new IndentFonts(aTextDefault.ListStyle!);
+            var listStyleFont = listStyleFonts.FontOrNull(indentLevel);
+            if (listStyleFont.HasValue && listStyleFont.Value.Size != null)
+            {
+                return listStyleFont.Value.Size!.Value / 100;
+            }    
+        }
+        
         var indentFonts = new IndentFonts(sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!);
         var indentFont = indentFonts.FontOrNull(indentLevel);
         if (indentFont != null)

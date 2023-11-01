@@ -497,7 +497,11 @@ internal readonly record struct ReferencedIndent
     {
         var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
         var indentLevel = new AParagraphWrap(aParagraph).IndentLevel();
-        var slidePShape = this.aText.Ancestors<P.Shape>().First();
+        var slidePShape = this.aText.Ancestors<P.Shape>().FirstOrDefault();
+        if (slidePShape == null)
+        {
+            return null;
+        }
         var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
         if (slidePh == null)
@@ -521,7 +525,7 @@ internal readonly record struct ReferencedIndent
 
         var layoutFonts = new IndentFonts(refLayoutPShapeOfSlide.TextBody!.ListStyle!);
         var layoutIndentFont = layoutFonts.FontOrNull(indentLevel);
-        if (layoutIndentFont.HasValue && layoutIndentFont.Value.Size?.Value != null)
+        if (layoutIndentFont.HasValue && layoutIndentFont.Value.Size.HasValue)
         {
             return (int)layoutIndentFont.Value.Size!;
         }

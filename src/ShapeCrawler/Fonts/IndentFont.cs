@@ -7,7 +7,7 @@ internal record struct IndentFont
 {
     internal A.SystemColor? ASystemColor { get; set; }
 
-    internal Int32Value? Size { get; set; }
+    internal int? Size { get; set; }
 
     internal A.LatinFont? ALatinFont { get; set; }
 
