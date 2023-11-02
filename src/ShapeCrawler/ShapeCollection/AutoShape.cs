@@ -49,14 +49,21 @@ internal sealed class AutoShape : CopyableShape
             var spPr = this.pShapeTreeElement.Descendants<P.ShapeProperties>().First();
             var aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
 
-            if (aPresetGeometry == null) // Placeholder can have transform on the slide, without having geometry
+            if (aPresetGeometry == null)
             {
-                return Geometry.Custom;
+                if (spPr.OfType<A.CustomGeometry>().Any())
+                {
+                    return Geometry.Custom;
+                }
             }
-
-            var name = aPresetGeometry.Preset!.Value.ToString();
-            Enum.TryParse(name, true, out Geometry geometryType);
-            return geometryType;
+            else
+            {
+                var name = aPresetGeometry.Preset!.Value.ToString();
+                Enum.TryParse(name, true, out Geometry geometryType);
+                return geometryType;    
+            }
+            
+            return Geometry.Rectangle;
         }
     }
 

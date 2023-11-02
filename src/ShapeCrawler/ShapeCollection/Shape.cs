@@ -171,6 +171,8 @@ internal abstract class Shape : IShape
             if (aTransform2D == null)
             {
                 aTransform2D = new ReferencedPShape(this.sdkTypedOpenXmlPart, this.pShapeTreeElement).ATransform2D();
+                var angle2 = aTransform2D.Rotation!.Value; // rotation angle in 1/60,000th of a degree
+                return angle2 / 60000d;
             }
             
             var angle = pSpPr.Transform2D!.Rotation!.Value; // rotation angle in 1/60,000th of a degree
