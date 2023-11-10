@@ -8,7 +8,6 @@ using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Services;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using SkiaSharp;
@@ -91,6 +90,7 @@ internal sealed class SCTextFrame : ITextFrame
     internal event Action? TextChanged;
 
     public IParagraphCollection Paragraphs => this.paragraphs.Value;
+    
     public string SDKXPath => this.TextBodyElement.GetXPath();
 
     public string Text

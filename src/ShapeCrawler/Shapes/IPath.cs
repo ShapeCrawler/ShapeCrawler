@@ -1,4 +1,5 @@
-﻿namespace ShapeCrawler.Shapes;
+﻿// ReSharper disable CheckNamespace
+namespace ShapeCrawler;
 
 /// <summary>
 ///     Represents path information of the shape.
