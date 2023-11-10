@@ -8,7 +8,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a shape on a slide.
 /// </summary>
-public interface IShape
+public interface IShape : IPath
 {
     /// <summary>
     ///     Gets or sets x-coordinate of the upper-left corner of the shape.

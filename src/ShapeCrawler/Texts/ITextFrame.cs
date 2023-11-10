@@ -6,6 +6,7 @@ using System.Text;
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Constants;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.Extensions;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
@@ -17,7 +18,7 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a text frame.
 /// </summary>
-public interface ITextFrame
+public interface ITextFrame : IPath
 {
     /// <summary>
     ///     Gets collection of paragraphs.
@@ -89,6 +90,8 @@ internal sealed class SCTextFrame : ITextFrame
     internal event Action? TextChanged;
 
     public IParagraphCollection Paragraphs => this.paragraphs.Value;
+    
+    public string SDKXPath => this.TextBodyElement.GetXPath();
 
     public string Text
     {

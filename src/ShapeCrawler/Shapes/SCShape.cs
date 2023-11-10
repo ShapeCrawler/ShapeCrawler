@@ -40,6 +40,8 @@ internal abstract class SCShape : IShape
 
     public string Name => this.PShapeTreeChild.GetNonVisualDrawingProperties().Name!;
 
+    public string SDKXPath => this.PShapeTreeChild.GetXPath();
+
     public bool Hidden =>
         this.DefineHidden(); // TODO: the Shape is inherited by LayoutShape, hence do we need this property?
 
