@@ -34,4 +34,6 @@ internal static class CompositeElementExtensions
             _ => throw new SCException()
         };
     }
+
+    internal static string GetXPath(this OpenXmlCompositeElement compositeElement) => new XmlPath(compositeElement).XPath;
 }
