@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using FluentAssertions;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Helpers.Attributes;
@@ -349,6 +350,46 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             
             // Assert
             bottomMargin.Should().Be(expectedMargin);
+        }
+
+        [Xunit.Theory]
+        [MemberData(nameof(TestCasesTextFrameXPath))]
+        public void GetPresentationSlideTextFrameXPath(string presentationName, int slideNumber, string[] expectedXPath)
+        {
+            // Arrange
+            var pptx = GetInputStream(presentationName);
+            var pres = SCPresentation.Open(pptx);
+            var slide = pres.Slides[slideNumber];
+            var textFrame = slide.GetAllTextFrames();
+
+            // Act
+            var actualXPath = textFrame.Select(tf => tf.SDKXPath).ToArray();
+
+            // Assert
+            actualXPath.Should().BeEquivalentTo(expectedXPath);
+        }
+
+        public static IEnumerable<object[]> TestCasesTextFrameXPath()
+        {
+            yield return new object[]
+            {
+                "054_get_shape_xpath.pptx", 0,
+                new string[]
+                {
+                    "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]/p:txBody[1]",
+                    "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[2]/p:txBody[1]"
+                }
+            };
+            yield return new object[]
+            {
+                "054_get_shape_xpath.pptx", 1,
+                new string[]
+                {
+                    "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]/p:txBody[1]",
+                    "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[2]/p:txBody[1]",
+                    "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[3]/p:txBody[1]"
+                }
+            };
         }
     }
 }

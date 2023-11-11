@@ -214,6 +214,8 @@
     <EmbeddedResource Include="Resource\039.pptx" />
     <None Remove="Resource\test-wav.wav" />
     <EmbeddedResource Include="Resource\test-wav.wav" />
+    <None Remove="Resource\054_get_shape_xpath.pptx" />
+    <EmbeddedResource Include="Resource\054_get_shape_xpath.pptx" />
   </ItemGroup>
 
   <ItemGroup>
