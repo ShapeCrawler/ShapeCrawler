@@ -29,8 +29,7 @@ public class ParagraphTests : SCTest
 
     [Xunit.Theory]
     [MemberData(nameof(TestCasesAlignmentGetter))]
-    public void Alignment_Getter_returns_text_alignment(IShape autoShape,
-        TextAlignment expectedAlignment)
+    public void Alignment_Getter_returns_text_alignment(IShape autoShape, TextAlignment expectedAlignment)
     {
         // Arrange
         var paragraph = autoShape.TextFrame.Paragraphs[0];
@@ -40,6 +39,18 @@ public class ParagraphTests : SCTest
 
         // Assert
         textAlignment.Should().Be(expectedAlignment);
+    }
+    
+    public static IEnumerable<object[]> TestCasesAlignmentGetter()
+    {
+        var pptx = StreamOf("001.pptx");
+        var autoShape1 = new Presentation(pptx).Slides[0].Shapes.GetByName<IShape>("TextBox 3");
+        yield return new object[] { autoShape1, TextAlignment.Center };
+
+        var pptxStream2 = StreamOf("001.pptx");
+        var pres2 = new Presentation(pptxStream2);
+        var autoShape2 = pres2.Slides[0].Shapes.GetByName<IShape>("Head 1");
+        yield return new object[] { autoShape2, TextAlignment.Center };
     }
 
     [Xunit.Theory]
@@ -61,18 +72,6 @@ public class ParagraphTests : SCTest
         testCase.SetPresentation(mStream);
         paragraph = testCase.AutoShape.TextFrame.Paragraphs[0];
         paragraph.Alignment.Should().Be(TextAlignment.Right);
-    }
-
-    public static IEnumerable<object[]> TestCasesAlignmentGetter()
-    {
-        var pptx = StreamOf("001.pptx");
-        var autoShape1 = new Presentation(pptx).Slides[0].Shapes.GetByName<IShape>("TextBox 3");
-        yield return new object[] { autoShape1, TextAlignment.Center };
-
-        var pptxStream2 = StreamOf("001.pptx");
-        var pres2 = new Presentation(pptxStream2);
-        var autoShape2 = pres2.Slides[0].Shapes.GetByName<IShape>("Head 1");
-        yield return new object[] { autoShape2, TextAlignment.Center };
     }
 
     public static IEnumerable<object[]> TestCasesParagraphsAlignmentSetter

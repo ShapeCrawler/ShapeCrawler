@@ -2,6 +2,8 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Placeholders;
+using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Texts;
 using ShapeCrawler.Wrappers;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -129,7 +131,33 @@ internal sealed class Paragraph : IParagraph
 
     public TextAlignment Alignment
     {
-        get => this.ParseAlignment();
+        get
+        {
+            if (this.alignment.HasValue)
+            {
+                return this.alignment.Value;
+            }
+
+            var aTextAlignmentType = this.AParagraph.ParagraphProperties?.Alignment;
+            if (aTextAlignmentType == null)
+            {
+                var parentShape = new AutoShape(this.sdkTypedOpenXmlPart, this.AParagraph.Ancestors<P.Shape>().First());
+                if (parentShape.PlaceholderType == PlaceholderType.CenteredTitle)
+                {
+                    return TextAlignment.Center;
+                }
+            }
+
+            this.alignment = aTextAlignmentType!.Value switch
+            {
+                A.TextAlignmentTypeValues.Center => TextAlignment.Center,
+                A.TextAlignmentTypeValues.Right => TextAlignment.Right,
+                A.TextAlignmentTypeValues.Justified => TextAlignment.Justify,
+                _ => TextAlignment.Left
+            };
+
+            return this.alignment.Value;
+        }
         set => this.SetAlignment(value);
     }
 
@@ -203,29 +231,5 @@ internal sealed class Paragraph : IParagraph
         }
 
         this.alignment = alignmentValue;
-    }
-
-    private TextAlignment ParseAlignment()
-    {
-        if (this.alignment.HasValue)
-        {
-            return this.alignment.Value;
-        }
-
-        var aTextAlignmentType = this.AParagraph.ParagraphProperties?.Alignment!;
-        if (aTextAlignmentType == null)
-        {
-            return TextAlignment.Left;
-        }
-
-        this.alignment = aTextAlignmentType.Value switch
-        {
-            A.TextAlignmentTypeValues.Center => TextAlignment.Center,
-            A.TextAlignmentTypeValues.Right => TextAlignment.Right,
-            A.TextAlignmentTypeValues.Justified => TextAlignment.Justify,
-            _ => TextAlignment.Left
-        };
-
-        return this.alignment.Value;
     }
 }

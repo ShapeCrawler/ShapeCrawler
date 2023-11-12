@@ -31,11 +31,18 @@ internal class PortionFontSize : IFontSize
         var size = new ReferencedIndent(this.sdkTypedOpenXmlPart, this.aText).FontSizeOrNull();
         if (size != null)
         {
-            return size.Value;
+            return size.Value / 100;
         }
 
         var indentLevel = new AParagraphWrap(this.aText.Ancestors<A.Paragraph>().First()).IndentLevel();
         var sdkSlidePart = (SlidePart)this.sdkTypedOpenXmlPart;
+        
+        var indentFonts2 = new IndentFonts(sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!);
+        var indentFont2 = indentFonts2.FontOrNull(indentLevel);
+        if (indentFont2 != null)
+        {
+            return indentFont2.Value.Size!.Value / 100;
+        }
         
         var pPresentation = ((PresentationDocument)sdkSlidePart.OpenXmlPackage).PresentationPart!.Presentation;
         if (pPresentation.DefaultTextStyle != null)

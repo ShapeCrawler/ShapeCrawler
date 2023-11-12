@@ -299,8 +299,7 @@ internal sealed class TextFrame : ITextFrame
         var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
         var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
 
-        this.UpdateShapeHeight(textWidth, currentBlockWidth, textHeight, tMarginPixel, bMarginPixel, currentBlockHeight,
-            this.sdkTextBody.Parent!);
+        this.UpdateShapeHeight(textWidth, currentBlockWidth, textHeight, tMarginPixel, bMarginPixel, currentBlockHeight, this.sdkTextBody.Parent!);
         this.UpdateShapeWidthIfNeeded(paint, lMarginPixel, rMarginPixel, this, this.sdkTextBody.Parent!);
     }
 

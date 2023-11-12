@@ -21,7 +21,18 @@ internal sealed class GroupedShape : IShape
 
     public int X
     {
-        get => this.decoratedShape.X;
+        get
+        {
+            var pGroupShape = this.pShape.Ancestors<P.GroupShape>().First();
+            var aTransformGroup = pGroupShape.GroupShapeProperties!.TransformGroup!;
+            var aOffset = aTransformGroup.Offset!;
+            
+            var xGroupShapeEmu = UnitConverter.HorizontalEmuToPixel(aOffset.X!);
+            var groupShapeChildX = UnitConverter.HorizontalEmuToPixel(pGroupShape.GroupShapeProperties!.TransformGroup!.ChildOffset!.X!.Value);
+            var groupedShapeX = this.decoratedShape.X;
+            
+            return xGroupShapeEmu - (groupShapeChildX - groupedShapeX);
+        }
         set
         {
             this.decoratedShape.X = value;
