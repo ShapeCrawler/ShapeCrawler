@@ -160,6 +160,7 @@ internal sealed class TextFrame : ITextFrame
     }
 
     public bool TextWrapped => this.IsTextWrapped();
+    public string SDKXPath => new XmlPath(this.sdkTextBody).XPath;
 
     internal void Draw(SKCanvas slideCanvas, float shapeX, float shapeY)
     {

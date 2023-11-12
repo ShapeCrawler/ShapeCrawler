@@ -133,6 +133,7 @@ internal sealed class GroupedShape : IShape
     public IMediaShape AsMedia() => this.decoratedShape.AsMedia();
     public bool Removeable => this.decoratedShape.Removeable;
     public void Remove() => this.decoratedShape.Remove();
+    public string SDKXPath => this.decoratedShape.SDKXPath;
 
     #endregion Decorated Shape
 }

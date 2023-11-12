@@ -121,4 +121,9 @@ public interface IShape : IPosition
     ///     Removes the shape from the slide.
     /// </summary>
     void Remove();
+    
+    /// <summary>
+    ///     Gets XPath.
+    /// </summary>
+    public string SDKXPath { get; }
 }

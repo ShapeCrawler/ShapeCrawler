@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.Texts;
 
 internal class NullTextFrame : ITextFrame
 {
@@ -41,4 +41,5 @@ internal class NullTextFrame : ITextFrame
         set => throw new Exception(error);
     }
     public bool TextWrapped => throw new Exception(error);
+    public string SDKXPath => throw new Exception(error);
 }

@@ -7,6 +7,7 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
+using ShapeCrawler.Texts;
 using P = DocumentFormat.OpenXml.Presentation;
 using Position = ShapeCrawler.Positions.Position;
 
@@ -190,4 +191,5 @@ internal abstract class Shape : IShape
     public virtual bool Removeable => false;
 
     public virtual void Remove() => this.pShapeTreeElement.Remove();
+    public string SDKXPath => new XmlPath(this.pShapeTreeElement).XPath;
 }
