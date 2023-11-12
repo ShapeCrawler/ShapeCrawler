@@ -61,6 +61,7 @@ internal sealed class TextFrame : ITextFrame
                 {
                     removingParagraph.Remove();
                 }
+
                 paragraphWithPortion.Text = value;
             }
 
@@ -68,6 +69,7 @@ internal sealed class TextFrame : ITextFrame
             {
                 this.ShrinkText(value, paragraphWithPortion);
             }
+
             this.ResizeParentShape();
         }
     }
@@ -90,7 +92,47 @@ internal sealed class TextFrame : ITextFrame
 
             return AutofitType.None;
         }
-        set => this.UpdateAutofitType(value);
+        set
+        {
+            var currentType = this.AutofitType;
+            if (currentType == value)
+            {
+                return;
+            }
+            
+            var aBodyPr = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
+            var dontAutofit = aBodyPr.GetFirstChild<A.NoAutoFit>();
+            var shrink = aBodyPr.GetFirstChild<A.NormalAutoFit>();
+            var resize = aBodyPr.GetFirstChild<A.ShapeAutoFit>();
+            
+            switch (value)
+            {
+                case AutofitType.None:
+                    shrink?.Remove();
+                    resize?.Remove();
+                    dontAutofit = new A.NoAutoFit();
+                    aBodyPr.Append(dontAutofit);
+                    break;
+                case AutofitType.Shrink:
+                    dontAutofit?.Remove();
+                    resize?.Remove();
+                    shrink = new A.NormalAutoFit();
+                    aBodyPr.Append(shrink);
+                    break;
+                case AutofitType.Resize:
+                {
+                    dontAutofit?.Remove();
+                    shrink?.Remove();
+                    resize = new A.ShapeAutoFit();
+                    aBodyPr.Append(resize);
+                    this.ResizeParentShape();
+                    break;
+                }
+            
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
+        }
     }
 
     public double LeftMargin
@@ -133,48 +175,6 @@ internal sealed class TextFrame : ITextFrame
         float x = shapeX + leftMarginPx;
         float y = shapeY + topMarginPx + fontHeightPx;
         slideCanvas.DrawText(this.Text, x, y, paint);
-    }
-
-    private void UpdateAutofitType(AutofitType newType)
-    {
-        var currentType = this.AutofitType;
-        if (currentType == newType)
-        {
-            return;
-        }
-
-        var aBodyPr = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
-        var dontAutofit = aBodyPr.GetFirstChild<A.NoAutoFit>();
-        var shrink = aBodyPr.GetFirstChild<A.NormalAutoFit>();
-        var resize = aBodyPr.GetFirstChild<A.ShapeAutoFit>();
-
-        switch (newType)
-        {
-            case AutofitType.None:
-                shrink?.Remove();
-                resize?.Remove();
-                dontAutofit = new A.NoAutoFit();
-                aBodyPr.Append(dontAutofit);
-                break;
-            case AutofitType.Shrink:
-                dontAutofit?.Remove();
-                resize?.Remove();
-                shrink = new A.NormalAutoFit();
-                aBodyPr.Append(shrink);
-                break;
-            case AutofitType.Resize:
-            {
-                dontAutofit?.Remove();
-                shrink?.Remove();
-                resize = new A.ShapeAutoFit();
-                aBodyPr.Append(resize);
-                this.ResizeParentShape();
-                break;
-            }
-
-            default:
-                throw new ArgumentOutOfRangeException(nameof(newType), newType, null);
-        }
     }
 
     private double GetLeftMargin()
@@ -290,10 +290,11 @@ internal sealed class TextFrame : ITextFrame
         var bMarginPixel = UnitConverter.CentimeterToPixel(this.BottomMargin);
 
         var textRect = default(SKRect);
-        paint.MeasureText(this.Text, ref textRect);
+        var text = this.Text;
+        paint.MeasureText(text, ref textRect);
         var textWidth = textRect.Width;
         var textHeight = paint.TextSize;
-        var shapeSize = new ShapeSize( this.sdkTypedOpenXmlPart,this.sdkTextBody.Ancestors<P.Shape>().First());
+        var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, this.sdkTextBody.Ancestors<P.Shape>().First());
         var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
         var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
 

@@ -64,7 +64,7 @@ public abstract class SCTest
     {
 
         var testFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "..", "TestResults",
-            TestContext.CurrentContext.Test.Name);
+            TestContext.CurrentContext.Test.MethodName);
         Directory.CreateDirectory(testFolder);
 
         pres.SaveAs(Path.Combine(testFolder, "result.pptx"));

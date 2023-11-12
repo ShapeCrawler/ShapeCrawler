@@ -520,6 +520,14 @@ internal readonly record struct ReferencedIndent
                 return (int)font.Value.Size!;
             }
 
+            var sdkSlidePart = (SlidePart)this.sdkTypedOpenXmlPart;
+            var bodyStyleFonts = new IndentFonts(sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!);
+            var bodyStyleFont = bodyStyleFonts.FontOrNull(indentLevel);
+            if (bodyStyleFont.HasValue)
+            {
+                return (int)bodyStyleFont.Value.Size! / 100;
+            }
+
             return null;
         }
 
