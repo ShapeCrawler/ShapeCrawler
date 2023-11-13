@@ -337,10 +337,9 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         public void GetPresentationSlideTextFrameXPath(string presentationName, int slideNumber, string[] expectedXPath)
         {
             // Arrange
-            var pptx = GetInputStream(presentationName);
-            var pres = SCPresentation.Open(pptx);
+            var pres = new Presentation(StreamOf(presentationName));
             var slide = pres.Slides[slideNumber];
-            var textFrame = slide.GetAllTextFrames();
+            var textFrame = slide.TextFrames();
 
             // Act
             var actualXPath = textFrame.Select(tf => tf.SDKXPath).ToArray();
