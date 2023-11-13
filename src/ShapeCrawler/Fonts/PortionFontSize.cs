@@ -18,7 +18,7 @@ internal class PortionFontSize : IFontSize
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aText = aText;
     }
-    
+
     int IFontSize.Size()
     {
         var fontSize = this.aText.Parent!.GetFirstChild<A.RunProperties>()?.FontSize
@@ -36,14 +36,7 @@ internal class PortionFontSize : IFontSize
 
         var indentLevel = new AParagraphWrap(this.aText.Ancestors<A.Paragraph>().First()).IndentLevel();
         var sdkSlidePart = (SlidePart)this.sdkTypedOpenXmlPart;
-        
-        var indentFonts2 = new IndentFonts(sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!);
-        var indentFont2 = indentFonts2.FontOrNull(indentLevel);
-        if (indentFont2 != null)
-        {
-            return indentFont2.Value.Size!.Value / 100;
-        }
-        
+
         var pPresentation = ((PresentationDocument)sdkSlidePart.OpenXmlPackage).PresentationPart!.Presentation;
         if (pPresentation.DefaultTextStyle != null)
         {
@@ -52,7 +45,27 @@ internal class PortionFontSize : IFontSize
             if (defaultTextStyleFont.HasValue && defaultTextStyleFont.Value.Size != null)
             {
                 return defaultTextStyleFont.Value.Size!.Value / 100;
-            }    
+            }
+
+            var aTextDefault2 = pPresentation.PresentationPart!.ThemePart!.Theme.ObjectDefaults!.TextDefault;
+            if (aTextDefault2 is not null)
+            {
+                var listStyleFonts =
+                    new IndentFonts(pPresentation.PresentationPart!.ThemePart!.Theme.ObjectDefaults!.TextDefault!.ListStyle!);
+                var listStyleFontsFont = listStyleFonts.FontOrNull(indentLevel);
+                if (listStyleFontsFont.HasValue && listStyleFontsFont.Value.Size != null)
+                {
+                    return listStyleFontsFont.Value.Size!.Value / 100;
+                }
+            }
+        }
+
+        var indentFonts2 =
+            new IndentFonts(sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!);
+        var indentFont2 = indentFonts2.FontOrNull(indentLevel);
+        if (indentFont2 != null && indentFont2.Value.Size != null)
+        {
+            return indentFont2.Value.Size!.Value / 100;
         }
 
         var aTextDefault = pPresentation.PresentationPart!.ThemePart!.Theme.ObjectDefaults!.TextDefault;
@@ -63,16 +76,17 @@ internal class PortionFontSize : IFontSize
             if (listStyleFont.HasValue && listStyleFont.Value.Size != null)
             {
                 return listStyleFont.Value.Size!.Value / 100;
-            }    
+            }
         }
-        
-        var indentFonts = new IndentFonts(sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!);
+
+        var indentFonts =
+            new IndentFonts(sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.BodyStyle!);
         var indentFont = indentFonts.FontOrNull(indentLevel);
         if (indentFont != null)
         {
             return indentFont.Value.Size!.Value / 100;
         }
-        
+
         return Constants.DefaultFontSize;
     }
 

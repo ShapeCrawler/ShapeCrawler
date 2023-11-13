@@ -74,10 +74,11 @@ public class SlideMasterTests : SCTest
     public void AutoShapePlaceholderType_ReturnsPlaceholderType()
     {
         // Arrange
-        ISlideMaster slideMaster = new Presentation(StreamOf("001.pptx")).SlideMasters[0];
-        IShape masterAutoShapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
-        IShape masterAutoShapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
-        IShape masterAutoShapeCase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
+        var pres = new Presentation(StreamOf("001.pptx"));
+        var slideMaster = pres.SlideMasters[0];
+        var masterAutoShapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
+        var masterAutoShapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
+        var masterAutoShapeCase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
 
         // Act
         PlaceholderType? shapePlaceholderTypeCase1 = masterAutoShapeCase1.PlaceholderType;

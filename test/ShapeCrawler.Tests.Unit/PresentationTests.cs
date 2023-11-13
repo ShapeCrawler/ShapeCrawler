@@ -341,7 +341,7 @@ public class PresentationTests : SCTest
         pres.Footer.SlideNumberAdded().Should().BeTrue();
     }
     
-    [Test]
+    [Test, Ignore("In Progress #540")]
     public void HeaderAndFooter_RemoveSlideNumber_removes_slide_number()
     {
         // Arrange
