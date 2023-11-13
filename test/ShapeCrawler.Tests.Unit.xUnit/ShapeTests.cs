@@ -115,6 +115,18 @@ public class ShapeTests : SCTest
         shape.GeometryType.Should().Be(expectedGeometryType);
     }
 
+    [Theory]
+    [SlideShapeData("054_get_shape_xpath.pptx", 1, "Title 1", "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]")]
+    [SlideShapeData("054_get_shape_xpath.pptx", 1, "SubTitle 2", "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[2]")]
+    public void SDKXPath_returns_shape_xpath(IShape shape, string expectedXPath)
+    {
+        // Act
+        var shapeXPath = shape.SDKXPath;
+
+        // Assert
+        shapeXPath.Should().Be(expectedXPath);
+    }
+
     public static IEnumerable<object[]> GeometryTypeTestCases()
     {
         var pptxStream = StreamOf("021.pptx");
