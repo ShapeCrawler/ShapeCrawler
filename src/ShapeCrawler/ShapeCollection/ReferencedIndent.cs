@@ -101,22 +101,22 @@ internal readonly record struct ReferencedIndent
     /// <summary>
     ///     Tries to get referenced Placeholder Shape located on Slide Layout.
     /// </summary>
-    private P.Shape? ReferencedLayoutPShapeOrNullOf(P.Shape pShape)
+    private P.Shape? ReferencedLayoutPShapeOrNullOf(P.Shape sourcePShape)
     {
         if (this.sdkTypedOpenXmlPart is not SlidePart sdkSlidePart)
         {
             return null;
         }
 
-        var slidePh = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+        var slidePh = sourcePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>()!;
 
         var layoutPShapes =
             sdkSlidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!.Elements<P.Shape>();
 
-        if (ReferencedPShape(layoutPShapes, slidePh, out var shape))
+        if (ReferencedPShape(layoutPShapes, slidePh, out var referencedPShape))
         {
-            return shape;
+            return referencedPShape;
         }
 
         return null;
@@ -145,11 +145,11 @@ internal readonly record struct ReferencedIndent
         }
 
         // https://answers.microsoft.com/en-us/msoffice/forum/all/placeholder-master/0d51dcec-f982-4098-b6b6-94785304607a?page=3
-        if (pPlaceholderShape.Index?.Value == 4294967295)
-        {
-            return masterPShapes.FirstOrDefault(x => x.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-                .GetFirstChild<P.PlaceholderShape>()?.Index?.Value == 1);
-        }
+        // if (pPlaceholderShape.Index?.Value == 4294967295)
+        // {
+        //     return masterPShapes.FirstOrDefault(x => x.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+        //         .GetFirstChild<P.PlaceholderShape>()?.Index?.Value == 1);
+        // }
 
         return null;
     }
@@ -206,7 +206,7 @@ internal readonly record struct ReferencedIndent
 
         var byType = layoutPShapes.FirstOrDefault(layoutPShape =>
             layoutPShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-                .GetFirstChild<P.PlaceholderShape>()?.Type == slidePh.Type);
+                .GetFirstChild<P.PlaceholderShape>()?.Type?.Value == slidePh.Type?.Value);
         if (byType != null)
         {
             referencedShape = byType;
@@ -513,11 +513,14 @@ internal readonly record struct ReferencedIndent
         if (refLayoutPShapeOfSlide == null)
         {
             var refMasterPShape = this.ReferencedMasterPShapeOrNullOf(slidePShape);
-            var fonts = new IndentFonts(refMasterPShape!.TextBody!.ListStyle!);
-            var font = fonts.FontOrNull(indentLevel);
-            if (font.HasValue)
+            if (refMasterPShape != null)
             {
-                return (int)font.Value.Size!;
+                var fonts = new IndentFonts(refMasterPShape!.TextBody!.ListStyle!);
+                var font = fonts.FontOrNull(indentLevel);
+                if (font.HasValue)
+                {
+                    return (int)font.Value.Size!;
+                }    
             }
 
             var sdkSlidePart = (SlidePart)this.sdkTypedOpenXmlPart;
@@ -525,7 +528,7 @@ internal readonly record struct ReferencedIndent
             var bodyStyleFont = bodyStyleFonts.FontOrNull(indentLevel);
             if (bodyStyleFont.HasValue)
             {
-                return (int)bodyStyleFont.Value.Size! / 100;
+                return (int)bodyStyleFont.Value.Size!;
             }
 
             return null;
@@ -551,7 +554,7 @@ internal readonly record struct ReferencedIndent
 
         var masterFontsOfLayout = new IndentFonts(refMasterPShapeOfLayout.TextBody!.ListStyle!);
         var masterOfLayoutIndentColorType = masterFontsOfLayout.FontOrNull(indentLevel);
-        if (masterOfLayoutIndentColorType.HasValue)
+        if (masterOfLayoutIndentColorType.HasValue && masterOfLayoutIndentColorType.Value.Size.HasValue)
         {
             return (int)masterOfLayoutIndentColorType.Value.Size!;
         }

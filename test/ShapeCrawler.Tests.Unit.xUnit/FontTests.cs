@@ -66,20 +66,20 @@ public class FontTests : SCTest
 
     [Theory]
     [MasterShapeData("001.pptx", "Freeform: Shape 7", 18)]
-    [SlideShapeData("020.pptx", 1, 3, 18)]
-    [SlideShapeData("015.pptx", 2, 61, 18)]
-    [SlideShapeData("009_table.pptx", 3, 2, 18)]
+    [SlideShapeData("020.pptx", 1, 3, 18)] //+
+    [SlideShapeData("015.pptx", 2, 61, 18)] //+
+    [SlideShapeData("009_table.pptx", 3, 2, 18)] //+
     [SlideShapeData("009_table.pptx", 4, 2, 44)]
     [SlideShapeData("009_table.pptx", 4, 3, 32)]
-    [SlideShapeData("019.pptx", 1, 4103, 18)]
+    [SlideShapeData("019.pptx", 1, 4103, 18)] //+
     [SlideShapeData("019.pptx", 1, 2, 12)]
     [SlideShapeData("014.pptx", 2, 5, 21)]
-    [SlideShapeData("012_title-placeholder.pptx", 1, "Title 1", 20)]
+    [SlideShapeData("012_title-placeholder.pptx", 1, "Title 1", 20)] //+
     [SlideShapeData("010.pptx", 1, 2, 15)]
     [SlideShapeData("014.pptx", 4, 5, 12)]
     [SlideShapeData("014.pptx", 5, 4, 12)]
     [SlideShapeData("014.pptx", 6, 52, 27)]
-    [SlideShapeData("autoshape-case016.pptx", 1, "Text Placeholder 1", 28)]
+    [SlideShapeData("autoshape-case016.pptx", 1, "Text Placeholder 1", 28)] //+
     public void Size_Getter_returns_font_size(IShape shape, int expectedSize)
     {
         // Arrange
