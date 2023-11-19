@@ -13,9 +13,9 @@ internal sealed class SlideSize
         this.pSlideSize = pSlideSize;
     }
 
-    internal int Width() => UnitConverter.HorizontalEmuToPixel(pSlideSize.Cx!.Value);
+    internal int Width() => UnitConverter.HorizontalEmuToPixel(this.pSlideSize.Cx!.Value);
 
-    internal int Height() => UnitConverter.HorizontalEmuToPixel(pSlideSize.Cy!.Value);
+    internal int Height() => UnitConverter.HorizontalEmuToPixel(this.pSlideSize.Cy!.Value);
 
     internal void UpdateWidth(int pixels)
     {

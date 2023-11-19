@@ -13,9 +13,10 @@ namespace ShapeCrawler.Drawing;
 /// </summary>
 internal sealed class SlideBgImage : ISlideBgImage
 {
-    private readonly SlidePart sdkSlidePart;
     private const string NotPresentedErrorMessage =
         $"Background image is not presented. Use {nameof(ISlideBgImage.Present)} to check.";
+    
+    private readonly SlidePart sdkSlidePart;
     
     internal SlideBgImage(SlidePart sdkSlidePart)
     {
@@ -23,6 +24,7 @@ internal sealed class SlideBgImage : ISlideBgImage
     }
 
     public string MIME => this.ParseMIME();
+    
     public string Name => this.ParseName();
 
     public void Update(Stream stream)
@@ -88,9 +90,7 @@ internal sealed class SlideBgImage : ISlideBgImage
         var aBlip = new A.Blip { Embed = rId };
         var pBackground = new P.Background(
             new P.BackgroundProperties(
-                new A.BlipFill(aBlip)
-                )
-            );
+                new A.BlipFill(aBlip)));
         this.sdkSlidePart.Slide.CommonSlideData!.InsertAt(pBackground, 0);
         this.sdkSlidePart.AddNewPart<ImagePart>("image/png", rId);
         return aBlip;

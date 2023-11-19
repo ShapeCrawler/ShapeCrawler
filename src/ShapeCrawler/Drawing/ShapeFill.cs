@@ -76,7 +76,7 @@ internal record ShapeFill : IShapeFill
                 _ => ((SlideMasterPart)this.sdkTypedOpenXmlPart).SlideMaster.ColorMap
             };
 
-            var targetSchemeColor = pColorMap?.GetAttributes().FirstOrDefault(a => a.LocalName == schemeColor)!;
+            var targetSchemeColor = pColorMap?.GetAttributes().FirstOrDefault(a => a.LocalName == schemeColor) !;
 
             var attrValue = targetSchemeColor!.Value;
             aColor2Type = aColorScheme.Elements<A.Color2Type>().FirstOrDefault(c => c.LocalName == attrValue.Value);

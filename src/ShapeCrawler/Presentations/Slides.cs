@@ -30,9 +30,12 @@ internal sealed class Slides : ISlides
     }
 
     public int Count => this.readOnlySlides.Count;
+    
     public ISlide this[int index] => this.readOnlySlides[index];
-    public IEnumerator<ISlide> GetEnumerator()=>this.readOnlySlides.GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator()=>this.GetEnumerator();
+    
+    public IEnumerator<ISlide> GetEnumerator() => this.readOnlySlides.GetEnumerator();
+    
+    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     public void Remove(ISlide slide)
     {
@@ -128,25 +131,6 @@ internal sealed class Slides : ISlides
         pSlideIdList.Append(pSlideId);
     }
 
-    private static P.TextBody ResolveTextBody(P.Shape shape)
-    {
-        // Creates a new TextBody
-        if (shape.TextBody is null)
-        {
-            return new P.TextBody(new OpenXmlElement[]
-            {
-                new DocumentFormat.OpenXml.Drawing.Paragraph(new OpenXmlElement[]
-                    { new DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties() })
-            })
-            {
-                BodyProperties = new DocumentFormat.OpenXml.Drawing.BodyProperties(),
-                ListStyle = new DocumentFormat.OpenXml.Drawing.ListStyle(),
-            };
-        }
-
-        return (P.TextBody)shape.TextBody.CloneNode(true);
-    }
-
     public void Insert(int position, ISlide slide)
     {
         if (position < 1 || position > this.Count + 1)
@@ -212,6 +196,25 @@ internal sealed class Slides : ISlides
         return addedSlidePart;
     }
 
+    private static P.TextBody ResolveTextBody(P.Shape shape)
+    {
+        // Creates a new TextBody
+        if (shape.TextBody is null)
+        {
+            return new P.TextBody(new OpenXmlElement[]
+            {
+                new DocumentFormat.OpenXml.Drawing.Paragraph(new OpenXmlElement[]
+                    { new DocumentFormat.OpenXml.Drawing.EndParagraphRunProperties() })
+            })
+            {
+                BodyProperties = new DocumentFormat.OpenXml.Drawing.BodyProperties(),
+                ListStyle = new DocumentFormat.OpenXml.Drawing.ListStyle(),
+            };
+        }
+
+        return (P.TextBody)shape.TextBody.CloneNode(true);
+    }
+    
     private static void NormalizeLayouts(SlidePart sourceSlidePart)
     {
         var sourceMasterPart = sourceSlidePart.SlideLayoutPart!.SlideMasterPart!;

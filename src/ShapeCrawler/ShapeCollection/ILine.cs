@@ -30,8 +30,7 @@ internal sealed class SlideLine : Shape, ILine
         : this(
             sdkTypedOpenXmlPart,
             pConnectionShape,
-            new SlideShapeOutline(sdkTypedOpenXmlPart, pConnectionShape.ShapeProperties!)
-        )
+            new SlideShapeOutline(sdkTypedOpenXmlPart, pConnectionShape.ShapeProperties!))
     {
     }
 
@@ -46,8 +45,11 @@ internal sealed class SlideLine : Shape, ILine
     }
 
     public override ShapeType ShapeType => ShapeType.Line;
+    
     public override bool HasOutline => true;
+    
     public override IShapeOutline Outline { get; }
+    
     public override Geometry GeometryType => Geometry.Line;
 
     public Point StartPoint
@@ -109,5 +111,6 @@ internal sealed class SlideLine : Shape, ILine
     }
 
     public override bool Removeable => true;
+    
     public override void Remove() => this.pConnectionShape.Remove();
 }

@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Drawing;
 
@@ -32,7 +30,9 @@ internal class TableCellFill : IShapeFill
     public string? Color => this.GetHexSolidColor();
     
     public double Alpha { get; }
+    
     public double LuminanceModulation { get; }
+    
     public double LuminanceOffset { get; }
 
     public IImage? Picture => this.GetPicture();

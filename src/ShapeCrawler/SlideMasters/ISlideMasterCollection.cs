@@ -26,13 +26,13 @@ internal sealed class SlideMasterCollection : ISlideMasterCollection
 {
     private readonly List<ISlideMaster> slideMasters;
 
-    internal SlideMasterCollection (IEnumerable<SlideMasterPart> sdkMasterParts)
+    internal SlideMasterCollection(IEnumerable<SlideMasterPart> sdkMasterParts)
     {
         this.slideMasters = new List<ISlideMaster>(sdkMasterParts.Count());
         var number = 1;
         foreach (var sdkMasterPart in sdkMasterParts)
         {
-            slideMasters.Add(new SlideMaster(sdkMasterPart));
+            this.slideMasters.Add(new SlideMaster(sdkMasterPart));
         }
     }
     

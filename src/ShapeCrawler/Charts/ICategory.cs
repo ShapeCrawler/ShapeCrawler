@@ -1,8 +1,4 @@
-﻿using System;
-using C = DocumentFormat.OpenXml.Drawing.Charts;
-using X = DocumentFormat.OpenXml.Spreadsheet;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
 
 /// <summary>
@@ -16,7 +12,7 @@ public interface ICategory
     public bool HasMainCategory { get; }
  
     /// <summary>
-    ///     Returns main category.
+    ///     Gets main category.
     /// </summary>
     public ICategory MainCategory { get; }
 

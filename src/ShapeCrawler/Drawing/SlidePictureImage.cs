@@ -9,8 +9,8 @@ namespace ShapeCrawler.Drawing;
 internal sealed class SlidePictureImage : IImage
 {
     private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
-    private ImagePart sdkImagePart;
     private readonly A.Blip aBlip;
+    private ImagePart sdkImagePart;
 
     internal SlidePictureImage(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Blip aBlip)
     {
@@ -21,7 +21,7 @@ internal sealed class SlidePictureImage : IImage
     
     public string MIME => this.sdkImagePart.ContentType;
 
-    public string Name => this.GetName();
+    public string Name => Path.GetFileName(this.sdkImagePart.Uri.ToString());
 
     public void Update(Stream stream)
     {
@@ -53,11 +53,6 @@ internal sealed class SlidePictureImage : IImage
         this.Update(sourceBytes);
     }
     
-    private string GetName()
-    {
-        return Path.GetFileName(this.sdkImagePart.Uri.ToString());
-    }
-
     public byte[] AsByteArray()
     {
         var stream = this.sdkImagePart.GetStream();

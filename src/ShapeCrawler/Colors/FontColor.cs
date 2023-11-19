@@ -5,7 +5,6 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
 using ShapeCrawler.ShapeCollection;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Wrappers;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -47,7 +46,7 @@ internal sealed class FontColor : IFontColor
             var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
             var indentLevel = new AParagraphWrap(aParagraph).IndentLevel();
             var pTextBody = aParagraph.Ancestors<P.TextBody>().First();
-            var aListStyle = pTextBody.GetFirstChild<A.ListStyle>()!;
+            var aListStyle = pTextBody.GetFirstChild<A.ListStyle>() !;
             var textBodyStyleFont = new IndentFonts(aListStyle).FontOrNull(indentLevel);
             if (textBodyStyleFont.HasValue)
             {
@@ -100,7 +99,8 @@ internal sealed class FontColor : IFontColor
             var aParagraph = this.aText.Ancestors<A.Paragraph>().First();
             var indentLevel = new AParagraphWrap(aParagraph).IndentLevel();
             var pTextBody = aParagraph.Ancestors<P.TextBody>().First();
-            var textBodyStyleFont = new IndentFonts(pTextBody.GetFirstChild<A.ListStyle>()!).FontOrNull(indentLevel);
+            var textBodyStyleFont = new IndentFonts(pTextBody.GetFirstChild<A.ListStyle>()
+                !).FontOrNull(indentLevel);
             if (textBodyStyleFont.HasValue)
             {
                 if (this.TryFromIndentFont(textBodyStyleFont, out var textBodyColor))

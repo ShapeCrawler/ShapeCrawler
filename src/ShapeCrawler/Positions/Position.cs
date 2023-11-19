@@ -2,7 +2,6 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.ShapeCollection;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -20,6 +19,7 @@ internal sealed class Position
     }
 
     internal int X() => new Emus(this.AOffset().X!.Value).AsHorizontalPixels();
+   
     internal void UpdateX(int pixels)
     {
         var emus = new Pixels(pixels).AsHorizontalEmus();

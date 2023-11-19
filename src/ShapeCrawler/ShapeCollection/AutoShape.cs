@@ -37,10 +37,16 @@ internal sealed class AutoShape : CopyableShape
     }
 
     public override bool HasOutline => true;
+   
     public override IShapeOutline Outline { get; }
+    
     public override bool HasFill => true;
+    
     public override IShapeFill Fill { get; }
+    
     public override ShapeType ShapeType => ShapeType.AutoShape;
+    
+    public override bool Removeable => true;
 
     public override Geometry GeometryType
     {
@@ -67,6 +73,8 @@ internal sealed class AutoShape : CopyableShape
         }
     }
 
+    public override void Remove() => this.pShape.Remove();
+    
     internal void Draw(SKCanvas slideCanvas)
     {
         var skColorOutline = SKColor.Parse(this.Outline.HexColor);
@@ -93,7 +101,5 @@ internal sealed class AutoShape : CopyableShape
     }
 
     internal IHtmlElement ToHtmlElement() => throw new NotImplementedException();
-
-    public override bool Removeable => true;
-    public override void Remove() => this.pShape.Remove();
+    
 }

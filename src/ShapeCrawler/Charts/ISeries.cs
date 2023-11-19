@@ -2,11 +2,9 @@
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Charts;
 using ShapeCrawler.Excel;
 using ShapeCrawler.Exceptions;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
-using X = DocumentFormat.OpenXml.Spreadsheet;
 
 // ReSharper disable PossibleMultipleEnumeration
 // ReSharper disable once CheckNamespace

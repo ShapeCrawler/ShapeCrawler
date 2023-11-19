@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Packaging;
-
-namespace ShapeCrawler;
+﻿namespace ShapeCrawler;
 
 /// <summary>
 ///     Represents a presentation properties.
@@ -26,12 +24,7 @@ public interface IPresentationProperties
     ///     Gets collection of the slide masters.
     /// </summary>
     ISlideMasterCollection SlideMasters { get; }
-
-    /// <summary>
-    ///     Gets a presentation byte array.
-    /// </summary>
-    byte[] AsByteArray();
-
+    
     /// <summary>
     ///     Gets section collection.
     /// </summary>
@@ -46,4 +39,9 @@ public interface IPresentationProperties
     ///     Saves presentation.
     /// </summary>
     void Save();
+    
+    /// <summary>
+    ///     Gets a presentation byte array.
+    /// </summary>
+    byte[] AsByteArray();
 }

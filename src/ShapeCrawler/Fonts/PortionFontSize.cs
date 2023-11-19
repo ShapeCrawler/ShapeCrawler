@@ -59,7 +59,7 @@ internal class PortionFontSize : IFontSize
             if (parentAutoShape.PlaceholderType == PlaceholderType.Title)
             {
                 var titleFontSize = sdkSlideMasterPart.SlideMaster.TextStyles!.TitleStyle!.Level1ParagraphProperties!
-                    .GetFirstChild<A.DefaultRunProperties>()!.FontSize!.Value;
+                    .GetFirstChild<A.DefaultRunProperties>() !.FontSize!.Value;
                 return titleFontSize / 100;
             }
             

@@ -5,15 +5,12 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Charts;
-using ShapeCrawler.Shapes;
+using ShapeCrawler.Drawing;
 using ShapeCrawler.SlideShape;
 using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
-using Chart = ShapeCrawler.Charts.Chart;
-using GroupShape = ShapeCrawler.ShapeCollection.GroupShape;
-using Picture = ShapeCrawler.Drawing.Picture;
+using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.ShapeCollection;
 
@@ -27,11 +24,17 @@ internal sealed class Shapes : IShapes
     }
 
     public int Count => this.ShapesCore().Count;
+    
     public IShape this[int index] => this.ShapesCore()[index];
+    
     public T GetById<T>(int id) where T : IShape => (T)this.ShapesCore().First(shape => shape.Id == id);
+    
     public T GetByName<T>(string name) where T : IShape => (T)this.GetByName(name);
+    
     public IShape GetByName(string name) => this.ShapesCore().First(shape => shape.Name == name);
+    
     public IEnumerator<IShape> GetEnumerator() => this.ShapesCore().GetEnumerator();
+    
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     private List<IShape> ShapesCore()
@@ -67,11 +70,7 @@ internal sealed class Shapes : IShapes
                                 this.sdkTypedOpenXmlPart,
                                 pShape,
                                 new TextFrame(
-                                    this.sdkTypedOpenXmlPart, pShape.TextBody
-                                )
-                            )
-                        )
-                    );
+                                    this.sdkTypedOpenXmlPart, pShape.TextBody))));
                 }
                 else
                 {
@@ -81,16 +80,14 @@ internal sealed class Shapes : IShapes
                             pShape,
                             new AutoShape(
                                 this.sdkTypedOpenXmlPart,
-                                pShape
-                            )
-                        )
-                    );
+                                pShape)));
                 }
             }
             else if (pShapeTreeElement is P.GraphicFrame pGraphicFrame)
             {
-                var aGraphicData = pShapeTreeElement.GetFirstChild<A.Graphic>()!.GetFirstChild<A.GraphicData>();
-                if (aGraphicData!.Uri!.Value!.Equals("http://schemas.openxmlformats.org/presentationml/2006/ole",
+                var aGraphicData = pShapeTreeElement.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>();
+                if (aGraphicData!.Uri!.Value!.Equals(
+                        "http://schemas.openxmlformats.org/presentationml/2006/ole",
                         StringComparison.Ordinal))
                 {
                     var oleObject = new OLEObject(this.sdkTypedOpenXmlPart, pGraphicFrame);
@@ -130,8 +127,7 @@ internal sealed class Shapes : IShapes
                             this.sdkTypedOpenXmlPart,
                             sdkChartPart,
                             pGraphicFrame,
-                            new Categories(sdkChartPart, cCharts)
-                        );
+                            new Categories(sdkChartPart, cCharts));
                         shapeList.Add(combinationChart);
                         continue;
                     }
@@ -144,8 +140,7 @@ internal sealed class Shapes : IShapes
                             this.sdkTypedOpenXmlPart,
                             sdkChartPart,
                             pGraphicFrame,
-                            new Categories(sdkChartPart, cCharts)
-                        );
+                            new Categories(sdkChartPart, cCharts));
                         shapeList.Add(lineChart);
                         continue;
                     }
@@ -156,8 +151,7 @@ internal sealed class Shapes : IShapes
                             this.sdkTypedOpenXmlPart,
                             sdkChartPart,
                             pGraphicFrame,
-                            new NullCategories()
-                        );
+                            new NullCategories());
                         shapeList.Add(scatterChart);
                         continue;
                     }
@@ -166,8 +160,7 @@ internal sealed class Shapes : IShapes
                         this.sdkTypedOpenXmlPart,
                         sdkChartPart,
                         pGraphicFrame,
-                        new Categories(sdkChartPart, cCharts)
-                    );
+                        new Categories(sdkChartPart, cCharts));
                     shapeList.Add(chart);
                 }
                 else if (this.IsTablePGraphicFrame(pShapeTreeElement))
@@ -195,6 +188,7 @@ internal sealed class Shapes : IShapes
 
                         continue;
                     }
+                    
                     case A.VideoFromFile:
                     {
                         var mediaShape = new MediaShape(this.sdkTypedOpenXmlPart, pPicture);
@@ -223,7 +217,8 @@ internal sealed class Shapes : IShapes
         if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
         {
             var graphicData = pGraphicFrame.Graphic!.GraphicData!;
-            if (graphicData.Uri!.Value!.Equals("http://schemas.openxmlformats.org/drawingml/2006/table",
+            if (graphicData.Uri!.Value!.Equals(
+                    "http://schemas.openxmlformats.org/drawingml/2006/table",
                     StringComparison.Ordinal))
             {
                 return true;
@@ -238,7 +233,8 @@ internal sealed class Shapes : IShapes
         if (pShapeTreeChild is P.GraphicFrame)
         {
             var aGraphicData = pShapeTreeChild.GetFirstChild<A.Graphic>() !.GetFirstChild<A.GraphicData>() !;
-            if (aGraphicData.Uri!.Value!.Equals("http://schemas.openxmlformats.org/drawingml/2006/chart",
+            if (aGraphicData.Uri!.Value!.Equals(
+                    "http://schemas.openxmlformats.org/drawingml/2006/chart",
                     StringComparison.Ordinal))
             {
                 return true;

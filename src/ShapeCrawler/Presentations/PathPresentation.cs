@@ -13,7 +13,7 @@ internal sealed record PathPresentation : IValidateable
         this.presentationCore = new PresentationCore(File.ReadAllBytes(this.path));
     }
 
-    public void Save() => this.presentationCore.CopyTo(path);
+    public void Save() => this.presentationCore.CopyTo(this.path);
     void IValidateable.Validate() => this.presentationCore.Validate();
 
     public void CopyTo(string newPath)

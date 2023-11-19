@@ -1,7 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
-using ShapeCrawler.SlideShape;
 using ShapeCrawler.Texts;
 using ShapeCrawler.Wrappers;
 using SkiaSharp;
@@ -24,6 +23,32 @@ internal sealed class RootShape : CopyableShape, IRootShape
         this.pShape = pShape;
     }
 
+    #region Decorated Shape
+
+    public override ShapeType ShapeType => this.decoratedShape.ShapeType;
+    
+    public override bool HasOutline => this.decoratedShape.HasOutline;
+    
+    public override IShapeOutline Outline => this.decoratedShape.Outline;
+    
+    public override bool HasFill => this.decoratedShape.HasFill;
+    
+    public override IShapeFill Fill => this.decoratedShape.Fill;
+    
+    public override bool IsTextHolder => this.decoratedShape.IsTextHolder;
+    
+    public override ITextFrame TextFrame => this.decoratedShape.TextFrame;
+    
+    public override Geometry GeometryType => this.decoratedShape.GeometryType;
+
+    public override int X
+    {
+        get => this.decoratedShape.X; 
+        set => this.decoratedShape.X = value;
+    }
+
+    #endregion Decorated Shape
+    
     public void Duplicate()
     {
         var pShapeTree = (P.ShapeTree)this.pShape.Parent!;
@@ -55,23 +80,4 @@ internal sealed class RootShape : CopyableShape, IRootShape
             textFrame.Draw(slideCanvas, left, this.Y);
         }
     }
-
-    #region Decorated Shape
-
-    public override ShapeType ShapeType => this.decoratedShape.ShapeType;
-    public override bool HasOutline => this.decoratedShape.HasOutline;
-    public override IShapeOutline Outline => this.decoratedShape.Outline;
-    public override bool HasFill => this.decoratedShape.HasFill;
-    public override IShapeFill Fill => this.decoratedShape.Fill;
-    public override bool IsTextHolder => this.decoratedShape.IsTextHolder;
-    public override ITextFrame TextFrame => this.decoratedShape.TextFrame;
-    public override Geometry GeometryType => this.decoratedShape.GeometryType;
-
-    public override int X
-    {
-        get => this.decoratedShape.X; 
-        set => this.decoratedShape.X = value;
-    }
-
-    #endregion Decorated Shape
 }

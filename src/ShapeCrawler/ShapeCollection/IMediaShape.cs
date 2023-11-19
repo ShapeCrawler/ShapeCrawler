@@ -19,14 +19,15 @@ namespace ShapeCrawler;
 public interface IMediaShape : IShape
 {
     /// <summary>
+    ///     Gets MIME type.
+    /// </summary>
+    string MIME { get; }
+    
+    /// <summary>
     ///     Gets bytes of video content.
     /// </summary>
     public byte[] AsByteArray();
 
-    /// <summary>
-    ///     Gets MIME type.
-    /// </summary>
-    string MIME { get; }
 }
 
 internal class MediaShape : Shape, IMediaShape
@@ -42,10 +43,16 @@ internal class MediaShape : Shape, IMediaShape
     }
 
     public override ShapeType ShapeType => ShapeType.Video;
+    
     public override bool HasOutline => true;
+    
     public override IShapeOutline Outline { get; }
+    
     public override bool HasFill => true;
+    
     public override IShapeFill Fill { get; }
+    
+    public override bool Removeable => true;
 
     public string MIME
     {
@@ -73,6 +80,5 @@ internal class MediaShape : Shape, IMediaShape
         return ms.ToArray();
     }
 
-    public override bool Removeable => true;
     public override void Remove() => this.pPicture.Remove();
 }

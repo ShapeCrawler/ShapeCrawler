@@ -4,9 +4,8 @@ using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.ShapeCollection;
 
 internal sealed class SlideShapeOutline : IShapeOutline
 {

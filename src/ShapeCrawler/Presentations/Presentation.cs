@@ -44,7 +44,7 @@ public sealed class Presentation : IPresentation
         get => this.validateable.SlideWidth; 
         set => this.validateable.SlideWidth = value;
     }
-
+    
     /// <inheritdoc />
     public int SlideHeight
     {
@@ -56,9 +56,6 @@ public sealed class Presentation : IPresentation
     public ISlideMasterCollection SlideMasters => this.validateable.SlideMasters;
     
     /// <inheritdoc />
-    public byte[] AsByteArray() => this.validateable.AsByteArray();
-    
-    /// <inheritdoc />
     public ISections Sections => this.validateable.Sections;
    
     /// <inheritdoc />
@@ -66,6 +63,11 @@ public sealed class Presentation : IPresentation
     
     /// <inheritdoc />
     public void Save() => this.validateable.Save();
+    
+    /// <summary>
+    ///     Gets a presentation byte array.
+    /// </summary>
+    public byte[] AsByteArray() => this.validateable.AsByteArray();
 
     /// <inheritdoc />
     public void SaveAs(string path)
@@ -81,8 +83,5 @@ public sealed class Presentation : IPresentation
         this.validateable = new StreamPresentation(stream);
     }
 
-    internal void Validate()
-    {
-        this.validateable.Validate();
-    }
+    internal void Validate() => this.validateable.Validate();
 }

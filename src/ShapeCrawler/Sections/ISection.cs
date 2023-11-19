@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shapes;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
@@ -26,27 +27,23 @@ internal sealed class Section : ISection, IRemoveable
     internal Section(PresentationDocument sdkPresDocument, P14.Section p14Section)
         : this(
             p14Section,
-            new SectionSlides(sdkPresDocument, p14Section.Descendants<P14.SectionSlideIdListEntry>())
-        )
+            new SectionSlides(sdkPresDocument, p14Section.Descendants<P14.SectionSlideIdListEntry>()))
     {
     }
 
     private Section(P14.Section p14Section, IReadOnlyList<ISlide> slides)
     {
-        this.p14Section = p14Section;
+        this.P14Section = p14Section;
         this.Slides = slides;
     }
 
-    public IReadOnlyList<ISlide> Slides { get; }
-
     public string Name => this.GetName();
+    
+    public IReadOnlyList<ISlide> Slides { get; }
+    
+    private P14.Section P14Section { get; }
+    
+    public void Remove() => this.P14Section.Remove();
 
-    private P14.Section p14Section { get; }
-
-    private string GetName()
-    {
-        return this.p14Section.Name!;
-    }
-
-    public void Remove() => this.p14Section.Remove();
+    private string GetName() => this.P14Section.Name!;
 }

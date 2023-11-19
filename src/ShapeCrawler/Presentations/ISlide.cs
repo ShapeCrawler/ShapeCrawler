@@ -19,16 +19,21 @@ public interface ISlide
     ///     Gets or sets custom data. It returns <see langword="null"/> if custom data is not presented.
     /// </summary>
     string? CustomData { get; set; }
-
-    /// <summary>
-    ///     Gets a value indicating whether the slide is hidden.
-    /// </summary>
-    bool Hidden();
-
+    
     /// <summary>
     ///     Gets referenced Slide Layout.
     /// </summary>
     ISlideLayout SlideLayout { get; }
+    
+    /// <summary>
+    ///     Gets or sets slide number.
+    /// </summary>
+    int Number { get; set; }
+    
+    /// <summary>
+    ///     Gets shape collection.
+    /// </summary>
+    ISlideShapes Shapes { get; }
 
     /// <summary>
     ///     List of all text frames on that slide.
@@ -40,15 +45,19 @@ public interface ISlide
     /// </summary>
     void Hide();
     
-    int Number { get; set; }
+    /// <summary>
+    ///     Gets a value indicating whether the slide is hidden.
+    /// </summary>
+    bool Hidden();
     
     /// <summary>
-    ///     Gets shape collection.
+    ///     Gets shape by name.
     /// </summary>
-    ISlideShapes Shapes { get; }
-    
     IShape ShapeWithName(string autoshape);
     
+    /// <summary>
+    ///     Gets table by name.
+    /// </summary>
     ITable TableWithName(string table);
 
 #if DEBUG

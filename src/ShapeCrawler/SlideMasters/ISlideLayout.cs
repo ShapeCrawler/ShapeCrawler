@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Shapes;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler;
@@ -25,12 +24,14 @@ public interface ISlideLayout
     /// </summary>
     IShapes Shapes { get; }
 
+    /// <summary>
+    ///     Gets slide master.
+    /// </summary>
     ISlideMaster SlideMaster { get; }
 }
 
 internal sealed class SlideLayout : ISlideLayout
 {
-    private readonly SlideLayoutPart sdkLayoutPart;
     private static readonly Dictionary<string, SlideLayoutType> TypeMapping = new()
     {
         // https://c-rex.net/samples/ooxml/e1/Part4/OOXML_P4_DOCX_ST_SlideLayoutType_topic_ID0EKTIIB.html
@@ -71,6 +72,8 @@ internal sealed class SlideLayout : ISlideLayout
         { "vertTitleAndTxOverChart", SlideLayoutType.VerticalTitleAndTextOverChart },
         { "vertTx", SlideLayoutType.VerticalText }
     };
+    
+    private readonly SlideLayoutPart sdkLayoutPart;
 
     internal SlideLayout(SlideLayoutPart sdkLayoutPart)
         : this(sdkLayoutPart, new SlideMaster(sdkLayoutPart.SlideMasterPart!))
@@ -85,8 +88,12 @@ internal sealed class SlideLayout : ISlideLayout
     }
 
     public string Name => this.sdkLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
+    
     public IShapes Shapes { get; }
+    
     public ISlideMaster SlideMaster { get; }
+    
     public SlideLayoutType Type => TypeMapping[this.sdkLayoutPart.SlideLayout.Type!];
+    
     internal SlideLayoutPart SDKSlideLayoutPart() => this.sdkLayoutPart;
 }

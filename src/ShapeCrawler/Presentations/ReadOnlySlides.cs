@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using P = DocumentFormat.OpenXml.Presentation;
-using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace ShapeCrawler;
 
@@ -21,9 +19,9 @@ internal sealed record ReadOnlySlides : IReadOnlyList<ISlide>
 
     public ISlide this[int index] => this.SlideList()[index];
 
-    public IEnumerator<ISlide> GetEnumerator()=>this.SlideList().GetEnumerator();
+    public IEnumerator<ISlide> GetEnumerator() => this.SlideList().GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator()=> this.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
     
     private List<Slide> SlideList()
     {

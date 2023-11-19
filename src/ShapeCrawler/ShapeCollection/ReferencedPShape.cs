@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
@@ -35,55 +34,6 @@ internal readonly ref struct ReferencedPShape
         }
         
         return this.MasterPShapeOf(pShape).ShapeProperties!.Transform2D!;
-    }
-
-    private P.Shape? LayoutPShapeOrNullOf(P.Shape pShape, SlidePart sdkSlidePart)
-    {
-        var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-            .GetFirstChild<P.PlaceholderShape>();
-        if (pPlaceholderShape == null)
-        {
-            return null;
-        }
-        
-        var layoutPShapes =
-            sdkSlidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!.Elements<P.Shape>();
-
-        var referencedPShape = PShapeOrNullOf(layoutPShapes, pPlaceholderShape);
-        if (referencedPShape != null)
-        {
-            return referencedPShape;
-        }
-
-        return null;
-    }
-
-    private P.Shape MasterPShapeOf(P.Shape pShape)
-    {
-        var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-            .GetFirstChild<P.PlaceholderShape>()!;
-        var masterPShapes = this.sdkTypedOpenXmlPart switch
-        {
-            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.CommonSlideData!
-                .ShapeTree!.Elements<P.Shape>(),
-            _ => ((SlideLayoutPart)this.sdkTypedOpenXmlPart).SlideMasterPart!.SlideMaster.CommonSlideData!
-                .ShapeTree!.Elements<P.Shape>()
-        };
-
-        var referencedPShape = PShapeOrNullOf(masterPShapes, pPlaceholderShape);
-        if (referencedPShape != null)
-        {
-            return referencedPShape;
-        }
-
-        // https://answers.microsoft.com/en-us/msoffice/forum/all/placeholder-master/0d51dcec-f982-4098-b6b6-94785304607a?page=3
-        if (pPlaceholderShape.Index?.Value == 4294967295)
-        {
-            return masterPShapes.FirstOrDefault(x => x.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-                .GetFirstChild<P.PlaceholderShape>()?.Index?.Value == 1)!;
-        }
-
-        throw new SCException("An error occurred while getting referenced master shape.");
     }
 
     private static P.Shape? PShapeOrNullOf(IEnumerable<P.Shape> pShapes, P.PlaceholderShape source)
@@ -148,5 +98,54 @@ internal readonly ref struct ReferencedPShape
         }
 
         return null;
+    }
+    
+    private P.Shape? LayoutPShapeOrNullOf(P.Shape pShape, SlidePart sdkSlidePart)
+    {
+        var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+            .GetFirstChild<P.PlaceholderShape>();
+        if (pPlaceholderShape == null)
+        {
+            return null;
+        }
+        
+        var layoutPShapes =
+            sdkSlidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!.Elements<P.Shape>();
+
+        var referencedPShape = PShapeOrNullOf(layoutPShapes, pPlaceholderShape);
+        if (referencedPShape != null)
+        {
+            return referencedPShape;
+        }
+
+        return null;
+    }
+
+    private P.Shape MasterPShapeOf(P.Shape pShape)
+    {
+        var pPlaceholderShape = pShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+            .GetFirstChild<P.PlaceholderShape>() !;
+        var masterPShapes = this.sdkTypedOpenXmlPart switch
+        {
+            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.CommonSlideData!
+                .ShapeTree!.Elements<P.Shape>(),
+            _ => ((SlideLayoutPart)this.sdkTypedOpenXmlPart).SlideMasterPart!.SlideMaster.CommonSlideData!
+                .ShapeTree!.Elements<P.Shape>()
+        };
+
+        var referencedPShape = PShapeOrNullOf(masterPShapes, pPlaceholderShape);
+        if (referencedPShape != null)
+        {
+            return referencedPShape;
+        }
+
+        // https://answers.microsoft.com/en-us/msoffice/forum/all/placeholder-master/0d51dcec-f982-4098-b6b6-94785304607a?page=3
+        if (pPlaceholderShape.Index?.Value == 4294967295)
+        {
+            return masterPShapes.FirstOrDefault(x => x.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
+                .GetFirstChild<P.PlaceholderShape>()?.Index?.Value == 1) !;
+        }
+
+        throw new SCException("An error occurred while getting referenced master shape.");
     }
 }

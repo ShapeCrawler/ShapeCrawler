@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using DocumentFormat.OpenXml.Packaging;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
@@ -48,14 +47,14 @@ public interface IChart : IShape
     ///     Gets collection of x-axis values.
     /// </summary>
     List<double> XValues { get; } // TODO: should be excluded
+    
+    /// <summary>
+    ///     Gets chart axes manager.
+    /// </summary>
+    IAxesManager Axes { get; }
 
     /// <summary>
     ///     Gets byte array of excel book containing chart data source.
     /// </summary>
     byte[] BookByteArray();
-
-    /// <summary>
-    ///     Gets chart axes manager.
-    /// </summary>
-    IAxesManager Axes { get; }
 }

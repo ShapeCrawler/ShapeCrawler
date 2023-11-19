@@ -12,7 +12,6 @@ using ShapeCrawler.Exceptions;
 using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
-using ShapeCrawler.SlideShape;
 using SkiaSharp;
 
 // ReSharper disable CheckNamespace
@@ -22,9 +21,9 @@ namespace ShapeCrawler;
 internal sealed class Slide : ISlide
 {
     private readonly Lazy<SlideBgImage> backgroundImage;
-    private Lazy<CustomXmlPart?> sdkCustomXmlPart;
     private readonly SlidePart sdkSlidePart;
     private readonly SlideSize slideSize;
+    private Lazy<CustomXmlPart?> sdkCustomXmlPart;
 
     internal Slide(
         SlidePart sdkSlidePart,
@@ -139,6 +138,8 @@ internal sealed class Slide : ISlide
 
         return returnList;
     }
+    
+    internal PresentationDocument SDKPresentationDocument() => (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
 
     /// <summary>
     ///     Iterates group recursively and add all text boxes in the list.
@@ -244,7 +245,7 @@ internal sealed class Slide : ISlide
 #if NET7_0
         return raw[Constants.CustomDataElementName.Length..];
 #else
-        return raw.Substring(SCConstants.CustomDataElementName.Length);
+        return raw.Substring(Constants.CustomDataElementName.Length);
 #endif
     }
 
@@ -281,10 +282,5 @@ internal sealed class Slide : ISlide
         }
 
         return null;
-    }
-
-    internal PresentationDocument SDKPresentationDocument()
-    {
-        return (PresentationDocument)this.sdkSlidePart.OpenXmlPackage;
     }
 }

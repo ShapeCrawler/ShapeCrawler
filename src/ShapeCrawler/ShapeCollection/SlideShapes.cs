@@ -10,14 +10,13 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Services;
-using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shared;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using Position = ShapeCrawler.Positions.Position;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.ShapeCollection;
 
 internal sealed class SlideShapes : ISlideShapes
 {

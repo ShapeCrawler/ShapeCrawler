@@ -5,7 +5,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
 using ShapeCrawler.Exceptions;
-using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler;
 

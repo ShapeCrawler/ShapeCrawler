@@ -4,12 +4,10 @@ using System.Linq;
 using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Shared;
 using SkiaSharp;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -47,6 +45,9 @@ public interface ITable : IShape
     /// </summary>
     void RemoveColumnAt(int columnIndex);
 
+    /// <summary>
+    ///     Updates table fill.
+    /// </summary>
     void UpdateFill(string colorHex);
 }
 
@@ -62,8 +63,12 @@ internal sealed class Table : CopyableShape, ITable
     }
 
     public override ShapeType ShapeType => ShapeType.Table;
+    
     public IReadOnlyList<IColumn> Columns => this.GetColumnList(); // TODO: make lazy
+    
     public ITableRows Rows { get; }
+    
+    public override bool Removeable => true;
 
     public override Geometry GeometryType => Geometry.Rectangle;
 
@@ -119,6 +124,8 @@ internal sealed class Table : CopyableShape, ITable
         this.RemoveRowIfNeeded();
     }
 
+    public override void Remove() => this.pGraphicFrame.Remove();
+    
     internal void Draw(SKCanvas canvas)
     {
         throw new NotImplementedException();
@@ -278,7 +285,7 @@ internal sealed class Table : CopyableShape, ITable
                 // Delete a:tc elements
                 foreach (var aTblRow in aTableRows)
                 {
-                    var removeCells = aTblRow.Elements<A.TableCell>().Skip(colIdx+1).Take(deleteColumnCount).ToList();
+                    var removeCells = aTblRow.Elements<A.TableCell>().Skip(colIdx + 1).Take(deleteColumnCount).ToList();
                     foreach (var aTblCell in removeCells)
                     {
                         aTblCell.Remove();
@@ -293,7 +300,4 @@ internal sealed class Table : CopyableShape, ITable
             }
         }
     }
-    
-    public override bool Removeable => true;
-    public override void Remove() => this.pGraphicFrame.Remove();
 }

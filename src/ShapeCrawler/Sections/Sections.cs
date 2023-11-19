@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
+using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shapes;
 using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
@@ -18,19 +19,11 @@ internal sealed class Sections : ISections
     }
 
     public int Count => this.SectionList().Count;
-
-    private List<Section> SectionList()
-    {
-        var p14SectionList = this.sdkPresDocument.PresentationPart!.Presentation.PresentationExtensionList
-            ?.Descendants<P14.SectionList>().FirstOrDefault();
-        return p14SectionList == null
-            ? new List<Section>(0)
-            : p14SectionList.OfType<P14.Section>().Select(p14Section => new Section(this.sdkPresDocument, p14Section))
-                .ToList();
-    }
-
+    
     public ISection this[int index] => this.SectionList()[index];
+    
     public IEnumerator<ISection> GetEnumerator() => this.SectionList().GetEnumerator();
+    
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     public void Remove(ISection removingSection)
@@ -52,4 +45,14 @@ internal sealed class Sections : ISections
     }
 
     public ISection GetByName(string sectionName) => this.SectionList().First(section => section.Name == sectionName);
+    
+    private List<Section> SectionList()
+    {
+        var p14SectionList = this.sdkPresDocument.PresentationPart!.Presentation.PresentationExtensionList
+            ?.Descendants<P14.SectionList>().FirstOrDefault();
+        return p14SectionList == null
+            ? new List<Section>(0)
+            : p14SectionList.OfType<P14.Section>().Select(p14Section => new Section(this.sdkPresDocument, p14Section))
+                .ToList();
+    }
 }

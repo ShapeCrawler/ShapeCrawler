@@ -109,8 +109,4 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <Folder Include="Resources\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Analyzer Include="ShapeCrawler.Analyzer.dll" />
-  </ItemGroup>
-
 </Project>

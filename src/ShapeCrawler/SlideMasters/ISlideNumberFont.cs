@@ -1,5 +1,4 @@
-﻿using ShapeCrawler.Drawing;
-using ShapeCrawler.Texts;
+﻿using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Packaging;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -11,9 +9,9 @@ namespace ShapeCrawler.Drawing;
 internal sealed class ShapeFillImage : IImage
 {
     private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
-    private ImagePart sdkImagePart;
     private readonly A.Blip aBlip;
-
+    private ImagePart sdkImagePart;
+    
     internal ShapeFillImage(TypedOpenXmlPart sdkTypedOpenXmlPart, A.BlipFill aBlipFill, ImagePart sdkImagePart)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;

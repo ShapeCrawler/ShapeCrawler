@@ -33,8 +33,7 @@ internal sealed class Chart : Shape, IChart
         TypedOpenXmlPart sdkTypedOpenXmlPart, 
         ChartPart sdkChartPart, 
         P.GraphicFrame pGraphicFrame,
-        IReadOnlyList<ICategory> categories
-        )
+        IReadOnlyList<ICategory> categories)
         : base(sdkTypedOpenXmlPart,pGraphicFrame)
     {
         this.sdkChartPart = sdkChartPart;
@@ -43,10 +42,11 @@ internal sealed class Chart : Shape, IChart
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
         this.cPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
         this.cXCharts = this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
-        var pShapeProperties = sdkChartPart.ChartSpace.GetFirstChild<C.ShapeProperties>()!;
+        var pShapeProperties = sdkChartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
         this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pShapeProperties);
         this.Fill = new ShapeFill(sdkTypedOpenXmlPart, pShapeProperties);
-        this.SeriesList = new SeriesList(sdkChartPart,
+        this.SeriesList = new SeriesList(
+            sdkChartPart,
             this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }
 
@@ -67,7 +67,9 @@ internal sealed class Chart : Shape, IChart
     }
 
     public override ShapeType ShapeType => ShapeType.Chart;
+    
     public override IShapeOutline Outline { get; }
+    
     public override IShapeFill Fill { get; }
 
     public bool HasTitle
@@ -78,6 +80,7 @@ internal sealed class Chart : Shape, IChart
             return this.chartTitle != null;
         }
     }
+
     public string? Title
     {
         get
@@ -86,9 +89,13 @@ internal sealed class Chart : Shape, IChart
             return this.chartTitle;
         }
     }
+
     public bool HasCategories => false;
+
     public IReadOnlyList<ICategory> Categories { get; }
+    
     public ISeriesList SeriesList { get; }
+    
     public bool HasXValues => this.ParseXValues() != null;
 
     public List<double> XValues
@@ -100,19 +107,21 @@ internal sealed class Chart : Shape, IChart
                 throw new NotSupportedException(ExceptionMessages.NotXValues);
             }
 
-            return this.ParseXValues()!;
+            return this.ParseXValues() !;
         }
     }
+    
     public override Geometry GeometryType => Geometry.Rectangle;
-    public byte[] BookByteArray() => new ExcelBook(this.sdkChartPart).AsByteArray();
+    
     public IAxesManager Axes => this.GetAxes();
+    
     public override bool Removeable => true;
+    
+    public byte[] BookByteArray() => new ExcelBook(this.sdkChartPart).AsByteArray();
+    
     public override void Remove() => this.pGraphicFrame.Remove();
     
-    private IAxesManager GetAxes()
-    {
-        return new AxesManager(this.cPlotArea);
-    }
+    private IAxesManager GetAxes() => new AxesManager(this.cPlotArea);
 
     private string? GetTitleOrDefault()
     {

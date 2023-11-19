@@ -64,7 +64,7 @@ public interface IShape : IPosition
     ShapeType ShapeType { get; }
     
     /// <summary>
-    ///     Gets value indicating whether the shape has outline formatting.
+    ///     Gets a value indicating whether the shape has outline formatting.
     /// </summary>
     bool HasOutline { get; }
     
@@ -74,7 +74,7 @@ public interface IShape : IPosition
     IShapeOutline Outline { get; }
  
     /// <summary>
-    ///     Gets value indicating whether the shape has fill.
+    ///     Gets a value indicating whether the shape has fill.
     /// </summary>
     bool HasFill { get; }
     
@@ -84,13 +84,12 @@ public interface IShape : IPosition
     IShapeFill Fill { get; }
     
     /// <summary>
-    ///     Gets value indicating whether the AutoShape is a text holder.
+    ///     Gets a value indicating whether the AutoShape is a text holder.
     /// </summary>
-    /// <returns></returns>
     bool IsTextHolder { get; }
     
     /// <summary>
-    ///     Text Frame.
+    ///     Gets Text Frame.
     /// </summary>
     ITextFrame TextFrame { get; }
     
@@ -113,7 +112,7 @@ public interface IShape : IPosition
     IMediaShape AsMedia();
 
     /// <summary>
-    ///     Gets value indicating whether the shape can be removed.
+    ///     Gets a value indicating whether the shape can be removed.
     /// </summary>
     bool Removeable { get; }
     

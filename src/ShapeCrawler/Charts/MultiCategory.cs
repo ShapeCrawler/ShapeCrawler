@@ -13,6 +13,7 @@ internal sealed class MultiCategory : ICategory
     }
 
     public bool HasMainCategory => true;
+    
     public ICategory MainCategory { get; }
 
     public string Name

@@ -12,5 +12,6 @@ internal readonly ref struct Emus
     }
 
     internal int AsHorizontalPixels() => (int)(this.emu * HorizontalResolutionDpi / 914400);
+    
     internal int AsVerticalPixels() => (int)(this.emu * VerticalResolutionDpi / 914400);
 }

@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
-using Shape = ShapeCrawler.ShapeCollection.Shape;
 
 namespace ShapeCrawler.SlideShape;
 
@@ -20,10 +20,16 @@ internal class OLEObject : ShapeCollection.Shape
     }
 
     public override ShapeType ShapeType => ShapeType.OLEObject;
+
     public override bool HasOutline => true;
+    
     public override IShapeOutline Outline { get; }
+    
     public override bool HasFill => true;
+    
     public override IShapeFill Fill { get; }
+    
     public override bool Removeable => true;
+    
     public override void Remove() => this.pGraphicFrame.Remove();
 }

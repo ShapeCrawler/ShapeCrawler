@@ -4,7 +4,6 @@ using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
 using P = DocumentFormat.OpenXml.Presentation;
-using Shape = ShapeCrawler.ShapeCollection.Shape;
 
 // ReSharper disable PossibleMultipleEnumeration
 namespace ShapeCrawler.ShapeCollection;
@@ -23,15 +22,21 @@ internal sealed class GroupShape : Shape, IGroupShape
     }
 
     public IShapes Shapes { get; }
+    
     public override Geometry GeometryType => Geometry.Rectangle;
+    
     public override ShapeType ShapeType => ShapeType.Group;
+    
     public override bool HasOutline => true;
+    
     public override IShapeOutline Outline { get; }
+    
     public override bool HasFill => true;
+    
     public override IShapeFill Fill { get; }
+    
     public override bool Removeable => true;
-    public override void Remove() => this.pGroupShape.Remove();
-
+    
     public override double Rotation
     {
         get
@@ -41,4 +46,6 @@ internal sealed class GroupShape : Shape, IGroupShape
             return rotation / 60000d;
         }
     }
+    
+    public override void Remove() => this.pGroupShape.Remove();
 }

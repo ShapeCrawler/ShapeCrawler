@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using SkiaSharp;
 

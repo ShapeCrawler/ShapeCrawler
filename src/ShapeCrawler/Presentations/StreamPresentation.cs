@@ -16,23 +16,34 @@ internal sealed class StreamPresentation : IValidateable
         this.presentationCore = new PresentationCore(internalStream);
     }
 
-    public void Save() => this.presentationCore.CopyTo(this.userStream);
-    void IValidateable.Validate() => this.presentationCore.Validate();
-    public void CopyTo(string path) => this.presentationCore.CopyTo(path);
-    public void CopyTo(Stream stream) => this.presentationCore.CopyTo(stream);
     public ISlides Slides => this.presentationCore.Slides;
+    
     public int SlideWidth
     {
         get => this.presentationCore.SlideWidth;
         set => this.presentationCore.SlideWidth = value;
     }
+    
     public int SlideHeight
     {
         get => this.presentationCore.SlideHeight;
         set => this.presentationCore.SlideHeight = value;
     }
+    
     public ISlideMasterCollection SlideMasters => this.presentationCore.SlideMasters;
-    public byte[] AsByteArray() => this.presentationCore.AsByteArray();
+    
     public ISections Sections => this.presentationCore.Sections;
+    
     public IFooter Footer => this.presentationCore.Footer;
+    
+    public byte[] AsByteArray() => this.presentationCore.AsByteArray();
+    
+    
+    public void Save() => this.presentationCore.CopyTo(this.userStream);
+    
+    void IValidateable.Validate() => this.presentationCore.Validate();
+    
+    public void CopyTo(string path) => this.presentationCore.CopyTo(path);
+    
+    public void CopyTo(Stream stream) => this.presentationCore.CopyTo(stream);
 }

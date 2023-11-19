@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Colors;
@@ -109,7 +108,7 @@ internal readonly record struct ReferencedIndent
         }
 
         var slidePh = sourcePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-            .GetFirstChild<P.PlaceholderShape>()!;
+            .GetFirstChild<P.PlaceholderShape>() !;
 
         var layoutPShapes =
             sdkSlidePart.SlideLayoutPart!.SlideLayout.CommonSlideData!.ShapeTree!.Elements<P.Shape>();
@@ -143,13 +142,6 @@ internal readonly record struct ReferencedIndent
         {
             return referencedPShape;
         }
-
-        // https://answers.microsoft.com/en-us/msoffice/forum/all/placeholder-master/0d51dcec-f982-4098-b6b6-94785304607a?page=3
-        // if (pPlaceholderShape.Index?.Value == 4294967295)
-        // {
-        //     return masterPShapes.FirstOrDefault(x => x.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
-        //         .GetFirstChild<P.PlaceholderShape>()?.Index?.Value == 1);
-        // }
 
         return null;
     }
@@ -502,6 +494,7 @@ internal readonly record struct ReferencedIndent
         {
             return null;
         }
+        
         var slidePh = slidePShape.NonVisualShapeProperties!.ApplicationNonVisualDrawingProperties!
             .GetFirstChild<P.PlaceholderShape>();
         if (slidePh == null)
@@ -585,15 +578,16 @@ internal readonly record struct ReferencedIndent
             var refMasterPShape = this.ReferencedMasterPShapeOrNullOf(pShape);
             if (refMasterPShape == null)
             {
-                if (pPlaceholderShape.Type!.Value == P.PlaceholderValues.CenteredTitle )
+                if (pPlaceholderShape.Type!.Value == P.PlaceholderValues.CenteredTitle)
                 {
                     return sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.TextStyles!.TitleStyle!.Level1ParagraphProperties!
-                        .GetFirstChild<A.DefaultRunProperties>()!
+                        .GetFirstChild<A.DefaultRunProperties>() !
                         .GetFirstChild<A.LatinFont>();    
                 }
                 
                 return null;
             }
+            
             var fonts = new IndentFonts(refMasterPShape.TextBody!.ListStyle!);
 
             return fonts.ALatinFontOrNull(indentLevel);

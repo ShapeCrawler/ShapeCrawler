@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
-using System.Text.RegularExpressions;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Excel;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
-using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Charts;
 

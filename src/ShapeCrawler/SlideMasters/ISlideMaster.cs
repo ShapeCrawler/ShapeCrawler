@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Drawing;
-using ShapeCrawler.Fonts;
-using ShapeCrawler.Services;
-using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.SlideMasters;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -59,11 +55,17 @@ internal sealed class SlideMaster : ISlideMaster
     }
 
     public IImage? Background => null;
+    
     public IReadOnlyList<ISlideLayout> SlideLayouts => this.layouts.Value;
+    
     public IShapes Shapes { get; }
+    
     public ITheme Theme => new Theme(this.sdkSlideMasterPart, this.sdkSlideMasterPart.ThemePart!.Theme);
+    
     public IMasterSlideNumber? SlideNumber => this.slideNumber.Value;
+    
     public int Number { get; set; }
+    
     private MasterSlideNumber? CreateSlideNumber()
     {
         var pSldNum = this.sdkSlideMasterPart.SlideMaster.CommonSlideData!.ShapeTree!

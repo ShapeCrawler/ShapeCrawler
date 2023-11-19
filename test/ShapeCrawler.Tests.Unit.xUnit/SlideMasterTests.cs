@@ -82,13 +82,11 @@ public class SlideMasterTests : SCTest
 
         // Act
         PlaceholderType? shapePlaceholderTypeCase1 = masterAutoShapeCase1.PlaceholderType;
-        PlaceholderType? shapePlaceholderTypeCase2 = masterAutoShapeCase2.PlaceholderType;
-        PlaceholderType? shapePlaceholderTypeCase3 = masterAutoShapeCase3.PlaceholderType;
 
         // Assert
         shapePlaceholderTypeCase1.Should().Be(PlaceholderType.Title);
-        shapePlaceholderTypeCase2.Should().BeNull();
-        shapePlaceholderTypeCase3.Should().BeNull();
+        masterAutoShapeCase2.IsPlaceholder.Should().BeFalse();
+        masterAutoShapeCase3.IsPlaceholder.Should().BeFalse();
     }
 
     [Fact]

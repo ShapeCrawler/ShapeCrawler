@@ -38,35 +38,24 @@ internal sealed class Picture : CopyableShape, IPicture
     }
 
     public IImage Image { get; }
+   
     public string? SvgContent => this.GetSvgContent();
+    
     public override Geometry GeometryType => Geometry.Rectangle;
+    
     public override ShapeType ShapeType => ShapeType.Picture;
+    
     public override bool HasOutline => true;
+    
     public override IShapeOutline Outline { get; }
 
     public override bool HasFill => true;
+    
     public override IShapeFill Fill { get; }
-
-    private string? GetSvgContent()
-    {
-        var bel = this.aBlip.GetFirstChild<A.BlipExtensionList>();
-        var svgBlipList = bel?.Descendants<SVGBlip>();
-        if (svgBlipList == null)
-        {
-            return null;
-        }
-
-        var svgId = svgBlipList.First().Embed!.Value!;
-
-        var imagePart = (ImagePart)this.sdkTypedOpenXmlPart.GetPartById(svgId);
-        using var svgStream = imagePart.GetStream(FileMode.Open, FileAccess.Read);
-        using var sReader = new StreamReader(svgStream);
-
-        return sReader.ReadToEnd();
-    }
-
+    
     public override bool Removeable => true;
-    public override void Remove() =>this.pPicture.Remove();
+   
+    public override void Remove() => this.pPicture.Remove();
 
     internal override void CopyTo(
         int id, 
@@ -90,5 +79,23 @@ internal sealed class Picture : CopyableShape, IPicture
 
         var copy = this.pShapeTreeElement.CloneNode(true);
         copy.Descendants<A.Blip>().First().Embed = targetImagePartRId;
+    }
+    
+    private string? GetSvgContent()
+    {
+        var bel = this.aBlip.GetFirstChild<A.BlipExtensionList>();
+        var svgBlipList = bel?.Descendants<SVGBlip>();
+        if (svgBlipList == null)
+        {
+            return null;
+        }
+
+        var svgId = svgBlipList.First().Embed!.Value!;
+
+        var imagePart = (ImagePart)this.sdkTypedOpenXmlPart.GetPartById(svgId);
+        using var svgStream = imagePart.GetStream(FileMode.Open, FileAccess.Read);
+        using var sReader = new StreamReader(svgStream);
+
+        return sReader.ReadToEnd();
     }
 }

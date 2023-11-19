@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Charts;
 using X = DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ShapeCrawler.Excel;

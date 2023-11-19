@@ -32,7 +32,7 @@ internal sealed class SectionSlides : IReadOnlyList<ISlide>
     private ReadOnlySlides ReadOnlySlides()
     {
         var sdkSlideParts = new List<SlidePart>();
-        var idToRId = this.sdkPresDocument.PresentationPart!.Presentation.SlideIdList!.ChildElements.OfType<P.SlideId>().ToDictionary(x=>x.Id, x=>x.RelationshipId);
+        var idToRId = this.sdkPresDocument.PresentationPart!.Presentation.SlideIdList!.ChildElements.OfType<P.SlideId>().ToDictionary(x => x.Id, x => x.RelationshipId);
         foreach (var p14SectionSlideIdListEntry in this.p14SectionSlideIdListEntryList)
         {
             var rId = idToRId[p14SectionSlideIdListEntry.Id]!.Value!;

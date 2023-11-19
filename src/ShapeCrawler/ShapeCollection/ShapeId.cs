@@ -1,9 +1,8 @@
 ﻿using System.Linq;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Extensions;
 using P = DocumentFormat.OpenXml.Presentation;
 
-namespace ShapeCrawler.Shapes;
+namespace ShapeCrawler.ShapeCollection;
 
 internal class ShapeId
 {

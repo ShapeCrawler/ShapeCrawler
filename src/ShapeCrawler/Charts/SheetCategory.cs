@@ -22,6 +22,7 @@ internal sealed class SheetCategory : ICategory
     }
 
     public bool HasMainCategory => false;
+    
     public ICategory MainCategory => throw new SCException($"The main category is not available since the chart doesn't have a multi-category. Use {nameof(ICategory.HasMainCategory)} property to check if the main category is available.");
 
     public string Name

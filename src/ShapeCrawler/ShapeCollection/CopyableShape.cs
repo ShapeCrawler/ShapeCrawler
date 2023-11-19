@@ -3,7 +3,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Wrappers;
 using P = DocumentFormat.OpenXml.Presentation;
-using Shape = ShapeCrawler.ShapeCollection.Shape;
 
 namespace ShapeCrawler.ShapeCollection;
 
