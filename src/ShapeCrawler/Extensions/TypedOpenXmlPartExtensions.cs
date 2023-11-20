@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -18,7 +19,7 @@ internal static class TypedOpenXmlPartExtensions
             .Union(typedOpenXmlPart.Parts.Select(p => p.RelationshipId));
         foreach (var relationship in relationships)
         {
-            var match = Regex.Match(relationship, @"\d+");
+            var match = Regex.Match(relationship, @"\d+", RegexOptions.None, TimeSpan.FromMicroseconds(1000));
             if (match.Success)
             {
                 var id = long.Parse(match.Value, NumberStyles.None, NumberFormatInfo.CurrentInfo);

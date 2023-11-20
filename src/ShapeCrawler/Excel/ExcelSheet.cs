@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
@@ -41,7 +42,7 @@ internal record ExcelSheet
         {
             var xWorksheet = sdkWorksheetPart.Worksheet;
             var xSheetData = xWorksheet.Elements<X.SheetData>().First();
-            var rowNumberStr = Regex.Match(address, @"\d+").Value;
+            var rowNumberStr = Regex.Match(address, @"\d+",RegexOptions.None, TimeSpan.FromMicroseconds(1000)).Value;
             var rowNumber = int.Parse(rowNumberStr, NumberStyles.Number, NumberFormatInfo.InvariantInfo);
             var xRow = xSheetData.Elements<X.Row>().First(r => r.RowIndex! == rowNumber);
             var newXCell = new X.Cell
