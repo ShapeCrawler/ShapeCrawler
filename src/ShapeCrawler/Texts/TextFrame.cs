@@ -265,11 +265,6 @@ internal sealed class TextFrame : ITextFrame
         var aBodyPr = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var wrap = aBodyPr.GetAttributes().FirstOrDefault(a => a.LocalName == "wrap");
 
-        if (wrap == null)
-        {
-            return false;
-        }
-
         if (wrap.Value == "none")
         {
             return false;

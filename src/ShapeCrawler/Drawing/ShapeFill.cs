@@ -66,23 +66,6 @@ internal record ShapeFill : IShapeFill
             return hex;
         }
 
-        if (hex == null)
-        {
-            // GetThemeMappedColor
-            var pColorMap = this.sdkTypedOpenXmlPart switch
-            {
-                SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.SlideMaster.ColorMap,
-                SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.SlideMaster.ColorMap,
-                _ => ((SlideMasterPart)this.sdkTypedOpenXmlPart).SlideMaster.ColorMap
-            };
-
-            var targetSchemeColor = pColorMap?.GetAttributes().FirstOrDefault(a => a.LocalName == schemeColor) !;
-
-            var attrValue = targetSchemeColor!.Value;
-            aColor2Type = aColorScheme.Elements<A.Color2Type>().FirstOrDefault(c => c.LocalName == attrValue.Value);
-            return aColor2Type?.RgbColorModelHex?.Val?.Value ?? aColor2Type?.SystemColor?.LastColor?.Value;
-        }
-
         return null;
     }
 
