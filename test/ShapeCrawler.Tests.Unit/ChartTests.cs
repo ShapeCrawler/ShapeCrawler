@@ -212,7 +212,6 @@ public class ChartTests : SCTest
 
         // Act
         category.Name = "Category 1_new";
-        SaveResult(pres);
 
         // Assert
         var mStream = new MemoryStream(lineChart.BookByteArray());

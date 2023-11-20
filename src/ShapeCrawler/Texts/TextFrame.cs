@@ -45,6 +45,7 @@ internal sealed class TextFrame : ITextFrame
 
             return sb.ToString();
         }
+        
         set
         {
             var paragraphs = this.Paragraphs.ToList();
@@ -92,6 +93,7 @@ internal sealed class TextFrame : ITextFrame
 
             return AutofitType.None;
         }
+        
         set
         {
             var currentType = this.AutofitType;
@@ -160,7 +162,45 @@ internal sealed class TextFrame : ITextFrame
     }
 
     public bool TextWrapped => this.IsTextWrapped();
+    
     public string SDKXPath => new XmlPath(this.sdkTextBody).XPath;
+    
+    public void ResizeParentShape()
+    {
+        if (this.AutofitType != AutofitType.Resize)
+        {
+            return;
+        }
+
+        var baseParagraph = this.Paragraphs.First();
+        var popularPortion = baseParagraph.Portions.OfType<TextParagraphPortion>().GroupBy(p => p.Font.Size)
+            .OrderByDescending(x => x.Count())
+            .First().First();
+        var font = popularPortion.Font;
+
+        var paint = new SKPaint();
+        var fontSize = font.Size;
+        paint.TextSize = fontSize;
+        paint.Typeface = SKTypeface.FromFamilyName(font.LatinName);
+        paint.IsAntialias = true;
+
+        var lMarginPixel = UnitConverter.CentimeterToPixel(this.LeftMargin);
+        var rMarginPixel = UnitConverter.CentimeterToPixel(this.RightMargin);
+        var tMarginPixel = UnitConverter.CentimeterToPixel(this.TopMargin);
+        var bMarginPixel = UnitConverter.CentimeterToPixel(this.BottomMargin);
+
+        var textRect = default(SKRect);
+        var text = this.Text;
+        paint.MeasureText(text, ref textRect);
+        var textWidth = textRect.Width;
+        var textHeight = paint.TextSize;
+        var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, this.sdkTextBody.Ancestors<P.Shape>().First());
+        var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
+        var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
+
+        this.UpdateShapeHeight(textWidth, currentBlockWidth, textHeight, tMarginPixel, bMarginPixel, currentBlockHeight, this.sdkTextBody.Parent!);
+        this.UpdateShapeWidthIfNeeded(paint, lMarginPixel, rMarginPixel, this, this.sdkTextBody.Parent!);
+    }
 
     internal void Draw(SKCanvas slideCanvas, float shapeX, float shapeY)
     {
@@ -266,44 +306,11 @@ internal sealed class TextFrame : ITextFrame
         paragraphInternal.SetFontSize(fontSize);
     }
 
-    public void ResizeParentShape()
-    {
-        if (this.AutofitType != AutofitType.Resize)
-        {
-            return;
-        }
-
-        var baseParagraph = this.Paragraphs.First();
-        var popularPortion = baseParagraph.Portions.OfType<TextParagraphPortion>().GroupBy(p => p.Font.Size)
-            .OrderByDescending(x => x.Count())
-            .First().First();
-        var font = popularPortion.Font;
-
-        var paint = new SKPaint();
-        var fontSize = font.Size;
-        paint.TextSize = fontSize;
-        paint.Typeface = SKTypeface.FromFamilyName(font.LatinName);
-        paint.IsAntialias = true;
-
-        var lMarginPixel = UnitConverter.CentimeterToPixel(this.LeftMargin);
-        var rMarginPixel = UnitConverter.CentimeterToPixel(this.RightMargin);
-        var tMarginPixel = UnitConverter.CentimeterToPixel(this.TopMargin);
-        var bMarginPixel = UnitConverter.CentimeterToPixel(this.BottomMargin);
-
-        var textRect = default(SKRect);
-        var text = this.Text;
-        paint.MeasureText(text, ref textRect);
-        var textWidth = textRect.Width;
-        var textHeight = paint.TextSize;
-        var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, this.sdkTextBody.Ancestors<P.Shape>().First());
-        var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
-        var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
-
-        this.UpdateShapeHeight(textWidth, currentBlockWidth, textHeight, tMarginPixel, bMarginPixel, currentBlockHeight, this.sdkTextBody.Parent!);
-        this.UpdateShapeWidthIfNeeded(paint, lMarginPixel, rMarginPixel, this, this.sdkTextBody.Parent!);
-    }
-
-    private void UpdateShapeWidthIfNeeded(SKPaint paint, int lMarginPixel, int rMarginPixel, TextFrame textFrame,
+    private void UpdateShapeWidthIfNeeded(
+        SKPaint paint, 
+        int lMarginPixel, 
+        int rMarginPixel, 
+        TextFrame textFrame,
         OpenXmlElement parent)
     {
         if (!textFrame.TextWrapped)
@@ -314,6 +321,7 @@ internal sealed class TextFrame : ITextFrame
                 .First().Text;
             var paraTextRect = default(SKRect);
             var widthInPixels = paint.MeasureText(longerText, ref paraTextRect);
+            
             // SkiaSharp uses 72 Dpi (https://stackoverflow.com/a/69916569/2948684), ShapeCrawler uses 96 Dpi.
             // 96/72=1.4
             const double Scale = 1.4;

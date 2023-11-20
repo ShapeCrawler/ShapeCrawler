@@ -52,6 +52,9 @@ public interface IParagraph
     /// </summary>
     void ReplaceText(string oldValue, string newValue);
 
+    /// <summary>
+    ///     Removes paragraph.
+    /// </summary>
     void Remove();
 }
 
@@ -59,8 +62,9 @@ internal sealed class Paragraph : IParagraph
 {
     private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly Lazy<Bullet> bullet;
-    private TextAlignment? alignment;
     private readonly AParagraphWrap aParagraphWrap;
+
+    private TextAlignment? alignment;
 
     internal Paragraph(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
         : this(sdkTypedOpenXmlPart, aParagraph, new AParagraphWrap(aParagraph))
@@ -90,7 +94,7 @@ internal sealed class Paragraph : IParagraph
             }
 
             // To set a paragraph text we use a single portion which is the first paragraph portion.
-            var baseARun = this.AParagraph.GetFirstChild<A.Run>()!;
+            var baseARun = this.AParagraph.GetFirstChild<A.Run>() !;
             foreach (var removingRun in this.AParagraph.OfType<A.Run>().Where(run => run != baseARun))
             {
                 removingRun.Remove();
@@ -168,6 +172,7 @@ internal sealed class Paragraph : IParagraph
     }
 
     public ISpacing Spacing => this.GetSpacing();
+    
     internal A.Paragraph AParagraph { get; }
 
     public void SetFontSize(int fontSize)
@@ -192,6 +197,7 @@ internal sealed class Paragraph : IParagraph
     }
 
     public void Remove() => this.AParagraph.Remove();
+    
     private ISpacing GetSpacing() => new Spacing(this, this.AParagraph);
 
     private Bullet GetBullet() => new Bullet(this.AParagraph.ParagraphProperties!);

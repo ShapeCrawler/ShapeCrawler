@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
-using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Texts;
 

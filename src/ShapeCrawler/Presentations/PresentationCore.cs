@@ -6,6 +6,10 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
 using ShapeCrawler.Exceptions;
 
+#if NETSTANDARD2_0
+using ShapeCrawler.Extensions;
+#endif
+
 namespace ShapeCrawler;
 
 internal sealed class PresentationCore
@@ -103,7 +107,13 @@ internal sealed class PresentationCore
             }
         }
 
-        errors = errors.Except(removing).DistinctBy(x => new { x.Description, x.Path?.XPath }).ToList();
+        errors = errors.Except(removing);
+        
+#if NETSTANDARD2_0
+        errors = errors.DistinctBy(x => new { x.Description, x.Path?.XPath }).ToList();
+#else
+        errors = errors.DistinctBy(x => new { x.Description, x.Path?.XPath }).ToList();
+#endif
 
         if (errors.Any())
         {

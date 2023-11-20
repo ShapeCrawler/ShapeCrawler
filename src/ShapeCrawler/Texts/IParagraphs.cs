@@ -33,8 +33,11 @@ internal readonly struct Paragraphs : IParagraphs
     #region Public Properties
 
     public int Count => this.ParagraphsCore().Count;
+    
     public IParagraph this[int index] => this.ParagraphsCore()[index];
+    
     public IEnumerator<IParagraph> GetEnumerator() => this.ParagraphsCore().GetEnumerator();
+    
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     #endregion Public Properties

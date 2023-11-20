@@ -30,6 +30,10 @@ internal sealed class SlideShapes : ISlideShapes
         this.shapes = shapes;
     }
 
+    public int Count => this.shapes.Count;
+    
+    public IShape this[int index] => this.shapes[index];
+    
     public void Add(IShape addingShape)
     {
         var pShapeTree = this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!;
@@ -425,11 +429,13 @@ internal sealed class SlideShapes : ISlideShapes
 
         throw new SCException("Shape is not cannot be removed.");
     }
-    public int Count => this.shapes.Count;
-    public IShape this[int index] => this.shapes[index];
+    
     public T GetById<T>(int id) where T : IShape => this.shapes.GetById<T>(id);
+    
     public T GetByName<T>(string name) where T : IShape => this.shapes.GetByName<T>(name);
+    
     public IShape GetByName(string name) => this.shapes.GetByName(name);
+    
     public IEnumerator<IShape> GetEnumerator() => this.shapes.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
@@ -443,8 +449,7 @@ internal sealed class SlideShapes : ISlideShapes
             maxId = shapes.Max(s => s.Id);
         }
 
-        var maxOrder = Regex.Matches(string.Join(string.Empty, shapes.Select(s => s.Name)), "\\d+",
-                RegexOptions.None, TimeSpan.FromSeconds(100))
+        var maxOrder = Regex.Matches(string.Join(string.Empty, shapes.Select(s => s.Name)), "\\d+", RegexOptions.None, TimeSpan.FromSeconds(100))
 
 #if NETSTANDARD2_0
             .Cast<Match>()

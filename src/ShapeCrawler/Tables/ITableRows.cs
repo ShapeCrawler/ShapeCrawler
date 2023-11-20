@@ -81,6 +81,7 @@ internal sealed class TableRows : ITableRows
     }
 
     IEnumerator<ITableRow> IEnumerable<ITableRow>.GetEnumerator() => this.Rows().GetEnumerator();
+    
     IEnumerator IEnumerable.GetEnumerator() => this.Rows().GetEnumerator();
 
     private List<TableRow> Rows() => this.aTable.Elements<A.TableRow>()

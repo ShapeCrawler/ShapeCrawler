@@ -97,24 +97,16 @@ public interface IShape : IPosition
     ///     Gets the rotation of the shape in degrees.
     /// </summary>
     double Rotation { get; }
-
-    /// <summary>
-    ///     Gets the table if the shape is a table. Use <see cref="IShape.ShapeType"/> property to check if the shape is a table.
-    /// </summary>
-    /// <returns></returns>
-    ITable AsTable();
     
-    /// <summary>
-    ///     Gets the media shape which is an audio or video.
-    ///     Use <see cref="IShape.ShapeType"/> property to check if the shape is an <see cref="PShapeTrPShapeTreeWrappe.Audio"/> or <see cref="PShapeTreeWrap.ShapeType.Video"/>.
-    /// </summary>
-    /// <returns></returns>
-    IMediaShape AsMedia();
-
     /// <summary>
     ///     Gets a value indicating whether the shape can be removed.
     /// </summary>
     bool Removeable { get; }
+    
+    /// <summary>
+    ///     Gets XPath.
+    /// </summary>
+    public string SDKXPath { get; }
     
     /// <summary>
     ///     Removes the shape from the slide.
@@ -122,7 +114,13 @@ public interface IShape : IPosition
     void Remove();
     
     /// <summary>
-    ///     Gets XPath.
+    ///     Gets the table if the shape is a table. Use <see cref="IShape.ShapeType"/> property to check if the shape is a table.
     /// </summary>
-    public string SDKXPath { get; }
+    ITable AsTable();
+    
+    /// <summary>
+    ///     Gets the media shape which is an audio or video.
+    ///     Use <see cref="IShape.ShapeType"/> property to check if the shape is an <see cref="PShapeTrPShapeTreeWrappe.Audio"/> or <see cref="PShapeTreeWrap.ShapeType.Video"/>.
+    /// </summary>
+    IMediaShape AsMedia();
 }

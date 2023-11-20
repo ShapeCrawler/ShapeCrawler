@@ -1,7 +1,4 @@
 ﻿// ReSharper disable CheckNamespace
-
-using ShapeCrawler.Texts;
-
 namespace ShapeCrawler;
 
 /// <summary>

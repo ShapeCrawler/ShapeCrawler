@@ -1,5 +1,4 @@
 ﻿using System;
-using ShapeCrawler.Drawing;
 using ShapeCrawler.Exceptions;
 using A = DocumentFormat.OpenXml.Drawing;
 

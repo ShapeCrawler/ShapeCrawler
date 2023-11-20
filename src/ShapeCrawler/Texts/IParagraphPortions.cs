@@ -60,6 +60,7 @@ internal sealed class ParagraphPortions : IParagraphPortions
     }
 
     public int Count => this.Portions().Count;
+    
     public IParagraphPortion this[int index] => this.Portions()[index];
 
     public void AddText(string text)
@@ -98,6 +99,7 @@ internal sealed class ParagraphPortions : IParagraphPortions
     }
 
     public IEnumerator<IParagraphPortion> GetEnumerator() => this.Portions().GetEnumerator();
+    
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
     internal void AddNewLine()
@@ -106,7 +108,10 @@ internal sealed class ParagraphPortions : IParagraphPortions
         lastARunOrABreak.InsertAfterSelf(new A.Break());
     }
 
-    private static void AddText(ref OpenXmlElement? lastElement, OpenXmlElement aTextParent, string text,
+    private static void AddText(
+        ref OpenXmlElement? lastElement, 
+        OpenXmlElement aTextParent, 
+        string text,
         A.Paragraph aParagraph)
     {
         var newARun = (A.Run)aTextParent.CloneNode(true);
@@ -139,6 +144,7 @@ internal sealed class ParagraphPortions : IParagraphPortions
                     portions.Add(fieldPortion);
                     break;
                 }
+                
                 case A.Break aBreak:
                     var lineBreak = new ParagraphLineBreak(aBreak);
                     portions.Add(lineBreak);

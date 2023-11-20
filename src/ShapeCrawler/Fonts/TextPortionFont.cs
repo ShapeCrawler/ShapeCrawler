@@ -25,8 +25,7 @@ internal sealed class TextPortionFont : ITextPortionFont
             sdkTypedOpenXmlPart,
             aText,
             size,
-            new ThemeFontScheme(sdkTypedOpenXmlPart)
-        )
+            new ThemeFontScheme(sdkTypedOpenXmlPart))
     {
     }
 

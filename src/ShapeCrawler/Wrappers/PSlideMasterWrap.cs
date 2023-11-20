@@ -1,5 +1,4 @@
 using ShapeCrawler.Fonts;
-using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
 namespace ShapeCrawler.Wrappers;

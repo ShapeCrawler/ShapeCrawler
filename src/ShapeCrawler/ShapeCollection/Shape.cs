@@ -126,7 +126,7 @@ internal abstract class Shape : IShape
             const string pattern = @$"<{customDataElementName}>(.*)<\/{customDataElementName}>";
 
 #if NETSTANDARD2_0
-        var regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(100));
+            var regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(100));
 #else
             var regex = new Regex(pattern, RegexOptions.NonBacktracking);
 #endif

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Shared;
-using ShapeCrawler.Wrappers;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 
@@ -66,7 +64,7 @@ internal sealed class TableRow : ITableRow
                 }
                 else if (aTc.VerticalMerge is not null)
                 {
-                    var pGraphicFrame = ATableRow.Ancestors<P.GraphicFrame>().First();
+                    var pGraphicFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
                     var table = new Table(this.sdkTypedOpenXmlPart, pGraphicFrame);
                     var upRowIdx = this.index - 1;
                     var upNeighborCell = (TableCell)table[upRowIdx, columnIdx];
@@ -121,7 +119,7 @@ internal sealed class TableRow : ITableRow
         var newEmu = UnitConverter.PointToEmu(newPoints);
         this.ATableRow.Height!.Value = newEmu;
 
-        var pGraphicalFrame = ATableRow.Ancestors<P.GraphicFrame>().First();
+        var pGraphicalFrame = this.ATableRow.Ancestors<P.GraphicFrame>().First();
         var parentTable = new Table(this.sdkTypedOpenXmlPart, pGraphicalFrame);
         if (newPoints > currentPoints)
         {
