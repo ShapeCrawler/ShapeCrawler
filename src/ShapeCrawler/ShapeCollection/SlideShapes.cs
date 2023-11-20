@@ -361,12 +361,12 @@ internal sealed class SlideShapes : ISlideShapes
         aXfrm.VerticalFlip = new BooleanValue(flipV);
     }
 
-    public void AddTable(int xPx, int yPx, int columns, int rows)
+    public void AddTable(int x, int y, int columnsCount, int rowsCount)
     {
         var shapeName = this.GenerateNextTableName();
-        var xEmu = UnitConverter.HorizontalPixelToEmu(xPx);
-        var yEmu = UnitConverter.VerticalPixelToEmu(yPx);
-        var tableHeightEmu = Constants.DefaultRowHeightEmu * rows;
+        var xEmu = UnitConverter.HorizontalPixelToEmu(x);
+        var yEmu = UnitConverter.VerticalPixelToEmu(y);
+        var tableHeightEmu = Constants.DefaultRowHeightEmu * rowsCount;
 
         var graphicFrame = new P.GraphicFrame();
         var nonVisualGraphicFrameProperties = new P.NonVisualGraphicFrameProperties();
@@ -392,8 +392,8 @@ internal sealed class SlideShapes : ISlideShapes
         tableProperties.Append(tableStyleId);
 
         var tableGrid = new A.TableGrid();
-        var gridWidthEmu = DefaultTableWidthEmu / columns;
-        for (var i = 0; i < columns; i++)
+        var gridWidthEmu = DefaultTableWidthEmu / columnsCount;
+        for (var i = 0; i < columnsCount; i++)
         {
             var gridColumn = new A.GridColumn { Width = gridWidthEmu };
             tableGrid.Append(gridColumn);
@@ -401,9 +401,9 @@ internal sealed class SlideShapes : ISlideShapes
 
         aTable.Append(tableProperties);
         aTable.Append(tableGrid);
-        for (var i = 0; i < rows; i++)
+        for (var i = 0; i < rowsCount; i++)
         {
-            aTable.AddRow(columns);
+            aTable.AddRow(columnsCount);
         }
 
         graphicData.Append(aTable);

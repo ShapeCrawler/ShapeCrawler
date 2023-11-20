@@ -95,19 +95,19 @@ internal sealed class Table : CopyableShape, ITable
         throw new NotImplementedException();
     }
 
-    public void MergeCells(ITableCell inputCell1, ITableCell inputCell2)
+    public void MergeCells(ITableCell cell1, ITableCell cell2)
     {
-        var cell1 = (TableCell)inputCell1;
-        var cell2 = (TableCell)inputCell2;
-        if (cell1 == cell2)
+        var cell1Internal = (TableCell)cell1;
+        var cell2Internal = (TableCell)cell2;
+        if (cell1Internal == cell2Internal)
         {
             throw new SCException("Cannot merge the same cells.");
         }
 
-        var minRowIndex = cell1.RowIndex < cell2.RowIndex ? cell1.RowIndex : cell2.RowIndex;
-        var maxRowIndex = cell1.RowIndex > cell2.RowIndex ? cell1.RowIndex : cell2.RowIndex;
-        var minColIndex = cell1.ColumnIndex < cell2.ColumnIndex ? cell1.ColumnIndex : cell2.ColumnIndex;
-        var maxColIndex = cell1.ColumnIndex > cell2.ColumnIndex ? cell1.ColumnIndex : cell2.ColumnIndex;
+        var minRowIndex = cell1Internal.RowIndex < cell2Internal.RowIndex ? cell1Internal.RowIndex : cell2Internal.RowIndex;
+        var maxRowIndex = cell1Internal.RowIndex > cell2Internal.RowIndex ? cell1Internal.RowIndex : cell2Internal.RowIndex;
+        var minColIndex = cell1Internal.ColumnIndex < cell2Internal.ColumnIndex ? cell1Internal.ColumnIndex : cell2Internal.ColumnIndex;
+        var maxColIndex = cell1Internal.ColumnIndex > cell2Internal.ColumnIndex ? cell1Internal.ColumnIndex : cell2Internal.ColumnIndex;
 
         var aTableRows = this.ATable.Elements<A.TableRow>().ToList();
         if (minColIndex != maxColIndex)

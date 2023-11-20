@@ -1,4 +1,6 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using System;
+using System.Collections.Generic;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Fonts;
 using A = DocumentFormat.OpenXml.Drawing;
 
@@ -37,53 +39,49 @@ internal sealed class PresentationColor
 
     internal string ThemeColorHex(A.SchemeColorValues aSchemeColorValue)
     {
-        var aColorScheme = this.sdkTypedOpenXmlPart switch
+        var aColorScheme = GetColorScheme(this.sdkTypedOpenXmlPart);
+        return GetColorValue(aColorScheme, aSchemeColorValue);
+    }
+    
+    private string GetRgbOrSystemColor(A.Color2Type colorType)
+    {
+        return colorType.RgbColorModelHex != null
+            ? colorType.RgbColorModelHex.Val!.Value!
+            : colorType.SystemColor!.LastColor!.Value!;
+    }
+    
+    private string GetColorValue(A.ColorScheme aColorScheme, A.SchemeColorValues aSchemeColorValue)
+    {
+        return aSchemeColorValue switch
+        {
+            A.SchemeColorValues.Dark1 => GetRgbOrSystemColor(aColorScheme.Dark1Color!),
+            A.SchemeColorValues.Light1 => GetRgbOrSystemColor(aColorScheme.Light1Color!),
+            A.SchemeColorValues.Dark2 => GetRgbOrSystemColor(aColorScheme.Dark2Color!),
+            A.SchemeColorValues.Light2 => GetRgbOrSystemColor(aColorScheme.Light2Color!),
+            A.SchemeColorValues.Accent1 => GetRgbOrSystemColor(aColorScheme.Accent1Color!),
+            A.SchemeColorValues.Accent2 => GetRgbOrSystemColor(aColorScheme.Accent2Color!),
+            A.SchemeColorValues.Accent3 => GetRgbOrSystemColor(aColorScheme.Accent3Color!),
+            A.SchemeColorValues.Accent4 => GetRgbOrSystemColor(aColorScheme.Accent4Color!),
+            A.SchemeColorValues.Accent5 => GetRgbOrSystemColor(aColorScheme.Accent5Color!),
+            A.SchemeColorValues.Accent6 => GetRgbOrSystemColor(aColorScheme.Accent6Color!),
+            A.SchemeColorValues.Hyperlink => GetRgbOrSystemColor(aColorScheme.Hyperlink!),
+            A.SchemeColorValues.FollowedHyperlink => GetRgbOrSystemColor(aColorScheme.FollowedHyperlinkColor!),
+            _ => this.GetThemeMappedColor(aSchemeColorValue)
+        };
+    }
+    
+    private A.ColorScheme GetColorScheme(OpenXmlPart sdkTypedOpenXmlPart)
+    {
+        return sdkTypedOpenXmlPart switch
         {
             SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
                 .ColorScheme!,
             SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
                 .ColorScheme!,
-            _ => ((SlideMasterPart)this.sdkTypedOpenXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
-        };
-        return aSchemeColorValue switch
-        {
-            A.SchemeColorValues.Dark1 => aColorScheme.Dark1Color!.RgbColorModelHex != null
-                ? aColorScheme.Dark1Color.RgbColorModelHex!.Val!.Value!
-                : aColorScheme.Dark1Color.SystemColor!.LastColor!.Value!,
-            A.SchemeColorValues.Light1 => aColorScheme.Light1Color!.RgbColorModelHex != null
-                ? aColorScheme.Light1Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Light1Color.SystemColor!.LastColor!.Value!,
-            A.SchemeColorValues.Dark2 => aColorScheme.Dark2Color!.RgbColorModelHex != null
-                ? aColorScheme.Dark2Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Dark2Color.SystemColor!.LastColor!.Value!,
-            A.SchemeColorValues.Light2 => aColorScheme.Light2Color!.RgbColorModelHex != null
-                ? aColorScheme.Light2Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Light2Color.SystemColor!.LastColor!.Value!,
-            A.SchemeColorValues.Accent1 => aColorScheme.Accent1Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent1Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent1Color.SystemColor!.LastColor!.Value!,
-            A.SchemeColorValues.Accent2 => aColorScheme.Accent2Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent2Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent2Color.SystemColor!.LastColor!.Value!,
-            A.SchemeColorValues.Accent3 => aColorScheme.Accent3Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent3Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent3Color.SystemColor!.LastColor!.Value!,
-            A.SchemeColorValues.Accent4 => aColorScheme.Accent4Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent4Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent4Color.SystemColor!.LastColor!.Value!,
-            A.SchemeColorValues.Accent5 => aColorScheme.Accent5Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent5Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent5Color.SystemColor!.LastColor!.Value!,
-            A.SchemeColorValues.Accent6 => aColorScheme.Accent6Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent6Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent6Color.SystemColor!.LastColor!.Value!,
-            A.SchemeColorValues.Hyperlink => aColorScheme.Hyperlink!.RgbColorModelHex != null
-                ? aColorScheme.Hyperlink.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Hyperlink.SystemColor!.LastColor!.Value!,
-            _ => this.GetThemeMappedColor(aSchemeColorValue)
+            _ => ((SlideMasterPart)sdkTypedOpenXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
         };
     }
-
+    
     #endregion APIs
 
     private string GetThemeMappedColor(A.SchemeColorValues themeColor)
@@ -114,49 +112,38 @@ internal sealed class PresentationColor
 
     private string GetThemeColorByString(string fontSchemeColor)
     {
-        var aColorScheme = this.sdkTypedOpenXmlPart switch
+        var aColorScheme = GetColorScheme(this.sdkTypedOpenXmlPart);
+        return GetColorFromScheme(aColorScheme, fontSchemeColor);
+    }
+    
+    private string GetColorFromScheme(A.ColorScheme aColorScheme, string fontSchemeColor)
+    {
+        var colorMap = new Dictionary<string, Func<A.Color2Type>>
         {
-            SlidePart sdkSlidePart => sdkSlidePart.SlideLayoutPart!.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
-                .ColorScheme!,
-            SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideMasterPart!.ThemePart!.Theme.ThemeElements!
-                .ColorScheme!,
-            _ => ((SlideMasterPart)this.sdkTypedOpenXmlPart).ThemePart!.Theme.ThemeElements!.ColorScheme!
+            ["dk1"] = () => aColorScheme.Dark1Color!,
+            ["lt1"] = () => aColorScheme.Light1Color!,
+            ["dk2"] = () => aColorScheme.Dark2Color!,
+            ["lt2"] = () => aColorScheme.Light2Color!,
+            ["accent1"] = () => aColorScheme.Accent1Color!,
+            ["accent2"] = () => aColorScheme.Accent2Color!,
+            ["accent3"] = () => aColorScheme.Accent3Color!,
+            ["accent4"] = () => aColorScheme.Accent4Color!,
+            ["accent5"] = () => aColorScheme.Accent5Color!,
+            ["accent6"] = () => aColorScheme.Accent6Color!,
+            ["hyperlink"] = () => aColorScheme.Hyperlink!
         };
-        return fontSchemeColor switch
+
+        if (colorMap.TryGetValue(fontSchemeColor, out var getColor))
         {
-            "dk1" => aColorScheme.Dark1Color!.RgbColorModelHex != null
-                ? aColorScheme.Dark1Color.RgbColorModelHex!.Val!.Value!
-                : aColorScheme.Dark1Color.SystemColor!.LastColor!.Value!,
-            "lt1" => aColorScheme.Light1Color!.RgbColorModelHex != null
-                ? aColorScheme.Light1Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Light1Color.SystemColor!.LastColor!.Value!,
-            "dk2" => aColorScheme.Dark2Color!.RgbColorModelHex != null
-                ? aColorScheme.Dark2Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Dark2Color.SystemColor!.LastColor!.Value!,
-            "lt2" => aColorScheme.Light2Color!.RgbColorModelHex != null
-                ? aColorScheme.Light2Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Light2Color.SystemColor!.LastColor!.Value!,
-            "accent1" => aColorScheme.Accent1Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent1Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent1Color.SystemColor!.LastColor!.Value!,
-            "accent2" => aColorScheme.Accent2Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent2Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent2Color.SystemColor!.LastColor!.Value!,
-            "accent3" => aColorScheme.Accent3Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent3Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent3Color.SystemColor!.LastColor!.Value!,
-            "accent4" => aColorScheme.Accent4Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent4Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent4Color.SystemColor!.LastColor!.Value!,
-            "accent5" => aColorScheme.Accent5Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent5Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent5Color.SystemColor!.LastColor!.Value!,
-            "accent6" => aColorScheme.Accent6Color!.RgbColorModelHex != null
-                ? aColorScheme.Accent6Color.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Accent6Color.SystemColor!.LastColor!.Value!,
-            _ => aColorScheme.Hyperlink!.RgbColorModelHex != null
-                ? aColorScheme.Hyperlink.RgbColorModelHex.Val!.Value!
-                : aColorScheme.Hyperlink.SystemColor!.LastColor!.Value!
-        };
+            var colorType = getColor();
+            return colorType.RgbColorModelHex != null
+                ? colorType.RgbColorModelHex.Val!.Value!
+                : colorType.SystemColor!.LastColor!.Value!;
+        }
+
+        // Default or fallback color
+        return aColorScheme.Hyperlink!.RgbColorModelHex != null
+            ? aColorScheme.Hyperlink.RgbColorModelHex.Val!.Value!
+            : aColorScheme.Hyperlink.SystemColor!.LastColor!.Value!;
     }
 }
