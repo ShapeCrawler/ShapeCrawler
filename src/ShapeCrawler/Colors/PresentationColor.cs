@@ -39,8 +39,8 @@ internal sealed class PresentationColor
 
     internal string ThemeColorHex(A.SchemeColorValues aSchemeColorValue)
     {
-        var aColorScheme = GetColorScheme(this.sdkTypedOpenXmlPart);
-        return GetColorValue(aColorScheme, aSchemeColorValue);
+        var aColorScheme = this.GetColorScheme(this.sdkTypedOpenXmlPart);
+        return this.GetColorValue(aColorScheme, aSchemeColorValue);
     }
     
     private string GetRgbOrSystemColor(A.Color2Type colorType)
@@ -54,18 +54,18 @@ internal sealed class PresentationColor
     {
         return aSchemeColorValue switch
         {
-            A.SchemeColorValues.Dark1 => GetRgbOrSystemColor(aColorScheme.Dark1Color!),
-            A.SchemeColorValues.Light1 => GetRgbOrSystemColor(aColorScheme.Light1Color!),
-            A.SchemeColorValues.Dark2 => GetRgbOrSystemColor(aColorScheme.Dark2Color!),
-            A.SchemeColorValues.Light2 => GetRgbOrSystemColor(aColorScheme.Light2Color!),
-            A.SchemeColorValues.Accent1 => GetRgbOrSystemColor(aColorScheme.Accent1Color!),
-            A.SchemeColorValues.Accent2 => GetRgbOrSystemColor(aColorScheme.Accent2Color!),
-            A.SchemeColorValues.Accent3 => GetRgbOrSystemColor(aColorScheme.Accent3Color!),
-            A.SchemeColorValues.Accent4 => GetRgbOrSystemColor(aColorScheme.Accent4Color!),
-            A.SchemeColorValues.Accent5 => GetRgbOrSystemColor(aColorScheme.Accent5Color!),
-            A.SchemeColorValues.Accent6 => GetRgbOrSystemColor(aColorScheme.Accent6Color!),
-            A.SchemeColorValues.Hyperlink => GetRgbOrSystemColor(aColorScheme.Hyperlink!),
-            A.SchemeColorValues.FollowedHyperlink => GetRgbOrSystemColor(aColorScheme.FollowedHyperlinkColor!),
+            A.SchemeColorValues.Dark1 => this.GetRgbOrSystemColor(aColorScheme.Dark1Color!),
+            A.SchemeColorValues.Light1 => this.GetRgbOrSystemColor(aColorScheme.Light1Color!),
+            A.SchemeColorValues.Dark2 => this.GetRgbOrSystemColor(aColorScheme.Dark2Color!),
+            A.SchemeColorValues.Light2 => this.GetRgbOrSystemColor(aColorScheme.Light2Color!),
+            A.SchemeColorValues.Accent1 => this.GetRgbOrSystemColor(aColorScheme.Accent1Color!),
+            A.SchemeColorValues.Accent2 => this.GetRgbOrSystemColor(aColorScheme.Accent2Color!),
+            A.SchemeColorValues.Accent3 => this.GetRgbOrSystemColor(aColorScheme.Accent3Color!),
+            A.SchemeColorValues.Accent4 => this.GetRgbOrSystemColor(aColorScheme.Accent4Color!),
+            A.SchemeColorValues.Accent5 => this.GetRgbOrSystemColor(aColorScheme.Accent5Color!),
+            A.SchemeColorValues.Accent6 => this.GetRgbOrSystemColor(aColorScheme.Accent6Color!),
+            A.SchemeColorValues.Hyperlink => this.GetRgbOrSystemColor(aColorScheme.Hyperlink!),
+            A.SchemeColorValues.FollowedHyperlink => this.GetRgbOrSystemColor(aColorScheme.FollowedHyperlinkColor!),
             _ => this.GetThemeMappedColor(aSchemeColorValue)
         };
     }
@@ -112,8 +112,8 @@ internal sealed class PresentationColor
 
     private string GetThemeColorByString(string fontSchemeColor)
     {
-        var aColorScheme = GetColorScheme(this.sdkTypedOpenXmlPart);
-        return GetColorFromScheme(aColorScheme, fontSchemeColor);
+        var aColorScheme = this.GetColorScheme(this.sdkTypedOpenXmlPart);
+        return this.GetColorFromScheme(aColorScheme, fontSchemeColor);
     }
     
     private string GetColorFromScheme(A.ColorScheme aColorScheme, string fontSchemeColor)
