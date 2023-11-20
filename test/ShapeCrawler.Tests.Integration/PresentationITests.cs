@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 using FluentAssertions;
+using NUnit.Framework;
 using ShapeCrawler.Logger;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
@@ -15,11 +16,11 @@ public class PresentationITests : SCTest
     public void Open_doesnt_create_log_file_When_logger_is_off()
     {
         // Arrange
-        var pptxStream = GetInputStream("autoshape-case001.pptx");
+        var pptxStream = StreamOf("autoshape-case001.pptx");
 
         // Act
         SCSettings.CanCollectLogs = false;
-        SCPresentation.Open(pptxStream);
+        new Presentation(pptxStream);
 
         // Assert
         var logPath = Path.Combine(Path.GetTempPath(), "sc-log.json");
@@ -34,12 +35,12 @@ public class PresentationITests : SCTest
         var pptxStream = TestHelperShared.GetStream("autoshape-case001.pptx");
 
         // Act
-        SCPresentation.Open(pptxStream);
+        new Presentation(pptxStream);
 
         // Assert
         File.Exists(logPath).Should().BeTrue();
         var json = File.OpenRead(logPath);
-        var log = JsonSerializer.Deserialize<SCLog>(json)!;
+        var log = JsonSerializer.Deserialize<Log>(json)!;
         var sendDate = (DateTime)log.SentDate;
         sendDate.Day.Should().Be(DateTime.UtcNow.Day);
         
@@ -53,17 +54,15 @@ public class PresentationITests : SCTest
         // Arrange
         var originFilePath = Path.GetTempFileName();
         var savedAsFilePath = Path.GetTempFileName();
-        var pptx = GetInputStream("001.pptx");
+        var pptx = StreamOf("001.pptx");
         File.WriteAllBytes(originFilePath, pptx.ToArray());
-        var pres = SCPresentation.Open(originFilePath);
+        var pres = new Presentation(originFilePath);
         pres.SaveAs(savedAsFilePath);
-        pres.Close();
 
         // Act-Assert
-        SCPresentation.Open(originFilePath);
+        new Presentation(originFilePath);
         
         // Clean up
-        pres.Close();
         File.Delete(originFilePath);
         File.Delete(savedAsFilePath);
     }
@@ -73,8 +72,8 @@ public class PresentationITests : SCTest
     {
         // Arrange
         var originalPath = GetTestPath("001.pptx");
-        var pres = SCPresentation.Open(originalPath);
-        var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
+        var pres = new Presentation(originalPath);
+        var textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextFrame;
         var originalText = textBox!.Text;
         var newStream = new MemoryStream();
         textBox.Text = originalText + "modified";
@@ -83,12 +82,10 @@ public class PresentationITests : SCTest
         pres.SaveAs(newStream);
 
         // Assert
-        pres.Close();
-        pres = SCPresentation.Open(originalPath);
-        textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
+        pres = new Presentation(originalPath);
+        textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextFrame;
         var autoShapeText = textBox!.Text;
         autoShapeText.Should().BeEquivalentTo(originalText);
-        pres.Close();
             
         // Clean
         File.Delete(originalPath);
@@ -99,8 +96,8 @@ public class PresentationITests : SCTest
     {
         // Arrange
         var originalFile = GetTestPath("001.pptx");
-        var pres = SCPresentation.Open(originalFile);
-        var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
+        var pres = new Presentation(originalFile);
+        var textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextFrame;
         var originalText = textBox!.Text;
         var newPath = Path.GetTempFileName();
         textBox.Text = originalText + "modified";
@@ -109,38 +106,34 @@ public class PresentationITests : SCTest
         pres.SaveAs(newPath);
 
         // Assert
-        pres.Close();
-        pres = SCPresentation.Open(originalFile);
-        textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
+        pres = new Presentation(originalFile);
+        textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextFrame;
         var autoShapeText = textBox!.Text;
         autoShapeText.Should().BeEquivalentTo(originalText);
-        pres.Close();
             
         // Clean
         File.Delete(newPath);
     }
     
-    [Fact]
+    [Test]
     public void SaveAs_should_not_change_the_Original_Path_when_it_is_saved_to_New_Path()
     {
         // Arrange
         var originalPath = GetTestPath("001.pptx");
-        var pres = SCPresentation.Open(originalPath);
-        var textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
-        var originalText = textBox!.Text;
+        var pres = new Presentation(originalPath);
+        var textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextFrame;
+        var originalText = textFrame!.Text;
         var newPath = Path.GetTempFileName();
-        textBox.Text = originalText + "modified";
+        textFrame.Text = originalText + "modified";
 
         // Act
         pres.SaveAs(newPath);
 
         // Assert
-        pres.Close();
-        pres = SCPresentation.Open(originalPath);
-        textBox = pres.Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3").TextFrame;
-        var autoShapeText = textBox!.Text; 
+        pres = new Presentation(originalPath);
+        textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextFrame;
+        var autoShapeText = textFrame!.Text; 
         autoShapeText.Should().BeEquivalentTo(originalText);
-        pres.Close();
             
         // Clean
         File.Delete(originalPath);

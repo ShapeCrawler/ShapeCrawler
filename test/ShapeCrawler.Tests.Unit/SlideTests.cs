@@ -22,47 +22,46 @@ public class SlideTests : SCTest
     public void Hide_MethodHidesSlide_WhenItIsExecuted()
     {
         // Arrange
-        var pptx = GetInputStream("001.pptx");
-        var pre = SCPresentation.Open(pptx);
+        var pptx = StreamOf("001.pptx");
+        var pre = new Presentation(pptx);
         var slide = pre.Slides.First();
 
         // Act
         slide.Hide();
 
         // Assert
-        slide.Hidden.Should().Be(true);
+        slide.Hidden().Should().Be(true);
     }
 
     [Test]
     public void Hidden_GetterReturnsTrue_WhenTheSlideIsHidden()
     {
         // Arrange
-        var pptx = GetInputStream("002.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf("002.pptx");
+        var pres = new Presentation(pptx);
         ISlide slideEx = pres.Slides[2];
 
         // Act
-        bool hidden = slideEx.Hidden;
+        bool hidden = slideEx.Hidden();
 
         // Assert
         hidden.Should().BeTrue();
     }
 
     [Test]
-    public async Task Background_SetImage_updates_background()
+    public void Background_SetImage_updates_background()
     {
         // Arrange
-        var pptx = GetInputStream("009_table.pptx");
-        var pre = SCPresentation.Open(pptx);
+        var pre = new Presentation(StreamOf("009_table.pptx"));
         var backgroundImage = pre.Slides[0].Background;
-        var image = GetInputStream("test-image-2.png");
-        var bytesBefore = await backgroundImage.BinaryData.ConfigureAwait(false);
+        var image = StreamOf("test-image-2.png");
+        var bytesBefore = backgroundImage.AsByteArray();
 
         // Act
-        backgroundImage.SetImage(image);
+        backgroundImage.Update(image);
 
         // Assert
-        var bytesAfter = await backgroundImage.BinaryData.ConfigureAwait(false);
+        var bytesAfter = backgroundImage.AsByteArray();
         bytesAfter.Length.Should().NotBe(bytesBefore.Length);
     }
 
@@ -70,30 +69,30 @@ public class SlideTests : SCTest
     public void Background_SetImage_updates_background_of_new_slide()
     {
         // Arrange
-        var pres = SCPresentation.Create();
-        var slide = pres.Slides.AddEmptySlide(SCSlideLayoutType.Blank);
-        var bgImage = GetInputStream("test-image-2.png");
-        
+        var pres = new Presentation();
+        pres.Slides.AddEmptySlide(SlideLayoutType.Blank);
+        var slide = pres.Slides[0];
+        var bgImage = StreamOf("test-image-2.png");
+
         // Act
-        slide.Background.SetImage(bgImage);
-        
+        slide.Background.Update(bgImage);
+
         // Assert
         slide.Background.Should().NotBeNull();
     }
 
     [Test]
-    public void Background_ImageIsNull_WhenTheSlideHasNotBackground()
+    public void Background_AsByteArray_throws_exception_slide_doesnt_have_background()
     {
         // Arrange
-        var pptx = GetInputStream("009_table.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pres = new Presentation(StreamOf("009_table.pptx"));
         var slide = pres.Slides[1];
 
         // Act
-        var backgroundContent = slide.Background.BinaryData.Result;
+        var act = () => slide.Background.AsByteArray();
 
         // Assert
-        backgroundContent.Should().BeEmpty();
+        act.Should().Throw<Exception>();
     }
 
     [Test]
@@ -101,7 +100,7 @@ public class SlideTests : SCTest
     {
         // Arrange
         const string customDataString = "Test custom data";
-        var originPre = SCPresentation.Open(GetInputStream("001.pptx"));
+        var originPre = new Presentation(StreamOf("001.pptx"));
         var slide = originPre.Slides.First();
 
         // Act
@@ -109,7 +108,7 @@ public class SlideTests : SCTest
 
         var savedPreStream = new MemoryStream();
         originPre.SaveAs(savedPreStream);
-        var savedPre = SCPresentation.Open(savedPreStream);
+        var savedPre = new Presentation(savedPreStream);
         var customData = savedPre.Slides.First().CustomData;
 
         // Assert
@@ -120,7 +119,7 @@ public class SlideTests : SCTest
     public void CustomData_PropertyIsNull_WhenTheSlideHasNotCustomData()
     {
         // Arrange
-        var slide = SCPresentation.Open(GetInputStream("001.pptx")).Slides.First();
+        var slide = new Presentation(StreamOf("001.pptx")).Slides.First();
 
         // Act
         var sldCustomData = slide.CustomData;
@@ -133,8 +132,8 @@ public class SlideTests : SCTest
     public void Number_Setter_moves_slide_to_specified_number_position()
     {
         // Arrange
-        var pptxStream = GetInputStream("001.pptx");
-        var pres = SCPresentation.Open(pptxStream);
+        var pptxStream = StreamOf("001.pptx");
+        var pres = new Presentation(pptxStream);
         var slide1 = pres.Slides[0];
         var slide2 = pres.Slides[1];
         slide1.CustomData = "old-number-1";
@@ -147,8 +146,7 @@ public class SlideTests : SCTest
         slide2.Number.Should().Be(1, "because the first slide was inserted to its position.");
 
         pres.Save();
-        pres.Close();
-        pres = SCPresentation.Open(pptxStream);
+        pres = new Presentation(pptxStream);
         slide2 = pres.Slides.First(s => s.CustomData == "old-number-1");
         slide2.Number.Should().Be(2);
     }
@@ -157,7 +155,7 @@ public class SlideTests : SCTest
     public void Number_Setter()
     {
         // Arrange
-        var pres = SCPresentation.Create();
+        var pres = new Presentation();
         var slide = pres.Slides[0];
 
         // Act
@@ -171,27 +169,26 @@ public class SlideTests : SCTest
     public void GetAllTextboxes_contains_all_textboxes_withTable()
     {
         // Arrange
-        var pptx = GetInputStream("039.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf("039.pptx");
+        var pres = new Presentation(pptx);
         var slide = pres.Slides.First();
 
         // Act
-        var textboxes = slide.GetAllTextFrames();
+        var textboxes = slide.TextFrames();
 
         // Assert
         textboxes.Count.Should().Be(11);
     }
 
     [Test]
-    public void GetAllTextboxes_contains_all_textboxes_withoutTable()
+    public void TextFrames_returns_list_of_all_text_frames_on_that_slide()
     {
         // Arrange
-        var pptx = GetInputStream("011_dt.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pres = new Presentation(StreamOf("011_dt.pptx"));
         var slide = pres.Slides.First();
 
         // Act
-        var textFrames = slide.GetAllTextFrames();
+        var textFrames = slide.TextFrames();
 
         // Assert
         textFrames.Count.Should().Be(4);
@@ -202,21 +199,21 @@ public class SlideTests : SCTest
     public void SaveAsPng_saves_slide_as_image()
     {
         // Arrange
-        var pptxStream = GetInputStream("autoshape-case011_save-as-png.pptx");
-        var pres = SCPresentation.Open(pptxStream);
+        var pptxStream = StreamOf("autoshape-case011_save-as-png.pptx");
+        var pres = new Presentation(pptxStream);
         var slide = pres.Slides[0];
         var mStream = new MemoryStream();
-        
+
         // Act
         slide.SaveAsPng(mStream);
     }
-    
+
     [Test]
     public void ToHTML_converts_slide_to_HTML()
     {
         // Arrange
         var pptx = TestHelper.GetStream("autoshape-case011_save-as-png.pptx");
-        var pre = SCPresentation.Open(pptx);
+        var pre = new Presentation(pptx);
         var slide = pre.Slides[0];
 
         // Act

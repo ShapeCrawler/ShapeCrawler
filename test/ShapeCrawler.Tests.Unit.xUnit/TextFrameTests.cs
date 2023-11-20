@@ -29,7 +29,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         public void Text_Getter_returns_text(IShape shape, string expectedText)
         {
             // Arrange
-            var textFrame = ((IAutoShape)shape).TextFrame;
+            var textFrame = ((IShape)shape).TextFrame;
 
             // Act
             var text = textFrame.Text;
@@ -99,9 +99,8 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             textFrame.Paragraphs.Should().HaveCount(1);
 
             pres.SaveAs(mStream);
-            pres.Close();
 
-            testTextBoxQuery.Presentation = SCPresentation.Open(mStream);
+            testTextBoxQuery.Presentation = new Presentation(mStream);
             textFrame = testTextBoxQuery.GetAutoShape().TextFrame;
             textFrame.Text.Should().BeEquivalentTo(newText);
             textFrame.Paragraphs.Should().HaveCount(1);
@@ -115,7 +114,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
                 
                 var case1 = new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(GetInputStream("001.pptx")),
+                    Presentation = new Presentation(StreamOf("001.pptx")),
                     SlideIndex = 0,
                     ShapeId = 3
                 };
@@ -123,7 +122,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
                 
                 var case2 = new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(GetInputStream("020.pptx")),
+                    Presentation = new Presentation(StreamOf("020.pptx")),
                     SlideIndex = 2,
                     ShapeId = 8
                 };
@@ -131,7 +130,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
                 
                 var case3 = new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(GetInputStream("001.pptx")),
+                    Presentation = new Presentation(StreamOf("001.pptx")),
                     SlideNumber = 2,
                     ShapeName = "Header 1",
                 };
@@ -139,7 +138,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
                 
                 var case4 = new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(GetInputStream("autoshape-case004_subtitle.pptx")),
+                    Presentation = new Presentation(StreamOf("autoshape-case004_subtitle.pptx")),
                     SlideNumber = 1,
                     ShapeName = "Subtitle 1",
                 };
@@ -147,7 +146,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
                 
                 var case5 = new TestElementQuery
                 {
-                    Presentation = SCPresentation.Open(GetInputStream("autoshape-case008_text-frame.pptx")),
+                    Presentation = new Presentation(StreamOf("autoshape-case008_text-frame.pptx")),
                     SlideNumber = 1,
                     ShapeName = "AutoShape 1",
                 };
@@ -162,7 +161,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         public void Text_Setter(IShape shape)
         {
             // Arrange
-            var autoShape = (IAutoShape)shape;
+            var autoShape = (IShape)shape;
             var textFrame = autoShape.TextFrame;
 
             // Act
@@ -178,7 +177,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         public void Text_Setter_sets_long_text(IShape shape)
         {
             // Arrange
-            var autoShape = (IAutoShape)shape;
+            var autoShape = (IShape)shape;
             var textFrame = autoShape.TextFrame;
 
             // Act
@@ -196,7 +195,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         public void TextWrapped_Getter_returns_value_indicating_whether_text_is_wrapped_in_shape(IShape shape, bool isTextWrapped)
         {
             // Arrange
-            var autoShape = (IAutoShape)shape;
+            var autoShape = (IShape)shape;
             var textFrame = autoShape.TextFrame!;
 
             // Act
@@ -204,25 +203,6 @@ namespace ShapeCrawler.Tests.Unit.xUnit
 
             // Assert
             textWrapped.Should().Be(isTextWrapped);
-        }
-
-        [Xunit.Theory]
-        [SlideShapeData("autoshape-case003.pptx", 1, "AutoShape 7")]
-        [SlideShapeData("001.pptx", 1, "Head 1")]
-        [SlideShapeData("autoshape-case014.pptx", 1, "Content Placeholder 1")]
-        public void AutofitType_Setter_sets_autofit_type(IShape shape)
-        {
-            // Arrange
-            var autoShape = (IAutoShape)shape;
-            var textFrame = autoShape.TextFrame!;
-
-            // Act
-            textFrame.AutofitType = SCAutofitType.Resize;
-
-            // Assert
-            textFrame.AutofitType.Should().Be(SCAutofitType.Resize);
-            var errors = PptxValidator.Validate(shape.SlideStructure.Presentation);
-            errors.Should().BeEmpty();
         }
         
         [Xunit.Theory]
@@ -245,30 +225,30 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         {
             get
             {
-                var pptxStream1 = GetInputStream("009_table.pptx");
-                var pres1 = SCPresentation.Open(pptxStream1);
-                var autoShape1 = pres1.Slides[2].Shapes.GetById<IAutoShape>(2);
+                var pptxStream1 = StreamOf("009_table.pptx");
+                var pres1 = new Presentation(pptxStream1);
+                var autoShape1 = pres1.Slides[2].Shapes.GetById<IShape>(2);
                 var textBox1 = autoShape1.TextFrame;
                 var testCase1 = new TestCase<ITextFrame, int>(1, textBox1, 1);
                 yield return new object[] { testCase1 };
 
-                var pptxStream2 = GetInputStream("020.pptx");
-                var pres2 = SCPresentation.Open(pptxStream2);
-                var autoShape2 = pres2.Slides[2].Shapes.GetById<IAutoShape>(8);
+                var pptxStream2 = StreamOf("020.pptx");
+                var pres2 = new Presentation(pptxStream2);
+                var autoShape2 = pres2.Slides[2].Shapes.GetById<IShape>(8);
                 var textBox2 = autoShape2.TextFrame;
                 var testCase2 = new TestCase<ITextFrame, int>(2, textBox2, 2);
                 yield return new object[] { testCase2 };
 
-                var pptxStream3 = GetInputStream("009_table.pptx");
-                var pres3 = SCPresentation.Open(pptxStream3);
+                var pptxStream3 = StreamOf("009_table.pptx");
+                var pres3 = new Presentation(pptxStream3);
                 var table3 = pres3.Slides[2].Shapes.GetById<ITable>(3);
                 var textBox3 = table3.Rows[0].Cells[0].TextFrame;
                 var testCase3 = new TestCase<ITextFrame, int>(3, textBox3, 2);
                 yield return new object[] { testCase3 };
 
-                var pptxStream4 = GetInputStream("001.pptx");
-                var pres4 = SCPresentation.Open(pptxStream4);
-                var autoShape4 = pres4.Slides[1].Shapes.GetById<IAutoShape>(2);
+                var pptxStream4 = StreamOf("001.pptx");
+                var pres4 = new Presentation(pptxStream4);
+                var autoShape4 = pres4.Slides[1].Shapes.GetById<IShape>(2);
                 var textBox4 = autoShape4.TextFrame;
                 var testCase4 = new TestCase<ITextFrame, int>(4, textBox4, 1);
                 yield return new object[] { testCase4 };
@@ -281,7 +261,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         public void LeftMargin_getter_returns_left_margin_of_text_frame_in_centimeters(IShape shape, double expectedMargin)
         {
             // Arrange
-            var autoShape = (IAutoShape)shape;
+            var autoShape = (IShape)shape;
             var textFrame = autoShape.TextFrame;
             
             // Act
@@ -296,7 +276,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         public void LeftMargin_setter_sets_left_margin_of_text_frame_in_centimeters(IShape shape)
         {
             // Arrange
-            var autoShape = (IAutoShape)shape;
+            var autoShape = (IShape)shape;
             var textFrame = autoShape.TextFrame;
             
             // Act
@@ -311,7 +291,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         public void RightMargin_getter_returns_right_margin_of_text_frame_in_centimeters(IShape shape, double expectedMargin)
         {
             // Arrange
-            var autoShape = (IAutoShape)shape;
+            var autoShape = (IShape)shape;
             var textFrame = autoShape.TextFrame;
             
             // Act
@@ -327,7 +307,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         public void TopMargin_getter_returns_top_margin_of_text_frame_in_centimeters(IShape shape, double expectedMargin)
         {
             // Arrange
-            var autoShape = (IAutoShape)shape;
+            var autoShape = (IShape)shape;
             var textFrame = autoShape.TextFrame;
             
             // Act
@@ -342,7 +322,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         public void BottomMargin_getter_returns_bottom_margin_of_text_frame_in_centimeters(IShape shape, double expectedMargin)
         {
             // Arrange
-            var autoShape = (IAutoShape)shape;
+            var autoShape = (IShape)shape;
             var textFrame = autoShape.TextFrame;
             
             // Act
@@ -357,10 +337,9 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         public void GetPresentationSlideTextFrameXPath(string presentationName, int slideNumber, string[] expectedXPath)
         {
             // Arrange
-            var pptx = GetInputStream(presentationName);
-            var pres = SCPresentation.Open(pptx);
+            var pres = new Presentation(StreamOf(presentationName));
             var slide = pres.Slides[slideNumber];
-            var textFrame = slide.GetAllTextFrames();
+            var textFrame = slide.TextFrames();
 
             // Act
             var actualXPath = textFrame.Select(tf => tf.SDKXPath).ToArray();

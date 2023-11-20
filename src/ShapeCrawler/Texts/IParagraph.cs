@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Linq;
 using DocumentFormat.OpenXml;
-using ShapeCrawler.Shared;
+using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Placeholders;
+using ShapeCrawler.ShapeCollection;
 using ShapeCrawler.Texts;
+using ShapeCrawler.Wrappers;
 using A = DocumentFormat.OpenXml.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler;
@@ -21,17 +25,17 @@ public interface IParagraph
     /// <summary>
     ///     Gets collection of paragraph portions.
     /// </summary>
-    IPortionCollection Portions { get; }
+    IParagraphPortions Portions { get; }
 
     /// <summary>
     ///     Gets paragraph bullet if bullet exist, otherwise <see langword="null"/>.
     /// </summary>
-    SCBullet Bullet { get; }
+    Bullet Bullet { get; }
 
     /// <summary>
     ///     Gets or sets the text alignment.
     /// </summary>
-    SCTextAlignment Alignment { get; set; }
+    TextAlignment Alignment { get; set; }
 
     /// <summary>
     ///     Gets or sets paragraph's indent level.
@@ -47,63 +51,135 @@ public interface IParagraph
     ///     Finds and replaces text.
     /// </summary>
     void ReplaceText(string oldValue, string newValue);
+
+    /// <summary>
+    ///     Removes paragraph.
+    /// </summary>
+    void Remove();
 }
 
-internal sealed class SCParagraph : IParagraph
+internal sealed class Paragraph : IParagraph
 {
-    private readonly Lazy<SCBullet> bullet;
-    private readonly ResetAbleLazy<SCPortionCollection> portions;
-    private SCTextAlignment? alignment;
+    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly Lazy<Bullet> bullet;
+    private readonly AParagraphWrap aParagraphWrap;
 
-    internal SCParagraph(A.Paragraph aParagraph, SCTextFrame textBox, SlideStructure slideStructure, ITextFrameContainer textFrameContainer)
+    private TextAlignment? alignment;
+
+    internal Paragraph(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
+        : this(sdkTypedOpenXmlPart, aParagraph, new AParagraphWrap(aParagraph))
     {
-        this.AParagraph = aParagraph;
-        this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
-        this.Level = this.GetIndentLevel();
-        this.bullet = new Lazy<SCBullet>(this.GetBullet);
-        this.ParentTextFrame = textBox;
-        this.portions = new ResetAbleLazy<SCPortionCollection>(() => new SCPortionCollection(this.AParagraph, slideStructure, textFrameContainer, this));
     }
 
-    internal event Action? TextChanged;
+    private Paragraph(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph, AParagraphWrap aParagraphWrap)
+    {
+        this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
+        this.AParagraph = aParagraph;
+        this.aParagraphWrap = aParagraphWrap;
+        this.AParagraph.ParagraphProperties ??= new A.ParagraphProperties();
+        this.bullet = new Lazy<Bullet>(this.GetBullet);
+        this.Portions = new ParagraphPortions(sdkTypedOpenXmlPart, this.AParagraph);
+    }
 
     public bool IsRemoved { get; set; }
 
     public string Text
     {
         get => this.ParseText();
-        set => this.SetText(value);
+        set
+        {
+            if (!this.Portions.Any())
+            {
+                this.Portions.AddText(" ");
+            }
+
+            // To set a paragraph text we use a single portion which is the first paragraph portion.
+            var baseARun = this.AParagraph.GetFirstChild<A.Run>() !;
+            foreach (var removingRun in this.AParagraph.OfType<A.Run>().Where(run => run != baseARun))
+            {
+                removingRun.Remove();
+            }
+
+#if NETSTANDARD2_0
+            var textLines = value.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+#else
+            var textLines = value.Split(Environment.NewLine);
+#endif
+
+            var basePortion = new TextParagraphPortion(this.sdkTypedOpenXmlPart, baseARun);
+            basePortion.Text = textLines.First();
+
+            foreach (var textLine in textLines.Skip(1))
+            {
+                if (!string.IsNullOrEmpty(textLine))
+                {
+                    ((ParagraphPortions)this.Portions).AddNewLine();
+                    this.Portions.AddText(textLine);
+                }
+                else
+                {
+                    ((ParagraphPortions)this.Portions).AddNewLine();
+                }
+            }
+
+            // Resize
+            var sdkTextBody = this.AParagraph.Parent!;
+            var textFrame = new TextFrame(this.sdkTypedOpenXmlPart, sdkTextBody);
+            textFrame.ResizeParentShape();
+        }
     }
 
-    public IPortionCollection Portions => this.portions.Value;
+    public IParagraphPortions Portions { get; }
 
-    public SCBullet Bullet => this.bullet.Value;
+    public Bullet Bullet => this.bullet.Value;
 
-    public SCTextAlignment Alignment
+    public TextAlignment Alignment
     {
-        get => this.GetAlignment();
+        get
+        {
+            if (this.alignment.HasValue)
+            {
+                return this.alignment.Value;
+            }
+
+            var aTextAlignmentType = this.AParagraph.ParagraphProperties?.Alignment;
+            if (aTextAlignmentType == null)
+            {
+                var parentShape = new AutoShape(this.sdkTypedOpenXmlPart, this.AParagraph.Ancestors<P.Shape>().First());
+                if (parentShape.PlaceholderType == PlaceholderType.CenteredTitle)
+                {
+                    return TextAlignment.Center;
+                }
+            }
+
+            this.alignment = aTextAlignmentType!.Value switch
+            {
+                A.TextAlignmentTypeValues.Center => TextAlignment.Center,
+                A.TextAlignmentTypeValues.Right => TextAlignment.Right,
+                A.TextAlignmentTypeValues.Justified => TextAlignment.Justify,
+                _ => TextAlignment.Left
+            };
+
+            return this.alignment.Value;
+        }
         set => this.SetAlignment(value);
     }
 
     public int IndentLevel
     {
-        get => this.GetIndentLevel();
-        set => this.SetIndentLevel(value);
+        get => this.aParagraphWrap.IndentLevel();
+        set => this.aParagraphWrap.UpdateIndentLevel(value);
     }
 
     public ISpacing Spacing => this.GetSpacing();
-
-    internal SCTextFrame ParentTextFrame { get; }
-
+    
     internal A.Paragraph AParagraph { get; }
-
-    internal int Level { get; }
 
     public void SetFontSize(int fontSize)
     {
         foreach (var portion in this.Portions)
         {
-            portion.Font!.Size = fontSize;
+            portion.Font.Size = fontSize;
         }
     }
 
@@ -120,16 +196,11 @@ internal sealed class SCParagraph : IParagraph
         }
     }
 
+    public void Remove() => this.AParagraph.Remove();
+    
+    private ISpacing GetSpacing() => new Spacing(this, this.AParagraph);
 
-    private ISpacing GetSpacing()
-    {
-        return new SCSpacing(this, this.AParagraph);
-    }
-
-    private SCBullet GetBullet()
-    {
-        return new SCBullet(this.AParagraph.ParagraphProperties!);
-    }
+    private Bullet GetBullet() => new Bullet(this.AParagraph.ParagraphProperties!);
 
     private string ParseText()
     {
@@ -141,67 +212,14 @@ internal sealed class SCParagraph : IParagraph
         return this.Portions.Select(portion => portion.Text).Aggregate((result, next) => result + next) !;
     }
 
-    private int GetIndentLevel()
-    {
-        var level = this.AParagraph.ParagraphProperties!.Level;
-        if (level is null)
-        {
-            return 1; // it is default indent level
-        }
-
-        return level + 1;
-    }
-
-    private void SetIndentLevel(int value)
-    {
-        this.AParagraph.ParagraphProperties!.Level = new Int32Value(value - 1);
-    }
-
-    private void SetText(string text)
-    {
-        if (!this.portions.Value.Any())
-        {
-            this.portions.Value.AddText(" ");
-        }
-
-        // To set a paragraph text we use a single portion which is the first paragraph portion.
-        var basePortion = this.portions.Value.OfType<SCTextPortion>().First();
-        var removingPortions = this.portions.Value.Where(p => p != basePortion).ToList();
-        this.portions.Value.Remove(removingPortions);
-
-#if NETSTANDARD2_0
-        var textLines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-#else
-        var textLines = text.Split(Environment.NewLine);
-#endif
-
-        basePortion.Text = textLines.First();
-
-        foreach (var textLine in textLines.Skip(1))
-        {
-            if (!string.IsNullOrEmpty(textLine))
-            {
-                this.portions.Value.AddNewLine();
-                this.portions.Value.AddText(textLine);
-            }
-            else
-            {
-                this.portions.Value.AddNewLine();
-            }
-        }
-        
-        this.portions.Reset();
-        this.TextChanged?.Invoke();
-    }
-
-    private void SetAlignment(SCTextAlignment alignmentValue)
+    private void SetAlignment(TextAlignment alignmentValue)
     {
         var aTextAlignmentTypeValue = alignmentValue switch
         {
-            SCTextAlignment.Left => A.TextAlignmentTypeValues.Left,
-            SCTextAlignment.Center => A.TextAlignmentTypeValues.Center,
-            SCTextAlignment.Right => A.TextAlignmentTypeValues.Right,
-            SCTextAlignment.Justify => A.TextAlignmentTypeValues.Justified,
+            TextAlignment.Left => A.TextAlignmentTypeValues.Left,
+            TextAlignment.Center => A.TextAlignmentTypeValues.Center,
+            TextAlignment.Right => A.TextAlignmentTypeValues.Right,
+            TextAlignment.Justify => A.TextAlignmentTypeValues.Justified,
             _ => throw new ArgumentOutOfRangeException(nameof(alignmentValue))
         };
 
@@ -219,44 +237,5 @@ internal sealed class SCParagraph : IParagraph
         }
 
         this.alignment = alignmentValue;
-    }
-
-    private SCTextAlignment GetAlignment()
-    {
-        if (this.alignment.HasValue)
-        {
-            return this.alignment.Value;
-        }
-
-        var shape = this.ParentTextFrame.TextFrameContainer.SCShape;
-        var placeholder = shape.Placeholder;
-
-        var aTextAlignmentType = this.AParagraph.ParagraphProperties?.Alignment!;
-        if (aTextAlignmentType == null)
-        {
-            if (placeholder is { Type: SCPlaceholderType.Title })
-            {
-                this.alignment = SCTextAlignment.Left;
-                return this.alignment.Value;
-            }
-
-            if (placeholder is { Type: SCPlaceholderType.CenteredTitle })
-            {
-                this.alignment = SCTextAlignment.Center;
-                return this.alignment.Value;
-            }
-
-            return SCTextAlignment.Left;
-        }
-
-        this.alignment = aTextAlignmentType.Value switch
-        {
-            A.TextAlignmentTypeValues.Center => SCTextAlignment.Center,
-            A.TextAlignmentTypeValues.Right => SCTextAlignment.Right,
-            A.TextAlignmentTypeValues.Justified => SCTextAlignment.Justify,
-            _ => SCTextAlignment.Left
-        };
-
-        return this.alignment.Value;
     }
 }

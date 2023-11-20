@@ -1,0 +1,46 @@
+<p:sp xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:nvSpPr>
+    <p:cNvPr id="1" name="Rectangle">
+      <a:extLst>
+        <a:ext uri="{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}">
+          <a16:creationId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" id="{A0C957D4-E4F1-4D51-EC0C-C161461E948E}"/>
+        </a:ext>
+      </a:extLst>
+    </p:cNvPr>
+    <p:cNvSpPr/>
+    <p:nvPr/>
+  </p:nvSpPr>
+  <p:spPr>
+    <a:xfrm>
+      <a:off x="2904565" y="1996888"/>
+      <a:ext cx="1606923" cy="786653"/>
+    </a:xfrm>
+    <a:prstGeom prst="rect">
+      <a:avLst/>
+    </a:prstGeom>
+  </p:spPr>
+  <p:style>
+    <a:lnRef idx="2">
+      <a:schemeClr val="accent1">
+        <a:shade val="15000"/>
+      </a:schemeClr>
+    </a:lnRef>
+    <a:fillRef idx="1">
+      <a:schemeClr val="accent1"/>
+    </a:fillRef>
+    <a:effectRef idx="0">
+      <a:schemeClr val="accent1"/>
+    </a:effectRef>
+    <a:fontRef idx="minor">
+      <a:schemeClr val="lt1"/>
+    </a:fontRef>
+  </p:style>
+  <p:txBody>
+    <a:bodyPr rtlCol="0" anchor="ctr"/>
+    <a:lstStyle/>
+    <a:p>
+      <a:pPr algn="ctr"/>
+      <a:endParaRPr lang="en-US"/>
+    </a:p>
+  </p:txBody>
+</p:sp>

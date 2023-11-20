@@ -60,6 +60,12 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <EmbeddedResource Include="Resources\audio-image.png" />
     <None Remove="Resources\new-presentation.pptx" />
     <EmbeddedResource Include="Resources\new-presentation.pptx" />
+    <None Remove="Resources\new-rectangle.xml" />
+    <EmbeddedResource Include="Resources\new-rectangle.xml" />
+    <None Remove="Resources\new-line.xml" />
+    <EmbeddedResource Include="Resources\new-line.xml" />
+    <None Remove="Resources\new-rectangle-rounded-corners.xml" />
+    <EmbeddedResource Include="Resources\new-rectangle-rounded-corners.xml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -74,7 +80,6 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageReference Include="AngleSharp" Version="1.0.1" />
     <PackageReference Include="AngleSharp.Css" Version="0.17.0" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.20.0" />
-    <PackageReference Include="OneOf" Version="3.0.243" />
     <PackageReference Include="SkiaSharp" Version="2.88.6" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.3" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
@@ -102,10 +107,6 @@ This library provides a simplified object model on top of the Open XML SDK for m
 
   <ItemGroup>
     <Folder Include="Resources\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Analyzer Include="ShapeCrawler.Analyzer.dll" />
   </ItemGroup>
 
 </Project>

@@ -21,8 +21,8 @@ public class PresentationTests : SCTest
     public void Slides_Remove_removes_slide(string file, int expectedSlidesCount)
     {
         // Arrange
-        var pptx = GetInputStream(file);
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf(file);
+        var pres = new Presentation(pptx);
         var removingSlide = pres.Slides[0];
         var mStream = new MemoryStream();
 
@@ -33,7 +33,7 @@ public class PresentationTests : SCTest
         pres.Slides.Should().HaveCount(expectedSlidesCount);
 
         pres.SaveAs(mStream);
-        pres = SCPresentation.Open(mStream);
+        pres = new Presentation(mStream);
         pres.Slides.Should().HaveCount(expectedSlidesCount);
     }
     

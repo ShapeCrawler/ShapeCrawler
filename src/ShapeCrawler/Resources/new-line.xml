@@ -1,0 +1,36 @@
+<p:cxnSp xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:nvCxnSpPr>
+    <p:cNvPr id="8" name="Straight Connector 7">
+      <a:extLst>
+        <a:ext uri="{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}">
+          <a16:creationId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" id="{07140A32-94A2-3494-976F-5BA2F17FCD02}"/>
+        </a:ext>
+      </a:extLst>
+    </p:cNvPr>
+    <p:cNvCxnSpPr/>
+    <p:nvPr/>
+  </p:nvCxnSpPr>
+  <p:spPr>
+    <a:xfrm>
+      <a:off x="1637270" y="1087395"/>
+      <a:ext cx="661087" cy="370702"/>
+    </a:xfrm>
+    <a:prstGeom prst="line">
+      <a:avLst/>
+    </a:prstGeom>
+  </p:spPr>
+  <p:style>
+    <a:lnRef idx="1">
+      <a:schemeClr val="accent1"/>
+    </a:lnRef>
+    <a:fillRef idx="0">
+      <a:schemeClr val="accent1"/>
+    </a:fillRef>
+    <a:effectRef idx="0">
+      <a:schemeClr val="accent1"/>
+    </a:effectRef>
+    <a:fontRef idx="minor">
+      <a:schemeClr val="tx1"/>
+    </a:fontRef>
+  </p:style>
+</p:cxnSp>
