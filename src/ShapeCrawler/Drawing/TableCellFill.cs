@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Extensions;
 using A = DocumentFormat.OpenXml.Drawing;
