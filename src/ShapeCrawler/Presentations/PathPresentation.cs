@@ -16,9 +16,9 @@ internal sealed record PathPresentation : IValidateable
     public void Save() => this.presentationCore.CopyTo(this.path);
     void IValidateable.Validate() => this.presentationCore.Validate();
 
-    public void CopyTo(string newPath)
+    public void CopyTo(string path)
     {
-        this.path = newPath;
+        this.path = path;
         this.Save();
     }
 

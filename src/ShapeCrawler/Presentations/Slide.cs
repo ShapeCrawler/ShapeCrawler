@@ -72,7 +72,7 @@ internal sealed class Slide : ISlide
         }
     }
 
-    public IShape ShapeWithName(string shape) => this.Shapes.GetByName<IShape>(shape);
+    public IShape ShapeWithName(string autoShape) => this.Shapes.GetByName<IShape>(autoShape);
 
     public ITable TableWithName(string table) => this.Shapes.GetByName<ITable>(table);
 

@@ -90,9 +90,9 @@ internal sealed class ParagraphPortions : IParagraphPortions
         removingPortion.Remove();
     }
 
-    public void Remove(IList<IParagraphPortion> removingPortions)
+    public void Remove(IList<IParagraphPortion> portions)
     {
-        foreach (var portion in removingPortions)
+        foreach (var portion in portions)
         {
             this.Remove(portion);
         }

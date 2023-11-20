@@ -10,7 +10,6 @@ internal class TableCellFill : IShapeFill
 {
     private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.TableCellProperties sdkATableCellProperties;
-    private BooleanValue? useBgFill;
     private FillType fillType;
     private bool isDirty;
     private string? hexSolidColor;
@@ -39,7 +38,7 @@ internal class TableCellFill : IShapeFill
 
     public FillType Type => this.GetFillType();
 
-    public void SetPicture(Stream imageStream)
+    public void SetPicture(Stream image)
     {
         if (this.isDirty)
         {
@@ -48,11 +47,11 @@ internal class TableCellFill : IShapeFill
 
         if (this.Type == FillType.Picture)
         {
-            this.pictureImage!.Update(imageStream);
+            this.pictureImage!.Update(image);
         }
         else
         {
-            var rId = this.sdkTypedOpenXmlPart.AddImagePart(imageStream);
+            var rId = this.sdkTypedOpenXmlPart.AddImagePart(image);
 
             var aBlipFill = new A.BlipFill();
             var aStretch = new A.Stretch();
@@ -68,7 +67,6 @@ internal class TableCellFill : IShapeFill
             this.sdkAGradFill = null;
             this.sdkAPattFill?.Remove();
             this.sdkAPattFill = null;
-            this.useBgFill = false;
         }
 
         this.isDirty = true;
@@ -83,8 +81,6 @@ internal class TableCellFill : IShapeFill
 
         this.sdkATableCellProperties.AddASolidFill(hex);
         
-        this.useBgFill = false;
-
         this.isDirty = true;
     }
 

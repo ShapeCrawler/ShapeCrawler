@@ -11,7 +11,6 @@ namespace ShapeCrawler.Drawing;
 internal record ShapeFill : IShapeFill
 {
     private readonly TypedOpenXmlCompositeElement sdkTypedOpenXmlCompositeElement;
-    private FillType fillType;
     private SlidePictureImage? pictureImage;
     private A.SolidFill? aSolidFill;
     private A.GradientFill? aGradFill;
@@ -215,7 +214,6 @@ internal record ShapeFill : IShapeFill
 
     private void InitSlideBackgroundFillOr()
     {
-            this.fillType = FillType.NoFill;
     }
 
     private void Initialize()
@@ -238,15 +236,12 @@ internal record ShapeFill : IShapeFill
                 // TODO: get hex color from scheme
                 var schemeColor = this.aSolidFill.SchemeColor;
             }
-
-            this.fillType = FillType.Solid;
         }
         else
         {
             this.aGradFill = this.sdkTypedOpenXmlCompositeElement!.GetFirstChild<A.GradientFill>();
             if (this.aGradFill != null)
             {
-                this.fillType = FillType.Gradient;
             }
             else
             {
@@ -260,7 +255,6 @@ internal record ShapeFill : IShapeFill
         this.aGradFill = this.sdkTypedOpenXmlCompositeElement!.GetFirstChild<A.GradientFill>();
         if (this.aGradFill != null)
         {
-            this.fillType = FillType.Gradient;
         }
         else
         {
@@ -276,7 +270,6 @@ internal record ShapeFill : IShapeFill
         {
             var image = new SlidePictureImage(this.sdkTypedOpenXmlPart, this.aBlipFill.Blip!);
             this.pictureImage = image;
-            this.fillType = FillType.Picture;
         }
         else
         {
@@ -289,7 +282,6 @@ internal record ShapeFill : IShapeFill
         this.aPattFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.PatternFill>();
         if (this.aPattFill != null)
         {
-            this.fillType = FillType.Pattern;
         }
         else
         {

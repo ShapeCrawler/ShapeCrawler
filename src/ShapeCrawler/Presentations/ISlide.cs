@@ -53,7 +53,7 @@ public interface ISlide
     /// <summary>
     ///     Gets shape by name.
     /// </summary>
-    IShape ShapeWithName(string autoshape);
+    IShape ShapeWithName(string autoShape);
     
     /// <summary>
     ///     Gets table by name.
