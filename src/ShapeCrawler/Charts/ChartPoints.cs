@@ -30,8 +30,8 @@ internal sealed class ChartPoints : IReadOnlyList<IChartPoint>
         var cFormula = cNumberReference.Formula!;
         
         var normalizedFormula = cFormula.Text.Replace("$", string.Empty).Replace("'", string.Empty);
-        var sheetName = Regex.Match(normalizedFormula, @"(?<=\(*)[\p{L} 0-9]+?(?=!)", RegexOptions.None, TimeSpan.FromMicroseconds(1000)).Value; // eg: Sheet1!A2:A5 -> Sheet1
-        var addressMatches = Regex.Matches(normalizedFormula, @"[A-Z]\d+(:[A-Z]\d+)*", RegexOptions.None, TimeSpan.FromMicroseconds(1000)); // eg: Sheet1!A2:A5 -> A2:A5
+        var sheetName = Regex.Match(normalizedFormula, @"(?<=\(*)[\p{L} 0-9]+?(?=!)", RegexOptions.None, TimeSpan.FromMilliseconds(1000)).Value; // eg: Sheet1!A2:A5 -> Sheet1
+        var addressMatches = Regex.Matches(normalizedFormula, @"[A-Z]\d+(:[A-Z]\d+)*", RegexOptions.None, TimeSpan.FromMilliseconds(1000)); // eg: Sheet1!A2:A5 -> A2:A5
         var addresses = new List<string>();
         foreach (Match match in addressMatches)
         {

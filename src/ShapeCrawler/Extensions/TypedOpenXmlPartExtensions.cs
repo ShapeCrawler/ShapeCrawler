@@ -19,7 +19,7 @@ internal static class TypedOpenXmlPartExtensions
             .Union(typedOpenXmlPart.Parts.Select(p => p.RelationshipId));
         foreach (var relationship in relationships)
         {
-            var match = Regex.Match(relationship, @"\d+", RegexOptions.None, TimeSpan.FromMicroseconds(1000));
+            var match = Regex.Match(relationship, @"\d+", RegexOptions.None, TimeSpan.FromMilliseconds(1000));
             if (match.Success)
             {
                 var id = long.Parse(match.Value, NumberStyles.None, NumberFormatInfo.CurrentInfo);
