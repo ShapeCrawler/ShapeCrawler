@@ -12,13 +12,12 @@
 
 ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoint presentations. It provides a simplified object model on top of the [Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK), allowing users to process presentations without having Microsoft Office installed.
 
-⚠️**Warning:** Since February, the library collects usage data to help us to improve your experience. You can opt out of telemetry. For more details, please visit [Statistics Collection](https://github.com/ShapeCrawler/ShapeCrawler#statistics-collection).
-
 ## Contents
 
 - [Quick Start](#quick-start)
-- [Shapes](#shapes)
-- [More samples](#more-samples)
+- [How To?](#how-to)
+  - [Create presentation](#create-presentation)
+  - [More samples](#more-samples)
 - [Have questions?](#have-questions)
 - [How to contribute](#how-to-contribute)
   - [Bug Report](#bug-report)
@@ -28,18 +27,22 @@ ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoin
 > `install-package ShapeCrawler`
 
 ```c#
-var pres = SCPresentation.Open("some.pptx");
-var shapeCollection = pres.Slides[0].Shapes;
+// open existing presentation
+var pres = new Presentation("some.pptx");
+
+var shapes = pres.Slides[0].Shapes;
 
 // get number of shapes on slide
-var slidesCount = shapeCollection.Count;
+var shapesCount = shapes.Count;
 
-// get text of text box
-var autoShape = shapeCollection.GetByName<IAutoShape>("TextBox 1");
-var text = autoShape.TextFrame!.Text;
+// get text
+var shape = shapes.GetByName("TextBox 1");
+var text = shape.TextFrame!.Text;
 ```
 
-## Shapes
+## How To?
+
+### Create presentation
 
 ```c#
 // create a new presentation
@@ -81,7 +84,3 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 🐞Fixed an issue with Slide Background updating [#577](https://github.com/ShapeCrawler/ShapeCrawler/issues/577)
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full log.
-
-## Statistics Collection
-
-Since February 15th, the library collects usage data to help us improve your experience. The data is collected by the maintainer and not shared with the community. Rest assured that we do not collect any sensitive or presentation content data. The collection includes, for example, information on the operating system, target framework, and frequently used shape types. If you prefer not to participate in this data collection, you can easily opt-out by setting the global setting `SCSettings.CanCollectLogs = false`.
