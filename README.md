@@ -46,15 +46,17 @@ var text = shape.TextFrame!.Text;
 
 ```c#
 // create a new presentation
-var pres = SCPresentation.Create();
+var pres = new Presentation();
 
-var shapeCollection = pres.Slides[0].Shapes;
+var shapes = pres.Slides[0].Shapes;
 
-// add a new shape
-var addedShape = shapeCollection.AddRectangle(x: 50, y: 60, w: 100, h: 70);
+// add new shape
+shapes.AddRectangle(x: 50, y: 60, width: 100, height: 70);
+var addedShape = shapes.Last();
 
 addedShape.TextFrame!.Text = "Hello World!";
-pres.Save();
+
+pres.SaveAs("my_pres.pptx");
 ```
 
 ## More samples
