@@ -29,8 +29,7 @@ public class ParagraphTests : SCTest
 
     [Xunit.Theory]
     [MemberData(nameof(TestCasesAlignmentGetter))]
-    public void Alignment_Getter_returns_text_alignment(IAutoShape autoShape,
-        SCTextAlignment expectedAlignment)
+    public void Alignment_Getter_returns_text_alignment(IShape autoShape, TextAlignment expectedAlignment)
     {
         // Arrange
         var paragraph = autoShape.TextFrame.Paragraphs[0];
@@ -40,6 +39,18 @@ public class ParagraphTests : SCTest
 
         // Assert
         textAlignment.Should().Be(expectedAlignment);
+    }
+    
+    public static IEnumerable<object[]> TestCasesAlignmentGetter()
+    {
+        var pptx = StreamOf("001.pptx");
+        var autoShape1 = new Presentation(pptx).Slides[0].Shapes.GetByName<IShape>("TextBox 3");
+        yield return new object[] { autoShape1, TextAlignment.Center };
+
+        var pptxStream2 = StreamOf("001.pptx");
+        var pres2 = new Presentation(pptxStream2);
+        var autoShape2 = pres2.Slides[0].Shapes.GetByName<IShape>("Head 1");
+        yield return new object[] { autoShape2, TextAlignment.Center };
     }
 
     [Xunit.Theory]
@@ -52,27 +63,15 @@ public class ParagraphTests : SCTest
         var mStream = new MemoryStream();
 
         // Act
-        paragraph.Alignment = SCTextAlignment.Right;
+        paragraph.Alignment = TextAlignment.Right;
 
         // Assert
-        paragraph.Alignment.Should().Be(SCTextAlignment.Right);
+        paragraph.Alignment.Should().Be(TextAlignment.Right);
 
         pres.SaveAs(mStream);
         testCase.SetPresentation(mStream);
         paragraph = testCase.AutoShape.TextFrame.Paragraphs[0];
-        paragraph.Alignment.Should().Be(SCTextAlignment.Right);
-    }
-
-    public static IEnumerable<object[]> TestCasesAlignmentGetter()
-    {
-        var pptx = GetInputStream("001.pptx");
-        var autoShape1 = SCPresentation.Open(pptx).Slides[0].Shapes.GetByName<IAutoShape>("TextBox 3");
-        yield return new object[] { autoShape1, SCTextAlignment.Center };
-
-        var pptxStream2 = GetInputStream("001.pptx");
-        var pres2 = SCPresentation.Open(pptxStream2);
-        var autoShape2 = pres2.Slides[0].Shapes.GetByName<IAutoShape>("Head 1");
-        yield return new object[] { autoShape2, SCTextAlignment.Center };
+        paragraph.Alignment.Should().Be(TextAlignment.Right);
     }
 
     public static IEnumerable<object[]> TestCasesParagraphsAlignmentSetter
@@ -110,8 +109,7 @@ public class ParagraphTests : SCTest
         paragraph.Portions.Count.Should().Be(expectedPortionsCount);
 
         pres.SaveAs(mStream);
-        pres.Close();
-        paragraphQuery.Presentation = SCPresentation.Open(mStream);
+        paragraphQuery.Presentation = new Presentation(mStream);
         paragraph = paragraphQuery.GetParagraph();
         paragraph.Text.Should().BeEquivalentTo(newText);
         
@@ -126,7 +124,7 @@ public class ParagraphTests : SCTest
             ShapeId = 4,
             ParagraphIndex = 2
         };
-        paragraphQuery.Presentation = SCPresentation.Open(GetInputStream("002.pptx"));
+        paragraphQuery.Presentation = new Presentation(StreamOf("002.pptx"));
         yield return new object[] { paragraphQuery, "Text", 1 };
         
         var paragraphQuery2 = new TestElementQuery
@@ -135,7 +133,7 @@ public class ParagraphTests : SCTest
             ShapeId = 4,
             ParagraphIndex = 2
         };
-        paragraphQuery2.Presentation = SCPresentation.Open(GetInputStream("002.pptx"));
+        paragraphQuery2.Presentation = new Presentation(StreamOf("002.pptx"));
         yield return new object[] { paragraphQuery2, $"Text{Environment.NewLine}", 2 };
         
         var paragraphQuery3 = new TestElementQuery
@@ -144,7 +142,7 @@ public class ParagraphTests : SCTest
             ShapeId = 4,
             ParagraphIndex = 2
         };
-        paragraphQuery3.Presentation = SCPresentation.Open(GetInputStream("002.pptx"));
+        paragraphQuery3.Presentation = new Presentation(StreamOf("002.pptx"));
         yield return new object[] { paragraphQuery3, $"Text{Environment.NewLine}Text2", 3 };
         
         var paragraphQuery4 = new TestElementQuery
@@ -153,7 +151,7 @@ public class ParagraphTests : SCTest
             ShapeId = 4,
             ParagraphIndex = 2
         };
-        paragraphQuery4.Presentation = SCPresentation.Open(GetInputStream("002.pptx"));
+        paragraphQuery4.Presentation = new Presentation(StreamOf("002.pptx"));
         yield return new object[] { paragraphQuery4, $"Text{Environment.NewLine}Text2{Environment.NewLine}", 4 };
     }
 
@@ -164,7 +162,7 @@ public class ParagraphTests : SCTest
     public void Paragraph_Spacing_LineSpacingLines_returns_line_spacing_in_Lines(IShape shape, double expectedLines)
     {
         // Arrange
-        var autoShape = (IAutoShape)shape;
+        var autoShape = (IShape)shape;
         var paragraph = autoShape.TextFrame!.Paragraphs[0];
             
         // Act
@@ -180,7 +178,7 @@ public class ParagraphTests : SCTest
     public void Paragraph_Spacing_LineSpacingPoints_returns_line_spacing_in_Points(IShape shape, double expectedPoints)
     {
         // Arrange
-        var autoShape = (IAutoShape)shape;
+        var autoShape = (IShape)shape;
         var paragraph = autoShape.TextFrame!.Paragraphs[0];
             
         // Act

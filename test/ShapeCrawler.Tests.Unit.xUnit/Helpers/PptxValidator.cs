@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
 using ShapeCrawler.Tests.Unit.Helpers;
 
@@ -31,10 +32,10 @@ public static class PptxValidator
             "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]/p:txBody[1]/a:p[1]")
     };
 
-    public static List<ValidationErrorInfo> Validate(IPresentation pres)
+    public static List<ValidationErrorInfo> Validate(PresentationDocument sdkPresDocument)
     {
         var validator = new OpenXmlValidator(FileFormatVersions.Microsoft365);
-        var errors = validator.Validate(pres.SDKPresentationDocument);
+        var errors = validator.Validate(sdkPresDocument);
 
         var removing = new List<ValidationErrorInfo>();
         foreach (var error in errors)

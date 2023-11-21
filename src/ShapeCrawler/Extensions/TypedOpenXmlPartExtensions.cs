@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace ShapeCrawler.Extensions;
 
 internal static class TypedOpenXmlPartExtensions
 {
-    internal static string GetNextRelationshipId(this TypedOpenXmlPart typedOpenXmlPart)
+    internal static string NextRelationshipId(this TypedOpenXmlPart typedOpenXmlPart)
     {
         var idNums = new List<long>();
         var relationships = typedOpenXmlPart.ExternalRelationships.Select(r => r.Id)
@@ -18,7 +19,7 @@ internal static class TypedOpenXmlPartExtensions
             .Union(typedOpenXmlPart.Parts.Select(p => p.RelationshipId));
         foreach (var relationship in relationships)
         {
-            var match = Regex.Match(relationship, @"\d+");
+            var match = Regex.Match(relationship, @"\d+", RegexOptions.None, TimeSpan.FromMilliseconds(1000));
             if (match.Success)
             {
                 var id = long.Parse(match.Value, NumberStyles.None, NumberFormatInfo.CurrentInfo);
@@ -37,7 +38,7 @@ internal static class TypedOpenXmlPartExtensions
     
     internal static string AddImagePart(this TypedOpenXmlPart typedOpenXmlPart, Stream stream)
     {
-        var rId = typedOpenXmlPart.GetNextRelationshipId();
+        var rId = typedOpenXmlPart.NextRelationshipId();
         
         var imagePart = typedOpenXmlPart.AddNewPart<ImagePart>("image/png", rId);
         stream.Position = 0;

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Shared;
 
 // ReSharper disable CheckNamespace
 namespace ShapeCrawler;
@@ -11,107 +10,90 @@ namespace ShapeCrawler;
 public interface ISlideLayout
 {
     /// <summary>
-    ///     Gets parent Slide Master.
-    /// </summary>
-    ISlideMaster SlideMaster { get; }
-
-    /// <summary>
-    ///     Gets collection of shape.
-    /// </summary>
-    IShapeCollection Shapes { get; }
-
-    /// <summary>
     ///     Gets layout type.
     /// </summary>
-    SCSlideLayoutType Type { get; }
+    SlideLayoutType Type { get; }
 
     /// <summary>
     ///     Gets layout name.
     /// </summary>
     string Name { get; }
+
+    /// <summary>
+    ///     Gets layout shape collection.
+    /// </summary>
+    IShapes Shapes { get; }
+
+    /// <summary>
+    ///     Gets slide master.
+    /// </summary>
+    ISlideMaster SlideMaster { get; }
 }
 
-internal sealed class SCSlideLayout : SlideStructure, ISlideLayout
+internal sealed class SlideLayout : ISlideLayout
 {
-    private static readonly Dictionary<string, SCSlideLayoutType> TypeMapping = new()
+    private static readonly Dictionary<string, SlideLayoutType> TypeMapping = new()
     {
         // https://c-rex.net/samples/ooxml/e1/Part4/OOXML_P4_DOCX_ST_SlideLayoutType_topic_ID0EKTIIB.html
-        { "blank", SCSlideLayoutType.Blank },
-        { "chart", SCSlideLayoutType.Chart },
-        { "chartAndTx", SCSlideLayoutType.ChartAndText },
-        { "clipArtAndTx", SCSlideLayoutType.ClipArtAndText },
-        { "clipArtAndVertTx", SCSlideLayoutType.ClipArtAndVerticalText },
-        { "cust", SCSlideLayoutType.Custom },
-        { "dgm", SCSlideLayoutType.Diagram },
-        { "fourObj", SCSlideLayoutType.FourObjects },
-        { "mediaAndTx", SCSlideLayoutType.MediaAndText },
-        { "obj", SCSlideLayoutType.Object },
-        { "objAndTwoObj", SCSlideLayoutType.ObjectAndTwoObjects },
-        { "objAndTx", SCSlideLayoutType.ObjectAndText },
-        { "objOnly", SCSlideLayoutType.ObjectOnly },
-        { "objOverTx", SCSlideLayoutType.ObjectOverText },
-        { "objTx", SCSlideLayoutType.ObjectText },
-        { "picTx", SCSlideLayoutType.PictureAndCaption },
-        { "secHead", SCSlideLayoutType.SectionHeader },
-        { "tbl", SCSlideLayoutType.Table },
-        { "title", SCSlideLayoutType.Title },
-        { "titleOnly", SCSlideLayoutType.TitleOnly },
-        { "twoColTx", SCSlideLayoutType.TwoColumnText },
-        { "twoObj", SCSlideLayoutType.TwoObjects },
-        { "twoObjAndObj", SCSlideLayoutType.TwoObjectsAndObject },
-        { "twoObjAndTx", SCSlideLayoutType.TwoObjectsAndText },
-        { "twoObjOverTx", SCSlideLayoutType.TwoObjectsOverText },
-        { "twoTxTwoObj", SCSlideLayoutType.TwoTextAndTwoObjects },
-        { "tx", SCSlideLayoutType.Text },
-        { "txAndChart", SCSlideLayoutType.TextAndChart },
-        { "txAndClipArt", SCSlideLayoutType.TextAndClipArt },
-        { "txAndMedia", SCSlideLayoutType.TextAndMedia },
-        { "txAndObj", SCSlideLayoutType.TextAndObject },
-        { "txAndTwoObj", SCSlideLayoutType.TextAndTwoObjects },
-        { "txOverObj", SCSlideLayoutType.TextOverObject },
-        { "vertTitleAndTx", SCSlideLayoutType.VerticalTitleAndText },
-        { "vertTitleAndTxOverChart", SCSlideLayoutType.VerticalTitleAndTextOverChart },
-        { "vertTx", SCSlideLayoutType.VerticalText }
+        { "blank", SlideLayoutType.Blank },
+        { "chart", SlideLayoutType.Chart },
+        { "chartAndTx", SlideLayoutType.ChartAndText },
+        { "clipArtAndTx", SlideLayoutType.ClipArtAndText },
+        { "clipArtAndVertTx", SlideLayoutType.ClipArtAndVerticalText },
+        { "cust", SlideLayoutType.Custom },
+        { "dgm", SlideLayoutType.Diagram },
+        { "fourObj", SlideLayoutType.FourObjects },
+        { "mediaAndTx", SlideLayoutType.MediaAndText },
+        { "obj", SlideLayoutType.Object },
+        { "objAndTwoObj", SlideLayoutType.ObjectAndTwoObjects },
+        { "objAndTx", SlideLayoutType.ObjectAndText },
+        { "objOnly", SlideLayoutType.ObjectOnly },
+        { "objOverTx", SlideLayoutType.ObjectOverText },
+        { "objTx", SlideLayoutType.ObjectText },
+        { "picTx", SlideLayoutType.PictureAndCaption },
+        { "secHead", SlideLayoutType.SectionHeader },
+        { "tbl", SlideLayoutType.Table },
+        { "title", SlideLayoutType.Title },
+        { "titleOnly", SlideLayoutType.TitleOnly },
+        { "twoColTx", SlideLayoutType.TwoColumnText },
+        { "twoObj", SlideLayoutType.TwoObjects },
+        { "twoObjAndObj", SlideLayoutType.TwoObjectsAndObject },
+        { "twoObjAndTx", SlideLayoutType.TwoObjectsAndText },
+        { "twoObjOverTx", SlideLayoutType.TwoObjectsOverText },
+        { "twoTxTwoObj", SlideLayoutType.TwoTextAndTwoObjects },
+        { "tx", SlideLayoutType.Text },
+        { "txAndChart", SlideLayoutType.TextAndChart },
+        { "txAndClipArt", SlideLayoutType.TextAndClipArt },
+        { "txAndMedia", SlideLayoutType.TextAndMedia },
+        { "txAndObj", SlideLayoutType.TextAndObject },
+        { "txAndTwoObj", SlideLayoutType.TextAndTwoObjects },
+        { "txOverObj", SlideLayoutType.TextOverObject },
+        { "vertTitleAndTx", SlideLayoutType.VerticalTitleAndText },
+        { "vertTitleAndTxOverChart", SlideLayoutType.VerticalTitleAndTextOverChart },
+        { "vertTx", SlideLayoutType.VerticalText }
     };
+    
+    private readonly SlideLayoutPart sdkLayoutPart;
 
-    private readonly ResetAbleLazy<ShapeCollection> shapes;
-    private readonly SCSlideMaster slideMaster;
-
-    internal SCSlideLayout(SCSlideMaster slideMaster, SlideLayoutPart slideLayoutPart, int number)
-        : base(slideMaster.Presentation)
+    internal SlideLayout(SlideLayoutPart sdkLayoutPart)
+        : this(sdkLayoutPart, new SlideMaster(sdkLayoutPart.SlideMasterPart!))
     {
-        this.slideMaster = slideMaster;
-        this.SlideLayoutPart = slideLayoutPart;
-        this.shapes = new ResetAbleLazy<ShapeCollection>(() =>
-            new ShapeCollection(slideLayoutPart, this));
-        this.Number = number;
     }
 
-    public string Name => this.GetName();
-
-    public SCSlideLayoutType Type => this.GetLayoutType();
-
-    public ISlideMaster SlideMaster => this.slideMaster;
-
-    public override int Number { get; set; }
-
-    public override IShapeCollection Shapes => this.shapes.Value;
-
-    internal SlideLayoutPart SlideLayoutPart { get; }
-
-    internal SCSlideMaster SlideMasterInternal => (SCSlideMaster)this.SlideMaster;
-
-    internal ShapeCollection ShapesInternal => (ShapeCollection)this.Shapes;
-
-    internal override TypedOpenXmlPart TypedOpenXmlPart => this.SlideLayoutPart;
-
-    private string GetName()
+    private SlideLayout(SlideLayoutPart sdkLayoutPart, ISlideMaster slideMaster)
     {
-        return this.SlideLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
+        this.sdkLayoutPart = sdkLayoutPart;
+        this.SlideMaster = slideMaster;
+        this.Shapes = new ShapeCollection.Shapes(this.sdkLayoutPart);
     }
 
-    private SCSlideLayoutType GetLayoutType()
-    {
-        return TypeMapping[this.SlideLayoutPart.SlideLayout.Type!];
-    }
+    public string Name => this.sdkLayoutPart.SlideLayout.CommonSlideData!.Name!.Value!;
+    
+    public IShapes Shapes { get; }
+    
+    public ISlideMaster SlideMaster { get; }
+    
+    public SlideLayoutType Type => TypeMapping[this.sdkLayoutPart.SlideLayout.Type!];
+    
+    internal SlideLayoutPart SDKSlideLayoutPart() => this.sdkLayoutPart;
 }

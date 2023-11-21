@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml.Presentation;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
@@ -20,10 +21,10 @@ public class SlideMasterTests : SCTest
     public void ShapeXAndY_ReturnXAndYAxesCoordinatesOfTheMasterShape()
     {
         // Arrange
-        var pptx = GetInputStream("001.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf("001.pptx");
+        var pres = new Presentation(pptx);
         ISlideMaster slideMaster = pres.SlideMasters[0];
-        IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
+       IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
 
         // Act
         int shapeXCoordinate = shape.X;
@@ -38,8 +39,8 @@ public class SlideMasterTests : SCTest
     public void ShapeWidthAndHeight_ReturnWidthAndHeightSizesOfTheMaster()
     {
         // Arrange
-        var pptx = GetInputStream("001.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf("001.pptx");
+        var pres = new Presentation(pptx);
         ISlideMaster slideMaster = pres.SlideMasters[0];
         IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
         float horizontalResolution = Helpers.TestHelper.HorizontalResolution;
@@ -58,8 +59,8 @@ public class SlideMasterTests : SCTest
     public void SlideLayout_Name_returns_name_of_slide_layout()
     {
         // Arrange
-        var pptx = GetInputStream("autoshape-case011_save-as-png.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf("autoshape-case011_save-as-png.pptx");
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -73,47 +74,46 @@ public class SlideMasterTests : SCTest
     public void AutoShapePlaceholderType_ReturnsPlaceholderType()
     {
         // Arrange
-        ISlideMaster slideMaster = SCPresentation.Open(GetInputStream("001.pptx")).SlideMasters[0];
-        IShape masterAutoShapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
-        IShape masterAutoShapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
-        IShape masterAutoShapeCase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
+        var pres = new Presentation(StreamOf("001.pptx"));
+        var slideMaster = pres.SlideMasters[0];
+        var masterAutoShapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
+        var masterAutoShapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
+        var masterAutoShapeCase3 = slideMaster.Shapes.First(sp => sp.Id == 7);
 
         // Act
-        SCPlaceholderType? shapePlaceholderTypeCase1 = masterAutoShapeCase1.Placeholder?.Type;
-        SCPlaceholderType? shapePlaceholderTypeCase2 = masterAutoShapeCase2.Placeholder?.Type;
-        SCPlaceholderType? shapePlaceholderTypeCase3 = masterAutoShapeCase3.Placeholder?.Type;
+        PlaceholderType? shapePlaceholderTypeCase1 = masterAutoShapeCase1.PlaceholderType;
 
         // Assert
-        shapePlaceholderTypeCase1.Should().Be(SCPlaceholderType.Title);
-        shapePlaceholderTypeCase2.Should().BeNull();
-        shapePlaceholderTypeCase3.Should().BeNull();
+        shapePlaceholderTypeCase1.Should().Be(PlaceholderType.Title);
+        masterAutoShapeCase2.IsPlaceholder.Should().BeFalse();
+        masterAutoShapeCase3.IsPlaceholder.Should().BeFalse();
     }
 
     [Fact]
     public void ShapeGeometryType_ReturnsShapesGeometryFormType()
     {
         // Arrange
-        var pptx = GetInputStream("001.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf("001.pptx");
+        var pres = new Presentation(pptx);
         ISlideMaster slideMaster = pres.SlideMasters[0];
         IShape shapeCase1 = slideMaster.Shapes.First(sp => sp.Id == 2);
         IShape shapeCase2 = slideMaster.Shapes.First(sp => sp.Id == 8);
 
         // Act
-        SCGeometry geometryTypeCase1 = shapeCase1.GeometryType;
-        SCGeometry geometryTypeCase2 = shapeCase2.GeometryType;
+        Geometry geometryTypeCase1 = shapeCase1.GeometryType;
+        Geometry geometryTypeCase2 = shapeCase2.GeometryType;
 
         // Assert
-        geometryTypeCase1.Should().Be(SCGeometry.Rectangle);
-        geometryTypeCase2.Should().Be(SCGeometry.Custom);
+        geometryTypeCase1.Should().Be(Geometry.Rectangle);
+        geometryTypeCase2.Should().Be(Geometry.Custom);
     }
 
     [Fact]
     public void AutoShapeTextBoxText_ReturnsText_WhenTheSlideMasterAutoShapesTextBoxIsNotEmpty()
     {
         // Arrange
-        ISlideMaster slideMaster = SCPresentation.Open(GetInputStream("001.pptx")).SlideMasters[0];
-        IAutoShape autoShape = (IAutoShape)slideMaster.Shapes.First(sp => sp.Id == 8);
+        ISlideMaster slideMaster = new Presentation(StreamOf("001.pptx")).SlideMasters[0];
+        IShape autoShape = (IShape)slideMaster.Shapes.First(sp => sp.Id == 8);
 
         // Act-Assert
         autoShape.TextFrame.Text.Should().BeEquivalentTo("id8");
@@ -123,8 +123,8 @@ public class SlideMasterTests : SCTest
     public void Theme_FontScheme_HeadLatinFont_Getter_returns_font_name_for_the_Latin_characters_of_Heading()
     {
         // Arrange
-        var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -138,8 +138,8 @@ public class SlideMasterTests : SCTest
     public void Theme_FontScheme_HeadEastAsianFont_Getter_returns_font_name_for_the_EastAsian_characters_of_Heading()
     {
         // Arrange
-        var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -153,8 +153,8 @@ public class SlideMasterTests : SCTest
     public void Theme_FontScheme_HeadLatinFont_Setter_sets_font_name_for_the_Latin_characters_of_heading()
     {
         // Arrange
-        var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -168,8 +168,8 @@ public class SlideMasterTests : SCTest
     public void Theme_FontScheme_HeadEastAsianFont_Setter_sets_font_for_the_East_Asian_characters_of_heading()
     {
         // Arrange
-        var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -177,16 +177,15 @@ public class SlideMasterTests : SCTest
 
         // Assert
         slideMaster.Theme.FontScheme.HeadEastAsianFont.Should().Be("MingLiU-ExtB");
-        var errors = PptxValidator.Validate(pres);
-        errors.Should().BeEmpty();
+        pres.Validate();
     }
     
     [Fact]
     public void Theme_FontScheme_BodyLatinFont_Getter_returns_font_name_for_the_Latin_characters_of_body()
     {
         // Arrange
-        var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -200,8 +199,8 @@ public class SlideMasterTests : SCTest
     public void Theme_FontScheme_BodyEastAsianFont_Getter_returns_font_for_the_EastAsian_characters_of_body()
     {
         // Arrange
-        var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -215,8 +214,8 @@ public class SlideMasterTests : SCTest
     public void Theme_FontScheme_BodyLatinFont_Setter_font_name_for_the_Latin_characters_of_body()
     {
         // Arrange
-        var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -230,8 +229,8 @@ public class SlideMasterTests : SCTest
     public void Theme_FontScheme_BodyEastAsianFont_Setter_font_for_the_East_Asian_characters_of_body()
     {
         // Arrange
-        var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -245,8 +244,8 @@ public class SlideMasterTests : SCTest
     public void Theme_ColorScheme_color_getter_returns_scheme_with_colors()
     {
         // Arrange
-        var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -282,8 +281,8 @@ public class SlideMasterTests : SCTest
     public void Theme_ColorScheme_color_setter_sets_scheme_color()
     {
         // Arrange
-        var pptx = GetInputStream("autoshape-grouping.pptx");
-        var pres = SCPresentation.Open(pptx);
+        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pres = new Presentation(pptx);
         var slideMaster = pres.SlideMasters[0];
 
         // Act
@@ -299,7 +298,6 @@ public class SlideMasterTests : SCTest
         slideMaster.Theme.ColorScheme.Accent1.Should().Be("FFC0CB");
         slideMaster.Theme.ColorScheme.Hyperlink.Should().Be("FFC0CB");
         slideMaster.Theme.ColorScheme.FollowedHyperlink.Should().Be("FFC0CB");
-        var errors = PptxValidator.Validate(pres);
-        errors.Should().BeEmpty();
+        pres.Validate();
     }
 }

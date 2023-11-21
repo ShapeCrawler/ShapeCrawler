@@ -1,4 +1,4 @@
-﻿using ShapeCrawler.Drawing;
+﻿using ShapeCrawler.Texts;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -7,30 +7,38 @@ namespace ShapeCrawler;
 /// <summary>
 ///     Represents a slide number font.
 /// </summary>
-public interface ISlideNumberFont
+public interface ISlideNumberFont : IFont
 {
     /// <summary>
     ///     Gets or sets color.
     /// </summary>
-    SCColor Color { get; set; }
+    Color Color { get; set; }
 }
 
-internal class SCSlideNumberFont : ISlideNumberFont
+internal sealed class SlideNumberFont : ISlideNumberFont
 {
     private readonly A.DefaultRunProperties aDefaultRunProperties;
+    private readonly MasterSlideNumberSize masterSlideNumberSize;
 
-    internal SCSlideNumberFont(A.DefaultRunProperties aDefaultRunProperties)
+    internal SlideNumberFont(A.DefaultRunProperties aDefaultRunProperties)
     {
         this.aDefaultRunProperties = aDefaultRunProperties;
+        this.masterSlideNumberSize = new MasterSlideNumberSize(aDefaultRunProperties);
     }
 
-    public SCColor Color
+    public Color Color
     {
         get => this.ParseColor();
         set => this.UpdateColor(value);
     }
 
-    private void UpdateColor(SCColor color)
+    public int Size
+    {
+        get => this.masterSlideNumberSize.Size();
+        set => this.masterSlideNumberSize.Update(value);
+    }
+
+    private void UpdateColor(Color color)
     {
         var solidFill = this.aDefaultRunProperties.GetFirstChild<A.SolidFill>();
         solidFill?.Remove();
@@ -41,10 +49,10 @@ internal class SCSlideNumberFont : ISlideNumberFont
         this.aDefaultRunProperties.Append(solidFill);
     }
 
-    private SCColor ParseColor()
+    private Color ParseColor()
     {
         var hex = this.aDefaultRunProperties.GetFirstChild<A.SolidFill>() !.RgbColorModelHex!.Val!.Value!;
 
-        return SCColor.FromHex(hex);
+        return Color.FromHex(hex);
     }
 }

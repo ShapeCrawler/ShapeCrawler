@@ -29,7 +29,7 @@ public class ShapeCollectionTests : SCTest
         var shapeCollection = groupShape.Shapes;
             
         // Act
-        var resultShape = shapeCollection.GetByName<IAutoShape>("AutoShape 1");
+        var resultShape = shapeCollection.GetByName<IShape>("AutoShape 1");
 
         // Assert
         resultShape.Should().NotBeNull();

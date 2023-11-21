@@ -12,7 +12,7 @@ namespace ShapeCrawler;
 
 internal static class SCLogger
 {
-    private static readonly Lazy<SCLog> Log = new(GetLog);
+    private static readonly Lazy<Log> Log = new(GetLog);
     private static readonly object LoggingLock = new();
     private static readonly string LogPath = Path.Combine(Path.GetTempPath(), "sc-log.json");
 
@@ -57,7 +57,7 @@ internal static class SCLogger
         }
     }
 
-    private static SCLog GetLog()
+    private static Log GetLog()
     {
         if (File.Exists(LogPath))
         {
@@ -80,21 +80,21 @@ internal static class SCLogger
 
         if (firstInterface == null)
         {
-            return new SCLog();
+            return new Log();
         }
 
-        var newLogValue = new SCLog();
+        var newLogValue = new Log();
         newLogValue.UserId = firstInterface.GetPhysicalAddress().ToString();
         
         return newLogValue;
     }
 
-    private static bool TryGetLogFromFile(string logPath, out SCLog? log)
+    private static bool TryGetLogFromFile(string logPath, out Log? log)
     {
         try
         {
             using var fileStream = File.OpenRead(logPath);
-            var fileLogValue = JsonSerializer.Deserialize<SCLog>(fileStream);
+            var fileLogValue = JsonSerializer.Deserialize<Log>(fileStream);
             if (fileLogValue != null)
             {
                 {

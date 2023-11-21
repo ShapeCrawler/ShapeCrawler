@@ -32,7 +32,7 @@ internal sealed class SCColumn : IColumn
 
     private int GetWidth()
     {
-        return UnitConverter.HorizontalEmuToPixel(this.AGridColumn.Width!.Value);
+        return new Emus(this.AGridColumn.Width!.Value).AsHorizontalPixels();
     }
     
     private void SetWidth(int pixels)
