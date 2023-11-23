@@ -157,6 +157,8 @@ internal sealed class GroupedShape : IShape
     
     public string SDKXPath => this.decoratedShape.SDKXPath;
     
+    public OpenXmlElement SDKOpenXmlElement => this.decoratedShape.SDKOpenXmlElement.CloneNode(true);
+
     public void Remove() => this.decoratedShape.Remove();
     
     public ITable AsTable() => this.decoratedShape.AsTable();

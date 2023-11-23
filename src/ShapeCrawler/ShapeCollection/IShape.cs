@@ -1,5 +1,6 @@
 ﻿// ReSharper disable once CheckNamespace
 
+using DocumentFormat.OpenXml;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Wrappers;
@@ -104,9 +105,14 @@ public interface IShape : IPosition
     bool Removeable { get; }
     
     /// <summary>
-    ///     Gets XPath.
+    ///     Gets XPath of the underlying Open XML element.
     /// </summary>
     public string SDKXPath { get; }
+    
+    /// <summary>
+    ///     Gets copy of the underlying Open XML element.
+    /// </summary>
+    public OpenXmlElement SDKOpenXmlElement { get; }
     
     /// <summary>
     ///     Removes the shape from the slide.

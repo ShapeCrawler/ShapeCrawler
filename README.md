@@ -59,7 +59,7 @@ addedShape.TextFrame!.Text = "Hello World!";
 pres.SaveAs("my_pres.pptx");
 ```
 
-## More samples
+### More samples
 
 Visit the [**Wiki**](https://github.com/ShapeCrawler/ShapeCrawler/wiki/Examples) page to find more usage samples.
 

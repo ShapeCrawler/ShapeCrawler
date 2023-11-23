@@ -187,6 +187,8 @@ internal abstract class Shape : IShape
     
     public string SDKXPath => new XmlPath(this.pShapeTreeElement).XPath;
     
+    public OpenXmlElement SDKOpenXmlElement => this.pShapeTreeElement.CloneNode(true);
+
     public virtual ITable AsTable() => throw new SCException(
         $"The shape is not a table. Use {nameof(IShape.ShapeType)} property to check if the shape is a table.");
 
