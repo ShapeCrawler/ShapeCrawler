@@ -1,4 +1,4 @@
-name: Publish package
+name: Publish master
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:  
   publish-package:
-    name: Publish package
+    name: Publish master
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
@@ -17,7 +17,7 @@ jobs:
         run: dotnet restore
       
       - name: Build
-        run: dotnet build -c Release -f net7.0 --no-restore --verbosity normal
+        run: dotnet build src\ShapeCrawler\ShapeCrawler.csproj -c Release -f net7.0 --no-restore --verbosity normal
 
       - name: Create the package
         run: dotnet pack --configuration Release
