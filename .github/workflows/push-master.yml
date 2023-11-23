@@ -1,0 +1,26 @@
+name: Publish package
+
+on:
+  push:
+    branches: [push-master]
+
+  workflow_dispatch:
+
+jobs:  
+  publish-package:
+    name: Publish package
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Restore dependencies
+        run: dotnet restore
+      
+      - name: Build
+        run: dotnet build -c Release -f net7.0 --no-restore --verbosity normal
+
+      - name: Create the package
+        run: dotnet pack --configuration Release
+
+      - name: Publish package      
+        run: dotnet nuget push "src\ShapeCrawler\bin\Release\*.nupkg" --api-key ${{ secrets.GITHUB_TOKEN }} --source "github"
