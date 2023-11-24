@@ -19,8 +19,9 @@ jobs:
       - name: Build
         run: dotnet build src\ShapeCrawler\ShapeCrawler.csproj -c Release -f net7.0 --no-restore --verbosity normal
 
-      - name: Create the package
+      - name: Create package
         run: dotnet pack --configuration Release
 
       - name: Publish package      
-        run: dotnet nuget push "src\ShapeCrawler\bin\Release\*.nupkg" --api-key ${{ secrets.GITHUB_TOKEN }} --source "github"
+        run: dotnet nuget push "src\ShapeCrawler\bin\Release\*.nupkg" --source "https://nuget.pkg.github.com/ShapeCrawler/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}
+        # run: dotnet nuget push "src\ShapeCrawler\bin\Release\*.nupkg" --api-key ${{ secrets.GITHUB_TOKEN }} --source "github" -
