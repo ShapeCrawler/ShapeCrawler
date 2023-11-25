@@ -21,7 +21,7 @@ jobs:
 
       - name: Create package
         # run: dotnet pack -c Release
-        run: dotnet pack src\ShapeCrawler\ShapeCrawler.csproj --configuration Release /p:Version=${{env.VERSION}}-master
+        run: dotnet pack src\ShapeCrawler\ShapeCrawler.csproj --configuration Release /p:Version=${{env.VERSION}}
 
       - name: Publish package      
         run: dotnet nuget push "src\ShapeCrawler\bin\Release\*.nupkg" --source "https://nuget.pkg.github.com/ShapeCrawler/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}
