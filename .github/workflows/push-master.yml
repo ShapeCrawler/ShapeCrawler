@@ -7,17 +7,22 @@ on:
   workflow_dispatch:
 
 jobs:  
-  publish-package:
+  publish:
     name: Publish master
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
-      
-      # - name: Restore dependencies
-      #   run: dotnet restore
+
+      - name: Generate version with timestamp
+        id: versioning
+        run: |
+          $version = "${{ secrets.VERSION }}-master"
+          $date = Get-Date -Format "yyyyMMdd-HHmm"
+          $versionWithDate = "$version-$date"
+          echo "PACKAGE_VERSION=$versionWithDate" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Create package
-        run: dotnet pack src\ShapeCrawler\ShapeCrawler.csproj --configuration Release /p:Version=${{ secrets.VERSION }}-master
+        run: dotnet pack src\ShapeCrawler\ShapeCrawler.csproj --configuration Release /p:Version=${{ env.PACKAGE_VERSION }}
 
       - name: Publish package      
         run: dotnet nuget push "src\ShapeCrawler\bin\Release\*.nupkg" --source "https://nuget.pkg.github.com/ShapeCrawler/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}
