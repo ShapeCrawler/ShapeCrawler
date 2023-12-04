@@ -1,0 +1,28 @@
+name: Beta version
+
+on:
+  push:
+    branches: [master]
+
+  workflow_dispatch:
+
+jobs:  
+  publish:
+    name: Publish beta
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Generate version with timestamp
+        id: versioning
+        run: |
+          $version = "${{ vars.VERSION }}-beta"
+          $date = Get-Date -Format "yyyyMMddHHmm"
+          $versionWithDate = "$version.$date"
+          echo "PACKAGE_VERSION=$versionWithDate" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Create package
+        run: dotnet pack src\ShapeCrawler\ShapeCrawler.csproj --configuration Release /p:Version=${{ env.PACKAGE_VERSION }}
+
+      - name: Publish package
+        run: dotnet nuget push "src\ShapeCrawler\bin\Release\*.nupkg" -s https://www.myget.org/F/shape/api/v3/index.json -k ${{ secrets.MYGET_API_KEY }}
