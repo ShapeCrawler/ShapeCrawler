@@ -2,7 +2,7 @@ name: Beta version
 
 on:
   push:
-    branches: [597-create-nuget-package-from-master]
+    branches: [master]
 
   workflow_dispatch:
 
