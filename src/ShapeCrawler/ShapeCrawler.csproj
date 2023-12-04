@@ -26,7 +26,8 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageIcon>package-icon.jpg</PackageIcon>
     <Nullable>enable</Nullable>
     <NoWarn>NU1608</NoWarn>
-    <PackageVersion>0.50.0-build.master</PackageVersion>
+    <!-- <PackageVersion>0.50.0</PackageVersion> -->
+    <!-- <PackageVersion>0.50.0-build.master</PackageVersion> -->
   </PropertyGroup>
 
   <ItemGroup>

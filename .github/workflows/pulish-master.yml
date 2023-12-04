@@ -16,8 +16,8 @@ jobs:
       - name: Generate version with timestamp
         id: versioning
         run: |
-          $version = "${{ secrets.VERSION }}-master"
-          $date = Get-Date -Format "yyyyMMdd-HHmm"
+          $version = "${{ secrets.VERSION }}-beta."
+          $date = Get-Date -Format "yyyyMMddHHmm"
           $versionWithDate = "$version-$date"
           echo "PACKAGE_VERSION=$versionWithDate" | Out-File -FilePath $env:GITHUB_ENV -Append
 
@@ -27,4 +27,5 @@ jobs:
 
       - name: Publish package      
         # run: dotnet nuget push "src\ShapeCrawler\bin\Release\*.nupkg" --source "https://nuget.pkg.github.com/ShapeCrawler/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}
-        run: dotnet nuget push "src\ShapeCrawler\bin\Release\*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+        # run: dotnet nuget push "src\ShapeCrawler\bin\Release\*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+        run: dotnet nuget push "src\ShapeCrawler\bin\Release\*.nupkg" -s https://www.myget.org/F/shape/api/v3/index.json -k ${{ secrets.MYGET_API_KEY }} /p:Version=${{ env.PACKAGE_VERSION }}
