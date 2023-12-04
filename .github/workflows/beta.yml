@@ -25,4 +25,4 @@ jobs:
         run: dotnet pack src\ShapeCrawler\ShapeCrawler.csproj --configuration Release /p:Version=${{ env.PACKAGE_VERSION }}
 
       - name: Publish package
-        run: dotnet nuget push "src\ShapeCrawler\bin\Release\*.nupkg" -s https://www.myget.org/F/shape/api/v3/index.json -k ${{ secrets.VERSION }}
+        run: dotnet nuget push "src\ShapeCrawler\bin\Release\*.nupkg" -s https://www.myget.org/F/shape/api/v3/index.json -k ${{ env.VERSION }}
