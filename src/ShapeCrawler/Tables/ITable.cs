@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Exceptions;
@@ -127,11 +126,6 @@ internal sealed class Table : CopyableShape, ITable
     public override void Remove() => this.pGraphicFrame.Remove();
     
     internal void Draw(SKCanvas canvas)
-    {
-        throw new NotImplementedException();
-    }
-
-    internal IHtmlElement ToHtmlElement()
     {
         throw new NotImplementedException();
     }

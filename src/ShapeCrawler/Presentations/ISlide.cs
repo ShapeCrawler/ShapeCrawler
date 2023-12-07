@@ -61,7 +61,6 @@ public interface ISlide
     ITable TableWithName(string table);
 
 #if DEBUG
-    Task<string> ToHtml();
     
     /// <summary>
     ///     Saves slide as PNG image.
