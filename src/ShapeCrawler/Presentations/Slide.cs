@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using AngleSharp;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
@@ -75,21 +73,7 @@ internal sealed class Slide : ISlide
     public IShape ShapeWithName(string autoShape) => this.Shapes.GetByName<IShape>(autoShape);
 
     public ITable TableWithName(string table) => this.Shapes.GetByName<ITable>(table);
-
-    public async Task<string> ToHtml()
-    {
-        var browsingContext = BrowsingContext.New(Configuration.Default.WithDefaultLoader().WithCss());
-        var document = await browsingContext.OpenNewAsync().ConfigureAwait(false);
-        var body = document.Body!;
-
-        foreach (var shape in this.Shapes.OfType<AutoShape>())
-        {
-            body.AppendChild(shape.ToHtmlElement());
-        }
-
-        return document.DocumentElement.OuterHtml;
-    }
-
+    
     public void SaveAsPng(Stream stream)
     {
         var imageInfo = new SKImageInfo(this.slideSize.Width(), this.slideSize.Height());

@@ -6,13 +6,10 @@ on:
 
 jobs:
   test:
-    name: Test on .NET 7.0
+    name: Test on .NET 8.0
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3      
-      
-      - name: Restore packages
-        run: dotnet restore    
+      - uses: actions/checkout@v4      
       
       - name: Test
-        run: dotnet test -c Release -f net7.0 --no-restore
+        run: dotnet test -c Release -f net8.0

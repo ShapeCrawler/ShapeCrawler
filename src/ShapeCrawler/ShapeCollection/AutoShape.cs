@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using AngleSharp.Html.Dom;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Shapes;
@@ -99,7 +98,4 @@ internal sealed class AutoShape : CopyableShape
             textFrame.Draw(slideCanvas, left, this.Y);
         }
     }
-
-    internal IHtmlElement ToHtmlElement() => throw new NotImplementedException();
-    
 }
