@@ -207,20 +207,6 @@ public class SlideTests : SCTest
         // Act
         slide.SaveAsPng(mStream);
     }
-
-    [Test]
-    public void ToHTML_converts_slide_to_HTML()
-    {
-        // Arrange
-        var pptx = TestHelper.GetStream("autoshape-case011_save-as-png.pptx");
-        var pre = new Presentation(pptx);
-        var slide = pre.Slides[0];
-
-        // Act
-        var slideHtml = slide.ToHtml();
-
-        // Arrange
-    }
-
+    
 #endif
 }
