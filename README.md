@@ -1,6 +1,6 @@
 <h3 align="center">
 
-![ShapeCrawler](./doc/logo-extend.png)
+![ShapeCrawler](./docs/logo-extend.png)
 
 </h3>
 
@@ -18,7 +18,7 @@ ShapeCrawler (formerly SlideDotNet) is a .NET library for manipulating PowerPoin
 - [How To?](#how-to)
   - [Create presentation](#create-presentation)
   - [More samples](#more-samples)
-- [Develop NuGet package](#develop-nuget-package)
+- [Prerelease Version](#prerelease-version)
 - [Have questions?](#have-questions)
 - [How to contribute](#how-to-contribute)
   - [Bug Report](#bug-report)
@@ -64,12 +64,11 @@ pres.SaveAs("my_pres.pptx");
 
 Visit the [**Wiki**](https://github.com/ShapeCrawler/ShapeCrawler/wiki/Examples) page to find more usage samples.
 
-## Develop NuGet package
-You can create NuGet package using the script `script\create-package.bat`. For example, to get the latest development version:
+## Prerelease Version
+To access prerelease builds from `master` branch, add `https://www.myget.org/F/shape/api/v3/index.json` as a package source:
 
-1. Clone the repository.
-2. Check out the `master` branch.
-3. Run `script\create-package.bat`. This will create `ShapeCrawler.X.X.X.nupkg` was created.
+![Prerelease](./docs/prerelease.png)
+![Download Prerelease](./docs/prerelease-download.png)
 
 ## Have questions?
 
