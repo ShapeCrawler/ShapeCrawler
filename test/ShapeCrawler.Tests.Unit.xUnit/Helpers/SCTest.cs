@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using ClosedXML.Excel;
-using NUnit.Framework;
 
 namespace ShapeCrawler.Tests.Unit.Helpers;
 

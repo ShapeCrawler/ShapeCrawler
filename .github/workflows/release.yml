@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Test on .NET 8
-        run: dotnet test -c Release -f net8.0 --no-restore --verbosity normal
+        run: dotnet test -c Release -f net8.0 --verbosity normal
       - name: Create the package
         run: dotnet pack --configuration Release /p:Version=${{ vars.VERSION }}
       - name: Publish the package to nuget.org
