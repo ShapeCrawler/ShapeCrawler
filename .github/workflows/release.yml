@@ -7,28 +7,32 @@ on:
   workflow_dispatch:
 
 jobs:  
+
+  test-net472:
+    name: Test on .NET Framework 4.7.2
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test on .NET Framework 4.7.2
+        run: dotnet test -c Release -f net472
+
   test-net48:
     name: Test on .NET Framework 4.8
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Restore packages
-        run: dotnet restore      
-      - name: Test on net48
+      - uses: actions/checkout@v4      
+      - name: Test on .NET Framework 4.8
         run: dotnet test -c Release -f net48
   
   publish-package:
+    needs: [test-net472, test-net48]
     name: Publish package
     runs-on: windows-latest
-    needs: [test-net48]
-    if: needs.test-net48.result == 'success'
     steps:
-      - uses: actions/checkout@v3
-      - name: Restore packages
-        run: dotnet restore
-      - name: Test on net7.0
-        run: dotnet test -c Release -f net7.0 --no-restore --verbosity normal
+      - uses: actions/checkout@v4
+      - name: Test on .NET 8
+        run: dotnet test -c Release -f net8.0 --no-restore --verbosity normal
       - name: Create the package
-        run: dotnet pack --configuration Release
+        run: dotnet pack --configuration Release /p:Version=${{ vars.VERSION }}
       - name: Publish the package to nuget.org      
         run: dotnet nuget push -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json "src\ShapeCrawler\bin\Release\*.nupkg"
