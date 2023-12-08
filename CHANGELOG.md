@@ -1,6 +1,6 @@
 # Changelog  
 
-## Version 0.50.0 - Unreleased
+## Version 0.50.1 - 2023-12-08
 🍀Added `IShape.SDKPath` to store the XPath of the underlying Open XML element [#592](https://github.com/ShapeCrawler/ShapeCrawler/issues/592)  
 
 ## Version 0.49.0 - 2023-09-12
