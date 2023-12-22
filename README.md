@@ -82,6 +82,8 @@ Give a star⭐ if you find this useful, please give it a star to show your suppo
 ### Bug Report
 If you encounter an issue, report the bug on the [issue](https://github.com/ShapeCrawler/ShapeCrawler/issues) page.
 
+To be able to reproduce a bug, it's often necessary to have the original presentation file attached to the issue description. If this file contains confidential data and cannot be shared publicly, you can securely send it to theadamo86@gmail.com. We assure you that only the maintainer will access this file, and it will not be shared publicly.
+
 ### Code contributing
 Pull Requests are welcome! Please read the [Contribution Guide](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CONTRIBUTING.md) for more details.
 
