@@ -389,4 +389,14 @@ public class PresentationTests : SCTest
         File.Delete(originalPath);
         File.Delete(newPath);
     }
+
+    [Test]
+    public void Discussion_617_WIP()
+    {
+        var pres = new Presentation(@"c:\OneDrive\Shape\issues\!d-617-presentation-save-exception\save.pptx");
+        var table = pres.Slides[0].Shapes.GetByName<ITable>("Table 1");
+        table.Rows[0].Cells[1].TextFrame.Text = "Test";
+        
+        pres.Save();
+    }
 }
