@@ -111,8 +111,26 @@ internal abstract class Shape : IShape
             {
                 return PlaceholderType.OnlineImage;
             }
-        
-            return (PlaceholderType)Enum.Parse(typeof(PlaceholderType), pPlaceholderValue.Value.ToString());
+
+            var value = pPlaceholderValue.ToString()!;
+
+            if (value == "dt")
+            {
+                return PlaceholderType.DateAndTime;
+            }
+ 
+            if (value == "ftr")
+            {
+                return PlaceholderType.Footer;
+            }
+
+            if (value == "sldNum")
+            {
+                return PlaceholderType.SlideNumber;
+            }
+
+            
+            return (PlaceholderType)Enum.Parse(typeof(PlaceholderType), value, true);
         }
     } 
         

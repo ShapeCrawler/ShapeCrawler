@@ -11,7 +11,8 @@ public class FontColorTests : SCTest
     public void ColorHex_Getter_returns_White_color()
     {
         // Arrange
-        var shape = (IShape)new Presentation(StreamOf("020.pptx")).Slides[0].Shapes.First(sp => sp.Id == 4);
+        var pres = new Presentation(StreamOf("020.pptx"));
+        var shape = pres.Slides[0].Shapes.First(sp => sp.Id == 4);
         var colorFormat = shape.TextFrame!.Paragraphs[0].Portions[0].Font.Color;
 
         // Act-Assert

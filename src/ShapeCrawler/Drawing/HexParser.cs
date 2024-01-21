@@ -45,7 +45,7 @@ internal static class HexParser
         var aPresetColor = typedElement.GetFirstChild<A.PresetColor>();
         if (aPresetColor != null)
         {
-            var coloName = aPresetColor.Val!.Value.ToString();
+            var coloName = aPresetColor.Val!.ToString()!;
             {
                 return (ColorType.Preset, ColorTranslator.HexFromName(coloName));
             }
