@@ -5,7 +5,7 @@ namespace ShapeCrawler.Extensions;
 
 internal static class ShapePropertiesExtensions
 {
-    internal static void AddASolidFill(this TypedOpenXmlCompositeElement pShapeProperties, string hex)
+    internal static void AddASolidFill(this OpenXmlCompositeElement pShapeProperties, string hex)
     {
         pShapeProperties.GetFirstChild<A.GradientFill>()?.Remove();
         pShapeProperties.GetFirstChild<A.PatternFill>()?.Remove();
@@ -42,7 +42,7 @@ internal static class ShapePropertiesExtensions
         aSolidFill.Append(aRgbColorModelHex);
     }
 
-    internal static A.Outline AddAOutline(this TypedOpenXmlCompositeElement pSpPr)
+    internal static A.Outline AddAOutline(this OpenXmlCompositeElement pSpPr)
     {
         var aOutline = pSpPr.GetFirstChild<A.Outline>();
         aOutline?.Remove();

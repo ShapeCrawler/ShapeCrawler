@@ -16,7 +16,7 @@ internal sealed class AutoShape : CopyableShape
     private readonly P.Shape pShape;
 
     internal AutoShape(
-        TypedOpenXmlPart sdkTypedOpenXmlPart,
+        OpenXmlPart sdkTypedOpenXmlPart,
         P.Shape pShape,
         TextFrame textFrame)
         : this(sdkTypedOpenXmlPart, pShape)
@@ -26,7 +26,7 @@ internal sealed class AutoShape : CopyableShape
     }
 
     internal AutoShape(
-        TypedOpenXmlPart sdkTypedOpenXmlPart,
+        OpenXmlPart sdkTypedOpenXmlPart,
         P.Shape pShape)
         : base(sdkTypedOpenXmlPart, pShape)
     {

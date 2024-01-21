@@ -21,10 +21,10 @@ public interface IParagraphs : IReadOnlyList<IParagraph>
 
 internal readonly struct Paragraphs : IParagraphs
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly OpenXmlElement sdkTextBody;
 
-    internal Paragraphs(TypedOpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement sdkTextBody)
+    internal Paragraphs(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement sdkTextBody)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.sdkTextBody = sdkTextBody;

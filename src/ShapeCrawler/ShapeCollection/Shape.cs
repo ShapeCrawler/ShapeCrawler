@@ -15,14 +15,14 @@ namespace ShapeCrawler.ShapeCollection;
 
 internal abstract class Shape : IShape
 {
-    protected readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    protected readonly OpenXmlPart sdkTypedOpenXmlPart;
     protected readonly OpenXmlElement pShapeTreeElement;
     private const string customDataElementName = "ctd";
     private readonly Position position;
     private readonly ShapeSize size;
     private readonly ShapeId shapeId;
 
-    internal Shape(TypedOpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement pShapeTreeElement)
+    internal Shape(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement pShapeTreeElement)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.pShapeTreeElement = pShapeTreeElement;

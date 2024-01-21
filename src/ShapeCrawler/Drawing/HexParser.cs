@@ -21,7 +21,7 @@ internal static class HexParser
         return (ColorType.Theme, fromScheme);
     }
 
-    internal static (ColorType, string)? GetWithoutScheme(TypedOpenXmlCompositeElement typedElement)
+    internal static (ColorType, string)? GetWithoutScheme(OpenXmlCompositeElement typedElement)
     {
         var aSrgbClr = typedElement.GetFirstChild<A.RgbColorModelHex>();
         string colorHexVariant;

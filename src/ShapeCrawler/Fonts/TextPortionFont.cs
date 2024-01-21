@@ -10,7 +10,7 @@ namespace ShapeCrawler.Fonts;
 
 internal sealed class TextPortionFont : ITextPortionFont
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Text aText;
     private readonly Lazy<FontColor> fontColor;
     private readonly IFontSize size;
@@ -18,7 +18,7 @@ internal sealed class TextPortionFont : ITextPortionFont
     private readonly ATextWrap sdkATextWrap;
 
     internal TextPortionFont(
-        TypedOpenXmlPart sdkTypedOpenXmlPart,
+        OpenXmlPart sdkTypedOpenXmlPart,
         A.Text aText,
         IFontSize size)
         : this(
@@ -30,7 +30,7 @@ internal sealed class TextPortionFont : ITextPortionFont
     }
 
     private TextPortionFont(
-        TypedOpenXmlPart sdkTypedOpenXmlPart,
+        OpenXmlPart sdkTypedOpenXmlPart,
         A.Text aText,
         IFontSize size,
         ThemeFontScheme themeFontScheme)

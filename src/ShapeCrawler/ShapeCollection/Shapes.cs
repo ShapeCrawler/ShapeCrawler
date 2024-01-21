@@ -16,9 +16,9 @@ namespace ShapeCrawler.ShapeCollection;
 
 internal sealed class Shapes : IShapes
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
 
-    internal Shapes(TypedOpenXmlPart sdkTypedOpenXmlPart)
+    internal Shapes(OpenXmlPart sdkTypedOpenXmlPart)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
     }
@@ -46,7 +46,7 @@ internal sealed class Shapes : IShapes
             _ => ((SlideMasterPart)this.sdkTypedOpenXmlPart).SlideMaster.CommonSlideData!.ShapeTree!
         };
         var shapeList = new List<IShape>(pShapeTree.Count());
-        foreach (var pShapeTreeElement in pShapeTree.OfType<TypedOpenXmlCompositeElement>())
+        foreach (var pShapeTreeElement in pShapeTree.OfType<OpenXmlCompositeElement>())
         {
             if (pShapeTreeElement is P.GroupShape pGroupShape)
             {
@@ -212,7 +212,7 @@ internal sealed class Shapes : IShapes
         return shapeList;
     }
 
-    private bool IsTablePGraphicFrame(TypedOpenXmlCompositeElement pShapeTreeChild)
+    private bool IsTablePGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
     {
         if (pShapeTreeChild is P.GraphicFrame pGraphicFrame)
         {
@@ -228,7 +228,7 @@ internal sealed class Shapes : IShapes
         return false;
     }
 
-    private bool IsChartPGraphicFrame(TypedOpenXmlCompositeElement pShapeTreeChild)
+    private bool IsChartPGraphicFrame(OpenXmlCompositeElement pShapeTreeChild)
     {
         if (pShapeTreeChild is P.GraphicFrame)
         {

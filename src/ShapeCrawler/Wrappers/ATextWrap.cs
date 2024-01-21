@@ -5,10 +5,10 @@ using A = DocumentFormat.OpenXml.Drawing;
 
 internal sealed class ATextWrap
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Text aText;
 
-    internal ATextWrap(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
+    internal ATextWrap(OpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aText = aText;

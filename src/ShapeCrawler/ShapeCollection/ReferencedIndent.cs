@@ -12,16 +12,16 @@ namespace ShapeCrawler.ShapeCollection;
 
 internal readonly record struct ReferencedIndent
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Text aText;
     private readonly PresentationColor presColor;
 
-    internal ReferencedIndent(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
+    internal ReferencedIndent(OpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
         : this(sdkTypedOpenXmlPart, aText, new PresentationColor(sdkTypedOpenXmlPart))
     {
     }
 
-    private ReferencedIndent(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Text aText, PresentationColor presColor)
+    private ReferencedIndent(OpenXmlPart sdkTypedOpenXmlPart, A.Text aText, PresentationColor presColor)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aText = aText;

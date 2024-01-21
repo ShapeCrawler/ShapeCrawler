@@ -14,7 +14,7 @@ internal sealed class RootShape : CopyableShape, IRootShape
     private readonly P.Shape pShape;
 
     internal RootShape(
-        TypedOpenXmlPart sdkTypedOpenXmlPart,
+        OpenXmlPart sdkTypedOpenXmlPart,
         P.Shape pShape,
         IShape decoratedShape)
         : base(sdkTypedOpenXmlPart, pShape)

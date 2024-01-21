@@ -36,10 +36,10 @@ public interface ITableRow
 
 internal sealed class TableRow : ITableRow
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly int index;
 
-    internal TableRow(TypedOpenXmlPart sdkTypedOpenXmlPart, A.TableRow aTableRow, int index)
+    internal TableRow(OpenXmlPart sdkTypedOpenXmlPart, A.TableRow aTableRow, int index)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.ATableRow = aTableRow;

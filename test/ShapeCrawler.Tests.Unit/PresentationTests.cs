@@ -389,4 +389,15 @@ public class PresentationTests : SCTest
         File.Delete(originalPath);
         File.Delete(newPath);
     }
+
+    [Test]
+    public void Issue_621_WIP()
+    {
+        var pres = new Presentation(@"c:\temp\template.pptx");
+        var shapeCollection = pres.Slides[1].Shapes;
+        var tableShape = shapeCollection.GetById<ITable>(5);
+            
+        var stream = new MemoryStream();
+        pres.SaveAs(stream);
+    } 
 }

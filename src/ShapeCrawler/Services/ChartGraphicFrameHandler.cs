@@ -14,7 +14,7 @@ internal sealed class ChartGraphicFrameHandler
 {
     private const string Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart";
 
-    public P.GraphicFrame Create(TypedOpenXmlPart typedOpenXmlPart)
+    public P.GraphicFrame Create(OpenXmlPart typedOpenXmlPart)
     {
         var id = (UInt32Value)6U;
         var name = "Chart X";

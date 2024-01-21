@@ -24,10 +24,10 @@ public interface ITheme
 
 internal sealed class Theme : ITheme
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Theme aTheme;
 
-    internal Theme(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Theme aTheme)
+    internal Theme(OpenXmlPart sdkTypedOpenXmlPart, A.Theme aTheme)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aTheme = aTheme;

@@ -15,10 +15,10 @@ namespace ShapeCrawler.Texts;
 
 internal sealed class TextFrame : ITextFrame
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly OpenXmlElement sdkTextBody;
 
-    internal TextFrame(TypedOpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement sdkTextBody)
+    internal TextFrame(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement sdkTextBody)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.sdkTextBody = sdkTextBody;

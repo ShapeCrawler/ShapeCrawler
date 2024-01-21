@@ -19,14 +19,14 @@ internal sealed class Picture : CopyableShape, IPicture
     private readonly A.Blip aBlip;
 
     internal Picture(
-        TypedOpenXmlPart sdkTypedOpenXmlPart,
+        OpenXmlPart sdkTypedOpenXmlPart,
         P.Picture pPicture,
         A.Blip aBlip)
         : this(sdkTypedOpenXmlPart, pPicture, aBlip, new SlidePictureImage(sdkTypedOpenXmlPart, aBlip))
     {
     }
 
-    private Picture(TypedOpenXmlPart sdkTypedOpenXmlPart, P.Picture pPicture, A.Blip aBlip, IImage image)
+    private Picture(OpenXmlPart sdkTypedOpenXmlPart, P.Picture pPicture, A.Blip aBlip, IImage image)
         : base(sdkTypedOpenXmlPart, pPicture)
     {
         this.pPicture = pPicture;

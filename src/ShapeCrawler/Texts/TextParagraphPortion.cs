@@ -9,11 +9,11 @@ namespace ShapeCrawler.Texts;
 
 internal sealed class TextParagraphPortion : IParagraphPortion
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly ResetableLazy<TextPortionFont> font;
     private readonly A.Run aRun;
 
-    internal TextParagraphPortion(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Run aRun)
+    internal TextParagraphPortion(OpenXmlPart sdkTypedOpenXmlPart, A.Run aRun)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.AText = aRun.Text!;

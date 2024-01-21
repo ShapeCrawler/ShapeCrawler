@@ -30,7 +30,7 @@ internal sealed class Chart : Shape, IChart
     private string? chartTitle;
 
     internal Chart(
-        TypedOpenXmlPart sdkTypedOpenXmlPart, 
+        OpenXmlPart sdkTypedOpenXmlPart, 
         ChartPart sdkChartPart, 
         P.GraphicFrame pGraphicFrame,
         IReadOnlyList<ICategory> categories)

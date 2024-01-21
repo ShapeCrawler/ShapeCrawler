@@ -9,10 +9,10 @@ namespace ShapeCrawler.Positions;
 
 internal sealed class Position
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly OpenXmlElement pShapeTreeElement;
 
-    internal Position(TypedOpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement pShapeTreeElement)
+    internal Position(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement pShapeTreeElement)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.pShapeTreeElement = pShapeTreeElement;

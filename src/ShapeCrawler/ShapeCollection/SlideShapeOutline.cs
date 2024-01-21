@@ -9,10 +9,10 @@ namespace ShapeCrawler.ShapeCollection;
 
 internal sealed class SlideShapeOutline : IShapeOutline
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
-    private readonly TypedOpenXmlCompositeElement sdkTypedOpenXmlCompositeElement;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlCompositeElement sdkTypedOpenXmlCompositeElement;
 
-    internal SlideShapeOutline(TypedOpenXmlPart sdkTypedOpenXmlPart, TypedOpenXmlCompositeElement sdkTypedOpenXmlCompositeElement)
+    internal SlideShapeOutline(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlCompositeElement sdkTypedOpenXmlCompositeElement)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.sdkTypedOpenXmlCompositeElement = sdkTypedOpenXmlCompositeElement;

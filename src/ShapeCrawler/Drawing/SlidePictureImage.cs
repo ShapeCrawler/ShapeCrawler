@@ -8,11 +8,11 @@ namespace ShapeCrawler.Drawing;
 
 internal sealed class SlidePictureImage : IImage
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Blip aBlip;
     private ImagePart sdkImagePart;
 
-    internal SlidePictureImage(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Blip aBlip)
+    internal SlidePictureImage(OpenXmlPart sdkTypedOpenXmlPart, A.Blip aBlip)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aBlip = aBlip;
