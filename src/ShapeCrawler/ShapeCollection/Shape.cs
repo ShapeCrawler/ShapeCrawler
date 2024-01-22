@@ -128,7 +128,16 @@ internal abstract class Shape : IShape
             {
                 return PlaceholderType.SlideNumber;
             }
-
+            
+            if(value == "pic")
+            {
+                return PlaceholderType.Picture;
+            }
+            
+            if(value == "tbl")
+            {
+                return PlaceholderType.Table;
+            }
             
             return (PlaceholderType)Enum.Parse(typeof(PlaceholderType), value, true);
         }
