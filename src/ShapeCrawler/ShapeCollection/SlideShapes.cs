@@ -432,7 +432,11 @@ internal sealed class SlideShapes : ISlideShapes
     
     public T GetById<T>(int id) where T : IShape => this.shapes.GetById<T>(id);
     
+    public T? TryGetById<T>(int id) where T : IShape => this.shapes.TryGetById<T>(id);
+    
     public T GetByName<T>(string name) where T : IShape => this.shapes.GetByName<T>(name);
+    
+    public T? TryGetByName<T>(string name) where T : IShape => this.shapes.TryGetByName<T>(name);
     
     public IShape GetByName(string name) => this.shapes.GetByName(name);
     

@@ -137,4 +137,76 @@ public class ShapeTests : SCTest
         yield return new object[] { shapeCase1, Geometry.Rectangle };
         yield return new object[] { shapeCase2, Geometry.Ellipse };
     }
+    
+    public static IEnumerable<object[]> TestCasesGetShapeById()
+    {
+        yield return new object[]
+        {
+            "054_get_shape_xpath.pptx", 0, 1, null
+        };
+        yield return new object[]
+        {
+            "054_get_shape_xpath.pptx", 0, 2, "Title 1"
+        };
+        yield return new object[]
+        {
+            "054_get_shape_xpath.pptx", 0, 3, "SubTitle 2"
+        };
+        yield return new object[]
+        {
+            "054_get_shape_xpath.pptx", 0, 4, null
+        };
+    }
+
+    [Theory]
+    [MemberData(nameof(TestCasesGetShapeById))]
+    public void TryGetSlideShapeById(string presentationName, int slideNumber, int shapeId, string? expectedShapeName)
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf(presentationName));
+        var slide = pres.Slides[slideNumber];
+        var shape = slide.Shapes.TryGetById<IShape>(shapeId);
+
+        // Act
+        var shapeName = shape?.Name;
+
+        // Assert
+        shapeName.Should().Be(expectedShapeName);
+    }
+
+    public static IEnumerable<object[]> TestCasesGetShapeByName()
+    {
+        yield return new object[]
+        {
+            "054_get_shape_xpath.pptx", 0, "Foo", null
+        };
+        yield return new object[]
+        {
+            "054_get_shape_xpath.pptx", 0, "Title 1", 2
+        };
+        yield return new object[]
+        {
+            "054_get_shape_xpath.pptx", 0, "SubTitle 2", 3
+        };
+        yield return new object[]
+        {
+            "054_get_shape_xpath.pptx", 0, "Bar", null
+        };
+    }
+
+    [Theory]
+    [MemberData(nameof(TestCasesGetShapeByName))]
+    public void TryGetSlideShapeByName(string presentationName, int slideNumber, string shapeName,int? expectedShapeId)
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf(presentationName));
+        var slide = pres.Slides[slideNumber];
+        var shape = slide.Shapes.TryGetByName<IShape>(shapeName);
+
+        // Act
+        var shapeId = shape?.Id;
+
+        // Assert
+        shapeId.Should().Be(expectedShapeId);
+    }
 }
