@@ -29,7 +29,11 @@ internal sealed class Shapes : IShapes
     
     public T GetById<T>(int id) where T : IShape => (T)this.ShapesCore().First(shape => shape.Id == id);
     
+    public T? TryGetById<T>(int id) where T : IShape => (T?)this.ShapesCore().FirstOrDefault(shape => shape.Id == id);
+    
     public T GetByName<T>(string name) where T : IShape => (T)this.GetByName(name);
+    
+    public T? TryGetByName<T>(string name) where T : IShape => (T?)this.ShapesCore().FirstOrDefault(shape => shape.Name == name);
     
     public IShape GetByName(string name) => this.ShapesCore().First(shape => shape.Name == name);
     
