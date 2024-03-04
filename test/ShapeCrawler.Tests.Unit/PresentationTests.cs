@@ -392,7 +392,7 @@ public class PresentationTests : SCTest
 
     [Test]
     [Parallelizable(ParallelScope.None)]
-    public void Discussion_617_WIP()
+    public void Slides_Add_adds_slide()
     {
         // Arrange
         var source = new Presentation(StreamOf("001.pptx"));
