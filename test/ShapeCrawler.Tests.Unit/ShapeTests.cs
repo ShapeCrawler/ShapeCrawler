@@ -430,4 +430,42 @@ public class ShapeTests : SCTest
         // Assert
         placeholderType.Should().Be(expectedType);
     }
+
+    [Test]
+    [TestCase("054_get_shape_xpath.pptx", 1, 1, null)]
+    [TestCase("054_get_shape_xpath.pptx", 1, 2, "Title 1")]
+    [TestCase("054_get_shape_xpath.pptx", 1, 3, "SubTitle 2")]
+    [TestCase("054_get_shape_xpath.pptx", 1, 4, null)]
+    public void TryGetSlideShapeById(string presentationName,int slideNumber, int shapeId, string? expectedShapeName)
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf(presentationName));
+        var slide = pres.Slides[slideNumber - 1];
+        var shape = slide.Shapes.TryGetById<IShape>(shapeId);
+
+        // Act
+        var shapeName = shape?.Name;
+
+        // Assert
+        shapeName.Should().Be(expectedShapeName);
+    }
+    
+    [Test]
+    [TestCase("054_get_shape_xpath.pptx", 1, "Foo", null)]
+    [TestCase("054_get_shape_xpath.pptx", 1, "Title 1", 2)]
+    [TestCase("054_get_shape_xpath.pptx", 1, "SubTitle 2", 3)]
+    [TestCase("054_get_shape_xpath.pptx", 1, "Bar", null)]
+    public void TryGetSlideShapeByName(string presentationName, int slideNumber, string shapeName, int? expectedShapeId)
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf(presentationName));
+        var slide = pres.Slides[slideNumber - 1];
+        var shape = slide.Shapes.TryGetByName<IShape>(shapeName);
+
+        // Act
+        var shapeId = shape?.Id;
+
+        // Assert
+        shapeId.Should().Be(expectedShapeId);
+    }
 }

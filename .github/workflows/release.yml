@@ -6,33 +6,28 @@ on:
       - 'v*'
   workflow_dispatch:
 
-jobs:  
-
-  test-net472:
-    name: Test on .NET Framework 4.7.2
+jobs:
+  
+  test:
+    name: Test on .NET Framework ${{ matrix.framework_version }}
     runs-on: windows-latest
+    strategy:
+      matrix:
+        framework_version: [ 'net472', 'net48' ]
     steps:
       - uses: actions/checkout@v4
-      - name: Test on .NET Framework 4.7.2
-        run: dotnet test -c Release -f net472
+      - name: Test
+        run: dotnet test -c Release -f ${{ matrix.framework_version }}
 
-  test-net48:
-    name: Test on .NET Framework 4.8
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4      
-      - name: Test on .NET Framework 4.8
-        run: dotnet test -c Release -f net48
-  
   publish-package:
-    needs: [test-net472, test-net48]
+    needs: test
     name: Publish package
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - name: Test on .NET 8
-        run: dotnet test -c Release -f net8.0 --no-restore --verbosity normal
+        run: dotnet test -c Release -f net8.0 --verbosity normal
       - name: Create the package
         run: dotnet pack --configuration Release /p:Version=${{ vars.VERSION }}
-      - name: Publish the package to nuget.org      
+      - name: Publish the package to nuget.org
         run: dotnet nuget push -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json "src\ShapeCrawler\bin\Release\*.nupkg"
