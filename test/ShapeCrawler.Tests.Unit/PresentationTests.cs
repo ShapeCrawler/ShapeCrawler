@@ -41,7 +41,7 @@ public class PresentationTests : SCTest
         // Assert
         slidesWidth.Should().Be(960);
     }
-    
+
     [Test]
     public void SlideWidth_Setter_sets_presentation_Slides_Width_in_pixels()
     {
@@ -55,7 +55,7 @@ public class PresentationTests : SCTest
         // Assert
         pres.SlideWidth.Should().Be(1000);
     }
-        
+
     [Test]
     public void SlideHeight_Getter_returns_presentation_Slides_Height_in_pixels()
     {
@@ -69,7 +69,7 @@ public class PresentationTests : SCTest
         // Assert
         slideHeight.Should().Be(540);
     }
-    
+
     [Test]
     public void SlideHeight_Setter_sets_presentation_Slides_Height_in_pixels()
     {
@@ -106,7 +106,7 @@ public class PresentationTests : SCTest
         var destPre = new Presentation(StreamOf("002.pptx"));
         var originSlidesCount = destPre.Slides.Count;
         var expectedSlidesCount = ++originSlidesCount;
-        MemoryStream savedPre = new ();
+        MemoryStream savedPre = new();
 
         // Act
         destPre.Slides.Add(sourceSlide);
@@ -118,7 +118,7 @@ public class PresentationTests : SCTest
         destPre = new Presentation(savedPre);
         destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
     }
-    
+
     [Test]
     public void Slides_Add_adds_should_copy_only_layout_of_copying_slide()
     {
@@ -129,7 +129,7 @@ public class PresentationTests : SCTest
         var copyingSlide = sourcePres.Slides[0];
         var destPres = new Presentation(destPptx);
         var expectedCount = destPres.Slides.Count + 1;
-        MemoryStream savedPre = new ();
+        MemoryStream savedPre = new();
 
         // Act
         destPres.Slides.Add(copyingSlide);
@@ -226,7 +226,7 @@ public class PresentationTests : SCTest
         // Assert
         pres.Sections.Count.Should().Be(0);
     }
-        
+
     [Test]
     public void Sections_Remove_should_remove_section_after_Removing_Slide_from_section()
     {
@@ -242,7 +242,7 @@ public class PresentationTests : SCTest
         // Assert
         pres.Sections.Count.Should().Be(0);
     }
-        
+
     [Test]
     public void Sections_Section_Slides_Count_returns_Zero_When_section_is_Empty()
     {
@@ -257,7 +257,7 @@ public class PresentationTests : SCTest
         // Assert
         slidesCount.Should().Be(0);
     }
-                
+
     [Test]
     public void Sections_Section_Slides_Count_returns_number_of_slides_in_section()
     {
@@ -280,16 +280,16 @@ public class PresentationTests : SCTest
         var pres = new Presentation(pptx);
         var textBox = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 2").TextFrame!;
         textBox.Text = "Test";
-            
+
         // Act
         pres.Save();
-            
+
         // Assert
         pres = new Presentation(pptx);
         textBox = pres.Slides[0].Shapes.GetByName<IShape>("AutoShape 2").TextFrame!;
         textBox.Text.Should().Be("Test");
     }
-    
+
     [Test]
     public void SaveAs_should_not_change_the_Original_Stream_when_it_is_saved_to_New_Stream()
     {
@@ -303,15 +303,15 @@ public class PresentationTests : SCTest
         // Act
         textBox.Text = originalText + "modified";
         pres.SaveAs(newStream);
-            
+
         pres = new Presentation(originalStream);
         textBox = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextFrame;
-        var autoShapeText = textBox!.Text; 
+        var autoShapeText = textBox!.Text;
 
         // Assert
         autoShapeText.Should().BeEquivalentTo(originalText);
     }
-    
+
     [Test]
     public void BinaryData_returns_presentation_binary_content_After_updating_series()
     {
@@ -323,48 +323,48 @@ public class PresentationTests : SCTest
         // Act
         chart.SeriesList[0].Points[0].Value = 1;
         var binaryData = pres.AsByteArray();
-        
+
         // Assert
         binaryData.Should().NotBeNull();
     }
-    
+
     [Test]
     public void HeaderAndFooter_AddSlideNumber_adds_slide_number()
     {
         // Arrange
         var pres = new Presentation();
-        
+
         // Act
         pres.Footer.AddSlideNumber();
 
         // Assert
         pres.Footer.SlideNumberAdded().Should().BeTrue();
     }
-    
+
     [Test, Ignore("In Progress #540")]
     public void HeaderAndFooter_RemoveSlideNumber_removes_slide_number()
     {
         // Arrange
         var pres = new Presentation();
         pres.Footer.AddSlideNumber();
-        
+
         // Act
         pres.Footer.RemoveSlideNumber();
-        
+
         // Assert
         pres.Footer.SlideNumberAdded().Should().BeFalse();
     }
-    
+
     [Test]
     public void HeaderAndFooter_SlideNumberAdded_returns_false_When_slide_number_is_not_added()
     {
         // Arrange
         var pres = new Presentation();
-        
+
         // Act-Assert
         pres.Footer.SlideNumberAdded().Should().BeFalse();
     }
-    
+
     [Test]
     public void SaveAs_should_not_change_the_Original_Path_when_it_is_saved_to_New_Path()
     {
@@ -382,11 +382,31 @@ public class PresentationTests : SCTest
         // Assert
         pres = new Presentation(originalPath);
         textFrame = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 3").TextFrame;
-        var autoShapeText = textFrame!.Text; 
+        var autoShapeText = textFrame!.Text;
         autoShapeText.Should().BeEquivalentTo(originalText);
-            
+
         // Clean
         File.Delete(originalPath);
         File.Delete(newPath);
+    }
+
+    [Test]
+    [Parallelizable(ParallelScope.None)]
+    public void Slides_Add_adds_slide()
+    {
+        // Arrange
+        var source = new Presentation(StreamOf("001.pptx"));
+        var targetPath = GetTestPath("008.pptx");
+        var target = new Presentation(targetPath);
+        var copyingSlide = source.Slides[0];
+
+        // Act
+        var slideAdding = () => target.Slides.Add(copyingSlide);
+
+        // Assert
+        slideAdding.Should().NotThrow();
+
+        // Clean
+        File.Delete(targetPath);
     }
 }
