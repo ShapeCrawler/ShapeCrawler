@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.50.2 - 2024-03-04
+🐞Fixed slide adding
+
 ## Version 0.50.1 - 2023-12-08
 🍀Added `IShape.SDKPath` to store the XPath of the underlying Open XML element [#592](https://github.com/ShapeCrawler/ShapeCrawler/issues/592)  
 

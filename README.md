@@ -89,7 +89,7 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.50.1 - 2023-12-08
-🍀Added `IShape.SDKPath` to store the XPath of the underlying Open XML element [#592](https://github.com/ShapeCrawler/ShapeCrawler/issues/592)  
+### Version 0.50.2 - 2024-03-04
+🐞Fixed slide adding
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full log.
