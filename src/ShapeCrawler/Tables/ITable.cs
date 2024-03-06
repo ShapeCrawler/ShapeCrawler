@@ -270,6 +270,7 @@ internal sealed class Table : CopyableShape, ITable
             if (topColumnCellSpan > 1 && sameGridSpan)
             {
                 var deleteColumnCount = topColumnCellSpan.Value - 1;
+                
                 // Delete a:gridCol elements and append width of deleting column to merged column
                 for (int i = 0; i < deleteColumnCount; i++)
                 {
@@ -277,6 +278,7 @@ internal sealed class Table : CopyableShape, ITable
                     column.AGridColumn.Remove();
                     this.Columns[colIdx].Width += column.Width;
                 }
+                
                 // Delete a:tc elements
                 foreach (var aTblRow in aTableRows)
                 {
@@ -286,6 +288,7 @@ internal sealed class Table : CopyableShape, ITable
                         aTblCell.Remove();
                     }
                 }
+                
                 colIdx += topColumnCellSpan.Value;
             }
             else
