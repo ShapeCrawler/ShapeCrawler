@@ -124,7 +124,9 @@ internal sealed class Table : CopyableShape, ITable
     }
 
     public override void Remove() => this.pGraphicFrame.Remove();
-    
+
+    public override ITable AsTable() => this;
+
     internal void Draw(SKCanvas canvas)
     {
         throw new NotImplementedException();
