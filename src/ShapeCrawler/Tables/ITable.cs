@@ -243,12 +243,11 @@ internal sealed class Table : CopyableShape, ITable
             foreach (A.TableCell aTblCell in nextMergingCells)
             {
                 aTblCell.HorizontalMerge = new BooleanValue(true);
-
                 this.MergeParagraphs(minRowIndex, minColIndex, aTblCell);
             }
         }
     }
-
+    
     private IReadOnlyList<SCColumn> GetColumnList()
     {
         IEnumerable<A.GridColumn> aGridColumns = this.ATable.TableGrid!.Elements<A.GridColumn>();
@@ -260,8 +259,8 @@ internal sealed class Table : CopyableShape, ITable
 
     private void RemoveColumnIfNeeded(List<A.TableRow> aTableRows)
     {
-        // Delete a:gridCol and a:tc elements if all columns are merged
-        for (var colIdx = 0; colIdx < this.Columns.Count;)
+        int colIdx = 0;
+        while (colIdx < this.Columns.Count)
         {
             var topColumnCell = ((TableRow)this.Rows[0]).ATableRow.Elements<A.TableCell>().ToList()[colIdx];
             var topColumnCellSpan = topColumnCell.GridSpan?.Value;
@@ -271,7 +270,6 @@ internal sealed class Table : CopyableShape, ITable
             if (topColumnCellSpan > 1 && sameGridSpan)
             {
                 var deleteColumnCount = topColumnCellSpan.Value - 1;
-
                 // Delete a:gridCol elements and append width of deleting column to merged column
                 for (int i = 0; i < deleteColumnCount; i++)
                 {
@@ -279,7 +277,6 @@ internal sealed class Table : CopyableShape, ITable
                     column.AGridColumn.Remove();
                     this.Columns[colIdx].Width += column.Width;
                 }
-
                 // Delete a:tc elements
                 foreach (var aTblRow in aTableRows)
                 {
@@ -289,7 +286,6 @@ internal sealed class Table : CopyableShape, ITable
                         aTblCell.Remove();
                     }
                 }
-
                 colIdx += topColumnCellSpan.Value;
             }
             else
