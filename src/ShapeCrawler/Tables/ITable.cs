@@ -150,16 +150,17 @@ internal sealed class Table : CopyableShape, ITable
 
     private void RemoveRowIfNeeded()
     {
-        // Delete a:tr if needed
-        for (var rowIdx = 0; rowIdx < this.Rows.Count;)
+        int rowIdx = 0;
+    
+        while (rowIdx < this.Rows.Count)
         {
             var cells = this.Rows[rowIdx].Cells.OfType<TableCell>().ToList();
             var firstCell = cells[0];
             var firstCellSpan = firstCell.ATableCell.RowSpan?.Value;
+
             if (firstCellSpan > 1 && cells.All(cell => cell.ATableCell.RowSpan?.Value == firstCellSpan))
             {
                 int deleteRowsCount = firstCellSpan.Value - 1;
-
                 foreach (var row in this.Rows.Skip(rowIdx + 1).Take(deleteRowsCount))
                 {
                     ((TableRow)row).ATableRow.Remove();
@@ -167,13 +168,14 @@ internal sealed class Table : CopyableShape, ITable
                 }
 
                 rowIdx += firstCellSpan.Value;
-                continue;
             }
-
-            rowIdx++;
+            else
+            {
+                rowIdx++;
+            }
         }
     }
-
+    
     private void MergeVertically(
         int bottomIndex,
         int topRowIndex,
