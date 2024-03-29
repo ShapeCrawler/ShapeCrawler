@@ -112,7 +112,7 @@ internal abstract class Shape : IShape
                 return PlaceholderType.OnlineImage;
             }
 
-            var value = pPlaceholderValue.ToString()!;
+            var value = pPlaceholderValue.ToString() !;
 
             if (value == "dt")
             {

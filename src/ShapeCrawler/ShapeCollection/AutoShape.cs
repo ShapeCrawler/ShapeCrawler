@@ -73,6 +73,7 @@ internal sealed class AutoShape : CopyableShape
                 {
                     return Geometry.Rectangle;
                 }
+
                 Enum.TryParse(name, true, out Geometry geometryType);
                 return geometryType;    
             }
