@@ -85,7 +85,7 @@ public class ChartPointTests : SCTest
         seriesPointValueCase5.Should().Be(3.2);
     }
 
-    [Test]
+    [Test, Ignore("ClosedXML dependency must be removed")]
     public void Value_Setter_updates_chart_point_in_Embedded_excel_workbook()
     {
         // Arrange

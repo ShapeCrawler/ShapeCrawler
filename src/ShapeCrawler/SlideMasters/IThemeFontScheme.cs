@@ -34,7 +34,7 @@ internal sealed class ThemeFontScheme : IThemeFontScheme
 {
     private readonly A.FontScheme aFontScheme;
 
-    internal ThemeFontScheme(TypedOpenXmlPart sdkTypedOpenXmlPart)
+    internal ThemeFontScheme(OpenXmlPart sdkTypedOpenXmlPart)
     {
         this.aFontScheme = sdkTypedOpenXmlPart switch
         {

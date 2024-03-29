@@ -12,10 +12,10 @@ namespace ShapeCrawler.Fonts;
 
 internal class PortionFontSize : IFontSize
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Text aText;
 
-    internal PortionFontSize(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
+    internal PortionFontSize(OpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aText = aText;

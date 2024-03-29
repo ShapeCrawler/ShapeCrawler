@@ -9,13 +9,13 @@ namespace ShapeCrawler.Texts;
 
 internal sealed class Field : IParagraphPortion
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly ResetableLazy<ITextPortionFont> font;
     private readonly A.Field aField;
     private readonly PortionText portionText;
     private readonly A.Text? aText;
 
-    internal Field(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Field aField)
+    internal Field(OpenXmlPart sdkTypedOpenXmlPart, A.Field aField)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aText = aField.GetFirstChild<A.Text>();

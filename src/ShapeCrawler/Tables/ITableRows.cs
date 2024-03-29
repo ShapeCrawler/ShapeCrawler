@@ -43,10 +43,10 @@ public interface ITableRows : IEnumerable<ITableRow>
 
 internal sealed class TableRows : ITableRows
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Table aTable;
 
-    internal TableRows(TypedOpenXmlPart sdkTypedOpenXmlPart, P.GraphicFrame pGraphicFrame)
+    internal TableRows(OpenXmlPart sdkTypedOpenXmlPart, P.GraphicFrame pGraphicFrame)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aTable = pGraphicFrame.GetFirstChild<A.Graphic>() !.GraphicData!.GetFirstChild<A.Table>() !;

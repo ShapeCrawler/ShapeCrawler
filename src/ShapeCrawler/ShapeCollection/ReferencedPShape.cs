@@ -10,10 +10,10 @@ namespace ShapeCrawler.ShapeCollection;
 
 internal readonly ref struct ReferencedPShape
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly OpenXmlElement pShapeTreeElement;
 
-    internal ReferencedPShape(TypedOpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement pShapeTreeElement)
+    internal ReferencedPShape(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement pShapeTreeElement)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.pShapeTreeElement = pShapeTreeElement;

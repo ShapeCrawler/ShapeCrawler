@@ -10,17 +10,17 @@ namespace ShapeCrawler.Drawing;
 
 internal record ShapeFill : IShapeFill
 {
-    private readonly TypedOpenXmlCompositeElement sdkTypedOpenXmlCompositeElement;
+    private readonly OpenXmlCompositeElement sdkTypedOpenXmlCompositeElement;
     private SlidePictureImage? pictureImage;
     private A.SolidFill? aSolidFill;
     private A.GradientFill? aGradFill;
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
 
     internal ShapeFill(
-        TypedOpenXmlPart sdkTypedOpenXmlPart, 
-        TypedOpenXmlCompositeElement sdkTypedOpenXmlCompositeElement)
+        OpenXmlPart sdkTypedOpenXmlPart, 
+        OpenXmlCompositeElement sdkTypedOpenXmlCompositeElement)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.sdkTypedOpenXmlCompositeElement = sdkTypedOpenXmlCompositeElement;

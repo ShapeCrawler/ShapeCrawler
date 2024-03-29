@@ -15,14 +15,14 @@ namespace ShapeCrawler.ShapeCollection;
 
 internal abstract class Shape : IShape
 {
-    protected readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    protected readonly OpenXmlPart sdkTypedOpenXmlPart;
     protected readonly OpenXmlElement pShapeTreeElement;
     private const string customDataElementName = "ctd";
     private readonly Position position;
     private readonly ShapeSize size;
     private readonly ShapeId shapeId;
 
-    internal Shape(TypedOpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement pShapeTreeElement)
+    internal Shape(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement pShapeTreeElement)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.pShapeTreeElement = pShapeTreeElement;
@@ -111,8 +111,35 @@ internal abstract class Shape : IShape
             {
                 return PlaceholderType.OnlineImage;
             }
-        
-            return (PlaceholderType)Enum.Parse(typeof(PlaceholderType), pPlaceholderValue.Value.ToString());
+
+            var value = pPlaceholderValue.ToString() !;
+
+            if (value == "dt")
+            {
+                return PlaceholderType.DateAndTime;
+            }
+ 
+            if (value == "ftr")
+            {
+                return PlaceholderType.Footer;
+            }
+
+            if (value == "sldNum")
+            {
+                return PlaceholderType.SlideNumber;
+            }
+            
+            if(value == "pic")
+            {
+                return PlaceholderType.Picture;
+            }
+            
+            if(value == "tbl")
+            {
+                return PlaceholderType.Table;
+            }
+            
+            return (PlaceholderType)Enum.Parse(typeof(PlaceholderType), value, true);
         }
     } 
         

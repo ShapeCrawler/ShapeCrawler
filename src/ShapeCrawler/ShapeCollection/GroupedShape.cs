@@ -13,7 +13,7 @@ internal sealed class GroupedShape : IShape
     private readonly P.Shape pShape;
     private readonly AutoShape decoratedShape;
 
-    internal GroupedShape(TypedOpenXmlPart sdkTypedOpenXmlPart, P.Shape pShape, AutoShape decoratedShape)
+    internal GroupedShape(OpenXmlPart sdkTypedOpenXmlPart, P.Shape pShape, AutoShape decoratedShape)
     {
         this.pShape = pShape;
         this.decoratedShape = decoratedShape;

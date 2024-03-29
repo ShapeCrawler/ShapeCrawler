@@ -8,7 +8,7 @@ namespace ShapeCrawler.ShapeCollection;
 
 internal abstract class CopyableShape : Shape
 {
-    internal CopyableShape(TypedOpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement openXmlElement)
+    internal CopyableShape(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement openXmlElement)
         : base(sdkTypedOpenXmlPart, openXmlElement)
     {
     }

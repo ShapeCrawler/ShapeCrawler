@@ -30,7 +30,7 @@ internal class MediaShape : Shape, IMediaShape
 {
     private readonly P.Picture pPicture;
 
-    internal MediaShape(TypedOpenXmlPart sdkTypedOpenXmlPart, P.Picture pPicture)
+    internal MediaShape(OpenXmlPart sdkTypedOpenXmlPart, P.Picture pPicture)
         : base(sdkTypedOpenXmlPart, pPicture)
     {
         this.pPicture = pPicture;

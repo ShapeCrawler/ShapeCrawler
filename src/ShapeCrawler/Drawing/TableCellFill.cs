@@ -7,7 +7,7 @@ namespace ShapeCrawler.Drawing;
 
 internal class TableCellFill : IShapeFill
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.TableCellProperties sdkATableCellProperties;
     private FillType fillType;
     private bool isDirty;
@@ -18,7 +18,7 @@ internal class TableCellFill : IShapeFill
     private A.PatternFill? sdkAPattFill;
     private A.BlipFill? sdkABlipFill;
 
-    internal TableCellFill(TypedOpenXmlPart sdkTypedOpenXmlPart, A.TableCellProperties sdkATableCellProperties)
+    internal TableCellFill(OpenXmlPart sdkTypedOpenXmlPart, A.TableCellProperties sdkATableCellProperties)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.sdkATableCellProperties = sdkATableCellProperties;

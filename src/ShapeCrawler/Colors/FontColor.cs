@@ -14,10 +14,10 @@ namespace ShapeCrawler;
 
 internal sealed class FontColor : IFontColor
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Text aText;
 
-    internal FontColor(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
+    internal FontColor(OpenXmlPart sdkTypedOpenXmlPart, A.Text aText)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aText = aText;

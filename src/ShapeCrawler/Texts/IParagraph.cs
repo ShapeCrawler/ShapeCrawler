@@ -60,18 +60,18 @@ public interface IParagraph
 
 internal sealed class Paragraph : IParagraph
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly Lazy<Bullet> bullet;
     private readonly AParagraphWrap aParagraphWrap;
 
     private TextAlignment? alignment;
 
-    internal Paragraph(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
+    internal Paragraph(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
         : this(sdkTypedOpenXmlPart, aParagraph, new AParagraphWrap(aParagraph))
     {
     }
 
-    private Paragraph(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph, AParagraphWrap aParagraphWrap)
+    private Paragraph(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph, AParagraphWrap aParagraphWrap)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.AParagraph = aParagraph;
@@ -152,13 +152,22 @@ internal sealed class Paragraph : IParagraph
                 }
             }
 
-            this.alignment = aTextAlignmentType!.Value switch
+            if (aTextAlignmentType!.Value == A.TextAlignmentTypeValues.Center)
             {
-                A.TextAlignmentTypeValues.Center => TextAlignment.Center,
-                A.TextAlignmentTypeValues.Right => TextAlignment.Right,
-                A.TextAlignmentTypeValues.Justified => TextAlignment.Justify,
-                _ => TextAlignment.Left
-            };
+                this.alignment = TextAlignment.Center;
+            }
+            else if (aTextAlignmentType!.Value == A.TextAlignmentTypeValues.Right)
+            {
+                this.alignment = TextAlignment.Right;
+            }
+            else if (aTextAlignmentType!.Value == A.TextAlignmentTypeValues.Justified)
+            {
+                this.alignment = TextAlignment.Justify;
+            }
+            else
+            {
+                this.alignment = TextAlignment.Left;
+            }
 
             return this.alignment.Value;
         }

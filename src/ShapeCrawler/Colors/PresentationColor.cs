@@ -8,9 +8,9 @@ namespace ShapeCrawler.Colors;
 
 internal sealed class PresentationColor
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
 
-    internal PresentationColor(TypedOpenXmlPart sdkTypedOpenXmlPart)
+    internal PresentationColor(OpenXmlPart sdkTypedOpenXmlPart)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
     }
@@ -52,22 +52,67 @@ internal sealed class PresentationColor
     
     private string GetColorValue(A.ColorScheme aColorScheme, A.SchemeColorValues aSchemeColorValue)
     {
-        return aSchemeColorValue switch
+        if(aSchemeColorValue == A.SchemeColorValues.Dark1)
         {
-            A.SchemeColorValues.Dark1 => this.GetRgbOrSystemColor(aColorScheme.Dark1Color!),
-            A.SchemeColorValues.Light1 => this.GetRgbOrSystemColor(aColorScheme.Light1Color!),
-            A.SchemeColorValues.Dark2 => this.GetRgbOrSystemColor(aColorScheme.Dark2Color!),
-            A.SchemeColorValues.Light2 => this.GetRgbOrSystemColor(aColorScheme.Light2Color!),
-            A.SchemeColorValues.Accent1 => this.GetRgbOrSystemColor(aColorScheme.Accent1Color!),
-            A.SchemeColorValues.Accent2 => this.GetRgbOrSystemColor(aColorScheme.Accent2Color!),
-            A.SchemeColorValues.Accent3 => this.GetRgbOrSystemColor(aColorScheme.Accent3Color!),
-            A.SchemeColorValues.Accent4 => this.GetRgbOrSystemColor(aColorScheme.Accent4Color!),
-            A.SchemeColorValues.Accent5 => this.GetRgbOrSystemColor(aColorScheme.Accent5Color!),
-            A.SchemeColorValues.Accent6 => this.GetRgbOrSystemColor(aColorScheme.Accent6Color!),
-            A.SchemeColorValues.Hyperlink => this.GetRgbOrSystemColor(aColorScheme.Hyperlink!),
-            A.SchemeColorValues.FollowedHyperlink => this.GetRgbOrSystemColor(aColorScheme.FollowedHyperlinkColor!),
-            _ => this.GetThemeMappedColor(aSchemeColorValue)
-        };
+            return this.GetRgbOrSystemColor(aColorScheme.Dark1Color!);
+        }
+
+        if (aSchemeColorValue == A.SchemeColorValues.Light1)
+        {
+            return this.GetRgbOrSystemColor(aColorScheme.Light1Color!);
+        }
+        
+        if (aSchemeColorValue == A.SchemeColorValues.Dark2)
+        {
+            return this.GetRgbOrSystemColor(aColorScheme.Dark2Color!);
+        }
+        
+        if (aSchemeColorValue == A.SchemeColorValues.Light2)
+        {
+            return this.GetRgbOrSystemColor(aColorScheme.Light2Color!);
+        }
+        
+        if (aSchemeColorValue == A.SchemeColorValues.Accent1)
+        {
+            return this.GetRgbOrSystemColor(aColorScheme.Accent1Color!);
+        }
+        
+        if (aSchemeColorValue == A.SchemeColorValues.Accent2)
+        {
+            return this.GetRgbOrSystemColor(aColorScheme.Accent2Color!);
+        }
+        
+        if (aSchemeColorValue == A.SchemeColorValues.Accent3)
+        {
+            return this.GetRgbOrSystemColor(aColorScheme.Accent3Color!);
+        }
+        
+        if (aSchemeColorValue == A.SchemeColorValues.Accent4)
+        {
+            return this.GetRgbOrSystemColor(aColorScheme.Accent4Color!);
+        }
+        
+        if (aSchemeColorValue == A.SchemeColorValues.Accent5)
+        {
+            return this.GetRgbOrSystemColor(aColorScheme.Accent5Color!);
+        }
+        
+        if (aSchemeColorValue == A.SchemeColorValues.Accent6)
+        {
+            return this.GetRgbOrSystemColor(aColorScheme.Accent6Color!);
+        }
+        
+        if (aSchemeColorValue == A.SchemeColorValues.Hyperlink)
+        {
+            return this.GetRgbOrSystemColor(aColorScheme.Hyperlink!);
+        }
+        
+        if (aSchemeColorValue == A.SchemeColorValues.FollowedHyperlink)
+        {
+            return this.GetRgbOrSystemColor(aColorScheme.FollowedHyperlinkColor!);
+        }
+
+        return this.GetThemeMappedColor(aSchemeColorValue);
     }
     
     private A.ColorScheme GetColorScheme(OpenXmlPart sdkTypedOpenXmlPart)

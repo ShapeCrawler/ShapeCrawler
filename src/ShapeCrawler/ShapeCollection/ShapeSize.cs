@@ -8,10 +8,10 @@ namespace ShapeCrawler.ShapeCollection;
 
 internal sealed class ShapeSize
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly OpenXmlElement sdkPShapeTreeElement;
 
-    internal ShapeSize(TypedOpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement sdkPShapeTreeElement)
+    internal ShapeSize(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlElement sdkPShapeTreeElement)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.sdkPShapeTreeElement = sdkPShapeTreeElement;

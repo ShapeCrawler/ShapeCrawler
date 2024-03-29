@@ -16,7 +16,7 @@ internal sealed class AutoShape : CopyableShape
     private readonly P.Shape pShape;
 
     internal AutoShape(
-        TypedOpenXmlPart sdkTypedOpenXmlPart,
+        OpenXmlPart sdkTypedOpenXmlPart,
         P.Shape pShape,
         TextFrame textFrame)
         : this(sdkTypedOpenXmlPart, pShape)
@@ -26,7 +26,7 @@ internal sealed class AutoShape : CopyableShape
     }
 
     internal AutoShape(
-        TypedOpenXmlPart sdkTypedOpenXmlPart,
+        OpenXmlPart sdkTypedOpenXmlPart,
         P.Shape pShape)
         : base(sdkTypedOpenXmlPart, pShape)
     {
@@ -63,7 +63,17 @@ internal sealed class AutoShape : CopyableShape
             }
             else
             {
-                var name = aPresetGeometry.Preset!.Value.ToString();
+                if(aPresetGeometry.Preset!.Value == A.ShapeTypeValues.RoundRectangle)
+                {
+                    return Geometry.RoundRectangle;
+                }
+                
+                var name = aPresetGeometry.Preset!.ToString();
+                if (name == "rect")
+                {
+                    return Geometry.Rectangle;
+                }
+
                 Enum.TryParse(name, true, out Geometry geometryType);
                 return geometryType;    
             }

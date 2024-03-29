@@ -54,7 +54,7 @@ internal sealed class Table : CopyableShape, ITable
 {
     private readonly P.GraphicFrame pGraphicFrame;
 
-    internal Table(TypedOpenXmlPart sdkTypedOpenXmlPart, OpenXmlCompositeElement pShapeTreeElement)
+    internal Table(OpenXmlPart sdkTypedOpenXmlPart, OpenXmlCompositeElement pShapeTreeElement)
         : base(sdkTypedOpenXmlPart, pShapeTreeElement)
     {
         this.pGraphicFrame = (P.GraphicFrame)pShapeTreeElement;

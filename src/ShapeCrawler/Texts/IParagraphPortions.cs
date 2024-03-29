@@ -50,10 +50,10 @@ public interface IParagraphPortions : IEnumerable<IParagraphPortion>
 
 internal sealed class ParagraphPortions : IParagraphPortions
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Paragraph aParagraph;
 
-    internal ParagraphPortions(TypedOpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
+    internal ParagraphPortions(OpenXmlPart sdkTypedOpenXmlPart, A.Paragraph aParagraph)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aParagraph = aParagraph;

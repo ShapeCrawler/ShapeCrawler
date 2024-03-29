@@ -11,11 +11,11 @@ namespace ShapeCrawler.ShapeCollection;
 
 internal sealed class GroupedShapes : IShapes
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly IEnumerable<OpenXmlCompositeElement> pGroupElements;
 
     internal GroupedShapes(
-        TypedOpenXmlPart sdkTypedOpenXmlPart,
+        OpenXmlPart sdkTypedOpenXmlPart,
         IEnumerable<OpenXmlCompositeElement> pGroupElements)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;

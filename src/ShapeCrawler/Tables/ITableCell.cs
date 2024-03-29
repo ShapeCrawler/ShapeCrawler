@@ -29,7 +29,7 @@ public interface ITableCell
 
 internal sealed class TableCell : ITableCell
 {
-    internal TableCell(TypedOpenXmlPart sdkTypedOpenXmlPart, A.TableCell aTableCell, int rowIndex, int columnIndex)
+    internal TableCell(OpenXmlPart sdkTypedOpenXmlPart, A.TableCell aTableCell, int rowIndex, int columnIndex)
     {
         this.ATableCell = aTableCell;
         this.RowIndex = rowIndex;

@@ -8,11 +8,11 @@ namespace ShapeCrawler.Drawing;
 
 internal sealed class ShapeFillImage : IImage
 {
-    private readonly TypedOpenXmlPart sdkTypedOpenXmlPart;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
     private readonly A.Blip aBlip;
     private ImagePart sdkImagePart;
     
-    internal ShapeFillImage(TypedOpenXmlPart sdkTypedOpenXmlPart, A.BlipFill aBlipFill, ImagePart sdkImagePart)
+    internal ShapeFillImage(OpenXmlPart sdkTypedOpenXmlPart, A.BlipFill aBlipFill, ImagePart sdkImagePart)
     {
         this.sdkTypedOpenXmlPart = sdkTypedOpenXmlPart;
         this.aBlip = aBlipFill.Blip!;

@@ -11,7 +11,7 @@ internal class OLEObject : ShapeCollection.Shape
 {
     private readonly P.GraphicFrame pGraphicFrame;
 
-    internal OLEObject(TypedOpenXmlPart sdkTypedOpenXmlPart, P.GraphicFrame pGraphicFrame)
+    internal OLEObject(OpenXmlPart sdkTypedOpenXmlPart, P.GraphicFrame pGraphicFrame)
         : base(sdkTypedOpenXmlPart, pGraphicFrame)
     {
         this.pGraphicFrame = pGraphicFrame;

@@ -12,7 +12,7 @@ internal sealed class GroupShape : Shape, IGroupShape
 {
     private readonly P.GroupShape pGroupShape;
 
-    internal GroupShape(TypedOpenXmlPart sdkTypedOpenXmlPart, P.GroupShape pGroupShape)
+    internal GroupShape(OpenXmlPart sdkTypedOpenXmlPart, P.GroupShape pGroupShape)
         : base(sdkTypedOpenXmlPart, pGroupShape)
     {
         this.pGroupShape = pGroupShape;
