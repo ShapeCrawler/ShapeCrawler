@@ -79,7 +79,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             textFrame.Text.Should().Contain("confirm that");
         }
 
-#if !NET48 // SkiaSharp throws error "Attempted to read or write protected memory. This is often an indication that other memory is corrupt."
+#if !NET472 && !NET48 // SkiaSharp throws error "Attempted to read or write protected memory. This is often an indication that other memory is corrupt."
         [Test]
         public void Text_Setter_updates_text_box_content_and_Reduces_font_size_When_text_is_Overflow()
         {

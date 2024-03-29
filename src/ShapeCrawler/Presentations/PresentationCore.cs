@@ -18,8 +18,17 @@ internal sealed class PresentationCore
     private readonly SlideSize slideSize;
 
     internal PresentationCore(byte[] bytes)
-        : this(new MemoryStream(bytes))
     {
+        var stream = new MemoryStream();
+        stream.Write(bytes, 0, bytes.Length);
+        stream.Position = 0;
+        this.sdkPresDocument = PresentationDocument.Open(stream, true);
+        var sdkMasterParts = this.sdkPresDocument.PresentationPart!.SlideMasterParts;
+        this.SlideMasters = new SlideMasterCollection(sdkMasterParts);
+        this.Sections = new Sections(this.sdkPresDocument);
+        this.Slides = new Slides(this.sdkPresDocument.PresentationPart!.SlideParts);
+        this.Footer = new Footer(this);
+        this.slideSize = new SlideSize(this.sdkPresDocument.PresentationPart!.Presentation.SlideSize!);
     }
 
     internal PresentationCore(Stream stream)

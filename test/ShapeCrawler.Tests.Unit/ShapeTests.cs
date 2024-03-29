@@ -468,4 +468,19 @@ public class ShapeTests : SCTest
         // Assert
         shapeId.Should().Be(expectedShapeId);
     }
+    
+    [Test]
+    public void AsTable_returns_ITable()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("table-case001.pptx"));
+        var slide = pres.Slides[0];
+        var table = slide.Shapes.GetByName<ITable>("Table 1");
+
+        // Act
+        var castingToITable = () => table.AsTable();
+
+        // Assert
+        castingToITable.Should().NotThrow();
+    }
 }
