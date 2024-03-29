@@ -202,7 +202,7 @@ public class ChartTests : SCTest
         pieChart.Categories[0].Name.Should().Be("Category 1_new");
     }
 
-    [Test]
+    [Test, Ignore("ClosedXML dependency must be removed")]
     public void Category_Name_Setter_updates_value_of_Excel_cell()
     {
         // Arrange
