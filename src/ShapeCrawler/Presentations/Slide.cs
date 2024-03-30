@@ -56,7 +56,7 @@ internal sealed class Slide : ISlide
         set => this.SetCustomData(value);
     }
 
-    public bool Hidden() => this.SDKSlidePart.Slide.Show is not null && this.SDKSlidePart.Slide.Show.Value == false;
+    public bool Hidden() => this.SDKSlidePart.Slide.Show is not null && !this.SDKSlidePart.Slide.Show.Value;
 
     public void Hide()
     {
