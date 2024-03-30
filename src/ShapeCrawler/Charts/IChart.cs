@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using DocumentFormat.OpenXml.Packaging;
+using P = DocumentFormat.OpenXml.Presentation;
+using C = DocumentFormat.OpenXml.Drawing.Charts;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
@@ -17,6 +20,21 @@ public interface IChart : IShape
     ///     Gets a value indicating whether the chart has a title.
     /// </summary>
     public bool HasTitle { get; }
+    
+    /// <summary>
+    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Presentation.GraphicFrame"/>.
+    /// </summary>
+    public P.GraphicFrame SDKGraphicFrame { get; }
+    
+    /// <summary>
+    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Packaging.ChartPart"/>.
+    /// </summary>
+    public ChartPart SDKChartPart { get; }
+    
+    /// <summary>
+    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Drawing.Charts.PlotArea"/>.
+    /// </summary>
+    public C.PlotArea SDKPlotArea { get; }
     
     /// <summary>
     ///     Gets chart title.

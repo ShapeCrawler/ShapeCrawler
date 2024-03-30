@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DocumentFormat.OpenXml.Packaging;
 #if DEBUG
 using System.Threading.Tasks;
 #endif
@@ -31,6 +32,11 @@ public interface ISlide
     int Number { get; set; }
     
     /// <summary>
+    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Packaging.SlidePart"/>.
+    /// </summary>
+    SlidePart SDKSlidePart { get; }
+    
+    /// <summary>
     ///     Gets shape collection.
     /// </summary>
     ISlideShapes Shapes { get; }
@@ -59,7 +65,7 @@ public interface ISlide
     ///     Gets table by name.
     /// </summary>
     ITable TableWithName(string table);
-
+    
 #if DEBUG
     
     /// <summary>
