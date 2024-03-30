@@ -19,9 +19,6 @@ internal sealed class Chart : Shape, IChart
 {
     private readonly ChartType chartType;
     private readonly Lazy<OpenXmlElement?> firstSeries;
-    private readonly P.GraphicFrame pGraphicFrame;
-    private readonly ChartPart sdkChartPart;
-    private readonly C.PlotArea cPlotArea;
 
     // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
     // then collection contains only single item.
@@ -36,20 +33,26 @@ internal sealed class Chart : Shape, IChart
         IReadOnlyList<ICategory> categories)
         : base(sdkTypedOpenXmlPart,pGraphicFrame)
     {
-        this.sdkChartPart = sdkChartPart;
-        this.pGraphicFrame = pGraphicFrame;
+        this.SDKChartPart = sdkChartPart;
+        this.SDKGraphicFrame = pGraphicFrame;
         this.Categories = categories;
         this.firstSeries = new Lazy<OpenXmlElement?>(this.GetFirstSeries);
-        this.cPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
-        this.cXCharts = this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
+        this.SDKPlotArea = sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.PlotArea!;
+        this.cXCharts = this.SDKPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal));
         var pShapeProperties = sdkChartPart.ChartSpace.GetFirstChild<C.ShapeProperties>() !;
         this.Outline = new SlideShapeOutline(sdkTypedOpenXmlPart, pShapeProperties);
         this.Fill = new ShapeFill(sdkTypedOpenXmlPart, pShapeProperties);
         this.SeriesList = new SeriesList(
             sdkChartPart,
-            this.cPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
+            this.SDKPlotArea.Where(e => e.LocalName.EndsWith("Chart", StringComparison.Ordinal)));
     }
-
+    
+    public P.GraphicFrame SDKGraphicFrame { get; }
+    
+    public ChartPart SDKChartPart { get; }
+    
+    public C.PlotArea SDKPlotArea { get; }
+    
     public ChartType Type
     {
         get
@@ -117,15 +120,15 @@ internal sealed class Chart : Shape, IChart
     
     public override bool Removeable => true;
     
-    public byte[] BookByteArray() => new ExcelBook(this.sdkChartPart).AsByteArray();
+    public byte[] BookByteArray() => new ExcelBook(this.SDKChartPart).AsByteArray();
     
-    public override void Remove() => this.pGraphicFrame.Remove();
+    public override void Remove() => this.SDKGraphicFrame.Remove();
     
-    private IAxesManager GetAxes() => new AxesManager(this.cPlotArea);
+    private IAxesManager GetAxes() => new AxesManager(this.SDKPlotArea);
 
     private string? GetTitleOrDefault()
     {
-        var cTitle = this.sdkChartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
+        var cTitle = this.SDKChartPart.ChartSpace.GetFirstChild<C.Chart>() !.Title;
         if (cTitle == null)
         {
             // chart has not title
@@ -197,7 +200,7 @@ internal sealed class Chart : Shape, IChart
             return cachedPointValues;
         }
 
-        return new ExcelBook(this.sdkChartPart).FormulaValues(cXValues.NumberReference.Formula!.Text);
+        return new ExcelBook(this.SDKChartPart).FormulaValues(cXValues.NumberReference.Formula!.Text);
     }
 
     private OpenXmlElement? GetFirstSeries()

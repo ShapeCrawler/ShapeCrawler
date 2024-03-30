@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DocumentFormat.OpenXml.Packaging;
 #if DEBUG
 using System.Threading.Tasks;
 #endif
@@ -59,6 +60,11 @@ public interface ISlide
     ///     Gets table by name.
     /// </summary>
     ITable TableWithName(string table);
+    
+    /// <summary>
+    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Packaging.SlidePart"/>.
+    /// </summary>
+    SlidePart SDKSlidePart { get; }
 
 #if DEBUG
     
