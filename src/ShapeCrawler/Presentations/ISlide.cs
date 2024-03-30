@@ -32,6 +32,11 @@ public interface ISlide
     int Number { get; set; }
     
     /// <summary>
+    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Packaging.SlidePart"/>.
+    /// </summary>
+    SlidePart SDKSlidePart { get; }
+    
+    /// <summary>
     ///     Gets shape collection.
     /// </summary>
     ISlideShapes Shapes { get; }
@@ -61,11 +66,6 @@ public interface ISlide
     /// </summary>
     ITable TableWithName(string table);
     
-    /// <summary>
-    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Packaging.SlidePart"/>.
-    /// </summary>
-    SlidePart SDKSlidePart { get; }
-
 #if DEBUG
     
     /// <summary>

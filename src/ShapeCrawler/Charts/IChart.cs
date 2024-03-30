@@ -22,6 +22,21 @@ public interface IChart : IShape
     public bool HasTitle { get; }
     
     /// <summary>
+    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Presentation.GraphicFrame"/>.
+    /// </summary>
+    public P.GraphicFrame SDKGraphicFrame { get; }
+    
+    /// <summary>
+    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Packaging.ChartPart"/>.
+    /// </summary>
+    public ChartPart SDKChartPart { get; }
+    
+    /// <summary>
+    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Drawing.Charts.PlotArea"/>.
+    /// </summary>
+    public C.PlotArea SDKPlotArea { get; }
+    
+    /// <summary>
     ///     Gets chart title.
     /// </summary>
     string Title { get; }
@@ -60,19 +75,4 @@ public interface IChart : IShape
     ///     Gets byte array of excel book containing chart data source.
     /// </summary>
     byte[] BookByteArray();
-    
-    /// <summary>
-    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Presentation.GraphicFrame"/>.
-    /// </summary>
-    public P.GraphicFrame SDKGraphicFrame { get; }
-    
-    /// <summary>
-    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Packaging.ChartPart"/>.
-    /// </summary>
-    public ChartPart SDKChartPart { get; }
-    
-    /// <summary>
-    ///     Gets underlying instance of <see cref="DocumentFormat.OpenXml.Drawing.Charts.PlotArea"/>.
-    /// </summary>
-    public C.PlotArea SDKPlotArea { get; }
 }
