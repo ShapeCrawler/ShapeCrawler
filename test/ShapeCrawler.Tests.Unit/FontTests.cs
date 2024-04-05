@@ -1,13 +1,7 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using ShapeCrawler.Shapes;
-using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using ShapeCrawler.Tests.Unit.Helpers.Attributes;
-using Xunit;
 
 // ReSharper disable SuggestVarOrType_SimpleTypes
 
@@ -246,5 +240,99 @@ public class FontTests : SCTest
         // Assert
         font.EastAsianName.Should().Be("SimSun");
         pres.Validate();
+    }
+    
+    [Test]
+    [SlideShape("002.pptx", 2, 3, "Palatino Linotype")]
+    [SlideShape("001.pptx", 1, 4, "Broadway")]
+    [SlideShape("001.pptx", 1, 7, "Calibri Light")]
+    [SlideShape("001.pptx", 5, 5, "Calibri Light")]
+    [SlideShape("autoshape-grouping.pptx", 1, "Title 1", "Franklin Gothic Medium")]
+    public void LatinName_Getter_returns_font_for_Latin_characters(IShape shape, string expectedFontName)
+    {
+        // Arrange
+        var autoShape = shape;
+        var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
+
+        // Act
+        var fontName = font.LatinName;
+
+        // Assert
+        fontName.Should().Be(expectedFontName);
+    }
+    
+    [Test]
+    [SlideShape("autoshape-grouping.pptx", 1, "TextBox 7", "SimSun")]
+    public void EastAsianName_Getter_returns_font_for_East_Asian_characters(IShape shape, string expectedFontName)
+    {
+        // Arrange
+        var autoShape =  shape;
+        var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
+
+        // Act
+        var fontName = font.EastAsianName;
+
+        // Assert
+        fontName.Should().Be(expectedFontName);
+    }
+    
+    [Test]
+    [SlideShape("001.pptx", 1, "TextBox 3")]
+    [SlideShape("001.pptx", 3, "Text Placeholder 3")]
+    public void LatinName_Setter_sets_font_for_the_latin_characters(IShape shape)
+    {
+        // Arrange
+        var autoShape =  shape;
+        var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
+
+        // Act
+        font.LatinName = "Time New Roman";
+
+        // Assert
+        font.LatinName.Should().Be("Time New Roman");
+    }
+    
+    [Test]
+    [MasterShape("001.pptx", "Freeform: Shape 7", 18)]
+    [SlideShape("020.pptx", 1, 3, 18)]
+    [SlideShape("015.pptx", 2, 61, 18)]
+    [SlideShape("009_table.pptx", 3, 2, 18)]
+    [SlideShape("009_table.pptx", 4, 2, 44)]
+    [SlideShape("009_table.pptx", 4, 3, 32)]
+    [SlideShape("019.pptx", 1, 4103, 18)]
+    [SlideShape("019.pptx", 1, 2, 12)]
+    [SlideShape("014.pptx", 2, 5, 21)]
+    [SlideShape("012_title-placeholder.pptx", 1, "Title 1", 20)]
+    [SlideShape("010.pptx", 1, 2, 15)]
+    [SlideShape("014.pptx", 4, 5, 12)]
+    [SlideShape("014.pptx", 5, 4, 12)]
+    [SlideShape("014.pptx", 6, 52, 27)]
+    [SlideShape("autoshape-case016.pptx", 1, "Text Placeholder 1", 28)]
+    public void Size_Getter_returns_font_size(IShape shape, int expectedSize)
+    {
+        // Arrange
+        var autoShape =  shape;
+        var font = autoShape.TextFrame!.Paragraphs[0].Portions[0].Font;
+        
+        // Act
+        var fontSize = font.Size;
+        
+        // Assert
+        fontSize.Should().Be(expectedSize);
+    }
+    
+    [Test]
+    [SlideShape("028.pptx", 1, 4098, 32)]
+    [SlideShape("029.pptx", 1, "Content Placeholder 2", 25)]
+    public void Size_Getter_returns_font_size_of_Placeholder(IShape shape, int expectedFontSize)
+    {
+        // Arrange
+        var font = shape.TextFrame!.Paragraphs[0].Portions[0].Font;
+
+        // Act
+        var fontSize = font.Size;
+
+        // Assert
+        fontSize.Should().Be(expectedFontSize);
     }
 }
