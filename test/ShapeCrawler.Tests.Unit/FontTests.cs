@@ -335,4 +335,90 @@ public class FontTests : SCTest
         // Assert
         fontSize.Should().Be(expectedFontSize);
     }
+    
+    [Test]
+    [TestCase("001.pptx", 1, "TextBox 3")]
+    [TestCase("026.pptx", 1, "AutoShape 1")]
+    [TestCase("autoshape-case016.pptx", 1, "Text Placeholder 1")]
+    public void Size_Setter_sets_font_size(string presentation, int slideNumber, string shapeName)
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf(presentation));
+        var font = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName).TextFrame!.Paragraphs[0].Portions[0].Font;
+        var mStream = new MemoryStream();
+        var oldSize = font.Size;
+        var newSize = oldSize + 2;
+
+        // Act
+        font.Size = newSize;
+
+        // Assert
+        pres.Validate();
+        pres.SaveAs(mStream);
+        pres = new Presentation(mStream);
+        font = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName).TextFrame!.Paragraphs[0].Portions[0].Font;
+        font.Size.Should().Be(newSize);
+    }
+    
+    [Test]
+    [TestCase("020.pptx", 3, 7)]
+    [TestCase("026.pptx", 1, 128)]
+    public void IsBold_Setter_sets_the_placeholder_font_to_be_bold(string presentation, int slideNumber, int shapeId)
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf(presentation));
+        var placeholder = pres.Slides[slideNumber - 1].Shapes.GetById<IShape>(shapeId);
+        var font = placeholder.TextFrame.Paragraphs[0].Portions[0].Font;
+        var mStream = new MemoryStream();
+
+        // Act
+        font.IsBold = true;
+
+        // Assert
+        font.IsBold.Should().BeTrue();
+        pres.SaveAs(mStream);
+        pres = new Presentation(mStream);
+        placeholder = pres.Slides[slideNumber - 1].Shapes.GetById<IShape>(shapeId);
+        font = placeholder.TextFrame.Paragraphs[0].Portions[0].Font;
+        font.IsBold.Should().BeTrue();
+    }
+
+    [Test]
+    [TestCase("autoshape-case010.pptx", 1, "Title 1", 50)]
+    [TestCase("autoshape-case010.pptx", 2, "Title 1", -32)]
+    public void OffsetEffect_Getter_returns_offset_of_Text(string presentation, int slideNumber, string shapeName, int expectedOffset)
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf(presentation));
+        var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
+        var font = shape.TextFrame!.Paragraphs[0].Portions[1].Font;
+
+        // Act
+        var offsetSize = font.OffsetEffect;
+
+        // Assert
+        offsetSize.Should().Be(expectedOffset);
+    }
+
+    [Test]
+    [TestCase("autoshape-case010.pptx", 3, "Title 1", 12)]
+    [TestCase("autoshape-case010.pptx", 2, "Title 1", -27)]
+    public void OffsetEffect_Setter_changes_Offset_of_paragraph_portion(string presentation, int slideNumber, string shapeName, int expectedOffsetEffect)
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf(presentation));
+        var font = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName).TextFrame!.Paragraphs[0].Portions[0].Font;
+        var mStream = new MemoryStream();
+        var oldOffsetSize = font.OffsetEffect;
+
+        // Act
+        font.OffsetEffect = expectedOffsetEffect;
+        pres.SaveAs(mStream);
+
+        // Assert
+        pres = new Presentation(mStream);
+        font = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName).TextFrame!.Paragraphs[0].Portions[0].Font;
+        font.OffsetEffect.Should().NotBe(oldOffsetSize);
+        font.OffsetEffect.Should().Be(expectedOffsetEffect);
+    }
 }
