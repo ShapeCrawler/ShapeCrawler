@@ -1,22 +1,12 @@
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
-using ShapeCrawler.Drawing;
-using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
-using Xunit;
-
-// ReSharper disable TooManyChainedReferences
-// ReSharper disable TooManyDeclarations
 
 namespace ShapeCrawler.Tests.Unit;
 
-[SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
 public class ParagraphPortionTests : SCTest
 {
-    [Fact]
+    [Test]
     public void Text_Getter_returns_text_of_paragraph_portion()
     {
         // Arrange
@@ -32,8 +22,8 @@ public class ParagraphPortionTests : SCTest
         // Assert
         paragraphPortionText.Should().BeEquivalentTo("0:0_p1_lvl1");
     }
-
-    [Fact]
+    
+    [Test]
     public void Text_Setter_updates_text()
     {
         // Arrange
@@ -48,9 +38,11 @@ public class ParagraphPortionTests : SCTest
         // Assert
         portion.Text.Should().Be("test");
     }
-
-    [Xunit.Theory]
-    [MemberData(nameof(TestCasesHyperlinkSetter))]
+    
+    [Test]
+    [TestCase("001.pptx", "TextBox 3")]
+    [TestCase("autoshape-case001.pptx", "AutoShape 1")]
+    [TestCase("autoshape-case002.pptx", "AutoShape 1")]
     public void Hyperlink_Setter_sets_hyperlink(string pptxFile, string shapeName)
     {
         // Arrange
@@ -69,15 +61,8 @@ public class ParagraphPortionTests : SCTest
         portion = autoShape.TextFrame.Paragraphs[0].Portions[0];
         portion.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
     }
-
-    public static IEnumerable<object[]> TestCasesHyperlinkSetter()
-    {
-        yield return new[] { "001.pptx", "TextBox 3" };
-        yield return new[] { "autoshape-case001.pptx", "AutoShape 1" };
-        yield return new[] { "autoshape-case002.pptx", "AutoShape 1" };
-    }
-
-    [Fact]
+    
+    [Test]
     public void Hyperlink_Setter_sets_hyperlink_for_two_shape_on_the_Same_slide()
     {
         // Arrange
@@ -96,8 +81,8 @@ public class ParagraphPortionTests : SCTest
         portion3.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
         portion4.Hyperlink.Should().Be("https://github.com/ShapeCrawler/ShapeCrawler");
     }
-
-    [Fact]
+    
+    [Test]
     public void Hyperlink_Setter_sets_File_Name_as_a_hyperlink()
     {
         // Arrange
@@ -113,7 +98,7 @@ public class ParagraphPortionTests : SCTest
         portion.Hyperlink.Should().Be("some.pptx");
     }
     
-    [Fact]
+    [Test]
     public void Hyperlink_Setter_sets_hyperlink_for_table_Cell()
     {
         // Arrange
@@ -130,7 +115,7 @@ public class ParagraphPortionTests : SCTest
         pres.Validate();
     }
 
-    [Fact]
+    [Test]
     public void TextHighlightColor_Getter_returns_text_highlight_color()
     {
         // Arrange
@@ -143,7 +128,7 @@ public class ParagraphPortionTests : SCTest
         portion.TextHighlightColor.ToString().Should().Be("FFFF00");
     }
 
-    [Fact]
+    [Test]
     public void TextHighlightColor_Getter_returns_text_highlight_sccolor()
     {
         // Arrange
@@ -156,7 +141,7 @@ public class ParagraphPortionTests : SCTest
         portion.TextHighlightColor.ToString().Should().Be("FFFF00");
     }
 
-    [Fact]
+    [Test]
     public void TextHighlightColor_Setter_sets_text_highlight_color()
     {
         // Arrange
@@ -172,7 +157,7 @@ public class ParagraphPortionTests : SCTest
         portion.TextHighlightColor.ToString().Should().Be("FFFF00");
     }
 
-    [Fact]
+    [Test]
     public void TextHighlightColor_Setter_sets_text_highlight()
     {
         // Arrange

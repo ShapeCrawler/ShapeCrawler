@@ -245,4 +245,16 @@ public class ParagraphTests : SCTest
         // Assert
         paragraph.Portions.Count.Should().Be(expectedPortionCount);
     }
+    
+    [Test]
+    [SlideParagraph("Case #1","autoshape-case003.pptx", 1, "AutoShape 5", 1, 1)]
+    [SlideParagraph("Case #2","autoshape-case003.pptx", 1, "AutoShape 5", 2, 2)]
+    public void IndentLevel_Getter_returns_indent_level(IParagraph paragraph, int expectedLevel)
+    {
+        // Act
+        var indentLevel = paragraph.IndentLevel;
+
+        // Assert
+        indentLevel.Should().Be(expectedLevel);
+    }
 }
