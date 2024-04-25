@@ -7,7 +7,7 @@ namespace ShapeCrawler.Tests.Unit.Helpers;
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public class SlideParagraphAttribute : Attribute, ITestBuilder
 {
-    private readonly string testName;
+    private readonly string caseName;
     private readonly string pptxName;
     private readonly int slideNumber;
     private readonly string shapeName;
@@ -15,14 +15,14 @@ public class SlideParagraphAttribute : Attribute, ITestBuilder
     private readonly object expectedResult;
 
     public SlideParagraphAttribute(
-        string testName,
+        string caseName,
         string pptxName,
         int slideNumber,
         string shapeName,
         int paragraphNumber,
         object expectedResult)
     {
-        this.testName = testName;
+        this.caseName = caseName;
         this.pptxName = pptxName;
         this.slideNumber = slideNumber;
         this.shapeName = shapeName;
@@ -38,9 +38,9 @@ public class SlideParagraphAttribute : Attribute, ITestBuilder
 
         var parameters = new TestCaseParameters(new[] { paragraph, this.expectedResult });
 
-        if (!string.IsNullOrEmpty(this.testName))
+        if (!string.IsNullOrEmpty(this.caseName))
         {
-            parameters.TestName = this.testName;
+            parameters.TestName = this.caseName;
         }
 
         yield return new NUnitTestCaseBuilder().BuildTestMethod(method, suite, parameters);
