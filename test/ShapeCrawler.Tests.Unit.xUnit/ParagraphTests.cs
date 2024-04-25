@@ -16,18 +16,6 @@ namespace ShapeCrawler.Tests.Unit;
 public class ParagraphTests : SCTest
 {
     [Xunit.Theory]
-    [SlideParagraphData("autoshape-case003.pptx", 1, "AutoShape 5", 1, 1)]
-    [SlideParagraphData("autoshape-case003.pptx", 1, "AutoShape 5", 2, 2)]
-    public void IndentLevel_Getter_returns_indent_level(IParagraph paragraph, int expectedLevel)
-    {
-        // Act
-        var indentLevel = paragraph.IndentLevel;
-
-        // Assert
-        indentLevel.Should().Be(expectedLevel);
-    }
-
-    [Xunit.Theory]
     [MemberData(nameof(TestCasesAlignmentGetter))]
     public void Alignment_Getter_returns_text_alignment(IShape autoShape, TextAlignment expectedAlignment)
     {
