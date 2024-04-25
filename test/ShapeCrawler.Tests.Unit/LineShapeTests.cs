@@ -7,7 +7,7 @@ namespace ShapeCrawler.Tests.Unit;
 
 public class LineShapeTests : SCTest
 {
-    [Fact]
+    [Test]
     public void StartPoint_returns_start_point_coordinates()
     {
         // Arrange
