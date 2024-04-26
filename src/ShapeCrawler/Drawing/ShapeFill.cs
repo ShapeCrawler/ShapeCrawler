@@ -242,21 +242,8 @@ internal record ShapeFill : IShapeFill
             var image = new SlidePictureImage(this.sdkTypedOpenXmlPart, this.aBlipFill.Blip!);
             this.pictureImage = image;
         }
-        else
-        {
-            this.InitPatternFillOr();
-        }
     }
-
-    private void InitPatternFillOr()
-    {
-        this.aPattFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.PatternFill>();
-        if (this.aPattFill == null)
-        {
-            this.InitSlideBackgroundFillOr();
-        }
-    }
-
+    
     private SlidePictureImage? GetPicture()
     {
         this.Initialize();
