@@ -212,10 +212,6 @@ internal record ShapeFill : IShapeFill
         this.sdkTypedOpenXmlCompositeElement.AddASolidFill(hex);
     }
 
-    private void InitSlideBackgroundFillOr()
-    {
-    }
-
     private void Initialize()
     {
         this.InitSolidFillOr();
@@ -224,20 +220,7 @@ internal record ShapeFill : IShapeFill
     private void InitSolidFillOr()
     {
         this.aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
-        if (this.aSolidFill != null)
-        {
-            var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
-            if (aRgbColorModelHex != null)
-            {
-                var hexColor = aRgbColorModelHex.Val!.ToString();
-            }
-            else
-            {
-                // TODO: get hex color from scheme
-                var schemeColor = this.aSolidFill.SchemeColor;
-            }
-        }
-        else
+        if (this.aSolidFill == null)
         {
             this.aGradFill = this.sdkTypedOpenXmlCompositeElement!.GetFirstChild<A.GradientFill>();
             if (this.aGradFill != null)
@@ -249,19 +232,7 @@ internal record ShapeFill : IShapeFill
             }
         }
     }
-
-    private void InitGradientFillOr()
-    {
-        this.aGradFill = this.sdkTypedOpenXmlCompositeElement!.GetFirstChild<A.GradientFill>();
-        if (this.aGradFill != null)
-        {
-        }
-        else
-        {
-            this.InitPictureFillOr();
-        }
-    }
-
+    
     private void InitPictureFillOr()
     {
         this.aBlipFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.BlipFill>();
@@ -280,10 +251,7 @@ internal record ShapeFill : IShapeFill
     private void InitPatternFillOr()
     {
         this.aPattFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.PatternFill>();
-        if (this.aPattFill != null)
-        {
-        }
-        else
+        if (this.aPattFill == null)
         {
             this.InitSlideBackgroundFillOr();
         }
