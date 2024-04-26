@@ -409,4 +409,26 @@ public class PresentationTests : SCTest
         // Clean
         File.Delete(targetPath);
     }
+    
+    [Test]
+    [TestCase("007_2 slides.pptx", 1)]
+    [TestCase("006_1 slides.pptx", 0)]
+    public void Slides_Remove_removes_slide(string file, int expectedSlidesCount)
+    {
+        // Arrange
+        var pptx = StreamOf(file);
+        var pres = new Presentation(pptx);
+        var removingSlide = pres.Slides[0];
+        var mStream = new MemoryStream();
+
+        // Act
+        pres.Slides.Remove(removingSlide);
+
+        // Assert
+        pres.Slides.Should().HaveCount(expectedSlidesCount);
+
+        pres.SaveAs(mStream);
+        pres = new Presentation(mStream);
+        pres.Slides.Should().HaveCount(expectedSlidesCount);
+    }
 }

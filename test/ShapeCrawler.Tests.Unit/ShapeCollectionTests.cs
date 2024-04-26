@@ -442,4 +442,41 @@ public class ShapeCollectionTests : SCTest
         table.Columns[0].Width.Should().Be(284);
         pres.Validate();
     }
+    
+    [Test]
+    [LayoutShape("autoshape-case004_subtitle.pptx", 1, "Group 1")]
+    [MasterShape("autoshape-case004_subtitle.pptx", "Group 1")]
+    public void GetByName_returns_shape_by_specified_name(IShape shape)
+    {
+        // Arrange
+        var groupShape = (IGroupShape)shape;
+        var shapeCollection = groupShape.Shapes;
+            
+        // Act
+        var resultShape = shapeCollection.GetByName<IShape>("AutoShape 1");
+
+        // Assert
+        resultShape.Should().NotBeNull();
+    }
+    
+    [Test]
+    [TestCase("002.pptx", 1,4)]
+    [TestCase("003.pptx", 1,5)]
+    [TestCase("013.pptx", 1,4)]
+    [TestCase("023.pptx", 1,1)]
+    [TestCase("014.pptx", 3,5)]
+    [TestCase("009_table.pptx", 1, 6)]
+    [TestCase("009_table.pptx", 2, 8)]
+    public void Count_returns_number_of_shapes(string pptxName, int slideNumber, int expectedCount)
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf(pptxName));
+        var slide = pres.Slides[slideNumber - 1];
+
+        // Act
+        int shapesCount = slide.Shapes.Count;
+
+        // Assert
+        shapesCount.Should().Be(expectedCount);
+    }
 }
