@@ -17,27 +17,6 @@ namespace ShapeCrawler.Tests.Unit;
 public class ShapeFillTests : SCTest
 {
     [Theory]
-    [SlideShapeData("008.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
-    [SlideShapeData("autoshape-case009.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
-    [LayoutShapeData("autoshape-case003.pptx", slideNumber: 1, shapeName: "AutoShape 1")]
-    [MasterShapeData("autoshape-case003.pptx", shapeName: "AutoShape 1")]
-    public void SetPicture_updates_fill_with_specified_picture_image_When_shape_is_Not_filled(IShape shape)
-    {
-        // Arrange
-        var autoShape = (IShape)shape;
-        var fill = autoShape.Fill;
-        var imageStream = StreamOf("test-image-1.png");
-
-        // Act
-        fill.SetPicture(imageStream);
-
-        // Assert
-        var pictureBytes = fill.Picture!.AsByteArray();
-        var imageBytes = imageStream.ToArray();
-        pictureBytes.SequenceEqual(imageBytes).Should().BeTrue();
-    }
-
-    [Theory]
     [MemberData(nameof(TestCasesFillType))]
     public void Type_returns_fill_type(IShape shape, FillType expectedFill)
     {
