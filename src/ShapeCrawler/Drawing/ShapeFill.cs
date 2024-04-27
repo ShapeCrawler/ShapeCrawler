@@ -11,12 +11,13 @@ namespace ShapeCrawler.Drawing;
 internal record ShapeFill : IShapeFill
 {
     private readonly OpenXmlCompositeElement sdkTypedOpenXmlCompositeElement;
+    private readonly OpenXmlPart sdkTypedOpenXmlPart;
+
     private SlidePictureImage? pictureImage;
     private A.SolidFill? aSolidFill;
     private A.GradientFill? aGradFill;
     private A.PatternFill? aPattFill;
     private A.BlipFill? aBlipFill;
-    private readonly OpenXmlPart sdkTypedOpenXmlPart;
 
     internal ShapeFill(
         OpenXmlPart sdkTypedOpenXmlPart, 
@@ -30,16 +31,16 @@ internal record ShapeFill : IShapeFill
     {
         get
         {
-            this.aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
-            if (this.aSolidFill != null)
+            var aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            if (aSolidFill != null)
             {
-                var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
+                var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
                 if (aRgbColorModelHex != null)
                 {
                     return aRgbColorModelHex.Val!.ToString();
                 }
 
-                return this.ColorHexOrNullOf(this.aSolidFill.SchemeColor!.Val!);
+                return this.ColorHexOrNullOf(aSolidFill.SchemeColor!.Val!);
             }
 
             return null;
@@ -73,17 +74,17 @@ internal record ShapeFill : IShapeFill
         get
         {
             const int defaultAlphaPercentages = 100;
-            this.aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
-            if (this.aSolidFill != null)
+            var aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            if (aSolidFill != null)
             {
-                var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
+                var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
                 if (aRgbColorModelHex != null)
                 {
                     var alpha = aRgbColorModelHex.Elements<A.Alpha>().FirstOrDefault();
                     return alpha?.Val?.Value / 1000d ?? defaultAlphaPercentages;
                 }
 
-                var schemeColor = this.aSolidFill.SchemeColor!;
+                var schemeColor = aSolidFill.SchemeColor!;
                 var schemeAlpha = schemeColor.Elements<A.Alpha>().FirstOrDefault();
                 return schemeAlpha?.Val?.Value / 1000d ?? defaultAlphaPercentages;
             }
@@ -97,16 +98,16 @@ internal record ShapeFill : IShapeFill
         get
         {
             const double luminanceModulation = 100;
-            this.aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
-            if (this.aSolidFill != null)
+            var aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            if (aSolidFill != null)
             {
-                var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
+                var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
                 if (aRgbColorModelHex != null)
                 {
                     return luminanceModulation;
                 }
 
-                var schemeColor = this.aSolidFill.SchemeColor!;
+                var schemeColor = aSolidFill.SchemeColor!;
                 var schemeAlpha = schemeColor.Elements<A.LuminanceModulation>().FirstOrDefault();
                 return schemeAlpha?.Val?.Value / 1000d ?? luminanceModulation;
             }
@@ -120,16 +121,16 @@ internal record ShapeFill : IShapeFill
         get
         {
             const double defaultValue = 0;
-            this.aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
-            if (this.aSolidFill != null)
+            var aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            if (aSolidFill != null)
             {
-                var aRgbColorModelHex = this.aSolidFill.RgbColorModelHex;
+                var aRgbColorModelHex = aSolidFill.RgbColorModelHex;
                 if (aRgbColorModelHex != null)
                 {
                     return defaultValue;
                 }
 
-                var schemeColor = this.aSolidFill.SchemeColor!;
+                var schemeColor = aSolidFill.SchemeColor!;
                 var schemeAlpha = schemeColor.Elements<A.LuminanceOffset>().FirstOrDefault();
                 return schemeAlpha?.Val?.Value / 1000d ?? defaultValue;
             }
@@ -144,8 +145,8 @@ internal record ShapeFill : IShapeFill
     {
         get
         {
-            this.aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
-            if (this.aSolidFill != null)
+            var aSolidFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.SolidFill>();
+            if (aSolidFill != null)
             {
                 return FillType.Solid;
             }
@@ -155,15 +156,14 @@ internal record ShapeFill : IShapeFill
                 return FillType.Gradient;
             }
 
-            this.aBlipFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.BlipFill>();
-
-            if (this.aBlipFill is not null)
+            var aBlipFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.BlipFill>();
+            if (aBlipFill is not null)
             {
                 return FillType.Picture;
             }
 
-            this.aPattFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.PatternFill>();
-            if (this.aPattFill != null)
+            var aPattFill = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.PatternFill>();
+            if (aPattFill != null)
             {
                 return FillType.Pattern;
             }
@@ -179,8 +179,6 @@ internal record ShapeFill : IShapeFill
 
     public void SetPicture(Stream image)
     {
-        this.Initialize();
-
         if (this.Type == FillType.Picture)
         {
             this.pictureImage!.Update(image);
@@ -223,10 +221,7 @@ internal record ShapeFill : IShapeFill
         if (this.aSolidFill == null)
         {
             this.aGradFill = this.sdkTypedOpenXmlCompositeElement!.GetFirstChild<A.GradientFill>();
-            if (this.aGradFill != null)
-            {
-            }
-            else
+            if (this.aGradFill == null)
             {
                 this.InitPictureFillOr();
             }

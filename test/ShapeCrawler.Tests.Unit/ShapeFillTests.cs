@@ -172,7 +172,6 @@ public class ShapeFillTests : SCTest
     }
 
     [Theory]
-    // [SlideShapeData("table-case001.pptx", slideNumber: 1, shapeName: "Table 1")]
     [TestCase("table-case001.pptx", 1, "Table 1")]
     public void SetColor_sets_solid_color_as_fill_of_Table_Cell(string file, int slideNumber, string shapeName)
     {
@@ -227,5 +226,20 @@ public class ShapeFillTests : SCTest
         var pictureBytes = fill.Picture!.AsByteArray();
         var imageBytes = imageStream.ToArray();
         pictureBytes.SequenceEqual(imageBytes).Should().BeTrue();
+    }
+    
+    [Test]
+    [SlideShape("009_table.pptx", 2, 6, FillType.NoFill)]
+    [SlideShape("009_table.pptx", 2, 2, FillType.Solid)]
+    [SlideShape("009_table.pptx", 3, 4, FillType.Picture)]
+    [SlideShape("009_table.pptx", 2, "AutoShape 2", FillType.Pattern)]
+    [SlideShape("autoshape-case003.pptx", 1, "AutoShape 1", FillType.SlideBackground)]
+    public void Type_returns_fill_type(IShape shape, FillType expectedFill)
+    {
+        // Act
+        var fillType = shape.Fill.Type;
+
+        // Assert
+        fillType.Should().Be(expectedFill);
     }
 }
