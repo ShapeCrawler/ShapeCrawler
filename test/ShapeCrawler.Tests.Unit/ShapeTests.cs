@@ -483,4 +483,34 @@ public class ShapeTests : SCTest
         // Assert
         castingToITable.Should().NotThrow();
     }
+
+    [Test]
+    [SlideShape("021.pptx", 4, 2, 383)]
+    [SlideShape("008.pptx", 1, 3, 66)]
+    [SlideShape("006_1 slides.pptx", 1, 2, 160)]
+    [SlideShape("009_table.pptx", 2, 9, 73)]
+    [SlideShape("025_chart.pptx", 3, 7, 79)]
+    [SlideShape("018.pptx", 1, "Picture Placeholder 1", 9)]
+    public void X_Getter_returns_x_coordinate_in_pixels(IShape shape, int expectedX)
+    {
+        // Act
+        int x = shape.X;
+
+        // Assert
+        x.Should().Be(expectedX);
+    }
+
+    [Test]
+    public void X_Getter_returns_x_coordinate_of_Grouped_shape_in_pixels()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("009_table.pptx"));
+        var shape = pres.Slides[1].Shapes.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IShape>("Shape 1");
+        
+        // Act
+        int x = shape.X;
+        
+        // Assert
+        x.Should().Be(53);
+    }
 }

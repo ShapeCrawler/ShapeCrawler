@@ -18,7 +18,7 @@ public class ShapeFillTests : SCTest
 {
     [Theory]
     [MemberData(nameof(TestCasesFillType))]
-    public void Type_returns_fill_type(IShape shape, FillType expectedFill)
+    public void Type_returns_Gradient_fill_type(IShape shape, FillType expectedFill)
     {
         // Act
         var fillType = shape.Fill.Type;
