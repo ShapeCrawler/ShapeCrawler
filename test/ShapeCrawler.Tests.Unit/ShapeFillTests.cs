@@ -227,4 +227,19 @@ public class ShapeFillTests : SCTest
         var imageBytes = imageStream.ToArray();
         pictureBytes.SequenceEqual(imageBytes).Should().BeTrue();
     }
+    
+    [Test]
+    [SlideShape("009_table.pptx", 2, 6, FillType.NoFill)]
+    [SlideShape("009_table.pptx", 2, 2, FillType.Solid)]
+    [SlideShape("009_table.pptx", 3, 4, FillType.Picture)]
+    [SlideShape("009_table.pptx", 2, "AutoShape 2", FillType.Pattern)]
+    [SlideShape("autoshape-case003.pptx", 1, "AutoShape 1", FillType.SlideBackground)]
+    public void Type_returns_fill_type(IShape shape, FillType expectedFill)
+    {
+        // Act
+        var fillType = shape.Fill.Type;
+
+        // Assert
+        fillType.Should().Be(expectedFill);
+    }
 }
