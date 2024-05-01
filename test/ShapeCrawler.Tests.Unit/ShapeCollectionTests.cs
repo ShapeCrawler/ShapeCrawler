@@ -479,4 +479,172 @@ public class ShapeCollectionTests : SCTest
         // Assert
         shapesCount.Should().Be(expectedCount);
     }
+    
+    [Test]
+    public void Count_returns_one_When_presentation_contains_one_slide()
+    {
+        // Act
+        var pptx17 = StreamOf("017.pptx");
+        var pres17 = new Presentation(pptx17);        
+        var pptx16 = StreamOf("016.pptx");
+        var pres16 = new Presentation(pptx16);
+        var numberSlidesCase1 = pres17.Slides.Count;
+        var numberSlidesCase2 = pres16.Slides.Count;
+
+        // Assert
+        numberSlidesCase1.Should().Be(1);
+        numberSlidesCase2.Should().Be(1);
+    }
+
+    [Test]
+    public void Add_adds_external_slide()
+    {
+        // Arrange
+        var sourceSlide = new Presentation(StreamOf("001.pptx")).Slides[0];
+        var pptx = StreamOf("002.pptx");
+        var destPre = new Presentation(pptx);
+        var originSlidesCount = destPre.Slides.Count;
+        var expectedSlidesCount = ++originSlidesCount;
+        MemoryStream savedPre = new ();
+
+        // Act
+        destPre.Slides.Add(sourceSlide);
+
+        // Assert
+        destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
+
+        destPre.SaveAs(savedPre);
+        destPre = new Presentation(savedPre);
+        destPre.Slides.Count.Should().Be(expectedSlidesCount, "because the new slide has been added");
+    }
+    
+    [Test]
+    public void Add_adds_slide_from_the_Same_presentation()
+    {
+        // Arrange
+        var pptxStream = StreamOf("charts-case003.pptx");
+        var pres = new Presentation(pptxStream);
+        var expectedSlidesCount = pres.Slides.Count + 1;
+        var slideCollection = pres.Slides;
+        var addingSlide = slideCollection[0];
+
+        // Act
+        pres.Slides.Add(addingSlide);
+
+        // Assert
+        pres.Slides.Count.Should().Be(expectedSlidesCount);
+    }
+    
+    [Test]
+    public void Add_adds_slide_After_updating_chart_series()
+    {
+        // Arrange
+        var pptx = TestHelper.GetStream("charts_bar-chart.pptx");
+        var pres = new Presentation(pptx);
+        var chart = pres.Slides[0].Shapes.GetByName<IChart>("Bar Chart 1");
+        var expectedSlidesCount = pres.Slides.Count + 1;
+
+        // Act
+        chart.SeriesList[0].Points[0].Value = 1;
+        pres.Slides.Add(pres.Slides[0]);
+        
+        // Assert
+        pres.Slides.Count.Should().Be(expectedSlidesCount);
+    }
+
+    [Test]
+    public void Add_add_adds_New_slide()
+    {
+        // Arrange
+        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pres = new Presentation(pptx);
+        var layout = pres.SlideMasters[0].SlideLayouts[0]; 
+        var slides = pres.Slides;
+
+        // Act
+        slides.AddEmptySlide(layout);
+
+        // Assert
+        var addedSlide = slides.Last();
+        addedSlide.Should().NotBeNull();
+        pres.Validate();
+    }
+
+    [Test]
+    public void AddEmptySlide_adds_slide_from_layout()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("017.pptx"));
+        var titleAndContentLayout = pres.SlideMasters[0].SlideLayouts[0];
+
+        // Act
+        pres.Slides.AddEmptySlide(SlideLayoutType.Title);
+
+        // Assert
+        var addedSlide = pres.Slides.Last();
+        titleAndContentLayout.Type.Should().Be(SlideLayoutType.Title);
+        addedSlide.Should().NotBeNull();
+        titleAndContentLayout.Shapes.Select(s => s.Name).Should().BeSubsetOf(addedSlide.Shapes.Select(s => s.Name));
+    }
+
+    [Test]
+    public void Slides_Insert_inserts_slide_at_the_specified_position()
+    {
+        // Arrange
+        var pptx = StreamOf("001.pptx");
+        var sourceSlide = new Presentation(pptx).Slides[0];
+        var sourceSlideId = Guid.NewGuid().ToString();
+        sourceSlide.CustomData = sourceSlideId;
+        pptx = StreamOf("002.pptx");
+        var destPre = new Presentation(pptx);
+
+        // Act
+        destPre.Slides.Insert(2, sourceSlide);
+
+        // Assert
+        destPre.Slides[1].CustomData.Should().Be(sourceSlideId);
+    }
+    
+    [Test]
+    [TestCase("007_2 slides.pptx", 1)]
+    public void Slides_Remove_removes_slide(string file, int expectedSlidesCount)
+    {
+        // Arrange
+        var pptx = StreamOf(file);
+        var pres = new Presentation(pptx);
+        var removingSlide = pres.Slides[0];
+        var mStream = new MemoryStream();
+
+        // Act
+        pres.Slides.Remove(removingSlide);
+
+        // Assert
+        pres.Slides.Should().HaveCount(expectedSlidesCount);
+
+        pres.SaveAs(mStream);
+        pres = new Presentation(mStream);
+        pres.Slides.Should().HaveCount(expectedSlidesCount);
+    }
+    
+    [Test]
+    public void Slides_Remove_removes_slide_from_section()
+    {
+        // Arrange
+        var pptxStream = StreamOf("autoshape-case017_slide-number.pptx");
+        var pres = new Presentation(pptxStream);
+        var sectionSlides = pres.Sections[0].Slides;
+        var removingSlide = sectionSlides[0];
+        var mStream = new MemoryStream();
+
+        // Act
+        pres.Slides.Remove(removingSlide);
+
+        // Assert
+        sectionSlides.Count.Should().Be(0);
+
+        pres.SaveAs(mStream);
+        pres = new Presentation(mStream);
+        sectionSlides = pres.Sections[0].Slides;
+        sectionSlides.Count.Should().Be(0);
+    }
 }
