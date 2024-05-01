@@ -17,21 +17,6 @@ namespace ShapeCrawler.Tests.Unit;
 public class TableTests : SCTest
 {
     [Xunit.Theory]
-    [SlideShapeData("009_table.pptx", 3, 3, 3)]
-    [SlideShapeData("001.pptx", 2, 5, 4)]
-    public void Rows_Count_returns_number_of_rows(IShape shape, int expectedCount)
-    {
-        // Arrange
-        var table = (ITable)shape;
-
-        // Act
-        var rowsCount = table.Rows.Count;
-
-        // Assert
-        rowsCount.Should().Be(expectedCount);
-    }
-
-    [Xunit.Theory]
     [MemberData(nameof(TestCasesCellIsMergedCell))]
     public void Row_Cell_IsMergedCell_returns_true_When_cell_is_merged_Vertically(ITableCell cell1, ITableCell cell2)
     {

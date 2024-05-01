@@ -684,4 +684,19 @@ public class TableTests : SCTest
         var aTableRow = table.Rows[0].ATableRow();
         aTableRow.Elements<A.TableCell>().ToList()[2].RowSpan.Should().BeNull();
     }
+    
+    [Test]
+    [SlideShape("009_table.pptx", 3, 3, 3)]
+    [SlideShape("001.pptx", 2, 5, 4)]
+    public void Rows_Count_returns_number_of_rows(IShape shape, int expectedCount)
+    {
+        // Arrange
+        var table = (ITable)shape;
+
+        // Act
+        var rowsCount = table.Rows.Count;
+
+        // Assert
+        rowsCount.Should().Be(expectedCount);
+    }
 }
