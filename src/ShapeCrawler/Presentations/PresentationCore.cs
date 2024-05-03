@@ -101,7 +101,10 @@ internal sealed class PresentationCore
                 "/p:sldMaster[1]/p:extLst[1]"),
             new(
                 "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:pPr'.",
-                "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]/p:txBody[1]/a:p[1]")
+                "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[1]/p:txBody[1]/a:p[1]"),
+            new(
+                "The element has unexpected child element 'http://schemas.openxmlformats.org/drawingml/2006/main:noFill'.",
+                "/p:sld[1]/p:cSld[1]/p:spTree[1]/p:sp[7]/p:spPr[1]")
         };
 
         var validator = new OpenXmlValidator(FileFormatVersions.Microsoft365);

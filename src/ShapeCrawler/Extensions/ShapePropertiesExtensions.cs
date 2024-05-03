@@ -10,6 +10,7 @@ internal static class ShapePropertiesExtensions
     internal static void AddANoFill(this OpenXmlCompositeElement pShapeProperties)
     {
         pShapeProperties.GetFirstChild<A.GradientFill>()?.Remove();
+        pShapeProperties.GetFirstChild<A.SolidFill>()?.Remove();
         pShapeProperties.GetFirstChild<A.PatternFill>()?.Remove();
         pShapeProperties.GetFirstChild<A.NoFill>()?.Remove();
         pShapeProperties.GetFirstChild<A.BlipFill>()?.Remove();
