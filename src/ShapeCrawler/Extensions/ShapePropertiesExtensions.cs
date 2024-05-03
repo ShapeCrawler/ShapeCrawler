@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using A = DocumentFormat.OpenXml.Drawing;
+
 namespace ShapeCrawler.Extensions;
 
 internal static class ShapePropertiesExtensions
