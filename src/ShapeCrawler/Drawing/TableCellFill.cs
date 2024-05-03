@@ -83,6 +83,19 @@ internal class TableCellFill : IShapeFill
         this.isDirty = true;
     }
 
+
+    public void SetNoFill()
+    {
+        if (this.isDirty)
+        {
+            this.Initialize();
+        }
+
+        this.sdkATableCellProperties.AddANoFill();
+
+        this.isDirty = true;
+    }
+
     private void InitSlideBackgroundFillOr()
     {
         this.fillType = FillType.NoFill;
