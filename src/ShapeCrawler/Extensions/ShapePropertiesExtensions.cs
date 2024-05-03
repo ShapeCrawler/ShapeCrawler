@@ -1,12 +1,9 @@
 ﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Drawing;
 using A = DocumentFormat.OpenXml.Drawing;
-
 namespace ShapeCrawler.Extensions;
 
 internal static class ShapePropertiesExtensions
 {
-
     internal static void AddANoFill(this OpenXmlCompositeElement pShapeProperties)
     {
         pShapeProperties.GetFirstChild<A.GradientFill>()?.Remove();
