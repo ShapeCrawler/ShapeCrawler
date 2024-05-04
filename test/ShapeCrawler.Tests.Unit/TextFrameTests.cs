@@ -295,5 +295,43 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             // Assert
             shape.Height.Should().Be(88);
         }
+        
+        [Test]
+        [SlideShape("009_table.pptx", 4, 2, "Title text")]
+        [SlideShape("001.pptx", 1, 5, " id5-Text1")]
+        [SlideShape("019.pptx", 1, 2, "1")]
+        [SlideShape("014.pptx", 2, 5, "Test subtitle")]
+        [SlideShape("011_dt.pptx", 1, 54275, "Jan 2018")]
+        [SlideShape("021.pptx", 4, 2, "test footer")]
+        [SlideShape("012_title-placeholder.pptx", 1, 2, "Test title text")]
+        [SlideShape("012_title-placeholder.pptx", 1, 3, "P1 P2")]
+        public void Text_Getter_returns_text(IShape shape, string expectedText)
+        {
+            // Arrange
+            var textFrame = ((IShape)shape).TextFrame;
+
+            // Act
+            var text = textFrame.Text;
+
+            // Assert
+            text.Should().BeEquivalentTo(expectedText);
+        }
+
+        [Test]
+        [SlideShape("001.pptx", 1, 6, $"id6-Text1#NewLine#Text2")]
+        [SlideShape("014.pptx", 1, 61, $"test1#NewLine#test2#NewLine#test3#NewLine#test4#NewLine#test5")]
+        [SlideShape("011_dt.pptx", 1, 2, $"P1#NewLine#")]
+        public void Text_Getter_returns_text_with_New_Line(IShape shape, string expectedText)
+        {
+            // Arrange
+            expectedText = expectedText.Replace("#NewLine#", Environment.NewLine);
+            var textFrame = shape.TextFrame;
+
+            // Act
+            var text = textFrame.Text;
+
+            // Assert
+            text.Should().BeEquivalentTo(expectedText);
+        }
     }
 }

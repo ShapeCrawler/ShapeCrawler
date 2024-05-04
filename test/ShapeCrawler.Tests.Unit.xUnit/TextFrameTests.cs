@@ -17,70 +17,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
     [SuppressMessage("Usage", "xUnit1013:Public method should be marked as test")]
     public class TextFrameTests : SCTest
     {
-        [Xunit.Theory]
-        [SlideShapeData("009_table.pptx", 4, 2, "Title text")]
-        [SlideShapeData("001.pptx", 1, 5, " id5-Text1")]
-        [SlideShapeData("019.pptx", 1, 2, "1")]
-        [SlideShapeData("014.pptx", 2, 5, "Test subtitle")]
-        [SlideShapeData("011_dt.pptx", 1, 54275, "Jan 2018")]
-        [SlideShapeData("021.pptx", 4, 2, "test footer")]
-        [SlideShapeData("012_title-placeholder.pptx", 1, 2, "Test title text")]
-        [SlideShapeData("012_title-placeholder.pptx", 1, 3, "P1 P2")]
-        public void Text_Getter_returns_text(IShape shape, string expectedText)
-        {
-            // Arrange
-            var textFrame = ((IShape)shape).TextFrame;
-
-            // Act
-            var text = textFrame.Text;
-
-            // Assert
-            text.Should().BeEquivalentTo(expectedText);
-        }
-
-        [Xunit.Theory]
-        [MemberData(nameof(TextGetterTestCases))]
-        public void Text_Getter_returns_text_with_New_Line(TestCase testCase)
-        {
-            // Arrange
-            var textFrame = testCase.AutoShape.TextFrame;
-            var expectedText = testCase.ExpectedString;
-
-            // Act
-            var text = textFrame.Text;
-
-            // Assert
-            text.Should().BeEquivalentTo(expectedText);
-        }
         
-        public static IEnumerable<object[]> TextGetterTestCases
-        {
-            get
-            {
-                var testCase3 = new TestCase("#3");
-                testCase3.PresentationName = "001.pptx";
-                testCase3.SlideNumber = 1;
-                testCase3.ShapeId = 6;
-                testCase3.ExpectedString = $"id6-Text1{Environment.NewLine}Text2";
-                yield return new object[] { testCase3 };
-                
-                var testCase5 = new TestCase("#5");
-                testCase5.PresentationName = "014.pptx";
-                testCase5.SlideNumber = 1;
-                testCase5.ShapeId = 61;
-                testCase5.ExpectedString = $"test1{Environment.NewLine}test2{Environment.NewLine}" +
-                                           $"test3{Environment.NewLine}test4{Environment.NewLine}test5";
-                yield return new object[] { testCase5 };
-                
-                var testCase11 = new TestCase("#11");
-                testCase11.PresentationName = "011_dt.pptx";
-                testCase11.SlideNumber = 1;
-                testCase11.ShapeId = 2;
-                testCase11.ExpectedString = $"P1{Environment.NewLine}";
-                yield return new object[] { testCase11 };
-            }
-        }
-
         [Xunit.Theory]
         [MemberData(nameof(TestCasesTextSetter))]
         public void Text_Setter_updates_content(TestElementQuery testTextBoxQuery)
