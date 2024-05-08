@@ -699,4 +699,94 @@ public class TableTests : SCTest
         // Assert
         rowsCount.Should().Be(expectedCount);
     }
+
+    [Test]
+    public void Row_Cell_IsMergedCell_returns_true_When_0x0_and_1x0_cells_are_merged()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("001.pptx"));
+        var table = pres.Slides[1].Shapes.GetById<ITable>(3);
+        var cell1 = table[0, 0];
+        var cell2 = table[1, 0];
+
+        // Act
+        var isMerged1 = cell1.IsMergedCell;
+        var isMerged2 = cell2.IsMergedCell;
+
+        // Assert
+        isMerged1.Should().BeTrue();
+        isMerged2.Should().BeTrue();
+        var internalCell1 = (TableCell) cell1;
+        var internalCell2 = (TableCell) cell2;
+        internalCell1.RowIndex.Should().Be(internalCell2.RowIndex);
+        internalCell1.ColumnIndex.Should().Be(internalCell2.ColumnIndex);
+    }
+
+    [Test]
+    public void Row_Cell_IsMergedCell_returns_true_When_1x1_and_2x1_cells_are_merged()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("001.pptx"));
+        var table = pres.Slides[1].Shapes.GetByName<ITable>("Table 5");
+        var cell1 = table[1, 1];
+        var cell2 = table[2, 1];
+
+        // Act
+        var isMerged1 = cell1.IsMergedCell;
+        var isMerged2 = cell2.IsMergedCell;
+
+        // Assert
+        isMerged1.Should().BeTrue();
+        isMerged2.Should().BeTrue();
+        var internalCell1 = (TableCell) cell1;
+        var internalCell2 = (TableCell) cell2;
+        internalCell1.RowIndex.Should().Be(internalCell2.RowIndex);
+        internalCell1.ColumnIndex.Should().Be(internalCell2.ColumnIndex);
+    }
+
+    [Test]
+    public void Row_Cell_IsMergedCell_returns_true_When_0x1_and_1x1_cells_are_merged()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("001.pptx"));
+        var table = pres.Slides[3].Shapes.GetById<ITable>(4);
+        var cell1 = table[0, 1];
+        var cell2 = table[1, 1];
+
+        // Act
+        var isMerged1 = cell1.IsMergedCell;
+        var isMerged2 = cell2.IsMergedCell;
+
+        // Assert
+        isMerged1.Should().BeTrue();
+        isMerged2.Should().BeTrue();
+        var internalCell1 = (TableCell) cell1;
+        var internalCell2 = (TableCell) cell2;
+        internalCell1.RowIndex.Should().Be(internalCell2.RowIndex);
+        internalCell1.ColumnIndex.Should().Be(internalCell2.ColumnIndex);
+    }
+    
+    [Test]
+    [TestCase(0, 0, 0, 1)]
+    [TestCase(0, 1, 0, 0)]
+    public void MergeCells_MergesSpecifiedCellsRange(int rowIdx1, int colIdx1, int rowIdx2, int colIdx2)
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("001.pptx"));
+        var table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 4);
+        var mStream = new MemoryStream();
+
+        // Act
+        table.MergeCells(table[rowIdx1, colIdx1], table[rowIdx2, colIdx2]);
+
+        // Assert
+        table[rowIdx1, colIdx1].IsMergedCell.Should().BeTrue();
+        table[rowIdx2, colIdx2].IsMergedCell.Should().BeTrue();
+
+        pres.SaveAs(mStream);
+        pres = new Presentation(mStream);
+        table = (ITable)pres.Slides[1].Shapes.First(sp => sp.Id == 4);
+        table[rowIdx1, colIdx1].IsMergedCell.Should().BeTrue();
+        table[rowIdx2, colIdx2].IsMergedCell.Should().BeTrue();
+    }
 }

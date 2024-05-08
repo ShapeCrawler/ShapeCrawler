@@ -20,6 +20,13 @@ public class SlideShapeAttribute : Attribute, ITestBuilder
         this.shapeName = shapeName;
     }
     
+    public SlideShapeAttribute(string pptxName, int slideNumber, int shapeId)
+    {
+        this.pptxName = pptxName;
+        this.slideNumber = slideNumber;
+        this.shapeId = shapeId;
+    }
+    
     public SlideShapeAttribute(string pptxName, int slideNumber, int shapeId, object expectedResult)
     {
         this.pptxName = pptxName;

@@ -23,7 +23,7 @@ public class ShapeFillTests : SCTest
         // Act
         var fillType = shape.Fill.Type;
 
-        // Assert
+        // Assert   
         fillType.Should().Be(expectedFill);
     }
 
