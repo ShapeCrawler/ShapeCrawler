@@ -367,6 +367,24 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
+    public void AddPicture_sets_dimensions()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-image-1.png");
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        var picture = (IPicture)shapes.Last();
+        picture.Width.Should().Be(300);
+        picture.Height.Should().Be(300);
+    }
+
+
+    [Test]
     public void AddRectangle_adds_rectangle_with_valid_id_and_name()
     {
         // Arrange
