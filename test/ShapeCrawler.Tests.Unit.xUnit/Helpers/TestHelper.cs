@@ -12,15 +12,7 @@ public static class TestHelper
         HorizontalResolution = 96;
         VerticalResolution = 96;
     }
-
-    public static MemoryStream ToResizeableStream(this byte[] byteArray)
-    {
-        var stream = new MemoryStream();
-        stream.Write(byteArray, 0, byteArray.Length);
-
-        return stream;
-    }
-
+    
     public static MemoryStream GetStream(string fileName)
     {
         var assembly = Assembly.GetExecutingAssembly();

@@ -365,7 +365,7 @@ public class ShapeCollectionTests : SCTest
         picture.ShapeType.Should().Be(ShapeType.Picture);
         pres.Validate();
     }
-
+    
     [Test]
     public void AddPicture_sets_dimensions()
     {
@@ -382,7 +382,6 @@ public class ShapeCollectionTests : SCTest
         picture.Width.Should().Be(300);
         picture.Height.Should().Be(300);
     }
-
 
     [Test]
     public void AddRectangle_adds_rectangle_with_valid_id_and_name()
