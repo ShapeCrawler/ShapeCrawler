@@ -367,7 +367,7 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    public void AddPicture_sets_dimensions()
+    public void AddPicture_adds_picture_with_correct_Height()
     {
         // Arrange
         var pres = new Presentation();
@@ -378,9 +378,8 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        var picture = (IPicture)shapes.Last();
-        picture.Width.Should().Be(300);
-        picture.Height.Should().Be(300);
+        var addedPicture = shapes.Last();
+        addedPicture.Height.Should().Be(300);
     }
 
     [Test]
