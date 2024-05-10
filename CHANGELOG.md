@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.50.4 - 2024-05-10
+🐞Fixed `ISlideShapes.AddPicture()` [#671](https://github.com/ShapeCrawler/ShapeCrawler/issues/671)
+
 ## Version 0.50.3 - 2024-03-06
 🐞Fixed `IShape.AsTable()`
 
