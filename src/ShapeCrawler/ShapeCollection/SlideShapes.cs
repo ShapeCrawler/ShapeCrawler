@@ -124,7 +124,7 @@ internal sealed class SlideShapes : ISlideShapes
         var xEmu = UnitConverter.HorizontalPixelToEmu(100);
         var yEmu = UnitConverter.VerticalPixelToEmu(100);
         var cxEmu = UnitConverter.HorizontalPixelToEmu(skBitmap.Width);
-        var cyEmu = UnitConverter.VerticalEmuToPixel(skBitmap.Height);
+        var cyEmu = UnitConverter.VerticalPixelToEmu(skBitmap.Height);
 
         var pPicture = this.CreatePPicture(imageStream, "Picture");
 
