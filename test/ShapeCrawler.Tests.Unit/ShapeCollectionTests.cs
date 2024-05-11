@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing.Imaging;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -349,42 +350,44 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    [Explicit]
-    public void AddPicture_adds_picture_svg()
+    public void AddPictureSvg_adds_picture()
     {
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
         var image = TestHelper.GetStream("test-vector-image-1.svg");
+        image.Position = 0;
+        var doc = Svg.SvgDocument.Open<Svg.SvgDocument>(image);
 
         // Act
-        shapes.AddPicture(image);
+        shapes.AddPictureSvg(doc, 200, 200);
 
         // Assert
         shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
         picture.ShapeType.Should().Be(ShapeType.Picture);
-        picture.Height.Should().Be(100);
-        picture.Width.Should().Be(100);
+        picture.Height.Should().Be(200);
+        picture.Width.Should().Be(200);
         pres.Validate();
     }
 
     [Test]
-    [Explicit]
-    public void AddPicture_returns_svg_content()
+    public void AddPictureSvg_sets_valid_svg_content()
     {
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
         var image = TestHelper.GetStream("test-vector-image-1.svg");
-        shapes.AddPicture(image);
+        image.Position = 0;
+        var doc = Svg.SvgDocument.Open<Svg.SvgDocument>(image);
+        shapes.AddPictureSvg(doc, 200, 200);
         var picture = (IPicture)shapes.Last();
 
         // Act
         var svgContent = picture.SvgContent;
         
         // Assert
-        svgContent.Should().NotBeEmpty();
+        svgContent.Should().Contain("<svg");
     }
 
     [Test]
