@@ -175,7 +175,7 @@ public class ShapeFillTests : SCTest
     [TestCase("autoshape-case005_text-frame.pptx", 1, "AutoShape 1")]
     [TestCase("autoshape-case005_text-frame.pptx", 1, "AutoShape 2")]
     [TestCase("autoshape-grouping.pptx", 1, "AutoShape 1")]
-    public void SetColor_sets_NoFill(string file, int slideNumber, string shapeName)
+    public void SetColor_sets_No_Fill(string file, int slideNumber, string shapeName)
     {
         // Arrange
         var pres = new Presentation(StreamOf(file));
