@@ -10,7 +10,7 @@ This library provides a simplified object model on top of the Open XML SDK for m
     <PackageTags>ShapeCrawler Presentation PPTX  PowerPoint Slides OpenXml OOXML</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
-    <PackageReleaseNotes>Fixed ISlideShapes.AddPicture()</PackageReleaseNotes>
+    <PackageReleaseNotes>Added IShapeFill.SetNoFill() to remove shape filling</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ShapeCrawler/ShapeCrawler</PackageProjectUrl>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RepositoryType>Git</RepositoryType>
