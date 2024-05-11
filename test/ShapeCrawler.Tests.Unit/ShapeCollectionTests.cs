@@ -349,6 +349,45 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
+    [Explicit]
+    public void AddPicture_adds_picture_svg()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-vector-image-1.svg");
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        shapes.Should().HaveCount(1);
+        var picture = (IPicture)shapes.Last();
+        picture.ShapeType.Should().Be(ShapeType.Picture);
+        picture.Height.Should().Be(100);
+        picture.Width.Should().Be(100);
+        pres.Validate();
+    }
+
+    [Test]
+    [Explicit]
+    public void AddPicture_returns_svg_content()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-vector-image-1.svg");
+        shapes.AddPicture(image);
+        var picture = (IPicture)shapes.Last();
+
+        // Act
+        var svgContent = picture.SvgContent;
+        
+        // Assert
+        svgContent.Should().NotBeEmpty();
+    }
+
+    [Test]
     public void AddPicture_adds_picture()
     {
         // Arrange
