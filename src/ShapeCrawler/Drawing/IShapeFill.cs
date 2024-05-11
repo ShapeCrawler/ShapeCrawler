@@ -49,7 +49,7 @@ public interface IShapeFill
     void SetColor(string hex);
 
     /// <summary>
-    ///     Removes Fills from the shape. And set a A.NoFill element.
+    ///     Removes Fills from the shape.
     /// </summary>
     void SetNoFill();
 }

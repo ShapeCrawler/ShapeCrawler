@@ -191,7 +191,7 @@ public class ShapeFillTests : SCTest
         shapeFill.SetNoFill();
 
         // Assert
-        Type_returns_fill_type(shape, FillType.NoFill);
+        shape.Fill.Type.Should().Be(FillType.NoFill);
         pres.Validate();
     }
 
@@ -227,7 +227,7 @@ public class ShapeFillTests : SCTest
         shapeFill.SetNoFill();
 
         // Assert
-        Type_returns_fill_type(shape, FillType.NoFill);
+        shape.Fill.Type.Should().Be(FillType.NoFill);
         pres.Validate();
     }
 
