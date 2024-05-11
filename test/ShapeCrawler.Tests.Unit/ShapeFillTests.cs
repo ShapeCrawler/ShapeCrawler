@@ -172,8 +172,8 @@ public class ShapeFillTests : SCTest
     }
 
     [Test]
-    // [TestCase("autoshape-case005_text-frame.pptx", 1, "AutoShape 1")]
-    // [TestCase("autoshape-case005_text-frame.pptx", 1, "AutoShape 2")]
+    [TestCase("autoshape-case005_text-frame.pptx", 1, "AutoShape 1")]
+    [TestCase("autoshape-case005_text-frame.pptx", 1, "AutoShape 2")]
     [TestCase("autoshape-grouping.pptx", 1, "AutoShape 1")]
     public void SetColor_sets_NoFill(string file, int slideNumber, string shapeName)
     {
@@ -183,7 +183,6 @@ public class ShapeFillTests : SCTest
 
         // Act
         shapeFill.SetNoFill();
-        pres.SaveAs(@"C:\temp\test.pptx");
 
         // Assert
         shapeFill.Type.Should().Be(FillType.NoFill);
