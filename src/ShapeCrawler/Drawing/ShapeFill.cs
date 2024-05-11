@@ -210,6 +210,12 @@ internal record ShapeFill : IShapeFill
         this.sdkTypedOpenXmlCompositeElement.AddASolidFill(hex);
     }
 
+    public void SetNoFill()
+    {
+        this.Initialize();
+        this.sdkTypedOpenXmlCompositeElement.AddANoFill();
+    }
+
     private void Initialize()
     {
         this.InitSolidFillOr();

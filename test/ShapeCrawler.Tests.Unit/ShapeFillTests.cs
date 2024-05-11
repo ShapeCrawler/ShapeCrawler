@@ -171,6 +171,30 @@ public class ShapeFillTests : SCTest
         pres.Validate();
     }
 
+
+    [Test]
+    [TestCase("autoshape-case005_text-frame.pptx", 1, "AutoShape 1")]
+    [TestCase("autoshape-case005_text-frame.pptx", 1, "AutoShape 2")]
+    [TestCase("autoshape-grouping.pptx", 1, "AutoShape 1")]
+    public void SetColor_sets_nofill(
+        string file,
+        int slideNumber,
+        string shapeName
+    )
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf(file));
+        var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
+        var shapeFill = shape.Fill;
+
+        // Act
+        shapeFill.SetNoFill();
+
+        // Assert
+        shape.Fill.Type.Should().Be(FillType.NoFill);
+        pres.Validate();
+    }
+
     [Theory]
     [TestCase("table-case001.pptx", 1, "Table 1")]
     public void SetColor_sets_solid_color_as_fill_of_Table_Cell(string file, int slideNumber, string shapeName)
@@ -191,7 +215,29 @@ public class ShapeFillTests : SCTest
 
     [Test]
     [TestCase("009_table.pptx", 2, "AutoShape 2")]
-    public void SetColor_sets_solid_color_After_picture(string file, int slideNumber, string shapeName)
+    public void SetFill_sets_NoFill_of_Table_Cell(string file, int slideNumber, string shapeName)
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf(file));
+        var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
+        var shapeFill = shape.Fill;
+        var imageStream = StreamOf("test-image-1.png");
+
+        // Act
+        shapeFill.SetNoFill();
+
+        // Assert
+        shape.Fill.Type.Should().Be(FillType.NoFill);
+        pres.Validate();
+    }
+
+    [Test]
+    [TestCase("009_table.pptx", 2, "AutoShape 2")]
+    public void SetFill_sets_as(
+        string file,
+        int slideNumber,
+        string shapeName
+    )
     {
         // Arrange
         var pres = new Presentation(StreamOf(file));

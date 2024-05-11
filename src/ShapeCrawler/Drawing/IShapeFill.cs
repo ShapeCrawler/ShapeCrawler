@@ -47,4 +47,9 @@ public interface IShapeFill
     ///     Fills the shape with solid color in hexadecimal representation.
     /// </summary>
     void SetColor(string hex);
+
+    /// <summary>
+    ///     Removes Fills from the shape.
+    /// </summary>
+    void SetNoFill();
 }
