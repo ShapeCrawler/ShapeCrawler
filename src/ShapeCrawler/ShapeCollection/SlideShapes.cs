@@ -627,14 +627,14 @@ internal sealed class SlideShapes : ISlideShapes
 
         a16CreationId.Id = "{2BEA8DB4-11C1-B7BA-06ED-DC504E2BBEBE}";
 
-        aNonVisualDrawingPropertiesExtension.Append(a16CreationId);
+        aNonVisualDrawingPropertiesExtension.AppendChild(a16CreationId);
 
-        aNonVisualDrawingPropertiesExtensionList.Append(aNonVisualDrawingPropertiesExtension);
+        aNonVisualDrawingPropertiesExtensionList.AppendChild(aNonVisualDrawingPropertiesExtension);
 
-        nonVisualDrawingProperties.Append(aNonVisualDrawingPropertiesExtensionList);
-        nonVisualPictureProperties.Append(nonVisualDrawingProperties);
-        nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
-        nonVisualPictureProperties.Append(appNonVisualDrawingProperties);
+        nonVisualDrawingProperties.AppendChild(aNonVisualDrawingPropertiesExtensionList);
+        nonVisualPictureProperties.AppendChild(nonVisualDrawingProperties);
+        nonVisualPictureProperties.AppendChild(nonVisualPictureDrawingProperties);
+        nonVisualPictureProperties.AppendChild(appNonVisualDrawingProperties);
 
         var blipFill = new P.BlipFill();
 
@@ -654,9 +654,9 @@ internal sealed class SlideShapes : ISlideShapes
 
         a14UseLocalDpi.Val = false;
 
-        aBlipExtension.Append(a14UseLocalDpi);
+        aBlipExtension.AppendChild(a14UseLocalDpi);
 
-        aBlipExtensionList.Append(aBlipExtension);
+        aBlipExtensionList.AppendChild(aBlipExtension);
 
         aBlipExtension = new A.BlipExtension();
         aBlipExtension.Uri = "{96DAC541-7B7A-43D3-8B79-37D633B846F1}";
@@ -668,21 +668,21 @@ internal sealed class SlideShapes : ISlideShapes
 
         sVGBlip.AddNamespaceDeclaration(nameof(asvg), asvg.NamespaceName);
 
-        aBlipExtension.Append(sVGBlip);
+        aBlipExtension.AppendChild(sVGBlip);
 
-        aBlipExtensionList.Append(aBlipExtension);
+        aBlipExtensionList.AppendChild(aBlipExtension);
 
-        aBlip.Append(aBlipExtensionList);
+        aBlip.AppendChild(aBlipExtensionList);
 
-        blipFill.Append(aBlip);
+        blipFill.AppendChild(aBlip);
 
         A.Stretch aStretch = new A.Stretch();
 
         A.FillRectangle aFillRectangle = new A.FillRectangle();
 
-        aStretch.Append(aFillRectangle);
+        aStretch.AppendChild(aFillRectangle);
 
-        blipFill.Append(aStretch);
+        blipFill.AppendChild(aStretch);
 
         var transform2D = new A.Transform2D(
             new A.Offset { X = 0, Y = 0 },
@@ -693,18 +693,18 @@ internal sealed class SlideShapes : ISlideShapes
 
         A.AdjustValueList aAdjustValueList = new A.AdjustValueList();
 
-        presetGeometry.Append(aAdjustValueList);
+        presetGeometry.AppendChild(aAdjustValueList);
 
         var shapeProperties = new P.ShapeProperties();
-        shapeProperties.Append(transform2D);
-        shapeProperties.Append(presetGeometry);
+        shapeProperties.AppendChild(transform2D);
+        shapeProperties.AppendChild(presetGeometry);
 
         var pPicture = new P.Picture();
-        pPicture.Append(nonVisualPictureProperties);
-        pPicture.Append(blipFill);
-        pPicture.Append(shapeProperties);
+        pPicture.AppendChild(nonVisualPictureProperties);
+        pPicture.AppendChild(blipFill);
+        pPicture.AppendChild(shapeProperties);
 
-        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
+        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.AppendChild(pPicture);
 
         return pPicture;
     }
