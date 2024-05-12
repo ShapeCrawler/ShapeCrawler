@@ -12,13 +12,13 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using SkiaSharp;
-using A = DocumentFormat.OpenXml.Drawing;
-using P = DocumentFormat.OpenXml.Presentation;
-using Position = ShapeCrawler.Positions.Position;
-using A16 = DocumentFormat.OpenXml.Office2016.Drawing;
-using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
 using Svg;
 using System.Drawing.Imaging;
+using A = DocumentFormat.OpenXml.Drawing;
+using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
+using A16 = DocumentFormat.OpenXml.Office2016.Drawing;
+using P = DocumentFormat.OpenXml.Presentation;
+using Position = ShapeCrawler.Positions.Position;
 
 namespace ShapeCrawler.ShapeCollection;
 
@@ -158,39 +158,6 @@ internal sealed class SlideShapes : ISlideShapes
             // Add it
             this.AddPictureSvg(doc);
         }
-    }
-
-    private void AddPictureSvg(SvgDocument image)
-    {
-        // Determine intrinsic size
-        var renderer = Svg.SvgRenderer.FromNull();
-        var width = (int)image.Width.ToDeviceValue(renderer, Svg.UnitRenderingType.Horizontal, image);
-        var height = (int)image.Height.ToDeviceValue(renderer, Svg.UnitRenderingType.Vertical, image);
-
-        // Rasterize image at intrinsic size
-        var bitmap = image.Draw(width, height);
-        var rasterStream = new MemoryStream();
-        bitmap.Save(rasterStream, ImageFormat.Png);
-        rasterStream.Position = 0;
-
-        // Extract svg
-        var svgStream = new MemoryStream();
-        image.Write(svgStream);
-        svgStream.Position = 0;
-
-        // Create the picture
-        var pPicture = this.CreatePPictureSvg(rasterStream, svgStream, "Picture");
-
-        // Fix up the sizes
-        var xEmu = UnitConverter.HorizontalPixelToEmu(100);
-        var yEmu = UnitConverter.VerticalPixelToEmu(100);
-        var cxEmu = UnitConverter.HorizontalPixelToEmu(width);
-        var cyEmu = UnitConverter.VerticalPixelToEmu(height);
-        var transform2D = pPicture.ShapeProperties!.Transform2D!;
-        transform2D.Offset!.X = xEmu;
-        transform2D.Offset!.Y = yEmu;
-        transform2D.Extents!.Cx = cxEmu;
-        transform2D.Extents!.Cy = cyEmu;
     }
 
     public void AddBarChart(BarChartType barChartType)
@@ -590,6 +557,40 @@ internal sealed class SlideShapes : ISlideShapes
 
         return pPicture;
     }
+
+    private void AddPictureSvg(SvgDocument image)
+    {
+        // Determine intrinsic size
+        var renderer = Svg.SvgRenderer.FromNull();
+        var width = (int)image.Width.ToDeviceValue(renderer, Svg.UnitRenderingType.Horizontal, image);
+        var height = (int)image.Height.ToDeviceValue(renderer, Svg.UnitRenderingType.Vertical, image);
+
+        // Rasterize image at intrinsic size
+        var bitmap = image.Draw(width, height);
+        var rasterStream = new MemoryStream();
+        bitmap.Save(rasterStream, ImageFormat.Png);
+        rasterStream.Position = 0;
+
+        // Extract svg
+        var svgStream = new MemoryStream();
+        image.Write(svgStream);
+        svgStream.Position = 0;
+
+        // Create the picture
+        var pPicture = this.CreatePPictureSvg(rasterStream, svgStream, "Picture");
+
+        // Fix up the sizes
+        var xEmu = UnitConverter.HorizontalPixelToEmu(100);
+        var yEmu = UnitConverter.VerticalPixelToEmu(100);
+        var cxEmu = UnitConverter.HorizontalPixelToEmu(width);
+        var cyEmu = UnitConverter.VerticalPixelToEmu(height);
+        var transform2D = pPicture.ShapeProperties!.Transform2D!;
+        transform2D.Offset!.X = xEmu;
+        transform2D.Offset!.Y = yEmu;
+        transform2D.Extents!.Cx = cxEmu;
+        transform2D.Extents!.Cy = cyEmu;
+    }
+
     private P.Picture CreatePPictureSvg(Stream rasterStream, Stream svgStream, string shapeName)
     {
         // The A.Blip contains a raster representation of the vector image
