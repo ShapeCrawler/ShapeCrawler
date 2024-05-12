@@ -1,5 +1,6 @@
 ﻿using System;
 using DocumentFormat.OpenXml.Packaging;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
 using ShapeCrawler.Shared;
@@ -81,6 +82,11 @@ internal sealed class Field : IParagraphPortion
 
     private void UpdateTextHighlight(Color? color)
     {
+        if (color == null)
+        {
+            throw new SCException("Color value must be non-null");
+        }
+        
         var arPr = this.aText!.PreviousSibling<A.RunProperties>() ?? this.aText.Parent!.AddRunProperties();
 
         arPr.AddAHighlight((Color)color);
