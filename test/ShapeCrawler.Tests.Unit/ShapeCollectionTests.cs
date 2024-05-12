@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Linq.Expressions;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Shapes;
@@ -407,7 +408,22 @@ public class ShapeCollectionTests : SCTest
         picture.ShapeType.Should().Be(ShapeType.Picture);
         pres.Validate();
     }
-    
+
+    [Test]
+    public void AddPicture_with_not_an_image_throws_exception()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var notAnImage = TestHelper.GetStream("autoshape-case011_save-as-png.pptx");
+
+        // Act
+        var act = () => shapes.AddPicture(notAnImage);
+
+        // Assert
+        act.Should().Throw<ArgumentException>();
+    }
+
     [Test]
     public void AddPicture_adds_picture_with_correct_Height()
     {
