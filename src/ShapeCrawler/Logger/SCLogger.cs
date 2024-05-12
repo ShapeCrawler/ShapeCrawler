@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Net.NetworkInformation;
-using System.Text;
 using System.Text.Json;
 using ShapeCrawler.Logger;
 
@@ -20,6 +18,7 @@ internal static class SCLogger
     {
         return;
 
+#if false
         if (!SCSettings.CanCollectLogs || DateTime.UtcNow < new DateTime(2023, 02, 15))
         {
             return;
@@ -55,6 +54,7 @@ internal static class SCLogger
         {
             Log.Value.SendFailed = DateTime.Now;
         }
+#endif
     }
 
     private static Log GetLog()
