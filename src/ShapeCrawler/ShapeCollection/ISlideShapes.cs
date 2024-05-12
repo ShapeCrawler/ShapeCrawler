@@ -74,20 +74,6 @@ public interface ISlideShapes : IShapes
     void AddPicture(Stream imageStream);
 
     /// <summary>
-    ///     Adds an SVG picture
-    /// </summary>
-    /// <remarks>
-    ///     Note that an SVG picture is inserted into the document as BOTH a
-    ///     vector image AND a rasterized image. The rasterized image is what
-    ///     the user sees. The vector image is used by the application to re-
-    ///     rasterize at a different size later.
-    /// </remarks>
-    /// <param name="image">The image to be loaded</param>
-    /// <param name="rasterWidth">Width of rasterized image in pixels.</param>
-    /// <param name="rasterHeight">Height of rasterized image in pixels.</param>
-    void AddPictureSvg(SvgDocument image, int rasterWidth, int rasterHeight);
-
-    /// <summary>
     ///     Adds Bar chart.
     /// </summary>
     void AddBarChart(BarChartType barChartType);

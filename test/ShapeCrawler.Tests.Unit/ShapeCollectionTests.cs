@@ -350,37 +350,37 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    public void AddPictureSvg_adds_picture()
+    public void AddPicture_adds_svg_picture()
     {
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
         var image = TestHelper.GetStream("test-vector-image-1.svg");
         image.Position = 0;
-        var doc = Svg.SvgDocument.Open<Svg.SvgDocument>(image);
 
         // Act
-        shapes.AddPictureSvg(doc, 200, 200);
+        shapes.AddPicture(image);
 
         // Assert
         shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
         picture.ShapeType.Should().Be(ShapeType.Picture);
-        picture.Height.Should().Be(200);
-        picture.Width.Should().Be(200);
+
+        // These values are the intrinsic size of the test image
+        picture.Height.Should().Be(100);
+        picture.Width.Should().Be(100);
         pres.Validate();
     }
 
     [Test]
-    public void AddPictureSvg_sets_valid_svg_content()
+    public void AddPicture_sets_valid_svg_content()
     {
         // Arrange
         var pres = new Presentation();
         var shapes = pres.Slides[0].Shapes;
         var image = TestHelper.GetStream("test-vector-image-1.svg");
         image.Position = 0;
-        var doc = Svg.SvgDocument.Open<Svg.SvgDocument>(image);
-        shapes.AddPictureSvg(doc, 200, 200);
+        shapes.AddPicture(image);
         var picture = (IPicture)shapes.Last();
 
         // Act

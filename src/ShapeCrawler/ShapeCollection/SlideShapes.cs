@@ -126,27 +126,49 @@ internal sealed class SlideShapes : ISlideShapes
         imageStream.Position = 0;
         using var skBitmap = SKBitmap.Decode(imageCopy);
 
-        if (skBitmap == null)
-            throw new ArgumentException("Unable to decode bitmap from supplied stream", nameof(imageStream));
+        if (skBitmap != null)
+        {
+            var xEmu = UnitConverter.HorizontalPixelToEmu(100);
+            var yEmu = UnitConverter.VerticalPixelToEmu(100);
+            var cxEmu = UnitConverter.HorizontalPixelToEmu(skBitmap.Width);
+            var cyEmu = UnitConverter.VerticalPixelToEmu(skBitmap.Height);
 
-        var xEmu = UnitConverter.HorizontalPixelToEmu(100);
-        var yEmu = UnitConverter.VerticalPixelToEmu(100);
-        var cxEmu = UnitConverter.HorizontalPixelToEmu(skBitmap.Width);
-        var cyEmu = UnitConverter.VerticalPixelToEmu(skBitmap.Height);
+            var pPicture = this.CreatePPicture(imageStream, "Picture");
 
-        var pPicture = this.CreatePPicture(imageStream, "Picture");
+            var transform2D = pPicture.ShapeProperties!.Transform2D!;
+            transform2D.Offset!.X = xEmu;
+            transform2D.Offset!.Y = yEmu;
+            transform2D.Extents!.Cx = cxEmu;
+            transform2D.Extents!.Cy = cyEmu;
+        }
+        else
+        {
+            // Not a bitmap, let's try it as an SVG
+            Svg.SvgDocument? doc = null;
+            try
+            {
+                doc = Svg.SvgDocument.Open<Svg.SvgDocument>(imageStream);
+            }
+            catch
+            {
+                // Neither bitmap nor svg can load this, so that's an error.
+                throw new ArgumentException("Unable to decode image from supplied stream", nameof(imageStream));
+            }
 
-        var transform2D = pPicture.ShapeProperties!.Transform2D!;
-        transform2D.Offset!.X = xEmu;
-        transform2D.Offset!.Y = yEmu;
-        transform2D.Extents!.Cx = cxEmu;
-        transform2D.Extents!.Cy = cyEmu;
+            // Add it
+            AddPictureSvg(doc);
+        }
     }
 
-    public void AddPictureSvg(SvgDocument image, int rasterWidth, int rasterHeight)
+    private void AddPictureSvg(SvgDocument image)
     {
-        // Rasterize image
-        var bitmap = image.Draw(rasterWidth, rasterHeight);
+        // Determine intrinsic size
+        var renderer = Svg.SvgRenderer.FromNull();
+        var width = (int)image.Width.ToDeviceValue(renderer, Svg.UnitRenderingType.Horizontal, image);
+        var height = (int)image.Height.ToDeviceValue(renderer, Svg.UnitRenderingType.Vertical, image);
+
+        // Rasterize image at intrinsic size
+        var bitmap = image.Draw(width, height);
         var rasterStream = new MemoryStream();
         bitmap.Save(rasterStream, ImageFormat.Png);
         rasterStream.Position = 0;
@@ -159,10 +181,11 @@ internal sealed class SlideShapes : ISlideShapes
         // Create the picture
         var pPicture = this.CreatePPictureSvg(rasterStream, svgStream, "Picture");
 
+        // Fix up the sizes
         var xEmu = UnitConverter.HorizontalPixelToEmu(100);
         var yEmu = UnitConverter.VerticalPixelToEmu(100);
-        var cxEmu = UnitConverter.HorizontalPixelToEmu(rasterWidth);
-        var cyEmu = UnitConverter.VerticalPixelToEmu(rasterHeight);
+        var cxEmu = UnitConverter.HorizontalPixelToEmu(width);
+        var cyEmu = UnitConverter.VerticalPixelToEmu(height);
         var transform2D = pPicture.ShapeProperties!.Transform2D!;
         transform2D.Offset!.X = xEmu;
         transform2D.Offset!.Y = yEmu;
@@ -570,21 +593,16 @@ internal sealed class SlideShapes : ISlideShapes
     private P.Picture CreatePPictureSvg(Stream rasterStream, Stream svgStream, string shapeName)
     {
         // The A.Blip contains a raster representation of the vector image
-        //
-        // This should be rendered to the size of the rectangle (or higher), else user will have to resize the image
-        // first to get the app to re-render it.
-
         var imgPartRId = this.sdkSlidePart.NextRelationshipId();
         var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
         rasterStream.Position = 0;
         imagePart.FeedData(rasterStream);
 
         // The SVG Blip contains the vector data
-
-        var imgPartRId2 = this.sdkSlidePart.NextRelationshipId();
-        var imagePart2 = this.sdkSlidePart.AddNewPart<ImagePart>("image/svg+xml", imgPartRId2);
-        rasterStream.Position = 0;
-        imagePart2.FeedData(svgStream);
+        var svgPartRId = this.sdkSlidePart.NextRelationshipId();
+        var svgPart = this.sdkSlidePart.AddNewPart<ImagePart>("image/svg+xml", svgPartRId);
+        svgStream.Position = 0;
+        svgPart.FeedData(svgStream);
 
         var nonVisualPictureProperties = new P.NonVisualPictureProperties();
         var shapeId = (uint)this.NextShapeId();
@@ -611,7 +629,6 @@ internal sealed class SlideShapes : ISlideShapes
         aNonVisualDrawingPropertiesExtensionList.Append(aNonVisualDrawingPropertiesExtension);
 
         nonVisualDrawingProperties.Append(aNonVisualDrawingPropertiesExtensionList);
-
         nonVisualPictureProperties.Append(nonVisualDrawingProperties);
         nonVisualPictureProperties.Append(nonVisualPictureDrawingProperties);
         nonVisualPictureProperties.Append(appNonVisualDrawingProperties);
@@ -638,7 +655,7 @@ internal sealed class SlideShapes : ISlideShapes
         aBlipExtension = new A.BlipExtension();
         aBlipExtension.Uri = "{96DAC541-7B7A-43D3-8B79-37D633B846F1}";
 
-        var sVGBlip = new DocumentFormat.OpenXml.Office2019.Drawing.SVG.SVGBlip() { Embed = imgPartRId2 };
+        var sVGBlip = new DocumentFormat.OpenXml.Office2019.Drawing.SVG.SVGBlip() { Embed = svgPartRId };
 
         sVGBlip.AddNamespaceDeclaration("asvg", "http://schemas.microsoft.com/office/drawing/2016/SVG/main");
 
