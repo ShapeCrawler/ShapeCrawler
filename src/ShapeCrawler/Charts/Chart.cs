@@ -17,7 +17,6 @@ namespace ShapeCrawler.Charts;
 
 internal sealed class Chart : Shape, IChart
 {
-    private readonly ChartType chartType;
     private readonly Lazy<OpenXmlElement?> firstSeries;
 
     // Contains chart elements, e.g. <c:pieChart>, <c:barChart>, <c:lineChart> etc. If the chart type is not a combination,
