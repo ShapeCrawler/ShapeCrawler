@@ -1,7 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing.Imaging;
 using System.Linq;
-using System.Linq.Expressions;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Shapes;

@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using ShapeCrawler.Shared;
-using Svg;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
