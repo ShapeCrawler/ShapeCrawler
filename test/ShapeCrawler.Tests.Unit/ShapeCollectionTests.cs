@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Tests.Shared;
@@ -419,7 +420,7 @@ public class ShapeCollectionTests : SCTest
         var act = () => shapes.AddPicture(notAnImage);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        act.Should().Throw<SCException>();
     }
 
     [Test]

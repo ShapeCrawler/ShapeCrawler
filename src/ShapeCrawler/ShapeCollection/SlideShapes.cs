@@ -152,7 +152,7 @@ internal sealed class SlideShapes : ISlideShapes
             catch
             {
                 // Neither bitmap nor svg can load this, so that's an error.
-                throw new ArgumentException("Unable to decode image from supplied stream", nameof(imageStream));
+                throw new SCException("Unable to decode image from supplied stream");
             }
 
             // Add it
