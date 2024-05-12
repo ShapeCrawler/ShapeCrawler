@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -12,7 +13,10 @@ using ShapeCrawler.Extensions;
 using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using SkiaSharp;
+using Svg;
 using A = DocumentFormat.OpenXml.Drawing;
+using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
+using A16 = DocumentFormat.OpenXml.Office2016.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
 using Position = ShapeCrawler.Positions.Position;
 
@@ -121,18 +125,39 @@ internal sealed class SlideShapes : ISlideShapes
         imageCopy.Position = 0;
         imageStream.Position = 0;
         using var skBitmap = SKBitmap.Decode(imageCopy);
-        var xEmu = UnitConverter.HorizontalPixelToEmu(100);
-        var yEmu = UnitConverter.VerticalPixelToEmu(100);
-        var cxEmu = UnitConverter.HorizontalPixelToEmu(skBitmap.Width);
-        var cyEmu = UnitConverter.VerticalPixelToEmu(skBitmap.Height);
 
-        var pPicture = this.CreatePPicture(imageStream, "Picture");
+        if (skBitmap != null)
+        {
+            var xEmu = UnitConverter.HorizontalPixelToEmu(100);
+            var yEmu = UnitConverter.VerticalPixelToEmu(100);
+            var cxEmu = UnitConverter.HorizontalPixelToEmu(skBitmap.Width);
+            var cyEmu = UnitConverter.VerticalPixelToEmu(skBitmap.Height);
 
-        var transform2D = pPicture.ShapeProperties!.Transform2D!;
-        transform2D.Offset!.X = xEmu;
-        transform2D.Offset!.Y = yEmu;
-        transform2D.Extents!.Cx = cxEmu;
-        transform2D.Extents!.Cy = cyEmu;
+            var pPicture = this.CreatePPicture(imageStream, "Picture");
+
+            var transform2D = pPicture.ShapeProperties!.Transform2D!;
+            transform2D.Offset!.X = xEmu;
+            transform2D.Offset!.Y = yEmu;
+            transform2D.Extents!.Cx = cxEmu;
+            transform2D.Extents!.Cy = cyEmu;
+        }
+        else
+        {
+            // Not a bitmap, let's try it as an SVG
+            Svg.SvgDocument? doc = null;
+            try
+            {
+                doc = Svg.SvgDocument.Open<Svg.SvgDocument>(imageStream);
+            }
+            catch
+            {
+                // Neither bitmap nor svg can load this, so that's an error.
+                throw new SCException("Unable to decode image from supplied stream");
+            }
+
+            // Add it
+            this.AddPictureSvg(doc);
+        }
     }
 
     public void AddBarChart(BarChartType barChartType)
@@ -529,6 +554,157 @@ internal sealed class SlideShapes : ISlideShapes
         pPicture.Append(shapeProperties);
 
         this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.Append(pPicture);
+
+        return pPicture;
+    }
+
+    private void AddPictureSvg(SvgDocument image)
+    {
+        // Determine intrinsic size
+        var renderer = Svg.SvgRenderer.FromNull();
+        var width = (int)image.Width.ToDeviceValue(renderer, Svg.UnitRenderingType.Horizontal, image);
+        var height = (int)image.Height.ToDeviceValue(renderer, Svg.UnitRenderingType.Vertical, image);
+
+        // Rasterize image at intrinsic size
+        var bitmap = image.Draw(width, height);
+        var rasterStream = new MemoryStream();
+        bitmap.Save(rasterStream, ImageFormat.Png);
+        rasterStream.Position = 0;
+
+        // Extract svg
+        var svgStream = new MemoryStream();
+        image.Write(svgStream);
+        svgStream.Position = 0;
+
+        // Create the picture
+        var pPicture = this.CreatePPictureSvg(rasterStream, svgStream, "Picture");
+
+        // Fix up the sizes
+        var xEmu = UnitConverter.HorizontalPixelToEmu(100);
+        var yEmu = UnitConverter.VerticalPixelToEmu(100);
+        var cxEmu = UnitConverter.HorizontalPixelToEmu(width);
+        var cyEmu = UnitConverter.VerticalPixelToEmu(height);
+        var transform2D = pPicture.ShapeProperties!.Transform2D!;
+        transform2D.Offset!.X = xEmu;
+        transform2D.Offset!.Y = yEmu;
+        transform2D.Extents!.Cx = cxEmu;
+        transform2D.Extents!.Cy = cyEmu;
+    }
+
+    private P.Picture CreatePPictureSvg(Stream rasterStream, Stream svgStream, string shapeName)
+    {
+        // The A.Blip contains a raster representation of the vector image
+        var imgPartRId = this.sdkSlidePart.NextRelationshipId();
+        var imagePart = this.sdkSlidePart.AddNewPart<ImagePart>("image/png", imgPartRId);
+        rasterStream.Position = 0;
+        imagePart.FeedData(rasterStream);
+
+        // The SVG Blip contains the vector data
+        var svgPartRId = this.sdkSlidePart.NextRelationshipId();
+        var svgPart = this.sdkSlidePart.AddNewPart<ImagePart>("image/svg+xml", svgPartRId);
+        svgStream.Position = 0;
+        svgPart.FeedData(svgStream);
+
+        var nonVisualPictureProperties = new P.NonVisualPictureProperties();
+        var shapeId = (uint)this.NextShapeId();
+        var nonVisualDrawingProperties = new P.NonVisualDrawingProperties
+        {
+            Id = shapeId, Name = $"{shapeName} {shapeId}"
+        };
+        var nonVisualPictureDrawingProperties = new P.NonVisualPictureDrawingProperties();
+        var appNonVisualDrawingProperties = new P.ApplicationNonVisualDrawingProperties();
+
+        A.NonVisualDrawingPropertiesExtensionList aNonVisualDrawingPropertiesExtensionList = new A.NonVisualDrawingPropertiesExtensionList();
+
+        A.NonVisualDrawingPropertiesExtension aNonVisualDrawingPropertiesExtension = new A.NonVisualDrawingPropertiesExtension();
+        aNonVisualDrawingPropertiesExtension.Uri = "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}";
+
+        A16.CreationId a16CreationId = new A16.CreationId();
+
+        // "http://schemas.microsoft.com/office/drawing/2014/main"
+        var a16 = DocumentFormat.OpenXml.Linq.A16.a16;
+        a16CreationId.AddNamespaceDeclaration(nameof(a16), a16.NamespaceName);
+
+        a16CreationId.Id = "{2BEA8DB4-11C1-B7BA-06ED-DC504E2BBEBE}";
+
+        aNonVisualDrawingPropertiesExtension.AppendChild(a16CreationId);
+
+        aNonVisualDrawingPropertiesExtensionList.AppendChild(aNonVisualDrawingPropertiesExtension);
+
+        nonVisualDrawingProperties.AppendChild(aNonVisualDrawingPropertiesExtensionList);
+        nonVisualPictureProperties.AppendChild(nonVisualDrawingProperties);
+        nonVisualPictureProperties.AppendChild(nonVisualPictureDrawingProperties);
+        nonVisualPictureProperties.AppendChild(appNonVisualDrawingProperties);
+
+        var blipFill = new P.BlipFill();
+
+        A.Blip aBlip = new A.Blip() { Embed = imgPartRId };
+
+        A.BlipExtensionList aBlipExtensionList = new A.BlipExtensionList();
+
+        A.BlipExtension aBlipExtension = new A.BlipExtension();
+        aBlipExtension.Uri = "{28A0092B-C50C-407E-A947-70E740481C1C}";
+
+        A14.UseLocalDpi a14UseLocalDpi = new A14.UseLocalDpi();
+
+        // "http://schemas.microsoft.com/office/drawing/2010/main"
+        var a14 = DocumentFormat.OpenXml.Linq.A14.a14;
+
+        a14UseLocalDpi.AddNamespaceDeclaration(nameof(a14), a14.NamespaceName);
+
+        a14UseLocalDpi.Val = false;
+
+        aBlipExtension.AppendChild(a14UseLocalDpi);
+
+        aBlipExtensionList.AppendChild(aBlipExtension);
+
+        aBlipExtension = new A.BlipExtension();
+        aBlipExtension.Uri = "{96DAC541-7B7A-43D3-8B79-37D633B846F1}";
+
+        var sVGBlip = new DocumentFormat.OpenXml.Office2019.Drawing.SVG.SVGBlip() { Embed = svgPartRId };
+
+        // "http://schemas.microsoft.com/office/drawing/2016/SVG/main"
+        var asvg = DocumentFormat.OpenXml.Linq.ASVG.asvg;
+
+        sVGBlip.AddNamespaceDeclaration(nameof(asvg), asvg.NamespaceName);
+
+        aBlipExtension.AppendChild(sVGBlip);
+
+        aBlipExtensionList.AppendChild(aBlipExtension);
+
+        aBlip.AppendChild(aBlipExtensionList);
+
+        blipFill.AppendChild(aBlip);
+
+        A.Stretch aStretch = new A.Stretch();
+
+        A.FillRectangle aFillRectangle = new A.FillRectangle();
+
+        aStretch.AppendChild(aFillRectangle);
+
+        blipFill.AppendChild(aStretch);
+
+        var transform2D = new A.Transform2D(
+            new A.Offset { X = 0, Y = 0 },
+            new A.Extents { Cx = 0, Cy = 0 });
+
+        var presetGeometry = new A.PresetGeometry
+            { Preset = A.ShapeTypeValues.Rectangle };
+
+        A.AdjustValueList aAdjustValueList = new A.AdjustValueList();
+
+        presetGeometry.AppendChild(aAdjustValueList);
+
+        var shapeProperties = new P.ShapeProperties();
+        shapeProperties.AppendChild(transform2D);
+        shapeProperties.AppendChild(presetGeometry);
+
+        var pPicture = new P.Picture();
+        pPicture.AppendChild(nonVisualPictureProperties);
+        pPicture.AppendChild(blipFill);
+        pPicture.AppendChild(shapeProperties);
+
+        this.sdkSlidePart.Slide.CommonSlideData!.ShapeTree!.AppendChild(pPicture);
 
         return pPicture;
     }
