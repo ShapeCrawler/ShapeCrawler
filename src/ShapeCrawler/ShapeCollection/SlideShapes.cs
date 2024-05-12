@@ -621,7 +621,9 @@ internal sealed class SlideShapes : ISlideShapes
 
         A16.CreationId a16CreationId = new A16.CreationId();
 
-        a16CreationId.AddNamespaceDeclaration("a16", "http://schemas.microsoft.com/office/drawing/2014/main");
+        // "http://schemas.microsoft.com/office/drawing/2014/main"
+        var a16 = DocumentFormat.OpenXml.Linq.A16.a16;
+        a16CreationId.AddNamespaceDeclaration(nameof(a16), a16.NamespaceName);
 
         a16CreationId.Id = "{2BEA8DB4-11C1-B7BA-06ED-DC504E2BBEBE}";
 
@@ -645,7 +647,10 @@ internal sealed class SlideShapes : ISlideShapes
 
         A14.UseLocalDpi a14UseLocalDpi = new A14.UseLocalDpi();
 
-        a14UseLocalDpi.AddNamespaceDeclaration("a14", "http://schemas.microsoft.com/office/drawing/2010/main");
+        // "http://schemas.microsoft.com/office/drawing/2010/main"
+        var a14 = DocumentFormat.OpenXml.Linq.A14.a14;
+
+        a14UseLocalDpi.AddNamespaceDeclaration(nameof(a14), a14.NamespaceName);
 
         a14UseLocalDpi.Val = false;
 
@@ -658,7 +663,10 @@ internal sealed class SlideShapes : ISlideShapes
 
         var sVGBlip = new DocumentFormat.OpenXml.Office2019.Drawing.SVG.SVGBlip() { Embed = svgPartRId };
 
-        sVGBlip.AddNamespaceDeclaration("asvg", "http://schemas.microsoft.com/office/drawing/2016/SVG/main");
+        // "http://schemas.microsoft.com/office/drawing/2016/SVG/main"
+        var asvg = DocumentFormat.OpenXml.Linq.ASVG.asvg;
+
+        sVGBlip.AddNamespaceDeclaration(nameof(asvg), asvg.NamespaceName);
 
         aBlipExtension.Append(sVGBlip);
 
