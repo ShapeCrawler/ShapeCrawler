@@ -171,7 +171,6 @@ public class ShapeFillTests : SCTest
         pres.Validate();
     }
 
-    [Test]
     [TestCase("autoshape-case005_text-frame.pptx", 1, "AutoShape 1")]
     [TestCase("autoshape-case005_text-frame.pptx", 1, "AutoShape 2")]
     [TestCase("autoshape-grouping.pptx", 1, "AutoShape 1")]
@@ -189,7 +188,6 @@ public class ShapeFillTests : SCTest
         pres.Validate();
     }
 
-    [Theory]
     [TestCase("table-case001.pptx", 1, "Table 1")]
     public void SetColor_sets_solid_color_as_fill_of_Table_Cell(string file, int slideNumber, string shapeName)
     {
@@ -215,7 +213,6 @@ public class ShapeFillTests : SCTest
         var pres = new Presentation(StreamOf(file));
         var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
         var shapeFill = shape.Fill;
-        var imageStream = StreamOf("test-image-1.png");
 
         // Act
         shapeFill.SetNoFill();
