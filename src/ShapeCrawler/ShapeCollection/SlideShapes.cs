@@ -156,7 +156,7 @@ internal sealed class SlideShapes : ISlideShapes
             }
 
             // Add it
-            AddPictureSvg(doc);
+            this.AddPictureSvg(doc);
         }
     }
 
