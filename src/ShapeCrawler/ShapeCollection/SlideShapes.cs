@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -13,7 +14,6 @@ using ShapeCrawler.Services;
 using ShapeCrawler.Shared;
 using SkiaSharp;
 using Svg;
-using System.Drawing.Imaging;
 using A = DocumentFormat.OpenXml.Drawing;
 using A14 = DocumentFormat.OpenXml.Office2010.Drawing;
 using A16 = DocumentFormat.OpenXml.Office2016.Drawing;
