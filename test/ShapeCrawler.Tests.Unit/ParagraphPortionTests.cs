@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Tests.Unit.Helpers;
 
 namespace ShapeCrawler.Tests.Unit;
@@ -173,4 +174,21 @@ public class ParagraphPortionTests : SCTest
         // Assert
         portion.TextHighlightColor.ToString().Should().Be("FFFF00");
     }
+
+    [Test]
+    public void TextHighlightColor_Setter_null_throws()
+    {
+        // Arrange
+        var pptx = StreamOf("autoshape-grouping.pptx");
+        var pres = new Presentation(pptx);
+        var shape = pres.Slides[0].Shapes.GetByName<IShape>("TextBox 4");
+        var portion = shape.TextFrame!.Paragraphs[0].Portions[0];
+
+        // Act
+        var act = () => portion.TextHighlightColor = null;
+
+        // Assert
+        act.Should().Throw<SCException>();
+    }
+
 }
