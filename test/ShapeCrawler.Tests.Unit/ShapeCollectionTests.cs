@@ -411,8 +411,8 @@ public class ShapeCollectionTests : SCTest
         picture.ShapeType.Should().Be(ShapeType.Picture);
 
         // These values are the intrinsic size of the test image
-        picture.Height.Should().BeLessThan(2500);
-        picture.Width.Should().BeLessThan(2500);
+        picture.Height.Should().BeLessThan(2400);
+        picture.Width.Should().BeLessThan(2400);
         pres.Validate();
     }
 

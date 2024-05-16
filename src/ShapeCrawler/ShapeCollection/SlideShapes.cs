@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -564,6 +565,22 @@ internal sealed class SlideShapes : ISlideShapes
         var renderer = Svg.SvgRenderer.FromNull();
         var width = (int)image.Width.ToDeviceValue(renderer, Svg.UnitRenderingType.Horizontal, image);
         var height = (int)image.Height.ToDeviceValue(renderer, Svg.UnitRenderingType.Vertical, image);
+
+        // Ensure image size is not inserted at an unreasonable size
+        // See Issue #683 Large-dimension SVG files lead to error opening in PowerPoint
+        //
+        // Ideally, we'd want to use the slide dimensions itself. However, not sure how we get that
+        // here, so will use a fixed "safe" size
+        if (height > 500)
+        {
+            height = 500;
+            width = (int)(height * image.Width.Value / image.Height.Value);
+        }
+        if (width > 500)
+        {
+            width = 500;
+            height = (int)(width * image.Height.Value / image.Width.Value);
+        }
 
         // Rasterize image at intrinsic size
         var bitmap = image.Draw(width, height);
