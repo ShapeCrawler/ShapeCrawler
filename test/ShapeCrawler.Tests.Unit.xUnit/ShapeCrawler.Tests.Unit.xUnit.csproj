@@ -218,6 +218,8 @@
     <EmbeddedResource Include="Resource\054_get_shape_xpath.pptx" />
     <None Remove="Resource\test-vector-image-1.svg" />
     <EmbeddedResource Include="Resource\test-vector-image-1.svg" />
+    <None Remove="Resource\test-vector-image-large.svg" />
+    <EmbeddedResource Include="Resource\test-vector-image-large.svg" />
   </ItemGroup>
 
   <ItemGroup>

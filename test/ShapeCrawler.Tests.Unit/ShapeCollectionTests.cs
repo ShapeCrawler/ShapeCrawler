@@ -389,6 +389,32 @@ public class ShapeCollectionTests : SCTest
         // Assert
         svgContent.Should().Contain("<svg");
     }
+    
+    [Test]
+    [Explicit]
+    public void AddPicture_too_large_adds_svg_picture()
+    {
+        // See: Issue #683 Large-dimension SVG files lead to error opening in PowerPoint
+
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-vector-image-large.svg");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        shapes.Should().HaveCount(1);
+        var picture = (IPicture)shapes.Last();
+        picture.ShapeType.Should().Be(ShapeType.Picture);
+
+        // These values are the intrinsic size of the test image
+        picture.Height.Should().BeLessThan(2500);
+        picture.Width.Should().BeLessThan(2500);
+        pres.Validate();
+    }
 
     [Test]
     public void AddPicture_adds_picture()
