@@ -16,12 +16,12 @@ public interface IShape : IPosition
     /// <summary>
     ///     Gets or sets width of the shape in pixels.
     /// </summary>
-    int Width { get; set; }
+    decimal Width { get; set; }
 
     /// <summary>
     ///     Gets or sets height of the shape in pixels.
     /// </summary>
-    int Height { get; set; }
+    decimal Height { get; set; }
 
     /// <summary>
     ///     Gets identifier of the shape.

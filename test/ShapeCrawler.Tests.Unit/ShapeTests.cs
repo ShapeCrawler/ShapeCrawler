@@ -105,9 +105,9 @@ public class ShapeTests : SCTest
         float verticalResoulution = Helpers.TestHelper.VerticalResolution;
 
         // Act
-        int yCoordinate1 = shapeCase1.Y;
-        int yCoordinate2 = shapeCase2.Y;
-        int yCoordinate3 = shapeCase3.Y;
+        decimal yCoordinate1 = shapeCase1.Y;
+        decimal yCoordinate2 = shapeCase2.Y;
+        decimal yCoordinate3 = shapeCase3.Y;
 
         // Assert
         yCoordinate1.Should().Be((int)(1122363 * verticalResoulution / 914400));
@@ -144,7 +144,7 @@ public class ShapeTests : SCTest
         // Assert
         groupedShape.Y.Should().Be(359);
         parentGroupShape.Y.Should().Be(359, "because the moved grouped shape was on the up-hand side");
-        parentGroupShape.Height.Should().Be(172);
+        parentGroupShape.Height.Should().BeApproximately(172,1m);
     }
 
     [Test]
@@ -160,7 +160,7 @@ public class ShapeTests : SCTest
 
         // Assert
         groupedShape.Y.Should().Be(555);
-        groupShape.Height.Should().Be(178, "because it was 108 and the down-hand grouped shape got down on 71 pixels");
+        groupShape.Height.Should().BeApproximately(178, 2m, "because it was 108 and the down-hand grouped shape got down on 71 pixels");
     }
 
     [Test]
@@ -177,7 +177,7 @@ public class ShapeTests : SCTest
         // Assert
         groupedShape.X.Should().Be(67);
         groupShape.X.Should().Be(67, "because the moved grouped shape was on the left-hand side");
-        groupShape.Width.Should().Be(117);
+        groupShape.Width.Should().BeApproximately(117,1m);
     }
 
     [Test]
@@ -195,7 +195,7 @@ public class ShapeTests : SCTest
         groupedShape.X.Should().Be(91);
         groupShape.X.Should().Be(79,
             "because the X-coordinate of parent group shouldn't be changed when a grouped shape is moved to the right side");
-        groupShape.Width.Should().Be(115);
+        groupShape.Width.Should().BeApproximately(115,1m);
     }
 
     [Test]
@@ -208,14 +208,14 @@ public class ShapeTests : SCTest
         IShape shapeCase3 = new Presentation(StreamOf("009_table.pptx")).Slides[1].Shapes.First(sp => sp.Id == 9);
 
         // Act
-        int width1 = shapeCase1.Width;
-        int width2 = shapeCase2.Width;
-        int width3 = shapeCase3.Width;
+        decimal width1 = shapeCase1.Width;
+        decimal width2 = shapeCase2.Width;
+        decimal width3 = shapeCase3.Width;
 
         // Assert
-        (width1 * 914400 / TestHelper.HorizontalResolution).Should().Be(9144000);
-        (width2 * 914400 / TestHelper.HorizontalResolution).Should().Be(1181100);
-        (width3 * 914400 / TestHelper.HorizontalResolution).Should().Be(485775);
+        (width1 * 914400 / TestHelper.HorizontalResolution).Should().Be(9144000m);
+        (width2 * 914400 / TestHelper.HorizontalResolution).Should().BeApproximately(1181100m,1000m);
+        (width3 * 914400 / TestHelper.HorizontalResolution).Should().Be(485775m);
     }
 
     [Test]
@@ -231,7 +231,7 @@ public class ShapeTests : SCTest
         var height = groupedShape.Height;
 
         // Assert
-        height.Should().Be(68);
+        height.Should().BeApproximately(68,1m);
     }
 
     [TestCase(2, Geometry.Rectangle)]
@@ -494,7 +494,7 @@ public class ShapeTests : SCTest
     public void X_Getter_returns_x_coordinate_in_pixels(IShape shape, int expectedX)
     {
         // Act
-        int x = shape.X;
+        decimal x = shape.X;
 
         // Assert
         x.Should().Be(expectedX);
@@ -508,10 +508,10 @@ public class ShapeTests : SCTest
         var shape = pres.Slides[1].Shapes.GetByName<IGroupShape>("Group 1").Shapes.GetByName<IShape>("Shape 1");
         
         // Act
-        int x = shape.X;
+        decimal x = shape.X;
         
         // Assert
-        x.Should().Be(53);
+        x.Should().BeApproximately(53,1m);
     }
     
     [Test]
@@ -531,7 +531,7 @@ public class ShapeTests : SCTest
         var shapeWidth = shape.Width;
 
         // Assert
-        shapeWidth.Should().Be(expectedWidth);
+        shapeWidth.Should().BeApproximately(expectedWidth,1m);
     }
     
     [Test]
@@ -544,7 +544,7 @@ public class ShapeTests : SCTest
         var height = shape.Height;
 
         // Assert
-        height.Should().Be(expectedHeight);
+        height.Should().BeApproximately(expectedHeight,1m);
     }
     
     [Test]

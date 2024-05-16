@@ -192,8 +192,8 @@ internal sealed class TextFrame : ITextFrame
         var textRect = default(SKRect);
         var text = this.Text;
         paint.MeasureText(text, ref textRect);
-        var textWidth = textRect.Width;
-        var textHeight = paint.TextSize;
+        var textWidth = (decimal)textRect.Width;
+        var textHeight = (decimal)paint.TextSize;
         var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, this.sdkTextBody.Ancestors<P.Shape>().First());
         var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
         var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
@@ -210,8 +210,8 @@ internal sealed class TextFrame : ITextFrame
         paint.TextSize = firstPortion.Font.Size;
         var typeFace = SKTypeface.FromFamilyName(firstPortion.Font.LatinName);
         paint.Typeface = typeFace;
-        float leftMarginPx = UnitConverter.CentimeterToPixel(this.LeftMargin);
-        float topMarginPx = UnitConverter.CentimeterToPixel(this.TopMargin);
+        float leftMarginPx = (float)UnitConverter.CentimeterToPixel(this.LeftMargin);
+        float topMarginPx = (float)UnitConverter.CentimeterToPixel(this.TopMargin);
         float fontHeightPx = UnitConverter.PointToPixel(16);
         float x = shapeX + leftMarginPx;
         float y = shapeY + topMarginPx + fontHeightPx;
@@ -295,7 +295,7 @@ internal sealed class TextFrame : ITextFrame
 
         var parent = this.sdkTextBody.Parent!;
         var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, parent);
-        var fontSize = FontService.GetAdjustedFontSize(newText, font, shapeSize.Width(), shapeSize.Height());
+        var fontSize = FontService.GetAdjustedFontSize(newText, font, (int)shapeSize.Width(), (int)shapeSize.Height());
 
         var paragraphInternal = (Paragraph)baseParagraph;
         paragraphInternal.SetFontSize(fontSize);
@@ -303,8 +303,8 @@ internal sealed class TextFrame : ITextFrame
 
     private void UpdateShapeWidthIfNeeded(
         SKPaint paint, 
-        int lMarginPixel, 
-        int rMarginPixel, 
+        decimal lMarginPixel, 
+        decimal rMarginPixel, 
         TextFrame textFrame,
         OpenXmlElement parent)
     {
@@ -326,12 +326,12 @@ internal sealed class TextFrame : ITextFrame
     }
 
     private void UpdateShapeHeight(
-        float textWidth,
-        int currentBlockWidth,
-        float textHeight,
-        int tMarginPixel,
-        int bMarginPixel,
-        int currentBlockHeight,
+        decimal textWidth,
+        decimal currentBlockWidth,
+        decimal textHeight,
+        decimal tMarginPixel,
+        decimal bMarginPixel,
+        decimal currentBlockHeight,
         OpenXmlElement parent)
     {
         var requiredRowsCount = textWidth / currentBlockWidth;
@@ -351,6 +351,6 @@ internal sealed class TextFrame : ITextFrame
         // We should raise the shape up by the amount which is half of the increased offset.
         // PowerPoint does the same thing.
         var yOffset = (requiredHeight - currentBlockHeight) / 2;
-        position.UpdateY((int)(position.Y() - yOffset));
+        position.UpdateY(position.Y() - yOffset);
     }
 }

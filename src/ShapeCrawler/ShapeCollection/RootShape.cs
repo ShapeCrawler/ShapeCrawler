@@ -41,7 +41,7 @@ internal sealed class RootShape : CopyableShape, IRootShape
     
     public override Geometry GeometryType => this.decoratedShape.GeometryType;
 
-    public override int X
+    public override decimal X
     {
         get => this.decoratedShape.X; 
         set => this.decoratedShape.X = value;
@@ -70,14 +70,14 @@ internal sealed class RootShape : CopyableShape, IRootShape
 
         if (this.GeometryType == Geometry.Rectangle)
         {
-            float left = this.X;
-            float top = this.Y;
-            float right = this.X + this.Width;
-            float bottom = this.Y + this.Height;
+            float left = (float)(this.X);
+            float top = (float)(this.Y);
+            float right = (float)(this.X + this.Width);
+            float bottom = (float)(this.Y + this.Height);
             var rect = new SKRect(left, top, right, bottom);
             slideCanvas.DrawRect(rect, paint);
             var textFrame = (TextFrame)this.TextFrame!;
-            textFrame.Draw(slideCanvas, left, this.Y);
+            textFrame.Draw(slideCanvas, left, top);
         }
     }
 }

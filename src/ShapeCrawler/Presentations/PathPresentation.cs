@@ -25,13 +25,13 @@ internal sealed record PathPresentation : IValidateable
     public void CopyTo(Stream stream) => this.presentationCore.CopyTo(stream);
     public ISlides Slides => this.presentationCore.Slides;
 
-    public int SlideWidth
+    public decimal SlideWidth
     {
         get => this.presentationCore.SlideWidth;
         set => this.presentationCore.SlideWidth = value;
     }
 
-    public int SlideHeight
+    public decimal SlideHeight
     {
         get => this.presentationCore.SlideHeight;
         set => this.presentationCore.SlideHeight = value;

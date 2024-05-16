@@ -39,14 +39,14 @@ public sealed class Presentation : IPresentation
     public ISlides Slides => this.validateable.Slides;
 
     /// <inheritdoc />
-    public int SlideWidth
+    public decimal SlideWidth
     {
         get => this.validateable.SlideWidth; 
         set => this.validateable.SlideWidth = value;
     }
     
     /// <inheritdoc />
-    public int SlideHeight
+    public decimal SlideHeight
     {
         get => this.validateable.SlideHeight;
         set => this.validateable.SlideHeight = value;
