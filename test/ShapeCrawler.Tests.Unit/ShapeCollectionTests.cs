@@ -391,7 +391,6 @@ public class ShapeCollectionTests : SCTest
     }
     
     [Test]
-    [Explicit]
     public void AddPicture_too_large_adds_svg_picture()
     {
         // See: Issue #683 Large-dimension SVG files lead to error opening in PowerPoint
@@ -413,6 +412,38 @@ public class ShapeCollectionTests : SCTest
         // These values are the intrinsic size of the test image
         picture.Height.Should().BeLessThan(2400);
         picture.Width.Should().BeLessThan(2400);
+        pres.Validate();
+    }
+
+    [Test]
+    public void AddPicture_too_large_adds_picture()
+    {
+        // See: Issue #683 Large-dimension PNG files lead to error opening in PowerPoint
+
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-image-large.png");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        shapes.Should().HaveCount(1);
+        var picture = (IPicture)shapes.Last();
+        picture.ShapeType.Should().Be(ShapeType.Picture);
+
+        // These values are the intrinsic size of the test image
+        picture.Height.Should().BeGreaterThan(0);
+        picture.Height.Should().BeLessThan(2400);
+        picture.Width.Should().BeGreaterThan(0);
+        picture.Width.Should().BeLessThan(2400);
+
+        // Ensure aspect ratio has been maintained
+        var aspect = picture.Width / picture.Height;
+        aspect.Should().Be(100);
+
         pres.Validate();
     }
 

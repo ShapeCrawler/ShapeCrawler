@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -129,14 +128,44 @@ internal sealed class SlideShapes : ISlideShapes
 
         if (skBitmap != null)
         {
+            var height = skBitmap.Height;
+            var width = skBitmap.Width;
+            var resize = false;
+
+            if (height > 500)
+            {
+                height = 500;
+                width = (int)(height * skBitmap.Width / (decimal)skBitmap.Height);
+                resize = true;
+            }
+
+            if (width > 500)
+            {
+                width = 500;
+                height = (int)(width * skBitmap.Height / (decimal)skBitmap.Width);
+                resize = true;
+            }
+
             var xEmu = UnitConverter.HorizontalPixelToEmu(100);
             var yEmu = UnitConverter.VerticalPixelToEmu(100);
-            var cxEmu = UnitConverter.HorizontalPixelToEmu(skBitmap.Width);
-            var cyEmu = UnitConverter.VerticalPixelToEmu(skBitmap.Height);
+            var cxEmu = UnitConverter.HorizontalPixelToEmu(width);
+            var cyEmu = UnitConverter.VerticalPixelToEmu(height);
 
-            var pPicture = this.CreatePPicture(imageStream, "Picture");
+            P.Picture? pPicture;
+            if (resize)
+            {
+                skBitmap.Resize(new SKSizeI(width:width, height:height), SKFilterQuality.High);
+                var resizedStream = new MemoryStream();
+                skBitmap.Encode(resizedStream, SKEncodedImageFormat.Png, 95);
+                resizedStream.Position = 0;
+                pPicture = this.CreatePPicture(resizedStream, "Picture");
+            }
+            else
+            {
+                pPicture = this.CreatePPicture(imageStream, "Picture");
+            }
 
-            var transform2D = pPicture.ShapeProperties!.Transform2D!;
+            var transform2D = pPicture!.ShapeProperties!.Transform2D!;
             transform2D.Offset!.X = xEmu;
             transform2D.Offset!.Y = yEmu;
             transform2D.Extents!.Cx = cxEmu;
@@ -576,6 +605,7 @@ internal sealed class SlideShapes : ISlideShapes
             height = 500;
             width = (int)(height * image.Width.Value / image.Height.Value);
         }
+        
         if (width > 500)
         {
             width = 500;
