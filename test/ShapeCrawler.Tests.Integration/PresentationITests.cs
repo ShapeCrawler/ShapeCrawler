@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Text.Json;
 using FluentAssertions;
-using ShapeCrawler.Logger;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
@@ -11,42 +10,6 @@ namespace ShapeCrawler.Tests.Integration;
 
 public class PresentationITests : SCTest
 {
-    [Fact]
-    public void Open_doesnt_create_log_file_When_logger_is_off()
-    {
-        // Arrange
-        var pptxStream = StreamOf("autoshape-case001.pptx");
-
-        // Act
-        SCSettings.CanCollectLogs = false;
-        new Presentation(pptxStream);
-
-        // Assert
-        var logPath = Path.Combine(Path.GetTempPath(), "sc-log.json");
-        File.Exists(logPath).Should().BeFalse();
-    }
-    
-    [Fact(Skip = "Wait deploy statistics service")]
-    public void Open_create_log_file()
-    {
-        // Arrange
-        var logPath = Path.Combine(Path.GetTempPath(), "sc-log.json");
-        var pptxStream = TestHelperShared.GetStream("autoshape-case001.pptx");
-
-        // Act
-        new Presentation(pptxStream);
-
-        // Assert
-        File.Exists(logPath).Should().BeTrue();
-        var json = File.OpenRead(logPath);
-        var log = JsonSerializer.Deserialize<Log>(json)!;
-        var sendDate = (DateTime)log.SentDate;
-        sendDate.Day.Should().Be(DateTime.UtcNow.Day);
-        
-        // Clean
-        File.Delete(logPath);
-    }
-
     [Fact]
     public void Open_should_not_throw_exception()
     {
