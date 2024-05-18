@@ -8,9 +8,9 @@ internal static class Constants
 
     internal static int DefaultFontSize => 18; // https://bit.ly/37Tjjlo
 
-    internal static double DefaultLeftAndRightMargin => 0.25;
+    internal static decimal DefaultLeftAndRightMargin => 0.25m; // cm
 
-    internal static double DefaultTopAndBottomMargin => 0.13;
+    internal static decimal DefaultTopAndBottomMargin => 0.13m; // cm
     
     internal static long DefaultRowHeightEmu => 370840L;
 }

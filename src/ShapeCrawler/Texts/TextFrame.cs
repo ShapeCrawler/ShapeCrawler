@@ -137,25 +137,25 @@ internal sealed class TextFrame : ITextFrame
         }
     }
 
-    public double LeftMargin
+    public decimal LeftMargin
     {
         get => this.GetLeftMargin();
         set => this.SetLeftMargin(value);
     }
 
-    public double RightMargin
+    public decimal RightMargin
     {
         get => this.GetRightMargin();
         set => this.SetRightMargin(value);
     }
 
-    public double TopMargin
+    public decimal TopMargin
     {
         get => this.GetTopMargin();
         set => this.SetTopMargin(value);
     }
 
-    public double BottomMargin
+    public decimal BottomMargin
     {
         get => this.GetBottomMargin();
         set => this.SetBottomMargin(value);
@@ -212,48 +212,48 @@ internal sealed class TextFrame : ITextFrame
         paint.Typeface = typeFace;
         float leftMarginPx = (float)UnitConverter.CentimeterToPixel(this.LeftMargin);
         float topMarginPx = (float)UnitConverter.CentimeterToPixel(this.TopMargin);
-        float fontHeightPx = UnitConverter.PointToPixel(16);
+        float fontHeightPx = (float)UnitConverter.PointToPixel(16);
         float x = shapeX + leftMarginPx;
         float y = shapeY + topMarginPx + fontHeightPx;
         slideCanvas.DrawText(this.Text, x, y, paint);
     }
 
-    private double GetLeftMargin()
+    private decimal GetLeftMargin()
     {
         var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.LeftInset;
         return ins is null ? Constants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
 
-    private double GetRightMargin()
+    private decimal GetRightMargin()
     {
         var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.RightInset;
         return ins is null ? Constants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
 
-    private void SetLeftMargin(double centimetre)
+    private void SetLeftMargin(decimal centimetre)
     {
         var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var emu = UnitConverter.CentimeterToEmu(centimetre);
         bodyProperties.LeftInset = new Int32Value((int)emu);
     }
 
-    private void SetRightMargin(double centimetre)
+    private void SetRightMargin(decimal centimetre)
     {
         var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var emu = UnitConverter.CentimeterToEmu(centimetre);
         bodyProperties.RightInset = new Int32Value((int)emu);
     }
 
-    private void SetTopMargin(double centimetre)
+    private void SetTopMargin(decimal centimetre)
     {
         var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var emu = UnitConverter.CentimeterToEmu(centimetre);
         bodyProperties.TopInset = new Int32Value((int)emu);
     }
 
-    private void SetBottomMargin(double centimetre)
+    private void SetBottomMargin(decimal centimetre)
     {
         var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var emu = UnitConverter.CentimeterToEmu(centimetre);
@@ -273,14 +273,14 @@ internal sealed class TextFrame : ITextFrame
         return true;
     }
 
-    private double GetTopMargin()
+    private decimal GetTopMargin()
     {
         var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.TopInset;
         return ins is null ? Constants.DefaultTopAndBottomMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
 
-    private double GetBottomMargin()
+    private decimal GetBottomMargin()
     {
         var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.BottomInset;
@@ -343,7 +343,7 @@ internal sealed class TextFrame : ITextFrame
         }
 
         var requiredHeight = (integerPart * textHeight) + tMarginPixel + bMarginPixel;
-        var newHeight = (int)requiredHeight + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
+        var newHeight = requiredHeight + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
         var position = new Position(this.sdkTypedOpenXmlPart, parent);
         var size = new ShapeSize(this.sdkTypedOpenXmlPart, parent);
         size.UpdateHeight(newHeight);

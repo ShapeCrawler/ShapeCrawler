@@ -64,7 +64,7 @@ internal sealed class RootShape : CopyableShape, IRootShape
         {
             Color = skColorOutline,
             IsAntialias = true,
-            StrokeWidth = UnitConverter.PointToPixel(this.Outline.Weight),
+            StrokeWidth = (float)UnitConverter.PointToPixel(this.Outline.Weight),
             Style = SKPaintStyle.Stroke
         };
 

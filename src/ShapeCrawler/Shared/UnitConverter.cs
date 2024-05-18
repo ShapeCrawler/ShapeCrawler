@@ -8,6 +8,8 @@ internal static class UnitConverter
     private const int VerticalResolutionDpi = 96;
     private const double AngleToDegrees = 1 / 60000d;
     private const int EmusPerInch = 914400;
+    private const int EmusPerCentimeter = 360000;
+    private const int EmusPerPoint = 12700;
 
     internal static decimal HorizontalEmuToPixel(long horizontalEmus)
     {
@@ -21,42 +23,42 @@ internal static class UnitConverter
 
     internal static long HorizontalPixelToEmu(decimal horizontalPixels)
     {
-        return (long)(horizontalPixels * EmusPerInch / HorizontalResolutionDpi);
+        return (long)Math.Round(horizontalPixels * EmusPerInch / (decimal)HorizontalResolutionDpi);
     }
 
     internal static long VerticalPixelToEmu(decimal verticalPixels)
     {
-        return (long)(verticalPixels * EmusPerInch / VerticalResolutionDpi);
+        return (long)Math.Round(verticalPixels * EmusPerInch / (decimal)VerticalResolutionDpi);
     }
 
-    internal static double EmuToCentimeter(long emu)
+    internal static decimal EmuToCentimeter(long emu)
     {
-        return Math.Round(emu * 0.000002734, 2);
+        return emu / (decimal)EmusPerCentimeter;
     }
 
-    internal static decimal CentimeterToEmu(double centimeter)
+    internal static long CentimeterToEmu(decimal centimeter)
     {
-        return (decimal)(centimeter / 0.000002734);
+        return (long)Math.Round(centimeter * EmusPerCentimeter);
     }
 
-    internal static decimal CentimeterToPixel(double centimeter)
+    internal static decimal CentimeterToPixel(decimal centimeter)
     {
-        return (decimal)(centimeter * 96 / 2.54);
+        return HorizontalEmuToPixel(CentimeterToEmu(centimeter));
     }
 
-    internal static double EmuToPoint(long emu)
+    internal static decimal EmuToPoint(long emu)
     {
-        return emu * 1.0 / 12700; // 1pt = 12700 EMUs (http://officeopenxml.com/drwSp-outline.php)
+        return emu / (decimal)EmusPerPoint; // 1pt = 12700 EMUs (http://officeopenxml.com/drwSp-outline.php)
     }
 
-    internal static int PointToEmu(double point)
+    internal static long PointToEmu(decimal point)
     {
-        return (int)(point * 12700); // 1pt = 12700 EMUs (http://officeopenxml.com/drwSp-outline.php)
+        return (long)Math.Round(point * EmusPerPoint); // 1pt = 12700 EMUs (http://officeopenxml.com/drwSp-outline.php)
     }
 
-    internal static float PointToPixel(double points)
+    internal static decimal PointToPixel(decimal point)
     {
-        return (float)(points * 96 / 72);
+        return HorizontalEmuToPixel(PointToEmu(point));
     }
 
     internal static double AngleValueToDegrees(int angle)

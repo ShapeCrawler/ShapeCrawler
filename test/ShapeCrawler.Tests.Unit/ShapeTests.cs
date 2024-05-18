@@ -144,7 +144,7 @@ public class ShapeTests : SCTest
         // Assert
         groupedShape.Y.Should().Be(359);
         parentGroupShape.Y.Should().Be(359, "because the moved grouped shape was on the up-hand side");
-        parentGroupShape.Height.Should().BeApproximately(172,1m);
+        parentGroupShape.Height.Should().BeApproximately(172.84m,0.01m);
     }
 
     [Test]
@@ -160,7 +160,7 @@ public class ShapeTests : SCTest
 
         // Assert
         groupedShape.Y.Should().Be(555);
-        groupShape.Height.Should().BeApproximately(178, 2m, "because it was 108 and the down-hand grouped shape got down on 71 pixels");
+        groupShape.Height.Should().BeApproximately(179.11m, 0.01m, "because it was 108 and the down-hand grouped shape got down on 71 pixels");
     }
 
     [Test]
@@ -177,7 +177,7 @@ public class ShapeTests : SCTest
         // Assert
         groupedShape.X.Should().Be(67);
         groupShape.X.Should().Be(67, "because the moved grouped shape was on the left-hand side");
-        groupShape.Width.Should().BeApproximately(117,1m);
+        groupShape.Width.Should().BeApproximately(117.25m,0.01m);
     }
 
     [Test]
@@ -195,7 +195,7 @@ public class ShapeTests : SCTest
         groupedShape.X.Should().Be(91);
         groupShape.X.Should().Be(79,
             "because the X-coordinate of parent group shouldn't be changed when a grouped shape is moved to the right side");
-        groupShape.Width.Should().BeApproximately(115,1m);
+        groupShape.Width.Should().BeApproximately(115.97m,0.01m);
     }
 
     [Test]
@@ -214,7 +214,7 @@ public class ShapeTests : SCTest
 
         // Assert
         (width1 * 914400 / TestHelper.HorizontalResolution).Should().Be(9144000m);
-        (width2 * 914400 / TestHelper.HorizontalResolution).Should().BeApproximately(1181100m,1000m);
+        (width2 * 914400 / TestHelper.HorizontalResolution).Should().Be(1181377m);
         (width3 * 914400 / TestHelper.HorizontalResolution).Should().Be(485775m);
     }
 
@@ -231,7 +231,7 @@ public class ShapeTests : SCTest
         var height = groupedShape.Height;
 
         // Assert
-        height.Should().BeApproximately(68,1m);
+        height.Should().BeApproximately(68.67m,0.01m);
     }
 
     [TestCase(2, Geometry.Rectangle)]
@@ -316,10 +316,10 @@ public class ShapeTests : SCTest
         shape.Hidden.Should().Be(expectedHidden);
     }
 
-    [TestCase("autoshape-case018_rotation.pptx", 1, "RotationTextBox", 325)]
-    [TestCase("autoshape-case018_rotation.pptx", 2, "VerticalTextPH", 282)]
+    [TestCase("autoshape-case018_rotation.pptx", 1, "RotationTextBox", 325.40)]
+    [TestCase("autoshape-case018_rotation.pptx", 2, "VerticalTextPH", 281.97)]
     [TestCase("autoshape-case018_rotation.pptx", 2, "NoRotationGroup", 0)]
-    [TestCase("autoshape-case018_rotation.pptx", 2, "RotationGroup", 56)]
+    [TestCase("autoshape-case018_rotation.pptx", 2, "RotationGroup", 55.60)]
     public void Rotation_returns_shape_rotation_in_degrees(string presentationName, int slideNumber, string shapeName, double expectedAngle)
     {
         // Arrange
@@ -330,7 +330,7 @@ public class ShapeTests : SCTest
         var rotation = shape.Rotation;
 
         // Assert
-        rotation.Should().BeApproximately(expectedAngle, 1);
+        rotation.Should().BeApproximately(expectedAngle, 0.01);
     }
     
     [Test]
@@ -511,17 +511,17 @@ public class ShapeTests : SCTest
         decimal x = shape.X;
         
         // Assert
-        x.Should().BeApproximately(53,1m);
+        x.Should().BeApproximately(53.05m,0.01m);
     }
     
     [Test]
-    [TestCase("050_title-placeholder.pptx", 1, 2, 777)]
-    [TestCase("051_title-placeholder.pptx", 1, 3074, 864)]
+    [TestCase("050_title-placeholder.pptx", 1, 2, 777.6)]
+    [TestCase("051_title-placeholder.pptx", 1, 3074, 864.0)]
     public void Width_returns_width_of_Title_placeholder(
         string filename, 
         int slideNumber, 
         int shapeId,
-        int expectedWidth)
+        decimal expectedWidth)
     {
         // Arrange
         var pres = new Presentation(StreamOf(filename));
@@ -531,20 +531,20 @@ public class ShapeTests : SCTest
         var shapeWidth = shape.Width;
 
         // Assert
-        shapeWidth.Should().BeApproximately(expectedWidth,1m);
+        shapeWidth.Should().Be(expectedWidth);
     }
     
     [Test]
-    [SlideShape("006_1 slides.pptx", 1, "Shape 2", 149)]
-    [SlideShape( "009_table.pptx", 2, "Object 3", 39)]
-    [SlideShape( "autoshape-grouping.pptx", 1, "Group 2", 108)]
-    public void Height_returns_shape_height_in_pixels(IShape shape, int expectedHeight)
+    [SlideShape("006_1 slides.pptx", 1, "Shape 2", 149.66)]
+    [SlideShape( "009_table.pptx", 2, "Object 3", 39.17)]
+    [SlideShape( "autoshape-grouping.pptx", 1, "Group 2", 108.02)]
+    public void Height_returns_shape_height_in_pixels(IShape shape, double expectedHeight)
     {
         // Act
         var height = shape.Height;
 
         // Assert
-        height.Should().BeApproximately(expectedHeight,1m);
+        height.Should().BeApproximately((decimal)expectedHeight,0.01m);
     }
     
     [Test]
