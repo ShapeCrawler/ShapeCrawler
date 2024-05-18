@@ -29,7 +29,6 @@ internal sealed class SlideMasterCollection : ISlideMasterCollection
     internal SlideMasterCollection(IEnumerable<SlideMasterPart> sdkMasterParts)
     {
         this.slideMasters = new List<ISlideMaster>(sdkMasterParts.Count());
-        var number = 1;
         foreach (var sdkMasterPart in sdkMasterParts)
         {
             this.slideMasters.Add(new SlideMaster(sdkMasterPart));

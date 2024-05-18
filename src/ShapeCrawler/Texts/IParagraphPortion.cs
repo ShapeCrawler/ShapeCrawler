@@ -22,9 +22,9 @@ public interface IParagraphPortion
     string? Hyperlink { get; set; }
 
     /// <summary>
-    ///     Gets or sets Text Highlight Color. Null if not set. 
+    ///     Gets or sets Text Highlight Color. Returns Color.Transparent if no highlight present.
     /// </summary>
-    Color? TextHighlightColor { get; set; }
+    Color TextHighlightColor { get; set; }
 
     /// <summary>
     /// 	Removes portion from paragraph.
