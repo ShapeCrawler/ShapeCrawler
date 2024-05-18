@@ -1,6 +1,5 @@
 ﻿using System;
 using DocumentFormat.OpenXml.Packaging;
-using ShapeCrawler.Exceptions;
 using ShapeCrawler.Extensions;
 using ShapeCrawler.Fonts;
 using ShapeCrawler.Shared;
@@ -40,7 +39,7 @@ internal sealed class TextParagraphPortion : IParagraphPortion
         set => this.SetHyperlink(value);
     }
 
-    public Color? TextHighlightColor
+    public Color TextHighlightColor
     {
         get => this.ParseTextHighlight();
         set => this.UpdateTextHighlight(value);
@@ -75,16 +74,11 @@ internal sealed class TextParagraphPortion : IParagraphPortion
         return color;
     }
 
-    private void UpdateTextHighlight(Color? color)
+    private void UpdateTextHighlight(Color color)
     {
-        if (color == null)
-        {
-            throw new SCException("Color value must be non-null");
-        }
-
         var arPr = this.AText.PreviousSibling<A.RunProperties>() ?? this.AText.Parent!.AddRunProperties();
 
-        arPr.AddAHighlight((Color)color);
+        arPr.AddAHighlight(color);
     }
 
     private string? ParseText()
