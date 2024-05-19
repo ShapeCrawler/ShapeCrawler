@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.52.0 - Unreleased
+🍀Added support for the SVG format for the `ISlideShapes.AddPicture()` method [#350](https://github.com/ShapeCrawler/ShapeCrawler/issues/350)
+
 ## Version 0.51.0 - 2024-05-11
 🍀Added `IShapeFill.SetNoFill()` to remove shape filling [#667](https://github.com/ShapeCrawler/ShapeCrawler/issues/667)
 
