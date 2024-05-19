@@ -77,7 +77,7 @@ internal sealed class Slide : ISlide
     
     public void SaveAsPng(Stream stream)
     {
-        var imageInfo = new SKImageInfo(this.slideSize.Width(), this.slideSize.Height());
+        var imageInfo = new SKImageInfo((int)this.slideSize.Width(), (int)this.slideSize.Height());
         var surface = SKSurface.Create(imageInfo);
         var canvas = surface.Canvas;
         canvas.Clear(SKColors.White); // TODO: #344 get real

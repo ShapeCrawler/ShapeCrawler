@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml;
+﻿using System;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
 using ShapeCrawler.Extensions;
@@ -18,7 +19,7 @@ internal sealed class SlideShapeOutline : IShapeOutline
         this.sdkTypedOpenXmlCompositeElement = sdkTypedOpenXmlCompositeElement;
     }
 
-    public double Weight
+    public decimal Weight
     {
         get => this.ParseWeight();
         set => this.UpdateWeight(value);
@@ -30,7 +31,7 @@ internal sealed class SlideShapeOutline : IShapeOutline
         set => this.UpdateHexColor(value);
     }
 
-    private void UpdateWeight(double points)
+    private void UpdateWeight(decimal points)
     {
         var aOutline = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.Outline>();
         var aNoFill = aOutline?.GetFirstChild<A.NoFill>();
@@ -40,7 +41,7 @@ internal sealed class SlideShapeOutline : IShapeOutline
             aOutline = this.sdkTypedOpenXmlCompositeElement.AddAOutline();
         }
 
-        aOutline.Width = new Int32Value(UnitConverter.PointToEmu(points));
+        aOutline.Width = new Int32Value((Int32)UnitConverter.PointToEmu(points));
     }
     
     private void UpdateHexColor(string? hex)
@@ -62,7 +63,7 @@ internal sealed class SlideShapeOutline : IShapeOutline
         aOutline.Append(aSolidFill);
     }
 
-    private double ParseWeight()
+    private decimal ParseWeight()
     {
         var width = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.Outline>()?.Width;
         if (width is null)

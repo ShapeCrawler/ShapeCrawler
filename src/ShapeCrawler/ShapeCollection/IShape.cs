@@ -3,7 +3,6 @@
 using DocumentFormat.OpenXml;
 using ShapeCrawler.Placeholders;
 using ShapeCrawler.Shapes;
-using ShapeCrawler.Wrappers;
 
 // ReSharper disable once CheckNamespace
 namespace ShapeCrawler;
@@ -16,12 +15,12 @@ public interface IShape : IPosition
     /// <summary>
     ///     Gets or sets width of the shape in pixels.
     /// </summary>
-    int Width { get; set; }
+    decimal Width { get; set; }
 
     /// <summary>
     ///     Gets or sets height of the shape in pixels.
     /// </summary>
-    int Height { get; set; }
+    decimal Height { get; set; }
 
     /// <summary>
     ///     Gets identifier of the shape.
@@ -126,7 +125,7 @@ public interface IShape : IPosition
     
     /// <summary>
     ///     Gets the media shape which is an audio or video.
-    ///     Use <see cref="IShape.ShapeType"/> property to check if the shape is an <see cref="PShapeTrPShapeTreeWrappe.Audio"/> or <see cref="PShapeTreeWrap.ShapeType.Video"/>.
+    ///     Use <see cref="IShape.ShapeType"/> property to check if the shape is an audio or video.    
     /// </summary>
     IMediaShape AsMedia();
 }

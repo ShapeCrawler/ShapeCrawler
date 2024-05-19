@@ -11,7 +11,13 @@ public readonly ref struct Point
         this.X = x;
         this.Y = y;
     }
-    
+
+    internal Point(decimal x, decimal y)
+    {
+        this.X = (int)x;
+        this.Y = (int)y;
+    }
+
     /// <summary>
     ///     Gets the X coordinate.
     /// </summary>

@@ -389,6 +389,61 @@ public class ShapeCollectionTests : SCTest
         // Assert
         svgContent.Should().Contain("<svg");
     }
+    
+    [Test]
+    public void AddPicture_too_large_adds_svg_picture()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-vector-image-large.svg");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        shapes.Should().HaveCount(1);
+        var picture = (IPicture)shapes.Last();
+        picture.ShapeType.Should().Be(ShapeType.Picture);
+
+        // These values are reasonable range for size of an added image
+        picture.Height.Should().BeGreaterThan(0);
+        picture.Height.Should().BeLessThan(2400);
+        picture.Width.Should().BeGreaterThan(0);
+        picture.Width.Should().BeLessThan(2400);
+        pres.Validate();
+    }
+
+    [Test]
+    public void AddPicture_too_large_adds_picture()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-image-large.png");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        shapes.Should().HaveCount(1);
+        var picture = (IPicture)shapes.Last();
+        picture.ShapeType.Should().Be(ShapeType.Picture);
+
+        // These values are reasonable range for size of an added image
+        picture.Height.Should().BeGreaterThan(0);
+        picture.Height.Should().BeLessThan(2400);
+        picture.Width.Should().BeGreaterThan(0);
+        picture.Width.Should().BeLessThan(2400);
+
+        // Ensure aspect ratio has been maintained
+        var aspect = picture.Width / picture.Height;
+        aspect.Should().Be(100);
+
+        pres.Validate();
+    }
 
     [Test]
     public void AddPicture_adds_svg_picture_no_width_height_tags()

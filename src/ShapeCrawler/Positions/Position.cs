@@ -18,17 +18,17 @@ internal sealed class Position
         this.pShapeTreeElement = pShapeTreeElement;
     }
 
-    internal int X() => new Emus(this.AOffset().X!.Value).AsHorizontalPixels();
+    internal decimal X() => new Emus(this.AOffset().X!.Value).AsHorizontalPixels();
    
-    internal void UpdateX(int pixels)
+    internal void UpdateX(decimal pixels)
     {
         var emus = new Pixels(pixels).AsHorizontalEmus();
         this.AOffset().X = new Int64Value(emus);
     }
     
-    internal int Y() => new Emus(this.AOffset().Y!.Value).AsVerticalPixels();
+    internal decimal Y() => new Emus(this.AOffset().Y!.Value).AsVerticalPixels();
 
-    internal void UpdateY(int pixels)
+    internal void UpdateY(decimal pixels)
     {
         var emus = new Pixels(pixels).AsVerticalEmus();
         this.AOffset().Y = new Int64Value(emus);

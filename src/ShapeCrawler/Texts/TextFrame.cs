@@ -137,25 +137,25 @@ internal sealed class TextFrame : ITextFrame
         }
     }
 
-    public double LeftMargin
+    public decimal LeftMargin
     {
         get => this.GetLeftMargin();
         set => this.SetLeftMargin(value);
     }
 
-    public double RightMargin
+    public decimal RightMargin
     {
         get => this.GetRightMargin();
         set => this.SetRightMargin(value);
     }
 
-    public double TopMargin
+    public decimal TopMargin
     {
         get => this.GetTopMargin();
         set => this.SetTopMargin(value);
     }
 
-    public double BottomMargin
+    public decimal BottomMargin
     {
         get => this.GetBottomMargin();
         set => this.SetBottomMargin(value);
@@ -192,8 +192,8 @@ internal sealed class TextFrame : ITextFrame
         var textRect = default(SKRect);
         var text = this.Text;
         paint.MeasureText(text, ref textRect);
-        var textWidth = textRect.Width;
-        var textHeight = paint.TextSize;
+        var textWidth = (decimal)textRect.Width;
+        var textHeight = (decimal)paint.TextSize;
         var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, this.sdkTextBody.Ancestors<P.Shape>().First());
         var currentBlockWidth = shapeSize.Width() - lMarginPixel - rMarginPixel;
         var currentBlockHeight = shapeSize.Height() - tMarginPixel - bMarginPixel;
@@ -210,50 +210,50 @@ internal sealed class TextFrame : ITextFrame
         paint.TextSize = firstPortion.Font.Size;
         var typeFace = SKTypeface.FromFamilyName(firstPortion.Font.LatinName);
         paint.Typeface = typeFace;
-        float leftMarginPx = UnitConverter.CentimeterToPixel(this.LeftMargin);
-        float topMarginPx = UnitConverter.CentimeterToPixel(this.TopMargin);
-        float fontHeightPx = UnitConverter.PointToPixel(16);
+        float leftMarginPx = (float)UnitConverter.CentimeterToPixel(this.LeftMargin);
+        float topMarginPx = (float)UnitConverter.CentimeterToPixel(this.TopMargin);
+        float fontHeightPx = (float)UnitConverter.PointToPixel(16);
         float x = shapeX + leftMarginPx;
         float y = shapeY + topMarginPx + fontHeightPx;
         slideCanvas.DrawText(this.Text, x, y, paint);
     }
 
-    private double GetLeftMargin()
+    private decimal GetLeftMargin()
     {
         var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.LeftInset;
         return ins is null ? Constants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
 
-    private double GetRightMargin()
+    private decimal GetRightMargin()
     {
         var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.RightInset;
         return ins is null ? Constants.DefaultLeftAndRightMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
 
-    private void SetLeftMargin(double centimetre)
+    private void SetLeftMargin(decimal centimetre)
     {
         var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var emu = UnitConverter.CentimeterToEmu(centimetre);
         bodyProperties.LeftInset = new Int32Value((int)emu);
     }
 
-    private void SetRightMargin(double centimetre)
+    private void SetRightMargin(decimal centimetre)
     {
         var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var emu = UnitConverter.CentimeterToEmu(centimetre);
         bodyProperties.RightInset = new Int32Value((int)emu);
     }
 
-    private void SetTopMargin(double centimetre)
+    private void SetTopMargin(decimal centimetre)
     {
         var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var emu = UnitConverter.CentimeterToEmu(centimetre);
         bodyProperties.TopInset = new Int32Value((int)emu);
     }
 
-    private void SetBottomMargin(double centimetre)
+    private void SetBottomMargin(decimal centimetre)
     {
         var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var emu = UnitConverter.CentimeterToEmu(centimetre);
@@ -273,14 +273,14 @@ internal sealed class TextFrame : ITextFrame
         return true;
     }
 
-    private double GetTopMargin()
+    private decimal GetTopMargin()
     {
         var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.TopInset;
         return ins is null ? Constants.DefaultTopAndBottomMargin : UnitConverter.EmuToCentimeter(ins.Value);
     }
 
-    private double GetBottomMargin()
+    private decimal GetBottomMargin()
     {
         var bodyProperties = this.sdkTextBody.GetFirstChild<A.BodyProperties>() !;
         var ins = bodyProperties.BottomInset;
@@ -295,7 +295,7 @@ internal sealed class TextFrame : ITextFrame
 
         var parent = this.sdkTextBody.Parent!;
         var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, parent);
-        var fontSize = FontService.GetAdjustedFontSize(newText, font, shapeSize.Width(), shapeSize.Height());
+        var fontSize = FontService.GetAdjustedFontSize(newText, font, (int)shapeSize.Width(), (int)shapeSize.Height());
 
         var paragraphInternal = (Paragraph)baseParagraph;
         paragraphInternal.SetFontSize(fontSize);
@@ -303,8 +303,8 @@ internal sealed class TextFrame : ITextFrame
 
     private void UpdateShapeWidthIfNeeded(
         SKPaint paint, 
-        int lMarginPixel, 
-        int rMarginPixel, 
+        decimal lMarginPixel, 
+        decimal rMarginPixel, 
         TextFrame textFrame,
         OpenXmlElement parent)
     {
@@ -326,12 +326,12 @@ internal sealed class TextFrame : ITextFrame
     }
 
     private void UpdateShapeHeight(
-        float textWidth,
-        int currentBlockWidth,
-        float textHeight,
-        int tMarginPixel,
-        int bMarginPixel,
-        int currentBlockHeight,
+        decimal textWidth,
+        decimal currentBlockWidth,
+        decimal textHeight,
+        decimal tMarginPixel,
+        decimal bMarginPixel,
+        decimal currentBlockHeight,
         OpenXmlElement parent)
     {
         var requiredRowsCount = textWidth / currentBlockWidth;
@@ -343,7 +343,7 @@ internal sealed class TextFrame : ITextFrame
         }
 
         var requiredHeight = (integerPart * textHeight) + tMarginPixel + bMarginPixel;
-        var newHeight = (int)requiredHeight + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
+        var newHeight = requiredHeight + tMarginPixel + bMarginPixel + tMarginPixel + bMarginPixel;
         var position = new Position(this.sdkTypedOpenXmlPart, parent);
         var size = new ShapeSize(this.sdkTypedOpenXmlPart, parent);
         size.UpdateHeight(newHeight);
@@ -351,6 +351,6 @@ internal sealed class TextFrame : ITextFrame
         // We should raise the shape up by the amount which is half of the increased offset.
         // PowerPoint does the same thing.
         var yOffset = (requiredHeight - currentBlockHeight) / 2;
-        position.UpdateY((int)(position.Y() - yOffset));
+        position.UpdateY(position.Y() - yOffset);
     }
 }

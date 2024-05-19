@@ -222,6 +222,10 @@
     <EmbeddedResource Include="Resource\test-vector-image-wide.svg" />
     <None Remove="Resource\test-vector-image-no-dimensions.svg" />
     <EmbeddedResource Include="Resource\test-vector-image-no-dimensions.svg" />
+    <None Remove="Resource\test-vector-image-large.svg" />
+    <EmbeddedResource Include="Resource\test-vector-image-large.svg" />
+    <None Remove="Resource\test-image-large.png" />
+    <EmbeddedResource Include="Resource\test-image-large.png" />
   </ItemGroup>
 
   <ItemGroup>

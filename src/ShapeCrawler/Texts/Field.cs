@@ -46,7 +46,7 @@ internal sealed class Field : IParagraphPortion
         set => this.SetHyperlink(value);
     }
 
-    public Color? TextHighlightColor
+    public Color TextHighlightColor
     {
         get => this.ParseTextHighlight();
         set => this.UpdateTextHighlight(value);
@@ -79,11 +79,11 @@ internal sealed class Field : IParagraphPortion
         return color;
     }
 
-    private void UpdateTextHighlight(Color? color)
-    {
+    private void UpdateTextHighlight(Color color)
+    {        
         var arPr = this.aText!.PreviousSibling<A.RunProperties>() ?? this.aText.Parent!.AddRunProperties();
 
-        arPr.AddAHighlight((Color)color);
+        arPr.AddAHighlight(color);
     }
 
     private string? GetHyperlink()
