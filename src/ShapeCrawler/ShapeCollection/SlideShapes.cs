@@ -662,12 +662,10 @@ internal sealed class SlideShapes : ISlideShapes
         var pPicture = this.CreatePPictureSvg(rasterStream, svgStream, "Picture");
 
         // Fix up the sizes
-        var xEmu = UnitConverter.HorizontalPixelToEmu(100);
-        var yEmu = UnitConverter.VerticalPixelToEmu(100);
-
-        // TODO: Refactor this all to decimal when that PR lands
-        var cxEmu = UnitConverter.HorizontalPixelToEmu((int)size.Width);
-        var cyEmu = UnitConverter.VerticalPixelToEmu((int)size.Height);
+        var xEmu = UnitConverter.HorizontalPixelToEmu(100m);
+        var yEmu = UnitConverter.VerticalPixelToEmu(100m);
+        var cxEmu = UnitConverter.HorizontalPixelToEmu((decimal)size.Width);
+        var cyEmu = UnitConverter.VerticalPixelToEmu((decimal)size.Height);
         var transform2D = pPicture.ShapeProperties!.Transform2D!;
         transform2D.Offset!.X = xEmu;
         transform2D.Offset!.Y = yEmu;

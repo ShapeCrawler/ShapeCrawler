@@ -487,10 +487,8 @@ public class ShapeCollectionTests : SCTest
         // These values are the actual extent of drawings on the test image, which is what
         // we'll be using since the image has no explicit dimensions of any form
         picture.Height.Should().Be(91);
-        picture.Width.Should().Be((int)277.96228m);
+        picture.Width.Should().BeApproximately(277.96m,0.01m);
         pres.Validate();
-
-        // TODO: Remove the int cast when width becomes decimal
     }
 
     [Test]
