@@ -45,13 +45,13 @@ internal sealed class PresentationCore
 
     internal ISlides Slides { get; }
 
-    internal int SlideHeight
+    internal decimal SlideHeight
     {
         get => this.slideSize.Height();
         set => this.slideSize.UpdateHeight(value);
     }
 
-    internal int SlideWidth
+    internal decimal SlideWidth
     {
         get => this.slideSize.Width();
         set => this.slideSize.UpdateWidth(value);

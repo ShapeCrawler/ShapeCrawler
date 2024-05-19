@@ -11,7 +11,7 @@ public interface IShapeOutline
     /// <summary>
     ///     Gets or sets outline weight in points.
     /// </summary>
-    double Weight { get; set; }
+    decimal Weight { get; set; }
 
     /// <summary>
     ///     Gets or sets color in hexadecimal format. Returns <see langword="null"/> if outline is not filled.

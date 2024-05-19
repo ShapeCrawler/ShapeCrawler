@@ -13,12 +13,12 @@ public interface IPresentationProperties
     /// <summary>
     ///     Gets or sets presentation slides width in pixels.
     /// </summary>
-    int SlideWidth { get; set; }
+    decimal SlideWidth { get; set; }
 
     /// <summary>
     ///     Gets or sets the presentation slides height.
     /// </summary>
-    int SlideHeight { get; set; }
+    decimal SlideHeight { get; set; }
 
     /// <summary>
     ///     Gets collection of the slide masters.

@@ -9,10 +9,10 @@ public interface IPosition
     /// <summary>
     ///     Gets or sets x-coordinate of the upper-left corner of the shape.
     /// </summary>
-    int X { get; set; }
+    decimal X { get; set; }
 
     /// <summary>
     ///     Gets or sets y-coordinate of the upper-left corner of the shape in pixels.
     /// </summary>
-    int Y { get; set; }
+    decimal Y { get; set; }
 }
