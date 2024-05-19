@@ -514,7 +514,7 @@ internal sealed class SlideShapes : ISlideShapes
             Width = image.Width.Type switch
             {
                 SvgUnitType.Percentage => bounds.Width * image.Width.Value / 100.0f,
-                SvgUnitType.User |
+                SvgUnitType.User or
                 SvgUnitType.Pixel => image.Width.Value,
                 SvgUnitType.Inch => UnitConverter.InchToPixelF(image.Width.Value),
                 SvgUnitType.Centimeter => UnitConverter.CentimeterToPixelF(image.Width.Value),
@@ -525,7 +525,7 @@ internal sealed class SlideShapes : ISlideShapes
             Height = image.Height.Type switch
             {
                 SvgUnitType.Percentage => bounds.Height * image.Height.Value / 100.0f,
-                SvgUnitType.User |
+                SvgUnitType.User or
                 SvgUnitType.Pixel => image.Height.Value,
                 SvgUnitType.Inch => UnitConverter.InchToPixelF(image.Height.Value),
                 SvgUnitType.Centimeter => UnitConverter.CentimeterToPixelF(image.Height.Value),
