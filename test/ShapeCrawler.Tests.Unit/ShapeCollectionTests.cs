@@ -391,6 +391,30 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
+    [Explicit]
+    public void AddPicture_adds_svg_picture_no_width_height_tags()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-vector-image-wide.svg");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        shapes.Should().HaveCount(1);
+        var picture = (IPicture)shapes.Last();
+
+        // These values are the viewbox size of the test image, which is what
+        // we'll be using since the image has no width or height tags
+        picture.Height.Should().Be(90);
+        picture.Width.Should().Be(280);
+        pres.Validate();
+    }
+
+    [Test]
     public void AddPicture_adds_picture()
     {
         // Arrange
