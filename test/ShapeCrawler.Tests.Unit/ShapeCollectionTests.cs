@@ -411,7 +411,7 @@ public class ShapeCollectionTests : SCTest
         picture.Height.Should().Be(90);
         picture.Width.Should().Be(280);
         pres.Validate();
-    }//    test\ShapeCrawler.Tests.Unit.xUnit\Resource\test-vector-image-no-dimensions.svg
+    }
 
     [Test]
     public void AddPicture_adds_svg_picture_no_dimensions()
