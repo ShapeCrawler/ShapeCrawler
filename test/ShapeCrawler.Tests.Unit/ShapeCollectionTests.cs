@@ -391,7 +391,6 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    [Explicit]
     public void AddPicture_adds_svg_picture_no_width_height_tags()
     {
         // Arrange
