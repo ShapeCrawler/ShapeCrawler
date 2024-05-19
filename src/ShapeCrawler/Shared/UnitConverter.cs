@@ -58,6 +58,11 @@ internal static class UnitConverter
         return (float)(points * 96 / 72);
     }
 
+    internal static decimal InchToPixel(decimal inch)
+    {
+        return inch * 96;
+    }
+    
     internal static double AngleValueToDegrees(int angle)
     {
         return angle * AngleToDegrees;
