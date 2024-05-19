@@ -46,6 +46,11 @@ internal static class UnitConverter
         return HorizontalEmuToPixel(CentimeterToEmu(centimeter));
     }
 
+    internal static float CentimeterToPixelF(float centimeter)
+    {
+        return (float)HorizontalEmuToPixel(CentimeterToEmu((decimal)centimeter));
+    }
+    
     internal static decimal EmuToPoint(long emu)
     {
         return emu / (decimal)EmusPerPoint; // 1pt = 12700 EMUs (http://officeopenxml.com/drwSp-outline.php)
@@ -61,9 +66,19 @@ internal static class UnitConverter
         return HorizontalEmuToPixel(PointToEmu(point));
     }
 
+    internal static float PointToPixelF(float point)
+    {
+        return (float)HorizontalEmuToPixel(PointToEmu((decimal)point));
+    }
+
     internal static decimal InchToPixel(decimal inch)
     {
-        return inch * 96;
+        return inch * 96.0m;
+    }
+
+    internal static float InchToPixelF(float inch)
+    {
+        return inch * 96.0f;
     }
     
     internal static double AngleValueToDegrees(int angle)

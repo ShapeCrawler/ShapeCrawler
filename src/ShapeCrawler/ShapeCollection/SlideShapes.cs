@@ -516,10 +516,10 @@ internal sealed class SlideShapes : ISlideShapes
                 SvgUnitType.Percentage => bounds.Width * image.Width.Value / 100.0f,
                 SvgUnitType.User |
                 SvgUnitType.Pixel => image.Width.Value,
-                SvgUnitType.Inch => (float)UnitConverter.InchToPixel((decimal)image.Width.Value),
-                SvgUnitType.Centimeter => UnitConverter.CentimeterToPixel(image.Width.Value),
-                SvgUnitType.Millimeter => UnitConverter.CentimeterToPixel(image.Width.Value / 10),
-                SvgUnitType.Point => UnitConverter.PointToPixel(image.Width.Value),
+                SvgUnitType.Inch => UnitConverter.InchToPixelF(image.Width.Value),
+                SvgUnitType.Centimeter => UnitConverter.CentimeterToPixelF(image.Width.Value),
+                SvgUnitType.Millimeter => UnitConverter.CentimeterToPixelF(image.Width.Value / 10.0f),
+                SvgUnitType.Point => UnitConverter.PointToPixelF(image.Width.Value),
                 _ => throw new NotImplementedException()
             },
             Height = image.Height.Type switch
@@ -527,10 +527,10 @@ internal sealed class SlideShapes : ISlideShapes
                 SvgUnitType.Percentage => bounds.Height * image.Height.Value / 100.0f,
                 SvgUnitType.User |
                 SvgUnitType.Pixel => image.Height.Value,
-                SvgUnitType.Inch => (float)UnitConverter.InchToPixel((decimal)image.Height.Value),
-                SvgUnitType.Centimeter => UnitConverter.CentimeterToPixel(image.Height.Value),
-                SvgUnitType.Millimeter => UnitConverter.CentimeterToPixel(image.Height.Value / 10),
-                SvgUnitType.Point => UnitConverter.PointToPixel(image.Height.Value),
+                SvgUnitType.Inch => UnitConverter.InchToPixelF(image.Height.Value),
+                SvgUnitType.Centimeter => UnitConverter.CentimeterToPixelF(image.Height.Value),
+                SvgUnitType.Millimeter => UnitConverter.CentimeterToPixelF(image.Height.Value / 10.0f),
+                SvgUnitType.Point => UnitConverter.PointToPixelF(image.Height.Value),
                 _ => throw new NotImplementedException()
             }
         };
@@ -635,16 +635,16 @@ internal sealed class SlideShapes : ISlideShapes
         //
         // Ideally, we'd want to use the slide dimensions itself. However, not sure how we get that
         // here, so will use a fixed "safe" size
-        if (height > 500)
+        if (size.Height > 500.0f)
         {
-            height = 500;
-            width = (int)(height * image.Width.Value / image.Height.Value);
+            size.Height = 500.0f;
+            size.Width = size.Height * image.Width.Value / image.Height.Value;
         }
         
-        if (width > 500)
+        if (size.Width > 500.0f)
         {
-            width = 500;
-            height = (int)(width * image.Height.Value / image.Width.Value);
+            size.Width = 500.0f;
+            size.Height = size.Width * image.Height.Value / image.Width.Value;
         }
 
         // Rasterize image at intrinsic size
