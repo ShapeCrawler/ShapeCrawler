@@ -472,11 +472,18 @@ internal sealed class SlideShapes : ISlideShapes
 
     private static SizeF GetSvgPixelSize(SvgDocument image)
     {
+        // Default base size come from viewbox if specified, else use the raw
+        // image bounds
+        var bounds = 
+            (image.ViewBox.Width > 0 && image.ViewBox.Height > 0) ?
+            new SizeF(width:image.ViewBox.Width, height:image.ViewBox.Height) :
+            new SizeF(width:image.Bounds.Width, height:image.Bounds.Height);
+
         return new SizeF()
         {
             Width = image.Width.Type switch
             {
-                SvgUnitType.Percentage => image.ViewBox.Width * image.Width.Value / 100.0f,
+                SvgUnitType.Percentage => bounds.Width * image.Width.Value / 100.0f,
                 SvgUnitType.User |
                 SvgUnitType.Pixel => image.Width.Value,
                 SvgUnitType.Inch => (float)UnitConverter.InchToPixel((decimal)image.Width.Value),
@@ -487,7 +494,7 @@ internal sealed class SlideShapes : ISlideShapes
             },
             Height = image.Height.Type switch
             {
-                SvgUnitType.Percentage => image.ViewBox.Height * image.Height.Value / 100.0f,
+                SvgUnitType.Percentage => bounds.Height * image.Height.Value / 100.0f,
                 SvgUnitType.User |
                 SvgUnitType.Pixel => image.Height.Value,
                 SvgUnitType.Inch => (float)UnitConverter.InchToPixel((decimal)image.Height.Value),

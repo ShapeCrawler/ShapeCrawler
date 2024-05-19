@@ -220,6 +220,8 @@
     <EmbeddedResource Include="Resource\test-vector-image-1.svg" />
     <None Remove="Resource\test-vector-image-wide.svg" />
     <EmbeddedResource Include="Resource\test-vector-image-wide.svg" />
+    <None Remove="Resource\test-vector-image-no-dimensions.svg" />
+    <EmbeddedResource Include="Resource\test-vector-image-no-dimensions.svg" />
   </ItemGroup>
 
   <ItemGroup>

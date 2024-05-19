@@ -411,6 +411,31 @@ public class ShapeCollectionTests : SCTest
         picture.Height.Should().Be(90);
         picture.Width.Should().Be(280);
         pres.Validate();
+    }//    test\ShapeCrawler.Tests.Unit.xUnit\Resource\test-vector-image-no-dimensions.svg
+
+    [Test]
+    public void AddPicture_adds_svg_picture_no_dimensions()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-vector-image-no-dimensions.svg");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        shapes.Should().HaveCount(1);
+        var picture = (IPicture)shapes.Last();
+
+        // These values are the actual extent of drawings on the test image, which is what
+        // we'll be using since the image has no explicit dimensions of any form
+        picture.Height.Should().Be(91);
+        picture.Width.Should().Be((int)277.96228m);
+        pres.Validate();
+
+        // TODO: Remove the int cast when width becomes decimal
     }
 
     [Test]
