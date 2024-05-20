@@ -143,9 +143,6 @@ public class ParagraphTests : SCTest
         paragraph.Text = "AutoShape 4 some text";
 
         // Assert
-        // TODO: Investigate! This is a pretty big approximation delta
-        // NOTE: Doing this operation in Excel results in 45.12, so about what we had before.
-        // In ShapeCrawler now, it's 50.88
         shape.Height.Should().BeApproximately(51.48m,0.01m);
         shape.Y.Should().Be(145m);
     }
