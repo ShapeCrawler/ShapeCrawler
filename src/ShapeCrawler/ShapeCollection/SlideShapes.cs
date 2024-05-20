@@ -614,8 +614,6 @@ internal sealed class SlideShapes : ISlideShapes
         }
 
         // Rasterize image at intrinsic size
-        // TODO: Consider higher resolution. PowerPoint seems to rasterize SVGs at 384-dpi, so 4x
-        // our dpi.
         var bitmap = image.Draw(width, height);
         var rasterStream = new MemoryStream();
         bitmap.Save(rasterStream, ImageFormat.Png);
