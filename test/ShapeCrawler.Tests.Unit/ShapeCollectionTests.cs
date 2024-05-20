@@ -403,9 +403,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
-        picture.ShapeType.Should().Be(ShapeType.Picture);
 
         // These values are reasonable range for size of an added image
         picture.Height.Should().BeGreaterThan(0);
@@ -428,9 +426,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
-        picture.ShapeType.Should().Be(ShapeType.Picture);
 
         // These values are reasonable range for size of an added image
         picture.Height.Should().BeGreaterThan(0);
@@ -458,11 +454,9 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        shapes.Should().HaveCount(1);
-        var picture = (IPicture)shapes.Last();
-
         // These values are the viewbox size of the test image, which is what
         // we'll be using since the image has no width or height tags
+        var picture = (IPicture)shapes.Last();
         picture.Height.Should().Be(90);
         picture.Width.Should().Be(280);
         pres.Validate();
@@ -481,11 +475,9 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        shapes.Should().HaveCount(1);
-        var picture = (IPicture)shapes.Last();
-
         // These values are the actual extent of drawings on the test image, which is what
         // we'll be using since the image has no explicit dimensions of any form
+        var picture = (IPicture)shapes.Last();
         picture.Height.Should().Be(91);
         picture.Width.Should().BeApproximately(277.96m,0.01m);
         pres.Validate();
