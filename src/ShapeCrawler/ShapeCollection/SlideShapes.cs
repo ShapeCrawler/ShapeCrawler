@@ -186,7 +186,8 @@ internal sealed class SlideShapes : ISlideShapes
             }
 
             // Add it
-            this.AddPictureSvg(doc);
+            imageStream.Position = 0;
+            this.AddPictureSvg(doc, imageStream);
         }
     }
 
@@ -588,7 +589,7 @@ internal sealed class SlideShapes : ISlideShapes
         return pPicture;
     }
 
-    private void AddPictureSvg(SvgDocument image)
+    private void AddPictureSvg(SvgDocument image, Stream svgStream)
     {
         // Determine intrinsic size
         var renderer = Svg.SvgRenderer.FromNull();
@@ -613,15 +614,12 @@ internal sealed class SlideShapes : ISlideShapes
         }
 
         // Rasterize image at intrinsic size
+        // TODO: Consider higher resolution. PowerPoint seems to rasterize SVGs at 384-dpi, so 4x
+        // our dpi.
         var bitmap = image.Draw(width, height);
         var rasterStream = new MemoryStream();
         bitmap.Save(rasterStream, ImageFormat.Png);
         rasterStream.Position = 0;
-
-        // Extract svg
-        var svgStream = new MemoryStream();
-        image.Write(svgStream);
-        svgStream.Position = 0;
 
         // Create the picture
         var pPicture = this.CreatePPictureSvg(rasterStream, svgStream, "Picture");

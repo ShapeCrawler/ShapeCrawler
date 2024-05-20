@@ -416,6 +416,32 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
+    [Explicit]
+    public void AddPicture_svg_with_text_matches_reference()
+    {
+        // Arrange
+
+        // This presentation contains the same SVG we're adding below, manually
+        // dragged in while running PowerPoint
+        var pres = new Presentation(StreamOf("055_svg_with_text.pptx"));
+        var shapes = pres.Slides[0].Shapes;
+        var expected = shapes.GetByName<IPicture>("Original");
+
+        var image = TestHelper.GetStream("1x1.svg");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+        pres.Validate();
+        var tempdir = Environment.GetEnvironmentVariable("TEMP") ?? throw new ApplicationException("TEMP directory not found");
+        pres.SaveAs($"{tempdir}\\AddPicture_svg_with_text_matches_reference.pptx");
+
+        // Assert
+        // This test must be checked manually. Load up the pptx saved above, and visually inspect
+        // the images to ensure they are identical. 
+    }
+
+    [Test]
     public void AddPicture_too_large_adds_picture()
     {
         // Arrange
