@@ -113,7 +113,6 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             textFrame.Text = "AutoShape 4 some text";
 
             // Assert
-            // TODO: Investigate this wide range
             shape.Height.Should().BeApproximately(51.48m,0.01m);
             shape.Y.Should().Be(149m);
             pres.Validate();
@@ -165,10 +164,6 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             textFrame.AutofitType = AutofitType.Resize;
 
             // Assert
-            // TODO: Investigate wide approximation range 
-            // NOTE: When performing this operation in Powerpoint, the resulting shape is 0.29 inches. (27.84)
-            // In current ShapeCrawler code, it's 0.41 inches, (39.36). 
-            // Oddly the original value isn't right either.
             shape.Height.Should().BeApproximately(40.48m, 0.01m);
             pres.Validate();
         }
@@ -303,7 +298,6 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             textFrame.Text = "Some sentence. Some sentence";
 
             // Assert
-            // TODO: Investigate wide approximation range
             shape.Height.Should().BeApproximately(93.48m,0.01m);
         }
         
