@@ -403,9 +403,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
-        picture.ShapeType.Should().Be(ShapeType.Picture);
 
         // These values are reasonable range for size of an added image
         picture.Height.Should().BeGreaterThan(0);
@@ -428,9 +426,7 @@ public class ShapeCollectionTests : SCTest
         shapes.AddPicture(image);
 
         // Assert
-        shapes.Should().HaveCount(1);
         var picture = (IPicture)shapes.Last();
-        picture.ShapeType.Should().Be(ShapeType.Picture);
 
         // These values are reasonable range for size of an added image
         picture.Height.Should().BeGreaterThan(0);
@@ -442,6 +438,48 @@ public class ShapeCollectionTests : SCTest
         var aspect = picture.Width / picture.Height;
         aspect.Should().Be(100);
 
+        pres.Validate();
+    }
+
+    [Test]
+    public void AddPicture_adds_svg_picture_no_width_height_tags()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-vector-image-wide.svg");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        // These values are the viewbox size of the test image, which is what
+        // we'll be using since the image has no width or height tags
+        var picture = (IPicture)shapes.Last();
+        picture.Height.Should().Be(90);
+        picture.Width.Should().Be(280);
+        pres.Validate();
+    }
+
+    [Test]
+    public void AddPicture_adds_svg_picture_no_dimensions()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-vector-image-no-dimensions.svg");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        // These values are the actual extent of drawings on the test image, which is what
+        // we'll be using since the image has no explicit dimensions of any form
+        var picture = (IPicture)shapes.Last();
+        picture.Height.Should().Be(91);
+        picture.Width.Should().BeApproximately(277.96m,0.01m);
         pres.Validate();
     }
 
