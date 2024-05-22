@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Exceptions;
@@ -432,13 +433,28 @@ public class ShapeCollectionTests : SCTest
 
         // Act
         shapes.AddPicture(image);
-        pres.Validate();
-        var tempdir = Environment.GetEnvironmentVariable("TEMP") ?? throw new ApplicationException("TEMP directory not found");
-        pres.SaveAs($"{tempdir}\\AddPicture_svg_with_text_matches_reference.pptx");
 
         // Assert
-        // This test must be checked manually. Load up the pptx saved above, and visually inspect
-        // the images to ensure they are identical. 
+        var actual = (IPicture)shapes.Where(x => x.Name.StartsWith("Picture")).Single();
+        var xml = new XmlDocument() { PreserveWhitespace = true };
+        xml.LoadXml(actual.SvgContent);
+        foreach(var obj in xml.GetElementsByTagName("text"))
+        {
+            var tag = obj as XmlElement;
+            foreach(var child in tag.ChildNodes)
+            {
+                child.Should().NotBeOfType<XmlSignificantWhitespace>("Text tags must not contain whitespace");
+            }
+        }
+
+        // The above assertion does guard against the root cause of the bug 
+        // which led to this test. However, the true test comes from loading
+        // these up in PowerPoint and ensure the added image looks like the
+        // existing image.
+        pres.Validate();
+        var tempdir = Environment.GetEnvironmentVariable("TEMP") 
+            ?? throw new ApplicationException("TEMP directory not found");
+        pres.SaveAs($"{tempdir}\\AddPicture_svg_with_text_matches_reference.pptx");
     }
 
     [Test]
