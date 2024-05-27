@@ -417,44 +417,32 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
-    [Explicit]
     public void AddPicture_svg_with_text_matches_reference()
     {
-        // Arrange
+        // ARRANGE
 
         // This presentation contains the same SVG we're adding below, manually
         // dragged in while running PowerPoint
         var pres = new Presentation(StreamOf("055_svg_with_text.pptx"));
         var shapes = pres.Slides[0].Shapes;
-        var expected = shapes.GetByName<IPicture>("Original");
-
         var image = TestHelper.GetStream("1x1.svg");
         image.Position = 0;
 
-        // Act
+        // ACT
         shapes.AddPicture(image);
 
-        // Assert
-        var actual = (IPicture)shapes.Where(x => x.Name.StartsWith("Picture")).Single();
-        var xml = new XmlDocument() { PreserveWhitespace = true };
-        xml.LoadXml(actual.SvgContent);
-        foreach(var obj in xml.GetElementsByTagName("text"))
-        {
-            var tag = obj as XmlElement;
-            foreach(var child in tag.ChildNodes)
-            {
-                child.Should().NotBeOfType<XmlSignificantWhitespace>("Text tags must not contain whitespace");
-            }
-        }
-
+        // ASSERT
+        var picture = (IPicture)shapes.First(shape => shape.Name.StartsWith("Picture"));
+        var xml = new XmlDocument { PreserveWhitespace = true };
+        xml.LoadXml(picture.SvgContent);
+        var textTagRandomChild = xml.GetElementsByTagName("text").OfType<XmlElement>().First().ChildNodes.Item(0);
+        textTagRandomChild.Should().NotBeOfType<XmlSignificantWhitespace>("Text tags must not contain whitespace");
+        
         // The above assertion does guard against the root cause of the bug 
         // which led to this test. However, the true test comes from loading
         // these up in PowerPoint and ensure the added image looks like the
         // existing image.
         pres.Validate();
-        var tempdir = Environment.GetEnvironmentVariable("TEMP") 
-            ?? throw new ApplicationException("TEMP directory not found");
-        pres.SaveAs($"{tempdir}\\AddPicture_svg_with_text_matches_reference.pptx");
     }
 
     [Test]
