@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Exceptions;
@@ -410,6 +411,35 @@ public class ShapeCollectionTests : SCTest
         picture.Height.Should().BeLessThan(2400);
         picture.Width.Should().BeGreaterThan(0);
         picture.Width.Should().BeLessThan(2400);
+        pres.Validate();
+    }
+
+    [Test]
+    public void AddPicture_svg_with_text_matches_reference()
+    {
+        // ARRANGE
+
+        // This presentation contains the same SVG we're adding below, manually
+        // dragged in while running PowerPoint
+        var pres = new Presentation(StreamOf("055_svg_with_text.pptx"));
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("1x1.svg");
+        image.Position = 0;
+
+        // ACT
+        shapes.AddPicture(image);
+
+        // ASSERT
+        var picture = (IPicture)shapes.First(shape => shape.Name.StartsWith("Picture"));
+        var xml = new XmlDocument { PreserveWhitespace = true };
+        xml.LoadXml(picture.SvgContent);
+        var textTagRandomChild = xml.GetElementsByTagName("text").OfType<XmlElement>().First().ChildNodes.Item(0);
+        textTagRandomChild.Should().NotBeOfType<XmlSignificantWhitespace>("Text tags must not contain whitespace");
+        
+        // The above assertion does guard against the root cause of the bug 
+        // which led to this test. However, the true test comes from loading
+        // these up in PowerPoint and ensure the added image looks like the
+        // existing image.
         pres.Validate();
     }
 
