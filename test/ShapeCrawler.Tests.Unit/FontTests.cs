@@ -347,7 +347,7 @@ public class FontTests : SCTest
         var font = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName).TextFrame!.Paragraphs[0].Portions[0].Font;
         var mStream = new MemoryStream();
         var oldSize = font.Size;
-        var newSize = oldSize + 2;
+        var newSize = oldSize + 2.4m;
 
         // Act
         font.Size = newSize;
