@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -186,7 +187,8 @@ internal sealed class SlideShapes : ISlideShapes
             }
 
             // Add it
-            this.AddPictureSvg(doc);
+            imageStream.Position = 0;
+            this.AddPictureSvg(doc, imageStream);
         }
     }
 
@@ -499,6 +501,42 @@ internal sealed class SlideShapes : ISlideShapes
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
+    private static SizeF GetSvgPixelSize(SvgDocument image)
+    {
+        // Default base size come from viewbox if specified, else use the raw
+        // image bounds
+        var bounds = 
+            (image.ViewBox.Width > 0 && image.ViewBox.Height > 0) ?
+            new SizeF(width:image.ViewBox.Width, height:image.ViewBox.Height) :
+            new SizeF(width:image.Bounds.Width, height:image.Bounds.Height);
+
+        return new SizeF()
+        {
+            Width = image.Width.Type switch
+            {
+                SvgUnitType.Percentage => bounds.Width * image.Width.Value / 100.0f,
+                SvgUnitType.User or
+                SvgUnitType.Pixel => image.Width.Value,
+                SvgUnitType.Inch => UnitConverter.InchToPixelF(image.Width.Value),
+                SvgUnitType.Centimeter => UnitConverter.CentimeterToPixelF(image.Width.Value),
+                SvgUnitType.Millimeter => UnitConverter.CentimeterToPixelF(image.Width.Value / 10.0f),
+                SvgUnitType.Point => UnitConverter.PointToPixelF(image.Width.Value),
+                _ => throw new NotImplementedException()
+            },
+            Height = image.Height.Type switch
+            {
+                SvgUnitType.Percentage => bounds.Height * image.Height.Value / 100.0f,
+                SvgUnitType.User or
+                SvgUnitType.Pixel => image.Height.Value,
+                SvgUnitType.Inch => UnitConverter.InchToPixelF(image.Height.Value),
+                SvgUnitType.Centimeter => UnitConverter.CentimeterToPixelF(image.Height.Value),
+                SvgUnitType.Millimeter => UnitConverter.CentimeterToPixelF(image.Height.Value / 10.0f),
+                SvgUnitType.Point => UnitConverter.PointToPixelF(image.Height.Value),
+                _ => throw new NotImplementedException()
+            }
+        };
+    }
+
     private (int, string) GenerateIdAndName()
     {
         var maxId = 0;
@@ -588,49 +626,42 @@ internal sealed class SlideShapes : ISlideShapes
         return pPicture;
     }
 
-    private void AddPictureSvg(SvgDocument image)
+    private void AddPictureSvg(SvgDocument image, Stream svgStream)
     {
-        // Determine intrinsic size
-        var renderer = Svg.SvgRenderer.FromNull();
-        var width = (int)image.Width.ToDeviceValue(renderer, Svg.UnitRenderingType.Horizontal, image);
-        var height = (int)image.Height.ToDeviceValue(renderer, Svg.UnitRenderingType.Vertical, image);
+        // Determine intrinsic size in 
+        var size = GetSvgPixelSize(image);
 
         // Ensure image size is not inserted at an unreasonable size
         // See Issue #683 Large-dimension SVG files lead to error opening in PowerPoint
         //
         // Ideally, we'd want to use the slide dimensions itself. However, not sure how we get that
         // here, so will use a fixed "safe" size
-        if (height > 500)
+        if (size.Height > 500.0f)
         {
-            height = 500;
-            width = (int)(height * image.Width.Value / image.Height.Value);
+            size.Height = 500.0f;
+            size.Width = size.Height * image.Width.Value / image.Height.Value;
         }
         
-        if (width > 500)
+        if (size.Width > 500.0f)
         {
-            width = 500;
-            height = (int)(width * image.Height.Value / image.Width.Value);
+            size.Width = 500.0f;
+            size.Height = size.Width * image.Height.Value / image.Width.Value;
         }
 
         // Rasterize image at intrinsic size
-        var bitmap = image.Draw(width, height);
+        var bitmap = image.Draw((int)size.Width, (int)size.Height);
         var rasterStream = new MemoryStream();
         bitmap.Save(rasterStream, ImageFormat.Png);
         rasterStream.Position = 0;
-
-        // Extract svg
-        var svgStream = new MemoryStream();
-        image.Write(svgStream);
-        svgStream.Position = 0;
 
         // Create the picture
         var pPicture = this.CreatePPictureSvg(rasterStream, svgStream, "Picture");
 
         // Fix up the sizes
-        var xEmu = UnitConverter.HorizontalPixelToEmu(100);
-        var yEmu = UnitConverter.VerticalPixelToEmu(100);
-        var cxEmu = UnitConverter.HorizontalPixelToEmu(width);
-        var cyEmu = UnitConverter.VerticalPixelToEmu(height);
+        var xEmu = UnitConverter.HorizontalPixelToEmu(100m);
+        var yEmu = UnitConverter.VerticalPixelToEmu(100m);
+        var cxEmu = UnitConverter.HorizontalPixelToEmu((decimal)size.Width);
+        var cyEmu = UnitConverter.VerticalPixelToEmu((decimal)size.Height);
         var transform2D = pPicture.ShapeProperties!.Transform2D!;
         transform2D.Offset!.X = xEmu;
         transform2D.Offset!.Y = yEmu;
