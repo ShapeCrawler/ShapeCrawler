@@ -14,7 +14,7 @@ internal static class FontService
 
         var paint = new SKPaint();
         var fontSize = font.Size;
-        paint.TextSize = fontSize;
+        paint.TextSize = (float)fontSize;
         paint.Typeface = SKTypeface.FromFamilyName(font.LatinName);
         paint.IsAntialias = true;
         const int defaultPaddingSize = 10;

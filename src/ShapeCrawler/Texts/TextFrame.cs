@@ -180,7 +180,7 @@ internal sealed class TextFrame : ITextFrame
 
         var paint = new SKPaint();
         var fontSize = font.Size;
-        paint.TextSize = fontSize;
+        paint.TextSize = (float)fontSize;
         paint.Typeface = SKTypeface.FromFamilyName(font.LatinName);
         paint.IsAntialias = true;
 
@@ -207,7 +207,7 @@ internal sealed class TextFrame : ITextFrame
         using var paint = new SKPaint();
         paint.Color = SKColors.Black;
         var firstPortion = this.Paragraphs.First().Portions.First();
-        paint.TextSize = firstPortion.Font.Size;
+        paint.TextSize = (float)firstPortion.Font.Size;
         var typeFace = SKTypeface.FromFamilyName(firstPortion.Font.LatinName);
         paint.Typeface = typeFace;
         float leftMarginPx = (float)UnitConverter.CentimeterToPixel(this.LeftMargin);

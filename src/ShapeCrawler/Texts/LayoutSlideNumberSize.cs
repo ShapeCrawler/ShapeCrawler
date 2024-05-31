@@ -10,7 +10,7 @@ internal record LayoutSlideNumberSize : IFontSize
 {
     private readonly P.TextBody pTextBody;
     private readonly ISlideNumberFont masterSlideNumberFont;
-    private const int HalfPointsInPoint = 100;
+    private const decimal HalfPointsInPoint = 100m;
 
     internal LayoutSlideNumberSize(P.TextBody pTextBody, ISlideNumberFont masterSlideNumberFont)
     {
@@ -18,7 +18,7 @@ internal record LayoutSlideNumberSize : IFontSize
         this.masterSlideNumberFont = masterSlideNumberFont;
     }
 
-    public int Size()
+    public decimal Size()
     {
         var halfPoints = this.pTextBody.Descendants<A.Field>().First().RunProperties?.FontSize?.Value;
         if (halfPoints == null)
@@ -31,7 +31,7 @@ internal record LayoutSlideNumberSize : IFontSize
         return points;
     }
 
-    public void Update(int points)
+    public void Update(decimal points)
     {
         var aListStyle = this.pTextBody.ListStyle!;
         var aLvl1pPr = aListStyle.Level1ParagraphProperties;
@@ -40,6 +40,6 @@ internal record LayoutSlideNumberSize : IFontSize
         var halfPoints = points * HalfPointsInPoint;
         aListStyle.AppendChild(
             new A.Level1ParagraphProperties(
-                new A.DefaultRunProperties { FontSize = new Int32Value(halfPoints) }));
+                new A.DefaultRunProperties { FontSize = new Int32Value((int)halfPoints) }));
     }
 }

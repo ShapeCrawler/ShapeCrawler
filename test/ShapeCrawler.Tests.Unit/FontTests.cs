@@ -295,20 +295,20 @@ public class FontTests : SCTest
     [Test]
     [MasterShape("001.pptx", "Freeform: Shape 7", 18)]
     [SlideShape("020.pptx", 1, 3, 18)]
-    [SlideShape("015.pptx", 2, 61, 18)]
+    [SlideShape("015.pptx", 2, 61, 18.67)]
     [SlideShape("009_table.pptx", 3, 2, 18)]
     [SlideShape("009_table.pptx", 4, 2, 44)]
     [SlideShape("009_table.pptx", 4, 3, 32)]
     [SlideShape("019.pptx", 1, 4103, 18)]
     [SlideShape("019.pptx", 1, 2, 12)]
-    [SlideShape("014.pptx", 2, 5, 21)]
+    [SlideShape("014.pptx", 2, 5, 21.77)]
     [SlideShape("012_title-placeholder.pptx", 1, "Title 1", 20)]
-    [SlideShape("010.pptx", 1, 2, 15)]
+    [SlideShape("010.pptx", 1, 2, 15.39)]
     [SlideShape("014.pptx", 4, 5, 12)]
     [SlideShape("014.pptx", 5, 4, 12)]
     [SlideShape("014.pptx", 6, 52, 27)]
     [SlideShape("autoshape-case016.pptx", 1, "Text Placeholder 1", 28)]
-    public void Size_Getter_returns_font_size(IShape shape, int expectedSize)
+    public void Size_Getter_returns_font_size(IShape shape, double expectedSize)
     {
         // Arrange
         var autoShape =  shape;
@@ -318,7 +318,7 @@ public class FontTests : SCTest
         var fontSize = font.Size;
         
         // Assert
-        fontSize.Should().Be(expectedSize);
+        fontSize.Should().Be((decimal)expectedSize);
     }
     
     [Test]
@@ -347,7 +347,7 @@ public class FontTests : SCTest
         var font = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName).TextFrame!.Paragraphs[0].Portions[0].Font;
         var mStream = new MemoryStream();
         var oldSize = font.Size;
-        var newSize = oldSize + 2;
+        var newSize = oldSize + 2.4m;
 
         // Act
         font.Size = newSize;
