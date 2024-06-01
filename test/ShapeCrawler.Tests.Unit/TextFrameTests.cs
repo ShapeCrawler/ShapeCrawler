@@ -518,7 +518,28 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var notes = slide.Notes;
 
             // Assert
+            notes.Paragraphs.Should().HaveCount(4);
             notes.Text.Should().Contain("NOTES LINE 1");
+        }
+
+        [Test]
+        public void SlideNotes_getter_enables_changing_notes()
+        {
+            // Arrange
+            var pptxStream = StreamOf("056_slide-notes.pptx");
+            var pres = new Presentation(pptxStream);
+            var slide = pres.Slides[0];
+            var notes = slide.Notes;
+
+            // Act
+            notes.Paragraphs[0].Text = "0";
+            notes.Paragraphs[1].Text = "1";
+            notes.Paragraphs[2].Text = "2";
+            notes.Paragraphs[3].Text = "3";
+
+            // Assert
+            notes.Paragraphs.Should().HaveCount(4);
+            notes.Text.Should().Be("0\r\n1\r\n2\r\n3");
         }
 
         [Test]
@@ -535,5 +556,19 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             // Assert
             notes.Should().BeNull();
         }
+
+        [Test]
+        public void NewPresentation_has_no_notes()
+        {
+            // Arrange
+            var pres = new Presentation();
+            var slide = pres.Slides[0];
+
+            // Act
+            var notes = slide.Notes;
+
+            // Assert
+            notes.Should().BeNull();
+        }        
     }
 }
