@@ -507,7 +507,6 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         }
 
         [Test]
-        [Explicit("Failing test for in-progress feature")]
         public void SlideNotes_getter_returns_notes()
         {
             // Arrange
@@ -523,7 +522,6 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         }
 
         [Test]
-        [Explicit("Failing test for in-progress feature")]
         public void SlideNotes_getter_returns_null_if_no_notes()
         {
             // Arrange
@@ -537,6 +535,5 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             // Assert
             notes.Should().BeNull();
         }
-
     }
 }

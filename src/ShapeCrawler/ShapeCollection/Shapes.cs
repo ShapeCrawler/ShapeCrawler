@@ -47,6 +47,7 @@ internal sealed class Shapes : IShapes
         {
             SlidePart sdkSlidePart => sdkSlidePart.Slide.CommonSlideData!.ShapeTree!,
             SlideLayoutPart sdkSlideLayoutPart => sdkSlideLayoutPart.SlideLayout.CommonSlideData!.ShapeTree!,
+            NotesSlidePart sdkNotesSlidePart => sdkNotesSlidePart.NotesSlide.CommonSlideData!.ShapeTree!,
             _ => ((SlideMasterPart)this.sdkTypedOpenXmlPart).SlideMaster.CommonSlideData!.ShapeTree!
         };
         var shapeList = new List<IShape>(pShapeTree.Count());

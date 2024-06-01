@@ -42,14 +42,14 @@ public interface ISlide
     ISlideShapes Shapes { get; }
 
     /// <summary>
-    ///     List of all text frames on that slide.
-    /// </summary>
-    public IList<ITextFrame> TextFrames();
-
-    /// <summary>
     ///     Gets slide notes as a single text frame.
     /// </summary>
     ITextFrame? Notes { get; }
+
+    /// <summary>
+    ///     List of all text frames on that slide.
+    /// </summary>
+    public IList<ITextFrame> TextFrames();
 
     /// <summary>
     ///     Hides slide.

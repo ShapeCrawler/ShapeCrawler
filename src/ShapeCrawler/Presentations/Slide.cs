@@ -58,7 +58,7 @@ internal sealed class Slide : ISlide
 
     public ITextFrame? Notes
     {
-        get => throw new NotImplementedException();
+        get => this.GetNotes();
     }
 
     public bool Hidden() => this.SDKSlidePart.Slide.Show is not null && !this.SDKSlidePart.Slide.Show.Value;
@@ -152,6 +152,25 @@ internal sealed class Slide : ISlide
                     break;
             }
         }
+    }
+
+    private ITextFrame? GetNotes()
+    {
+        var notes = this.SDKSlidePart.NotesSlidePart;
+
+        if (notes is null)
+        {
+            return null;
+        }
+
+        var shapes = new ShapeCollection.Shapes(notes);
+        var notesPlaceholder = shapes
+            .Where(x => 
+                x.IsPlaceholder && 
+                x.IsTextHolder && 
+                x.PlaceholderType == Placeholders.PlaceholderType.Text)
+            .FirstOrDefault();
+        return notesPlaceholder?.TextFrame;
     }
 
     private int ParseNumber()
