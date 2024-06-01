@@ -147,25 +147,49 @@ internal sealed class Slide : ISlide
         var rid = this.SDKSlidePart.NextRelationshipId();
         NotesSlidePart notesSlidePart1 = this.SDKSlidePart.AddNewPart<NotesSlidePart>(rid);
 
+        var nonVisualShapeDrawingPropertiesConstructorParams = new List<OpenXmlElement>()
+        {
+            new ShapeLocks() { NoGrouping = true }
+        };
+
+        var applicationNonVisualDrawingPropertiesConstructorParams = new List<OpenXmlElement>()
+        {
+            new PlaceholderShape() { Type = PlaceholderValues.Body }
+        };
+
+        var paragraphConstructorParams = new List<OpenXmlElement>() 
+        {
+            new EndParagraphRunProperties()
+        };
+
+        var groupShapePropertiesConstructorParams = new List<OpenXmlElement>()
+        {
+            new TransformGroup()
+        };
+
+        var commonSlideDataConstructorParams = new List<OpenXmlElement>()
+        {
+            new ShapeTree(
+                new P.NonVisualGroupShapeProperties(
+                    new P.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = string.Empty },
+                    new P.NonVisualGroupShapeDrawingProperties(),
+                    new ApplicationNonVisualDrawingProperties()),
+                new GroupShapeProperties(groupShapePropertiesConstructorParams),
+                new P.Shape(
+                    new P.NonVisualShapeProperties(
+                        new P.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Notes Placeholder 2" },
+                        new P.NonVisualShapeDrawingProperties(nonVisualShapeDrawingPropertiesConstructorParams),
+                        new ApplicationNonVisualDrawingProperties(applicationNonVisualDrawingPropertiesConstructorParams)),
+                    new P.ShapeProperties(),
+                    new P.TextBody(
+                        new BodyProperties(),
+                        new ListStyle(),
+                        new A.Paragraph(paragraphConstructorParams))))
+        };
+
         var notesSlideConstructorParams = new List<OpenXmlElement>() 
         {
-            new CommonSlideData(
-                new ShapeTree(
-                    new P.NonVisualGroupShapeProperties(
-                        new P.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = string.Empty },
-                        new P.NonVisualGroupShapeDrawingProperties(),
-                        new ApplicationNonVisualDrawingProperties()),
-                    new GroupShapeProperties(new TransformGroup()),
-                    new P.Shape(
-                        new P.NonVisualShapeProperties(
-                            new P.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Notes Placeholder 2" },
-                            new P.NonVisualShapeDrawingProperties(new ShapeLocks() { NoGrouping = true }),
-                            new ApplicationNonVisualDrawingProperties(new PlaceholderShape() { Type = PlaceholderValues.Body })),
-                        new P.ShapeProperties(),
-                        new P.TextBody(
-                            new BodyProperties(),
-                            new ListStyle(),
-                            new A.Paragraph(new EndParagraphRunProperties()))))),
+            new CommonSlideData(commonSlideDataConstructorParams),
             new ColorMapOverride(new MasterColorMapping())
         };
 
