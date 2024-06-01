@@ -28,7 +28,17 @@ internal sealed class SlideShapeOutline : IShapeOutline
     public string? HexColor
     {
         get => this.ParseHexColor();
-        set => this.UpdateHexColor(value);
+        set 
+        {
+            if (value == null)
+            {
+                this.Remove();                
+            }
+            else
+            {
+                this.UpdateHexColor(value);
+            }
+        }
     }
 
     private void UpdateWeight(decimal points)
@@ -44,11 +54,11 @@ internal sealed class SlideShapeOutline : IShapeOutline
         aOutline.Width = new Int32Value((Int32)UnitConverter.PointToEmu(points));
     }
     
-    private void UpdateHexColor(string? hex)
+    private void UpdateHexColor(string hex)
     {
         var aOutline = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.Outline>();
-        var aNoFill = aOutline?.GetFirstChild<A.NoFill>();
 
+        var aNoFill = aOutline?.GetFirstChild<A.NoFill>();
         if (aOutline == null || aNoFill != null)
         {
             aOutline = this.sdkTypedOpenXmlCompositeElement.AddAOutline();
@@ -61,6 +71,11 @@ internal sealed class SlideShapeOutline : IShapeOutline
         var aSrgbColor = new A.RgbColorModelHex { Val = hex };
         aSolidFill = new A.SolidFill(aSrgbColor);
         aOutline.Append(aSolidFill);
+    }
+
+    private void Remove()
+    {
+        this.sdkTypedOpenXmlCompositeElement.RemoveAllChildren<A.Outline>();
     }
 
     private decimal ParseWeight()
