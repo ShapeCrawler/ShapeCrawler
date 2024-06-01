@@ -83,8 +83,7 @@ internal sealed class SlideShapeOutline : IShapeOutline
             .GetFirstChild<A.SolidFill>();
         if (aSolidFill is null)
         {
-            var defaultBlackHex = "000000";
-            return defaultBlackHex;
+            return null;
         }
 
         var pSlideMaster = this.sdkTypedOpenXmlPart switch
