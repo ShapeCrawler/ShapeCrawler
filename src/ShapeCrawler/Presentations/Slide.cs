@@ -143,58 +143,33 @@ internal sealed class Slide : ISlide
             return;
         }
 
+        // Helper function to help resolve overloaded constructors which can 
+        // take either element params or an enumerable of elements. With this,
+        // we are clearly saying, we want the enumerable overload.
+        IEnumerable<OpenXmlElement> ArrayOf(OpenXmlElement element) => [element];
+
         // https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-notes-slides
         var rid = this.SDKSlidePart.NextRelationshipId();
         NotesSlidePart notesSlidePart1 = this.SDKSlidePart.AddNewPart<NotesSlidePart>(rid);
-
-        var nonVisualShapeDrawingPropertiesConstructorParams = new List<OpenXmlElement>()
-        {
-            new ShapeLocks() { NoGrouping = true }
-        };
-
-        var applicationNonVisualDrawingPropertiesConstructorParams = new List<OpenXmlElement>()
-        {
-            new PlaceholderShape() { Type = PlaceholderValues.Body }
-        };
-
-        var paragraphConstructorParams = new List<OpenXmlElement>() 
-        {
-            new EndParagraphRunProperties()
-        };
-
-        var groupShapePropertiesConstructorParams = new List<OpenXmlElement>()
-        {
-            new TransformGroup()
-        };
-
-        var commonSlideDataConstructorParams = new List<OpenXmlElement>()
-        {
-            new ShapeTree(
-                new P.NonVisualGroupShapeProperties(
-                    new P.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = string.Empty },
-                    new P.NonVisualGroupShapeDrawingProperties(),
-                    new ApplicationNonVisualDrawingProperties()),
-                new GroupShapeProperties(groupShapePropertiesConstructorParams),
-                new P.Shape(
-                    new P.NonVisualShapeProperties(
-                        new P.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Notes Placeholder 2" },
-                        new P.NonVisualShapeDrawingProperties(nonVisualShapeDrawingPropertiesConstructorParams),
-                        new ApplicationNonVisualDrawingProperties(applicationNonVisualDrawingPropertiesConstructorParams)),
-                    new P.ShapeProperties(),
-                    new P.TextBody(
-                        new BodyProperties(),
-                        new ListStyle(),
-                        new A.Paragraph(paragraphConstructorParams))))
-        };
-
-        var colorMapOverrideConstructorParams = new List<OpenXmlElement>()
-        {
-            new MasterColorMapping()
-        };
-
         NotesSlide notesSlide = new NotesSlide(
-            new CommonSlideData(commonSlideDataConstructorParams),
-            new ColorMapOverride(colorMapOverrideConstructorParams));
+            new CommonSlideData(ArrayOf(
+                new ShapeTree(
+                    new P.NonVisualGroupShapeProperties(
+                        new P.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = string.Empty },
+                        new P.NonVisualGroupShapeDrawingProperties(),
+                        new ApplicationNonVisualDrawingProperties()),
+                    new GroupShapeProperties(ArrayOf(new TransformGroup())),
+                    new P.Shape(
+                        new P.NonVisualShapeProperties(
+                            new P.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Notes Placeholder 2" },
+                            new P.NonVisualShapeDrawingProperties(ArrayOf(new ShapeLocks() { NoGrouping = true })),
+                            new ApplicationNonVisualDrawingProperties(ArrayOf(new PlaceholderShape() { Type = PlaceholderValues.Body }))),
+                        new P.ShapeProperties(),
+                        new P.TextBody(
+                            new BodyProperties(),
+                            new ListStyle(),
+                            new A.Paragraph(ArrayOf(new EndParagraphRunProperties()))))))),            
+            new ColorMapOverride(ArrayOf(new MasterColorMapping())));
         notesSlidePart1.NotesSlide = notesSlide;
     }
     
