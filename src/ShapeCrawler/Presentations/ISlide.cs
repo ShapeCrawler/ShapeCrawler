@@ -47,6 +47,11 @@ public interface ISlide
     public IList<ITextFrame> TextFrames();
 
     /// <summary>
+    ///     Gets slide notes as a single text frame.
+    /// </summary>
+    ITextFrame? Notes { get; }
+
+    /// <summary>
     ///     Hides slide.
     /// </summary>
     void Hide();

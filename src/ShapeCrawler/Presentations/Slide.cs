@@ -56,6 +56,11 @@ internal sealed class Slide : ISlide
         set => this.SetCustomData(value);
     }
 
+    public ITextFrame? Notes
+    {
+        get => throw new NotImplementedException();
+    }
+
     public bool Hidden() => this.SDKSlidePart.Slide.Show is not null && !this.SDKSlidePart.Slide.Show.Value;
 
     public void Hide()
