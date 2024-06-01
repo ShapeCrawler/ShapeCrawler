@@ -572,7 +572,6 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         }
 
         [Test]
-        [Explicit("Failing test for in-progress feature")]
         public void SlideAddNotes_adds_notes()
         {
             // Arrange
@@ -589,7 +588,6 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         }
 
         [Test]
-        [Explicit("Failing test for in-progress feature")]
         public void SlideAddNotes_can_change_notes()
         {
             // Arrange
@@ -611,7 +609,6 @@ namespace ShapeCrawler.Tests.Unit.xUnit
         }
 
         [Test]
-        [Explicit("Failing test for in-progress feature")]
         public void SlideAddNotes_can_change_notes_with_many_lines()
         {
             // Arrange
