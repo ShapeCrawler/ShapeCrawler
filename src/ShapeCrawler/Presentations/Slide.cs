@@ -146,8 +146,9 @@ internal sealed class Slide : ISlide
         // https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-notes-slides
         var rid = this.SDKSlidePart.NextRelationshipId();
         NotesSlidePart notesSlidePart1 = this.SDKSlidePart.AddNewPart<NotesSlidePart>(rid);
-        NotesSlide notesSlide = new NotesSlide
-        (
+
+        var notesSlideConstructorParams = new List<OpenXmlElement>() 
+        {
             new CommonSlideData(
                 new ShapeTree(
                     new P.NonVisualGroupShapeProperties(
@@ -165,7 +166,10 @@ internal sealed class Slide : ISlide
                             new BodyProperties(),
                             new ListStyle(),
                             new A.Paragraph(new EndParagraphRunProperties()))))),
-            new ColorMapOverride(new MasterColorMapping()));
+            new ColorMapOverride(new MasterColorMapping())
+        };
+
+        NotesSlide notesSlide = new NotesSlide(notesSlideConstructorParams);
         notesSlidePart1.NotesSlide = notesSlide;
     }
     
