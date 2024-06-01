@@ -210,11 +210,10 @@ internal sealed class Slide : ISlide
 
         var shapes = new ShapeCollection.Shapes(notes);
         var notesPlaceholder = shapes
-            .Where(x => 
+            .FirstOrDefault(x => 
                 x.IsPlaceholder && 
                 x.IsTextHolder && 
-                x.PlaceholderType == Placeholders.PlaceholderType.Text)
-            .FirstOrDefault();
+                x.PlaceholderType == Placeholders.PlaceholderType.Text);
         return notesPlaceholder?.TextFrame;
     }
 
