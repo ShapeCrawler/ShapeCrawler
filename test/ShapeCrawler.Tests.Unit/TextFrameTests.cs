@@ -530,6 +530,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var pres = new Presentation(pptxStream);
             var slide = pres.Slides[0];
             var notes = slide.Notes;
+            var expected = string.Join(Environment.NewLine, new[] { "0", "1", "2", "3" });
 
             // Act
             notes.Paragraphs[0].Text = "0";
@@ -539,7 +540,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
 
             // Assert
             notes.Paragraphs.Should().HaveCount(4);
-            notes.Text.Should().Be("0\r\n1\r\n2\r\n3");
+            notes.Text.Should().Be(expected);
         }
 
         [Test]
@@ -616,6 +617,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var slide = pres.Slides[0];
             slide.AddNotesIfEmpty();
             var notes = slide.Notes;
+            var expected = string.Join(Environment.NewLine, new[] { "1", "2", "3" });
 
             // Act
             notes.Paragraphs.Last().Text = "1";
@@ -626,7 +628,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
 
             // Assert
             notes.Paragraphs.Should().HaveCount(3);
-            notes.Text.Should().Be("1\r\n2\r\n3");
+            notes.Text.Should().Be(expected);
             pres.Validate();
 
             // Just in case you want to check it!
