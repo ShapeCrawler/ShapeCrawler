@@ -187,13 +187,14 @@ internal sealed class Slide : ISlide
                         new A.Paragraph(paragraphConstructorParams))))
         };
 
-        var notesSlideConstructorParams = new List<OpenXmlElement>() 
+        var colorMapOverrideConstructorParams = new List<OpenXmlElement>()
         {
-            new CommonSlideData(commonSlideDataConstructorParams),
-            new ColorMapOverride(new MasterColorMapping())
+            new MasterColorMapping()
         };
 
-        NotesSlide notesSlide = new NotesSlide(notesSlideConstructorParams);
+        NotesSlide notesSlide = new NotesSlide(
+            new CommonSlideData(commonSlideDataConstructorParams),
+            new ColorMapOverride(colorMapOverrideConstructorParams));
         notesSlidePart1.NotesSlide = notesSlide;
     }
     
