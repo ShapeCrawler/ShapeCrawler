@@ -148,29 +148,24 @@ internal sealed class Slide : ISlide
         NotesSlidePart notesSlidePart1 = this.SDKSlidePart.AddNewPart<NotesSlidePart>(rid);
         NotesSlide notesSlide = new NotesSlide
         (
-            (OpenXmlElement)new CommonSlideData
-            (
-                new ShapeTree
-                (
-                    new P.NonVisualGroupShapeProperties
-                    (
+            new CommonSlideData(
+                new ShapeTree(
+                    new P.NonVisualGroupShapeProperties(
                         new P.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = string.Empty },
                         new P.NonVisualGroupShapeDrawingProperties(),
                         new ApplicationNonVisualDrawingProperties()),
-                    new GroupShapeProperties((OpenXmlElement)new TransformGroup()),
+                    new GroupShapeProperties(new TransformGroup()),
                     new P.Shape(
-                        new P.NonVisualShapeProperties
-                        (
+                        new P.NonVisualShapeProperties(
                             new P.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Notes Placeholder 2" },
-                            new P.NonVisualShapeDrawingProperties((OpenXmlElement)new ShapeLocks() { NoGrouping = true }),
-                            new ApplicationNonVisualDrawingProperties((OpenXmlElement)new PlaceholderShape() { Type = PlaceholderValues.Body })),
+                            new P.NonVisualShapeDrawingProperties(new ShapeLocks() { NoGrouping = true }),
+                            new ApplicationNonVisualDrawingProperties(new PlaceholderShape() { Type = PlaceholderValues.Body })),
                         new P.ShapeProperties(),
-                        new P.TextBody
-                        (
+                        new P.TextBody(
                             new BodyProperties(),
                             new ListStyle(),
-                            new A.Paragraph((OpenXmlElement)new EndParagraphRunProperties()))))),
-            new ColorMapOverride((OpenXmlElement)new MasterColorMapping()));
+                            new A.Paragraph(new EndParagraphRunProperties()))))),
+            new ColorMapOverride(new MasterColorMapping()));
         notesSlidePart1.NotesSlide = notesSlide;
     }
     
