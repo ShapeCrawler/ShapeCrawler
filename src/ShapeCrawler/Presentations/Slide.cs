@@ -149,7 +149,7 @@ internal sealed class Slide : ISlide
         NotesSlide notesSlide = new NotesSlide
         (
             new CommonSlideData
-            (
+            ([
                 new ShapeTree
                 (
                     new P.NonVisualGroupShapeProperties
@@ -157,20 +157,20 @@ internal sealed class Slide : ISlide
                         new P.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = string.Empty },
                         new P.NonVisualGroupShapeDrawingProperties(),
                         new ApplicationNonVisualDrawingProperties()),
-                    new GroupShapeProperties(new TransformGroup()),
+                    new GroupShapeProperties([new TransformGroup()]),
                     new P.Shape(
                         new P.NonVisualShapeProperties
                         (
                             new P.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Notes Placeholder 2" },
-                            new P.NonVisualShapeDrawingProperties(new ShapeLocks() { NoGrouping = true }),
-                            new ApplicationNonVisualDrawingProperties(new PlaceholderShape() { Type = PlaceholderValues.Body })),
+                            new P.NonVisualShapeDrawingProperties([new ShapeLocks() { NoGrouping = true }]),
+                            new ApplicationNonVisualDrawingProperties([new PlaceholderShape() { Type = PlaceholderValues.Body }])),
                         new P.ShapeProperties(),
                         new P.TextBody
                         (
                             new BodyProperties(),
                             new ListStyle(),
-                            new A.Paragraph(new EndParagraphRunProperties()))))),
-            new ColorMapOverride(new MasterColorMapping()));
+                            new A.Paragraph([new EndParagraphRunProperties()]))))]),
+            new ColorMapOverride([new MasterColorMapping()]));
         notesSlidePart1.NotesSlide = notesSlide;
     }
     
