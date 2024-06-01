@@ -71,6 +71,11 @@ public interface ISlide
     /// </summary>
     ITable TableWithName(string table);
     
+    /// <summary>
+    ///     Adds a notes slide if there isn't already one.
+    /// </summary>
+    void AddNotesIfEmpty();
+    
 #if DEBUG
     
     /// <summary>

@@ -128,6 +128,14 @@ internal sealed class Slide : ISlide
 
         return returnList;
     }
+
+    /// <summary>
+    ///     Ensure this slide has a notes slide, adding one if needed.
+    /// </summary>
+    public void AddNotesIfEmpty()
+    {
+        throw new NotImplementedException();
+    }
     
     internal PresentationDocument SDKPresentationDocument() => (PresentationDocument)this.SDKSlidePart.OpenXmlPackage;
 
