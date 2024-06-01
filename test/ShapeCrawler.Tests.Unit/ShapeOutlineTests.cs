@@ -74,4 +74,22 @@ public class ShapeOutlineTests : SCTest
         outline.HexColor.Should().Be("be3455");
         pres.Validate();
     }
+
+    [Test]
+    [TestCase("autoshape-grouping.pptx", 1, "TextBox 6")]
+    [Explicit("Failing test for issue #703")]
+    public void Color_Setter_null_removes_outline_color(string file, int slideNumber, string shapeName)
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf(file));
+        var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
+        var outline = shape.Outline;
+        
+        // Act
+        outline.HexColor = null;
+
+        // Assert
+        outline.HexColor.Should().BeNull();
+        pres.Validate();
+    }
 }
