@@ -230,6 +230,8 @@
     <EmbeddedResource Include="Resource\1x1.svg" />
     <None Remove="Resource\055_svg_with_text.pptx" />
     <EmbeddedResource Include="Resource\055_svg_with_text.pptx" />
+    <None Remove="Resource\056_slide-notes.pptx" />
+    <EmbeddedResource Include="Resource\056_slide-notes.pptx" />
   </ItemGroup>
 
   <ItemGroup>

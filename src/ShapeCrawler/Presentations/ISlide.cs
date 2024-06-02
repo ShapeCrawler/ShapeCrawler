@@ -42,6 +42,11 @@ public interface ISlide
     ISlideShapes Shapes { get; }
 
     /// <summary>
+    ///     Gets slide notes as a single text frame.
+    /// </summary>
+    ITextFrame? Notes { get; }
+
+    /// <summary>
     ///     List of all text frames on that slide.
     /// </summary>
     public IList<ITextFrame> TextFrames();
@@ -65,6 +70,14 @@ public interface ISlide
     ///     Gets table by name.
     /// </summary>
     ITable TableWithName(string table);
+    
+    /// <summary>
+    ///     Adds specified lines to notes slide.
+    /// </summary>
+    /// <remarks>
+    ///     Creates the notes slide if there isn't already one.
+    /// </remarks>
+    void AddNotes(IEnumerable<string> lines);
     
 #if DEBUG
     
