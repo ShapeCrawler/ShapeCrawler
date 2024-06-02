@@ -604,9 +604,6 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             // Assert
             notes.Text.Should().Be(expected);
             pres.Validate();
-
-            // Just in case you want to check it!
-            // pres.SaveAs($"{Environment.GetEnvironmentVariable("TEMP")}\\{expected}.pptx");
         }
 
         [Test]
@@ -630,9 +627,6 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             notes.Paragraphs.Should().HaveCount(3);
             notes.Text.Should().Be(expected);
             pres.Validate();
-
-            // Just in case you want to check it!
-            // pres.SaveAs($"{Environment.GetEnvironmentVariable("TEMP")}\\SlideAddNotes_can_change_notes_with_many_lines.pptx");
         }
     }
 }
