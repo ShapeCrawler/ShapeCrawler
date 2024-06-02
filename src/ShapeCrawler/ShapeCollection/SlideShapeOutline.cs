@@ -75,7 +75,22 @@ internal sealed class SlideShapeOutline : IShapeOutline
 
     private void Remove()
     {
-        this.sdkTypedOpenXmlCompositeElement.RemoveAllChildren<A.Outline>();
+        // Removing an outline really means ensuring that the shape has a 
+        // 'NoFill' outline. If we just REMOVE the outline, then the style
+        // will take over and give it the default outline, which is not
+        // what we want
+        A.Outline? outline = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.Outline>();
+        if (outline is null)
+        {
+            outline = new A.Outline();
+            this.sdkTypedOpenXmlCompositeElement.AppendChild(outline);
+        }
+
+        // Remove any explicit existing kinds of outline
+        outline.RemoveAllChildren();
+
+        // Add a nofill outline
+        outline.AppendChild(new A.NoFill());
     }
 
     private decimal ParseWeight()

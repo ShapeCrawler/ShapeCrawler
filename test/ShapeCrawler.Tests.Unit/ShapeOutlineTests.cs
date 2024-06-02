@@ -104,5 +104,5 @@ public class ShapeOutlineTests : SCTest
         
         // Assert
         outlineColor.Should().BeNull();
-    }    
+    }
 }
