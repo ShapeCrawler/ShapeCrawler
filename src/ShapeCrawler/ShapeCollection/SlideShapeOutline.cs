@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
@@ -28,17 +29,7 @@ internal sealed class SlideShapeOutline : IShapeOutline
     public string? HexColor
     {
         get => this.ParseHexColor();
-        set 
-        {
-            if (value == null)
-            {
-                this.Remove();                
-            }
-            else
-            {
-                this.UpdateHexColor(value);
-            }
-        }
+        set => this.UpdateHexColor(value);
     }
 
     private void UpdateWeight(decimal points)
@@ -54,43 +45,30 @@ internal sealed class SlideShapeOutline : IShapeOutline
         aOutline.Width = new Int32Value((Int32)UnitConverter.PointToEmu(points));
     }
     
-    private void UpdateHexColor(string hex)
+    private void UpdateHexColor(string? hex)
     {
+        // Ensure there is an outline
         var aOutline = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.Outline>();
-
-        var aNoFill = aOutline?.GetFirstChild<A.NoFill>();
-        if (aOutline == null || aNoFill != null)
+        if (aOutline is null)
         {
-            aOutline = this.sdkTypedOpenXmlCompositeElement.AddAOutline();
-        }
-
-        var aSolidFill = aOutline.GetFirstChild<A.SolidFill>();
-        aNoFill?.Remove();
-        aSolidFill?.Remove();
-
-        var aSrgbColor = new A.RgbColorModelHex { Val = hex };
-        aSolidFill = new A.SolidFill(aSrgbColor);
-        aOutline.Append(aSolidFill);
-    }
-
-    private void Remove()
-    {
-        // Removing an outline really means ensuring that the shape has a 
-        // 'NoFill' outline. If we just REMOVE the outline, then the style
-        // will take over and give it the default outline, which is not
-        // what we want
-        A.Outline? outline = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.Outline>();
-        if (outline is null)
-        {
-            outline = new A.Outline();
-            this.sdkTypedOpenXmlCompositeElement.AppendChild(outline);
+            aOutline = new A.Outline();
+            this.sdkTypedOpenXmlCompositeElement.AppendChild(aOutline);
         }
 
         // Remove any explicit existing kinds of outline
-        outline.RemoveAllChildren();
+        aOutline.RemoveAllChildren();
 
-        // Add a nofill outline
-        outline.AppendChild(new A.NoFill());
+        if (hex is null)
+        {
+            // Add a no fill outline
+            aOutline.AppendChild(new A.NoFill());
+        }
+        else
+        {
+            // Add a solid fill outline
+            IEnumerable<OpenXmlElement> solidFillParams = [ new A.RgbColorModelHex { Val = hex } ];
+            aOutline.AppendChild(new A.SolidFill(solidFillParams));
+        }
     }
 
     private decimal ParseWeight()
