@@ -164,7 +164,7 @@ internal sealed class Slide : ISlide
         foreach(var line in adding)
         {
             notes.Paragraphs.Add();
-            notes.Text = line;
+            notes.Paragraphs[^1].Text = line;
         }
     }
 

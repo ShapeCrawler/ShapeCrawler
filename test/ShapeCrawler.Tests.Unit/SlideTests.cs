@@ -294,6 +294,24 @@ public class SlideTests : SCTest
     }
 
     [Test]
+    public void AddNotes_adds_many_notes()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slides[0];
+        var adding = new[] { "1", "2", "3" };
+        var expected = string.Join(Environment.NewLine, adding );
+
+        // Act
+        slide.AddNotes(adding);
+        var notes = slide.Notes;
+
+        // Assert
+        notes.Text.Should().Be(expected);
+        pres.Validate();
+    }
+
+    [Test]
     public void AddNotes_can_change_notes()
     {
         // Arrange
