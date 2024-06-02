@@ -143,10 +143,11 @@ internal sealed class Slide : ISlide
         }
         else
         {
+            var paragraphs = notes.Paragraphs;
             foreach(var line in lines)
             {
-                notes.Paragraphs.Add();
-                notes.Paragraphs.Last().Text = line;
+                paragraphs.Add();
+                paragraphs[paragraphs.Count - 1].Text = line;
             }
         }
     }
