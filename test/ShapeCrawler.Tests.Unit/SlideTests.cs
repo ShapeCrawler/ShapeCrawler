@@ -285,7 +285,7 @@ public class SlideTests : SCTest
         var slide = pres.Slides[0];
 
         // Act
-        slide.AddNotes();
+        slide.AddNotes(Enumerable.Empty<string>());
         var notes = slide.Notes;
 
         // Assert

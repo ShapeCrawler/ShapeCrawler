@@ -134,17 +134,16 @@ internal sealed class Slide : ISlide
     }
 
     /// <inheritdoc/>
-    public void AddNotes(IEnumerable<string>? lines = null)
+    public void AddNotes(IEnumerable<string> lines)
     {
-        var adding = lines ?? [];
         var notes = this.Notes;
         if (notes is null)
         {
-            this.AddNotesSlide(adding);
+            this.AddNotesSlide(lines);
         }
         else
         {
-            foreach(var line in adding)
+            foreach(var line in lines)
             {
                 notes.Paragraphs.Add();
                 notes.Paragraphs.Last().Text = line;

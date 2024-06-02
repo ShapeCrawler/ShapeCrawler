@@ -77,7 +77,7 @@ public interface ISlide
     /// <remarks>
     ///     Creates the notes slide if there isn't already one.
     /// </remarks>
-    void AddNotes(IEnumerable<string>? lines = null);
+    void AddNotes(IEnumerable<string> lines);
     
 #if DEBUG
     
