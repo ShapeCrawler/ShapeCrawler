@@ -200,11 +200,6 @@ internal sealed class Slide : ISlide
     /// </summary>
     private void AddNotesSlide(IEnumerable<string> lines)
     {
-        // Helper function to help resolve overloaded constructors which can 
-        // take either element params or an enumerable of elements. With this,
-        // we are clearly saying, we want the enumerable overload.
-        IEnumerable<OpenXmlElement> ArrayOf(OpenXmlElement element) => [element];
-
         // Build up the children of the text body element
         var textBodyChildren = new List<OpenXmlElement>() {
             new BodyProperties(),
@@ -225,30 +220,30 @@ internal sealed class Slide : ISlide
         if (!lines.Any())
         {
             textBodyChildren.Add(
-                new A.Paragraph(ArrayOf(
-                    new A.EndParagraphRunProperties())));
+                new A.Paragraph(
+                    new A.EndParagraphRunProperties()));
         }
 
         // https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-notes-slides
         var rid = this.SDKSlidePart.NextRelationshipId();
         NotesSlidePart notesSlidePart1 = this.SDKSlidePart.AddNewPart<NotesSlidePart>(rid);
         NotesSlide notesSlide = new NotesSlide(
-            new CommonSlideData(ArrayOf(
+            new CommonSlideData(
                 new ShapeTree(
                     new P.NonVisualGroupShapeProperties(
                         new P.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = string.Empty },
                         new P.NonVisualGroupShapeDrawingProperties(),
                         new ApplicationNonVisualDrawingProperties()),
-                    new GroupShapeProperties(ArrayOf(new TransformGroup())),
+                    new GroupShapeProperties(new TransformGroup()),
                     new P.Shape(
                         new P.NonVisualShapeProperties(
                             new P.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Notes Placeholder 2" },
-                            new P.NonVisualShapeDrawingProperties(ArrayOf(new ShapeLocks() { NoGrouping = true })),
-                            new ApplicationNonVisualDrawingProperties(ArrayOf(new PlaceholderShape() { Type = PlaceholderValues.Body }))),
+                            new P.NonVisualShapeDrawingProperties(new ShapeLocks() { NoGrouping = true }),
+                            new ApplicationNonVisualDrawingProperties(new PlaceholderShape() { Type = PlaceholderValues.Body })),
                         new P.ShapeProperties(),
                         new P.TextBody(
-                            textBodyChildren))))),            
-            new ColorMapOverride(ArrayOf(new MasterColorMapping())));
+                            textBodyChildren)))),           
+            new ColorMapOverride(new MasterColorMapping()));
         notesSlidePart1.NotesSlide = notesSlide;
     }
     
