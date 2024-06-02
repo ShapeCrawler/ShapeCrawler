@@ -195,7 +195,7 @@ public class SlideTests : SCTest
     }
 
     [Test]
-    public void SlideNotes_getter_returns_notes()
+    public void Notes_Getter_returns_notes()
     {
         // Arrange
         var pptxStream = StreamOf("056_slide-notes.pptx");
@@ -211,7 +211,7 @@ public class SlideTests : SCTest
     }
 
     [Test]
-    public void SlideNotes_getter_enables_changing_notes()
+    public void Notes_Getter_enables_changing_notes()
     {
         // Arrange
         var pptxStream = StreamOf("056_slide-notes.pptx");
@@ -232,7 +232,7 @@ public class SlideTests : SCTest
     }
 
     [Test]
-    public void SlideNotes_getter_returns_null_if_no_notes()
+    public void Notes_Getter_returns_null_if_no_notes()
     {
         // Arrange
         var pptxStream = StreamOf("003.pptx");
@@ -261,7 +261,7 @@ public class SlideTests : SCTest
     }
 
     [Test]
-    public void SlideAddNotes_adds_notes()
+    public void AddNotes_adds_notes()
     {
         // Arrange
         var pres = new Presentation();
@@ -278,7 +278,7 @@ public class SlideTests : SCTest
     }
 
     [Test]
-    public void SlideAddNotes_with_no_notes_adds_empty_line()
+    public void AddNotes_with_no_notes_adds_empty_line()
     {
         // Arrange
         var pres = new Presentation();
@@ -294,7 +294,7 @@ public class SlideTests : SCTest
     }
 
     [Test]
-    public void SlideAddNotes_can_change_notes()
+    public void AddNotes_can_change_notes()
     {
         // Arrange
         var pres = new Presentation();
@@ -312,7 +312,7 @@ public class SlideTests : SCTest
     }
 
     [Test]
-    public void SlideAddNotes_can_change_notes_with_many_lines()
+    public void AddNotes_can_change_notes_with_many_lines()
     {
         // Arrange
         var pres = new Presentation();
