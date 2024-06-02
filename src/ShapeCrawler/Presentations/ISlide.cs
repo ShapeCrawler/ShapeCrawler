@@ -72,9 +72,12 @@ public interface ISlide
     ITable TableWithName(string table);
     
     /// <summary>
-    ///     Adds a notes slide if there isn't already one.
+    ///     Adds specified lines to notes slide.
     /// </summary>
-    void AddNotesIfEmpty();
+    /// <remarks>
+    ///     Creates the notes slide if there isn't already one.
+    /// </remarks>
+    void AddNotes(IEnumerable<string>? lines = null);
     
 #if DEBUG
     

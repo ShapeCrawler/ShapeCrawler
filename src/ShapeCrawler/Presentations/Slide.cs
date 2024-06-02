@@ -133,46 +133,41 @@ internal sealed class Slide : ISlide
         return returnList;
     }
 
-    /// <summary>
-    ///     Ensure this slide has a notes slide, adding one if needed.
-    /// </summary>
-    public void AddNotesIfEmpty()
+    /// <inheritdoc/>
+    public void AddNotes(IEnumerable<string>? lines = null)
     {
-        if (this.SDKSlidePart.NotesSlidePart is not null)
+        AddNotesIfEmpty();
+
+        var notes = this.Notes;
+        if (notes is null)
+        {
+            throw new SCException("Adding notes slide failed.");
+        }
+
+        if (lines == null || !lines.Any())
         {
             return;
         }
 
-        // Helper function to help resolve overloaded constructors which can 
-        // take either element params or an enumerable of elements. With this,
-        // we are clearly saying, we want the enumerable overload.
-        IEnumerable<OpenXmlElement> ArrayOf(OpenXmlElement element) => [element];
+        // Special case, if notes is only string.empty, then we don't want to 
+        // add the first line, we want to replace the existing blank line with
+        // the first line. This could be improved by passing in the first
+        // line to AddNotesIfEmpty, and having it add. Will just have to
+        // figure that out.
 
-        // https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-notes-slides
-        var rid = this.SDKSlidePart.NextRelationshipId();
-        NotesSlidePart notesSlidePart1 = this.SDKSlidePart.AddNewPart<NotesSlidePart>(rid);
-        NotesSlide notesSlide = new NotesSlide(
-            new CommonSlideData(ArrayOf(
-                new ShapeTree(
-                    new P.NonVisualGroupShapeProperties(
-                        new P.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = string.Empty },
-                        new P.NonVisualGroupShapeDrawingProperties(),
-                        new ApplicationNonVisualDrawingProperties()),
-                    new GroupShapeProperties(ArrayOf(new TransformGroup())),
-                    new P.Shape(
-                        new P.NonVisualShapeProperties(
-                            new P.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Notes Placeholder 2" },
-                            new P.NonVisualShapeDrawingProperties(ArrayOf(new ShapeLocks() { NoGrouping = true })),
-                            new ApplicationNonVisualDrawingProperties(ArrayOf(new PlaceholderShape() { Type = PlaceholderValues.Body }))),
-                        new P.ShapeProperties(),
-                        new P.TextBody(
-                            new BodyProperties(),
-                            new ListStyle(),
-                            new A.Paragraph(ArrayOf(new EndParagraphRunProperties()))))))),            
-            new ColorMapOverride(ArrayOf(new MasterColorMapping())));
-        notesSlidePart1.NotesSlide = notesSlide;
+        var adding = new Queue<string>(lines);
+        if (notes.Text == string.Empty)
+        {
+            notes.Paragraphs[0].Text = adding.Dequeue();
+        }
+
+        foreach(var line in adding)
+        {
+            notes.Paragraphs.Add();
+            notes.Text = line;
+        }
     }
-    
+
     internal PresentationDocument SDKPresentationDocument() => (PresentationDocument)this.SDKSlidePart.OpenXmlPackage;
 
     /// <summary>
@@ -216,6 +211,46 @@ internal sealed class Slide : ISlide
         return notesPlaceholder?.TextFrame;
     }
 
+    /// <summary>
+    ///     Ensure this slide has a notes slide, adding one if needed.
+    /// </summary>
+    private void AddNotesIfEmpty()
+    {
+        if (this.SDKSlidePart.NotesSlidePart is not null)
+        {
+            return;
+        }
+
+        // Helper function to help resolve overloaded constructors which can 
+        // take either element params or an enumerable of elements. With this,
+        // we are clearly saying, we want the enumerable overload.
+        IEnumerable<OpenXmlElement> ArrayOf(OpenXmlElement element) => [element];
+
+        // https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-notes-slides
+        var rid = this.SDKSlidePart.NextRelationshipId();
+        NotesSlidePart notesSlidePart1 = this.SDKSlidePart.AddNewPart<NotesSlidePart>(rid);
+        NotesSlide notesSlide = new NotesSlide(
+            new CommonSlideData(ArrayOf(
+                new ShapeTree(
+                    new P.NonVisualGroupShapeProperties(
+                        new P.NonVisualDrawingProperties() { Id = (UInt32Value)1U, Name = string.Empty },
+                        new P.NonVisualGroupShapeDrawingProperties(),
+                        new ApplicationNonVisualDrawingProperties()),
+                    new GroupShapeProperties(ArrayOf(new TransformGroup())),
+                    new P.Shape(
+                        new P.NonVisualShapeProperties(
+                            new P.NonVisualDrawingProperties() { Id = (UInt32Value)2U, Name = "Notes Placeholder 2" },
+                            new P.NonVisualShapeDrawingProperties(ArrayOf(new ShapeLocks() { NoGrouping = true })),
+                            new ApplicationNonVisualDrawingProperties(ArrayOf(new PlaceholderShape() { Type = PlaceholderValues.Body }))),
+                        new P.ShapeProperties(),
+                        new P.TextBody(
+                            new BodyProperties(),
+                            new ListStyle(),
+                            new A.Paragraph(ArrayOf(new EndParagraphRunProperties()))))))),            
+            new ColorMapOverride(ArrayOf(new MasterColorMapping())));
+        notesSlidePart1.NotesSlide = notesSlide;
+    }
+    
     private int ParseNumber()
     {
         var sdkPresentationDocument = (PresentationDocument)this.SDKSlidePart.OpenXmlPackage;
