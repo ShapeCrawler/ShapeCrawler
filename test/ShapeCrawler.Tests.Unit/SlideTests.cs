@@ -312,6 +312,26 @@ public class SlideTests : SCTest
     }
 
     [Test]
+    public void AddNotes_adds_many_notes_and_can_add_more()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slides[0];
+        var original = new[] { "1", "2", "3" };
+        var adding = new[] { "4", "5", "6" };
+        var expected = string.Join(Environment.NewLine, original.Concat(adding) );
+        slide.AddNotes(original);
+
+        // Act
+        slide.AddNotes(adding);
+        var notes = slide.Notes;
+
+        // Assert
+        notes.Text.Should().Be(expected);
+        pres.Validate();
+    }
+
+    [Test]
     public void AddNotes_can_change_notes()
     {
         // Arrange
@@ -340,11 +360,11 @@ public class SlideTests : SCTest
         var expected = string.Join(Environment.NewLine, "1", "2", "3" );
 
         // Act
-        notes.Paragraphs[^1].Text = "1";
+        notes.Paragraphs.Last().Text = "1";
         notes.Paragraphs.Add();
-        notes.Paragraphs[^1].Text = "2";
+        notes.Paragraphs.Last().Text = "2";
         notes.Paragraphs.Add();
-        notes.Paragraphs[^1].Text = "3";
+        notes.Paragraphs.Last().Text = "3";
 
         // Assert
         notes.Paragraphs.Should().HaveCount(3);

@@ -136,35 +136,19 @@ internal sealed class Slide : ISlide
     /// <inheritdoc/>
     public void AddNotes(IEnumerable<string>? lines = null)
     {
-        AddNotesIfEmpty();
-
+        var adding = lines ?? [];
         var notes = this.Notes;
         if (notes is null)
         {
-            throw new SCException("Adding notes slide failed.");
+            this.AddNotesSlide(adding);
         }
-
-        if (lines == null || !lines.Any())
+        else
         {
-            return;
-        }
-
-        // Special case, if notes is only string.empty, then we don't want to 
-        // add the first line, we want to replace the existing blank line with
-        // the first line. This could be improved by passing in the first
-        // line to AddNotesIfEmpty, and having it add. Will just have to
-        // figure that out.
-
-        var adding = new Queue<string>(lines);
-        if (notes.Text == string.Empty)
-        {
-            notes.Paragraphs[0].Text = adding.Dequeue();
-        }
-
-        foreach(var line in adding)
-        {
-            notes.Paragraphs.Add();
-            notes.Paragraphs[^1].Text = line;
+            foreach(var line in adding)
+            {
+                notes.Paragraphs.Add();
+                notes.Paragraphs.Last().Text = line;
+            }
         }
     }
 
@@ -212,19 +196,38 @@ internal sealed class Slide : ISlide
     }
 
     /// <summary>
-    ///     Ensure this slide has a notes slide, adding one if needed.
+    ///     Add a notes slide, with the specified lines of text.
     /// </summary>
-    private void AddNotesIfEmpty()
+    private void AddNotesSlide(IEnumerable<string> lines)
     {
-        if (this.SDKSlidePart.NotesSlidePart is not null)
-        {
-            return;
-        }
-
         // Helper function to help resolve overloaded constructors which can 
         // take either element params or an enumerable of elements. With this,
         // we are clearly saying, we want the enumerable overload.
         IEnumerable<OpenXmlElement> ArrayOf(OpenXmlElement element) => [element];
+
+        // Build up the children of the text body element
+        var textBodyChildren = new List<OpenXmlElement>() {
+            new BodyProperties(),
+            new ListStyle()
+        };
+
+        // Add in the text lines
+        textBodyChildren.AddRange(
+            lines
+                .Select(line => new A.Paragraph(
+                    new A.ParagraphProperties(),
+                    new A.Run(
+                        new A.RunProperties(),
+                        new A.Text(line)),
+                    new A.EndParagraphRunProperties())));
+
+        // Always add at least one paragraph, even if empty
+        if (!lines.Any())
+        {
+            textBodyChildren.Add(
+                new A.Paragraph(ArrayOf(
+                    new A.EndParagraphRunProperties())));
+        }
 
         // https://learn.microsoft.com/en-us/office/open-xml/presentation/working-with-notes-slides
         var rid = this.SDKSlidePart.NextRelationshipId();
@@ -244,9 +247,7 @@ internal sealed class Slide : ISlide
                             new ApplicationNonVisualDrawingProperties(ArrayOf(new PlaceholderShape() { Type = PlaceholderValues.Body }))),
                         new P.ShapeProperties(),
                         new P.TextBody(
-                            new BodyProperties(),
-                            new ListStyle(),
-                            new A.Paragraph(ArrayOf(new EndParagraphRunProperties()))))))),            
+                            textBodyChildren))))),            
             new ColorMapOverride(ArrayOf(new MasterColorMapping())));
         notesSlidePart1.NotesSlide = notesSlide;
     }
