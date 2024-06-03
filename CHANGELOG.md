@@ -1,5 +1,8 @@
 # Changelog  
 
+## Version 0.53.0 - Unreleased
+🍀Added `ISlide.Notes` and `ISlide.AddNotes()` for Slide Notes expirience [#684](https://github.com/ShapeCrawler/ShapeCrawler/issues/684)    
+
 ## Version 0.52.0 - 2024-05-28
 🍀Added support for the SVG format for the method `ISlideShapes.AddPicture()` [#350](https://github.com/ShapeCrawler/ShapeCrawler/issues/350)  
 🐞Fixed not displaying a picture added using the method `ISlideShapes.AddPicture()` [#649](https://github.com/ShapeCrawler/ShapeCrawler/issues/649)  
