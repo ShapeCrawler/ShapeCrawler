@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
@@ -26,10 +25,22 @@ internal sealed class SlideShapeOutline : IShapeOutline
         set => this.UpdateWeight(value);
     }
 
+    /// <inheritdoc/>
     public string? HexColor
     {
         get => this.ParseHexColor();
-        set => this.UpdateHexColor(value);
+    }
+
+    /// <inheritdoc/>
+    public void SetHexColor(string value)
+    {
+        this.UpdateFill(new A.SolidFill(new A.RgbColorModelHex { Val = value }));
+    }
+
+    /// <inheritdoc/>
+    public void SetNoOutline()
+    {
+        this.UpdateFill(new A.NoFill());
     }
 
     private void UpdateWeight(decimal points)
@@ -45,7 +56,7 @@ internal sealed class SlideShapeOutline : IShapeOutline
         aOutline.Width = new Int32Value((Int32)UnitConverter.PointToEmu(points));
     }
     
-    private void UpdateHexColor(string? hex)
+    private void UpdateFill(OpenXmlElement child)
     {
         // Ensure there is an outline
         var aOutline = this.sdkTypedOpenXmlCompositeElement.GetFirstChild<A.Outline>();
@@ -58,17 +69,8 @@ internal sealed class SlideShapeOutline : IShapeOutline
         // Remove any explicit existing kinds of outline
         aOutline.RemoveAllChildren();
 
-        if (hex is null)
-        {
-            // Add a no fill outline
-            aOutline.AppendChild(new A.NoFill());
-        }
-        else
-        {
-            // Add a solid fill outline
-            IEnumerable<OpenXmlElement> solidFillParams = [ new A.RgbColorModelHex { Val = hex } ];
-            aOutline.AppendChild(new A.SolidFill(solidFillParams));
-        }
+        // Set the new child value
+        aOutline.AppendChild(child);
     }
 
     private decimal ParseWeight()
