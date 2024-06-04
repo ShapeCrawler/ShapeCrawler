@@ -597,7 +597,7 @@ public class ShapeCollectionTests : SCTest
         rectangle.Width.Should().Be(100);
         rectangle.Height.Should().Be(70);
         rectangle.TextFrame!.Paragraphs.Count.Should().Be(1);
-        rectangle.Outline.HexColor.Should().Be("000000");
+        rectangle.Outline.HexColor.Should().BeNull();
         pres.Validate();
     }
 
@@ -615,7 +615,7 @@ public class ShapeCollectionTests : SCTest
         var roundedRectangle = shapes.Last();
         roundedRectangle.GeometryType.Should().Be(Geometry.RoundRectangle);
         roundedRectangle.Name.Should().Be("Rectangle: Rounded Corners");
-        roundedRectangle.Outline.HexColor.Should().Be("000000");
+        roundedRectangle.Outline.HexColor.Should().BeNull();
         pres.Validate();
     }
 
