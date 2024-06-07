@@ -152,21 +152,45 @@ internal abstract class Shape : IShape
             var aPresetGeometry = spPr.GetFirstChild<A.PresetGeometry>();
             if (aPresetGeometry?.Preset?.Value != A.ShapeTypeValues.RoundRectangle)
             {
+                // Not a rounded rectangle, so has no corner roundedness
                 return null;
             }
 
             var avList = aPresetGeometry?.AdjustValueList;
+
+            if (avList is null)
+            {
+                // Is a round rectangle, but has no avList. 
+                // That's invalid data. Going to throw an exception so hopefully
+                // user reports this.
+                throw new SCException("Rounded rectangle missing AdjustValueList. Please file a GitHub issue.");
+            }
+
             var sg = avList?.GetFirstChild<A.ShapeGuide>();
+
+            if (sg is null)
+            {
+                // Has no shape guide. That means we're using the DEFAULT
+                // value, which is 0.35
+                return 0.35m;
+            }
+
             var formula = sg?.Formula?.Value;
             var val = formula?.Split(' ').Skip(1).SingleOrDefault();
             if (val is null)
             {
-                return null;
+                // Has a shape guide, but no formula or malformed formule
+                // That's invalid data. Going to throw an exception so hopefully
+                // user reports this.
+                throw new SCException($"AdjustValueList mal-formed formula: {formula ?? "null"}. Please file a GitHub issue.");
             }
 
             if (!decimal.TryParse(val, out var dVal))
             {
-                return null;
+                // Has a shape guide, but formula is not decimal.
+                // That's invalid data. Going to throw an exception so hopefully
+                // user reports this.
+                throw new SCException($"AdjustValueList mal-formed formula value: {val}. Please file a GitHub issue.");
             }
 
             // Maximum roundedness is represented by the constant 50,000

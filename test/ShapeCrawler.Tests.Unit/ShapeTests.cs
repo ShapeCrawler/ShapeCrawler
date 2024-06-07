@@ -588,7 +588,7 @@ public class ShapeTests : SCTest
     [SlideShape("057_corner-radius.pptx", 1, "Size 2 Round 0.25", "0.20834")]
     [SlideShape("057_corner-radius.pptx", 1, "Size 3 Round 0.25", "0.20834")]
     [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round 0", "0.0")]
-    [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round X", "")]
+    [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round X", "0.35")]
     [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round 1", "1.0")]
     [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round 0.75", "0.61112")]
     [Explicit]
