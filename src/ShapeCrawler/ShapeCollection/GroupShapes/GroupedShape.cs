@@ -168,6 +168,8 @@ internal sealed class GroupedShape : IShape
         set => this.TextBox.Text = value;
     }
 
+    public decimal? CornerRoundedness => null;
+
     public void Remove() => this.decoratedShape.Remove();
     
     public ITable AsTable() => this.decoratedShape.AsTable();

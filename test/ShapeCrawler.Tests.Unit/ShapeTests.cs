@@ -582,4 +582,23 @@ public class ShapeTests : SCTest
         // Assert
         shape.Text.Should().Be("Test");
     }
+
+    [Test]
+    [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round 0.25", "0.20834")]
+    [SlideShape("057_corner-radius.pptx", 1, "Size 2 Round 0.25", "0.20834")]
+    [SlideShape("057_corner-radius.pptx", 1, "Size 3 Round 0.25", "0.20834")]
+    [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round 0", "0.0")]
+    [SlideShape("057_corner-radius.pptx", 1, "Size 1 Round X", "")]
+    [Explicit]
+    public void CornerRadius_getter_returns_values(IShape shape, string expectedRoundednessStr)
+    {
+        // Arrange
+        decimal? expectedRoundedness = string.IsNullOrEmpty(expectedRoundednessStr) ? null : decimal.Parse(expectedRoundednessStr);
+
+        // Act
+        var actualRoundedness = shape.CornerRoundedness;
+
+        // Assert
+        actualRoundedness.Should().Be((decimal?)expectedRoundedness);
+    }
 }

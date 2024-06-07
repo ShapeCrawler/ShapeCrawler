@@ -195,6 +195,8 @@
     <None Remove="Assets\056_slide-notes.pptx" />
     <EmbeddedResource Include="Assets\056_slide-notes.pptx" />
     <None Remove="Assets\tables-case001.pptx" />
+    <None Remove="Assets\057_corner-radius.pptx" />
+    <EmbeddedResource Include="Assets\057_corner-radius.pptx" />
     <EmbeddedResource Include="Assets\tables-case001.pptx" />
     <None Remove="Assets\images\png image-1.png" />
     <EmbeddedResource Include="Assets\images\png image-1.png" />
