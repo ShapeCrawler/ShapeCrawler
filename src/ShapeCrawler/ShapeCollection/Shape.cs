@@ -157,7 +157,8 @@ internal abstract class Shape : IShape
 
             var avList = aPresetGeometry?.AdjustValueList;
             var sg = avList?.GetFirstChild<A.ShapeGuide>();
-            var val = sg?.Formula?.Value?.Split(' ').Skip(1).SingleOrDefault();
+            var formula = sg?.Formula?.Value;
+            var val = formula?.Split(' ').Skip(1).SingleOrDefault();
             if (val is null)
             {
                 return null;
@@ -168,6 +169,7 @@ internal abstract class Shape : IShape
                 return null;
             }
 
+            // Maximum roundedness is represented by the constant 50,000
             return dVal / 50000m;
         }
     }
