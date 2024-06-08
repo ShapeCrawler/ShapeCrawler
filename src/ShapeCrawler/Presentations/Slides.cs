@@ -147,7 +147,6 @@ internal sealed class Slides : ISlides
     public void Add(ISlide slide)
     {
         var addingSlideInternal = (Slide)slide;
-        PresentationDocument sourcePresDoc;
         var tempStream = new MemoryStream();
         var currentSdkPresDocument = (PresentationDocument)this.sdkSlideParts.First().OpenXmlPackage;
         var addingSlideSdkPresDocumentCopy =

@@ -113,8 +113,8 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             textFrame.Text = "AutoShape 4 some text";
 
             // Assert
-            shape.Height.Should().Be(46);
-            shape.Y.Should().Be(151);
+            shape.Height.Should().BeApproximately(51.48m,0.01m);
+            shape.Y.Should().Be(149m);
             pres.Validate();
         }
 
@@ -147,7 +147,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             textFrame.AutofitType = AutofitType.Resize;
 
             // Assert
-            shape.Width.Should().Be(107);
+            shape.Width.Should().BeApproximately(107.90m,0.01m);
             pres.Validate();
         }
 
@@ -164,7 +164,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             textFrame.AutofitType = AutofitType.Resize;
 
             // Assert
-            shape.Height.Should().Be(35);
+            shape.Height.Should().BeApproximately(40.48m, 0.01m);
             pres.Validate();
         }
 
@@ -298,7 +298,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             textFrame.Text = "Some sentence. Some sentence";
 
             // Assert
-            shape.Height.Should().Be(88);
+            shape.Height.Should().BeApproximately(93.48m,0.01m);
         }
         
         [Test]
@@ -442,7 +442,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var leftMargin = textFrame.LeftMargin;
             
             // Assert
-            leftMargin.Should().Be(expectedMargin);
+            leftMargin.Should().Be((decimal)expectedMargin);
         }
         
         [Test]
@@ -454,10 +454,10 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var textFrame = autoShape.TextFrame;
             
             // Act
-            textFrame.LeftMargin = 0.5;
+            textFrame.LeftMargin = 0.5m;
             
             // Assert
-            textFrame.LeftMargin.Should().Be(0.5);
+            textFrame.LeftMargin.Should().Be(0.5m);
         }
         
         [Test]
@@ -472,7 +472,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var rightMargin = textFrame.RightMargin;
             
             // Assert
-            rightMargin.Should().Be(expectedMargin);
+            rightMargin.Should().Be((decimal)expectedMargin);
         }
         
         [Test]
@@ -488,7 +488,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var topMargin = textFrame.TopMargin;
             
             // Assert
-            topMargin.Should().Be(expectedMargin);
+            topMargin.Should().Be((decimal)expectedMargin);
         }
         
         [Test]
@@ -503,7 +503,7 @@ namespace ShapeCrawler.Tests.Unit.xUnit
             var bottomMargin = textFrame.BottomMargin;
             
             // Assert
-            bottomMargin.Should().Be(expectedMargin);
+            bottomMargin.Should().Be((decimal)expectedMargin);
         }
     }
 }

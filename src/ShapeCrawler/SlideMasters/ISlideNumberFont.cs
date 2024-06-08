@@ -32,7 +32,7 @@ internal sealed class SlideNumberFont : ISlideNumberFont
         set => this.UpdateColor(value);
     }
 
-    public int Size
+    public decimal Size
     {
         get => this.masterSlideNumberSize.Size();
         set => this.masterSlideNumberSize.Update(value);

@@ -12,7 +12,7 @@ public class ShapeOutlineTests : SCTest
     [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 4", 0)]
     [SlideShapeData("autoshape-grouping.pptx", 1, "TextBox 6", 0.25)]
     [SlideShapeData("020.pptx", 1, "Shape 1", 0)]
-    public void Weight_Getter_returns_outline_weight_in_points(IShape shape, double expectedWeight)
+    public void Weight_Getter_returns_outline_weight_in_points(IShape shape, decimal expectedWeight)
     {
         // Arrange
         var autoShape = (IShape)shape;
@@ -36,10 +36,10 @@ public class ShapeOutlineTests : SCTest
         var outline = shape.Outline;
         
         // Act
-        outline.Weight = 0.25;
+        outline.Weight = 0.25m;
 
         // Assert
-        outline.Weight.Should().Be(0.25);
+        outline.Weight.Should().Be(0.25m);
         pres.Validate();
     }
 
@@ -60,7 +60,7 @@ public class ShapeOutlineTests : SCTest
     
     [Test]
     [TestCase("autoshape-grouping.pptx", 1, "TextBox 6")]
-    public void Color_Setter_sets_outline_color(string file, int slideNumber, string shapeName)
+    public void SetHexColor_sets_outline_color(string file, int slideNumber, string shapeName)
     {
         // Arrange
         var pres = new Presentation(StreamOf(file));
@@ -68,10 +68,41 @@ public class ShapeOutlineTests : SCTest
         var outline = shape.Outline;
         
         // Act
-        outline.HexColor = "be3455";
+        outline.SetHexColor("be3455");
 
         // Assert
         outline.HexColor.Should().Be("be3455");
         pres.Validate();
+    }
+
+    [Test]
+    [TestCase("autoshape-grouping.pptx", 1, "TextBox 6")]
+    public void SetNoOutline_removes_outline_color(string file, int slideNumber, string shapeName)
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf(file));
+        var shape = pres.Slides[slideNumber - 1].Shapes.GetByName(shapeName);
+        var outline = shape.Outline;
+        
+        // Act
+        outline.SetNoOutline();
+
+        // Assert
+        outline.HexColor.Should().BeNull();
+        pres.Validate();
+    }
+
+    [Test]
+    [SlideShape("autoshape-grouping.pptx", 1, "TextBox 4")]
+    public void Color_Getter_returns_no_outline_color_as_null(IShape shape)
+    {
+        // Arrange
+        var outline = shape.Outline;
+        
+        // Act
+        var outlineColor = outline.HexColor;
+        
+        // Assert
+        outlineColor.Should().BeNull();
     }
 }

@@ -1,7 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
+using ShapeCrawler.Exceptions;
 using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Tests.Shared;
@@ -349,6 +351,169 @@ public class ShapeCollectionTests : SCTest
     }
 
     [Test]
+    public void AddPicture_adds_svg_picture()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-vector-image-1.svg");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        shapes.Should().HaveCount(1);
+        var picture = (IPicture)shapes.Last();
+        picture.ShapeType.Should().Be(ShapeType.Picture);
+
+        // These values are the intrinsic size of the test image
+        picture.Height.Should().Be(100);
+        picture.Width.Should().Be(100);
+        pres.Validate();
+    }
+
+    [Test]
+    public void AddPicture_sets_valid_svg_content()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-vector-image-1.svg");
+        image.Position = 0;
+        shapes.AddPicture(image);
+        var picture = (IPicture)shapes.Last();
+
+        // Act
+        var svgContent = picture.SvgContent;
+        
+        // Assert
+        svgContent.Should().Contain("<svg");
+    }
+    
+    [Test]
+    public void AddPicture_too_large_adds_svg_picture()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-vector-image-large.svg");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        var picture = (IPicture)shapes.Last();
+
+        // These values are reasonable range for size of an added image
+        picture.Height.Should().BeGreaterThan(0);
+        picture.Height.Should().BeLessThan(2400);
+        picture.Width.Should().BeGreaterThan(0);
+        picture.Width.Should().BeLessThan(2400);
+        pres.Validate();
+    }
+
+    [Test]
+    public void AddPicture_svg_with_text_matches_reference()
+    {
+        // ARRANGE
+
+        // This presentation contains the same SVG we're adding below, manually
+        // dragged in while running PowerPoint
+        var pres = new Presentation(StreamOf("055_svg_with_text.pptx"));
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("1x1.svg");
+        image.Position = 0;
+
+        // ACT
+        shapes.AddPicture(image);
+
+        // ASSERT
+        var picture = (IPicture)shapes.First(shape => shape.Name.StartsWith("Picture"));
+        var xml = new XmlDocument { PreserveWhitespace = true };
+        xml.LoadXml(picture.SvgContent);
+        var textTagRandomChild = xml.GetElementsByTagName("text").OfType<XmlElement>().First().ChildNodes.Item(0);
+        textTagRandomChild.Should().NotBeOfType<XmlSignificantWhitespace>("Text tags must not contain whitespace");
+        
+        // The above assertion does guard against the root cause of the bug 
+        // which led to this test. However, the true test comes from loading
+        // these up in PowerPoint and ensure the added image looks like the
+        // existing image.
+        pres.Validate();
+    }
+
+    [Test]
+    public void AddPicture_too_large_adds_picture()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-image-large.png");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        var picture = (IPicture)shapes.Last();
+
+        // These values are reasonable range for size of an added image
+        picture.Height.Should().BeGreaterThan(0);
+        picture.Height.Should().BeLessThan(2400);
+        picture.Width.Should().BeGreaterThan(0);
+        picture.Width.Should().BeLessThan(2400);
+
+        // Ensure aspect ratio has been maintained
+        var aspect = picture.Width / picture.Height;
+        aspect.Should().Be(100);
+
+        pres.Validate();
+    }
+
+    [Test]
+    public void AddPicture_adds_svg_picture_no_width_height_tags()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-vector-image-wide.svg");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        // These values are the viewbox size of the test image, which is what
+        // we'll be using since the image has no width or height tags
+        var picture = (IPicture)shapes.Last();
+        picture.Height.Should().Be(90);
+        picture.Width.Should().Be(280);
+        pres.Validate();
+    }
+
+    [Test]
+    public void AddPicture_adds_svg_picture_no_dimensions()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var image = TestHelper.GetStream("test-vector-image-no-dimensions.svg");
+        image.Position = 0;
+
+        // Act
+        shapes.AddPicture(image);
+
+        // Assert
+        // These values are the actual extent of drawings on the test image, which is what
+        // we'll be using since the image has no explicit dimensions of any form
+        var picture = (IPicture)shapes.Last();
+        picture.Height.Should().Be(91);
+        picture.Width.Should().BeApproximately(277.96m,0.01m);
+        pres.Validate();
+    }
+
+    [Test]
     public void AddPicture_adds_picture()
     {
         // Arrange
@@ -365,7 +530,22 @@ public class ShapeCollectionTests : SCTest
         picture.ShapeType.Should().Be(ShapeType.Picture);
         pres.Validate();
     }
-    
+
+    [Test]
+    public void AddPicture_with_not_an_image_throws_exception()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var shapes = pres.Slides[0].Shapes;
+        var notAnImage = TestHelper.GetStream("autoshape-case011_save-as-png.pptx");
+
+        // Act
+        var act = () => shapes.AddPicture(notAnImage);
+
+        // Assert
+        act.Should().Throw<SCException>();
+    }
+
     [Test]
     public void AddPicture_adds_picture_with_correct_Height()
     {
@@ -417,7 +597,7 @@ public class ShapeCollectionTests : SCTest
         rectangle.Width.Should().Be(100);
         rectangle.Height.Should().Be(70);
         rectangle.TextFrame!.Paragraphs.Count.Should().Be(1);
-        rectangle.Outline.HexColor.Should().Be("000000");
+        rectangle.Outline.HexColor.Should().BeNull();
         pres.Validate();
     }
 
@@ -435,7 +615,7 @@ public class ShapeCollectionTests : SCTest
         var roundedRectangle = shapes.Last();
         roundedRectangle.GeometryType.Should().Be(Geometry.RoundRectangle);
         roundedRectangle.Name.Should().Be("Rectangle: Rounded Corners");
-        roundedRectangle.Outline.HexColor.Should().Be("000000");
+        roundedRectangle.Outline.HexColor.Should().BeNull();
         pres.Validate();
     }
 

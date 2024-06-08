@@ -21,12 +21,6 @@ public class SlideShapeDataAttribute : DataAttribute
     {
         this.expectedResult = expectedResult;
     }
-
-    public SlideShapeDataAttribute(string displayName, string pptxFile, int slideNumber, string shapeName)
-        : this(pptxFile, slideNumber, shapeName)
-    {
-        this.displayName = displayName;
-    }
     
     public SlideShapeDataAttribute(string pptxFile, int slideNumber, string shapeName)
     {
@@ -34,15 +28,7 @@ public class SlideShapeDataAttribute : DataAttribute
         this.slideNumber = slideNumber;
         this.shapeName = shapeName;
     }
-
-    public SlideShapeDataAttribute(string pptxFile, int slideNumber, int shapeId, object expectedResult)
-    {
-        this.pptxFile = pptxFile;
-        this.slideNumber = slideNumber;
-        this.shapeId = shapeId;
-        this.expectedResult = expectedResult;
-    }
-
+    
     public override IEnumerable<object[]> GetData(MethodInfo testMethod)
     {
         var pptxStream = SCTest.StreamOf(this.pptxFile);

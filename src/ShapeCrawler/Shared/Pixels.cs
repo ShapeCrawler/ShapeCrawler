@@ -4,14 +4,15 @@ internal readonly ref struct Pixels
 {
     private const int HorizontalResolutionDpi = 96;
     private const int VerticalResolutionDpi = 96;
-    private readonly int pixels;
+    private const int EmusPerInch = 914400;
+    private readonly decimal pixels;
 
-    internal Pixels(int pixels)
+    internal Pixels(decimal pixels)
     {
         this.pixels = pixels;
     }
 
-    internal long AsHorizontalEmus() => this.pixels * 914400 / HorizontalResolutionDpi;
+    internal long AsHorizontalEmus() => (long)(this.pixels * EmusPerInch / HorizontalResolutionDpi);
    
-    internal long AsVerticalEmus() => this.pixels * 914400 / VerticalResolutionDpi;
+    internal long AsVerticalEmus() => (long)(this.pixels * EmusPerInch / VerticalResolutionDpi);
 }

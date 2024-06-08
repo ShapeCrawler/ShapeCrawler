@@ -23,7 +23,7 @@ public static class TestHelper
         return mStream;
     }
 
-    public static readonly float HorizontalResolution;
+    public static readonly int HorizontalResolution;
 
-    public static readonly float VerticalResolution;
+    public static readonly int VerticalResolution;
 }

@@ -74,12 +74,19 @@ dotnet_diagnostic.SA1629.severity = error
 dotnet_diagnostic.SA1633.severity = none
 
 # CSXXXX
+dotnet_diagnostic.CS0162.severity = error
+dotnet_diagnostic.CS0168.severity = error
+dotnet_diagnostic.CS0169.severity = error
+dotnet_diagnostic.CS0219.severity = error
 dotnet_diagnostic.CS0649.severity = error
+dotnet_diagnostic.CS1572.severity = error
+dotnet_diagnostic.CS1574.severity = error
 dotnet_diagnostic.CS8602.severity = error
 dotnet_diagnostic.CS8603.severity = error
 dotnet_diagnostic.CS8604.severity = error
 dotnet_diagnostic.CS8619.severity = error
 dotnet_diagnostic.CS8621.severity = error
+dotnet_diagnostic.CS8629.severity = error
 dotnet_diagnostic.CS8764.severity = error
 dotnet_diagnostic.CS8766.severity = suggestion
 dotnet_diagnostic.CS8767.severity = error

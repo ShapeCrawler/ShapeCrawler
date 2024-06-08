@@ -216,6 +216,22 @@
     <EmbeddedResource Include="Resource\test-wav.wav" />
     <None Remove="Resource\054_get_shape_xpath.pptx" />
     <EmbeddedResource Include="Resource\054_get_shape_xpath.pptx" />
+    <None Remove="Resource\test-vector-image-1.svg" />
+    <EmbeddedResource Include="Resource\test-vector-image-1.svg" />
+    <None Remove="Resource\test-vector-image-wide.svg" />
+    <EmbeddedResource Include="Resource\test-vector-image-wide.svg" />
+    <None Remove="Resource\test-vector-image-no-dimensions.svg" />
+    <EmbeddedResource Include="Resource\test-vector-image-no-dimensions.svg" />
+    <None Remove="Resource\test-vector-image-large.svg" />
+    <EmbeddedResource Include="Resource\test-vector-image-large.svg" />
+    <None Remove="Resource\test-image-large.png" />
+    <EmbeddedResource Include="Resource\test-image-large.png" />
+    <None Remove="Resource\1x1.svg" />
+    <EmbeddedResource Include="Resource\1x1.svg" />
+    <None Remove="Resource\055_svg_with_text.pptx" />
+    <EmbeddedResource Include="Resource\055_svg_with_text.pptx" />
+    <None Remove="Resource\056_slide-notes.pptx" />
+    <EmbeddedResource Include="Resource\056_slide-notes.pptx" />
   </ItemGroup>
 
   <ItemGroup>

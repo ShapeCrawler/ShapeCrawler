@@ -20,25 +20,25 @@ internal class NullTextFrame : ITextFrame
         set => throw new Exception(error);
     }
     
-    public double LeftMargin 
+    public decimal LeftMargin 
     { 
         get => throw new Exception(error); 
         set => throw new Exception(error);
     }
 
-    public double RightMargin
+    public decimal RightMargin
     {
         get => throw new Exception(error); 
         set => throw new Exception(error);
     }
 
-    public double TopMargin
+    public decimal TopMargin
     {
         get => throw new Exception(error); 
         set => throw new Exception(error);
     }
 
-    public double BottomMargin
+    public decimal BottomMargin
     {
         get => throw new Exception(error); 
         set => throw new Exception(error);

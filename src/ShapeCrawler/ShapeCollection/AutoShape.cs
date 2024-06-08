@@ -92,20 +92,20 @@ internal sealed class AutoShape : CopyableShape
         {
             Color = skColorOutline,
             IsAntialias = true,
-            StrokeWidth = UnitConverter.PointToPixel(this.Outline.Weight),
+            StrokeWidth = (float)UnitConverter.PointToPixel(this.Outline.Weight),
             Style = SKPaintStyle.Stroke
         };
 
         if (this.GeometryType == Geometry.Rectangle)
         {
-            float left = this.X;
-            float top = this.Y;
-            float right = this.X + this.Width;
-            float bottom = this.Y + this.Height;
+            float left = (float)this.X;
+            float top = (float)this.Y;
+            float right = (float)(this.X + this.Width);
+            float bottom = (float)(this.Y + this.Height);
             var rect = new SKRect(left, top, right, bottom);
             slideCanvas.DrawRect(rect, paint);
             var textFrame = (TextFrame)this.TextFrame!;
-            textFrame.Draw(slideCanvas, left, this.Y);
+            textFrame.Draw(slideCanvas, left, top);
         }
     }
 }

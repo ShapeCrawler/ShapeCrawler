@@ -24,22 +24,22 @@ public interface ITextFrame
     /// <summary>
     ///     Gets or sets left margin of text frame in centimeters.
     /// </summary>
-    double LeftMargin { get; set; }
+    decimal LeftMargin { get; set; }
 
     /// <summary>
     ///     Gets or sets right margin of text frame in centimeters.
     /// </summary>
-    double RightMargin { get; set; }
+    decimal RightMargin { get; set; }
 
     /// <summary>
     ///     Gets or sets top margin of text frame in centimeters.
     /// </summary>
-    double TopMargin { get; set; }
+    decimal TopMargin { get; set; }
 
     /// <summary>
     ///     Gets or sets bottom margin of text frame in centimeters.
     /// </summary>
-    double BottomMargin { get; set; }
+    decimal BottomMargin { get; set; }
 
     /// <summary>
     ///     Gets a value indicating whether text is wrapped in shape.

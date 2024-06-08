@@ -52,8 +52,8 @@ public class SlideMasterTests : SCTest
        IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
 
         // Act
-        int shapeXCoordinate = shape.X;
-        int shapeYCoordinate = shape.Y;
+        decimal shapeXCoordinate = shape.X;
+        decimal shapeYCoordinate = shape.Y;
 
         // Assert
         shapeXCoordinate.Should().Be((int)(838200 * Helpers.TestHelper.HorizontalResolution / 914400));
@@ -68,16 +68,16 @@ public class SlideMasterTests : SCTest
         var pres = new Presentation(pptx);
         ISlideMaster slideMaster = pres.SlideMasters[0];
         IShape shape = slideMaster.Shapes.First(sp => sp.Id == 2);
-        float horizontalResolution = Helpers.TestHelper.HorizontalResolution;
-        float verticalResolution = Helpers.TestHelper.VerticalResolution;
+        var horizontalResolution = Helpers.TestHelper.HorizontalResolution;
+        var verticalResolution = Helpers.TestHelper.VerticalResolution;
 
         // Act
-        int shapeWidth = shape.Width;
-        int shapeHeight = shape.Height;
+        decimal shapeWidth = shape.Width;
+        decimal shapeHeight = shape.Height;
 
         // Assert
-        shapeWidth.Should().Be((int)(10515600 * horizontalResolution / 914400));
-        shapeHeight.Should().Be((int)(1325563 * verticalResolution / 914400));
+        shapeWidth.Should().Be(10515600m * horizontalResolution / 914400m);
+        shapeHeight.Should().Be(1325563m * verticalResolution / 914400m);
     }
 
     [Test]

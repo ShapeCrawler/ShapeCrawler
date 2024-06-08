@@ -31,25 +31,25 @@ internal abstract class Shape : IShape
         this.shapeId = new ShapeId(pShapeTreeElement);
     }
 
-    public virtual int X
+    public virtual decimal X
     {
         get => this.position.X();
         set => this.position.UpdateX(value);
     }
 
-    public virtual int Y
+    public virtual decimal Y
     {
         get => this.position.Y();
         set => this.position.UpdateY(value);
     }
 
-    public int Width
+    public decimal Width
     {
         get => this.size.Width();
         set => this.size.UpdateWidth(value);
     }
 
-    public int Height
+    public decimal Height
     {
         get => this.size.Height();
         set => this.size.UpdateHeight(value);

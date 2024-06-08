@@ -19,7 +19,6 @@ internal sealed record SlideLayouts : IReadOnlyList<ISlideLayout>
     {
         var rIdList = this.sdkSlideMasterPart.SlideMaster.SlideLayoutIdList!.OfType<P.SlideLayoutId>().Select(layoutId => layoutId.RelationshipId!);
         var layouts = new List<ISlideLayout>(rIdList.Count());
-        var number = 1;
         foreach (var rId in rIdList)
         {
             var sdkLayoutPart = (SlideLayoutPart)this.sdkSlideMasterPart.GetPartById(rId.Value!);
