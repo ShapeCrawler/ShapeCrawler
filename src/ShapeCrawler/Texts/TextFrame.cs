@@ -289,11 +289,12 @@ internal sealed class TextFrame : ITextFrame
 
     private void ShrinkText(string newText, IParagraph baseParagraph)
     {
-        var popularPortion = baseParagraph.Portions.GroupBy(p => p.Font!.Size).OrderByDescending(x => x.Count())
+        var parent = this.sdkTextBody.Parent!;
+        var groups = baseParagraph.Portions.Where(s => s.Font != null).GroupBy(p => p.Font.Size);
+        var popularPortion = groups.OrderByDescending(x => x.Count())
             .First().First();
         var font = popularPortion.Font;
 
-        var parent = this.sdkTextBody.Parent!;
         var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, parent);
         var fontSize = FontService.GetAdjustedFontSize(newText, font, (int)shapeSize.Width(), (int)shapeSize.Height());
 

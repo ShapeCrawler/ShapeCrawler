@@ -186,7 +186,7 @@ internal sealed class Paragraph : IParagraph
 
     public void SetFontSize(int fontSize)
     {
-        foreach (var portion in this.Portions)
+        foreach (var portion in this.Portions.Where(s => s.Font != null))
         {
             portion.Font.Size = fontSize;
         }
