@@ -14,7 +14,7 @@ public interface IParagraphPortion
     /// <summary>
     ///     Gets font.
     /// </summary>
-    ITextPortionFont Font { get; }
+    ITextPortionFont? Font { get; }
 
     /// <summary>
     ///     Gets or sets hypelink.
