@@ -207,8 +207,8 @@ internal sealed class TextFrame : ITextFrame
         using var paint = new SKPaint();
         paint.Color = SKColors.Black;
         var firstPortion = this.Paragraphs.First().Portions.First();
-        paint.TextSize = (float)firstPortion.Font.Size;
-        var typeFace = SKTypeface.FromFamilyName(firstPortion.Font.LatinName);
+        paint.TextSize = (float)(firstPortion.Font?.Size ?? 11);
+        var typeFace = SKTypeface.FromFamilyName(firstPortion.Font?.LatinName ?? "Arial");
         paint.Typeface = typeFace;
         float leftMarginPx = (float)UnitConverter.CentimeterToPixel(this.LeftMargin);
         float topMarginPx = (float)UnitConverter.CentimeterToPixel(this.TopMargin);
@@ -290,10 +290,9 @@ internal sealed class TextFrame : ITextFrame
     private void ShrinkText(string newText, IParagraph baseParagraph)
     {
         var parent = this.sdkTextBody.Parent!;
-        var groups = baseParagraph.Portions.Where(s => s.Font != null).GroupBy(p => p.Font.Size);
-        var popularPortion = groups.OrderByDescending(x => x.Count())
+        var popularPortion = baseParagraph.Portions.Where(s => s.Font != null).GroupBy(p => p.Font!.Size).OrderByDescending(x => x.Count())
             .First().First();
-        var font = popularPortion.Font;
+        var font = popularPortion.Font!;
 
         var shapeSize = new ShapeSize(this.sdkTypedOpenXmlPart, parent);
         var fontSize = FontService.GetAdjustedFontSize(newText, font, (int)shapeSize.Width(), (int)shapeSize.Height());
