@@ -89,9 +89,8 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.52.0 - 2024-05-28
-🍀Added support for the SVG format for the method `ISlideShapes.AddPicture()` [#350](https://github.com/ShapeCrawler/ShapeCrawler/issues/350)  
-🐞Fixed not displaying a picture added using the method `ISlideShapes.AddPicture()` [#649](https://github.com/ShapeCrawler/ShapeCrawler/issues/649)  
-🐞Fixed adding picture with high resolution [#683](https://github.com/ShapeCrawler/ShapeCrawler/issues/683)
+### Version 0.53.0 - 2024-06-20
+🍀Added `ISlide.Notes` and `ISlide.AddNotes()` for Slide Notes expirience [#684](https://github.com/ShapeCrawler/ShapeCrawler/issues/684)    
+🐞Fixed appllying "No Outline" [#649](https://github.com/ShapeCrawler/ShapeCrawler/issues/649)  
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full log.
