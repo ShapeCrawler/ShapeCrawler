@@ -95,7 +95,8 @@ internal sealed class Paragraph : IParagraph
 
             // To set a paragraph text we use a single portion which is the first paragraph portion.
             var baseARun = this.AParagraph.GetFirstChild<A.Run>() !;
-            foreach (var removingRun in this.AParagraph.OfType<A.Run>().Where(run => run != baseARun))
+            var remainingRuns = this.AParagraph.OfType<A.Run>().Where(run => run != baseARun).ToList();
+            foreach (var removingRun in remainingRuns)
             {
                 removingRun.Remove();
             }
