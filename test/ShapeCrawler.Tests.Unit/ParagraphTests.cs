@@ -299,6 +299,7 @@ public class ParagraphTests : SCTest
     [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}", 2)]
     [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}Text2", 3)]
     [TestCase("002.pptx", 2, 4, 3, "Text{NewLine}Text2{NewLine}", 4)]
+    [TestCase("023.pptx", 1, 2, 2, "Text", 1)]
     public void Text_Setter_sets_paragraph_text(string presName, int slideNumber, int shapeId, int paraNumber, string paraText, int expectedPortionsCount)
     {
         // Arrange

@@ -1,8 +1,11 @@
 # Changelog  
 
-## Version 0.53.0 - Unreleased
+## Version 0.53.1 - 2024-07-18
+🐞Fixed updating paragraph text
+
+## Version 0.53.0 - 2024-06-20
 🍀Added `ISlide.Notes` and `ISlide.AddNotes()` for Slide Notes expirience [#684](https://github.com/ShapeCrawler/ShapeCrawler/issues/684)    
-🐞Fixed appllying "No Outline" [#649](https://github.com/ShapeCrawler/ShapeCrawler/issues/649)  
+🐞Fixed applying "No Outline" [#649](https://github.com/ShapeCrawler/ShapeCrawler/issues/649)  
 
 ## Version 0.52.0 - 2024-05-28
 🍀Added support for the SVG format for the method `ISlideShapes.AddPicture()` [#350](https://github.com/ShapeCrawler/ShapeCrawler/issues/350)  

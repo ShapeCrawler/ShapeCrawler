@@ -6,7 +6,13 @@
 
 <h3 align="center"> 
 
-[![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=orange)](https://www.nuget.org/packages/ShapeCrawler) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?color=orange)](https://makeapullrequest.com) ![Nuget](https://img.shields.io/nuget/dt/ShapeCrawler?color=orange) [![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE) 
+[![NuGet](https://img.shields.io/nuget/v/ShapeCrawler?color=orange)](https://www.nuget.org/packages/ShapeCrawler)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?color=orange)](https://makeapullrequest.com)
+![Nuget](https://img.shields.io/nuget/dt/ShapeCrawler?color=orange)
+[![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE) 
+[![GitHub repo Good Issues for newbies](https://img.shields.io/github/issues/ShapeCrawler/ShapeCrawler/good%20first%20issue?style=flat&logo=github&logoColor=green&label=Good%20First%20issues)](https://github.com/ShapeCrawler/ShapeCrawler/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
+[![GitHub Help Wanted issues](https://img.shields.io/github/issues/ShapeCrawler/ShapeCrawler/help%20wanted?style=flat&logo=github&logoColor=b545d1&label=%22Help%20Wanted%22%20issues)](https://github.com/ShapeCrawler/ShapeCrawler/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
+[![GitHub repo Issues](https://img.shields.io/github/issues/ShapeCrawler/ShapeCrawler?style=flat&logo=github&logoColor=red&label=Issues)](https://github.com/ShapeCrawler/ShapeCrawler/issues?q=is%3Aopen)
 
 </h3>
 
@@ -89,9 +95,7 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.52.0 - 2024-05-28
-🍀Added support for the SVG format for the method `ISlideShapes.AddPicture()` [#350](https://github.com/ShapeCrawler/ShapeCrawler/issues/350)  
-🐞Fixed not displaying a picture added using the method `ISlideShapes.AddPicture()` [#649](https://github.com/ShapeCrawler/ShapeCrawler/issues/649)  
-🐞Fixed adding picture with high resolution [#683](https://github.com/ShapeCrawler/ShapeCrawler/issues/683)
+### Version 0.53.1 - 2024-07-18
+🐞Fixed updating paragraph text
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full log.
