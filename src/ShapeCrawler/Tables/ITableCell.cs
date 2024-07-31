@@ -1,6 +1,8 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
+using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
+using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
 
 // ReSharper disable CheckNamespace
@@ -25,6 +27,22 @@ public interface ITableCell
     ///     Gets Shape Fill of the cell.
     /// </summary>
     IShapeFill Fill { get; }
+
+    /// <summary>
+    ///     Gets the top border.
+    /// </summary>
+    ITopBorder TopBorder { get; }
+}
+
+/// <summary>
+///     Represents a top border of a table cell.
+/// </summary>
+public interface ITopBorder
+{
+    /// <summary>
+    ///     Gets or sets border width in points.
+    /// </summary>
+    float Width { get; set; }
 }
 
 internal sealed class TableCell : ITableCell
@@ -37,6 +55,7 @@ internal sealed class TableCell : ITableCell
         this.TextFrame = new TextFrame(sdkTypedOpenXmlPart, this.ATableCell.TextBody!);
         var aTcPr = aTableCell.TableCellProperties!;
         this.Fill = new TableCellFill(sdkTypedOpenXmlPart, aTcPr);
+        this.TopBorder = new TopBorder(aTableCell.TableCellProperties!.TopBorderLineProperties);
     }
 
     public bool IsMergedCell => this.ATableCell.GridSpan is not null ||
@@ -45,6 +64,7 @@ internal sealed class TableCell : ITableCell
                                 this.ATableCell.VerticalMerge is not null;
 
     public IShapeFill Fill { get; }
+    public ITopBorder TopBorder { get; }
 
     public ITextFrame TextFrame { get; }
 
@@ -53,4 +73,31 @@ internal sealed class TableCell : ITableCell
     internal int RowIndex { get; }
 
     internal int ColumnIndex { get; }
+}
+
+internal class TopBorder : ITopBorder
+{
+    private readonly A.TopBorderLineProperties? aTopBorderLineProperties;
+
+    internal TopBorder(A.TopBorderLineProperties? aTopBorderLineProperties)
+    {
+        this.aTopBorderLineProperties = aTopBorderLineProperties;
+    }
+
+    public float Width
+    {
+        get => this.GetWidth();
+        set => this.SetWidth(value);
+    }
+
+    private void SetWidth(float points)
+    {
+        var emus = new Points(points).AsEmus();
+        this.aTopBorderLineProperties!.Width!.Value = (int)emus;
+    }
+
+    private float GetWidth()
+    {
+        return new Emus(this.aTopBorderLineProperties!.Width!.Value).AsPoints();
+    }
 }

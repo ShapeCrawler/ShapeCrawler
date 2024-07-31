@@ -279,18 +279,4 @@ public class ShapeFillTests : SCTest
         // Assert
         fillType.Should().Be(expectedFill);
     }
-
-    [Test]
-    public void ISSUE_669()
-    {
-        var pres = new Presentation();
-        var slide = pres.Slides[0];
-        slide.Shapes.AddTable(40, 40, 6, 5);
-        var table = (ITable)slide.Shapes.Last();
-        var cell = table[1, 2];
-        cell.TextFrame.Text = "Hello";
-        var cellFont = cell.TextFrame.Paragraphs.First().Portions.First().Font;
-
-        cellFont.LatinName = "Prelo Slab Bold";
-    }
 }

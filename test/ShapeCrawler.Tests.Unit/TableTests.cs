@@ -167,7 +167,25 @@ public class TableTests : SCTest
         cell1.RowIndex.Should().Be(cell2.RowIndex);
         cell1.ColumnIndex.Should().Be(cell2.ColumnIndex);
     }
-
+    
+    [Test]
+    public void Row_Cell_TopBorder_Width_Setter_sets_top_border_width_in_points()
+    {
+        // Arrange
+        var pres = new Presentation();
+        var slide = pres.Slides[0];
+        slide.Shapes.AddTable(40, 40, 2, 1);
+        var table = (ITable)slide.Shapes.Last();
+        var cell = table[0, 1];
+        
+        // Act
+        cell.TopBorder.Width = 2;
+        SaveResult(pres);
+        
+        // Assert
+        cell.TopBorder.Width.Should().Be(2);
+    }
+    
     [Test]
     public void Row_Clone_cloning_row_increases_row_count_by_one()
     {
