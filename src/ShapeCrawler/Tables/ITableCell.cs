@@ -51,6 +51,7 @@ internal sealed class TableCell : ITableCell
                                 this.ATableCell.VerticalMerge is not null;
 
     public IShapeFill Fill { get; }
+
     public ITopBorder TopBorder { get; }
 
     public ITextFrame TextFrame { get; }
