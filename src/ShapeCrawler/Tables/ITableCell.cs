@@ -1,6 +1,6 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 using ShapeCrawler.Drawing;
-using ShapeCrawler.Shared;
 using ShapeCrawler.Texts;
 using ShapeCrawler.Units;
 using A = DocumentFormat.OpenXml.Drawing;
@@ -55,7 +55,7 @@ internal sealed class TableCell : ITableCell
         this.TextFrame = new TextFrame(sdkTypedOpenXmlPart, this.ATableCell.TextBody!);
         var aTcPr = aTableCell.TableCellProperties!;
         this.Fill = new TableCellFill(sdkTypedOpenXmlPart, aTcPr);
-        this.TopBorder = new TopBorder(aTableCell.TableCellProperties!.TopBorderLineProperties);
+        this.TopBorder = new TopBorder(aTableCell.TableCellProperties!);
     }
 
     public bool IsMergedCell => this.ATableCell.GridSpan is not null ||
@@ -77,27 +77,44 @@ internal sealed class TableCell : ITableCell
 
 internal class TopBorder : ITopBorder
 {
-    private readonly A.TopBorderLineProperties? aTopBorderLineProperties;
+    private readonly A.TableCellProperties aTableCellProperties;
 
-    internal TopBorder(A.TopBorderLineProperties? aTopBorderLineProperties)
+    internal TopBorder(A.TableCellProperties aTableCellProperties)
     {
-        this.aTopBorderLineProperties = aTopBorderLineProperties;
+        this.aTableCellProperties = aTableCellProperties;
     }
 
     public float Width
     {
         get => this.GetWidth();
-        set => this.SetWidth(value);
+        set => this.UpdateWidth(value);
     }
 
-    private void SetWidth(float points)
+    private void UpdateWidth(float points)
     {
+        if (this.aTableCellProperties.TopBorderLineProperties is null)
+        {
+            var aSolidFill = new A.SolidFill
+            {
+                SchemeColor = new A.SchemeColor { Val = A.SchemeColorValues.Text1 }
+            };
+            this.aTableCellProperties.TopBorderLineProperties = new A.TopBorderLineProperties();
+            this.aTableCellProperties.TopBorderLineProperties.AppendChild(aSolidFill);
+        }
+        
         var emus = new Points(points).AsEmus();
-        this.aTopBorderLineProperties!.Width!.Value = (int)emus;
+        this.aTableCellProperties.TopBorderLineProperties.Width = new Int32Value((int)emus);
     }
 
     private float GetWidth()
     {
-        return new Emus(this.aTopBorderLineProperties!.Width!.Value).AsPoints();
+        if (this.aTableCellProperties.TopBorderLineProperties is null)
+        {
+            return 1; // default value
+        }
+
+        var emus = this.aTableCellProperties.TopBorderLineProperties!.Width!.Value;
+        
+        return new Emus(emus).AsPoints();
     }
 }

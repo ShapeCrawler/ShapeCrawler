@@ -4,8 +4,6 @@ internal readonly ref struct Emus
 {
     private const int HorizontalResolutionDpi = 96;
     private const int VerticalResolutionDpi = 96;
-    private const int EmusPerInch = 914400;
-    private const float EmusPerPoint = 12700;
     private readonly long value;
 
     internal Emus(long value)
@@ -13,9 +11,9 @@ internal readonly ref struct Emus
         this.value = value;
     }
 
-    internal int AsHorizontalPixels() => (int)(this.value * HorizontalResolutionDpi / EmusPerInch);
+    internal int AsHorizontalPixels() => (int)(this.value * HorizontalResolutionDpi / 914400);
     
-    internal int AsVerticalPixels() => (int)(this.value * VerticalResolutionDpi / EmusPerInch);
+    internal int AsVerticalPixels() => (int)(this.value * VerticalResolutionDpi / 914400);
 
-    internal float AsPoints() => this.value / EmusPerPoint;
+    internal float AsPoints() => this.value / 12700f;
 }
