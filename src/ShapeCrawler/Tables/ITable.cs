@@ -77,7 +77,7 @@ internal sealed class Table : CopyableShape, ITable
 
     public void RemoveColumnAt(int columnIndex)
     {
-        var column = (SCColumn)this.Columns[columnIndex];
+        var column = (Column)this.Columns[columnIndex];
         column.AGridColumn.Remove();
 
         var aTableRows = this.ATable.Elements<A.TableRow>();
@@ -248,11 +248,11 @@ internal sealed class Table : CopyableShape, ITable
         }
     }
     
-    private IReadOnlyList<SCColumn> GetColumnList()
+    private IReadOnlyList<Column> GetColumnList()
     {
         IEnumerable<A.GridColumn> aGridColumns = this.ATable.TableGrid!.Elements<A.GridColumn>();
-        var columnList = new List<SCColumn>(aGridColumns.Count());
-        columnList.AddRange(aGridColumns.Select(aGridColumn => new SCColumn(aGridColumn)));
+        var columnList = new List<Column>(aGridColumns.Count());
+        columnList.AddRange(aGridColumns.Select(aGridColumn => new Column(aGridColumn)));
 
         return columnList;
     }
@@ -274,7 +274,7 @@ internal sealed class Table : CopyableShape, ITable
                 // Delete a:gridCol elements and append width of deleting column to merged column
                 for (int i = 0; i < deleteColumnCount; i++)
                 {
-                    var column = (SCColumn)this.Columns[colIdx + 1 + i];
+                    var column = (Column)this.Columns[colIdx + 1 + i];
                     column.AGridColumn.Remove();
                     this.Columns[colIdx].Width += column.Width;
                 }

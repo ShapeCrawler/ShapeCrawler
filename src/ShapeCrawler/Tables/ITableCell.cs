@@ -25,6 +25,11 @@ public interface ITableCell
     ///     Gets Shape Fill of the cell.
     /// </summary>
     IShapeFill Fill { get; }
+
+    /// <summary>
+    ///     Gets the top border.
+    /// </summary>
+    ITopBorder TopBorder { get; }
 }
 
 internal sealed class TableCell : ITableCell
@@ -37,6 +42,7 @@ internal sealed class TableCell : ITableCell
         this.TextFrame = new TextFrame(sdkTypedOpenXmlPart, this.ATableCell.TextBody!);
         var aTcPr = aTableCell.TableCellProperties!;
         this.Fill = new TableCellFill(sdkTypedOpenXmlPart, aTcPr);
+        this.TopBorder = new TopBorder(aTableCell.TableCellProperties!);
     }
 
     public bool IsMergedCell => this.ATableCell.GridSpan is not null ||
@@ -45,6 +51,8 @@ internal sealed class TableCell : ITableCell
                                 this.ATableCell.VerticalMerge is not null;
 
     public IShapeFill Fill { get; }
+
+    public ITopBorder TopBorder { get; }
 
     public ITextFrame TextFrame { get; }
 

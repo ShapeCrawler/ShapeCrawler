@@ -1,4 +1,4 @@
-﻿namespace ShapeCrawler.Shared;
+﻿namespace ShapeCrawler.Units;
 
 internal readonly ref struct Pixels
 {
