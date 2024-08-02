@@ -2,8 +2,5 @@
 
 internal readonly ref struct Points(float points)
 {
-    public long AsEmus()
-    {
-        return (long)(points * 12700);
-    }
+    internal long AsEmus() => (long)(points * 12700);
 }
