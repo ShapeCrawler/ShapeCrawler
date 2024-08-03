@@ -1,21 +1,9 @@
 ﻿using DocumentFormat.OpenXml;
 using ShapeCrawler.Units;
 
-// ReSharper disable once CheckNamespace
-namespace ShapeCrawler;
+namespace ShapeCrawler.Tables;
 
-/// <summary>
-///     Represents a top border of a table cell.
-/// </summary>
-public interface ITopBorder
-{
-    /// <summary>
-    ///     Gets or sets border width in points.
-    /// </summary>
-    float Width { get; set; }
-}
-
-internal class TopBorder : ITopBorder
+internal class TopBorder : IBorder
 {
     private readonly DocumentFormat.OpenXml.Drawing.TableCellProperties aTableCellProperties;
 
