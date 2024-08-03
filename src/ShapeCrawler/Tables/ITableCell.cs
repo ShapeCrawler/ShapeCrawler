@@ -74,7 +74,9 @@ internal sealed class TableCell : ITableCell
     public IBorder TopBorder { get; }
     
     public IBorder BottomBorder { get; }
+
     public IBorder LeftBorder { get; }
+
     public IBorder RightBorder { get; }
 
     public ITextFrame TextFrame { get; }
