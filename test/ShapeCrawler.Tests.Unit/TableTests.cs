@@ -186,6 +186,20 @@ public class TableTests : SCTest
     }
     
     [Test]
+    public void Row_Cell_LeftBorder_Width_Setter_sets_left_border_width_in_points()
+    {
+        // Arrange
+        var pres = new Presentation(StreamOf("table-case001.pptx"));
+        var cell = pres.Slides[0].TableWithName("Table 1")[0, 0];
+        
+        // Act
+        cell.LeftBorder.Width = 2;  
+        
+        // Assert
+        cell.LeftBorder.Width.Should().Be(2);
+    }
+    
+    [Test]
     public void Row_Cell_TopBorder_Width_Getter_returns_top_border_width_in_points()
     {
         // Arrange
