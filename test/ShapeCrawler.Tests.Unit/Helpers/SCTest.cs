@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using ClosedXML.Excel;
 using NUnit.Framework;
 

@@ -254,8 +254,4 @@
     <EmbeddedResource Include="Resource\autoshape\autoshape-case002.pptx" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Helpers\Attributes\" />
-  </ItemGroup>
-
 </Project>

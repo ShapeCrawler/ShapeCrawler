@@ -7,7 +7,6 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
-using Assert = Xunit.Assert;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable TooManyChainedReferences
@@ -60,10 +59,10 @@ public class ShapeCollectionTests : SCTest
         var shapes = pres.Slides.First().Shapes;
 
         // Assert
-        Assert.Single(shapes.Where(sp => sp.ShapeType == ShapeType.Chart));
-        Assert.Single(shapes.Where(sp => sp is IPicture));
-        Assert.Single(shapes.Where(sp => sp is ITable));
-        Assert.Single(shapes.Where(sp => sp is IGroupShape));
+        shapes.Count(sp => sp.ShapeType == ShapeType.Chart).Should().Be(1);
+        shapes.Count(sp => sp.ShapeType == ShapeType.Picture).Should().Be(1);
+        shapes.Count(sp => sp.ShapeType == ShapeType.Table).Should().Be(1);
+        shapes.Count(sp => sp.ShapeType == ShapeType.Group).Should().Be(1);
     }
 
     [Test]
@@ -100,8 +99,7 @@ public class ShapeCollectionTests : SCTest
         var shapesCollection = presentation.Slides[0].Shapes;
 
         // Act-Assert
-        Assert.Contains(shapesCollection,
-            shape => shape.Id == 10 && shape is ILine && shape.GeometryType == Geometry.Line);
+        shapesCollection.Should().Contain(shape => shape.Id == 10 && shape is ILine && shape.GeometryType == Geometry.Line);
     }
 
     [Test]

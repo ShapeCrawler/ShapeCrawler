@@ -1,12 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
-using ShapeCrawler.Tests.Unit.Properties;
-using Xunit;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable TooManyChainedReferences
@@ -371,20 +366,4 @@ public class SlideTests : SCTest
         notes.Text.Should().Be(expected);
         pres.Validate();
     }    
-
-#if DEBUG
-    [Fact(Skip = "In progress")]
-    public void SaveAsPng_saves_slide_as_image()
-    {
-        // Arrange
-        var pptxStream = StreamOf("autoshape-case011_save-as-png.pptx");
-        var pres = new Presentation(pptxStream);
-        var slide = pres.Slides[0];
-        var mStream = new MemoryStream();
-
-        // Act
-        slide.SaveAsPng(mStream);
-    }
-    
-#endif
 }
