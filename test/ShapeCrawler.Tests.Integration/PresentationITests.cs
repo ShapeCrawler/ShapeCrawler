@@ -1,8 +1,5 @@
-using System;
 using System.IO;
-using System.Text.Json;
 using FluentAssertions;
-using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
 using Xunit;
 

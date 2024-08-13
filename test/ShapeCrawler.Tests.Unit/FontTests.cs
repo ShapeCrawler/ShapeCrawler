@@ -1,7 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
 using ShapeCrawler.Tests.Unit.Helpers;
-using ShapeCrawler.Tests.Unit.Helpers.Attributes;
 
 // ReSharper disable SuggestVarOrType_SimpleTypes
 

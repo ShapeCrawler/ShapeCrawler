@@ -281,7 +281,7 @@ public class ShapeFillTests : SCTest
     }
     
     [Test]
-    public void Type_returns_Gradient_fill_type_2()
+    public void Type_returns_Gradient_fill_type()
     {
         // Act
         var pres = new Presentation(StreamOf("009_table.pptx"));

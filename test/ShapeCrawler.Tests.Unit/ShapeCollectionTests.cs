@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Xml;
 using FluentAssertions;
 using NUnit.Framework;
@@ -8,8 +7,6 @@ using ShapeCrawler.Shapes;
 using ShapeCrawler.Shared;
 using ShapeCrawler.Tests.Shared;
 using ShapeCrawler.Tests.Unit.Helpers;
-using ShapeCrawler.Tests.Unit.Helpers.Attributes;
-using Xunit;
 using Assert = Xunit.Assert;
 
 // ReSharper disable SuggestVarOrType_BuiltInTypes
