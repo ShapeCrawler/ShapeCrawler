@@ -95,7 +95,7 @@ Pull Requests are welcome! Please read the [Contribution Guide](https://github.c
 
 ## Changelog  
 
-### Version 0.53.1 - 2024-07-18
-🐞Fixed updating paragraph text
+### Version 0.54.0 - 2024-08-13
+🍀Added APIs `TopBorder`, `BottomBorder` etc. to table cell to manage borders [#546](https://github.com/ShapeCrawler/ShapeCrawler/issues/546)
 
 Visit [CHANGELOG.md](https://github.com/ShapeCrawler/ShapeCrawler/blob/master/CHANGELOG.md) to see the full log.
