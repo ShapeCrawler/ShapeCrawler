@@ -95,6 +95,8 @@
     <EmbeddedResource Include="Assets\pictures\pictures-case001.pptx" />
     <None Remove="Assets\pictures\pictures-case002.pptx" />
     <EmbeddedResource Include="Assets\pictures\pictures-case002.pptx" />
+    <None Remove="Assets\pictures\pictures-case004.pptx" />
+    <EmbeddedResource Include="Assets\pictures\pictures-case004.pptx" />
     <None Remove="Assets\tables\009_table.pptx" />
     <EmbeddedResource Include="Assets\tables\009_table.pptx" />
     <None Remove="Assets\tables\table-case001.pptx" />
@@ -213,12 +215,8 @@
     <EmbeddedResource Include="Assets\test-vector-image-wide.svg" />
     <None Remove="Assets\test-wav.wav" />
     <EmbeddedResource Include="Assets\test-wav.wav" />
-
-
-
-
-    
-
+    <None Remove="Assets\040_video.pptx" />
+    <EmbeddedResource Include="Assets\040_video.pptx" />
   </ItemGroup>
 
 </Project>
