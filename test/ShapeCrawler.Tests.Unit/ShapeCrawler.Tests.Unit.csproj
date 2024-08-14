@@ -35,7 +35,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ShapeCrawler\ShapeCrawler.csproj" />
-    <ProjectReference Include="..\ShapeCrawler.Tests.Shared\ShapeCrawler.Tests.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
