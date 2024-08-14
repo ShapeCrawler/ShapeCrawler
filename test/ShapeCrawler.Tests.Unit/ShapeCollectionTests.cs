@@ -122,7 +122,7 @@ public class ShapeCollectionTests : SCTest
     {
         // Arrange
         var pres = new Presentation();
-        var xml = TestHelperShared.GetString("line-shape.xml");
+        var xml = StringOf("line-shape.xml");
         var shapes = pres.Slides[0].Shapes;
 
         // Act
