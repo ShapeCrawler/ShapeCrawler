@@ -38,6 +38,12 @@ public abstract class SCTest
 
         return mStream;
     }
+
+    protected static string StringOf(string fileName)
+    {
+        var stream = StreamOf(fileName);
+        return System.Text.Encoding.UTF8.GetString(stream.ToArray());
+    }
     
     protected string GetTestPath(string fileName)
     {

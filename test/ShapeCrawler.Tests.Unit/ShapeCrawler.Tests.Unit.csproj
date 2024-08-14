@@ -35,7 +35,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ShapeCrawler\ShapeCrawler.csproj" />
-    <ProjectReference Include="..\ShapeCrawler.Tests.Shared\ShapeCrawler.Tests.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -217,6 +216,8 @@
     <EmbeddedResource Include="Assets\test-wav.wav" />
     <None Remove="Assets\040_video.pptx" />
     <EmbeddedResource Include="Assets\040_video.pptx" />
+    <None Remove="Assets\autoshape\line-shape.xml" />
+    <EmbeddedResource Include="Assets\autoshape\line-shape.xml" />
   </ItemGroup>
 
 </Project>
